@@ -1,0 +1,31 @@
+####### kdevelop will overwrite this part!!! (begin)##########
+
+SUBDIRS = qucs
+
+EXTRA_DIST = qucs.kdevprj admin AUTHORS COPYING ChangeLog INSTALL README TODO qucs.lsm qucs.spec NEWS autogen.sh 
+
+####### kdevelop will overwrite this part!!! (end)############
+# not a GNU package. You can remove this line, if 
+# have all needed files, that a GNU package needs
+AUTOMAKE_OPTIONS = foreign 
+
+#$(top_srcdir)/configure.in: configure.in.in $(top_srcdir)/subdirs
+#	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in ;
+
+$(top_srcdir)/subdirs:
+	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common subdirs
+
+$(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
+	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
+
+MAINTAINERCLEANFILES = subdirs configure.in acinclude.m4 configure.files 
+
+package-messages:
+	$(MAKE) -f $(top_srcdir)/admin/Makefile.common package-messages
+	$(MAKE) -C po merge
+
+dist-hook:
+	rm -rf $(distdir)/admin/CVS
+	rm -f $(distdir)/*.tar.gz
+	cd $(top_distdir) && perl $(top_srcdir)/admin/am_edit -padmin
+	cd $(top_distdir) && $(MAKE) -f $(top_srcdir)/admin/Makefile.common subdirs
