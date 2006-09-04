@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(qucs,0.0.10,qucs-bugs@lists.sourceforge.net)
+AC_INIT(qucs,0.1.0,qucs-bugs@lists.sourceforge.net)
 AC_CONFIG_SRCDIR([qucs/qucs.cpp])
 AC_CONFIG_HEADERS([config.h])
 
@@ -116,12 +116,19 @@ fi
 dnl Check include path to Qt.
 QT_INCLUDES=""
 QT_VER=2
+QT_EXTRA_INCLUDES=""
 AC_MSG_CHECKING([for Qt headers])
 paths="$QTDIR/include /usr/local/qt/include /usr/include/qt /usr/include/qt3 \
   /usr/include /usr/X11R6/include/X11/qt /usr/X11R6/include/X11/qt \
-  /usr/X11R6/include/qt /usr/X11R6/include/qt2 /usr/X11R6/include"
+  /usr/X11R6/include/qt /usr/X11R6/include/qt2 /usr/X11R6/include \
+  /usr/include/qt4"
 for path in $paths; do
-  if test -f "$path/qapplication.h"; then
+  if test -f "$path/Qt/qapplication.h"; then
+    QT_INCLUDES=$path
+    QT_VER=4
+    QT_EXTRA_INCLUDES="-I$path/Qt -I$path/QtCore -I$path/QtGui"
+    break
+  elif test -f "$path/qapplication.h"; then
     QT_INCLUDES=$path
     if test -f "$path/qmemarray.h"; then
       QT_VER=3
@@ -147,7 +154,16 @@ AC_ARG_ENABLE([mt],
    else
      enable_mt="no"
    fi])
-if test "$enable_mt" = yes; then
+if test $QT_VER = 4; then
+  QT_LDF=""
+  if test x$WIN32 = xyes; then
+    QT_LIB="-lQtCore4 -lQtGui4 -lQtXml4"
+  else
+    QT_LIB="-lQtCore -lQtGui -lQtXml"
+  fi
+  QT_INC="$QT_DEF"
+  QT_MTS="non-threaded"
+elif test "$enable_mt" = yes; then
   QT_LDF=""
   QT_LIB="-lqt-mt"
   QT_INC="$QT_DEF -DQT_THREAD_SUPPORT -D_REENTRANT"
@@ -187,7 +203,7 @@ for path in $paths; do
   save_CXXFLAGS="$CXXFLAGS"
   LIBS="$LIBS $X11_LIBS $QT_LIB"
   LDFLAGS="$LDFLAGS $X11_LDFLAGS -L$path $QT_LDF"
-  CXXFLAGS="$CXXFLAGS $X11_INCLUDES $QT_INCLUDES $QT_INC"
+  CXXFLAGS="$CXXFLAGS $X11_INCLUDES $QT_INCLUDES $QT_EXTRA_INCLUDES $QT_INC"
   AC_LINK_IFELSE(
     [#include <qapplication.h>
      int main (int argc, char ** argv) {
