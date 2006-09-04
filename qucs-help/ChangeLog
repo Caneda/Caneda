@@ -1,3 +1,7 @@
+2006-09-04 Gopala Krishna   <krishna.ggk@gmail.com>
+
+	* qucshelp application ported to Qt4
+
 2006-08-26  Stefan Jahn  <stefan@lkcc.org>
 
 	* qucshelp.cpp (setupActions): Made some more user visible

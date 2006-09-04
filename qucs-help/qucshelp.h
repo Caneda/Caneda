@@ -18,11 +18,10 @@
 #ifndef QUCSHELP_H
 #define QUCSHELP_H
 
-#include <qmainwindow.h>
-#include <qtextbrowser.h>
-#include <qdir.h>
-#include <qfont.h>
-#include <qstringlist.h>
+#include <QtGui/QMainWindow>
+#include <QtGui/QFont>
+#include <QtCore/QDir>
+#include <QtCore/QStringList>
 
 struct tQucsSettings {
   int x, y, dx, dy;    // position and size of main window
@@ -36,38 +35,41 @@ struct tQucsSettings {
 extern tQucsSettings QucsSettings;
 extern QDir QucsHelpDir;
 class QAction;
-class QListViewItem;
 class QListView;
 class HtmlDataFetcher;
-class QDockWindow;
+class QDockWidget;
+class QTextBrowser;
+class StringListModel;
+class QModelIndex;
+class QUrl;
 
 class QucsHelp : public QMainWindow  {
   Q_OBJECT
+
   public:
-    QucsHelp(const QString& page);
+  QucsHelp(const QString& page,QWidget *parent=0l);
     ~QucsHelp();
 
   private slots:
-    void slotSourceChanged(const QString& str);
-    void slotToggleSidebar(bool);
-    void slotToggleSidebarAction(bool);
+    void slotSourceChanged(const QUrl& str);
     void previousLink();
     void nextLink();
-    void displaySelectedChapter();
+    void displaySelectedChapter(const QModelIndex & index);
 
   private:
     void setupActions();
     void createSidebar();
 
     QTextBrowser *textBrowser;
-    uint currentIndex;
+    int currentIndex;
     QStringList links;
     QAction *previousAction;
     QAction *nextAction;
-    QAction *viewBrowseDock;
+    StringListModel *model;
     QListView *chaptersView;
-    QDockWindow *dock;
+    QDockWidget *dock;
     HtmlDataFetcher *dataFetcher;
+
 };
 
 #endif

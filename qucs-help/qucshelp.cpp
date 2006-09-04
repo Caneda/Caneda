@@ -22,37 +22,82 @@
 #include "qucshelp.h"
 #include "htmldatafetcher.h"
 
-#include <qpushbutton.h>
-#include <qaction.h>
-#include <qpixmap.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qpopupmenu.h>
-#include <qmenubar.h>
-#include <qapplication.h>
-#include <qlistview.h>
+#include <QtGui/QPushButton>
+#include <QtGui/QAction>
+#include <QtGui/QPixmap>
+#include <QtGui/QMenu>
+#include <QtGui/QMenuBar>
+#include <QtGui/QApplication>
+#include <QtGui/QListView>
+#include <QtGui/QTextBrowser>
+#include <QtGui/QToolBar>
+#include <QtGui/QDockWidget>
 
+#include <QtCore/QAbstractListModel>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <QtCore/QUrl>
 
-QucsHelp::QucsHelp(const QString& page)
+class StringListModel : public QAbstractListModel
+{
+public:
+  StringListModel(const QStringList &strings, QObject *parent = 0) : 
+    QAbstractListModel(parent), stringList(strings) {}
+  ~StringListModel() {}
+  int rowCount(const QModelIndex &parent = QModelIndex()) const;
+  QVariant data(const QModelIndex &index, int role) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+		      int role = Qt::DisplayRole) const;
+
+private:
+  QStringList stringList;
+};
+
+int StringListModel::rowCount(const QModelIndex &parent) const
+{
+  Q_UNUSED(parent);
+  return stringList.count();
+}
+
+QVariant StringListModel::data(const QModelIndex &index, int role) const
+{
+  if (!index.isValid() || index.row() >= stringList.size() || role != Qt::DisplayRole )
+    return QVariant();
+  return stringList.at(index.row());
+}
+
+QVariant StringListModel::headerData(int section, Qt::Orientation orientation,
+				     int role) const
+{
+  if (role != Qt::DisplayRole)
+    return QVariant();
+
+  if (orientation == Qt::Horizontal)
+    return QString("Column %1").arg(section);
+  else
+    return QString("Row %1").arg(section);
+}
+
+QucsHelp::QucsHelp(const QString& page,QWidget *parent) : QMainWindow(parent)
 {
   currentIndex = 0;
   dataFetcher = new HtmlDataFetcher();
   links = dataFetcher->fetchLinksToFiles(QucsHelpDir.filePath("index.html"));
   // set application icon
-  setIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
-  setCaption(tr("Qucs Help System"));
+  setWindowIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
+  setWindowTitle(tr("Qucs Help System"));
 
   textBrowser = new QTextBrowser(this);
   textBrowser->setMinimumSize(400,200);
   setCentralWidget(textBrowser);
-  setupActions();
-  createSidebar();
+  createSidebar();//beware of order : may crash if changed
+  setupActions(); // "     "   "      "    "    "  "
+  
 
-  textBrowser->setSource(QucsHelpDir.filePath(links[0]));
+  textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[0])));
 
-  // .......................................
   if(!page.isEmpty())
-    textBrowser->setSource(QucsHelpDir.filePath(page));
+    textBrowser->setSource(QUrl(QucsHelpDir.filePath(page)));
 }
 
 QucsHelp::~QucsHelp()
@@ -60,139 +105,96 @@ QucsHelp::~QucsHelp()
 
 void QucsHelp::setupActions()
 {
-  QToolBar *toolbar = new QToolBar(this,"main_toolbar");
+  QToolBar *toolbar = addToolBar(tr("Main toolbar"));
   QMenuBar *bar = menuBar();
   statusBar();
 
-  const QKeySequence ks = QKeySequence();
+  QMenu *fileMenu = bar->addMenu(tr("&File"));
+  QMenu *viewMenu = bar->addMenu(tr("&View"));
+  bar->addSeparator();
+  QMenu *helpMenu = bar->addMenu(tr("&Help"));
+  
+  QAction *quitAction = fileMenu->addAction(QIcon(QucsSettings.BitmapDir + "quit.png"),tr("&Quit"),qApp,SLOT(quit()),Qt::CTRL+Qt::Key_Q);
 
-  QAction *quitAction = new QAction(QIconSet(QPixmap(QucsSettings.BitmapDir + "quit.png")),
-                                    tr("&Quit"), CTRL+Key_Q, this);
-  QAction *backAction = new QAction(QIconSet(QPixmap(QucsSettings.BitmapDir + "back.png")),
-                                    tr("&Back"), ALT+Key_Left, this);
-  QAction *forwardAction = new QAction(QIconSet(QPixmap(QucsSettings.BitmapDir + "forward.png")),
-                                       tr("&Forward"), ALT+Key_Right, this);
-  QAction *homeAction = new QAction(QIconSet(QPixmap(QucsSettings.BitmapDir + "home.png")),
-                                    tr("&Home"),CTRL+Key_H,this);
-  previousAction = new QAction(QIconSet(QPixmap(QucsSettings.BitmapDir + "previous.png")),tr("&Previous"),
-                               ks, this);
-  nextAction = new QAction(QIconSet(QPixmap(QucsSettings.BitmapDir + "next.png")),
-                           tr("&Next"), ks, this);
-  viewBrowseDock = new QAction(tr("&Table of Contents"), 0, this);
-  viewBrowseDock->setToggleAction(true);
-  viewBrowseDock->setOn(true);
+  QAction *backAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "back.png"), tr("&Back"),textBrowser,SLOT(backward()),
+					    Qt::ALT+Qt::Key_Left);
+  QAction *forwardAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "forward.png"),tr("&Forward"),textBrowser,
+					       SLOT(forward()),Qt::ALT+Qt::Key_Right);
+  QAction *homeAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "home.png"),tr("&Home"),textBrowser,
+					    SLOT(home()),Qt::CTRL+Qt::Key_H);
+
+  previousAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "previous.png"),tr("&Previous"),this,SLOT(previousLink()));
+  nextAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "next.png"),tr("&Next"),this,SLOT(nextLink()));
+  viewMenu->addSeparator();
+
+  QAction *viewBrowseDock = dock->toggleViewAction();
+  viewMenu->addAction(viewBrowseDock);
   viewBrowseDock->setStatusTip(tr("Enables/disables the table of contents"));
   viewBrowseDock->setWhatsThis(tr("Table of Contents\n\nEnables/disables the table of contents"));
 
-  connect(quitAction,SIGNAL(activated()),qApp,SLOT(quit()));
+  helpMenu->addAction(tr("&About Qt"),qApp,SLOT(aboutQt()));
 
-  connect(backAction,SIGNAL(activated()),textBrowser,SLOT(backward()));
   connect(textBrowser,SIGNAL(backwardAvailable(bool)),backAction,SLOT(setEnabled(bool)));
-
-  connect(forwardAction,SIGNAL(activated()),textBrowser,SLOT(forward()));
   connect(textBrowser,SIGNAL(forwardAvailable(bool)),forwardAction,SLOT(setEnabled(bool)));
-
-  connect(homeAction,SIGNAL(activated()),textBrowser,SLOT(home()));
-
-  connect(textBrowser,SIGNAL(sourceChanged(const QString &)),this,SLOT(slotSourceChanged(const QString&)));
-  connect(previousAction,SIGNAL(activated()),this,SLOT(previousLink()));
-  connect(nextAction,SIGNAL(activated()),this,SLOT(nextLink()));
-  connect(viewBrowseDock, SIGNAL(toggled(bool)), SLOT(slotToggleSidebar(bool)));
-
-  backAction->addTo(toolbar);
-  forwardAction->addTo(toolbar);
+  connect(textBrowser,SIGNAL(sourceChanged(const QUrl &)),this,SLOT(slotSourceChanged(const QUrl &)));
+  
+  toolbar->addAction(backAction);
+  toolbar->addAction(forwardAction);
   toolbar->addSeparator();
-  homeAction->addTo(toolbar);
-  previousAction->addTo(toolbar);
-  nextAction->addTo(toolbar);
+  toolbar->addAction(homeAction);
+  toolbar->addAction(previousAction);
+  toolbar->addAction(nextAction);
   toolbar->addSeparator();
-  quitAction->addTo(toolbar);
-
-  QPopupMenu *fileMenu = new QPopupMenu(this);
-  quitAction->addTo(fileMenu);
-
-  QPopupMenu *viewMenu = new QPopupMenu(this);
-  backAction->addTo(viewMenu);
-  forwardAction->addTo(viewMenu);
-  homeAction->addTo(viewMenu);
-  previousAction->addTo(viewMenu);
-  nextAction->addTo(viewMenu);
-  viewMenu->insertSeparator();
-  viewBrowseDock->addTo(viewMenu);
-
-  QPopupMenu *helpMenu = new QPopupMenu(this);
-  helpMenu->insertItem(tr("&About Qt"),qApp,SLOT(aboutQt()));
-
-  bar->insertItem(tr("&File"), fileMenu );
-  bar->insertItem(tr("&View"),viewMenu);
-  bar->insertSeparator();
-  bar->insertItem(tr("&Help"),helpMenu);
-
+  toolbar->addAction(quitAction);
 }
 
 
 void QucsHelp::createSidebar()
 {
-  dock = new QDockWindow(QDockWindow::InDock,this);
-  dock->setResizeEnabled(true);
-  dock->setCloseMode(QDockWindow::Always);
-  connect(dock,SIGNAL(visibilityChanged(bool)),this,SLOT(slotToggleSidebarAction(bool)));
-
-  chaptersView = new QListView(dock,"chapters_view");
-  chaptersView->setRootIsDecorated(false);
-  chaptersView->addColumn(tr("Contents"));
-  chaptersView->setSorting(-1);
-  chaptersView->setSelectionMode(QListView::Single);
-
-  dock->setWidget(chaptersView);
-  moveDockWindow(dock,QDockWindow::Left);
-
+  dock = new QDockWidget(tr("Table of Contents"),this);
+  dock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable); 
+  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  addDockWidget(Qt::LeftDockWidgetArea, dock);
 
   QStringList l = dataFetcher->fetchChapterTexts(QucsHelpDir.filePath("index.html"));
-  for(int i=l.count()-1;i>=0;i--)
-    chaptersView->insertItem(new QListViewItem(chaptersView,l[i],QString::number(i+1)));
+  model = new StringListModel(l);
 
-  QListViewItem *curItem = new QListViewItem(chaptersView,tr("Home"),QString::number(0));
-  chaptersView->insertItem(curItem);
-  chaptersView->setSelected(curItem,true);
+  chaptersView = new QListView(dock);
+  chaptersView->setModel(model);
 
-  connect(chaptersView,SIGNAL(selectionChanged()),this,SLOT(displaySelectedChapter()));
+  dock->setWidget(chaptersView);
+    
+  connect(chaptersView,SIGNAL(activated ( const QModelIndex &  )),this,
+	  SLOT(displaySelectedChapter(const QModelIndex & )));
 }
 
-void QucsHelp::displaySelectedChapter()
+void QucsHelp::displaySelectedChapter(const QModelIndex & index)
 {
-  uint y = chaptersView->selectedItem()->text(1).toUInt();
-  Q_ASSERT(y < links.count());
-  textBrowser->setSource(QucsHelpDir.filePath(links[y]));
+  int y = index.isValid() ? index.row() : 0;
+  textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[y])));
 }
+
 //This slot updates next and previous actions i.e enabling/disabling
-void QucsHelp::slotSourceChanged(const QString& str)
+void QucsHelp::slotSourceChanged(const QUrl& ustr)
 {
+  QString str = ustr.path();
   bool found = false;
-  for(unsigned int i=0;i < links.count(); i++)
+  for(int i=0;i < links.count(); i++)
   {
     if(str.endsWith(links[i]))
     {
       currentIndex = i;
       previousAction->setEnabled(bool(i!=0));
       nextAction->setEnabled(bool(i+1 != links.count()));
-      if(chaptersView->selectedItem()->text(1).toUInt() != i)
-      {
-        QListViewItem *item = chaptersView->findItem(QString::number(i),1);
-        if(item != 0l)
-        {
-          chaptersView->blockSignals(true);
-          chaptersView->setSelected(item,true);
-          chaptersView->blockSignals(false);
-        }
-      }
+      if(!(chaptersView->selectionModel()->isRowSelected(i,QModelIndex())))
+      	chaptersView->selectionModel()->select(model->index(i),QItemSelectionModel::ClearAndSelect);
       found = true;
       break;
     }
   }
   if(found == false) // some error
   {
-    textBrowser->setSource(QucsHelpDir.filePath(links[0]));
+    //textBrowser->setSource(QucsHelpDir.filePath(links[0]));
     qDebug("QucsHelp::slotSourceChanged():  Link mismatch");
     return;
   }
@@ -203,25 +205,13 @@ void QucsHelp::previousLink()
 {
   if(currentIndex > 0)
     --currentIndex;
-  textBrowser->setSource(QucsHelpDir.filePath(links[currentIndex]));
+  textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[currentIndex])));
 }
 
 void QucsHelp::nextLink()
 {
   ++currentIndex;
   if(currentIndex >= links.count())
-    currentIndex = links.count();
-  textBrowser->setSource(QucsHelpDir.filePath(links[currentIndex]));
-}
-
-void QucsHelp::slotToggleSidebar(bool b)
-{
-  dock->setShown(b);
-}
-
-void QucsHelp::slotToggleSidebarAction(bool b)
-{
-  viewBrowseDock->blockSignals(true);
-  viewBrowseDock->setOn(b);
-  viewBrowseDock->blockSignals(false);
+    currentIndex = links.count()-1;
+  textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[currentIndex])));
 }

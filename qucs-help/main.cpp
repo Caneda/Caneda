@@ -21,18 +21,21 @@
 
 #include <stdlib.h>
 
-#include <qapplication.h>
-#include <qstring.h>
-#include <qtextcodec.h>
-#include <qtranslator.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qmessagebox.h>
-#include <qdir.h>
-#include <qfont.h>
-#include <qtextcodec.h>
-
 #include "qucshelp.h"
+
+#include <QtGui/QApplication>
+#include <QtGui/QMessageBox>
+#include <QtGui/QFont>
+
+#include <QtCore/QString>
+#include <QtCore/QTextCodec>
+#include <QtCore/QTranslator>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <QtCore/QDir>
+#include <QtCore/QLocale>
+
+
 
 QDir QucsHelpDir; // directory to find helps files
 tQucsSettings QucsSettings; // application settings
@@ -43,8 +46,8 @@ bool loadSettings()
 {
   bool result = true;
 
-  QFile file(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/helprc"));
-  if(!file.open(IO_ReadOnly))
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/helprc"));
+  if(!file.open(QIODevice::ReadOnly))
     result = false; // settings file doesn't exist
   else {
     QTextStream stream(&file);
@@ -63,8 +66,8 @@ bool loadSettings()
     file.close();
   }
 
-  file.setName(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/qucsrc"));
-  if(!file.open(IO_ReadOnly))
+  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.qucs/qucsrc"));
+  if(!file.open(QIODevice::ReadOnly))
     result = true; // qucs settings not necessary
   else {
     QTextStream stream(&file);
@@ -72,7 +75,7 @@ bool loadSettings()
     while(!stream.atEnd()) {
       Line = stream.readLine();
       Setting = Line.section('=',0,0);
-      Line = Line.section('=',1,1).stripWhiteSpace();
+      Line = Line.section('=',1,1).trimmed();
       if(Setting == "Font")
 	QucsSettings.font.fromString(Line);
       else if(Setting == "Language")
@@ -87,15 +90,13 @@ bool loadSettings()
 // Saves the settings in the settings file.
 bool saveApplSettings(QucsHelp *qucs)
 {
-  if(qucs->x() == QucsSettings.x)
-    if(qucs->y() == QucsSettings.y)
-      if(qucs->width() == QucsSettings.dx)
-	if(qucs->height() == QucsSettings.dy)
-	  return true;   // nothing has changed
+  if(qucs->x() == QucsSettings.x && qucs->y() == QucsSettings.y && 
+     qucs->width() == QucsSettings.dx && qucs->height() == QucsSettings.dy)
+    return true;   // nothing has changed
 
 
-  QFile file(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/helprc"));
-  if(!file.open(IO_WriteOnly)) {
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/helprc"));
+  if(!file.open(QIODevice::WriteOnly)) {
     QMessageBox::warning(0, QObject::tr("Warning"),
 			QObject::tr("Cannot save settings !"));
     return false;
@@ -153,13 +154,13 @@ int main(int argc, char *argv[])
   QTranslator tor( 0 );
   QString locale = QucsSettings.Language;
   if(locale.isEmpty())
-    locale = QTextCodec::locale();
+    locale = QLocale().name();
   tor.load( QString("qucs_") + locale, QucsSettings.LangDir);
   a.installTranslator( &tor );
 
   QucsHelpDir = QucsSettings.DocDir + locale;
   if (!QucsHelpDir.exists () || !QucsHelpDir.isReadable ()) {
-    int p = locale.find ('_');
+    int p = locale.indexOf(QChar('_'));
     if (p != -1) {
       QucsHelpDir = QucsSettings.DocDir + locale.left (p);
       if (!QucsHelpDir.exists () || !QucsHelpDir.isReadable ()) {
@@ -173,7 +174,6 @@ int main(int argc, char *argv[])
   if(argc > 1) Page = argv[1];
 
   QucsHelp *qucs = new QucsHelp(Page);
-  a.setMainWidget(qucs);
   qucs->resize(QucsSettings.dx, QucsSettings.dy); // size and position ...
   qucs->move(QucsSettings.x, QucsSettings.y);     // ... before "show" !!!
   qucs->show();

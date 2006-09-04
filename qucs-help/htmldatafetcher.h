@@ -1,8 +1,8 @@
 #ifndef __HDF_H
 #define __HDF_H
-#include <qstringlist.h>
-#include <qmap.h>
-#include <qfile.h>
+#include <QtCore/QStringList>
+#include <QtCore/QMap>
+#include <QtCore/QFile>
 
 class HtmlDataFetcher
 {

@@ -1,5 +1,6 @@
 #include "htmldatafetcher.h"
-
+#include <QtCore/QTextStream>
+#include <QtCore/QtDebug>
 HtmlDataFetcher::HtmlDataFetcher()
 {
   initMap();
@@ -273,7 +274,7 @@ QChar HtmlDataFetcher::unicodeFor(QString placeHolder)
   placeHolder.remove(' ');
   placeHolder.remove('\t');
   Q_ASSERT(placeHolder[0] == '&');
-  Q_ASSERT(placeHolder[(int)placeHolder.length() - 1] == ';');
+  Q_ASSERT(placeHolder[placeHolder.length() - 1] == ';');
   placeHolder.remove(placeHolder.length() - 1,1);//remove ';'
   placeHolder.remove(0,1);// remove '&'
   if(placeHolder[0] == '#')
@@ -281,44 +282,49 @@ QChar HtmlDataFetcher::unicodeFor(QString placeHolder)
     placeHolder.remove(0,1);//remove '#'
     return QChar(placeHolder.toInt());
   }
-  QMap<QString, QChar>::Iterator it = entityMap.find(placeHolder);
+  QMap<QString, QChar>::const_iterator it = entityMap.find(placeHolder);
   if ( it != entityMap.end() )
-    return *it;
-  qWarning("HtmlDataFetcher::unicodeFor() :  Unknown html entity or html special character");
+    return it.value();
+  qDebug() << "HtmlDataFetcher::unicodeFor() : Unknown html entity or html special character" ;
   return '*';
 }
 
+
+//NOTE: This method fetches the chapter headings(displayed in sidebar) assuming
+//      the "index.html" file contains references to other files and corresponding description
+//      in the following format :
+//        <a href="file.html" Description of link (can span multiple lines) </a>
 QStringList HtmlDataFetcher::fetchChapterTexts(const QString &indexFile)
 {
   QStringList retVal;
-
+  retVal << QObject::tr("Home");
   QFile file(indexFile);
-  if(!file.open(IO_ReadOnly))
+  if(!file.open(QIODevice::ReadOnly))
   {
-    qWarning("HtmlDataFetcher::fetchChapterTexts() : Can't open file %s",indexFile.latin1());
-    return retVal;
+    qDebug() << "HtmlDataFetcher::fetchChapterTexts() : Can't open file" << indexFile;
+    return QStringList();
   }
   QTextStream str(&file);
   QString txt;
-  bool inText = false;//spans multiple lines
+  bool inText = false;//whether the text spans multiple lines
   while ( !str.atEnd() )
   {
     QString line = str.readLine();
     if(inText == false)
     {
       txt = "";
-      int index = line.find("href=\"");
+      int index = line.indexOf("href=\"");
       if(index == -1  || line.contains("http"))
         continue;
       index += 6;
-      index = line.find('>',index);
+      index = line.indexOf('>',index);
       if(index == -1)
       {
-        qWarning("HtmlDataFetcher::fetchChapterTexts() : Parse error");
-        return retVal;
+        qDebug() << "HtmlDataFetcher::fetchChapterTexts() : Parse error, cant find ending '>'";
+      return QStringList();
       }
       ++index;
-      int end = line.find("</a>",index);
+      int end = line.indexOf("</a>",index);
       if(end != -1)
       {
         txt = line.mid(index,end-index);
@@ -333,7 +339,7 @@ QStringList HtmlDataFetcher::fetchChapterTexts(const QString &indexFile)
     }
     else
     {
-      int end = line.find("</a>");
+      int end = line.indexOf("</a>");
       if(end == -1)
         txt += line;
       else
@@ -353,9 +359,9 @@ QStringList HtmlDataFetcher::fetchLinksToFiles(const QString &indexFile)
   QStringList retVal;
   retVal << QString("index.html");
   QFile file(indexFile);
-  if(!file.open(IO_ReadOnly))
+  if(!file.open(QIODevice::ReadOnly))
   {
-    qWarning("HtmlDataFetcher::fetchLinksToFiles() : File open error");
+    qDebug() << "HtmlDataFetcher::fetchLinksToFiles() : File open error  ->  " << indexFile;
     return QStringList();
   }
   QTextStream str(&file);
@@ -367,14 +373,14 @@ QStringList HtmlDataFetcher::fetchLinksToFiles(const QString &indexFile)
     line = str.readLine();
     if(line.contains("http"))
       continue;
-    index = line.find("href=\"");//find link to other file
+    index = line.indexOf("href=\"");//find link to other file
     if(index != -1)
     {
       index += 6;
-      end = line.find('"',index);
+      end = line.indexOf('"',index);
       if(end == -1)
       {
-        qWarning("HtmlDataFetcher::fetchLinksToFiles() : Can't find end quote. May be HTML error");
+        qDebug() << "HtmlDataFetcher::fetchLinksToFiles() : Can't find end quote i.e '\"'. May be HTML error";
         return QStringList();
       }
       link = line.mid(index,end-index);
@@ -392,13 +398,13 @@ void HtmlDataFetcher::formatAndReplace(QString &txt)
   
   while(1)
   {
-    st = txt.find('&');
+    st = txt.indexOf('&');
     if(st == -1)
       return;
-    end = txt.find(';',st);
+    end = txt.indexOf(';',st);
     if(end == -1)
     {
-      qWarning("HtmlDataFetcher::formatAndReplace() : Can't find ';'");
+      qDebug() << "HtmlDataFetcher::formatAndReplace() : Can't find ';'";
       return;
     }
     QChar ch = unicodeFor(txt.mid(st,end-st+1));
