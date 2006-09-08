@@ -41,8 +41,6 @@ class QUCS_Att
 
   int Calc(tagATT*);
   static QString* createSchematic(tagATT*);
-
-
 };
 
 #endif

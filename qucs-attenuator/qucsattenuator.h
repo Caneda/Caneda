@@ -14,16 +14,17 @@
 #ifndef QUCSATTENUATOR_H
 #define QUCSATTENUATOR_H
 
-#include <qdialog.h>
 #include "attenuatorfunc.h"
 
-class QGridLayout;
+#include <QtGui/QMainWindow>
+
 class QComboBox;
 class QLineEdit;
 class QIntValidator;
 class QDoubleValidator;
 class QLabel;
 class QPushButton;
+class QStatusBar;
 
 struct tQucsSettings
 {
@@ -36,7 +37,7 @@ struct tQucsSettings
 
 extern struct tQucsSettings QucsSettings;
 
-class QucsAttenuator : public QDialog
+class QucsAttenuator : public QWidget
 {
  Q_OBJECT
  public:
@@ -49,7 +50,6 @@ class QucsAttenuator : public QDialog
   void slotHelpAboutQt();
   void slotTopologyChanged();
   void slotCalculate();
-  void slotQuit();
   void slotSetText_Zin(const QString &);
   void slotSetText_Zout(const QString &);
 
@@ -63,6 +63,7 @@ class QucsAttenuator : public QDialog
   QPushButton *Calculate;
   QIntValidator *IntVal;
   QDoubleValidator *DoubleVal;
+  QStatusBar *statusBar;
 
 };
 
