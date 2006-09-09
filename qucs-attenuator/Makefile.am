@@ -28,7 +28,7 @@ SUBDIRS = bitmaps
 
 dist_man_MANS = qucsattenuator.1
 
-MOCHEADERS = qucsattenuator.h helpdialog.h
+MOCHEADERS = qucsattenuator.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
 qucsattenuator_SOURCES = main.cpp qucsattenuator.cpp helpdialog.cpp \
@@ -40,7 +40,7 @@ INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES)
 qucsattenuator_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
 qucsattenuator_LDADD = $(X11_LIBS) $(QT_LIBS)
 
-noinst_HEADERS = $(MOCHEADERS) attenuatorfunc.h
+noinst_HEADERS = $(MOCHEADERS) attenuatorfunc.h helpdialog.h
 
 %.moc.cpp: %.h
 	$(MOC) -o $@ $<
