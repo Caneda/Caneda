@@ -18,7 +18,7 @@
 #ifndef QUCSFILTER_H
 #define QUCSFILTER_H
 
-#include <qdialog.h>
+#include <QtGui/QWidget>
 
 class QGridLayout;
 class QComboBox;
@@ -38,7 +38,7 @@ struct tQucsSettings {
 
 extern struct tQucsSettings QucsSettings;
 
-class QucsFilter : public QDialog
+class QucsFilter : public QWidget
 {
   Q_OBJECT
 public:
@@ -46,7 +46,6 @@ public:
  ~QucsFilter();
 
 private slots:
-  void slotQuit();
   void slotHelpIntro();
   void slotHelpAbout();
   void slotHelpAboutQt();
@@ -61,14 +60,11 @@ private:
 
   int ResultState;
 
-  QGridLayout *gbox;
   QComboBox *ComboType, *ComboClass, *ComboCorner, *ComboStop, *ComboBandStop;
   QLineEdit *EditOrder, *EditCorner, *EditStop, *EditRipple, *EditImpedance;
   QLineEdit *EditAtten, *EditBandStop;
   QLabel *LabelRipple, *LabelRipple_dB, *LabelStart, *LabelStop, *LabelResult;
   QLabel *LabelAtten, *LabelAtten_dB, *LabelBandStop, *LabelOrder;
-  QIntValidator *IntVal;
-  QDoubleValidator *DoubleVal;
 };
 
 #endif

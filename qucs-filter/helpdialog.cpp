@@ -21,16 +21,13 @@
 
 #include "helpdialog.h"
 
-#include <qlayout.h>
-#include <qhbox.h>
-#include <qpushbutton.h>
-#include <qtextedit.h>
-
-
+#include <QtGui/qlayout.h>
+#include <QtGui/QPushButton>
+#include <QtGui/QTextEdit>
 HelpDialog::HelpDialog(QWidget *parent)
-                     : QDialog(parent, 0, false, Qt::WDestructiveClose)
+                     : QDialog(parent)
 {
-  setCaption("Qucs Filter Help");
+  setWindowTitle(tr("Qucs Filter Help"));
 
 
   // --------  set help text into dialog  ------------
@@ -49,34 +46,19 @@ HelpDialog::HelpDialog(QWidget *parent)
   // --------  create dialog widgets  ------------
   resize(250, 230);
 
-  vLayout = new QVBoxLayout(this);
+  QVBoxLayout *vLayout = new QVBoxLayout(this);
 
-  Text = new QTextEdit(s, QString::null, this);
-  Text->setTextFormat(Qt::PlainText);
+  Text = new QTextEdit(s,this);
   Text->setReadOnly(true);
-//  Text->setWordWrap(QTextEdit::NoWrap);
   Text->setMinimumSize(200,200);
   vLayout->addWidget(Text);
 
-  QHBox *h = new QHBox(this);
-  vLayout->addWidget(h);
+  QHBoxLayout *h = new QHBoxLayout();
+  vLayout->addLayout(h);
 
-  h->setStretchFactor(new QWidget(h),5); // stretchable placeholder
-
-  QPushButton *ButtonClose = new QPushButton(tr("Close"), h);
-  connect(ButtonClose, SIGNAL(clicked()), SLOT(slotClose()));
+  h->addStretch( 5 );
+  QPushButton *ButtonClose = new QPushButton(tr("Close"));
+  connect(ButtonClose, SIGNAL(clicked()),this, SLOT(accept()));
   ButtonClose->setFocus();
-
-  h->setStretchFactor(new QWidget(h),5); // stretchable placeholder
-}
-
-HelpDialog::~HelpDialog()
-{
-  delete vLayout;
-}
-
-// ************************************************************
-void HelpDialog::slotClose()
-{
-  accept();
+  h->addStretch( 5 );
 }

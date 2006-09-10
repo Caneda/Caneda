@@ -25,12 +25,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
- 
+
 LC_Filter::LC_Filter()
 {
 }
@@ -67,7 +67,7 @@ QString LC_Filter::num2str(double Num)
 
   QString Str = QString::number(Num, 'g', 4);
   if(c)  Str += c;
-  
+
   return Str;
 }
 

@@ -50,7 +50,6 @@ struct tFilter {
    double Frequency3;
 };
 
-
 class QString;
 
 class LC_Filter {

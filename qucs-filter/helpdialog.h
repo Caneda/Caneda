@@ -18,26 +18,19 @@
 #ifndef HELPDIALOG_H
 #define HELPDIALOG_H
 
-#include <qdialog.h>
+#include <QtGui/QDialog>
 
 class QTextEdit;
-class QVBoxLayout;
 
 /**
   *@author Michael Margraf
   */
 
 class HelpDialog : public QDialog  {
-   Q_OBJECT
 public:
   HelpDialog(QWidget *parent = 0);
- ~HelpDialog();
-
-private slots:
-  void slotClose();
 
 private:
-  QVBoxLayout *vLayout;
   QTextEdit *Text;
 };
 
