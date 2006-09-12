@@ -132,7 +132,7 @@ void QucsHelp::setupActions()
   viewBrowseDock->setStatusTip(tr("Enables/disables the table of contents"));
   viewBrowseDock->setWhatsThis(tr("Table of Contents\n\nEnables/disables the table of contents"));
 
-  helpMenu->addAction(tr("&About Qt"),qApp,SLOT(aboutQt()));
+  helpMenu->addAction(tr("&About Qt     "),qApp,SLOT(aboutQt()));
 
   connect(textBrowser,SIGNAL(backwardAvailable(bool)),backAction,SLOT(setEnabled(bool)));
   connect(textBrowser,SIGNAL(forwardAvailable(bool)),forwardAction,SLOT(setEnabled(bool)));
@@ -160,18 +160,21 @@ void QucsHelp::createSidebar()
   model = new StringListModel(l);
 
   chaptersView = new QListView(dock);
+  chaptersView->setSelectionMode(QAbstractItemView::SingleSelection);
   chaptersView->setModel(model);
 
   dock->setWidget(chaptersView);
     
-  connect(chaptersView,SIGNAL(activated ( const QModelIndex &  )),this,
-	  SLOT(displaySelectedChapter(const QModelIndex & )));
+  connect(chaptersView->selectionModel(),SIGNAL(selectionChanged ( const QItemSelection & , const QItemSelection &  )),
+	  this,SLOT(displaySelectedChapter( const QItemSelection &)));
+  chaptersView->setFocus();
 }
 
-void QucsHelp::displaySelectedChapter(const QModelIndex & index)
+void QucsHelp::displaySelectedChapter(const QItemSelection & is)
 {
-  int y = index.isValid() ? index.row() : 0;
-  textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[y])));
+  const QModelIndex index = is.indexes()[0];
+  if(index.isValid())
+    textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[index.row()])));
 }
 
 //This slot updates next and previous actions i.e enabling/disabling
@@ -187,14 +190,13 @@ void QucsHelp::slotSourceChanged(const QUrl& ustr)
       previousAction->setEnabled(bool(i!=0));
       nextAction->setEnabled(bool(i+1 != links.count()));
       if(!(chaptersView->selectionModel()->isRowSelected(i,QModelIndex())))
-      	chaptersView->selectionModel()->select(model->index(i),QItemSelectionModel::ClearAndSelect);
+      	chaptersView->selectionModel()->setCurrentIndex(model->index(i),QItemSelectionModel::ClearAndSelect);
       found = true;
       break;
     }
   }
   if(found == false) // some error
   {
-    //textBrowser->setSource(QucsHelpDir.filePath(links[0]));
     qDebug("QucsHelp::slotSourceChanged():  Link mismatch");
     return;
   }

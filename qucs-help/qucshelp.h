@@ -41,6 +41,7 @@ class QDockWidget;
 class QTextBrowser;
 class StringListModel;
 class QModelIndex;
+class QItemSelection;
 class QUrl;
 
 class QucsHelp : public QMainWindow  {
@@ -54,7 +55,7 @@ class QucsHelp : public QMainWindow  {
     void slotSourceChanged(const QUrl& str);
     void previousLink();
     void nextLink();
-    void displaySelectedChapter(const QModelIndex & index);
+    void displaySelectedChapter(const QItemSelection & index);
 
   private:
     void setupActions();
