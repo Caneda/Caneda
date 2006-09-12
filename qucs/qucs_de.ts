@@ -4352,6 +4352,10 @@ Verwendung:  qucsedit [-r] Datei
         <source>initial delay delay time</source>
         <translation>Anfangsverzögerungszeit</translation>
     </message>
+    <message>
+        <source>Home</source>
+        <translation type="unfinished">Startseite</translation>
+    </message>
 </context>
 <context>
     <name>QucsActions</name>
@@ -8838,11 +8842,11 @@ Filtersynthese-Programm
     </message>
     <message>
         <source>Home</source>
-        <translation>Startseite</translation>
+        <translation type="obsolete">Startseite</translation>
     </message>
     <message>
         <source>&amp;Table of Contents</source>
-        <translation>&amp;Inhaltsverzeichnis</translation>
+        <translation type="obsolete">&amp;Inhaltsverzeichnis</translation>
     </message>
     <message>
         <source>Enables/disables the table of contents</source>
@@ -8874,7 +8878,15 @@ Schaltet das Inhaltsverzeichnis ein/aus</translation>
     </message>
     <message>
         <source>Contents</source>
-        <translation>Inhalte</translation>
+        <translation type="obsolete">Inhalte</translation>
+    </message>
+    <message>
+        <source>Main toolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Table of Contents</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

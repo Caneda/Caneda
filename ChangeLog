@@ -1,3 +1,10 @@
+2006-09-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.ac:  Don't link using "-s" on MacOSX since it drops lazy
+	dynamic symbol information.  Also checking for {moc|uic|lrelease|
+	lupdate}-qt4 programs.  Added some more paths for Qt headers and
+	libraries.
+
 2006-08-08  Stefan Jahn  <stefan@lkcc.org>
 
 	* qucs-attenuator/qucsattenuator.cpp (slotSetText_Zin): 

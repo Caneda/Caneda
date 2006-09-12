@@ -4271,6 +4271,10 @@ Usage:  qucsedit [-r] file
         <source>initial delay delay time</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Home</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QucsActions</name>
@@ -7309,14 +7313,6 @@ Programma di sintesi dei filtri
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Home</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Table of Contents</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enables/disables the table of contents</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7343,7 +7339,11 @@ Enables/disables the table of contents</source>
         <translation type="unfinished">&amp;Aiuto</translation>
     </message>
     <message>
-        <source>Contents</source>
+        <source>Main toolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Table of Contents</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
