@@ -132,7 +132,7 @@ void QucsHelp::setupActions()
   viewBrowseDock->setStatusTip(tr("Enables/disables the table of contents"));
   viewBrowseDock->setWhatsThis(tr("Table of Contents\n\nEnables/disables the table of contents"));
 
-  helpMenu->addAction(tr("&About Qt     "),qApp,SLOT(aboutQt()));
+  helpMenu->addAction(tr("&About Qt"),qApp,SLOT(aboutQt()));
 
   connect(textBrowser,SIGNAL(backwardAvailable(bool)),backAction,SLOT(setEnabled(bool)));
   connect(textBrowser,SIGNAL(forwardAvailable(bool)),forwardAction,SLOT(setEnabled(bool)));
