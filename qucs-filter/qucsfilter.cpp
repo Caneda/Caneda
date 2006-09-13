@@ -65,7 +65,7 @@ QucsFilter::QucsFilter()
 
   helpMenu->addAction(tr("Help..."), this, SLOT(slotHelpIntro()), Qt::Key_F1);
   helpMenu->addSeparator();
-  helpMenu->addAction(tr("&About QucsFilter...          "), this, SLOT(slotHelpAbout()), 0);
+  helpMenu->addAction(tr("&About QucsFilter..."), this, SLOT(slotHelpAbout()), 0);
   helpMenu->addAction(tr("About Qt..."), this, SLOT(slotHelpAboutQt()), 0);
 
 
