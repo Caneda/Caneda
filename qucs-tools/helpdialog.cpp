@@ -2,6 +2,7 @@
 #include <QtGui/QTextEdit>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QVBoxLayout>
+#include <QtGui/QPushButton>
 
 HelpDialog::HelpDialog(const QString& cap,QWidget *p) : QDialog(p)
 {

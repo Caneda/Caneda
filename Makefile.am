@@ -22,7 +22,7 @@
 # Boston, MA 02110-1301, USA.  
 #
 
-SUBDIRS = qucs qucs-edit qucs-help qucs-transcalc qucs-filter qucs-lib \
+SUBDIRS = qucs-tools qucs qucs-edit qucs-help qucs-transcalc qucs-filter qucs-lib \
 	qucs-attenuator $(RELEASEDIRS)
 
 EXTRA_DIST = autogen.sh depcomp PLATFORMS RELEASE
