@@ -24,14 +24,14 @@
 
 noinst_LIBRARIES = libqucstools.a
 
-MOCHEADERS = 
+MOCHEADERS = propertygrid.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-libqucstools_a_SOURCES = 
+libqucstools_a_SOURCES = units.cpp propertygrid.cpp helpdialog.cpp
 
-nodist_libdiagrams_a_SOURCES = $(MOCFILES)
+nodist_libqucstools_a_SOURCES = $(MOCFILES)
 
-noinst_HEADERS = $(MOCHEADERS) 
+noinst_HEADERS = $(MOCHEADERS) units.h helpdialog.h
 
 INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(top_srcdir)/qucs
 

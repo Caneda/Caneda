@@ -22,5 +22,5 @@ HelpDialog::HelpDialog(const QString& cap,QWidget *p) : QDialog(p)
 
 void HelpDialog::setText(const QString &text)
 {
-  edit->setText(text);
+  edit->setPlainText(text);
 }

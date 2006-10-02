@@ -10,250 +10,388 @@
 #include <QtGui/QIntValidator>
 #include <QtGui/QDoubleValidator>
 #include <QtGui/QRadioButton>
+#include <QtGui/QScrollArea>
+#include <QtCore/QMapIterator>
 
-const QStringList freqList(QStringList() << "GHz" << "Hz" << "kHz" << "MHz");
-const QStringList resList(QStringList() << "Ohm" << "kOhm");
-const QStringList lenList(QStringList() << "mil" << "cm" << "mm" << "m" << "um" << "in" << "ft");
-const QStringList angleList(QStringList() << "deg" << "rad");
+#include <QtCore/QTextStream>
 
-// Unit conversion array for length.
-static double convLength[7][7] = {
-  { 1.0,       2.54e-3,   2.54e-2,   2.54e-5,   25.4,     1.e-3,   1./12000},
-  {1./2.54e-3,    1.0,     10.0,      1.e-2,    1.e4,   1./2.54,   1./30.48},
-  {1./2.54e-2,  1./10.,     1.0,       1.e-3,   1.e3,   1./25.4,   1./304.8},
-  {1./2.54e-5,    1.e2,    1.e3,         1.0,   1.e6,  1./2.54e-2, 1./0.3048},
-  {1./25.4,      1.e-4,   1.e-3,       1.e-6,    1.0,  1./2.54e4,  1./3.048e5},
-  {1.e3,          2.54,    25.4,     2.54e-2, 2.54e4,        1.0,    1./12.},
-  {1.2e4,        30.48,   304.8,      0.3048, 3.048e5,      12.0,       1.0}
-};
-
-// Unit conversion array for frequencies.
-static double convFrequency[4][4] = {
-  { 1.0,     1.e9,     1.e6,      1.e3},
-  { 1.e-9,   1.0,      1.e-3,     1.e-6},
-  { 1.e-6,   1.e3,     1.0,       1.e-3},
-  { 1.e-3,   1.e6,     1.e3,      1.0}
-};
-
-// Unit conversion array for resistances.
-static double convResistance[2][2] = {
-  {1.0,    1.e-3},
-  {1.e3,   1.0}
-};
-
-// Unit conversion array for angles.
-static double convAngle[2][2] = {
-  {1.0,         M_PI/180.0},
-  {180.0/M_PI,         1.0}
-};
-
-
-QIntValidator* PropertyGridWidget::intValidator()
+Value::Value(double value, Units::UnitType ut, int inUnit)
 {
-  static QIntValidator *p_intValidator = new QIntValidator(0l);
-  return p_intValidator;
+  m_value = value;
+  m_unitType = ut;
+  m_currentUnit = inUnit;
 }
 
-QDoubleValidator* PropertyGridWidget::doubleValidator()
+Value::Value(const Value& val)
 {
-  static QDoubleValidator* p_doubleValidator = new QDoubleValidator(0l);
-  return p_doubleValidator;
+  m_value = val.m_value;
+  m_unitType = val.m_unitType;
+  m_currentUnit = val.m_currentUnit;
 }
 
-Property::Property()
+Value& Value::operator=(const Value& val)
 {
-  label = 0l;
+  m_value = val.m_value;
+  m_unitType = val.m_unitType;
+  m_currentUnit = val.m_currentUnit;
+  return *this;
+}
+
+double Value::value() const
+{
+  return m_value;
+}
+
+void Value::setValue(double val)
+{
+  m_value = val;
+}
+Value Value::convertedTo(int unit) const
+{
+  double cnv = Units::convert(m_value,m_unitType,m_currentUnit,unit);
+  return Value(cnv,m_unitType,unit);
+}
+
+void Value::convertTo(int unit)
+{
+  m_value = Units::convert(m_value,m_unitType,m_currentUnit,unit);
+  m_currentUnit = unit;
+}
+
+void Value::setUnit(int unit)
+{
+  m_currentUnit = unit;
+}
+
+QString Value::toString() const
+{
+  return QString::number(m_value);
+}
+
+int Value::currentUnit() const
+{
+  return m_currentUnit;
+}
+
+Units::UnitType Value::unitType() const
+{
+  return m_unitType;
+}
+
+
+PropertyBox::PropertyRow::PropertyRow() : val(-1.0)
+{
+  l = 0l;
   le = 0l;
-  units = 0l;
-  radio = 0l;
+  cb = 0l;
+  rb = 0l;
+  ocb = 0l;
 }
 
-Property::~Property()
+PropertyBox::PropertyRow::~PropertyRow()
 {
-  delete label;
+  delete l;
   delete le;
-  delete units;
-  delete radio;
+  delete cb;
+  delete rb;
+  delete ocb;
 }
 
-PropertyGridWidget::PropertyGridWidget(QWidget *parent) : QWidget(parent)
+PropertyBox::PropertyBox(const QString& title,QWidget *parent) : QGroupBox(title,parent)
 {
   layout = new QGridLayout(this);
-  layout->setSpacing(3);
-  layout->setMargin(3);
-  currentRow = 0;    
+  lastRow = 0;
 }
 
-void PropertyGridWidget::addProperty(const QString& propName,const QString& tip,Property::Type t,
-				     Property::UnitType unit,bool selectable)
+QDoubleValidator* PropertyBox::doubleValidator()
 {
-  if(propMap.contains(propName))
-  {
-    qDebug("PropertyGridWidget::addProperty():  Key already exists");
+  static QDoubleValidator* d = new QDoubleValidator(0l);
+  return d;
+}
+
+QIntValidator* PropertyBox::intValidator()
+{
+  static QIntValidator* d = new QIntValidator(0l);
+  return d;
+}
+
+void PropertyBox::addDoubleProperty(const QString& name,const QString &tip,double val,
+		    Units::UnitType ut,int curUnit,bool isSelectable)
+{
+  if(paramMap.contains(name))
     return;
-  }
-  Property *p = new Property();
-  p->label = new QLabel(propName);
-  p->label->setToolTip(tip);
-  p->le = new QLineEdit();
-  p->type = t;
-  p->unitType = unit;
-  if(t == Property::Int)
-      p->le->setValidator(intValidator());
-  else if(t ==  Property::Double)
-      p->le->setValidator(doubleValidator());   
-  
-  if(unit != Property::NoUnit)
-  {
-    p->units = new QComboBox();
-    switch(unit)
+  PropertyRow *row = new PropertyRow();
+  row->l = new QLabel(name);
+  row->l->setToolTip(tip);
+  row->le = new QLineEdit();
+  row->le->setValidator(doubleValidator());
+  connect(row->le, SIGNAL(textEdited(const QString&)), this, SLOT(storeLineEditValues()));
+  if(ut != Units::None) {
+    row->cb = new QComboBox();
+    connect(row->cb, SIGNAL(activated(int)), this, SLOT(storeComboValues()));
+    switch(ut)
     {
-    case Property::Frequency:
-      p->units->addItems(freqList);
+    case Units::Frequency:
+      row->cb->addItems(Units::freqList);
       break;
-    case Property::Resistance:
-      p->units->addItems(resList);
+    case Units::Resistance:
+      row->cb->addItems(Units::resList);
       break;
-    case Property::Length:
-      p->units->addItems(lenList);
+    case Units::Length:
+      row->cb->addItems(Units::lenList);
+      break;
+    case Units::Angle:
+      row->cb->addItems(Units::angleList);
+      break;
     default:break;
     };
   }
-  if(selectable)
-  {
-    p->radio = new QRadioButton();
-  }
-  propMap.insert(propName,p);
-  layout->addWidget(p->label,currentRow,0);
-  layout->addWidget(p->le,currentRow,1);
-  if(p->units)
-    layout->addWidget(p->units,currentRow,2);
-  if(p->radio)
-    layout->addWidget(p->radio,currentRow,3);
-  ++currentRow;
+  if(isSelectable)
+    {
+      row->rb = new QRadioButton();
+    }
+  row->val = Value(val,ut,curUnit);
+  if(ut != Units::None)
+    row->cb->setCurrentIndex(curUnit);
+  row->le->setText(row->val.toString());
+  
+  layout->addWidget(row->l,lastRow,0);
+  layout->addWidget(row->le,lastRow,1);
+  if(ut != Units::None)
+    layout->addWidget(row->cb,lastRow,2);
+  if(isSelectable)
+    layout->addWidget(row->rb,lastRow,3);
+  paramMap[name] = row;
+  ++lastRow; 
 }
 
-void PropertyGridWidget::setValue(const QString& name,const QVariant &val)
+void PropertyBox::addIntProperty(const QString& name,const QString &tip,int value)
 {
-  if(!propMap.contains(name))
-  {
-    qDebug("PropertyGridWidget::setValue() : Property doesn't exist");
+  PropertyRow *row = new PropertyRow();
+  row->l = new QLabel(name);
+  row->l->setToolTip(tip);
+  row->le = new QLineEdit();
+  row->le->setText(QString::number(value));
+  row->le->setValidator(intValidator());
+  layout->addWidget(row->l,lastRow,0);
+  layout->addWidget(row->le,lastRow,1);
+  paramMap[name] = row;
+  ++lastRow;
+}
+
+void PropertyBox::addComboProperty(const QString& name, const QString& tip,const QStringList& values)
+{
+  PropertyRow *row = new PropertyRow();
+  row->l = new QLabel(name);
+  row->l->setToolTip(tip);
+  row->ocb = new QComboBox();
+  row->ocb->addItems(values);
+  layout->addWidget(row->l,lastRow,0);
+  layout->addWidget(row->ocb,lastRow,1);
+  paramMap[name] = row;
+  ++lastRow;
+}
+
+double PropertyBox::doubleValue(const QString& name) const
+{
+  Q_ASSERT(paramMap.contains(name));
+  return paramMap[name]->val.value();
+}
+
+double PropertyBox::doubleValue(const QString& name,int inUnit) const
+{
+  Q_ASSERT(paramMap.contains(name));
+  return paramMap[name]->val.convertedTo(inUnit).value();
+}
+
+void PropertyBox::setDoubleValue(const QString& name,double val)
+{
+  Q_ASSERT(paramMap.contains(name));
+  PropertyRow *r = paramMap[name];
+  r->val.setValue(val);
+  r->le->setText(r->val.toString());
+}
+
+void PropertyBox::setDoubleValue(const QString& name,double val,int toUnit)
+{
+  Q_ASSERT(paramMap.contains(name));
+  PropertyRow *r = paramMap[name];
+  r->val.setValue(val);
+  r->val.setUnit(toUnit);
+  r->le->setText(r->val.toString());
+  r->cb->setCurrentIndex(toUnit);
+}
+
+void PropertyBox::convertTo(const QString& name, int unit)
+{
+  Q_ASSERT(paramMap.contains(name));
+  PropertyRow *r = paramMap[name];
+  r->val.convertTo(unit);
+  r->le->setText(r->val.toString());
+  r->cb->setCurrentIndex(unit);
+}
+
+void PropertyBox::setIntValue(const QString& name,int val)
+{
+  Q_ASSERT(paramMap.contains(name) );
+  paramMap[name]->le->setText(QString::number(val));
+}
+
+int PropertyBox::intValue(const QString& name) const
+{
+  Q_ASSERT(paramMap.contains(name));
+  return paramMap[name]->le->text().toInt();
+}
+
+void PropertyBox::setCurrentComboIndex(const QString& name,int index)
+{
+  Q_ASSERT(paramMap.contains(name) && paramMap[name]->ocb != 0l);
+  paramMap[name]->ocb->setCurrentIndex(index);
+}
+
+int PropertyBox::currentComboIndex(const QString &name) const
+{
+  Q_ASSERT(paramMap.contains(name) && paramMap[name]->ocb != 0l);
+  return paramMap[name]->ocb->currentIndex();
+}
+
+void PropertyBox::setEnabled(const QString& name,bool state)
+{
+  Q_ASSERT(paramMap.contains(name));
+  PropertyRow *r = paramMap[name];
+  r->l->setEnabled(state);
+  if(r->le)
+    r->le->setEnabled(state);
+  if(r->cb)
+    r->cb->setEnabled(state);
+  if(r->rb)
+    r->rb->setEnabled(state);
+  if(r->ocb)
+    r->ocb->setEnabled(state);
+}
+
+bool PropertyBox::exists(const QString& name) const
+{
+  return paramMap.contains(name);
+}
+
+bool PropertyBox::isSelected(const QString& name) const
+{
+  Q_ASSERT(paramMap.contains(name) && paramMap[name]->rb != 0l);
+  return paramMap[name]->rb->isChecked();
+}
+
+void PropertyBox::setSelected(const QString& name, bool state)
+{
+  Q_ASSERT(paramMap.contains(name) && paramMap[name]->rb != 0l);
+  paramMap[name]->rb->setChecked(state);
+}
+
+int PropertyBox::unit(const QString& name) const
+{
+  Q_ASSERT(paramMap.contains(name));
+  return paramMap[name]->val.currentUnit();
+}
+
+Units::UnitType PropertyBox::unitType(const QString& name)
+{
+  Q_ASSERT(paramMap.contains(name));
+  return paramMap[name]->val.unitType();
+}
+
+Value PropertyBox::value(const QString& name)
+{
+  Q_ASSERT(paramMap.contains(name));
+  return paramMap[name]->val;
+}
+
+void PropertyBox::storeComboValues()
+{
+  QMapIterator<QString,PropertyBox::PropertyRow *> i(paramMap);
+  while( i.hasNext()) {
+    i.next();
+    PropertyBox::PropertyRow *r = i.value();
+    if(r->val.unitType() != Units::None)
+      r->val.setUnit(r->cb->currentIndex());
+  }
+}
+
+void PropertyBox::storeLineEditValues()
+{
+  QMapIterator<QString,PropertyBox::PropertyRow *> i(paramMap);
+  while( i.hasNext()) {
+    i.next();
+    PropertyBox::PropertyRow *r = i.value();
+    if(r->le != 0l)
+      r->val.setValue(r->le->text().toDouble());
+  }
+}
+
+QTextStream& operator<<(QTextStream &str, const PropertyBox& box)
+{
+  QMapIterator<QString,PropertyBox::PropertyRow *> i(box.paramMap);
+  while( i.hasNext()) {
+    i.next();
+    PropertyBox::PropertyRow *r = i.value();
+    if(r->val.unitType() != Units::None)
+      str << "  " << i.key() << " " << r->val.value() << " " 
+	  << Units::toString(r->val.currentUnit(), r->val.unitType()) << "\n";
+    else
+      str << "  " << i.key() << " " << r->val.value() << " " << "NA\n";
+  }
+  return str;
+}
+
+
+ResultBox::ResultBox(QWidget *par = 0l) : QGroupBox(par)
+{
+  lastRow = 0;
+  QVBoxLayout *ll = new QVBoxLayout(this);
+  QScrollArea *area = new QScrollArea();
+  ll->addWidget(area);
+  wid = new QWidget(area);
+  area->setWidget(wid);
+  setTitle("       " + tr("Calculated Results") + "     ");
+  layout = new QGridLayout(wid);
+  layout->setColumnStretch(0,1);
+  layout->setColumnStretch(1,1);
+  wid->resize(300,200);
+}
+
+void ResultBox::addResultItem(const QString& name,const QString& val)
+{
+  if(resultMap.contains(name))
     return;
-  }
-  Property *pp = propMap[name];
-  if(pp->type == Property::Int)
-    pp->le->setText(QString::number(val.toInt()));
-  else if(pp->type == Property::Double)
-    pp->le->setText(QString::number(val.toDouble()));
-  else
-    pp->le->setText(val.toString());
+  QLabel *l1 = new QLabel(name + QString(":"));
+  l1->setAlignment(Qt::AlignRight);
+  QLabel *l2 = new QLabel(val);
+  l2->setAlignment(Qt::AlignLeft);
+  layout->addWidget(l1,lastRow,0);
+  layout->addWidget(l2,lastRow,1);
+  resultMap[name] = l2;
+  ++lastRow;
 }
 
-QVariant PropertyGridWidget::value(const QString &name)
+void ResultBox::setValue(const QString& name, int val, const QString& us)
 {
-  if(!propMap.contains(name))
-  {
-    qDebug("PropertyGridWidget::value(): Property doesn't exist!");
-    return QVariant();
-  }
-  Property *p = propMap[name];
-  if(p->type == Property::Int)
-    return QVariant(p->le->text().toInt());
-  else if(p->type == Property::Double)
-    return QVariant(p->le->text().toDouble());
-  else
-    return QVariant(p->le->text());
+  Q_ASSERT(resultMap.contains(name));
+  resultMap[name]->setText(QString::number(val).append(us));
 }
 
-void PropertyGridWidget::setUnit(const QString &property,int unit)
+void ResultBox::setValue(const QString& name, double val, const QString& us)
 {
-  if(!propMap.contains(property))
-  {
-    qDebug("PropertyGridWidget::setUnits() : property doesn't exist");
-    return;
-  }
-  Property *p = propMap[property];
-  if(unit < 0 || unit >= p->units->count())
-    unit = 0;
-  p->units->setCurrentIndex(unit);
-  /*
-  switch(p->unitType)
-  {
-  case Property::Frequency:
-    p->units->setText(freqList[unit]);
-    break;
-  case Property::Length:
-    p->units->setText(lenList[unit]);
-    break;
-  case Property::Resistance:
-    p->units->setText(resList[unit]);
-    break;
-  case Property::Angle:
-    p->units->setText(angleList[unit]);
-    break;
-  default:
-    break;
-    };*/
+  Q_ASSERT(resultMap.contains(name));
+  resultMap[name]->setText(QString::number(val).append(us));
 }
 
-QString PropertyGridWidget::unit(const QString &property)
+void ResultBox::setValue(const QString& name, const QString& val)
 {
-  if(!propMap.contains(property))
-  {
-    qDebug("PropertyGridWidget::unit(): Property doesn't exist ");
-    return QString();
-  }
-  return propMap[property]->units->currentText();
+  Q_ASSERT(resultMap.contains(name));
+  resultMap[name]->setText(val);
 }
 
-QVariant PropertyGridWidget::value(const QString &pr,int unit)
+void ResultBox::adjustSize()
 {
-  if(!propMap.contains(pr))
-  {
-    qDebug("PropertyGridWidget::value() : Property %s doesn't exist !!",pr.toLatin1().constData());
-    return QVariant();
-  }
-  Property *p = propMap[pr];
-  if(p->type == Property::String)
-  {
-    qDebug("PropertyGridWidget::value() : No units for string property");
-    return QVariant();
-  }
-  if(p->unitType == Property::NoUnit)
-  {
-    qDebug("PropertyGridWidget::value() : Tried to fetch unit when unit doesn't exist");
-  }
-  if(p->type == Property::Int)
-  {
-    switch(p->unitType)
-      {
-      case Property::Frequency:
-	return QVariant(p->le->text().toInt()*int(convFrequency[p->units->currentIndex()][unit]));
-      case Property::Length:
-	return QVariant(p->le->text().toInt()*int(convLength[p->units->currentIndex()][unit]));
-      case Property::Resistance:
-	return QVariant(p->le->text().toInt()*int(convResistance[p->units->currentIndex()][unit]));
-      case Property::Angle:
-	return QVariant(p->le->text().toInt()*int(convAngle[p->units->currentIndex()][unit]));
-      default:
-	return QVariant();
-      }
-  }
-  else
-  {
-    switch(p->unitType)
-      {
-      case Property::Frequency:
-	return QVariant(p->le->text().toDouble()*convFrequency[p->units->currentIndex()][unit]);
-      case Property::Length:
-	return QVariant(p->le->text().toDouble()*convLength[p->units->currentIndex()][unit]);
-      case Property::Resistance:
-	return QVariant(p->le->text().toDouble()*convResistance[p->units->currentIndex()][unit]);
-      case Property::Angle:
-	return QVariant(p->le->text().toDouble()*convAngle[p->units->currentIndex()][unit]);
-      default:
-	return QVariant();
-      }
-  }
-      
+  //wid->resize(wid->sizeHint());
+  //wid->setHeight(wid->
 }
