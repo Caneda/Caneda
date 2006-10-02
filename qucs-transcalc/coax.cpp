@@ -34,12 +34,13 @@
 #include <string.h>
 #include <math.h>
 
-#include "units.h"
+#include "qucstrans.h"
 #include "transline.h"
 #include "coax.h"
-
+#include "qucs-tools/propertygrid.h"
 coax::coax() : transline()
 {
+  description = "Coaxial";
 }
 
 coax::~coax()
@@ -64,7 +65,7 @@ void coax::get_coax_sub ()
  */
 void coax::get_coax_comp ()
 {
-  f = getProperty ("Freq", UNIT_FREQ, FREQ_HZ);
+  f = getProperty ("Freq", Units::Hz);
 }
 
 /*
@@ -73,8 +74,8 @@ void coax::get_coax_comp ()
  */
 void coax::get_coax_elec ()
 {
-  Z0 = getProperty ("Z0", UNIT_RES, RES_OHM);
-  ang_l = getProperty ("Ang_l", UNIT_ANG, ANG_RAD);
+  Z0 = getProperty ("Z0", Units::Ohm);
+  ang_l = getProperty ("Ang_l", Units::Rad);
 }
 
 /*
@@ -83,9 +84,9 @@ void coax::get_coax_elec ()
  */
 void coax::get_coax_phys ()
 {
-  din = getProperty ("din", UNIT_LENGTH, LENGTH_M);
-  dout = getProperty ("dout", UNIT_LENGTH, LENGTH_M);
-  l = getProperty ("L", UNIT_LENGTH, LENGTH_M);
+  din = getProperty ("din", Units::m);
+  dout = getProperty ("dout", Units::m);
+  l = getProperty ("L", Units::m);
 }
 
 double coax::alphad_coax ()
@@ -129,8 +130,8 @@ void coax::analyze ()
   /* calculate electrical angle */
   ang_l = (2.0 * M_PI * l)/lambda_g;    /* in radians */
      
-  setProperty ("Z0", Z0, UNIT_RES, RES_OHM);
-  setProperty ("Ang_l", ang_l, UNIT_ANG, ANG_RAD);
+  setProperty ("Z0", Z0, Units::Ohm);
+  setProperty ("Ang_l", ang_l, Units::Rad);
 
   show_results();
 }
@@ -158,17 +159,17 @@ void coax::synthesize ()
   if (isSelected ("din")) {
     /* solve for din */
     din = dout / exp(Z0*sqrt(er)/ZF0/2/M_PI);
-    setProperty ("din", din, UNIT_LENGTH, LENGTH_M);
+    setProperty ("din", din, Units::m);
   } else if (isSelected ("dout")) {
     /* solve for dout */
     dout = din * exp(Z0*sqrt(er)/ZF0/2/M_PI);
-    setProperty ("dout", dout, UNIT_LENGTH, LENGTH_M);
+    setProperty ("dout", dout, Units::m);
   }
 
   lambda_g = (C0/(f))/sqrt(er * mur);
   /* calculate physical length */
   l = (lambda_g * ang_l)/(2.0 * M_PI);    /* in m */
-  setProperty ("L", l, UNIT_LENGTH, LENGTH_M);
+  setProperty ("L", l, Units::m);
 
   show_results();
 }
@@ -184,12 +185,12 @@ void coax::show_results()
   atten_dielectric = alphad_coax () * l;
   atten_cond = alphac_coax () * l;
 
-  setResult (0, atten_cond, "dB");
-  setResult (1, atten_dielectric, "dB");
+  setResult (QObject::tr("Conductor Losses"), atten_cond, "dB");
+  setResult (QObject::tr("Dielectric Losses"), atten_dielectric, "dB");
       
   n = 1;
   fc = C0 / (M_PI * (dout + din)/(double) n);
-  setResult (2, "none");
+  setResult (QObject::tr("TE-Modes"), "none");
   if (fc <= f) {
     char text[256], txt[256];
     strcpy (text, "TE(1,1) ");
@@ -201,10 +202,10 @@ void coax::show_results()
       m++;
       fc = C0 / (2 * (dout - din)/(double) (m-1));
     }
-    setResult (2, text);
+    setResult (QObject::tr("TE-Modes"), text);
   }
 
-  setResult (3, "none");
+  setResult (QObject::tr("TM-Modes"), "none");
   m = 1;
   fc = C0 / (2 * (dout - din)/(float) m);
   if (fc <= f) {
@@ -216,6 +217,6 @@ void coax::show_results()
       m++;
       fc = C0 / (2 * (dout - din)/(double) m);
     }
-    setResult (3, text);
+    setResult (QObject::tr("TM-Modes"), text);
   }
 }

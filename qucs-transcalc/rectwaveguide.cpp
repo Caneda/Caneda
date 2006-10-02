@@ -25,12 +25,14 @@
 #include <string.h>
 #include <math.h>
 
-#include "units.h"
+#include "qucstrans.h"
 #include "transline.h"
 #include "rectwaveguide.h"
+#include "qucs-tools/propertygrid.h"
 
 rectwaveguide::rectwaveguide() : transline()
 {
+  description = "Rectangular";
 }
 
 rectwaveguide::~rectwaveguide()
@@ -172,7 +174,7 @@ void rectwaveguide::get_rectwaveguide_sub ()
  */
 void rectwaveguide::get_rectwaveguide_comp ()
 {
-  f = getProperty ("Freq", UNIT_FREQ, FREQ_HZ);
+  f = getProperty ("Freq", Units::Hz);
 }
 
 /*
@@ -182,8 +184,8 @@ void rectwaveguide::get_rectwaveguide_comp ()
  */
 void rectwaveguide::get_rectwaveguide_elec ()
 {
-  Z0 = getProperty ("Z0", UNIT_RES, RES_OHM);
-  ang_l = getProperty ("Ang_l", UNIT_ANG, ANG_RAD);
+  Z0 = getProperty ("Z0", Units::Ohm);
+  ang_l = getProperty ("Ang_l", Units::Rad);
 }
 
 
@@ -194,9 +196,9 @@ void rectwaveguide::get_rectwaveguide_elec ()
  */
 void rectwaveguide::get_rectwaveguide_phys ()
 {
-  a = getProperty ("a", UNIT_LENGTH, LENGTH_M);
-  b = getProperty ("b", UNIT_LENGTH, LENGTH_M);
-  l = getProperty ("L", UNIT_LENGTH, LENGTH_M);
+  a = getProperty ("a", Units::m);
+  b = getProperty ("b", Units::m);
+  l = getProperty ("L", Units::m);
 }
 
 
@@ -243,8 +245,8 @@ void rectwaveguide::analyze ()
     atten_cond = alphac_cutoff () * l;
   }
 
-  setProperty ("Z0", Z0, UNIT_RES, RES_OHM);
-  setProperty ("Ang_l", ang_l, UNIT_ANG, ANG_RAD);
+  setProperty ("Z0", Z0, Units::Ohm);
+  setProperty ("Ang_l", ang_l, Units::Rad);
 
   show_results ();
 }
@@ -273,12 +275,12 @@ void rectwaveguide::synthesize ()
     /* solve for b */
     b = Z0 * a * sqrt(1.0 - pow((fc(1,0)/f),2.0))/
       (2. * ZF0);
-    setProperty ("b", b, UNIT_LENGTH, LENGTH_M);
+    setProperty ("b", b, Units::m);
   } else if (isSelected ("a")) {
     /* solve for a */
     a = sqrt(pow((2.0 * ZF0 * b/Z0), 2.0) + 
 		 pow((C0/(2.0 * f)),2.0));
-    setProperty ("a", a, UNIT_LENGTH, LENGTH_M);
+    setProperty ("a", a, Units::m);
   }
 
   k = kval ();
@@ -286,7 +288,7 @@ void rectwaveguide::synthesize ()
   lambda_g = (2. * M_PI)/beta;
   l = (ang_l * lambda_g)/(2.0 * M_PI);    /* in m */
 
-  setProperty ("L", l, UNIT_LENGTH, LENGTH_M);
+  setProperty ("L", l, Units::m);
 
   if (kc(1,0) <= k) {
     /*propagating modes */
@@ -311,11 +313,11 @@ void rectwaveguide::show_results ()
 {
   short m, n, mmax, nmax;
   
-  setResult (0, er_eff, "");
-  setResult (1, atten_cond, "dB");
-  setResult (2, atten_dielectric, "dB");
+  setResult (QObject::tr("ErEff"), er_eff, "");
+  setResult (QObject::tr("Conductor Losses"), atten_cond, "dB");
+  setResult (QObject::tr("Dielectric Losses"), atten_dielectric, "dB");
 
-  setResult (3, "none");
+  setResult (QObject::tr("TE-Modes"), "none");
   if (f >= (2.*fc(1,0))) {
     char text[256], txt[256];
     strcpy (text, "");
@@ -331,10 +333,10 @@ void rectwaveguide::show_results ()
 	}
       }
     }
-    setResult (3, text);
+    setResult (QObject::tr("TE-Modes"), text);
   }
 
-  setResult (4, "none");
+  setResult (QObject::tr("TM-Modes"), "none");
   if (f >= fc(1,1)){ /*TM(1,1) mode possible*/
     char text[256], txt[256];
     strcpy (text, "");
@@ -349,6 +351,6 @@ void rectwaveguide::show_results ()
 	}
       }
     }
-    setResult (3, text);
+    setResult (QObject::tr("TM-Modes"), text);
   }
 }

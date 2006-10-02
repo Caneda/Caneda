@@ -19,18 +19,17 @@
 # include <config.h>
 #endif
 
-#include <qlayout.h>
-#include <qhbox.h>
-#include <qpushbutton.h>
-#include <qtextedit.h>
-
 #include "helpdialog.h"
+
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QPushButton>
+#include <QtGui/QTextEdit>
 
 
 HelpDialog::HelpDialog(QWidget *parent)
-                     : QDialog(parent, 0, false, Qt::WDestructiveClose)
+                     : QDialog(parent)
 {
-  setCaption("QucsTranscalc "+tr("Help"));
+  setWindowTitle("QucsTranscalc "+tr("Help"));
 
   // --------  set help text into dialog  ------------
   QString s(tr("QucsTranscalc is an analysis and synthesis tool for "
@@ -49,12 +48,12 @@ HelpDialog::HelpDialog(QWidget *parent)
   // --------  create dialog widgets  ------------
   resize(350, 230);
 
-  vLayout = new QVBoxLayout(this);
+  QVBoxLayout *vLayout = new QVBoxLayout(this);
   vLayout->setMargin(3);
   vLayout->setSpacing(3);
 
-  Text = new QTextEdit(s, QString::null, this);
-  Text->setTextFormat(Qt::PlainText);
+  Text = new QTextEdit(s, this);
+  //Text->setTextFormat(Qt::PlainText);
   Text->setReadOnly(true);
   Text->setMinimumSize(300,200);
   vLayout->addWidget(Text);
@@ -67,7 +66,7 @@ HelpDialog::HelpDialog(QWidget *parent)
 
 HelpDialog::~HelpDialog()
 {
-  delete vLayout;
+  //delete vLayout;
 }
 
 void HelpDialog::slotClose()

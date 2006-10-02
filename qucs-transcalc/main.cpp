@@ -21,29 +21,31 @@
 
 #include <stdlib.h>
 
-#include <qapplication.h>
-#include <qstring.h>
-#include <qtextcodec.h>
-#include <qtranslator.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qmessagebox.h>
-#include <qdir.h>
-#include <qfont.h>
-
 #include "qucstrans.h"
+
+#include <QtGui/QApplication>
+#include <QtCore/QString>
+#include <QtCore/QTextCodec>
+#include <QtCore/QTranslator>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <QtGui/QMessageBox>
+#include <QtCore/QDir>
+#include <QtCore/QLocale>
+#include <QtGui/QFont>
+#include "qucs-tools/propertygrid.h"
+
 
 tQucsSettings QucsSettings;
 extern QDir QucsWorkDir;
-extern struct TransUnit TransUnits[];
 
 // Loads the settings file and stores the settings.
 bool loadSettings()
 {
   bool result = true;
 
-  QFile file(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/transrc"));
-  if(!file.open(IO_ReadOnly))
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/transrc"));
+  if(!file.open(QFile::ReadOnly))
     result = false; // settings file doesn't exist
   else {
     QTextStream stream(&file);
@@ -53,23 +55,23 @@ bool loadSettings()
       Setting = Line.section('=',0,0);
       Line = Line.section('=',1,1);
       if(Setting == "Mode") {
-	QucsSettings.Mode = Line.simplifyWhiteSpace();
+	QucsSettings.Mode = Line.simplified();
       }
       else if(Setting == "Frequency") {
-	Line = Line.simplifyWhiteSpace();
-	QucsSettings.freq_unit = QucsTranscalc::translateUnit(Line,0);
+	Line = Line.simplified();
+	QucsSettings.freq_unit = Units::toInt(Line);
       }
       else if(Setting == "Length") {
-	Line = Line.simplifyWhiteSpace();
-	QucsSettings.length_unit = QucsTranscalc::translateUnit(Line,1);
+	Line = Line.simplified();
+	QucsSettings.length_unit = Units::toInt(Line);
       }
       else if(Setting == "Resistance") {
-	Line = Line.simplifyWhiteSpace();
-	QucsSettings.res_unit = QucsTranscalc::translateUnit(Line,2);
+	Line = Line.simplified();
+	QucsSettings.res_unit = Units::toInt(Line);
       }
       else if(Setting == "Angle") {
-	Line = Line.simplifyWhiteSpace();
-	QucsSettings.ang_unit = QucsTranscalc::translateUnit(Line,3);
+	Line = Line.simplified();
+	QucsSettings.ang_unit = Units::toInt(Line);
       }
       else if(Setting == "TransWindow") {
 	QucsSettings.x  = Line.section(",",0,0).toInt();
@@ -82,8 +84,8 @@ bool loadSettings()
     file.close();
   }
 
-  file.setName(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/qucsrc"));
-  if(!file.open(IO_ReadOnly))
+  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.qucs/qucsrc"));
+  if(!file.open(QFile::ReadOnly))
     result = true; // qucs settings not necessary
   else {
     QTextStream stream(&file);
@@ -91,7 +93,7 @@ bool loadSettings()
     while(!stream.atEnd()) {
       Line = stream.readLine();
       Setting = Line.section('=',0,0);
-      Line = Line.section('=',1,1).stripWhiteSpace();
+      Line = Line.section('=',1,1).trimmed();
       if(Setting == "Font")
 	QucsSettings.font.fromString(Line);
       else if(Setting == "Language")
@@ -105,8 +107,8 @@ bool loadSettings()
 // Saves the settings in the settings file.
 bool saveApplSettings(QucsTranscalc *qucs)
 {
-  QFile file(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/transrc"));
-  if(!file.open(IO_WriteOnly)) {
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/transrc"));
+  if(!file.open(QFile::WriteOnly)) {
     QMessageBox::warning(0, QObject::tr("Warning"),
 			QObject::tr("Cannot save settings !"));
     return false;
@@ -116,14 +118,14 @@ bool saveApplSettings(QucsTranscalc *qucs)
   QTextStream stream(&file);
 
   stream << "Settings file, QucsTranscalc " PACKAGE_VERSION "\n"
-	 << "Mode=" << qucs->getMode() << "\n"
-	 << "Frequency=" << TransUnits[0].units[QucsSettings.freq_unit] << "\n"
-	 << "Length=" << TransUnits[1].units[QucsSettings.length_unit] << "\n"
-	 << "Resistance=" << TransUnits[2].units[QucsSettings.res_unit] << "\n"
-	 << "Angle=" << TransUnits[3].units[QucsSettings.ang_unit] << "\n"
+	 << "Mode=" << qucs->currentModeString() << "\n"
+	 << "Frequency=" << Units::toString(QucsSettings.freq_unit,Units::Frequency) << "\n"
+	 << "Length=" << Units::toString(QucsSettings.length_unit,Units::Length) << "\n"
+	 << "Resistance=" << Units::toString(QucsSettings.res_unit,Units::Resistance) << "\n"
+	 << "Angle=" << Units::toString(QucsSettings.ang_unit,Units::Angle) << "\n"
 	 << "TransWindow=" << qucs->x() << ',' << qucs->y() << ','
 	 << qucs->width() << ',' << qucs->height() << '\n';
-  qucs->saveModes(stream);
+  qucs->saveToStream(stream);
 
   file.close();
   return true;
@@ -161,7 +163,7 @@ int main(int argc, char *argv[])
     QucsSettings.BitmapDir = BITMAPDIR;
     QucsSettings.LangDir = LANGUAGEDIR;
   }
-  QucsWorkDir.setPath (QDir::homeDirPath()+QDir::convertSeparators ("/.qucs"));
+  QucsWorkDir.setPath (QDir::homePath()+QDir::convertSeparators ("/.qucs"));
   loadSettings();
 
   QApplication a(argc, argv);
@@ -170,24 +172,22 @@ int main(int argc, char *argv[])
   QTranslator tor( 0 );
   QString lang = QucsSettings.Language;
   if(lang.isEmpty())
-    lang = QTextCodec::locale();
+    lang = QLocale().name();
   tor.load( QString("qucs_") + lang, QucsSettings.LangDir);
   a.installTranslator( &tor );
 
   QucsTranscalc *qucs = new QucsTranscalc();
-  a.setMainWidget(qucs);
   qucs->resize(QucsSettings.dx, QucsSettings.dy); // size and position ...
   qucs->move(QucsSettings.x, QucsSettings.y);     // ... before "show" !!!
   qucs->show();
 
-  qucs->loadFile(QDir::homeDirPath()+"/.qucs/transrc");
-  qucs->setMode(QucsSettings.Mode);
+  qucs->loadFile(QDir::homePath()+"/.qucs/transrc");
+  qucs->setCurrentMode(QucsSettings.Mode);
 
   // optional file argument
   if (argc > 1) {
-    int _mode = 0;
     QString File = argv[1];
-    qucs->loadFile(File,&_mode);
+    qucs->loadFile(File);
   }
 
   int result = a.exec();

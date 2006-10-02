@@ -18,9 +18,8 @@
 #ifndef OPTIONSDIALOG_H
 #define OPTIONSDIALOG_H
 
-#include <qdialog.h>
+#include <QtGui/QDialog>
 
-class QVBoxLayout;
 class QComboBox;
 
 /**
@@ -38,7 +37,6 @@ private slots:
   void slotSave();
 
 private:
-  QVBoxLayout *vLayout;
   QComboBox *units[4];
 };
 

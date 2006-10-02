@@ -30,15 +30,15 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include <math.h>
 
-#include "units.h"
-#include "transline.h"
 #include "microstrip.h"
-
+#include "qucstrans.h"
+#include "qucs-tools/propertygrid.h"
+#include "qucs-tools/units.h"
 microstrip::microstrip() : transline()
 {
+  description = "Microstrip";
 }
 
 microstrip::~microstrip()
@@ -432,12 +432,12 @@ void microstrip::get_microstrip_sub()
 {
   er = getProperty ("Er");
   mur = getProperty ("Mur");
-  h = getProperty ("H", UNIT_LENGTH, LENGTH_M);
-  ht = getProperty ("H_t", UNIT_LENGTH, LENGTH_M);
-  t = getProperty ("T", UNIT_LENGTH, LENGTH_M);
+  h = getProperty ("H", Units::m);
+  ht = getProperty ("H_t", Units::m);
+  t = getProperty ("T", Units::m);
   sigma = getProperty ("Cond");
   tand = getProperty ("Tand");
-  rough = getProperty ("Rough", UNIT_LENGTH, LENGTH_M);
+  rough = getProperty ("Rough", Units::m);
 }
 
 /*
@@ -446,7 +446,7 @@ void microstrip::get_microstrip_sub()
  */
 void microstrip::get_microstrip_comp()
 {
-  f = getProperty ("Freq", UNIT_FREQ, FREQ_HZ);
+  f = getProperty ("Freq", Units::Hz);
 }
 
 /*
@@ -455,8 +455,8 @@ void microstrip::get_microstrip_comp()
  */
 void microstrip::get_microstrip_elec()
 {
-  Z0 = getProperty ("Z0", UNIT_RES, RES_OHM);
-  ang_l = getProperty ("Ang_l", UNIT_ANG, ANG_RAD);
+  Z0 = getProperty ("Z0", Units::Ohm);
+  ang_l = getProperty ("Ang_l", Units::Rad);
 }
 
 
@@ -466,22 +466,24 @@ void microstrip::get_microstrip_elec()
  */
 void microstrip::get_microstrip_phys()
 {
-  w = getProperty ("W", UNIT_LENGTH, LENGTH_M);
-  l = getProperty ("L", UNIT_LENGTH, LENGTH_M);
+  w = getProperty ("W", Units::m);
+  l = getProperty ("L", Units::m);
 }
 
 
 void microstrip::show_results()
 {
-  setProperty ("Z0", Z0, UNIT_RES, RES_OHM);
-  setProperty ("Ang_l", ang_l, UNIT_ANG, ANG_RAD);
+  setProperty ("Z0", Z0, Units::Ohm);
+  setProperty ("Ang_l", ang_l, Units::Rad);
 
-  setResult (0, er_eff, "");
-  setResult (1, atten_cond, "dB");
-  setResult (2, atten_dielectric, "dB");
+  setResult (QObject::tr("ErEff"), er_eff, "");
+  setResult (QObject::tr("Conductor Losses"), atten_cond, "dB");
+  setResult (QObject::tr("Dielectric Losses"), atten_dielectric, "dB");
 
-  double val = convertProperty ("T", skindepth, UNIT_LENGTH, LENGTH_M);
-  setResult (3, val, getUnit ("T"));
+  PropertyBox* box = transWidgets->boxWithProperty("T");
+  Q_ASSERT(box != 0l);
+  double val = Units::convert(skindepth,box->unitType("T"),Units::m,box->unit("T"));
+  setResult (QObject::tr("Skin Depth"), val, Units::toString(box->unit("T"),box->value("T").unitType()));
 }
 
 /*
@@ -571,11 +573,11 @@ void microstrip::synthesize()
       break;
   }
 
-  setProperty ("W", w, UNIT_LENGTH, LENGTH_M);
+  setProperty ("W", w, Units::m);
   /* calculate physical length */
-  ang_l = getProperty ("Ang_l", UNIT_ANG, ANG_RAD);
+  ang_l = getProperty ("Ang_l", Units::Rad);
   l = C0 / f / sqrt(er_eff * mur_eff) * ang_l / 2.0 / M_PI;    /* in m */
-  setProperty ("L", l, UNIT_LENGTH, LENGTH_M);
+  setProperty ("L", l, Units::m);
 
   /* compute microstrip parameters */
   calc();

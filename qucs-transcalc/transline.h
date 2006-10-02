@@ -22,31 +22,32 @@
 
 #ifndef __TRANSLINE_H
 #define __TRANSLINE_H
-
-class QucsTranscalc;
+#include <QtCore/QString>
+class TransWidgets;
+class QString;
 
 class transline {
  public:
   transline ();
   virtual ~transline ();
 
-  void   setApplication (QucsTranscalc *);
-  void   setProperty (char *, double);
-  void   setProperty (char *, double, int, int);
-  double getProperty (char *);
-  double getProperty (char *, int, int);
-  double convertProperty (char *, double, int, int);
-  void   setResult (int, double, char *);
-  void   setResult (int, char *);
-  int    translateUnit (char *);
-  char * getUnit (char *);
-  bool   isSelected (char *);
+  void   setTransWidgets (TransWidgets *tw);
+  void   setProperty (const QString& name, double val);
+  void   setProperty (const QString& name, double val, int unit);
+  double getProperty (const QString& name);
+  double getProperty (const QString&, int unit);
+  double convertProperty (const QString&, double, int, int);
+  void   setResult (const QString&, double, const QString&);
+  void   setResult (const QString&,const QString&);
+  bool   isSelected (const QString&);
 
   virtual void synthesize () { };
   virtual void analyze () { };
 
- private:
-  QucsTranscalc * app;
+  QString description;
+  
+ protected:
+  TransWidgets * transWidgets;
 };
 
 #endif /* __TRANSLINE_H */
