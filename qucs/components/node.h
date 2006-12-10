@@ -17,66 +17,51 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "resistor.h"
-#include "propertytext.h"
-#include "schematicscene.h"
+#ifndef __NODE_H
+#define __NODE_H
 
-#include <QtGui/QPainter>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOptionGraphicsItem>
+#include "item.h"
+#include <QtCore/QSet>
 
-Resistor::Resistor(QGraphicsScene *s) : Component(0l,s)
+class Component;
+
+class Node : public QucsItem
 {
-   m_ports.append(new ComponentPort(this,QPointF(-30.0,0.0)));
-   m_ports.append(new ComponentPort(this,QPointF(30.0,0.0)));
-   
-   PropertyText *t1 = new PropertyText("R","100k","Simple resistor",0l,scene());
-   m_properties.append(t1);
-   t1->setPos(scenePos() + QPointF(0,-35));
-}
-
-QString Resistor::name() const
-{
-   return QString("R");
-}
-
-QString Resistor::model() const
-{
-   return QString("R");
-}
-
-QString Resistor::text() const
-{
-   return QObject::tr("R");
-}
-
-QString Resistor::netlist() const
-{
-   return QString("R");
-}
-
-void Resistor::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
-{
-   Q_UNUSED(w);
-   p->drawLine(-30,  0,-18,  0);
-   p->drawLine(-18,  0,-15, -7);
-   p->drawLine(-15, -7, -9,  7);
-   p->drawLine( -9,  7, -3, -7);
-   p->drawLine( -3, -7,  3,  7);
-   p->drawLine(  3,  7,  9, -7);
-   p->drawLine(  9, -7, 15,  7);
-   p->drawLine( 15,  7, 18,  0);
-   p->drawLine( 18,  0, 30,  0);
-
-   if(o->state & QStyle::State_Selected)
-   {
-      p->setPen(QPen(Qt::darkGray,2));
-      p->drawRect(boundingRect());
-   }
+   public:
+      static const qreal Radius;
       
-}
+      Node(const QString& name = QString(),QGraphicsScene *scene = 0l);
+      ~Node();
+      
+      void addComponent(Component *comp);
+      void removeComponent(Component *comp);
+      const QSet<Component*>& connectedComponents() const;
 
-QRectF Resistor::boundingRect() const
-{
-   return QRectF(-30,-7,60,14).adjusted(-6,-1,+6,+1);
-}
+      virtual void paint(QPainter *p,const QStyleOptionGraphicsItem *o, QWidget *w = 0l);
+      virtual bool contains(const QPointF& pt) const;
+
+      QString name() const;
+      void setName(const QString& name);
+
+      QRectF boundingRect() const;
+      bool collidesWith(const Node* node) const;
+
+      bool isOpen() const;
+      bool areAllComponentsSelected() const;
+
+      QSet<Component*> selectedComponents();
+      QSet<Component*> unselectedComponents();
+      void setNewPos(const QPointF& np);
+      QPointF newPos() const;
+      
+      
+      
+   private:
+      QSet<Component*> m_connectedComponents;
+      QString m_name;
+      
+      QPointF m_newPos; // to cache new pos before attaining it
+      Node* m_creator;
+};
+
+#endif //__NODE_H

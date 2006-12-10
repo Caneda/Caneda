@@ -17,66 +17,50 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "resistor.h"
-#include "propertytext.h"
-#include "schematicscene.h"
+#ifndef __WIRE_H
+#define __WIRE_H
 
-#include <QtGui/QPainter>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOptionGraphicsItem>
+#include "component.h"
 
-Resistor::Resistor(QGraphicsScene *s) : Component(0l,s)
+class Node;
+class QLineF;
+
+class Wire : public Component
 {
-   m_ports.append(new ComponentPort(this,QPointF(-30.0,0.0)));
-   m_ports.append(new ComponentPort(this,QPointF(30.0,0.0)));
-   
-   PropertyText *t1 = new PropertyText("R","100k","Simple resistor",0l,scene());
-   m_properties.append(t1);
-   t1->setPos(scenePos() + QPointF(0,-35));
-}
-
-QString Resistor::name() const
-{
-   return QString("R");
-}
-
-QString Resistor::model() const
-{
-   return QString("R");
-}
-
-QString Resistor::text() const
-{
-   return QObject::tr("R");
-}
-
-QString Resistor::netlist() const
-{
-   return QString("R");
-}
-
-void Resistor::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
-{
-   Q_UNUSED(w);
-   p->drawLine(-30,  0,-18,  0);
-   p->drawLine(-18,  0,-15, -7);
-   p->drawLine(-15, -7, -9,  7);
-   p->drawLine( -9,  7, -3, -7);
-   p->drawLine( -3, -7,  3,  7);
-   p->drawLine(  3,  7,  9, -7);
-   p->drawLine(  9, -7, 15,  7);
-   p->drawLine( 15,  7, 18,  0);
-   p->drawLine( 18,  0, 30,  0);
-
-   if(o->state & QStyle::State_Selected)
-   {
-      p->setPen(QPen(Qt::darkGray,2));
-      p->drawRect(boundingRect());
-   }
+   public:
+      Wire(QGraphicsScene *scene,Node *n1,Node *n2);
+      ~Wire();
       
-}
+      QString name() const;
+      QString model() const;
+      QString text() const;
+      QString netlist() const;
 
-QRectF Resistor::boundingRect() const
-{
-   return QRectF(-30,-7,60,14).adjusted(-6,-1,+6,+1);
-}
+      QRectF boundingRect() const;
+      QPainterPath shape() const;
+
+      void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+      Node* node1() const;
+      Node* node2() const;
+
+      bool contains(const QPointF& point) const;
+      void setPathLines(QList<QLineF*> lines);
+
+      void rebuild();
+
+      int type() const;
+      
+   protected:
+      void mousePressEvent(QGraphicsSceneMouseEvent * event );
+      void mouseMoveEvent(QGraphicsSceneMouseEvent * event );
+      void mouseReleaseEvent(QGraphicsSceneMouseEvent * event );
+      QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+      
+   private:
+
+      QRectF rectForLine(const QLineF& line) const;
+      QList<QLineF*> m_lines;
+};
+
+#endif //__WIRE_H

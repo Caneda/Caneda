@@ -1,117 +1,86 @@
 /***************************************************************************
-                               component.h
-                              -------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
+ * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#ifndef __COMPONENT_H
+#define __COMPONENT_H
 
-#ifndef COMPONENT_H
-#define COMPONENT_H
+#include "item.h"
+#include "propertytext.h"
 
-#include "../element.h"
+class Component;
+class Node;
+class SchematicScene;
 
-#include <qptrlist.h>
-#include <qpen.h>
-#include <qpoint.h>
-#include <qwidget.h>
+/// Encapsulates a node for component to use it as a port
+class ComponentPort
+{
+   public:
+      ComponentPort(Component* owner,const QPointF& pos);
+      ~ComponentPort();
 
-class Schematic;
-class ViewPainter;
-class QString;
+      void setNode(Node *node);
+      Node* node() const;
+      Component* owner() const;
+      
+      void moveBy(qreal dx, qreal dy);
+      const QPointF& centrePos() const;
 
-
-class Component : public Element {
-public:
-  Component();
-  virtual ~Component() {};
-
-  virtual Component* newOne();
-  virtual void recreate(Schematic*) {};
-  virtual QString NetList();
-  virtual QString VHDL_Code(int);
-  QString getShortenNetlist();
-  QString getShortenVHDL();
-  void    paint(ViewPainter*);
-  void    paintScheme(QPainter*);
-  void    print(ViewPainter*, float);
-  void    setCenter(int, int, bool relative=false);
-  void    getCenter(int&, int&);
-  int     textSize(int&, int&);
-  void    Bounding(int&, int&, int&, int&);
-  void    entireBounds(int&, int&, int&, int&, float);
-  bool    getSelected(int, int);
-  int     getTextSelected(int, int, float);
-  void    rotate();
-  void    mirrorX();  // mirror about X axis
-  void    mirrorY();  // mirror about Y axis
-  QString save();
-  bool    load(const QString&);
-
-  // to hold track of the component appearance for saving and copying
-  bool mirroredX;   // is it mirrored about X axis or not
-  int  rotated;     // rotation angle divided by 90 degrees
-
-
-  QPtrList<Line>     Lines;
-  QPtrList<struct Arc>      Arcs;
-  QPtrList<Area>     Rects, Ellips;
-  QPtrList<Port>     Ports;
-  QPtrList<Text>     Texts;
-  QPtrList<Property> Props;
-
-  #define COMP_IS_OPEN    0
-  #define COMP_IS_ACTIVE  1
-  #define COMP_IS_SHORTEN 2
-  int  isActive; // should it be used in simulation or not ?
-  int  tx, ty;   // upper left corner of text (position)
-  bool showName;
-  QString  Model, Name;
-  QString  Description;
-
-protected:
-  int  analyseLine(const QString&);
-  bool getIntegers(const QString&, int *i1=0, int *i2=0, int *i3=0,
-		   int *i4=0, int *i5=0, int *i6=0);
-  bool getPen(const QString&, QPen&, int);
-  bool getBrush(const QString&, QBrush&, int);
-
-  void copyComponent(Component*);
+      friend class SchematicScene;
+   private:
+      Node *m_node;
+      Component* m_owner;
+      const QPointF m_centrePos; //pos of port w.r.t Component is a const
 };
 
+// This class encapsulates a component in general
+class Component : public QucsItem
+{
+   public:
 
-class MultiViewComponent : public Component {
-public:
-  MultiViewComponent() {};
-  virtual ~MultiViewComponent() {};
+      Component(QGraphicsItem* parent = 0l, QGraphicsScene* scene = 0l);
+      virtual ~Component() {};
 
-  void recreate(Schematic*);
+      virtual QString name() const = 0;
+      virtual QString model() const = 0;
+      virtual QString text() const = 0;
+      virtual QString netlist() const = 0;
+      
+      const QList<ComponentPort*>& componentPorts() const;
+      SchematicScene* schematicScene() const;
 
-protected:
-  virtual void createSymbol() {};
+      int type() const;
+
+      void determineHowToMove();
+      void resetSimplyMove();
+      
+   protected:
+      QVariant itemChange(GraphicsItemChange c,const QVariant& value);
+      void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+      void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+      void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+      
+      QList<ComponentPort*> m_ports;
+      QList<PropertyText*> m_properties;
+                  
+   private:
+      QVariant handlePositionChange(const QPointF& pos);
+      bool simplyMove;
 };
 
-
-class GateComponent : public MultiViewComponent {
-public:
-  GateComponent();
-  QString NetList();
-  QString VHDL_Code(int);
-
-protected:
-  void createSymbol();
-};
-
-// prototype of independent function
-Component* getComponentFromName(QString&);
-
-#endif
+#endif //__COMPONENT_H
