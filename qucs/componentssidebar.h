@@ -17,16 +17,16 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#ifndef __COMPONENTSSIDEBAR_H
+#define __COMPONENTSSIDEBAR_H
 
-int main(int argc,char *argv[])
+#include <QtGui/QTreeView>
+
+class ComponentsSidebar : public QTreeView
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
-}
+   public:
+      ComponentsSidebar(QWidget *parent = 0l);
+      ~ComponentsSidebar() {}
+};
 
+#endif

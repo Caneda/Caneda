@@ -1,4 +1,4 @@
-/***************************************************************************
+ /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
@@ -17,16 +17,39 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#ifndef __ITEM_H
+#define __ITEM_H
 
-int main(int argc,char *argv[])
+#include <QtGui/QGraphicsItem>
+
+class QGraphicsScene;
+class MoveItemCommand;
+
+class QucsItem : public QGraphicsItem
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
-}
+   public:
+      enum QucsItemTypes {
+	 QucsItemType = UserType+5,
+	 PaintingType,
+	 WireType,
+	 PortType,
+	 ComponentType,
+	 DisplayType
+      };
 
+      QucsItem(QGraphicsItem* parent = 0l, QGraphicsScene* scene = 0l);
+      virtual ~QucsItem() {};
+
+      int type() const;
+      QRectF boundingRect() const {return QRectF(); }
+
+      MoveItemCommand* createMoveItemCommand();
+      void backupScenePos();
+      QPointF savedScenePosition() const;
+      
+   protected:
+      QPointF m_savedScenePosition;
+
+};
+
+#endif //__ITEM_H

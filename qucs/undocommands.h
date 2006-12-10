@@ -17,16 +17,29 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#ifndef __UNDOCOMMANDS_H
+#define __UNDOCOMMANDS_H
 
-int main(int argc,char *argv[])
+#include <QtGui/QUndoCommand>
+#include <QtCore/QPointF>
+
+class QucsItem;
+
+class MoveItemCommand : public QUndoCommand
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
-}
+   public:
+      MoveItemCommand(QucsItem *i,const QPointF& init,const QPointF& end);
+      ~MoveItemCommand();
 
+      void undo();
+      void redo();
+      int id() const;
+      
+   private:
+      QucsItem *item;
+      QPointF initialPoint;
+      QPointF endPoint;
+      bool firstTime;
+};
+
+#endif

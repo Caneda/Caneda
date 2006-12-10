@@ -17,16 +17,53 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#ifndef __SCHEMATICSCENE_H
+#define __SCHEMATICSCENE_H
 
-int main(int argc,char *argv[])
+#include <QtGui/QGraphicsScene>
+#include <QtCore/QSet>
+#include <QtCore/QList>
+
+class Node;
+class QUndoStack;
+
+class SchematicScene : public QGraphicsScene
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
-}
+   public:
+      SchematicScene(QObject *parent =0l);
+      SchematicScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent = 0 );
+      ~SchematicScene(){}
 
+      Node* nodeAt(qreal cx, qreal cy);
+      Node *nodeAt(const QPointF& centre);
+      Node* createNode(const QPointF& pos);
+      void removeNode(Node* n);
+      
+      const QList<Node*>& circuitNodes() const;
+
+      QUndoStack* undoStack();
+
+      bool areItemsMoving() const;
+      bool isCommonMovingNode(Node *n) const;
+   protected:
+      void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
+      void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
+      void dropEvent(QGraphicsSceneDragDropEvent * event);
+
+      void mousePressEvent(QGraphicsSceneMouseEvent *e);
+      void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
+      void mouseReleaseEvent(QGraphicsSceneMouseEvent *e);
+
+   private:
+      void init();
+      void processBeforeMouseMove();
+      void moveCommonNodes();
+      
+      QList<Node*> m_circuitNodes;
+      QSet<Node*> m_commonMovingNodes;
+      QUndoStack *m_undoStack;
+      bool m_areItemsMoving;
+      
+};
+
+#endif //__SCHEMATICSCENE_H

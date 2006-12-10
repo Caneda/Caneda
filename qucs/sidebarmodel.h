@@ -17,16 +17,31 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#ifndef __SIDEBARMODEL_H
+#define __SIDEBARMODEL_H
 
-int main(int argc,char *argv[])
+#include <QtCore/QAbstractItemModel>
+
+class CategoryItem;
+
+class SidebarModel : public QAbstractItemModel
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
-}
+   public:
+      SidebarModel(QObject *parent=0l);
+      ~SidebarModel(){};
 
+      int columnCount(const QModelIndex & parent = QModelIndex()) const {Q_UNUSED(parent);return 1;}
+      QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+      QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
+      QModelIndex parent ( const QModelIndex & index ) const;
+      int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
+      Qt::ItemFlags flags(const QModelIndex& index) const;
+      QStringList mimeTypes() const;
+      QMimeData* mimeData(const QModelIndexList& indexes) const;
+   private:
+      
+      CategoryItem *rootItem;
+      void fillData();
+};
+
+#endif //__SIDEBARMODEL_H

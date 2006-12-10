@@ -17,16 +17,11 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#ifndef __GLOBAL_H
+#define __GLOBAL_H
 
-int main(int argc,char *argv[])
-{
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
-}
+class QString;
 
+QString imageDirectory();
+
+#endif

@@ -22,7 +22,8 @@
 # Boston, MA 02110-1301, USA.  
 #
 
-SUBDIRS = bitmaps components diagrams paintings dialogs
+SUBDIRS = ideality  components 
+#bitmaps diagrams paintings dialogs
 
 if COND_WIN32
 bin_SCRIPTS = qucsdigi.bat
@@ -32,24 +33,30 @@ endif
 
 bin_PROGRAMS = qucs
 
-MOCHEADERS = qucs.h schematic.h textdoc.h
+MOCHEADERS = schematicview.h qucsmainwindow.h
+#qucs.h schematic.h textdoc.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-qucs_SOURCES = node.cpp element.cpp qucsdoc.cpp wire.cpp mouseactions.cpp   \
-  qucs.cpp main.cpp wirelabel.cpp qucs_init.cpp qucs_actions.cpp            \
-  viewpainter.cpp mnemo.cpp schematic.cpp schematic_element.cpp textdoc.cpp \
-  schematic_file.cpp
+qucs_SOURCES = componentssidebar.cpp  item.cpp  propertytext.cpp    schematicscene.cpp  sidebarmodel.cpp \
+               global.cpp main.cpp  qucsmainwindow.cpp  schematicview.cpp   undocommands.cpp
+# node.cpp element.cpp qucsdoc.cpp wire.cpp mouseactions.cpp   \
+#   qucs.cpp main.cpp wirelabel.cpp qucs_init.cpp qucs_actions.cpp            \
+#   viewpainter.cpp mnemo.cpp schematic.cpp schematic_element.cpp textdoc.cpp \
+#   schematic_file.cpp
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES)
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(QTDIR)/include/QtGui -I$(QTDIR)/include/QtCore -I$(top_srcdir)/qucs/ideality
 qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
-qucs_LDADD = components/libcomponents.a diagrams/libdiagrams.a \
-  paintings/libpaintings.a dialogs/libdialogs.a \
+qucs_LDADD = ideality/libideality.a components/libcomponents.a \
   $(X11_LIBS) $(QT_LIBS)
+# diagrams/libdiagrams.a 
+#   paintings/libpaintings.a dialogs/libdialogs.a 
 
-noinst_HEADERS = $(MOCHEADERS) main.h wire.h qucsdoc.h element.h      \
-  node.h wirelabel.h viewpainter.h mnemo.h mouseactions.h
+noinst_HEADERS = $(MOCHEADERS) componentssidebar.h  item.h undocommands.h \
+                               global.h  propertytext.h  schematicscene.h  sidebarmodel.h
+# main.h wire.h qucsdoc.h element.h      \
+#   node.h wirelabel.h viewpainter.h mnemo.h mouseactions.h
 
 # rules for translations
 TRANSLATIONS = qucs_de.ts qucs_pl.ts qucs_fr.ts qucs_it.ts qucs_ro.ts \
@@ -61,33 +68,35 @@ GENTRANSLATIONS = qtgeneric_untranslated.ts qtgeneric_de.ts qtgeneric_fr.ts \
   qtgeneric_tr.ts qtgeneric_uk.ts qtgeneric_ru.ts
 TRANSFILES = $(TRANSLATIONS:.ts=.qm)
 
-qucs_%.ts: $(qucs_SOURCES)
-	@echo "Updating translations...";
-	@list='$(TRANSLATIONS)'; for file in $$list; do \
-	  $(LUPDATE) `$(PATHXFORM) $(srcdir)/*.cpp $(srcdir)/paintings/*.cpp \
-	  $(srcdir)/diagrams/*.cpp $(srcdir)/components/*.cpp \
-	  $(srcdir)/dialogs/*.cpp  $(top_srcdir)/qucs-help/*.cpp \
-	  $(top_srcdir)/qucs-edit/*.cpp $(top_srcdir)/qucs-filter/*.cpp \
-	  $(top_srcdir)/qucs-transcalc/*.cpp $(top_srcdir)/qucs-lib/*.cpp \
-	  $(top_srcdir)/qucs-attenuator/*.cpp` \
-	  -ts $(srcdir)/$$file; \
-	done
+qucs_%.ts: 
+# $(qucs_SOURCES)
+# 	@echo "Updating translations...";
+# 	@list='$(TRANSLATIONS)'; for file in $$list; do \
+# 	  $(LUPDATE) `$(PATHXFORM) $(srcdir)/*.cpp $(srcdir)/paintings/*.cpp \
+# 	  $(srcdir)/diagrams/*.cpp $(srcdir)/components/*.cpp \
+# 	  $(srcdir)/dialogs/*.cpp  $(top_srcdir)/qucs-help/*.cpp \
+# 	  $(top_srcdir)/qucs-edit/*.cpp $(top_srcdir)/qucs-filter/*.cpp \
+# 	  $(top_srcdir)/qucs-transcalc/*.cpp $(top_srcdir)/qucs-lib/*.cpp \
+# 	  $(top_srcdir)/qucs-attenuator/*.cpp` \
+# 	  -ts $(srcdir)/$$file; \
+# 	done
 
-%.qm: %.ts
-	@qucsfile=$<; \
-	genfile=`echo $< | sed -e 's/qucs_\(..\)\.ts/qtgeneric_\1\.ts/'`; \
-	ts_file=`echo $< | sed -e 's/\(.*\)qucs_\(..\)\.ts/tmp_\2\.ts/'`; \
-	qm_file=`echo $< | sed -e 's/\(.*\)qucs_\(..\)\.ts/tmp_\2\.qm/'`; \
-	if test -f $$genfile; then \
-	  echo "Incorporating '$$genfile'..."; \
-	  grep -v "</TS>" $$qucsfile > $$ts_file; \
-	  grep -v "<\!DOCTYPE TS><TS>" $$genfile >> $$ts_file; \
-	else \
-	  cp -f $$qucsfile $$ts_file; \
-	fi; \
-	echo "$(LRELEASE) $$qucsfile"; \
-	$(LRELEASE) $$ts_file; test -f $$qm_file && mv -f $$qm_file $@; \
-	rm -f $$ts_file
+%.qm: 
+# %.ts
+# 	@qucsfile=$<; \
+# 	genfile=`echo $< | sed -e 's/qucs_\(..\)\.ts/qtgeneric_\1\.ts/'`; \
+# 	ts_file=`echo $< | sed -e 's/\(.*\)qucs_\(..\)\.ts/tmp_\2\.ts/'`; \
+# 	qm_file=`echo $< | sed -e 's/\(.*\)qucs_\(..\)\.ts/tmp_\2\.qm/'`; \
+# 	if test -f $$genfile; then \
+# 	  echo "Incorporating '$$genfile'..."; \
+# 	  grep -v "</TS>" $$qucsfile > $$ts_file; \
+# 	  grep -v "<\!DOCTYPE TS><TS>" $$genfile >> $$ts_file; \
+# 	else \
+# 	  cp -f $$qucsfile $$ts_file; \
+# 	fi; \
+# 	echo "$(LRELEASE) $$qucsfile"; \
+# 	$(LRELEASE) $$ts_file; test -f $$qm_file && mv -f $$qm_file $@; \
+# 	rm -f $$ts_file
 
 # installation of translations
 langdatadir = ${prefix}/share/qucs/lang

@@ -17,16 +17,10 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#include "global.h"
+#include <QtCore/QString>
 
-int main(int argc,char *argv[])
+QString imageDirectory()
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
+   return QString("/usr/local/share/qucs/bitmaps/");
 }
-

@@ -17,16 +17,21 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#ifndef __SCHEMATICVIEW_H
+#define __SCHEMATICVIEW_H
 
-int main(int argc,char *argv[])
+#include <QtGui/QGraphicsView>
+class SchematicScene;
+class SchematicView : public QGraphicsView
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
-}
+   Q_OBJECT
+   public:
+      SchematicView(QGraphicsScene *sc = 0l,QWidget *parent = 0l);
+      ~SchematicView() {};
 
+      void init();
+
+      SchematicScene* schematicScene() const;
+};
+
+#endif //__SCHEMATICVIEW_H

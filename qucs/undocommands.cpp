@@ -17,16 +17,35 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#include "undocommands.h"
+#include "item.h"
+#include <QtGui/QGraphicsScene>
 
-int main(int argc,char *argv[])
+MoveItemCommand::MoveItemCommand(QucsItem *i,const QPointF& init,const QPointF& end) : item(i), initialPoint(init),endPoint(end)
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
+   firstTime = true;
+   setText("Move Component");
 }
 
+MoveItemCommand::~MoveItemCommand()
+{
+}
+      
+void MoveItemCommand::undo()
+{
+   item->setPos(initialPoint);
+   item->scene()->clearSelection();
+}
+
+void MoveItemCommand::redo()
+{
+   if(firstTime)
+      firstTime = false;
+   else
+      item->setPos(endPoint);
+}
+
+int MoveItemCommand::id() const
+{
+   return 5;
+}

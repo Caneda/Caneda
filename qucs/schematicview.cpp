@@ -18,15 +18,45 @@
  ***************************************************************************/
 
 #include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#include "components/resistor.h"
+#include "schematicscene.h"
+#include "components/wire.h"
 
-int main(int argc,char *argv[])
+#include <QtGui/QWheelEvent>
+#include <cstdlib>
+
+SchematicView::SchematicView(QGraphicsScene *sc,QWidget *parent) : QGraphicsView(sc,parent)
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
+   Q_ASSERT(sc == 0l);
+   setScene(new SchematicScene(0,0,800,600));
+   setDragMode(RubberBandDrag);
+   setAcceptDrops(true);
+   setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+   setWindowTitle("Untitled");
+   init();
 }
 
+void SchematicView::init()
+{
+   SchematicScene *s = qobject_cast<SchematicScene *>(scene());
+   Q_ASSERT(s != 0l);
+   Resistor *r = new Resistor(s);
+   r->setPos(400,400);
+   Resistor *r1 = new Resistor(s);
+   r1->setPos(700,400);
+   r1->rotate(45*2);
+   //std::srand(std::time(0l));
+   /*for(int i=0; i < 10; i++)
+   {
+      Resistor *r = new Resistor(s);
+      //scene()->addItem(r);
+      r->setPos(std::rand()%800,std::rand()%600);
+      }*/
+}
+
+SchematicScene* SchematicView::schematicScene() const
+{
+   SchematicScene* s = qobject_cast<SchematicScene*>(scene());
+   Q_ASSERT(s);
+   return s;
+}

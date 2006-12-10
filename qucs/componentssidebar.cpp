@@ -17,16 +17,17 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#include "componentssidebar.h"
+#include "sidebarmodel.h"
+#include <QtGui/QHeaderView>
 
-int main(int argc,char *argv[])
+ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QTreeView(parent)
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
+   setModel(new SidebarModel());
+   setWindowTitle(tr("Components"));
+   header()->hide();
+   setDragEnabled(true);
+   setAlternatingRowColors(true);
+   expandAll();
 }
 

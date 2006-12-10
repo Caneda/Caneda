@@ -17,16 +17,42 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#ifndef __PROPERTYTEXT_H
+#define __PROPERTYTEXT_H
 
-int main(int argc,char *argv[])
+#include <QtGui/QGraphicsTextItem>
+
+class PropertyTextValue : public QGraphicsTextItem
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
-}
+   public:
+      PropertyTextValue(const QString& text,QGraphicsItem *p=0l,QGraphicsScene *s=0l);
+      ~PropertyTextValue() {}
+      void formatText();
 
+   protected:
+      void mousePressEvent(QGraphicsSceneMouseEvent *e);
+      void keyPressEvent(QKeyEvent *e);
+      void focusOutEvent(QFocusEvent *e);
+};
+
+class PropertyText : public QGraphicsTextItem
+{
+   public:
+      PropertyText(const QString& name, const QString& initialValue = "nil",
+		   const QString& description = "nil", QGraphicsItem* par = 0l, QGraphicsScene *scene = 0l);
+      ~PropertyText() {}
+      
+      QString name() const { return m_name; }
+      QString value() const { return m_valueItem->toPlainText(); }
+      QString description() const { return m_description; }
+
+   protected:
+      QVariant itemChange(GraphicsItemChange c,const QVariant& value);
+      void mousePressEvent(QGraphicsSceneMouseEvent *e);
+
+   private:
+      PropertyTextValue *m_valueItem;
+      QString m_description;
+      QString m_name;
+};
+#endif //__PROPERTYTEXT_H

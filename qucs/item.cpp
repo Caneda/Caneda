@@ -17,16 +17,30 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#include "item.h"
+#include "undocommands.h"
+#include <QtGui/QGraphicsScene>
 
-int main(int argc,char *argv[])
+QucsItem::QucsItem(QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem(parent,scene)
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
 }
 
+int QucsItem::type() const
+{
+   return QucsItemType;
+}
+
+void QucsItem::backupScenePos()
+{
+   m_savedScenePosition = scenePos();
+}
+
+QPointF QucsItem::savedScenePosition() const
+{
+   return m_savedScenePosition;
+}
+
+MoveItemCommand* QucsItem::createMoveItemCommand()
+{
+   return new MoveItemCommand(this,m_savedScenePosition,scenePos());
+}

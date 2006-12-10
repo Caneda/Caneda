@@ -17,16 +17,35 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
-#include "qucsmainwindow.h"
-#include <QtGui>
+#ifndef __QUCSMAINWINDOW_H
+#define __QUCSMAINWINDOW_H
 
-int main(int argc,char *argv[])
+#include "ideality/dtabbedmainwindow.h"
+class ComponentsSidebar;
+class QUndoGroup;
+class SchematicView;
+class QucsMainWindow : public DTabbedMainWindow
 {
-   QApplication app(argc,argv);
-   QucsMainWindow mw;
-   mw.show();
-   
-   return app.exec();
-}
+Q_OBJECT
+   public:
+      QucsMainWindow(QWidget *w=0l);
+      ~QucsMainWindow() {}
 
+      void addView(SchematicView *view);
+
+   private slots:
+      void activateStackOf(QWidget *w);
+      void newView();
+      
+   private:
+      void initActions();
+
+      QAction *fileNewAction;
+      QAction *fileSaveAction;
+
+      //QUndoView *m_undoView;
+      QUndoGroup *m_undoGroup;
+      ComponentsSidebar *m_componentsSidebar;
+};
+
+#endif //__QUCSMAINWINDOW_H
