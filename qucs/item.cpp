@@ -19,7 +19,7 @@
 
 #include "item.h"
 #include "undocommands.h"
-#include <QtGui/QGraphicsScene>
+#include "schematicscene.h"
 
 QucsItem::QucsItem(QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem(parent,scene)
 {
@@ -43,4 +43,11 @@ QPointF QucsItem::savedScenePosition() const
 MoveItemCommand* QucsItem::createMoveItemCommand()
 {
    return new MoveItemCommand(this,m_savedScenePosition,scenePos());
+}
+
+SchematicScene* QucsItem::schematicScene() const
+{
+   SchematicScene *s = qobject_cast<SchematicScene*>(this->scene());
+   Q_ASSERT(s != 0l);
+   return s;
 }

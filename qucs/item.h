@@ -24,6 +24,7 @@
 
 class QGraphicsScene;
 class MoveItemCommand;
+class SchematicScene;
 
 class QucsItem : public QGraphicsItem
 {
@@ -33,6 +34,7 @@ class QucsItem : public QGraphicsItem
 	 PaintingType,
 	 WireType,
 	 PortType,
+	 NodeType,
 	 ComponentType,
 	 DisplayType
       };
@@ -46,6 +48,8 @@ class QucsItem : public QGraphicsItem
       MoveItemCommand* createMoveItemCommand();
       void backupScenePos();
       QPointF savedScenePosition() const;
+
+      SchematicScene* schematicScene() const;
       
    protected:
       QPointF m_savedScenePosition;

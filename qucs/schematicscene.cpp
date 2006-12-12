@@ -17,11 +17,10 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 #include "schematicscene.h"
+#include "resistor.h"
+#include "node.h"
+#include "wire.h"
 #include "undocommands.h"
-#include "components/resistor.h"
-#include "components/node.h"
-#include "components/wire.h"
-
 
 #include <QtCore/QMimeData>
 #include <QtCore/QtDebug>
@@ -113,85 +112,70 @@ void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
    // (2) -> If also helps to detect items before being moved for 1st time.
    if(!m_areItemsMoving && (e->buttons() & Qt::LeftButton) && !selectedItems().isEmpty())
    {
-      processBeforeMouseMove();
+      //processBeforeMouseMove();
       m_areItemsMoving = true;
    }
 
    QGraphicsScene::mouseMoveEvent(e);
 
-   moveCommonNodes();
+   //moveCommonNodes();
 }
 
 void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
 {
    if(!m_areItemsMoving)
       return QGraphicsScene::mouseReleaseEvent(e);
-   
    m_areItemsMoving = false;
-   QSet<Node*> nodesToBeDeleted;
-   m_commonMovingNodes.clear();
+   QSet<Node*> trash;
    foreach(QGraphicsItem *item, selectedItems())
    {
-      Component* c = qgraphicsitem_cast<Component*>(item);
-      
-      if(!c) // Just handle specially for components
+      Component *c = qgraphicsitem_cast<Component*>(item);
+      if(!c)
 	 continue;
 
-      foreach(ComponentPort *port,c->componentPorts())
+      foreach(ComponentPort *p,c->componentPorts())
       {
-	 Node* portNode = port->node();
-	 Q_ASSERT(portNode && port->owner() == c);
-
-	 foreach(Node *node, m_circuitNodes)
-	 {
-	    if(node != portNode && node->collidesWith(portNode) &&
-	       !node->connectedComponents().contains(c))
-	    {
-	       // Remove wire when the components meet at nodes
-	       Wire *cw = ::connectedWire(node,portNode);
-	       if(cw)
-	       {
-		  node->removeComponent(cw);
-		  portNode->removeComponent(cw);
-		  delete cw;
-	       }
-	       
-	       qreal dx = node->x() - portNode->x();
-	       qreal dy = node->y() - portNode->y();
-	       c->moveBy(dx,dy);
-	       port->setNode(node);
-	       nodesToBeDeleted << portNode;
-	    }
-	 } //m_circuitNodes
-      } //c->componentPorts()
-      c->resetSimplyMove();
-   } //selectedItems
-
-   
-   
-   // Delete empty nodes
-   foreach(Node *node, nodesToBeDeleted)
-   {
-      if(node && node->connectedComponents().isEmpty())
-      {
-	 delete node;
-	 node = 0l;
-      }
-   }
-
-   //Now create undoCommands
-   if(!selectedItems().isEmpty())
-   {
-      m_undoStack->beginMacro("Move components");
-      foreach(QGraphicsItem *item, selectedItems())
-      {
-	 QucsItem *qitem = qgraphicsitem_cast<QucsItem*>(item);
-	 if(!qitem)
+	 if(trash.contains(p->node()))
 	    continue;
-	 m_undoStack->push(qitem->createMoveItemCommand());
+	 QList<QGraphicsItem*> coll = p->node()->collidingItems();
+	 foreach(QGraphicsItem *citem, coll)
+	 {
+	    Node *n = 0l;
+	    if(citem->type() == QucsItem::NodeType)
+	       n = (Node*)(citem);
+	    if(!n)
+	       continue;
+	    if(trash.contains(n))
+	       continue;
+	    Q_ASSERT(n != p->node());
+	    qreal dx = n->x() - p->node()->x();
+	    qreal dy = n->y() - p->node()->y();
+	    c->moveBy(dx,dy);
+	    
+	    
+	    QSet<Component*>& connComp = const_cast<QSet<Component*>&>(n->connectedComponents());
+	    connComp.unite(p->node()->connectedComponents());
+	    
+	    trash.insert(p->node());
+	    m_circuitNodes.removeAll(p->node());
+	    
+
+	    foreach(Component *c, connComp)
+	    {
+	       foreach(ComponentPort *port,c->componentPorts())
+	       {
+		  if(port != p && port->node() == p->node())
+		     port->m_node = n;
+	       }
+	    }
+	    p->m_node = n;
+	 }
       }
-      m_undoStack->endMacro();
    }
+   
+   qDeleteAll(trash);
+   
+   
    QGraphicsScene::mouseReleaseEvent(e); // other behaviour by base
 }
 
@@ -208,7 +192,18 @@ void SchematicScene::processBeforeMouseMove()
 	 {
 	    if(port->node()->selectedComponents().size() > 1)
 	    {
-	       port->node()->backupScenePos();
+	       bool shdBackup = true;
+	       foreach(Component *sc, port->node()->connectedComponents())
+	       {
+		  if(sc->type() == QucsItem::WireType && !sc->isSelected())
+		  {
+		     qDebug("Here");
+		     shdBackup = false;
+		     break;
+		  }
+	       }
+	       if(shdBackup)
+		  port->node()->backupScenePos();
 	       m_commonMovingNodes.insert(port->node());
 	    }
 		  
@@ -228,10 +223,10 @@ void SchematicScene::moveCommonNodes()
 {
    if(m_commonMovingNodes.isEmpty())
       return;
-   
    foreach(Node *n, m_commonMovingNodes)
    {
       QPointF oldPos = n->savedScenePosition();
+      qDebug() << oldPos;
       n->setPos(n->newPos());
       if(n->areAllComponentsSelected())
 	 continue;
@@ -243,7 +238,11 @@ void SchematicScene::moveCommonNodes()
       else
       {
 	 if(!sn)
+	 {
+	    static int cnt = 0;
+	    qDebug() << "Me here " << cnt++ << "   " << oldPos;
 	    sn = createNode(oldPos);
+	 }
 	 QSet<Component*> unselected = n->unselectedComponents();
 	 if(unselected.isEmpty())
 	    continue;
@@ -313,6 +312,8 @@ Node* SchematicScene::nodeAt(const QPointF& centre)
       //foreach(Node *nd, ns)
       // removeNode(nd);
       qDeleteAll(ns); //now safe to delete
+      qDebug("fn");
+      return fn;
    }
    return 0l;
 }
