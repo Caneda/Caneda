@@ -41,14 +41,11 @@ class Wire : public Component
 
       void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
-      Node* node1() const;
-      Node* node2() const;
-
       bool contains(const QPointF& point) const;
       void setPathLines(QList<QLineF*> lines);
 
       void rebuild();
-
+      void rebuild(const QPointF& st, const QPointF& end);
       int type() const;
       
    protected:

@@ -53,15 +53,22 @@ class Node : public QucsItem
       QSet<Component*> unselectedComponents();
       void setNewPos(const QPointF& np);
       QPointF newPos() const;
+
+      void setController(Component *c);
+      void resetController();
+      bool isControllerSet() const;
+
+      int type() const;
       
-      
+   protected:
+      QVariant itemChange(GraphicsItemChange change, const QVariant& val);
       
    private:
       QSet<Component*> m_connectedComponents;
       QString m_name;
       
       QPointF m_newPos; // to cache new pos before attaining it
-      Node* m_creator;
+      Component *m_controller;
 };
 
 #endif //__NODE_H

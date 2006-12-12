@@ -19,6 +19,8 @@
 
 #include "node.h"
 #include "component.h"
+#include "wire.h"
+#include "schematicscene.h"
 #include <QtGui/QPainter>
 
 #include <cmath>
@@ -38,6 +40,7 @@ Node::Node(const QString& name,QGraphicsScene *scene) : QucsItem(0l,scene)
    setFlags(0);
    setAcceptedMouseButtons(0);
    setZValue(1.0);
+   m_controller = 0l;
 }
 
 Node::~Node()
@@ -153,4 +156,90 @@ void Node::setNewPos(const QPointF& np)
 QPointF Node::newPos() const
 {
    return m_newPos;
+}
+
+void Node::setController(Component *c)
+{
+   m_controller = c;
+}
+
+void Node::resetController()
+{
+   m_controller = 0l;
+}
+
+bool Node::isControllerSet() const
+{
+   return m_controller != 0l;
+}
+
+QVariant Node::itemChange(GraphicsItemChange change, const QVariant& val)
+{
+   if(change == ItemPositionChange)
+   {
+      QPointF newPos = val.toPointF();
+      QPointF oldPos = scenePos();
+      qreal dx = newPos.x() - oldPos.x();
+      qreal dy = newPos.y()-oldPos.y();
+      //This assert makes sure that the node is moved only by component/wire
+      Q_ASSERT(m_controller);
+      
+      foreach(Component* c,selectedComponents())
+      {
+	 if(c != m_controller)
+	    c->moveBy(dx,dy);
+      }
+
+      QSet<Component*> unselCom = unselectedComponents();
+      if(selectedComponents().size() >= 1 && !unselCom.isEmpty())
+      {
+	 uint wireCount = 0;
+	 Node *_new = 0l;
+	 foreach(Component *c,unselectedComponents())
+	 {
+	    if(c->type() == QucsItem::WireType)
+	    {
+	       ++wireCount;
+	       Wire *w = (Wire*)c;
+	       QPointF s = w->componentPorts()[0]->node()->scenePos();
+	       QPointF e = w->componentPorts()[1]->node()->scenePos();
+	       if(s == oldPos)
+		  s += QPointF(dx,dy);
+	       else if(e == oldPos)
+		  e += QPointF(dx,dy);
+	       else
+		  Q_ASSERT(0);
+	       w->rebuild(s,e);
+	       continue;
+	    }
+	    else if(_new == 0l)
+	    {
+	       _new = schematicScene()->createNode(scenePos());
+	       removeComponent(c);
+	       _new->addComponent(c);
+	       new Wire(schematicScene(),this,_new);
+	       ComponentPort *port = c->portWithNode(this);
+	       Q_ASSERT(port != 0l);
+	       port->m_node = _new;
+	    }
+	    else
+	    {
+	       removeComponent(c);
+	       _new->addComponent(c);
+	       ComponentPort *port = c->portWithNode(this);
+	       Q_ASSERT(port != 0l);
+	       port->m_node = _new;
+	    }
+	 }
+      }
+   
+      return QVariant(newPos);
+   }
+   
+   return QGraphicsItem::itemChange(change,val);
+}
+
+int Node::type() const
+{
+   return QucsItem::NodeType;
 }

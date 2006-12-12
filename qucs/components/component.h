@@ -31,7 +31,8 @@ class SchematicScene;
 class ComponentPort
 {
    public:
-      ComponentPort(Component* owner,const QPointF& pos);
+      ComponentPort(Component* owner,const QPointF& pos,Node *n = 0l);
+      ComponentPort(Component *owner,Node *n);
       ~ComponentPort();
 
       void setNode(Node *node);
@@ -42,6 +43,7 @@ class ComponentPort
       const QPointF& centrePos() const;
 
       friend class SchematicScene;
+      friend class Node;
    private:
       Node *m_node;
       Component* m_owner;
@@ -62,12 +64,14 @@ class Component : public QucsItem
       virtual QString netlist() const = 0;
       
       const QList<ComponentPort*>& componentPorts() const;
-      SchematicScene* schematicScene() const;
-
+      
       int type() const;
 
       void determineHowToMove();
       void resetSimplyMove();
+
+      ComponentPort* portWithNode(Node *n) const;
+      void adjustPosAccordingTo(ComponentPort *p);
       
    protected:
       QVariant itemChange(GraphicsItemChange c,const QVariant& value);

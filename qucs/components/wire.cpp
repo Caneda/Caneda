@@ -31,8 +31,8 @@
 
 Wire::Wire(QGraphicsScene *scene,Node *n1, Node *n2) : Component(0l,scene)
 {
-   m_ports.append(new ComponentPort(this,mapFromScene(n1->scenePos())));
-   m_ports.append(new ComponentPort(this,mapFromScene(n2->scenePos())));
+   m_ports.append(new ComponentPort(this,mapFromScene(n1->scenePos()),n1));
+   m_ports.append(new ComponentPort(this,mapFromScene(n2->scenePos()),n2));
       
    rebuild();
    setFlags(ItemIsMovable | ItemIsSelectable);
@@ -187,4 +187,29 @@ QVariant Wire::itemChange(GraphicsItemChange change, const QVariant &value)
    }
    //rebuild();
    return QGraphicsItem::itemChange(change,value);
+}
+
+void Wire::rebuild(const QPointF& s, const QPointF& e)
+{
+   if(!m_lines.isEmpty())
+   {
+      qDeleteAll(m_lines);
+      m_lines.clear();
+   }
+   
+   
+   QPointF st = mapFromScene(s);
+   QPointF en = mapFromScene(e);
+
+   if(st.x() == en.x() || st.y() == en.y())
+   {
+      m_lines.append(new QLineF(st,en));
+      prepareGeometryChange();
+      return;
+   }
+
+   QPointF inter = QPointF(st.x(),en.y());
+   m_lines.append(new QLineF(st,inter));
+   m_lines.append(new QLineF(inter,en));
+   prepareGeometryChange();
 }

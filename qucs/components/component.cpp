@@ -26,25 +26,20 @@
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtCore/QDebug>
 
-ComponentPort::ComponentPort(Component* owner,const QPointF& pos) : m_centrePos(pos)
+ComponentPort::ComponentPort(Component* owner,const QPointF& pos,Node *n) : m_centrePos(pos)
 {
    m_owner = owner;
-   
+
    SchematicScene *s = owner->schematicScene();
    QPointF spos = owner->mapToScene(pos);
    
-   if((m_node = s->nodeAt(spos)))
-   {
-      m_node->addComponent(owner);
-      qreal dx = m_node->x() - pos.x();
-      qreal dy = m_node->y() - pos.y();
-      owner->moveBy(dx,dy);
-   }
+   if(n != 0l)
+      m_node = n;
+   else if((m_node = s->nodeAt(spos)))
+      ;
    else
-   {
       m_node = s->createNode(spos);
-      m_node->addComponent(m_owner);
-   }
+   m_node->addComponent(m_owner);
 }
 
 ComponentPort::~ComponentPort()
@@ -127,61 +122,14 @@ QVariant Component::handlePositionChange(const QPointF& pos)
       QPointF spos = mapToScene(port->centrePos());
       spos += QPointF(dx,dy);
 	 
-      if(schematicScene()->isCommonMovingNode(port->node()))
+      if(!(port->node()->isControllerSet()))
       {
-	 // Doesn't move now. Moves this later managed by SchematicScene
-	 port->node()->setNewPos(spos);
-	 continue;
-      }
-      if( simplyMove)
-      {
+	 port->node()->setController(this);
 	 port->node()->setPos(spos);
-	 continue;
+	 port->node()->resetController();
       }
-
-      const QSet<Component*>& conCom = port->node()->connectedComponents();
-      int size = conCom.size();
-
-      // Size can never be zero here since atleast this component exists
-      Q_ASSERT(size != 0);
-
-      if(size == 1) // Or open
-      {
-	port->node()->setPos(spos);
-	continue;
-      }
-      
-      else if(size == 2)
-      {
-	 // The following four lines detect the index/pos of other component in node
-	 QSet<Component*>::const_iterator it = conCom.begin();
-	 if(*it == this)
-	    ++it;
-	 else
-	    Q_ASSERT(*(it+1) == this);
-	    
-	 if((*it)->type() == QucsItem::WireType)
-	 {
-	    Wire *w = qgraphicsitem_cast<Wire*>(*it);//(Wire*)(*it);
-	    port->node()->setPos(spos);
-	    w->rebuild();
-	    continue;
-	 }
-      }
-
-      // Here size can be 2 when other component is not wire
-      Node *n = schematicScene()->nodeAt(spos);
-      if(!n)
-	 n = schematicScene()->createNode(spos);
-      if(port->node() != n)
-      {
-	 Node *pn = port->node();
-	 port->setNode(n);
-	 new Wire(scene(),pn,n);
-      }
-      
    }
-
+   
    foreach(PropertyText *text, m_properties)
       text->moveBy(dx,dy);
 
@@ -224,13 +172,6 @@ void Component::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
    QucsItem::mouseReleaseEvent(event);
 }
 
-SchematicScene* Component::schematicScene() const
-{
-   SchematicScene *s = qobject_cast<SchematicScene*>(this->scene());
-   Q_ASSERT(s != 0l);
-   return s;
-}
-
 const QList<ComponentPort*>& Component::componentPorts() const
 {
    return m_ports;
@@ -239,4 +180,39 @@ const QList<ComponentPort*>& Component::componentPorts() const
 int Component::type() const
 {
    return QucsItem::ComponentType;
+}
+
+ComponentPort* Component::portWithNode(Node *n) const
+{
+   foreach(ComponentPort *p,m_ports)
+   {
+      if(p->node() == n)
+	 return p;
+   }
+   return 0l;
+}
+
+void Component::adjustPosAccordingTo(ComponentPort *port)
+{
+   Q_ASSERT(port && port->owner() == this);
+   QPointF pos = mapFromScene(port->node()->scenePos());
+   qreal dx = pos.x() - port->centrePos().x();
+   qreal dy = pos.y() - port->centrePos().y();
+   if(dx == 0 && dy == 0)
+      return;
+   simplyMove = true;
+   moveBy(dx,dy);
+   foreach(ComponentPort *p, componentPorts())
+   {
+      if(p == port)
+	 continue;
+      p->node()->setPos(mapToScene(p->centrePos()));
+      foreach(Component *c, p->node()->connectedComponents())
+      {
+	 if(c == this)
+	    continue;
+	 ComponentPort *pt = c->portWithNode(p->node());
+	 c->adjustPosAccordingTo(pt);
+      }
+   }
 }
