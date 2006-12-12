@@ -17,9 +17,9 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 #include "schematicscene.h"
-#include "resistor.h"
-#include "node.h"
-#include "wire.h"
+#include "components/resistor.h"
+#include "components/node.h"
+#include "components/wire.h"
 #include "undocommands.h"
 
 #include <QtCore/QMimeData>

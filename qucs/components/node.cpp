@@ -181,9 +181,7 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant& val)
       QPointF oldPos = scenePos();
       qreal dx = newPos.x() - oldPos.x();
       qreal dy = newPos.y()-oldPos.y();
-      //This assert makes sure that the node is moved only by component/wire
-      Q_ASSERT(m_controller);
-      
+            
       foreach(Component* c,selectedComponents())
       {
 	 if(c != m_controller)
