@@ -30,19 +30,19 @@ int QucsItem::type() const
    return QucsItemType;
 }
 
-void QucsItem::backupScenePos()
+void QucsItem::backupUndoPosition()
 {
-   m_savedScenePosition = scenePos();
+   m_savedUndoPosition = scenePos();
 }
 
-QPointF QucsItem::savedScenePosition() const
+QPointF QucsItem::savedUndoPosition() const
 {
-   return m_savedScenePosition;
+   return m_savedUndoPosition;
 }
 
 MoveItemCommand* QucsItem::createMoveItemCommand()
 {
-   return new MoveItemCommand(this,m_savedScenePosition,scenePos());
+   return new MoveItemCommand(this,m_savedUndoPosition,scenePos());
 }
 
 SchematicScene* QucsItem::schematicScene() const

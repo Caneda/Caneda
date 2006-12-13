@@ -47,6 +47,8 @@ class Wire : public Component
       void rebuild();
       void rebuild(const QPointF& st, const QPointF& end);
       int type() const;
+
+      static Wire* connectedWire(const Node* n1, const Node* n2);
       
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent * event );

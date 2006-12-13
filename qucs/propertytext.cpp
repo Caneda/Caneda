@@ -32,7 +32,10 @@ PropertyTextValue::PropertyTextValue(const QString& text,QGraphicsItem *p,QGraph
 
 void PropertyTextValue::formatText()
 {
-   setPlainText(toPlainText().remove(QRegExp("[\n\r ]")));
+   QString text = toPlainText().remove(QRegExp("[\n\r ]"));
+   if(text.isEmpty())
+      text.append('0');
+   setPlainText(text);
 }
 
 void PropertyTextValue::mousePressEvent(QGraphicsSceneMouseEvent *e)
@@ -71,14 +74,10 @@ PropertyText::PropertyText(const QString& name, const QString& initialValue,
    m_valueItem = new PropertyTextValue(initialValue,this,scene);
    m_valueItem->setPos(40,0);
    setFlag(ItemIsMovable,true);
-   //setFlag(ItemIsFocusable,true);
-   //setFlag(ItemIsSelectable,true);
 }
 
 QVariant PropertyText::itemChange(GraphicsItemChange c,const QVariant& value)
 {
-   if(c == ItemMatrixChange)
-      qDebug("u can detect me");
    return QGraphicsTextItem::itemChange(c,value);
 }
 

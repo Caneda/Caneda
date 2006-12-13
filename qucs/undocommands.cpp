@@ -21,31 +21,40 @@
 #include "item.h"
 #include <QtGui/QGraphicsScene>
 
-MoveItemCommand::MoveItemCommand(QucsItem *i,const QPointF& init,const QPointF& end) : item(i), initialPoint(init),endPoint(end)
+UndoCommand::UndoCommand() : firstTime(true)
 {
-   firstTime = true;
-   setText("Move Component");
 }
 
-MoveItemCommand::~MoveItemCommand()
+void UndoCommand::undo()
 {
+   this->undoIt();
 }
-      
-void MoveItemCommand::undo()
+
+void UndoCommand::redo()
+{
+   if(firstTime == true)
+      firstTime = false;
+   else
+      this->redoIt();
+}
+
+MoveItemCommand::MoveItemCommand(QucsItem *i,const QPointF& init,const QPointF& end) : item(i), initialPoint(init),endPoint(end)
+{
+   setText(QObject::tr("Move Component"));
+}
+
+void MoveItemCommand::undoIt()
 {
    item->setPos(initialPoint);
    item->scene()->clearSelection();
 }
 
-void MoveItemCommand::redo()
+void MoveItemCommand::redoIt()
 {
-   if(firstTime)
-      firstTime = false;
-   else
-      item->setPos(endPoint);
+   item->setPos(endPoint);
 }
 
 int MoveItemCommand::id() const
 {
-   return 5;
+   return UndoCommand::MoveItem;
 }

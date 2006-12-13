@@ -39,12 +39,8 @@ class SchematicScene : public QGraphicsScene
       Node* createNode(const QPointF& pos);
       void removeNode(Node* n);
       
-      const QList<Node*>& circuitNodes() const;
-
       QUndoStack* undoStack();
 
-      bool areItemsMoving() const;
-      bool isCommonMovingNode(Node *n) const;
    protected:
       void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
       void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
@@ -56,14 +52,10 @@ class SchematicScene : public QGraphicsScene
 
    private:
       void init();
-      void processBeforeMouseMove();
-      void moveCommonNodes();
-      
-      QList<Node*> m_circuitNodes;
-      QSet<Node*> m_commonMovingNodes;
+         
+      QSet<Node*> m_circuitNodes;
       QUndoStack *m_undoStack;
       bool m_areItemsMoving;
-      
 };
 
 #endif //__SCHEMATICSCENE_H

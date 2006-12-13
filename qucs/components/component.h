@@ -39,14 +39,11 @@ class ComponentPort
       Node* node() const;
       Component* owner() const;
       
-      void moveBy(qreal dx, qreal dy);
       const QPointF& centrePos() const;
 
-      friend class SchematicScene;
-      friend class Node;
    private:
       Node *m_node;
-      Component* m_owner;
+      Component* const m_owner;
       const QPointF m_centrePos; //pos of port w.r.t Component is a const
 };
 
@@ -62,17 +59,12 @@ class Component : public QucsItem
       virtual QString model() const = 0;
       virtual QString text() const = 0;
       virtual QString netlist() const = 0;
+
+      int type() const;
       
       const QList<ComponentPort*>& componentPorts() const;
-      
-      int type() const;
-
-      void determineHowToMove();
-      void resetSimplyMove();
-
       ComponentPort* portWithNode(Node *n) const;
-      void adjustPosAccordingTo(ComponentPort *p);
-      
+            
    protected:
       QVariant itemChange(GraphicsItemChange c,const QVariant& value);
       void mousePressEvent ( QGraphicsSceneMouseEvent * event );
@@ -84,7 +76,6 @@ class Component : public QucsItem
                   
    private:
       QVariant handlePositionChange(const QPointF& pos);
-      bool simplyMove;
 };
 
 #endif //__COMPONENT_H

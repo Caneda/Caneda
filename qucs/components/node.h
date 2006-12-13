@@ -36,23 +36,19 @@ class Node : public QucsItem
       void addComponent(Component *comp);
       void removeComponent(Component *comp);
       const QSet<Component*>& connectedComponents() const;
-
-      virtual void paint(QPainter *p,const QStyleOptionGraphicsItem *o, QWidget *w = 0l);
-      virtual bool contains(const QPointF& pt) const;
-
-      QString name() const;
-      void setName(const QString& name);
-
-      QRectF boundingRect() const;
-      bool collidesWith(const Node* node) const;
-
       bool isOpen() const;
       bool areAllComponentsSelected() const;
-
-      QSet<Component*> selectedComponents();
-      QSet<Component*> unselectedComponents();
-      void setNewPos(const QPointF& np);
-      QPointF newPos() const;
+      QSet<Component*> selectedComponents() const;
+      QSet<Component*> unselectedComponents() const;
+      
+      void paint(QPainter *p,const QStyleOptionGraphicsItem *o, QWidget *w = 0l);
+      bool contains(const QPointF& pt) const;
+      QRectF boundingRect() const;
+      bool collidesWithItem(QGraphicsItem *other) const;
+      QPainterPath shape() const;
+      
+      QString name() const;
+      void setName(const QString& name);
 
       void setController(Component *c);
       void resetController();
@@ -66,8 +62,6 @@ class Node : public QucsItem
    private:
       QSet<Component*> m_connectedComponents;
       QString m_name;
-      
-      QPointF m_newPos; // to cache new pos before attaining it
       Component *m_controller;
 };
 

@@ -213,3 +213,20 @@ void Wire::rebuild(const QPointF& s, const QPointF& e)
    m_lines.append(new QLineF(inter,en));
    prepareGeometryChange();
 }
+
+// Returns wire connected between two nodes
+Wire* Wire::connectedWire(const Node* n1, const Node* n2)
+{
+   foreach(Component *c, n1->connectedComponents())
+   {
+      Wire *w = qgraphicsitem_cast<Wire*>(c);
+      if(w)
+      {
+	 const QList<ComponentPort*>& pl = w->componentPorts();
+	 Q_ASSERT(pl.size() == 2);
+	 if((pl[0]->node() == n1 && pl[1]->node() == n2) || (pl[1]->node() == n1 && pl[0]->node() == n2))
+	    return w;
+      }
+   }
+   return 0l;
+}

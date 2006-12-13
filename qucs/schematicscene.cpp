@@ -25,26 +25,7 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QtDebug>
 #include <QtGui/QGraphicsSceneEvent>
-#include <QtGui/QUndoCommand>
 #include <QtGui/QUndoStack>
-
-
-// Returns wire connected between two nodes
-static Wire* connectedWire(const Node* n1, const Node* n2)
-{
-   foreach(Component *c, n1->connectedComponents())
-   {
-      Wire *w = qgraphicsitem_cast<Wire*>(c);
-      if(w)
-      {
-	 const QList<ComponentPort*>& pl = w->componentPorts();
-	 Q_ASSERT(pl.size() == 2);
-	 if((pl[0]->node() == n1 && pl[1]->node() == n2) || (pl[1]->node() == n1 && pl[0]->node() == n2))
-	    return w;
-      }
-   }
-   return 0l;
-}
 
 SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 {
@@ -83,9 +64,7 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
    if(event->mimeData()->formats().contains("application/qucs.sidebarItem"))
    {
       QByteArray encodedData = event->mimeData()->data("application/qucs.sidebarItem");
-
       QDataStream stream(&encodedData, QIODevice::ReadOnly);
-
       QString text;
       stream >> text;
       if(text == "Resistor")
@@ -101,7 +80,6 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 
 void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
-   
    QGraphicsScene::mousePressEvent(e);
 }
 
@@ -111,14 +89,8 @@ void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
    // (1) -> It detects whether event is generated because of moving items.
    // (2) -> If also helps to detect items before being moved for 1st time.
    if(!m_areItemsMoving && (e->buttons() & Qt::LeftButton) && !selectedItems().isEmpty())
-   {
-      //processBeforeMouseMove();
       m_areItemsMoving = true;
-   }
-
    QGraphicsScene::mouseMoveEvent(e);
-
-   //moveCommonNodes();
 }
 
 void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
@@ -157,7 +129,7 @@ void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
 	    connComp.unite(p->node()->connectedComponents());
 	    
 	    trash.insert(p->node());
-	    m_circuitNodes.removeAll(p->node());
+	    removeNode(p->node());
 	    
 
 	    foreach(Component *c, connComp)
@@ -165,10 +137,10 @@ void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
 	       foreach(ComponentPort *port,c->componentPorts())
 	       {
 		  if(port != p && port->node() == p->node())
-		     port->m_node = n;
+		     port->setNode(n);
 	       }
 	    }
-	    p->m_node = n;
+	    p->setNode(n);
 	 }
       }
    }
@@ -177,90 +149,6 @@ void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
    
    
    QGraphicsScene::mouseReleaseEvent(e); // other behaviour by base
-}
-
-void SchematicScene::processBeforeMouseMove()
-{
-   foreach(QGraphicsItem *item,selectedItems())
-   {
-
-      Component *c = qgraphicsitem_cast<Component*>(item);
-      if(c)
-      {
-	 c->determineHowToMove();
-	 foreach(ComponentPort *port, c->componentPorts())
-	 {
-	    if(port->node()->selectedComponents().size() > 1)
-	    {
-	       bool shdBackup = true;
-	       foreach(Component *sc, port->node()->connectedComponents())
-	       {
-		  if(sc->type() == QucsItem::WireType && !sc->isSelected())
-		  {
-		     qDebug("Here");
-		     shdBackup = false;
-		     break;
-		  }
-	       }
-	       if(shdBackup)
-		  port->node()->backupScenePos();
-	       m_commonMovingNodes.insert(port->node());
-	    }
-		  
-	 }
-	 c->backupScenePos();
-      }
-      else
-      {
-	 QucsItem *qitem = qgraphicsitem_cast<QucsItem*>(item);
-	 if(qitem)
-	    qitem->backupScenePos();
-      }
-   }
-}
-
-void SchematicScene::moveCommonNodes()
-{
-   if(m_commonMovingNodes.isEmpty())
-      return;
-   foreach(Node *n, m_commonMovingNodes)
-   {
-      QPointF oldPos = n->savedScenePosition();
-      qDebug() << oldPos;
-      n->setPos(n->newPos());
-      if(n->areAllComponentsSelected())
-	 continue;
-
-      Node *sn = nodeAt(oldPos);
-      Wire *w;
-      if(sn && (w = ::connectedWire(n,sn)))
-      	 w->rebuild();
-      else
-      {
-	 if(!sn)
-	 {
-	    static int cnt = 0;
-	    qDebug() << "Me here " << cnt++ << "   " << oldPos;
-	    sn = createNode(oldPos);
-	 }
-	 QSet<Component*> unselected = n->unselectedComponents();
-	 if(unselected.isEmpty())
-	    continue;
-	 foreach(Component *c, unselected)
-	 {
-	    foreach(ComponentPort *port, c->componentPorts())
-	    {
-	       if(port->node() == n)
-	       {
-		  n->removeComponent(c);
-		  sn->addComponent(c);
-		  port->m_node = sn;
-	       }
-	    }
-	 }
-	 static_cast<void*>(new Wire(this,n,sn));
-      }
-   }
 }
 
 Node* SchematicScene::nodeAt(qreal x, qreal y)
@@ -274,11 +162,12 @@ Node* SchematicScene::nodeAt(const QPointF& centre)
    if(!m_circuitNodes.isEmpty())
    {
       QSet<Node*> ns;
-      foreach(Node *node, m_circuitNodes)
+      foreach(QGraphicsItem *item, items(centre))
       {
-	 Q_ASSERT(node != 0l);
-	 QPointF mapped = node->mapFromScene(centre);
-	 if(node->contains(mapped))
+	 if(item->type() != QucsItem::NodeType)
+	    continue;
+	 Node *node = (Node*)item;
+	 if(node->scenePos() == centre)
 	    ns << node;
       }
       if(ns.size() == 1) //only one node found
@@ -298,21 +187,16 @@ Node* SchematicScene::nodeAt(const QPointF& centre)
 	    {
 	       fn->addComponent(c);
 	       //find port containing dup node and modify its variable
-	       foreach(ComponentPort *pt, c->componentPorts())
-	       {
-		  if(pt->node() == n)
-		  {
-		     pt->m_node = fn;
-		     break;
-		  }
-	       }
+	       ComponentPort *pt = c->portWithNode(n);
+	       if(pt)
+		  pt->setNode(fn);
 	    }
 	 } //n->connectedComponents()
       } //ns
-      //foreach(Node *nd, ns)
-      // removeNode(nd);
+      foreach(Node *nd, ns)
+	 removeNode(nd);
       qDeleteAll(ns); //now safe to delete
-      qDebug("fn");
+      qDebug("Just for info: Found many nodes at same location");
       return fn;
    }
    return 0l;
@@ -322,33 +206,17 @@ Node* SchematicScene::createNode(const QPointF& centre)
 {
    Node *n = new Node(QString("FH"),(QGraphicsScene*)this);
    n->setPos(centre);
-   m_circuitNodes.append(n);
+   m_circuitNodes.insert(n);
    return n;
 }
 
 // Removes node from circuit nodes but doesn't delete
 void SchematicScene::removeNode(Node *n)
 {
-   m_circuitNodes.removeAll(n);
-}
-
-// Returns a const reference to circuit nodes
-const QList<Node*>& SchematicScene::circuitNodes() const
-{
-   return m_circuitNodes;
+   m_circuitNodes.remove(n);
 }
 
 QUndoStack* SchematicScene::undoStack()
 {
    return m_undoStack;
-}
-
-bool SchematicScene::areItemsMoving() const
-{
-   return m_areItemsMoving;
-}
-
-bool SchematicScene::isCommonMovingNode(Node *n) const
-{
-   return m_commonMovingNodes.contains(n);
 }

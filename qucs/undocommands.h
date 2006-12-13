@@ -25,21 +25,38 @@
 
 class QucsItem;
 
-class MoveItemCommand : public QUndoCommand
+class UndoCommand : public QUndoCommand
 {
    public:
-      MoveItemCommand(QucsItem *i,const QPointF& init,const QPointF& end);
-      ~MoveItemCommand();
+      enum CommandIds
+      {
+	 MoveItem = 0
+      };
+      
+      UndoCommand();
 
       void undo();
       void redo();
+
+   protected:
+      virtual void undoIt()=0l;
+      virtual void redoIt()=0l;
+   private:
+      bool firstTime;
+};
+
+class MoveItemCommand : public UndoCommand
+{
+   public:
+      MoveItemCommand(QucsItem *i,const QPointF& init,const QPointF& end);
       int id() const;
-      
+   protected:
+      void undoIt();
+      void redoIt();
    private:
       QucsItem *item;
       QPointF initialPoint;
       QPointF endPoint;
-      bool firstTime;
 };
 
 #endif

@@ -46,13 +46,13 @@ class QucsItem : public QGraphicsItem
       QRectF boundingRect() const {return QRectF(); }
 
       MoveItemCommand* createMoveItemCommand();
-      void backupScenePos();
-      QPointF savedScenePosition() const;
+      void backupUndoPosition();
+      QPointF savedUndoPosition() const;
 
       SchematicScene* schematicScene() const;
       
    protected:
-      QPointF m_savedScenePosition;
+      QPointF m_savedUndoPosition;
 
 };
 

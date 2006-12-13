@@ -26,10 +26,8 @@
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtCore/QDebug>
 
-ComponentPort::ComponentPort(Component* owner,const QPointF& pos,Node *n) : m_centrePos(pos)
+ComponentPort::ComponentPort(Component* owner,const QPointF& pos,Node *n) : m_owner(owner), m_centrePos(pos)
 {
-   m_owner = owner;
-
    SchematicScene *s = owner->schematicScene();
    QPointF spos = owner->mapToScene(pos);
    
@@ -48,18 +46,7 @@ ComponentPort::~ComponentPort()
 
 void ComponentPort::setNode(Node *node)
 {
-   Q_ASSERT(m_node);
-   if(m_node == node)
-      return;
-   m_node->removeComponent(m_owner);
-   
-   if(m_node->connectedComponents().isEmpty())
-      m_owner->schematicScene()->removeNode(m_node);
-
    m_node = node;
-   
-   if(!(m_node->connectedComponents().contains(m_owner)))
-      m_node->addComponent(m_owner);
 }
 
 Node* ComponentPort::node() const
@@ -72,11 +59,6 @@ Component* ComponentPort::owner() const
    return m_owner;
 }
 
-void ComponentPort::moveBy(qreal dx, qreal dy)
-{
-   m_node->moveBy(dx,dy);
-}
-
 const QPointF& ComponentPort::centrePos() const
 {
    return m_centrePos;
@@ -84,31 +66,7 @@ const QPointF& ComponentPort::centrePos() const
 
 Component::Component(QGraphicsItem* parent, QGraphicsScene* scene) : QucsItem(parent,scene)
 {
-   simplyMove = true;
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-}
-
-void Component::determineHowToMove()
-{
-   simplyMove = true; //Reset simply move
-   foreach(ComponentPort* port, m_ports)
-   {
-      foreach(Component* c, port->node()->connectedComponents())
-      {
-	 if(c != this && !(c->isSelected()))
-	 {
-	    simplyMove = false;
-	    break;
-	 }
-      }
-      if(!simplyMove)
-	 break;
-   }
-}
-
-void Component::resetSimplyMove()
-{
-   simplyMove = true;
 }
 
 QVariant Component::handlePositionChange(const QPointF& pos)
@@ -190,29 +148,4 @@ ComponentPort* Component::portWithNode(Node *n) const
 	 return p;
    }
    return 0l;
-}
-
-void Component::adjustPosAccordingTo(ComponentPort *port)
-{
-   Q_ASSERT(port && port->owner() == this);
-   QPointF pos = mapFromScene(port->node()->scenePos());
-   qreal dx = pos.x() - port->centrePos().x();
-   qreal dy = pos.y() - port->centrePos().y();
-   if(dx == 0 && dy == 0)
-      return;
-   simplyMove = true;
-   moveBy(dx,dy);
-   foreach(ComponentPort *p, componentPorts())
-   {
-      if(p == port)
-	 continue;
-      p->node()->setPos(mapToScene(p->centrePos()));
-      foreach(Component *c, p->node()->connectedComponents())
-      {
-	 if(c == this)
-	    continue;
-	 ComponentPort *pt = c->portWithNode(p->node());
-	 c->adjustPosAccordingTo(pt);
-      }
-   }
 }

@@ -27,7 +27,7 @@
 
 const qreal Node::Radius = 3.0;
 
-inline qreal distance(const QPointF& p1, const QPointF& p2)
+inline static qreal distance(const QPointF& p1, const QPointF& p2)
 {
    qreal dx = p1.x() - p2.x();
    qreal dy = p1.y() - p2.y();
@@ -100,8 +100,11 @@ QRectF Node::boundingRect() const
    return QRectF(-Radius, -Radius, 2*Radius, 2*Radius);
 }
 
-bool Node::collidesWith(const Node* port) const
+bool Node::collidesWithItem(QGraphicsItem *other) const
 {
+   Node *port = qgraphicsitem_cast<Node*>(other);
+   if(!port)
+      return QGraphicsItem::collidesWithItem(other);
    QPointF myCentre = scenePos();
    QPointF otherCentre = port->scenePos();
    qreal dist = distance(myCentre,otherCentre);
@@ -109,6 +112,13 @@ bool Node::collidesWith(const Node* port) const
    if(dist > (2 * Node::Radius))
       return false;
    return true;
+}
+
+QPainterPath Node::shape() const
+{
+   QPainterPath path;
+   path.addEllipse(boundingRect());
+   return path;
 }
 
 bool Node::isOpen() const
@@ -126,7 +136,7 @@ bool Node::areAllComponentsSelected() const
    return true;
 }
 
-QSet<Component*> Node::selectedComponents()
+QSet<Component*> Node::selectedComponents() const
 {
    QSet<Component*> selCom;
    foreach(Component *c, m_connectedComponents)
@@ -137,7 +147,7 @@ QSet<Component*> Node::selectedComponents()
    return selCom;
 }
 
-QSet<Component*> Node::unselectedComponents()
+QSet<Component*> Node::unselectedComponents() const
 {
    QSet<Component*> unSelCom;
    foreach(Component *c, m_connectedComponents)
@@ -148,15 +158,7 @@ QSet<Component*> Node::unselectedComponents()
    return unSelCom;
 }
 
-void Node::setNewPos(const QPointF& np)
-{
-   m_newPos = np;
-}
 
-QPointF Node::newPos() const
-{
-   return m_newPos;
-}
 
 void Node::setController(Component *c)
 {
@@ -181,15 +183,16 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant& val)
       QPointF oldPos = scenePos();
       qreal dx = newPos.x() - oldPos.x();
       qreal dy = newPos.y()-oldPos.y();
-            
-      foreach(Component* c,selectedComponents())
+      
+      QSet<Component*> selCom = selectedComponents();
+      foreach(Component* c,selCom)
       {
 	 if(c != m_controller)
 	    c->moveBy(dx,dy);
       }
 
       QSet<Component*> unselCom = unselectedComponents();
-      if(selectedComponents().size() >= 1 && !unselCom.isEmpty())
+      if(!selCom.isEmpty() && !unselCom.isEmpty())
       {
 	 uint wireCount = 0;
 	 Node *_new = 0l;
@@ -218,7 +221,7 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant& val)
 	       new Wire(schematicScene(),this,_new);
 	       ComponentPort *port = c->portWithNode(this);
 	       Q_ASSERT(port != 0l);
-	       port->m_node = _new;
+	       port->setNode(_new);
 	    }
 	    else
 	    {
@@ -226,7 +229,7 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant& val)
 	       _new->addComponent(c);
 	       ComponentPort *port = c->portWithNode(this);
 	       Q_ASSERT(port != 0l);
-	       port->m_node = _new;
+	       port->setNode(_new);
 	    }
 	 }
       }
