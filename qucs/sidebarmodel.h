@@ -27,7 +27,7 @@ class CategoryItem;
 class SidebarModel : public QAbstractItemModel
 {
    public:
-      SidebarModel(QObject *parent=0l);
+      SidebarModel(QObject *parent=0);
       ~SidebarModel(){};
 
       int columnCount(const QModelIndex & parent = QModelIndex()) const {Q_UNUSED(parent);return 1;}
@@ -39,7 +39,7 @@ class SidebarModel : public QAbstractItemModel
       QStringList mimeTypes() const;
       QMimeData* mimeData(const QModelIndexList& indexes) const;
    private:
-      
+
       CategoryItem *rootItem;
       void fillData();
 };

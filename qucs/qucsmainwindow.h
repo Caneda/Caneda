@@ -28,7 +28,7 @@ class QucsMainWindow : public DTabbedMainWindow
 {
 Q_OBJECT
    public:
-      QucsMainWindow(QWidget *w=0l);
+      QucsMainWindow(QWidget *w=0);
       ~QucsMainWindow() {}
 
       void addView(SchematicView *view);
@@ -36,14 +36,12 @@ Q_OBJECT
    private slots:
       void activateStackOf(QWidget *w);
       void newView();
-      
-   private:
+         private:
       void initActions();
 
       QAction *fileNewAction;
       QAction *fileSaveAction;
 
-      //QUndoView *m_undoView;
       QUndoGroup *m_undoGroup;
       ComponentsSidebar *m_componentsSidebar;
 };

@@ -30,7 +30,11 @@ class UndoCommand : public QUndoCommand
    public:
       enum CommandIds
       {
-	 MoveItem = 0
+	 Move = 0,
+	 Connect,
+	 Disconnect,
+	 AddWire,
+	 RemoveWire
       };
       
       UndoCommand();
@@ -39,24 +43,91 @@ class UndoCommand : public QUndoCommand
       void redo();
 
    protected:
-      virtual void undoIt()=0l;
-      virtual void redoIt()=0l;
+      virtual void undoIt()=0;
+      virtual void redoIt()=0;
    private:
       bool firstTime;
 };
 
-class MoveItemCommand : public UndoCommand
+class MoveCommand : public UndoCommand
 {
    public:
-      MoveItemCommand(QucsItem *i,const QPointF& init,const QPointF& end);
+      MoveCommand(QucsItem *i,const QPointF& init,const QPointF& end);
       int id() const;
    protected:
       void undoIt();
       void redoIt();
    private:
-      QucsItem *item;
+      QucsItem * const item;
       QPointF initialPoint;
       QPointF endPoint;
+};
+
+class ComponentPort;
+
+class ConnectCommand : public UndoCommand
+{
+   public:
+      ConnectCommand(ComponentPort *p1,ComponentPort *p2);
+      ~ConnectCommand();
+      int id() const;
+   protected:
+      void undoIt();
+      void redoIt();
+
+   private:
+      ComponentPort * const port1;
+      ComponentPort * const port2;
+};
+
+class DisconnectCommand : public UndoCommand
+{
+   public:
+      DisconnectCommand(ComponentPort *p1,ComponentPort *p2);
+      //~ConnectCommand();
+      int id() const;
+   protected:
+      void undoIt();
+      void redoIt();
+
+   private:
+      ComponentPort * const port1;
+      ComponentPort * const port2;
+};
+
+class Wire;
+
+class AddWireCommand : public UndoCommand
+{
+   public:
+      AddWireCommand(ComponentPort *p1, ComponentPort *p2, Wire *w);
+      ~AddWireCommand(){};
+      int id() const;
+   protected:
+      void undoIt();
+      void redoIt();
+
+   private:
+      
+      ComponentPort * const port1;
+      ComponentPort * const port2;
+      Wire *wire;
+};
+
+class RemoveWireCommand : public UndoCommand
+{
+   public:
+      RemoveWireCommand(ComponentPort *p1, ComponentPort *p2);
+      ~RemoveWireCommand(){};
+      int id() const;
+   protected:
+      void undoIt();
+      void redoIt();
+
+   private:
+      Wire *wire;
+      ComponentPort * const port1;
+      ComponentPort * const port2; 
 };
 
 #endif

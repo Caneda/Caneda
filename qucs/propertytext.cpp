@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "propertytext.h"
+
 #include <QtGui/QTextCursor>
 #include <QtGui/QCursor>
 #include <QtGui/QGraphicsSceneMouseEvent>

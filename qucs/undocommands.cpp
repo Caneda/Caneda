@@ -18,8 +18,12 @@
  ***************************************************************************/
 
 #include "undocommands.h"
-#include "item.h"
-#include <QtGui/QGraphicsScene>
+#include "components/component.h"
+#include "node.h"
+#include "wire.h"
+#include "schematicscene.h"
+
+#include <QtCore/QDebug>
 
 UndoCommand::UndoCommand() : firstTime(true)
 {
@@ -38,23 +42,178 @@ void UndoCommand::redo()
       this->redoIt();
 }
 
-MoveItemCommand::MoveItemCommand(QucsItem *i,const QPointF& init,const QPointF& end) : item(i), initialPoint(init),endPoint(end)
+MoveCommand::MoveCommand(QucsItem *i,const QPointF& init,const QPointF& end) : item(i), initialPoint(init),endPoint(end)
 {
    setText(QObject::tr("Move Component"));
 }
 
-void MoveItemCommand::undoIt()
+void MoveCommand::undoIt()
 {
    item->setPos(initialPoint);
    item->scene()->clearSelection();
+   qDebug() << "MoveCommand::undoIt() -- initialPoint is" << initialPoint;
 }
 
-void MoveItemCommand::redoIt()
+void MoveCommand::redoIt()
 {
    item->setPos(endPoint);
+   qDebug() << "MoveCommand::redoIt() -- endPoint is" << endPoint;
 }
 
-int MoveItemCommand::id() const
+int MoveCommand::id() const
 {
-   return UndoCommand::MoveItem;
+   return UndoCommand::Move;
 }
+
+/*ConnectCommand::ConnectCommand(ComponentPort *p1,ComponentPort *p2) : port1(p1),port2(p2)
+{
+   setText("Connect component");
+}
+
+ConnectCommand::~ConnectCommand()
+{
+   //qDebug("ConnectCommand::~ConnectCommand()");
+   
+}
+
+int ConnectCommand::id() const
+{
+   return UndoCommand::Connect;
+}
+
+void ConnectCommand::undoIt()
+{
+   Node *n1 = 0;
+   if(port1->node() == port2->node())
+   {
+      n1 = port1->owner()->schematicScene()->createNode(port1->node()->pos());
+      n1->addComponent(port1->owner());
+      port1->setNode(n1);
+   }
+   else
+      Q_ASSERT(0);
+   {
+      //Wire *w = Wire::connectedWire(port1->node(),port2->node());
+      //if(w)
+      //{
+	// port1->node()->removeComponent(w);
+	// port2->node()->removeComponent(w);
+	// delete w;
+	// }
+   }
+   port2->node()->removeComponent(port1->owner());
+   port1->node()->removeComponent(port2->owner());
+   qDebug() << "ConnectCommand::undoIt()";
+}
+
+void ConnectCommand::redoIt()
+{
+   Q_ASSERT(port1->node() != port2->node());
+   port2->node()->connectedComponents().unite(port1->node()->connectedComponents());
+   Node *n = port1->node();
+   foreach(Component *c, n->connectedComponents())
+   {
+      ComponentPort *p = c->portWithNode(n);
+      if(p)
+	 p->setNode(port2->node());
+   }
+   delete n;
+   qDebug("ConnectCommand::redoIt()  port1Size : %d,   port2Size: %d",port1->node()->connectedComponents().size(),port2->node()->connectedComponents().size());
+}
+
+
+DisconnectCommand::DisconnectCommand(ComponentPort *p1,ComponentPort *p2) : port1(p1),port2(p2)
+{
+   setText("Disconnect component");
+}
+
+
+int DisconnectCommand::id() const
+{
+   return UndoCommand::Disconnect;
+}
+
+void DisconnectCommand::undoIt()
+{
+   Q_ASSERT(port1->node() != port2->node());
+   port2->node()->connectedComponents().unite(port1->node()->connectedComponents());
+   Node *n = port1->node();
+   foreach(Component *c, n->connectedComponents())
+   {
+      ComponentPort *p = c->portWithNode(n);
+      if(p)
+	 p->setNode(port2->node());
+   }
+   delete n;
+   qDebug("DisconnectCommand::undoIt()  port1Size : %d,   port2Size: %d",port1->node()->connectedComponents().size(),
+	  port2->node()->connectedComponents().size());
+}
+
+void DisconnectCommand::redoIt()
+{
+   Q_ASSERT(port1->node() == port2->node());
+   Node *n1 = 0;
+   n1 = port1->owner()->schematicScene()->createNode(port1->node()->pos());
+   n1->addComponent(port1->owner());
+   port1->setNode(n1);
+      
+   port2->node()->removeComponent(port1->owner());
+   port1->node()->removeComponent(port2->owner());
+   qDebug() << "DisconnectCommand::redoIt()";
+}
+
+
+
+AddWireCommand::AddWireCommand(ComponentPort *p1, ComponentPort *p2,Wire *w) :port1(p1),port2(p2),wire(w)
+{
+   setText(QObject::tr("Add wire"));
+}
+
+int AddWireCommand::id() const
+{
+   return AddWire;
+}
+
+void AddWireCommand::undoIt()
+{
+   Q_ASSERT(wire != 0);
+   qDebug() << "AddWireCommand::undoIt()";
+   
+   delete wire;
+   wire = 0;
+}
+
+void AddWireCommand::redoIt()
+{
+   Q_ASSERT(port1->node() != port2->node());
+   Q_ASSERT(wire == 0);
+   wire = new Wire(port1->owner()->schematicScene(),port1->node(),port2->node());
+   qDebug() << "AddWireCommand::redoIt()";
+}
+
+RemoveWireCommand::RemoveWireCommand(ComponentPort *p1, ComponentPort *p2) :port1(p1),port2(p2)
+{
+   wire = 0;
+   setText(QObject::tr("Remove wire"));
+}
+
+int RemoveWireCommand::id() const
+{
+   return RemoveWire;
+}
+
+void RemoveWireCommand::undoIt()
+{
+   Q_ASSERT(port1->node() != port2->node());
+   Q_ASSERT(wire == 0);
+   wire = new Wire(port1->owner()->schematicScene(),port1->node(),port2->node());
+}
+
+void RemoveWireCommand::redoIt()
+{
+   Q_ASSERT(wire != 0);
+   Q_ASSERT(port1->node() != port2->node());
+   delete wire;
+   wire = 0;
+}
+*/

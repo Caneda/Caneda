@@ -1,87 +1,74 @@
 /***************************************************************************
-                               coupler.cpp
-                              -------------
-    begin                : Tue Jan 03 2006
-    copyright            : (C) 2006 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "coupler.h"
+#include "propertytext.h"
+#include "schematicscene.h"
 
+#include <QtGui/QPainter>
+#include <QtGui/QStyle>
+#include <QtGui/QStyleOptionGraphicsItem>
 
-Coupler::Coupler()
+Coupler::Coupler(QGraphicsScene *s) : Component(0,s)
 {
-  Description = QObject::tr("ideal coupler");
-
-  Lines.append(new Line(-23,-24, 23,-24,QPen(QPen::darkGray,1)));
-  Lines.append(new Line( 23,-24, 23, 24,QPen(QPen::darkGray,1)));
-  Lines.append(new Line( 23, 24,-23, 24,QPen(QPen::darkGray,1)));
-  Lines.append(new Line(-23, 24,-23,-24,QPen(QPen::darkGray,1)));
-
-  Lines.append(new Line(-30,-20,-20,-20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 30,-20, 20,-20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-20,-20, 20,-20,QPen(QPen::darkBlue,4)));
-  Lines.append(new Line(-30, 20,-20, 20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 30, 20, 20, 20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-20, 20, 20, 20,QPen(QPen::darkBlue,4)));
-
-  Lines.append(new Line( 14, 14,-14,-14,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-14,-14, -9,-14,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-14,-14,-14, -9,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(  9, 14, 14, 14,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line( 14,  9, 14, 14,QPen(QPen::darkBlue,1)));
-  
-  Lines.append(new Line( 14,-14,-14, 14,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line( 14,-14,  9,-14,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line( 14,-14, 14, -9,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-14, 14, -9, 14,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-14, 14,-14,  9,QPen(QPen::darkBlue,1)));
-
-  Ports.append(new Port(-30,-20));
-  Ports.append(new Port( 30,-20));
-  Ports.append(new Port( 30, 20));
-  Ports.append(new Port(-30, 20));
-
-
-  x1 = -30; y1 = -25;
-  x2 =  30; y2 =  25;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "Coupler";
-  Name  = "X";
-
-  Props.append(new Property("k", "0.7071", true,
-		QObject::tr("coupling factor")));
-  Props.append(new Property("phi", "180", true,
-		QObject::tr("phase shift of coupling path in degree")));
-  Props.append(new Property("Z", "50 Ohm", false,
-		QObject::tr("reference impedance")));
+   initComponentStrings();
+   m_ports.append(new ComponentPort(this,QPointF(-30,-20)));
+   m_ports.append(new ComponentPort(this,QPointF( 30,-20)));
+   m_ports.append(new ComponentPort(this,QPointF( 30, 20)));
+   m_ports.append(new ComponentPort(this,QPointF(-30, 20)));
 }
 
-Coupler::~Coupler()
+void Coupler::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
 {
+   Q_UNUSED(w);
+   initPainter(p,o);
+   p->drawLine(-23,-24, 23,-24);
+   p->drawLine( 23,-24, 23, 24);
+   p->drawLine( 23, 24,-23, 24);
+   p->drawLine(-23, 24,-23,-24);
+
+   p->drawLine(-27,-20,-20,-20);
+   p->drawLine( 27,-20, 20,-20);
+   p->drawLine(-20,-20, 20,-20);
+   p->drawLine(-27, 20,-20, 20);
+   p->drawLine( 27, 20, 20, 20);
+   p->drawLine(-20, 20, 20, 20);
+
+   p->drawLine( 14, 14,-14,-14);
+   p->drawLine(-14,-14, -9,-14);
+   p->drawLine(-14,-14,-14, -9);
+   p->drawLine(  9, 14, 14, 14);
+   p->drawLine( 14,  9, 14, 14);
+
+   p->drawLine( 14,-14,-14, 14);
+   p->drawLine( 14,-14,  9,-14);
+   p->drawLine( 14,-14, 14, -9);
+   p->drawLine(-14, 14, -9, 14);
+   p->drawLine(-14, 14,-14,  9);
+
+   if(o->state & QStyle::State_Open)
+      drawNodes(p);
 }
 
-Component* Coupler::newOne()
+void Coupler::initComponentStrings()
 {
-  return new Coupler();
-}
-
-Element* Coupler::info(QString& Name, char* &BitmapFile, bool getNewOne)
-{
-  Name = QObject::tr("Coupler");
-  BitmapFile = "coupler";
-
-  if(getNewOne)  return new Coupler();
-  return 0;
+   model = "Coupler";
+   name  = "X";
+   description = QObject::tr("ideal coupler");
 }

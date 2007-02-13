@@ -25,7 +25,7 @@
 class PropertyTextValue : public QGraphicsTextItem
 {
    public:
-      PropertyTextValue(const QString& text,QGraphicsItem *p=0l,QGraphicsScene *s=0l);
+      PropertyTextValue(const QString& text,QGraphicsItem *p=0,QGraphicsScene *s=0);
       ~PropertyTextValue() {}
       void formatText();
 
@@ -39,9 +39,9 @@ class PropertyText : public QGraphicsTextItem
 {
    public:
       PropertyText(const QString& name, const QString& initialValue = "nil",
-		   const QString& description = "nil", QGraphicsItem* par = 0l, QGraphicsScene *scene = 0l);
+		   const QString& description = "nil", QGraphicsItem* par = 0, QGraphicsScene *scene = 0);
       ~PropertyText() {}
-      
+
       QString name() const { return m_name; }
       QString value() const { return m_valueItem->toPlainText(); }
       QString description() const { return m_description; }

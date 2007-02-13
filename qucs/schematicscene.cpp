@@ -16,16 +16,22 @@
  * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
+
 #include "schematicscene.h"
-#include "components/resistor.h"
-#include "components/node.h"
-#include "components/wire.h"
+#include "node.h"
+#include "wire.h"
+#include "components/components.h"
 #include "undocommands.h"
 
 #include <QtCore/QMimeData>
 #include <QtCore/QtDebug>
+#include <QtCore/QVarLengthArray>
+
+#include <QtGui/QGraphicsView>
 #include <QtGui/QGraphicsSceneEvent>
 #include <QtGui/QUndoStack>
+#include <QtGui/QPainter>
+#include <QtGui/QStyleOptionGraphicsItem>
 
 SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 {
@@ -67,11 +73,11 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
       QDataStream stream(&encodedData, QIODevice::ReadOnly);
       QString text;
       stream >> text;
-      if(text == "Resistor")
+      Component *c = Component::componentFromName(text,this);
+      if(c)
       {
-	 Resistor *r = new Resistor(this);
-	 r->setPos(event->scenePos());
-	 event->acceptProposedAction();
+         c->setPos(event->scenePos());
+         event->acceptProposedAction();
       }
    }
    else
@@ -80,143 +86,317 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 
 void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
+   if(e->button() == Qt::MidButton)
+   {
+      qDebug() << "SchematicScene::mousePressEvent()" << e->pos();
+      foreach(QGraphicsItem *item, items(e->pos()))
+      {
+         Node *node = qgraphicsitem_cast<Node*>(item);
+         if(node)
+         {
+            qDebug() << "Node wire size is" << node->wires().size();
+            qDebug() << "Node's Components size is" << node->connectedComponents().size();
+            qDebug() << "Are all components selected is" << node->areAllComponentsSelected();
+         }
+      }
+   }
+   m_grabbedWire = 0;
    QGraphicsScene::mousePressEvent(e);
+   m_movingNodes.clear();
+   m_resizingWires.clear();
+   foreach(QGraphicsItem *item, selectedItems())
+   {
+      Component *component = qgraphicsitem_cast<Component*>(item);
+      if(!component)
+         continue;
+
+      foreach(ComponentPort *port, component->componentPorts())
+      {
+         Node *portNode = port->node();
+         portNode->setController(component);
+
+         m_movingNodes.insert(portNode);
+         if(portNode->areAllComponentsSelected())
+         {
+            foreach(Wire *wire, portNode->wires())
+            {
+               if(!wire->isSelected())
+                  m_resizingWires.insert(wire);
+            }
+         }
+      }
+   }
 }
 
 void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
 {
-   //This condition serves 2 purposes
-   // (1) -> It detects whether event is generated because of moving items.
-   // (2) -> If also helps to detect items before being moved for 1st time.
-   if(!m_areItemsMoving && (e->buttons() & Qt::LeftButton) && !selectedItems().isEmpty())
-      m_areItemsMoving = true;
+   if(!m_areItemsMoving)
+   {
+      if(e->buttons()& Qt::LeftButton && !selectedItems().isEmpty())
+         m_areItemsMoving = true;
+   }
+
    QGraphicsScene::mouseMoveEvent(e);
+
+   if(!m_areItemsMoving)
+      return;
+
+   if(m_grabbedWire)
+   {
+      QGraphicsSceneMouseEvent *mouseEvent = new QGraphicsSceneMouseEvent();
+      mouseEvent->setButtons(e->buttons());
+      mouseEvent->setButton(e->button());
+      mouseEvent->setScenePos(e->pos());
+      mouseEvent->setLastScenePos(e->lastScenePos());
+      mouseEvent->setPos(m_grabbedWire->mapFromScene(mouseEvent->pos()));
+      mouseEvent->setLastPos(m_grabbedWire->mapFromScene(mouseEvent->lastScenePos()));
+      m_grabbedWire->grabMoveEvent(mouseEvent);
+      delete mouseEvent;
+   }
+   QPointF delta;
+
+   foreach(Node *node, m_movingNodes)
+   {
+      Q_ASSERT(node->isControllerSet());
+      Component* controller = node->controller();
+      ComponentPort *port = controller->portWithNode(node);
+      Q_ASSERT(controller && port);
+      QPointF oldPos = node->pos();
+      QPointF newPos = controller->mapToScene(port->centrePos());
+      if(delta.isNull())
+         delta = newPos - oldPos;
+      //Note: Here wires selection isn't taken into account
+      if(node->areAllComponentsSelected())
+         node->setPos(newPos);
+      else
+      {
+         Node *newNode = createNode(oldPos);
+         foreach(Component *component,node->connectedComponents())
+         {
+            if(!component->isSelected())
+            {
+               component->replaceNode(node,newNode);
+               node->removeComponent(component);
+               newNode->addComponent(component);
+            }
+         }
+         foreach(Wire *wire, node->wires())
+         {
+            if(!wire->isSelected())
+            {
+               wire->replaceNode(node,newNode);
+               node->removeWire(wire);
+               newNode->addWire(wire);
+            }
+         }
+
+         Wire *newWire = new Wire(this,node,newNode);
+         m_resizingWires.insert(newWire);
+      }
+   }
+
+   foreach(Wire *wire, m_resizingWires)
+   {
+      if(wire->isVisible())
+         wire->hide();
+      wire->rebuild();
+   }
 }
 
 void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
 {
+   if(m_grabbedWire)
+   {
+      m_grabbedWire->grabReleaseEvent(e);
+      m_grabbedWire = 0;
+   }
    if(!m_areItemsMoving)
       return QGraphicsScene::mouseReleaseEvent(e);
+
    m_areItemsMoving = false;
-   QSet<Node*> trash;
-   foreach(QGraphicsItem *item, selectedItems())
+
+   QSet<Node*> deletions;
+
+   foreach(Node *node, m_movingNodes)
    {
-      Component *c = qgraphicsitem_cast<Component*>(item);
-      if(!c)
-	 continue;
-
-      foreach(ComponentPort *p,c->componentPorts())
+      if(deletions.contains(node))
+         continue;
+      node->resetController();
+      foreach(QGraphicsItem *item, node->collidingItems())
       {
-	 if(trash.contains(p->node()))
-	    continue;
-	 QList<QGraphicsItem*> coll = p->node()->collidingItems();
-	 foreach(QGraphicsItem *citem, coll)
-	 {
-	    Node *n = 0l;
-	    if(citem->type() == QucsItem::NodeType)
-	       n = (Node*)(citem);
-	    if(!n)
-	       continue;
-	    if(trash.contains(n))
-	       continue;
-	    Q_ASSERT(n != p->node());
-	    qreal dx = n->x() - p->node()->x();
-	    qreal dy = n->y() - p->node()->y();
-	    c->moveBy(dx,dy);
-	    
-	    
-	    QSet<Component*>& connComp = const_cast<QSet<Component*>&>(n->connectedComponents());
-	    connComp.unite(p->node()->connectedComponents());
-	    
-	    trash.insert(p->node());
-	    removeNode(p->node());
-	    
+         Node *otherNode = qgraphicsitem_cast<Node*>(item);
+         if(!otherNode || deletions.contains(node))
+            continue;
 
-	    foreach(Component *c, connComp)
-	    {
-	       foreach(ComponentPort *port,c->componentPorts())
-	       {
-		  if(port != p && port->node() == p->node())
-		     port->setNode(n);
-	       }
-	    }
-	    p->setNode(n);
-	 }
+         QPointF delta = otherNode->pos() - node->pos();
+         m_areItemsMoving = true;
+         m_alreadyMoved.clear();
+         adjustPositions(node,delta);
+         m_alreadyMoved.clear();
+         m_areItemsMoving = false;
+         connect(node,otherNode);
+
+         deletions.insert(node);
+         break;
       }
    }
-   
-   qDeleteAll(trash);
-   
-   
+
+   foreach(Wire *wire,m_resizingWires)
+   {
+      wire->show();
+      wire->rebuild();
+   }
+
+   qDeleteAll(deletions);
+   deletions.clear();
+
+   m_movingNodes.clear();
+   m_resizingWires.clear();
+
    QGraphicsScene::mouseReleaseEvent(e); // other behaviour by base
+}
+
+void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
+{
+   m_areItemsMoving = false;
+   m_grabbedWire = 0;
+   QGraphicsScene::mouseDoubleClickEvent(e);
+}
+
+void SchematicScene::connect(Node *from, Node *to)
+{
+   Wire *w =  Wire::connectedWire(from,to);
+   if(w)
+   {
+      m_resizingWires.remove(w);
+      delete w;
+   }
+
+   to->addAllComponentsFrom(from);
+   to->addAllWiresFrom(from);
+
+   foreach(Component *component, from->connectedComponents())
+      component->replaceNode(from,to);
+   foreach(Wire *wire,from->wires())
+      wire->replaceNode(from,to);
+}
+
+void SchematicScene::adjustPositions(Node *node,const QPointF& delta)
+{
+   if(!m_alreadyMoved.contains(node))
+   {
+      node->moveBy(delta.x(),delta.y());
+      m_alreadyMoved << node;
+   }
+   foreach(Component *component, node->connectedComponents())
+   {
+      Q_ASSERT(component->isSelected());
+      if(m_alreadyMoved.contains(component))
+         continue;;
+      component->moveBy(delta.x(),delta.y());
+      m_alreadyMoved << component;
+      foreach(ComponentPort *port, component->componentPorts())
+      {
+         Node *portNode = port->node();
+         if(portNode->connectedComponents().size() > 1)
+            adjustPositions(portNode,delta);
+         else if(!m_alreadyMoved.contains(portNode))
+         {
+            portNode->moveBy(delta.x(),delta.y());
+            m_alreadyMoved << portNode;
+         }
+      }
+   }
+}
+
+void SchematicScene::setGrabbedWire(Wire *w)
+{
+   m_grabbedWire = w;
 }
 
 Node* SchematicScene::nodeAt(qreal x, qreal y)
 {
-   return this->nodeAt(QPointF(x,y));
+   return nodeAt(QPointF(x,y));
+}
+
+static Node* singlifyNodes(QSet<Node*> &nodeSet)
+{
+   // Many nodes found at same location. Hence remove all duplicate nodes
+   // by adding all components to one node and deleting others
+   Node *fn = *(nodeSet.begin());
+   nodeSet.erase(nodeSet.begin()); // remove first one from set and delete others
+   const QSet<Component*>& fnc = fn->connectedComponents();
+   foreach(Node *n, nodeSet)
+   {
+      foreach(Component *c, n->connectedComponents())
+      {
+         if(!fnc.contains(c))
+         {
+            fn->addComponent(c);
+            //find port containing dup node and modify its variable
+            ComponentPort *pt = c->portWithNode(n);
+            if(pt)
+               pt->setNode(fn);
+         }
+      } //n->connectedComponents()
+   } //ns
+
+   qDeleteAll(nodeSet); //now safe to delete
+   qDebug("Just for info: Found many nodes at same location. Singlified them");
+   return fn;
 }
 
 // Returns node at location given by centre
 Node* SchematicScene::nodeAt(const QPointF& centre)
 {
-   if(!m_circuitNodes.isEmpty())
+   QSet<Node*> ns;
+   foreach(QGraphicsItem *item, items(centre))
    {
-      QSet<Node*> ns;
-      foreach(QGraphicsItem *item, items(centre))
-      {
-	 if(item->type() != QucsItem::NodeType)
-	    continue;
-	 Node *node = (Node*)item;
-	 if(node->scenePos() == centre)
-	    ns << node;
-      }
-      if(ns.size() == 1) //only one node found
-	 return *(ns.begin());
-      else if(ns.isEmpty()) //no node found
-	 return 0l;
-      // Many nodes found at same location. Hence remove all duplicate nodes
-      // by adding all components to one node and deleting others
-      Node *fn = *(ns.begin());
-      ns.erase(ns.begin()); // remove first one from set and delete others
-      const QSet<Component*>& fnc = fn->connectedComponents();
-      foreach(Node *n, ns)
-      {
-	 foreach(Component *c, n->connectedComponents())
-	 {
-	    if(!fnc.contains(c))
-	    {
-	       fn->addComponent(c);
-	       //find port containing dup node and modify its variable
-	       ComponentPort *pt = c->portWithNode(n);
-	       if(pt)
-		  pt->setNode(fn);
-	    }
-	 } //n->connectedComponents()
-      } //ns
-      foreach(Node *nd, ns)
-	 removeNode(nd);
-      qDeleteAll(ns); //now safe to delete
-      qDebug("Just for info: Found many nodes at same location");
-      return fn;
+      Node *node = qgraphicsitem_cast<Node*>(item);
+      if(!node)
+         continue;
+      if(node->pos() == centre)
+         ns << node;
    }
-   return 0l;
+   if(ns.size() == 1) //only one node found
+      return *(ns.begin());
+   else if(ns.isEmpty()) //no node found
+      return 0;
+   else
+      return singlifyNodes(ns);
 }
 
 Node* SchematicScene::createNode(const QPointF& centre)
 {
    Node *n = new Node(QString("FH"),(QGraphicsScene*)this);
    n->setPos(centre);
-   m_circuitNodes.insert(n);
    return n;
-}
-
-// Removes node from circuit nodes but doesn't delete
-void SchematicScene::removeNode(Node *n)
-{
-   m_circuitNodes.remove(n);
 }
 
 QUndoStack* SchematicScene::undoStack()
 {
    return m_undoStack;
+}
+
+bool SchematicScene::areItemsMoving() const
+{
+   return m_areItemsMoving;
+}
+
+void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
+{
+   const int gridSize = 25;
+
+   painter->setPen(QPen(Qt::black,0));
+
+   qreal left = int(rect.left()) - (int(rect.left()) % gridSize);
+   qreal top = int(rect.top()) - (int(rect.top()) % gridSize);
+   qreal bottom = rect.bottom();
+   qreal right = rect.right();
+   
+   QVarLengthArray<QPointF, 800> points;
+   for( qreal x = left; x < right; x+=gridSize)
+       for( qreal y = top; y < bottom; y+=gridSize)
+          points.append(QPointF(x,y));
+   painter->drawPoints(points.data(),points.size());
 }

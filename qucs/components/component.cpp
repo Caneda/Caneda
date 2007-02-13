@@ -20,95 +20,135 @@
 #include "component.h"
 #include "node.h"
 #include "wire.h"
+#include "components.h"
 
 #include "schematicscene.h"
 #include "propertytext.h"
+#include "undocommands.h"
+#include <QtGui/QUndoStack>
 #include <QtGui/QGraphicsSceneMouseEvent>
+#include <QtGui/QStyleOptionGraphicsItem>
 #include <QtCore/QDebug>
+#include <QtGui/QPainter>
 
-ComponentPort::ComponentPort(Component* owner,const QPointF& pos,Node *n) : m_owner(owner), m_centrePos(pos)
+ComponentPort::ComponentPort(Component* owner,const QPointF& pos) : m_owner(owner), m_centrePos(pos)
 {
    SchematicScene *s = owner->schematicScene();
-   QPointF spos = owner->mapToScene(pos);
-   
-   if(n != 0l)
-      m_node = n;
-   else if((m_node = s->nodeAt(spos)))
-      ;
+   if(s)
+   {
+      QPointF spos = m_owner->mapToScene(pos);
+
+      m_node = s->nodeAt(spos);
+      if(!m_node)
+         m_node = s->createNode(spos);
+   }
    else
-      m_node = s->createNode(spos);
+      m_node = new Node(); // To avoid crashes
    m_node->addComponent(m_owner);
 }
 
-ComponentPort::~ComponentPort()
+Component::~Component()
 {
+   foreach(ComponentPort *port, m_ports)
+      port->node()->removeComponent(this);
 }
 
-void ComponentPort::setNode(Node *node)
+QString Component::netlist() const
 {
-   m_node = node;
+   QString s = model + ":" + name;
+
+   // output all node names
+   foreach(ComponentPort *port, m_ports)
+      s += ' ' + port->node()->name(); // node names
+   
+   // output all properties
+   foreach(PropertyText *prop, m_properties)
+      s += ' ' + prop->name() + "'=\"" + prop->value() + "\"";
+   return s;
 }
 
-Node* ComponentPort::node() const
+QString Component::shortNetlist() const
 {
-   return m_node;
-}
-
-Component* ComponentPort::owner() const
-{
-   return m_owner;
-}
-
-const QPointF& ComponentPort::centrePos() const
-{
-   return m_centrePos;
-}
-
-Component::Component(QGraphicsItem* parent, QGraphicsScene* scene) : QucsItem(parent,scene)
-{
-   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-}
-
-QVariant Component::handlePositionChange(const QPointF& pos)
-{
-   QPointF oldPos = scenePos();
-   qreal dx = pos.x() - oldPos.x();
-   qreal dy = pos.y() - oldPos.y();
-      
-   foreach(ComponentPort* port, m_ports)
+   int z=0;
+   QString s;
+   QString Node1 = m_ports.first()->node()->name();
+   foreach(ComponentPort *port, m_ports)
    {
-      QPointF spos = mapToScene(port->centrePos());
-      spos += QPointF(dx,dy);
-	 
-      if(!(port->node()->isControllerSet()))
+      if( z == 0) continue;
+      s += "R:" + name + "." + QString::number(z++) + ' ' +
+         Node1 + ' ' + port->node()->name() + " R=\"0\"\n";
+   }
+   return s;
+}
+
+ComponentPort* Component::portWithNode(Node *n) const
+{
+   QList<ComponentPort*>::const_iterator it = m_ports.constBegin();
+   const QList<ComponentPort*>::const_iterator end = m_ports.constEnd();
+   for(; it != end; ++it)
+   {
+      if((*it)->node() == n)
+         return *it;
+   }
+   return 0;
+}
+
+void Component::replaceNode(Node *_old, Node *_new)
+{
+   ComponentPort *p = portWithNode(_old);
+   Q_ASSERT(p);
+   p->setNode(_new);
+}
+
+QVariant Component::handlePositionChange(const QPointF& hpos)
+{
+   QPointF oldPos = pos();
+   qreal dx = hpos.x() - oldPos.x();
+   qreal dy = hpos.y() - oldPos.y();
+
+   QList<PropertyText*>::iterator it = m_properties.begin();
+   const QList<PropertyText*>::iterator end = m_properties.end();
+   for(; it != end; ++it)
+      (*it)->moveBy(dx,dy);
+
+   if(schematicScene()->areItemsMoving() == false)
+   {
+      QList<ComponentPort*>::iterator _it = m_ports.begin();
+      const QList<ComponentPort*>::iterator _end = m_ports.end();
+      for(; _it != _end; ++_it)
       {
-	 port->node()->setController(this);
-	 port->node()->setPos(spos);
-	 port->node()->resetController();
+         ComponentPort *port = *_it;
+         if(port->node()->isControllerSet() && port->node()->controller() != this)
+            continue;
+         port->node()->setController(this);
+         port->node()->moveBy(dx,dy);
+         port->node()->resetController();
       }
    }
-   
-   foreach(PropertyText *text, m_properties)
-      text->moveBy(dx,dy);
-
-   return QVariant(pos);
+   return QVariant(hpos);
 }
 
 QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
 {
    Q_ASSERT(scene());
-   
+
    if (change == ItemPositionChange)
       return handlePositionChange(value.toPointF());
 
    else if(change == ItemMatrixChange)
    {
       QMatrix newMatrix = qVariantValue<QMatrix>(value);
-      foreach(ComponentPort* port, m_ports)
+      QList<ComponentPort*>::iterator it = m_ports.begin();
+      const QList<ComponentPort*>::iterator end = m_ports.end();
+      for(; it != end; ++it)
       {
-	 QPointF old = mapFromScene(port->node()->scenePos());
-	 QPointF newP = newMatrix.map(old);
-	 port->node()->setPos(sceneMatrix().map(newP));
+         ComponentPort *port = *it;
+         QMatrix newSceneMatrix = newMatrix * QMatrix().translate(pos().x(),pos().y());
+         QPointF newP = newSceneMatrix.map(port->centrePos());
+
+         port->node()->setController(this);
+         port->node()->setPos(newP);
+         port->node()->resetController();
       }
       return QVariant(newMatrix);
    }
@@ -117,7 +157,19 @@ QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
 
 void Component::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
-   QucsItem::mousePressEvent(event);
+   if(event->buttons() & Qt::RightButton)
+   {
+      rotate(-45);
+      foreach(QGraphicsItem *item, scene()->selectedItems())
+      {
+         if(item != this)
+            item->setSelected(false);
+         else
+            setSelected(true);
+      }
+   }
+   else
+      QucsItem::mousePressEvent(event);
 }
 
 void Component::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
@@ -130,22 +182,35 @@ void Component::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
    QucsItem::mouseReleaseEvent(event);
 }
 
-const QList<ComponentPort*>& Component::componentPorts() const
+Component* Component::componentFromName(const QString& comp,SchematicScene *scene)
 {
-   return m_ports;
+   if(comp == "Resistor")
+      return new Resistor(scene);
+   else if(comp == "ResistorUS")
+      return new ResistorUS(scene);
+   else if(comp == "Capacitor")
+      return new Capacitor(scene);
+   else if(comp == "Coupler")
+      return new Coupler(scene);
+   return 0;
 }
 
-int Component::type() const
+void Component::initPainter(QPainter *p,const QStyleOptionGraphicsItem *o)
 {
-   return QucsItem::ComponentType;
+   if(!(o->state & QStyle::State_Open))
+      p->setPen(Qt::darkBlue);
+   if(o->state & QStyle::State_Selected)
+      p->setPen(QPen(Qt::darkGray,1));
 }
 
-ComponentPort* Component::portWithNode(Node *n) const
+void Component::drawNodes(QPainter *p)
 {
-   foreach(ComponentPort *p,m_ports)
+   QList<ComponentPort*>::const_iterator it = m_ports.constBegin();
+   const QList<ComponentPort*>::const_iterator end = m_ports.constEnd();
+   p->setPen(QPen(Qt::red));
+   for(; it != end; ++it)
    {
-      if(p->node() == n)
-	 return p;
+      QRectF rect = (*it)->node()->boundingRect().translated((*it)->centrePos());
+      p->drawEllipse(rect);
    }
-   return 0l;
 }

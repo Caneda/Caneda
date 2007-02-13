@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "resistor.h"
+#include "node.h"
 #include "propertytext.h"
 #include "schematicscene.h"
 
@@ -25,40 +26,68 @@
 #include <QtGui/QStyle>
 #include <QtGui/QStyleOptionGraphicsItem>
 
-Resistor::Resistor(QGraphicsScene *s) : Component(0l,s)
+Resistor::Resistor(QGraphicsScene *s) : Component(0,s)
 {
+   initComponentStrings();
    m_ports.append(new ComponentPort(this,QPointF(-30.0,0.0)));
    m_ports.append(new ComponentPort(this,QPointF(30.0,0.0)));
-   
-   PropertyText *t1 = new PropertyText("R","100k","Simple resistor",0l,scene());
+   PropertyText *t1 = new PropertyText("R","100k","Simple resistor",0,s);
    m_properties.append(t1);
-   t1->setPos(scenePos() + QPointF(0,-35));
+   if(s)
+      t1->setPos(pos() + QPointF(0,-35));
 }
 
-QString Resistor::name() const
+void Resistor::initComponentStrings()
 {
-   return QString("R");
-}
-
-QString Resistor::model() const
-{
-   return QString("R");
-}
-
-QString Resistor::text() const
-{
-   return QObject::tr("R");
+   model = name = "R";
+   description = QObject::tr("resistor");
 }
 
 QString Resistor::netlist() const
 {
-   return QString("R");
+   QString s = model+":"+name;
+
+   // output all node names
+   foreach(ComponentPort *port, m_ports)
+      s += ' ' + port->node()->name(); // node names
+   
+   // output all properties
+   foreach(PropertyText *prop, m_properties)
+   {
+      if(prop->name() != "Symbol")
+         s += ' ' + prop->name() + "'=\"" + prop->value() + "\"";
+   }
+   return s;
 }
 
 void Resistor::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
 {
    Q_UNUSED(w);
-   p->drawLine(-30,  0,-18,  0);
+   initPainter(p,o);
+
+   p->drawLine(-18, -9, 18, -9);
+   p->drawLine( 18, -9, 18,  9);
+   p->drawLine( 18,  9,-18,  9);
+   p->drawLine(-18,  9,-18, -9);
+   p->drawLine(-27,  0,-18,  0);
+   p->drawLine( 18,  0, 27,  0);
+
+   
+   if(o->state & QStyle::State_Open)
+      drawNodes(p);
+
+}
+
+ResistorUS::ResistorUS(QGraphicsScene *s) : Resistor(s)
+{
+}
+
+void ResistorUS::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
+{
+   Q_UNUSED(w);
+   initPainter(p,o);
+   
+   p->drawLine(-27,  0,-18,  0);
    p->drawLine(-18,  0,-15, -7);
    p->drawLine(-15, -7, -9,  7);
    p->drawLine( -9,  7, -3, -7);
@@ -66,17 +95,8 @@ void Resistor::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
    p->drawLine(  3,  7,  9, -7);
    p->drawLine(  9, -7, 15,  7);
    p->drawLine( 15,  7, 18,  0);
-   p->drawLine( 18,  0, 30,  0);
+   p->drawLine( 18,  0, 27,  0);
 
-   if(o->state & QStyle::State_Selected)
-   {
-      p->setPen(QPen(Qt::darkGray,2));
-      p->drawRect(boundingRect());
-   }
-      
-}
-
-QRectF Resistor::boundingRect() const
-{
-   return QRectF(-30,-7,60,14).adjusted(-6,-1,+6,+1);
+   if(o->state & QStyle::State_Open)
+      drawNodes(p);
 }

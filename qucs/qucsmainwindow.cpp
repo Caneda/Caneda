@@ -22,6 +22,7 @@
 #include "qucsmainwindow.h"
 #include "schematicview.h"
 #include "schematicscene.h"
+
 #include <QtGui/QStatusBar>
 #include <QtGui/QMenu>
 #include <QtGui/QToolBar>
@@ -50,7 +51,7 @@ void QucsMainWindow::initActions()
    fileNewAction = fileMenu->addAction(QIcon(imageDirectory()+"filenew.png"),tr("&New"),this,SLOT(newView()));
    fileSaveAction = fileMenu->addAction(QIcon(imageDirectory()+"filesave.png"),tr("&Save"));
    fileMenu->addAction(tr("&Quit"),qApp,SLOT(quit()));
-   
+
    QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
    QAction* ua = m_undoGroup->createUndoAction(this);
    ua->setIcon(QIcon(imageDirectory()+"undo.png"));
@@ -58,7 +59,7 @@ void QucsMainWindow::initActions()
    ra->setIcon(QIcon(imageDirectory()+"redo.png"));
    editMenu->addAction(ua);
    editMenu->addAction(ra);
-   
+
    QToolBar* toolBar = new QToolBar("main");
    toolBar->addAction(fileNewAction);
    toolBar->addAction(fileSaveAction);

@@ -1,208 +1,519 @@
 /***************************************************************************
-                          wire.cpp  -  description
-                             -------------------
-    begin                : Wed Sep 3 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "wire.h"
+#include "schematicscene.h"
+
+#include <QtCore/QList>
+#include <QtCore/QtAlgorithms>
+#include <QtGui/QGraphicsLineItem>
+#include <QtGui/QGraphicsView>
+
+#include <QtGui/QGraphicsScene>
+#include <QtGui/QGraphicsSceneEvent>
+#include <QtCore/QDebug>
+#include <QtGui/QRubberBand>
+#include <QtCore/QVariant>
+#include <QtGui/QStyle>
+#include <QtGui/QStyleOptionGraphicsItem>
 
 
-Wire::Wire(int _x1, int _y1, int _x2, int _y2, Node *n1, Node *n2)
+Wire::Wire(SchematicScene *scene,Node *n1,Node *n2) : QucsItem(0,scene),m_node1(n1),m_node2(n2)
 {
-  cx = 0;
-  cy = 0;
-  x1 = _x1;
-  y1 = _y1;
-  x2 = _x2;
-  y2 = _y2;
-  Port1 = n1;
-  Port2 = n2;
-  Label  = 0;
-
-  Type = isWire;
-  isSelected = false;
+   n1->addWire(this);
+   n2->addWire(this);
+   m_grabbedLineIndex = -1;
+   m_proxyWiring = false;
+   m_wasGrabbed = false;
+   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+   rebuild();
 }
 
 Wire::~Wire()
 {
+   clearProxyWires();
+   m_node1->removeWire(this);
+   m_node2->removeWire(this);
 }
 
-// ----------------------------------------------------------------
-void Wire::rotate()
+void Wire::rebuild()
 {
-  int xm, ym, tmp;
+   if(isVisible())
+   {
+      clearProxyWires();
+      prepareGeometryChange();
+   }
+   QPointF node1Pos = mapFromScene(m_node1->pos());
+   QPointF node2Pos = mapFromScene(m_node2->pos());
 
-  xm = (x1+x2) >> 1;
-  ym = (y1+y2) >> 1;
+   if(m_lines.isEmpty())
+      m_lines = linesBetween(node1Pos,node2Pos);
+   else if(node1Pos != m_lines.first().p1()) // node1 is moved
+   {
+      bool cont = false;
+      do
+      {
+         int firstIndex = 0;
+         int secondIndex = firstIndex + 1;
+         cont = false;
+         if(m_lines[firstIndex].isHorizontal())
+            m_lines[firstIndex].setY(node1Pos.y());
+         else
+         {
+            Q_ASSERT(m_lines[firstIndex].isVertical());
+            m_lines[firstIndex].setX(node1Pos.x());
+         }
+         m_lines[firstIndex].setP1(node1Pos);
+         if(secondIndex < m_lines.size())
+         {
+            m_lines[secondIndex].setP1(m_lines[firstIndex].p2());
+            if(m_lines[firstIndex].isNull())
+            {
+               m_lines.removeFirst();
+               --secondIndex;
+            }
 
-  tmp = x1;
-  x1  = xm + y1  - ym;
-  y1  = ym - tmp + xm;
+            if(secondIndex < m_lines.size() && m_lines[secondIndex].isNull())
+            {
+               m_lines.removeAt(secondIndex);
+               if(secondIndex != firstIndex)
+               {
+                  m_lines.removeFirst();
+                  cont = true;
+               }
+            }
+         }
+         else if(m_lines[firstIndex].p2() != node2Pos)
+         {
+            QPointF p2 = m_lines[firstIndex].p2();
+            if(m_lines[firstIndex].isHorizontal())
+            {
+               QPointF inter = QPointF(node2Pos.x(),p2.y());
+               m_lines[firstIndex].setP2(inter);
+               m_lines.append(Line(inter,node2Pos));
+            }
+            else
+            {
+               Q_ASSERT(m_lines[firstIndex].isVertical());
+               QPointF inter = QPointF(p2.x(),node2Pos.y());
+               m_lines[firstIndex].setP2(inter);
+               m_lines.append(Line(inter,node2Pos));
+            }
+         }
+         if(m_lines.isEmpty())
+            cont = false;
+      }while(cont);
+   }
+   else if(node2Pos != m_lines.last().p2()) // node2 is moved
+   {
+      bool cont = false;
+      do
+      {
+         int lastIndex = m_lines.size() - 1;
+         int lastButIndex = lastIndex - 1;
+         cont = false;
+         if(m_lines[lastIndex].isHorizontal())
+            m_lines[lastIndex].setY(node2Pos.y());
+         else
+         {
+            Q_ASSERT(m_lines[lastIndex].isVertical());
+            m_lines[lastIndex].setX(node2Pos.x());
+         }
+         m_lines[lastIndex].setP2(node2Pos);
+         if(lastButIndex > -1)
+         {
+            m_lines[lastButIndex].setP2(m_lines[lastIndex].p1());
+            if(m_lines[lastIndex].isNull())
+            {
+               m_lines.removeLast();
+               --lastIndex;
+            }
 
-  tmp = x2;
-  x2  = xm + y2  - ym;
-  y2  = ym - tmp + xm;
-
-  if(Label) {
-    tmp = Label->cx;
-    Label->cx = xm + Label->cy - ym;
-    Label->cy = ym - tmp + xm;
-    if(Label->Type == isHWireLabel) Label->Type = isVWireLabel;
-    else Label->Type = isHWireLabel;
-  }
+            if(lastButIndex > -1 && m_lines[lastButIndex].isNull())
+            {
+               m_lines.removeAt(lastButIndex);
+               if(lastButIndex != lastIndex)
+               {
+                  m_lines.removeLast();
+                  cont = true;
+               }
+            }
+         }
+         else if(m_lines[lastIndex].p1() != node1Pos)
+         {
+            QPointF p1 = m_lines[lastIndex].p1();
+            if(m_lines[lastIndex].isHorizontal())
+            {
+               QPointF inter = QPointF(node1Pos.x(),p1.y());
+               m_lines[lastIndex].setP1(inter);
+               m_lines.prepend(Line(node1Pos,inter));
+            }
+            else
+            {
+               Q_ASSERT(m_lines[lastIndex].isVertical());
+               QPointF inter = QPointF(p1.x(),node1Pos.y());
+               m_lines[lastIndex].setP1(inter);
+               m_lines.prepend(Line(node1Pos,inter));
+            }
+         }
+         if(m_lines.isEmpty())
+            cont = false;
+      }while(cont);
+   }
+   if(m_lines.isEmpty())
+      m_lines = linesBetween(node1Pos,node2Pos);
+   if(!isVisible())
+      updateProxyWires();
 }
 
-// ----------------------------------------------------------------
-void Wire::setCenter(int x, int y, bool relative)
+
+void Wire::createLines(const QPointF& p1, const QPointF& p2)
 {
-  if(relative) {
-    x1 += x;  x2 += x;
-    y1 += y;  y2 += y;
-//    if(Label) Label->setCenter(x, y, true);
-  }
-  else {
-    x1 = x;  x2 = x;
-    y1 = y;  y2 = y;
-  }
+   m_lines.clear();
+   m_lines = linesBetween(p1,p2);
 }
 
-// ----------------------------------------------------------------
-void Wire::getCenter(int& x, int& y)
+QList<Line> Wire::linesBetween(const QPointF& p1, const QPointF& p2) const
 {
-  x = (x1+x2) >> 1;
-  y = (y1+y2) >> 1;
+   QList<Line> lines;
+   if(p1.x() == p2.x() || p1.y() == p2.y())
+      lines << Line(p1,p2);
+   else
+   {
+      QPointF inter = QPointF(p1.x(),p2.y());
+      lines << Line(p1,inter);
+      lines << Line(inter,p2);
+   }
+   return lines;
 }
 
-// ----------------------------------------------------------------
-// Lie x/y on wire ? 5 is the precision the coordinates have to fit.
-bool Wire::getSelected(int x_, int y_)
+void Wire::createProxyWires()
 {
-  if(x1-5 <= x_) if(x2+5 >= x_) if(y1-5 <= y_) if(y2+5 >= y_)
-    return true;
-
-  return false;
+   clearProxyWires();
+   QGraphicsView *view = activeView();
+   if(!view)
+      return;
+   foreach(Line line, m_lines)
+   {
+      QRubberBand *proxy = new QRubberBand(QRubberBand::Line,view->viewport());
+      proxy->setGeometry(proxyRect(line));
+      proxy->show();
+      m_proxyWires.append(proxy);
+   }
 }
 
-// ----------------------------------------------------------------
-void Wire::paintScheme(QPainter *p)
+QRect Wire::proxyRect(const Line& line) const
 {
-  p->drawLine(x1, y1, x2, y2);
-//  if(Label)
-//    if((Label->Type == isHWireLabel) || (Label->Type == isHWireLabel))
-//    if(Label->Type == isHWireLabel)
-//      Label->paintScheme(p);
+   QRectF rect; 
+   if(!line.isNull())
+   {
+      Line sceneLine(mapToScene(line.p1()),mapToScene(line.p2()));
+      QGraphicsView *view = activeView();
+      if(!view)
+         return rect.toRect();
+      rect.setTopLeft(view->mapFromScene(sceneLine.p1()));
+      rect.setBottomRight(view->mapFromScene(sceneLine.p2()));
+      //normalize dimension of rect
+      rect = rect.normalized();
+      if(rect.height() < 1)
+         rect.setHeight(1);
+      if(rect.width() < 1)
+         rect.setWidth(1);
+   }
+   return rect.toRect();
 }
 
-// ----------------------------------------------------------------
-void Wire::paint(ViewPainter *p)
+void Wire::updateProxyWires()
 {
-  if(isSelected) {
-    p->Painter->setPen(QPen(QPen::darkGray,6));
-    p->drawLine(x1, y1, x2, y2);
-    p->Painter->setPen(QPen(QPen::lightGray,2));
-    p->drawLine(x1, y1, x2, y2);
-  }
-  else {
-    p->Painter->setPen(QPen(QPen::darkBlue,2));
-    p->drawLine(x1, y1, x2, y2);
-  }
+   QGraphicsView *view = activeView();
+   Q_ASSERT(view);
+   QWidget *viewport = view->viewport();
+   if(m_proxyWires.size() > m_lines.size())
+   {
+      int size = m_proxyWires.size() - m_lines.size() ;
+      for(int i=0; i < size; i++)
+         delete m_proxyWires.takeAt(0);
+   }
+
+   if(m_proxyWires.size() < m_lines.size())
+   {
+      int size = m_lines.size() - m_proxyWires.size() ;
+      for(int i=0; i < size; ++i)
+         m_proxyWires.prepend(new QRubberBand(QRubberBand::Line,viewport));
+   }
+
+   QList<QRubberBand*>::iterator proxyIt = m_proxyWires.begin();
+   QList<Line>::iterator lineIt = m_lines.begin();
+   for(; proxyIt != m_proxyWires.end(); ++proxyIt,++lineIt)
+   {
+      (*proxyIt)->setParent(viewport);
+      const QRect& geometry = proxyRect(*lineIt);
+      (*proxyIt)->setGeometry(geometry);
+      (*proxyIt)->show();
+   }
 }
 
-// ----------------------------------------------------------------
-bool Wire::isHorizontal()
+void Wire::clearProxyWires()
 {
-  return (y1 == y2);
+   qDeleteAll(m_proxyWires);
+   m_proxyWires.clear();
 }
 
-// ----------------------------------------------------------------
-void Wire::setName(const QString& Name_, const QString& Value_, int delta_, int x_, int y_)
+void Wire::replaceNode(Node *oldNode,Node *newNode)
 {
-  if(Name_.isEmpty() && Value_.isEmpty()) {
-    if(Label) delete Label;
-    Label = 0;
-    return;
-  }
-
-  if(!Label) {
-    if(isHorizontal())
-      Label = new WireLabel(Name_, x1+delta_, y1, x_, y_, isHWireLabel);
-    else
-      Label = new WireLabel(Name_, x1, y1+delta_, x_, y_, isVWireLabel);
-    Label->pOwner = this;
-    Label->initValue = Value_;
-  }
-  else Label->setName(Name_);
+   if(oldNode == m_node1)
+      m_node1 = newNode;
+   else if(oldNode == m_node2)
+      m_node2 = newNode;
+   else
+      qFatal("Wire::replaceNode() : Some bug in node variable");
 }
 
-// ----------------------------------------------------------------
-// Converts all necessary data of the wire into a string. This can be used to
-// save it to an ASCII file or to transport it via the clipboard.
-QString Wire::save()
+Wire* Wire::connectedWire(const Node* n1, const Node* n2)
 {
-  QString s  = "<"+QString::number(x1)+" "+QString::number(y1);
-          s += " "+QString::number(x2)+" "+QString::number(y2);
-  if(Label) {
-          s += " \""+Label->Name+"\" ";
-          s += QString::number(Label->x1)+" "+QString::number(Label->y1)+" ";
-          s += QString::number(Label->cx-x1 + Label->cy-y1);
-          s += " \""+Label->initValue+"\">";
-  }
-  else { s += " \"\" 0 0 0 \"\">"; }
-  return s;
+   Node *n = const_cast<Node*>(n1);
+   foreach(Wire *w, n->wires())
+   {
+      if((w->node1() == n1 && w->node2() == n2) || (w->node2() == n1 && w->node1() == n2))
+         return w;
+   }
+   return 0;
 }
 
-// ----------------------------------------------------------------
-// This is the counterpart to Wire::save.
-bool Wire::load(const QString& _s)
+QRectF Wire::boundingRect() const
 {
-  bool ok;
-  QString s = _s;
+   QRectF rect;
 
-  if(s.at(0) != '<') return false;
-  if(s.at(s.length()-1) != '>') return false;
-  s = s.mid(1, s.length()-2);   // cut off start and end character
+   QList<Line>::const_iterator it = m_lines.constBegin();
+   QList<Line>::const_iterator end = m_lines.constEnd();
+   for(; it != end; ++it)
+      rect |= rectForLine(*it);
 
-  QString n;
-  n  = s.section(' ',0,0);    // x1
-  x1 = n.toInt(&ok);
-  if(!ok) return false;
+   qreal adjust = 1.0;
+   return rect.adjusted(-adjust,-adjust,+adjust,+adjust);
+}
 
-  n  = s.section(' ',1,1);    // y1
-  y1 = n.toInt(&ok);
-  if(!ok) return false;
+QPainterPath Wire::shape() const
+{
+   QPainterPath path;
+   if(m_lines.isEmpty())
+      return path;
+   QList<Line>::const_iterator it = m_lines.constBegin();
+   QList<Line>::const_iterator end = m_lines.constEnd();
+   for(; it != end; ++it)
+      path.addRect(rectForLine(*it));
+   return path;
+}
 
-  n  = s.section(' ',2,2);    // x2
-  x2 = n.toInt(&ok);
-  if(!ok) return false;
+bool Wire::contains ( const QPointF & point ) const
+{
+   QList<Line>::const_iterator it = m_lines.constBegin();
+   QList<Line>::const_iterator end = m_lines.constEnd();
+   for(; it != end; ++it)
+   {
+      if(rectForLine(*it).contains(point))
+         return true;
+   }
+   return false;
+}
 
-  n  = s.section(' ',3,3);    // y2
-  y2 = n.toInt(&ok);
-  if(!ok) return false;
+void Wire::paint (QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w)
+{
+   Q_UNUSED(w);
+   if(o->state & QStyle::State_Selected)
+      p->setPen(Qt::red);
+   else
+      p->setPen(Qt::blue);
+   QList<Line>::const_iterator it = m_lines.constBegin();
+   QList<Line>::const_iterator end = m_lines.constEnd();
+   for(; it != end; ++it)
+      p->drawLine(*it);
+}
 
-  n = s.section('"',1,1);
-  if(!n.isEmpty()) {     // is wire labeled ?
-    int nx = s.section(' ',5,5).toInt(&ok);   // x coordinate
-    if(!ok) return false;
+QRectF Wire::rectForLine(const Line& line) const
+{
+   qreal x = qMin(line.p1().x() , line.p2().x()) - 3.0;
+   qreal y = qMin(line.p1().y() , line.p2().y()) - 3.0;
+   qreal w = qAbs(line.p1().x() - line.p2().x()) + 3.0;
+   qreal h = qAbs(line.p1().y() - line.p2().y()) + 3.0;
+   return QRectF(x,y,w,h);
+}
 
-    int ny = s.section(' ',6,6).toInt(&ok);   // y coordinate
-    if(!ok) return false;
+QVariant Wire::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+   if(change == ItemPositionChange && isSelected() && schematicScene()->selectedItems().size() == 1)
+      return QVariant(pos());
+   return QGraphicsItem::itemChange(change,value);
+}
 
-    int delta = s.section(' ',7,7).toInt(&ok);// delta for x/y root coordinate
-    if(!ok) return false;
+void Wire::mousePressEvent ( QGraphicsSceneMouseEvent * event )
+{
+   m_grabbedLineIndex = -1;
+   QGraphicsItem::mousePressEvent(event);
 
-    setName(n, s.section('"',3,3), delta, nx, ny);  // Wire Label
-  }
+   if(!isSelected())
+      return;
 
-  return true;
+   m_grabbedLineIndex = indexForPos(event->pos());
+   Q_ASSERT(m_grabbedLineIndex != -1);
+   m_wasGrabbed = true;
+}
+
+void Wire::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
+{
+   if(!m_wasGrabbed)
+      event->ignore();
+
+   schematicScene()->setGrabbedWire(this);
+   hide();
+}
+
+void Wire::deleteNullLines()
+{
+   int i = 0;
+   QList<Line>::iterator it(m_lines.begin());
+   QList<Line>::iterator end(m_lines.end());
+   for( ; it != end; ++it,++i)
+   {
+      if(QLineF(*it).isNull())
+      {
+         if(i < m_grabbedLineIndex)
+            --m_grabbedLineIndex;
+         m_lines.erase(it);
+      }
+   }
+}
+
+void Wire::grabMoveEvent( QGraphicsSceneMouseEvent * event )
+{
+   if(m_grabbedLineIndex < 0)
+      return;
+   QPointF delta = event->pos() - event->lastPos();
+   int prevIndex = m_grabbedLineIndex - 1;
+   int nextIndex = m_grabbedLineIndex + 1;
+   QPointF node1Pos = mapFromScene(m_node1->pos());
+   QPointF node2Pos = mapFromScene(m_node2->pos());
+
+   Line& grabbedLine = m_lines[m_grabbedLineIndex];
+   grabbedLine.translate(delta);
+
+   if(prevIndex < 0)
+   {
+      QList<Line> begin = linesBetween(node1Pos,grabbedLine.p1());
+      m_lines = begin + m_lines;
+      m_grabbedLineIndex += begin.size();
+   }
+   else
+   {
+      while(prevIndex >= 0)
+      {
+         Line& prevLine = m_lines[prevIndex];
+         Line& nextLine = m_lines[prevIndex + 1];
+         if(prevLine.isVertical())
+         {
+            prevLine.setX(nextLine.p1().x());
+            prevLine.setP2(nextLine.p1());
+         }
+         else
+         {
+            Q_ASSERT(prevLine.isHorizontal());
+            prevLine.setY(nextLine.p1().y());
+            prevLine.setP2(nextLine.p1());
+         }
+         --prevIndex;
+      }
+      QPointF startLineP1 = m_lines.at(0).p1();
+      if(node1Pos != startLineP1)
+      {
+         QList<Line> begin = linesBetween(node1Pos,startLineP1);
+         m_lines = begin + m_lines;
+         m_grabbedLineIndex += begin.size();
+      }
+   }
+   deleteNullLines();
+
+//--------------------------------------------------------------------------------------
+   nextIndex = m_grabbedLineIndex + 1;
+   if(nextIndex == m_lines.size())
+   {
+      QList<Line> end = linesBetween(grabbedLine.p2(),node2Pos);
+      m_lines += end;
+   }
+   else
+   {
+      while(nextIndex < m_lines.size())
+      {
+         Line& nextLine = m_lines[nextIndex];
+         Line& prevLine = m_lines[nextIndex-1];
+         if(nextLine.isVertical())
+         {
+            nextLine.setX(prevLine.p2().x());
+            nextLine.setP1(prevLine.p2());
+         }
+         else
+         {
+            Q_ASSERT(nextLine.isHorizontal());
+            nextLine.setY(prevLine.y2());
+            nextLine.setP1(prevLine.p2());
+         }
+         ++nextIndex;
+      }
+
+      QPointF endLineP2 = m_lines.last().p2();
+      if(node2Pos != endLineP2)
+      {
+         QList<Line> end = linesBetween(endLineP2,node2Pos);
+         m_lines += end;
+      }
+   }
+
+   deleteNullLines();
+   updateProxyWires();
+}
+
+void Wire::grabReleaseEvent ( QGraphicsSceneMouseEvent * event )
+{
+   Q_UNUSED(event);
+   m_wasGrabbed = false;
+   m_grabbedLineIndex = -1;
+   clearProxyWires();
+   show();
+   prepareGeometryChange();
+}
+
+void Wire::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * mouseEvent )
+{
+   Q_UNUSED(mouseEvent);
+   m_wasGrabbed = true;
+}
+
+int Wire::indexForPos(const QPointF& pos) const
+{
+   int retVal = 0;
+   QList<Line>::const_iterator it = m_lines.begin();
+   const QList<Line>::const_iterator end = m_lines.end();
+
+   for( ; it != end; ++it , ++retVal)
+   {
+      if(rectForLine(*it).contains(pos))
+         return retVal;
+   }
+
+   return -1;
 }

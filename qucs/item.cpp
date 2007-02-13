@@ -30,24 +30,15 @@ int QucsItem::type() const
    return QucsItemType;
 }
 
-void QucsItem::backupUndoPosition()
-{
-   m_savedUndoPosition = scenePos();
-}
-
-QPointF QucsItem::savedUndoPosition() const
-{
-   return m_savedUndoPosition;
-}
-
-MoveItemCommand* QucsItem::createMoveItemCommand()
-{
-   return new MoveItemCommand(this,m_savedUndoPosition,scenePos());
-}
-
 SchematicScene* QucsItem::schematicScene() const
 {
    SchematicScene *s = qobject_cast<SchematicScene*>(this->scene());
-   Q_ASSERT(s != 0l);
    return s;
+}
+
+QGraphicsView* QucsItem::activeView() const
+{
+   if(scene()->views().isEmpty())
+      return 0;
+   return scene()->views().at(0);
 }

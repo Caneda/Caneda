@@ -23,37 +23,36 @@
 #include <QtGui/QGraphicsItem>
 
 class QGraphicsScene;
-class MoveItemCommand;
+class QGraphicsView;
 class SchematicScene;
 
 class QucsItem : public QGraphicsItem
 {
    public:
       enum QucsItemTypes {
-	 QucsItemType = UserType+5,
-	 PaintingType,
-	 WireType,
-	 PortType,
-	 NodeType,
-	 ComponentType,
-	 DisplayType
+         QucsItemType = UserType+5,
+         ComponentType,
+         NodeType,
+         PortType,
+         WireType,
+         PaintingType,
+         DisplayType
       };
 
-      QucsItem(QGraphicsItem* parent = 0l, QGraphicsScene* scene = 0l);
+      enum {
+         Type = QucsItemType
+      };
+
+      QucsItem(QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
       virtual ~QucsItem() {};
 
       int type() const;
       QRectF boundingRect() const {return QRectF(); }
 
-      MoveItemCommand* createMoveItemCommand();
-      void backupUndoPosition();
-      QPointF savedUndoPosition() const;
-
       SchematicScene* schematicScene() const;
-      
-   protected:
-      QPointF m_savedUndoPosition;
+      QGraphicsView* activeView() const;
 
+   protected:
 };
 
 #endif //__ITEM_H

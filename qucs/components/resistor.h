@@ -28,13 +28,32 @@ class Resistor : public Component
       Resistor(QGraphicsScene *scene);
       ~Resistor(){}
 
-      QString name() const;
-      QString model() const;
-      QString text() const;
       QString netlist() const;
-      
-      void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0l);
-      QRectF boundingRect() const;
+      void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
+      inline QRectF boundingRect() const;
+
+   protected:
+      void initComponentStrings();
 };
+
+inline QRectF Resistor::boundingRect() const
+{
+   qreal pw = 0.5;
+   return QRectF(-27,-9,54,18).adjusted(-pw,-pw,pw,pw);
+}
+
+class ResistorUS : public Resistor
+{
+   public:
+      ResistorUS(QGraphicsScene *scene);
+      void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
+      inline QRectF boundingRect() const;
+};
+
+inline QRectF ResistorUS::boundingRect() const
+{
+   qreal pw = 0.5;
+   return QRectF(-27,-7,54,14).adjusted(-pw,-pw,+pw,+pw);
+}
 
 #endif //__RESISTOR_H

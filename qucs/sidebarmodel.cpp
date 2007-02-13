@@ -17,22 +17,23 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
+#include "global.h"
 #include "sidebarmodel.h"
+
 #include <QtCore/QList>
 #include <QtCore/QtAlgorithms>
 #include <QtCore/QVariant>
 #include <QtGui/QIcon>
 #include <QtCore/QDebug>
 #include <QtCore/QMimeData>
-//#include <
-#include "global.h"
+
 
 class CategoryItem
 {
    public:
-      CategoryItem(const QString& n, const QString& f=QString(),CategoryItem *parent = 0l,bool isc = true);
+      CategoryItem(const QString& n, const QString& f=QString(),CategoryItem *parent = 0,bool isc = true);
       ~CategoryItem();
-      
+
       CategoryItem *parent() const;
       CategoryItem *child(int row) const;
       int childCount() const;
@@ -42,14 +43,14 @@ class CategoryItem
       QString name() const { return m_name; }
       QString fileName() const { return m_fileName; }
       bool isComponent() const { return m_isComponent; }
-      
+
    private:
       QString m_name;
       QString m_fileName;
       bool m_isComponent;
       QList<CategoryItem*> m_childItems;
       CategoryItem *m_parentItem;
-   
+
 };
 
 CategoryItem::CategoryItem(const QString& n, const QString& f, CategoryItem *parent, bool isc)
@@ -75,7 +76,7 @@ CategoryItem* CategoryItem::parent() const
 CategoryItem* CategoryItem::child(int row) const
 {
    if(m_childItems.isEmpty())
-      return 0l;
+      return 0;
    if(row < m_childItems.size())
       return m_childItems.value(row);
    return m_childItems.value(0);
@@ -94,7 +95,7 @@ void CategoryItem::addChild(CategoryItem *c)
 
 void CategoryItem::addChild(const QString& name,const QString& fname,bool isc)
 {
-   CategoryItem *n = new CategoryItem(name,fname,0l,isc);
+   CategoryItem *n = new CategoryItem(name,fname,0,isc);
    n->m_parentItem = const_cast<CategoryItem*>(this);
    m_childItems << n;
 }
@@ -118,9 +119,9 @@ void SidebarModel::fillData()
    CategoryItem *lumped = new CategoryItem(tr("Lumped Components"),QString(),rootItem,false);
    CategoryItem *sources = new CategoryItem(tr("Sources"),QString(),rootItem,false);
 
-   
+
    lumped->addChild(tr("Resistor"),QString("resistor.png"));
-   lumped->addChild(tr("Resistor US"),QString("resistor_us.png"));
+   lumped->addChild(tr("ResistorUS"),QString("resistor_us.png"));
    lumped->addChild(tr("Capacitor"),QString("capacitor.png"));
    lumped->addChild(tr("Inductor"),QString("inductor.png"));
    lumped->addChild(tr("Ground"),QString("ground.png"));
@@ -164,7 +165,7 @@ void SidebarModel::fillData()
    sources->addChild(tr("Correlated Noise Sources"),QString("noise_iv.png"));
    sources->addChild(tr("AM Modulated Source"),QString("am_mod.png"));
    sources->addChild(tr("PM Modulated Source"),QString("pm_mod.png"));
-   
+
 }
 
 QModelIndex SidebarModel::index ( int row, int column, const QModelIndex & parent ) const
@@ -173,42 +174,42 @@ QModelIndex SidebarModel::index ( int row, int column, const QModelIndex & paren
       return QModelIndex();
    CategoryItem *parentItem;
 
-    if (!parent.isValid())
-        parentItem = rootItem;
-    else
-        parentItem = static_cast<CategoryItem*>(parent.internalPointer());
+   if (!parent.isValid())
+      parentItem = rootItem;
+   else
+      parentItem = static_cast<CategoryItem*>(parent.internalPointer());
 
-    CategoryItem *childItem = parentItem->child(row);
-    if (childItem)
-        return createIndex(row, 0, childItem);
-    else
-        return QModelIndex();
+   CategoryItem *childItem = parentItem->child(row);
+   if (childItem)
+      return createIndex(row, 0, childItem);
+   else
+      return QModelIndex();
 }
 
 int SidebarModel::rowCount ( const QModelIndex & parent) const
 {
    CategoryItem *parentItem;
 
-    if (!parent.isValid())
-        parentItem = rootItem;
-    else
-        parentItem = static_cast<CategoryItem*>(parent.internalPointer());
+   if (!parent.isValid())
+      parentItem = rootItem;
+   else
+      parentItem = static_cast<CategoryItem*>(parent.internalPointer());
 
-    return parentItem->childCount();
+   return parentItem->childCount();
 }
 
 QModelIndex SidebarModel::parent ( const QModelIndex & index ) const
 {
    if (!index.isValid())
-        return QModelIndex();
+      return QModelIndex();
 
-    CategoryItem *childItem = static_cast<CategoryItem*>(index.internalPointer());
-    CategoryItem *parentItem = childItem->parent();
+   CategoryItem *childItem = static_cast<CategoryItem*>(index.internalPointer());
+   CategoryItem *parentItem = childItem->parent();
 
-    if (parentItem == rootItem)
-        return QModelIndex();
+   if (parentItem == rootItem)
+      return QModelIndex();
 
-    return createIndex(parentItem->row(), 0, parentItem);
+   return createIndex(parentItem->row(), 0, parentItem);
 }
 
 QVariant SidebarModel::data ( const QModelIndex & index, int role ) const
@@ -250,8 +251,8 @@ QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
 
    foreach (QModelIndex index, indexes) {
       if (index.isValid()) {
-	 QString text = data(index, Qt::DisplayRole).toString();
-	 stream << text;
+         QString text = data(index, Qt::DisplayRole).toString();
+         stream << text;
       }
    }
 

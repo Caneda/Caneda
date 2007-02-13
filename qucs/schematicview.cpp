@@ -18,17 +18,21 @@
  ***************************************************************************/
 
 #include "schematicview.h"
-#include "components/resistor.h"
 #include "schematicscene.h"
-#include "components/wire.h"
+#include "components/resistor.h"
+
+#include "wire.h"
+#include "node.h"
 
 #include <QtGui/QWheelEvent>
+#include <QtCore/QDebug>
 #include <cstdlib>
 
 SchematicView::SchematicView(QGraphicsScene *sc,QWidget *parent) : QGraphicsView(sc,parent)
 {
-   Q_ASSERT(sc == 0l);
+   Q_ASSERT(sc == 0);
    setScene(new SchematicScene(0,0,800,600));
+   //setCacheMode(CacheBackground);
    setDragMode(RubberBandDrag);
    setAcceptDrops(true);
    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -39,19 +43,13 @@ SchematicView::SchematicView(QGraphicsScene *sc,QWidget *parent) : QGraphicsView
 void SchematicView::init()
 {
    SchematicScene *s = qobject_cast<SchematicScene *>(scene());
-   Q_ASSERT(s != 0l);
-   Resistor *r = new Resistor(s);
-   r->setPos(400,400);
-   Resistor *r1 = new Resistor(s);
-   r1->setPos(700,400);
-   r1->rotate(45*2);
-   //std::srand(std::time(0l));
-   /*for(int i=0; i < 10; i++)
+   Q_ASSERT(s != 0);
+   for(int i=0; i <20;i++)
    {
       Resistor *r = new Resistor(s);
-      //scene()->addItem(r);
-      r->setPos(std::rand()%800,std::rand()%600);
-      }*/
+      r->setPos(rand() %800,rand() % 600);
+   }
+   //scale(10,10);
 }
 
 SchematicScene* SchematicView::schematicScene() const

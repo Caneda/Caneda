@@ -21,12 +21,15 @@
 #define __COMPONENTSSIDEBAR_H
 
 #include <QtGui/QTreeView>
-
+class QPixmap;
 class ComponentsSidebar : public QTreeView
 {
    public:
-      ComponentsSidebar(QWidget *parent = 0l);
+      ComponentsSidebar(QWidget *parent = 0);
       ~ComponentsSidebar() {}
+
+      void startDrag( Qt::DropActions supportedActions);
+      QPixmap renderToPixmap(const QModelIndexList &indexes, QRect *r);
 };
 
 #endif

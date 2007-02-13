@@ -23,24 +23,29 @@
 #include <QtGui/QGraphicsScene>
 #include <QtCore/QSet>
 #include <QtCore/QList>
+#include <QtCore/QPair>
 
 class Node;
 class QUndoStack;
+class ComponentPort;
+class Wire;
+class QucsItem;
 
 class SchematicScene : public QGraphicsScene
 {
    public:
-      SchematicScene(QObject *parent =0l);
+      SchematicScene(QObject *parent =0);
       SchematicScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent = 0 );
       ~SchematicScene(){}
 
       Node* nodeAt(qreal cx, qreal cy);
       Node *nodeAt(const QPointF& centre);
       Node* createNode(const QPointF& pos);
-      void removeNode(Node* n);
-      
+
+      bool areItemsMoving() const;
       QUndoStack* undoStack();
 
+      void setGrabbedWire(Wire *w);
    protected:
       void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
       void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
@@ -49,13 +54,21 @@ class SchematicScene : public QGraphicsScene
       void mousePressEvent(QGraphicsSceneMouseEvent *e);
       void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *e);
+      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e);
+      void drawBackground(QPainter *p, const QRectF& r);
 
    private:
       void init();
-         
-      QSet<Node*> m_circuitNodes;
+      void connect(Node *from, Node *to);
+      void adjustPositions(Node *of,const QPointF& delta);
+
+      QSet<Node*> m_movingNodes;
+      QSet<Wire*> m_resizingWires;
+      QSet<QucsItem*> m_alreadyMoved;
       QUndoStack *m_undoStack;
       bool m_areItemsMoving;
+      Wire *m_grabbedWire;
+
 };
 
 #endif //__SCHEMATICSCENE_H

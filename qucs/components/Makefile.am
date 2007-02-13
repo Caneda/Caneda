@@ -28,7 +28,7 @@ MOCHEADERS =
 # componentdialog.h spicedialog.h optimizedialog.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-libcomponents_a_SOURCES = component.cpp node.cpp resistor.cpp wire.cpp
+libcomponents_a_SOURCES = component.cpp resistor.cpp capacitor.cpp coupler.cpp
 # phaseshifter.cpp gyrator.cpp componentdialog.cpp    \
 #   vcvs.cpp vccs.cpp tr_sim.cpp tline.cpp substrate.cpp sp_sim.cpp             \
 #   param_sweep.cpp mstee.cpp msstep.cpp msline.cpp mscross.cpp mscoupled.cpp   \
@@ -51,8 +51,8 @@ libcomponents_a_SOURCES = component.cpp node.cpp resistor.cpp wire.cpp
 
 nodist_libcomponents_a_SOURCES = $(MOCFILES)
 
-noinst_HEADERS = $(MOCHEADERS) component.h node.h resistor.h wire.h
-  # resistor.h components.h capacitor.h vccs.h     \
+noinst_HEADERS = $(MOCHEADERS) component.h components.h resistor.h capacitor.h coupler.h
+# resistor.h components.h capacitor.h vccs.h     \
 #   inductor.h biast.h dcblock.h dcfeed.h ground.h subcirport.h symtrafo.h      \
 #   transformer.h ampere_dc.h attenuator.h circulator.h equation.h isolator.h   \
 #   source_ac.h sparamfile.h subcircuit.h volt_ac.h volt_dc.h ac_sim.h cccs.h   \

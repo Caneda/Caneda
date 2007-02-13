@@ -21,12 +21,14 @@
 #define __SCHEMATICVIEW_H
 
 #include <QtGui/QGraphicsView>
+
 class SchematicScene;
+
 class SchematicView : public QGraphicsView
 {
    Q_OBJECT
    public:
-      SchematicView(QGraphicsScene *sc = 0l,QWidget *parent = 0l);
+      SchematicView(QGraphicsScene *sc = 0,QWidget *parent = 0);
       ~SchematicView() {};
 
       void init();

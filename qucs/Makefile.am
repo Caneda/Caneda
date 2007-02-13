@@ -37,7 +37,7 @@ MOCHEADERS = schematicview.h qucsmainwindow.h
 #qucs.h schematic.h textdoc.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-qucs_SOURCES = componentssidebar.cpp  item.cpp  propertytext.cpp    schematicscene.cpp  sidebarmodel.cpp \
+qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp  propertytext.cpp  schematicscene.cpp  sidebarmodel.cpp \
                global.cpp main.cpp  qucsmainwindow.cpp  schematicview.cpp   undocommands.cpp
 # node.cpp element.cpp qucsdoc.cpp wire.cpp mouseactions.cpp   \
 #   qucs.cpp main.cpp wirelabel.cpp qucs_init.cpp qucs_actions.cpp            \
@@ -53,7 +53,7 @@ qucs_LDADD = ideality/libideality.a components/libcomponents.a \
 # diagrams/libdiagrams.a 
 #   paintings/libpaintings.a dialogs/libdialogs.a 
 
-noinst_HEADERS = $(MOCHEADERS) componentssidebar.h  item.h undocommands.h \
+noinst_HEADERS = $(MOCHEADERS) wire.h node.h line.h componentssidebar.h  item.h undocommands.h \
                                global.h  propertytext.h  schematicscene.h  sidebarmodel.h
 # main.h wire.h qucsdoc.h element.h      \
 #   node.h wirelabel.h viewpainter.h mnemo.h mouseactions.h

@@ -1,51 +1,114 @@
 /***************************************************************************
-                                  wire.h
-                                 --------
-    begin                : Wed Sep 3 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
+ * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#ifndef __WIRE_H
+#define __WIRE_H
 
-#ifndef WIRE_H
-#define WIRE_H
+#include "item.h"
+#include "line.h"
+#include "node.h"
 
-#include "viewpainter.h"
-#include "element.h"
-#include "components/component.h"    // because of struct Port
-#include "wirelabel.h"
+#include <QtCore/QList>
 
-#include <qpainter.h>
-#include <qstring.h>
-#include <qptrlist.h>
+class SchematicScene;
+class QGraphicsLineItem;
+class QRubberBand;
 
+class Wire : public QucsItem
+{
+   public:
+      enum {
+         Type = QucsItem::WireType
+      };
+      
+      Wire(SchematicScene *scene, Node *n1,Node *n2);
+      ~Wire();
+      void rebuild();
+      
+      inline Node* node1() const;
+      inline Node* node2() const;
+      inline void setNode1(Node *n1);
+      inline void setNode2(Node *n2);
+      void replaceNode(Node *oldNode,Node *newNode);
+      
+      QRectF boundingRect() const;
+      inline int type() const;
+      void paint(QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w = 0 );
+      QPainterPath shape() const;
+      bool contains ( const QPointF & point ) const;
+      
+      static Wire* connectedWire(const Node *n1,const Node *n2);
 
-class Wire : public Conductor {
-public:
-  Wire(int _x1=0, int _y1=0, int _x2=0, int _y2=0, Node *n1=0, Node *n2=0);
- ~Wire();
+      void grabMoveEvent( QGraphicsSceneMouseEvent * event );
+      void grabReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
-  void paint(ViewPainter*);
-  void paintScheme(QPainter*);
-  void setCenter(int, int, bool relative=false);
-  void getCenter(int&, int&);
-  bool getSelected(int, int);
-  void setName(const QString&, const QString&, int delta_=0, int x_=0, int y_=0);
+   protected:
+      QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+      void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+      void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+      void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
 
-  Node      *Port1, *Port2;
+   private:
+      void createLines(const QPointF& p1, const QPointF& p2);
+      void createProxyWires();
+      QList<Line> linesBetween(const QPointF& p1, const QPointF& p2) const;
+      QRect proxyRect(const Line& line) const;
+      void updateProxyWires();
+      void clearProxyWires();
+      QRectF rectForLine(const Line& line) const;
+      int indexForPos(const QPointF& pos) const;
+      void deleteNullLines();
 
-  void    rotate();
-  QString save();
-  bool    load(const QString&);
-  bool    isHorizontal();
+      bool m_proxyWiring;
+      QList<Line> m_lines;
+      QList<QRubberBand*> m_proxyWires;
+      Node *m_node1;
+      Node *m_node2;
+      int m_grabbedLineIndex;
+      bool m_wasGrabbed;
 };
 
-#endif
+inline Node* Wire::node1() const
+{
+   return m_node1;
+}
+
+inline Node* Wire::node2() const
+{
+   return m_node2;
+}
+
+inline void Wire::setNode1(Node *n1)
+{
+   n1->removeWire(this);
+   m_node1 = n1;
+}
+
+inline void Wire::setNode2(Node *n2)
+{
+   n2->removeWire(this);
+   m_node2 = n2;
+}
+
+inline int Wire::type() const
+{
+   return Wire::Type;
+}
+
+#endif //__WIRE_H

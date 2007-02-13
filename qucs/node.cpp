@@ -1,82 +1,118 @@
 /***************************************************************************
-                          node.cpp  -  description
-                             -------------------
-    begin                : Sat Sep 20 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "node.h"
+#include "components/component.h"
+#include "wire.h"
 
-#include "viewpainter.h"
-#include "wirelabel.h"
+#include "schematicscene.h"
+#include "undocommands.h"
+#include <QtGui/QPainter>
+#include <QtCore/QDebug>
 
-Node::Node(int _x, int _y)
+const qreal Node::Radius = 3.0;
+
+Node::Node(const QString& name,QGraphicsScene *scene) : QucsItem(0,scene)
 {
-  Label = 0;
-  Type  = isNode;
-  State = 0;
-
-  cx = _x;
-  cy = _y;
+   setName(name);
+   setFlags(0);
+   setAcceptedMouseButtons(0);
+   setZValue(1.0);
+   m_controller = 0;
 }
 
-Node::~Node()
+void Node::addComponent(Component *comp)
 {
+   m_connectedComponents.insert(comp);
+   update();
 }
 
-// -------------------------------------------------------------
-void Node::paint(ViewPainter *p)
+void Node::removeComponent(Component* comp)
 {
-  switch(Connections.count()) {
-    case 1:  if(Label)
-               p->fillRect(cx-2, cy-2, 4, 4, Qt::darkBlue); // open but labeled
-             else {
-               p->Painter->setPen(QPen(QPen::red,1));  // node is open
-               p->drawEllipse(cx-4, cy-4, 8, 8);
-             }
-             return;
-    case 2:  if(Connections.getFirst()->Type == isWire)
-               if(Connections.getLast()->Type == isWire) return;
-             p->fillRect(cx-2, cy-2, 4, 4, Qt::darkBlue);
-             break;
-    default: p->Painter->setBrush(Qt::darkBlue);  // more than 2 connections
-	     p->Painter->setPen(QPen(QPen::darkBlue,1));
-	     p->drawEllipse(cx-3, cy-3, 6, 6);
-	     p->Painter->setBrush(Qt::NoBrush);
-             break;
-  }
+   // call erase instead of remove to prevent rehashing
+   QSet<Component*>::iterator it = m_connectedComponents.find(comp);
+   if(it != m_connectedComponents.end())
+   {
+      m_connectedComponents.erase(it);
+      update();
+   }
 }
 
-// ----------------------------------------------------------------
-bool Node::getSelected(int x_, int y_)
+bool Node::areAllComponentsSelected() const
 {
-  if(cx-5 <= x_) if(cx+5 >= x_) if(cy-5 <= y_) if(cy+5 >= y_)
-    return true;
-
-  return false;
+   QSet<Component*>::const_iterator it = m_connectedComponents.constBegin();
+   const QSet<Component*>::const_iterator end = m_connectedComponents.constEnd();
+   for( ; it != end; ++it)
+   {
+      if(!((*it)->isSelected()))
+         return false;
+   }
+   return true;
 }
 
-// ----------------------------------------------------------------
-void Node::setName(const QString& Name_, const QString& Value_, int x_, int y_)
+void Node::addAllComponentsFrom(Node *n)
 {
-  if(Name_.isEmpty() && Value_.isEmpty()) {
-    if(Label) delete Label;
-    Label = 0;
-    return;
-  }
+   m_connectedComponents.unite(n->m_connectedComponents);
+   update();
+}
 
-  if(!Label) Label = new WireLabel(Name_, cx, cy, x_, y_, isNodeLabel);
-  else Label->setName(Name_);
-  Label->pOwner = this;
-  Label->initValue = Value_;
+void Node::addWire(Wire *w)
+{
+   m_wires.insert(w);
+   update();
+}
+
+void Node::removeWire(Wire *w)
+{
+   m_wires.remove(w);
+   update();
+}
+
+void Node::addAllWiresFrom(Node *n)
+{
+   m_wires.unite(n->m_wires);
+   update();
+}
+
+void Node::paint(QPainter* p,const QStyleOptionGraphicsItem *o, QWidget *w)
+{
+   Q_UNUSED(o);
+   Q_UNUSED(w);
+   p->setPen(Qt::darkRed);
+   if(!isOpen())
+      p->setBrush(QBrush(Qt::cyan, Qt::SolidPattern));
+   p->drawEllipse(boundingRect());
+}
+
+bool Node::collidesWithItem(QGraphicsItem *other) const
+{
+   Node *port = qgraphicsitem_cast<Node*>(other);
+   if(!port)
+      return QGraphicsItem::collidesWithItem(other);
+   qreal dist = distance(pos(),port->pos());
+
+   return (dist <= (2 * Node::Radius));
+}
+
+QPainterPath Node::shape() const
+{
+   QPainterPath path;
+   path.addEllipse(boundingRect());
+   return path;
 }
