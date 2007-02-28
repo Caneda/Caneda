@@ -46,7 +46,7 @@ qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp  propertytext.c
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(QTDIR)/include/QtGui -I$(QTDIR)/include/QtCore -I$(top_srcdir)/qucs/ideality
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)/qucs/ideality
 qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
 qucs_LDADD = ideality/libideality.a components/libcomponents.a \
   $(X11_LIBS) $(QT_LIBS)

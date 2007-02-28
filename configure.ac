@@ -146,6 +146,7 @@ else
   AC_MSG_ERROR([not found])
 fi
 AC_SUBST(QT_INCLUDES)
+AC_SUBST(QT_EXTRA_INCLUDES)
 
 dnl Check for multi-threaded option.
 AC_ARG_ENABLE([mt],
