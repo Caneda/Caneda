@@ -19,20 +19,22 @@
 # include <config.h>
 #endif
 
-#include <qmenubar.h>
-#include <qaction.h>
-#include <qpopupmenu.h>
-#include <qcombobox.h>
-#include <qclipboard.h>
-#include <qapplication.h>
-#include <qlayout.h>
-#include <qhbox.h>
-#include <qvgroupbox.h>
-#include <qpushbutton.h>
-#include <qmessagebox.h>
-#include <qtextedit.h>
-#include <qlistbox.h>
-#include <qregexp.h>
+#include <QtGui/QMenu>
+#include <QtGui/QMenuBar>
+#include <QtGui/QAction>
+#include <QtGui/QComboBox>
+#include <QtGui/QClipboard>
+#include <QtGui/QApplication>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QPushButton>
+#include <QtGui/QMessageBox>
+#include <QtGui/QTextEdit>
+#include <QtGui/QListWidget>
+#include <QtCore/QRegExp>
+#include <QtGui/QCloseEvent>
+#include <QtCore/QTextStream>
 
 #include "qucslib.h"
 #include "librarydialog.h"
@@ -40,45 +42,45 @@
 #include "symbolwidget.h"
 #include "searchdialog.h"
 
-
 /* Constructor setups the GUI. */
 QucsLib::QucsLib()
 {
   // set application icon
-  setIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
-  setCaption("Qucs Library Tool " PACKAGE_VERSION);
+  setWindowIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
+  setWindowTitle("Qucs Library Tool " PACKAGE_VERSION);
 
   QMenuBar * menuBar = new QMenuBar (this);
 
   // create file menu
-  QPopupMenu * fileMenu = new QPopupMenu ();
-  QAction * manageLib =
-    new QAction ("Manage User Libraries...", tr("Manage User &Libraries..."), CTRL+Key_M, this);
-  manageLib->addTo (fileMenu);
+  QMenu * fileMenu = menuBar->addMenu(tr("&File"));//new QMenu ();
+  QAction * manageLib = new QAction (tr("Manage User &Libraries..."), this);
+  manageLib->setShortcut(QKeySequence("CTRL+M"));
+
+  fileMenu->addAction ( manageLib );
   connect(manageLib, SIGNAL(activated()), SLOT(slotManageLib()));
 
-  fileMenu->insertSeparator();
+  fileMenu->addSeparator();
 
-  QAction * fileQuit =
-    new QAction ("Quit", tr("&Quit"), CTRL+Key_Q, this);
-  fileQuit->addTo (fileMenu);
+  QAction * fileQuit = new QAction (tr("&Quit"), this);
+  fileQuit->setShortcut(QKeySequence("CTRL+Q"));
+
+  fileMenu->addAction(fileQuit);
   connect(fileQuit, SIGNAL(activated()), SLOT(slotQuit()));
 
-  // create help menu
-  QPopupMenu * helpMenu = new QPopupMenu ();
-  QAction * helpHelp =
-    new QAction (tr("Help"), tr("&Help"), Key_F1, this);
-  helpHelp->addTo (helpMenu);
-  connect(helpHelp, SIGNAL(activated()), SLOT(slotHelp()));
-  QAction * helpAbout =
-    new QAction (tr("About"), tr("About"), 0, helpMenu);
-  helpAbout->addTo (helpMenu);
-  connect(helpAbout, SIGNAL(activated()), SLOT(slotAbout()));
+  // Insert separator
+  menuBar->addSeparator ();
 
-  // setup menu bar
-  menuBar->insertItem (tr("&File"), fileMenu);
-  menuBar->insertSeparator ();
-  menuBar->insertItem (tr("&Help"), helpMenu);
+  // create help menu
+  QMenu * helpMenu = menuBar->addMenu(tr("&Help"));
+  QAction * helpHelp = new QAction (tr("&Help"), this);
+  helpHelp->setShortcut(QKeySequence("F1"));
+
+  helpMenu->addAction (helpHelp);
+  connect(helpHelp, SIGNAL(activated()), SLOT(slotHelp()));
+  QAction * helpAbout = new QAction(tr("About"),helpMenu);
+
+  helpMenu->addAction (helpAbout);
+  connect(helpAbout, SIGNAL(activated()), SLOT(slotAbout()));
 
   // main box
   QVBoxLayout * all = new QVBoxLayout (this);
@@ -91,38 +93,52 @@ QucsLib::QucsLib()
   all->addWidget (Space);
 
   // main layout
-  QHBox * h = new QHBox (this);
+  QHBoxLayout * h = new QHBoxLayout();
   h->setSpacing (5);
   h->setMargin (3);
-  all->addWidget (h);
+  all->addLayout (h);
 
   // library and component choice
-  QVGroupBox * LibGroup = new QVGroupBox (tr("Component Selection"), h);
+  QGroupBox * LibGroup = new QGroupBox (tr("Component Selection"),this);
+  h->addWidget(LibGroup);
+  QVBoxLayout *grpl = new QVBoxLayout( LibGroup );
   Library = new QComboBox (LibGroup);
+  grpl->addWidget( Library );
   connect(Library, SIGNAL(activated(int)), SLOT(slotSelectLibrary(int)));
-  CompList = new QListBox(LibGroup);
-  connect(CompList, SIGNAL(highlighted(QListBoxItem*)),
-	SLOT(slotShowComponent(QListBoxItem*)));
+  CompList = new QListWidget(LibGroup);
+  grpl->addWidget( CompList );
+//  connect(CompList, SIGNAL(highlighted(QListBoxItem*)),SLOT(slotShowComponent(QListBoxItem*)));
+  connect(CompList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
+	  this, SLOT(slotShowComponent(QListWidgetItem*,QListWidgetItem*)));
 
-  QHBox * h1 = new QHBox (LibGroup);
-  QPushButton * SearchButton = new QPushButton (tr("Search..."), h1);
+  QHBoxLayout * h1 = new QHBoxLayout();
+  grpl->addLayout( h1 );
+  QPushButton * SearchButton = new QPushButton (tr("Search..."), LibGroup);
+  h1->addWidget( SearchButton );
   connect(SearchButton, SIGNAL(clicked()), SLOT(slotSearchComponent()));
-  h1->setStretchFactor(new QWidget(h1), 5); // stretchable placeholder
-
+  QWidget * w1 = new QWidget(LibGroup);
+  h1->addWidget(w1);
+  h1->setStretchFactor(w1, 5); // stretchable placeholder
 
   // component display
-  QVGroupBox *CompGroup = new QVGroupBox (tr("Component"), h);
+  QGroupBox *CompGroup = new QGroupBox (tr("Component"), this);
+  h->addWidget( CompGroup );
+  QVBoxLayout * compLayout = new QVBoxLayout(CompGroup);
   CompDescr = new QTextEdit(CompGroup);
-  CompDescr->setTextFormat(Qt::PlainText);
+  compLayout->addWidget(CompDescr);
   CompDescr->setReadOnly(true);
-  CompDescr->setWordWrap(QTextEdit::NoWrap);
+  CompDescr->setWordWrapMode(QTextOption::NoWrap);
 
   Symbol = new SymbolWidget (CompGroup);
+  compLayout->addWidget( Symbol );
 
-  QHBox * h2 = new QHBox (CompGroup);
-  QPushButton * CopyButton = new QPushButton (tr("Copy to clipboard"), h2);
+  QHBoxLayout * h2 = new QHBoxLayout();
+  compLayout->addLayout( h2  );
+  QPushButton * CopyButton = new QPushButton (tr("Copy to clipboard"), CompGroup);
+  h2->addWidget( CopyButton );
   connect(CopyButton, SIGNAL(clicked()), SLOT(slotCopyToClipBoard()));
-  QPushButton * ShowButton = new QPushButton (tr("Show Model"), h2);
+  QPushButton * ShowButton = new QPushButton (tr("Show Model"), CompGroup);
+  h2->addWidget( ShowButton );
   connect(ShowButton, SIGNAL(clicked()), SLOT(slotShowModel()));
 
   // ......................................................
@@ -144,18 +160,18 @@ void QucsLib::putLibrariesIntoCombobox()
   QStringList LibFiles;
   QStringList::iterator it;
   if(UserLibDir.cd(".")) { // user library directory exists ?
-    LibFiles = UserLibDir.entryList("*.lib", QDir::Files, QDir::Name);
-    UserLibCount = LibFiles.count();
+    LibFiles = UserLibDir.entryList(QStringList("*.lib"), QDir::Files, QDir::Name);
+  UserLibCount = LibFiles.count();
 
     for(it = LibFiles.begin(); it != LibFiles.end(); it++)
-      Library->insertItem((*it).left((*it).length()-4));
+      Library->addItem((*it).left((*it).length()-4));
   }
 
   QDir LibDir(QucsSettings.LibDir);
-  LibFiles = LibDir.entryList("*.lib", QDir::Files, QDir::Name);
+  LibFiles = LibDir.entryList(QStringList("*.lib"), QDir::Files, QDir::Name);
 
   for(it = LibFiles.begin(); it != LibFiles.end(); it++)
-    Library->insertItem((*it).left((*it).length()-4));
+    Library->addItem((*it).left((*it).length()-4));
 
   slotSelectLibrary(0);
 }
@@ -207,12 +223,12 @@ void QucsLib::slotManageLib()
 void QucsLib::slotHelp()
 {
   DisplayDialog *d = new DisplayDialog(this);
-  d->setCaption("QucsLib Help");
+  d->setWindowTitle("QucsLib Help");
   d->resize(250, 325);
   d->Text->setText(
      tr("QucsLib is a program to manage Qucs component libraries. "
 	"On the left side of the application window the available "
-	"libraries can be browsed to find the wanted component. "
+	"libraries can be browsed to search the wanted component. "
 	"By clicking on the component name its description can be "
 	"seen on the right side. The selected component is "
 	"transported to the Qucs application by clicking on the "
@@ -241,10 +257,10 @@ void QucsLib::slotCopyToClipBoard()
 void QucsLib::slotShowModel()
 {
   DisplayDialog *d = new DisplayDialog(this);
-  d->setCaption("Model");
+  d->setWindowTitle("Model");
   d->resize(500, 150);
   d->Text->setText(Symbol->ModelString);
-  d->Text->setWordWrap(QTextEdit::NoWrap);
+  d->Text->setWordWrapMode(QTextOption::NoWrap);
   d->show();
 }
 
@@ -253,7 +269,7 @@ void QucsLib::slotSelectLibrary(int Index)
 {
   int Start, End, NameStart, NameEnd;
   End = Library->count()-1;
-  if(Library->text(End) == tr("Search result"))
+  if(Library->itemText(End) == tr("Search result"))
     if(Index < End)
       Library->removeItem(End); // if search result still there -> remove it
     else  return;
@@ -265,37 +281,38 @@ void QucsLib::slotSelectLibrary(int Index)
 
   QFile file;
   if(Index < UserLibCount)  // Is it user library ?
-    file.setName(UserLibDir.absPath() + QDir::separator() + Library->text(Index) + ".lib");
+    file.setFileName(UserLibDir.absolutePath() + QDir::separator() + Library->itemText(Index) + ".lib");
   else
-    file.setName(QucsSettings.LibDir + Library->text(Index) + ".lib");
+    file.setFileName(QucsSettings.LibDir + Library->itemText(Index) + ".lib");
 
-  if(!file.open(IO_ReadOnly)) {
+  if(!file.open(QIODevice::ReadOnly))
+  {
     QMessageBox::critical(this, tr("Error"),
         tr("Cannot open \"%1\".").arg(
-           QucsSettings.LibDir + Library->text(Index) + ".lib"));
+           QucsSettings.LibDir + Library->itemText(Index) + ".lib"));
     return;
   }
 
   QTextStream ReadWhole(&file);
-  QString LibraryString = ReadWhole.read();
+  QString LibraryString = ReadWhole.readAll();
   file.close();
 
-  Start = LibraryString.find("<Qucs Library ");
+  Start = LibraryString.indexOf("<Qucs Library ");
   if(Start < 0) {
     QMessageBox::critical(this, tr("Error"), tr("Library is corrupt."));
     return;
   }
-  End = LibraryString.find('>', Start);
+  End = LibraryString.indexOf('>', Start);
   if(End < 0) {
     QMessageBox::critical(this, tr("Error"), tr("Library is corrupt."));
     return;
   }
   QString LibName = LibraryString.mid(Start, End-Start).section('"', 1, 1);
 
-  Start = LibraryString.find("\n<", End);
+  Start = LibraryString.indexOf("\n<", End);
   if(Start < 0) return;
   if(LibraryString.mid(Start+2, 14) == "DefaultSymbol>") {
-    End = LibraryString.find("\n</DefaultSymbol>");
+    End = LibraryString.indexOf("\n</DefaultSymbol>");
     if(End < 0) {
       QMessageBox::critical(this, tr("Error"), tr("Library is corrupt."));
       return;
@@ -305,22 +322,23 @@ void QucsLib::slotSelectLibrary(int Index)
     Start = End + 3;
   }
 
-  while((Start=LibraryString.find("\n<Component ", Start)) > 0) {
+  while((Start=LibraryString.indexOf("\n<Component ", Start)) > 0) {
     Start++;
     NameStart = Start + 11;
-    NameEnd = LibraryString.find('>', NameStart);
+    NameEnd = LibraryString.indexOf('>', NameStart);
     if(NameEnd < 0)  continue;
 
-    End = LibraryString.find("\n</Component>", NameEnd);
+    End = LibraryString.indexOf("\n</Component>", NameEnd);
     if(End < 0)  continue;
     End += 13;
 
-    CompList->insertItem(LibraryString.mid(NameStart, NameEnd-NameStart));
+    CompList->addItem(LibraryString.mid(NameStart, NameEnd-NameStart));
     LibraryComps.append(LibName+'\n'+LibraryString.mid(Start, End-Start));
     Start = End;
   }
 
-  CompList->setSelected(0, true);  // select first item
+  ///FIXME (Is this alright?)
+  CompList->setCurrentRow(0);  // select first item
 }
 
 // ----------------------------------------------------
@@ -333,59 +351,59 @@ void QucsLib::slotSearchComponent()
 }
 
 // ----------------------------------------------------
-void QucsLib::slotShowComponent(QListBoxItem *Item)
+void QucsLib::slotShowComponent(QListWidgetItem *Item, QListWidgetItem*)
 {
   if(!Item) return;
 
-  QStringList::Iterator CompString = LibraryComps.at(CompList->index(Item));
-  QString LibName = (*CompString).section('\n', 0, 0);
+  QString CompString = LibraryComps.at(CompList->row(Item));
+  QString LibName = CompString.section('\n', 0, 0);
   CompDescr->setText("Name: " + Item->text());
   CompDescr->append("Library: " + LibName);
   CompDescr->append("----------------------------");
 
-  if(Library->currentItem() < UserLibCount)
-    LibName = UserLibDir.absPath() + QDir::separator() + LibName;
+  if(Library->currentIndex() < UserLibCount)
+    LibName = UserLibDir.absolutePath() + QDir::separator() + LibName;
 
 
   int Start, End;
-  Start = (*CompString).find("<Description>");
+  Start = CompString.indexOf("<Description>");
   if(Start > 0) {
     Start += 13;
-    End = (*CompString).find("</Description>", Start);
+    End = CompString.indexOf("</Description>", Start);
     if(End < 0) {
       QMessageBox::critical(this, tr("Error"), tr("Library is corrupt."));
       return;
     }
     CompDescr->append(
-      (*CompString).mid(Start, End-Start).replace(QRegExp("\\n\\x20+"), "\n").remove(0, 1));
+      CompString.mid(Start, End-Start).replace(QRegExp("\\n\\x20+"), "\n").remove(0, 1));
   }
 
 
-  Start = (*CompString).find("<Model>");
+  Start = CompString.indexOf("<Model>");
   if(Start > 0) {
     Start += 7;
-    End = (*CompString).find("</Model>", Start);
+    End = CompString.indexOf("</Model>", Start);
     if(End < 0) {
       QMessageBox::critical(this, tr("Error"), tr("Library is corrupt."));
       return;
     }
     Symbol->ModelString =
-      (*CompString).mid(Start, End-Start).replace(QRegExp("\\n\\x20+"), "\n").remove(0, 1);
+      CompString.mid(Start, End-Start).replace(QRegExp("\\n\\x20+"), "\n").remove(0, 1);
 
-    if(Symbol->ModelString.contains('\n') < 2)
+    if((Symbol->ModelString.count('\n')) < 2)
       Symbol->createSymbol(LibName, Item->text());
   }
 
 
-  Start = (*CompString).find("<Symbol>");
+  Start = CompString.indexOf("<Symbol>");
   if(Start > 0) {
     Start += 8;
-    End = (*CompString).find("</Symbol>", Start);
+    End = CompString.indexOf("</Symbol>", Start);
     if(End < 0) {
       QMessageBox::critical(this, tr("Error"), tr("Library is corrupt."));
       return;
     }
-    Symbol->setSymbol((*CompString).mid(Start, End-Start),
+    Symbol->setSymbol(CompString.mid(Start, End-Start),
                       LibName, Item->text());
   }
   else if(!DefaultSymbol.isEmpty())   // has library a default symbol ?

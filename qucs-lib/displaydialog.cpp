@@ -21,33 +21,38 @@
 
 #include "displaydialog.h"
 
-#include <qlayout.h>
-#include <qhbox.h>
-#include <qpushbutton.h>
-#include <qtextedit.h>
+#include <QtGui/QLayout>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QPushButton>
+#include <QtGui/QTextEdit>
 
 
 DisplayDialog::DisplayDialog(QWidget *parent)
-                     : QDialog(parent, 0, false, Qt::WDestructiveClose)
+                     : QDialog(parent)
 {
   vLayout = new QVBoxLayout(this);
-
+  setAttribute( Qt::WA_DeleteOnClose  );
   Text = new QTextEdit(this);
-  Text->setTextFormat(Qt::PlainText);
+  //Text->setTextFormat(Qt::PlainText);
   Text->setReadOnly(true);
   Text->setMinimumSize(200, 100);
   vLayout->addWidget(Text);
 
-  QHBox *h = new QHBox(this);
-  vLayout->addWidget(h);
+  QHBoxLayout *h = new QHBoxLayout(this);
+  vLayout->addLayout(h);
 
-  h->setStretchFactor(new QWidget(h),5); // stretchable placeholder
+	QWidget *w1 = new QWidget(this);
+	h->addWidget( w1 );
+  h->setStretchFactor(w1,5); // stretchable placeholder
 
-  QPushButton *ButtonClose = new QPushButton(tr("Close"), h);
+  QPushButton *ButtonClose = new QPushButton(tr("Close"), this);
+	h->addWidget( ButtonClose );
   connect(ButtonClose, SIGNAL(clicked()), SLOT(slotClose()));
   ButtonClose->setFocus();
 
-  h->setStretchFactor(new QWidget(h),5); // stretchable placeholder
+	QWidget *w2= new QWidget(this);
+	h->addWidget( w2 );
+  h->setStretchFactor(w2,5); // stretchable placeholder
 }
 
 DisplayDialog::~DisplayDialog()

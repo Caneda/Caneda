@@ -18,10 +18,11 @@
 #ifndef QUCSEDIT_H
 #define QUCSEDIT_H
 
-#include <qdialog.h>
+#include <QtGui/QDialog>
 
 class QLabel;
 class QTextEdit;
+class QTextCharFormat;
 
 
 struct tQucsSettings {
@@ -46,7 +47,7 @@ private slots:
   void slotLoad();
   void slotSave();
   void slotQuit();
-  void slotPrintCursorPosition(int, int);
+  void slotPrintCursorPosition();
 
 private:
   void closeEvent(QCloseEvent*);

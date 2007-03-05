@@ -18,7 +18,7 @@
 #ifndef SEARCHDIALOG_H
 #define SEARCHDIALOG_H
 
-#include <qdialog.h>
+#include <Qt/qdialog.h>
 
 class QVBoxLayout;
 class QLineEdit;

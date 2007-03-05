@@ -15,21 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
+/* Modified on 28/02/07 by Martin "Ruso" Ribelotta at porting to Qt4 */
+
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
 #include <stdlib.h>
 
-#include <qapplication.h>
-#include <qstring.h>
-#include <qtextcodec.h>
-#include <qtranslator.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qmessagebox.h>
-#include <qdir.h>
-#include <qfont.h>
+#include <QtGui/QApplication>
+#include <QtCore/QString>
+#include <QtCore/QTextCodec>
+#include <QtCore/QTranslator>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <QtGui/QMessageBox>
+#include <QtCore/QDir>
+#include <QtGui/QFont>
+#include <QtCore/QLocale>
 
 #include "qucsedit.h"
 
@@ -41,8 +44,8 @@ bool loadSettings()
 {
   bool result = true;
 
-  QFile file(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/editrc"));
-  if(!file.open(IO_ReadOnly))
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/editrc"));
+  if(!file.open(QIODevice::ReadOnly))
     result = false; // settings file doesn't exist
   else {
     QTextStream stream(&file);
@@ -61,8 +64,8 @@ bool loadSettings()
     file.close();
   }
 
-  file.setName(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/qucsrc"));
-  if(!file.open(IO_ReadOnly))
+  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.qucs/qucsrc"));
+  if(!file.open(QIODevice::ReadOnly))
     result = true; // qucs settings not necessary
   else {
     QTextStream stream(&file);
@@ -70,7 +73,7 @@ bool loadSettings()
     while(!stream.atEnd()) {
       Line = stream.readLine();
       Setting = Line.section('=',0,0);
-      Line = Line.section('=',1,1).stripWhiteSpace();
+      Line = Line.section('=',1,1).simplified();
       if(Setting == "Font")
 	QucsSettings.font.fromString(Line);
       else if(Setting == "Language")
@@ -92,8 +95,8 @@ bool saveApplSettings(QucsEdit *qucs)
 	  return true;   // nothing has changed
 
 
-  QFile file(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/editrc"));
-  if(!file.open(IO_WriteOnly)) {
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/editrc"));
+  if(!file.open(QIODevice::WriteOnly)) {
     QMessageBox::warning(0, QObject::tr("Warning"),
 			QObject::tr("Cannot save settings !"));
     return false;
@@ -113,12 +116,12 @@ bool saveApplSettings(QucsEdit *qucs)
 // #########################################################################
 void showOptions()
 {
-  fprintf(stdout, QObject::tr("Qucs Editor Version ")+PACKAGE_VERSION+
+  fprintf(stdout, QString( QObject::tr("Qucs Editor Version ")+PACKAGE_VERSION+
     QObject::tr("\nVery simple text editor for Qucs\n")+
     QObject::tr("Copyright (C) 2004, 2005 by Michael Margraf\n")+
     QObject::tr("\nUsage:  qucsedit [-r] file\n")+
     QObject::tr("    -h  display this help and exit\n")+
-    QObject::tr("    -r  open file read-only\n"));
+    QObject::tr("    -r  open file read-only\n") ).toAscii());
 }
 
 
@@ -159,7 +162,8 @@ int main(int argc, char *argv[])
   QTranslator tor( 0 );
   QString lang = QucsSettings.Language;
   if(lang.isEmpty())
-    lang = QTextCodec::locale();
+    lang = QLocale::languageToString( QLocale::system().language() );
+		//lang = QTextCodec::locale();
   tor.load( QString("qucs_") + lang, QucsSettings.LangDir);
   a.installTranslator( &tor );
 
@@ -169,31 +173,31 @@ int main(int argc, char *argv[])
     s = argv[i];
     if(s.at(0) == '-') {
       if(s.length() != 2) {
-	fprintf(stdout, QObject::tr("Too long command line argument!\n\n"));
+	fprintf(stdout, QString(QObject::tr("Too long command line argument!\n\n")).toAscii());
 	showOptions();
 	return -1;
       }
-      switch(s.at(1).latin1()) {
+      switch(s.at(1).toLatin1()) {
 	case 'r': readOnly = true;
 		  break;
 	case 'h': showOptions();
 		  return 0;
 	default :
-	  fprintf(stderr, QObject::tr("Wrong command line argument!\n\n"));
+	  fprintf(stderr, QObject::tr("Wrong command line argument!\n\n").toAscii());
 	  showOptions();
 	  return -1;
       }
     }
     else  if(FileName.isEmpty())  FileName = s;
 	  else {
-	    fprintf(stderr, QObject::tr("Only one filename allowed!\n\n"));
+	    fprintf(stderr, QObject::tr("Only one filename allowed!\n\n").toAscii());
 	    showOptions();
 	    return -1;
 	  }
   }
 
   QucsEdit *qucs = new QucsEdit(FileName, readOnly);
-  a.setMainWidget(qucs);
+  //a.setMainWidget(qucs);
   qucs->resize(QucsSettings.dx, QucsSettings.dy); // size and position ...
   qucs->move(QucsSettings.x, QucsSettings.y);     // ... before "show" !!!
   qucs->show();

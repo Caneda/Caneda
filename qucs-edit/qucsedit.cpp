@@ -15,66 +15,79 @@
  *                                                                         *
  ***************************************************************************/
 
+/* Modified on 28/02/07 by Martin "Ruso" Ribelotta at porting to Qt4 */
+
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
 #include "qucsedit.h"
 
-#include <qtextedit.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qhbox.h>
-#include <qpushbutton.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qmessagebox.h>
-#include <qtoolbutton.h>
-#include <qimage.h>
-#include <qfiledialog.h>
-
+#include <QtGui/QTextEdit>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QPushButton>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <QtGui/QMessageBox>
+#include <QtGui/QToolButton>
+#include <QtGui/QImage>
+#include <QtGui/QFileDialog>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QTextCharFormat>
 
 QucsEdit::QucsEdit(const QString& FileName_, bool readOnly)
 {
   // set application icon
-  setIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
-  setCaption("Qucs Editor " PACKAGE_VERSION " - " + tr("File: "));
+  setWindowIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
+  setWindowTitle("Qucs Editor " PACKAGE_VERSION " - " + tr("File: "));
 
   QVBoxLayout *v = new QVBoxLayout(this);
 
-  QHBox *h = new QHBox(this);
-  v->addWidget(h);
+  QHBoxLayout *h = new QHBoxLayout();
+  v->addLayout(h);
 
-  QToolButton *ButtLoad = new QToolButton(h);
-  ButtLoad->setIconSet(
-	    QIconSet(QImage(QucsSettings.BitmapDir + "fileopen.png")));
+  QToolButton *ButtLoad = new QToolButton(this);
+	h->addWidget(ButtLoad);
+	QString s1 = QucsSettings.BitmapDir + "fileopen.png";
+  ButtLoad->setIcon(QIcon(s1));
   connect(ButtLoad, SIGNAL(clicked()), SLOT(slotLoad()));
 
-  QToolButton *ButtSave = new QToolButton(h);
-  ButtSave->setIconSet(
-            QIconSet(QImage(QucsSettings.BitmapDir + "filesave.png")));
+  QToolButton *ButtSave = new QToolButton(this);
+	h->addWidget(ButtSave);
+  ButtSave->setIcon(QIcon(QucsSettings.BitmapDir + "filesave.png"));
   connect(ButtSave, SIGNAL(clicked()), SLOT(slotSave()));
   ButtSave->setDisabled(readOnly);
 
-  h->setStretchFactor(new QWidget(h),5); // stretchable placeholder
-  PosText = new QLabel(tr("Line: %1  -  Column: %2").arg(1).arg(1), h);
-  h->setStretchFactor(new QWidget(h),5); // stretchable placeholder
+	QWidget *gost_w1 = new QWidget( this );
+	h->addWidget(gost_w1);
+  h->setStretchFactor(gost_w1,5); // stretchable placeholder
+  PosText = new QLabel(tr("Line: %1  -  Column: %2").arg(1).arg(1), this);
+	h->addWidget( PosText );
+	QWidget *gost_w2 = new QWidget( this );
+	h->addWidget( gost_w2 );
+  h->setStretchFactor(gost_w2,5); // stretchable placeholder
 
-  QPushButton *ButtAbout = new QPushButton(tr("About"),h);
+  QPushButton *ButtAbout = new QPushButton(tr("About"),this);
+	h->addWidget( ButtAbout );
   connect(ButtAbout, SIGNAL(clicked()), SLOT(slotAbout()));
 
-  QPushButton *ButtOK = new QPushButton(tr("Quit"),h);
+  QPushButton *ButtOK = new QPushButton(tr("Quit"),this);
+	h->addWidget( ButtOK );
   connect(ButtOK, SIGNAL(clicked()), SLOT(slotQuit()));
   ButtOK->setFocus();
 
   text = new QTextEdit(this);
-  text->setTextFormat(Qt::PlainText);
-  text->setReadOnly(readOnly);
-  text->setWordWrap(QTextEdit::NoWrap);
+  //text->setTextFormat(Qt::PlainText);
+  //text->setReadOnly(readOnly);
+  //text->setWordWrap(QTextEdit::NoWrap);
+	text->setLineWrapMode( QTextEdit::NoWrap );
+	text->setWordWrapMode( QTextOption::NoWrap );
   text->setMinimumSize(300,200);
   v->addWidget(text);
-  connect(text, SIGNAL(cursorPositionChanged(int, int)),
-          SLOT(slotPrintCursorPosition(int, int)));
+  connect(text, SIGNAL(cursorPositionChanged()),
+          SLOT(slotPrintCursorPosition()));
 
   // .................................................
   loadFile(FileName_);
@@ -85,9 +98,12 @@ QucsEdit::~QucsEdit()
 }
 
 // ************************************************************
-void QucsEdit::slotPrintCursorPosition(int Para, int Pos)
+void QucsEdit::slotPrintCursorPosition()
 {
-  PosText->setText(tr("Line: %1  -  Column: %2").arg(Para+1).arg(Pos+1));
+	/// Commented out until we find how to implement it.
+// 	QTextCursor textCursor = text->textCursor();
+//
+//   PosText->setText(tr("Line: %1  -  Column: %2").arg(Para+1).arg(Pos+1));
 }
 
 // ************************************************************
@@ -106,10 +122,14 @@ void QucsEdit::slotAbout()
 void QucsEdit::slotLoad()
 {
   static QString lastDir;  // to remember last directory and file
-
+/*
   QString s = QFileDialog::getOpenFileName(
     lastDir.isEmpty() ? QString(".") : lastDir,
     "*", this, "", tr("Enter a Filename"));
+	*/
+	QString s = QFileDialog::getOpenFileName(
+			this, tr("Enter a Filename"), lastDir.isEmpty()? ".":lastDir, tr("Any files (*)")
+																					);
   if(s.isEmpty()) return;
   lastDir = s;   // remember last directory and file
   if(!closeFile()) return;
@@ -119,22 +139,28 @@ void QucsEdit::slotLoad()
 // ************************************************************
 void QucsEdit::slotSave()
 {
-  if(FileName.isEmpty()) {
+/*
+	if(FileName.isEmpty()) {
     FileName = QFileDialog::getSaveFileName(".", QString::null,
 	this, "", tr("Enter a Document Name"));
     if(FileName.isEmpty())  return;
   }
-
-  QFile file(FileName);
-  if(!file.open(IO_WriteOnly)) {
+*/
+  if (FileName.isEmpty())
+		FileName = QFileDialog::getSaveFileName(this, tr("Enter a Document Name"),
+		                                        ".", tr("Any files (*)"));
+	if(FileName.isEmpty())
+		return;
+	QFile file(FileName);
+  if(!file.open(QIODevice::WriteOnly)) {
     QMessageBox::critical(this, tr("Error"),
 		tr("Cannot write file: ")+FileName);
     return;
   }
 
   QTextStream stream(&file);
-  stream << text->text();
-  text->setModified(false);
+  stream << text->toPlainText();
+  text->document()->setModified(false);
   file.close();
 }
 
@@ -164,20 +190,20 @@ bool QucsEdit::loadFile(const QString& Name)
 {
   if(Name.isEmpty()) return false;
   QFile file(Name);
-  if(!file.open(IO_ReadOnly)) {
+  if(!file.open(QIODevice::ReadOnly)) {
     QMessageBox::critical(this, tr("Error"),
 		tr("Cannot read file: ")+Name);
     return false;
   }
 
   QTextStream stream(&file);
-  text->setText(stream.read());
+  text->setPlainText(stream.readAll());
   file.close();
 
   FileName = Name;
 //  QFileInfo info(Name);
 //  FileName = info.fileName();
-  setCaption("Qucs Editor " PACKAGE_VERSION " - " + tr("File: ")+FileName);
+  setWindowTitle("Qucs Editor " PACKAGE_VERSION " - " + tr("File: ")+FileName);
   return true;
 }
 
@@ -185,7 +211,7 @@ bool QucsEdit::loadFile(const QString& Name)
 // ************************************************************
 bool QucsEdit::closeFile()
 {
-  if(text->isModified()) {
+  if(text->document()->isModified()) {
     switch(QMessageBox::warning(this,tr("Closing document"),
       tr("The text contains unsaved changes!\n")+
       tr("Do you want to save the changes?"),

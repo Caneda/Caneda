@@ -22,24 +22,26 @@
 #include "librarydialog.h"
 #include "qucslib.h"
 
-#include <qhbox.h>
-#include <qvbox.h>
-#include <qfile.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qvalidator.h>
-#include <qmessagebox.h>
-#include <qpushbutton.h>
-#include <qscrollview.h>
-#include <qradiobutton.h>
-#include <qvbuttongroup.h>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QListWidget>
+#include <QtGui/QLabel>
+#include <Qt/qfile.h>
+#include <Qt/qlabel.h>
+#include <Qt/qlineedit.h>
+#include <Qt/qvalidator.h>
+#include <Qt/qmessagebox.h>
+#include <Qt/qpushbutton.h>
+#include <Qt/qradiobutton.h>
+#include <Qt/qbuttongroup.h>
 
 
 LibraryDialog::LibraryDialog(QWidget *App_)
-			: QDialog(App_, 0, TRUE, Qt::WDestructiveClose)
+			: QDialog(App_)
 {
-  setCaption(tr("Manage User Libraries"));
+
+  setWindowTitle(tr("Manage User Libraries"));
+  setAttribute( Qt::WA_DeleteOnClose  );
 
   Expr.setPattern("[\\w_]+");
   Validator = new QRegExpValidator(Expr, this);
@@ -49,54 +51,41 @@ LibraryDialog::LibraryDialog(QWidget *App_)
   all->setMargin(5);
   all->setSpacing(6);
 
-  Group = new QVButtonGroup(tr("Choose library:"), this);
-  all->addWidget(Group);
-  
-  QScrollView *Dia_Scroll = new QScrollView(Group);
-  Dia_Scroll->setMargin(5);
-  Dia_Box = new QVBox(Dia_Scroll->viewport());
-  Dia_Scroll->addChild(Dia_Box);
+  QLabel *lb1 = new QLabel( tr("<font color=#000FFF>Choose library:</font>"), this );
+  all->addWidget( lb1 );
+  listUserLib = new QListWidget(this);
+  all->addWidget(listUserLib);
 
-  QHBox *h1 = new QHBox(this);
-  all->addWidget(h1);
-  theLabel = new QLabel(tr("New Name:"), h1);
-  NameEdit = new QLineEdit(h1);
+  QHBoxLayout *h1 = new QHBoxLayout();
+  all->addLayout(h1);
+  theLabel = new QLabel(tr("New Name:"), this);
+	h1->addWidget( theLabel );
+  NameEdit = new QLineEdit(this);
+	h1->addWidget( NameEdit );
   NameEdit->setValidator(Validator);
 
   // ...........................................................
-  QHBox *h2 = new QHBox(this);
-  all->addWidget(h2);
-  ButtDelete = new QPushButton(tr("Delete"), h2);
+  QHBoxLayout *h2 = new QHBoxLayout();
+  all->addLayout(h2);
+  ButtDelete = new QPushButton(tr("Delete"), this);
+  h2->addWidget(ButtDelete);
   connect(ButtDelete, SIGNAL(clicked()), SLOT(slotDelete()));
-  ButtRename = new QPushButton(tr("Rename"), h2);
+  ButtRename = new QPushButton(tr("Rename"), this);
+  h2->addWidget(ButtRename);
   connect(ButtRename, SIGNAL(clicked()), SLOT(slotRename()));
-  ButtClose = new QPushButton(tr("Close"), h2);
+  ButtClose = new QPushButton(tr("Close"), this);
+  h2->addWidget(ButtClose);
   connect(ButtClose, SIGNAL(clicked()), SLOT(reject()));
   ButtClose->setDefault(true);
 
   // ...........................................................
   // insert all user libraries
-  QStringList LibFiles = UserLibDir.entryList("*.lib", QDir::Files, QDir::Name);
-
-  toggleGroup = new QVButtonGroup();  // only to handle exclusive toggling
-
-  previousLib = 0;
+  QStringList LibFiles = UserLibDir.entryList(QStringList("*.lib"), QDir::Files, QDir::Name);
   QStringList::iterator it;
   // inserts all project directories
-  for(it = LibFiles.begin(); it != LibFiles.end(); it++)
-    toggleGroup->insert(new QRadioButton((*it).left((*it).length()-4), Dia_Box));
-
-  QColor theColor;
-  QButton *rButton = toggleGroup->find(0);
-  if(rButton)
-    theColor = rButton->paletteBackgroundColor();
-  else {
-    ButtDelete->setEnabled(false);
-    ButtRename->setEnabled(false);
-    theColor =
-       (new QLabel(tr("No user library!"), Dia_Box))->paletteBackgroundColor();
+  for(it = LibFiles.begin(); it != LibFiles.end(); it++) {
+    listUserLib->addItem( ((*it).left((*it).length()-4) ) );
   }
-  Dia_Scroll->viewport()->setPaletteBackgroundColor(theColor);
 }
 
 LibraryDialog::~LibraryDialog()
@@ -113,26 +102,25 @@ void LibraryDialog::slotRename()
     return;
   }
 
-  QRadioButton *rButton = (QRadioButton*)toggleGroup->selected();
-  if(rButton == 0) {
+  QListWidgetItem *r = listUserLib->currentItem();
+  if(r == 0) {
     QMessageBox::critical(this, tr("Error"), tr("Please choose a library!"));
     return;
   }
-
   QFile NewLibFile(QucsSettings.LibDir + NameEdit->text() + ".lib");
   if(NewLibFile.exists()) {
     QMessageBox::critical(this, tr("Error"), tr("A system library with this name already exists!"));
     return;
   }
 
-  NewLibFile.setName(UserLibDir.absFilePath(NameEdit->text() + ".lib"));
+  NewLibFile.setFileName(UserLibDir.absoluteFilePath(NameEdit->text() + ".lib"));
   if(NewLibFile.exists()) {
     QMessageBox::critical(this, tr("Error"), tr("A library with this name already exists!"));
     return;
   }
 
-  QFile LibFile(UserLibDir.absFilePath(rButton->text() + ".lib"));
-  if(!LibFile.open(IO_ReadOnly)) {
+  QFile LibFile(UserLibDir.absoluteFilePath(r->text() + ".lib"));
+  if(!LibFile.open(QFile::ReadOnly)) {
     QMessageBox::critical(this, tr("Error"), tr("Cannot open library!"));
     return;
   }
@@ -152,14 +140,14 @@ void LibraryDialog::slotRename()
     p = strstr(Name, "\">");
     if(p == 0) break;
 
-    if(!NewLibFile.open(IO_WriteOnly)) {
+    if(!NewLibFile.open(QFile::WriteOnly)) {
       QMessageBox::critical(this, tr("Error"), tr("No permission to modify library!"));
       return;
     }
     int count = 0;
-    count += NewLibFile.writeBlock(Config, Name-Config);
-    count += NewLibFile.writeBlock(NameEdit->text().latin1(), NameEdit->text().length());
-    count += NewLibFile.writeBlock(p, FileContent.count() - (p-Config) );
+    count += NewLibFile.write(Config, Name-Config);
+    count += NewLibFile.write(NameEdit->text().toLatin1(), NameEdit->text().length());
+    count += NewLibFile.write(p, FileContent.count() - (p-Config) );
     NewLibFile.close();
     count -= FileContent.count() + NameEdit->text().length() - (p-Name);
     if(count != 0) {
@@ -169,12 +157,13 @@ void LibraryDialog::slotRename()
 
     if(!LibFile.remove()) {
       QMessageBox::critical(this, tr("Error"), tr("Cannot delete old library."));
-      toggleGroup->insert(new QRadioButton(NameEdit->text(), Dia_Box));
+			listUserLib->addItem( NameEdit->text() );
+      //toggleGroup->insert(new QRadioButton(NameEdit->text(), Dia_Box));
       NameEdit->clear();
       return;
     }
 
-    rButton->setText(NameEdit->text());
+    r->setText(NameEdit->text());
     NameEdit->clear();
     return;
   }
@@ -186,17 +175,18 @@ void LibraryDialog::slotRename()
 // Deletes the selected user library.
 void LibraryDialog::slotDelete()
 {
-  QRadioButton *rButton = (QRadioButton*)toggleGroup->selected();
-  if(rButton == 0) {
+
+  QListWidgetItem *r = listUserLib->currentItem();
+  if(r == 0) {
     QMessageBox::critical(this, tr("Error"), tr("Please choose a library!"));
     return;
   }
 
-  QFile LibFile(UserLibDir.absFilePath(rButton->text() + ".lib"));
+  QFile LibFile(UserLibDir.absoluteFilePath(r->text() + ".lib"));
   if(!LibFile.remove()) {
     QMessageBox::critical(this, tr("Error"),
-                 tr("No permission to delete library \"%1\".").arg(rButton->text()));
+                 tr("No permission to delete library \"%1\".").arg(r->text()));
     return;
   }
-  delete rButton;
+  delete r;
 }

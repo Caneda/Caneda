@@ -18,19 +18,20 @@
 #ifndef QUCSLIB_H
 #define QUCSLIB_H
 
-#include <qdialog.h>
-#include <qdir.h>
-#include <qfont.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtGui/QDialog>
+#include <QtCore/QDir>
+#include <QtGui/QFont>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 class SymbolWidget;
 class QTextEdit;
 class QComboBox;
-class QListBox;
-class QVGroupBox;
+class QListWidget;
+class QListWidgetItem;
+class QGroupBox;
 class QVBoxLayout;
-class QListBoxItem;
+class QListViewItem;
 
 
 // Application settings.
@@ -52,7 +53,7 @@ public:
   QucsLib();
  ~QucsLib();
 
-  QListBox     *CompList;
+  QListWidget     *CompList;
   QStringList   LibraryComps;
   QComboBox    *Library;
 
@@ -64,7 +65,7 @@ private slots:
   void slotShowModel();
   void slotSelectLibrary(int);
   void slotSearchComponent();
-  void slotShowComponent(QListBoxItem*);
+  void slotShowComponent(QListWidgetItem*,QListWidgetItem*);
   void slotManageLib();
 
 private:

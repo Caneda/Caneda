@@ -18,7 +18,7 @@
 #ifndef DISPLAYDIALOG_H
 #define DISPLAYDIALOG_H
 
-#include <qdialog.h>
+#include <QtGui/QDialog>
 
 class QTextEdit;
 class QVBoxLayout;

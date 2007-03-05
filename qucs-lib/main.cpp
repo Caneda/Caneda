@@ -21,15 +21,17 @@
 
 #include <stdlib.h>
 
-#include <qapplication.h>
-#include <qstring.h>
-#include <qtextcodec.h>
-#include <qtranslator.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qmessagebox.h>
-#include <qdir.h>
-#include <qfont.h>
+#include <Qt/qapplication.h>
+#include <Qt/qstring.h>
+#include <Qt/qtextcodec.h>
+#include <Qt/qtranslator.h>
+#include <Qt/qfile.h>
+#include <Qt/qtextstream.h>
+#include <Qt/qmessagebox.h>
+#include <Qt/qdir.h>
+#include <Qt/qfont.h>
+
+#include <QtCore/QLocale>
 
 #include "qucslib.h"
 
@@ -41,8 +43,8 @@ bool loadSettings()
 {
   bool result = true;
 
-  QFile file(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/librc"));
-  if(!file.open(IO_ReadOnly))
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/librc"));
+  if(!file.open(QIODevice::ReadOnly))
     result = false; // settings file doesn't exist
   else {
     QTextStream stream(&file);
@@ -61,8 +63,8 @@ bool loadSettings()
     file.close();
   }
 
-  file.setName(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/qucsrc"));
-  if(!file.open(IO_ReadOnly))
+  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.qucs/qucsrc"));
+  if(!file.open(QIODevice::ReadOnly))
     result = true; // qucs settings not necessary
   else {
     QTextStream stream(&file);
@@ -70,7 +72,7 @@ bool loadSettings()
     while(!stream.atEnd()) {
       Line = stream.readLine();
       Setting = Line.section('=',0,0);
-      Line = Line.section('=',1,1).stripWhiteSpace();
+      Line = Line.section('=',1,1).simplified();
       if(Setting == "Font")
 	QucsSettings.font.fromString(Line);
       else if(Setting == "Language")
@@ -84,8 +86,8 @@ bool loadSettings()
 // Saves the settings in the settings file.
 bool saveApplSettings(QucsLib *qucs)
 {
-  QFile file(QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/librc"));
-  if(!file.open(IO_WriteOnly)) {
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/librc"));
+  if(!file.open(QIODevice::WriteOnly)) {
     QMessageBox::warning(0, QObject::tr("Warning"),
 			QObject::tr("Cannot save settings !"));
     return false;
@@ -133,7 +135,7 @@ int main(int argc, char *argv[])
     QucsSettings.LangDir = LANGUAGEDIR;
     QucsSettings.LibDir = LIBRARYDIR;
   }
-  UserLibDir.setPath (QDir::homeDirPath()+QDir::convertSeparators ("/.qucs/user_lib"));
+  UserLibDir.setPath (QDir::homePath()+QDir::convertSeparators ("/.qucs/user_lib"));
   loadSettings();
 
   QApplication a(argc, argv);
@@ -142,12 +144,13 @@ int main(int argc, char *argv[])
   QTranslator tor( 0 );
   QString lang = QucsSettings.Language;
   if(lang.isEmpty())
-    lang = QTextCodec::locale();
+    lang = QLocale::languageToString( QLocale::system().language());
+		//lang = QTextCodec::locale();
   tor.load( QString("qucs_") + lang, QucsSettings.LangDir);
   a.installTranslator( &tor );
 
   QucsLib *qucs = new QucsLib();
-  a.setMainWidget(qucs);
+  //a.setMainWidget(qucs);
   qucs->resize(QucsSettings.dx, QucsSettings.dy); // size and position ...
   qucs->move(QucsSettings.x, QucsSettings.y);     // ... before "show" !!!
   qucs->show();

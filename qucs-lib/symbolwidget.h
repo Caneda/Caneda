@@ -18,20 +18,21 @@
 #ifndef SYMBOLWIDGET_H
 #define SYMBOLWIDGET_H
 
-#include <qwidget.h>
-#include <qsize.h>
-#include <qpen.h>
-#include <qbrush.h>
-#include <qcolor.h>
-#include <qstring.h>
-#include <qptrlist.h>
+#include <QtGui/QWidget>
+#include <QtCore/QSize>
+#include <QtGui/QPen>
+#include <QtGui/QBrush>
+#include <QtGui/QColor>
+#include <QtCore/QString>
+#include <QtCore/QList>
 
-class QDragObject;
+class QDrag;
 class QPaintEvent;
 class QSizePolicy;
 
 
 struct Line {
+	Line() { }
   Line(int _x1, int _y1, int _x2, int _y2, QPen _style)
        : x1(_x1), y1(_y1), x2(_x2), y2(_y2), style(_style) {};
   int   x1, y1, x2, y2;
@@ -39,6 +40,7 @@ struct Line {
 };
 
 struct Arc {
+	Arc() { }
   Arc(int _x, int _y, int _w, int _h, int _angle, int _arclen, QPen _style)
       : x(_x), y(_y), w(_w), h(_h), angle(_angle),
 	arclen(_arclen), style(_style) {};
@@ -47,6 +49,7 @@ struct Arc {
 };
 
 struct Area {
+	Area() { }
   Area(int _x, int _y, int _w, int _h, QPen _Pen,
 	QBrush _Brush = QBrush(Qt::NoBrush))
 	: x(_x), y(_y), w(_w), h(_h), Pen(_Pen), Brush(_Brush) {};
@@ -56,9 +59,10 @@ struct Area {
 };
 
 struct Text {
+	Text() { }
   Text(int _x, int _y, const QString& _s, QColor _Color = QColor(0,0,0),
 	float _Size = 10.0, float _mCos=1.0, float _mSin=0.0)
-	: x(_x), y(_y), s(_s), Color(_Color), Size(_Size) {};
+	: x(_x), y(_y), s(_s), Color(_Color), Size(_Size) { (void)_mSin; (void)_mCos; };
   int     x, y;
   QString s;
   QColor  Color;
@@ -93,15 +97,15 @@ private:
   bool getPen  (const QString&, QPen&, int);
   bool getBrush(const QString&, QBrush&, int);
 
-  QDragObject *myDragObject;
+  QDrag *myDragObject;
 
   QString PaintText, DragNDropText;
   int TextWidth, DragNDropWidth, TextHeight;
   int cx, cy, x1, x2, y1, y2;
-  QPtrList<Line>       Lines;
-  QPtrList<struct Arc> Arcs;
-  QPtrList<Area>       Rects, Ellips;
-  QPtrList<Text>       Texts;
+  QList<Line>       Lines;
+  QList<struct Arc> Arcs;
+  QList<Area>       Rects, Ellips;
+  QList<Text>       Texts;
 };
 
 #endif
