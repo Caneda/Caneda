@@ -20,13 +20,11 @@
 #include "schematicview.h"
 #include "schematicscene.h"
 #include "components/resistor.h"
-
 #include "wire.h"
 #include "node.h"
 
 #include <QtGui/QWheelEvent>
 #include <QtCore/QDebug>
-#include <cstdlib>
 
 SchematicView::SchematicView(QGraphicsScene *sc,QWidget *parent) : QGraphicsView(sc,parent)
 {
@@ -44,12 +42,12 @@ void SchematicView::init()
 {
    SchematicScene *s = qobject_cast<SchematicScene *>(scene());
    Q_ASSERT(s != 0);
-   for(int i=0; i <20;i++)
-   {
-      Resistor *r = new Resistor(s);
-      r->setPos(rand() %800,rand() % 600);
-   }
-   //scale(10,10);
+   for( int j=1;j<3;++j)
+      for(int i=1; i <11;i++)
+      {
+         Resistor *r = new Resistor(s);
+         r->setPos(j*200,i*50);
+      }
 }
 
 SchematicScene* SchematicView::schematicScene() const

@@ -1,93 +1,66 @@
 /***************************************************************************
-                              d_flipflop.cpp
-                             ----------------
-    begin                : Fri Jan 06 2006
-    copyright            : (C) 2006 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
-
-#include <stdlib.h>
 
 #include "d_flipflop.h"
-#include "node.h"
+#include "shapes.h"
 
-D_FlipFlop::D_FlipFlop()
+D_FlipFlop::D_FlipFlop(SchematicScene *s) : Component(s)
 {
-  Type = isDigitalComponent;
-  Description = QObject::tr("D flip flop with asynchron reset");
-
-  Props.append(new Property("t", "0", false, QObject::tr("delay time")));
-
-  Lines.append(new Line(-20,-20, 20,-20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-20, 20, 20, 20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-20,-20,-20, 20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 20,-20, 20, 20,QPen(QPen::darkBlue,2)));
-
-  Lines.append(new Line(-30,-10,-20,-10,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-30, 10,-20, 10,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 30,-10, 20,-10,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  0, 20,  0, 30,QPen(QPen::darkBlue,2)));
-
-  Texts.append(new Text(-17,-17, "D", QPen::darkBlue, 12.0));
-  Texts.append(new Text(  6,-17, "Q", QPen::darkBlue, 12.0));
-  Texts.append(new Text( -4,  5, "R", QPen::darkBlue, 12.0));
-  Lines.append(new Line(-20,  6,-12, 10,QPen(QPen::darkBlue,0)));
-  Lines.append(new Line(-20, 14,-12, 10,QPen(QPen::darkBlue,0)));
-
-  Ports.append(new Port(-30,-10));  // D
-  Ports.append(new Port(-30, 10));  // Clock
-  Ports.append(new Port( 30,-10));  // Q
-  Ports.append(new Port(  0, 30));  // Reset
-
-  x1 = -30; y1 = -24;
-  x2 =  30; y2 =  30;
-  tx = x1+4;
-  ty = y2+4;
-  Model = "DFF";
-  Name  = "Y";
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-// -------------------------------------------------------
-QString D_FlipFlop::VHDL_Code(int NumPorts)
+void D_FlipFlop::initConstants()
 {
-  QString s = ";\n";
-  if(NumPorts <= 0)  // no truth table simulation ?
-    if(strtod(Props.getFirst()->Value.latin1(), 0) != 0.0)  // delay time
-      s = " after " + Props.getFirst()->Value + ";\n";
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -24, 60, 54).adjusted(-pw, -pw, pw, pw);
 
-  s = "  " + Name + " : process (" +
-      Ports.at(0)->Connection->Name + ", " +
-      Ports.at(1)->Connection->Name + ")\n  begin\n    if (" +
-      Ports.at(3)->Connection->Name + "='1') then  " +
-      Ports.at(2)->Connection->Name + " <= '0'" + s +"    elsif (" +
-      Ports.at(1)->Connection->Name + "='1' and " +
-      Ports.at(1)->Connection->Name + "'event) then\n      " +
-      Ports.at(2)->Connection->Name + " <= " +
-      Ports.at(0)->Connection->Name + s + "    end if;\n  end process;\n";
-  return s;
+   model = "DFF";
+   name = "Y";
+   description =  QObject::tr("D flip flop with asynchron reset");
+
+   m_shapes.append(new Line(-20,-20, 20,-20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-20, 20, 20, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-20,-20,-20, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 20,-20, 20, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30,-10,-20,-10, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30, 10,-20, 10, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 30,-10, 20,-10, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  0, 20,  0, 30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Text( -17, -17, "D", Qt::darkBlue, 12.0));
+   m_shapes.append(new Text( 6, -17, "Q", Qt::darkBlue, 12.0));
+   m_shapes.append(new Text( -4, 5, "R", Qt::darkBlue, 12.0));
+   m_shapes.append(new Line(-20,  6,-12, 10, Component::getPen(Qt::darkBlue,0)));
+   m_shapes.append(new Line(-20, 14,-12, 10, Component::getPen(Qt::darkBlue,0)));
 }
 
-// -------------------------------------------------------
-Component* D_FlipFlop::newOne()
+void D_FlipFlop::initPorts()
 {
-  return new D_FlipFlop();
+   addPort(QPointF(-30,-10));
+   addPort(QPointF(-30,10));
+   addPort(QPointF(30,-10));
+   addPort(QPointF(0,30));
 }
 
-// -------------------------------------------------------
-Element* D_FlipFlop::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void D_FlipFlop::initProperties()
 {
-  Name = QObject::tr("D-FlipFlop");
-  BitmapFile = "dflipflop";
-
-  if(getNewOne)  return new D_FlipFlop();
-  return 0;
+   addProperty("t","0",QObject::tr("delay time"),false);
 }
+

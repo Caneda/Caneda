@@ -1,67 +1,60 @@
 /***************************************************************************
-                          mscorner.cpp  -  description
-                             -------------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "mscorner.h"
+#include "shapes.h"
 
-
-MScorner::MScorner()
+MScorner::MScorner(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("microstrip corner");
-
-  Lines.append(new Line(-30,  0,-18,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  0, 18,  0, 30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-18, -8,  8, -8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-18,  8, -8,  8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-18, -8,-18,  8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( -8,  8, -8, 18,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  8, -8,  8, 18,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( -8, 18,  8, 18,QPen(QPen::darkBlue,2)));
-
-  Ports.append(new Port(-30, 0));
-  Ports.append(new Port(  0,30));
-
-  x1 = -30; y1 =-11;
-  x2 =  11; y2 = 30;
-
-  tx = x2+4;
-  ty = y1+4;
-  Model = "MCORN";
-  Name  = "MS";
-
-  Props.append(new Property("Subst", "Subst1", true,
-		QObject::tr("substrate")));
-  Props.append(new Property("W", "1 mm", true,
-		QObject::tr("width of line")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-MScorner::~MScorner()
+void MScorner::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -11, 41, 41).adjusted(-pw, -pw, pw, pw);
+
+   model = "MCORN";
+   name = "MS";
+   description =  QObject::tr("microstrip corner");
+
+   m_shapes.append(new Line(-30,  0,-18,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  0, 18,  0, 30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-18, -8,  8, -8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-18,  8, -8,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-18, -8,-18,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -8,  8, -8, 18, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  8, -8,  8, 18, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -8, 18,  8, 18, Component::getPen(Qt::darkBlue,2)));
 }
 
-Component* MScorner::newOne()
+void MScorner::initPorts()
 {
-  return new MScorner();
+   addPort(QPointF(-30,0));
+   addPort(QPointF(0,30));
 }
 
-Element* MScorner::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void MScorner::initProperties()
 {
-  Name = QObject::tr("Microstrip Corner");
-  BitmapFile = "mscorner";
-
-  if(getNewOne)  return new MScorner();
-  return 0;
+   addProperty("Subst","Subst1",QObject::tr("substrate"),true);
+   addProperty("W","1 mm",QObject::tr("width of line"),true);
 }
+

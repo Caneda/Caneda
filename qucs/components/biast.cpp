@@ -1,77 +1,69 @@
 /***************************************************************************
-                          biast.cpp  -  description
-                             -------------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "biast.h"
+#include "shapes.h"
 
-
-BiasT::BiasT()
+BiasT::BiasT(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("bias t");
-
-  Arcs.append(new Arc( -3,  2, 6, 6, 16*270, 16*180,QPen(QPen::darkBlue,1)));
-  Arcs.append(new Arc( -3,  8, 6, 6, 16*270, 16*180,QPen(QPen::darkBlue,1)));
-  Arcs.append(new Arc( -3, 14, 6, 6, 16*270, 16*180,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-22,-10, 22,-10,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-22,-10,-22, 22,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-22, 22, 22, 22,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line( 22,-10, 22, 22,QPen(QPen::darkBlue,1)));
-
-  Lines.append(new Line(-13, -6,-13,  7,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( -9, -6, -9,  7,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( -9,  0, 22,  0,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-22,  0,-13,  0,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-30,  0,-22,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 22,  0, 30,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  0,  0,  0,  2,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(  0, 20,  0, 22,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(  0, 22,  0, 30,QPen(QPen::darkBlue,2)));
-
-  Ports.append(new Port(-30,  0));
-  Ports.append(new Port( 30,  0));
-  Ports.append(new Port(  0, 30));
-
-  x1 = -30; y1 = -13;
-  x2 =  30; y2 =  30;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "BiasT";
-  Name  = "X";
-
-  Props.append(new Property("L", "1 uH", false,
-	QObject::tr("for transient simulation: inductance in Henry")));
-  Props.append(new Property("C", "1 uF", false,
-	QObject::tr("for transient simulation: capacitance in Farad")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-BiasT::~BiasT()
+void BiasT::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -13, 60, 43).adjusted(-pw, -pw, pw, pw);
+
+   model = "BiasT";
+   name = "X";
+   description =  QObject::tr("bias t");
+
+   m_shapes.append(new Arc( -3,  2, 6, 6, 16*270, 16*180, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Arc( -3,  8, 6, 6, 16*270, 16*180, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Arc( -3, 14, 6, 6, 16*270, 16*180, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-22,-10, 22,-10, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-22,-10,-22, 22, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-22, 22, 22, 22, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line( 22,-10, 22, 22, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-13, -6,-13,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -9, -6, -9,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -9,  0, 22,  0, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-22,  0,-13,  0, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-30,  0,-22,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 22,  0, 30,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  0,  0,  0,  2, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(  0, 20,  0, 22, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(  0, 22,  0, 30, Component::getPen(Qt::darkBlue,2)));
 }
 
-Component* BiasT::newOne()
+void BiasT::initPorts()
 {
-  return new BiasT();
+   addPort(QPointF(-30,0));
+   addPort(QPointF(30,0));
+   addPort(QPointF(0,30));
 }
 
-Element* BiasT::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void BiasT::initProperties()
 {
-  Name = QObject::tr("Bias T");
-  BitmapFile = "biast";
-
-  if(getNewOne)  return new BiasT();
-  return 0;
+   addProperty("L","1 uH",QObject::tr("for transient simulation: inductance in Henry"),false);
+   addProperty("C","1 uF",QObject::tr("for transient simulation: capacitance in Farad"),false);
 }
+

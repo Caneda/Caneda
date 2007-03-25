@@ -1,67 +1,58 @@
 /***************************************************************************
-                        amplifier.cpp  -  description
-                             -------------------
-    begin                : Sat Oct 30 2004
-    copyright            : (C) 2004 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "amplifier.h"
+#include "shapes.h"
 
-
-Amplifier::Amplifier()
+Amplifier::Amplifier(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("ideal amplifier");
-
-  Lines.append(new Line(-16,-20,-16, 20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-16,-20, 16,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-16, 20, 16,  0,QPen(QPen::darkBlue,2)));
-
-  Lines.append(new Line(-30,  0,-16,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 16,  0, 30,  0,QPen(QPen::darkBlue,2)));
-
-  Ports.append(new Port(-30,  0));
-  Ports.append(new Port( 30,  0));
-
-  x1 = -30; y1 = -23;
-  x2 =  30; y2 =  23;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "Amp";
-  Name  = "X";
-
-  Props.append(new Property("G", "10", true,
-		QObject::tr("voltage gain")));
-  Props.append(new Property("Z1", "50 Ohm", false,
-		QObject::tr("reference impedance of input port")));
-  Props.append(new Property("Z2", "50 Ohm", false,
-		QObject::tr("reference impedance of output port")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-Amplifier::~Amplifier()
+void Amplifier::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -23, 60, 46).adjusted(-pw, -pw, pw, pw);
+
+   model = "Amp";
+   name = "X";
+   description =  QObject::tr("ideal amplifier");
+
+   m_shapes.append(new Line(-16,-20,-16, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-16,-20, 16,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-16, 20, 16,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30,  0,-16,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 16,  0, 30,  0, Component::getPen(Qt::darkBlue,2)));
 }
 
-Component* Amplifier::newOne()
+void Amplifier::initPorts()
 {
-  return new Amplifier();
+   addPort(QPointF(-30,0));
+   addPort(QPointF(30,0));
 }
 
-Element* Amplifier::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void Amplifier::initProperties()
 {
-  Name = QObject::tr("Amplifier");
-  BitmapFile = "amplifier";
-
-  if(getNewOne)  return new Amplifier();
-  return 0;
+   addProperty("G","10",QObject::tr("voltage gain"),true);
+   addProperty("Z1","50 Ohm",QObject::tr("reference impedance of input port"),false);
+   addProperty("Z2","50 Ohm",QObject::tr("reference impedance of output port"),false);
 }
+

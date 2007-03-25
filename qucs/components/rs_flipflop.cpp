@@ -1,91 +1,66 @@
 /***************************************************************************
-                              rs_flipflop.cpp
-                             -----------------
-    begin                : Fri Jan 06 2006
-    copyright            : (C) 2006 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
-
-#include <stdlib.h>
 
 #include "rs_flipflop.h"
-#include "node.h"
+#include "shapes.h"
 
-RS_FlipFlop::RS_FlipFlop()
+RS_FlipFlop::RS_FlipFlop(SchematicScene *s) : Component(s)
 {
-  Type = isDigitalComponent;
-  Description = QObject::tr("RS flip flop");
-
-  Props.append(new Property("t", "0", false, QObject::tr("delay time")));
-
-  Lines.append(new Line(-20,-20, 20,-20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-20, 20, 20, 20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-20,-20,-20, 20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 20,-20, 20, 20,QPen(QPen::darkBlue,2)));
-
-  Lines.append(new Line(-30,-10,-20,-10,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-30, 10,-20, 10,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 30,-10, 20,-10,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 30, 10, 20, 10,QPen(QPen::darkBlue,2)));
-
-  Texts.append(new Text(-17,-17, "R", QPen::darkBlue, 12.0));
-  Texts.append(new Text(-17,  3, "S", QPen::darkBlue, 12.0));
-  Texts.append(new Text(  6,-17, "Q", QPen::darkBlue, 12.0));
-  Texts.append(new Text(  6,  3, "Q", QPen::darkBlue, 12.0));
-  Lines.append(new Line(  7,   3, 15,   3,QPen(QPen::darkBlue,1)));
-
-  Ports.append(new Port(-30,-10));  // R
-  Ports.append(new Port(-30, 10));  // S
-  Ports.append(new Port( 30,-10));  // Q
-  Ports.append(new Port( 30, 10));  // nQ
-
-  x1 = -30; y1 = -24;
-  x2 =  30; y2 =  24;
-  tx = x1+4;
-  ty = y2+4;
-  Model = "RSFF";
-  Name  = "Y";
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-// -------------------------------------------------------
-QString RS_FlipFlop::VHDL_Code(int NumPorts)
+void RS_FlipFlop::initConstants()
 {
-  QString s = ";\n";
-  if(NumPorts <= 0)  // no truth table simulation ?
-    if(strtod(Props.getFirst()->Value.latin1(), 0) != 0.0)  // delay time
-      s = " after " + Props.getFirst()->Value + ";\n";
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -24, 60, 48).adjusted(-pw, -pw, pw, pw);
 
-  s = "  " +
-    Ports.at(2)->Connection->Name + " <= " +
-    Ports.at(0)->Connection->Name + " nor " +
-    Ports.at(3)->Connection->Name + s + "  " +
-    Ports.at(3)->Connection->Name + " <= " +
-    Ports.at(1)->Connection->Name + " nor " +
-    Ports.at(2)->Connection->Name + s;
-  return s;
+   model = "RSFF";
+   name = "Y";
+   description =  QObject::tr("RS flip flop");
+
+   m_shapes.append(new Line(-20,-20, 20,-20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-20, 20, 20, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-20,-20,-20, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 20,-20, 20, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30,-10,-20,-10, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30, 10,-20, 10, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 30,-10, 20,-10, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 30, 10, 20, 10, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Text( -17, -17, "R", Qt::darkBlue, 12.0));
+   m_shapes.append(new Text( -17, 3, "S", Qt::darkBlue, 12.0));
+   m_shapes.append(new Text( 6, -17, "Q", Qt::darkBlue, 12.0));
+   m_shapes.append(new Text( 6, 3, "Q", Qt::darkBlue, 12.0));
+   m_shapes.append(new Line(  7,   3, 15,   3, Component::getPen(Qt::darkBlue,1)));
 }
 
-// -------------------------------------------------------
-Component* RS_FlipFlop::newOne()
+void RS_FlipFlop::initPorts()
 {
-  return new RS_FlipFlop();
+   addPort(QPointF(-30,-10));
+   addPort(QPointF(-30,10));
+   addPort(QPointF(30,-10));
+   addPort(QPointF(30,10));
 }
 
-// -------------------------------------------------------
-Element* RS_FlipFlop::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void RS_FlipFlop::initProperties()
 {
-  Name = QObject::tr("RS-FlipFlop");
-  BitmapFile = "rsflipflop";
-
-  if(getNewOne)  return new RS_FlipFlop();
-  return 0;
+   addProperty("t","0",QObject::tr("delay time"),false);
 }
+

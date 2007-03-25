@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,42 +17,66 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __PROPERTYTEXT_H
-#define __PROPERTYTEXT_H
+#include "componentproperty.h"
+#include "propertytext.h"
+#include "component.h"
 
-#include <QtGui/QGraphicsTextItem>
-
-class PropertyTextValue : public QGraphicsTextItem
+ComponentProperty::ComponentProperty( Component *c,const QString& name, const QString& value,
+                                     const QString& description, bool visible,const QStringList& options)
+   : m_component(c),
+     m_name(name),
+     m_value(value),
+     m_description(description),
+     m_options(options),
+     m_item(0)
 {
-   public:
-      PropertyTextValue(const QString& text,QGraphicsItem *p=0,QGraphicsScene *s=0);
-      ~PropertyTextValue() {}
-      void formatText();
+   if(visible)
+      show();
+}
 
-   protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *e);
-      void keyPressEvent(QKeyEvent *e);
-      void focusOutEvent(QFocusEvent *e);
-};
-
-class PropertyText : public QGraphicsTextItem
+ComponentProperty::~ComponentProperty()
 {
-   public:
-      PropertyText(const QString& name, const QString& initialValue = "nil",
-		   const QString& description = "nil", QGraphicsItem* par = 0, QGraphicsScene *scene = 0);
-      ~PropertyText() {}
+   hide();
+}
 
-      QString name() const { return m_name; }
-      QString value() const { return m_valueItem->toPlainText(); }
-      QString description() const { return m_description; }
+void ComponentProperty::show()
+{
+   if(m_item)
+   {
+      m_item->setPos(m_pos);
+      m_item->show();
+      return;
+   }
 
-   protected:
-      QVariant itemChange(GraphicsItemChange c,const QVariant& value);
-      void mousePressEvent(QGraphicsSceneMouseEvent *e);
+   m_item = new PropertyText(this,m_component->schematicScene());
+}
 
-   private:
-      PropertyTextValue *m_valueItem;
-      QString m_description;
-      QString m_name;
-};
-#endif //__PROPERTYTEXT_H
+void ComponentProperty::hide()
+{
+   if(m_item)
+      m_pos = m_item->pos();
+   delete m_item;
+   m_item = 0;
+}
+
+void ComponentProperty::operator=(const QString& value)
+{
+   if(m_options.isEmpty())
+      m_value = value;
+   else if(m_options.contains(value))
+   {
+      m_value = value;
+   }
+   else
+   {
+      qDebug() << "Trying to set value out of given options" ;
+      qDebug() << m_name << m_options << "Given val is" << value;
+   }
+   update();
+}
+
+void ComponentProperty::update()
+{
+   if(m_item)
+      m_item->updateValue();
+}

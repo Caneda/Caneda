@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -24,21 +24,22 @@
 
 class Coupler : public Component
 {
-   public:
-      Coupler(QGraphicsScene *scene);
-      ~Coupler(){}
+public:
+   Coupler(SchematicScene *scene = 0);
 
-      void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
-      inline QRectF boundingRect() const;
+   inline QRectF boundingRect() const;
 
-   protected:
-      void initComponentStrings();
+private:
+   void initConstants();
+   void initPorts();
+   void initProperties();
+
+   QRectF m_boundingRect;
 };
 
-QRectF Coupler::boundingRect() const
+inline QRectF Coupler::boundingRect() const
 {
-   qreal pw = 0.5;
-   return QRectF(-27,-24,57,48).adjusted(-pw,-pw,pw,pw);
+   return m_boundingRect;
 }
 
-#endif //__COUPLER_H
+#endif

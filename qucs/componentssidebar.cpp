@@ -25,6 +25,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QDrag>
 #include <QtGui/QPainter>
+#include <QtCore/QMimeData>
 
 ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QTreeView(parent)
 {
@@ -45,7 +46,7 @@ void ComponentsSidebar::startDrag( Qt::DropActions supportedActions)
    if (!data)
       return;
    QRect rect;
-   QPixmap pixmap = renderToPixmap(indexes, &rect);
+   QPixmap pixmap = renderToPixmap(data, &rect);
    if(pixmap.isNull())
       return QAbstractItemView::startDrag(supportedActions);
    QDrag *drag = new QDrag(this);
@@ -56,12 +57,18 @@ void ComponentsSidebar::startDrag( Qt::DropActions supportedActions)
       clearSelection();
 }
 
-QPixmap ComponentsSidebar::renderToPixmap(const QModelIndexList &indexes, QRect *r)
+QPixmap ComponentsSidebar::renderToPixmap(const QMimeData* data, QRect *r)
 {
-   Q_ASSERT(indexes.size() == 1);
-   QRectF rect = visualRect(indexes.at(0));
-   QString modelString = model()->data(indexes[0],Qt::DisplayRole).toString();
-   Component *c = Component::componentFromName(modelString,0);
+   QRectF rect;// = visualRect(indexes.at(0));
+   Component *c = 0;
+   if(data->formats().contains("application/qucs.sidebarItem"))
+   {
+      QByteArray encodedData = data->data("application/qucs.sidebarItem");
+      QDataStream stream(&encodedData, QIODevice::ReadOnly);
+      QString text;
+      stream >> text;
+      c = Component::componentFromName(text,0);
+   }
    if(!c)
    {
       if(r)
@@ -74,7 +81,7 @@ QPixmap ComponentsSidebar::renderToPixmap(const QModelIndexList &indexes, QRect 
    const QList<ComponentPort*>::const_iterator end = c->componentPorts().constEnd();
    for(; it != end; ++it)
       rect |= (*it)->node()->boundingRect().translated((*it)->centrePos());
-   
+   rect = rect.adjusted(-1,-1,1,1);
    QPainter p;
    QStyleOptionGraphicsItem so;
    so.state |= QStyle::State_Open;
@@ -85,8 +92,9 @@ QPixmap ComponentsSidebar::renderToPixmap(const QModelIndexList &indexes, QRect 
    pen.setStyle(Qt::DashDotLine);
    pen.setWidth(2);
    p.setPen(pen);
-   p.setRenderHint(QPainter::Antialiasing,true);
+   p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing |QPainter::SmoothPixmapTransform );
    p.translate(rect.width()/2,rect.height()/2);
+   //p.setMatrix(c->matrix());
    c->paint(&p,&so,0);
    p.end();
 

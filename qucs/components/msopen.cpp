@@ -1,72 +1,59 @@
 /***************************************************************************
-                          msopen.cpp  -  description
-                             -------------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "msopen.h"
+#include "shapes.h"
 
-
-MSopen::MSopen()
+MSopen::MSopen(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("microstrip open");
-
-  Lines.append(new Line(-30,  0,-18,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-13, -8, 13, -8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-23,  8,  3,  8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-13, -8,-23,  8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 13, -8,  3,  8,QPen(QPen::darkBlue,2)));
-
-  Ports.append(new Port(-30, 0));
-
-  x1 = -30; y1 =-11;
-  x2 =  16; y2 = 11;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "MOPEN";
-  Name  = "MS";
-
-  Props.append(new Property("Subst", "Subst1", true,
-	QObject::tr("name of substrate definition")));
-  Props.append(new Property("W", "1 mm", true,
-	QObject::tr("width of the line")));
-  Props.append(new Property("MSModel", "Hammerstad", false,
-	QObject::tr("quasi-static microstrip model")+
-	" [Hammerstad, Wheeler, Schneider]"));
-  Props.append(new Property("MSDispModel", "Kirschning", false,
-	QObject::tr("microstrip dispersion model")+" [Kirschning, Kobayashi, "
-	"Yamashita, Hammerstad, Getsinger, Schneider, Pramanick]"));
-  Props.append(new Property("Model", "Kirschning", false,
-	QObject::tr("microstrip open end model")+" [Kirschning, Hammerstad, "
-	"Alexopoulos]"));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-MSopen::~MSopen()
+void MSopen::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -11, 46, 22).adjusted(-pw, -pw, pw, pw);
+
+   model = "MOPEN";
+   name = "MS";
+   description =  QObject::tr("microstrip open");
+
+   m_shapes.append(new Line(-30,  0,-18,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-13, -8, 13, -8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-23,  8,  3,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-13, -8,-23,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 13, -8,  3,  8, Component::getPen(Qt::darkBlue,2)));
 }
 
-Component* MSopen::newOne()
+void MSopen::initPorts()
 {
-  return new MSopen();
+   addPort(QPointF(-30,0));
 }
 
-Element* MSopen::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void MSopen::initProperties()
 {
-  Name = QObject::tr("Microstrip Open");
-  BitmapFile = "msopen";
-
-  if(getNewOne)  return new MSopen();
-  return 0;
+   addProperty("Subst","Subst1",QObject::tr("name of substrate definition"),true);
+   addProperty("W","1 mm",QObject::tr("width of the line"),true);
+   addProperty("MSModel","Hammerstad",QObject::tr("quasi-static microstrip model"),false, QString("Hammerstad,Wheeler,Schneider").split(',',QString::SkipEmptyParts));
+   addProperty("MSDispModel","Kirschning",QObject::tr("microstrip dispersion model"),false, QString("Kirschning,Kobayashi,Yamashita,Hammerstad,Getsinger,Schneider,Pramanick").split(',',QString::SkipEmptyParts));
+   addProperty("Model","Kirschning",QObject::tr("microstrip open end model"),false, QString("Kirschning,Hammerstad,Alexopoulos").split(',',QString::SkipEmptyParts));
 }
+

@@ -1,67 +1,59 @@
 /***************************************************************************
-                          msvia.cpp  -  description
-                             -------------------
-    begin                : Sat Oct 30 2004
-    copyright            : (C) 2004 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "msvia.h"
+#include "shapes.h"
 
-
-MSvia::MSvia()
+MSvia::MSvia(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("microstrip via");
-
-  Arcs.append(new Arc(-5,-4, 10,  7,  0, 16*360,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-20,  0, -5,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( -5,  0, -5, 14,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  5,  0,  5, 14,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-11, 14, 11, 14,QPen(QPen::darkBlue,3)));
-  Lines.append(new Line( -7, 20,  7, 20,QPen(QPen::darkBlue,3)));
-  Lines.append(new Line( -3, 26,  3, 26,QPen(QPen::darkBlue,3)));
-
-  Ports.append(new Port(-20,  0));
-
-  x1 = -20; y1 = -7;
-  x2 =  14; y2 = 30;
-
-  tx = 20;
-  ty = 0;
-  Model = "MVIA";
-  Name  = "MS";
-
-  Props.append(new Property("Subst", "Subst1", true,
-		QObject::tr("substrate")));
-  Props.append(new Property("D", "1 mm", true,
-		QObject::tr("diameter of round via conductor")));
-  Props.append(new Property("Temp", "26.85", false,
-	QObject::tr("simulation temperature in degree Celsius")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-MSvia::~MSvia()
+void MSvia::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -20, -7, 34, 37).adjusted(-pw, -pw, pw, pw);
+
+   model = "MVIA";
+   name = "MS";
+   description =  QObject::tr("microstrip via");
+
+   m_shapes.append(new Arc(-5,-4, 10,  7,  0, 16*360, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-20,  0, -5,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -5,  0, -5, 14, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  5,  0,  5, 14, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-11, 14, 11, 14, Component::getPen(Qt::darkBlue,3)));
+   m_shapes.append(new Line( -7, 20,  7, 20, Component::getPen(Qt::darkBlue,3)));
+   m_shapes.append(new Line( -3, 26,  3, 26, Component::getPen(Qt::darkBlue,3)));
 }
 
-Component* MSvia::newOne()
+void MSvia::initPorts()
 {
-  return new MSvia();
+   addPort(QPointF(-20,0));
 }
 
-Element* MSvia::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void MSvia::initProperties()
 {
-  Name = QObject::tr("Microstrip Via");
-  BitmapFile = "msvia";
-
-  if(getNewOne)  return new MSvia();
-  return 0;
+   addProperty("Subst","Subst1",QObject::tr("substrate"),true);
+   addProperty("D","1 mm",QObject::tr("diameter of round via conductor"),true);
+   addProperty("Temp","26.85",QObject::tr("simulation temperature in degree Celsius"),false);
 }
+

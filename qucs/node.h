@@ -35,7 +35,7 @@ class Node : public QucsItem
 
       static const qreal Radius;
 
-      Node(const QString& name = QString(),QGraphicsScene *scene = 0);
+      Node(const QString& name = QString(),SchematicScene *scene = 0);
       ~Node() {}
 
       void addComponent(Component *comp);

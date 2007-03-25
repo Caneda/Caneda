@@ -1,83 +1,69 @@
 /***************************************************************************
-                                relais.cpp
-                               ------------
-    begin                : Sat Feb 25 2006
-    copyright            : (C) 2006 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "relais.h"
+#include "shapes.h"
 
-
-Relais::Relais()
+Relais::Relais(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("relais");
-
-  Lines.append(new Line(-30,-30,-30, -8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-30,  8,-30, 30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-45, -8,-15, -8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-45,  8,-15,  8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-45, -8,-45,  8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-15, -8,-15,  8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-45,  8,-15, -8,QPen(QPen::darkBlue,2)));
-
-  Lines.append(new Line(-15,  0, 35,  0,QPen(QPen::darkBlue,1,Qt::DotLine)));
-
-  Lines.append(new Line( 30,-30, 30,-18,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 30, 15, 30, 30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 30, 15, 45,-15,QPen(QPen::darkBlue,2)));
-  Arcs.append(new Arc( 27,-18, 5, 5, 0, 16*360,QPen(QPen::darkBlue,2)));
-  Ellips.append(new Area( 27, 12, 6, 6, QPen(QPen::darkBlue,2),
-                         QBrush(Qt::darkBlue, Qt::SolidPattern)));
-
-  Ports.append(new Port(-30,-30));
-  Ports.append(new Port( 30,-30));
-  Ports.append(new Port( 30, 30));
-  Ports.append(new Port(-30, 30));
-
-  x1 = -48; y1 = -30;
-  x2 =  45; y2 =  30;
-
-  tx = x2+4;
-  ty = y1+4;
-  Model = "Relais";
-  Name  = "S";
-
-  Props.append(new Property("Vt", "0.5 V", false,
-		QObject::tr("threshold voltage in Volts")));
-  Props.append(new Property("Vh", "0.1 V", false,
-		QObject::tr("hysteresis voltage in Volts")));
-  Props.append(new Property("Ron", "0", false,
-		QObject::tr("resistance of \"on\" state in Ohms")));
-  Props.append(new Property("Roff", "1e12", false,
-		QObject::tr("resistance of \"off\" state in Ohms")));
-  Props.append(new Property("Temp", "26.85", false,
-		QObject::tr("simulation temperature in degree Celsius")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-Relais::~Relais()
+void Relais::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -48, -30, 93, 60).adjusted(-pw, -pw, pw, pw);
+
+   model = "Relais";
+   name = "S";
+   description =  QObject::tr("relay");
+
+   m_shapes.append(new Line(-30,-30,-30, -8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30,  8,-30, 30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-45, -8,-15, -8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-45,  8,-15,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-45, -8,-45,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-15, -8,-15,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-45,  8,-15, -8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-15,  0, 35,  0, Component::getPen(Qt::darkBlue,1,Qt::DotLine)));
+   m_shapes.append(new Line( 30,-30, 30,-18, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 30, 15, 30, 30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 30, 15, 45,-15, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Arc( 27,-18, 5, 5, 0, 16*360, Component::getPen(Qt::darkBlue,2)));
 }
 
-Component* Relais::newOne()
+void Relais::initPorts()
 {
-  return new Relais();
+   addPort(QPointF(-30,-30));
+   addPort(QPointF(30,-30));
+   addPort(QPointF(30,30));
+   addPort(QPointF(-30,30));
 }
 
-Element* Relais::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void Relais::initProperties()
 {
-  Name = QObject::tr("Relais");
-  BitmapFile = "relais";
-
-  if(getNewOne)  return new Relais();
-  return 0;
+   addProperty("Vt","0.5 V",QObject::tr("threshold voltage in Volts"),false);
+   addProperty("Vh","0.1 V",QObject::tr("hysteresis voltage in Volts"),false);
+   addProperty("Ron","0",QObject::tr("resistance of \"on\" state in Ohms"),false);
+   addProperty("Roff","1e12",QObject::tr("resistance of \"off\" state in Ohms"),false);
+   addProperty("Temp","26.85",QObject::tr("simulation temperature in degree Celsius"),false);
 }
+

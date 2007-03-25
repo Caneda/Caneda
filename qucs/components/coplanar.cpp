@@ -1,91 +1,76 @@
 /***************************************************************************
-                               coplanar.cpp
-                              --------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "coplanar.h"
+#include "shapes.h"
 
-
-Coplanar::Coplanar()
+Coplanar::Coplanar(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("coplanar line");
-
-  Lines.append(new Line(-30,  0,-18,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 18,  0, 30,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-13, -8, 23, -8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-23,  8, 13,  8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-13, -8,-23,  8,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 23, -8, 13,  8,QPen(QPen::darkBlue,2)));
-
-  Lines.append(new Line(-25,-13, 25,-13,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 16,-21, 24,-13,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  8,-21, 16,-13,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  0,-21,  8,-13,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( -8,-21,  0,-13,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-16,-21, -8,-13,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-24,-21,-16,-13,QPen(QPen::darkBlue,2)));
-  
-  Lines.append(new Line(-25, 13, 25, 13,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-24, 13,-16, 21,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-16, 13, -8, 21,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( -8, 13,  0, 21,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  0, 13,  8, 21,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  8, 13, 16, 21,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 16, 13, 24, 21,QPen(QPen::darkBlue,2)));
-
-  Ports.append(new Port(-30, 0));
-  Ports.append(new Port( 30, 0));
-
-  x1 = -30; y1 =-24;
-  x2 =  30; y2 = 24;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "CLIN";
-  Name  = "CL";
-
-  Props.append(new Property("Subst", "Subst1", true,
-		QObject::tr("name of substrate definition")));
-  Props.append(new Property("W", "1 mm", true,
-		QObject::tr("width of the line")));
-  Props.append(new Property("S", "1 mm", true,
-		QObject::tr("width of a gap")));
-  Props.append(new Property("L", "10 mm", true,
-		QObject::tr("length of the line")));
-  Props.append(new Property("Backside", "Air", false,
-		QObject::tr("material at the backside of the substrate")+
-		" [Metal, Air]"));
-  Props.append(new Property("Approx", "yes", false,
-		QObject::tr("use approximation instead of precise equation")+
-		" [yes, no]"));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-Coplanar::~Coplanar()
+void Coplanar::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -24, 60, 48).adjusted(-pw, -pw, pw, pw);
+
+   model = "CLIN";
+   name = "CL";
+   description =  QObject::tr("coplanar line");
+
+   m_shapes.append(new Line(-30,  0,-18,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 18,  0, 30,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-13, -8, 23, -8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-23,  8, 13,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-13, -8,-23,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 23, -8, 13,  8, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-25,-13, 25,-13, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 16,-21, 24,-13, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  8,-21, 16,-13, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  0,-21,  8,-13, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -8,-21,  0,-13, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-16,-21, -8,-13, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-24,-21,-16,-13, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-25, 13, 25, 13, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-24, 13,-16, 21, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-16, 13, -8, 21, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -8, 13,  0, 21, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  0, 13,  8, 21, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  8, 13, 16, 21, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 16, 13, 24, 21, Component::getPen(Qt::darkBlue,2)));
 }
 
-Component* Coplanar::newOne()
+void Coplanar::initPorts()
 {
-  return new Coplanar();
+   addPort(QPointF(-30,0));
+   addPort(QPointF(30,0));
 }
 
-Element* Coplanar::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void Coplanar::initProperties()
 {
-  Name = QObject::tr("Coplanar Line");
-  BitmapFile = "coplanar";
-
-  if(getNewOne)  return new Coplanar();
-  return 0;
+   addProperty("Subst","Subst1",QObject::tr("name of substrate definition"),true);
+   addProperty("W","1 mm",QObject::tr("width of the line"),true);
+   addProperty("S","1 mm",QObject::tr("width of a gap"),true);
+   addProperty("L","10 mm",QObject::tr("length of the line"),true);
+   addProperty("Backside","Air",QObject::tr("material at the backside of the substrate"),false, QString("Metal,Air").split(',',QString::SkipEmptyParts));
+   addProperty("Approx","yes",QObject::tr("use approximation instead of precise equation"),false, QString("yes,no").split(',',QString::SkipEmptyParts));
 }
+

@@ -1,70 +1,64 @@
 /***************************************************************************
-                          tline.cpp  -  description
-                             -------------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "tline.h"
+#include "shapes.h"
 
-
-TLine::TLine()
+TLine::TLine(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("ideal transmission line");
-
-  Arcs.append(new Arc(-20, -9, 8, 18,     0, 16*360,QPen(QPen::darkBlue,2)));
-  Arcs.append(new Arc( 11, -9, 8, 18,16*270, 16*180,QPen(QPen::darkBlue,2)));
-
-  Lines.append(new Line(-30,  0,-16,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 19,  0, 30,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-16, -9, 16, -9,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-16,  9, 16,  9,QPen(QPen::darkBlue,2)));
-
-  Ports.append(new Port(-30, 0));
-  Ports.append(new Port( 30, 0));
-
-  x1 = -30; y1 =-12;
-  x2 =  30; y2 = 12;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "TLIN";
-  Name  = "Line";
-
-  Props.append(new Property("Z", "50 Ohm", true,
-		QObject::tr("characteristic impedance")));
-  Props.append(new Property("L", "1 mm", true,
-		QObject::tr("electrical length of the line")));
-  Props.append(new Property("Alpha", "0 dB", false,
-		QObject::tr("attenuation factor per length in 1/m")));
-  Props.append(new Property("Temp", "26.85", false,
-		QObject::tr("simulation temperature in degree Celsius")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-TLine::~TLine()
+void TLine::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -4, 60, 20).adjusted(-pw, -pw, pw, pw);
+
+   model = "TLIN";
+   name = "Line";
+   description =  QObject::tr("ideal transmission line");
+
+   m_shapes.append(new Line(-30,  0, 30,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-28,  7, 28,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-28, 14,-21,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-21, 14,-14,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-14, 14, -7,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -7, 14,  0,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  0, 14,  7,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  7, 14, 14,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 14, 14, 21,  7, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 21, 14, 28,  7, Component::getPen(Qt::darkBlue,2)));
 }
 
-Component* TLine::newOne()
+void TLine::initPorts()
 {
-  return new TLine();
+   addPort(QPointF(-30,0));
+   addPort(QPointF(30,0));
 }
 
-Element* TLine::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void TLine::initProperties()
 {
-  Name = QObject::tr("Transmission Line");
-  BitmapFile = "tline";
-
-  if(getNewOne)  return new TLine();
-  return 0;
+   addProperty("Z","50 Ohm",QObject::tr("characteristic impedance"),true);
+   addProperty("L","1 mm",QObject::tr("electrical length of the line"),true);
+   addProperty("Alpha","0 dB",QObject::tr("attenuation factor per length in 1/m"),false);
+   addProperty("Temp","26.85",QObject::tr("simulation temperature in degree Celsius"),false);
 }
+

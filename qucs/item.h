@@ -43,7 +43,7 @@ class QucsItem : public QGraphicsItem
          Type = QucsItemType
       };
 
-      QucsItem(QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+      QucsItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
       virtual ~QucsItem() {};
 
       int type() const;

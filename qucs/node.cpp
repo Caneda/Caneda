@@ -28,7 +28,7 @@
 
 const qreal Node::Radius = 3.0;
 
-Node::Node(const QString& name,QGraphicsScene *scene) : QucsItem(0,scene)
+Node::Node(const QString& name,SchematicScene *scene) : QucsItem(0,scene)
 {
    setName(name);
    setFlags(0);

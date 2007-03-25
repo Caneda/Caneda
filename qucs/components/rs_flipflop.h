@@ -1,33 +1,45 @@
 /***************************************************************************
-                               rs_flipflop.h
-                              --------------
-    begin                : Fri Jan 06 2006
-    copyright            : (C) 2006 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef RS_FLIPFLOP_H
-#define RS_FLIPFLOP_H
+#ifndef __RS_FLIPFLOP_H
+#define __RS_FLIPFLOP_H
 
 #include "component.h"
 
-
-class RS_FlipFlop : public Component  {
+class RS_FlipFlop : public Component
+{
 public:
-  RS_FlipFlop();
- ~RS_FlipFlop() {};
-  Component* newOne();
-  static Element* info(QString&, char* &, bool getNewOne=false);
-  QString VHDL_Code(int);
+   RS_FlipFlop(SchematicScene *scene = 0);
+
+   inline QRectF boundingRect() const;
+
+private:
+   void initConstants();
+   void initPorts();
+   void initProperties();
+
+   QRectF m_boundingRect;
 };
+
+inline QRectF RS_FlipFlop::boundingRect() const
+{
+   return m_boundingRect;
+}
 
 #endif

@@ -31,31 +31,34 @@
 class CategoryItem
 {
    public:
-      CategoryItem(const QString& n, const QString& f=QString(),CategoryItem *parent = 0,bool isc = true);
+      CategoryItem(const QString& n, const QString& m="",const QString& f=QString(),CategoryItem *parent = 0,bool isc = true);
       ~CategoryItem();
 
       CategoryItem *parent() const;
       CategoryItem *child(int row) const;
       int childCount() const;
       void addChild(CategoryItem* c);
-      void addChild(const QString& name,const QString& fname = QString(),bool isc = true);
+      void addChild(const QString& name,const QString& m,const QString& fname = QString(),bool isc = true);
       int row() const;
       QString name() const { return m_name; }
+      QString model() const { return m_model; }
       QString fileName() const { return m_fileName; }
       bool isComponent() const { return m_isComponent; }
 
    private:
       QString m_name;
       QString m_fileName;
+      QString m_model;
       bool m_isComponent;
       QList<CategoryItem*> m_childItems;
       CategoryItem *m_parentItem;
 
 };
 
-CategoryItem::CategoryItem(const QString& n, const QString& f, CategoryItem *parent, bool isc)
+CategoryItem::CategoryItem(const QString& n, const QString& m,const QString& f, CategoryItem *parent, bool isc)
 {
    m_name = n;
+   m_model = m;
    m_fileName = f;
    m_isComponent = isc;
    m_parentItem = parent;
@@ -93,9 +96,9 @@ void CategoryItem::addChild(CategoryItem *c)
    m_childItems << c;
 }
 
-void CategoryItem::addChild(const QString& name,const QString& fname,bool isc)
+void CategoryItem::addChild(const QString& name,const QString& m,const QString& fname,bool isc)
 {
-   CategoryItem *n = new CategoryItem(name,fname,0,isc);
+   CategoryItem *n = new CategoryItem(name,m,fname,0,isc);
    n->m_parentItem = const_cast<CategoryItem*>(this);
    m_childItems << n;
 }
@@ -116,56 +119,84 @@ SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
 
 void SidebarModel::fillData()
 {
-   CategoryItem *lumped = new CategoryItem(tr("Lumped Components"),QString(),rootItem,false);
-   CategoryItem *sources = new CategoryItem(tr("Sources"),QString(),rootItem,false);
+   CategoryItem *lumped = new CategoryItem(tr("Lumped Components"),"","",rootItem,false);
+   CategoryItem *sources = new CategoryItem(tr("Sources"),"","",rootItem,false);
+   CategoryItem *transmission = new CategoryItem(tr("Transmission lines"),"","",rootItem,false);
+   CategoryItem *nonlinear = new CategoryItem(tr("Non linear components"),"","",rootItem,false);
+   CategoryItem *digital = new CategoryItem(tr("Digital"),"","",rootItem,false);
+   
+   lumped->addChild( QObject::tr("Amplifier"), "Amp", "amplifier.png");
+   lumped->addChild( QObject::tr("Attenuator"), "Attenuator", "attenuator.png");
+   lumped->addChild( QObject::tr("Bias T"), "BiasT", "biast.png");
+   lumped->addChild( QObject::tr("Circulator"), "Circulator", "circulator.png");
+   lumped->addChild( QObject::tr("Coupler"), "Coupler", "coupler.png");
+   lumped->addChild( QObject::tr("dc Block"), "DCBlock", "dcblock.png");
+   lumped->addChild( QObject::tr("dc Feed"), "DCFeed", "dcfeed.png");
+   lumped->addChild( QObject::tr("Ground"), "GND", "gnd.png");
+   lumped->addChild( QObject::tr("Gyrator"), "Gyrator", "gyrator.png");
+   lumped->addChild( QObject::tr("Inductor"), "L", "inductor.png");
+   lumped->addChild( QObject::tr("Current Probe"), "IProbe", "iprobe.png");
+   lumped->addChild( QObject::tr("Isolator"), "Isolator", "isolator.png");
+   lumped->addChild( QObject::tr("3 Mutual Inductors"), "MUT2", "mutual2.png");
+   lumped->addChild( QObject::tr("Mutual Inductors"), "MUT", "mutual.png");
+   lumped->addChild( QObject::tr("Phase Shifter"), "PShift", "pshifter.png");
+   lumped->addChild( QObject::tr("Relay"), "Relais", "relais.png");
+   lumped->addChild( QObject::tr("symmetric Transformer"), "sTr", "symtrans.png");
+   lumped->addChild( QObject::tr("Transformer"), "Tr", "transformer.png");
+   lumped->addChild( QObject::tr("Voltage Probe"), "VProbe", "vprobe.png");
 
 
-   lumped->addChild(tr("Resistor"),QString("resistor.png"));
-   lumped->addChild(tr("ResistorUS"),QString("resistor_us.png"));
-   lumped->addChild(tr("Capacitor"),QString("capacitor.png"));
-   lumped->addChild(tr("Inductor"),QString("inductor.png"));
-   lumped->addChild(tr("Ground"),QString("ground.png"));
-   lumped->addChild(tr("Subcircuit Port"),QString("subport.png"));
-   lumped->addChild(tr("Transformer"),QString("transformer.png"));
-   lumped->addChild(tr("Symmetric Transformer"),QString("symtrans.png"));
-   lumped->addChild(tr("DC Block"),QString("dcblock.png"));
-   lumped->addChild(tr("DC Feed"),QString("dcfeed.png"));
-   lumped->addChild(tr("Bias T"),QString("biast.png"));
-   lumped->addChild(tr("Attenuator"),QString("attenuator.png"));
-   lumped->addChild(tr("Amplifier"),QString("amplifier.png"));
-   lumped->addChild(tr("Isolator"),QString("isolator.png"));
-   lumped->addChild(tr("Circulator"),QString("circulator.png"));
-   lumped->addChild(tr("Gyrator"),QString("gyrator.png"));
-   lumped->addChild(tr("Phase Shifter"),QString("pshifter.png"));
-   lumped->addChild(tr("Coupler"),QString("coupler.png"));
-   lumped->addChild(tr("Current Probe"),QString("iprobe.png"));
-   lumped->addChild(tr("Voltage Probe"),QString("vprobe.png"));
-   lumped->addChild(tr("Mutual Inductors"),QString(".png"));
-   lumped->addChild(tr("3 Mutual Inductors"),QString(".png"));
-   lumped->addChild(tr("Switch"),QString("switch.png"));
-   lumped->addChild(tr("Relay"),QString("relay.png"));
+   sources->addChild( QObject::tr("AM modulated Source"), "AM_Mod", "am_mod.png");
+   sources->addChild( QObject::tr("ac Current Source"), "Iac", "ac_current.png");
+   sources->addChild( QObject::tr("dc Current Source"), "Idc", "dc_current.png");
+   sources->addChild( QObject::tr("Noise Current Source"), "Inoise", "noise_current.png");
+   sources->addChild( QObject::tr("Current Controlled Current Source"), "CCCS", "cccs.png");
+   sources->addChild( QObject::tr("Current Controlled Voltage Source"), "CCVS", "ccvs.png");
+   sources->addChild( QObject::tr("Current Pulse"), "Ipulse", "ipulse.png");
+   sources->addChild( QObject::tr("Rectangle Current"), "Irect", "irect.png");
+   sources->addChild( QObject::tr("Correlated Noise Sources"), "IInoise", "noise_ii.png");
+   sources->addChild( QObject::tr("Correlated Noise Sources"), "IVnoise", "noise_iv.png");
+   sources->addChild( QObject::tr("Correlated Noise Sources"), "VVnoise", "noise_vv.png");
+   sources->addChild( QObject::tr("PM modulated Source"), "PM_Mod", "pm_mod.png");
+   sources->addChild( QObject::tr("Power Source"), "Pac", "source.png");
+   sources->addChild( QObject::tr("Voltage Controlled Current Source"), "VCCS", "vccs.png");
+   sources->addChild( QObject::tr("Voltage Controlled Voltage Source"), "VCVS", "vcvs.png");
+   sources->addChild( QObject::tr("ac Voltage Source"), "Vac", "ac_voltage.png");
+   sources->addChild( QObject::tr("dc Voltage Source"), "Vdc", "dc_voltage.png");
+   sources->addChild( QObject::tr("Noise Voltage Source"), "Vnoise", "noise_volt.png");
+   sources->addChild( QObject::tr("Voltage Pulse"), "Vpulse", "vpulse.png");
+   sources->addChild( QObject::tr("Rectangle Voltage"), "Vrect", "vrect.png");
 
-   sources->addChild(tr("DC Voltage Source"),QString("dc_voltage.png"));
-   sources->addChild(tr("DC Current Source"),QString("dc_current.png"));
-   sources->addChild(tr("AC Voltage Source"),QString("ac_voltage.png"));
-   sources->addChild(tr("AC Current Source"),QString("ac_current.png"));
-   sources->addChild(tr("Power Source"),QString("source.png"));
-   sources->addChild(tr("Noise Voltage Source"),QString("noise_volt.png"));
-   sources->addChild(tr("Noise Current Source"),QString("noise_current.png"));
-   sources->addChild(tr("Voltage Controlled Current Source"),QString("vccs.png"));
-   sources->addChild(tr("Current Controlled Current Source"),QString("cccs.png"));
-   sources->addChild(tr("Voltage Controlled Voltage Source"),QString("vcvs.png"));
-   sources->addChild(tr("Current Controlled Voltage Source"),QString("ccvs.png"));
-   sources->addChild(tr("Voltage Pulse"),QString("vpulse.png"));
-   sources->addChild(tr("Current Pulse"),QString("ipulse.png"));
-   sources->addChild(tr("Rectangle Voltage"),QString("vrect.png"));
-   sources->addChild(tr("Rectangle Current"),QString("irect.png"));
-   sources->addChild(tr("Correlated Noise Sources"),QString("noise_ii.png"));
-   sources->addChild(tr("Correlated Noise Sources"),QString("noise_vv.png"));
-   sources->addChild(tr("Correlated Noise Sources"),QString("noise_iv.png"));
-   sources->addChild(tr("AM Modulated Source"),QString("am_mod.png"));
-   sources->addChild(tr("PM Modulated Source"),QString("pm_mod.png"));
 
+   transmission->addChild( QObject::tr("Bond Wire"), "BOND", "bondwire.png");
+   transmission->addChild( QObject::tr("Coaxial Line"), "COAX", "coaxial.png");
+   transmission->addChild( QObject::tr("Coplanar Line"), "CLIN", "coplanar.png");
+   transmission->addChild( QObject::tr("Coplanar Gap"), "CGAP", "cpwgap.png");
+   transmission->addChild( QObject::tr("Coplanar Open"), "COPEN", "cpwopen.png");
+   transmission->addChild( QObject::tr("Coplanar Short"), "CSHORT", "cpwshort.png");
+   transmission->addChild( QObject::tr("Coplanar Step"), "CSTEP", "cpwstep.png");
+   transmission->addChild( QObject::tr("Microstrip Corner"), "MCORN", "mscorner.png");
+   transmission->addChild( QObject::tr("Coupled Microstrip Line"), "MCOUPLED", "mscoupled.png");
+   transmission->addChild( QObject::tr("Microstrip Gap"), "MGAP", "msgap.png");
+   transmission->addChild( QObject::tr("Microstrip Line"), "MLIN", "msline.png");
+   transmission->addChild( QObject::tr("Microstrip Mitered Bend"), "MMBEND", "msmbend.png");
+   transmission->addChild( QObject::tr("Microstrip Open"), "MOPEN", "msopen.png");
+   transmission->addChild( QObject::tr("Microstrip Step"), "MSTEP", "msstep.png");
+   transmission->addChild( QObject::tr("Microstrip Via"), "MVIA", "msvia.png");
+   transmission->addChild( QObject::tr("Substrate"), "SUBST", "substrate.png");
+   transmission->addChild( QObject::tr("4-Terminal Transmission Line"), "TLIN4P", "tline_4port.png");
+   transmission->addChild( QObject::tr("Transmission Line"), "TLIN", "tline.png");
+   transmission->addChild( QObject::tr("Twisted-Pair"), "TWIST", "twistedpair.png");
+
+
+   nonlinear->addChild( QObject::tr("OpAmp"), "OpAmp", "opamp.png");
+
+
+   digital->addChild( QObject::tr("D-FlipFlop"), "DFF", "dflipflop.png");
+   digital->addChild( QObject::tr("digital source"), "DigiSource", "digi_source.png");
+   digital->addChild( QObject::tr("JK-FlipFlop"), "JKFF", "jkflipflop.png");
+   digital->addChild( QObject::tr("RS-FlipFlop"), "RSFF", "rsflipflop.png");
+   
 }
 
 QModelIndex SidebarModel::index ( int row, int column, const QModelIndex & parent ) const
@@ -250,9 +281,11 @@ QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
    QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
    foreach (QModelIndex index, indexes) {
-      if (index.isValid()) {
-         QString text = data(index, Qt::DisplayRole).toString();
-         stream << text;
+      if (index.isValid())
+      {
+         CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
+         //QString text = data(index, Qt::DisplayRole).toString();
+         stream << item->model();
       }
    }
 

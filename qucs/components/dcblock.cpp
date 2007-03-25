@@ -1,65 +1,59 @@
 /***************************************************************************
-                          dcblock.cpp  -  description
-                             -------------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "dcblock.h"
+#include "shapes.h"
 
-dcBlock::dcBlock()
+dcBlock::dcBlock(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("dc block");
-
-  Lines.append(new Line(- 4,-11, -4, 11,QPen(QPen::darkBlue,4)));
-  Lines.append(new Line(  4,-11,  4, 11,QPen(QPen::darkBlue,4)));
-  Lines.append(new Line(-30,  0, -4,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(  4,  0, 30,  0,QPen(QPen::darkBlue,2)));
-
-  Lines.append(new Line(-23,-14, 23,-14,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-23, 14, 23, 14,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line(-23,-14,-23, 14,QPen(QPen::darkBlue,1)));
-  Lines.append(new Line( 23,-14, 23, 14,QPen(QPen::darkBlue,1)));
-
-  Ports.append(new Port(-30,  0));
-  Ports.append(new Port( 30,  0));
-
-  x1 = -30; y1 = -16;
-  x2 =  30; y2 =  17;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "DCBlock";
-  Name  = "C";
-
-  Props.append(new Property("C", "1 uF", false,
-	QObject::tr("for transient simulation: capacitance in Farad")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-dcBlock::~dcBlock()
+void dcBlock::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -16, 60, 33).adjusted(-pw, -pw, pw, pw);
+
+   model = "DCBlock";
+   name = "C";
+   description =  QObject::tr("dc block");
+
+   m_shapes.append(new Line(- 4,-11, -4, 11, Component::getPen(Qt::darkBlue,4)));
+   m_shapes.append(new Line(  4,-11,  4, 11, Component::getPen(Qt::darkBlue,4)));
+   m_shapes.append(new Line(-30,  0, -4,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(  4,  0, 30,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-23,-14, 23,-14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-23, 14, 23, 14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-23,-14,-23, 14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line( 23,-14, 23, 14, Component::getPen(Qt::darkBlue,1)));
 }
 
-Component* dcBlock::newOne()
+void dcBlock::initPorts()
 {
-  return new dcBlock();
+   addPort(QPointF(-30,0));
+   addPort(QPointF(30,0));
 }
 
-Element* dcBlock::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void dcBlock::initProperties()
 {
-  Name = QObject::tr("dc Block");
-  BitmapFile = "dcblock";
-
-  if(getNewOne)  return new dcBlock();
-  return 0;
+   addProperty("C","1 uF",QObject::tr("for transient simulation: capacitance in Farad"),false);
 }
+

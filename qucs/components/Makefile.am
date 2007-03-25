@@ -24,11 +24,24 @@
 
 noinst_LIBRARIES = libcomponents.a
 
-MOCHEADERS = 
+MOCHEADERS = propertytext.h componentproperty.h
 # componentdialog.h spicedialog.h optimizedialog.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-libcomponents_a_SOURCES = component.cpp resistor.cpp capacitor.cpp coupler.cpp
+libcomponents_a_SOURCES = component.cpp resistor.cpp componentproperty.cpp propertytext.cpp \
+					am_modulator.cpp ampere_ac.cpp ampere_dc.cpp ampere_noise.cpp amplifier.cpp\
+					attenuator.cpp biast.cpp bondwire.cpp cccs.cpp ccvs.cpp circulator.cpp \
+					coaxialline.cpp coplanar.cpp coupler.cpp cpwgap.cpp cpwopen.cpp \
+					cpwshort.cpp cpwstep.cpp dcblock.cpp dcfeed.cpp d_flipflop.cpp \
+					digi_source.cpp ground.cpp gyrator.cpp inductor.cpp iprobe.cpp \
+					ipulse.cpp irect.cpp isolator.cpp jk_flipflop.cpp mscorner.cpp \
+					mscoupled.cpp msgap.cpp msline.cpp msmbend.cpp msopen.cpp msstep.cpp \
+					msvia.cpp mutual2.cpp mutual.cpp noise_ii.cpp noise_iv.cpp noise_vv.cpp \
+					opamp.cpp phaseshifter.cpp pm_modulator.cpp relais.cpp rs_flipflop.cpp \
+					source_ac.cpp substrate.cpp symtrafo.cpp tline_4port.cpp tline.cpp \
+					transformer.cpp twistedpair.cpp vccs.cpp vcvs.cpp volt_ac.cpp volt_dc.cpp \
+					volt_noise.cpp vprobe.cpp vpulse.cpp vrect.cpp
+
 # phaseshifter.cpp gyrator.cpp componentdialog.cpp    \
 #   vcvs.cpp vccs.cpp tr_sim.cpp tline.cpp substrate.cpp sp_sim.cpp             \
 #   param_sweep.cpp mstee.cpp msstep.cpp msline.cpp mscross.cpp mscoupled.cpp   \
@@ -51,7 +64,19 @@ libcomponents_a_SOURCES = component.cpp resistor.cpp capacitor.cpp coupler.cpp
 
 nodist_libcomponents_a_SOURCES = $(MOCFILES)
 
-noinst_HEADERS = $(MOCHEADERS) component.h components.h resistor.h capacitor.h coupler.h
+noinst_HEADERS = $(MOCHEADERS) component.h components.h resistor.h\
+						am_modulator.h ampere_ac.h ampere_dc.h ampere_noise.h amplifier.h \
+						attenuator.h biast.h bondwire.h cccs.h ccvs.h circulator.h \
+						coaxialline.h coplanar.h coupler.h cpwgap.h cpwopen.h cpwshort.h \
+						cpwstep.h dcblock.h dcfeed.h d_flipflop.h digi_source.h ground.h \
+						gyrator.h inductor.h iprobe.h ipulse.h irect.h isolator.h \
+						jk_flipflop.h mscorner.h mscoupled.h msgap.h msline.h msmbend.h \
+						msopen.h msstep.h msvia.h mutual2.h mutual.h noise_ii.h noise_iv.h \
+						noise_vv.h opamp.h phaseshifter.h pm_modulator.h relais.h \
+						rs_flipflop.h source_ac.h substrate.h symtrafo.h tline_4port.h \
+						tline.h transformer.h twistedpair.h vccs.h vcvs.h volt_ac.h \
+						volt_dc.h volt_noise.h vprobe.h vpulse.h vrect.h
+
 # resistor.h components.h capacitor.h vccs.h     \
 #   inductor.h biast.h dcblock.h dcfeed.h ground.h subcirport.h symtrafo.h      \
 #   transformer.h ampere_dc.h attenuator.h circulator.h equation.h isolator.h   \

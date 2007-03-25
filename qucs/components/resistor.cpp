@@ -18,29 +18,44 @@
  ***************************************************************************/
 
 #include "resistor.h"
-#include "node.h"
-#include "propertytext.h"
-#include "schematicscene.h"
+#include "shapes.h"
+#include "componentproperty.h"
+//#include "node.h"
+//#include "propertytext.h"
+//#include "schematicscene.h"
 
 #include <QtGui/QPainter>
-#include <QtGui/QStyle>
+//#include <QtGui/QStyle>
 #include <QtGui/QStyleOptionGraphicsItem>
 
-Resistor::Resistor(QGraphicsScene *s) : Component(0,s)
+Resistor::Resistor(SchematicScene *s) : Component(s)
 {
-   initComponentStrings();
-   m_ports.append(new ComponentPort(this,QPointF(-30.0,0.0)));
-   m_ports.append(new ComponentPort(this,QPointF(30.0,0.0)));
-   PropertyText *t1 = new PropertyText("R","100k","Simple resistor",0,s);
-   m_properties.append(t1);
-   if(s)
-      t1->setPos(pos() + QPointF(0,-35));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-void Resistor::initComponentStrings()
+void Resistor::initConstants()
 {
    model = name = "R";
    description = QObject::tr("resistor");
+   m_shapes.append(new Line(-18, -9, 18, -9,getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line( 18, -9, 18,  9,getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line( 18,  9,-18,  9,getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-18,  9,-18, -9,getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-27,  0,-18,  0,getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line( 18,  0, 27,  0,getPen(Qt::darkBlue,1)));
+}
+
+void Resistor::initPorts()
+{
+   addPort(QPointF(-30.0,0.0));
+   addPort(QPointF(30.0,0.0));
+}
+
+void Resistor::initProperties()
+{
+   addProperty("R","100k","Simple resistor",true);
 }
 
 QString Resistor::netlist() const
@@ -48,11 +63,11 @@ QString Resistor::netlist() const
    QString s = model+":"+name;
 
    // output all node names
-   foreach(ComponentPort *port, m_ports)
-      s += ' ' + port->node()->name(); // node names
+//   foreach(ComponentPort *port, m_ports)
+   //    s += ' ' + port->node()->name(); // node names
    
    // output all properties
-   foreach(PropertyText *prop, m_properties)
+   foreach(ComponentProperty *prop, m_properties)
    {
       if(prop->name() != "Symbol")
          s += ' ' + prop->name() + "'=\"" + prop->value() + "\"";
@@ -60,32 +75,16 @@ QString Resistor::netlist() const
    return s;
 }
 
-void Resistor::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
-{
-   Q_UNUSED(w);
-   initPainter(p,o);
 
-   p->drawLine(-18, -9, 18, -9);
-   p->drawLine( 18, -9, 18,  9);
-   p->drawLine( 18,  9,-18,  9);
-   p->drawLine(-18,  9,-18, -9);
-   p->drawLine(-27,  0,-18,  0);
-   p->drawLine( 18,  0, 27,  0);
 
-   
-   if(o->state & QStyle::State_Open)
-      drawNodes(p);
-
-}
-
-ResistorUS::ResistorUS(QGraphicsScene *s) : Resistor(s)
+ResistorUS::ResistorUS(SchematicScene *s) : Resistor(s)
 {
 }
 
 void ResistorUS::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
 {
    Q_UNUSED(w);
-   initPainter(p,o);
+   //initPainter(p,o);
    
    p->drawLine(-27,  0,-18,  0);
    p->drawLine(-18,  0,-15, -7);

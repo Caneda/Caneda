@@ -1,89 +1,75 @@
 /***************************************************************************
-                          mscoupled.cpp  -  description
-                             -------------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "mscoupled.h"
+#include "shapes.h"
 
-
-MScoupled::MScoupled()
+MScoupled::MScoupled(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("coupled microstrip line");
-
-  Lines.append(new Line(-30,-12,-16,-12,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-30,-30,-30,-12,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 20,-12, 30,-12,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 30,-30, 30,-12,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-11,-20, 25,-20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-21, -4, 15, -4,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-11,-20,-21, -4,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 25,-20, 15, -4,QPen(QPen::darkBlue,2)));
-
-  Lines.append(new Line(-30, 12,-20, 12,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-30, 30,-30, 12,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 16, 12, 30, 12,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 30, 30, 30, 12,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-15,  4, 21,  4,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-25, 20, 11, 20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-15,  4,-25, 20,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 21,  4, 11, 20,QPen(QPen::darkBlue,2)));
-
-  Ports.append(new Port(-30,-30));
-  Ports.append(new Port( 30,-30));
-  Ports.append(new Port( 30, 30));
-  Ports.append(new Port(-30, 30));
-
-  x1 = -30; y1 =-33;
-  x2 =  30; y2 = 33;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "MCOUPLED";
-  Name  = "MS";
-
-  Props.append(new Property("Subst", "Subst1", true,
-	QObject::tr("name of substrate definition")));
-  Props.append(new Property("W", "1 mm", true,
-	QObject::tr("width of the line")));
-  Props.append(new Property("L", "10 mm", true,
-	QObject::tr("length of the line")));
-  Props.append(new Property("S", "1 mm", true,
-	QObject::tr("spacing between the lines")));
-  Props.append(new Property("Model", "Kirschning", false,
-	QObject::tr("microstrip model")+" [Kirschning, Hammerstad]"));
-  Props.append(new Property("DispModel", "Kirschning", false,
-	QObject::tr("microstrip dispersion model")+
-	" [Kirschning, Getsinger]"));
-  Props.append(new Property("Temp", "26.85", false,
-	QObject::tr("simulation temperature in degree Celsius")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-MScoupled::~MScoupled()
+void MScoupled::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -33, 60, 66).adjusted(-pw, -pw, pw, pw);
+
+   model = "MCOUPLED";
+   name = "MS";
+   description =  QObject::tr("coupled microstrip line");
+
+   m_shapes.append(new Line(-30,-12,-16,-12, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30,-30,-30,-12, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 20,-12, 30,-12, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 30,-30, 30,-12, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-11,-20, 25,-20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-21, -4, 15, -4, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-11,-20,-21, -4, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 25,-20, 15, -4, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30, 12,-20, 12, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30, 30,-30, 12, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 16, 12, 30, 12, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 30, 30, 30, 12, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-15,  4, 21,  4, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-25, 20, 11, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-15,  4,-25, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 21,  4, 11, 20, Component::getPen(Qt::darkBlue,2)));
 }
 
-Component* MScoupled::newOne()
+void MScoupled::initPorts()
 {
-  return new MScoupled();
+   addPort(QPointF(-30,-30));
+   addPort(QPointF(30,-30));
+   addPort(QPointF(30,30));
+   addPort(QPointF(-30,30));
 }
 
-Element* MScoupled::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void MScoupled::initProperties()
 {
-  Name = QObject::tr("Coupled Microstrip Line");
-  BitmapFile = "mscoupled";
-
-  if(getNewOne)  return new MScoupled();
-  return 0;
+   addProperty("Subst","Subst1",QObject::tr("name of substrate definition"),true);
+   addProperty("W","1 mm",QObject::tr("width of the line"),true);
+   addProperty("L","10 mm",QObject::tr("length of the line"),true);
+   addProperty("S","1 mm",QObject::tr("spacing between the lines"),true);
+   addProperty("Model","Kirschning",QObject::tr("microstrip model"),false, QString("Kirschning,Hammerstad").split(',',QString::SkipEmptyParts));
+   addProperty("DispModel","Kirschning",QObject::tr("microstrip dispersion model"),false, QString("Kirschning,Getsinger").split(',',QString::SkipEmptyParts));
+   addProperty("Temp","26.85",QObject::tr("simulation temperature in degree Celsius"),false);
 }
+

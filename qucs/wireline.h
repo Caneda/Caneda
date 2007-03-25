@@ -17,18 +17,18 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __LINE_UTILITIES_H
-#define __LINE_UTILITIES_H
+#ifndef __WIRE_LINE_UTILITIES_H
+#define __WIRE_LINE_UTILITIES_H
 
 #include <QtCore/QLineF>
 
-class Line
+class WireLine
 {
    public:
-      inline Line();
-      inline Line(const QLineF& line);
-      inline Line(const QPointF& p2, const QPointF& p2);
-      inline Line(qreal x1,qreal y1, qreal x2,qreal y2);
+      inline WireLine();
+      inline WireLine(const QLineF& line);
+      inline WireLine(const QPointF& p2, const QPointF& p2);
+      inline WireLine(qreal x1,qreal y1, qreal x2,qreal y2);
       inline bool isHorizontal() const;
       inline bool isVertical() const;
       inline bool isNull() const;
@@ -56,46 +56,46 @@ class Line
       inline qreal length() const;
 
       inline operator const QLineF () const;// { return m_line; }
-      friend inline bool operator==(const Line& l1, const Line& l2);
-      friend inline bool operator!=(const Line& l1, const Line& l2);
+      friend inline bool operator==(const WireLine& l1, const WireLine& l2);
+      friend inline bool operator!=(const WireLine& l1, const WireLine& l2);
    private:
       QLineF m_line;
 };
 
-inline Line::Line() {}
+inline WireLine::WireLine() {}
 
-inline Line::Line(const QLineF& line) : m_line(line) {}
+inline WireLine::WireLine(const QLineF& line) : m_line(line) {}
 
-inline Line::Line(const QPointF& p1, const QPointF& p2) : m_line(p1,p2) {}
+inline WireLine::WireLine(const QPointF& p1, const QPointF& p2) : m_line(p1,p2) {}
 
-inline Line::Line(qreal x1,qreal y1,qreal x2,qreal y2) : m_line(x1,y1,x2,y2) {}
+inline WireLine::WireLine(qreal x1,qreal y1,qreal x2,qreal y2) : m_line(x1,y1,x2,y2) {}
 
-inline bool Line::isHorizontal() const
+inline bool WireLine::isHorizontal() const
 {
    return m_line.p1().y() == m_line.p2().y();
 }
 
-inline bool Line::isVertical() const
+inline bool WireLine::isVertical() const
 {
    return m_line.p1().x() == m_line.p2().x();
 }
 
-inline bool Line::isNull() const
+inline bool WireLine::isNull() const
 {
    return m_line.isNull();
 }
 
-inline void Line::setP1(const QPointF& pt)
+inline void WireLine::setP1(const QPointF& pt)
 {
    m_line = QLineF(pt,m_line.p2());
 }
 
-inline void Line::setP2(const QPointF& pt)
+inline void WireLine::setP2(const QPointF& pt)
 {
    m_line = QLineF(m_line.p1(),pt);
 }
 
-inline void Line::setX(qreal x)
+inline void WireLine::setX(qreal x)
 {
    QPointF p1 = m_line.p1();
    QPointF p2 = m_line.p2();
@@ -104,7 +104,7 @@ inline void Line::setX(qreal x)
    m_line = QLineF(p1,p2);
 }
 
-inline void Line::setY(qreal y)
+inline void WireLine::setY(qreal y)
 {
    QPointF p1 = m_line.p1();
    QPointF p2 = m_line.p2();
@@ -113,74 +113,74 @@ inline void Line::setY(qreal y)
    m_line = QLineF(p1,p2);
 }
 
-inline void Line::translate(const QPointF& delta)
+inline void WireLine::translate(const QPointF& delta)
 {
    m_line.translate(delta);
 }
 
-inline void Line::translate(qreal dx,qreal dy)
+inline void WireLine::translate(qreal dx,qreal dy)
 {
    m_line.translate(dx,dy);
 }
 
-inline qreal Line::x1() const
+inline qreal WireLine::x1() const
 {
    return m_line.x1();
 }
 
-inline qreal Line::y1() const
+inline qreal WireLine::y1() const
 {
    return m_line.y1();
 }
 
-inline qreal Line::x2() const
+inline qreal WireLine::x2() const
 {
    return m_line.x2();
 }
 
-inline qreal Line::y2() const
+inline qreal WireLine::y2() const
 {
    return m_line.y2();
 }
 
 
-inline QPointF Line::p1() const
+inline QPointF WireLine::p1() const
 {
    return m_line.p1();
 }
 
-inline QPointF Line::p2() const
+inline QPointF WireLine::p2() const
 {
    return m_line.p2();
 }
 
 
-inline qreal Line::x() const
+inline qreal WireLine::x() const
 {
    return m_line.x1();
 }
 
-inline qreal Line::y() const
+inline qreal WireLine::y() const
 {
    return m_line.y1();
 }
 
-inline qreal Line::length() const
+inline qreal WireLine::length() const
 {
    return m_line.length();
 }
 
-inline Line::operator const QLineF() const
+inline WireLine::operator const QLineF() const
 {
    return m_line;
 }
 
-inline bool operator==(const Line& l1,const Line& l2)
+inline bool operator==(const WireLine& l1,const WireLine& l2)
 {
    return QLineF(l1) == QLineF(l2);
 }
 
-inline bool operator!=(const Line& l1,const Line& l2)
+inline bool operator!=(const WireLine& l1,const WireLine& l2)
 {
    return QLineF(l1) != QLineF(l2);
 }

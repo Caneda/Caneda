@@ -29,7 +29,7 @@ class ComponentsSidebar : public QTreeView
       ~ComponentsSidebar() {}
 
       void startDrag( Qt::DropActions supportedActions);
-      QPixmap renderToPixmap(const QModelIndexList &indexes, QRect *r);
+      QPixmap renderToPixmap(const QMimeData *d, QRect *r);
 };
 
 #endif

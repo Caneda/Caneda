@@ -21,7 +21,7 @@
 #define __WIRE_H
 
 #include "item.h"
-#include "line.h"
+#include "wireline.h"
 #include "node.h"
 
 #include <QtCore/QList>
@@ -67,16 +67,16 @@ class Wire : public QucsItem
    private:
       void createLines(const QPointF& p1, const QPointF& p2);
       void createProxyWires();
-      QList<Line> linesBetween(const QPointF& p1, const QPointF& p2) const;
-      QRect proxyRect(const Line& line) const;
+      QList<WireLine> linesBetween(const QPointF& p1, const QPointF& p2) const;
+      QRect proxyRect(const WireLine& line) const;
       void updateProxyWires();
       void clearProxyWires();
-      QRectF rectForLine(const Line& line) const;
+      QRectF rectForLine(const WireLine& line) const;
       int indexForPos(const QPointF& pos) const;
       void deleteNullLines();
 
       bool m_proxyWiring;
-      QList<Line> m_lines;
+      QList<WireLine> m_lines;
       QList<QRubberBand*> m_proxyWires;
       Node *m_node1;
       Node *m_node2;

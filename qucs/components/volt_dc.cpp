@@ -1,66 +1,59 @@
 /***************************************************************************
-                               volt_dc.cpp
-                              -------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "volt_dc.h"
+#include "shapes.h"
 
-
-Volt_dc::Volt_dc()
+Volt_dc::Volt_dc(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("ideal dc voltage source");
-
-  Lines.append(new Line(  4,-13,  4, 13,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( -4, -6, -4,  6,QPen(QPen::darkBlue,4)));
-  Lines.append(new Line( 30,  0,  4,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( -4,  0,-30,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 11,  5, 11, 11,QPen(QPen::red,1)));
-  Lines.append(new Line( 14,  8,  8,  8,QPen(QPen::red,1)));
-  Lines.append(new Line(-11,  5,-11, 11,QPen(QPen::black,1)));
-
-  Ports.append(new Port( 30,  0));
-  Ports.append(new Port(-30,  0));
-
-  x1 = -30; y1 = -14;
-  x2 =  30; y2 =  14;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "Vdc";
-  Name  = "V";
-
-  Props.append(new Property("U", "1 V", true,
-		QObject::tr("voltage in Volts")));
-
-  rotate();  // fix historical flaw
+   initConstants();
+   initPorts();
+   initProperties();
+   rotate();
 }
 
-Volt_dc::~Volt_dc()
+void Volt_dc::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -14, 60, 28).adjusted(-pw, -pw, pw, pw);
+
+   model = "Vdc";
+   name = "V";
+   description =  QObject::tr("ideal dc voltage source");
+
+   m_shapes.append(new Line(  4,-13,  4, 13, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -4, -6, -4,  6, Component::getPen(Qt::darkBlue,4)));
+   m_shapes.append(new Line( 30,  0,  4,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( -4,  0,-30,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 11,  5, 11, 11, Component::getPen(Qt::red,1)));
+   m_shapes.append(new Line( 14,  8,  8,  8, Component::getPen(Qt::red,1)));
+   m_shapes.append(new Line(-11,  5,-11, 11, Component::getPen(Qt::black,1)));
 }
 
-Component* Volt_dc::newOne()
+void Volt_dc::initPorts()
 {
-  return new Volt_dc();
+   addPort(QPointF(30,0));
+   addPort(QPointF(-30,0));
 }
 
-Element* Volt_dc::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void Volt_dc::initProperties()
 {
-  Name = QObject::tr("dc Voltage Source");
-  BitmapFile = "dc_voltage";
-
-  if(getNewOne)  return new Volt_dc();
-  return 0;
+   addProperty("U","1 V",QObject::tr("voltage in Volts"),true);
 }
+

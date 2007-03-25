@@ -1,81 +1,72 @@
 /***************************************************************************
-                                mutual.cpp
-                               ------------
-    begin                : Sat Aug 20 2005
-    copyright            : (C) 2005 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "mutual.h"
+#include "shapes.h"
 
-
-Mutual::Mutual()
+Mutual::Mutual(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("two mutual inductors");
-
-  Arcs.append(new Arc(-16,-18,12,12, 16*270,16*180, QPen(QPen::darkBlue,2)));
-  Arcs.append(new Arc(-16, -6,12,12, 16*270,16*180, QPen(QPen::darkBlue,2)));
-  Arcs.append(new Arc(-16,  6,12,12, 16*270,16*180, QPen(QPen::darkBlue,2)));
-  Arcs.append(new Arc(  4,-18,12,12,  16*90,16*180, QPen(QPen::darkBlue,2)));
-  Arcs.append(new Arc(  4, -6,12,12,  16*90,16*180, QPen(QPen::darkBlue,2)));
-  Arcs.append(new Arc(  4,  6,12,12,  16*90,16*180, QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-10,-18,-10,-30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-10,-30,-30,-30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 10,-18, 10,-30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 10,-30, 30,-30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-10, 18,-10, 30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-10, 30,-30, 30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 10, 18, 10, 30,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 10, 30, 30, 30,QPen(QPen::darkBlue,2)));
-
-  Texts.append(new Text(-21, -22, "1"));
-  Texts.append(new Text( 15, -22, "2"));
-  Lines.append(new Line(  0,-20,  0, 20,QPen(QPen::darkBlue,1,Qt::DashLine)));
-
-  Ports.append(new Port(-30,-30));
-  Ports.append(new Port( 30,-30));
-  Ports.append(new Port( 30, 30));
-  Ports.append(new Port(-30, 30));
-
-  x1 = -33; y1 = -34;
-  x2 =  33; y2 =  34;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "MUT";
-  Name  = "Tr";
-
-  Props.append(new Property("L1", "1 mH", false,
-		QObject::tr("inductance of coil 1")));
-  Props.append(new Property("L2", "1 mH", false,
-		QObject::tr("inductance of coil 2")));
-  Props.append(new Property("k", "0.9", false,
-		QObject::tr("coupling factor between coil 1 and 2")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-Mutual::~Mutual()
+void Mutual::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -33, -34, 66, 68).adjusted(-pw, -pw, pw, pw);
+
+   model = "MUT";
+   name = "Tr";
+   description =  QObject::tr("two mutual inductors");
+
+   m_shapes.append(new Arc(-16,-18,12,12, 16*270,16*180, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Arc(-16, -6,12,12, 16*270,16*180, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Arc(-16,  6,12,12, 16*270,16*180, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Arc(  4,-18,12,12,  16*90,16*180, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Arc(  4, -6,12,12,  16*90,16*180, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Arc(  4,  6,12,12,  16*90,16*180, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-10,-18,-10,-30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-10,-30,-30,-30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 10,-18, 10,-30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 10,-30, 30,-30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-10, 18,-10, 30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-10, 30,-30, 30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 10, 18, 10, 30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 10, 30, 30, 30, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Text( -21, -22, "1"));
+   m_shapes.append(new Text( 15, -22, "2"));
+   m_shapes.append(new Line(  0,-20,  0, 20, Component::getPen(Qt::darkBlue,1,Qt::DashLine)));
 }
 
-Component* Mutual::newOne()
+void Mutual::initPorts()
 {
-  return new Mutual();
+   addPort(QPointF(-30,-30));
+   addPort(QPointF(30,-30));
+   addPort(QPointF(30,30));
+   addPort(QPointF(-30,30));
 }
 
-Element* Mutual::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void Mutual::initProperties()
 {
-  Name = QObject::tr("Mutual Inductors");
-  BitmapFile = "mutual";
-
-  if(getNewOne)  return new Mutual();
-  return 0;
+   addProperty("L1","1 mH",QObject::tr("inductance of coil 1"),false);
+   addProperty("L2","1 mH",QObject::tr("inductance of coil 2"),false);
+   addProperty("k","0.9",QObject::tr("coupling factor between coil 1 and 2"),false);
 }
+

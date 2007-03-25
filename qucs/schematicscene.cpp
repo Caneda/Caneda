@@ -146,10 +146,10 @@ void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
       QGraphicsSceneMouseEvent *mouseEvent = new QGraphicsSceneMouseEvent();
       mouseEvent->setButtons(e->buttons());
       mouseEvent->setButton(e->button());
-      mouseEvent->setScenePos(e->pos());
+      mouseEvent->setScenePos(e->scenePos());
       mouseEvent->setLastScenePos(e->lastScenePos());
-      mouseEvent->setPos(m_grabbedWire->mapFromScene(mouseEvent->pos()));
-      mouseEvent->setLastPos(m_grabbedWire->mapFromScene(mouseEvent->lastScenePos()));
+      mouseEvent->setPos(m_grabbedWire->mapFromScene(e->scenePos()));
+      mouseEvent->setLastPos(m_grabbedWire->mapFromScene(e->lastScenePos()));
       m_grabbedWire->grabMoveEvent(mouseEvent);
       delete mouseEvent;
    }
@@ -368,7 +368,7 @@ Node* SchematicScene::nodeAt(const QPointF& centre)
 
 Node* SchematicScene::createNode(const QPointF& centre)
 {
-   Node *n = new Node(QString("FH"),(QGraphicsScene*)this);
+   Node *n = new Node(QString("FH"),this);
    n->setPos(centre);
    return n;
 }
@@ -388,6 +388,8 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
    const int gridSize = 25;
 
    painter->setPen(QPen(Qt::black,0));
+   painter->setBrush(Qt::NoBrush);
+   painter->setRenderHint(QPainter::Antialiasing,false);
 
    qreal left = int(rect.left()) - (int(rect.left()) % gridSize);
    qreal top = int(rect.top()) - (int(rect.top()) % gridSize);
@@ -399,4 +401,5 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
        for( qreal y = top; y < bottom; y+=gridSize)
           points.append(QPointF(x,y));
    painter->drawPoints(points.data(),points.size());
+   painter->setRenderHint(QPainter::Antialiasing,true);
 }

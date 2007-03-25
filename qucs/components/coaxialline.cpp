@@ -1,79 +1,64 @@
 /***************************************************************************
-                              coaxialline.cpp
-                             -----------------
-    begin                : Sun Jan 29 2006
-    copyright            : (C) 2006 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "coaxialline.h"
+#include "shapes.h"
 
-
-CoaxialLine::CoaxialLine()
+CoaxialLine::CoaxialLine(SchematicScene *s) : Component(s)
 {
-  Description = QObject::tr("coaxial transmission line");
-
-  Arcs.append(new Arc(-20, -9, 8, 18,     0, 16*360,QPen(QPen::darkBlue,2)));
-  Arcs.append(new Arc( 11, -9, 8, 18,16*270, 16*180,QPen(QPen::darkBlue,2)));
-
-  Lines.append(new Line(-30,  0,-16,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line( 19,  0, 30,  0,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-16, -9, 16, -9,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-16,  9, 16,  9,QPen(QPen::darkBlue,2)));
-  Lines.append(new Line(-11,  0, 19,  0,QPen(QPen::darkBlue,1,Qt::DotLine)));
-
-  Ports.append(new Port(-30, 0));
-  Ports.append(new Port( 30, 0));
-
-  x1 = -30; y1 =-12;
-  x2 =  30; y2 = 12;
-
-  tx = x1+4;
-  ty = y2+4;
-  Model = "COAX";
-  Name  = "Line";
-
-  Props.append(new Property("er", "2.29", true,
-		QObject::tr("relative permittivity of dielectric")));
-  Props.append(new Property("rho", "0.022e-6", false,
-		QObject::tr("specific resistance of conductor")));
-  Props.append(new Property("mur", "1", false,
-		QObject::tr("relative permeability of conductor")));
-  Props.append(new Property("D", "2.95 mm", false,
-		QObject::tr("inner diameter of shield")));
-  Props.append(new Property("d", "0.9 mm", false,
-		QObject::tr("diameter of inner conductor")));
-  Props.append(new Property("L", "1500 mm", true,
-		QObject::tr("mechanical length of the line")));
-  Props.append(new Property("tand", "4e-4", false,
-		QObject::tr("loss tangent")));
-  Props.append(new Property("Temp", "26.85", false,
-		QObject::tr("simulation temperature in degree Celsius")));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-CoaxialLine::~CoaxialLine()
+void CoaxialLine::initConstants()
 {
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -12, 60, 24).adjusted(-pw, -pw, pw, pw);
+
+   model = "COAX";
+   name = "Line";
+   description =  QObject::tr("coaxial transmission line");
+
+   m_shapes.append(new Arc(-20, -9, 8, 18,     0, 16*360, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Arc( 11, -9, 8, 18,16*270, 16*180, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-30,  0,-16,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 19,  0, 30,  0, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-16, -9, 16, -9, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-16,  9, 16,  9, Component::getPen(Qt::darkBlue,2)));
 }
 
-Component* CoaxialLine::newOne()
+void CoaxialLine::initPorts()
 {
-  return new CoaxialLine();
+   addPort(QPointF(-30,0));
+   addPort(QPointF(30,0));
 }
 
-Element* CoaxialLine::info(QString& Name, char* &BitmapFile, bool getNewOne)
+void CoaxialLine::initProperties()
 {
-  Name = QObject::tr("Coaxial Line");
-  BitmapFile = "coaxial";
-
-  if(getNewOne)  return new CoaxialLine();
-  return 0;
+   addProperty("er","2.29",QObject::tr("relative permittivity of dielectric"),true);
+   addProperty("rho","0.022e-6",QObject::tr("specific resistance of conductor"),false);
+   addProperty("mur","1",QObject::tr("relative permeability of conductor"),false);
+   addProperty("D","2.95 mm",QObject::tr("inner diameter of shield"),false);
+   addProperty("d","0.9 mm",QObject::tr("diameter of inner conductor"),false);
+   addProperty("L","1500 mm",QObject::tr("mechanical length of the line"),true);
+   addProperty("tand","4e-4",QObject::tr("loss tangent"),false);
+   addProperty("Temp","26.85",QObject::tr("simulation temperature in degree Celsius"),false);
 }
+

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -18,57 +18,58 @@
  ***************************************************************************/
 
 #include "coupler.h"
-#include "propertytext.h"
-#include "schematicscene.h"
+#include "shapes.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOptionGraphicsItem>
-
-Coupler::Coupler(QGraphicsScene *s) : Component(0,s)
+Coupler::Coupler(SchematicScene *s) : Component(s)
 {
-   initComponentStrings();
-   m_ports.append(new ComponentPort(this,QPointF(-30,-20)));
-   m_ports.append(new ComponentPort(this,QPointF( 30,-20)));
-   m_ports.append(new ComponentPort(this,QPointF( 30, 20)));
-   m_ports.append(new ComponentPort(this,QPointF(-30, 20)));
+   initConstants();
+   initPorts();
+   initProperties();
 }
 
-void Coupler::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
+void Coupler::initConstants()
 {
-   Q_UNUSED(w);
-   initPainter(p,o);
-   p->drawLine(-23,-24, 23,-24);
-   p->drawLine( 23,-24, 23, 24);
-   p->drawLine( 23, 24,-23, 24);
-   p->drawLine(-23, 24,-23,-24);
+   qreal pw = 0.5;
+   m_boundingRect = QRectF( -30, -25, 60, 50).adjusted(-pw, -pw, pw, pw);
 
-   p->drawLine(-27,-20,-20,-20);
-   p->drawLine( 27,-20, 20,-20);
-   p->drawLine(-20,-20, 20,-20);
-   p->drawLine(-27, 20,-20, 20);
-   p->drawLine( 27, 20, 20, 20);
-   p->drawLine(-20, 20, 20, 20);
-
-   p->drawLine( 14, 14,-14,-14);
-   p->drawLine(-14,-14, -9,-14);
-   p->drawLine(-14,-14,-14, -9);
-   p->drawLine(  9, 14, 14, 14);
-   p->drawLine( 14,  9, 14, 14);
-
-   p->drawLine( 14,-14,-14, 14);
-   p->drawLine( 14,-14,  9,-14);
-   p->drawLine( 14,-14, 14, -9);
-   p->drawLine(-14, 14, -9, 14);
-   p->drawLine(-14, 14,-14,  9);
-
-   if(o->state & QStyle::State_Open)
-      drawNodes(p);
-}
-
-void Coupler::initComponentStrings()
-{
    model = "Coupler";
-   name  = "X";
-   description = QObject::tr("ideal coupler");
+   name = "X";
+   description =  QObject::tr("ideal coupler");
+
+   m_shapes.append(new Line(-23,-24, 23,-24, Component::getPen(Qt::darkGray,1)));
+   m_shapes.append(new Line( 23,-24, 23, 24, Component::getPen(Qt::darkGray,1)));
+   m_shapes.append(new Line( 23, 24,-23, 24, Component::getPen(Qt::darkGray,1)));
+   m_shapes.append(new Line(-23, 24,-23,-24, Component::getPen(Qt::darkGray,1)));
+   m_shapes.append(new Line(-30,-20,-20,-20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 30,-20, 20,-20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-20,-20, 20,-20, Component::getPen(Qt::darkBlue,4)));
+   m_shapes.append(new Line(-30, 20,-20, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line( 30, 20, 20, 20, Component::getPen(Qt::darkBlue,2)));
+   m_shapes.append(new Line(-20, 20, 20, 20, Component::getPen(Qt::darkBlue,4)));
+   m_shapes.append(new Line( 14, 14,-14,-14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-14,-14, -9,-14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-14,-14,-14, -9, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(  9, 14, 14, 14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line( 14,  9, 14, 14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line( 14,-14,-14, 14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line( 14,-14,  9,-14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line( 14,-14, 14, -9, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-14, 14, -9, 14, Component::getPen(Qt::darkBlue,1)));
+   m_shapes.append(new Line(-14, 14,-14,  9, Component::getPen(Qt::darkBlue,1)));
 }
+
+void Coupler::initPorts()
+{
+   addPort(QPointF(-30,-20));
+   addPort(QPointF(30,-20));
+   addPort(QPointF(30,20));
+   addPort(QPointF(-30,20));
+}
+
+void Coupler::initProperties()
+{
+   addProperty("k","0.7071",QObject::tr("coupling factor"),true);
+   addProperty("phi","180",QObject::tr("phase shift of coupling path in degree"),true);
+   addProperty("Z","50 Ohm",QObject::tr("reference impedance"),false);
+}
+

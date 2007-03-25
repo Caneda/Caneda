@@ -21,7 +21,7 @@
 #include "undocommands.h"
 #include "schematicscene.h"
 
-QucsItem::QucsItem(QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem(parent,scene)
+QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) : QGraphicsItem(parent,(QGraphicsScene*)scene)
 {
 }
 

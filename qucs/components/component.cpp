@@ -21,15 +21,18 @@
 #include "node.h"
 #include "wire.h"
 #include "components.h"
-
 #include "schematicscene.h"
 #include "propertytext.h"
 #include "undocommands.h"
+#include "shapes.h"
+#include "componentproperty.h"
 #include <QtGui/QUndoStack>
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtCore/QDebug>
 #include <QtGui/QPainter>
+
+QMap<int,QPen> Component::pens;
 
 ComponentPort::ComponentPort(Component* owner,const QPointF& pos) : m_owner(owner), m_centrePos(pos)
 {
@@ -47,10 +50,24 @@ ComponentPort::ComponentPort(Component* owner,const QPointF& pos) : m_owner(owne
    m_node->addComponent(m_owner);
 }
 
+Component::Component(SchematicScene* scene) : QucsItem(0,scene),m_pen(getPen(Qt::darkBlue,0)),
+                                              prevPropertyPos(0,0)
+{
+   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+}
+
 Component::~Component()
 {
    foreach(ComponentPort *port, m_ports)
       port->node()->removeComponent(this);
+}
+
+Component* Component::copy() const
+{
+   Component *c = Component::componentFromName(model,schematicScene());
+   c->m_properties = m_properties;
+   c->setMatrix(matrix());
+   return c;
 }
 
 QString Component::netlist() const
@@ -62,7 +79,7 @@ QString Component::netlist() const
       s += ' ' + port->node()->name(); // node names
    
    // output all properties
-   foreach(PropertyText *prop, m_properties)
+   foreach(ComponentProperty *prop, m_properties)
       s += ' ' + prop->name() + "'=\"" + prop->value() + "\"";
    return s;
 }
@@ -79,6 +96,24 @@ QString Component::shortNetlist() const
          Node1 + ' ' + port->node()->name() + " R=\"0\"\n";
    }
    return s;
+}
+
+void Component::addProperty(QString _name,QString _initVal,QString _des,bool isVisible,const QStringList& options)
+{
+   ComponentProperty *prop = new ComponentProperty(this,_name,_initVal,_des,isVisible,options);
+   
+   QPointF p = pos();
+   if(prevPropertyPos.isNull())
+      prevPropertyPos = QPointF(0,matrix().mapRect(boundingRect()).bottom()+5);
+   prop->setPos( p + prevPropertyPos);
+   //prop->setPos(pos() + QPointF(0,-35));
+   m_properties.append(prop);
+   prevPropertyPos += QPointF(0,20);
+}
+
+void Component::addPort(const QPointF& pos)
+{
+   m_ports.append(new ComponentPort(this,pos));
 }
 
 ComponentPort* Component::portWithNode(Node *n) const
@@ -106,8 +141,8 @@ QVariant Component::handlePositionChange(const QPointF& hpos)
    qreal dx = hpos.x() - oldPos.x();
    qreal dy = hpos.y() - oldPos.y();
 
-   QList<PropertyText*>::iterator it = m_properties.begin();
-   const QList<PropertyText*>::iterator end = m_properties.end();
+   QList<ComponentProperty*>::iterator it = m_properties.begin();
+   const QList<ComponentProperty*>::iterator end = m_properties.end();
    for(; it != end; ++it)
       (*it)->moveBy(dx,dy);
 
@@ -159,7 +194,7 @@ void Component::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
    if(event->buttons() & Qt::RightButton)
    {
-      rotate(-45);
+      QucsItem::rotate(-45);
       foreach(QGraphicsItem *item, scene()->selectedItems())
       {
          if(item != this)
@@ -184,23 +219,156 @@ void Component::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 
 Component* Component::componentFromName(const QString& comp,SchematicScene *scene)
 {
+   Component *c = 0;
    if(comp == "Resistor")
-      return new Resistor(scene);
+      c =  new Resistor(scene);
    else if(comp == "ResistorUS")
-      return new ResistorUS(scene);
-   else if(comp == "Capacitor")
-      return new Capacitor(scene);
+      c =  new ResistorUS(scene);
+   else if(comp == "AM_Mod")
+      c = new AM_Modulator(scene);
+   else if(comp == "Iac")
+      c = new Ampere_ac(scene);
+   else if(comp == "Idc")
+      c = new Ampere_dc(scene);
+   else if(comp == "Inoise")
+      c = new Ampere_noise(scene);
+   else if(comp == "Amp")
+      c = new Amplifier(scene);
+   else if(comp == "Attenuator")
+      c = new Attenuator(scene);
+   else if(comp == "BiasT")
+      c = new BiasT(scene);
+   else if(comp == "BOND")
+      c = new BondWire(scene);
+   else if(comp == "CCCS")
+      c = new CCCS(scene);
+   else if(comp == "CCVS")
+      c = new CCVS(scene);
+   else if(comp == "Circulator")
+      c = new Circulator(scene);
+   else if(comp == "COAX")
+      c = new CoaxialLine(scene);
+   else if(comp == "CLIN")
+      c = new Coplanar(scene);
    else if(comp == "Coupler")
-      return new Coupler(scene);
-   return 0;
+      c = new Coupler(scene);
+   else if(comp == "CGAP")
+      c = new CPWgap(scene);
+   else if(comp == "COPEN")
+      c = new CPWopen(scene);
+   else if(comp == "CSHORT")
+      c = new CPWshort(scene);
+   else if(comp == "CSTEP")
+      c = new CPWstep(scene);
+   else if(comp == "DCBlock")
+      c = new dcBlock(scene);
+   else if(comp == "DCFeed")
+      c = new dcFeed(scene);
+   else if(comp == "DFF")
+      c = new D_FlipFlop(scene);
+   else if(comp == "DigiSource")
+      c = new Digi_Source(scene);
+   else if(comp == "GND")
+      c = new Ground(scene);
+   else if(comp == "Gyrator")
+      c = new Gyrator(scene);
+   else if(comp == "L")
+      c = new Inductor(scene);
+   else if(comp == "IProbe")
+      c = new iProbe(scene);
+   else if(comp == "Ipulse")
+      c = new iPulse(scene);
+   else if(comp == "Irect")
+      c = new iRect(scene);
+   else if(comp == "Isolator")
+      c = new Isolator(scene);
+   else if(comp == "JKFF")
+      c = new JK_FlipFlop(scene);
+   else if(comp == "MCORN")
+      c = new MScorner(scene);
+   else if(comp == "MCOUPLED")
+      c = new MScoupled(scene);
+   else if(comp == "MGAP")
+      c = new MSgap(scene);
+   else if(comp == "MLIN")
+      c = new MSline(scene);
+   else if(comp == "MMBEND")
+      c = new MSmbend(scene);
+   else if(comp == "MOPEN")
+      c = new MSopen(scene);
+   else if(comp == "MSTEP")
+      c = new MSstep(scene);
+   else if(comp == "MVIA")
+      c = new MSvia(scene);
+   else if(comp == "MUT2")
+      c = new Mutual2(scene);
+   else if(comp == "MUT")
+      c = new Mutual(scene);
+   else if(comp == "IInoise")
+      c = new Noise_ii(scene);
+   else if(comp == "IVnoise")
+      c = new Noise_iv(scene);
+   else if(comp == "VVnoise")
+      c = new Noise_vv(scene);
+   else if(comp == "OpAmp")
+      c = new OpAmp(scene);
+   else if(comp == "PShift")
+      c = new Phaseshifter(scene);
+   else if(comp == "PM_Mod")
+      c = new PM_Modulator(scene);
+   else if(comp == "Relais")
+      c = new Relais(scene);
+   else if(comp == "RSFF")
+      c = new RS_FlipFlop(scene);
+   else if(comp == "Pac")
+      c = new Source_ac(scene);
+   else if(comp == "SUBST")
+      c = new Substrate(scene);
+   else if(comp == "sTr")
+      c = new symTrafo(scene);
+   else if(comp == "TLIN4P")
+      c = new TLine_4Port(scene);
+   else if(comp == "TLIN")
+      c = new TLine(scene);
+   else if(comp == "Tr")
+      c = new Transformer(scene);
+   else if(comp == "TWIST")
+      c = new TwistedPair(scene);
+   else if(comp == "VCCS")
+      c = new VCCS(scene);
+   else if(comp == "VCVS")
+      c = new VCVS(scene);
+   else if(comp == "Vac")
+      c = new Volt_ac(scene);
+   else if(comp == "Vdc")
+      c = new Volt_dc(scene);
+   else if(comp == "Vnoise")
+      c = new Volt_noise(scene);
+   else if(comp == "VProbe")
+      c = new vProbe(scene);
+   else if(comp == "Vpulse")
+      c = new vPulse(scene);
+   else if(comp == "Vrect")
+      c = new vRect(scene);
+   return c;
 }
 
-void Component::initPainter(QPainter *p,const QStyleOptionGraphicsItem *o)
+void Component::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
 {
-   if(!(o->state & QStyle::State_Open))
-      p->setPen(Qt::darkBlue);
-   if(o->state & QStyle::State_Selected)
-      p->setPen(QPen(Qt::darkGray,1));
+   Q_UNUSED(w);
+   
+   QList<Shape*>::const_iterator it = m_shapes.constBegin();
+   const QList<Shape*>::const_iterator end = m_shapes.constEnd();
+   for(; it != end; ++it)
+      (*it)->draw(p,o);
+   
+   if(0 && o->state & QStyle::State_Selected)
+   {
+      p->setPen(getPen(Qt::darkGray,2));
+      p->drawRect(boundingRect());
+   }
+   if(o->state & QStyle::State_Open)
+      drawNodes(p);
 }
 
 void Component::drawNodes(QPainter *p)
@@ -213,4 +381,17 @@ void Component::drawNodes(QPainter *p)
       QRectF rect = (*it)->node()->boundingRect().translated((*it)->centrePos());
       p->drawEllipse(rect);
    }
+}
+
+const QPen& Component::getPen(QColor color,int penWidth,Qt::PenStyle style)
+{
+   int hash = (color.red() * 2) + (color.blue() * 3) + (color.green() * 5) + (penWidth*7) + (int(style)*11);
+   if(!(Component::pens.contains(hash)))
+   {
+      QPen p = QPen(color);
+      p.setWidth(penWidth);
+      p.setStyle(style);
+      Component::pens[hash] = p;
+   }
+   return Component::pens[hash];
 }
