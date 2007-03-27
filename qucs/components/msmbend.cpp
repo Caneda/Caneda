@@ -29,8 +29,7 @@ MSmbend::MSmbend(SchematicScene *s) : Component(s)
 
 void MSmbend::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -11, 41, 41).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -11, 41, 41);
 
    model = "MMBEND";
    name = "MS";

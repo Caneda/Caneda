@@ -30,8 +30,7 @@ Ampere_ac::Ampere_ac(SchematicScene *s) : Component(s)
 
 void Ampere_ac::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -14, 60, 30).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -14, 60, 30);
 
    model = "Iac";
    name = "I";

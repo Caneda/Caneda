@@ -29,8 +29,7 @@ Substrate::Substrate(SchematicScene *s) : Component(s)
 
 void Substrate::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -34, -44, 118, 64).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -34, -44, 118, 64);
 
    model = "SUBST";
    name = "Subst";

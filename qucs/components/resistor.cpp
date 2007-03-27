@@ -20,17 +20,14 @@
 #include "resistor.h"
 #include "shapes.h"
 #include "componentproperty.h"
-//#include "node.h"
-//#include "propertytext.h"
-//#include "schematicscene.h"
 
 #include <QtGui/QPainter>
-//#include <QtGui/QStyle>
 #include <QtGui/QStyleOptionGraphicsItem>
 
-Resistor::Resistor(SchematicScene *s) : Component(s)
+Resistor::Resistor(SchematicScene *s) : MultiSymbolComponent(s)
 {
    initConstants();
+   initSymbolMap();
    initPorts();
    initProperties();
 }
@@ -39,12 +36,6 @@ void Resistor::initConstants()
 {
    model = name = "R";
    description = QObject::tr("resistor");
-   m_shapes.append(new Line(-18, -9, 18, -9,getPen(Qt::darkBlue,1)));
-   m_shapes.append(new Line( 18, -9, 18,  9,getPen(Qt::darkBlue,1)));
-   m_shapes.append(new Line( 18,  9,-18,  9,getPen(Qt::darkBlue,1)));
-   m_shapes.append(new Line(-18,  9,-18, -9,getPen(Qt::darkBlue,1)));
-   m_shapes.append(new Line(-27,  0,-18,  0,getPen(Qt::darkBlue,1)));
-   m_shapes.append(new Line( 18,  0, 27,  0,getPen(Qt::darkBlue,1)));
 }
 
 void Resistor::initPorts()
@@ -65,7 +56,7 @@ QString Resistor::netlist() const
    // output all node names
 //   foreach(ComponentPort *port, m_ports)
    //    s += ' ' + port->node()->name(); // node names
-   
+
    // output all properties
    foreach(ComponentProperty *prop, m_properties)
    {
@@ -75,27 +66,31 @@ QString Resistor::netlist() const
    return s;
 }
 
-
-
-ResistorUS::ResistorUS(SchematicScene *s) : Resistor(s)
+void Resistor::initSymbolMap()
 {
-}
+   SymbolData *s = new SymbolData();
+   s->shapesList.append(new Line(-18, -9, 18, -9,getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line( 18, -9, 18,  9,getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line( 18,  9,-18,  9,getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line(-18,  9,-18, -9,getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line(-27,  0,-18,  0,getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line( 18,  0, 27,  0,getPen(Qt::darkBlue,1)));
+   s->boundRect = QRectF(-27,-9,54,18);
+   symbolMap["Regular"] = s;
 
-void ResistorUS::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
-{
-   Q_UNUSED(w);
-   //initPainter(p,o);
-   
-   p->drawLine(-27,  0,-18,  0);
-   p->drawLine(-18,  0,-15, -7);
-   p->drawLine(-15, -7, -9,  7);
-   p->drawLine( -9,  7, -3, -7);
-   p->drawLine( -3, -7,  3,  7);
-   p->drawLine(  3,  7,  9, -7);
-   p->drawLine(  9, -7, 15,  7);
-   p->drawLine( 15,  7, 18,  0);
-   p->drawLine( 18,  0, 27,  0);
+   s = new SymbolData();
 
-   if(o->state & QStyle::State_Open)
-      drawNodes(p);
+   s->shapesList.append(new Line(-27,  0,-18,  0, getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line(-18,  0,-15, -7, getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line(-15, -7, -9,  7, getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line( -9,  7, -3, -7, getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line( -3, -7,  3,  7, getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line(  3,  7,  9, -7, getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line(  9, -7, 15,  7, getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line( 15,  7, 18,  0, getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line( 18,  0, 27,  0, getPen(Qt::darkBlue,1)));
+   s->boundRect = QRectF(-27,-9,54,18);
+   symbolMap["US"] = s;
+
+   setSymbol("Regular");
 }

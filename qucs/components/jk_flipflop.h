@@ -27,19 +27,11 @@ class JK_FlipFlop : public Component
 public:
    JK_FlipFlop(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF JK_FlipFlop::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

@@ -29,8 +29,7 @@ TLine::TLine(SchematicScene *s) : Component(s)
 
 void TLine::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -4, 60, 20).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -4, 60, 20);
 
    model = "TLIN";
    name = "Line";

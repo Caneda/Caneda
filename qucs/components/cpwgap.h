@@ -27,19 +27,11 @@ class CPWgap : public Component
 public:
    CPWgap(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF CPWgap::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

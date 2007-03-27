@@ -17,21 +17,55 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __MSOPEN_H
-#define __MSOPEN_H
+#ifndef __MULTISYMBOLCOMPONENT_H
+#define __MULTISYMBOLCOMPONENT_H
 
 #include "component.h"
+#include "shapes.h"
 
-class MSopen : public Component
+class MultiSymbolComponent : public Component
 {
-public:
-   MSopen(SchematicScene *scene = 0);
+   public:
+      // enum {
+// 	 Type = QucsItem::MultiSymbolComponentType
+//       };
 
-private:
-   void initConstants();
-   void initPorts();
-   void initProperties();
+      explicit MultiSymbolComponent(SchematicScene *scene = 0) : Component(scene){}
+      //int type() const { return QucsItem::MultiSymbolComponentType; }
+
+      inline void setSymbol(const QString& symbol);
+
+   protected:
+      struct SymbolData
+      {
+	    ShapesList shapesList;
+	    QRectF boundRect;
+
+	    SymbolData() {}
+	    SymbolData(const SymbolData& s)
+	    {
+	       shapesList = s.shapesList;
+	       boundRect = s.boundRect;
+	    }
+
+	    void operator=(const SymbolData& s)
+	    {
+	       shapesList = s.shapesList;
+	       boundRect = s.boundRect;
+	    }
+      };
+
+      QMap<QString,SymbolData*> symbolMap;
 
 };
 
-#endif
+inline void MultiSymbolComponent::setSymbol(const QString& symbol)
+{
+   if(!symbolMap.contains(symbol))
+      return;
+   prepareGeometryChange();
+   m_shapes = symbolMap[symbol]->shapesList;
+   m_boundingRect = symbolMap[symbol]->boundRect;
+}
+
+#endif //__MULTISYMBOLCOMPONENT_H

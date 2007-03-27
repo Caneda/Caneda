@@ -27,19 +27,11 @@ class symTrafo : public Component
 public:
    symTrafo(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF symTrafo::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

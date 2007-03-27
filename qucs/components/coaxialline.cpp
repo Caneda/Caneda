@@ -29,8 +29,7 @@ CoaxialLine::CoaxialLine(SchematicScene *s) : Component(s)
 
 void CoaxialLine::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -12, 60, 24).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -12, 60, 24);
 
    model = "COAX";
    name = "Line";

@@ -27,19 +27,11 @@ class MScorner : public Component
 public:
    MScorner(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF MScorner::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

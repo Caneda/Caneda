@@ -29,8 +29,7 @@ JK_FlipFlop::JK_FlipFlop(SchematicScene *s) : Component(s)
 
 void JK_FlipFlop::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -40, 60, 80).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -40, 60, 80);
 
    model = "JKFF";
    name = "Y";

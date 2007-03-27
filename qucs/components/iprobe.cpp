@@ -29,8 +29,7 @@ iProbe::iProbe(SchematicScene *s) : Component(s)
 
 void iProbe::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -34, 60, 46).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -34, 60, 46);
 
    model = "IProbe";
    name = "Pr";

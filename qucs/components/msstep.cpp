@@ -29,8 +29,7 @@ MSstep::MSstep(SchematicScene *s) : Component(s)
 
 void MSstep::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -13, 60, 26).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -13, 60, 26);
 
    model = "MSTEP";
    name = "MS";

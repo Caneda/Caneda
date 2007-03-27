@@ -29,8 +29,7 @@ Noise_iv::Noise_iv(SchematicScene *s) : Component(s)
 
 void Noise_iv::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -44, -30, 88, 60).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -44, -30, 88, 60);
 
    model = "IVnoise";
    name = "SRC";

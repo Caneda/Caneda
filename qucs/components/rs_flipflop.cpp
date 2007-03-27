@@ -29,8 +29,7 @@ RS_FlipFlop::RS_FlipFlop(SchematicScene *s) : Component(s)
 
 void RS_FlipFlop::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -24, 60, 48).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -24, 60, 48);
 
    model = "RSFF";
    name = "Y";

@@ -27,19 +27,11 @@ class MScoupled : public Component
 public:
    MScoupled(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF MScoupled::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

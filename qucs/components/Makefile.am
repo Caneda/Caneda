@@ -64,7 +64,7 @@ libcomponents_a_SOURCES = component.cpp resistor.cpp componentproperty.cpp prope
 
 nodist_libcomponents_a_SOURCES = $(MOCFILES)
 
-noinst_HEADERS = $(MOCHEADERS) component.h components.h resistor.h\
+noinst_HEADERS = $(MOCHEADERS) component.h multisymbolcomponent.h components.h resistor.h\
 						am_modulator.h ampere_ac.h ampere_dc.h ampere_noise.h amplifier.h \
 						attenuator.h biast.h bondwire.h cccs.h ccvs.h circulator.h \
 						coaxialline.h coplanar.h coupler.h cpwgap.h cpwopen.h cpwshort.h \

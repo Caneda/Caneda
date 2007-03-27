@@ -27,19 +27,11 @@ class Transformer : public Component
 public:
    Transformer(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF Transformer::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

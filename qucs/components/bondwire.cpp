@@ -29,8 +29,7 @@ BondWire::BondWire(SchematicScene *s) : Component(s)
 
 void BondWire::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -13, 60, 18).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -13, 60, 18);
 
    model = "BOND";
    name = "Line";

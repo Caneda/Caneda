@@ -27,19 +27,11 @@ class Source_ac : public Component
 public:
    Source_ac(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF Source_ac::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

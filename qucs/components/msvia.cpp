@@ -29,8 +29,7 @@ MSvia::MSvia(SchematicScene *s) : Component(s)
 
 void MSvia::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -20, -7, 34, 37).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -20, -7, 34, 37);
 
    model = "MVIA";
    name = "MS";

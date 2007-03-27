@@ -29,8 +29,7 @@ Amplifier::Amplifier(SchematicScene *s) : Component(s)
 
 void Amplifier::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -23, 60, 46).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -23, 60, 46);
 
    model = "Amp";
    name = "X";

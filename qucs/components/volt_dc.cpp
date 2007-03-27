@@ -30,8 +30,7 @@ Volt_dc::Volt_dc(SchematicScene *s) : Component(s)
 
 void Volt_dc::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -14, 60, 28).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -14, 60, 28);
 
    model = "Vdc";
    name = "V";

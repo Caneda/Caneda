@@ -74,6 +74,7 @@ class Component : public QucsItem
       static Component* componentFromName(const QString& str,SchematicScene *scene);
 
       void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
+      inline QRectF boundingRect() const;
       void rotate() {}
 
    public:
@@ -97,6 +98,7 @@ class Component : public QucsItem
       QList<Shape*> m_shapes;
       QPen m_pen;
       QPointF prevPropertyPos;
+      QRectF m_boundingRect;
 
    private:
       QVariant handlePositionChange(const QPointF& pos);
@@ -131,6 +133,12 @@ inline int Component::type() const
 inline const QList<ComponentPort*>& Component::componentPorts() const
 {
    return m_ports;
+}
+
+inline QRectF Component::boundingRect() const
+{
+    qreal pw = 0.5;
+    return m_boundingRect.adjusted(-pw,-pw,pw,pw);
 }
 
 #endif //__COMPONENT_H

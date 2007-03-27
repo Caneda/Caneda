@@ -27,19 +27,11 @@ class CPWshort : public Component
 public:
    CPWshort(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF CPWshort::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

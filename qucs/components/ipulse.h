@@ -27,19 +27,11 @@ class iPulse : public Component
 public:
    iPulse(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF iPulse::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

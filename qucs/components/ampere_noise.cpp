@@ -30,8 +30,7 @@ Ampere_noise::Ampere_noise(SchematicScene *s) : Component(s)
 
 void Ampere_noise::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -15, 60, 30).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -15, 60, 30);
 
    model = "Inoise";
    name = "I";

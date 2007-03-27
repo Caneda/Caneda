@@ -27,19 +27,11 @@ class TLine_4Port : public Component
 public:
    TLine_4Port(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF TLine_4Port::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

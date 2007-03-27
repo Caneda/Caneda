@@ -20,41 +20,28 @@
 #ifndef __RESISTOR_H
 #define __RESISTOR_H
 
-#include "component.h"
+#include "multisymbolcomponent.h"
 
-class Resistor : public Component
+class Resistor : public MultiSymbolComponent
 {
    public:
       Resistor(SchematicScene *scene);
       ~Resistor(){}
 
       QString netlist() const;
-      inline QRectF boundingRect() const;
+//      inline QRectF boundingRect() const;
 
    private:
       void initConstants();
       void initPorts();
       void initProperties();
+      void initSymbolMap();
 };
 
-inline QRectF Resistor::boundingRect() const
-{
-   qreal pw = 0.0;
-   return QRectF(-27,-9,54,18).adjusted(-pw,-pw,pw,pw);
-}
-
-class ResistorUS : public Resistor
-{
-   public:
-      ResistorUS(SchematicScene *scene);
-      void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
-      inline QRectF boundingRect() const;
-};
-
-inline QRectF ResistorUS::boundingRect() const
-{
-   qreal pw = 0.5;
-   return QRectF(-27,-7,54,14).adjusted(-pw,-pw,+pw,+pw);
-}
+// inline QRectF Resistor::boundingRect() const
+// {
+//    qreal pw = 0.5;
+//    return QRectF(-27,-9,54,18).adjusted(-pw,-pw,pw,pw);
+// }
 
 #endif //__RESISTOR_H

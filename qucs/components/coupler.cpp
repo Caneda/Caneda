@@ -29,8 +29,7 @@ Coupler::Coupler(SchematicScene *s) : Component(s)
 
 void Coupler::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -25, 60, 50).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -25, 60, 50);
 
    model = "Coupler";
    name = "X";

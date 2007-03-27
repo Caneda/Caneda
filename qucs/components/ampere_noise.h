@@ -27,19 +27,11 @@ class Ampere_noise : public Component
 public:
    Ampere_noise(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF Ampere_noise::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

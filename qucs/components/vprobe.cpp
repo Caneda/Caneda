@@ -29,8 +29,7 @@ vProbe::vProbe(SchematicScene *s) : Component(s)
 
 void vProbe::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -24, -35, 48, 55).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -24, -35, 48, 55);
 
    model = "VProbe";
    name = "Pr";

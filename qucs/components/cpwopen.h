@@ -27,19 +27,11 @@ class CPWopen : public Component
 public:
    CPWopen(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF CPWopen::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

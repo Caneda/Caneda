@@ -29,8 +29,7 @@ CPWshort::CPWshort(SchematicScene *s) : Component(s)
 
 void CPWshort::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -24, 44, 48).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -24, 44, 48);
 
    model = "CSHORT";
    name = "CL";

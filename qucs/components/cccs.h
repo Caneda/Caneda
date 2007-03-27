@@ -27,19 +27,11 @@ class CCCS : public Component
 public:
    CCCS(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF CCCS::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

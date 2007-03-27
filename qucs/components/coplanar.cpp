@@ -29,8 +29,7 @@ Coplanar::Coplanar(SchematicScene *s) : Component(s)
 
 void Coplanar::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -24, 60, 48).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -24, 60, 48);
 
    model = "CLIN";
    name = "CL";

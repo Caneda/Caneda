@@ -29,8 +29,7 @@ TwistedPair::TwistedPair(SchematicScene *s) : Component(s)
 
 void TwistedPair::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -12, 60, 24).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -12, 60, 24);
 
    model = "TWIST";
    name = "Line";

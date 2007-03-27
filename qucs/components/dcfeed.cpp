@@ -29,8 +29,7 @@ dcFeed::dcFeed(SchematicScene *s) : Component(s)
 
 void dcFeed::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -15, 60, 31).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -15, 60, 31);
 
    model = "DCFeed";
    name = "L";

@@ -27,19 +27,11 @@ class Phaseshifter : public Component
 public:
    Phaseshifter(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF Phaseshifter::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

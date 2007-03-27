@@ -29,8 +29,7 @@ Circulator::Circulator(SchematicScene *s) : Component(s)
 
 void Circulator::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -16, 60, 46).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -16, 60, 46);
 
    model = "Circulator";
    name = "X";

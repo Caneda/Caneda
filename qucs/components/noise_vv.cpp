@@ -29,8 +29,7 @@ Noise_vv::Noise_vv(SchematicScene *s) : Component(s)
 
 void Noise_vv::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -44, -30, 88, 60).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -44, -30, 88, 60);
 
    model = "VVnoise";
    name = "SRC";

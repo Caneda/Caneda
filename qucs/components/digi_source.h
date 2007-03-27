@@ -27,19 +27,11 @@ class Digi_Source : public Component
 public:
    Digi_Source(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF Digi_Source::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

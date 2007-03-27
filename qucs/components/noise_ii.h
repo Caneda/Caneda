@@ -27,19 +27,11 @@ class Noise_ii : public Component
 public:
    Noise_ii(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF Noise_ii::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

@@ -27,19 +27,11 @@ class Mutual2 : public Component
 public:
    Mutual2(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF Mutual2::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

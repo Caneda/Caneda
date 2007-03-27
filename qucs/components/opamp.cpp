@@ -29,8 +29,7 @@ OpAmp::OpAmp(SchematicScene *s) : Component(s)
 
 void OpAmp::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -38, 60, 76).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -38, 60, 76);
 
    model = "OpAmp";
    name = "OP";

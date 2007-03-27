@@ -25,7 +25,7 @@
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QApplication>
 
-#include "component.h"
+#include "components/component.h"
 
 
 struct Shape
@@ -115,5 +115,7 @@ class Text : public Shape
       const QColor color;
       const qreal size;
 };
+
+typedef QList<Shape*> ShapesList;
 
 #endif //__SHAPES_H

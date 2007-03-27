@@ -27,19 +27,11 @@ class Ground : public Component
 public:
    Ground(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF Ground::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

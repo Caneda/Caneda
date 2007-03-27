@@ -29,8 +29,7 @@ symTrafo::symTrafo(SchematicScene *s) : Component(s)
 
 void symTrafo::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -33, -74, 66, 148).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -33, -74, 66, 148);
 
    model = "sTr";
    name = "Tr";

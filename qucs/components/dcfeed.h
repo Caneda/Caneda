@@ -27,19 +27,11 @@ class dcFeed : public Component
 public:
    dcFeed(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF dcFeed::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

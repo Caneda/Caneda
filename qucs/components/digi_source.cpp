@@ -29,8 +29,7 @@ Digi_Source::Digi_Source(SchematicScene *s) : Component(s)
 
 void Digi_Source::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -39, -14, 39, 28).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -39, -14, 39, 28);
 
    model = "DigiSource";
    name = "S";

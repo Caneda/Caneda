@@ -29,8 +29,7 @@ PM_Modulator::PM_Modulator(SchematicScene *s) : Component(s)
 
 void PM_Modulator::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -30, 44, 60).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -30, 44, 60);
 
    model = "PM_Mod";
    name = "V";

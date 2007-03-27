@@ -29,8 +29,7 @@ Inductor::Inductor(SchematicScene *s) : Component(s)
 
 void Inductor::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -10, 60, 16).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -10, 60, 16);
 
    model = "L";
    name = "L";

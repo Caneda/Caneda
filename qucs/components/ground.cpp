@@ -29,8 +29,7 @@ Ground::Ground(SchematicScene *s) : Component(s)
 
 void Ground::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -12, 0, 24, 25).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -12, 0, 24, 25);
 
    model = "GND";
    name = "";

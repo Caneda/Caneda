@@ -27,19 +27,11 @@ class BondWire : public Component
 public:
    BondWire(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF BondWire::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

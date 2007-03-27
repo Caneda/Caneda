@@ -29,8 +29,7 @@ BiasT::BiasT(SchematicScene *s) : Component(s)
 
 void BiasT::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -13, 60, 43).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -13, 60, 43);
 
    model = "BiasT";
    name = "X";

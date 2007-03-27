@@ -29,8 +29,7 @@ TLine_4Port::TLine_4Port(SchematicScene *s) : Component(s)
 
 void TLine_4Port::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -12, 60, 24).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -12, 60, 24);
 
    model = "TLIN4P";
    name = "Line";

@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "component.h"
+#include "multisymbolcomponent.h"
 #include "node.h"
 #include "wire.h"
 #include "components.h"
@@ -223,7 +223,10 @@ Component* Component::componentFromName(const QString& comp,SchematicScene *scen
    if(comp == "Resistor")
       c =  new Resistor(scene);
    else if(comp == "ResistorUS")
-      c =  new ResistorUS(scene);
+   {
+      c =  new Resistor(scene);
+      ((MultiSymbolComponent*)c)->setSymbol("US");
+   }
    else if(comp == "AM_Mod")
       c = new AM_Modulator(scene);
    else if(comp == "Iac")

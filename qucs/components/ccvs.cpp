@@ -29,8 +29,7 @@ CCVS::CCVS(SchematicScene *s) : Component(s)
 
 void CCVS::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -30, 60, 60).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -30, 60, 60);
 
    model = "CCVS";
    name = "SRC";

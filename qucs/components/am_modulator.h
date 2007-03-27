@@ -27,19 +27,11 @@ class AM_Modulator : public Component
 public:
    AM_Modulator(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF AM_Modulator::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

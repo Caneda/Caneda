@@ -29,8 +29,7 @@ Mutual::Mutual(SchematicScene *s) : Component(s)
 
 void Mutual::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -33, -34, 66, 68).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -33, -34, 66, 68);
 
    model = "MUT";
    name = "Tr";

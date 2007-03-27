@@ -27,19 +27,11 @@ class Volt_dc : public Component
 public:
    Volt_dc(SchematicScene *scene = 0);
 
-   inline QRectF boundingRect() const;
-
 private:
    void initConstants();
    void initPorts();
    void initProperties();
 
-   QRectF m_boundingRect;
 };
-
-inline QRectF Volt_dc::boundingRect() const
-{
-   return m_boundingRect;
-}
 
 #endif

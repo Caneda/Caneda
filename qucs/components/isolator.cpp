@@ -29,8 +29,7 @@ Isolator::Isolator(SchematicScene *s) : Component(s)
 
 void Isolator::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -17, 60, 34).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -17, 60, 34);
 
    model = "Isolator";
    name = "X";

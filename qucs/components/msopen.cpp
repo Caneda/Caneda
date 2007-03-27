@@ -29,8 +29,7 @@ MSopen::MSopen(SchematicScene *s) : Component(s)
 
 void MSopen::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -11, 46, 22).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -11, 46, 22);
 
    model = "MOPEN";
    name = "MS";

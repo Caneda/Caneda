@@ -29,8 +29,7 @@ CPWopen::CPWopen(SchematicScene *s) : Component(s)
 
 void CPWopen::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -24, 47, 48).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -24, 47, 48);
 
    model = "COPEN";
    name = "CL";

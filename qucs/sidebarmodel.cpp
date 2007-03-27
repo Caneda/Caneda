@@ -125,6 +125,8 @@ void SidebarModel::fillData()
    CategoryItem *nonlinear = new CategoryItem(tr("Non linear components"),"","",rootItem,false);
    CategoryItem *digital = new CategoryItem(tr("Digital"),"","",rootItem,false);
    
+   lumped->addChild( QObject::tr("Resistor"), "Resistor", "resistor.png");
+   lumped->addChild( QObject::tr("Resistor"), "ResistorUS", "resistor_us.png");
    lumped->addChild( QObject::tr("Amplifier"), "Amp", "amplifier.png");
    lumped->addChild( QObject::tr("Attenuator"), "Attenuator", "attenuator.png");
    lumped->addChild( QObject::tr("Bias T"), "BiasT", "biast.png");

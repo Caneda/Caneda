@@ -29,8 +29,7 @@ MScoupled::MScoupled(SchematicScene *s) : Component(s)
 
 void MScoupled::initConstants()
 {
-   qreal pw = 0.5;
-   m_boundingRect = QRectF( -30, -33, 60, 66).adjusted(-pw, -pw, pw, pw);
+   m_boundingRect = QRectF( -30, -33, 60, 66);
 
    model = "MCOUPLED";
    name = "MS";
