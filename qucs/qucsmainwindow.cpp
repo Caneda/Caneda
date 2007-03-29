@@ -31,6 +31,7 @@
 #include <QtGui/QUndoGroup>
 #include <QtGui/QUndoView>
 #include <QtGui/QApplication>
+#include <QtGui/QDockWidget>
 
 QucsMainWindow::QucsMainWindow(QWidget *w) : DTabbedMainWindow(w)
 {
@@ -39,7 +40,10 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : DTabbedMainWindow(w)
    statusBar()->show();
    initActions();
    m_componentsSidebar = new ComponentsSidebar(this);
-   addToolView(m_componentsSidebar, Qt::LeftDockWidgetArea);
+   QDockWidget *dw = new QDockWidget("Components");
+   dw->setWidget(m_componentsSidebar);
+   addDockWidget(Qt::LeftDockWidgetArea,dw);
+   //addToolView(m_componentsSidebar, Qt::LeftDockWidgetArea);
    m_componentsSidebar->show();
    connect(this,SIGNAL(widgetChanged(QWidget *)),this,SLOT(activateStackOf(QWidget *)));
    newView();
