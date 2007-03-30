@@ -31,7 +31,7 @@ libqucstools_a_SOURCES = units.cpp propertygrid.cpp helpdialog.cpp
 
 nodist_libqucstools_a_SOURCES = $(MOCFILES)
 
-noinst_HEADERS = $(MOCHEADERS) units.h helpdialog.h
+noinst_HEADERS = $(MOCHEADERS) global.h units.h helpdialog.h
 
 INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(top_srcdir)/qucs
 
