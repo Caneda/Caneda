@@ -9,10 +9,8 @@
 **
 **
 *****************************************************************************/
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
+#include "qucs-tools/global.h"
 #include "attenuatorfunc.h"
 
 #include <QtCore/QString>
@@ -78,7 +76,7 @@ QString* QUCS_Att::createSchematic(tagATT *ATT)
 {
   // create the Qucs schematic
   QString *s = new QString("<Qucs Schematic ");
-  *s += PACKAGE_VERSION;
+  *s += Qucs::version;
   *s += ">\n";
   *s += "<Components>\n";
   

@@ -26,17 +26,6 @@ class QLabel;
 class QPushButton;
 class QStatusBar;
 
-struct tQucsSettings
-{
-  int x, y;      // position of main window
-  QFont font;
-  QString LangDir;
-  QString BitmapDir;
-  QString Language;
-};
-
-extern struct tQucsSettings QucsSettings;
-
 class QucsAttenuator : public QWidget
 {
  Q_OBJECT
@@ -53,7 +42,13 @@ class QucsAttenuator : public QWidget
   void slotSetText_Zin(const QString &);
   void slotSetText_Zout(const QString &);
 
+ protected:
+  void closeEvent(QCloseEvent *e);
+
  private:
+  void readSettings();
+  void writeSettings();
+      
   QComboBox *ComboTopology;
   QLabel *LabelTopology, *LabelAtten, *LabelImp1, *LabelImp2;
   QLabel *LabelR1, *LabelR2, *LabelR3, *pixTopology, *LabelResult;

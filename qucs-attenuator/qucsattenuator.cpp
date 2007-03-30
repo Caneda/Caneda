@@ -10,10 +10,7 @@
 **
 *****************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
+#include "qucs-tools/global.h"
 #include "attenuatorfunc.h"
 #include "qucsattenuator.h"
 #include "helpdialog.h"
@@ -38,11 +35,10 @@
 #include <QtGui/QFrame>
 #include <QtCore/QTimer>
 
-//This class uses few magic numbers to manage layout because of some weird layout behavior
 QucsAttenuator::QucsAttenuator()
 {
-  setWindowIcon(QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
-  setWindowTitle(QString("Qucs Attenuator " PACKAGE_VERSION));
+   setWindowIcon(QPixmap(Qucs::bitmapDirectory() + "big.qucs.xpm"));
+   setWindowTitle(QString("Qucs Attenuator ") + Qucs::version);
 
   QMenuBar *bar = new QMenuBar(this);
   QMenu *fileMenu = bar->addMenu(tr("&File"));
@@ -50,7 +46,7 @@ QucsAttenuator::QucsAttenuator()
   QMenu *helpMenu = bar->addMenu(tr("&Help"));
   bar->setFixedHeight(bar->sizeHint().height());
   
-  fileMenu->addAction(tr("E&xit"), qApp, SLOT(quit()), Qt::CTRL+Qt::Key_Q);
+  fileMenu->addAction(tr("E&xit"), this, SLOT(close()), Qt::CTRL+Qt::Key_Q);
   
   helpMenu->addAction(tr("Help..."), this, SLOT(slotHelpIntro()), Qt::Key_F1);
   helpMenu->addSeparator();
@@ -74,7 +70,7 @@ QucsAttenuator::QucsAttenuator()
   ComboTopology = new QComboBox(TopoGroup);//Topology Combobox
   topoLayout->addWidget(ComboTopology);
   pixTopology = new QLabel(TopoGroup);//Pixmap for Topology
-  pixTopology->setMinimumSize(300,300);
+  pixTopology->setMinimumSize(250,175);
   topoLayout->addWidget(pixTopology);
 
   QVBoxLayout *ioLayout = new QVBoxLayout();
@@ -83,7 +79,7 @@ QucsAttenuator::QucsAttenuator()
   QGroupBox * InputGroup = new QGroupBox (tr("Input"));
   ioLayout->addWidget(InputGroup);
   Calculate = new QPushButton(tr("Calculate and put into Clipboard"));
-  Calculate->setMinimumWidth(Calculate->sizeHint().width()+45);
+  
   ioLayout->addWidget(Calculate);
   QGroupBox * OutputGroup = new QGroupBox (tr("Output"));
   ioLayout->addWidget(OutputGroup);
@@ -95,7 +91,7 @@ QucsAttenuator::QucsAttenuator()
   ComboTopology->addItems(QStringList() << QString("Pi") << QString("Tee") << QString("Bridged Tee"));
   connect(ComboTopology, SIGNAL(activated(int)),this,SLOT(slotTopologyChanged()));
     
-  pixTopology->setPixmap(QPixmap(QucsSettings.BitmapDir + "att_pi.png"));
+  pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_pi.png"));
 
   IntVal = new QIntValidator(this);
   DoubleVal = new QDoubleValidator(this);
@@ -107,7 +103,7 @@ QucsAttenuator::QucsAttenuator()
   inpLayout->addWidget(LabelAtten,0,0);
   inpLayout->addWidget(lineEdit_Attvalue,0,1);
   inpLayout->addWidget(Label1,0,2);
-  inpLayout->setColumnMinimumWidth(0,LabelAtten->sizeHint().width()+20);//+20 because of some weired result in my comp
+  
   
   LabelImp1 = new QLabel(tr("Zin:"));
   lineEdit_Zin = new QLineEdit(tr("50"));
@@ -128,7 +124,7 @@ QucsAttenuator::QucsAttenuator()
   inpLayout->addWidget(LabelImp2,2,0);
   inpLayout->addWidget(lineEdit_Zout,2,1);
   inpLayout->addWidget(Label3,2,2);
-  inpLayout->setColumnMinimumWidth(2,Label3->sizeHint().width()+10);
+  
   connect(Calculate, SIGNAL(clicked()), this, SLOT(slotCalculate()));
 
   
@@ -152,7 +148,8 @@ QucsAttenuator::QucsAttenuator()
   outLayout->addWidget(LabelR3, 2,0);
   outLayout->addWidget(lineEdit_R3, 2,1);
   outLayout->addWidget(LabelR3_Ohm, 2,2);
-  outLayout->setColumnMinimumWidth(2,LabelR3_Ohm->sizeHint().width()+10);
+  
+  readSettings();
 }
 
 QucsAttenuator::~QucsAttenuator()
@@ -209,21 +206,21 @@ void QucsAttenuator::slotTopologyChanged()
   switch(ComboTopology->currentIndex())
     {
     case PI_TYPE:
-      pixTopology->setPixmap(QPixmap(QucsSettings.BitmapDir + "att_pi.png"));
+      pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_pi.png"));
       LabelR2->setText("R2:");
       LabelR3->show();
       lineEdit_R3->show();
       LabelR3_Ohm->show();
       break;
     case TEE_TYPE:
-      pixTopology->setPixmap(QPixmap(QucsSettings.BitmapDir + "att_tee.png"));
+      pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_tee.png"));
       LabelR2->setText("R2:");
       LabelR3->show();
       lineEdit_R3->show();
       LabelR3_Ohm->show();
       break;
     case BRIDGE_TYPE:
-      pixTopology->setPixmap(QPixmap(QucsSettings.BitmapDir + "att_bridge.png"));
+      pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_bridge.png"));
       LabelR2->setText("R4:");
       LabelR3->hide();
       lineEdit_R3->hide();
@@ -231,7 +228,6 @@ void QucsAttenuator::slotTopologyChanged()
       lineEdit_Zout->setText( lineEdit_Zin->text() );
       break;
     }
-  adjustSize();
 }
 
 void QucsAttenuator::slotCalculate()
@@ -270,4 +266,30 @@ void QucsAttenuator::slotCalculate()
       lineEdit_R3->setText("--");
     }
 
+}
+
+void QucsAttenuator::readSettings()
+{
+   Qucs::Settings settings("qucsattenuatorrc");
+   
+   settings.beginGroup("MainWindow");
+   resize(settings.value("size", QSize(400, 400)).toSize());
+   move(settings.value("pos", QPoint(200, 200)).toPoint());
+   settings.endGroup();
+}
+
+void QucsAttenuator::writeSettings()
+{
+   Qucs::Settings settings("qucsattenuatorrc");
+   
+   settings.beginGroup("MainWindow");
+   settings.setValue("size", size());
+   settings.setValue("pos", pos());
+   settings.endGroup();
+}
+
+void QucsAttenuator::closeEvent(QCloseEvent *e)
+{
+   writeSettings();
+   QWidget::closeEvent(e);
 }

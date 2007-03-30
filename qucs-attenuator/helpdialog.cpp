@@ -28,9 +28,10 @@
 
 
 HelpDialog::HelpDialog(QWidget *parent)
-  : QDialog(parent)//,Qt::WDestructiveClose)
+   : QDialog(parent)
 {
   setModal(false);
+  setAttribute(Qt::WA_DeleteOnClose);
   setWindowTitle(tr("Qucs Attenuator Help"));
 
 
@@ -71,5 +72,5 @@ HelpDialog::HelpDialog(QWidget *parent)
 
 HelpDialog::~HelpDialog()
 {
-  delete vLayout;
+   delete vLayout;
 }
