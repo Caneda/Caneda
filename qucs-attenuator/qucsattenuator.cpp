@@ -38,7 +38,7 @@
 QucsAttenuator::QucsAttenuator()
 {
    setWindowIcon(QPixmap(Qucs::bitmapDirectory() + "big.qucs.xpm"));
-   setWindowTitle(QString("Qucs Attenuator ") + Qucs::version);
+   setWindowTitle(tr("Qucs Attenuator") + "" + Qucs::version);
 
   QMenuBar *bar = new QMenuBar(this);
   QMenu *fileMenu = bar->addMenu(tr("&File"));
@@ -65,6 +65,8 @@ QucsAttenuator::QucsAttenuator()
   topLayout->addWidget(statusBar);
   QHBoxLayout * mainLayout = new QHBoxLayout(f);
   QGroupBox * TopoGroup = new QGroupBox (tr("Topology"));
+  TopoGroup->setAlignment(Qt::AlignHCenter);
+  
   mainLayout->addWidget(TopoGroup);
   QVBoxLayout *topoLayout = new QVBoxLayout(TopoGroup);
   ComboTopology = new QComboBox(TopoGroup);//Topology Combobox
@@ -77,18 +79,20 @@ QucsAttenuator::QucsAttenuator()
   mainLayout->addLayout(ioLayout);
   
   QGroupBox * InputGroup = new QGroupBox (tr("Input"));
+  InputGroup->setAlignment(Qt::AlignHCenter);
   ioLayout->addWidget(InputGroup);
   Calculate = new QPushButton(tr("Calculate and put into Clipboard"));
   
   ioLayout->addWidget(Calculate);
   QGroupBox * OutputGroup = new QGroupBox (tr("Output"));
+  OutputGroup->setAlignment(Qt::AlignHCenter);
   ioLayout->addWidget(OutputGroup);
   
   QGridLayout * inpLayout = new QGridLayout(InputGroup);
   QGridLayout * outLayout = new QGridLayout(OutputGroup);
 
   // Set up the widgets now
-  ComboTopology->addItems(QStringList() << QString("Pi") << QString("Tee") << QString("Bridged Tee"));
+  ComboTopology->addItems(QStringList() << tr("Pi") << tr("Tee") << tr("Bridged Tee"));
   connect(ComboTopology, SIGNAL(activated(int)),this,SLOT(slotTopologyChanged()));
     
   pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_pi.png"));
@@ -97,7 +101,7 @@ QucsAttenuator::QucsAttenuator()
   DoubleVal = new QDoubleValidator(this);
 
   LabelAtten = new QLabel(tr("Attenuation:"));
-  lineEdit_Attvalue = new QLineEdit(tr("1"));
+  lineEdit_Attvalue = new QLineEdit();
   lineEdit_Attvalue->setValidator(DoubleVal);
   QLabel *Label1 = new QLabel(tr("dB"));
   inpLayout->addWidget(LabelAtten,0,0);
@@ -106,7 +110,7 @@ QucsAttenuator::QucsAttenuator()
   
   
   LabelImp1 = new QLabel(tr("Zin:"));
-  lineEdit_Zin = new QLineEdit(tr("50"));
+  lineEdit_Zin = new QLineEdit();
   lineEdit_Zin->setValidator(DoubleVal);
   connect(lineEdit_Zin, SIGNAL(textChanged(const QString&)), this,
 	  SLOT(slotSetText_Zin(const QString&)) );
@@ -116,7 +120,7 @@ QucsAttenuator::QucsAttenuator()
   inpLayout->addWidget(Label2,1,2);
 
   LabelImp2 = new QLabel(tr("Zout:"));
-  lineEdit_Zout = new QLineEdit(tr("50"));
+  lineEdit_Zout = new QLineEdit();
   lineEdit_Zout->setValidator(DoubleVal);
   connect(lineEdit_Zout, SIGNAL(textChanged(const QString&)), this,
 	  SLOT(slotSetText_Zout(const QString&)) );
@@ -149,6 +153,7 @@ QucsAttenuator::QucsAttenuator()
   outLayout->addWidget(lineEdit_R3, 2,1);
   outLayout->addWidget(LabelR3_Ohm, 2,2);
   
+  // Make sure this is at last, else may cause seg fault
   readSettings();
 }
 
@@ -276,6 +281,13 @@ void QucsAttenuator::readSettings()
    resize(settings.value("size", QSize(400, 400)).toSize());
    move(settings.value("pos", QPoint(200, 200)).toPoint());
    settings.endGroup();
+
+   settings.beginGroup("SavedInputValues");
+   lineEdit_Attvalue->setText(settings.value("Attenuation",tr("1")).toString());
+   lineEdit_Zin->setText(settings.value("Zin",tr("50")).toString());
+   lineEdit_Zout->setText(settings.value("Zout",tr("50")).toString());
+   ComboTopology->setCurrentIndex(settings.value("Topology",PI_TYPE).toInt());
+   settings.endGroup();
 }
 
 void QucsAttenuator::writeSettings()
@@ -285,6 +297,13 @@ void QucsAttenuator::writeSettings()
    settings.beginGroup("MainWindow");
    settings.setValue("size", size());
    settings.setValue("pos", pos());
+   settings.endGroup();
+
+   settings.beginGroup("SavedInputValues");
+   settings.setValue("Attenuation",lineEdit_Attvalue->text());
+   settings.setValue("Zin",lineEdit_Zin->text());
+   settings.setValue("Zout",lineEdit_Zout->text());
+   settings.setValue("Topology",ComboTopology->currentIndex());
    settings.endGroup();
 }
 
