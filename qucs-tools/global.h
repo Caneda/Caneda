@@ -41,6 +41,13 @@ namespace Qucs
       return retVal;
    }
 
+   static QString getenv()
+   {
+      // is application relocated?
+      static QString var(::getenv("QUCSDIR"));
+      return var;
+   }
+
    
    class Settings : public QSettings
    {
@@ -60,9 +67,8 @@ namespace Qucs
 
    inline QString bitmapDirectory()
    {
-      // is application relocated?
-      char *var = getenv("QUCSDIR");
-      if(var)
+      QString var = Qucs::getenv();
+      if(!var.isEmpty())
       {
          QDir QucsDir = QDir (var);
          return QDir::convertSeparators (QucsDir.canonicalPath () + "/share/qucs/bitmaps/");
@@ -72,9 +78,9 @@ namespace Qucs
    
    inline QString langDirectory()
    {
-      // is application relocated?
-      char *var = getenv("QUCSDIR");
-      if(var)
+      
+      QString var = Qucs::getenv();
+      if(!var.isEmpty())
       {
          QDir QucsDir = QDir (var);
          return QDir::convertSeparators (QucsDir.canonicalPath () + "/share/qucs/lang/");
