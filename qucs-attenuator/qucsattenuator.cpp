@@ -134,6 +134,7 @@ QucsAttenuator::QucsAttenuator()
   
   LabelR1 = new QLabel(tr("R1:"));
   lineEdit_R1 = new QLineEdit(tr("--"));
+  lineEdit_R1->setReadOnly(true);
   QLabel *Label4 = new QLabel(tr("Ohm"));
   outLayout->addWidget(LabelR1, 0,0);
   outLayout->addWidget(lineEdit_R1, 0,1);
@@ -141,6 +142,7 @@ QucsAttenuator::QucsAttenuator()
 
   LabelR2 = new QLabel(tr("R2:"));
   lineEdit_R2 = new QLineEdit(tr("--"));
+  lineEdit_R2->setReadOnly(true);
   QLabel *Label5 = new QLabel(tr("Ohm"));
   outLayout->addWidget(LabelR2, 1,0);
   outLayout->addWidget(lineEdit_R2, 1,1);
@@ -148,6 +150,7 @@ QucsAttenuator::QucsAttenuator()
 
   LabelR3 = new QLabel(tr("R3:"));
   lineEdit_R3 = new QLineEdit(tr("--"));
+  lineEdit_R3->setReadOnly(true);
   LabelR3_Ohm = new QLabel(tr("Ohm"));
   outLayout->addWidget(LabelR3, 2,0);
   outLayout->addWidget(lineEdit_R3, 2,1);
@@ -287,6 +290,7 @@ void QucsAttenuator::readSettings()
    lineEdit_Zin->setText(settings.value("Zin","50").toString());
    lineEdit_Zout->setText(settings.value("Zout","50").toString());
    ComboTopology->setCurrentIndex(settings.value("Topology",PI_TYPE).toInt());
+   slotTopologyChanged();
    settings.endGroup();
 }
 
