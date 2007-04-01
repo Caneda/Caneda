@@ -38,7 +38,7 @@
 QucsAttenuator::QucsAttenuator()
 {
    setWindowIcon(QPixmap(Qucs::bitmapDirectory() + "big.qucs.xpm"));
-   setWindowTitle(tr("Qucs Attenuator") + "" + Qucs::version);
+   setWindowTitle(tr("Qucs Attenuator") + " " + Qucs::version);
 
   QMenuBar *bar = new QMenuBar(this);
   QMenu *fileMenu = bar->addMenu(tr("&File"));
@@ -212,21 +212,21 @@ void QucsAttenuator::slotTopologyChanged()
     {
     case PI_TYPE:
       pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_pi.png"));
-      LabelR2->setText("R2:");
+      LabelR2->setText(tr("R2:"));
       LabelR3->show();
       lineEdit_R3->show();
       LabelR3_Ohm->show();
       break;
     case TEE_TYPE:
       pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_tee.png"));
-      LabelR2->setText("R2:");
+      LabelR2->setText(tr("R2:"));
       LabelR3->show();
       lineEdit_R3->show();
       LabelR3_Ohm->show();
       break;
     case BRIDGE_TYPE:
       pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_bridge.png"));
-      LabelR2->setText("R4:");
+      LabelR2->setText(tr("R4:"));
       LabelR3->hide();
       lineEdit_R3->hide();
       LabelR3_Ohm->hide();
@@ -266,9 +266,9 @@ void QucsAttenuator::slotCalculate()
     else
     {
       statusBar->showMessage(tr("Error: Set Attenuation more than %1 dB").arg(QString::number(Values.MinimumATT, 'f', 3)));
-      lineEdit_R1->setText("--");
-      lineEdit_R2->setText("--");
-      lineEdit_R3->setText("--");
+      lineEdit_R1->setText(tr("--"));
+      lineEdit_R2->setText(tr("--"));
+      lineEdit_R3->setText(tr("--"));
     }
 
 }
@@ -283,9 +283,9 @@ void QucsAttenuator::readSettings()
    settings.endGroup();
 
    settings.beginGroup("SavedInputValues");
-   lineEdit_Attvalue->setText(settings.value("Attenuation",tr("1")).toString());
-   lineEdit_Zin->setText(settings.value("Zin",tr("50")).toString());
-   lineEdit_Zout->setText(settings.value("Zout",tr("50")).toString());
+   lineEdit_Attvalue->setText(settings.value("Attenuation","1").toString());
+   lineEdit_Zin->setText(settings.value("Zin","50").toString());
+   lineEdit_Zout->setText(settings.value("Zout","50").toString());
    ComboTopology->setCurrentIndex(settings.value("Topology",PI_TYPE).toInt());
    settings.endGroup();
 }
