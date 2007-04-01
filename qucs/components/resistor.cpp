@@ -69,26 +69,25 @@ QString Resistor::netlist() const
 void Resistor::initSymbolMap()
 {
    SymbolData *s = new SymbolData();
-   s->shapesList.append(new Line(-18, -9, 18, -9,getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line( 18, -9, 18,  9,getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line( 18,  9,-18,  9,getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line(-18,  9,-18, -9,getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line(-27,  0,-18,  0,getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line( 18,  0, 27,  0,getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line(-18, -9, 18, -9,getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line( 18, -9, 18,  9,getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line( 18,  9,-18,  9,getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line(-18,  9,-18, -9,getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line(-27,  0,-18,  0,getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line( 18,  0, 27,  0,getPen(Qt::darkBlue,2)));
    s->boundRect = QRectF(-27,-9,54,18);
    symbolMap["Regular"] = s;
 
    s = new SymbolData();
-
-   s->shapesList.append(new Line(-27,  0,-18,  0, getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line(-18,  0,-15, -7, getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line(-15, -7, -9,  7, getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line( -9,  7, -3, -7, getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line( -3, -7,  3,  7, getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line(  3,  7,  9, -7, getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line(  9, -7, 15,  7, getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line( 15,  7, 18,  0, getPen(Qt::darkBlue,1)));
-   s->shapesList.append(new Line( 18,  0, 27,  0, getPen(Qt::darkBlue,1)));
+   s->shapesList.append(new Line(-27,  0,-18,  0, getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line(-18,  0,-15, -7, getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line(-15, -7, -9,  7, getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line( -9,  7, -3, -7, getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line( -3, -7,  3,  7, getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line(  3,  7,  9, -7, getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line(  9, -7, 15,  7, getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line( 15,  7, 18,  0, getPen(Qt::darkBlue,2)));
+   s->shapesList.append(new Line( 18,  0, 27,  0, getPen(Qt::darkBlue,2)));
    s->boundRect = QRectF(-27,-9,54,18);
    symbolMap["US"] = s;
 

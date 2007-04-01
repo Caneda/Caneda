@@ -47,7 +47,7 @@ class Line : public Shape
          if(o->state & QStyle::State_Open)
          {
             QPen _pen = p->pen();
-            _pen.setWidth(style.width()+1);
+            _pen.setWidth(style.width());
             p->setPen(_pen);
          }
          else if(o->state & QStyle::State_Selected)
@@ -74,7 +74,11 @@ class Arc : public Shape
       inline void draw(QPainter *p,const QStyleOptionGraphicsItem *o)
       {
          if(o->state & QStyle::State_Open)
-            p->setPen(QPen(p->pen().color(),style.width()+1));
+         {
+            QPen _pen = p->pen();
+            _pen.setWidth(style.width());
+            p->setPen(_pen);
+         }
          else if(o->state & QStyle::State_Selected)
             p->setPen(Component::getPen(Qt::darkGray,style.width()));
          else

@@ -46,18 +46,19 @@ void ComponentsSidebar::startDrag( Qt::DropActions supportedActions)
    if (!data)
       return;
    QRect rect;
-   QPixmap pixmap = renderToPixmap(data, &rect);
+   QPointF hotSpot;
+   QPixmap pixmap = renderToPixmap(data, &rect, hotSpot);
    if(pixmap.isNull())
       return QAbstractItemView::startDrag(supportedActions);
    QDrag *drag = new QDrag(this);
    drag->setPixmap(pixmap);
    drag->setMimeData(data);
-   drag->setHotSpot(rect.center());
+   drag->setHotSpot(hotSpot.toPoint());
    if (drag->start(supportedActions) == Qt::MoveAction)
       clearSelection();
 }
 
-QPixmap ComponentsSidebar::renderToPixmap(const QMimeData* data, QRect *r)
+QPixmap ComponentsSidebar::renderToPixmap(const QMimeData* data, QRect *r, QPointF& hotSpot)
 {
    QRectF rect;// = visualRect(indexes.at(0));
    Component *c = 0;
@@ -82,6 +83,7 @@ QPixmap ComponentsSidebar::renderToPixmap(const QMimeData* data, QRect *r)
    for(; it != end; ++it)
       rect |= (*it)->node()->boundingRect().translated((*it)->centrePos());
    rect = rect.adjusted(-1,-1,1,1);
+   
    QPainter p;
    QStyleOptionGraphicsItem so;
    so.state |= QStyle::State_Open;
@@ -89,20 +91,21 @@ QPixmap ComponentsSidebar::renderToPixmap(const QMimeData* data, QRect *r)
    pix.fill(QColor(255,255,255,0));
    p.begin(&pix);
    QPen pen = QPen(Qt::darkGray);
-   pen.setStyle(Qt::DashDotLine);
-   pen.setWidth(2);
+   pen.setStyle(Qt::DashLine);
+   pen.setWidth(1);
    p.setPen(pen);
-   p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing |QPainter::SmoothPixmapTransform );
-   p.translate(rect.width()/2,rect.height()/2);
-   //p.setMatrix(c->matrix());
+   p.setRenderHint(QPainter::Antialiasing,true);
+   p.setRenderHint(QPainter::TextAntialiasing,true);
+   p.setRenderHint(QPainter::SmoothPixmapTransform,true);
+   p.translate(-rect.left(),-rect.top());
+   
    c->paint(&p,&so,0);
    p.end();
 
    if(r)
    {
-      qreal dx = -rect.left();
-      qreal dy = -rect.top();
-      rect.translate(dx,dy);
+      hotSpot = QPointF(-rect.left(),-rect.top());
+      rect.translate(-rect.left(),-rect.top());
       *r = rect.toRect();
    }
    delete c;

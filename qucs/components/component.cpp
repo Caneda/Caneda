@@ -365,7 +365,7 @@ void Component::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w
    for(; it != end; ++it)
       (*it)->draw(p,o);
    
-   if(0 && o->state & QStyle::State_Selected)
+   if( o->state & QStyle::State_Selected)
    {
       p->setPen(getPen(Qt::darkGray,2));
       p->drawRect(boundingRect());
