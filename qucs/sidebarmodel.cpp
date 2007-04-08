@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "global.h"
+#include "qucs-tools/global.h"
 #include "sidebarmodel.h"
 
 #include <QtCore/QList>
@@ -254,7 +254,7 @@ QVariant SidebarModel::data ( const QModelIndex & index, int role ) const
    if (role == Qt::DisplayRole)
       return QVariant(item->name());
    else if(role == Qt::DecorationRole && item->isComponent())
-      return QVariant(QIcon(imageDirectory() + item->fileName()));
+      return QVariant(QIcon(Qucs::bitmapDirectory() + item->fileName()));
    return QVariant();
 }
 

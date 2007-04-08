@@ -34,7 +34,7 @@
 namespace Qucs
 {
 
-   static inline QString pathForFile(const QString& fileName)
+   inline QString pathForFile(const QString& fileName)
    {
       QString retVal = QDir::homePath();
       retVal += QDir::convertSeparators(QString("/.qucs/")+fileName);

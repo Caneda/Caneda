@@ -38,7 +38,7 @@ MOCHEADERS = schematicview.h qucsmainwindow.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
 qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp schematicscene.cpp  sidebarmodel.cpp \
-               global.cpp main.cpp  qucsmainwindow.cpp  schematicview.cpp   undocommands.cpp
+               main.cpp  qucsmainwindow.cpp  schematicview.cpp   undocommands.cpp
 # node.cpp element.cpp qucsdoc.cpp wire.cpp mouseactions.cpp   \
 #   qucs.cpp main.cpp wirelabel.cpp qucs_init.cpp qucs_actions.cpp            \
 #   viewpainter.cpp mnemo.cpp schematic.cpp schematic_element.cpp textdoc.cpp \
@@ -46,15 +46,15 @@ qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp schematicscene.
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)/qucs/ideality
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)/qucs/ideality -I$(top_srcdir)/qucs-tools
 qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
-qucs_LDADD = ideality/libideality.a components/libcomponents.a \
+qucs_LDADD = $(top_srcdir)/qucs-tools/libqucstools.a ideality/libideality.a components/libcomponents.a \
   $(X11_LIBS) $(QT_LIBS)
 # diagrams/libdiagrams.a 
 #   paintings/libpaintings.a dialogs/libdialogs.a 
 
 noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h componentssidebar.h  item.h undocommands.h \
-                               global.h  schematicscene.h  sidebarmodel.h
+                               schematicscene.h  sidebarmodel.h
 # main.h wire.h qucsdoc.h element.h      \
 #   node.h wirelabel.h viewpainter.h mnemo.h mouseactions.h
 
