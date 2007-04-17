@@ -258,6 +258,11 @@ QVariant SidebarModel::data ( const QModelIndex & index, int role ) const
    return QVariant();
 }
 
+bool SidebarModel::isComponent(const QModelIndex& index) const
+{
+   return (index.isValid() && static_cast<CategoryItem*>(index.internalPointer())->isComponent());
+}
+
 Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const
 {
    if(!index.isValid())

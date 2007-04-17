@@ -58,7 +58,7 @@ class QucsMainWindow : public DTabbedMainWindow
       void slotAlignRight();
       void slotDistribHoriz();
       void slotDistribVert();
-      void slotCenterHorizontal(); 
+      void slotCenterHorizontal();
       void slotCenterVertical();
       void slotOnGrid(bool);
       void slotMoveText(bool);
@@ -120,6 +120,8 @@ class QucsMainWindow : public DTabbedMainWindow
       void slotHelpAbout();
       void slotHelpAboutQt();
 
+   protected:
+         void closeEvent( QCloseEvent *closeEvent);
 
    private slots:
       void activateStackOf(QWidget *w);

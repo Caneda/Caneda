@@ -20,16 +20,31 @@
 #ifndef __COMPONENTSSIDEBAR_H
 #define __COMPONENTSSIDEBAR_H
 
-#include <QtGui/QTreeView>
+#include <QtGui/QWidget>
+
 class QPixmap;
-class ComponentsSidebar : public QTreeView
+class FilterProxyModel;
+class QLineEdit;
+class SidebarModel;
+class TreeView;
+class QToolButton;
+
+class ComponentsSidebar : public QWidget
 {
+Q_OBJECT
    public:
       ComponentsSidebar(QWidget *parent = 0);
       ~ComponentsSidebar() {}
 
-      void startDrag( Qt::DropActions supportedActions);
-      QPixmap renderToPixmap(const QMimeData *d, QRect *r, QPointF& hotSpot);
+   private slots:
+      void filterTextChanged();
+
+   private:
+      SidebarModel *m_model;
+      FilterProxyModel *m_proxyModel;
+      QLineEdit *m_filterEdit;
+      TreeView *m_treeView;
+      QToolButton *m_clearButton;
 };
 
 #endif

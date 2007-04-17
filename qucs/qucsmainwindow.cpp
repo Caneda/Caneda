@@ -33,9 +33,22 @@
 #include <QtGui/QApplication>
 #include <QtGui/QDockWidget>
 #include <QtGui/QWhatsThis>
+#include <QtGui/QMessageBox>
+#include <QtGui/QCloseEvent>
+#include <QtCore/QDebug>
+#include <QtGui/QFileDialog>
+#include <QtGui/QGraphicsItem>
+
+static QString qucsFilter;
 
 QucsMainWindow::QucsMainWindow(QWidget *w) : DTabbedMainWindow(w)
 {
+   qucsFilter =
+      tr("Schematic")+" (*.sch);;"+
+      tr("Data Display")+" (*.dpl);;"+
+      tr("Qucs Documents")+" (*.sch *.dpl);;"+
+      tr("VHDL Sources")+" (*.vhdl *.vhd);;"+
+      tr("Any File")+" (*)";
    m_undoGroup = new QUndoGroup();
    //m_undoView = new QUndoView(m_undoGroup,this);
    statusBar()->show();
@@ -917,11 +930,18 @@ void QucsMainWindow::activateStackOf(QWidget *w)
       m_undoGroup->setActiveStack(v->schematicScene()->undoStack());
 }
 
-
+void QucsMainWindow::closeEvent( QCloseEvent *e )
+{
+//    if ( QMessageBox::question( this, tr("Quit..."), tr("Do you really want to quit?"),
+//                                QMessageBox::Ok, QMessageBox::Cancel )==QMessageBox::Ok )
+       e->accept();
+//    else
+//       e->ignore();
+}
 
 void QucsMainWindow::slotFileNew()
 {
-   //TODO: implement this or rather port directly
+   newView();
 }
 
 void QucsMainWindow::slotTextNew()
@@ -931,17 +951,29 @@ void QucsMainWindow::slotTextNew()
 
 void QucsMainWindow::slotFileOpen()
 {
-   //TODO: implement this or rather port directly
+   QString file_Name = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    "", qucsFilter);
+   if ( !file_Name.isEmpty() )
+   {
+      //TODO: implement this or rather port directly
+   }
 }
 
 void QucsMainWindow::slotFileSave()
 {
-   //TODO: implement this or rather port directly
+   SchematicView *vv = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if ( vv )
+   {
+      QString name = vv->windowTitle();
+      //TODO: implement this or rather port directly
+   }
 }
 
 void QucsMainWindow::slotFileSaveAs()
 {
-   //TODO: implement this or rather port directly
+   QString file_Name = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                    "", qucsFilter);
+   slotFileSave();
 }
 
 void QucsMainWindow::slotFileSaveAll()
@@ -951,7 +983,8 @@ void QucsMainWindow::slotFileSaveAll()
 
 void QucsMainWindow::slotFileClose()
 {
-   //TODO: implement this or rather port directly
+   //TODO: Verify if page document is modified
+   tabWidget()->removeTab( tabWidget()->currentIndex() );
 }
 
 void QucsMainWindow::slotSymbolEdit()
@@ -976,7 +1009,7 @@ void QucsMainWindow::slotFilePrintFit()
 
 void QucsMainWindow::slotFileQuit()
 {
-   //TODO: implement this or rather port directly
+   close();
 }
 
 void QucsMainWindow::slotApplSettings()
@@ -1132,21 +1165,48 @@ void QucsMainWindow::slotExportGraphAsCsv()
 void QucsMainWindow::slotShowAll()
 {
    //TODO: implement this or rather port directly
+   SchematicView *v = qobject_cast<SchematicView*> (tabWidget()->currentWidget());
+   if ( v ) {
+      QRectF intersect;
+      QList<QGraphicsItem*> items = v->items();
+      if ( !items.isEmpty() ) {
+         // It's ineficient??????
+         intersect = items.first()->sceneBoundingRect();
+         foreach( QGraphicsItem* it, items ) {
+            intersect |= it->sceneBoundingRect();
+         }
+         intersect.adjust( -10, -10, 10, 10);
+         v->fitInView( intersect, Qt::KeepAspectRatio );
+      }
+   }
 }
 
 void QucsMainWindow::slotShowOne()
 {
    //TODO: implement this or rather port directly
+   SchematicView *v = qobject_cast<SchematicView*> (tabWidget()->currentWidget());
+   if ( v ) {
+      v->resetMatrix();
+   }
 }
 
 void QucsMainWindow::slotZoomIn(bool)
 {
    //TODO: implement this or rather port directly
+   // TODO: Not implemented equal qith qucs 3
+   SchematicView *v = qobject_cast<SchematicView*> (tabWidget()->currentWidget());
+   if ( v ) {
+      v->scale( 1.2, 1.2 );
+   }
 }
 
 void QucsMainWindow::slotZoomOut()
 {
    //TODO: implement this or rather port directly
+   SchematicView *v = qobject_cast<SchematicView*> (tabWidget()->currentWidget());
+   if ( v ) {
+      v->scale( 1/1.2, 1/1.2 );
+   }
 }
 
 void QucsMainWindow::slotSelect(bool)

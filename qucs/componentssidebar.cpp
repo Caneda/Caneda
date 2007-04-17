@@ -17,6 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
+#include "qucs-tools/global.h"
 #include "componentssidebar.h"
 #include "sidebarmodel.h"
 #include "components/component.h"
@@ -25,12 +26,27 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QDrag>
 #include <QtGui/QPainter>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QTreeView>
+#include <QtGui/QSortFilterProxyModel>
+#include <QtGui/QLineEdit>
+#include <QtGui/QToolButton>
+#include <QtGui/QAction>
+
 #include <QtCore/QMimeData>
 
-ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QTreeView(parent)
+class TreeView : public QTreeView
 {
-   setModel(new SidebarModel());
-   setWindowTitle(tr("Components"));
+   public:
+      TreeView(QWidget *parent = 0);
+      ~TreeView() {}
+
+      void startDrag( Qt::DropActions supportedActions);
+      QPixmap renderToPixmap(const QMimeData *d, QRect *r, QPointF& hotSpot);
+};
+
+TreeView::TreeView(QWidget *parent) : QTreeView(parent)
+{
    header()->hide();
    setDragDropMode(QAbstractItemView::DragOnly);
    setDragEnabled(true);
@@ -38,13 +54,12 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QTreeView(parent)
    expandAll();
 }
 
-void ComponentsSidebar::startDrag( Qt::DropActions supportedActions)
+void TreeView::startDrag( Qt::DropActions supportedActions)
 {
    QModelIndexList indexes = selectedIndexes();
-   Q_ASSERT(indexes.count() == 1);
    QMimeData *data = model()->mimeData(indexes);
-   if (!data)
-      return;
+   if (!data) return;
+   
    QRect rect;
    QPointF hotSpot;
    QPixmap pixmap = renderToPixmap(data, &rect, hotSpot);
@@ -58,7 +73,7 @@ void ComponentsSidebar::startDrag( Qt::DropActions supportedActions)
       clearSelection();
 }
 
-QPixmap ComponentsSidebar::renderToPixmap(const QMimeData* data, QRect *r, QPointF& hotSpot)
+QPixmap TreeView::renderToPixmap(const QMimeData* data, QRect *r, QPointF& hotSpot)
 {
    QRectF rect;// = visualRect(indexes.at(0));
    Component *c = 0;
@@ -110,4 +125,62 @@ QPixmap ComponentsSidebar::renderToPixmap(const QMimeData* data, QRect *r, QPoin
    }
    delete c;
    return pix;
+}
+
+
+class FilterProxyModel : public QSortFilterProxyModel
+{
+   public:
+      FilterProxyModel(QObject *parent = 0) : QSortFilterProxyModel(parent)
+      {}
+
+      bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+      {
+         QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
+         SidebarModel *sm = static_cast<SidebarModel*>(sourceModel());
+         if(sm->isComponent(index0) == false)
+            return true;
+         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+      }
+};
+
+ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
+{
+   QVBoxLayout *layout = new QVBoxLayout(this);
+   QHBoxLayout *hl = new QHBoxLayout();
+   layout->addLayout(hl);
+   m_filterEdit = new QLineEdit();
+   hl->addWidget(m_filterEdit);
+   m_clearButton = new QToolButton();
+   m_clearButton->setIcon(QIcon(Qucs::bitmapDirectory() + "clearFilterText.png"));
+   m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
+   m_clearButton->setWhatsThis(tr("Clear Filter Text\n\nClears the filter text thus reshowing all components"));
+   hl->addWidget(m_clearButton);
+   m_clearButton->setEnabled(false);
+
+   m_treeView = new TreeView();
+   layout->addWidget(m_treeView);
+   
+   m_model = new SidebarModel();
+   m_proxyModel = new FilterProxyModel();
+   m_proxyModel->setDynamicSortFilter(true);
+   m_proxyModel->setSourceModel(m_model);
+   m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+   m_treeView->setModel(m_proxyModel);
+   m_treeView->expandAll();
+
+   connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
+           this, SLOT(filterTextChanged()));
+
+   connect(m_clearButton,SIGNAL(clicked()),m_filterEdit,SLOT(clear()));
+   
+   setWindowTitle(tr("Components"));
+}
+
+void ComponentsSidebar::filterTextChanged()
+{
+   QString text = m_filterEdit->text();
+   m_clearButton->setEnabled(!text.isEmpty());
+   QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+   m_proxyModel->setFilterRegExp(regExp);
 }

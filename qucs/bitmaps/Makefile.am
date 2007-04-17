@@ -51,7 +51,7 @@ PNGS = fileopen.png filesave.png editdelete.png editcut.png editcopy.png      \
   port.png rebuild.png redo.png rotate_ccw.png top.png undo.png viewmag1.png  \
   viewmag+.png viewmag-.png viewmagfit.png wire.png filenew.png mirrory.png   \
   ground.png textnew.png quit.png back.png forward.png home.png previous.png  \
-  next.png close_tab.png
+  next.png close_tab.png clearFilterText.png
 
 # application pictures
 ICONS = big.button.qucs.xpm big.qucs.xpm tiny.button.qucs.xpm tiny.qucs.xpm

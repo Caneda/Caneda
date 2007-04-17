@@ -4,3 +4,4 @@ Makefile.in
 *.moc.cpp
 *.qm
 qucs
+resources.cpp

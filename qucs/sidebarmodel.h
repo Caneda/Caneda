@@ -37,6 +37,7 @@ class SidebarModel : public QAbstractItemModel
       int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
       Qt::ItemFlags flags(const QModelIndex& index) const;
       QStringList mimeTypes() const;
+      bool isComponent(const QModelIndex& index) const;
       QMimeData* mimeData(const QModelIndexList& indexes) const;
    private:
 
