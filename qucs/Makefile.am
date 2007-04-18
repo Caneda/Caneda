@@ -34,15 +34,11 @@ endif
 bin_PROGRAMS = qucs
 
 MOCHEADERS = schematicview.h qucsmainwindow.h componentssidebar.h
-#qucs.h schematic.h textdoc.h
+
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
 qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp schematicscene.cpp  sidebarmodel.cpp \
-               main.cpp  qucsmainwindow.cpp  schematicview.cpp   undocommands.cpp  resources.cpp
-# node.cpp element.cpp qucsdoc.cpp wire.cpp mouseactions.cpp   \
-#   qucs.cpp main.cpp wirelabel.cpp qucs_init.cpp qucs_actions.cpp            \
-#   viewpainter.cpp mnemo.cpp schematic.cpp schematic_element.cpp textdoc.cpp \
-#   schematic_file.cpp
+               main.cpp  qucsmainwindow.cpp schematicview.cpp  undocommands.cpp
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
@@ -51,12 +47,10 @@ qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
 qucs_LDADD = $(top_srcdir)/qucs-tools/libqucstools.a ideality/libideality.a components/libcomponents.a \
   $(X11_LIBS) $(QT_LIBS)
 # diagrams/libdiagrams.a 
-#   paintings/libpaintings.a dialogs/libdialogs.a 
+# paintings/libpaintings.a dialogs/libdialogs.a 
 
 noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h \
                                schematicscene.h  sidebarmodel.h
-# main.h wire.h qucsdoc.h element.h      \
-#   node.h wirelabel.h viewpainter.h mnemo.h mouseactions.h
 
 # rules for translations
 TRANSLATIONS = qucs_de.ts qucs_pl.ts qucs_fr.ts qucs_it.ts qucs_ro.ts \
@@ -96,9 +90,6 @@ qucs_%.ts:
 	echo "$(LRELEASE) $$qucsfile"; \
 	$(LRELEASE) $$ts_file; test -f $$qm_file && mv -f $$qm_file $@; \
 	rm -f $$ts_file
-
-resources.cpp: qucs.qrc
-	rcc -o resources.cpp qucs.qrc
 
 # installation of translations
 langdatadir = ${prefix}/share/qucs/lang
