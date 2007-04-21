@@ -120,8 +120,8 @@ void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
          {
             foreach(Wire *wire, portNode->wires())
             {
-               if(!wire->isSelected())
-                  m_resizingWires.insert(wire);
+               m_resizingWires.insert(wire);
+                  ++nWires;
             }
          }
       }
