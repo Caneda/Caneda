@@ -49,6 +49,7 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : DTabbedMainWindow(w)
       tr("Qucs Documents")+" (*.sch *.dpl);;"+
       tr("VHDL Sources")+" (*.vhdl *.vhd);;"+
       tr("Any File")+" (*)";
+   loadSettings();
    m_undoGroup = new QUndoGroup();
    //m_undoView = new QUndoView(m_undoGroup,this);
    statusBar()->show();
@@ -934,9 +935,10 @@ void QucsMainWindow::closeEvent( QCloseEvent *e )
 {
 //    if ( QMessageBox::question( this, tr("Quit..."), tr("Do you really want to quit?"),
 //                                QMessageBox::Ok, QMessageBox::Cancel )==QMessageBox::Ok )
-       e->accept();
+   e->accept();
 //    else
 //       e->ignore();
+   saveSettings();
 }
 
 void QucsMainWindow::slotFileNew()
@@ -1377,4 +1379,32 @@ void QucsMainWindow::slotHelpAbout()
 void QucsMainWindow::slotHelpAboutQt()
 {
    //TODO: implement this or rather port directly
+}
+
+void QucsMainWindow::loadSettings()
+{
+   Qucs::Settings settings("qucsrc");
+   
+   settings.beginGroup("MainWindow");
+   resize(settings.value("size", QSize(600, 400)).toSize());
+   move(settings.value("pos", QPoint(0, 0)).toPoint());
+   maxUndo = settings.value("undo", 20).toInt();
+   largeFontSize = settings.value("largefontsize", 16.0).toDouble();
+   setFont(Qucs::font());
+   Editor = settings.value("editor", Qucs::binaryDir + "qucsedit").toString();
+   settings.endGroup();
+}
+
+void QucsMainWindow::saveSettings()
+{
+   Qucs::Settings settings("qucsrc");
+
+   settings.beginGroup("MainWindow");
+   settings.setValue("size", size());
+   settings.setValue("pos", pos());
+   settings.setValue("undo", maxUndo);
+   settings.setValue("editor", Editor);
+   settings.setValue("largefontsize", largeFontSize);
+   settings.setValue("font", Qucs::font().toString());
+   settings.endGroup();
 }

@@ -131,6 +131,9 @@ class QucsMainWindow : public DTabbedMainWindow
       void initMenus();
       void initToolBars();
 
+      void loadSettings();
+      void saveSettings();
+
       // The following aim at reducing clutter by substituting
       // action pointers with a map container using object names
       // to identify them.
@@ -145,6 +148,14 @@ class QucsMainWindow : public DTabbedMainWindow
       QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
       QUndoGroup *m_undoGroup;
       ComponentsSidebar *m_componentsSidebar;
+
+   public:
+      int x, y, dx, dy;     // position and size
+      float largeFontSize;
+      unsigned int maxUndo; // size of undo stack
+      QString Editor;
+      // registered filename extensions with program to open the file
+      QStringList FileTypes;
 };
 
 inline void QucsMainWindow::addActionToMap(QAction *action)
