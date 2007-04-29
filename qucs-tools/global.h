@@ -31,8 +31,50 @@
 
 #include <QtGui/QFont>
 
+//Prototypes
 namespace Qucs
 {
+   inline QString pathForFile(const QString& fileName);
+   static QString getenv();
+   inline QString bitmapDirectory();
+   inline QString langDirectory();
+   inline QString language();
+   inline QFont font();
+
+   QString complexRect(double real, double imag, int Precision);
+   QString complexDeg(double real, double imag, int Precision);
+   QString complexRad (double real, double imag, int Precision);
+   QString StringNum(double num, char form, int Precision);
+   QString StringNiceNum(double num);
+   QString num2str(double Num);
+   void str2num(const QString& s_, double& Number, QString& Unit, double& Factor);
+   void convert2Unicode(QString& Text);
+   void convert2ASCII(QString& Text);
+   QString properName (const QString& Name);
+   bool VHDL_Time(QString& t, const QString& Name);
+   bool Verilog_Time(QString& t, const QString& Name);
+   bool checkVersion(QString& Line);
+
+   class Settings;
+}
+
+namespace Qucs
+{
+   const QString binaryDir = QString(BINARYDIR);
+   const QString bitmapDir = QString(BITMAPDIR);
+   const QString docDir = QString(DOCDIR);
+   const QString langDir = QString(LANGUAGEDIR);
+   const QString libDir = QString(LIBRARYDIR);
+   const QString version = QString(PACKAGE_VERSION);
+   const QString versionString = QString(PACKAGE_STRING);
+
+   class Settings : public QSettings
+   {
+      public:
+         Settings(const QString& filename):
+            QSettings(Qucs::pathForFile(filename),QSettings::IniFormat)
+         {}
+   };
 
    inline QString pathForFile(const QString& fileName)
    {
@@ -48,23 +90,6 @@ namespace Qucs
       return var;
    }
 
-   
-   class Settings : public QSettings
-   {
-      public:
-         Settings(const QString& filename):
-            QSettings(Qucs::pathForFile(filename),QSettings::IniFormat)
-         {}
-   };
-
-   const QString binaryDir = QString(BINARYDIR);
-   const QString bitmapDir = QString(BITMAPDIR);
-   const QString docDir = QString(DOCDIR);
-   const QString langDir = QString(LANGUAGEDIR);
-   const QString libDir = QString(LIBRARYDIR);
-   const QString version = QString(PACKAGE_VERSION);
-   const QString versionString = QString(PACKAGE_STRING);
-
    inline QString bitmapDirectory()
    {
       QString var = Qucs::getenv();
@@ -75,10 +100,10 @@ namespace Qucs
       }
       return Qucs::bitmapDir;
    }
-   
+
    inline QString langDirectory()
    {
-      
+
       QString var = Qucs::getenv();
       if(!var.isEmpty())
       {
@@ -87,7 +112,7 @@ namespace Qucs
       }
       return Qucs::langDir;
    }
-   
+
    inline QString language()
    {
       QString _default = QLocale().name();
@@ -106,8 +131,9 @@ namespace Qucs
       fnt.fromString(fontStr);
       return fnt;
    }
+
 }
-      
+
 
 
 #endif //__GLOBAL_H
