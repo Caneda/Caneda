@@ -20,10 +20,9 @@
 #ifndef __NODE_H
 #define __NODE_H
 
-#include "item.h"
+#include "components/component.h"
 #include <QtCore/QSet>
 
-class Component;
 class Wire;
 
 class Node : public QucsItem
@@ -41,10 +40,12 @@ class Node : public QucsItem
       void addComponent(Component *comp);
       void removeComponent(Component *comp);
       inline const QSet<Component*>& connectedComponents();
+      inline QSet<Component*> selectedComponents() const;
       inline bool isOpen() const;
+      inline bool isEmpty() const;
       bool areAllComponentsSelected() const;
       void addAllComponentsFrom(Node *other);
-      
+
       void addWire(Wire *w);
       void removeWire(Wire *w);
       void addAllWiresFrom(Node *other);
@@ -87,9 +88,23 @@ inline const QSet<Component*>& Node::connectedComponents()
    return m_connectedComponents;
 }
 
+inline QSet<Component*> Node::selectedComponents() const
+{
+   QSet<Component*> selCom;
+   foreach(Component *c, selCom)
+      if(c->isSelected())
+         selCom << c;
+   return selCom;
+}
+
 inline bool Node::isOpen() const
 {
    return m_connectedComponents.size() <= 1 && m_wires.isEmpty();
+}
+
+inline bool Node::isEmpty() const
+{
+   return m_connectedComponents.isEmpty() && m_wires.isEmpty();
 }
 
 inline QSet<Wire*> Node::wires() const

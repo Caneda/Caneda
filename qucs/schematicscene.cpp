@@ -21,6 +21,7 @@
 #include "node.h"
 #include "wire.h"
 #include "components/components.h"
+#include "components/componentproperty.h"
 #include "undocommands.h"
 
 #include <QtCore/QMimeData>
@@ -47,6 +48,11 @@ void SchematicScene::init()
 {
    m_undoStack = new QUndoStack();
    m_areItemsMoving = false;
+   m_xGridSize = m_yGridSize = 10;
+   m_currentMode = Qucs::SchematicMode;
+   m_frameShown = false;
+   m_gridShown = true;
+   m_simOpenDpl = true;
 }
 
 void SchematicScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event)
@@ -100,27 +106,39 @@ void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
          }
       }
    }
+
+   // This has to be before Scene::mousePress since, wire sets this variable if it is grabbed
    m_grabbedWire = 0;
    QGraphicsScene::mousePressEvent(e);
    m_movingNodes.clear();
    m_resizingWires.clear();
+   m_moveResizingWires.clear();
    foreach(QGraphicsItem *item, selectedItems())
    {
       Component *component = qgraphicsitem_cast<Component*>(item);
-      if(!component)
-         continue;
-
-      foreach(ComponentPort *port, component->componentPorts())
+      Wire *theWire = qgraphicsitem_cast<Wire*>(item);
+      if(component)
       {
-         Node *portNode = port->node();
-         portNode->setController(component);
-
-         m_movingNodes.insert(portNode);
-         if(portNode->areAllComponentsSelected())
+         foreach(ComponentPort *port, component->componentPorts())
          {
-            foreach(Wire *wire, portNode->wires())
-               m_resizingWires.insert(wire);
+            Node *portNode = port->node();
+            portNode->setController(component);
+
+            m_movingNodes.insert(portNode);
+            if(portNode->areAllComponentsSelected())
+            {
+               foreach(Wire *wire, portNode->wires())
+                  m_resizingWires.insert(wire);
+            }
          }
+      }
+      else if(theWire && theWire->isSelected() &&
+              theWire != m_grabbedWire &&
+              theWire->node1()->selectedComponents().size() == 0 &&
+              theWire->node2()->selectedComponents().size() == 0)
+      {
+      	 m_moveResizingWires << theWire;
+
       }
    }
 }
@@ -198,6 +216,16 @@ void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
          wire->hide();
       wire->rebuild();
    }
+
+   qreal dx = e->scenePos().x() - e->lastScenePos().x();
+   qreal dy = e->scenePos().y() - e->lastScenePos().y();
+
+   foreach(Wire *wire, m_moveResizingWires)
+   {
+      if(wire->isVisible())
+         wire->startMoveAndResize();
+      wire->moveAndResizeBy(dx,dy);
+   }
 }
 
 void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
@@ -244,6 +272,12 @@ void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
       wire->rebuild();
    }
 
+   foreach(Wire *wire, m_moveResizingWires)
+   {
+      wire->stopMoveAndResize();
+      wire->setSelected(true);
+   }
+
    qDeleteAll(deletions);
    deletions.clear();
 
@@ -255,7 +289,7 @@ void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
 
 void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 {
-   m_areItemsMoving = false;
+   m_areItemsMoving = true;
    m_grabbedWire = 0;
    QGraphicsScene::mouseDoubleClickEvent(e);
 }
@@ -310,6 +344,12 @@ void SchematicScene::setGrabbedWire(Wire *w)
 {
    m_grabbedWire = w;
 }
+
+void SchematicScene::setMode(Qucs::Mode mode)
+{
+   if(m_currentMode == mode) return;
+}
+
 
 Node* SchematicScene::nodeAt(qreal x, qreal y)
 {
@@ -382,21 +422,66 @@ bool SchematicScene::areItemsMoving() const
 
 void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 {
-   const int gridSize = 25;
-
    painter->setPen(QPen(Qt::black,0));
    painter->setBrush(Qt::NoBrush);
    painter->setRenderHint(QPainter::Antialiasing,false);
 
-   qreal left = int(rect.left()) - (int(rect.left()) % gridSize);
-   qreal top = int(rect.top()) - (int(rect.top()) % gridSize);
+   qreal left = int(rect.left()) - (int(rect.left()) % m_xGridSize);
+   qreal top = int(rect.top()) - (int(rect.top()) % m_yGridSize);
    qreal bottom = rect.bottom();
    qreal right = rect.right();
-   
+
    QVarLengthArray<QPointF, 800> points;
-   for( qreal x = left; x < right; x+=gridSize)
-       for( qreal y = top; y < bottom; y+=gridSize)
-          points.append(QPointF(x,y));
+   for( qreal x = left; x < right; x+=m_xGridSize)
+      for( qreal y = top; y < bottom; y+=m_yGridSize)
+         points.append(QPointF(x,y));
    painter->drawPoints(points.data(),points.size());
    painter->setRenderHint(QPainter::Antialiasing,true);
+}
+
+void SchematicScene::insertComponent(Component *comp)
+{
+   SchematicScene *old = comp->schematicScene();
+   if(old != this)
+   {
+      if(old)
+         old->removeComponent(comp);
+      addItem(comp);
+   }
+
+   if(m_components.count(comp) == 0)
+      m_components.append(comp);
+
+   foreach(ComponentPort *port, comp->m_ports)
+   {
+      Node *n = port->node();
+      n->removeComponent(comp);
+      if(n->isEmpty()) delete n;
+      QPointF pos = comp->mapToScene(port->centrePos());
+      n = nodeAt(pos);
+      if(!n) n = createNode(pos);
+      port->setNode(n);
+   }
+
+   foreach(ComponentProperty *prop, comp->m_properties)
+      if(!prop->isVisible() || prop->item()->scene() != this)
+         addItem(prop->item());
+}
+
+void SchematicScene::removeComponent(Component *comp)
+{
+   m_components.removeAll(comp);
+   foreach(ComponentPort *port, comp->m_ports)
+   {
+      Node *n = port->node();
+      n->removeComponent(comp);
+      if(n->isEmpty())
+         removeItem(n);
+   }
+
+    foreach(ComponentProperty *prop, comp->m_properties)
+       if(prop->item())
+          removeItem(prop->item());
+
+    removeItem(comp);
 }

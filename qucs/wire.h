@@ -57,6 +57,9 @@ class Wire : public QucsItem
 
       void grabMoveEvent( QGraphicsSceneMouseEvent * event );
       void grabReleaseEvent ( QGraphicsSceneMouseEvent * event );
+      void startMoveAndResize();
+      void moveAndResizeBy(qreal dx, qreal dy);
+      void stopMoveAndResize();
 
    protected:
       QVariant itemChange(GraphicsItemChange change, const QVariant &value);

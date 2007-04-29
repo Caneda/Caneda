@@ -102,6 +102,7 @@ class Component : public QucsItem
 
    private:
       QVariant handlePositionChange(const QPointF& pos);
+      friend class SchematicScene;
 };
 
 

@@ -27,9 +27,18 @@
 
 class Node;
 class QUndoStack;
+class Component;
 class ComponentPort;
 class Wire;
 class QucsItem;
+
+namespace Qucs
+{
+   enum Mode {
+      SchematicMode,
+      SymbolMode
+   };
+}
 
 class SchematicScene : public QGraphicsScene
 {
@@ -46,6 +55,27 @@ class SchematicScene : public QGraphicsScene
       QUndoStack* undoStack();
 
       void setGrabbedWire(Wire *w);
+      QList<Component*> components() const { return m_components; }
+      void insertComponent(Component *comp);
+      void removeComponent(Component *comp);
+      void insertWire(Wire *w, Node* n1, Node *n2);
+      void insertWire(Wire *w, const QPointF& n1Pos, const QPointF& n2Pos);
+      void removeWire(Wire *w);
+
+      int xGridSize() const { return m_xGridSize; }
+      int yGridSize() const { return m_yGridSize; }
+      bool isGridShown() const { return m_gridShown; }
+      QString dataSet() const { return m_dataSet; }
+      QString dataDisplay() const { return m_dataDisplay; }
+      bool simOpenDpl() const { return m_simOpenDpl; }
+      bool isFrameShown() const { return m_frameShown; }
+      QString frameText0() const { return m_frameText0; }
+      QString frameText1() const { return m_frameText1; }
+      QString frameText2() const { return m_frameText2; }
+      QString frameText3() const { return m_frameText3; }
+      Qucs::Mode currentMode() const { return m_currentMode; }
+      void setMode(Qucs::Mode mode);
+
    protected:
       void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
       void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
@@ -64,11 +94,26 @@ class SchematicScene : public QGraphicsScene
 
       QSet<Node*> m_movingNodes;
       QSet<Wire*> m_resizingWires;
+      QSet<Wire*> m_moveResizingWires;
       QSet<QucsItem*> m_alreadyMoved;
+
+      QList<Component*> m_components;
+      QList<Wire*> m_wires;
       QUndoStack *m_undoStack;
       bool m_areItemsMoving;
       Wire *m_grabbedWire;
 
+      //Document properties
+      int m_xGridSize;
+      int m_yGridSize;
+      bool m_gridShown;
+      QString m_dataSet;
+      QString m_dataDisplay;
+      bool m_simOpenDpl;
+      bool m_frameShown;
+      QString m_frameText0,m_frameText1;
+      QString m_frameText2,m_frameText3;
+      Qucs::Mode m_currentMode;
 };
 
 #endif //__SCHEMATICSCENE_H

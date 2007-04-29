@@ -54,12 +54,16 @@ Component::Component(SchematicScene* scene) : QucsItem(0,scene),m_pen(getPen(Qt:
                                               prevPropertyPos(0,0)
 {
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+   if(scene)
+      scene->insertComponent(this);
 }
 
 Component::~Component()
 {
    foreach(ComponentPort *port, m_ports)
       port->node()->removeComponent(this);
+   if(schematicScene())
+      schematicScene()->removeComponent(this);
 }
 
 Component* Component::copy() const
@@ -77,7 +81,7 @@ QString Component::netlist() const
    // output all node names
    foreach(ComponentPort *port, m_ports)
       s += ' ' + port->node()->name(); // node names
-   
+
    // output all properties
    foreach(ComponentProperty *prop, m_properties)
       s += ' ' + prop->name() + "'=\"" + prop->value() + "\"";
@@ -101,7 +105,7 @@ QString Component::shortNetlist() const
 void Component::addProperty(QString _name,QString _initVal,QString _des,bool isVisible,const QStringList& options)
 {
    ComponentProperty *prop = new ComponentProperty(this,_name,_initVal,_des,isVisible,options);
-   
+
    QPointF p = pos();
    if(prevPropertyPos.isNull())
       prevPropertyPos = QPointF(0,matrix().mapRect(boundingRect()).bottom()+5);
@@ -138,6 +142,25 @@ void Component::replaceNode(Node *_old, Node *_new)
 QVariant Component::handlePositionChange(const QPointF& hpos)
 {
    QPointF oldPos = pos();
+//   int gs = 10;//schematicScene()->gridSize();
+//   int x = hpos.x()), y = hpos.y();
+
+//      //TODO: Implent grid based movement for components
+//    if(0 && x%gs)
+//    {
+//       if(x%gs > gs/2)
+//          x -= (x%gs) + gs;
+//       else
+//          x -= (x%gs);
+//    }
+//    if(0 && y%gs)
+//    {
+//       if(y%gs > gs/2)
+//          y -= (y%gs) + gs;
+//       else
+//          y -= (y%gs);
+//    }
+
    qreal dx = hpos.x() - oldPos.x();
    qreal dy = hpos.y() - oldPos.y();
 
@@ -160,7 +183,7 @@ QVariant Component::handlePositionChange(const QPointF& hpos)
          port->node()->resetController();
       }
    }
-   return QVariant(hpos);
+   return QVariant(hpos);//QPointF(x,y));
 }
 
 QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
@@ -170,7 +193,7 @@ QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
    if (change == ItemPositionChange)
       return handlePositionChange(value.toPointF());
 
-   else if(change == ItemMatrixChange)
+   else if(change == ItemMatrixChange && scene())
    {
       QMatrix newMatrix = qVariantValue<QMatrix>(value);
       QList<ComponentPort*>::iterator it = m_ports.begin();
@@ -359,12 +382,12 @@ Component* Component::componentFromName(const QString& comp,SchematicScene *scen
 void Component::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
 {
    Q_UNUSED(w);
-   
+
    QList<Shape*>::const_iterator it = m_shapes.constBegin();
    const QList<Shape*>::const_iterator end = m_shapes.constEnd();
    for(; it != end; ++it)
       (*it)->draw(p,o);
-   
+
    if( 0 && o->state & QStyle::State_Selected)
    {
       p->setPen(getPen(Qt::darkGray,2));

@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-# 
+#
 # qucs/Makefile.am
 #
 # Automake input file.
@@ -10,19 +10,19 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
-# 
+#
 # This software is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this package; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
-# Boston, MA 02110-1301, USA.  
+# Boston, MA 02110-1301, USA.
 #
 
-SUBDIRS = ideality  components 
+SUBDIRS = ideality  components
 #bitmaps diagrams paintings dialogs
 
 if COND_WIN32
@@ -38,7 +38,8 @@ MOCHEADERS = schematicview.h qucsmainwindow.h componentssidebar.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
 qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp schematicscene.cpp  sidebarmodel.cpp \
-               main.cpp  qucsmainwindow.cpp schematicview.cpp  undocommands.cpp
+               main.cpp  qucsmainwindow.cpp schematicview.cpp  undocommands.cpp fileformathandler.cpp \
+							 qucsprimaryformat.cpp
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
@@ -46,11 +47,11 @@ INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)/q
 qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
 qucs_LDADD = $(top_srcdir)/qucs-tools/libqucstools.a ideality/libideality.a components/libcomponents.a \
   $(X11_LIBS) $(QT_LIBS)
-# diagrams/libdiagrams.a 
-# paintings/libpaintings.a dialogs/libdialogs.a 
+# diagrams/libdiagrams.a
+# paintings/libpaintings.a dialogs/libdialogs.a
 
 noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h \
-                               schematicscene.h  sidebarmodel.h
+                               schematicscene.h  sidebarmodel.h fileformathandler.h qucsprimaryformat.h
 
 # rules for translations
 TRANSLATIONS = qucs_de.ts qucs_pl.ts qucs_fr.ts qucs_it.ts qucs_ro.ts \
@@ -62,7 +63,7 @@ GENTRANSLATIONS = qtgeneric_untranslated.ts qtgeneric_de.ts qtgeneric_fr.ts \
   qtgeneric_tr.ts qtgeneric_uk.ts qtgeneric_ru.ts
 TRANSFILES = $(TRANSLATIONS:.ts=.qm)
 
-qucs_%.ts: 
+qucs_%.ts:
 # $(qucs_SOURCES)
 # 	@echo "Updating translations...";
 # 	@list='$(TRANSLATIONS)'; for file in $$list; do \

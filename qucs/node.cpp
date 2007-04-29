@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 #include "node.h"
-#include "components/component.h"
 #include "wire.h"
 
 #include "schematicscene.h"

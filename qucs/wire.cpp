@@ -322,6 +322,111 @@ QVariant Wire::itemChange(GraphicsItemChange change, const QVariant &value)
    return QGraphicsItem::itemChange(change,value);
 }
 
+void Wire::startMoveAndResize()
+{
+   m_wasGrabbed = true;
+   m_grabbedLineIndex = m_lines.size()/2;
+   qDebug("%d index in startAndMove\n",m_grabbedLineIndex);
+   hide();
+   rebuild();
+}
+
+void Wire::moveAndResizeBy(qreal dx, qreal dy)
+{
+   if(m_grabbedLineIndex < 0)
+      return;
+   QPointF delta(dx,dy);
+   int prevIndex = m_grabbedLineIndex - 1;
+   int nextIndex = m_grabbedLineIndex + 1;
+   QPointF node1Pos = mapFromScene(m_node1->scenePos());
+   QPointF node2Pos = mapFromScene(m_node2->scenePos());
+   
+   WireLine& grabbedLine = m_lines[m_grabbedLineIndex];
+   grabbedLine.translate(delta);
+   
+   if(prevIndex < 0)
+   {
+      QList<WireLine> begin = linesBetween(node1Pos,grabbedLine.p1());
+      m_lines = begin + m_lines;
+      m_grabbedLineIndex += begin.size();
+   }
+   else
+   {
+      while(prevIndex >= 0)
+      {
+         WireLine& prevLine = m_lines[prevIndex];
+         WireLine& nextLine = m_lines[prevIndex + 1];
+         if(prevLine.isVertical())
+         {
+            prevLine.setX(nextLine.p1().x());
+            prevLine.setP2(nextLine.p1());
+         }
+         else
+         {
+            Q_ASSERT(prevLine.isHorizontal());
+            prevLine.setY(nextLine.p1().y());
+            prevLine.setP2(nextLine.p1());
+         }
+         --prevIndex;
+      }
+      QPointF startLineP1 = m_lines.at(0).p1();
+      if(node1Pos != startLineP1)
+      {
+         QList<WireLine> begin = linesBetween(node1Pos,startLineP1);
+         m_lines = begin + m_lines;
+         m_grabbedLineIndex += begin.size();
+      }
+   }
+   deleteNullLines();
+   
+//--------------------------------------------------------------------------------------
+   nextIndex = m_grabbedLineIndex + 1;
+   if(nextIndex == m_lines.size())
+   {
+      QList<WireLine> end = linesBetween(grabbedLine.p2(),node2Pos);
+      m_lines += end;
+   }
+   else
+   {
+      while(nextIndex < m_lines.size())
+      {
+         WireLine& nextLine = m_lines[nextIndex];
+         WireLine& prevLine = m_lines[nextIndex-1];
+         if(nextLine.isVertical())
+         {
+            nextLine.setX(prevLine.p2().x());
+            nextLine.setP1(prevLine.p2());
+         }
+         else
+         {
+            Q_ASSERT(nextLine.isHorizontal());
+            nextLine.setY(prevLine.y2());
+            nextLine.setP1(prevLine.p2());
+         }
+         ++nextIndex;
+      }
+      
+      QPointF endLineP2 = m_lines.last().p2();
+      if(node2Pos != endLineP2)
+      {
+         QList<WireLine> end = linesBetween(endLineP2,node2Pos);
+         m_lines += end;
+      }
+   }
+
+   deleteNullLines();
+   updateProxyWires();
+}
+
+void Wire::stopMoveAndResize()
+{
+   m_wasGrabbed = false;
+   m_grabbedLineIndex = -1;
+   clearProxyWires();
+   show();
+   prepareGeometryChange();
+}
+
 void Wire::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
    m_grabbedLineIndex = -1;
@@ -364,7 +469,7 @@ void Wire::grabMoveEvent( QGraphicsSceneMouseEvent * event )
 {
    if(m_grabbedLineIndex < 0)
       return;
-   QPointF delta = event->pos() - event->lastPos();
+   QPointF delta = event->scenePos() - event->lastScenePos();
    int prevIndex = m_grabbedLineIndex - 1;
    int nextIndex = m_grabbedLineIndex + 1;
    QPointF node1Pos = mapFromScene(m_node1->scenePos());
@@ -456,6 +561,7 @@ void Wire::grabReleaseEvent ( QGraphicsSceneMouseEvent * event )
    show();
    prepareGeometryChange();
 }
+
 
 void Wire::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * mouseEvent )
 {
