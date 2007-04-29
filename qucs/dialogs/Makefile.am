@@ -24,25 +24,29 @@
 
 noinst_LIBRARIES = libdialogs.a
 
-MOCHEADERS = messagebox.h settingsdialog.h simmessage.h qucssettingsdialog.h \
-     labeldialog.h changedialog.h matchdialog.h digisettingsdialog.h         \
-     sweepdialog.h searchdialog.h librarydialog.h importdialog.h             \
-     packagedialog.h \
-     vtabbutton.h vtabbar.h vtabwidget.h vtabbeddockwidget.h
+MOCHEADERS = qucssettingsdialog.h
+
+#     messagebox.h settingsdialog.h simmessage.h qucssettingsdialog.h \
+#     labeldialog.h changedialog.h matchdialog.h digisettingsdialog.h         \
+#     sweepdialog.h searchdialog.h librarydialog.h importdialog.h             \
+#     packagedialog.h \
+#     vtabbutton.h vtabbar.h vtabwidget.h vtabbeddockwidget.h
 
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-libdialogs_a_SOURCES = messagebox.cpp settingsdialog.cpp newprojdialog.cpp   \
-     simmessage.cpp qucssettingsdialog.cpp labeldialog.cpp changedialog.cpp  \
-     matchdialog.cpp sweepdialog.cpp digisettingsdialog.cpp searchdialog.cpp \
-     librarydialog.cpp importdialog.cpp packagedialog.cpp \
-     vtabbutton.cpp vtabbar.cpp vtabwidget.cpp vtabbeddockwidget.cpp
+libdialogs_a_SOURCES = qucssettingsdialog.cpp
+# messagebox.cpp settingsdialog.cpp newprojdialog.cpp   \
+#     simmessage.cpp qucssettingsdialog.cpp labeldialog.cpp changedialog.cpp  \
+#     matchdialog.cpp sweepdialog.cpp digisettingsdialog.cpp searchdialog.cpp \
+#     librarydialog.cpp importdialog.cpp packagedialog.cpp \
+#     vtabbutton.cpp vtabbar.cpp vtabwidget.cpp vtabbeddockwidget.cpp
 
 nodist_libdialogs_a_SOURCES = $(MOCFILES)
 
-noinst_HEADERS = newprojdialog.h vtabglobal.h $(MOCHEADERS)
+noinst_HEADERS = $(MOCHEADERS)
+#newprojdialog.h vtabglobal.h $(MOCHEADERS)
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(top_srcdir)/qucs
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)/qucs -I$(top_srcdir)/qucs/ideality -I$(top_srcdir)/qucs-tools
 
 %.moc.cpp: %.h
 	$(MOC) -o $@ $<

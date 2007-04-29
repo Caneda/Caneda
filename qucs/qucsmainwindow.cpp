@@ -23,6 +23,8 @@
 #include "schematicview.h"
 #include "schematicscene.h"
 
+#include "dialogs/qucssettingsdialog.h"
+
 #include <QtGui/QStatusBar>
 #include <QtGui/QMenu>
 #include <QtGui/QToolBar>
@@ -1021,6 +1023,8 @@ void QucsMainWindow::slotFileQuit()
 void QucsMainWindow::slotApplSettings()
 {
    //TODO: implement this or rather port directly
+  QucsSettingsDialog *d = new QucsSettingsDialog(this);
+  d->exec();
 }
 
 void QucsMainWindow::slotAlignTop()
