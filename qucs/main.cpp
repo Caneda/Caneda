@@ -19,11 +19,13 @@
 
 #include "schematicview.h"
 #include "qucsmainwindow.h"
+#include "qucs-tools/global.h"
 #include <QtGui>
 
 int main(int argc,char *argv[])
 {
    QApplication app(argc,argv);
+   app.setFont(Qucs::font());
    QucsMainWindow mw;
 
    mw.show();

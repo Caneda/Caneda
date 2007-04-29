@@ -38,6 +38,7 @@
 #include <QtCore/QDebug>
 #include <QtGui/QFileDialog>
 #include <QtGui/QGraphicsItem>
+#include <QtCore/QTimer>
 
 static QString qucsFilter;
 
@@ -49,7 +50,7 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : DTabbedMainWindow(w)
       tr("Qucs Documents")+" (*.sch *.dpl);;"+
       tr("VHDL Sources")+" (*.vhdl *.vhd);;"+
       tr("Any File")+" (*)";
-   loadSettings();
+
    m_undoGroup = new QUndoGroup();
    //m_undoView = new QUndoView(m_undoGroup,this);
    statusBar()->show();
@@ -64,6 +65,7 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : DTabbedMainWindow(w)
    m_componentsSidebar->show();
    connect(this,SIGNAL(widgetChanged(QWidget *)),this,SLOT(activateStackOf(QWidget *)));
    newView();
+   QTimer::singleShot(10,this,SLOT(loadSettings()));
 }
 
 void QucsMainWindow::initActions()
@@ -845,13 +847,13 @@ void QucsMainWindow::initMenus()
    viewMenu->addAction(action("viewBrowseDock"));
 
    menuBar()->addSeparator();
-   
+
    helpMenu = menuBar()->addMenu(tr("&Help"));
 
    helpMenu->addAction(action("helpIndex"));
    helpMenu->addAction(action("helpGetStart"));
    helpMenu->addAction(action("whatsThis"));
-   
+
    helpMenu->addSeparator();
 
    helpMenu->addAction(action("helpAboutApp"));
@@ -904,9 +906,9 @@ void QucsMainWindow::initToolBars()
    workToolbar->addAction(action("simulate"));
    workToolbar->addAction(action("dpl_sch"));
    workToolbar->addAction(action("setMarker"));
-   
+
    workToolbar->addSeparator();
-   
+
    workToolbar->addAction(action("whatsThis"));
 }
 
@@ -916,6 +918,7 @@ void QucsMainWindow::newView()
    addView(vv);
    if(tabWidget()->count() == 1)
       m_undoGroup->setActiveStack(vv->schematicScene()->undoStack());
+   loadSettings();
 }
 
 void QucsMainWindow::addView(SchematicView *view)
@@ -935,10 +938,11 @@ void QucsMainWindow::closeEvent( QCloseEvent *e )
 {
 //    if ( QMessageBox::question( this, tr("Quit..."), tr("Do you really want to quit?"),
 //                                QMessageBox::Ok, QMessageBox::Cancel )==QMessageBox::Ok )
-   e->accept();
+   //e->accept();
 //    else
 //       e->ignore();
    saveSettings();
+   DTabbedMainWindow::closeEvent(e);
 }
 
 void QucsMainWindow::slotFileNew()
@@ -1384,13 +1388,12 @@ void QucsMainWindow::slotHelpAboutQt()
 void QucsMainWindow::loadSettings()
 {
    Qucs::Settings settings("qucsrc");
-   
+
    settings.beginGroup("MainWindow");
    resize(settings.value("size", QSize(600, 400)).toSize());
    move(settings.value("pos", QPoint(0, 0)).toPoint());
    maxUndo = settings.value("undo", 20).toInt();
    largeFontSize = settings.value("largefontsize", 16.0).toDouble();
-   setFont(Qucs::font());
    Editor = settings.value("editor", Qucs::binaryDir + "qucsedit").toString();
    settings.endGroup();
 }

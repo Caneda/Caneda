@@ -37,7 +37,7 @@ class QucsMainWindow : public DTabbedMainWindow
       ~QucsMainWindow() {}
 
       void addView(SchematicView *view);
-                                       
+
    public slots:
       void slotFileNew();
       void slotTextNew();
@@ -126,12 +126,12 @@ class QucsMainWindow : public DTabbedMainWindow
    private slots:
       void activateStackOf(QWidget *w);
       void newView();
+      void loadSettings();
    private:
       void initActions();
       void initMenus();
       void initToolBars();
 
-      void loadSettings();
       void saveSettings();
 
       // The following aim at reducing clutter by substituting
