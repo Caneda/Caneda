@@ -22,8 +22,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
-SUBDIRS = ideality components dialogs
-#bitmaps diagrams paintings dialogs
+SUBDIRS = ideality components dialogs bitmaps diagrams paintings
 
 if COND_WIN32
 bin_SCRIPTS = qucsdigi.bat
@@ -46,10 +45,7 @@ nodist_qucs_SOURCES = $(MOCFILES)
 INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)/qucs/ideality -I$(top_srcdir)/qucs-tools
 qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
 qucs_LDADD = $(top_srcdir)/qucs-tools/libqucstools.a ideality/libideality.a components/libcomponents.a dialogs/libdialogs.a \
-  $(X11_LIBS) $(QT_LIBS)
-# diagrams/libdiagrams.a
-# paintings/libpaintings.a
-# dialogs/libdialogs.a
+  $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a
 
 noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h \
                                schematicscene.h  sidebarmodel.h fileformathandler.h qucsprimaryformat.h

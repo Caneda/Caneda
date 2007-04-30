@@ -971,10 +971,7 @@ void QucsMainWindow::slotFileSave()
 {
    SchematicView *vv = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
    if ( vv )
-   {
-      QString name = vv->windowTitle();
-      //TODO: implement this or rather port directly
-   }
+      vv->save();
 }
 
 void QucsMainWindow::slotFileSaveAs()

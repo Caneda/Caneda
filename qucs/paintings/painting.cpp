@@ -17,22 +17,6 @@
 
 #include "painting.h"
 
-Painting::Painting()
+Painting::Painting(SchematicScene *scene) : QucsItem(0,scene)
 {
-  Type = isPainting;
-  State = 0;
-}
-
-Painting::~Painting()
-{
-}
-
-Painting* Painting::newOne()
-{
-  return new Painting();
-}
-
-QString Painting::save()
-{
-  return QString();
 }

@@ -217,6 +217,8 @@ namespace Qucs
 // #########################################################################
    void convert2ASCII(QString& Text)
    {
+      if(Text.isEmpty() || Text.isNull())
+         return;
       Text.replace('\\', "\\\\");
       Text.replace('\n', "\\n");
 

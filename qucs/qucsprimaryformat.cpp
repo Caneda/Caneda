@@ -20,6 +20,10 @@
 #include "qucsprimaryformat.h"
 #include "schematicview.h"
 #include "schematicscene.h"
+#include "components/component.h"
+#include "paintings/painting.h"
+#include "wire.h"
+#include "diagrams/diagram.h"
 #include "qucs-tools/global.h"
 
 #include <QtCore/QTextStream>
@@ -35,6 +39,7 @@ QucsPrimaryFormat::QucsPrimaryFormat(SchematicView *view) : FileFormatHandler(vi
 int QucsPrimaryFormat::save(const QString& fileName)
 {
    QFile file(fileName);
+
    if(!file.open(QIODevice::WriteOnly)) {
       QMessageBox::critical(0, QObject::tr("Error"),
                             QObject::tr("Cannot save document!"));
@@ -53,7 +58,6 @@ int QucsPrimaryFormat::save(const QString& fileName)
    QTextStream stream(&file);
 
    stream << "<Qucs Schematic " << Qucs::version << ">\n";
-
    stream << "<Properties>\n";
 
    switch(scene->currentMode()) {
@@ -82,46 +86,50 @@ int QucsPrimaryFormat::save(const QString& fileName)
    stream << "  <showFrame=" << scene->isFrameShown() << ">\n";
 
    QString t;
-   Qucs::convert2ASCII(t = scene->frameText0());
+   t = scene->frameText0();
+   Qucs::convert2ASCII(t);
    stream << "  <FrameText0=" << t << ">\n";
-   Qucs::convert2ASCII(t = scene->frameText1());
+   t = scene->frameText1();
+   Qucs::convert2ASCII(t);
    stream << "  <FrameText1=" << t << ">\n";
-   Qucs::convert2ASCII(t = scene->frameText2());
+   t = scene->frameText2();
+   Qucs::convert2ASCII(t);
    stream << "  <FrameText2=" << t << ">\n";
-   Qucs::convert2ASCII(t = scene->frameText3());
+   t = scene->frameText3();
+   Qucs::convert2ASCII(t);
    stream << "  <FrameText3=" << t << ">\n";
    stream << "</Properties>\n";
 
-   //Painting *pp;
-/*   stream << "<Symbol>\n";     // save all paintings for symbol
-   //for(pp = SymbolPaints.first(); pp != 0; pp = SymbolPaints.next())
-   //   stream << "  <" << pp->save() << ">\n";
+   stream << "<Symbol>\n";     // save all paintings for symbol
+   foreach(Painting *p, scene->symbolPaintings())
+      stream << "  <" << p->saveString() << ">\n";
    stream << "</Symbol>\n";
 
    stream << "<Components>\n";    // save all components
-   for(Component *pc = DocComps.first(); pc != 0; pc = DocComps.next())
-      stream << "  " << pc->save() << "\n";
+   foreach(Component *c, scene->components())
+      stream << "  " << c->saveString() << "\n";
    stream << "</Components>\n";
 
    stream << "<Wires>\n";    // save all wires
-   for(Wire *pw = DocWires.first(); pw != 0; pw = DocWires.next())
-      stream << "  " << pw->save() << "\n";
+   foreach(Wire *pw,scene->wires())
+      stream << "  " << pw->saveString() << "\n";
 
    // save all labeled nodes as wires
-   for(Node *pn = DocNodes.first(); pn != 0; pn = DocNodes.next())
-      if(pn->Label) stream << "  " << pn->Label->save() << "\n";
-   stream << "</Wires>\n";
+   // for(Node *pn = DocNodes.first(); pn != 0; pn = DocNodes.next())
+//       if(pn->Label) stream << "  " << pn->Label->save() << "\n";
+//    stream << "</Wires>\n";
 
    stream << "<Diagrams>\n";    // save all diagrams
-   for(Diagram *pd = DocDiags.first(); pd != 0; pd = DocDiags.next())
-      stream << "  " << pd->save() << "\n";
+   foreach(Diagram *pd,scene->diagrams())
+      stream << "  " << pd->saveString() << "\n";
    stream << "</Diagrams>\n";
 
    stream << "<Paintings>\n";     // save all paintings
-   for(pp = DocPaints.first(); pp != 0; pp = DocPaints.next())
-      stream << "  <" << pp->save() << ">\n";
+   foreach(Painting *p, scene->paintings())
+      stream << "  <" << p->saveString() << ">\n";
    stream << "</Paintings>\n";
-*/
+   qDebug("aReally strange");
+
    file.close();
    return 0;
 }

@@ -102,6 +102,37 @@ QString Component::shortNetlist() const
    return s;
 }
 
+
+QString Component::saveString() const
+{
+   QString s = "<" + model;
+
+   if(name.isEmpty()) s += " * ";
+   else s += " " + name + " ";
+
+//    int i=0;
+//    if(!showName)
+//       i = 4;
+//    i |= isActive;
+//    s += QString::number(i);
+   s += " "+QString::number(pos().x())+" "+QString::number(pos().y());
+//    s += " "+QString::number(tx)+" "+QString::number(ty);
+//    if(mirroredX) s += " 1";
+//    else s += " 0";
+//    s += " "+QString::number(rotated);
+
+   // write all properties
+   foreach(ComponentProperty *p1, m_properties) {
+      if(p1->description().isEmpty())
+         s += " \""+p1->name() + "=" + p1->value() + "\"";   // e.g. for equations
+      else s += " \"" + p1->value() + "\"";
+      if(p1->isVisible()) s += " 1";
+      else s += " 0";
+   }
+
+   return s+">";
+}
+
 void Component::addProperty(QString _name,QString _initVal,QString _des,bool isVisible,const QStringList& options)
 {
    ComponentProperty *prop = new ComponentProperty(this,_name,_initVal,_des,isVisible,options);

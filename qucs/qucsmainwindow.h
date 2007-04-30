@@ -157,7 +157,7 @@ class QucsMainWindow : public DTabbedMainWindow
       QString Language;
       QColor BGColor;
       QColor VHDL_Comment, VHDL_String, VHDL_Integer, VHDL_Real,
-	VHDL_Character, VHDL_Types, VHDL_Attributes;
+         VHDL_Character, VHDL_Types, VHDL_Attributes;
       // registered filename extensions with program to open the file
       QStringList FileTypes;
 };

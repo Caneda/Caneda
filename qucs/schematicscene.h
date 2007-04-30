@@ -31,6 +31,8 @@ class Component;
 class ComponentPort;
 class Wire;
 class QucsItem;
+class Diagram;
+class Painting;
 
 namespace Qucs
 {
@@ -55,18 +57,26 @@ class SchematicScene : public QGraphicsScene
       QUndoStack* undoStack();
 
       void setGrabbedWire(Wire *w);
-      QList<Component*> components() const { return m_components; }
       void insertComponent(Component *comp);
       void removeComponent(Component *comp);
       void insertWire(Wire *w, Node* n1, Node *n2);
       void insertWire(Wire *w, const QPointF& n1Pos, const QPointF& n2Pos);
       void removeWire(Wire *w);
 
+      QList<Component*> components() const { return m_components; }
+      QList<Painting*> paintings() const { return m_paintings; }
+      QList<Wire*> wires() const { return m_wires; }
+      QList<Diagram*> diagrams() const { return m_diagrams; }
+      QList<Painting*> symbolPaintings() const { return m_symbolPaintings; }
+      QList<Node*> nodes() const { return m_nodes; }
+
       int xGridSize() const { return m_xGridSize; }
       int yGridSize() const { return m_yGridSize; }
       bool isGridShown() const { return m_gridShown; }
       QString dataSet() const { return m_dataSet; }
       QString dataDisplay() const { return m_dataDisplay; }
+      QString fileName() const { return m_fileName; }
+      void setFileName(const QString& fn) { m_fileName = fn; }
       bool simOpenDpl() const { return m_simOpenDpl; }
       bool isFrameShown() const { return m_frameShown; }
       QString frameText0() const { return m_frameText0; }
@@ -75,6 +85,8 @@ class SchematicScene : public QGraphicsScene
       QString frameText3() const { return m_frameText3; }
       Qucs::Mode currentMode() const { return m_currentMode; }
       void setMode(Qucs::Mode mode);
+
+      void save();
 
    protected:
       void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
@@ -99,6 +111,11 @@ class SchematicScene : public QGraphicsScene
 
       QList<Component*> m_components;
       QList<Wire*> m_wires;
+      QList<Diagram*> m_diagrams;
+      QList<Node*> m_nodes;
+      QList<Painting*> m_paintings;
+      QList<Painting*> m_symbolPaintings;
+
       QUndoStack *m_undoStack;
       bool m_areItemsMoving;
       Wire *m_grabbedWire;
@@ -109,6 +126,7 @@ class SchematicScene : public QGraphicsScene
       bool m_gridShown;
       QString m_dataSet;
       QString m_dataDisplay;
+      QString m_fileName;
       bool m_simOpenDpl;
       bool m_frameShown;
       QString m_frameText0,m_frameText1;

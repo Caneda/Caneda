@@ -62,6 +62,7 @@ class Component : public QucsItem
 
       virtual QString netlist() const;
       virtual QString shortNetlist() const;
+      QString saveString() const;
       inline int type() const;
 
       inline const QList<ComponentPort*>& componentPorts() const;

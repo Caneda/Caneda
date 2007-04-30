@@ -52,7 +52,8 @@ class QucsItem : public QGraphicsItem
       SchematicScene* schematicScene() const;
       QGraphicsView* activeView() const;
 
-   protected:
+      virtual QString saveString() const { return QString(""); }
+
 };
 
 #endif //__ITEM_H

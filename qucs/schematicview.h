@@ -32,7 +32,9 @@ class SchematicView : public QGraphicsView
       ~SchematicView() {};
 
       void init();
-
+      void save();
+      void saveAs();
+      void load();
       SchematicScene* schematicScene() const;
 };
 

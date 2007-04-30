@@ -22,15 +22,16 @@
 #include "components/resistor.h"
 #include "wire.h"
 #include "node.h"
+#include "qucsprimaryformat.h"
 
 #include <QtGui/QWheelEvent>
 #include <QtCore/QDebug>
+#include <QtGui/QFileDialog>
 
 SchematicView::SchematicView(QGraphicsScene *sc,QWidget *parent) : QGraphicsView(sc,parent)
 {
    Q_ASSERT(sc == 0);
    setScene(new SchematicScene(0,0,800,600));
-   //setCacheMode(CacheBackground);
    setDragMode(RubberBandDrag);
    setAcceptDrops(true);
    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -55,4 +56,26 @@ SchematicScene* SchematicView::schematicScene() const
    SchematicScene* s = qobject_cast<SchematicScene*>(scene());
    Q_ASSERT(s);
    return s;
+}
+
+void SchematicView::save()
+{
+   SchematicScene *s = schematicScene();
+   if(!s) return;
+   if(s->fileName().isEmpty())
+      return saveAs();
+   QucsPrimaryFormat format(this);
+   format.save(s->fileName());
+}
+
+void SchematicView::saveAs()
+{
+   SchematicScene *s = schematicScene();
+   if(!s) return;
+   QString fn;
+   fn = QFileDialog::getSaveFileName( this, tr("Save File"), QString(), tr("Schematic files (*.sch)"));
+   if(fn.isEmpty()) return;
+   setWindowTitle(fn);
+   s->setFileName(fn);
+   return save();
 }

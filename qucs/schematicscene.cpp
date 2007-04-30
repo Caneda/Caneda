@@ -22,7 +22,10 @@
 #include "wire.h"
 #include "components/components.h"
 #include "components/componentproperty.h"
+#include "paintings/painting.h"
+#include "diagrams/diagram.h"
 #include "undocommands.h"
+#include "qucsprimaryformat.h"
 
 #include <QtCore/QMimeData>
 #include <QtCore/QtDebug>
@@ -53,6 +56,8 @@ void SchematicScene::init()
    m_frameShown = false;
    m_gridShown = true;
    m_simOpenDpl = true;
+   m_dataSet = m_dataDisplay = m_fileName = QString("");
+   m_frameText0 = m_frameText1 =m_frameText2 =m_frameText3 = QString("");
 }
 
 void SchematicScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event)
@@ -484,4 +489,8 @@ void SchematicScene::removeComponent(Component *comp)
           removeItem(prop->item());
 
     removeItem(comp);
+}
+
+void SchematicScene::save()
+{
 }

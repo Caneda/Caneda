@@ -127,7 +127,7 @@ namespace Qucs
    {
       Qucs::Settings settings("qucsrc");
       settings.beginGroup("MainWindow");
-      QString fontStr = settings.value("font","Helvetica,12").toString();
+      QString fontStr = settings.value("font").toString();
       QFont fnt;
       fnt.fromString(fontStr);
       settings.endGroup();
