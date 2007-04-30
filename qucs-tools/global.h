@@ -119,6 +119,7 @@ namespace Qucs
       Qucs::Settings settings("qucsrc");
       settings.beginGroup("MainWindow");
       QString retVal = settings.value("language",_default).toString();
+      settings.endGroup();
       return retVal;
    }
 
@@ -129,6 +130,7 @@ namespace Qucs
       QString fontStr = settings.value("font","Helvetica,12").toString();
       QFont fnt;
       fnt.fromString(fontStr);
+      settings.endGroup();
       return fnt;
    }
 

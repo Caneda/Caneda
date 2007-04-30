@@ -37,6 +37,7 @@ class QucsMainWindow : public DTabbedMainWindow
       ~QucsMainWindow() {}
 
       void addView(SchematicView *view);
+      void saveSettings();
 
    public slots:
       void slotFileNew();
@@ -132,8 +133,6 @@ class QucsMainWindow : public DTabbedMainWindow
       void initMenus();
       void initToolBars();
 
-      void saveSettings();
-
       // The following aim at reducing clutter by substituting
       // action pointers with a map container using object names
       // to identify them.
@@ -153,7 +152,12 @@ class QucsMainWindow : public DTabbedMainWindow
       int x, y, dx, dy;     // position and size
       float largeFontSize;
       unsigned int maxUndo; // size of undo stack
+      QString savingFont;
       QString Editor;
+      QString Language;
+      QColor BGColor;
+      QColor VHDL_Comment, VHDL_String, VHDL_Integer, VHDL_Real,
+	VHDL_Character, VHDL_Types, VHDL_Attributes;
       // registered filename extensions with program to open the file
       QStringList FileTypes;
 };

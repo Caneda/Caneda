@@ -1,5 +1,6 @@
 /***************************************************************************
- * Copyright (C) 2007 by Stefan Jahn <stefan@lkcc.org>                     *
+ * Copyright (C) 2007 Stefan Jahn <stefan@lkcc.org>                        *
+ * Copyright (C) 2004 Michael Margraf <michael.margraf@alumni.tu-berlin.de>*
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -27,16 +28,17 @@
 #include <QtGui/QValidator>
 #include <QtGui/QPushButton>
 #include <QtGui/QLineEdit>
-#include <QtGui/QListView>
+#include <QtGui/QTableWidget>
 #include <QtGui/QComboBox>
 #include <QtGui/QMessageBox>
+#include <QtGui/QHeaderView>
 
 #include "global.h"
 #include "qucsmainwindow.h"
 #include "qucssettingsdialog.h"
 
-QucsSettingsDialog::QucsSettingsDialog(QucsMainWindow *parent,
-				       const char *name) : QDialog(parent)
+QucsSettingsDialog::QucsSettingsDialog(QucsMainWindow *parent)
+  : QDialog(parent)
 {
   setWindowModality (Qt::ApplicationModal);
   setAttribute (Qt::WA_DeleteOnClose);
@@ -52,7 +54,6 @@ QucsSettingsDialog::QucsSettingsDialog(QucsMainWindow *parent,
 
   // ...........................................................
   QWidget *Tab1 = new QWidget(t);
-  //  QGridLayout *gp = new QGridLayout(Tab1,6,2,5,5);
   QGridLayout *gp = new QGridLayout(Tab1);
 
   gp->addWidget(new QLabel(tr("Font (set after reload):"), Tab1), 0,0);
@@ -102,52 +103,49 @@ QucsSettingsDialog::QucsSettingsDialog(QucsMainWindow *parent,
 
   // ...........................................................
   QWidget *Tab3 = new QWidget(t);
-  //  QGridLayout *gp3 = new QGridLayout(Tab3,5,2,5,5);
   QGridLayout *gp3 = new QGridLayout(Tab3);
 
-  //  gp3->addMultiCellWidget(new QLabel(tr("Colors for Syntax Highlighting:"), Tab3), 0,0,0,1);
+  gp3->addWidget(new QLabel(tr("Colors for Syntax Highlighting:"), Tab3), 0,0,1,2);
 
-  QPalette palette;
   ColorComment = new QPushButton(tr("Comment"), Tab3);
-  //palette.setColor(ColorComment->foregroundRole(), QucsSettings.VHDL_Comment);
-  //ColorComment->setPaletteForegroundColor(QucsSettings.VHDL_Comment);
-  //ColorComment->setPaletteBackgroundColor(QucsSettings.BGColor);
+  setBackgroundColor(ColorComment, App->BGColor);
+  setForegroundColor(ColorComment, App->VHDL_Comment);
   connect(ColorComment, SIGNAL(clicked()), SLOT(slotColorComment()));
   gp3->addWidget(ColorComment,1,0);
 
   ColorString = new QPushButton(tr("String"), Tab3);
-  //ColorString->setPaletteForegroundColor(QucsSettings.VHDL_String);
-  //ColorString->setPaletteBackgroundColor(QucsSettings.BGColor);
+  setBackgroundColor(ColorString, App->BGColor);
+  setForegroundColor(ColorString, App->VHDL_String);
   connect(ColorString, SIGNAL(clicked()), SLOT(slotColorString()));
   gp3->addWidget(ColorString,1,1);
 
   ColorInteger = new QPushButton(tr("Integer Number"), Tab3);
-  //ColorInteger->setPaletteForegroundColor(QucsSettings.VHDL_Integer);
-  //ColorInteger->setPaletteBackgroundColor(QucsSettings.BGColor);
+  setBackgroundColor(ColorInteger, App->BGColor);
+  setForegroundColor(ColorInteger, App->VHDL_Integer);
   connect(ColorInteger, SIGNAL(clicked()), SLOT(slotColorInteger()));
   gp3->addWidget(ColorInteger,2,0);
 
   ColorReal = new QPushButton(tr("Real Number"), Tab3);
-  //ColorReal->setPaletteForegroundColor(QucsSettings.VHDL_Real);
-  //ColorReal->setPaletteBackgroundColor(QucsSettings.BGColor);
+  setBackgroundColor(ColorReal, App->BGColor);
+  setForegroundColor(ColorReal, App->VHDL_Real);
   connect(ColorReal, SIGNAL(clicked()), SLOT(slotColorReal()));
   gp3->addWidget(ColorReal,2,1);
 
   ColorCharacter = new QPushButton(tr("Character"), Tab3);
-  //ColorCharacter->setPaletteForegroundColor(QucsSettings.VHDL_Character);
-  //ColorCharacter->setPaletteBackgroundColor(QucsSettings.BGColor);
+  setBackgroundColor(ColorCharacter, App->BGColor);
+  setForegroundColor(ColorCharacter, App->VHDL_Character);
   connect(ColorCharacter, SIGNAL(clicked()), SLOT(slotColorCharacter()));
   gp3->addWidget(ColorCharacter,3,0);
 
   ColorDataType = new QPushButton(tr("Data Type"), Tab3);
-  //ColorDataType->setPaletteForegroundColor(QucsSettings.VHDL_Types);
-  //ColorDataType->setPaletteBackgroundColor(QucsSettings.BGColor);
+  setBackgroundColor(ColorDataType, App->BGColor);
+  setForegroundColor(ColorDataType, App->VHDL_Types);
   connect(ColorDataType, SIGNAL(clicked()), SLOT(slotColorDataType()));
   gp3->addWidget(ColorDataType,3,1);
 
   ColorAttributes = new QPushButton(tr("Attribute"), Tab3);
-  //ColorAttributes->setPaletteForegroundColor(QucsSettings.VHDL_Attributes);
-  //ColorAttributes->setPaletteBackgroundColor(QucsSettings.BGColor);
+  setBackgroundColor(ColorAttributes, App->BGColor);
+  setForegroundColor(ColorAttributes, App->VHDL_Attributes);
   connect(ColorAttributes, SIGNAL(clicked()), SLOT(slotColorAttributes()));
   gp3->addWidget(ColorAttributes,4,0);
 
@@ -156,44 +154,57 @@ QucsSettingsDialog::QucsSettingsDialog(QucsMainWindow *parent,
 
   // ...........................................................
   QWidget *Tab2 = new QWidget(t);
-  //  QGridLayout *gp2 = new QGridLayout(Tab2,5,3,3,3);
   QGridLayout *gp2 = new QGridLayout(Tab2);
 
   QLabel *l7 = new QLabel(
-     tr("Register filename extensions here in order to\nopen files with an appropriate program.")
-     , Tab2);
-  //  gp2->addMultiCellWidget(l7,0,0,0,2);
+    tr("Register filename extensions here in order to\n"
+       "open files with an appropriate program."), Tab2);
+  gp2->addWidget(l7,0,0,1,3);
 
-  List_Suffix = new QListView(Tab2);
-  //  List_Suffix->addColumn(tr("Suffix"));
-  //  List_Suffix->addColumn(tr("Program"));
-  //  gp2->addMultiCellWidget(List_Suffix,1,4,0,0);
-  connect(List_Suffix, SIGNAL(clicked(QListViewItem*)),
-		SLOT(slotEditSuffix(QListViewItem*)));
+  List_Suffix = new QTableWidget(Tab2);
+  List_Suffix->setColumnCount(2);
+  List_Suffix->setHorizontalHeaderLabels(
+    QStringList() << tr("Suffix") << tr("Program"));
+  List_Suffix->verticalHeader()->hide();
+  List_Suffix->setEditTriggers(QAbstractItemView::NoEditTriggers);
+  List_Suffix->horizontalHeader()->setClickable(false);
+  List_Suffix->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
 
-  // fill listview with already registered file extensions
-  /*QStringList::Iterator it = QucsSettings.FileTypes.begin();
-  while(it != QucsSettings.FileTypes.end()) {
-    new QListViewItem(List_Suffix,
-        (*it).section('/',0,0), (*it).section('/',1,1));
+  gp2->addWidget(List_Suffix,1,0,4,1);
+  connect(List_Suffix, SIGNAL(itemPressed(QTableWidgetItem*)),
+		SLOT(slotEditSuffix(QTableWidgetItem*)));
+
+  // fill tableview with already registered file extensions
+  QStringList::Iterator it = App->FileTypes.begin();
+  int r = 0;
+  while(it != App->FileTypes.end()) {
+    QTableWidgetItem *Item0, *Item1;
+    Item0 = new QTableWidgetItem((*it).section('/',0,0));
+    Item1 = new QTableWidgetItem((*it).section('/',1));
+    List_Suffix->insertRow(r);
+    List_Suffix->setItem(r,0,Item0);
+    List_Suffix->setItem(r,1,Item1);
     it++;
-    }*/
+    r++;
+  }
+  List_Suffix->resizeColumnsToContents();
+  List_Suffix->resizeRowsToContents();
 
   QLabel *l5 = new QLabel(tr("Suffix:"), Tab2);
   gp2->addWidget(l5,1,1);
   Input_Suffix = new QLineEdit(Tab2);
   Input_Suffix->setValidator(Validator);
   gp2->addWidget(Input_Suffix,1,2);
-//  connect(Input_Suffix, SIGNAL(returnPressed()), SLOT(slotGotoProgEdit()));
 
   QLabel *l6 = new QLabel(tr("Program:"), Tab2);
   gp2->addWidget(l6,2,1);
   Input_Program = new QLineEdit(Tab2);
   gp2->addWidget(Input_Program,2,2);
 
+  QWidget *b = new QWidget(this);
   QHBoxLayout *h = new QHBoxLayout();
   h->setSpacing(3);
-  //  gp2->addMultiCellWidget(h,3,3,1,2);
+  gp2->addWidget(b,3,1,1,2);
 
   QPushButton *AddButt = new QPushButton(tr("Set"));
   h->addWidget(AddButt);
@@ -201,16 +212,18 @@ QucsSettingsDialog::QucsSettingsDialog(QucsMainWindow *parent,
   QPushButton *RemoveButt = new QPushButton(tr("Remove"));
   h->addWidget(RemoveButt);
   connect(RemoveButt, SIGNAL(clicked()), SLOT(slotRemove()));
+  b->setLayout(h);
 
   gp2->setRowStretch(4,5);
   t->addTab(Tab2, tr("File Types"));
 
   // ...........................................................
   // buttons on the bottom of the dialog (independent of the TabWidget)
-  QHBoxLayout *Butts = new QHBoxLayout(this);
+  QWidget *b1 = new QWidget(this);
+  QHBoxLayout *Butts = new QHBoxLayout();
   Butts->setSpacing(3);
   Butts->setMargin(3);
-  all->addLayout(Butts);
+  all->addWidget(b1);
 
   QPushButton *OkButt = new QPushButton(tr("OK"));
   Butts->addWidget(OkButt);
@@ -224,6 +237,7 @@ QucsSettingsDialog::QucsSettingsDialog(QucsMainWindow *parent,
   QPushButton *DefaultButt = new QPushButton(tr("Default Values"));
   Butts->addWidget(DefaultButt);
   connect(DefaultButt, SIGNAL(clicked()), SLOT(slotDefaultValues()));
+  b1->setLayout(Butts);
 
   OkButt->setDefault(true);
 
@@ -232,7 +246,7 @@ QucsSettingsDialog::QucsSettingsDialog(QucsMainWindow *parent,
 
   Font  = Qucs::font();
   FontButton->setText(Font.toString());
-  //  BGColorButton->setPaletteBackgroundColor(QucsSettings.BGColor);
+  setBackgroundColor(BGColorButton, App->BGColor);
   undoNumEdit->setText(QString::number(App->maxUndo));
   editorEdit->setText(App->Editor);
 
@@ -250,12 +264,42 @@ QucsSettingsDialog::~QucsSettingsDialog()
   delete Validator;
 }
 
-// -----------------------------------------------------------
-void QucsSettingsDialog::slotEditSuffix(QListViewItem *Item)
+void QucsSettingsDialog::setForegroundColor(QPushButton *b, QColor col)
 {
+  QPalette palette(b->palette());
+  palette.setColor(b->foregroundRole(), col);
+  b->setPalette(palette);
+}
+
+QColor QucsSettingsDialog::getForegroundColor(QPushButton *b)
+{
+  QPalette palette(b->palette());
+  return palette.color(b->foregroundRole());
+}
+
+void QucsSettingsDialog::setBackgroundColor(QPushButton *b, QColor col)
+{
+  QPalette palette(b->palette());
+  palette.setColor(b->backgroundRole(), col);
+  b->setPalette(palette);
+}
+
+QColor QucsSettingsDialog::getBackgroundColor(QPushButton *b)
+{
+  QPalette palette(b->palette());
+  return palette.color(b->backgroundRole());
+}
+
+
+// -----------------------------------------------------------
+void QucsSettingsDialog::slotEditSuffix(QTableWidgetItem *Item)
+{
+  int row = List_Suffix->currentRow();
+  QTableWidgetItem *Item0 = List_Suffix->item(row,0);
+  QTableWidgetItem *Item1 = List_Suffix->item(row,1);
   if(Item) {
-    //    Input_Suffix->setText(Item->text(0));
-    //    Input_Program->setText(Item->text(1));
+    Input_Suffix->setText(Item0->text());
+    Input_Program->setText(Item1->text());
   }
   else {
     Input_Suffix->setFocus();
@@ -267,40 +311,50 @@ void QucsSettingsDialog::slotEditSuffix(QListViewItem *Item)
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotAdd()
 {
-  /*  QListViewItem *Item = List_Suffix->selectedItem();
-  if(Item) {
-    Item->setText(0, Input_Suffix->text());
-    Item->setText(1, Input_Program->text());
+  int row = List_Suffix->currentRow();
+  QTableWidgetItem *Item0 = List_Suffix->item(row,0);
+  QTableWidgetItem *Item1 = List_Suffix->item(row,1);
+  if(Item0) {
+    Item0->setText(Input_Suffix->text());
+    Item1->setText(Input_Program->text());
+    List_Suffix->resizeColumnsToContents();
+    List_Suffix->resizeRowsToContents();
     return;
-    }
+  }
 
-
-  for(Item = List_Suffix->firstChild(); Item!=0; Item = Item->itemBelow())
-    if(Item->text(0) == Input_Suffix->text()) {
+  for(int r = 0; r < List_Suffix->rowCount(); r++) {
+    Item0 = List_Suffix->item(r,0);
+    if(Item0->text() == Input_Suffix->text()) {
       QMessageBox::critical(this, tr("Error"),
-			tr("This suffix is already registered!"));
+			    tr("This suffix is already registered!"));
       return;
     }
+  }
 
-  List_Suffix->ensureItemVisible(
-      new QListViewItem(List_Suffix, List_Suffix->lastItem(),
-          Input_Suffix->text(), Input_Program->text()));
+  Item0 = new QTableWidgetItem(Input_Suffix->text());
+  Item1 = new QTableWidgetItem(Input_Program->text());
+  row = List_Suffix->rowCount();
+  List_Suffix->insertRow(row);
+  List_Suffix->setItem(row,0,Item0);
+  List_Suffix->setItem(row,1,Item1);
+  List_Suffix->resizeColumnsToContents();
+  List_Suffix->resizeRowsToContents();
   Input_Suffix->setFocus();
   Input_Suffix->setText("");
-  Input_Program->setText("");*/
+  Input_Program->setText("");
 }
 
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotRemove()
 {
-  /*  QListViewItem *Item = List_Suffix->selectedItem();
-  if(Item == 0) return;
+  int row = List_Suffix->currentRow();
+  QTableWidgetItem *Item0 = List_Suffix->item(row,0);
+  if(Item0 == 0) return;
 
-  List_Suffix->takeItem(Item);   // remove from ListView
-  delete Item;
+  List_Suffix->removeRow(row);   // remove from TableWidget
 
   Input_Suffix->setText("");
-  Input_Program->setText("");*/
+  Input_Program->setText("");
 }
 
 // -----------------------------------------------------------
@@ -315,10 +369,10 @@ void QucsSettingsDialog::slotApply()
 {
   bool changed = false;
 
-  /*  if(QucsSettings.BGColor != BGColorButton->paletteBackgroundColor()) {
-    QucsSettings.BGColor = BGColorButton->paletteBackgroundColor();
+  if(App->BGColor != getBackgroundColor(BGColorButton)) {
+    App->BGColor = getBackgroundColor(BGColorButton);
 
-    int No=0;
+    /*    int No=0;
     QWidget *w;
     while((w=App->DocumentTab->page(No++)) != 0)
       if(w->inherits("QTextEdit"))
@@ -327,64 +381,66 @@ void QucsSettingsDialog::slotApply()
       else
         ((Schematic*)w)->viewport()->setPaletteBackgroundColor(
 					QucsSettings.BGColor);
+    */
     changed = true;
-    }*/
+    }
 
-  /*  if(savingFont != Font) {
-    savingFont = Font;
+  if(App->savingFont != Font.toString()) {
+    App->savingFont = Font.toString();
     changed = true;
-    }*/
+  }
 
-  /*  QucsSettings.Language =
+  App->Language =
       LanguageCombo->currentText().section('(',1,1).remove(')');
-
-  if(QucsSettings.VHDL_Comment != ColorComment->paletteForegroundColor()) {
-    QucsSettings.VHDL_Comment = ColorComment->paletteForegroundColor();
+  
+  if(App->VHDL_Comment != getForegroundColor(ColorComment)) {
+    App->VHDL_Comment = getForegroundColor(ColorComment);
     changed = true;
   }
-  if(QucsSettings.VHDL_String != ColorString->paletteForegroundColor()) {
-    QucsSettings.VHDL_String = ColorString->paletteForegroundColor();
+  if(App->VHDL_String != getForegroundColor(ColorString)) {
+    App->VHDL_String = getForegroundColor(ColorString);
     changed = true;
   }
-  if(QucsSettings.VHDL_Integer != ColorInteger->paletteForegroundColor()) {
-    QucsSettings.VHDL_Integer = ColorInteger->paletteForegroundColor();
+  if(App->VHDL_Integer != getForegroundColor(ColorInteger)) {
+    App->VHDL_Integer = getForegroundColor(ColorInteger);
     changed = true;
   }
-  if(QucsSettings.VHDL_Real != ColorReal->paletteForegroundColor()) {
-    QucsSettings.VHDL_Real = ColorReal->paletteForegroundColor();
+  if(App->VHDL_Real != getForegroundColor(ColorReal)) {
+    App->VHDL_Real = getForegroundColor(ColorReal);
     changed = true;
   }
-  if(QucsSettings.VHDL_Character != ColorCharacter->paletteForegroundColor()) {
-    QucsSettings.VHDL_Character = ColorCharacter->paletteForegroundColor();
+  if(App->VHDL_Character != getForegroundColor(ColorCharacter)) {
+    App->VHDL_Character = getForegroundColor(ColorCharacter);
     changed = true;
   }
-  if(QucsSettings.VHDL_Types != ColorDataType->paletteForegroundColor()) {
-    QucsSettings.VHDL_Types = ColorDataType->paletteForegroundColor();
+  if(App->VHDL_Types != getForegroundColor(ColorDataType)) {
+    App->VHDL_Types = getForegroundColor(ColorDataType);
     changed = true;
   }
-  if(QucsSettings.VHDL_Attributes != ColorAttributes->paletteForegroundColor()) {
-    QucsSettings.VHDL_Attributes = ColorAttributes->paletteForegroundColor();
+  if(App->VHDL_Attributes != getForegroundColor(ColorAttributes)) {
+    App->VHDL_Attributes = getForegroundColor(ColorAttributes);
     changed = true;
   }
 
   bool ok;
-  if(QucsSettings.maxUndo != undoNumEdit->text().toUInt(&ok)) {
-    QucsSettings.maxUndo = undoNumEdit->text().toInt(&ok);
+  if(App->maxUndo != undoNumEdit->text().toUInt(&ok)) {
+    App->maxUndo = undoNumEdit->text().toInt(&ok);
     changed = true;
   }
-  if(QucsSettings.Editor != editorEdit->text()) {
-    QucsSettings.Editor = editorEdit->text();
+  if(App->Editor != editorEdit->text()) {
+    App->Editor = editorEdit->text();
     changed = true;
   }
 
-  QListViewItem *Item;
-  QucsSettings.FileTypes.clear();
-  for(Item = List_Suffix->firstChild(); Item!=0; Item = Item->itemBelow())
-    QucsSettings.FileTypes.append(Item->text(0)+"/"+Item->text(1));
+  QTableWidgetItem *Item0, *Item1;
+  App->FileTypes.clear();
+  for(int r = 0; r < List_Suffix->rowCount(); r++) {
+    Item0 = List_Suffix->item(r,0);
+    Item1 = List_Suffix->item(r,1);
+    App->FileTypes.append(Item0->text()+"/"+Item1->text());
+  }
 
-
-  saveApplSettings(App);  // also sets the small and large font
-  */
+  App->saveSettings();  // also sets the small and large font
   if(changed)
     App->repaint();
 }
@@ -403,10 +459,10 @@ void QucsSettingsDialog::slotFontDialog()
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotBGColorDialog()
 {
-  /*  QColor c = QColorDialog::getColor(
-		BGColorButton->paletteBackgroundColor(), this);
+  QColor c = QColorDialog::getColor(
+		getBackgroundColor(BGColorButton), this);
   if(c.isValid())
-  BGColorButton->setPaletteBackgroundColor(c);*/
+    setBackgroundColor(BGColorButton,c);
 }
 
 // -----------------------------------------------------------
@@ -415,17 +471,21 @@ void QucsSettingsDialog::slotDefaultValues()
   Font = QFont("Helvetica", 12);
   FontButton->setText(Font.toString());
   LanguageCombo->setCurrentIndex(0);
-  /*
-  BGColorButton->setPaletteBackgroundColor(QColor(255,250,225));
-
-  ColorComment->setPaletteForegroundColor(Qt::gray);
-  ColorString->setPaletteForegroundColor(Qt::red);
-  ColorInteger->setPaletteForegroundColor(Qt::blue);
-  ColorReal->setPaletteForegroundColor(Qt::darkMagenta);
-  ColorCharacter->setPaletteForegroundColor(Qt::magenta);
-  ColorDataType->setPaletteForegroundColor(Qt::darkRed);
-  ColorAttributes->setPaletteForegroundColor(Qt::darkCyan);
-  */
+  setBackgroundColor(BGColorButton,QColor(255,250,225));
+  setForegroundColor(ColorComment,Qt::gray);
+  setBackgroundColor(ColorComment,QColor(255,250,225));
+  setForegroundColor(ColorString,Qt::red);
+  setBackgroundColor(ColorString,QColor(255,250,225));
+  setForegroundColor(ColorInteger,Qt::blue);
+  setBackgroundColor(ColorInteger,QColor(255,250,225));
+  setForegroundColor(ColorReal,Qt::darkMagenta);
+  setBackgroundColor(ColorReal,QColor(255,250,225));
+  setForegroundColor(ColorCharacter,Qt::magenta);
+  setBackgroundColor(ColorCharacter,QColor(255,250,225));
+  setForegroundColor(ColorDataType,Qt::darkRed);
+  setBackgroundColor(ColorDataType,QColor(255,250,225));
+  setForegroundColor(ColorAttributes,Qt::darkCyan);
+  setBackgroundColor(ColorAttributes,QColor(255,250,225));
   undoNumEdit->setText("20");
   editorEdit->setText(Qucs::binaryDir + "qucsedit");
 }
@@ -433,62 +493,62 @@ void QucsSettingsDialog::slotDefaultValues()
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotColorComment()
 {
-  /*  QColor c = QColorDialog::getColor(
-		ColorComment->paletteForegroundColor(), this);
+  QColor c = QColorDialog::getColor(
+		getForegroundColor(ColorComment), this);
   if(c.isValid())
-  ColorComment->setPaletteForegroundColor(c);*/
+    setForegroundColor(ColorComment,c);
 }
 
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotColorString()
 {
-  /*  QColor c = QColorDialog::getColor(
-		ColorString->paletteForegroundColor(), this);
+  QColor c = QColorDialog::getColor(
+		getForegroundColor(ColorString), this);
   if(c.isValid())
-  ColorString->setPaletteForegroundColor(c);*/
+    setForegroundColor(ColorString,c);
 }
 
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotColorInteger()
 {
-  /*  QColor c = QColorDialog::getColor(
-		ColorInteger->paletteForegroundColor(), this);
+  QColor c = QColorDialog::getColor(
+		getForegroundColor(ColorInteger), this);
   if(c.isValid())
-    ColorInteger->setPaletteForegroundColor(c);*/
+    setForegroundColor(ColorInteger,c);
 }
 
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotColorReal()
 {
-  /*  QColor c = QColorDialog::getColor(
-		ColorReal->paletteForegroundColor(), this);
+  QColor c = QColorDialog::getColor(
+		getForegroundColor(ColorReal), this);
   if(c.isValid())
-    ColorReal->setPaletteForegroundColor(c);*/
+    setForegroundColor(ColorReal,c);
 }
 
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotColorCharacter()
 {
-  /*  QColor c = QColorDialog::getColor(
-		ColorCharacter->paletteForegroundColor(), this);
+  QColor c = QColorDialog::getColor(
+		getForegroundColor(ColorCharacter), this);
   if(c.isValid())
-    ColorCharacter->setPaletteForegroundColor(c);*/
+    setForegroundColor(ColorCharacter,c);
 }
 
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotColorDataType()
 {
-  /*  QColor c = QColorDialog::getColor(
-		ColorDataType->paletteForegroundColor(), this);
+  QColor c = QColorDialog::getColor(
+		getForegroundColor(ColorDataType), this);
   if(c.isValid())
-    ColorDataType->setPaletteForegroundColor(c);*/
+    setForegroundColor(ColorDataType,c);
 }
 
 // -----------------------------------------------------------
 void QucsSettingsDialog::slotColorAttributes()
 {
-  /*  QColor c = QColorDialog::getColor(
-		ColorAttributes->paletteForegroundColor(), this);
+  QColor c = QColorDialog::getColor(
+		getForegroundColor(ColorAttributes), this);
   if(c.isValid())
-    ColorAttributes->setPaletteForegroundColor(c);*/
+    setForegroundColor(ColorAttributes,c);
 }

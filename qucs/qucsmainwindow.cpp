@@ -1022,7 +1022,6 @@ void QucsMainWindow::slotFileQuit()
 
 void QucsMainWindow::slotApplSettings()
 {
-   //TODO: implement this or rather port directly
   QucsSettingsDialog *d = new QucsSettingsDialog(this);
   d->exec();
 }
@@ -1399,6 +1398,39 @@ void QucsMainWindow::loadSettings()
    maxUndo = settings.value("undo", 20).toInt();
    largeFontSize = settings.value("largefontsize", 16.0).toDouble();
    Editor = settings.value("editor", Qucs::binaryDir + "qucsedit").toString();
+   Language = settings.value("language", "").toString();
+   savingFont = settings.value("font", "Helvetica,12").toString();
+   settings.endGroup();
+
+   settings.beginGroup("Colors");
+   BGColor.setNamedColor(
+     settings.value("bgcolor", QColor(255,250,225).name()).toString());
+   settings.beginGroup("VHDL");
+   VHDL_Comment.setNamedColor(
+     settings.value("comment", QColor(Qt::gray).name()).toString());
+   VHDL_String.setNamedColor(
+     settings.value("string", QColor(Qt::red).name()).toString());
+   VHDL_Integer.setNamedColor(
+     settings.value("integer", QColor(Qt::blue).name()).toString());
+   VHDL_Real.setNamedColor(
+     settings.value("real", QColor(Qt::darkMagenta).name()).toString());
+   VHDL_Character.setNamedColor(
+     settings.value("character", QColor(Qt::magenta).name()).toString());
+   VHDL_Types.setNamedColor(
+     settings.value("types", QColor(Qt::darkRed).name()).toString());
+   VHDL_Attributes.setNamedColor(
+     settings.value("attributes", QColor(Qt::darkCyan).name()).toString());
+   settings.endGroup();
+   settings.endGroup();
+
+   settings.beginGroup("FileTypes");
+   FileTypes.clear();
+   QStringList f = settings.childKeys();
+   QStringList::Iterator it = f.begin();
+   while(it != f.end()) {
+     FileTypes.append((*it)+"/"+settings.value(*it, "").toString());
+     it++;
+   }
    settings.endGroup();
 }
 
@@ -1412,6 +1444,31 @@ void QucsMainWindow::saveSettings()
    settings.setValue("undo", maxUndo);
    settings.setValue("editor", Editor);
    settings.setValue("largefontsize", largeFontSize);
-   settings.setValue("font", Qucs::font().toString());
+   settings.setValue("font", savingFont);
+   if(Language.isEmpty())
+     settings.remove("language");
+   else
+     settings.setValue("language", Language);
+   settings.endGroup();
+
+   settings.beginGroup("Colors");
+   settings.setValue("bgcolor", BGColor.name());
+   settings.beginGroup("VHDL");
+   settings.setValue("comment", VHDL_Comment.name());
+   settings.setValue("string", VHDL_String.name());
+   settings.setValue("integer", VHDL_Integer.name());
+   settings.setValue("real", VHDL_Real.name());
+   settings.setValue("character", VHDL_Character.name());
+   settings.setValue("types", VHDL_Types.name());
+   settings.setValue("attributes", VHDL_Attributes.name());
+   settings.endGroup();
+   settings.endGroup();
+
+   settings.beginGroup("FileTypes");
+   QStringList::Iterator it = FileTypes.begin();
+   while(it != FileTypes.end()) {
+     settings.setValue((*it).section('/',0,0), (*it).section('/',1));
+    it++;
+   }
    settings.endGroup();
 }

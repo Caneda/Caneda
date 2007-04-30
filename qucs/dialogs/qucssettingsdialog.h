@@ -24,11 +24,12 @@
 #include <QtGui/QFont>
 #include <QtCore/QRegExp>
 
-class QListView;
-class QListViewItem;
+class QTableWidget;
+class QTableWidgetItem;
 class QLineEdit;
 class QVBoxLayout;
 class QPushButton;
+class QColor;
 class QComboBox;
 class QIntValidator;
 class QRegExpValidator;
@@ -38,7 +39,7 @@ class QucsMainWindow;
 class QucsSettingsDialog : public QDialog  {
    Q_OBJECT
 public:
-  QucsSettingsDialog(QucsMainWindow *parent=0, const char *name=0);
+  QucsSettingsDialog(QucsMainWindow *parent=0);
  ~QucsSettingsDialog();
 
 private slots:
@@ -49,7 +50,7 @@ private slots:
   void slotDefaultValues();
   void slotAdd();
   void slotRemove();
-  void slotEditSuffix(QListViewItem*);
+  void slotEditSuffix(QTableWidgetItem*);
   void slotColorComment();
   void slotColorString();
   void slotColorInteger();
@@ -58,6 +59,12 @@ private slots:
   void slotColorDataType();
   void slotColorAttributes();
 
+private:
+  void setBackgroundColor(QPushButton *, QColor);
+  QColor getBackgroundColor(QPushButton *);
+  void setForegroundColor(QPushButton *, QColor);
+  QColor getForegroundColor(QPushButton *);
+
 public:
   QucsMainWindow *App;
 
@@ -65,7 +72,7 @@ public:
   QComboBox *LanguageCombo;
   QPushButton *FontButton, *BGColorButton;
   QLineEdit *undoNumEdit, *editorEdit, *Input_Suffix, *Input_Program;
-  QListView *List_Suffix;
+  QTableWidget *List_Suffix;
   QPushButton *ColorComment, *ColorString, *ColorInteger,
        *ColorReal, *ColorCharacter, *ColorDataType, *ColorAttributes;
 
