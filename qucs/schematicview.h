@@ -36,6 +36,12 @@ class SchematicView : public QGraphicsView
       void saveAs();
       void load();
       SchematicScene* schematicScene() const;
+
+   public slots:
+      void setTitle(const QString& title);
+
+   signals:
+      void titleChanged(const QString& newTitle);
 };
 
 #endif //__SCHEMATICVIEW_H

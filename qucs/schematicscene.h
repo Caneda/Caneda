@@ -59,8 +59,7 @@ class SchematicScene : public QGraphicsScene
       void setGrabbedWire(Wire *w);
       void insertComponent(Component *comp);
       void removeComponent(Component *comp);
-      void insertWire(Wire *w, Node* n1, Node *n2);
-      void insertWire(Wire *w, const QPointF& n1Pos, const QPointF& n2Pos);
+      void insertWire(Wire *w);
       void removeWire(Wire *w);
 
       QList<Component*> components() const { return m_components; }
@@ -85,8 +84,6 @@ class SchematicScene : public QGraphicsScene
       QString frameText3() const { return m_frameText3; }
       Qucs::Mode currentMode() const { return m_currentMode; }
       void setMode(Qucs::Mode mode);
-
-      void save();
 
    protected:
       void dragEnterEvent(QGraphicsSceneDragDropEvent * event);

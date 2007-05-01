@@ -44,6 +44,7 @@ Wire::Wire(SchematicScene *scene,Node *n1,Node *n2) : QucsItem(0,scene),m_node1(
    m_wasGrabbed = false;
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
    rebuild();
+   scene->insertWire(this);
 }
 
 Wire::~Wire()
@@ -51,6 +52,7 @@ Wire::~Wire()
    clearProxyWires();
    m_node1->removeWire(this);
    m_node2->removeWire(this);
+   schematicScene()->removeWire(this);
 }
 
 void Wire::rebuild()
@@ -87,7 +89,7 @@ void Wire::rebuild()
             m_lines.removeFirst();
             --secondIndex;
          }
-         
+
          if(m_lines[secondIndex].isNull())
          {
             m_lines.removeAt(secondIndex);
@@ -126,7 +128,7 @@ void Wire::rebuild()
             m_lines.removeLast();
             --lastIndex;
          }
-         
+
          if(m_lines[lastButIndex].isNull())
          {
             m_lines.removeAt(lastButIndex);
@@ -180,7 +182,7 @@ void Wire::createProxyWires()
 
 QRect Wire::proxyRect(const WireLine& line) const
 {
-   QRectF rect; 
+   QRectF rect;
    if(!line.isNull())
    {
       WireLine sceneLine(mapToScene(line.p1()),mapToScene(line.p2()));
@@ -210,14 +212,14 @@ void Wire::updateProxyWires()
       for(int i=0; i < size; i++)
          delete m_proxyWires.takeAt(0);
    }
-   
+
    if(m_proxyWires.size() < m_lines.size())
    {
       int size = m_lines.size() - m_proxyWires.size() ;
       for(int i=0; i < size; ++i)
          m_proxyWires.prepend(new QRubberBand(QRubberBand::Line,viewport));
    }
-   
+
    QList<QRubberBand*>::iterator proxyIt = m_proxyWires.begin();
    QList<WireLine>::iterator lineIt = m_lines.begin();
    for(; proxyIt != m_proxyWires.end(); ++proxyIt,++lineIt)
@@ -259,12 +261,12 @@ Wire* Wire::connectedWire(const Node* n1, const Node* n2)
 QRectF Wire::boundingRect() const
 {
    QRectF rect;
-   
+
    QList<WireLine>::const_iterator it = m_lines.constBegin();
    QList<WireLine>::const_iterator end = m_lines.constEnd();
    for(; it != end; ++it)
       rect |= rectForLine(*it);
-   
+
    qreal adjust = 1.0;
    return rect.adjusted(-adjust,-adjust,+adjust,+adjust);
 }
@@ -340,10 +342,10 @@ void Wire::moveAndResizeBy(qreal dx, qreal dy)
    int nextIndex = m_grabbedLineIndex + 1;
    QPointF node1Pos = mapFromScene(m_node1->scenePos());
    QPointF node2Pos = mapFromScene(m_node2->scenePos());
-   
+
    WireLine& grabbedLine = m_lines[m_grabbedLineIndex];
    grabbedLine.translate(delta);
-   
+
    if(prevIndex < 0)
    {
       QList<WireLine> begin = linesBetween(node1Pos,grabbedLine.p1());
@@ -378,7 +380,7 @@ void Wire::moveAndResizeBy(qreal dx, qreal dy)
       }
    }
    deleteNullLines();
-   
+
 //--------------------------------------------------------------------------------------
    nextIndex = m_grabbedLineIndex + 1;
    if(nextIndex == m_lines.size())
@@ -405,7 +407,7 @@ void Wire::moveAndResizeBy(qreal dx, qreal dy)
          }
          ++nextIndex;
       }
-      
+
       QPointF endLineP2 = m_lines.last().p2();
       if(node2Pos != endLineP2)
       {
@@ -431,10 +433,10 @@ void Wire::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
    m_grabbedLineIndex = -1;
    QGraphicsItem::mousePressEvent(event);
-   
+
    if(!isSelected())
       return;
-   
+
    m_grabbedLineIndex = indexForPos(event->pos());
    Q_ASSERT(m_grabbedLineIndex != -1);
    m_wasGrabbed = true;
@@ -444,7 +446,7 @@ void Wire::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
    if(!m_wasGrabbed)
       event->ignore();
-   
+
    schematicScene()->setGrabbedWire(this);
    hide();
 }
@@ -474,10 +476,10 @@ void Wire::grabMoveEvent( QGraphicsSceneMouseEvent * event )
    int nextIndex = m_grabbedLineIndex + 1;
    QPointF node1Pos = mapFromScene(m_node1->scenePos());
    QPointF node2Pos = mapFromScene(m_node2->scenePos());
-   
+
    WireLine& grabbedLine = m_lines[m_grabbedLineIndex];
    grabbedLine.translate(delta);
-   
+
    if(prevIndex < 0)
    {
       QList<WireLine> begin = linesBetween(node1Pos,grabbedLine.p1());
@@ -512,7 +514,7 @@ void Wire::grabMoveEvent( QGraphicsSceneMouseEvent * event )
       }
    }
    deleteNullLines();
-   
+
 //--------------------------------------------------------------------------------------
    nextIndex = m_grabbedLineIndex + 1;
    if(nextIndex == m_lines.size())
@@ -539,7 +541,7 @@ void Wire::grabMoveEvent( QGraphicsSceneMouseEvent * event )
          }
          ++nextIndex;
       }
-      
+
       QPointF endLineP2 = m_lines.last().p2();
       if(node2Pos != endLineP2)
       {
@@ -582,4 +584,19 @@ int Wire::indexForPos(const QPointF& pos) const
    }
 
    return -1;
+}
+
+QString Wire::saveString() const
+{
+   QString s  = "<" + QString::number(m_node1->pos().x()) + " " + QString::number(m_node1->pos().y());
+   s += " "+QString::number(m_node2->pos().x()) + " " + QString::number(m_node2->pos().y());
+//    if(0 && Label) {
+//       s += " \""+Label->Name+"\" ";
+//       s += QString::number(Label->x1)+" "+QString::number(Label->y1)+" ";
+//       s += QString::number(Label->cx-x1 + Label->cy-y1);
+//       s += " \""+Label->initValue+"\">";
+//    }
+//    else
+      s += " \"\" 0 0 0 \"\">";
+   return s;
 }

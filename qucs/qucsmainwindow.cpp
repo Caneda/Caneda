@@ -926,6 +926,7 @@ void QucsMainWindow::newView()
 void QucsMainWindow::addView(SchematicView *view)
 {
    m_undoGroup->addStack(view->schematicScene()->undoStack());
+   connect(view,SIGNAL(titleChanged(const QString&)),this,SLOT(setTabTitle(const QString& )));
    DTabbedMainWindow::addWidget(view);
 }
 
@@ -1468,4 +1469,14 @@ void QucsMainWindow::saveSettings()
     it++;
    }
    settings.endGroup();
+}
+
+void QucsMainWindow::setTabTitle(const QString& title)
+{
+   SchematicView *view = qobject_cast<SchematicView*>(sender());
+   if(!view || title.isEmpty())
+      return;
+   int index = tabWidget()->indexOf(view);
+   if(index != -1)
+      tabWidget()->setTabText(index,title);
 }

@@ -32,15 +32,12 @@ class FileFormatHandler
       FileFormatHandler(SchematicView *view=0);
       virtual ~FileFormatHandler() {}
 
-      /** Saves the document. If non-negative is returned
-        * the operation is successful. Negative return
-        * value indicated failure */
-      virtual int save(const QString& fileName) = 0;
+      virtual QString saveText() = 0;
 
       /** Loads the document. If non-negative is returned
         * the operation is successful. Negative return
         * value indicated failure */
-      virtual int load(const QString& fileName) = 0;
+      virtual void loadFromText(const QString& text) = 0;
 
       SchematicView* view() const { return m_view; }
       void setView(SchematicView *view) { m_view = view; }

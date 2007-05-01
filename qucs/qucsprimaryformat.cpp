@@ -32,30 +32,20 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QMatrix>
 
+
 QucsPrimaryFormat::QucsPrimaryFormat(SchematicView *view) : FileFormatHandler(view)
 {
 }
 
-int QucsPrimaryFormat::save(const QString& fileName)
+QString QucsPrimaryFormat::saveText()
 {
-   QFile file(fileName);
-
-   if(!file.open(QIODevice::WriteOnly)) {
-      QMessageBox::critical(0, QObject::tr("Error"),
-                            QObject::tr("Cannot save document!"));
-      return -1;
-   }
-   if(!m_view) {
-      qDebug("Nothing to save!\n");
-      return -1;
-   }
+   QString retVal;
+   if(!m_view)
+      return retVal;
    SchematicScene *scene = m_view->schematicScene();
-   if(!scene) {
-      qDebug("Nothing to save!\n");
-      return -1;
-   }
-
-   QTextStream stream(&file);
+   if(!scene)
+      return retVal;
+   QTextStream stream(&retVal);
 
    stream << "<Qucs Schematic " << Qucs::version << ">\n";
    stream << "<Properties>\n";
@@ -117,7 +107,7 @@ int QucsPrimaryFormat::save(const QString& fileName)
    // save all labeled nodes as wires
    // for(Node *pn = DocNodes.first(); pn != 0; pn = DocNodes.next())
 //       if(pn->Label) stream << "  " << pn->Label->save() << "\n";
-//    stream << "</Wires>\n";
+   stream << "</Wires>\n";
 
    stream << "<Diagrams>\n";    // save all diagrams
    foreach(Diagram *pd,scene->diagrams())
@@ -130,13 +120,10 @@ int QucsPrimaryFormat::save(const QString& fileName)
    stream << "</Paintings>\n";
    qDebug("aReally strange");
 
-   file.close();
-   return 0;
+   return retVal;
 }
 
-int QucsPrimaryFormat::load(const QString& fileName)
+void QucsPrimaryFormat::loadFromText(const QString& text)
 {
-   QFile f(fileName);
-   f.open(QIODevice::ReadOnly);
-   return 0;
+   if(text.isNull());
 }

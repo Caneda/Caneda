@@ -27,6 +27,8 @@
 #include <QtGui/QWheelEvent>
 #include <QtCore/QDebug>
 #include <QtGui/QFileDialog>
+#include <QtGui/QMessageBox>
+#include <QtCore/QDir>
 
 SchematicView::SchematicView(QGraphicsScene *sc,QWidget *parent) : QGraphicsView(sc,parent)
 {
@@ -65,7 +67,21 @@ void SchematicView::save()
    if(s->fileName().isEmpty())
       return saveAs();
    QucsPrimaryFormat format(this);
-   format.save(s->fileName());
+   QFile file(s->fileName());
+   if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Cannot save document!"));
+      return;
+   }
+   QTextStream stream(&file);
+   QString saveText = format.saveText();
+   if(saveText.isNull()) {
+      QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Nothing to save! Please report this to qucs team if this was unexpecte"));
+      return;
+   }
+   stream << saveText;
+   file.close();
 }
 
 void SchematicView::saveAs()
@@ -75,7 +91,14 @@ void SchematicView::saveAs()
    QString fn;
    fn = QFileDialog::getSaveFileName( this, tr("Save File"), QString(), tr("Schematic files (*.sch)"));
    if(fn.isEmpty()) return;
-   setWindowTitle(fn);
+   setTitle(fn.mid(1+fn.lastIndexOf(QDir::separator())));
    s->setFileName(fn);
    return save();
+}
+
+void SchematicView::setTitle(const QString& title)
+{
+   setWindowTitle(title);
+   setWindowModified(false);
+   emit titleChanged(windowTitle());
 }

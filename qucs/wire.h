@@ -36,23 +36,23 @@ class Wire : public QucsItem
       enum {
          Type = QucsItem::WireType
       };
-      
+
       Wire(SchematicScene *scene, Node *n1,Node *n2);
       ~Wire();
       void rebuild();
-      
+
       inline Node* node1() const;
       inline Node* node2() const;
       inline void setNode1(Node *n1);
       inline void setNode2(Node *n2);
       void replaceNode(Node *oldNode,Node *newNode);
-      
+
       QRectF boundingRect() const;
       inline int type() const;
       void paint(QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w = 0 );
       QPainterPath shape() const;
       bool contains ( const QPointF & point ) const;
-      
+
       static Wire* connectedWire(const Node *n1,const Node *n2);
 
       void grabMoveEvent( QGraphicsSceneMouseEvent * event );
@@ -60,6 +60,8 @@ class Wire : public QucsItem
       void startMoveAndResize();
       void moveAndResizeBy(qreal dx, qreal dy);
       void stopMoveAndResize();
+
+      QString saveString() const;
 
    protected:
       QVariant itemChange(GraphicsItemChange change, const QVariant &value);

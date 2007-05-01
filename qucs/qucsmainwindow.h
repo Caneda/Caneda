@@ -128,6 +128,7 @@ class QucsMainWindow : public DTabbedMainWindow
       void activateStackOf(QWidget *w);
       void newView();
       void loadSettings();
+      void setTabTitle(const QString& str);
    private:
       void initActions();
       void initMenus();

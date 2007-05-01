@@ -471,6 +471,8 @@ void SchematicScene::insertComponent(Component *comp)
    foreach(ComponentProperty *prop, comp->m_properties)
       if(!prop->isVisible() || prop->item()->scene() != this)
          addItem(prop->item());
+
+   //TODO: add number suffix to component name
 }
 
 void SchematicScene::removeComponent(Component *comp)
@@ -484,13 +486,21 @@ void SchematicScene::removeComponent(Component *comp)
          removeItem(n);
    }
 
-    foreach(ComponentProperty *prop, comp->m_properties)
-       if(prop->item())
-          removeItem(prop->item());
+   foreach(ComponentProperty *prop, comp->m_properties)
+      if(prop->item())
+         removeItem(prop->item());
 
-    removeItem(comp);
+   removeItem(comp);
 }
 
-void SchematicScene::save()
+void SchematicScene::insertWire(Wire *w)
 {
+   if(m_wires.count(w) == 0)
+      m_wires << w;
+   //TODO: check labels and stuff
+}
+
+void SchematicScene::removeWire(Wire *w)
+{
+   m_wires.removeAll(w);
 }

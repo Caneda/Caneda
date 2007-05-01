@@ -29,8 +29,8 @@ class QucsPrimaryFormat : public FileFormatHandler
       ~QucsPrimaryFormat() {}
 
 
-      int save(const QString& fileName);
-      int load(const QString& fileName);
+      QString saveText();
+      void loadFromText(const QString& text);
 };
 
 #endif //__QUCSPRIMARYFORMAT_H
