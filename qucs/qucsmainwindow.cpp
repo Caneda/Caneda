@@ -22,6 +22,7 @@
 #include "qucsmainwindow.h"
 #include "schematicview.h"
 #include "schematicscene.h"
+#include "qucsview.h"
 
 #include "dialogs/qucssettingsdialog.h"
 
@@ -916,11 +917,8 @@ void QucsMainWindow::initToolBars()
 
 void QucsMainWindow::newView()
 {
-   SchematicView *vv = new SchematicView();
+   SchematicView *vv = new SchematicView(0,this);
    addView(vv);
-   if(tabWidget()->count() == 1)
-      m_undoGroup->setActiveStack(vv->schematicScene()->undoStack());
-   loadSettings();
 }
 
 void QucsMainWindow::addView(SchematicView *view)
@@ -928,6 +926,7 @@ void QucsMainWindow::addView(SchematicView *view)
    m_undoGroup->addStack(view->schematicScene()->undoStack());
    connect(view,SIGNAL(titleChanged(const QString&)),this,SLOT(setTabTitle(const QString& )));
    DTabbedMainWindow::addWidget(view);
+   tabWidget()->setCurrentWidget(view);
 }
 
 void QucsMainWindow::activateStackOf(QWidget *w)
@@ -939,11 +938,6 @@ void QucsMainWindow::activateStackOf(QWidget *w)
 
 void QucsMainWindow::closeEvent( QCloseEvent *e )
 {
-//    if ( QMessageBox::question( this, tr("Quit..."), tr("Do you really want to quit?"),
-//                                QMessageBox::Ok, QMessageBox::Cancel )==QMessageBox::Ok )
-   //e->accept();
-//    else
-//       e->ignore();
    saveSettings();
    DTabbedMainWindow::closeEvent(e);
 }
@@ -970,15 +964,21 @@ void QucsMainWindow::slotFileOpen()
 
 void QucsMainWindow::slotFileSave()
 {
-   SchematicView *vv = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
-   if ( vv )
-      vv->save();
+   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+   if(!v) return;
+   if(v->fileName.isEmpty())
+      return slotFileSaveAs();
+   v->save();
 }
 
 void QucsMainWindow::slotFileSaveAs()
 {
-   QString file_Name = QFileDialog::getSaveFileName(this, tr("Save File"),
+   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+   if(!v) return;
+   QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     "", qucsFilter);
+   if(fileName.isEmpty()) return;
+   v->setFileName(fileName);
    slotFileSave();
 }
 
@@ -1171,49 +1171,32 @@ void QucsMainWindow::slotExportGraphAsCsv()
 
 void QucsMainWindow::slotShowAll()
 {
-   //TODO: implement this or rather port directly
-   SchematicView *v = qobject_cast<SchematicView*> (tabWidget()->currentWidget());
-   if ( v ) {
-      QRectF intersect;
-      QList<QGraphicsItem*> items = v->items();
-      if ( !items.isEmpty() ) {
-         // It's ineficient??????
-         intersect = items.first()->sceneBoundingRect();
-         foreach( QGraphicsItem* it, items ) {
-            intersect |= it->sceneBoundingRect();
-         }
-         intersect.adjust( -10, -10, 10, 10);
-         v->fitInView( intersect, Qt::KeepAspectRatio );
-      }
-   }
+   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+   if(view)
+      view->showAll();
 }
 
 void QucsMainWindow::slotShowOne()
 {
-   //TODO: implement this or rather port directly
-   SchematicView *v = qobject_cast<SchematicView*> (tabWidget()->currentWidget());
-   if ( v ) {
-      v->resetMatrix();
-   }
+   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+   if(view)
+      view->showNoZoom();
 }
 
 void QucsMainWindow::slotZoomIn(bool)
 {
    //TODO: implement this or rather port directly
-   // TODO: Not implemented equal qith qucs 3
-   SchematicView *v = qobject_cast<SchematicView*> (tabWidget()->currentWidget());
-   if ( v ) {
-      v->scale( 1.2, 1.2 );
-   }
+   // TODO: Not implemented equal with qucs 3
+   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+   if(view)
+      view->zoomIn();
 }
 
 void QucsMainWindow::slotZoomOut()
 {
-   //TODO: implement this or rather port directly
-   SchematicView *v = qobject_cast<SchematicView*> (tabWidget()->currentWidget());
-   if ( v ) {
-      v->scale( 1/1.2, 1/1.2 );
-   }
+   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+   if(view)
+      view->zoomOut();
 }
 
 void QucsMainWindow::slotSelect(bool)
@@ -1479,4 +1462,12 @@ void QucsMainWindow::setTabTitle(const QString& title)
    int index = tabWidget()->indexOf(view);
    if(index != -1)
       tabWidget()->setTabText(index,title);
+}
+
+QucsView* QucsMainWindow::viewFromWidget(QWidget *widget)
+{
+   SchematicView *v = qobject_cast<SchematicView*>(widget);
+   if(v) return (QucsView*)v;
+   qDebug("QucsMainWindow::viewFromWidget() : Couldn't identify view type.");
+   return 0;
 }

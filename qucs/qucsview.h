@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,41 +17,33 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __SCHEMATICVIEW_H
-#define __SCHEMATICVIEW_H
+#ifndef __QUCSVIEW_H
+#define __QUCSVIEW_H
 
-#include "qucsview.h"
-#include <QtGui/QGraphicsView>
+#include <QtCore/QDateTime>
+#include <QtCore/QString>
 
-class SchematicScene;
 class QucsMainWindow;
+class QPainter;
 
-class SchematicView : public QGraphicsView, public QucsView
+struct QucsView
 {
-   Q_OBJECT
-   public:
-      static const qreal zoomFactor;
-      SchematicView(SchematicScene *sc = 0,QucsMainWindow *parent = 0);
-      ~SchematicView() {};
-      void init();
+      QucsView(QucsMainWindow *m);
+      virtual ~QucsView() {}
 
-      //reimplemented virtuals from QucsView
-      void setFileName(const QString& name);
-      bool load();
-      bool save();
-      void print(QPainter *p, bool printAll, bool fitToPage);
-      void zoomIn();
-      void zoomOut();
-      void showAll();
-      void showNoZoom();
-      //end of QucsAbstarctView's methods
-      SchematicScene* schematicScene() const;
+      virtual void setFileName(const QString& name); // Emit signal while reimplementing
+      virtual bool load() = 0; // First set filename and then call load
+      virtual bool save() = 0; // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  save
+      virtual void print(QPainter *p, bool printAll, bool fitToPage) = 0;
+      virtual void zoomIn() = 0;
+      virtual void zoomOut() = 0;
+      virtual void showAll() = 0;
+      virtual void showNoZoom() = 0;
 
-   public slots:
-      void setTitle(const QString& title);
-
-   signals:
-      void titleChanged(const QString& newTitle);
+      QString tabText() const; // Returns text to be displayed on tab
+      QString fileName; // With path
+      QDateTime lastSaved; // To check for external modification
+      QucsMainWindow *mainWindow;
 };
 
-#endif //__SCHEMATICVIEW_H
+#endif //__QUCSVIEW_H

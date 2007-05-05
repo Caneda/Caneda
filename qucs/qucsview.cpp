@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,41 +17,22 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __SCHEMATICVIEW_H
-#define __SCHEMATICVIEW_H
-
 #include "qucsview.h"
-#include <QtGui/QGraphicsView>
+#include <QtCore/QFileInfo>
 
-class SchematicScene;
-class QucsMainWindow;
-
-class SchematicView : public QGraphicsView, public QucsView
+QucsView::QucsView(QucsMainWindow *m) : mainWindow(m)
 {
-   Q_OBJECT
-   public:
-      static const qreal zoomFactor;
-      SchematicView(SchematicScene *sc = 0,QucsMainWindow *parent = 0);
-      ~SchematicView() {};
-      void init();
+}
 
-      //reimplemented virtuals from QucsView
-      void setFileName(const QString& name);
-      bool load();
-      bool save();
-      void print(QPainter *p, bool printAll, bool fitToPage);
-      void zoomIn();
-      void zoomOut();
-      void showAll();
-      void showNoZoom();
-      //end of QucsAbstarctView's methods
-      SchematicScene* schematicScene() const;
+QString QucsView::tabText() const
+{
+   if(fileName.isEmpty())
+      return QString();
+   QFileInfo info(fileName);
+   return info.fileName();
+}
 
-   public slots:
-      void setTitle(const QString& title);
-
-   signals:
-      void titleChanged(const QString& newTitle);
-};
-
-#endif //__SCHEMATICVIEW_H
+void QucsView::setFileName(const QString& name)
+{
+   fileName = name;
+}

@@ -37,7 +37,7 @@ MOCHEADERS = schematicview.h qucsmainwindow.h componentssidebar.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
 qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp schematicscene.cpp  sidebarmodel.cpp \
-               main.cpp  qucsmainwindow.cpp schematicview.cpp  undocommands.cpp fileformathandler.cpp \
+               main.cpp  qucsmainwindow.cpp qucsview.cpp schematicview.cpp  undocommands.cpp fileformathandler.cpp \
 							 qucsprimaryformat.cpp
 
 nodist_qucs_SOURCES = $(MOCFILES)
@@ -47,7 +47,7 @@ qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
 qucs_LDADD = $(top_srcdir)/qucs-tools/libqucstools.a ideality/libideality.a components/libcomponents.a dialogs/libdialogs.a \
   $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a
 
-noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h \
+noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h qucsview.h \
                                schematicscene.h  sidebarmodel.h fileformathandler.h qucsprimaryformat.h
 
 # rules for translations

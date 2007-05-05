@@ -28,6 +28,7 @@
 class ComponentsSidebar;
 class QUndoGroup;
 class SchematicView;
+class QucsView;
 
 class QucsMainWindow : public DTabbedMainWindow
 {
@@ -133,7 +134,7 @@ class QucsMainWindow : public DTabbedMainWindow
       void initActions();
       void initMenus();
       void initToolBars();
-
+      QucsView* viewFromWidget(QWidget *widget);//Returns QucsView* appropriately
       // The following aim at reducing clutter by substituting
       // action pointers with a map container using object names
       // to identify them.

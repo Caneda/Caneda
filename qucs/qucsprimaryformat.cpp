@@ -118,7 +118,6 @@ QString QucsPrimaryFormat::saveText()
    foreach(Painting *p, scene->paintings())
       stream << "  <" << p->saveString() << ">\n";
    stream << "</Paintings>\n";
-   qDebug("aReally strange");
 
    return retVal;
 }
