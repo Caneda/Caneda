@@ -20,6 +20,79 @@
 #include "componentproperty.h"
 #include "propertytext.h"
 #include "component.h"
+#include "schematicscene.h"
+#include "qucs-tools/global.h"
+
+#include <QtGui/QFontMetricsF>
+
+PropertyGroup::PropertyGroup(Component *comp,SchematicScene *scene) :
+   QGraphicsItemGroup(0,static_cast<QGraphicsScene*>(scene)), m_component(comp)
+{
+   Q_ASSERT(scene);
+   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+   QFontMetricsF fm(Qucs::font());
+   lastChildPos = comp->mapToScene(comp->boundingRect().bottomLeft());
+   fontHeight = fm.height()+4;
+   itemLeft = 2.0;
+   lastChildPos += QPointF(0.0, fontHeight);
+   setPos(lastChildPos);
+   lastChildPos = mapFromScene(lastChildPos);
+   //lastChildPos += QPointF(itemLeft,fontHeight);
+}
+
+void PropertyGroup::addChild(ComponentProperty *child)
+{
+   if(m_children.count(child)) return;
+   m_children << child;
+   if(child->isVisible()) {
+      QPointF np = lastChildPos;
+      // This makes the leftmost part of item to coincide with leftmost of item
+      //np.rx() -= child->item()->boundingRect().left();
+      child->setPos(mapToScene(np));
+      addToGroup(child->item());
+      lastChildPos.ry() += fontHeight;
+   }
+}
+
+void PropertyGroup::hideChild(ComponentProperty *child)
+{
+   int index = m_children.indexOf(child);
+   Q_ASSERT(index != -1);
+   child->hide();
+   if(index + 1 < m_children.size())
+      realignItems(index+1);
+}
+
+void PropertyGroup::showChild(ComponentProperty *child)
+{
+   int index = m_children.indexOf(child);
+   Q_ASSERT(index != -1);
+   child->show();
+   addToGroup(child->item());
+   realignItems(index);
+}
+
+void PropertyGroup::realignItems( int fromIndex )
+{
+   Q_ASSERT(fromIndex < m_children.size());
+   QPointF lastVisibleItemPos = pos() + QPointF(itemLeft, 0.0);
+   if(fromIndex != 0)
+      for(int i = fromIndex - 1; i > -1; --i)
+         if(m_children.at(i)->isVisible()) {
+            lastVisibleItemPos = m_children.at(i)->item()->pos();
+            break;
+         }
+
+   qreal y = lastVisibleItemPos.y() + fontHeight;
+
+   for(int i = fromIndex; i < m_children.size(); ++i) {
+      ComponentProperty *p = m_children[i];
+      if(p->isVisible()) {
+         p->item()->setPos(itemLeft - p->item()->boundingRect().left(),y);
+         y += fontHeight;
+      }
+   }
+}
 
 ComponentProperty::ComponentProperty( Component *c,const QString& name, const QString& value,
                                      const QString& description, bool visible,const QStringList& options)

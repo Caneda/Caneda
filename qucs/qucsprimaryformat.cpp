@@ -31,7 +31,7 @@
 
 #include <QtGui/QMessageBox>
 #include <QtGui/QMatrix>
-
+#include <QtGui/QScrollBar>
 
 QucsPrimaryFormat::QucsPrimaryFormat(SchematicView *view) : FileFormatHandler(view)
 {
@@ -54,11 +54,12 @@ QString QucsPrimaryFormat::saveText()
       case Qucs::SchematicMode:
          // Using integer coordinates to support old version.
          int x1,y1,x2,y2;
-         int dummyContentsX,dummyContentsY;
-         dummyContentsX = dummyContentsY = 0;
+         int horScroll,verScroll;
+         horScroll = m_view->horizontalScrollBar() ? m_view->horizontalScrollBar()->value() : 0;
+         verScroll = m_view->verticalScrollBar() ? m_view->verticalScrollBar()->value() : 0;
          m_view->sceneRect().toRect().getCoords(&x1,&y1,&x2,&y2);
          stream <<  "  <View=" << x1<<","<<y1<<"," << x2 << "," << y2 << ",";
-         stream << m_view->matrix().m11() << "," << dummyContentsX << "," << dummyContentsY << ">\n";
+         stream << m_view->matrix().m11() << "," << horScroll << "," << verScroll << ">\n";
          break;
 
       case Qucs::SymbolMode:

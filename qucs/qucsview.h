@@ -31,7 +31,8 @@ struct QucsView
       QucsView(QucsMainWindow *m);
       virtual ~QucsView() {}
 
-      virtual void setFileName(const QString& name); // Emit signal while reimplementing
+      virtual void setFileName(const QString& name) = 0; // Emit signal while reimplementing
+      virtual QString fileName() const = 0; // With path
       virtual bool load() = 0; // First set filename and then call load
       virtual bool save() = 0; // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  save
       virtual void print(QPainter *p, bool printAll, bool fitToPage) = 0;
@@ -41,7 +42,6 @@ struct QucsView
       virtual void showNoZoom() = 0;
 
       QString tabText() const; // Returns text to be displayed on tab
-      QString fileName; // With path
       QDateTime lastSaved; // To check for external modification
       QucsMainWindow *mainWindow;
 };

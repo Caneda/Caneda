@@ -75,7 +75,7 @@ class SchematicScene : public QGraphicsScene
       QString dataSet() const { return m_dataSet; }
       QString dataDisplay() const { return m_dataDisplay; }
       QString fileName() const { return m_fileName; }
-      void setFileName(const QString& fn) { m_fileName = fn; }
+      void setFileName(const QString& fn);
       bool simOpenDpl() const { return m_simOpenDpl; }
       bool isFrameShown() const { return m_frameShown; }
       QString frameText0() const { return m_frameText0; }

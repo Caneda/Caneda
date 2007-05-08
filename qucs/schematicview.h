@@ -36,6 +36,7 @@ class SchematicView : public QGraphicsView, public QucsView
       void init();
 
       //reimplemented virtuals from QucsView
+      QString fileName() const;
       void setFileName(const QString& name);
       bool load();
       bool save();

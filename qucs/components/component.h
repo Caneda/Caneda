@@ -28,6 +28,7 @@ class Node;
 class SchematicScene;
 class Shape;
 class ComponentProperty;
+class PropertyGroup;
 
 /// Encapsulates a node for component to use it as a port
 class ComponentPort
@@ -53,7 +54,13 @@ class Component : public QucsItem
 {
    public:
       enum {
-         Type = QucsItem::ComponentType
+         Type = QucsItem::ComponentType,
+      };
+
+      enum ActiveStatus {
+         Open = 0,
+         Active = 1,
+         Shorten = 2
       };
 
       explicit Component(SchematicScene* scene = 0);
@@ -82,7 +89,8 @@ class Component : public QucsItem
       QString name;
       QString model;
       QString description;
-
+      bool showName;
+      ActiveStatus activeStatus;
       static QMap<int,QPen> pens;
       static const QPen& getPen(QColor col = Qt::darkBlue,int pw = 0,Qt::PenStyle = Qt::SolidLine);
 
@@ -96,9 +104,10 @@ class Component : public QucsItem
 
       QList<ComponentPort*> m_ports;
       QList<ComponentProperty*> m_properties;
+      PropertyGroup *m_propertyGroup;
       QList<Shape*> m_shapes;
       QPen m_pen;
-      QPointF prevPropertyPos;
+      QPointF m_textPos;
       QRectF m_boundingRect;
 
    private:

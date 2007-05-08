@@ -26,7 +26,26 @@
 #include <QtCore/QPointF>
 #include <QtCore/QtDebug>
 
+#include <QtGui/QGraphicsItemGroup>
+
 class Component;
+class PropertyGroup : public QGraphicsItemGroup
+{
+   public:
+      PropertyGroup(Component *comp,SchematicScene *scene = 0);
+      ~PropertyGroup() {}
+
+      void addChild(ComponentProperty *child);
+      void hideChild(ComponentProperty *child);
+      void showChild(ComponentProperty *child);
+      void realignItems( int fromIndex = 0 );
+   private:
+      Component *m_component;
+      qreal fontHeight;
+      qreal itemLeft;
+      QList<ComponentProperty*> m_children;
+      QPointF lastChildPos;
+};
 
 class ComponentProperty
 {

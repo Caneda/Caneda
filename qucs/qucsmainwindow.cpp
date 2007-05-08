@@ -966,7 +966,7 @@ void QucsMainWindow::slotFileSave()
 {
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
-   if(v->fileName.isEmpty())
+   if(v->fileName().isEmpty())
       return slotFileSaveAs();
    v->save();
 }
@@ -1366,7 +1366,7 @@ void QucsMainWindow::slotHelpAbout()
 
 void QucsMainWindow::slotHelpAboutQt()
 {
-   //TODO: implement this or rather port directly
+   QApplication::aboutQt();
 }
 
 void QucsMainWindow::loadSettings()

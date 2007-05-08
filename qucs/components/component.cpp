@@ -50,12 +50,16 @@ ComponentPort::ComponentPort(Component* owner,const QPointF& pos) : m_owner(owne
    m_node->addComponent(m_owner);
 }
 
-Component::Component(SchematicScene* scene) : QucsItem(0,scene),m_pen(getPen(Qt::darkBlue,0)),
-                                              prevPropertyPos(0,0)
+Component::Component(SchematicScene* scene) : QucsItem(0,scene),showName(true),
+                                              activeStatus(Active), m_pen(getPen(Qt::darkBlue,0))
 {
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-   if(scene)
+   if(scene) {
       scene->insertComponent(this);
+      m_propertyGroup = new PropertyGroup(this,scene);
+   }
+   else
+      m_propertyGroup = 0;
 }
 
 Component::~Component()
@@ -64,13 +68,20 @@ Component::~Component()
       port->node()->removeComponent(this);
    if(schematicScene())
       schematicScene()->removeComponent(this);
+   delete m_propertyGroup;
 }
 
 Component* Component::copy() const
 {
    Component *c = Component::componentFromName(model,schematicScene());
+   qDeleteAll(m_properties);
    c->m_properties = m_properties;
    c->setMatrix(matrix());
+   c->name = name;
+   c->model = model;
+   c->description = description;
+   c->showName = showName;
+   c->activeStatus = activeStatus;
    return c;
 }
 
@@ -110,12 +121,12 @@ QString Component::saveString() const
    if(name.isEmpty()) s += " * ";
    else s += " " + name + " ";
 
-//    int i=0;
-//    if(!showName)
-//       i = 4;
-//    i |= isActive;
-//    s += QString::number(i);
-   s += " "+QString::number(pos().x())+" "+QString::number(pos().y());
+   int i=0;
+   if(!showName)
+      i = 4;
+   i |= activeStatus;
+   s += QString::number(i);
+   s += " " + QString::number(pos().x()) + " " + QString::number(pos().y());
 //    s += " "+QString::number(tx)+" "+QString::number(ty);
 //    if(mirroredX) s += " 1";
 //    else s += " 0";
@@ -130,20 +141,17 @@ QString Component::saveString() const
       else s += " 0";
    }
 
-   return s+">";
+   s += QChar('>');
+   return s;
 }
 
 void Component::addProperty(QString _name,QString _initVal,QString _des,bool isVisible,const QStringList& options)
 {
    ComponentProperty *prop = new ComponentProperty(this,_name,_initVal,_des,isVisible,options);
-
+   if(m_propertyGroup)
+      m_propertyGroup->addChild(prop);
    QPointF p = pos();
-   if(prevPropertyPos.isNull())
-      prevPropertyPos = QPointF(0,matrix().mapRect(boundingRect()).bottom()+5);
-   prop->setPos( p + prevPropertyPos);
-   //prop->setPos(pos() + QPointF(0,-35));
    m_properties.append(prop);
-   prevPropertyPos += QPointF(0,20);
 }
 
 void Component::addPort(const QPointF& pos)
@@ -195,10 +203,13 @@ QVariant Component::handlePositionChange(const QPointF& hpos)
    qreal dx = hpos.x() - oldPos.x();
    qreal dy = hpos.y() - oldPos.y();
 
-   QList<ComponentProperty*>::iterator it = m_properties.begin();
-   const QList<ComponentProperty*>::iterator end = m_properties.end();
-   for(; it != end; ++it)
-      (*it)->moveBy(dx,dy);
+//    QList<ComponentProperty*>::iterator it = m_properties.begin();
+//    const QList<ComponentProperty*>::iterator end = m_properties.end();
+//    for(; it != end; ++it)
+//       (*it)->moveBy(dx,dy);
+
+   if(m_propertyGroup)
+      m_propertyGroup->moveBy(dx,dy);
 
    if(schematicScene()->areItemsMoving() == false)
    {
@@ -419,7 +430,8 @@ void Component::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w
    for(; it != end; ++it)
       (*it)->draw(p,o);
 
-   if( 0 && o->state & QStyle::State_Selected)
+   // For testing purpose
+   if( 1 && o->state & QStyle::State_Selected)
    {
       p->setPen(getPen(Qt::darkGray,2));
       p->drawRect(boundingRect());

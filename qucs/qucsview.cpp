@@ -26,13 +26,9 @@ QucsView::QucsView(QucsMainWindow *m) : mainWindow(m)
 
 QString QucsView::tabText() const
 {
-   if(fileName.isEmpty())
+   if(fileName().isEmpty())
       return QString();
-   QFileInfo info(fileName);
+   QFileInfo info(fileName());
    return info.fileName();
 }
 
-void QucsView::setFileName(const QString& name)
-{
-   fileName = name;
-}

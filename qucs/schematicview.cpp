@@ -64,12 +64,15 @@ SchematicScene* SchematicView::schematicScene() const
    return s;
 }
 
+QString SchematicView::fileName() const
+{
+   return schematicScene()->fileName();
+}
+
 void SchematicView::setFileName(const QString& name)
 {
-   if(name == fileName)
-      return;
-   QucsView::setFileName(name);
-   QFileInfo info(name);
+   schematicScene()->setFileName(name);
+   QFileInfo info(fileName());
    setTitle(info.fileName());
 }
 
@@ -77,10 +80,10 @@ bool SchematicView::load()
 {
    //This assumes filename is set before!
    QucsPrimaryFormat format(this);
-   QFile file(fileName);
+   QFile file(fileName());
    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
       QMessageBox::critical(0, QObject::tr("Error"),
-                            QObject::tr("Cannot load document ")+fileName);
+                            QObject::tr("Cannot load document ")+fileName());
       return false;
    }
    QTextStream stream(&file);
@@ -90,7 +93,7 @@ bool SchematicView::load()
 
 bool SchematicView::save()
 {
-   QFile file(fileName);
+   QFile file(fileName());
    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
       QMessageBox::critical(0, QObject::tr("Error"),
                             QObject::tr("Cannot save document!"));
