@@ -126,8 +126,9 @@ QString Component::saveString() const
       i = 4;
    i |= activeStatus;
    s += QString::number(i);
-   s += " " + QString::number(pos().x()) + " " + QString::number(pos().y());
-//    s += " "+QString::number(tx)+" "+QString::number(ty);
+   s += " " + QString::number(pos().x(),'f') + " " + QString::number(pos().y(),'f');
+   QPointF textPos = m_propertyGroup ? m_propertyGroup->pos() : QPointF(0.,0.);
+   s += " " + QString::number(textPos.x(),'f') + " " + QString::number(textPos.y(),'f');
 //    if(mirroredX) s += " 1";
 //    else s += " 0";
 //    s += " "+QString::number(rotated);
@@ -150,7 +151,6 @@ void Component::addProperty(QString _name,QString _initVal,QString _des,bool isV
    ComponentProperty *prop = new ComponentProperty(this,_name,_initVal,_des,isVisible,options);
    if(m_propertyGroup)
       m_propertyGroup->addChild(prop);
-   QPointF p = pos();
    m_properties.append(prop);
 }
 
@@ -163,8 +163,7 @@ ComponentPort* Component::portWithNode(Node *n) const
 {
    QList<ComponentPort*>::const_iterator it = m_ports.constBegin();
    const QList<ComponentPort*>::const_iterator end = m_ports.constEnd();
-   for(; it != end; ++it)
-   {
+   for(; it != end; ++it) {
       if((*it)->node() == n)
          return *it;
    }
@@ -203,12 +202,7 @@ QVariant Component::handlePositionChange(const QPointF& hpos)
    qreal dx = hpos.x() - oldPos.x();
    qreal dy = hpos.y() - oldPos.y();
 
-//    QList<ComponentProperty*>::iterator it = m_properties.begin();
-//    const QList<ComponentProperty*>::iterator end = m_properties.end();
-//    for(; it != end; ++it)
-//       (*it)->moveBy(dx,dy);
-
-   if(m_propertyGroup)
+   if(m_propertyGroup && !scene()->selectedItems().contains(m_propertyGroup))
       m_propertyGroup->moveBy(dx,dy);
 
    if(schematicScene()->areItemsMoving() == false)

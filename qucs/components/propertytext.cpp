@@ -40,11 +40,7 @@ PropertyText::PropertyText(ComponentProperty *prop,SchematicScene *sc) :
    m_staticText.append(" = ");
    setPlainText(prop->value());
    setTextInteractionFlags(Qt::TextEditorInteraction);
-   setFlag(ItemIsMovable,true);
-   setFlag(ItemIsSelectable,false);
-   setFlag(ItemIsFocusable,false);
-   setSelected(false);
-   clickedIn = false;
+   setFlags(ItemIsMovable | ItemIsFocusable);
    calculatePos();
 }
 
@@ -72,90 +68,128 @@ void PropertyText::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
                          QWidget *widget)
 {
    painter->save();
-   painter->setFont(font());   
+   painter->setFont(font());
    painter->drawText(staticPos,m_staticText);
-	
+
    QStyleOptionGraphicsItem *o = new QStyleOptionGraphicsItem(*option);
    o->exposedRect.setLeft(0.);
-   if(!clickedIn)
-   {         
-      o->state &= ~QStyle::State_Selected;
-      o->state &= ~QStyle::State_HasFocus;
-   }
+   o->state &= ~QStyle::State_Selected;
+   o->state &= ~QStyle::State_HasFocus;
    QGraphicsTextItem::paint(painter,o,widget);
-	
-   if (!clickedIn && option->state & (QStyle::State_Selected | QStyle::State_HasFocus))
+
+   if (option->state & QStyle::State_HasFocus)
    {
       painter->setPen(QPen(Qt::black, 1));
       painter->setBrush(Qt::NoBrush);
-      painter->drawRect(boundingRect());
+      painter->drawRect(QGraphicsTextItem::boundingRect());
    }
-	
+
    painter->restore();
    delete o;
 }
 
+bool PropertyText::sceneEvent(QEvent *event)
+{
+   if(!group() || !hasFocus())
+      return QGraphicsTextItem::sceneEvent(event);
+
+   // The call to parent is avoided to remove group behaviour
+   // and allow items to be edited.
+   switch (event->type()) {
+    case QEvent::FocusIn:
+        focusInEvent(static_cast<QFocusEvent *>(event));
+        break;
+    case QEvent::FocusOut:
+        focusOutEvent(static_cast<QFocusEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneContextMenu:
+        contextMenuEvent(static_cast<QGraphicsSceneContextMenuEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneDragEnter:
+        dragEnterEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneDragMove:
+        dragMoveEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneDragLeave:
+        dragLeaveEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneDrop:
+        dropEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneHoverEnter:
+        hoverEnterEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneHoverMove:
+        hoverMoveEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneHoverLeave:
+        hoverLeaveEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneMouseMove:
+        mouseMoveEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneMousePress:
+        mousePressEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneMouseRelease:
+        mouseReleaseEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneMouseDoubleClick:
+        mouseDoubleClickEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+        break;
+    case QEvent::GraphicsSceneWheel:
+        wheelEvent(static_cast<QGraphicsSceneWheelEvent *>(event));
+        break;
+    case QEvent::KeyPress:
+        keyPressEvent(static_cast<QKeyEvent *>(event));
+        break;
+    case QEvent::KeyRelease:
+        keyReleaseEvent(static_cast<QKeyEvent *>(event));
+        break;
+    case QEvent::InputMethod:
+        inputMethodEvent(static_cast<QInputMethodEvent *>(event));
+        break;
+    default:
+        return false;
+    }
+
+   return true;
+}
+
 void PropertyText::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-   if(isSelected() && event->modifiers() & Qt::ControlModifier)
-   {
-      setSelected(false);
-      return;
-   }
-   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-   if (event->pos().x() < 0 || (!clickedIn && !isSelected()))
-   {
-      QGraphicsItem::mousePressEvent(event);
-      clickedIn = false;
-      //clearFocus();     
-   }
-   else
-   {
-      clickedIn = true;
-      setFlag(ItemIsMovable,false);
+   if (event->pos().x() > 0) {
+      if(scene())
+         scene()->clearSelection();
       QGraphicsTextItem::mousePressEvent(event);
    }
+   else
+      clearFocus();
 }
 
 void PropertyText::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-   if (!clickedIn)
-      QGraphicsItem::mouseMoveEvent(event);
-   else
-      QGraphicsTextItem::mouseMoveEvent(event);
+   QGraphicsTextItem::mouseMoveEvent(event);
 }
 
 void PropertyText::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-   if (clickedIn)
-      QGraphicsTextItem::mouseReleaseEvent(event);
+   QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
 void PropertyText::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
    QGraphicsTextItem::mouseDoubleClickEvent(event);
-	
-   if(!clickedIn)
-   {
-      QTextCursor tc = textCursor();
-      tc.clearSelection();
-      setTextCursor(tc);
-   }
-   clickedIn = true;
+   QTextCursor tc = textCursor();
+   tc.clearSelection();
+   setTextCursor(tc);
 }
 
 void PropertyText::focusOutEvent(QFocusEvent *event)
 {
-   clickedIn = false;
-   QTextCursor tc = textCursor();
-   tc.clearSelection();
-   setTextCursor(tc);
+   QGraphicsTextItem::focusOutEvent(event);
    trimText();
-   QGraphicsTextItem::focusOutEvent(event);      
-   setFlag(ItemIsMovable,true);
-   setFlag(ItemIsSelectable,false);
-   setFlag(ItemIsFocusable,false);
 }
 
 void PropertyText::keyPressEvent(QKeyEvent *e)
@@ -168,18 +202,5 @@ void PropertyText::keyPressEvent(QKeyEvent *e)
 
 QVariant PropertyText::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-   if(change == QGraphicsItem::ItemSelectedChange)
-   {
-      if(value.toBool() == false)
-         QTimer::singleShot(50,this,SLOT(resetFlags()));
-      return value;
-   }
    return QGraphicsTextItem::itemChange(change,value);
-}
-
-void PropertyText::resetFlags()
-{
-   setFlag(ItemIsMovable,true);
-   setFlag(ItemIsSelectable,false);
-   setFlag(ItemIsFocusable,false);
 }

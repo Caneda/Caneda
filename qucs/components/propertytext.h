@@ -31,37 +31,38 @@ class PropertyText : public QGraphicsTextItem
 Q_OBJECT
    public:
       PropertyText(ComponentProperty *prop,SchematicScene *scene);
-		
+
       inline QRectF boundingRect() const
       {
          QRectF br = QGraphicsTextItem::boundingRect();
          br.setLeft((staticPos.x()));
          return br;
       }
-	
+
       inline QPainterPath shape() const
       {
          QPainterPath p;
          p.addRect(boundingRect());
          return p;
       }
-		
+
       inline bool contains(const QPointF &point) const
       {
          return boundingRect().contains(point);
       }
-		
+
       inline void setFont(const QFont& f)
       {
          QGraphicsTextItem::setFont(f);
          calculatePos();
       }
-		
+
       void trimText();
       void updateValue();
-		
+
    protected:
       void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+      bool sceneEvent(QEvent *event);
       void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
       void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
       void mousePressEvent ( QGraphicsSceneMouseEvent * event );
@@ -69,9 +70,6 @@ Q_OBJECT
       void focusOutEvent(QFocusEvent *event);
       void keyPressEvent(QKeyEvent *event);
       QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-
-   private slots:
-      void resetFlags();
 
    private:
       void calculatePos();
