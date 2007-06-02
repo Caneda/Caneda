@@ -24,7 +24,7 @@
 #include "wire.h"
 #include "node.h"
 #include "qucsprimaryformat.h"
-
+#include "xmlformat.h"
 #include <QtGui/QWheelEvent>
 #include <QtCore/QDebug>
 #include <QtGui/QFileDialog>
@@ -37,18 +37,18 @@ SchematicView::SchematicView(SchematicScene *sc,QucsMainWindow *parent) :
    QGraphicsView((QGraphicsScene*)sc,(QWidget*)parent), QucsView(parent)
 {
    if(sc == 0)
-      setScene(new SchematicScene(0,0,800,600));
+      setScene(new SchematicScene(0,0,1024,768));
    setDragMode(RubberBandDrag);
    setAcceptDrops(true);
    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
    setWindowTitle("Untitled");
-   init();
+   //init();
 }
 
 void SchematicView::init()
 {
    SchematicScene *s = schematicScene();
-   for( int j=1;j<3;++j)
+   for( int j=1;j<6;++j)
       for(int i=1; i <11;i++)
       {
          Resistor *r = new Resistor(s);
@@ -78,16 +78,23 @@ void SchematicView::setFileName(const QString& name)
 bool SchematicView::load()
 {
    //This assumes filename is set before!
-   QucsPrimaryFormat format(this);
+   FileFormatHandler *format = 0;
+   QFileInfo info(fileName());
+   if(info.suffix() == "sch")
+      format = new QucsPrimaryFormat(this);
+   else if(info.suffix() == "xsch")
+      format = new XmlFormat(this);
+   if(!format) {
+      QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
+      return false;
+   }
    QFile file(fileName());
    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      QMessageBox::critical(0, QObject::tr("Error"),
-                            QObject::tr("Cannot load document ")+fileName());
+      QMessageBox::critical(0, tr("Error"), tr("Cannot load document ")+fileName());
       return false;
    }
    QTextStream stream(&file);
-   format.loadFromText(stream.readAll());
-   return true;
+   return format->loadFromText(stream.readAll());
 }
 
 bool SchematicView::save()
@@ -99,8 +106,19 @@ bool SchematicView::save()
       return false;
    }
    QTextStream stream(&file);
-   QucsPrimaryFormat format(this);
-   QString saveText = format.saveText();
+   QFileInfo info(fileName());
+   FileFormatHandler *format = 0;
+   if(info.suffix() == "sch")
+      format = new QucsPrimaryFormat(this);
+   else if(info.suffix() == "xsch")
+      format = new XmlFormat(this);
+
+   if(!format) {
+      QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
+      return false;
+   }
+
+   QString saveText = format->saveText();
    if(saveText.isNull()) {
       qDebug("Null data to save! Was this expected ??");
    }
@@ -127,17 +145,18 @@ void SchematicView::zoomOut()
 
 void SchematicView::showAll()
 {
-   QRectF intersect;
-   QList<QGraphicsItem*> _items = items();
-   if ( !_items.isEmpty() ) {
-      // It's ineficient??????
-      intersect = _items.first()->sceneBoundingRect();
-      foreach( QGraphicsItem* it, _items ) {
-         intersect |= it->sceneBoundingRect();
-      }
-      intersect.adjust( -10, -10, 10, 10);
-      fitInView( intersect, Qt::KeepAspectRatio );
-   }
+   fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
+//    QRectF intersect;
+//    QList<QGraphicsItem*> _items = items();
+//    if ( !_items.isEmpty() ) {
+//       // It's ineficient??????
+//       intersect = _items.first()->sceneBoundingRect();
+//       foreach( QGraphicsItem* it, _items ) {
+//          intersect |= it->sceneBoundingRect();
+//       }
+//       intersect.adjust( -10, -10, 10, 10);
+//       fitInView( intersect, Qt::KeepAspectRatio );
+//    }
 }
 
 void SchematicView::showNoZoom()

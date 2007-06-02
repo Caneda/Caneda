@@ -180,6 +180,8 @@ void PropertyText::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void PropertyText::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+   if(scene())
+      scene()->clearSelection();
    QGraphicsTextItem::mouseDoubleClickEvent(event);
    QTextCursor tc = textCursor();
    tc.clearSelection();

@@ -123,7 +123,173 @@ QString QucsPrimaryFormat::saveText()
    return retVal;
 }
 
-void QucsPrimaryFormat::loadFromText(const QString& text)
+bool QucsPrimaryFormat::loadFromText(const QString& t)
 {
-   if(text.isNull());
+   QString text(t);
+   QTextStream stream(&text);
+   QString Line;
+
+   do {
+      if(stream.atEnd())
+         return true;
+      Line = stream.readLine();
+   } while(Line.isEmpty());
+
+   if(Line.left(16) != "<Qucs Schematic ") {  // wrong file type ?
+
+      QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Wrong document type: ")+m_view->fileName());
+      return false;
+   }
+
+   Line = Line.mid(16, Line.length()-17);
+   if(!Qucs::checkVersion(Line)) { // wrong version number ?
+
+      QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Wrong document version: ")+Line);
+      return false;
+   }
+
+   // read content *************************
+   while(!stream.atEnd()) {
+      Line = stream.readLine();
+      Line = Line.trimmed();
+      if(Line.isEmpty()) continue;
+
+      if(Line == "<Symbol>") {
+         if(!loadPaintings(stream)) {
+            return false;
+         }
+      }
+      else
+         if(Line == "<Properties>") {
+            if(!loadProperties(stream)) {  return false; } }
+         else
+            if(Line == "<Components>") {
+               if(!loadComponents(stream)) {  return false; } }
+            else
+               if(Line == "<Wires>") {
+                  if(!loadWires(stream)) {  return false; } }
+               else
+                  if(Line == "<Diagrams>") {
+                     if(!loadDiagrams(stream)) {  return false; } }
+                  else
+                     if(Line == "<Paintings>") {
+                        if(!loadPaintings(stream)) {  return false; } }
+                     else {
+                        QMessageBox::critical(0, QObject::tr("Error"),
+                                              QObject::tr("File Format Error:\nUnknown field!"));
+
+                        return false;
+                     }
+   }
+
+
+   return true;
+}
+
+bool QucsPrimaryFormat::loadProperties(QTextStream &stream)
+{
+   QString Line;
+   while(!stream.atEnd()) {
+      Line = stream.readLine();
+      if(Line.at(0) == '<') if(Line.at(1) == '/') return true;  // field end ?
+   }
+   return false;
+}
+
+bool QucsPrimaryFormat::loadComponents(QTextStream &stream)
+{
+   QString Line, cstr;
+   Component *c;
+   while(!stream.atEnd()) {
+      Line = stream.readLine();
+      if(Line.at(0) == '<') if(Line.at(1) == '/') return true;
+      Line = Line.trimmed();
+      if(Line.isEmpty()) continue;
+      c = Component::componentFromLine(Line,m_view->schematicScene());
+      if(!c) return false;
+
+      m_view->schematicScene()->insertComponent(c);
+   }
+
+   QMessageBox::critical(0, QObject::tr("Error"),
+                         QObject::tr("Format Error:\n'Component' field is not closed!"));
+   return false;
+}
+
+bool QucsPrimaryFormat::loadWires(QTextStream &stream)
+{
+   QString Line;
+   while(!stream.atEnd()) {
+      Line = stream.readLine();
+      if(Line.at(0) == '<') if(Line.at(1) == '/') return true;  // field end ?
+
+      Line = Line.trimmed();
+      if(Line.isEmpty()) continue;
+
+      if(!loadWireFromLine(Line))
+	 break;
+   }
+   return false;
+}
+
+bool QucsPrimaryFormat::loadWireFromLine(QString s)
+{
+   bool ok;
+   QPointF p;
+   QString n;
+
+   if(s.at(0) != '<' || s.at(s.length()-1) != '>')
+      return false;
+   s = s.mid(1,s.length()-2); // cut off start and end character
+
+   n = s.section(' ',0,0);
+   p.setX(n.toDouble(&ok));
+   if(!ok) return false;
+
+   n = s.section(' ',1,1);
+   p.setY(n.toDouble(&ok));
+   if(!ok) return false;
+
+   Node *n1 = m_view->schematicScene()->nodeAt(p);
+   if(!n1)
+      n1 = m_view->schematicScene()->createNode(p);
+
+   n = s.section(' ',2,2);
+   p.setX(n.toDouble(&ok));
+   if(!ok) return false;
+
+
+   n = s.section(' ',3,3);
+   p.setY(n.toDouble(&ok));
+   if(!ok) return false;
+
+
+   Node *n2 = m_view->schematicScene()->nodeAt(p);
+   if(!n2)
+      n2 = m_view->schematicScene()->createNode(p);
+
+   m_view->schematicScene()->insertWire(new Wire(m_view->schematicScene(),n1,n2));
+   return true;
+}
+
+bool QucsPrimaryFormat::loadDiagrams(QTextStream &stream)
+{
+   QString Line;
+   while(!stream.atEnd()) {
+      Line = stream.readLine();
+      if(Line.at(0) == '<') if(Line.at(1) == '/') return true;  // field end ?
+   }
+   return false;
+}
+
+bool QucsPrimaryFormat::loadPaintings(QTextStream &stream)
+{
+   QString Line;
+   while(!stream.atEnd()) {
+      Line = stream.readLine();
+      if(Line.at(0) == '<') if(Line.at(1) == '/') return true;  // field end ?
+   }
+   return false;
 }

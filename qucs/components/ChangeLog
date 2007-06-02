@@ -1,3 +1,7 @@
+2007-06-02  Gopala Krishna  <gopala@localhost>
+
+	* component.cpp (Component::property): 	Implemented this function.
+
 2007-05-12  Gopala Krishna  <gopala@localhost>
 
 	* componentproperty.h, componentproperty.cpp, component.cpp, propertytext.cpp : Added a new class PropertyGroup that helps

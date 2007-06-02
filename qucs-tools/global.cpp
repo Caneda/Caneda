@@ -19,6 +19,7 @@
 
 #include "global.h"
 #include <cmath>
+#include <QtCore/QDebug>
 
 using namespace std;
 
@@ -198,6 +199,12 @@ namespace Qucs
    }
 
 // #########################################################################
+   QString realToString(qreal val)
+   {
+      return QString::number(val,'f',2);
+   }
+
+// #########################################################################
    void convert2Unicode(QString& Text)
    {
       bool ok;
@@ -308,18 +315,19 @@ namespace Qucs
    }
 
 // #########################################################################
-   bool checkVersion(QString& Line)
+   bool checkVersion(const QString& Line)
    {
       QStringList sl = Qucs::version.split('.', QString::SkipEmptyParts);
       QStringList ll = Line.split('.',QString::SkipEmptyParts);
       if (ll.count() != 3 || sl.count() != 3)
          return false;
-      int sv = (sl.at(1)).toInt() * 10000 + (sl.at(2)).toInt() * 100 +
-         (sl.at(3)).toInt();
-      int lv = (ll.at(1)).toInt() * 10000 + (ll.at(2)).toInt() * 100 +
-         (ll.at(3)).toInt();
+      int sv = (sl.at(0)).toInt() * 10000 + (sl.at(1)).toInt() * 100 +
+         (sl.at(2)).toInt();
+      int lv = (ll.at(0)).toInt() * 10000 + (ll.at(1)).toInt() * 100 +
+         (ll.at(2)).toInt();
       if(lv > sv) // wrong version number ? (only backward compatible)
          return false;
       return true;
    }
+
 }

@@ -38,27 +38,26 @@ Node::Node(const QString& name,SchematicScene *scene) : QucsItem(0,scene)
 
 void Node::addComponent(Component *comp)
 {
-   m_connectedComponents.insert(comp);
-   update();
+   if(!m_connectedComponents.contains(comp)) {
+      m_connectedComponents << comp;
+      update();
+   }
 }
 
 void Node::removeComponent(Component* comp)
 {
-   // call erase instead of remove to prevent rehashing
-   QSet<Component*>::iterator it = m_connectedComponents.find(comp);
-   if(it != m_connectedComponents.end())
-   {
-      m_connectedComponents.erase(it);
+   int index =  m_connectedComponents.indexOf(comp);
+   if(index != -1) {
+      m_connectedComponents.removeAt(index);
       update();
    }
 }
 
 bool Node::areAllComponentsSelected() const
 {
-   QSet<Component*>::const_iterator it = m_connectedComponents.constBegin();
-   const QSet<Component*>::const_iterator end = m_connectedComponents.constEnd();
-   for( ; it != end; ++it)
-   {
+   QList<Component*>::const_iterator it = m_connectedComponents.constBegin();
+   const QList<Component*>::const_iterator end = m_connectedComponents.constEnd();
+   for( ; it != end; ++it) {
       if(!((*it)->isSelected()))
          return false;
    }
@@ -67,25 +66,35 @@ bool Node::areAllComponentsSelected() const
 
 void Node::addAllComponentsFrom(Node *n)
 {
-   m_connectedComponents.unite(n->m_connectedComponents);
+   foreach(Component *c, n->m_connectedComponents) {
+      if(!m_connectedComponents.contains(c))
+         m_connectedComponents << c;
+   }
    update();
 }
 
 void Node::addWire(Wire *w)
 {
-   m_wires.insert(w);
+   if(!m_wires.contains(w))
+      m_wires << w;
    update();
 }
 
 void Node::removeWire(Wire *w)
 {
-   m_wires.remove(w);
-   update();
+   int index = m_wires.indexOf(w);
+   if(index != -1) {
+      m_wires.removeAt(index);
+      update();
+   }
 }
 
 void Node::addAllWiresFrom(Node *n)
 {
-   m_wires.unite(n->m_wires);
+   foreach(Wire *w, n->m_wires) {
+      if(!m_wires.contains(w))
+         m_wires << w;
+   }
    update();
 }
 

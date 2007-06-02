@@ -48,12 +48,13 @@ namespace Qucs
    QString StringNiceNum(double num);
    QString num2str(double Num);
    void str2num(const QString& s_, double& Number, QString& Unit, double& Factor);
+   QString realToString(qreal val);
    void convert2Unicode(QString& Text);
    void convert2ASCII(QString& Text);
    QString properName (const QString& Name);
    bool VHDL_Time(QString& t, const QString& Name);
    bool Verilog_Time(QString& t, const QString& Name);
-   bool checkVersion(QString& Line);
+   bool checkVersion(const QString& Line);
 
    class Settings;
 }

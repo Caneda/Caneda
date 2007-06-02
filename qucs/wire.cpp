@@ -20,7 +20,7 @@
 #include "wire.h"
 #include "node.h"
 #include "schematicscene.h"
-
+#include "qucs-tools/global.h"
 #include <QtCore/QList>
 #include <QtCore/QtAlgorithms>
 #include <QtGui/QGraphicsLineItem>
@@ -437,7 +437,7 @@ void Wire::mousePressEvent ( QGraphicsSceneMouseEvent * event )
    if(!isSelected())
       return;
 
-   m_grabbedLineIndex = indexForPos(event->pos());
+   m_grabbedLineIndex = indexForPos(event->scenePos());
    Q_ASSERT(m_grabbedLineIndex != -1);
    m_wasGrabbed = true;
 }
@@ -588,8 +588,10 @@ int Wire::indexForPos(const QPointF& pos) const
 
 QString Wire::saveString() const
 {
-   QString s  = "<" + QString::number(m_node1->pos().x()) + " " + QString::number(m_node1->pos().y());
-   s += " "+QString::number(m_node2->pos().x()) + " " + QString::number(m_node2->pos().y());
+   using Qucs::realToString;
+   QString s  = "<" + realToString(m_node1->pos().x()) + " " + realToString(m_node1->pos().y());
+   s += " "+realToString(m_node2->pos().x()) + " " + realToString(m_node2->pos().y());
+   //TODO: Wire label
 //    if(0 && Label) {
 //       s += " \""+Label->Name+"\" ";
 //       s += QString::number(Label->x1)+" "+QString::number(Label->y1)+" ";
@@ -597,6 +599,16 @@ QString Wire::saveString() const
 //       s += " \""+Label->initValue+"\">";
 //    }
 //    else
-      s += " \"\" 0 0 0 \"\">";
+   s += " \"\" 0 0 0 \"\">";
    return s;
+}
+
+void Wire::setWireLines(const QList<WireLine>& lines)
+{
+   if(isVisible())
+      prepareGeometryChange();
+   m_lines = lines;
+
+   if(!isVisible())
+      updateProxyWires();
 }

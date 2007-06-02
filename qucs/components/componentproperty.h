@@ -39,6 +39,12 @@ class PropertyGroup : public QGraphicsItemGroup
       void hideChild(ComponentProperty *child);
       void showChild(ComponentProperty *child);
       void realignItems( int fromIndex = 0 );
+
+      QRectF boundingRect() const;
+
+   protected:
+      void mousePressEvent(QGraphicsSceneMouseEvent *event);
+
    private:
       Component *m_component;
       qreal fontHeight;
@@ -46,6 +52,14 @@ class PropertyGroup : public QGraphicsItemGroup
       QList<ComponentProperty*> m_children;
       QPointF lastChildPos;
 };
+
+inline QRectF PropertyGroup::boundingRect() const
+{
+   if(children().size()) return QGraphicsItemGroup::boundingRect();
+   //HACK: An empty group makes item to move very slow. The below
+   //     line fixes it.
+   return QRectF(-2.0,-2.0,4.0,4.0);
+}
 
 class ComponentProperty
 {

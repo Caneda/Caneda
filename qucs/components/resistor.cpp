@@ -54,7 +54,7 @@ QString Resistor::netlist() const
    QString s = model+":"+name;
 
    // output all node names
-//   foreach(ComponentPort *port, m_ports)
+   // foreach(ComponentPort *port, m_ports)
    //    s += ' ' + port->node()->name(); // node names
 
    // output all properties

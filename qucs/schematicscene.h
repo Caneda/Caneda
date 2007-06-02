@@ -21,7 +21,6 @@
 #define __SCHEMATICSCENE_H
 
 #include <QtGui/QGraphicsScene>
-#include <QtCore/QSet>
 #include <QtCore/QList>
 #include <QtCore/QPair>
 
@@ -69,6 +68,10 @@ class SchematicScene : public QGraphicsScene
       QList<Painting*> symbolPaintings() const { return m_symbolPaintings; }
       QList<Node*> nodes() const { return m_nodes; }
 
+      void mirrorXComponents();
+      void mirrorYComponents();
+      void rotateComponents();
+
       int xGridSize() const { return m_xGridSize; }
       int yGridSize() const { return m_yGridSize; }
       bool isGridShown() const { return m_gridShown; }
@@ -83,7 +86,20 @@ class SchematicScene : public QGraphicsScene
       QString frameText2() const { return m_frameText2; }
       QString frameText3() const { return m_frameText3; }
       Qucs::Mode currentMode() const { return m_currentMode; }
+
       void setMode(Qucs::Mode mode);
+      void setXGridSize(int sz);
+      void setYGridSize(int sz);
+      void setXYGridSize(int s1, int s2);
+      void setGridVisible(bool visibility);
+      void setDataSet(const QString& str);
+      void setDataDisplay(const QString& disp);
+      void setOpenDisplay(bool b);
+      void setFrameVisible(bool vis);
+      void setFrameText0(const QString& str);
+      void setFrameText1(const QString& str);
+      void setFrameText2(const QString& str);
+      void setFrameText3(const QString& str);
 
    protected:
       void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
@@ -101,10 +117,10 @@ class SchematicScene : public QGraphicsScene
       void connect(Node *from, Node *to);
       void adjustPositions(Node *of,const QPointF& delta);
 
-      QSet<Node*> m_movingNodes;
-      QSet<Wire*> m_resizingWires;
-      QSet<Wire*> m_moveResizingWires;
-      QSet<QucsItem*> m_alreadyMoved;
+      QList<Node*> m_movingNodes;
+      QList<Wire*> m_resizingWires;
+      QList<Wire*> m_moveResizingWires;
+      QList<QucsItem*> m_alreadyMoved;
 
       QList<Component*> m_components;
       QList<Wire*> m_wires;

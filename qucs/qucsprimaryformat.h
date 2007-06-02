@@ -22,6 +22,8 @@
 
 #include "fileformathandler.h"
 
+class QTextStream;
+
 class QucsPrimaryFormat : public FileFormatHandler
 {
    public:
@@ -30,7 +32,14 @@ class QucsPrimaryFormat : public FileFormatHandler
 
 
       QString saveText();
-      void loadFromText(const QString& text);
+      bool loadFromText(const QString& text);
+
+      bool loadProperties(QTextStream &stream);
+      bool loadComponents(QTextStream &stream);
+      bool loadWires(QTextStream &stream);
+      bool loadDiagrams(QTextStream &stream);
+      bool loadPaintings(QTextStream &stream);
+      bool loadWireFromLine(QString s);
 };
 
 #endif //__QUCSPRIMARYFORMAT_H

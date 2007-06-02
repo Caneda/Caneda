@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,34 +17,26 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __FILEFORMATHANDLER_H
-#define __FILEFORMATHANDLER_H
+#ifndef __XMLFORMAT_H
+#define __XMLFORMAT_H
 
-#include <QtCore/QString>
+#include "fileformathandler.h"
 
-class SchematicView;
+class QDomElement;
 
-/** This class is used to save and load files.
- * Using this base class we can support any fileformat */
-class FileFormatHandler
+class XmlFormat : public FileFormatHandler
 {
    public:
-      FileFormatHandler(SchematicView *view=0);
-      virtual ~FileFormatHandler() {}
+      XmlFormat(SchematicView *view = 0);
+      ~XmlFormat() {}
 
-      virtual QString saveText() = 0;
+      QString saveText();
+      bool loadFromText(const QString& text);
+      bool loadView(const QDomElement& ele);
+      bool loadComponents(const QDomElement& ele);
+      bool loadWires(const QDomElement& ele);
 
-      /** Loads the document. If non-negative is returned
-        * the operation is successful. Negative return
-        * value indicated failure */
-      virtual bool loadFromText(const QString& text) = 0;
-
-      SchematicView* view() const { return m_view; }
-      void setView(SchematicView *view) { m_view = view; }
-
-   protected:
-      SchematicView *m_view;
-
+//      bool parseProperties(const QDomElement& ele);
 };
 
-#endif //__FILEFORMATHANDLER_H
+#endif //__XML_FORMAT_H

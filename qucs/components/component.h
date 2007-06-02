@@ -70,6 +70,7 @@ class Component : public QucsItem
       virtual QString netlist() const;
       virtual QString shortNetlist() const;
       QString saveString() const;
+      bool loadFromString(QString str);
       inline int type() const;
 
       inline const QList<ComponentPort*>& componentPorts() const;
@@ -78,12 +79,21 @@ class Component : public QucsItem
 
       void addProperty(QString _name,QString _initVal,QString _des,bool isVisible = false,const QStringList& options = QStringList());
       ComponentProperty* property(const QString& _name) const;
+      inline QList<ComponentProperty*> properties() const;
       void addPort(const QPointF& pos);
+      inline PropertyGroup* propertyGroup() const;
+
       static Component* componentFromName(const QString& str,SchematicScene *scene);
+      static Component* componentFromLine( QString line,SchematicScene *scene);
+      static Component* componentFromModel(const QString& model, SchematicScene *scene);
 
       void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
       inline QRectF boundingRect() const;
-      void rotate() {}
+
+      void rotate();
+      void mirrorX();
+      void mirrorY();
+
 
    public:
       QString name;
@@ -109,6 +119,10 @@ class Component : public QucsItem
       QPen m_pen;
       QPointF m_textPos;
       QRectF m_boundingRect;
+
+      unsigned int m_rotated;
+      bool m_mirroredX;
+      bool m_mirroredY;
 
    private:
       QVariant handlePositionChange(const QPointF& pos);
@@ -151,5 +165,16 @@ inline QRectF Component::boundingRect() const
     qreal pw = 0.5;
     return m_boundingRect.adjusted(-pw,-pw,pw,pw);
 }
+
+inline PropertyGroup* Component::propertyGroup() const
+{
+   return m_propertyGroup;
+}
+
+inline QList<ComponentProperty*> Component::properties() const
+{
+   return m_properties;
+}
+
 
 #endif //__COMPONENT_H

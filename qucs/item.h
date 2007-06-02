@@ -53,6 +53,7 @@ class QucsItem : public QGraphicsItem
       QGraphicsView* activeView() const;
 
       virtual QString saveString() const { return QString(""); }
+      virtual bool loadFromString(QString ) { return true;}
 
 };
 

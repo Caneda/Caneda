@@ -61,6 +61,9 @@ class Wire : public QucsItem
       void moveAndResizeBy(qreal dx, qreal dy);
       void stopMoveAndResize();
 
+      void setWireLines(const QList<WireLine>& lines);
+      inline QList<WireLine> wireLines() const;
+
       QString saveString() const;
 
    protected:
@@ -114,6 +117,11 @@ inline void Wire::setNode2(Node *n2)
 inline int Wire::type() const
 {
    return Wire::Type;
+}
+
+inline QList<WireLine> Wire::wireLines() const
+{
+   return m_lines;
 }
 
 #endif //__WIRE_H

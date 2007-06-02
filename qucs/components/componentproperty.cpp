@@ -29,7 +29,7 @@ PropertyGroup::PropertyGroup(Component *comp,SchematicScene *scene) :
    QGraphicsItemGroup(0,static_cast<QGraphicsScene*>(scene)), m_component(comp)
 {
    Q_ASSERT(scene);
-   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+
    QFontMetricsF fm(Qucs::font());
    lastChildPos = comp->mapToScene(comp->boundingRect().bottomLeft());
    fontHeight = fm.height()+4;
@@ -43,6 +43,7 @@ PropertyGroup::PropertyGroup(Component *comp,SchematicScene *scene) :
 void PropertyGroup::addChild(ComponentProperty *child)
 {
    if(m_children.count(child)) return;
+   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
    m_children << child;
    if(child->isVisible()) {
       QPointF np = lastChildPos;
@@ -93,6 +94,15 @@ void PropertyGroup::realignItems( int fromIndex )
       }
    }
 }
+
+void PropertyGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+   if(scene())
+      scene()->clearSelection();
+   qDebug("CA");
+   QGraphicsItemGroup::mousePressEvent(event);
+}
+
 
 ComponentProperty::ComponentProperty( Component *c,const QString& name, const QString& value,
                                      const QString& description, bool visible,const QStringList& options)

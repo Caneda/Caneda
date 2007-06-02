@@ -48,6 +48,7 @@ static QString qucsFilter;
 QucsMainWindow::QucsMainWindow(QWidget *w) : DTabbedMainWindow(w)
 {
    qucsFilter =
+      tr("Schematic-xml")+" (*.xsch);;"+
       tr("Schematic")+" (*.sch);;"+
       tr("Data Display")+" (*.dpl);;"+
       tr("Qucs Documents")+" (*.sch *.dpl);;"+
@@ -954,11 +955,21 @@ void QucsMainWindow::slotTextNew()
 
 void QucsMainWindow::slotFileOpen()
 {
-   QString file_Name = QFileDialog::getOpenFileName(this, tr("Open File"),
+   QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "", qucsFilter);
-   if ( !file_Name.isEmpty() )
-   {
-      //TODO: implement this or rather port directly
+   if ( fileName.isEmpty() ) return;
+
+   newView();
+   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+   if(!v) return;
+
+   v->setFileName(fileName);
+   bool b = v->load();
+   if(!b) {
+      QMessageBox::critical(0,QObject::tr("Error"),
+                            QObject::tr("Cannot load document!\nParse Error"));
+      slotFileClose();
+      newView();
    }
 }
 
@@ -990,7 +1001,9 @@ void QucsMainWindow::slotFileSaveAll()
 void QucsMainWindow::slotFileClose()
 {
    //TODO: Verify if page document is modified
+   QWidget *w = tabWidget()->currentWidget();
    tabWidget()->removeTab( tabWidget()->currentIndex() );
+   delete w;
 }
 
 void QucsMainWindow::slotSymbolEdit()
@@ -1216,17 +1229,23 @@ void QucsMainWindow::slotSelectMarker()
 
 void QucsMainWindow::slotEditRotate(bool)
 {
-   //TODO: implement this or rather port directly
+   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if(view)
+      view->schematicScene()->rotateComponents();
 }
 
 void QucsMainWindow::slotEditMirrorX(bool)
 {
-   //TODO: implement this or rather port directly
+   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if(view)
+      view->schematicScene()->mirrorXComponents();
 }
 
 void QucsMainWindow::slotEditMirrorY(bool)
 {
-   //TODO: implement this or rather port directly
+   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if(view)
+      view->schematicScene()->mirrorYComponents();
 }
 
 void QucsMainWindow::slotIntoHierarchy()

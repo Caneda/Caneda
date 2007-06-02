@@ -36,6 +36,7 @@
 #include <QtGui/QUndoStack>
 #include <QtGui/QPainter>
 #include <QtGui/QStyleOptionGraphicsItem>
+#include <QtGui/QScrollBar>
 
 SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 {
@@ -51,7 +52,7 @@ void SchematicScene::init()
 {
    m_undoStack = new QUndoStack();
    m_areItemsMoving = false;
-   m_xGridSize = m_yGridSize = 10;
+   m_xGridSize = m_yGridSize = 25;
    m_currentMode = Qucs::SchematicMode;
    m_frameShown = false;
    m_gridShown = true;
@@ -81,6 +82,13 @@ void SchematicScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event)
 void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 {
    if(event->mimeData()->formats().contains("application/qucs.sidebarItem")) {
+      //#HACK: The event generating active view is obtained indirectly so that
+      //       the scrollbar's position can be restored since the framework
+      //       scrolls the view to show component rect.
+      QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
+      // The scrollBars are never null as seen from source of qgraphicsview.
+      int hor = v->horizontalScrollBar()->value();
+      int ver = v->verticalScrollBar()->value();
       QByteArray encodedData = event->mimeData()->data("application/qucs.sidebarItem");
       QDataStream stream(&encodedData, QIODevice::ReadOnly);
       QString text;
@@ -88,6 +96,8 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
       Component *c = Component::componentFromName(text,this);
       if(c) {
          c->setPos(event->scenePos());
+         v->horizontalScrollBar()->setValue(hor);
+         v->verticalScrollBar()->setValue(ver);
          event->acceptProposedAction();
       }
    }
@@ -115,17 +125,21 @@ void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
             Node *portNode = port->node();
             portNode->setController(component);
 
-            m_movingNodes.insert(portNode);
+            if(!m_movingNodes.contains(portNode))
+               m_movingNodes << portNode;
             if(portNode->areAllComponentsSelected()) {
-               foreach(Wire *wire, portNode->wires())
-                  m_resizingWires.insert(wire);
+               foreach(Wire *wire, portNode->wires()) {
+                  if(!m_resizingWires.contains(wire))
+                     m_resizingWires << wire;
+               }
             }
          }
       }
       else if(theWire && theWire->isSelected() &&
               theWire != m_grabbedWire &&
               theWire->node1()->selectedComponents().size() == 0 &&
-              theWire->node2()->selectedComponents().size() == 0) {
+              theWire->node2()->selectedComponents().size() == 0 &&
+              !m_moveResizingWires.contains(theWire)) {
       	 m_moveResizingWires << theWire;
       }
    }
@@ -143,17 +157,8 @@ void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
    if(!m_areItemsMoving) return;
 
    // Send event to hidden wire since the framework doesn't do that
-   if(m_grabbedWire) {
-      QGraphicsSceneMouseEvent *mouseEvent = new QGraphicsSceneMouseEvent();
-      mouseEvent->setButtons(e->buttons());
-      mouseEvent->setButton(e->button());
-      mouseEvent->setScenePos(e->scenePos());
-      mouseEvent->setLastScenePos(e->lastScenePos());
-      mouseEvent->setPos(m_grabbedWire->mapFromScene(e->scenePos()));
-      mouseEvent->setLastPos(m_grabbedWire->mapFromScene(e->lastScenePos()));
-      m_grabbedWire->grabMoveEvent(mouseEvent);
-      delete mouseEvent;
-   }
+   if(m_grabbedWire)
+      m_grabbedWire->grabMoveEvent(e);
 
    QPointF delta;
    foreach(Node *node, m_movingNodes) {
@@ -186,12 +191,12 @@ void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
          }
 
          Wire *newWire = new Wire(this,node,newNode);
-         m_resizingWires.insert(newWire);
+         m_resizingWires << newWire;
       }
    }
 
    foreach(Wire *wire, m_resizingWires) {
-      if(wire->isVisible())
+      if(wire != m_grabbedWire && wire->isVisible())
          wire->hide();
       wire->rebuild();
    }
@@ -200,9 +205,11 @@ void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
    qreal dy = e->scenePos().y() - e->lastScenePos().y();
 
    foreach(Wire *wire, m_moveResizingWires) {
-      if(wire->isVisible())
-         wire->startMoveAndResize();
-      wire->moveAndResizeBy(dx,dy);
+      if(wire != m_grabbedWire) {
+         if(wire->isVisible())
+            wire->startMoveAndResize();
+         wire->moveAndResizeBy(dx,dy);
+      }
    }
 }
 
@@ -270,10 +277,12 @@ void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 void SchematicScene::connect(Node *from, Node *to)
 {
    Wire *w =  Wire::connectedWire(from,to);
-   if(w)
-   {
-      m_resizingWires.remove(w);
-      delete w;
+   if(w) {
+      int index = m_resizingWires.indexOf(w);
+      if(index != -1) {
+         m_resizingWires.removeAt(index);
+         delete w;
+      }
    }
 
    to->addAllComponentsFrom(from);
@@ -336,7 +345,7 @@ static Node* singlifyNodes(QSet<Node*> &nodeSet)
    // by adding all components to one node and deleting others
    Node *fn = *(nodeSet.begin());
    nodeSet.erase(nodeSet.begin()); // remove first one from set and delete others
-   const QSet<Component*>& fnc = fn->connectedComponents();
+   const QList<Component*>& fnc = fn->connectedComponents();
    foreach(Node *n, nodeSet)
    {
       foreach(Component *c, n->connectedComponents())
@@ -433,11 +442,12 @@ void SchematicScene::insertComponent(Component *comp)
       QPointF pos = comp->mapToScene(port->centrePos());
       n = nodeAt(pos);
       if(!n) n = createNode(pos);
+      n->addComponent(comp);
       port->setNode(n);
    }
 
    foreach(ComponentProperty *prop, comp->m_properties)
-      if(!prop->isVisible() || prop->item()->scene() != this)
+      if(prop->isVisible() && prop->item()->scene() != this)
          addItem(prop->item());
 
    //TODO: add number suffix to component name
@@ -480,4 +490,113 @@ void SchematicScene::setFileName(const QString& name)
    QFileInfo info(m_fileName);
    m_dataSet = info.baseName() + ".dat";
    m_dataDisplay = info.baseName() + ".dpl";
+}
+
+void SchematicScene::mirrorXComponents()
+{
+   foreach(QGraphicsItem *item, selectedItems()) {
+      Component *c = qgraphicsitem_cast<Component*>(item);
+      if(c)
+         c->mirrorX();
+   }
+   //TODO: Select correct axis if multi components selected
+}
+
+void SchematicScene::mirrorYComponents()
+{
+   foreach(QGraphicsItem *item, selectedItems()) {
+      Component *c = qgraphicsitem_cast<Component*>(item);
+      if(c)
+         c->mirrorY();
+   }
+   //TODO: Select correct axis if multi components selected
+}
+
+void SchematicScene::rotateComponents()
+{
+   foreach(QGraphicsItem *item, selectedItems()) {
+      Component *c = qgraphicsitem_cast<Component*>(item);
+      if(c)
+         c->rotate();
+   }
+   //TODO: Select correct axis if multi components selected
+}
+
+void SchematicScene::setXGridSize(int sz)
+{
+   if(m_xGridSize == sz) return;
+   m_xGridSize = sz;
+   update();
+}
+
+void SchematicScene::setYGridSize(int sz)
+{
+   if(m_yGridSize == sz) return;
+   m_yGridSize = sz;
+   update();
+}
+
+void SchematicScene::setXYGridSize(int s1, int s2)
+{
+   if(m_xGridSize == s1 && m_yGridSize == s2)
+      return;
+   m_xGridSize = s1;
+   m_yGridSize = s2;
+   update();
+}
+
+void SchematicScene::setGridVisible(bool visibility)
+{
+   if(m_gridShown == visibility) return;
+   m_gridShown = visibility;
+   update();
+}
+
+void SchematicScene::setDataSet(const QString& str)
+{
+   m_dataSet = str;
+}
+
+void SchematicScene::setDataDisplay(const QString& disp)
+{
+   m_dataDisplay = disp;
+}
+
+void SchematicScene::setOpenDisplay(bool b)
+{
+   m_simOpenDpl = b;
+}
+
+void SchematicScene::setFrameVisible(bool vis)
+{
+   if(m_frameShown == vis) return;
+   m_frameShown = vis;
+   update();
+}
+
+void SchematicScene::setFrameText0(const QString& str)
+{
+   if(m_frameText0 == str) return;
+   m_frameText0 = str;
+   update();
+}
+
+void SchematicScene::setFrameText1(const QString& str)
+{
+   if( m_frameText1 == str) return;
+   update();
+}
+
+void SchematicScene::setFrameText2(const QString& str)
+{
+   if( m_frameText2 == str) return;
+   m_frameText2 = str;
+   update();
+}
+
+void SchematicScene::setFrameText3(const QString& str)
+{
+   if( m_frameText3 == str) return;
+   m_frameText3 = str;
+   update();
 }

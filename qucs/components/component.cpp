@@ -26,11 +26,14 @@
 #include "undocommands.h"
 #include "shapes.h"
 #include "componentproperty.h"
+#include "qucs-tools/global.h"
+
 #include <QtGui/QUndoStack>
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtCore/QDebug>
 #include <QtGui/QPainter>
+#include <QtGui/QMessageBox>
 
 QMap<int,QPen> Component::pens;
 
@@ -54,6 +57,9 @@ Component::Component(SchematicScene* scene) : QucsItem(0,scene),showName(true),
                                               activeStatus(Active), m_pen(getPen(Qt::darkBlue,0))
 {
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+   m_rotated = 0;
+   m_mirroredX = false;
+   m_mirroredY = false;
    if(scene) {
       scene->insertComponent(this);
       m_propertyGroup = new PropertyGroup(this,scene);
@@ -116,6 +122,7 @@ QString Component::shortNetlist() const
 
 QString Component::saveString() const
 {
+   using namespace Qucs;
    QString s = "<" + model;
 
    if(name.isEmpty()) s += " * ";
@@ -126,12 +133,11 @@ QString Component::saveString() const
       i = 4;
    i |= activeStatus;
    s += QString::number(i);
-   s += " " + QString::number(pos().x(),'f') + " " + QString::number(pos().y(),'f');
+   s += " " + realToString(pos().x()) + " " + realToString(pos().y());
    QPointF textPos = m_propertyGroup ? m_propertyGroup->pos() : QPointF(0.,0.);
-   s += " " + QString::number(textPos.x(),'f') + " " + QString::number(textPos.y(),'f');
-//    if(mirroredX) s += " 1";
-//    else s += " 0";
-//    s += " "+QString::number(rotated);
+   s += " " + realToString(textPos.x()) + " " + realToString(textPos.y());
+   s += m_mirroredX ? " 1" : " 0";
+   s += " " + QString::number(m_rotated);
 
    // write all properties
    foreach(ComponentProperty *p1, m_properties) {
@@ -144,6 +150,78 @@ QString Component::saveString() const
 
    s += QChar('>');
    return s;
+}
+
+bool Component::loadFromString(QString s)
+{
+   bool ok;
+   int tmp;
+
+   if(s.at(0) != '<') return false;
+   if(s.at(s.length()-1) != '>') return false;
+   s = s.mid(1, s.length()-2);   // cut off start and end character
+
+   QString n;
+   name = s.section(' ',1,1);    // Name
+   if(name == "*") name = "";
+
+   n  = s.section(' ',2,2);      // isActive
+   tmp = n.toInt(&ok);
+   if(!ok) return false;
+   activeStatus = ActiveStatus(tmp & 3);
+
+   showName = tmp & 4 ? true : false;
+   QPointF p;
+   n  = s.section(' ',3,3);    // cx
+   p.setX(n.toDouble(&ok));
+   if(!ok) return false;
+
+   n  = s.section(' ',4,4);    // cy
+   p.setY(n.toDouble(&ok));
+   if(!ok) return false;
+   setPos(p);
+
+   n  = s.section(' ',5,5);    // tx
+   p.setX(n.toDouble(&ok));
+   if(!ok) return false;
+
+   n  = s.section(' ',6,6);    // ty
+   p.setY(n.toDouble(&ok));
+   if(!ok) return false;
+
+   m_propertyGroup->setPos(p);
+
+   if(model.at(0) != '.') {  // is simulation component (dc, ac, ...) ?
+
+      n  = s.section(' ',7,7);    // mirroredX
+      if(n.toInt(&ok) == 1) mirrorX();
+
+      if(!ok) return false;
+
+
+      n  = s.section(' ',8,8);    // rotated
+      m_rotated = n.toInt(&ok);
+      if(!ok) return false;
+      QGraphicsItem::rotate(m_rotated*90.0);
+
+   }
+
+   unsigned int z=0;
+   ComponentProperty *p1;
+   foreach(p1,m_properties) {
+      z++;
+      n = s.section('"',z,z);    // property value
+      z++;
+      *p1 = n;
+      n  = s.section('"',z,z);    // display
+      bool shdShow = n.at(1) == '1';
+      if(shdShow)
+         p1->show();
+      else
+         p1->hide();
+   }
+
+   return true;
 }
 
 void Component::addProperty(QString _name,QString _initVal,QString _des,bool isVisible,const QStringList& options)
@@ -202,7 +280,7 @@ QVariant Component::handlePositionChange(const QPointF& hpos)
    qreal dx = hpos.x() - oldPos.x();
    qreal dy = hpos.y() - oldPos.y();
 
-   if(m_propertyGroup && !scene()->selectedItems().contains(m_propertyGroup))
+   if(m_propertyGroup && !m_propertyGroup->isSelected())
       m_propertyGroup->moveBy(dx,dy);
 
    if(schematicScene()->areItemsMoving() == false)
@@ -253,14 +331,11 @@ void Component::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
    if(event->buttons() & Qt::RightButton)
    {
-      QucsItem::rotate(-45);
-      foreach(QGraphicsItem *item, scene()->selectedItems())
-      {
-         if(item != this)
-            item->setSelected(false);
-         else
-            setSelected(true);
-      }
+      update();
+      scale(1.0,-1.0);
+      scene()->clearSelection();
+      setSelected(true);
+      //update();
    }
    else
       QucsItem::mousePressEvent(event);
@@ -415,6 +490,323 @@ Component* Component::componentFromName(const QString& comp,SchematicScene *scen
    return c;
 }
 
+Component* Component::componentFromLine(QString Line, SchematicScene *scene)
+{
+   Component *c = 0;
+
+   Line = Line.trimmed();
+   if(Line.at(0) != '<') {
+      QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Format Error:\nWrong line start!"));
+      return 0;
+   }
+
+   QString cstr = Line.section(' ',0,0); // component type
+   char first = Line.at(1).toLatin1();     // first letter of component name
+   cstr.remove(0,2);    // remove leading "<" and first letter
+
+   // to speed up the string comparision, they are ordered by the first
+   // letter of their name
+   switch(first) {
+      case 'R' : if(cstr.isEmpty()) c = new Resistor(scene);
+      else if(cstr == "us") {
+         c = new Resistor(false);  // backward capatible
+         ((MultiSymbolComponent*)c)->setSymbol("US");
+      }
+      else if(cstr == "SFF") c = new RS_FlipFlop(scene);
+      else if(cstr == "elais") c = new Relais(scene);
+         break;
+      case 'C' : if(cstr.isEmpty()) c = 0;//new Capacitor(scene);
+         else if(cstr == "CCS") c = new CCCS(scene);
+         else if(cstr == "CVS") c = new CCVS(scene);
+         else if(cstr == "irculator") c = new Circulator(scene);
+         else if(cstr == "oupler") c = new Coupler(scene);
+         else if(cstr == "LIN") c = new Coplanar(scene);
+         else if(cstr == "OPEN") c = new CPWopen(scene);
+         else if(cstr == "SHORT") c = new CPWshort(scene);
+         else if(cstr == "GAP") c = new CPWgap(scene);
+         else if(cstr == "STEP") c = new CPWstep(scene);
+         else if(cstr == "OAX") c = new CoaxialLine(scene);
+         break;
+      case 'L' : if(cstr.isEmpty()) c = new Inductor(scene);
+         //else if(cstr == "ib") c = new LibComp(scene);
+         break;
+      case 'G' : if(cstr == "ND") c = new Ground(scene);
+         else if(cstr == "yrator") c = new Gyrator(scene);
+         break;
+      case 'I' : if(cstr == "Probe") c = new iProbe(scene);
+         else if(cstr == "dc") c = new Ampere_dc(scene);
+         else if(cstr == "ac") c = new Ampere_ac(scene);
+         else if(cstr == "noise") c = new Ampere_noise(scene);
+         else if(cstr == "solator") c = new Isolator(scene);
+         else if(cstr == "pulse") c = new iPulse(scene);
+         else if(cstr == "rect") c = new iRect(scene);
+         else if(cstr == "Inoise") c = new Noise_ii(scene);
+         else if(cstr == "Vnoise") c = new Noise_iv(scene);
+         //else if(cstr == "nv") c = new Logical_Inv(scene);
+         //else if(cstr == "exp") c = new iExp(scene);
+         break;
+      case 'J' : //if(cstr == "FET") c = new JFET(scene);
+         if(cstr == "KFF") c = new JK_FlipFlop(scene);
+         break;
+      case 'V' : if(cstr == "dc") c = new Volt_dc(scene);
+         else if(cstr == "ac") c = new Volt_ac(scene);
+         else if(cstr == "CCS") c = new VCCS(scene);
+         else if(cstr == "CVS") c = new VCVS(scene);
+         else if(cstr == "Probe") c = new vProbe(scene);
+         else if(cstr == "noise") c = new Volt_noise(scene);
+         else if(cstr == "pulse") c = new vPulse(scene);
+         else if(cstr == "rect") c = new vRect(scene);
+         else if(cstr == "Vnoise") c = new Noise_vv(scene);
+//         else if(cstr == "HDL") c = new VHDL_File(scene);
+//         else if(cstr == "erilog") c = new Verilog_File(scene);
+//         else if(cstr == "exp") c = new vExp(scene);
+         break;
+      case 'T' : if(cstr == "r") c = new Transformer(scene);
+         else if(cstr == "LIN") c = new TLine(scene);
+         else if(cstr == "LIN4P") c = new TLine_4Port(scene);
+         else if(cstr == "WIST") c = new TwistedPair(scene);
+         break;
+      case 's' : if(cstr == "Tr") c = new symTrafo(scene);
+         break;
+      case 'P' : if(cstr == "ac") c = new Source_ac(scene);
+//         else if(cstr == "ort") c = new SubCirPort(scene);
+         else if(cstr == "Shift") c = new Phaseshifter(scene);
+         else if(cstr == "M_Mod") c = new PM_Modulator(scene);
+         break;
+      case 'S' : //if(cstr == "Pfile") c = new SParamFile(scene);
+//         else if(cstr.left(5) == "Pfile") {  // backward compatible
+//            c = new SParamFile(scene);
+//            c->Props.getLast()->Value = cstr.mid(5); }
+//         else if(cstr == "ub")   c = new Subcircuit(scene);
+         if(cstr == "UBST") c = new Substrate(scene);
+//         else if(cstr == "PICE") c = new SpiceFile(scene);
+//         else if(cstr == "witch") c = new Switch(scene);
+         break;
+      case 'D' : if(cstr == "CBlock") c = new dcBlock(scene);
+         else if(cstr == "CFeed") c = new dcFeed(scene);
+//         else if(cstr == "iode") c = new Diode(scene);
+         else if(cstr == "igiSource") c = new Digi_Source(scene);
+         else if(cstr == "FF") c = new D_FlipFlop(scene);
+         break;
+      case 'B' : if(cstr == "iasT") c = new BiasT(scene);
+//         else if(cstr == "JT") c = new BJTsub(scene);
+         else if(cstr == "OND") c = new BondWire(scene);
+         break;
+      case 'A' : if(cstr == "ttenuator") c = new Attenuator(scene);
+         else if(cstr == "mp") c = new Amplifier(scene);
+//         else if(cstr == "ND") c = new Logical_AND(scene);
+         else if(cstr == "M_Mod") c = new AM_Modulator(scene);
+         break;
+      case 'M' : if(cstr == "UT") c = new Mutual(scene);
+         else if(cstr == "UT2") c = new Mutual2(scene);
+         else if(cstr == "LIN") c = new MSline(scene);
+//         else if(cstr == "OSFET") c = new MOSFET_sub(scene);
+         else if(cstr == "STEP") c = new MSstep(scene);
+         else if(cstr == "CORN") c = new MScorner(scene);
+//         else if(cstr == "TEE") c = new MStee(scene);
+//         else if(cstr == "CROSS") c = new MScross(scene);
+         else if(cstr == "MBEND") c = new MSmbend(scene);
+         else if(cstr == "OPEN") c = new MSopen(scene);
+         else if(cstr == "GAP") c = new MSgap(scene);
+         else if(cstr == "COUPLED") c = new MScoupled(scene);
+         else if(cstr == "VIA") c = new MSvia(scene);
+         break;
+//       case 'E' : if(cstr == "qn") c = new Equation(scene);
+//          else if(cstr == "DD") c = new EqnDefined(scene);
+//          break;
+//       case 'O' : if(cstr == "pAmp") c = new OpAmp(scene);
+//          else if(cstr == "R") c = new Logical_OR(scene);
+//          break;
+//       case 'N' : if(cstr == "OR") c = new Logical_NOR(scene);
+//          else if(cstr == "AND") c = new Logical_NAND(scene);
+//          break;
+      // case '.' : if(cstr == "DC") c = new DC_Sim(scene);
+//          else if(cstr == "AC") c = new AC_Sim(scene);
+//          else if(cstr == "TR") c = new TR_Sim(scene);
+//          else if(cstr == "SP") c = new SP_Sim(scene);
+//          else if(cstr == "HB") c = new HB_Sim(scene);
+//          else if(cstr == "SW") c = new Param_Sweep(scene);
+//          else if(cstr == "Digi") c = new Digi_Sim(scene);
+//          else if(cstr == "Opt") c = new Optimize_Sim(scene);
+//          break;
+      // case '_' : if(cstr == "BJT") c = new BJT(scene);
+//          else if(cstr == "MOSFET") c = new MOSFET(scene);
+//          break;
+	 //case 'X' : if(cstr == "OR") c = new Logical_XOR(scene);
+         //else if(cstr == "NOR") c = new Logical_XNOR(scene);
+         //break;
+	 //case 'h' : if(cstr == "icumL2p1") c = new hicumL2p1(scene);
+         //break;
+	 //case 'H' : if(cstr == "BT_X") c = new HBT_X(scene);
+         //break;
+   }
+   if(!c) {
+      QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Format Error:\nUnknown component!"));
+      return 0;
+   }
+
+   if(!c->loadFromString(Line)) {
+      QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Format Error:\nWrong 'component' line format!"));
+      delete c;
+      return 0;
+   }
+   return c;
+}
+
+Component* Component::componentFromModel(const QString& _model, SchematicScene *scene)
+{
+   Component *c = 0;
+   char first = _model.at(0).toLatin1();     // first letter of component name
+   QString cstr = _model.mid(1);
+   // to speed up the string comparision, they are ordered by the first
+   // letter of their name
+   switch(first) {
+      case 'R' : if(cstr.isEmpty()) c = new Resistor(scene);
+      else if(cstr == "us") {
+         c = new Resistor(false);  // backward capatible
+         ((MultiSymbolComponent*)c)->setSymbol("US");
+      }
+      else if(cstr == "SFF") c = new RS_FlipFlop(scene);
+      else if(cstr == "elais") c = new Relais(scene);
+         break;
+      case 'C' : if(cstr.isEmpty()) c = 0;//new Capacitor(scene);
+         else if(cstr == "CCS") c = new CCCS(scene);
+         else if(cstr == "CVS") c = new CCVS(scene);
+         else if(cstr == "irculator") c = new Circulator(scene);
+         else if(cstr == "oupler") c = new Coupler(scene);
+         else if(cstr == "LIN") c = new Coplanar(scene);
+         else if(cstr == "OPEN") c = new CPWopen(scene);
+         else if(cstr == "SHORT") c = new CPWshort(scene);
+         else if(cstr == "GAP") c = new CPWgap(scene);
+         else if(cstr == "STEP") c = new CPWstep(scene);
+         else if(cstr == "OAX") c = new CoaxialLine(scene);
+         break;
+      case 'L' : if(cstr.isEmpty()) c = new Inductor(scene);
+         //else if(cstr == "ib") c = new LibComp(scene);
+         break;
+      case 'G' : if(cstr == "ND") c = new Ground(scene);
+         else if(cstr == "yrator") c = new Gyrator(scene);
+         break;
+      case 'I' : if(cstr == "Probe") c = new iProbe(scene);
+         else if(cstr == "dc") c = new Ampere_dc(scene);
+         else if(cstr == "ac") c = new Ampere_ac(scene);
+         else if(cstr == "noise") c = new Ampere_noise(scene);
+         else if(cstr == "solator") c = new Isolator(scene);
+         else if(cstr == "pulse") c = new iPulse(scene);
+         else if(cstr == "rect") c = new iRect(scene);
+         else if(cstr == "Inoise") c = new Noise_ii(scene);
+         else if(cstr == "Vnoise") c = new Noise_iv(scene);
+         //else if(cstr == "nv") c = new Logical_Inv(scene);
+         //else if(cstr == "exp") c = new iExp(scene);
+         break;
+      case 'J' : //if(cstr == "FET") c = new JFET(scene);
+         if(cstr == "KFF") c = new JK_FlipFlop(scene);
+         break;
+      case 'V' : if(cstr == "dc") c = new Volt_dc(scene);
+         else if(cstr == "ac") c = new Volt_ac(scene);
+         else if(cstr == "CCS") c = new VCCS(scene);
+         else if(cstr == "CVS") c = new VCVS(scene);
+         else if(cstr == "Probe") c = new vProbe(scene);
+         else if(cstr == "noise") c = new Volt_noise(scene);
+         else if(cstr == "pulse") c = new vPulse(scene);
+         else if(cstr == "rect") c = new vRect(scene);
+         else if(cstr == "Vnoise") c = new Noise_vv(scene);
+//         else if(cstr == "HDL") c = new VHDL_File(scene);
+//         else if(cstr == "erilog") c = new Verilog_File(scene);
+//         else if(cstr == "exp") c = new vExp(scene);
+         break;
+      case 'T' : if(cstr == "r") c = new Transformer(scene);
+         else if(cstr == "LIN") c = new TLine(scene);
+         else if(cstr == "LIN4P") c = new TLine_4Port(scene);
+         else if(cstr == "WIST") c = new TwistedPair(scene);
+         break;
+      case 's' : if(cstr == "Tr") c = new symTrafo(scene);
+         break;
+      case 'P' : if(cstr == "ac") c = new Source_ac(scene);
+//         else if(cstr == "ort") c = new SubCirPort(scene);
+         else if(cstr == "Shift") c = new Phaseshifter(scene);
+         else if(cstr == "M_Mod") c = new PM_Modulator(scene);
+         break;
+      case 'S' : //if(cstr == "Pfile") c = new SParamFile(scene);
+//         else if(cstr.left(5) == "Pfile") {  // backward compatible
+//            c = new SParamFile(scene);
+//            c->Props.getLast()->Value = cstr.mid(5); }
+//         else if(cstr == "ub")   c = new Subcircuit(scene);
+         if(cstr == "UBST") c = new Substrate(scene);
+//         else if(cstr == "PICE") c = new SpiceFile(scene);
+//         else if(cstr == "witch") c = new Switch(scene);
+         break;
+      case 'D' : if(cstr == "CBlock") c = new dcBlock(scene);
+         else if(cstr == "CFeed") c = new dcFeed(scene);
+//         else if(cstr == "iode") c = new Diode(scene);
+         else if(cstr == "igiSource") c = new Digi_Source(scene);
+         else if(cstr == "FF") c = new D_FlipFlop(scene);
+         break;
+      case 'B' : if(cstr == "iasT") c = new BiasT(scene);
+//         else if(cstr == "JT") c = new BJTsub(scene);
+         else if(cstr == "OND") c = new BondWire(scene);
+         break;
+      case 'A' : if(cstr == "ttenuator") c = new Attenuator(scene);
+         else if(cstr == "mp") c = new Amplifier(scene);
+//         else if(cstr == "ND") c = new Logical_AND(scene);
+         else if(cstr == "M_Mod") c = new AM_Modulator(scene);
+         break;
+      case 'M' : if(cstr == "UT") c = new Mutual(scene);
+         else if(cstr == "UT2") c = new Mutual2(scene);
+         else if(cstr == "LIN") c = new MSline(scene);
+//         else if(cstr == "OSFET") c = new MOSFET_sub(scene);
+         else if(cstr == "STEP") c = new MSstep(scene);
+         else if(cstr == "CORN") c = new MScorner(scene);
+//         else if(cstr == "TEE") c = new MStee(scene);
+//         else if(cstr == "CROSS") c = new MScross(scene);
+         else if(cstr == "MBEND") c = new MSmbend(scene);
+         else if(cstr == "OPEN") c = new MSopen(scene);
+         else if(cstr == "GAP") c = new MSgap(scene);
+         else if(cstr == "COUPLED") c = new MScoupled(scene);
+         else if(cstr == "VIA") c = new MSvia(scene);
+         break;
+//       case 'E' : if(cstr == "qn") c = new Equation(scene);
+//          else if(cstr == "DD") c = new EqnDefined(scene);
+//          break;
+//       case 'O' : if(cstr == "pAmp") c = new OpAmp(scene);
+//          else if(cstr == "R") c = new Logical_OR(scene);
+//          break;
+//       case 'N' : if(cstr == "OR") c = new Logical_NOR(scene);
+//          else if(cstr == "AND") c = new Logical_NAND(scene);
+//          break;
+      // case '.' : if(cstr == "DC") c = new DC_Sim(scene);
+//          else if(cstr == "AC") c = new AC_Sim(scene);
+//          else if(cstr == "TR") c = new TR_Sim(scene);
+//          else if(cstr == "SP") c = new SP_Sim(scene);
+//          else if(cstr == "HB") c = new HB_Sim(scene);
+//          else if(cstr == "SW") c = new Param_Sweep(scene);
+//          else if(cstr == "Digi") c = new Digi_Sim(scene);
+//          else if(cstr == "Opt") c = new Optimize_Sim(scene);
+//          break;
+      // case '_' : if(cstr == "BJT") c = new BJT(scene);
+//          else if(cstr == "MOSFET") c = new MOSFET(scene);
+//          break;
+	 //case 'X' : if(cstr == "OR") c = new Logical_XOR(scene);
+         //else if(cstr == "NOR") c = new Logical_XNOR(scene);
+         //break;
+	 //case 'h' : if(cstr == "icumL2p1") c = new hicumL2p1(scene);
+         //break;
+	 //case 'H' : if(cstr == "BT_X") c = new HBT_X(scene);
+         //break;
+   }
+   if(!c) {
+      QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Format Error:\nUnknown component!"));
+      return 0;
+   }
+
+   return c;
+}
+
+
 void Component::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
 {
    Q_UNUSED(w);
@@ -457,4 +849,39 @@ const QPen& Component::getPen(QColor color,int penWidth,Qt::PenStyle style)
       Component::pens[hash] = p;
    }
    return Component::pens[hash];
+}
+
+void Component::mirrorX()
+{
+   m_mirroredX = !m_mirroredX;
+   update();
+   scale(1.0,-1.0);
+   //TODO : Take care of texts so that only their pos is changed
+   //         not symbol!
+}
+
+void Component::mirrorY()
+{
+   m_mirroredY = !m_mirroredY;
+   update();
+   scale(-1.0,1.0);
+   //TODO : Take care of texts so that only their pos is changed
+   //         not symbol!
+}
+
+void Component::rotate()
+{
+   m_rotated++;
+   m_rotated &= 3;
+   update();
+   QGraphicsItem::rotate(90.0);
+}
+
+ComponentProperty* Component::property(const QString& _name) const
+{
+   foreach(ComponentProperty* p, m_properties) {
+      if(p->name() == _name)
+         return p;
+   }
+   return 0;
 }

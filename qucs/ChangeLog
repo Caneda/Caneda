@@ -1,10 +1,16 @@
+2007-06-02  Gopala Krishna  <gopala@localhost>
+
+	* schematicscene.h: Optimized by using QList instead of QSet as container.
+
+	* xmlformat.cpp, xmlformat.h: Added xml format to save and load files.
+
 2007-03-05 Martín Ribelotta and Lisandro Damián Nicanor Pérez Meyer
-	* optimized bitmaps(png's)	
+	* optimized bitmaps(png's)
 
 2006-08-30  Stefan Jahn  <stefan@lkcc.org>
 
       * main.cpp (main): Using ASCODIR environment variable (if set)
-      in order to locate the ASCO binary.  Otherwise it must be 
+      in order to locate the ASCO binary.  Otherwise it must be
       somewhere in the executable PATH.
 
       * dialogs/simmessage.cpp (startSimulator): Running ASCO
@@ -232,7 +238,7 @@
 	* qucs_sv.ts, qucs_fr.ts: Applied translation updates.
 
 2006-05-09  Michael Margraf   <michael.margraf@alumni.tu-berlin.de>
- 
+
 	* fixed segfault of clicking on copy/cut toolbar of text editor
 	* fixed rotation problem for subcircuit etc. after loading
 	* fixed bug mirroring text in component symbols
@@ -562,7 +568,7 @@
 
 2005-05-16  Stefan Jahn  <stefan@lkcc.org>
 
-	* qucsactions.cpp (editFile): Do not pass empty command line 
+	* qucsactions.cpp (editFile): Do not pass empty command line
 	arguments.
 
 2005-05-15  Michael Margraf   <michael.margraf@alumni.tu-berlin.de>
@@ -613,7 +619,7 @@
 
 2005-04-06  Stefan Jahn  <stefan@lkcc.org>
 
-	* Makefile.am (qucs_%.ts): Added the qucs-filter and 
+	* Makefile.am (qucs_%.ts): Added the qucs-filter and
 	qucs-transcalc directory to the source of translations.
 
 2005-03-26  Michael Margraf   <michael.margraf@alumni.tu-berlin.de>
@@ -1244,10 +1250,10 @@
 
 2004-01-21  Stefan Jahn  <stefan@lkcc.org>
 
-	* fileshowdialog.cpp, settingsdialog.cpp: Added translatable 
+	* fileshowdialog.cpp, settingsdialog.cpp: Added translatable
 	strings.
 
-	* Makefile.am (TRANSLATIONS): Adjusted paths for translation 
+	* Makefile.am (TRANSLATIONS): Adjusted paths for translation
 	files to make 'make distcheck' working again.
 
 2004-01-14  Stefan Jahn  <stefan@lkcc.org>

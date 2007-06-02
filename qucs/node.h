@@ -21,7 +21,7 @@
 #define __NODE_H
 
 #include "components/component.h"
-#include <QtCore/QSet>
+#include <QtCore/QList>
 
 class Wire;
 
@@ -39,8 +39,8 @@ class Node : public QucsItem
 
       void addComponent(Component *comp);
       void removeComponent(Component *comp);
-      inline const QSet<Component*>& connectedComponents();
-      inline QSet<Component*> selectedComponents() const;
+      inline const QList<Component*>& connectedComponents();
+      inline QList<Component*> selectedComponents() const;
       inline bool isOpen() const;
       inline bool isEmpty() const;
       bool areAllComponentsSelected() const;
@@ -49,7 +49,7 @@ class Node : public QucsItem
       void addWire(Wire *w);
       void removeWire(Wire *w);
       void addAllWiresFrom(Node *other);
-      inline QSet<Wire*> wires() const;
+      inline QList<Wire*> wires() const;
 
       void paint(QPainter *p,const QStyleOptionGraphicsItem *o, QWidget *w = 0);
       inline bool contains(const QPointF& pt) const;
@@ -68,8 +68,8 @@ class Node : public QucsItem
       inline int type() const;
 
    private:
-      QSet<Component*> m_connectedComponents;
-      QSet<Wire*> m_wires;
+      QList<Component*> m_connectedComponents;
+      QList<Wire*> m_wires;
       QString m_name;
       Component *m_controller;
 };
@@ -83,14 +83,14 @@ inline qreal distance(const QPointF& p1, const QPointF& p2)
    return std::sqrt((dx*dx)+(dy*dy));
 }
 
-inline const QSet<Component*>& Node::connectedComponents()
+inline const QList<Component*>& Node::connectedComponents()
 {
    return m_connectedComponents;
 }
 
-inline QSet<Component*> Node::selectedComponents() const
+inline QList<Component*> Node::selectedComponents() const
 {
-   QSet<Component*> selCom;
+   QList<Component*> selCom;
    foreach(Component *c, selCom)
       if(c->isSelected())
          selCom << c;
@@ -107,7 +107,7 @@ inline bool Node::isEmpty() const
    return m_connectedComponents.isEmpty() && m_wires.isEmpty();
 }
 
-inline QSet<Wire*> Node::wires() const
+inline QList<Wire*> Node::wires() const
 {
    return m_wires;
 }
