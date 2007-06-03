@@ -32,7 +32,7 @@ endif
 
 bin_PROGRAMS = qucs
 
-MOCHEADERS = schematicview.h qucsmainwindow.h componentssidebar.h
+MOCHEADERS = schematicscene.h schematicview.h qucsmainwindow.h componentssidebar.h
 
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
@@ -48,7 +48,7 @@ qucs_LDADD = $(top_srcdir)/qucs-tools/libqucstools.a ideality/libideality.a comp
   $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a
 
 noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h qucsview.h \
-                               schematicscene.h  sidebarmodel.h fileformathandler.h qucsprimaryformat.h \
+                               sidebarmodel.h fileformathandler.h qucsprimaryformat.h \
 			       xmlformat.cpp
 
 # rules for translations

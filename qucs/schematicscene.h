@@ -43,6 +43,7 @@ namespace Qucs
 
 class SchematicScene : public QGraphicsScene
 {
+Q_OBJECT
    public:
       SchematicScene(QObject *parent =0);
       SchematicScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent = 0 );

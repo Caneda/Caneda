@@ -302,16 +302,35 @@ QVariant Component::handlePositionChange(const QPointF& hpos)
 
 QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
 {
-   Q_ASSERT(scene());
-
-   if (change == ItemPositionChange)
+   if (change == ItemPositionChange && scene())
       return handlePositionChange(value.toPointF());
 
+#if QT_VERSION >= 0x040300
+   else if( change == ItemTransformChange && scene())
+   {
+      QTransform newTransform = qVariantValue<QTransform>(value);
+      QList<ComponentPort*>::iterator it = m_ports.begin();
+      const QList<ComponentPort*>::iterator end = m_ports.end();
+
+      for(; it != end; ++it)
+      {
+         ComponentPort *port = *it;
+         QTransform newSceneTransform = newTransform * QTransform().translate(pos().x(),pos().y());
+         QPointF newP = newSceneTransform.map(port->centrePos());
+
+         port->node()->setController(this);
+         port->node()->setPos(newP);
+         port->node()->resetController();
+      }
+      return QVariant(newTransform);
+   }
+#else
    else if(change == ItemMatrixChange && scene())
    {
       QMatrix newMatrix = qVariantValue<QMatrix>(value);
       QList<ComponentPort*>::iterator it = m_ports.begin();
       const QList<ComponentPort*>::iterator end = m_ports.end();
+
       for(; it != end; ++it)
       {
          ComponentPort *port = *it;
@@ -324,6 +343,7 @@ QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
       }
       return QVariant(newMatrix);
    }
+#endif
    return QGraphicsItem::itemChange(change,value);
 }
 

@@ -59,7 +59,7 @@ void TreeView::startDrag( Qt::DropActions supportedActions)
    QModelIndexList indexes = selectedIndexes();
    QMimeData *data = model()->mimeData(indexes);
    if (!data) return;
-   
+
    QRect rect;
    QPointF hotSpot;
    QPixmap pixmap = renderToPixmap(data, &rect, hotSpot);
@@ -92,13 +92,13 @@ QPixmap TreeView::renderToPixmap(const QMimeData* data, QRect *r, QPointF& hotSp
       return QPixmap();
    }
    rect = c->boundingRect();
-   
+
    QList<ComponentPort*>::const_iterator it = c->componentPorts().constBegin();
    const QList<ComponentPort*>::const_iterator end = c->componentPorts().constEnd();
    for(; it != end; ++it)
       rect |= (*it)->node()->boundingRect().translated((*it)->centrePos());
    rect = rect.adjusted(-1,-1,1,1);
-   
+   rect = c->matrix().mapRect(rect);
    QPainter p;
    QStyleOptionGraphicsItem so;
    so.state |= QStyle::State_Open;
@@ -109,12 +109,18 @@ QPixmap TreeView::renderToPixmap(const QMimeData* data, QRect *r, QPointF& hotSp
    pen.setStyle(Qt::DashLine);
    pen.setWidth(1);
    p.setPen(pen);
+
    p.setRenderHint(QPainter::Antialiasing,true);
    p.setRenderHint(QPainter::TextAntialiasing,true);
    p.setRenderHint(QPainter::SmoothPixmapTransform,true);
    p.translate(-rect.left(),-rect.top());
-   
+   #if QT_VERSION >= 0x040300
+   p.setTransform(c->transform(),true);
+   #else
+   p.setMatrix(c->matrix(),true);
+   #endif
    c->paint(&p,&so,0);
+
    p.end();
 
    if(r)
@@ -160,7 +166,7 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
 
    m_treeView = new TreeView();
    layout->addWidget(m_treeView);
-   
+
    m_model = new SidebarModel();
    m_proxyModel = new FilterProxyModel();
    m_proxyModel->setDynamicSortFilter(true);
@@ -173,7 +179,7 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
            this, SLOT(filterTextChanged()));
 
    connect(m_clearButton,SIGNAL(clicked()),m_filterEdit,SLOT(clear()));
-   
+
    setWindowTitle(tr("Components"));
 }
 

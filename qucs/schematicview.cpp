@@ -42,6 +42,9 @@ SchematicView::SchematicView(SchematicScene *sc,QucsMainWindow *parent) :
    setAcceptDrops(true);
    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
    setWindowTitle("Untitled");
+   #if QT_VERSION >= 0x040300
+   setViewportUpdateMode(SmartViewportUpdate);
+   #endif
    //init();
 }
 
