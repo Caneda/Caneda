@@ -1,8 +1,12 @@
-2007-06-02  Gopala Krishna  <gopala@localhost>
+2007-06-03  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* component.cpp (Component::rotate): Changed clockwise rotation to counter clockwise rotation.
+
+2007-06-02  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* component.cpp (Component::property): 	Implemented this function.
 
-2007-05-12  Gopala Krishna  <gopala@localhost>
+2007-05-12  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* componentproperty.h, componentproperty.cpp, component.cpp, propertytext.cpp : Added a new class PropertyGroup that helps
 	to group property texts of one component together.

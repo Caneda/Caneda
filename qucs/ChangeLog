@@ -1,4 +1,4 @@
-2007-06-02  Gopala Krishna  <gopala@localhost>
+2007-06-02  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* schematicscene.h: Optimized by using QList instead of QSet as container.
 

@@ -202,7 +202,7 @@ bool Component::loadFromString(QString s)
       n  = s.section(' ',8,8);    // rotated
       m_rotated = n.toInt(&ok);
       if(!ok) return false;
-      QGraphicsItem::rotate(m_rotated*90.0);
+      QGraphicsItem::rotate(m_rotated*-90.0);
 
    }
 
@@ -894,7 +894,7 @@ void Component::rotate()
    m_rotated++;
    m_rotated &= 3;
    update();
-   QGraphicsItem::rotate(90.0);
+   QGraphicsItem::rotate(-90.0);
 }
 
 ComponentProperty* Component::property(const QString& _name) const
