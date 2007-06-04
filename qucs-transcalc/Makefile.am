@@ -37,7 +37,7 @@ qucstrans_LDADD = ../qucs-tools/libqucstools.a libtranscalc.a $(X11_LIBS) $(QT_L
 
 nodist_qucstrans_SOURCES = $(MOCFILES)
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES)
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(top_srcdir)
 qucstrans_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
 
 noinst_HEADERS = $(MOCHEADERS) transline.h microstrip.h coax.h \

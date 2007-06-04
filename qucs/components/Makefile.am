@@ -93,7 +93,7 @@ noinst_HEADERS = $(MOCHEADERS) component.h multisymbolcomponent.h components.h r
 #   coupler.h rs_flipflop.h d_flipflop.h jk_flipflop.h coaxialline.h vprobe.h   \
 #   switch.h relais.h am_modulator.h pm_modulator.h opt_sim.h
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(top_srcdir)/qucs
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(top_srcdir)/qucs -I$(top_srcdir)
 
 %.moc.cpp: %.h
 	$(MOC) -o $@ $<

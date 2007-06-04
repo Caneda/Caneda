@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT(qucs,0.1.0,qucs-bugs@lists.sourceforge.net)
-AC_CONFIG_SRCDIR([qucs/qucs.cpp])
+AC_CONFIG_SRCDIR([qucs/main.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 AC_CANONICAL_BUILD

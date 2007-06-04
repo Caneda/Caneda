@@ -42,14 +42,13 @@ qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp schematicscene.
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)/qucs/ideality -I$(top_srcdir)/qucs-tools
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)/qucs/ideality -I$(top_srcdir)
 qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
-qucs_LDADD = $(top_srcdir)/qucs-tools/libqucstools.a ideality/libideality.a components/libcomponents.a dialogs/libdialogs.a \
+qucs_LDADD = ../qucs-tools/libqucstools.a ideality/libideality.a components/libcomponents.a dialogs/libdialogs.a \
   $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a
 
 noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h qucsview.h \
-                               sidebarmodel.h fileformathandler.h qucsprimaryformat.h \
-			       xmlformat.cpp
+                               sidebarmodel.h fileformathandler.h qucsprimaryformat.h xmlformat.h
 
 # rules for translations
 TRANSLATIONS = qucs_de.ts qucs_pl.ts qucs_fr.ts qucs_it.ts qucs_ro.ts \

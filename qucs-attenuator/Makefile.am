@@ -36,7 +36,7 @@ qucsattenuator_SOURCES = main.cpp qucsattenuator.cpp helpdialog.cpp \
 
 nodist_qucsattenuator_SOURCES = $(MOCFILES)
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES)
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(top_srcdir)
 qucsattenuator_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
 qucsattenuator_LDADD = ../qucs-tools/libqucstools.a $(X11_LIBS) $(QT_LIBS)
 
