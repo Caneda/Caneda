@@ -20,7 +20,7 @@
 #ifndef __QUCSMAINWINDOW_H
 #define __QUCSMAINWINDOW_H
 
-#include "ideality/dtabbedmainwindow.h"
+#include "mainwindowbase.h"
 #include <QtCore/QMap>
 #include <QtGui/QToolBar>
 #include <QtGui/QMenu>
@@ -30,7 +30,7 @@ class QUndoGroup;
 class SchematicView;
 class QucsView;
 
-class QucsMainWindow : public DTabbedMainWindow
+class QucsMainWindow : public MainWindowBase
 {
       Q_OBJECT;
    public:

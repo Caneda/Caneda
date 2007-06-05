@@ -22,7 +22,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
-SUBDIRS = ideality components dialogs bitmaps diagrams paintings
+SUBDIRS = components dialogs bitmaps diagrams paintings
 
 if COND_WIN32
 bin_SCRIPTS = qucsdigi.bat
@@ -32,19 +32,19 @@ endif
 
 bin_PROGRAMS = qucs
 
-MOCHEADERS = schematicscene.h schematicview.h qucsmainwindow.h componentssidebar.h
+MOCHEADERS = schematicscene.h schematicview.h mainwindowbase.h qucsmainwindow.h componentssidebar.h
 
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
 qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp schematicscene.cpp  sidebarmodel.cpp \
-               main.cpp  qucsmainwindow.cpp qucsview.cpp schematicview.cpp  undocommands.cpp fileformathandler.cpp \
-	       qucsprimaryformat.cpp xmlformat.cpp
+               main.cpp mainwindowbase.cpp qucsmainwindow.cpp qucsview.cpp schematicview.cpp  undocommands.cpp \
+               fileformathandler.cpp qucsprimaryformat.cpp xmlformat.cpp
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)/qucs/ideality -I$(top_srcdir)
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)
 qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
-qucs_LDADD = ../qucs-tools/libqucstools.a ideality/libideality.a components/libcomponents.a dialogs/libdialogs.a \
+qucs_LDADD = ../qucs-tools/libqucstools.a components/libcomponents.a dialogs/libdialogs.a \
   $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a
 
 noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h qucsview.h \

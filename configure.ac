@@ -74,7 +74,7 @@ dnl Check for new platforms.
 osversion="`grep \"$host\" $srcdir/PLATFORMS 2>/dev/null`"
 if test "x$osversion" = "x"; then
   AC_MSG_RESULT([
-  The $PACKAGE package has never been compiled or run on this platform.  
+  The $PACKAGE package has never been compiled or run on this platform.
   Please send an email to <qucs-devel@lists.sourceforge.net> including your
   compiler and Qt version and whether it worked correctly or not.  The
   '$host' line will then be added to the PLATFORMS file included
@@ -101,7 +101,7 @@ if test "$MOC" = ":"; then
   AC_MSG_WARN([
   The $PACKAGE package needs the 'Qt Meta Object Compiler' to compile properly.
   Though Qt itself may be properly installed including headers and libraries
-  the 'moc' program is missing.  Possibly you need to install the full 
+  the 'moc' program is missing.  Possibly you need to install the full
   development package of Qt.])
 fi
 
@@ -290,7 +290,7 @@ AH_TOP([
 ])
 
 dnl Add here all your Makefiles. These are created by configure.
-AC_CONFIG_FILES([Makefile 
+AC_CONFIG_FILES([Makefile
 		 qucs-tools/Makefile
 		 qucs-edit/Makefile
 		 qucs-help/Makefile
@@ -309,7 +309,6 @@ AC_CONFIG_FILES([Makefile
 		 qucs-attenuator/Makefile
 		 qucs-attenuator/bitmaps/Makefile
 		 qucs/Makefile
-		 qucs/ideality/Makefile
 		 qucs/bitmaps/Makefile
 		 qucs/components/Makefile
 		 qucs/diagrams/Makefile

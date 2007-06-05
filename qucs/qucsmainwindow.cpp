@@ -45,7 +45,7 @@
 
 static QString qucsFilter;
 
-QucsMainWindow::QucsMainWindow(QWidget *w) : DTabbedMainWindow(w)
+QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
 {
    qucsFilter =
       tr("Schematic-xml")+" (*.xsch);;"+
@@ -56,20 +56,17 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : DTabbedMainWindow(w)
       tr("Any File")+" (*)";
 
    m_undoGroup = new QUndoGroup();
-   //m_undoView = new QUndoView(m_undoGroup,this);
+
    statusBar()->show();
    initActions();
    initMenus();
    initToolBars();
    m_componentsSidebar = new ComponentsSidebar(this);
-   QDockWidget *dw = new QDockWidget("Components");
-   dw->setWidget(m_componentsSidebar);
-   addDockWidget(Qt::LeftDockWidgetArea,dw);
-   //addToolView(m_componentsSidebar, Qt::LeftDockWidgetArea);
-   m_componentsSidebar->show();
-   connect(this,SIGNAL(widgetChanged(QWidget *)),this,SLOT(activateStackOf(QWidget *)));
+   addAsDockWidget(m_componentsSidebar, tr("Components"));
+
+   connect(this,SIGNAL(currentWidgetChanged(QWidget *)),this,SLOT(activateStackOf(QWidget *)));
    newView();
-   QTimer::singleShot(10,this,SLOT(loadSettings()));
+   loadSettings();
 }
 
 void QucsMainWindow::initActions()
@@ -926,7 +923,7 @@ void QucsMainWindow::addView(SchematicView *view)
 {
    m_undoGroup->addStack(view->schematicScene()->undoStack());
    connect(view,SIGNAL(titleChanged(const QString&)),this,SLOT(setTabTitle(const QString& )));
-   DTabbedMainWindow::addWidget(view);
+   addChildWidget(view);
    tabWidget()->setCurrentWidget(view);
 }
 
@@ -940,7 +937,7 @@ void QucsMainWindow::activateStackOf(QWidget *w)
 void QucsMainWindow::closeEvent( QCloseEvent *e )
 {
    saveSettings();
-   DTabbedMainWindow::closeEvent(e);
+   MainWindowBase::closeEvent(e);
 }
 
 void QucsMainWindow::slotFileNew()
@@ -1001,9 +998,7 @@ void QucsMainWindow::slotFileSaveAll()
 void QucsMainWindow::slotFileClose()
 {
    //TODO: Verify if page document is modified
-   QWidget *w = tabWidget()->currentWidget();
-   tabWidget()->removeTab( tabWidget()->currentIndex() );
-   delete w;
+   closeCurrentTab();
 }
 
 void QucsMainWindow::slotSymbolEdit()

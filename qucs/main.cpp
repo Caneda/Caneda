@@ -28,7 +28,7 @@ int main(int argc,char *argv[])
    app.setFont(Qucs::font());
    QucsMainWindow mw;
 
-   mw.show();
+   QTimer::singleShot(100,&mw,SLOT(show()));
 
    return app.exec();
 }
