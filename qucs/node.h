@@ -67,6 +67,11 @@ class Node : public QucsItem
 
       inline int type() const;
 
+      // Reimplemented virtuals to not to react
+      void rotate() {}
+      void mirrorX() {}
+      void mirrorY() {}
+
    private:
       QList<Component*> m_connectedComponents;
       QList<Wire*> m_wires;

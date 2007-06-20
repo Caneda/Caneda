@@ -28,7 +28,11 @@
 class ComponentsSidebar;
 class QUndoGroup;
 class SchematicView;
+class SchematicScene;
 class QucsView;
+class QucsItem;
+
+typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>&);
 
 class QucsMainWindow : public MainWindowBase
 {
@@ -63,11 +67,10 @@ class QucsMainWindow : public MainWindowBase
       void slotCenterHorizontal();
       void slotCenterVertical();
       void slotOnGrid(bool);
-      void slotMoveText(bool);
       void slotChangeProps();
       void slotEditCut();
       void slotEditCopy();
-      void slotEditPaste(bool);
+      void slotEditPaste();
       void slotEditDelete(bool);
       void slotEditFind();
       void slotEditFindAgain();
@@ -134,6 +137,7 @@ class QucsMainWindow : public MainWindowBase
       void initActions();
       void initMenus();
       void initToolBars();
+      void performToggleAction(bool on, pActionFunc func, QAction *action);
       QucsView* viewFromWidget(QWidget *widget);//Returns QucsView* appropriately
       // The following aim at reducing clutter by substituting
       // action pointers with a map container using object names
@@ -141,7 +145,7 @@ class QucsMainWindow : public MainWindowBase
       inline void addActionToMap(QAction *act);
       inline QAction* action(const QString& name) const;
       QMap<QString ,QAction*> actionMap;
-
+      QList<QAction*> checkableActions;
       // menus contain the items of their menubar
       QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
          *helpMenu, *alignMenu, *toolMenu;

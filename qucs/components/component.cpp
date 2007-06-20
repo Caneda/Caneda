@@ -40,8 +40,7 @@ QMap<int,QPen> Component::pens;
 ComponentPort::ComponentPort(Component* owner,const QPointF& pos) : m_owner(owner), m_centrePos(pos)
 {
    SchematicScene *s = owner->schematicScene();
-   if(s)
-   {
+   if(s) {
       QPointF spos = m_owner->mapToScene(pos);
 
       m_node = s->nodeAt(spos);
@@ -110,8 +109,7 @@ QString Component::shortNetlist() const
    int z=0;
    QString s;
    QString Node1 = m_ports.first()->node()->name();
-   foreach(ComponentPort *port, m_ports)
-   {
+   foreach(ComponentPort *port, m_ports) {
       if( z == 0) continue;
       s += "R:" + name + "." + QString::number(z++) + ' ' +
          Node1 + ' ' + port->node()->name() + " R=\"0\"\n";
@@ -258,24 +256,6 @@ void Component::replaceNode(Node *_old, Node *_new)
 QVariant Component::handlePositionChange(const QPointF& hpos)
 {
    QPointF oldPos = pos();
-//   int gs = 10;//schematicScene()->gridSize();
-//   int x = hpos.x()), y = hpos.y();
-
-//      //TODO: Implent grid based movement for components
-//    if(0 && x%gs)
-//    {
-//       if(x%gs > gs/2)
-//          x -= (x%gs) + gs;
-//       else
-//          x -= (x%gs);
-//    }
-//    if(0 && y%gs)
-//    {
-//       if(y%gs > gs/2)
-//          y -= (y%gs) + gs;
-//       else
-//          y -= (y%gs);
-//    }
 
    qreal dx = hpos.x() - oldPos.x();
    qreal dy = hpos.y() - oldPos.y();
@@ -297,7 +277,7 @@ QVariant Component::handlePositionChange(const QPointF& hpos)
          port->node()->resetController();
       }
    }
-   return QVariant(hpos);//QPointF(x,y));
+   return QVariant(hpos);
 }
 
 QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
@@ -349,16 +329,7 @@ QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
 
 void Component::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
-   if(event->buttons() & Qt::RightButton)
-   {
-      update();
-      scale(1.0,-1.0);
-      scene()->clearSelection();
-      setSelected(true);
-      //update();
-   }
-   else
-      QucsItem::mousePressEvent(event);
+   QucsItem::mousePressEvent(event);
 }
 
 void Component::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
@@ -376,8 +347,7 @@ Component* Component::componentFromName(const QString& comp,SchematicScene *scen
    Component *c = 0;
    if(comp == "Resistor")
       c =  new Resistor(scene);
-   else if(comp == "ResistorUS")
-   {
+   else if(comp == "ResistorUS") {
       c =  new Resistor(scene);
       ((MultiSymbolComponent*)c)->setSymbol("US");
    }
@@ -874,8 +844,7 @@ const QPen& Component::getPen(QColor color,int penWidth,Qt::PenStyle style)
 void Component::mirrorX()
 {
    m_mirroredX = !m_mirroredX;
-   update();
-   scale(1.0,-1.0);
+   QucsItem::mirrorX();
    //TODO : Take care of texts so that only their pos is changed
    //         not symbol!
 }
@@ -883,8 +852,7 @@ void Component::mirrorX()
 void Component::mirrorY()
 {
    m_mirroredY = !m_mirroredY;
-   update();
-   scale(-1.0,1.0);
+   QucsItem::mirrorY();
    //TODO : Take care of texts so that only their pos is changed
    //         not symbol!
 }
@@ -893,8 +861,7 @@ void Component::rotate()
 {
    m_rotated++;
    m_rotated &= 3;
-   update();
-   QGraphicsItem::rotate(-90.0);
+   QucsItem::rotate();
 }
 
 ComponentProperty* Component::property(const QString& _name) const

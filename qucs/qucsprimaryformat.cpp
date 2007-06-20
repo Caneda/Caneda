@@ -69,24 +69,25 @@ QString QucsPrimaryFormat::saveText()
    };
 
 
-   stream << "  <Grid=" << scene->xGridSize() << ","<< scene->yGridSize() <<","
-          << scene->isGridShown() << ">\n";
+   stream << "  <Grid=" << scene->gridWidth() << ","<< scene->gridHeight() <<","
+          << scene->isGridVisible() << ">\n";
    stream << "  <DataSet=" << scene->dataSet() << ">\n";
    stream << "  <DataDisplay=" << scene->dataDisplay() << ">\n";
-   stream << "  <OpenDisplay=" << scene->simOpenDpl() << ">\n";
-   stream << "  <showFrame=" << scene->isFrameShown() << ">\n";
+   stream << "  <OpenDisplay=" << scene->opensDataDisplay() << ">\n";
+   stream << "  <showFrame=" << scene->isFrameVisible() << ">\n";
 
    QString t;
-   t = scene->frameText0();
+   QStringList frameTexts = scene->frameTexts();
+   t = frameTexts[0];
    Qucs::convert2ASCII(t);
    stream << "  <FrameText0=" << t << ">\n";
-   t = scene->frameText1();
+   t = frameTexts[1];
    Qucs::convert2ASCII(t);
    stream << "  <FrameText1=" << t << ">\n";
-   t = scene->frameText2();
+   t = frameTexts[2];
    Qucs::convert2ASCII(t);
    stream << "  <FrameText2=" << t << ">\n";
-   t = scene->frameText3();
+   t = frameTexts[3];
    Qucs::convert2ASCII(t);
    stream << "  <FrameText3=" << t << ">\n";
    stream << "</Properties>\n";

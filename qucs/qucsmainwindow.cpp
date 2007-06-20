@@ -23,7 +23,7 @@
 #include "schematicview.h"
 #include "schematicscene.h"
 #include "qucsview.h"
-
+#include "item.h"
 #include "dialogs/qucssettingsdialog.h"
 
 #include <QtGui/QStatusBar>
@@ -44,6 +44,7 @@
 #include <QtCore/QTimer>
 
 static QString qucsFilter;
+
 
 QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
 {
@@ -237,16 +238,10 @@ void QucsMainWindow::initActions()
    action->setWhatsThis(tr("Set on Grid\n\nSets selected elements on grid"));
    action->setObjectName("onGrid");
    action->setCheckable(true);
+   action->setData(QVariant(SchematicScene::SettingOnGrid));
    connect( action, SIGNAL(toggled(bool)), SLOT(slotOnGrid(bool)));
    addActionToMap(action);
-
-   action = new QAction( tr("Move Component Text"), this);
-   action->setShortcut(CTRL+Key_K);
-   action->setWhatsThis(tr("Move Component Text\n\nMoves the property text of components"));
-   action->setObjectName("moveText");
-   action->setCheckable(true);
-   connect( action, SIGNAL(toggled(bool)), SLOT(slotMoveText(bool)));
-   addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction( tr("Replace..."), this);
    action->setShortcut(Key_F7);
@@ -276,8 +271,7 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Pastes the clipboard contents to the cursor position"));
    action->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to the cursor position"));
    action->setObjectName("editPaste");
-   action->setCheckable(true);
-   connect( action, SIGNAL(toggled(bool)), SLOT(slotEditPaste(bool)));
+   connect( action, SIGNAL(triggered()), SLOT(slotEditPaste()));
    addActionToMap(action);
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "editdelete.png"), tr("&Delete"), this);
@@ -285,9 +279,11 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Deletes the selected components"));
    action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
    action->setObjectName("editDelete");
+   action->setData(QVariant(SchematicScene::Deleting));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotEditDelete(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction( tr("Find..."), this);
    action->setShortcut(CTRL+Key_F);
@@ -419,9 +415,11 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Zooms into the current view"));
    action->setWhatsThis(tr("Zoom in\n\nZooms the current view"));
    action->setObjectName("magPlus");
+   action->setData(QVariant(SchematicScene::ZoomingAtPoint));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotZoomIn(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "viewmag-.png"), tr("Zoom out"), this);
    action->setShortcut(Key_Minus);
@@ -436,9 +434,12 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Activate select mode"));
    action->setWhatsThis(tr("Select\n\nActivates select mode"));
    action->setObjectName("select");
+   action->setData(QVariant(SchematicScene::Normal));
    action->setCheckable(true);
+   action->setChecked(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotSelect(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction( tr("Select All"), this);
    action->setShortcut(CTRL+Key_A);
@@ -461,25 +462,31 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Rotates the selected component by 90°"));
    action->setWhatsThis(tr("Rotate\n\nRotates the selected component by 90° counter-clockwise"));
    action->setObjectName("editRotate");
+   action->setData(QVariant(SchematicScene::Rotating));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotEditRotate(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "mirror.png"), tr("Mirror about X Axis"), this);
    action->setShortcut(CTRL+Key_J);
    action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
    action->setObjectName("editMirror");
+   action->setData(QVariant(SchematicScene::MirroringX));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotEditMirrorX(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "mirrory.png"), tr("Mirror about Y Axis"), this);
    action->setShortcut(CTRL+Key_M);
    action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
    action->setObjectName("editMirrorY");
+   action->setData(QVariant(SchematicScene::MirroringY));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotEditMirrorY(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "bottom.png"), tr("Go into Subcircuit"), this);
    action->setShortcut(CTRL+Key_I);
@@ -501,49 +508,61 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Deactivate/Activate selected components"));
    action->setWhatsThis(tr("Deactivate/Activate\n\nDeactivate/Activate the selected components"));
    action->setObjectName("editActivate");
+   action->setData(QVariant(SchematicScene::ChangingActiveStatus));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotEditActivate(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "equation.png"), tr("Insert Equation"), this);
    action->setShortcut(CTRL+Key_Less);
    action->setWhatsThis(tr("Insert Equation\n\nInserts a user defined equation"));
    action->setObjectName("insEquation");
+   action->setData(QVariant(SchematicScene::InsertingEquation));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotInsertEquation(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "ground.png"), tr("Insert Ground"), this);
    action->setShortcut(CTRL+Key_G);
    action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
    action->setObjectName("insGround");
+   action->setData(QVariant(SchematicScene::InsertingGround));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotInsertGround(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "port.png"), tr("Insert Port"), this);
    action->setWhatsThis(tr("Insert Port\n\nInserts a port symbol"));
    action->setObjectName("insPort");
+   action->setData(QVariant(SchematicScene::InsertingPort));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotInsertPort(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "wire.png"), tr("Wire"), this);
    action->setShortcut(CTRL+Key_E);
    action->setWhatsThis(tr("Wire\n\nInserts a wire"));
    action->setObjectName("insWire");
+   action->setData(QVariant(SchematicScene::Wiring));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotSetWire(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "nodename.png"), tr("Wire Label"), this);
    action->setShortcut(CTRL+Key_L);
    action->setStatusTip(tr("Inserts a wire or pin label"));
    action->setWhatsThis(tr("Wire Label\n\nInserts a wire or pin label"));
    action->setObjectName("insLabel");
+   action->setData(QVariant(SchematicScene::InsertingWireLabel));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotInsertLabel(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction( tr("VHDL entity"), this);
    action->setShortcut(CTRL+Key_Space);
@@ -630,9 +649,11 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Sets a marker on a diagram's graph"));
    action->setWhatsThis(tr("Set Marker\n\nSets a marker on a diagram's graph"));
    action->setObjectName("setMarker");
+   action->setData(QVariant(SchematicScene::Marking));
    action->setCheckable(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotSetMarker(bool)));
    addActionToMap(action);
+   checkableActions << action;
 
    action = new QAction( tr("Show Last Messages"), this);
    action->setShortcut(Key_F5);
@@ -768,7 +789,6 @@ void QucsMainWindow::initMenus()
 
    alignMenu = menuBar()->addMenu(tr("P&ositioning"));
 
-   alignMenu->addAction(action("moveText"));
    alignMenu->addAction(action("onGrid"));
 
    alignMenu->addSeparator();
@@ -911,6 +931,75 @@ void QucsMainWindow::initToolBars()
    workToolbar->addSeparator();
 
    workToolbar->addAction(action("whatsThis"));
+}
+
+
+void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *action)
+{
+   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if(!view) {
+      qDebug("QucsMainWindow::performToggleAction() : This func called at wrong circumstance!");
+      return;
+   }
+
+   SchematicScene *scene = view->schematicScene();
+   SchematicScene::MouseAction ma = SchematicScene::MouseAction(action->data().toInt());
+   QAction *norm = this->action("select");
+
+   if(!on) {
+      if(ma != SchematicScene::Normal) {
+         foreach(QAction *act, checkableActions) {
+            if(act != norm) {
+               act->blockSignals(true);
+               act->setChecked(false);
+               act->blockSignals(false);
+            }
+         }
+      }
+      norm->blockSignals(true);
+      norm->setChecked(true);
+      norm->blockSignals(false);
+      scene->setCurrentMouseAction(SchematicScene::Normal);
+      return;
+   }
+
+   QList<QGraphicsItem*> selectedItems = scene->selectedItems();
+
+   if(selectedItems.isEmpty() || func == 0) {
+      foreach(QAction *act, checkableActions) {
+         if(act != action) {
+            act->blockSignals(true);
+            act->setChecked(false);
+            act->blockSignals(false);
+         }
+      }
+      scene->setCurrentMouseAction(ma);
+   }
+   else {
+      QList<QucsItem*> funcable;
+
+      foreach(QGraphicsItem *item, selectedItems) {
+         QucsItem *i = qucsitem_cast<QucsItem*>(item);
+         if(i)
+            funcable << i;
+      }
+
+      (scene->*func)(funcable);
+      foreach(QAction *act, checkableActions) {
+         if(act != norm) {
+            act->blockSignals(true);
+            act->setChecked(false);
+            act->blockSignals(false);
+         }
+      }
+      norm->blockSignals(true);
+      norm->setChecked(true);
+      norm->blockSignals(false);
+      //Safe to call repeatedly since this function performs change if
+      //only the mouseAction is different from previous.
+      scene->setCurrentMouseAction(SchematicScene::Normal);
+   }
+
 }
 
 void QucsMainWindow::newView()
@@ -1072,14 +1161,9 @@ void QucsMainWindow::slotCenterVertical()
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotOnGrid(bool)
+void QucsMainWindow::slotOnGrid(bool on)
 {
-   //TODO: implement this or rather port directly
-}
-
-void QucsMainWindow::slotMoveText(bool)
-{
-   //TODO: implement this or rather port directly
+   performToggleAction(on, &SchematicScene::setItemsOnGrid, action("onGrid"));
 }
 
 void QucsMainWindow::slotChangeProps()
@@ -1097,14 +1181,14 @@ void QucsMainWindow::slotEditCopy()
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotEditPaste(bool)
+void QucsMainWindow::slotEditPaste()
 {
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotEditDelete(bool)
+void QucsMainWindow::slotEditDelete(bool on)
 {
-   //TODO: implement this or rather port directly
+   performToggleAction(on, &SchematicScene::deleteItems, action("editDelete"));
 }
 
 void QucsMainWindow::slotEditFind()
@@ -1191,13 +1275,9 @@ void QucsMainWindow::slotShowOne()
       view->showNoZoom();
 }
 
-void QucsMainWindow::slotZoomIn(bool)
+void QucsMainWindow::slotZoomIn(bool on)
 {
-   //TODO: implement this or rather port directly
-   // TODO: Not implemented equal with qucs 3
-   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
-   if(view)
-      view->zoomIn();
+   performToggleAction(on, 0, action("magPlus"));
 }
 
 void QucsMainWindow::slotZoomOut()
@@ -1207,9 +1287,9 @@ void QucsMainWindow::slotZoomOut()
       view->zoomOut();
 }
 
-void QucsMainWindow::slotSelect(bool)
+void QucsMainWindow::slotSelect(bool on)
 {
-   //TODO: implement this or rather port directly
+   performToggleAction(on, 0, action("select"));
 }
 
 void QucsMainWindow::slotSelectAll()
@@ -1222,25 +1302,19 @@ void QucsMainWindow::slotSelectMarker()
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotEditRotate(bool)
+void QucsMainWindow::slotEditRotate(bool on)
 {
-   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
-   if(view)
-      view->schematicScene()->rotateComponents();
+   performToggleAction(on, &SchematicScene::rotateItems, action("editRotate"));
 }
 
-void QucsMainWindow::slotEditMirrorX(bool)
+void QucsMainWindow::slotEditMirrorX(bool on)
 {
-   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
-   if(view)
-      view->schematicScene()->mirrorXComponents();
+   performToggleAction(on, &SchematicScene::mirrorXItems, action("editMirror"));
 }
 
-void QucsMainWindow::slotEditMirrorY(bool)
+void QucsMainWindow::slotEditMirrorY(bool on)
 {
-   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
-   if(view)
-      view->schematicScene()->mirrorYComponents();
+   performToggleAction(on, &SchematicScene::mirrorYItems, action("editMirrorY"));
 }
 
 void QucsMainWindow::slotIntoHierarchy()
@@ -1253,39 +1327,38 @@ void QucsMainWindow::slotPopHierarchy()
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotEditActivate(bool)
+void QucsMainWindow::slotEditActivate(bool on)
 {
-   //TODO: implement this or rather port directly
+   performToggleAction(on, &SchematicScene::toggleActiveStatus, action("editActivate"));
 }
 
-void QucsMainWindow::slotInsertEquation(bool)
+void QucsMainWindow::slotInsertEquation(bool on)
 {
-   //TODO: implement this or rather port directly
+   performToggleAction(on, 0, action("insEquation"));
 }
 
-void QucsMainWindow::slotInsertGround(bool)
+void QucsMainWindow::slotInsertGround(bool on)
 {
-   //TODO: implement this or rather port directly
+   performToggleAction(on, 0, action("insGround"));
 }
 
-void QucsMainWindow::slotInsertPort(bool)
+void QucsMainWindow::slotInsertPort(bool on)
 {
-   //TODO: implement this or rather port directly
+   performToggleAction(on, 0, action("insPort"));
 }
 
-void QucsMainWindow::slotSetWire(bool)
+void QucsMainWindow::slotSetWire(bool on)
 {
-   //TODO: implement this or rather port directly
+   performToggleAction(on, 0, action("insWire"));
 }
 
-void QucsMainWindow::slotInsertLabel(bool)
+void QucsMainWindow::slotInsertLabel(bool on)
 {
-   //TODO: implement this or rather port directly
+   performToggleAction(on, 0, action("insLabel"));
 }
 
 void QucsMainWindow::slotInsertEntity()
 {
-   //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCallEditor()
@@ -1333,9 +1406,9 @@ void QucsMainWindow::slotDCbias()
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotSetMarker(bool)
+void QucsMainWindow::slotSetMarker(bool on)
 {
-   //TODO: implement this or rather port directly
+   performToggleAction(on, 0, action("selectMarker"));
 }
 
 void QucsMainWindow::slotShowLastMsg()

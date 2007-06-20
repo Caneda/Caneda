@@ -98,11 +98,11 @@ QString XmlFormat::saveText()
 
 
       CreateElement(grid,view,doc);
-      _grid.setAttribute("visible",QString::number(scene->isGridShown()));
+      _grid.setAttribute("visible",QString::number(scene->isGridVisible()));
       CreateElement(xsize,grid,doc);
-      _xsize.appendChild(createIntNode(scene->xGridSize(),doc));
+      _xsize.appendChild(createIntNode(scene->gridWidth(),doc));
       CreateElement(ysize,grid,doc);
-      _ysize.appendChild(createIntNode(scene->yGridSize(),doc));
+      _ysize.appendChild(createIntNode(scene->gridHeight(),doc));
 
       CreateElement(data,view,doc);
       CreateElement(dataset,data,doc);
@@ -110,25 +110,26 @@ QString XmlFormat::saveText()
       CreateElement(datadisplay,data,doc);
       _datadisplay.appendChild(doc.createTextNode(scene->dataDisplay()));
       CreateElement(opendisplay,data,doc);
-      _opendisplay.appendChild(createIntNode(scene->simOpenDpl(),doc));
+      _opendisplay.appendChild(createIntNode(scene->opensDataDisplay(),doc));
 
       CreateElement(frame,view,doc);
-      _frame.setAttribute("visible",QString::number(scene->isFrameShown()));
+      _frame.setAttribute("visible",QString::number(scene->isFrameVisible()));
       QString t;
       CreateElement(text0,frame,doc);
-      t = scene->frameText0();
+      QStringList frameText = scene->frameTexts();
+      t = frameText[0];
       Qucs::convert2ASCII(t);
       _text0.appendChild(doc.createTextNode(t));
       CreateElement(text1,frame,doc);
-      t = scene->frameText1();
+      t = frameText[1];
       Qucs::convert2ASCII(t);
       _text1.appendChild(doc.createTextNode(t));
       CreateElement(text2,frame,doc);
-      t = scene->frameText2();
+      t = frameText[2];
       Qucs::convert2ASCII(t);
       _text2.appendChild(doc.createTextNode(t));
       CreateElement(text3,frame,doc);
-      t = scene->frameText3();
+      t = frameText[3];
       Qucs::convert2ASCII(t);
       _text3.appendChild(doc.createTextNode(t));
    }
@@ -335,13 +336,13 @@ bool XmlFormat::loadView(const QDomElement& ele)
          if(xsize.isNull()) return false;
          val = xsize.text().toInt(&ok);
          if(!ok) return false;
-         scene->setXGridSize(val);
+         scene->setGridWidth(val);
 
          QDomElement ysize = child.firstChildElement("ysize");
          if(ysize.isNull()) return false;
          val = ysize.text().toInt(&ok);
          if(!ok) return false;
-         scene->setYGridSize(val);
+         scene->setGridHeight(val);
       }
 
       else if(tag == "data") {
@@ -361,7 +362,7 @@ bool XmlFormat::loadView(const QDomElement& ele)
          val = opendisplay.text().toInt(&ok);
          if(!ok) return false;
          ok = (val != 0);
-         scene->setOpenDisplay(ok);
+         scene->setOpensDataDisplay(ok);
       }
 
       else if(tag == "frame") {
@@ -375,20 +376,23 @@ bool XmlFormat::loadView(const QDomElement& ele)
          }
 
          QDomElement text0 = child.firstChildElement("text0");
+         QStringList frameTexts;
          if(text0.isNull()) return false;
-         scene->setFrameText0(text0.text());
+         frameTexts << text0.text();
 
          QDomElement text1 = child.firstChildElement("text1");
          if(text1.isNull()) return false;
-         scene->setFrameText1(text1.text());
+         frameTexts << text1.text();
 
          QDomElement text2 = child.firstChildElement("text2");
          if(text2.isNull()) return false;
-         scene->setFrameText2(text2.text());
+         frameTexts << text2.text();
 
          QDomElement text3 = child.firstChildElement("text3");
          if(text3.isNull()) return false;
-         scene->setFrameText3(text3.text());
+         frameTexts << text3.text();
+
+         scene->setFrameTexts(frameTexts);
 
       }
       child = child.nextSiblingElement();

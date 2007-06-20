@@ -20,9 +20,12 @@
 #include "item.h"
 #include "undocommands.h"
 #include "schematicscene.h"
+#include "schematicview.h"
+#include "qucsmainwindow.h"
 
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) : QGraphicsItem(parent,(QGraphicsScene*)scene)
 {
+
 }
 
 int QucsItem::type() const
@@ -41,4 +44,45 @@ QGraphicsView* QucsItem::activeView() const
    if(scene()->views().isEmpty())
       return 0;
    return scene()->views().at(0);
+}
+
+QucsMainWindow* QucsItem::mainWindow() const
+{
+   QGraphicsView *view = activeView();
+   if(!view) return 0;
+
+   QucsMainWindow *mw = qobject_cast<QucsMainWindow*>(view->parent());
+   return mw;
+}
+
+void QucsItem::mirrorX()
+{
+   update();
+#if QT_VERSION >= 0x040300
+   scale(1.0,-1.0);
+#else
+   scale(1.0,-1.0);
+#endif
+}
+
+void QucsItem::mirrorY()
+{
+   update();
+#if QT_VERSION >= 0x040300
+   scale(-1.0,1.0);
+#else
+   scale(-1.0,1.0);
+#endif
+}
+
+void QucsItem::rotate()
+{
+   update();
+   rotate(-90.0);
+}
+
+QMenu* QucsItem::defaultContextMenu() const
+{
+   //TODO
+   return 0;
 }

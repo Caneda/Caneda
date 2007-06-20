@@ -48,11 +48,15 @@ class SchematicView : public QGraphicsView, public QucsView
       //end of QucsAbstarctView's methods
       SchematicScene* schematicScene() const;
 
+   protected:
+      void drawForeground(QPainter *p, const QRectF& rect);
    public slots:
       void setTitle(const QString& title);
 
    signals:
       void titleChanged(const QString& newTitle);
+   private:
+      void repaintWires();
 };
 
 #endif //__SCHEMATICVIEW_H

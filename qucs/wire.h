@@ -66,6 +66,11 @@ class Wire : public QucsItem
 
       QString saveString() const;
 
+      // Reimplemented virtuals to not to react
+      void rotate() {}
+      void mirrorX() {}
+      void mirrorY() {}
+
    protected:
       QVariant itemChange(GraphicsItemChange change, const QVariant &value);
       void mousePressEvent ( QGraphicsSceneMouseEvent * event );
@@ -104,13 +109,11 @@ inline Node* Wire::node2() const
 
 inline void Wire::setNode1(Node *n1)
 {
-   n1->removeWire(this);
    m_node1 = n1;
 }
 
 inline void Wire::setNode2(Node *n2)
 {
-   n2->removeWire(this);
    m_node2 = n2;
 }
 

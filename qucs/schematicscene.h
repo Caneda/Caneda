@@ -23,6 +23,7 @@
 #include <QtGui/QGraphicsScene>
 #include <QtCore/QList>
 #include <QtCore/QPair>
+#include <QtGui/QGraphicsItem>
 
 class Node;
 class QUndoStack;
@@ -41,22 +42,50 @@ namespace Qucs
    };
 }
 
+template<typename T> T qucsitem_cast(QGraphicsItem *item)
+{
+   bool firstCond = int(static_cast<T>(0)->Type) == int(QGraphicsItem::Type);
+   bool secondCond = !firstCond && item &&
+      ((int(static_cast<T>(0)->Type) & item->type()) == (int(static_cast<T>(0)->Type)));
+   bool result = firstCond | secondCond;
+   return result ? static_cast<T>(item)  : 0;
+}
+
+
+typedef QGraphicsSceneMouseEvent MouseActionEvent;
+
 class SchematicScene : public QGraphicsScene
 {
-Q_OBJECT
+      Q_OBJECT;
    public:
+      enum MouseAction {
+         Wiring,
+         Deleting,
+         Marking,
+         Rotating,
+         MirroringX,
+         MirroringY,
+         ChangingActiveStatus,
+         SettingOnGrid,
+         ZoomingAtPoint,
+         InsertingEquation,
+         InsertingGround,
+         InsertingPort,
+         InsertingWireLabel,
+         Normal
+      };
+
       SchematicScene(QObject *parent =0);
       SchematicScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent = 0 );
-      ~SchematicScene(){}
+      ~SchematicScene();
 
       Node* nodeAt(qreal cx, qreal cy);
-      Node *nodeAt(const QPointF& centre);
+      Node* nodeAt(const QPointF& centre);
       Node* createNode(const QPointF& pos);
 
-      bool areItemsMoving() const;
-      QUndoStack* undoStack();
-
+      inline bool areItemsMoving() const { return m_areItemsMoving; }
       void setGrabbedWire(Wire *w);
+
       void insertComponent(Component *comp);
       void removeComponent(Component *comp);
       void insertWire(Wire *w);
@@ -69,40 +98,56 @@ Q_OBJECT
       QList<Painting*> symbolPaintings() const { return m_symbolPaintings; }
       QList<Node*> nodes() const { return m_nodes; }
 
-      void mirrorXComponents();
-      void mirrorYComponents();
-      void rotateComponents();
+      void mirrorXItems(QList<QucsItem*>& items);
+      void mirrorYItems(QList<QucsItem*>& items);
+      void rotateItems(QList<QucsItem*>& items);
+      void deleteItems(QList<QucsItem*>& items);
+      void setItemsOnGrid(QList<QucsItem*>& items);
+      void toggleActiveStatus(QList<QucsItem*>& components);
 
-      int xGridSize() const { return m_xGridSize; }
-      int yGridSize() const { return m_yGridSize; }
-      bool isGridShown() const { return m_gridShown; }
-      QString dataSet() const { return m_dataSet; }
-      QString dataDisplay() const { return m_dataDisplay; }
-      QString fileName() const { return m_fileName; }
+      inline QString fileName() const { return m_fileName; }
       void setFileName(const QString& fn);
-      bool simOpenDpl() const { return m_simOpenDpl; }
-      bool isFrameShown() const { return m_frameShown; }
-      QString frameText0() const { return m_frameText0; }
-      QString frameText1() const { return m_frameText1; }
-      QString frameText2() const { return m_frameText2; }
-      QString frameText3() const { return m_frameText3; }
-      Qucs::Mode currentMode() const { return m_currentMode; }
 
-      void setMode(Qucs::Mode mode);
-      void setXGridSize(int sz);
-      void setYGridSize(int sz);
-      void setXYGridSize(int s1, int s2);
+      QPointF nearingGridPoint(const QPointF &pos);
+
+      inline QUndoStack* undoStack() { return m_undoStack; }
+
+      inline uint gridWidth() const { return m_gridWidth; }
+      inline void setGridWidth(uint width) { setGridSize(width, gridHeight()); }
+
+      inline uint gridHeight() const { return m_gridHeight; }
+      inline void setGridHeight(uint height) { setGridSize(gridWidth(), height); }
+
+      void setGridSize(uint width, uint height);
+
+      inline bool isGridVisible() const { return m_gridVisible; }
       void setGridVisible(bool visibility);
+
+      inline QString dataSet() const { return m_dataSet; }
       void setDataSet(const QString& str);
+
+      inline QString dataDisplay() const { return m_dataDisplay; }
       void setDataDisplay(const QString& disp);
-      void setOpenDisplay(bool b);
+
+      inline bool opensDataDisplay() const { return m_opensDataDisplay; }
+      void setOpensDataDisplay(bool b);
+
+      inline bool isFrameVisible() const { return m_frameVisible; }
       void setFrameVisible(bool vis);
-      void setFrameText0(const QString& str);
-      void setFrameText1(const QString& str);
-      void setFrameText2(const QString& str);
-      void setFrameText3(const QString& str);
+
+      inline QStringList frameTexts() const { return m_frameTexts; }
+      void setFrameTexts(const QStringList& texts);
+
+      inline Qucs::Mode currentMode() const { return m_currentMode; }
+      void setMode(Qucs::Mode mode);
+
+      inline MouseAction currentMouseAction() const { return m_currentMouseAction; }
+      void setCurrentMouseAction(MouseAction ma);
+
 
    protected:
+      void drawBackground(QPainter *p, const QRectF& r);
+
       void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
       void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
       void dropEvent(QGraphicsSceneDragDropEvent * event);
@@ -111,18 +156,41 @@ Q_OBJECT
       void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *e);
       void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e);
-      void drawBackground(QPainter *p, const QRectF& r);
+
+      // Custom handlers
+      void wiringEvent(MouseActionEvent *e);
+      void deletingEvent(MouseActionEvent *e);
+      void markingEvent(MouseActionEvent *e);
+      void rotatingEvent(MouseActionEvent *e);
+      void mirroringXEvent(MouseActionEvent *e);
+      void mirroringYEvent(MouseActionEvent *e);
+      void changingActiveStatusEvent(MouseActionEvent *e);
+      void settingOnGridEvent(MouseActionEvent *e);
+      void zoomingAtPointEvent(MouseActionEvent *e);
+      void insertingEquationEvent(MouseActionEvent *event);
+      void insertingGroundEvent(MouseActionEvent *event);
+      void insertingPortEvent(MouseActionEvent *event);
+      void insertingWireLabelEvent(MouseActionEvent *event);
+      void normalEvent(MouseActionEvent *e);
 
    private:
       void init();
-      void connect(Node *from, Node *to);
+      void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
+      void connectNodes(Node *from, Node *to);
+      // A very helpful recursive function to move components after connection
       void adjustPositions(Node *of,const QPointF& delta);
 
+      //These are helper variables (aka state holders)
+      bool m_areItemsMoving;
+      Wire *eventWire;
+      Wire *m_grabbedWire;
+      Node *helperNode;
       QList<Node*> m_movingNodes;
       QList<Wire*> m_resizingWires;
       QList<Wire*> m_moveResizingWires;
       QList<QucsItem*> m_alreadyMoved;
 
+      // These are the various qucs-items on scene
       QList<Component*> m_components;
       QList<Wire*> m_wires;
       QList<Diagram*> m_diagrams;
@@ -130,22 +198,22 @@ Q_OBJECT
       QList<Painting*> m_paintings;
       QList<Painting*> m_symbolPaintings;
 
-      QUndoStack *m_undoStack;
-      bool m_areItemsMoving;
-      Wire *m_grabbedWire;
-
       //Document properties
-      int m_xGridSize;
-      int m_yGridSize;
-      bool m_gridShown;
+      QUndoStack *m_undoStack;
+      MouseAction m_currentMouseAction;
+      Qucs::Mode m_currentMode;
+
+      uint m_gridWidth;
+      uint m_gridHeight;
+      bool m_gridVisible;
+
       QString m_dataSet;
       QString m_dataDisplay;
       QString m_fileName;
-      bool m_simOpenDpl;
-      bool m_frameShown;
-      QString m_frameText0,m_frameText1;
-      QString m_frameText2,m_frameText3;
-      Qucs::Mode m_currentMode;
+      QStringList m_frameTexts;
+
+      bool m_opensDataDisplay;
+      bool m_frameVisible;
 };
 
 #endif //__SCHEMATICSCENE_H

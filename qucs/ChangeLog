@@ -1,3 +1,12 @@
+2007-06-20  Gopala Krishna  <gopala@localhost>
+
+	* schematicscene.h, item.h: Refactored them as well as added code usable for future like contextmenu.
+
+	* qucsmainwindow.cpp (QucsMainWindow::performToggleAction): Implemented this such that
+	we can eaily toggle between mouse action mode and normal mode.
+
+	* schematicscene.cpp: Proper mirroring and rotating support through toggle actions
+
 2007-06-02  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* schematicscene.h: Optimized by using QList instead of QSet as container.

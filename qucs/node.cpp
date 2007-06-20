@@ -110,7 +110,7 @@ void Node::paint(QPainter* p,const QStyleOptionGraphicsItem *o, QWidget *w)
 
 bool Node::collidesWithItem(QGraphicsItem *other) const
 {
-   Node *port = qgraphicsitem_cast<Node*>(other);
+   Node *port = qucsitem_cast<Node*>(other);
    if(!port)
       return QGraphicsItem::collidesWithItem(other);
    qreal dist = distance(pos(),port->pos());

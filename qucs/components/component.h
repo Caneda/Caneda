@@ -94,7 +94,6 @@ class Component : public QucsItem
       void mirrorX();
       void mirrorY();
 
-
    public:
       QString name;
       QString model;

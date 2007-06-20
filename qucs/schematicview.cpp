@@ -36,15 +36,19 @@ const qreal SchematicView::zoomFactor = 1.2f;
 SchematicView::SchematicView(SchematicScene *sc,QucsMainWindow *parent) :
    QGraphicsView((QGraphicsScene*)sc,(QWidget*)parent), QucsView(parent)
 {
-   if(sc == 0)
-      setScene(new SchematicScene(0,0,1024,768));
-   setDragMode(RubberBandDrag);
+   if(sc == 0) {
+      sc = new SchematicScene(0.0,0.0,1024.0,768.0);
+      setScene(sc);
+      DragMode dragMode = (sc->currentMouseAction() == SchematicScene::Normal) ? RubberBandDrag : NoDrag;
+      setDragMode(dragMode);
+   }
+
    setAcceptDrops(true);
    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
    setWindowTitle("Untitled");
-   #if QT_VERSION >= 0x040300
+#if QT_VERSION >= 0x040300
    setViewportUpdateMode(SmartViewportUpdate);
-   #endif
+#endif
    //init();
 }
 
@@ -138,28 +142,20 @@ void SchematicView::print(QPainter *p, bool printAll, bool fitToPage)
 void SchematicView::zoomIn()
 {
    scale(zoomFactor,zoomFactor);
+   repaintWires();
 }
 
 void SchematicView::zoomOut()
 {
    qreal zf = 1.0/zoomFactor;
    scale(zf,zf);
+   repaintWires();
 }
 
 void SchematicView::showAll()
 {
    fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
-//    QRectF intersect;
-//    QList<QGraphicsItem*> _items = items();
-//    if ( !_items.isEmpty() ) {
-//       // It's ineficient??????
-//       intersect = _items.first()->sceneBoundingRect();
-//       foreach( QGraphicsItem* it, _items ) {
-//          intersect |= it->sceneBoundingRect();
-//       }
-//       intersect.adjust( -10, -10, 10, 10);
-//       fitInView( intersect, Qt::KeepAspectRatio );
-//    }
+   repaintWires();
 }
 
 void SchematicView::showNoZoom()
@@ -172,4 +168,15 @@ void SchematicView::setTitle(const QString& title)
    setWindowTitle(title);
    setWindowModified(false);
    emit titleChanged(windowTitle());
+}
+
+void SchematicView::drawForeground(QPainter *painter, const QRectF &rect)
+{
+   QGraphicsView::drawBackground(painter, rect);
+}
+
+void SchematicView::repaintWires()
+{
+   foreach(Wire *w, schematicScene()->wires())
+      w->rebuild();
 }

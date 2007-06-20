@@ -25,23 +25,27 @@
 class QGraphicsScene;
 class QGraphicsView;
 class SchematicScene;
+class QucsMainWindow;
+class QMenu;
 
 class QucsItem : public QGraphicsItem
 {
    public:
       enum QucsItemTypes {
-         QucsItemType = UserType+5,
-         ComponentType,
-         NodeType,
-         PortType,
-         WireType,
-         PaintingType,
-         DisplayType
+         QucsItemType = (UserType << 14),
+         ComponentType = (UserType << 13) | QucsItemType,
+         MultiSymbolComponentType = (UserType << 12) | ComponentType,
+         NodeType = (UserType << 11) | QucsItemType,
+         WireType = (UserType << 10) | QucsItemType,
+         PaintingType = (UserType << 9) | QucsItemType,
+         DisplayType = (UserType << 8) | QucsItemType
       };
 
       enum {
          Type = QucsItemType
       };
+
+      using QGraphicsItem::rotate;
 
       QucsItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
       virtual ~QucsItem() {};
@@ -51,10 +55,18 @@ class QucsItem : public QGraphicsItem
 
       SchematicScene* schematicScene() const;
       QGraphicsView* activeView() const;
+      QucsMainWindow* mainWindow() const;
 
       virtual QString saveString() const { return QString(""); }
-      virtual bool loadFromString(QString ) { return true;}
+      virtual bool loadFromString(QString ) { return true; }
 
+      virtual void mirrorX();
+      virtual void mirrorY();
+      virtual void rotate();
+
+      virtual void invokePropertiesDialog() {}
+
+      QMenu* defaultContextMenu() const;
 };
 
 #endif //__ITEM_H
