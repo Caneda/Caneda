@@ -543,7 +543,7 @@ void SchematicScene::mirroringYEvent(MouseActionEvent *event)
             break;
          }
       }
-      mirrorXItems(_items);
+      mirrorYItems(_items);
    }
 }
 
