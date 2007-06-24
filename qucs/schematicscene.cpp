@@ -284,23 +284,44 @@ void SchematicScene::setCurrentMouseAction(MouseAction action)
 
    m_areItemsMoving = false;
    m_grabbedWire = 0;
+
    if(eventWire) {
-      Node *n = 0;
-      foreach(QGraphicsItem *item, helperNode->collidingItems()) {
-         n = qucsitem_cast<Node*>(item);
-         if(n) break;
+      Node *n = eventWire->node1();
+      n->show();
+      delete eventWire;
+      delete helperNode;
+      if(n->wires().isEmpty() && n->connectedComponents().isEmpty())
+         delete n;
+      else if(!createdWires.isEmpty()) {
+         Wire *finalWire = createdWires.takeFirst();
+         //n = createdWires.last()->node2();
+         QList<WireLine> wLines = finalWire->wireLines();
+         QSet<Node*> delNodes;
+         foreach(Wire *w, createdWires) {
+            foreach(WireLine line, w->wireLines()) {
+               QPointF p1 = finalWire->mapFromItem(w, line.p1());
+               QPointF p2 = finalWire->mapFromItem(w, line.p2());
+               wLines << WireLine(p1, p2);
+            }
+            Node *n1 = w->node1();
+            Node *n2 = w->node2();
+            delete w;
+            if(n1 != n) delNodes << n1;
+            if(n2 != n) delNodes << n2;
+         }
+
+         qDeleteAll(delNodes);
+         createdWires.clear();
+         finalWire->setNode2(n);
+         n->show();
+         n->addWire(finalWire);
+         finalWire->show();
+         finalWire->setWireLines(wLines);
       }
-      if(!n)
-         n = createNode(helperNode->pos());
-      else
-         helperNode->setPos(n->pos());
-      eventWire->rebuild();
-      eventWire->setNode2(n);
-      eventWire->show();
    }
    eventWire = 0;
    helperNode = 0;
-
+   createdWires.clear();
    m_currentMouseAction = action;
 
    QGraphicsView::DragMode dragMode = (action == Normal) ? QGraphicsView::RubberBandDrag : QGraphicsView::NoDrag;
@@ -427,24 +448,42 @@ void SchematicScene::wiringEvent(MouseActionEvent *event)
                n = qucsitem_cast<Node*>(item);
                if(n) break;
             }
-
             delete helperNode;
             helperNode = 0;
-
             if(n) {
                eventWire->setNode2(n);
-               eventWire->rebuild();
-               eventWire->show();
-               eventWire->rebuild();
-               insertWire(eventWire);
+               n->addWire(eventWire);
+               createdWires << eventWire;
+               Wire *finalWire = createdWires.takeFirst();
+               QList<WireLine> wLines = finalWire->wireLines();
+               QSet<Node*> delNodes;
+               foreach(Wire *w, createdWires) {
+                  foreach(WireLine line, w->wireLines()) {
+                     QPointF p1 = finalWire->mapFromItem(w, line.p1());
+                     QPointF p2 = finalWire->mapFromItem(w, line.p2());
+                     wLines << WireLine(p1, p2);
+                  }
+                  Node *n1 = w->node1();
+                  Node *n2 = w->node2();
+                  delete w;
+                  if(n1 != n) delNodes << n1;
+                  if(n2 != n) delNodes << n2;
+               }
+               qDeleteAll(delNodes);
+               createdWires.clear();
+               finalWire->setNode2(n);
+               n->addWire(finalWire);
+               finalWire->setWireLines(wLines);
+
                eventWire = 0;
                break;
             }
             n = createNode(pos);
             eventWire->setNode2(n);
+            n->addWire(eventWire);
             eventWire->show();
             eventWire->rebuild();
-            insertWire(eventWire);
+            createdWires << eventWire;
          }
 
          n = 0;
@@ -456,9 +495,7 @@ void SchematicScene::wiringEvent(MouseActionEvent *event)
          if(eventWire)
             n->hide();
          helperNode = createNode(event->scenePos());
-         helperNode->hide();
          eventWire = new Wire(this,n,helperNode);
-         insertWire(eventWire);
          eventWire->hide();
 
          break;

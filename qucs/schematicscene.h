@@ -183,6 +183,7 @@ class SchematicScene : public QGraphicsScene
       //These are helper variables (aka state holders)
       bool m_areItemsMoving;
       Wire *eventWire;
+      QList<Wire*> createdWires;
       Wire *m_grabbedWire;
       Node *helperNode;
       QList<Node*> m_movingNodes;

@@ -70,66 +70,68 @@ void Wire::rebuild()
 
    if(m_lines.size() < 3)
       m_lines = linesBetween(node1Pos,node2Pos);
-   else if(node1Pos != m_lines.first().p1()) {
-      bool cont = false;
-      do {
-         int firstIndex = 0;
-         int secondIndex = firstIndex + 1;
-         cont = false;
-         if(m_lines[firstIndex].isHorizontal())
-            m_lines[firstIndex].setY(node1Pos.y());
-         else {
-            Q_ASSERT(m_lines[firstIndex].isVertical());
-            m_lines[firstIndex].setX(node1Pos.x());
-         }
-         m_lines[firstIndex].setP1(node1Pos);
-         m_lines[secondIndex].setP1(m_lines[firstIndex].p2());
-         if(m_lines[firstIndex].isNull()) {
-            m_lines.removeFirst();
-            --secondIndex;
-         }
-
-         if(m_lines[secondIndex].isNull()) {
-            m_lines.removeAt(secondIndex);
-            if(secondIndex != firstIndex) {
+   else {
+      if(node1Pos != m_lines.first().p1()) {
+         bool cont = false;
+         do {
+            int firstIndex = 0;
+            int secondIndex = firstIndex + 1;
+            cont = false;
+            if(m_lines[firstIndex].isHorizontal())
+               m_lines[firstIndex].setY(node1Pos.y());
+            else {
+               Q_ASSERT(m_lines[firstIndex].isVertical());
+               m_lines[firstIndex].setX(node1Pos.x());
+            }
+            m_lines[firstIndex].setP1(node1Pos);
+            m_lines[secondIndex].setP1(m_lines[firstIndex].p2());
+            if(m_lines[firstIndex].isNull()) {
                m_lines.removeFirst();
-               cont = true;
+               --secondIndex;
             }
-         }
-         if(m_lines.isEmpty()) {
-            m_lines.append(WireLine(node1Pos,node2Pos));
-            qDebug() << "Check this out!!";
-         }
-      }while(cont);
-   }
-   else if(node2Pos != m_lines.last().p2()) {
-      bool cont = false;
-      do {
-         int lastIndex = m_lines.size() - 1;
-         int lastButIndex = lastIndex - 1;
-         cont = false;
-         if(m_lines[lastIndex].isHorizontal())
-            m_lines[lastIndex].setY(node2Pos.y());
-         else {
-            Q_ASSERT(m_lines[lastIndex].isVertical());
-            m_lines[lastIndex].setX(node2Pos.x());
-         }
-         m_lines[lastIndex].setP2(node2Pos);
-         m_lines[lastButIndex].setP2(m_lines[lastIndex].p1());
-         if(m_lines[lastIndex].isNull()) {
-            m_lines.removeLast();
-            --lastIndex;
-         }
 
-         if(m_lines[lastButIndex].isNull()) {
-            m_lines.removeAt(lastButIndex);
-            if(lastButIndex != lastIndex)
-            {
-               m_lines.removeLast();
-               cont = true;
+            if(m_lines[secondIndex].isNull()) {
+               m_lines.removeAt(secondIndex);
+               if(secondIndex != firstIndex) {
+                  m_lines.removeFirst();
+                  cont = true;
+               }
             }
-         }
-      }while(cont);
+            if(m_lines.isEmpty()) {
+               m_lines.append(WireLine(node1Pos,node2Pos));
+               qDebug() << "Check this out!!";
+            }
+         }while(cont);
+      }
+      if(node2Pos != m_lines.last().p2()) {
+         bool cont = false;
+         do {
+            int lastIndex = m_lines.size() - 1;
+            int lastButIndex = lastIndex - 1;
+            cont = false;
+            if(m_lines[lastIndex].isHorizontal())
+               m_lines[lastIndex].setY(node2Pos.y());
+            else {
+               Q_ASSERT(m_lines[lastIndex].isVertical());
+               m_lines[lastIndex].setX(node2Pos.x());
+            }
+            m_lines[lastIndex].setP2(node2Pos);
+            m_lines[lastButIndex].setP2(m_lines[lastIndex].p1());
+            if(m_lines[lastIndex].isNull()) {
+               m_lines.removeLast();
+               --lastIndex;
+            }
+
+            if(m_lines[lastButIndex].isNull()) {
+               m_lines.removeAt(lastButIndex);
+               if(lastButIndex != lastIndex)
+               {
+                  m_lines.removeLast();
+                  cont = true;
+               }
+            }
+         }while(cont);
+      }
    }
    if(!isVisible())
       updateProxyWires();
@@ -205,7 +207,7 @@ void Wire::updateProxyWires()
       for(int i=0; i < size; ++i)
          m_proxyWires.prepend(new QRubberBand(QRubberBand::Line,viewport));
    }
-
+   Q_ASSERT(m_proxyWires.size() == m_lines.size());
    QList<QRubberBand*>::iterator proxyIt = m_proxyWires.begin();
    QList<WireLine>::iterator lineIt = m_lines.begin();
    for(; proxyIt != m_proxyWires.end(); ++proxyIt,++lineIt) {
@@ -312,7 +314,6 @@ void Wire::startMoveAndResize()
 {
    m_wasGrabbed = true;
    m_grabbedLineIndex = m_lines.size()/2;
-   qDebug("%d index in startAndMove\n",m_grabbedLineIndex);
    hide();
    rebuild();
 }

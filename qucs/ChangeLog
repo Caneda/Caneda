@@ -1,3 +1,11 @@
+2007-06-24  Gopala Krishna  <gopala@localhost>
+
+	* schematicscene.cpp (SchematicScene::wiringEvent): Now wires can
+	be added by selecting from toolbar. Mouse actions fixed to work properly.
+
+	* wire.cpp (Wire::rebuild): Fixed a bug the end part of wire used
+	to become invisible while moving wire.
+
 2007-06-20  Gopala Krishna  <gopala@localhost>
 
 	* schematicscene.h, item.h: Refactored them as well as added code usable for future like contextmenu.
