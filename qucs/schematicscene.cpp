@@ -85,6 +85,7 @@ Node* SchematicScene::nodeAt(const QPointF& centre)
 Node* SchematicScene::createNode(const QPointF& centre)
 {
    Node *n = new Node(QString("FH"),this);
+   //TODO: Implement node numbering/suffix
    n->setPos(centre);
    return n;
 }
@@ -327,7 +328,8 @@ void SchematicScene::setCurrentMouseAction(MouseAction action)
    QGraphicsView::DragMode dragMode = (action == Normal) ? QGraphicsView::RubberBandDrag : QGraphicsView::NoDrag;
    foreach(QGraphicsView *view, views())
       view->setDragMode(dragMode);
-
+   setFocusItem(0);
+   clearSelection();
    //TODO: Implemement this appropriately for all mouse actions
 }
 

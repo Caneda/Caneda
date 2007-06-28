@@ -42,7 +42,7 @@ class MainWindowBase : public QMainWindow
       void removeChildWidget(QWidget *widget, bool deleteWidget = false);
       void addAsDockWidget(QWidget *w, const QString& title = "", Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
       QTabWidget* tabWidget() const { return m_tabWidget; }
-
+      QWidget* currentWidget() const { return m_tabWidget->currentWidget(); }
    signals:
       void currentWidgetChanged(QWidget *widget);
 

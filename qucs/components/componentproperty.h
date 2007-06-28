@@ -39,7 +39,6 @@ class PropertyGroup : public QGraphicsItemGroup
       void hideChild(ComponentProperty *child);
       void showChild(ComponentProperty *child);
       void realignItems( int fromIndex = 0 );
-
       QRectF boundingRect() const;
 
    protected:
@@ -77,6 +76,7 @@ class ComponentProperty
       void operator=(const QString& value);
 
       inline PropertyText* item() const;
+      inline Component* component() const { return m_component; }
       inline bool isVisible() const;
       void update();
 

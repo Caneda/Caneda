@@ -46,8 +46,13 @@
 static QString qucsFilter;
 
 
-QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
+QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w),
+                                             titleText(QString("Qucs ") + (Qucs::version) + QString(" : %1[*]"))
 {
+   setObjectName("QucsMainWindow"); //for debugging purpose
+
+   setDocumentTitle("Untitled");
+   setWindowModified(true);
    qucsFilter =
       tr("Schematic-xml")+" (*.xsch);;"+
       tr("Schematic")+" (*.sch);;"+
@@ -965,40 +970,43 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
 
    QList<QGraphicsItem*> selectedItems = scene->selectedItems();
 
-   if(selectedItems.isEmpty() || func == 0) {
-      foreach(QAction *act, checkableActions) {
-         if(act != action) {
-            act->blockSignals(true);
-            act->setChecked(false);
-            act->blockSignals(false);
-         }
-      }
-      scene->setCurrentMouseAction(ma);
-   }
-   else {
-      QList<QucsItem*> funcable;
+   do {
+      if(!(selectedItems.isEmpty() || func == 0)) {
+         QList<QucsItem*> funcable;
 
-      foreach(QGraphicsItem *item, selectedItems) {
-         QucsItem *i = qucsitem_cast<QucsItem*>(item);
-         if(i)
-            funcable << i;
-      }
-
-      (scene->*func)(funcable);
-      foreach(QAction *act, checkableActions) {
-         if(act != norm) {
-            act->blockSignals(true);
-            act->setChecked(false);
-            act->blockSignals(false);
+         foreach(QGraphicsItem *item, selectedItems) {
+            QucsItem *i = qucsitem_cast<QucsItem*>(item);
+            if(i)
+               funcable << i;
          }
+         if(funcable.isEmpty())
+            break;
+         (scene->*func)(funcable);
+         foreach(QAction *act, checkableActions) {
+            if(act != norm) {
+               act->blockSignals(true);
+               act->setChecked(false);
+               act->blockSignals(false);
+            }
+         }
+         norm->blockSignals(true);
+         norm->setChecked(true);
+         norm->blockSignals(false);
+         //Safe to call repeatedly since this function performs change if
+         //only the mouseAction is different from previous.
+         scene->setCurrentMouseAction(SchematicScene::Normal);
+         return;
       }
-      norm->blockSignals(true);
-      norm->setChecked(true);
-      norm->blockSignals(false);
-      //Safe to call repeatedly since this function performs change if
-      //only the mouseAction is different from previous.
-      scene->setCurrentMouseAction(SchematicScene::Normal);
+   } while(false); //For break
+
+   foreach(QAction *act, checkableActions) {
+      if(act != action) {
+         act->blockSignals(true);
+         act->setChecked(false);
+         act->blockSignals(false);
+      }
    }
+   scene->setCurrentMouseAction(ma);
 
 }
 
@@ -1557,4 +1565,9 @@ QucsView* QucsMainWindow::viewFromWidget(QWidget *widget)
    if(v) return (QucsView*)v;
    qDebug("QucsMainWindow::viewFromWidget() : Couldn't identify view type.");
    return 0;
+}
+
+void QucsMainWindow::setDocumentTitle(const QString& title)
+{
+   setWindowTitle(titleText.arg(title));
 }

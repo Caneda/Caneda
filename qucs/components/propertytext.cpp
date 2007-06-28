@@ -20,6 +20,9 @@
 #include "propertytext.h"
 #include "componentproperty.h"
 #include "schematicscene.h"
+#include "schematicview.h"
+#include "components/component.h"
+#include "qucsmainwindow.h"
 
 #include <QtGui/QTextCursor>
 #include <QtGui/QCursor>
@@ -29,6 +32,7 @@
 #include <QtGui/QFontMetricsF>
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QPainter>
+#include <QtGui/QApplication>
 
 #include <QtCore/QTimer>
 #include <QtCore/QtDebug>
@@ -96,63 +100,63 @@ bool PropertyText::sceneEvent(QEvent *event)
    // The call to parent is avoided to remove group behaviour
    // and allow items to be edited.
    switch (event->type()) {
-    case QEvent::FocusIn:
-        focusInEvent(static_cast<QFocusEvent *>(event));
-        break;
-    case QEvent::FocusOut:
-        focusOutEvent(static_cast<QFocusEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneContextMenu:
-        contextMenuEvent(static_cast<QGraphicsSceneContextMenuEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneDragEnter:
-        dragEnterEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneDragMove:
-        dragMoveEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneDragLeave:
-        dragLeaveEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneDrop:
-        dropEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneHoverEnter:
-        hoverEnterEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneHoverMove:
-        hoverMoveEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneHoverLeave:
-        hoverLeaveEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneMouseMove:
-        mouseMoveEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneMousePress:
-        mousePressEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneMouseRelease:
-        mouseReleaseEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneMouseDoubleClick:
-        mouseDoubleClickEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-        break;
-    case QEvent::GraphicsSceneWheel:
-        wheelEvent(static_cast<QGraphicsSceneWheelEvent *>(event));
-        break;
-    case QEvent::KeyPress:
-        keyPressEvent(static_cast<QKeyEvent *>(event));
-        break;
-    case QEvent::KeyRelease:
-        keyReleaseEvent(static_cast<QKeyEvent *>(event));
-        break;
-    case QEvent::InputMethod:
-        inputMethodEvent(static_cast<QInputMethodEvent *>(event));
-        break;
-    default:
-        return false;
-    }
+      case QEvent::FocusIn:
+         focusInEvent(static_cast<QFocusEvent *>(event));
+         break;
+      case QEvent::FocusOut:
+         focusOutEvent(static_cast<QFocusEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneContextMenu:
+         contextMenuEvent(static_cast<QGraphicsSceneContextMenuEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneDragEnter:
+         dragEnterEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneDragMove:
+         dragMoveEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneDragLeave:
+         dragLeaveEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneDrop:
+         dropEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneHoverEnter:
+         hoverEnterEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneHoverMove:
+         hoverMoveEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneHoverLeave:
+         hoverLeaveEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneMouseMove:
+         mouseMoveEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneMousePress:
+         mousePressEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneMouseRelease:
+         mouseReleaseEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneMouseDoubleClick:
+         mouseDoubleClickEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+         break;
+      case QEvent::GraphicsSceneWheel:
+         wheelEvent(static_cast<QGraphicsSceneWheelEvent *>(event));
+         break;
+      case QEvent::KeyPress:
+         keyPressEvent(static_cast<QKeyEvent *>(event));
+         break;
+      case QEvent::KeyRelease:
+         keyReleaseEvent(static_cast<QKeyEvent *>(event));
+         break;
+      case QEvent::InputMethod:
+         inputMethodEvent(static_cast<QInputMethodEvent *>(event));
+         break;
+      default:
+         return false;
+   }
 
    return true;
 }
@@ -188,10 +192,18 @@ void PropertyText::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
    setTextCursor(tc);
 }
 
+void PropertyText::focusInEvent(QFocusEvent *event)
+{
+   QGraphicsTextItem::focusInEvent(event);
+   trimText();
+   qApp->installEventFilter(this);
+}
+
 void PropertyText::focusOutEvent(QFocusEvent *event)
 {
    QGraphicsTextItem::focusOutEvent(event);
    trimText();
+   qApp->removeEventFilter(this);
 }
 
 void PropertyText::keyPressEvent(QKeyEvent *e)
@@ -205,4 +217,24 @@ void PropertyText::keyPressEvent(QKeyEvent *e)
 QVariant PropertyText::itemChange(GraphicsItemChange change, const QVariant &value)
 {
    return QGraphicsTextItem::itemChange(change,value);
+}
+
+SchematicView* PropertyText::activeView() const
+{
+   QGraphicsView *gview = property->component()->activeView();
+   SchematicView *view = gview ? static_cast<SchematicView*>(gview) : 0;
+   return view;
+}
+
+//HACK:  This solves the bug where keyboard shortcuts were interfering with textcontrol.
+bool PropertyText::eventFilter(QObject* object, QEvent* event)
+{
+   if (event->type() == QEvent::Shortcut ||
+       event->type() == QEvent::ShortcutOverride) {
+      if (!object->inherits("QGraphicsView")) {
+         event->accept();
+         return true;
+      }
+   }
+   return false;
 }

@@ -125,8 +125,9 @@ class QucsMainWindow : public MainWindowBase
       void slotHelpAbout();
       void slotHelpAboutQt();
 
+      void setDocumentTitle(const QString& title);
    protected:
-         void closeEvent( QCloseEvent *closeEvent);
+      void closeEvent( QCloseEvent *closeEvent);
 
    private slots:
       void activateStackOf(QWidget *w);
@@ -146,6 +147,7 @@ class QucsMainWindow : public MainWindowBase
       inline QAction* action(const QString& name) const;
       QMap<QString ,QAction*> actionMap;
       QList<QAction*> checkableActions;
+
       // menus contain the items of their menubar
       QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
          *helpMenu, *alignMenu, *toolMenu;
@@ -153,6 +155,7 @@ class QucsMainWindow : public MainWindowBase
       QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
       QUndoGroup *m_undoGroup;
       ComponentsSidebar *m_componentsSidebar;
+      const QString titleText;
 
    public:
       int x, y, dx, dy;     // position and size

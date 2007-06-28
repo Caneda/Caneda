@@ -22,9 +22,11 @@
 
 #include <QtGui/QGraphicsTextItem>
 #include <QtGui/QPainterPath>
+#include <QtCore/QtDebug>
 
 class ComponentProperty;
 class SchematicScene;
+class SchematicView;
 
 class PropertyText : public QGraphicsTextItem
 {
@@ -60,6 +62,10 @@ Q_OBJECT
       void trimText();
       void updateValue();
 
+      SchematicView* activeView() const;
+
+      bool eventFilter(QObject* object, QEvent* event);
+
    protected:
       void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
       bool sceneEvent(QEvent *event);
@@ -67,6 +73,7 @@ Q_OBJECT
       void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
       void mousePressEvent ( QGraphicsSceneMouseEvent * event );
       void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+      void focusInEvent(QFocusEvent *event);
       void focusOutEvent(QFocusEvent *event);
       void keyPressEvent(QKeyEvent *event);
       QVariant itemChange(GraphicsItemChange change, const QVariant &value);

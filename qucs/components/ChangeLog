@@ -1,3 +1,8 @@
+2007-06-28  Gopala Krishna  <gopala@localhost>
+
+	* propertytext.cpp (PropertyText::eventFilter): Fixed the bug of application keyboard shortcuts (like del)
+	interfering while property text was being edited by introducing this function(hack).
+
 2007-06-03  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* component.cpp (Component::rotate): Changed clockwise rotation to counter clockwise rotation.

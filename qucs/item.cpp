@@ -41,9 +41,9 @@ SchematicScene* QucsItem::schematicScene() const
 
 QGraphicsView* QucsItem::activeView() const
 {
-   if(scene()->views().isEmpty())
+   if(!scene() || scene()->views().isEmpty())
       return 0;
-   return scene()->views().at(0);
+   return scene()->views()[0];
 }
 
 QucsMainWindow* QucsItem::mainWindow() const
