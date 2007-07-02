@@ -1,3 +1,8 @@
+2007-07-02  Gopala Krishna  <gopala@localhost>
+
+	* schematicscene.cpp (SchematicScene::zoomingAtPointEvent): Made this mouse action to work appropriately.
+	Now the scroll pos is maintained appropriately after scale.
+
 2007-06-28  Gopala Krishna  <gopala@localhost>
 
 	* item.cpp (QucsItem::activeView): Fixed segfault when item hasn't been added to scene.

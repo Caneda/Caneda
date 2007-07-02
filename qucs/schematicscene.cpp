@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "schematicscene.h"
+#include "schematicview.h"
 #include "node.h"
 #include "wire.h"
 #include "components/components.h"
@@ -39,7 +40,7 @@
 #include <QtGui/QScrollBar>
 
 #include <cmath>
-
+#define QT_NO_DEBUG
 static Node* singlifyNodes(QSet<Node*> &nodeSet);
 
 
@@ -432,9 +433,8 @@ void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
 
 void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 {
-   //m_areItemsMoving = true;
-   m_grabbedWire = 0;
-   QGraphicsScene::mouseDoubleClickEvent(e);
+   sendMouseActionEvent(e);
+
 }
 
 void SchematicScene::wiringEvent(MouseActionEvent *event)
@@ -611,7 +611,22 @@ void SchematicScene::settingOnGridEvent(MouseActionEvent *event)
 
 void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
 {
-   //TODO
+   if(event->type() != QEvent::GraphicsSceneMousePress)
+      return;
+   QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
+   SchematicView *sv = qobject_cast<SchematicView*>(v);
+   if(sv) {
+      QPointF viewPoint(sv->mapFromScene(event->scenePos()));
+      sv->zoomIn();
+      QPointF afterScalePoint(sv->mapFromScene(event->scenePos()));
+      int dx = (afterScalePoint - viewPoint).toPoint().x();
+      int dy = (afterScalePoint - viewPoint).toPoint().y();
+      QScrollBar *hb = sv->horizontalScrollBar();
+      QScrollBar *vb = sv->verticalScrollBar();
+      hb->setValue(hb->value() + dx);
+      vb->setValue(vb->value() + dy);
+   }
+   //TODO: Add zooming by drawing a rectangle for zoom area.
 }
 
 void SchematicScene::insertingEquationEvent(MouseActionEvent *event)
@@ -803,6 +818,11 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
       }
       break;
 
+      case QEvent::GraphicsSceneMouseDoubleClick:
+         m_grabbedWire = 0;
+         QGraphicsScene::mouseDoubleClickEvent(e);
+         break;
+
       default:
          qDebug("SchematicScene::normalEvent() :Unknown event type");
    };
@@ -812,7 +832,7 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
 void SchematicScene::init()
 {
    m_undoStack = new QUndoStack(this);
-
+   qDebug("Init");
    m_gridWidth = m_gridHeight = 10;
    m_currentMode = Qucs::SchematicMode;
    m_frameVisible = false;

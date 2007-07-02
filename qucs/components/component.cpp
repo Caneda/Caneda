@@ -809,8 +809,8 @@ void Component::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w
    // For testing purpose
    if( 1 && o->state & QStyle::State_Selected)
    {
-      p->setPen(getPen(Qt::darkGray,2));
-      p->drawRect(boundingRect());
+      p->setPen(getPen(Qt::darkGray,1));
+      p->drawRect(m_boundingRect);
    }
    if(o->state & QStyle::State_Open)
       drawNodes(p);

@@ -75,7 +75,7 @@ void Resistor::initSymbolMap()
    s->shapesList.append(new Line(-18,  9,-18, -9,getPen(Qt::darkBlue,2)));
    s->shapesList.append(new Line(-27,  0,-18,  0,getPen(Qt::darkBlue,2)));
    s->shapesList.append(new Line( 18,  0, 27,  0,getPen(Qt::darkBlue,2)));
-   s->boundRect = QRectF(-27,-9,54,18);
+   s->boundRect = QRectF(-27,-11,54,22);
    symbolMap["Regular"] = s;
 
    s = new SymbolData();
