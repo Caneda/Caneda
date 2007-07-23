@@ -192,6 +192,8 @@ bool QucsPrimaryFormat::loadFromText(const QString& t)
 bool QucsPrimaryFormat::loadProperties(QTextStream &stream)
 {
    QString Line;
+   //TODO: Not yet implemented. Just skips.
+   //TODO: Remember to clear scene before load
    while(!stream.atEnd()) {
       Line = stream.readLine();
       if(Line.at(0) == '<') if(Line.at(1) == '/') return true;  // field end ?

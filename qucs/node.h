@@ -104,7 +104,7 @@ inline QList<Component*> Node::selectedComponents() const
 
 inline bool Node::isOpen() const
 {
-   return m_connectedComponents.size() <= 1 && m_wires.isEmpty();
+   return m_connectedComponents.size() + m_wires.size() == 1;
 }
 
 inline bool Node::isEmpty() const

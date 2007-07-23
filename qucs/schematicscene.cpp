@@ -40,7 +40,7 @@
 #include <QtGui/QScrollBar>
 
 #include <cmath>
-#define QT_NO_DEBUG
+
 static Node* singlifyNodes(QSet<Node*> &nodeSet);
 
 
@@ -52,6 +52,24 @@ SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 SchematicScene::SchematicScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent ) : QGraphicsScene(x,y,width,height,parent)
 {
    init();
+}
+
+void SchematicScene::init()
+{
+   m_undoStack = new QUndoStack(this);
+   m_gridWidth = m_gridHeight = 10;
+   m_currentMode = Qucs::SchematicMode;
+   m_frameVisible = false;
+   m_modified = false;
+   m_gridVisible = true;
+   m_opensDataDisplay = true;
+   m_frameTexts = QStringList() << tr("Title") << tr("Drawn By:") << tr("Date:") << tr("Revision:");
+
+   eventWire = 0;
+   helperNode = 0;
+   m_grabbedWire = 0;
+   m_areItemsMoving = false;
+   setCurrentMouseAction(Normal);
 }
 
 SchematicScene::~SchematicScene()
@@ -108,8 +126,7 @@ void SchematicScene::insertComponent(Component *comp)
    if(m_components.count(comp) == 0)
       m_components.append(comp);
 
-   foreach(ComponentPort *port, comp->m_ports)
-   {
+   foreach(ComponentPort *port, comp->m_ports) {
       Node *n = port->node();
       n->removeComponent(comp);
       if(n->isEmpty()) delete n;
@@ -120,10 +137,10 @@ void SchematicScene::insertComponent(Component *comp)
       port->setNode(n);
    }
 
-   foreach(ComponentProperty *prop, comp->m_properties)
+   foreach(ComponentProperty *prop, comp->m_properties) {
       if(prop->isVisible() && prop->item()->scene() != this)
          addItem(prop->item());
-
+   }
    //TODO: add number suffix to component name
 }
 
@@ -197,7 +214,7 @@ void SchematicScene::setItemsOnGrid(QList<QucsItem*>& items)
 
 void SchematicScene::toggleActiveStatus(QList<QucsItem*>& components)
 {
-   //TODO
+   //TODO:
 }
 
 void SchematicScene::setFileName(const QString& name)
@@ -208,6 +225,8 @@ void SchematicScene::setFileName(const QString& name)
    QFileInfo info(m_fileName);
    m_dataSet = info.baseName() + ".dat";
    m_dataDisplay = info.baseName() + ".dpl";
+   emit fileNameChanged(m_fileName);
+   emit stateUpdated();
 }
 
 QPointF SchematicScene::nearingGridPoint(const QPointF &pos)
@@ -273,7 +292,7 @@ void SchematicScene::setMode(Qucs::Mode mode)
    if(m_currentMode == mode) return;
    m_currentMode = mode;
    update();
-   //TODO
+   //TODO:
 }
 
 void SchematicScene::setCurrentMouseAction(MouseAction action)
@@ -332,6 +351,15 @@ void SchematicScene::setCurrentMouseAction(MouseAction action)
    setFocusItem(0);
    clearSelection();
    //TODO: Implemement this appropriately for all mouse actions
+}
+
+void SchematicScene::setModified(bool m)
+{
+   if(m_modified != m) {
+      m_modified = m;
+      emit modificationChanged(m_modified);
+      emit stateUpdated();
+   }
 }
 
 void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
@@ -410,6 +438,7 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
          v->horizontalScrollBar()->setValue(hor);
          v->verticalScrollBar()->setValue(ver);
          event->acceptProposedAction();
+         setModified(true);
       }
    }
    else
@@ -532,7 +561,7 @@ void SchematicScene::deletingEvent(MouseActionEvent *event)
 
 void SchematicScene::markingEvent(MouseActionEvent *event)
 {
-   //TODO
+   //TODO:
 }
 
 void SchematicScene::rotatingEvent(MouseActionEvent *event)
@@ -588,7 +617,7 @@ void SchematicScene::mirroringYEvent(MouseActionEvent *event)
 
 void SchematicScene::changingActiveStatusEvent(MouseActionEvent *event)
 {
-   //TODO
+   //TODO:
 }
 
 void SchematicScene::settingOnGridEvent(MouseActionEvent *event)
@@ -631,22 +660,22 @@ void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
 
 void SchematicScene::insertingEquationEvent(MouseActionEvent *event)
 {
-   //TODO
+   //TODO:
 }
 
 void SchematicScene::insertingGroundEvent(MouseActionEvent *event)
 {
-   //TODO
+   //TODO:
 }
 
 void SchematicScene::insertingPortEvent(MouseActionEvent *event)
 {
-   //TODO
+   //TODO:
 }
 
 void SchematicScene::insertingWireLabelEvent(MouseActionEvent *event)
 {
-   //TODO
+   //TODO:
 }
 
 void SchematicScene::normalEvent(MouseActionEvent *e)
@@ -829,24 +858,6 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
 }
 
 
-void SchematicScene::init()
-{
-   m_undoStack = new QUndoStack(this);
-   qDebug("Init");
-   m_gridWidth = m_gridHeight = 10;
-   m_currentMode = Qucs::SchematicMode;
-   m_frameVisible = false;
-   m_gridVisible = true;
-   m_opensDataDisplay = true;
-   m_frameTexts = QStringList() << tr("Title") << tr("Drawn By:") << tr("Date:") << tr("Revision:");
-
-   eventWire = 0;
-   helperNode = 0;
-   m_grabbedWire = 0;
-   m_areItemsMoving = false;
-
-   setCurrentMouseAction(Normal);
-}
 
 void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
 {

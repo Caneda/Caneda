@@ -22,27 +22,62 @@
 
 #include <QtCore/QDateTime>
 #include <QtCore/QString>
+//For signals definition
+#include <QtCore/qobjectdefs.h>
+#include <QtGui/QIcon>
 
 class QucsMainWindow;
 class QPainter;
+class SchematicView;
+class QWidget;
 
-struct QucsView
+class QucsView
 {
+   public:
       QucsView(QucsMainWindow *m);
       virtual ~QucsView() {}
 
-      virtual void setFileName(const QString& name) = 0; // Emit signal while reimplementing
+      // Emit signal while reimplementing
+      virtual void setFileName(const QString& _fileName) = 0;
       virtual QString fileName() const = 0; // With path
-      virtual bool load() = 0; // First set filename and then call load
-      virtual bool save() = 0; // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  save
+
+      virtual bool load() = 0;
+      virtual bool save() = 0;
+
       virtual void print(QPainter *p, bool printAll, bool fitToPage) = 0;
+
       virtual void zoomIn() = 0;
       virtual void zoomOut() = 0;
+
       virtual void showAll() = 0;
       virtual void showNoZoom() = 0;
 
-      QString tabText() const; // Returns text to be displayed on tab
-      QDateTime lastSaved; // To check for external modification
+      virtual QWidget* toWidget() const = 0;
+      virtual SchematicView* toSchematicView() const;
+      //TODO: Add other view convienience methods
+
+      virtual bool isModified() const = 0;
+      virtual void setModified(bool b) = 0;
+
+      // Returns text to be displayed on tab
+      QString tabText() const;
+      int tabIndex() const;
+
+      //A helper function for setFileName and load
+      bool load(const QString& name);
+
+      static QIcon modifiedTabIcon();
+      static QIcon unmodifiedTabIcon();
+
+   signals:
+      virtual void modificationChanged(bool b) = 0;
+      virtual void fileNameChanged(const QString& filename) = 0;
+      // This signal is emitted with the above for convienience.
+      virtual void stateUpdated() = 0;
+
+   protected:
+      // To check for external modification
+      QDateTime lastSaved;
       QucsMainWindow *mainWindow;
 };
 

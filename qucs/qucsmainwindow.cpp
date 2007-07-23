@@ -52,7 +52,7 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w),
    setObjectName("QucsMainWindow"); //for debugging purpose
 
    setDocumentTitle("Untitled");
-   setWindowModified(true);
+
    qucsFilter =
       tr("Schematic-xml")+" (*.xsch);;"+
       tr("Schematic")+" (*.sch);;"+
@@ -71,6 +71,8 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w),
    addAsDockWidget(m_componentsSidebar, tr("Components"));
 
    connect(this,SIGNAL(currentWidgetChanged(QWidget *)),this,SLOT(activateStackOf(QWidget *)));
+   connect(this, SIGNAL(currentWidgetChanged(QWidget *)), this, SLOT(updateTitleText()));
+
    newView();
    loadSettings();
 }
@@ -1019,9 +1021,11 @@ void QucsMainWindow::newView()
 void QucsMainWindow::addView(SchematicView *view)
 {
    m_undoGroup->addStack(view->schematicScene()->undoStack());
-   connect(view,SIGNAL(titleChanged(const QString&)),this,SLOT(setTabTitle(const QString& )));
+   connect(view, SIGNAL(stateUpdated()), this, SLOT(updateTitleText()));
    addChildWidget(view);
    tabWidget()->setCurrentWidget(view);
+   setDocumentTitle(view->fileName());
+   setWindowModified(view->isModified());
 }
 
 void QucsMainWindow::activateStackOf(QWidget *w)
@@ -1057,8 +1061,7 @@ void QucsMainWindow::slotFileOpen()
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
 
-   v->setFileName(fileName);
-   bool b = v->load();
+   bool b = v->load(fileName);
    if(!b) {
       QMessageBox::critical(0,QObject::tr("Error"),
                             QObject::tr("Cannot load document!\nParse Error"));
@@ -1567,7 +1570,16 @@ QucsView* QucsMainWindow::viewFromWidget(QWidget *widget)
    return 0;
 }
 
-void QucsMainWindow::setDocumentTitle(const QString& title)
+void QucsMainWindow::setDocumentTitle(const QString& filename)
 {
-   setWindowTitle(titleText.arg(title));
+   setWindowTitle(titleText.arg(filename));
+}
+
+void QucsMainWindow::updateTitleText()
+{
+   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+   if(view) {
+      setDocumentTitle(view->tabText());
+      setWindowModified(view->isModified());
+   }
 }

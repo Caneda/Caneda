@@ -27,36 +27,50 @@ class SchematicScene;
 class QucsMainWindow;
 
 class SchematicView : public QGraphicsView, public QucsView
-{
-   Q_OBJECT
+{      Q_OBJECT;
    public:
       static const qreal zoomFactor;
-      SchematicView(SchematicScene *sc = 0,QucsMainWindow *parent = 0);
-      ~SchematicView() {};
-      void init();
 
-      //reimplemented virtuals from QucsView
-      QString fileName() const;
-      void setFileName(const QString& name);
-      bool load();
-      bool save();
-      void print(QPainter *p, bool printAll, bool fitToPage);
-      void zoomIn();
-      void zoomOut();
-      void showAll();
-      void showNoZoom();
-      //end of QucsAbstarctView's methods
+      SchematicView(SchematicScene *sc = 0,QucsMainWindow *parent = 0);
+      ~SchematicView();
+
       SchematicScene* schematicScene() const;
 
-   protected:
-      void drawForeground(QPainter *p, const QRectF& rect);
+      //reimplemented virtuals from QucsView
+      void setFileName(const QString& name);
+      QString fileName() const;
+
+      bool load();
+      bool save();
+
+      void print(QPainter *p, bool printAll, bool fitToPage);
+
+      void zoomIn();
+      void zoomOut();
+
+      void showAll();
+      void showNoZoom();
+
+      QWidget* toWidget() const;
+      SchematicView* toSchematicView() const;
+
+      bool isModified() const;
+
    public slots:
-      void setTitle(const QString& title);
+      void setModified(bool m);
+      //update tab's text and modification status
+      void updateTabs();
 
    signals:
-      void titleChanged(const QString& newTitle);
+      void modificationChanged(bool modified);
+      void fileNameChanged(const QString& file);
+      void stateUpdated();
+
    private:
       void repaintWires();
+
+   private slots:
+      void addTestComponents();
 };
 
 #endif //__SCHEMATICVIEW_H

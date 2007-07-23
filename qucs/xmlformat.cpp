@@ -243,16 +243,13 @@ bool XmlFormat::loadFromText(const QString& text)
       if(ele.tagName() == "view") {
          if(!loadView(ele))
             return false;
-      }
-      else if(ele.tagName() == "components") {
+      } else if(ele.tagName() == "components") {
          if(!loadComponents(ele))
             return false;
-      }
-      else if(ele.tagName() == "wires") {
+      } else if(ele.tagName() == "wires") {
          if(!loadWires(ele))
             return false;
-      }
-      else {
+      } else {
          QMessageBox::critical(0, QObject::tr("Error"),
                                QObject::tr("Unknown tag %1").arg(ele.tagName()));
          return false;

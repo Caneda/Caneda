@@ -25,19 +25,22 @@
 #include "node.h"
 #include "qucsprimaryformat.h"
 #include "xmlformat.h"
+
 #include <QtGui/QWheelEvent>
-#include <QtCore/QDebug>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
+
 #include <QtCore/QFileInfo>
+#include <QtCore/QTimer>
+#include <QtCore/QDebug>
 
 const qreal SchematicView::zoomFactor = 1.2f;
 
-SchematicView::SchematicView(SchematicScene *sc,QucsMainWindow *parent) :
-   QGraphicsView((QGraphicsScene*)sc,(QWidget*)parent), QucsView(parent)
+SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
+   QGraphicsView(sc,parent), QucsView(parent)
 {
    if(sc == 0) {
-      sc = new SchematicScene(0.0,0.0,1024.0,768.0);
+      sc = new SchematicScene(0, 0, 1024, 768);
       setScene(sc);
       DragMode dragMode = (sc->currentMouseAction() == SchematicScene::Normal) ? RubberBandDrag : NoDrag;
       setDragMode(dragMode);
@@ -45,23 +48,24 @@ SchematicView::SchematicView(SchematicScene *sc,QucsMainWindow *parent) :
 
    setAcceptDrops(true);
    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-   setWindowTitle("Untitled");
+
+   connect(sc, SIGNAL(modificationChanged()), this, SIGNAL(modificationChanged()));
+   connect(sc, SIGNAL(fileNameChanged(const QString&)), this, SIGNAL(fileNameChanged(const QString&)));
+   connect(sc, SIGNAL(stateUpdated()), this, SIGNAL(stateUpdated()));
+
+   connect(this, SIGNAL(stateUpdated()), this, SLOT(updateTabs()));
+
 #if QT_VERSION >= 0x040300
+   //Enormous performance improvement!
    setViewportUpdateMode(SmartViewportUpdate);
 #endif
-   //init();
+
 }
 
-void SchematicView::init()
+SchematicView::~SchematicView()
 {
-   SchematicScene *s = schematicScene();
-   for( int j=1;j<6;++j)
-      for(int i=1; i <11;i++)
-      {
-         Resistor *r = new Resistor(s);
-         r->setPos(j*200,i*50);
-      }
 }
+
 
 SchematicScene* SchematicView::schematicScene() const
 {
@@ -70,21 +74,19 @@ SchematicScene* SchematicView::schematicScene() const
    return s;
 }
 
+void SchematicView::setFileName(const QString& name)
+{
+   schematicScene()->setFileName(name);
+}
+
 QString SchematicView::fileName() const
 {
    return schematicScene()->fileName();
 }
 
-void SchematicView::setFileName(const QString& name)
-{
-   schematicScene()->setFileName(name);
-   QFileInfo info(fileName());
-   setTitle(info.fileName());
-}
-
 bool SchematicView::load()
 {
-   //This assumes filename is set before!
+   //Assumes file name is set
    FileFormatHandler *format = 0;
    QFileInfo info(fileName());
    if(info.suffix() == "sch")
@@ -92,6 +94,7 @@ bool SchematicView::load()
    else if(info.suffix() == "xsch")
       format = new XmlFormat(this);
    if(!format) {
+      //TODO: Try to determine the file format dynamically
       QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
       return false;
    }
@@ -101,11 +104,15 @@ bool SchematicView::load()
       return false;
    }
    QTextStream stream(&file);
+
+   setModified(false);
+
    return format->loadFromText(stream.readAll());
 }
 
 bool SchematicView::save()
 {
+   //Assumes filename is set before the call
    QFile file(fileName());
    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
       QMessageBox::critical(0, QObject::tr("Error"),
@@ -127,10 +134,13 @@ bool SchematicView::save()
 
    QString saveText = format->saveText();
    if(saveText.isNull()) {
-      qDebug("Null data to save! Was this expected ??");
+      qDebug("Looks buggy! Null data to save! Was this expected ??");
    }
    stream << saveText;
    file.close();
+
+   setModified(false);
+
    return true;
 }
 
@@ -141,14 +151,14 @@ void SchematicView::print(QPainter *p, bool printAll, bool fitToPage)
 
 void SchematicView::zoomIn()
 {
-   scale(zoomFactor,zoomFactor);
+   scale(zoomFactor, zoomFactor);
    repaintWires();
 }
 
 void SchematicView::zoomOut()
 {
    qreal zf = 1.0/zoomFactor;
-   scale(zf,zf);
+   scale(zf, zf);
    repaintWires();
 }
 
@@ -161,22 +171,57 @@ void SchematicView::showAll()
 void SchematicView::showNoZoom()
 {
    resetMatrix();
+   repaintWires();
 }
 
-void SchematicView::setTitle(const QString& title)
+QWidget* SchematicView::toWidget() const
 {
-   setWindowTitle(title);
-   setWindowModified(false);
-   emit titleChanged(windowTitle());
+   SchematicView* self = const_cast<SchematicView*>(this);
+   QGraphicsView* view = qobject_cast<QGraphicsView*>(self);
+   return static_cast<QWidget*>(view);
 }
 
-void SchematicView::drawForeground(QPainter *painter, const QRectF &rect)
+SchematicView* SchematicView::toSchematicView() const
 {
-   QGraphicsView::drawBackground(painter, rect);
+   SchematicView* self = const_cast<SchematicView*>(this);
+   QGraphicsView* view = qobject_cast<QGraphicsView*>(self);
+   return qobject_cast<SchematicView*>(view);
+}
+
+bool SchematicView::isModified() const
+{
+   return schematicScene()->isModified();
+}
+
+void SchematicView::setModified(bool m)
+{
+   schematicScene()->setModified(m);
+}
+
+void SchematicView::updateTabs()
+{
+   QTabWidget *tw = mainWindow->tabWidget();
+   int index = tabIndex();
+   if(index != -1) {
+      tw->setTabText(index, tabText());
+      tw->setTabIcon(index, isModified() ? modifiedTabIcon() : unmodifiedTabIcon());
+   }
 }
 
 void SchematicView::repaintWires()
 {
    foreach(Wire *w, schematicScene()->wires())
       w->rebuild();
+}
+
+void SchematicView::addTestComponents()
+{
+   SchematicScene *s = schematicScene();
+   for( int j=1; j<6; ++j)
+      for(int i=1; i <11; i++)
+      {
+         Resistor *r = new Resistor(s);
+         r->setPos(j*200, i*50);
+      }
+   setModified(true);
 }

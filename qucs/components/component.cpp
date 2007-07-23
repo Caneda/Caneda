@@ -761,9 +761,9 @@ Component* Component::componentFromModel(const QString& _model, SchematicScene *
 //       case 'E' : if(cstr == "qn") c = new Equation(scene);
 //          else if(cstr == "DD") c = new EqnDefined(scene);
 //          break;
-//       case 'O' : if(cstr == "pAmp") c = new OpAmp(scene);
+      case 'O' : if(cstr == "pAmp") c = new OpAmp(scene);
 //          else if(cstr == "R") c = new Logical_OR(scene);
-//          break;
+         break;
 //       case 'N' : if(cstr == "OR") c = new Logical_NOR(scene);
 //          else if(cstr == "AND") c = new Logical_NAND(scene);
 //          break;
@@ -809,7 +809,7 @@ void Component::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w
    // For testing purpose
    if( 1 && o->state & QStyle::State_Selected)
    {
-      p->setPen(getPen(Qt::darkGray,1));
+      p->setPen(getPen(Qt::black,0));
       p->drawRect(m_boundingRect);
    }
    if(o->state & QStyle::State_Open)

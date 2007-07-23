@@ -126,6 +126,8 @@ class QucsMainWindow : public MainWindowBase
       void slotHelpAboutQt();
 
       void setDocumentTitle(const QString& title);
+      void updateTitleText();
+
    protected:
       void closeEvent( QCloseEvent *closeEvent);
 

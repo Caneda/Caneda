@@ -76,7 +76,7 @@ class SchematicScene : public QGraphicsScene
       };
 
       SchematicScene(QObject *parent =0);
-      SchematicScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent = 0 );
+      SchematicScene(qreal x, qreal y, qreal width, qreal height, QObject * parent = 0);
       ~SchematicScene();
 
       Node* nodeAt(qreal cx, qreal cy);
@@ -107,6 +107,8 @@ class SchematicScene : public QGraphicsScene
 
       inline QString fileName() const { return m_fileName; }
       void setFileName(const QString& fn);
+
+      bool isModified() const { return m_modified; }
 
       QPointF nearingGridPoint(const QPointF &pos);
 
@@ -144,6 +146,13 @@ class SchematicScene : public QGraphicsScene
       inline MouseAction currentMouseAction() const { return m_currentMouseAction; }
       void setCurrentMouseAction(MouseAction ma);
 
+   public slots:
+      void setModified(bool m = true);
+
+   signals:
+      void modificationChanged(bool changed);
+      void fileNameChanged(const QString& file);
+      void stateUpdated();
 
    protected:
       void drawBackground(QPainter *p, const QRectF& r);
@@ -213,6 +222,7 @@ class SchematicScene : public QGraphicsScene
       QString m_fileName;
       QStringList m_frameTexts;
 
+      bool m_modified;
       bool m_opensDataDisplay;
       bool m_frameVisible;
 };
