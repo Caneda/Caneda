@@ -1024,8 +1024,10 @@ void QucsMainWindow::addView(SchematicView *view)
    connect(view, SIGNAL(stateUpdated()), this, SLOT(updateTitleText()));
    addChildWidget(view);
    tabWidget()->setCurrentWidget(view);
-   setDocumentTitle(view->fileName());
-   setWindowModified(view->isModified());
+   //Force fully cause modificationChanged signal to be emitted to set
+   //tab text and title bar text
+   view->setModified(true);
+   view->setModified(false);
 }
 
 void QucsMainWindow::activateStackOf(QWidget *w)

@@ -22,7 +22,9 @@
 
 #include "fileformathandler.h"
 
-class QDomElement;
+namespace Qucs {
+   class XmlReader;
+}
 
 class XmlFormat : public FileFormatHandler
 {
@@ -32,11 +34,11 @@ class XmlFormat : public FileFormatHandler
 
       QString saveText();
       bool loadFromText(const QString& text);
-      bool loadView(const QDomElement& ele);
-      bool loadComponents(const QDomElement& ele);
-      bool loadWires(const QDomElement& ele);
 
-//      bool parseProperties(const QDomElement& ele);
+      void readQucs(Qucs::XmlReader *reader);
+      void loadView(Qucs::XmlReader *reader);
+      void loadComponents(Qucs::XmlReader *reader);
+      void loadWires(Qucs::XmlReader *reader);
 };
 
 #endif //__XML_FORMAT_H

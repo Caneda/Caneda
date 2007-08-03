@@ -28,6 +28,11 @@ class SchematicScene;
 class QucsMainWindow;
 class QMenu;
 
+namespace Qucs {
+   class XmlReader;
+   class XmlWriter;
+}
+
 class QucsItem : public QGraphicsItem
 {
    public:
@@ -51,7 +56,7 @@ class QucsItem : public QGraphicsItem
       virtual ~QucsItem() {};
 
       int type() const;
-      QRectF boundingRect() const {return QRectF(); }
+      QRectF boundingRect() const { return QRectF(); }
 
       SchematicScene* schematicScene() const;
       QGraphicsView* activeView() const;
@@ -60,10 +65,14 @@ class QucsItem : public QGraphicsItem
       virtual QString saveString() const { return QString(""); }
       virtual bool loadFromString(QString ) { return true; }
 
+      virtual void writeXml(Qucs::XmlWriter *writer);
+      virtual void readXml(Qucs::XmlReader *reader);
+
       virtual void mirrorX();
       virtual void mirrorY();
       virtual void rotate();
 
+      //TODO:Make this pure virtual
       virtual void invokePropertiesDialog() {}
 
       QMenu* defaultContextMenu() const;

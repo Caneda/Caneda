@@ -24,88 +24,93 @@
 #include "qucs-tools/global.h"
 
 #include <QtGui/QFontMetricsF>
+#include <QtCore/QtDebug>
 
 PropertyGroup::PropertyGroup(Component *comp,SchematicScene *scene) :
-   QGraphicsItemGroup(0,static_cast<QGraphicsScene*>(scene)), m_component(comp)
+   QGraphicsItemGroup(0, scene),
+   m_component(comp)
 {
-   Q_ASSERT(scene);
+   firstTime = true;
+   //initVariables();
+   firstTime = false;
+   if(scene)
+      setPos(mapToScene(lastChildPos));
+}
 
+void PropertyGroup::initVariables()
+{
+   lastChildPos = QPointF(5,5);
+   if(scene() && !firstTime)
+      lastChildPos = m_component->sceneBoundingRect().bottomLeft();
    QFontMetricsF fm(Qucs::font());
-   lastChildPos = comp->mapToScene(comp->boundingRect().bottomLeft());
    fontHeight = fm.height()+4;
    itemLeft = 2.0;
    lastChildPos += QPointF(0.0, fontHeight);
-   setPos(lastChildPos);
-   lastChildPos = mapFromScene(lastChildPos);
-   //lastChildPos += QPointF(itemLeft,fontHeight);
+   if(scene() && !firstTime)
+      lastChildPos = mapFromScene(lastChildPos);
 }
 
-void PropertyGroup::addChild(ComponentProperty *child)
+void PropertyGroup::addProperty(ComponentProperty *property)
 {
-   if(m_children.count(child)) return;
+   if(m_properties.contains(property))
+      return;
+   //Calling this here prevents setting flags for empty group
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-   m_children << child;
-   if(child->isVisible()) {
+   m_properties << property;
+
+   if(property->isVisible()) {
       QPointF np = lastChildPos;
       // This makes the leftmost part of item to coincide with leftmost of item
-      //np.rx() -= child->item()->boundingRect().left();
-      child->setPos(mapToScene(np));
-      addToGroup(child->item());
+      //np.rx() -= property->item()->boundingRect().left();
+      property->setPos(mapToScene(np));
+      addToGroup(property->item());
       lastChildPos.ry() += fontHeight;
    }
 }
 
-void PropertyGroup::hideChild(ComponentProperty *child)
+void PropertyGroup::realignItems()
 {
-   int index = m_children.indexOf(child);
-   Q_ASSERT(index != -1);
-   child->hide();
-   if(index + 1 < m_children.size())
-      realignItems(index+1);
-}
-
-void PropertyGroup::showChild(ComponentProperty *child)
-{
-   int index = m_children.indexOf(child);
-   Q_ASSERT(index != -1);
-   child->show();
-   addToGroup(child->item());
-   realignItems(index);
-}
-
-void PropertyGroup::realignItems( int fromIndex )
-{
-   Q_ASSERT(fromIndex < m_children.size());
-   QPointF lastVisibleItemPos = pos() + QPointF(itemLeft, 0.0);
-   if(fromIndex != 0)
-      for(int i = fromIndex - 1; i > -1; --i)
-         if(m_children.at(i)->isVisible()) {
-            lastVisibleItemPos = m_children.at(i)->item()->pos();
-            break;
-         }
-
-   qreal y = lastVisibleItemPos.y() + fontHeight;
-
-   for(int i = fromIndex; i < m_children.size(); ++i) {
-      ComponentProperty *p = m_children[i];
-      if(p->isVisible()) {
-         p->item()->setPos(itemLeft - p->item()->boundingRect().left(),y);
-         y += fontHeight;
+   initVariables();
+   foreach( ComponentProperty *property, m_properties) {
+      if(property->isVisible()) {
+         Q_ASSERT(property->item()->group() == this);
+         QPointF np = lastChildPos;
+         // This makes the leftmost part of item to coincide with leftmost of item
+         np.rx() -= property->item()->boundingRect().left();
+         property->setPos(np);
+         lastChildPos.ry() += fontHeight;
       }
    }
 }
 
+QRectF PropertyGroup::boundingRect() const
+{
+   if(!children().isEmpty()) return QGraphicsItemGroup::boundingRect();
+   //HACK: An empty group makes item to move very slow. The below
+   //     line fixes it.
+   return QRectF(-2.0,-2.0,4.0,4.0);
+}
+
 void PropertyGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-   if(scene())
-      scene()->clearSelection();
-   qDebug("CA");
+   if(scene()) {
+      foreach(QGraphicsItem *item, scene()->selectedItems()) {
+         if(item != this)
+            item->setSelected(false);
+      }
+   }
+
+   foreach(ComponentProperty *p, m_properties) {
+      if(p->item() && p->item()->hasFocus())
+         p->item()->clearFocus();
+   }
+
    QGraphicsItemGroup::mousePressEvent(event);
 }
 
 
 ComponentProperty::ComponentProperty( Component *c,const QString& name, const QString& value,
-                                     const QString& description, bool visible,const QStringList& options)
+                                      const QString& description, bool visible,const QStringList& options)
    : m_component(c),
      m_name(name),
      m_value(value),
@@ -124,42 +129,70 @@ ComponentProperty::~ComponentProperty()
 
 void ComponentProperty::show()
 {
-   if(m_item)
-   {
+   if(isVisible()) {
+      qDebug("Item visible when calling ComponentProperty::show()");
       m_item->setPos(m_pos);
       m_item->show();
       return;
    }
 
    m_item = new PropertyText(this,m_component->schematicScene());
+   if(group()) {
+      group()->addToGroup(m_item);
+      group()->realignItems();
+   }
 }
 
 void ComponentProperty::hide()
 {
-   if(m_item)
+   if(isVisible()) {
       m_pos = m_item->pos();
-   delete m_item;
-   m_item = 0;
-}
-
-void ComponentProperty::operator=(const QString& value)
-{
-   if(m_options.isEmpty())
-      m_value = value;
-   else if(m_options.contains(value))
-   {
-      m_value = value;
+      if(group()) {
+         group()->removeFromGroup(m_item);
+         group()->realignItems();
+      }
+      delete m_item;
+      m_item = 0;
    }
    else
-   {
+      qDebug("Item already hidden while calling ComponentProperty::hide()");
+}
+
+void ComponentProperty::setVisible(bool visible)
+{
+   if(visible)
+      show();
+   else
+      hide();
+}
+
+void ComponentProperty::setPos(const QPointF& pos)
+{
+   if(isVisible())
+      m_item->setPos(pos);
+   else
+      m_pos = pos;
+}
+
+void ComponentProperty::setValue(const QString& value)
+{
+   if(m_options.isEmpty() || m_options.contains(value))
+      m_value = value;
+   else {
       qDebug() << "Trying to set value out of given options" ;
       qDebug() << m_name << m_options << "Given val is" << value;
    }
-   update();
+   if(isVisible())
+      m_item->updateValue();
 }
 
-void ComponentProperty::update()
+void ComponentProperty::updateValueFromItem()
 {
-   if(m_item)
-      m_item->updateValue();
+   if(isVisible())
+      m_value = m_item->toPlainText();
+}
+
+PropertyGroup* ComponentProperty::group() const
+{
+   return m_component->propertyGroup();
 }

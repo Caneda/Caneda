@@ -123,7 +123,7 @@ void SchematicScene::insertComponent(Component *comp)
       addItem(comp);
    }
 
-   if(m_components.count(comp) == 0)
+   if(!m_components.contains(comp))
       m_components.append(comp);
 
    foreach(ComponentPort *port, comp->m_ports) {
@@ -136,11 +136,11 @@ void SchematicScene::insertComponent(Component *comp)
       n->addComponent(comp);
       port->setNode(n);
    }
-
-   foreach(ComponentProperty *prop, comp->m_properties) {
-      if(prop->isVisible() && prop->item()->scene() != this)
-         addItem(prop->item());
+   if(comp->propertyGroup()->scene() != this) {
+      addItem(comp->propertyGroup());
+      comp->propertyGroup()->realignItems();
    }
+
    //TODO: add number suffix to component name
 }
 
@@ -154,10 +154,7 @@ void SchematicScene::removeComponent(Component *comp)
          removeItem(n);
    }
 
-   foreach(ComponentProperty *prop, comp->m_properties)
-      if(prop->item())
-         removeItem(prop->item());
-
+   removeItem(comp->propertyGroup());
    removeItem(comp);
 }
 
@@ -435,6 +432,8 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
       Component *c = Component::componentFromName(text,this);
       if(c) {
          c->setPos(event->scenePos());
+         //We can't set posn in constructor since we need a value from virtual function
+         c->setInitialPropertyPosition();
          v->horizontalScrollBar()->setValue(hor);
          v->verticalScrollBar()->setValue(ver);
          event->acceptProposedAction();

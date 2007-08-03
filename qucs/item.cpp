@@ -22,6 +22,9 @@
 #include "schematicscene.h"
 #include "schematicview.h"
 #include "qucsmainwindow.h"
+#include "xmlutilities.h"
+
+#include <QtXml/QXmlStreamWriter>
 
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) : QGraphicsItem(parent,(QGraphicsScene*)scene)
 {
@@ -55,24 +58,27 @@ QucsMainWindow* QucsItem::mainWindow() const
    return mw;
 }
 
+void QucsItem::writeXml(Qucs::XmlWriter *writer)
+{
+   Q_UNUSED(writer);
+}
+
+void QucsItem::readXml(Qucs::XmlReader *reader)
+{
+   if(reader->isStartElement())
+      reader->readUnknownElement();
+}
+
 void QucsItem::mirrorX()
 {
    update();
-#if QT_VERSION >= 0x040300
    scale(1.0,-1.0);
-#else
-   scale(1.0,-1.0);
-#endif
 }
 
 void QucsItem::mirrorY()
 {
    update();
-#if QT_VERSION >= 0x040300
    scale(-1.0,1.0);
-#else
-   scale(-1.0,1.0);
-#endif
 }
 
 void QucsItem::rotate()
@@ -83,6 +89,6 @@ void QucsItem::rotate()
 
 QMenu* QucsItem::defaultContextMenu() const
 {
-   //TODO
+   //TODO:
    return 0;
 }

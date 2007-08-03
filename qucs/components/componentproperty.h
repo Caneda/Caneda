@@ -29,37 +29,35 @@
 #include <QtGui/QGraphicsItemGroup>
 
 class Component;
+
 class PropertyGroup : public QGraphicsItemGroup
 {
    public:
       PropertyGroup(Component *comp,SchematicScene *scene = 0);
       ~PropertyGroup() {}
 
-      void addChild(ComponentProperty *child);
-      void hideChild(ComponentProperty *child);
-      void showChild(ComponentProperty *child);
-      void realignItems( int fromIndex = 0 );
+      void addProperty(ComponentProperty *child);
+
+      void realignItems();
       QRectF boundingRect() const;
+
+      QList<ComponentProperty*> properties() const { return m_properties; }
 
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
    private:
-      Component *m_component;
+      void initVariables();
+
+      Component *const m_component;
       qreal fontHeight;
       qreal itemLeft;
-      QList<ComponentProperty*> m_children;
+      QList<ComponentProperty*> m_properties;
       QPointF lastChildPos;
+      bool firstTime;
 };
 
-inline QRectF PropertyGroup::boundingRect() const
-{
-   if(children().size()) return QGraphicsItemGroup::boundingRect();
-   //HACK: An empty group makes item to move very slow. The below
-   //     line fixes it.
-   return QRectF(-2.0,-2.0,4.0,4.0);
-}
-
+//An abstraction to the propoerty of the component
 class ComponentProperty
 {
    public:
@@ -70,23 +68,25 @@ class ComponentProperty
 
       void show();
       void hide();
-      inline void setPos(const QPointF& pos);
-      inline void moveBy(qreal dx, qreal dy);
-      inline QPointF pos() const;
-      void operator=(const QString& value);
+      void setVisible(bool visible);
 
-      inline PropertyText* item() const;
-      inline Component* component() const { return m_component; }
-      inline bool isVisible() const;
-      void update();
+      void setPos(const QPointF& pos);
+      QPointF pos() const { return isVisible() ? m_item->pos() : m_pos; }
+      void setValue(const QString& value);
 
-      inline QString name() const;
-      inline QString value() const;
-      inline QString description() const;
-      inline QStringList options() const;
+      PropertyText* item() const { return m_item; }
+      Component* component() const { return m_component; }
+      bool isVisible() const { return m_item != 0; }
+      void updateValueFromItem();
+      PropertyGroup* group() const;
+
+      QString name() const { return m_name; }
+      QString value() const { return m_value; }
+      QString description() const { return m_description; }
+      QStringList options() const { return m_options; }
 
    private:
-      Component *m_component;
+      Component *const m_component;
       const QString m_name;
       QString m_value;
       const QString m_description;
@@ -95,59 +95,9 @@ class ComponentProperty
       PropertyText *m_item;
 };
 
-inline PropertyText* ComponentProperty::item() const
-{
-   return m_item;
-}
 
-inline bool ComponentProperty::isVisible() const
-{
-   return m_item != 0;
-}
 
-inline void ComponentProperty::setPos(const QPointF& pos)
-{
-   if(m_item)
-      m_item->setPos(pos);
-   else
-      m_pos = pos;
-}
 
-inline void ComponentProperty::moveBy(qreal dx, qreal dy)
-{
-   if(m_item)
-      m_item->moveBy(dx,dy);
-   else
-      m_pos += QPointF(dx,dy);
-}
-
-inline QPointF ComponentProperty::pos() const
-{
-   if(m_item)
-      return m_item->pos();
-   else
-      return m_pos;
-}
-
-inline QString ComponentProperty::name() const
-{
-   return m_name;
-}
-
-inline QString ComponentProperty::value() const
-{
-   return m_value;
-}
-
-inline QString ComponentProperty::description() const
-{
-   return m_description;
-}
-
-inline QStringList ComponentProperty::options() const
-{
-   return m_options;
-}
 
 #endif //__COMPONENTPROPERTY_H
 

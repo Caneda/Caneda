@@ -17,50 +17,56 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "propertytext.h"
-#include "componentproperty.h"
+#include "components/propertytext.h"
+#include "components/componentproperty.h"
+#include "components/component.h"
 #include "schematicscene.h"
 #include "schematicview.h"
-#include "components/component.h"
 #include "qucsmainwindow.h"
 
-#include <QtGui/QTextCursor>
-#include <QtGui/QCursor>
+
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QGraphicsScene>
 #include <QtGui/QFontMetricsF>
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QPainter>
 #include <QtGui/QApplication>
-
-#include <QtCore/QTimer>
 #include <QtCore/QtDebug>
 
 PropertyText::PropertyText(ComponentProperty *prop,SchematicScene *sc) :
-   QGraphicsTextItem(0,(QGraphicsScene *)sc), property(prop)
+   QGraphicsTextItem(0, sc), property(prop)
 {
    m_staticText = prop->name();
    m_staticText.append(" = ");
-   setPlainText(prop->value());
    setTextInteractionFlags(Qt::TextEditorInteraction);
    setFlags(ItemIsMovable | ItemIsFocusable);
    calculatePos();
+   updateValue();
 }
 
-void PropertyText::calculatePos()
+QRectF PropertyText::boundingRect() const
 {
-   QFontMetricsF fm(font());
-   prepareGeometryChange();
-   staticPos = QPointF(-fm.width(m_staticText),fm.ascent()+2);
+   QRectF br = QGraphicsTextItem::boundingRect();
+   br.setLeft((staticPos.x()));
+   return br;
 }
 
-void PropertyText::trimText()
+QPainterPath PropertyText::shape() const
 {
-   QString text = toPlainText().remove(QRegExp("[\n\r]"));
-   if(text.isEmpty())
-      text.append('0');
-   setPlainText(text);
+   QPainterPath p;
+   p.addRect(boundingRect());
+   return p;
+}
+
+void PropertyText::setFont(const QFont& f)
+{
+   QGraphicsTextItem::setFont(f);
+   calculatePos();
+}
+
+void PropertyText::validateText()
+{
+   //TODO: Validate the text here
 }
 
 void PropertyText::updateValue()
@@ -68,108 +74,154 @@ void PropertyText::updateValue()
    setPlainText(property->value());
 }
 
-void PropertyText::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+SchematicView* PropertyText::activeView() const
+{
+   QGraphicsView *gview = property->component()->activeView();
+   SchematicView *view = gview ? static_cast<SchematicView*>(gview) : 0;
+   return view;
+}
+
+//HACK: This solves the bug where keyboard shortcuts were interfering with textcontrol.
+bool PropertyText::eventFilter(QObject* object, QEvent* event)
+{
+   if (event->type() == QEvent::Shortcut ||
+       event->type() == QEvent::ShortcutOverride) {
+      if (!object->inherits("QGraphicsView")) {
+         event->accept();
+         return true;
+      }
+   }
+   return false;
+}
+
+
+void PropertyText::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
                          QWidget *widget)
 {
-   painter->save();
    painter->setFont(font());
+   painter->setBrush(Qt::NoBrush);
+   painter->setPen(QPen(Qt::black,0));
    painter->drawText(staticPos,m_staticText);
 
-   QStyleOptionGraphicsItem *o = new QStyleOptionGraphicsItem(*option);
-   o->exposedRect.setLeft(0.);
-   o->state &= ~QStyle::State_Selected;
-   o->state &= ~QStyle::State_HasFocus;
-   QGraphicsTextItem::paint(painter,o,widget);
+   QStyleOptionGraphicsItem *option = const_cast<QStyleOptionGraphicsItem*>(o);
+   QStyle::State state = option->state;
 
-   if (option->state & QStyle::State_HasFocus)
-   {
+   if(option->exposedRect.left() < 0)
+      option->exposedRect.setLeft(0);
+   option->state &= ~QStyle::State_Selected;
+   option->state &= ~QStyle::State_HasFocus;
+   QGraphicsTextItem::paint(painter,option,widget);
+
+   option->state = state;
+
+   if (option->state & QStyle::State_HasFocus) {
       painter->setPen(QPen(Qt::black, 1));
       painter->setBrush(Qt::NoBrush);
       painter->drawRect(QGraphicsTextItem::boundingRect());
    }
-
-   painter->restore();
-   delete o;
 }
 
 bool PropertyText::sceneEvent(QEvent *event)
 {
-   if(!group() || !hasFocus())
+   if(!group())
       return QGraphicsTextItem::sceneEvent(event);
 
-   // The call to parent is avoided to remove group behaviour
-   // and allow items to be edited.
+   //Eat some unnecessary
    switch (event->type()) {
-      case QEvent::FocusIn:
-         focusInEvent(static_cast<QFocusEvent *>(event));
-         break;
-      case QEvent::FocusOut:
-         focusOutEvent(static_cast<QFocusEvent *>(event));
-         break;
-      case QEvent::GraphicsSceneContextMenu:
-         contextMenuEvent(static_cast<QGraphicsSceneContextMenuEvent *>(event));
-         break;
       case QEvent::GraphicsSceneDragEnter:
-         dragEnterEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
-         break;
       case QEvent::GraphicsSceneDragMove:
-         dragMoveEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
-         break;
       case QEvent::GraphicsSceneDragLeave:
-         dragLeaveEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
-         break;
       case QEvent::GraphicsSceneDrop:
-         dropEvent(static_cast<QGraphicsSceneDragDropEvent *>(event));
-         break;
       case QEvent::GraphicsSceneHoverEnter:
-         hoverEnterEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
-         break;
       case QEvent::GraphicsSceneHoverMove:
-         hoverMoveEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
-         break;
       case QEvent::GraphicsSceneHoverLeave:
-         hoverLeaveEvent(static_cast<QGraphicsSceneHoverEvent *>(event));
-         break;
-      case QEvent::GraphicsSceneMouseMove:
-         mouseMoveEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-         break;
-      case QEvent::GraphicsSceneMousePress:
-         mousePressEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-         break;
-      case QEvent::GraphicsSceneMouseRelease:
-         mouseReleaseEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-         break;
-      case QEvent::GraphicsSceneMouseDoubleClick:
-         mouseDoubleClickEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-         break;
-      case QEvent::GraphicsSceneWheel:
-         wheelEvent(static_cast<QGraphicsSceneWheelEvent *>(event));
-         break;
-      case QEvent::KeyPress:
-         keyPressEvent(static_cast<QKeyEvent *>(event));
-         break;
-      case QEvent::KeyRelease:
-         keyReleaseEvent(static_cast<QKeyEvent *>(event));
-         break;
       case QEvent::InputMethod:
-         inputMethodEvent(static_cast<QInputMethodEvent *>(event));
-         break;
-      default:
-         return false;
+      case QEvent::GraphicsSceneWheel:
+         event->ignore();
+         return true;
+      default: ;
+   };
+
+   //Call event handlers of this and not send them to the parent - group
+   if(hasFocus()) {
+      switch (event->type()) {
+
+         case QEvent::KeyPress:
+            keyPressEvent(static_cast<QKeyEvent *>(event));
+            return true;
+
+         case QEvent::KeyRelease:
+            keyReleaseEvent(static_cast<QKeyEvent *>(event));
+            return true;
+
+         case QEvent::FocusIn:
+            focusInEvent(static_cast<QFocusEvent *>(event));
+            return true;
+
+         case QEvent::FocusOut:
+            focusOutEvent(static_cast<QFocusEvent *>(event));
+            return true;
+
+         case QEvent::GraphicsSceneMousePress:
+            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
+               mousePressEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+               return true;
+            }
+            //Remove foucs of this
+            clearFocus();
+            //Ignoring the event facilitates selection of new grabber, which is most likely group
+            event->ignore();
+            //This prevents double sending of events when the scene is selecting mouse grabber
+            if(!group()->hasFocus())
+               return true;
+            break;
+
+         case QEvent::GraphicsSceneMouseMove:
+            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
+               mouseMoveEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+               return true;
+            }
+            break;
+
+         case QEvent::GraphicsSceneMouseRelease:
+            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
+               mouseReleaseEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+               return true;
+            }
+            break;
+
+         case QEvent::GraphicsSceneMouseDoubleClick:
+            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
+               mouseDoubleClickEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+               return true;
+            }
+            break;
+
+         case QEvent::GraphicsSceneContextMenu:
+            contextMenuEvent(static_cast<QGraphicsSceneContextMenuEvent *>(event));
+            break;
+
+         default: break;
+      };
+   }
+   else {
+      event->accept();
+      //TODO:  Review this code thoroughly
    }
 
-   return true;
+   return QGraphicsTextItem::sceneEvent(event);
 }
 
 void PropertyText::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-   if (event->pos().x() > 0) {
-      if(scene())
-         scene()->clearSelection();
-      QGraphicsTextItem::mousePressEvent(event);
+   if(scene()) {
+      // Unselect other items once focus is received
+      foreach(QGraphicsItem *item, scene()->selectedItems()) {
+         if(item != this)
+            item->setSelected(false);
+      }
    }
-   else
-      clearFocus();
+   QGraphicsTextItem::mousePressEvent(event);
 }
 
 void PropertyText::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -184,25 +236,21 @@ void PropertyText::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void PropertyText::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-   if(scene())
-      scene()->clearSelection();
    QGraphicsTextItem::mouseDoubleClickEvent(event);
-   QTextCursor tc = textCursor();
-   tc.clearSelection();
-   setTextCursor(tc);
 }
 
 void PropertyText::focusInEvent(QFocusEvent *event)
 {
    QGraphicsTextItem::focusInEvent(event);
-   trimText();
    qApp->installEventFilter(this);
 }
 
 void PropertyText::focusOutEvent(QFocusEvent *event)
 {
    QGraphicsTextItem::focusOutEvent(event);
-   trimText();
+   validateText();
+   updateGroupGeometry();
+   property->updateValueFromItem();
    qApp->removeEventFilter(this);
 }
 
@@ -214,27 +262,32 @@ void PropertyText::keyPressEvent(QKeyEvent *e)
       QGraphicsTextItem::keyPressEvent(e);
 }
 
-QVariant PropertyText::itemChange(GraphicsItemChange change, const QVariant &value)
+void PropertyText::calculatePos()
 {
-   return QGraphicsTextItem::itemChange(change,value);
+   QFontMetricsF fm(font());
+   prepareGeometryChange();
+   staticPos = QPointF(-fm.width(m_staticText),fm.ascent()+2);
 }
 
-SchematicView* PropertyText::activeView() const
+bool PropertyText::isSendable(QGraphicsSceneMouseEvent *event) const
 {
-   QGraphicsView *gview = property->component()->activeView();
-   SchematicView *view = gview ? static_cast<SchematicView*>(gview) : 0;
-   return view;
-}
-
-//HACK:  This solves the bug where keyboard shortcuts were interfering with textcontrol.
-bool PropertyText::eventFilter(QObject* object, QEvent* event)
-{
-   if (event->type() == QEvent::Shortcut ||
-       event->type() == QEvent::ShortcutOverride) {
-      if (!object->inherits("QGraphicsView")) {
-         event->accept();
+   if(event->type() == QEvent::GraphicsSceneMousePress) {
+      if( event->pos().x() < 0.0)
          return true;
-      }
+      return false;
    }
+   if(event->buttonDownPos(Qt::LeftButton).x() < 0.0)
+      return true;
    return false;
+}
+
+//HACK: This adds and removes a dummy item from group to update its geometry
+void PropertyText::updateGroupGeometry()
+{
+   if(group()) {
+      QGraphicsTextItem *dummyItem = new QGraphicsTextItem();
+      group()->addToGroup(dummyItem);
+      group()->removeFromGroup(dummyItem);
+      delete dummyItem;
+   }
 }

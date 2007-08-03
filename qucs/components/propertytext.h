@@ -30,36 +30,17 @@ class SchematicView;
 
 class PropertyText : public QGraphicsTextItem
 {
-Q_OBJECT
+      Q_OBJECT;
    public:
       PropertyText(ComponentProperty *prop,SchematicScene *scene);
 
-      inline QRectF boundingRect() const
-      {
-         QRectF br = QGraphicsTextItem::boundingRect();
-         br.setLeft((staticPos.x()));
-         return br;
-      }
+      QRectF boundingRect() const;
+      QPainterPath shape() const;
+      bool contains(const QPointF &point) const { return boundingRect().contains(point); }
 
-      inline QPainterPath shape() const
-      {
-         QPainterPath p;
-         p.addRect(boundingRect());
-         return p;
-      }
+      void setFont(const QFont& f);
 
-      inline bool contains(const QPointF &point) const
-      {
-         return boundingRect().contains(point);
-      }
-
-      inline void setFont(const QFont& f)
-      {
-         QGraphicsTextItem::setFont(f);
-         calculatePos();
-      }
-
-      void trimText();
+      void validateText();
       void updateValue();
 
       SchematicView* activeView() const;
@@ -68,19 +49,24 @@ Q_OBJECT
 
    protected:
       void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
       bool sceneEvent(QEvent *event);
-      void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
-      void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
       void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+      void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
       void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+      void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
+
       void focusInEvent(QFocusEvent *event);
       void focusOutEvent(QFocusEvent *event);
+
       void keyPressEvent(QKeyEvent *event);
-      QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
    private:
       void calculatePos();
-      bool clickedIn;
+      bool isSendable(QGraphicsSceneMouseEvent *event) const;
+      void updateGroupGeometry();
+
       QString m_staticText;
       QPointF staticPos;
       ComponentProperty *property;

@@ -49,7 +49,7 @@ SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
    setAcceptDrops(true);
    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
-   connect(sc, SIGNAL(modificationChanged()), this, SIGNAL(modificationChanged()));
+   connect(sc, SIGNAL(modificationChanged(bool)), this, SIGNAL(modificationChanged(bool)));
    connect(sc, SIGNAL(fileNameChanged(const QString&)), this, SIGNAL(fileNameChanged(const QString&)));
    connect(sc, SIGNAL(stateUpdated()), this, SIGNAL(stateUpdated()));
 

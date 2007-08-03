@@ -25,6 +25,7 @@
 #include "paintings/painting.h"
 #include "wire.h"
 #include "wireline.h"
+#include "xmlutilities.h"
 #include "diagrams/diagram.h"
 
 #include "qucs-tools/global.h"
@@ -36,19 +37,7 @@
 #include <QtGui/QMatrix>
 #include <QtGui/QScrollBar>
 
-#define CreateElement(ele,par,docu) QDomElement _##ele = docu.createElement(#ele); \
-   _##par.appendChild(_##ele)
-
-inline QDomText createIntNode(int val, QDomDocument& doc)
-{
-   return doc.createTextNode(QString::number(val));
-}
-
-inline QDomText createRealNode(qreal val, QDomDocument& doc)
-{
-   return doc.createTextNode(Qucs::realToString(val));
-}
-
+#include <QtXml/QXmlStreamWriter>
 
 XmlFormat::XmlFormat(SchematicView *view) : FileFormatHandler(view)
 {
@@ -62,541 +51,312 @@ QString XmlFormat::saveText()
    if(!scene)
       return QString();
 
-   QDomDocument doc("qucs");
-   QDomElement _root = doc.createElement("qucs");
-   _root.setAttribute("version","0.1.0");
-   doc.appendChild(_root);
+   QString retVal;
+   Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
+   writer->setAutoFormatting(true);
+   writer->writeStartDocument();
+   writer->writeDTD(QString("<!DOCTYPE qucs>"));
+   writer->writeStartElement("qucs");
+   writer->writeAttribute("version", Qucs::version);
 
-   {
-      CreateElement(view,root,doc);
-      CreateElement(scenerect,view,doc);
-      QRectF r = m_view->sceneRect();
+   //TODO:mainwindow geometry
+   //write all view details
+   writer->writeStartElement("view");
 
-      CreateElement(x,scenerect,doc);
-      _x.appendChild(createRealNode(r.x(),doc));
+   writer->writeStartElement("scenerect");
+   Qucs:: writeRect(writer, m_view->sceneRect());
+   writer->writeEndElement(); //</scenerect>
 
-      CreateElement(y,scenerect,doc);
-      _y.appendChild(createRealNode(r.y(),doc));
+   writer->writeStartElement("viewtransform");
+   Qucs:: writeTransform(writer, m_view->transform());
+   writer->writeEndElement(); //</viewtransform>
 
-      CreateElement(width,scenerect,doc);
-      _width.appendChild(createRealNode(r.width(),doc));
+   writer->writeStartElement("scrollbarvalues");
+   Qucs:: writeElement(writer, "horizontal", m_view->horizontalScrollBar()->value());
+   Qucs:: writeElement(writer, "vertical", m_view->verticalScrollBar()->value());
+   writer->writeEndElement(); //</scrollbarvalues>
 
-      CreateElement(height,scenerect,doc);
-      _height.appendChild(createRealNode(r.height(),doc));
+   writer->writeStartElement("grid");
+   writer->writeAttribute("visible", Qucs::boolToString(scene->isGridVisible()));
+   Qucs:: writeSize(writer, QSize(scene->gridWidth(), scene->gridHeight()));
+   writer->writeEndElement(); //</grid>
 
-      CreateElement(scale,view,doc);
-      _scale.appendChild(createRealNode(m_view->matrix().m11(),doc));
+   writer->writeStartElement("data");
+   Qucs:: writeElement(writer, "dataset", scene->dataSet());
+   Qucs:: writeElement(writer, "datadisplay", scene->dataDisplay());
+   Qucs:: writeElement(writer, "opensdatadisplay", scene->opensDataDisplay());
+   writer->writeEndElement(); //</data>
 
-      CreateElement(scrollbar,view,doc);
-      int horScroll,verScroll;
-      horScroll = m_view->horizontalScrollBar() ? m_view->horizontalScrollBar()->value() : 0;
-      verScroll = m_view->verticalScrollBar() ? m_view->verticalScrollBar()->value() : 0;
-      CreateElement(horizontal,scrollbar,doc);
-      _horizontal.appendChild(createIntNode(horScroll,doc));
-      CreateElement(vertical,scrollbar,doc);
-      _vertical.appendChild(createIntNode(verScroll,doc));
+   writer->writeStartElement("frame");
+   writer->writeAttribute("visible", Qucs::boolToString(scene->isFrameVisible()));
 
-
-      CreateElement(grid,view,doc);
-      _grid.setAttribute("visible",QString::number(scene->isGridVisible()));
-      CreateElement(xsize,grid,doc);
-      _xsize.appendChild(createIntNode(scene->gridWidth(),doc));
-      CreateElement(ysize,grid,doc);
-      _ysize.appendChild(createIntNode(scene->gridHeight(),doc));
-
-      CreateElement(data,view,doc);
-      CreateElement(dataset,data,doc);
-      _dataset.appendChild(doc.createTextNode(scene->dataSet()));
-      CreateElement(datadisplay,data,doc);
-      _datadisplay.appendChild(doc.createTextNode(scene->dataDisplay()));
-      CreateElement(opendisplay,data,doc);
-      _opendisplay.appendChild(createIntNode(scene->opensDataDisplay(),doc));
-
-      CreateElement(frame,view,doc);
-      _frame.setAttribute("visible",QString::number(scene->isFrameVisible()));
-      QString t;
-      CreateElement(text0,frame,doc);
-      QStringList frameText = scene->frameTexts();
-      t = frameText[0];
-      Qucs::convert2ASCII(t);
-      _text0.appendChild(doc.createTextNode(t));
-      CreateElement(text1,frame,doc);
-      t = frameText[1];
-      Qucs::convert2ASCII(t);
-      _text1.appendChild(doc.createTextNode(t));
-      CreateElement(text2,frame,doc);
-      t = frameText[2];
-      Qucs::convert2ASCII(t);
-      _text2.appendChild(doc.createTextNode(t));
-      CreateElement(text3,frame,doc);
-      t = frameText[3];
-      Qucs::convert2ASCII(t);
-      _text3.appendChild(doc.createTextNode(t));
+   writer->writeStartElement("frametexts");
+   foreach(QString text, scene->frameTexts()) {
+      Qucs::convert2ASCII(text);
+      Qucs:: writeElement(writer, "text",text);
    }
+   writer->writeEndElement(); //</frametexts>
+   writer->writeEndElement(); //</frame>
+   writer->writeEndElement(); //</view>
 
-   CreateElement(components,root,doc);
-   foreach(Component *c, scene->components()) {
-      CreateElement(component,components,doc);
-      _component.setAttribute("model",c->model);
-      _component.setAttribute("activestatus",c->activeStatus);
+   //Write all the components now
+   writer->writeStartElement("components");
+   foreach(Component *c, scene->components())
+      c->writeXml(writer);
+   writer->writeEndElement(); //</components>
 
-      {
-         CreateElement(name,component,doc);
-         _name.setAttribute("visible",QString::number(c->showName));
-         QString name = c->name.isEmpty() ? "*" : c->name;
-         _name.appendChild(doc.createTextNode(name));
-      }
-      CreateElement(pos,component,doc);
-      {
-         CreateElement(x,pos,doc);
-         _x.appendChild(createRealNode(c->pos().x(),doc));
-         CreateElement(y,pos,doc);
-         _y.appendChild(createRealNode(c->pos().y(),doc));
-      }
+   writer->writeStartElement("wires");
+   foreach(Wire *w, scene->wires())
+      w->writeXml(writer);
+   writer->writeEndElement(); //</wires>
 
-      CreateElement(textpos,component,doc);
-      {
-         QPointF textPos = c->propertyGroup() ? c->propertyGroup()->pos() : QPointF(0.,0.);
-         CreateElement(x,textpos,doc);
-         _x.appendChild(createRealNode(textPos.x(),doc));
-         CreateElement(y,textpos,doc);
-         _y.appendChild(createRealNode(textPos.y(),doc));
-      }
+   writer->writeEndDocument(); //</qucs>
 
-      CreateElement(matrix,component,doc);
-      QMatrix m = c->matrix();
-      CreateElement(m11,matrix,doc);
-      _m11.appendChild(createRealNode(m.m11(),doc));
-      CreateElement(m12,matrix,doc);
-      _m12.appendChild(createRealNode(m.m12(),doc));
-      CreateElement(m21,matrix,doc);
-      _m21.appendChild(createRealNode(m.m21(),doc));
-      CreateElement(m22,matrix,doc);
-      _m22.appendChild(createRealNode(m.m22(),doc));
-      CreateElement(dx,matrix,doc);
-      _dx.appendChild(createRealNode(m.dx(),doc));
-      CreateElement(dy,matrix,doc);
-      _dy.appendChild(createRealNode(m.dy(),doc));
-
-      CreateElement(properties,component,doc);
-
-      foreach(ComponentProperty *p1, c->properties()) {
-         CreateElement(property,properties,doc);
-         _property.setAttribute("visible",QString::number(p1->isVisible()));
-         CreateElement(name,property,doc);
-         _name.appendChild(doc.createTextNode(p1->name()));
-         CreateElement(value,property,doc);
-         _value.appendChild(doc.createTextNode(p1->value()));
-      }
-   }
-
-   CreateElement(wires,root,doc);
-   foreach(Wire *w, scene->wires()) {
-      CreateElement(wire,wires,doc);
-      foreach(WireLine l, w->wireLines()) {
-         CreateElement(wireline,wire,doc);
-         CreateElement(x1,wireline,doc);
-         _x1.appendChild(createRealNode(l.x1(),doc));
-         CreateElement(y1,wireline,doc);
-         _y1.appendChild(createRealNode(l.y1(),doc));
-         CreateElement(x2,wireline,doc);
-         _x2.appendChild(createRealNode(l.x2(),doc));
-         CreateElement(y2,wireline,doc);
-         _y2.appendChild(createRealNode(l.y2(),doc));
-      }
-   }
-   return doc.toString(4);
+   delete writer;
+   return retVal;
 }
 
 bool XmlFormat::loadFromText(const QString& text)
 {
-   QString errorStr;
-   int errorLine;
-   int errorColumn;
+   if(!m_view) return false;
 
-   QDomDocument doc;
-   if (!doc.setContent(text, &errorStr, &errorLine,
-                       &errorColumn)) {
-      QMessageBox::information(0,QObject::tr("Qucs Schematic"),
-                               QObject::tr("Parse error at line %1, column %2:\n%3")
-                               .arg(errorLine)
-                               .arg(errorColumn)
-                               .arg(errorStr));
-      return false;
-   }
+   qDebug("loadFromText");
 
-   QDomElement root = doc.documentElement();
-   if (root.tagName() != "qucs") {
-      QMessageBox::information(0,QObject::tr("Qucs Schematic"),
-                               QObject::tr("The file is not an qucs xml schematic file."));
-      return false;
-   } else if (root.hasAttribute("version")
-              && !Qucs::checkVersion(root.attribute("version"))) {
-      QMessageBox::information(0, QObject::tr("Error"),
-                               QObject::tr("Wrong document version"));
-      return false;
-   }
+   Qucs::XmlReader *reader = new Qucs::XmlReader(text);
+   while(!reader->atEnd()) {
+      reader->readNext();
 
+      if(reader->isStartElement()) {
+         if(reader->name() == "qucs" &&
+            Qucs::checkVersion(reader->attributes().value("version").toString())) {
 
-   QDomElement ele = root.firstChildElement();
-   while(!ele.isNull()) {
-      if(ele.tagName() == "view") {
-         if(!loadView(ele))
-            return false;
-      } else if(ele.tagName() == "components") {
-         if(!loadComponents(ele))
-            return false;
-      } else if(ele.tagName() == "wires") {
-         if(!loadWires(ele))
-            return false;
-      } else {
-         QMessageBox::critical(0, QObject::tr("Error"),
-                               QObject::tr("Unknown tag %1").arg(ele.tagName()));
-         return false;
+            readQucs(reader);
+         }
+         else {
+            reader->raiseError(QObject::tr("Not a qucs file or probably malformatted file"));
+         }
       }
-
-      ele = ele.nextSiblingElement();
    }
 
+   if(reader->hasError()) {
+      QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
+      delete reader;
+      return false;
+   }
+
+   delete reader;
    return true;
 }
 
-bool XmlFormat::loadView(const QDomElement& ele)
+void XmlFormat::readQucs(Qucs::XmlReader* reader)
 {
-   SchematicScene *scene = m_view->schematicScene();
-   if(!scene) return false;
-   QDomElement child = ele.firstChildElement();
-   while( !child.isNull()) {
-      QString tag = child.tagName();
+   qDebug("Reading qucs");
+   if(!reader->isStartElement() || reader->name() != "qucs")
+      reader->raiseError(QObject::tr("Not a qucs file or probably malformatted file"));
 
-      if(tag == "scenerect") {
-         QDomElement grandChild = child.firstChildElement("x");
-         if(grandChild.isNull()) return false;
-         QRectF r;
-         bool ok,k=true;
-         r.setX(grandChild.text().toDouble(&ok));
-         k &= ok;
+   while(!reader->atEnd()) {
+      reader->readNext();
 
-         grandChild = child.firstChildElement("y");
-         if(grandChild.isNull()) return false;
-         r.setY(grandChild.text().toDouble(&ok));
-         k &= ok;
-
-         grandChild = child.firstChildElement("width");
-         if(grandChild.isNull()) return false;
-         r.setWidth(grandChild.text().toDouble(&ok));
-         k &= ok;
-
-         grandChild = child.firstChildElement("height");
-         if(grandChild.isNull()) return false;
-         r.setHeight(grandChild.text().toDouble(&ok));
-         k &= ok;
-         if(!k) return false;
-         m_view->setSceneRect(r);
+      if(reader->isEndElement()) {
+         Q_ASSERT(reader->name() == "qucs");
+         break;
       }
 
-      else if(tag == "scale") {
-         bool ok;
-         qreal scale = child.text().toDouble(&ok);
-         if(!ok) return false;
-         m_view->scale(scale,scale);
+      if(reader->isStartElement()) {
+         if(reader->name() == "components")
+            loadComponents(reader);
+         else if(reader->name() == "view")
+            loadView(reader);
+         else if(reader->name() == "wires")
+            loadWires(reader);
+         else
+            reader->readUnknownElement();
       }
-
-      else if(tag == "scrollbar") {
-         int val;
-         bool ok;
-
-         QDomElement hor = child.firstChildElement("horizontal");
-         if(hor.isNull()) return false;
-         val = hor.text().toInt(&ok);
-         if(!ok) return false;
-         m_view->horizontalScrollBar()->setValue(val);
-
-         QDomElement ver = child.firstChildElement("vertical");
-         if(ver.isNull()) return false;
-         val = ver.text().toInt(&ok);
-         if(!ok) return false;
-         m_view->verticalScrollBar()->setValue(val);
-      }
-
-      else if(tag == "grid") {
-         bool ok;
-         int val;
-         if(child.hasAttribute("visible")) {
-            val = child.attribute("visible").toInt(&ok);
-            if(!ok) return false;
-            ok = (val != 0); //reusing ok
-            scene->setGridVisible(ok);
-         }
-
-         QDomElement xsize = child.firstChildElement("xsize");
-         if(xsize.isNull()) return false;
-         val = xsize.text().toInt(&ok);
-         if(!ok) return false;
-         scene->setGridWidth(val);
-
-         QDomElement ysize = child.firstChildElement("ysize");
-         if(ysize.isNull()) return false;
-         val = ysize.text().toInt(&ok);
-         if(!ok) return false;
-         scene->setGridHeight(val);
-      }
-
-      else if(tag == "data") {
-         int val;
-         bool ok;
-
-         QDomElement dataset = child.firstChildElement("dataset");
-         if(dataset.isNull()) return false;
-         scene->setDataSet(dataset.text());
-
-         QDomElement datadisplay = child.firstChildElement("datadisplay");
-         if(datadisplay.isNull()) return false;
-         scene->setDataDisplay(datadisplay.text());
-
-         QDomElement opendisplay = child.firstChildElement("opendisplay");
-         if(opendisplay.isNull()) return false;
-         val = opendisplay.text().toInt(&ok);
-         if(!ok) return false;
-         ok = (val != 0);
-         scene->setOpensDataDisplay(ok);
-      }
-
-      else if(tag == "frame") {
-         bool ok;
-         int val;
-         if(child.hasAttribute("visible")) {
-            val = child.attribute("visible").toInt(&ok);
-            if(!ok) return false;
-            ok = (val != 0); //reusing ok
-            scene->setFrameVisible(ok);
-         }
-
-         QDomElement text0 = child.firstChildElement("text0");
-         QStringList frameTexts;
-         if(text0.isNull()) return false;
-         frameTexts << text0.text();
-
-         QDomElement text1 = child.firstChildElement("text1");
-         if(text1.isNull()) return false;
-         frameTexts << text1.text();
-
-         QDomElement text2 = child.firstChildElement("text2");
-         if(text2.isNull()) return false;
-         frameTexts << text2.text();
-
-         QDomElement text3 = child.firstChildElement("text3");
-         if(text3.isNull()) return false;
-         frameTexts << text3.text();
-
-         scene->setFrameTexts(frameTexts);
-
-      }
-      child = child.nextSiblingElement();
    }
-   return true;
 }
 
-bool XmlFormat::loadComponents(const QDomElement& ele)
+void XmlFormat::loadComponents(Qucs::XmlReader *reader)
 {
+   qDebug("loading components");
    SchematicScene *scene = m_view->schematicScene();
-   if(!scene) return false;
-   QDomElement child = ele.firstChildElement();
-   while( !child.isNull()) {
-      if(child.tagName() != "component" ||
-         !child.hasAttribute("model"))
-         return false;
+   if(!scene) {
+      reader->raiseError(QObject::tr("XmlFormat::loadComponents() : Scene doesn't exist.\n"
+                                     "So raising xml error to stop parsing"));
+      return;
+   }
+   if(!reader->isStartElement() || reader->name() != "components")
+      reader->raiseError(QObject::tr("Malformatted file"));
 
-      Component *c = Component::componentFromModel(child.attribute("model"), scene);
-      if(!c) return false;
+   while(!reader->atEnd()) {
+      reader->readNext();
 
-      if(child.hasAttribute("activestatus")) {
-         int status;
-         bool ok;
-         status = child.attribute("activestatus").toInt(&ok);
-         if(!ok) return false;
-         c->activeStatus = (Component::ActiveStatus)status;
+      if(reader->isEndElement()) {
+         Q_ASSERT(reader->name() == "components");
+         break;
       }
-
-      QDomElement grandChild = child.firstChildElement();
-
-      while( !grandChild.isNull()) {
-         QString tag = grandChild.tagName();
-         if(tag == "name") {
-            if(!grandChild.hasAttribute("visible"))
-               return false;
-            int val;
-            bool ok;
-            val = grandChild.attribute("visible").toInt(&ok);
-            if(!ok) return false;
-            c->name = grandChild.text();
-            //TODO: Make name property
-         }
-
-         else if(tag == "pos") {
-            QPointF p;
-            bool ok;
-            QDomElement _x = grandChild.firstChildElement("x");
-            if(_x.isNull()) return false;
-            p.setX(_x.text().toDouble(&ok));
-            if(!ok) return false;
-
-            QDomElement _y = grandChild.firstChildElement("y");
-            if(_y.isNull()) return false;
-            p.setY(_y.text().toDouble(&ok));
-            if(!ok) return false;
-
-            c->setPos(p);
-         }
-
-         else if(tag == "textpos") {
-            bool ok;
-            QPointF p;
-            QDomElement _x = grandChild.firstChildElement("x");
-            if(_x.isNull()) return false;
-            p.setX(_x.text().toDouble(&ok));
-            if(!ok) return false;
-
-            QDomElement _y = grandChild.firstChildElement("y");
-            if(_y.isNull()) return false;
-            p.setY(_y.text().toDouble(&ok));
-            if(!ok) return false;
-
-            c->propertyGroup()->setPos(p);
-         }
-
-         else if(tag == "matrix") {
-            bool ok;
-            QDomElement _m11 = grandChild.firstChildElement("m11");
-            if(_m11.isNull()) return false;
-            qreal m11 = _m11.text().toDouble(&ok);
-            if(!ok) return false;
-
-            QDomElement _m12 = grandChild.firstChildElement("m12");
-            if(_m12.isNull()) return false;
-            qreal m12 = _m12.text().toDouble(&ok);
-            if(!ok) return false;
-
-            QDomElement _m21 = grandChild.firstChildElement("m21");
-            if(_m21.isNull()) return false;
-            qreal m21 = _m21.text().toDouble(&ok);
-            if(!ok) return false;
-
-            QDomElement _m22 = grandChild.firstChildElement("m22");
-            if(_m22.isNull()) return false;
-            qreal m22 = _m22.text().toDouble(&ok);
-            if(!ok) return false;
-
-            QDomElement _dx = grandChild.firstChildElement("dx");
-            if(_dx.isNull()) return false;
-            qreal dx = _dx.text().toDouble(&ok);
-            if(!ok) return false;
-
-            QDomElement _dy = grandChild.firstChildElement("dy");
-            if(_dy.isNull()) return false;
-            qreal dy = _dy.text().toDouble(&ok);
-            if(!ok) return false;
-
-            c->setMatrix(QMatrix(m11,m12,m21,m22,dx,dy));
-         }
-
-         else if(tag == "properties") {
-            QDomElement property = grandChild.firstChildElement();
-            while(!property.isNull()) {
-               if(property.tagName() != "property")
-                  return false;
-
-               QString name;
-               QString value;
-
-               QDomElement _name = property.firstChildElement("name");
-               if(_name.isNull()) return false;
-               name = _name.text();
-
-               QDomElement _value = property.firstChildElement("value");
-               if(_value.isNull()) return false;
-               value = _value.text();
-
-               ComponentProperty *p = c->property(name);
-               if(!p) return false;
-               *p = value;
-
-               if(property.hasAttribute("visible")) {
-                  int val;
-                  bool ok;
-                  val = property.attribute("visible").toInt(&ok);
-                  if(!ok) return false;
-                  ok = (val != 0);
-                  if(ok)
-                     p->show();
-                  else
-                     p->hide();
-               }
-
-               property = property.nextSiblingElement();
+      if(reader->isStartElement()) {
+         if(reader->name() == "component") {
+            QString model = reader->attributes().value("model").toString();
+            Component *c = Component::componentFromModel(model, scene);
+            if(!c)
+               reader->raiseError(QObject::tr("Component %1 doesn't exist").arg(model));
+            else {
+               c->readXml(reader);
             }
          }
-
-         grandChild = grandChild.nextSiblingElement();
+         else
+            reader->readUnknownElement();
       }
-
-      child = child.nextSiblingElement();
    }
-   return true;
 }
 
-bool XmlFormat::loadWires(const QDomElement& ele)
+void XmlFormat::loadView(Qucs::XmlReader *reader)
 {
+   qDebug("Loading view");
    SchematicScene *scene = m_view->schematicScene();
-   if(!scene) return false;
-   QDomElement child = ele.firstChildElement();
-   while(!child.isNull()) {
-      QList<WireLine> wireLines;
-      if(child.tagName() != "wire")
-         return false;
-      QDomElement _line = child.firstChildElement("wireline");
-      while(!_line.isNull()) {
-         qreal x1,y1,x2,y2;
-         bool ok;
+   if(!scene) {
+      reader->raiseError(QObject::tr("XmlFormat::loadView() : Scene doesn't exist.\n"
+                                     "So raising xml error to stop parsing"));
+      return;
+   }
 
-         QDomElement _x1 = _line.firstChildElement("x1");
-         if(_x1.isNull()) return false;
-         x1 = _x1.text().toDouble(&ok);
-         if(!ok) return false;
+   if(!reader->isStartElement() || reader->name() != "view")
+      reader->raiseError(QObject::tr("Malformatted file"));
 
-         QDomElement _y1 = _line.firstChildElement("y1");
-         if(_y1.isNull()) return false;
-         y1 = _y1.text().toDouble(&ok);
-         if(!ok) return false;
+   QRectF sceneRect;
+   QTransform viewTransform;
+   int horizontalScroll = 0;
+   int verticalScroll = 0;
+   bool gridVisible = false;
+   QSize gridSize;
+   QString dataSet;
+   QString dataDisplay;
+   bool opensDataDisplay = false;
+   bool frameVisible = false;
+   QStringList frameTexts;
 
-         QDomElement _x2 = _line.firstChildElement("x2");
-         if(_x2.isNull()) return false;
-         x2 = _x2.text().toDouble(&ok);
-         if(!ok) return false;
+   while(!reader->atEnd()) {
+      reader->readNext();
 
-         QDomElement _y2 = _line.firstChildElement("y2");
-         if(_y2.isNull()) return false;
-         y2 = _y2.text().toDouble(&ok);
-         if(!ok) return false;
-
-         wireLines << WireLine(x1,y1,x2,y2);
-         _line = _line.nextSiblingElement();
+      if(reader->isEndElement()) {
+         Q_ASSERT(reader->name() == "view");
+         break;
       }
 
-      child = child.nextSiblingElement();
+      if(reader->isStartElement()) {
+         if(reader->name() == "scenerect") {
+            reader->readFurther();
+            sceneRect = reader->readRect();
+            reader->readFurther();
+            Q_ASSERT(reader->isEndElement() && reader->name() == "scenerect");
+         }
+         else if(reader->name() == "viewtransform") {
+            reader->readFurther();
+            viewTransform = reader->readTransform();
+            reader->readFurther();
+            Q_ASSERT(reader->isEndElement() && reader->name() == "viewtransform");
+         }
+         else if(reader->name() == "scrollbarvalues") {
+            reader->readFurther();
+            horizontalScroll = reader->readInt("horizontal");
+            reader->readFurther();
+            verticalScroll = reader->readInt("vertical");
+            reader->readFurther();
+            Q_ASSERT(reader->isEndElement() && reader->name() == "scrollbarvalues");
+         }
+         else if(reader->name() == "grid") {
+            QString att = reader->attributes().value("visible").toString();
+            att = att.toLower();
+            if(att != "true" && att != "false") {
+               reader->raiseError(QObject::tr("Invalid bool attribute"));
+               break;
+            }
+            gridVisible = (att == "true");
+            reader->readFurther();
+            gridSize = reader->readSize();
+            reader->readFurther();
+            Q_ASSERT(reader->isEndElement() && reader->name() == "grid");
+         }
+         else if(reader->name() == "data") {
+            reader->readFurther();
+            dataSet = reader->readText("dataset");
+            reader->readFurther();
+            dataDisplay = reader->readText("datadisplay");
+            reader->readFurther();
+            opensDataDisplay = (reader->readText("opensdatadisplay") == "true");
+            reader->readFurther();
+            Q_ASSERT(reader->isEndElement() && reader->name() == "data");
+         }
+         else if(reader->name() == "frame") {
+            QString att = reader->attributes().value("visible").toString();
+            att = att.toLower();
+            if(att != "true" && att != "false") {
+               reader->raiseError(QObject::tr("Invalid bool attribute"));
+               break;
+            }
+            frameVisible = (att == "true");
 
-      if(wireLines.isEmpty()) continue;
-      QPointF p1 = wireLines[0].p1();
-      QPointF p2 = wireLines.last().p2();
-      Node *n1 = scene->nodeAt(p1);
-      if(!n1)
-         n1 = scene->createNode(p1);
-      Node *n2 = scene->nodeAt(p2);
-      if(!n2)
-         n2 = scene->createNode(p2);
+            reader->readFurther();
+            if(reader->isStartElement() && reader->name() == "frametexts") {
+               while(!reader->atEnd()) {
+                  reader->readNext();
+                  if(reader->isEndElement()) {
+                     Q_ASSERT(reader->name() == "frametexts");
+                     break;
+                  }
 
-      Wire *w = new Wire(scene,n1,n2);
-      w->setWireLines(wireLines);
+                  if(reader->isStartElement()) {
+                     if(reader->name() == "text") {
+                        QString text = reader->readText("text");
+                        frameTexts << text;
+                     }
+                     else
+                        reader->readUnknownElement();
+                  }
+               }
+            }
+            reader->readFurther();
+            Q_ASSERT(reader->isEndElement() && reader->name() == "frame");
+         }
+      }
    }
-   return true;
+
+   if(!reader->hasError()) {
+      m_view->setUpdatesEnabled(false);
+      m_view->setSceneRect(sceneRect);
+      m_view->setTransform(viewTransform);
+      m_view->horizontalScrollBar()->setValue(horizontalScroll);
+      m_view->verticalScrollBar()->setValue(verticalScroll);
+      scene->setGridVisible(gridVisible);
+      scene->setGridSize(gridSize.width(), gridSize.height());
+      scene->setDataSet(dataSet);
+      scene->setDataDisplay(dataDisplay);
+      scene->setOpensDataDisplay(opensDataDisplay);
+      scene->setFrameVisible(frameVisible);
+      scene->setFrameTexts(frameTexts);
+      m_view->setUpdatesEnabled(true);
+   }
+}
+
+void XmlFormat::loadWires(Qucs::XmlReader* reader)
+{
+   qDebug("Loading wires");
+   if(!reader->isStartElement() || reader->name() != "wires")
+      reader->raiseError(QObject::tr("Malformatted file"));
+
+   while(!reader->atEnd()) {
+      reader->readNext();
+
+      if(reader->isEndElement())
+         break;
+
+      if(reader->isStartElement()) {
+         if(reader->name() == "wire") {
+            //TODO: Implement this
+            reader->readUnknownElement();
+         }
+         else
+            reader->readUnknownElement();
+      }
+   }
 }

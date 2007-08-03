@@ -58,7 +58,7 @@ QString Resistor::netlist() const
    //    s += ' ' + port->node()->name(); // node names
 
    // output all properties
-   foreach(ComponentProperty *prop, m_properties)
+   foreach(ComponentProperty *prop, properties())
    {
       if(prop->name() != "Symbol")
          s += ' ' + prop->name() + "'=\"" + prop->value() + "\"";

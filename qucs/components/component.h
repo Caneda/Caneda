@@ -36,16 +36,18 @@ class ComponentPort
    public:
       ComponentPort(Component* owner,const QPointF& pos);
 
-      inline void setNode(Node *node);
-      inline Node* node() const;
-      inline Component* owner() const;
+      void setNode(Node *node) { m_node = node; }
+      Node* node() const { return m_node; }
 
-      inline const QPointF& centrePos() const;
+      Component* owner() const { return m_owner; }
+
+      const QPointF& centrePos() const { return m_centrePos; }
 
    private:
       Node *m_node;
       Component* const m_owner;
-      const QPointF m_centrePos; //pos of port w.r.t Component is a const
+      //pos of port w.r.t Component is a const
+      const QPointF m_centrePos;
 };
 
 
@@ -65,30 +67,41 @@ class Component : public QucsItem
 
       explicit Component(SchematicScene* scene = 0);
       virtual ~Component();
-      Component *copy() const;
 
       virtual QString netlist() const;
       virtual QString shortNetlist() const;
+
       QString saveString() const;
       bool loadFromString(QString str);
-      inline int type() const;
 
-      inline const QList<ComponentPort*>& componentPorts() const;
+      void writeXml(Qucs::XmlWriter *writer);
+      void readXml(Qucs::XmlReader *reader);
+
+      int type() const { return QucsItem::ComponentType; }
+
+      const QList<ComponentPort*>& componentPorts() const { return m_ports; }
       ComponentPort* portWithNode(Node *n) const;
       void replaceNode(Node *_old, Node *_new);
 
       void addProperty(QString _name,QString _initVal,QString _des,bool isVisible = false,const QStringList& options = QStringList());
       ComponentProperty* property(const QString& _name) const;
-      inline QList<ComponentProperty*> properties() const;
+      QList<ComponentProperty*> properties() const;
+
       void addPort(const QPointF& pos);
-      inline PropertyGroup* propertyGroup() const;
+      PropertyGroup* propertyGroup() const { return m_propertyGroup; }
 
       static Component* componentFromName(const QString& str,SchematicScene *scene);
       static Component* componentFromLine( QString line,SchematicScene *scene);
       static Component* componentFromModel(const QString& model, SchematicScene *scene);
 
       void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
-      inline QRectF boundingRect() const;
+      QRectF boundingRect() const
+      {
+         qreal half_pw = 0.5;
+         return m_boundingRect.adjusted(-half_pw, -half_pw, half_pw, half_pw);
+      }
+
+      void setInitialPropertyPosition();
 
       void rotate();
       void mirrorX();
@@ -112,7 +125,7 @@ class Component : public QucsItem
       void drawNodes(QPainter *p);
 
       QList<ComponentPort*> m_ports;
-      QList<ComponentProperty*> m_properties;
+
       PropertyGroup *m_propertyGroup;
       QList<Shape*> m_shapes;
       QPen m_pen;
@@ -128,52 +141,6 @@ class Component : public QucsItem
       friend class SchematicScene;
 };
 
-
-inline void ComponentPort::setNode(Node *node)
-{
-   m_node = node;
-}
-
-inline Node* ComponentPort::node() const
-{
-   return m_node;
-}
-
-inline Component* ComponentPort::owner() const
-{
-   return m_owner;
-}
-
-inline const QPointF& ComponentPort::centrePos() const
-{
-   return m_centrePos;
-}
-
-inline int Component::type() const
-{
-   return QucsItem::ComponentType;
-}
-
-inline const QList<ComponentPort*>& Component::componentPorts() const
-{
-   return m_ports;
-}
-
-inline QRectF Component::boundingRect() const
-{
-    qreal pw = 0.5;
-    return m_boundingRect.adjusted(-pw,-pw,pw,pw);
-}
-
-inline PropertyGroup* Component::propertyGroup() const
-{
-   return m_propertyGroup;
-}
-
-inline QList<ComponentProperty*> Component::properties() const
-{
-   return m_properties;
-}
 
 
 #endif //__COMPONENT_H

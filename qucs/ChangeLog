@@ -1,3 +1,7 @@
+2007-08-03  Gopala Krishna  <gopala@localhost>
+
+	* schematicscene.cpp and other files: Made Qt-4.3 the requirement to build qucs.
+
 2007-07-02  Gopala Krishna  <gopala@localhost>
 
 	* schematicscene.cpp (SchematicScene::zoomingAtPointEvent): Made this mouse action to work appropriately.

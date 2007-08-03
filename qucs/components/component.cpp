@@ -20,6 +20,7 @@
 #include "multisymbolcomponent.h"
 #include "node.h"
 #include "wire.h"
+#include "xmlutilities.h"
 #include "components.h"
 #include "schematicscene.h"
 #include "propertytext.h"
@@ -28,12 +29,16 @@
 #include "componentproperty.h"
 #include "qucs-tools/global.h"
 
+#include <QtCore/QDebug>
+
 #include <QtGui/QUndoStack>
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtGui/QStyleOptionGraphicsItem>
-#include <QtCore/QDebug>
 #include <QtGui/QPainter>
 #include <QtGui/QMessageBox>
+
+#include <QtXml/QXmlStreamWriter>
+#include <QtXml/QXmlStreamReader>
 
 QMap<int,QPen> Component::pens;
 
@@ -52,19 +57,18 @@ ComponentPort::ComponentPort(Component* owner,const QPointF& pos) : m_owner(owne
    m_node->addComponent(m_owner);
 }
 
-Component::Component(SchematicScene* scene) : QucsItem(0,scene),showName(true),
-                                              activeStatus(Active), m_pen(getPen(Qt::darkBlue,0))
+Component::Component(SchematicScene* scene) : QucsItem(0,scene),
+                                              showName(true),
+                                              activeStatus(Active),
+                                              m_propertyGroup(new PropertyGroup(this,scene)),
+                                              m_pen(getPen(Qt::darkBlue,0)),
+                                              m_rotated(0),
+                                              m_mirroredX(false),
+                                              m_mirroredY(false)
 {
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-   m_rotated = 0;
-   m_mirroredX = false;
-   m_mirroredY = false;
-   if(scene) {
+   if(scene)
       scene->insertComponent(this);
-      m_propertyGroup = new PropertyGroup(this,scene);
-   }
-   else
-      m_propertyGroup = 0;
 }
 
 Component::~Component()
@@ -76,20 +80,6 @@ Component::~Component()
    delete m_propertyGroup;
 }
 
-Component* Component::copy() const
-{
-   Component *c = Component::componentFromName(model,schematicScene());
-   qDeleteAll(m_properties);
-   c->m_properties = m_properties;
-   c->setMatrix(matrix());
-   c->name = name;
-   c->model = model;
-   c->description = description;
-   c->showName = showName;
-   c->activeStatus = activeStatus;
-   return c;
-}
-
 QString Component::netlist() const
 {
    QString s = model + ":" + name;
@@ -99,7 +89,7 @@ QString Component::netlist() const
       s += ' ' + port->node()->name(); // node names
 
    // output all properties
-   foreach(ComponentProperty *prop, m_properties)
+   foreach(ComponentProperty *prop, properties())
       s += ' ' + prop->name() + "'=\"" + prop->value() + "\"";
    return s;
 }
@@ -138,7 +128,7 @@ QString Component::saveString() const
    s += " " + QString::number(m_rotated);
 
    // write all properties
-   foreach(ComponentProperty *p1, m_properties) {
+   foreach(ComponentProperty *p1, properties()) {
       if(p1->description().isEmpty())
          s += " \""+p1->name() + "=" + p1->value() + "\"";   // e.g. for equations
       else s += " \"" + p1->value() + "\"";
@@ -206,11 +196,11 @@ bool Component::loadFromString(QString s)
 
    unsigned int z=0;
    ComponentProperty *p1;
-   foreach(p1,m_properties) {
+   foreach(p1,properties()) {
       z++;
       n = s.section('"',z,z);    // property value
       z++;
-      *p1 = n;
+      p1->setValue(n);
       n  = s.section('"',z,z);    // display
       bool shdShow = n.at(1) == '1';
       if(shdShow)
@@ -222,12 +212,134 @@ bool Component::loadFromString(QString s)
    return true;
 }
 
+void Component::writeXml(Qucs::XmlWriter *writer)
+{
+   writer->writeStartElement("component");
+   writer->writeAttribute("model", model);
+   writer->writeAttribute("activestatus", QString::number(int(activeStatus)));
+
+   writer->writeStartElement("name");
+   writer->writeAttribute("visible", Qucs::boolToString(showName));
+   writer->writeCharacters(name.isEmpty() ? "*" : name);
+   writer->writeEndElement(); // </name>
+
+   writer->writeStartElement("pos");
+   Qucs::writePoint(writer, pos());
+   writer->writeEndElement(); // </pos>
+
+   writer->writeStartElement("textpos");
+   Qucs::writePoint(writer, propertyGroup()->pos());
+   writer->writeEndElement(); // </textpos>
+
+   Qucs::writeTransform(writer, transform());
+
+   writer->writeStartElement("properties");
+   foreach(ComponentProperty *p1, properties()) {
+      writer->writeStartElement("property");
+      writer->writeAttribute("visible", Qucs::boolToString(p1->isVisible()));
+
+      Qucs::writeElement(writer, "name", p1->name());
+      Qucs::writeElement(writer, "value", p1->value());
+
+      writer->writeEndElement(); // </property>
+   }
+   writer->writeEndElement(); // </properties>
+
+   writer->writeEndElement(); // </component>
+}
+
+void Component::readXml(Qucs::XmlReader *reader)
+{
+   if(!reader->isStartElement() || reader->name() != "component") {
+      reader->raiseError(QObject::tr("Unidentified tag %1. Expected %2").arg(reader->name().toString()).arg("component"));
+   }
+   bool ok = false;
+   model = reader->attributes().value("model").toString();
+   activeStatus = (ActiveStatus)reader->attributes().value("activestatus").toString().toInt(&ok);
+   if(!ok) {
+      reader->raiseError(QObject::tr("Couldn't parse the active status attribute"));
+   }
+
+   while(!reader->atEnd()) {
+      reader->readNext();
+
+      if(reader->isEndElement()) {
+         Q_ASSERT(reader->name() == "component");
+         break;
+      }
+
+      if(reader->isStartElement()) {
+         if(reader->name() == "name") {
+            name = reader->readElementText();
+            //TODO: Take care of visibility. May be make name a property.
+         }
+
+         else if(reader->name() == "pos") {
+            reader->readFurther();
+            QPointF p = reader->readPoint();
+            reader->readFurther();
+            Q_ASSERT(reader->isEndElement() && reader->name() == "pos");
+            setPos(p);
+         }
+
+         else if(reader->name() == "textpos") {
+            reader->readFurther();
+            QPointF p = reader->readPoint();
+            reader->readFurther();
+            Q_ASSERT(reader->isEndElement() && reader->name() == "textpos");
+            m_propertyGroup->setPos(p);
+         }
+
+         else if(reader->name() == "transform") {
+            setTransform(reader->readTransform());
+         }
+
+         else if(reader->name() == "properties") {
+            while(!reader->atEnd()) {
+               reader->readNext();
+
+               if(reader->isEndElement()) {
+                  Q_ASSERT(reader->name() == "properties");
+                  break;
+               }
+
+               if(reader->isStartElement()) {
+                  if(reader->name() == "property") {
+                     QString att = reader->attributes().value("visible").toString();
+                     att = att.toLower();
+                     if(att != "true" && att != "false") {
+                        reader->raiseError(QObject::tr("Invalid bool attribute"));
+                        break;
+                     }
+
+                     bool vis = (att == "true");
+
+                     reader->readFurther();
+                     QString propName = reader->readText("name");
+                     reader->readFurther();
+                     QString propValue = reader->readText("value");
+                     reader->readFurther();
+
+                     ComponentProperty *prop = property(propName);
+                     if(prop) {
+                        prop->setValue(propValue);
+                        prop->setVisible(vis);
+                     }
+                     Q_ASSERT(reader->isEndElement() && reader->name() == "property");
+                  }
+                  else
+                     reader->readUnknownElement();
+               }
+            }
+         } //end of else if properties
+      }
+   } //end of topmost while
+}
+
 void Component::addProperty(QString _name,QString _initVal,QString _des,bool isVisible,const QStringList& options)
 {
    ComponentProperty *prop = new ComponentProperty(this,_name,_initVal,_des,isVisible,options);
-   if(m_propertyGroup)
-      m_propertyGroup->addChild(prop);
-   m_properties.append(prop);
+   m_propertyGroup->addProperty(prop);
 }
 
 void Component::addPort(const QPointF& pos)
@@ -285,7 +397,6 @@ QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
    if (change == ItemPositionChange && scene())
       return handlePositionChange(value.toPointF());
 
-#if QT_VERSION >= 0x040300
    else if( change == ItemTransformChange && scene())
    {
       QTransform newTransform = qVariantValue<QTransform>(value);
@@ -304,26 +415,6 @@ QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
       }
       return QVariant(newTransform);
    }
-#else
-   else if(change == ItemMatrixChange && scene())
-   {
-      QMatrix newMatrix = qVariantValue<QMatrix>(value);
-      QList<ComponentPort*>::iterator it = m_ports.begin();
-      const QList<ComponentPort*>::iterator end = m_ports.end();
-
-      for(; it != end; ++it)
-      {
-         ComponentPort *port = *it;
-         QMatrix newSceneMatrix = newMatrix * QMatrix().translate(pos().x(),pos().y());
-         QPointF newP = newSceneMatrix.map(port->centrePos());
-
-         port->node()->setController(this);
-         port->node()->setPos(newP);
-         port->node()->resetController();
-      }
-      return QVariant(newMatrix);
-   }
-#endif
    return QGraphicsItem::itemChange(change,value);
 }
 
@@ -816,6 +907,20 @@ void Component::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w
       drawNodes(p);
 }
 
+void Component::setInitialPropertyPosition()
+{
+   QGraphicsLineItem *l = new QGraphicsLineItem(5,6,7,8);
+   m_propertyGroup->addToGroup(l);
+   m_propertyGroup->removeFromGroup(l);
+
+   QPointF p = transform().mapRect(boundingRect()).translated(pos()).normalized().bottomLeft();
+   qDebug() << sceneBoundingRect().bottomLeft() << p << m_propertyGroup->sceneBoundingRect();
+   m_propertyGroup->realignItems();
+   m_propertyGroup->setPos(p);
+
+   qDebug("Called");
+}
+
 void Component::drawNodes(QPainter *p)
 {
    QList<ComponentPort*>::const_iterator it = m_ports.constBegin();
@@ -866,9 +971,14 @@ void Component::rotate()
 
 ComponentProperty* Component::property(const QString& _name) const
 {
-   foreach(ComponentProperty* p, m_properties) {
+   foreach(ComponentProperty* p, properties()) {
       if(p->name() == _name)
          return p;
    }
    return 0;
+}
+
+QList<ComponentProperty*> Component::properties() const
+{
+   return m_propertyGroup->properties();
 }
