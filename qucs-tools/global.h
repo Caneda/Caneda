@@ -41,6 +41,7 @@ namespace Qucs
    inline QString language();
    inline QFont font();
 
+   QString boolToString(bool b);
    QString complexRect(double real, double imag, int Precision);
    QString complexDeg(double real, double imag, int Precision);
    QString complexRad (double real, double imag, int Precision);

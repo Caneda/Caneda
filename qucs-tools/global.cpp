@@ -26,6 +26,10 @@ using namespace std;
 namespace Qucs
 {
 
+   QString boolToString(bool b)
+   {
+      return b ? QString("true") : QString("false");
+   }
    // #########################################################################
    QString complexRect(double real, double imag, int Precision)
    {
