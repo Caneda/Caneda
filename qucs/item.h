@@ -21,6 +21,8 @@
 #define __ITEM_H
 
 #include <QtGui/QGraphicsItem>
+#include <QtGui/QPen>
+#include <QtGui/QBrush>
 
 class QGraphicsScene;
 class QGraphicsView;
@@ -53,14 +55,19 @@ class QucsItem : public QGraphicsItem
       using QGraphicsItem::rotate;
 
       QucsItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
-      virtual ~QucsItem() {};
+      virtual ~QucsItem();
 
-      int type() const;
-      QRectF boundingRect() const { return QRectF(); }
+      virtual void copyTo(QucsItem *_item) const;
+
+      int type() const { return QucsItemType; }
+      QRectF boundingRect() const { return m_boundingRect; }
 
       SchematicScene* schematicScene() const;
       QGraphicsView* activeView() const;
       QucsMainWindow* mainWindow() const;
+
+      void setPenColor(QColor _color);
+      QColor penColor() const { return m_penColor; }
 
       virtual QString saveString() const { return QString(""); }
       virtual bool loadFromString(QString ) { return true; }
@@ -76,6 +83,11 @@ class QucsItem : public QGraphicsItem
       virtual void invokePropertiesDialog() {}
 
       QMenu* defaultContextMenu() const;
+
+   protected:
+      void setBoundingRect(const QRectF& rect);
+      QColor m_penColor;
+      QRectF m_boundingRect;
 };
 
 #endif //__ITEM_H

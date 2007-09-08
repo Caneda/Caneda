@@ -28,12 +28,29 @@
 
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) : QGraphicsItem(parent,(QGraphicsScene*)scene)
 {
-
 }
 
-int QucsItem::type() const
+QucsItem::~QucsItem()
 {
-   return QucsItemType;
+}
+
+void QucsItem::copyTo(QucsItem *_item) const
+{
+   _item->setPenColor(m_penColor);
+   _item->setBoundingRect(m_boundingRect);
+   _item->setTransform(transform());
+   _item->setPos(pos());
+   _item->update();
+}
+
+void QucsItem::setBoundingRect(const QRectF& rect)
+{
+   static qreal pw = 1.0;
+   prepareGeometryChange();
+   m_boundingRect = rect;
+
+   m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
+   update();
 }
 
 SchematicScene* QucsItem::schematicScene() const
@@ -56,6 +73,11 @@ QucsMainWindow* QucsItem::mainWindow() const
 
    QucsMainWindow *mw = qobject_cast<QucsMainWindow*>(view->parent());
    return mw;
+}
+
+void QucsItem::setPenColor(QColor color)
+{
+   m_penColor = color;
 }
 
 void QucsItem::writeXml(Qucs::XmlWriter *writer)

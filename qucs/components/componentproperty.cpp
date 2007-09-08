@@ -25,29 +25,37 @@
 
 #include <QtGui/QFontMetricsF>
 #include <QtCore/QtDebug>
+#include <QtCore/QTimer>
 
 PropertyGroup::PropertyGroup(Component *comp,SchematicScene *scene) :
    QGraphicsItemGroup(0, scene),
    m_component(comp)
 {
    firstTime = true;
-   //initVariables();
-   firstTime = false;
-   if(scene)
-      setPos(mapToScene(lastChildPos));
+   QTimer::singleShot(30, this, SLOT(init()));
 }
 
-void PropertyGroup::initVariables()
+PropertyGroup::~PropertyGroup()
 {
-   lastChildPos = QPointF(5,5);
-   if(scene() && !firstTime)
-      lastChildPos = m_component->sceneBoundingRect().bottomLeft();
+   qDeleteAll(m_properties);
+}
+
+void PropertyGroup::copyTo(PropertyGroup *grp)
+{
+   foreach(ComponentProperty *property, m_properties) {
+      ComponentProperty *other = grp->m_component->property(property->name());
+      if(other)
+         other->setValue(property->value());
+   }
+}
+
+void PropertyGroup::init()
+{
    QFontMetricsF fm(Qucs::font());
    fontHeight = fm.height()+4;
    itemLeft = 2.0;
-   lastChildPos += QPointF(0.0, fontHeight);
-   if(scene() && !firstTime)
-      lastChildPos = mapFromScene(lastChildPos);
+   lastChildPos = QPointF(boundingRect().left(), fontHeight);
+   forceUpdate();
 }
 
 void PropertyGroup::addProperty(ComponentProperty *property)
@@ -61,19 +69,21 @@ void PropertyGroup::addProperty(ComponentProperty *property)
    if(property->isVisible()) {
       QPointF np = lastChildPos;
       // This makes the leftmost part of item to coincide with leftmost of item
-      //np.rx() -= property->item()->boundingRect().left();
+      np.rx() -= property->item()->boundingRect().left();
       property->setPos(mapToScene(np));
+
       addToGroup(property->item());
+      update();
       lastChildPos.ry() += fontHeight;
    }
 }
 
 void PropertyGroup::realignItems()
 {
-   initVariables();
+   init();
    foreach( ComponentProperty *property, m_properties) {
       if(property->isVisible()) {
-         Q_ASSERT(property->item()->group() == this);
+         //Q_ASSERT(property->item()->group() == this);
          QPointF np = lastChildPos;
          // This makes the leftmost part of item to coincide with leftmost of item
          np.rx() -= property->item()->boundingRect().left();
@@ -81,11 +91,22 @@ void PropertyGroup::realignItems()
          lastChildPos.ry() += fontHeight;
       }
    }
+   forceUpdate();
+}
+
+//HACK: This adds and removes a dummy item from group to update its geometry
+void PropertyGroup::forceUpdate()
+{
+   QGraphicsLineItem *l = new QGraphicsLineItem(-5,-5,5,5);
+   addToGroup(l);
+   removeFromGroup(l);
+   delete l;
 }
 
 QRectF PropertyGroup::boundingRect() const
 {
-   if(!children().isEmpty()) return QGraphicsItemGroup::boundingRect();
+   if(!QGraphicsItemGroup::children().isEmpty())
+      return QGraphicsItemGroup::boundingRect();
    //HACK: An empty group makes item to move very slow. The below
    //     line fixes it.
    return QRectF(-2.0,-2.0,4.0,4.0);
@@ -124,38 +145,39 @@ ComponentProperty::ComponentProperty( Component *c,const QString& name, const QS
 
 ComponentProperty::~ComponentProperty()
 {
-   hide();
+   if(isVisible())
+      delete m_item;
 }
 
 void ComponentProperty::show()
 {
    if(isVisible()) {
-      qDebug("Item visible when calling ComponentProperty::show()");
-      m_item->setPos(m_pos);
-      m_item->show();
+      Q_ASSERT(m_item->isVisible());
       return;
    }
 
    m_item = new PropertyText(this,m_component->schematicScene());
-   if(group()) {
-      group()->addToGroup(m_item);
-      group()->realignItems();
-   }
+
+   Q_ASSERT(group());
+   group()->addToGroup(m_item);
+   group()->realignItems();
 }
 
 void ComponentProperty::hide()
 {
-   if(isVisible()) {
-      m_pos = m_item->pos();
-      if(group()) {
-         group()->removeFromGroup(m_item);
-         group()->realignItems();
-      }
-      delete m_item;
-      m_item = 0;
+   if(!isVisible()) {
+      Q_ASSERT(m_item == 0);
+      return;
    }
-   else
-      qDebug("Item already hidden while calling ComponentProperty::hide()");
+
+   updateValueFromItem();
+
+   Q_ASSERT(group());
+   group()->removeFromGroup(m_item);
+   group()->realignItems();
+
+   delete m_item;
+   m_item = 0;
 }
 
 void ComponentProperty::setVisible(bool visible)
@@ -170,8 +192,6 @@ void ComponentProperty::setPos(const QPointF& pos)
 {
    if(isVisible())
       m_item->setPos(pos);
-   else
-      m_pos = pos;
 }
 
 void ComponentProperty::setValue(const QString& value)
@@ -182,6 +202,7 @@ void ComponentProperty::setValue(const QString& value)
       qDebug() << "Trying to set value out of given options" ;
       qDebug() << m_name << m_options << "Given val is" << value;
    }
+
    if(isVisible())
       m_item->updateValue();
 }

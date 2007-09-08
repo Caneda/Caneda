@@ -124,9 +124,9 @@ void SidebarModel::fillData()
    CategoryItem *transmission = new CategoryItem(tr("Transmission lines"),"","",rootItem,false);
    CategoryItem *nonlinear = new CategoryItem(tr("Non linear components"),"","",rootItem,false);
    CategoryItem *digital = new CategoryItem(tr("Digital"),"","",rootItem,false);
-   
-   lumped->addChild( QObject::tr("Resistor"), "Resistor", "resistor.png");
-   lumped->addChild( QObject::tr("Resistor"), "ResistorUS", "resistor_us.png");
+
+   lumped->addChild( QObject::tr("Resistor"), "R", "resistor.png");
+   lumped->addChild( QObject::tr("Resistor"), "Rus", "resistor_us.png");
    lumped->addChild( QObject::tr("Amplifier"), "Amp", "amplifier.png");
    lumped->addChild( QObject::tr("Attenuator"), "Attenuator", "attenuator.png");
    lumped->addChild( QObject::tr("Bias T"), "BiasT", "biast.png");
@@ -198,7 +198,7 @@ void SidebarModel::fillData()
    digital->addChild( QObject::tr("digital source"), "DigiSource", "digi_source.png");
    digital->addChild( QObject::tr("JK-FlipFlop"), "JKFF", "jkflipflop.png");
    digital->addChild( QObject::tr("RS-FlipFlop"), "RSFF", "rsflipflop.png");
-   
+
 }
 
 QModelIndex SidebarModel::index ( int row, int column, const QModelIndex & parent ) const

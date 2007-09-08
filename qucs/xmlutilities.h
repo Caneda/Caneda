@@ -68,18 +68,17 @@ namespace Qucs
          XmlWriter(QString *string) : QXmlStreamWriter(string) {}
 
          ~XmlWriter() {}
+
+         void writeElement(const QString& tag, const QString& value);
+         void writeElement(const QString& tag, int value);
+         void writeElement(const QString& tag, qreal value);
+         void writeElement(const QString& tag, bool value);
+
+         void writeRect(const QRectF& rect);
+         void writeTransform(const QTransform& transform);
+         void writeSize(const QSize& size);
+         void writePoint(const QPointF& point);
    };
-
-   void writeElement(QXmlStreamWriter *writer, const QString& tag, const QString& value);
-   void writeElement(QXmlStreamWriter *writer, const QString& tag, int value);
-   void writeElement(QXmlStreamWriter *writer, const QString& tag, qreal value);
-   void writeElement(QXmlStreamWriter *writer, const QString& tag, bool value);
-
-   void writeRect(QXmlStreamWriter *writer, const QRectF& rect);
-   void writeTransform(QXmlStreamWriter *writer, const QTransform& transform);
-   void writeSize(QXmlStreamWriter *writer, const QSize& size);
-   void writePoint(QXmlStreamWriter *writer, const QPointF& point);
-
 }
 
 #endif //__XMLUTILITIES_H

@@ -25,6 +25,7 @@
 
 class SchematicScene;
 class QucsMainWindow;
+class QucsItem;
 
 class SchematicView : public QGraphicsView, public QucsView
 {      Q_OBJECT;
@@ -56,6 +57,10 @@ class SchematicView : public QGraphicsView, public QucsView
 
       bool isModified() const;
 
+      void copy() const;
+      void cut();
+      void paste();
+
    public slots:
       void setModified(bool m);
       //update tab's text and modification status
@@ -68,6 +73,7 @@ class SchematicView : public QGraphicsView, public QucsView
 
    private:
       void repaintWires();
+      QList<QucsItem*> qucsItemsFromGraphicsItems(QList<QGraphicsItem*> _items) const;
 
    private slots:
       void addTestComponents();

@@ -34,6 +34,7 @@
 #include <QtGui/QStyle>
 #include <QtGui/QStyleOptionGraphicsItem>
 
+#include "xmlutilities.h"
 
 Wire::Wire(SchematicScene *scene,Node *n1,Node *n2) : QucsItem(0,scene),m_node1(n1),m_node2(n2)
 {
@@ -68,80 +69,87 @@ void Wire::rebuild()
    QPointF node1Pos = mapFromScene(m_node1->scenePos());
    QPointF node2Pos = mapFromScene(m_node2->scenePos());
 
-   if(m_lines.size() < 3)
-      m_lines = linesBetween(node1Pos,node2Pos);
-   else {
-      if(node1Pos != m_lines.first().p1()) {
-         bool cont = false;
-         do {
-            int firstIndex = 0;
-            int secondIndex = firstIndex + 1;
-            cont = false;
-            if(m_lines[firstIndex].isHorizontal())
-               m_lines[firstIndex].setY(node1Pos.y());
-            else {
-               Q_ASSERT(m_lines[firstIndex].isVertical());
-               m_lines[firstIndex].setX(node1Pos.x());
-            }
-            m_lines[firstIndex].setP1(node1Pos);
-            m_lines[secondIndex].setP1(m_lines[firstIndex].p2());
-            if(m_lines[firstIndex].isNull()) {
-               m_lines.removeFirst();
-               --secondIndex;
-            }
 
-            if(m_lines[secondIndex].isNull()) {
-               m_lines.removeAt(secondIndex);
-               if(secondIndex != firstIndex) {
-                  m_lines.removeFirst();
-                  cont = true;
-               }
-            }
-            if(m_lines.isEmpty()) {
-               m_lines.append(WireLine(node1Pos,node2Pos));
-               qDebug() << "Check this out!!";
-            }
-         }while(cont);
-      }
-      if(node2Pos != m_lines.last().p2()) {
-         bool cont = false;
-         do {
-            int lastIndex = m_lines.size() - 1;
-            int lastButIndex = lastIndex - 1;
-            cont = false;
-            if(m_lines[lastIndex].isHorizontal())
-               m_lines[lastIndex].setY(node2Pos.y());
-            else {
-               Q_ASSERT(m_lines[lastIndex].isVertical());
-               m_lines[lastIndex].setX(node2Pos.x());
-            }
-            m_lines[lastIndex].setP2(node2Pos);
-            m_lines[lastButIndex].setP2(m_lines[lastIndex].p1());
-            if(m_lines[lastIndex].isNull()) {
-               m_lines.removeLast();
-               --lastIndex;
-            }
 
-            if(m_lines[lastButIndex].isNull()) {
-               m_lines.removeAt(lastButIndex);
-               if(lastButIndex != lastIndex)
-               {
-                  m_lines.removeLast();
-                  cont = true;
-               }
-            }
-         }while(cont);
-      }
+   if(!m_lines.isEmpty()) {
+      bool bothMoved = m_lines.first().p1() != node1Pos && m_lines.last().p2() != node2Pos;
+      Q_ASSERT_X(!bothMoved, "Wire::rebuild()", "Against logical assumption that both only one node is moved.");
+      bool noneMoved = m_lines.first().p1() == node1Pos && m_lines.last().p2() == node2Pos;
+      if(noneMoved)
+         return; // Nothing to do.
    }
+
+
+   // This is true when wire is created
+   if(m_lines.isEmpty()) {
+      QPointF referencePos = QPointF(node1Pos.x(), node2Pos.y());
+      m_lines << WireLine(node1Pos, referencePos);
+      m_lines << WireLine(referencePos, node2Pos);
+   }
+   else {
+      bool node1Moved = m_lines.first().p1() != node1Pos;
+      QPointF referencePos = (node1Moved ? node1Pos : node2Pos);
+
+      if(m_lines.size() == 1) {
+         if(node1Moved)
+            m_lines.append(WireLine(m_lines.first().p2(), m_lines.first().p2()));
+         else
+            m_lines.prepend(WireLine(m_lines.last().p1(), m_lines.last().p1()));
+      }
+      QList<WireLine>::iterator it,it1;
+      if(node1Moved) {
+         it = m_lines.begin();
+         it1 = it + 1;
+      }
+      else {
+         it = m_lines.end()-1;
+         it1 = it - 1;
+      }
+
+      bool notOblique = it->isNull() || it->isHorizontal() || it->isVertical();
+      notOblique = notOblique && (it1->isNull() || it1->isHorizontal() || it1->isVertical());
+      Q_ASSERT_X(notOblique, "Wire::rebuild()", "Oblique lines found!");
+      if(it->isNull()) {
+         if(it1->isNull() || it1->isHorizontal())
+            it->setX(referencePos.x());
+         else
+            it->setY(referencePos.y());
+      }
+      else {
+         if(it->isVertical())
+            it->setX(referencePos.x());
+         else
+            it->setY(referencePos.y());
+      }
+      if(node1Moved) {
+         it->setP1(referencePos);
+         referencePos = it->p2();
+      }
+      else {
+         it->setP2(referencePos);
+         referencePos = it->p1();
+      }
+
+      if(it1->isNull()) {
+         if(it->isNull() || it->isVertical())
+            it1->setY(referencePos.y());
+         else
+            it1->setX(referencePos.x());
+      }
+      else {
+         if(it1->isHorizontal())
+            it1->setY(referencePos.y());
+         else
+            it1->setX(referencePos.x());
+      }
+      if(node1Moved)
+         it1->setP1(referencePos);
+      else
+         it1->setP2(referencePos);
+   }
+
    if(!isVisible())
       updateProxyWires();
-}
-
-
-void Wire::createLines(const QPointF& p1, const QPointF& p2)
-{
-   m_lines.clear();
-   m_lines = linesBetween(p1,p2);
 }
 
 QList<WireLine> Wire::linesBetween(const QPointF& p1, const QPointF& p2) const
@@ -269,7 +277,7 @@ QPainterPath Wire::shape() const
    return path;
 }
 
-bool Wire::contains ( const QPointF & point ) const
+bool Wire::contains( const QPointF & point ) const
 {
    QList<WireLine>::const_iterator it = m_lines.constBegin();
    QList<WireLine>::const_iterator end = m_lines.constEnd();
@@ -281,7 +289,7 @@ bool Wire::contains ( const QPointF & point ) const
    return false;
 }
 
-void Wire::paint (QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w)
+void Wire::paint(QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w)
 {
    Q_UNUSED(w);
    if(o->state & QStyle::State_Selected)
@@ -305,8 +313,14 @@ QRectF Wire::rectForLine(const WireLine& line) const
 
 QVariant Wire::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-   if(change == ItemPositionChange && isSelected() && schematicScene()->selectedItems().size() == 1)
-      return QVariant(pos());
+   if(change == ItemPositionChange) {
+      QPointF delta = value.toPointF() - pos();
+
+      if(m_node1->components().isEmpty() && m_node1->wires().size() == 1)
+         m_node1->moveBy(delta.x(), delta.y());
+      if(m_node2->components().isEmpty() && m_node2->wires().size() == 1)
+         m_node2->moveBy(delta.x(), delta.y());
+   }
    return QGraphicsItem::itemChange(change,value);
 }
 
@@ -436,6 +450,45 @@ void Wire::deleteNullLines()
          m_lines.erase(it);
       }
    }
+}
+
+void Wire::delNullLines()
+{
+   prepareGeometryChange();
+   qDebug() << "Wire::delNullLines() enter";
+   QList<WireLine>::iterator it = m_lines.begin(),it1;
+   int cnt = 0;
+   for(; it != m_lines.end(); ++it) {
+      if(it->isNull()) {
+         it = m_lines.erase(it);
+         --it;
+         cnt++;
+      }
+   }
+   qDebug() << "Deleted" << cnt << "wirelines";
+   cnt = 0;
+   if(m_lines.size() <= 1)
+      return;
+   for(it = m_lines.begin()+1; it != m_lines.end(); ++it) {
+      it1 = it - 1;
+      if(it->isHorizontal() && it1->isHorizontal()) {
+         Q_ASSERT(it->y() == it1->y());
+         Q_ASSERT(it1->p2() == it->p1());
+         it1->setP2(it->p2());
+         it = m_lines.erase(it);
+         --it;
+         cnt++;
+      }
+      else if(it->isVertical() && it1->isVertical()) {
+         Q_ASSERT(it->x() == it1->x());
+         Q_ASSERT(it1->p2() == it->p1());
+         it1->setP2(it->p2());
+         it = m_lines.erase(it);
+         --it;
+         cnt++;
+      }
+   }
+   qDebug() << "Singlified" << cnt << "wirelines";
 }
 
 void Wire::grabMoveEvent( QGraphicsSceneMouseEvent * event )
@@ -570,4 +623,86 @@ void Wire::setWireLines(const QList<WireLine>& lines)
 
    if(!isVisible())
       updateProxyWires();
+}
+
+void Wire::writeXml(Qucs::XmlWriter *writer)
+{
+   Q_ASSERT(!m_lines.isEmpty());
+   writer->writeStartElement("wire");
+
+   writer->writeStartElement("node1pos");
+   writer->writePoint(m_lines.first().p1());
+   writer->writeEndElement(); //</node1pos>
+
+   writer->writeStartElement("node2pos");
+   writer->writePoint(m_lines.last().p2());
+   writer->writeEndElement(); //</node2pos>
+
+   writer->writeStartElement("wirelines");
+   foreach(WireLine wireline, m_lines) {
+      writer->writeStartElement("wireline");
+
+      writer->writeStartElement("p1");
+      writer->writePoint(wireline.p1());
+      writer->writeEndElement(); //</p1>
+
+      writer->writeStartElement("p2");
+      writer->writePoint(wireline.p2());
+      writer->writeEndElement(); //</p2>
+
+      writer->writeEndElement(); //</wireline>
+   }
+   writer->writeEndElement(); //</wirelines>
+   writer->writeEndElement(); //</wire>
+   //TODO: Wirelabel
+}
+
+void Wire::readXml(Qucs::XmlReader *reader)
+{
+   //NOTE: This assumes initial part is parsed already
+   if(!reader->isStartElement() || reader->name() != "wirelines") {
+      reader->raiseError(QObject::tr("Unidentified tag %1. Expected %2").arg(reader->name().toString()).arg("wire"));
+   }
+   QList<WireLine> lines;
+   while(!reader->atEnd()) {
+      reader->readNext();
+
+      if(reader->isEndElement()) {
+         Q_ASSERT(reader->name() == "wirelines");
+         break;
+      }
+
+      if(reader->isStartElement()) {
+         if(reader->name() == "wireline") {
+            QPointF p1;
+            QPointF p2;
+
+            while(!reader->atEnd()) {
+               reader->readNext();
+
+               if(reader->isEndElement()) {
+                  lines << WireLine(p1, p2);
+                  Q_ASSERT(reader->name() == "wireline");
+                  break;
+               }
+               if(reader->name() == "p1") {
+                  reader->readFurther();
+                  p1 = reader->readPoint();
+                  reader->readFurther();
+                  Q_ASSERT(reader->isEndElement() && reader->name() == "p1");
+               }
+
+               else if(reader->name() == "p2") {
+                  reader->readFurther();
+                  p2 = reader->readPoint();
+                  reader->readFurther();
+                  Q_ASSERT(reader->isEndElement() && reader->name() == "p2");
+               }
+            }
+         }
+      }
+   }
+   if(!reader->hasError()) {
+      setWireLines(lines);
+   }
 }

@@ -1186,17 +1186,23 @@ void QucsMainWindow::slotChangeProps()
 
 void QucsMainWindow::slotEditCut()
 {
-   //TODO: implement this or rather port directly
+   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+   if(!v) return;
+   v->cut();
 }
 
 void QucsMainWindow::slotEditCopy()
 {
-   //TODO: implement this or rather port directly
+   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+   if(!v) return;
+   v->copy();
 }
 
 void QucsMainWindow::slotEditPaste()
 {
-   //TODO: implement this or rather port directly
+   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+   if(!v) return;
+   v->paste();
 }
 
 void QucsMainWindow::slotEditDelete(bool on)

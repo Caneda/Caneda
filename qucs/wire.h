@@ -41,14 +41,14 @@ class Wire : public QucsItem
       ~Wire();
       void rebuild();
 
-      inline Node* node1() const;
-      inline Node* node2() const;
-      inline void setNode1(Node *n1);
-      inline void setNode2(Node *n2);
+      Node* node1() const { return m_node1; }
+      Node* node2() const { return m_node2; }
+      void setNode1(Node *n1) { m_node1 = n1; }
+      void setNode2(Node *n2) { m_node2 = n2; }
       void replaceNode(Node *oldNode,Node *newNode);
 
       QRectF boundingRect() const;
-      inline int type() const;
+      int type() const { return Wire::Type; }
       void paint(QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w = 0 );
       QPainterPath shape() const;
       bool contains ( const QPointF & point ) const;
@@ -62,7 +62,7 @@ class Wire : public QucsItem
       void stopMoveAndResize();
 
       void setWireLines(const QList<WireLine>& lines);
-      inline QList<WireLine> wireLines() const;
+      QList<WireLine> wireLines() const { return m_lines; }
 
       QString saveString() const;
 
@@ -71,6 +71,9 @@ class Wire : public QucsItem
       void mirrorX() {}
       void mirrorY() {}
 
+      void writeXml(Qucs::XmlWriter *writer);
+      void readXml(Qucs::XmlReader *reader);
+
    protected:
       QVariant itemChange(GraphicsItemChange change, const QVariant &value);
       void mousePressEvent ( QGraphicsSceneMouseEvent * event );
@@ -78,7 +81,6 @@ class Wire : public QucsItem
       void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
 
    private:
-      void createLines(const QPointF& p1, const QPointF& p2);
       void createProxyWires();
       QList<WireLine> linesBetween(const QPointF& p1, const QPointF& p2) const;
       QRect proxyRect(const WireLine& line) const;
@@ -87,6 +89,9 @@ class Wire : public QucsItem
       QRectF rectForLine(const WireLine& line) const;
       int indexForPos(const QPointF& pos) const;
       void deleteNullLines();
+      void delNullLines();
+
+      friend class SchematicScene;
 
       bool m_proxyWiring;
       QList<WireLine> m_lines;
@@ -96,35 +101,5 @@ class Wire : public QucsItem
       int m_grabbedLineIndex;
       bool m_wasGrabbed;
 };
-
-inline Node* Wire::node1() const
-{
-   return m_node1;
-}
-
-inline Node* Wire::node2() const
-{
-   return m_node2;
-}
-
-inline void Wire::setNode1(Node *n1)
-{
-   m_node1 = n1;
-}
-
-inline void Wire::setNode2(Node *n2)
-{
-   m_node2 = n2;
-}
-
-inline int Wire::type() const
-{
-   return Wire::Type;
-}
-
-inline QList<WireLine> Wire::wireLines() const
-{
-   return m_lines;
-}
 
 #endif //__WIRE_H

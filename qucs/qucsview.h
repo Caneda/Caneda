@@ -59,6 +59,10 @@ class QucsView
       virtual bool isModified() const = 0;
       virtual void setModified(bool b) = 0;
 
+      virtual void copy() const = 0;
+      virtual void cut() = 0;
+      virtual void paste() = 0;
+
       // Returns text to be displayed on tab
       QString tabText() const;
       int tabIndex() const;

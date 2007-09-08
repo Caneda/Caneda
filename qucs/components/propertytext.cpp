@@ -31,6 +31,8 @@
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QPainter>
 #include <QtGui/QApplication>
+#include <QtGui/QTextCursor>
+
 #include <QtCore/QtDebug>
 
 PropertyText::PropertyText(ComponentProperty *prop,SchematicScene *sc) :
@@ -42,6 +44,7 @@ PropertyText::PropertyText(ComponentProperty *prop,SchematicScene *sc) :
    setFlags(ItemIsMovable | ItemIsFocusable);
    calculatePos();
    updateValue();
+   setAcceptsHoverEvents(false);
 }
 
 QRectF PropertyText::boundingRect() const
@@ -252,6 +255,11 @@ void PropertyText::focusOutEvent(QFocusEvent *event)
    updateGroupGeometry();
    property->updateValueFromItem();
    qApp->removeEventFilter(this);
+
+   // Clear the text selection
+   QTextCursor c = textCursor();
+   c.clearSelection();
+   setTextCursor(c);
 }
 
 void PropertyText::keyPressEvent(QKeyEvent *e)
@@ -281,13 +289,9 @@ bool PropertyText::isSendable(QGraphicsSceneMouseEvent *event) const
    return false;
 }
 
-//HACK: This adds and removes a dummy item from group to update its geometry
 void PropertyText::updateGroupGeometry()
 {
    if(group()) {
-      QGraphicsTextItem *dummyItem = new QGraphicsTextItem();
-      group()->addToGroup(dummyItem);
-      group()->removeFromGroup(dummyItem);
-      delete dummyItem;
+      property->group()->forceUpdate();
    }
 }

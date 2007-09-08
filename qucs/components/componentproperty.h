@@ -30,11 +30,14 @@
 
 class Component;
 
-class PropertyGroup : public QGraphicsItemGroup
+class PropertyGroup : public QObject, public QGraphicsItemGroup
 {
+      Q_OBJECT;
    public:
       PropertyGroup(Component *comp,SchematicScene *scene = 0);
-      ~PropertyGroup() {}
+      ~PropertyGroup();
+
+      void copyTo(PropertyGroup *grp);
 
       void addProperty(ComponentProperty *child);
 
@@ -43,12 +46,15 @@ class PropertyGroup : public QGraphicsItemGroup
 
       QList<ComponentProperty*> properties() const { return m_properties; }
 
+      void forceUpdate();
+
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
-   private:
-      void initVariables();
+   private slots:
+      void init();
 
+   private:
       Component *const m_component;
       qreal fontHeight;
       qreal itemLeft;
@@ -71,7 +77,7 @@ class ComponentProperty
       void setVisible(bool visible);
 
       void setPos(const QPointF& pos);
-      QPointF pos() const { return isVisible() ? m_item->pos() : m_pos; }
+      QPointF pos() const { return isVisible() ? m_item->pos() : QPointF(); }
       void setValue(const QString& value);
 
       PropertyText* item() const { return m_item; }
@@ -91,13 +97,8 @@ class ComponentProperty
       QString m_value;
       const QString m_description;
       const QStringList m_options;
-      QPointF m_pos;
       PropertyText *m_item;
 };
-
-
-
-
 
 #endif //__COMPONENTPROPERTY_H
 

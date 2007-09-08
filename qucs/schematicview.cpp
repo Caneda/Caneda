@@ -193,6 +193,23 @@ bool SchematicView::isModified() const
    return schematicScene()->isModified();
 }
 
+void SchematicView::copy() const
+{
+   QList<QucsItem*> _items = qucsItemsFromGraphicsItems(schematicScene()->selectedItems());
+   schematicScene()->copyItems(_items);
+}
+
+void SchematicView::cut()
+{
+   QList<QucsItem*> _items = qucsItemsFromGraphicsItems(schematicScene()->selectedItems());
+   schematicScene()->cutItems(_items);
+}
+
+void SchematicView::paste()
+{
+   schematicScene()->paste();
+}
+
 void SchematicView::setModified(bool m)
 {
    schematicScene()->setModified(m);
@@ -212,6 +229,17 @@ void SchematicView::repaintWires()
 {
    foreach(Wire *w, schematicScene()->wires())
       w->rebuild();
+}
+
+QList<QucsItem*> SchematicView::qucsItemsFromGraphicsItems(QList<QGraphicsItem*> _items) const
+{
+   QList<QucsItem*> retVal;
+   foreach(QGraphicsItem *_item, _items) {
+      QucsItem *qitem = qucsitem_cast<QucsItem*>(_item);
+      if(qitem)
+         retVal << qitem;
+   }
+   return retVal;
 }
 
 void SchematicView::addTestComponents()

@@ -25,7 +25,15 @@
 #include <QtGui/QPainter>
 #include <QtCore/QDebug>
 
+#include <cmath>
 const qreal Node::Radius = 3.0;
+
+inline qreal distance(const QPointF& p1, const QPointF& p2)
+{
+   qreal dx = p1.x() - p2.x();
+   qreal dy = p1.y() - p2.y();
+   return std::sqrt((dx*dx)+(dy*dy));
+}
 
 Node::Node(const QString& name,SchematicScene *scene) : QucsItem(0,scene)
 {
@@ -36,27 +44,41 @@ Node::Node(const QString& name,SchematicScene *scene) : QucsItem(0,scene)
    m_controller = 0;
 }
 
+Node::~Node()
+{
+}
+
 void Node::addComponent(Component *comp)
 {
-   if(!m_connectedComponents.contains(comp)) {
-      m_connectedComponents << comp;
+   if(!m_components.contains(comp)) {
+      m_components << comp;
       update();
    }
 }
 
 void Node::removeComponent(Component* comp)
 {
-   int index =  m_connectedComponents.indexOf(comp);
+   int index =  m_components.indexOf(comp);
    if(index != -1) {
-      m_connectedComponents.removeAt(index);
+      m_components.removeAt(index);
       update();
    }
 }
 
+QList<Component*> Node::selectedComponents() const
+{
+   QList<Component*> selCom;
+   foreach(Component *c, m_components) {
+      if(c->isSelected())
+         selCom << c;
+   }
+   return selCom;
+}
+
 bool Node::areAllComponentsSelected() const
 {
-   QList<Component*>::const_iterator it = m_connectedComponents.constBegin();
-   const QList<Component*>::const_iterator end = m_connectedComponents.constEnd();
+   QList<Component*>::const_iterator it = m_components.constBegin();
+   const QList<Component*>::const_iterator end = m_components.constEnd();
    for( ; it != end; ++it) {
       if(!((*it)->isSelected()))
          return false;
@@ -66,18 +88,19 @@ bool Node::areAllComponentsSelected() const
 
 void Node::addAllComponentsFrom(Node *n)
 {
-   foreach(Component *c, n->m_connectedComponents) {
-      if(!m_connectedComponents.contains(c))
-         m_connectedComponents << c;
+   foreach(Component *c, n->m_components) {
+      if(!m_components.contains(c))
+         m_components << c;
    }
    update();
 }
 
 void Node::addWire(Wire *w)
 {
-   if(!m_wires.contains(w))
+   if(!m_wires.contains(w)) {
       m_wires << w;
-   update();
+      update();
+   }
 }
 
 void Node::removeWire(Wire *w)
@@ -87,6 +110,16 @@ void Node::removeWire(Wire *w)
       m_wires.removeAt(index);
       update();
    }
+}
+
+QList<Wire*> Node::selectedWires() const
+{
+   QList<Wire*> selWires;
+   foreach(Wire *w, m_wires) {
+      if(w->isSelected())
+         selWires << w;
+   }
+   return selWires;
 }
 
 void Node::addAllWiresFrom(Node *n)
@@ -108,6 +141,12 @@ void Node::paint(QPainter* p,const QStyleOptionGraphicsItem *o, QWidget *w)
    p->drawEllipse(boundingRect());
 }
 
+bool Node::contains(const QPointF& pt) const
+{
+   qreal dist = distance(QPointF(0,0),pt);
+   return (((dist * dist) - (Node::Radius*Node::Radius)) <= 0);
+}
+
 bool Node::collidesWithItem(QGraphicsItem *other) const
 {
    Node *port = qucsitem_cast<Node*>(other);
@@ -115,7 +154,7 @@ bool Node::collidesWithItem(QGraphicsItem *other) const
       return QGraphicsItem::collidesWithItem(other);
    qreal dist = distance(pos(),port->pos());
 
-   return (dist <= (2 * Node::Radius));
+   return (dist <= (2. * Node::Radius));
 }
 
 QPainterPath Node::shape() const

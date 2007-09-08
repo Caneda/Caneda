@@ -21,6 +21,8 @@
 #define __COMPONENT_H
 
 #include "item.h"
+#include "components/componentproperty.h"
+
 #include <QtGui/QPen>
 
 class Component;
@@ -65,82 +67,69 @@ class Component : public QucsItem
          Shorten = 2
       };
 
+      int type() const { return QucsItem::ComponentType; }
+
       explicit Component(SchematicScene* scene = 0);
       virtual ~Component();
 
-      virtual QString netlist() const;
-      virtual QString shortNetlist() const;
+      Component* newOne() const;
+      void copyTo(Component *component) const;
 
+      // methods to assist in saving and loading from file, clipboard..
       QString saveString() const;
       bool loadFromString(QString str);
 
       void writeXml(Qucs::XmlWriter *writer);
       void readXml(Qucs::XmlReader *reader);
 
-      int type() const { return QucsItem::ComponentType; }
+      QString getNetlist() const;
+      QString getVHDLCode(int numOfPorts) const;
+      QString getVerilogCode(int numOfPorts) const;
 
       const QList<ComponentPort*>& componentPorts() const { return m_ports; }
-      ComponentPort* portWithNode(Node *n) const;
-      void replaceNode(Node *_old, Node *_new);
-
-      void addProperty(QString _name,QString _initVal,QString _des,bool isVisible = false,const QStringList& options = QStringList());
-      ComponentProperty* property(const QString& _name) const;
-      QList<ComponentProperty*> properties() const;
-
       void addPort(const QPointF& pos);
+
+      void replaceNode(Node *_old, Node *_new);
+      ComponentPort* portWithNode(Node *n) const;
+      void checkForConnections(bool exactCentreMatch = true);
+
+      void addProperty(QString _name,QString _initVal,QString _des,
+                       bool isVisible = false,
+                       const QStringList& options = QStringList());
+      ComponentProperty* property(const QString& _name) const;
+      QList<ComponentProperty*> properties() const { return m_propertyGroup->properties(); }
       PropertyGroup* propertyGroup() const { return m_propertyGroup; }
-
-      static Component* componentFromName(const QString& str,SchematicScene *scene);
-      static Component* componentFromLine( QString line,SchematicScene *scene);
-      static Component* componentFromModel(const QString& model, SchematicScene *scene);
-
-      void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
-      QRectF boundingRect() const
-      {
-         qreal half_pw = 0.5;
-         return m_boundingRect.adjusted(-half_pw, -half_pw, half_pw, half_pw);
-      }
-
       void setInitialPropertyPosition();
 
-      void rotate();
-      void mirrorX();
-      void mirrorY();
+      void drawNodes(QPainter *p);
+      void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
 
-   public:
+      static Component* componentFromModel(const QString& model, SchematicScene *scene);
+      static QPen getPen(QColor col = Qt::darkBlue, qreal pw = 0, Qt::PenStyle ps = Qt::SolidLine)
+      {
+         return QPen(col, pw, ps);
+      }
+
       QString name;
       QString model;
       QString description;
       bool showName;
       ActiveStatus activeStatus;
-      static QMap<int,QPen> pens;
-      static const QPen& getPen(QColor col = Qt::darkBlue,int pw = 0,Qt::PenStyle = Qt::SolidLine);
 
    protected:
+      virtual QString netlist() const;
+      virtual QString vhdlCode(int numOfPorts) const;
+      virtual QString verilogCode(int numOfPorts) const;
+
       QVariant itemChange(GraphicsItemChange c,const QVariant& value);
-      void mousePressEvent ( QGraphicsSceneMouseEvent * event );
-      void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-      void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-
-      void drawNodes(QPainter *p);
-
-      QList<ComponentPort*> m_ports;
-
-      PropertyGroup *m_propertyGroup;
       QList<Shape*> m_shapes;
-      QPen m_pen;
-      QPointF m_textPos;
-      QRectF m_boundingRect;
-
-      unsigned int m_rotated;
-      bool m_mirroredX;
-      bool m_mirroredY;
 
    private:
+      QList<ComponentPort*> m_ports;
+      PropertyGroup *m_propertyGroup;
+
       QVariant handlePositionChange(const QPointF& pos);
       friend class SchematicScene;
 };
-
-
 
 #endif //__COMPONENT_H

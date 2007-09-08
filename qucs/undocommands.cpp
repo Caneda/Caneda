@@ -51,13 +51,11 @@ void MoveCommand::undoIt()
 {
    item->setPos(initialPoint);
    item->scene()->clearSelection();
-   qDebug() << "MoveCommand::undoIt() -- initialPoint is" << initialPoint;
 }
 
 void MoveCommand::redoIt()
 {
    item->setPos(endPoint);
-   qDebug() << "MoveCommand::redoIt() -- endPoint is" << endPoint;
 }
 
 int MoveCommand::id() const
@@ -72,8 +70,7 @@ int MoveCommand::id() const
 
 ConnectCommand::~ConnectCommand()
 {
-   //qDebug("ConnectCommand::~ConnectCommand()");
-   
+
 }
 
 int ConnectCommand::id() const
@@ -103,7 +100,6 @@ void ConnectCommand::undoIt()
    }
    port2->node()->removeComponent(port1->owner());
    port1->node()->removeComponent(port2->owner());
-   qDebug() << "ConnectCommand::undoIt()";
 }
 
 void ConnectCommand::redoIt()
@@ -156,7 +152,7 @@ void DisconnectCommand::redoIt()
    n1 = port1->owner()->schematicScene()->createNode(port1->node()->pos());
    n1->addComponent(port1->owner());
    port1->setNode(n1);
-      
+
    port2->node()->removeComponent(port1->owner());
    port1->node()->removeComponent(port2->owner());
    qDebug() << "DisconnectCommand::redoIt()";
@@ -178,7 +174,7 @@ void AddWireCommand::undoIt()
 {
    Q_ASSERT(wire != 0);
    qDebug() << "AddWireCommand::undoIt()";
-   
+
    delete wire;
    wire = 0;
 }

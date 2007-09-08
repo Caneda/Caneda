@@ -68,6 +68,7 @@ class SchematicScene : public QGraphicsScene
          ChangingActiveStatus,
          SettingOnGrid,
          ZoomingAtPoint,
+         InsertingItems,
          InsertingEquation,
          InsertingGround,
          InsertingPort,
@@ -82,8 +83,9 @@ class SchematicScene : public QGraphicsScene
       Node* nodeAt(qreal cx, qreal cy);
       Node* nodeAt(const QPointF& centre);
       Node* createNode(const QPointF& pos);
+      void removeNode(Node *n);
 
-      inline bool areItemsMoving() const { return m_areItemsMoving; }
+      bool areItemsMoving() const { return m_areItemsMoving; }
       void setGrabbedWire(Wire *w);
 
       void insertComponent(Component *comp);
@@ -105,46 +107,50 @@ class SchematicScene : public QGraphicsScene
       void setItemsOnGrid(QList<QucsItem*>& items);
       void toggleActiveStatus(QList<QucsItem*>& components);
 
-      inline QString fileName() const { return m_fileName; }
+      QString fileName() const { return m_fileName; }
       void setFileName(const QString& fn);
 
       bool isModified() const { return m_modified; }
 
       QPointF nearingGridPoint(const QPointF &pos);
 
-      inline QUndoStack* undoStack() { return m_undoStack; }
+      QUndoStack* undoStack() { return m_undoStack; }
 
-      inline uint gridWidth() const { return m_gridWidth; }
-      inline void setGridWidth(uint width) { setGridSize(width, gridHeight()); }
+      uint gridWidth() const { return m_gridWidth; }
+      void setGridWidth(uint width) { setGridSize(width, gridHeight()); }
 
-      inline uint gridHeight() const { return m_gridHeight; }
-      inline void setGridHeight(uint height) { setGridSize(gridWidth(), height); }
+      uint gridHeight() const { return m_gridHeight; }
+      void setGridHeight(uint height) { setGridSize(gridWidth(), height); }
 
       void setGridSize(uint width, uint height);
 
-      inline bool isGridVisible() const { return m_gridVisible; }
+      bool isGridVisible() const { return m_gridVisible; }
       void setGridVisible(bool visibility);
 
-      inline QString dataSet() const { return m_dataSet; }
+      QString dataSet() const { return m_dataSet; }
       void setDataSet(const QString& str);
 
-      inline QString dataDisplay() const { return m_dataDisplay; }
+      QString dataDisplay() const { return m_dataDisplay; }
       void setDataDisplay(const QString& disp);
 
-      inline bool opensDataDisplay() const { return m_opensDataDisplay; }
+      bool opensDataDisplay() const { return m_opensDataDisplay; }
       void setOpensDataDisplay(bool b);
 
-      inline bool isFrameVisible() const { return m_frameVisible; }
+      bool isFrameVisible() const { return m_frameVisible; }
       void setFrameVisible(bool vis);
 
-      inline QStringList frameTexts() const { return m_frameTexts; }
+      QStringList frameTexts() const { return m_frameTexts; }
       void setFrameTexts(const QStringList& texts);
 
-      inline Qucs::Mode currentMode() const { return m_currentMode; }
+      Qucs::Mode currentMode() const { return m_currentMode; }
       void setMode(Qucs::Mode mode);
 
-      inline MouseAction currentMouseAction() const { return m_currentMouseAction; }
+      MouseAction currentMouseAction() const { return m_currentMouseAction; }
       void setCurrentMouseAction(MouseAction ma);
+
+      void cutItems(QList<QucsItem*> items);
+      void copyItems(QList<QucsItem*> items);
+      void paste();
 
    public slots:
       void setModified(bool m = true);
@@ -176,6 +182,7 @@ class SchematicScene : public QGraphicsScene
       void changingActiveStatusEvent(MouseActionEvent *e);
       void settingOnGridEvent(MouseActionEvent *e);
       void zoomingAtPointEvent(MouseActionEvent *e);
+      void insertingItemsEvent(MouseActionEvent *e);
       void insertingEquationEvent(MouseActionEvent *event);
       void insertingGroundEvent(MouseActionEvent *event);
       void insertingPortEvent(MouseActionEvent *event);
@@ -188,7 +195,7 @@ class SchematicScene : public QGraphicsScene
       void connectNodes(Node *from, Node *to);
       // A very helpful recursive function to move components after connection
       void adjustPositions(Node *of,const QPointF& delta);
-
+      void testInsertingItems();
       //These are helper variables (aka state holders)
       bool m_areItemsMoving;
       Wire *eventWire;
@@ -199,6 +206,7 @@ class SchematicScene : public QGraphicsScene
       QList<Wire*> m_resizingWires;
       QList<Wire*> m_moveResizingWires;
       QList<QucsItem*> m_alreadyMoved;
+      QList<QucsItem*> m_insertingItems;
 
       // These are the various qucs-items on scene
       QList<Component*> m_components;

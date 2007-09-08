@@ -217,7 +217,6 @@ namespace Qucs
 
    }
 
-
    void XmlReader::readFurther()
    {
       readNext();
@@ -225,64 +224,64 @@ namespace Qucs
          readNext();
    }
 
-   void writeElement(QXmlStreamWriter *writer, const QString& tag, const QString& value)
+   void XmlWriter::writeElement(const QString& tag, const QString& value)
    {
-      writer->writeTextElement(tag, value);
+      writeTextElement(tag, value);
    }
 
-   void writeElement(QXmlStreamWriter *writer, const QString& tag, int value)
+   void XmlWriter::writeElement(const QString& tag, int value)
    {
-      writeElement(writer, tag, QString::number(value));
+      writeTextElement(tag, QString::number(value));
    }
 
-   void writeElement(QXmlStreamWriter *writer, const QString& tag, qreal value)
+   void XmlWriter::writeElement(const QString& tag, qreal value)
    {
-      writeElement(writer, tag, Qucs::realToString(value));
+      writeTextElement(tag, Qucs::realToString(value));
    }
 
-   void writeElement(QXmlStreamWriter *writer, const QString& tag, bool value)
+   void XmlWriter::writeElement(const QString& tag, bool value)
    {
-      writeElement(writer, tag, Qucs::boolToString(value));
+      writeTextElement(tag, Qucs::boolToString(value));
    }
 
-   void writeRect(QXmlStreamWriter *writer, const QRectF& rect)
+   void XmlWriter::writeRect(const QRectF& rect)
    {
-      writer->writeStartElement("rect");
-      writeElement(writer, "x", rect.x());
-      writeElement(writer, "y", rect.y());
-      writeElement(writer, "width", rect.width());
-      writeElement(writer, "height", rect.height());
-      writer->writeEndElement(); //</rect>
+      writeStartElement("rect");
+      writeElement("x", rect.x());
+      writeElement("y", rect.y());
+      writeElement("width", rect.width());
+      writeElement("height", rect.height());
+      writeEndElement(); //</rect>
    }
 
-   void writeTransform(QXmlStreamWriter *writer, const QTransform& transform)
+   void XmlWriter::writeTransform(const QTransform& transform)
    {
-      writer->writeStartElement("transform");
-      writeElement(writer, "m11", transform.m11());
-      writeElement(writer, "m12", transform.m12());
-      writeElement(writer, "m13", transform.m13());
-      writeElement(writer, "m21", transform.m21());
-      writeElement(writer, "m22", transform.m22());
-      writeElement(writer, "m23", transform.m23());
-      writeElement(writer, "m31", transform.m31());
-      writeElement(writer, "m32", transform.m32());
-      writeElement(writer, "m33", transform.m33());
-      writer->writeEndElement(); //</transform>
+      writeStartElement("transform");
+      writeElement("m11", transform.m11());
+      writeElement("m12", transform.m12());
+      writeElement("m13", transform.m13());
+      writeElement("m21", transform.m21());
+      writeElement("m22", transform.m22());
+      writeElement("m23", transform.m23());
+      writeElement("m31", transform.m31());
+      writeElement("m32", transform.m32());
+      writeElement("m33", transform.m33());
+      writeEndElement(); //</transform>
    }
 
-   void writeSize(QXmlStreamWriter *writer, const QSize& size)
+   void XmlWriter::writeSize(const QSize& size)
    {
-      writer->writeStartElement("size");
-      writeElement(writer, "width", size.width());
-      writeElement(writer, "height", size.height());
-      writer->writeEndElement(); //</size>
+      writeStartElement("size");
+      writeElement("width", size.width());
+      writeElement("height", size.height());
+      writeEndElement(); //</size>
    }
 
-   void writePoint(QXmlStreamWriter *writer, const QPointF& point)
+   void XmlWriter::writePoint(const QPointF& point)
    {
-      writer->writeStartElement("point");
-      writeElement(writer, "x", point.x());
-      writeElement(writer, "y", point.y());
-      writer->writeEndElement(); //</point>
+      writeStartElement("point");
+      writeElement("x", point.x());
+      writeElement("y", point.y());
+      writeEndElement(); //</point>
    }
 }

@@ -34,6 +34,7 @@
 #include <QtGui/QAction>
 
 #include <QtCore/QMimeData>
+#include <QtCore/QDebug>
 
 class TreeView : public QTreeView
 {
@@ -77,13 +78,14 @@ QPixmap TreeView::renderToPixmap(const QMimeData* data, QRect *r, QPointF& hotSp
 {
    QRectF rect;// = visualRect(indexes.at(0));
    Component *c = 0;
+   QString text;
    if(data->formats().contains("application/qucs.sidebarItem"))
    {
       QByteArray encodedData = data->data("application/qucs.sidebarItem");
       QDataStream stream(&encodedData, QIODevice::ReadOnly);
-      QString text;
+
       stream >> text;
-      c = Component::componentFromName(text,0);
+      c = Component::componentFromModel(text,0);
    }
    if(!c)
    {
@@ -114,13 +116,11 @@ QPixmap TreeView::renderToPixmap(const QMimeData* data, QRect *r, QPointF& hotSp
    p.setRenderHint(QPainter::TextAntialiasing,true);
    p.setRenderHint(QPainter::SmoothPixmapTransform,true);
    p.translate(-rect.left(),-rect.top());
-   #if QT_VERSION >= 0x040300
-   p.setTransform(c->transform(),true);
-   #else
-   p.setMatrix(c->matrix(),true);
-   #endif
-   c->paint(&p,&so,0);
 
+   p.setTransform(c->transform(),true);
+
+   c->paint(&p,&so,0);
+   c->drawNodes(&p);
    p.end();
 
    if(r)

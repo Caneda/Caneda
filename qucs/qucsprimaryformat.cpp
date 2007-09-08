@@ -210,7 +210,16 @@ bool QucsPrimaryFormat::loadComponents(QTextStream &stream)
       if(Line.at(0) == '<') if(Line.at(1) == '/') return true;
       Line = Line.trimmed();
       if(Line.isEmpty()) continue;
-      c = Component::componentFromLine(Line,m_view->schematicScene());
+      Line = Line.trimmed();
+      if(Line.at(0) != '<') {
+         QMessageBox::critical(0, QObject::tr("Error"),
+                               QObject::tr("Format Error:\nWrong line start!"));
+         return 0;
+      }
+
+      QString cstr = Line.section(' ',0,0); // component type
+      cstr.remove(0,1);    // remove leading "<"
+      c = Component::componentFromModel(cstr, m_view->schematicScene());
       if(!c) return false;
 
       m_view->schematicScene()->insertComponent(c);
