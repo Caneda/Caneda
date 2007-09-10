@@ -532,8 +532,9 @@ QVariant Component::handlePositionChange(const QPointF& hpos)
 
 QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
 {
-   if (change == ItemPositionChange && scene())
+   if (change == ItemPositionChange && scene()) {
       return handlePositionChange(value.toPointF());
+   }
 
    else if( change == ItemTransformChange && scene()) {
       QTransform newTransform = qVariantValue<QTransform>(value);

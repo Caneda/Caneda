@@ -207,7 +207,7 @@ class SchematicScene : public QGraphicsScene
       QList<Wire*> m_moveResizingWires;
       QList<QucsItem*> m_alreadyMoved;
       QList<QucsItem*> m_insertingItems;
-
+      QPointF lastPos;
       // These are the various qucs-items on scene
       QList<Component*> m_components;
       QList<Wire*> m_wires;

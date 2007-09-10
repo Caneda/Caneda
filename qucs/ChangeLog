@@ -1,3 +1,7 @@
+2007-09-10  Gopala Krishna  <gopala@localhost>
+
+	* schematicscene.cpp, schematicscene.h: Scene items are now moved only along grid.
+
 2007-08-03  Gopala Krishna  <gopala@localhost>
 
 	* schematicscene.cpp and other files: Made Qt-4.3 the requirement to build qucs.

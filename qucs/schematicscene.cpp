@@ -253,12 +253,18 @@ void SchematicScene::setFileName(const QString& name)
 
 QPointF SchematicScene::nearingGridPoint(const QPointF &pos)
 {
-   int x = int(pos.x());
-   int y = int(pos.y());
-   int xr = x % m_gridWidth;
-   int yr = y % m_gridHeight;
-   x = xr > int(m_gridWidth/2) ? x - xr + m_gridWidth : x - xr;
-   y = yr > int(m_gridHeight/2) ? y - yr + m_gridHeight : y - yr;
+   QPoint point = pos.toPoint();
+   int x = point.x();
+   int y = point.y();
+
+   if(x<0) x -= (m_gridWidth >> 1) - 1;
+   else x += m_gridWidth >> 1;
+   x -= x % m_gridWidth;
+
+   if(y<0) y -= (m_gridHeight >> 1) - 1;
+   else y += m_gridHeight >> 1;
+   y -= y % m_gridHeight;
+
    return QPointF(x,y);
 }
 
@@ -586,7 +592,7 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
       Component *c = Component::componentFromModel(text,this);
       insertComponent(c);
       if(c) {
-         c->setPos(event->scenePos());
+         c->setPos(nearingGridPoint(event->scenePos()));
          c->checkForConnections(false);
          c->setInitialPropertyPosition();
          v->horizontalScrollBar()->setValue(hor);
@@ -878,6 +884,9 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
       {
          // This has to be before Scene::mousePress since, wire sets this variable if it is grabbed
          m_grabbedWire = 0;
+         //Cache the mouse press position
+         lastPos = nearingGridPoint(e->scenePos());
+
          QGraphicsScene::mousePressEvent(e);
          // Clear the containers from previous press
          m_movingNodes.clear();
@@ -925,9 +934,25 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
                m_areItemsMoving = true;
          }
 
+
+         QPointF point = nearingGridPoint(e->scenePos());
+
+         if(!m_areItemsMoving)
+            return;
+
+         //HACK: Fool the event receivers by changing event parameters with new grid position.
+         e->setScenePos(point);
+         e->setPos(point);
+         e->setLastScenePos(lastPos);
+         e->setLastPos(lastPos);
+         //Now cache this point for next move
+         lastPos = point;
+
          QGraphicsScene::mouseMoveEvent(e);
 
          if(!m_areItemsMoving) return;
+
+
 
          // Send event to hidden wire since the framework doesn't do that
          if(m_grabbedWire)
@@ -984,12 +1009,14 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
                wire->moveAndResizeBy(dx,dy);
             }
          }
+
       }
       break;
 
 
       case QEvent::GraphicsSceneMouseRelease:
       {
+         lastPos = QPointF();
          if(m_grabbedWire) {
             m_grabbedWire->grabReleaseEvent(e);
             m_grabbedWire = 0;

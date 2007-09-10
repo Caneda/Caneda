@@ -73,7 +73,7 @@ void Wire::rebuild()
 
    if(!m_lines.isEmpty()) {
       bool bothMoved = m_lines.first().p1() != node1Pos && m_lines.last().p2() != node2Pos;
-      Q_ASSERT_X(!bothMoved, "Wire::rebuild()", "Against logical assumption that both only one node is moved.");
+      Q_ASSERT_X(!bothMoved, "Wire::rebuild()", "Against logical assumption that only one node is moved.");
       bool noneMoved = m_lines.first().p1() == node1Pos && m_lines.last().p2() == node2Pos;
       if(noneMoved)
          return; // Nothing to do.
@@ -458,25 +458,27 @@ void Wire::delNullLines()
    qDebug() << "Wire::delNullLines() enter";
    QList<WireLine>::iterator it = m_lines.begin(),it1;
    int cnt = 0;
-   for(; it != m_lines.end(); ++it) {
+   while(it != m_lines.end()) {
       if(it->isNull()) {
          it = m_lines.erase(it);
-         --it;
          cnt++;
+      }
+      else {
+         ++it;
       }
    }
    qDebug() << "Deleted" << cnt << "wirelines";
    cnt = 0;
    if(m_lines.size() <= 1)
       return;
-   for(it = m_lines.begin()+1; it != m_lines.end(); ++it) {
+   it = m_lines.begin() + 1;
+   while(it != m_lines.end()) {
       it1 = it - 1;
       if(it->isHorizontal() && it1->isHorizontal()) {
          Q_ASSERT(it->y() == it1->y());
          Q_ASSERT(it1->p2() == it->p1());
          it1->setP2(it->p2());
          it = m_lines.erase(it);
-         --it;
          cnt++;
       }
       else if(it->isVertical() && it1->isVertical()) {
@@ -484,8 +486,10 @@ void Wire::delNullLines()
          Q_ASSERT(it1->p2() == it->p1());
          it1->setP2(it->p2());
          it = m_lines.erase(it);
-         --it;
          cnt++;
+      }
+      else {
+         ++it;
       }
    }
    qDebug() << "Singlified" << cnt << "wirelines";
