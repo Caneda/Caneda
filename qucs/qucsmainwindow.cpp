@@ -945,7 +945,7 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
 {
    SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
    if(!view) {
-      qDebug("QucsMainWindow::performToggleAction() : This func called at wrong circumstance!");
+      //nothing to do since it is not schematic view
       return;
    }
 
@@ -984,6 +984,7 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
          if(funcable.isEmpty())
             break;
          (scene->*func)(funcable);
+         scene->setModified(true);
          foreach(QAction *act, checkableActions) {
             if(act != norm) {
                act->blockSignals(true);
@@ -1009,7 +1010,11 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
       }
    }
    scene->setCurrentMouseAction(ma);
+}
 
+void QucsMainWindow::setNormalAction()
+{
+   performToggleAction(true, 0, action("select"));
 }
 
 void QucsMainWindow::newView()
@@ -1045,16 +1050,19 @@ void QucsMainWindow::closeEvent( QCloseEvent *e )
 
 void QucsMainWindow::slotFileNew()
 {
+   setNormalAction();
    newView();
 }
 
 void QucsMainWindow::slotTextNew()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotFileOpen()
 {
+   setNormalAction();
    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "", qucsFilter);
    if ( fileName.isEmpty() ) return;
@@ -1074,6 +1082,7 @@ void QucsMainWindow::slotFileOpen()
 
 void QucsMainWindow::slotFileSave()
 {
+   setNormalAction();
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
    if(v->fileName().isEmpty())
@@ -1083,6 +1092,7 @@ void QucsMainWindow::slotFileSave()
 
 void QucsMainWindow::slotFileSaveAs()
 {
+   setNormalAction();
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
@@ -1094,83 +1104,99 @@ void QucsMainWindow::slotFileSaveAs()
 
 void QucsMainWindow::slotFileSaveAll()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotFileClose()
 {
+   setNormalAction();
    //TODO: Verify if page document is modified
    closeCurrentTab();
 }
 
 void QucsMainWindow::slotSymbolEdit()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotFileSettings()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotFilePrint()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotFilePrintFit()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotFileQuit()
 {
+   setNormalAction();
    close();
 }
 
 void QucsMainWindow::slotApplSettings()
 {
-  QucsSettingsDialog *d = new QucsSettingsDialog(this);
-  d->exec();
+   setNormalAction();
+   QucsSettingsDialog *d = new QucsSettingsDialog(this);
+   d->exec();
 }
 
 void QucsMainWindow::slotAlignTop()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotAlignBottom()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotAlignLeft()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotAlignRight()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotDistribHoriz()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotDistribVert()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCenterHorizontal()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCenterVertical()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
@@ -1181,11 +1207,13 @@ void QucsMainWindow::slotOnGrid(bool on)
 
 void QucsMainWindow::slotChangeProps()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotEditCut()
 {
+   setNormalAction();
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
    v->cut();
@@ -1193,6 +1221,7 @@ void QucsMainWindow::slotEditCut()
 
 void QucsMainWindow::slotEditCopy()
 {
+   setNormalAction();
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
    v->copy();
@@ -1200,6 +1229,7 @@ void QucsMainWindow::slotEditCopy()
 
 void QucsMainWindow::slotEditPaste()
 {
+   setNormalAction();
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
    v->paste();
@@ -1212,76 +1242,91 @@ void QucsMainWindow::slotEditDelete(bool on)
 
 void QucsMainWindow::slotEditFind()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotEditFindAgain()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotEditUndo()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotEditRedo()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotProjNewButt()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotMenuOpenProject()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotMenuDelProject()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotMenuCloseProject()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotAddToProject()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCreateLib()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCreatePackage()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotExtractPackage()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotImportData()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotExportGraphAsCsv()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotShowAll()
 {
+   setNormalAction();
    QucsView *view = viewFromWidget(tabWidget()->currentWidget());
    if(view)
       view->showAll();
@@ -1289,6 +1334,7 @@ void QucsMainWindow::slotShowAll()
 
 void QucsMainWindow::slotShowOne()
 {
+   setNormalAction();
    QucsView *view = viewFromWidget(tabWidget()->currentWidget());
    if(view)
       view->showNoZoom();
@@ -1301,6 +1347,7 @@ void QucsMainWindow::slotZoomIn(bool on)
 
 void QucsMainWindow::slotZoomOut()
 {
+   setNormalAction();
    QucsView *view = viewFromWidget(tabWidget()->currentWidget());
    if(view)
       view->zoomOut();
@@ -1313,11 +1360,13 @@ void QucsMainWindow::slotSelect(bool on)
 
 void QucsMainWindow::slotSelectAll()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotSelectMarker()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
@@ -1338,11 +1387,13 @@ void QucsMainWindow::slotEditMirrorY(bool on)
 
 void QucsMainWindow::slotIntoHierarchy()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotPopHierarchy()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
@@ -1378,50 +1429,60 @@ void QucsMainWindow::slotInsertLabel(bool on)
 
 void QucsMainWindow::slotInsertEntity()
 {
+   setNormalAction();
 }
 
 void QucsMainWindow::slotCallEditor()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCallFilter()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCallLine()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCallLibrary()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCallMatch()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotCallAtt()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotSimulate()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotToPage()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotDCbias()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
@@ -1432,46 +1493,55 @@ void QucsMainWindow::slotSetMarker(bool on)
 
 void QucsMainWindow::slotShowLastMsg()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotShowLastNetlist()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotViewToolBar(bool)
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotViewStatusBar(bool)
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotViewBrowseDock(bool)
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotHelpIndex()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotGettingStarted()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotHelpAbout()
 {
+   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotHelpAboutQt()
 {
+   setNormalAction();
    QApplication::aboutQt();
 }
 

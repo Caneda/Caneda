@@ -20,7 +20,7 @@
 #ifndef __ITEM_H
 #define __ITEM_H
 
-#include <QtGui/QGraphicsItem>
+#include <QtSvg/QGraphicsSvgItem>
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
 
@@ -35,7 +35,7 @@ namespace Qucs {
    class XmlWriter;
 }
 
-class QucsItem : public QGraphicsItem
+class QucsItem : public QGraphicsSvgItem
 {
    public:
       enum QucsItemTypes {

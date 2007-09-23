@@ -141,6 +141,7 @@ class QucsMainWindow : public MainWindowBase
       void initMenus();
       void initToolBars();
       void performToggleAction(bool on, pActionFunc func, QAction *action);
+      void setNormalAction();
       QucsView* viewFromWidget(QWidget *widget);//Returns QucsView* appropriately
       // The following aim at reducing clutter by substituting
       // action pointers with a map container using object names

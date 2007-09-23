@@ -26,8 +26,10 @@
 
 #include <QtXml/QXmlStreamWriter>
 
-QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) : QGraphicsItem(parent,(QGraphicsScene*)scene)
+QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) : QGraphicsSvgItem(parent)
 {
+   if(scene)
+      scene->addItem(this);
 }
 
 QucsItem::~QucsItem()

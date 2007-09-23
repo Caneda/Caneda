@@ -151,7 +151,7 @@ bool Node::collidesWithItem(QGraphicsItem *other) const
 {
    Node *port = qucsitem_cast<Node*>(other);
    if(!port)
-      return QGraphicsItem::collidesWithItem(other);
+      return QGraphicsSvgItem::collidesWithItem(other);
    qreal dist = distance(pos(),port->pos());
 
    return (dist <= (2. * Node::Radius));

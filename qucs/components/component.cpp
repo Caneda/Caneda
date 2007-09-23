@@ -171,7 +171,7 @@ bool Component::loadFromString(QString s)
       n  = s.section(' ',8,8);    // rotated
       uint m_rotated = n.toInt(&ok);
       if(!ok) return false;
-      QGraphicsItem::rotate(m_rotated*-90.0);
+      QGraphicsSvgItem::rotate(m_rotated*-90.0);
 
    }
 
@@ -552,7 +552,7 @@ QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
       }
       return QVariant(newTransform);
    }
-   return QGraphicsItem::itemChange(change,value);
+   return QGraphicsSvgItem::itemChange(change,value);
 }
 
 Component* Component::componentFromModel(const QString& _model, SchematicScene *scene)

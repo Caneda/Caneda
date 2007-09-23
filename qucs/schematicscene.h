@@ -152,6 +152,10 @@ class SchematicScene : public QGraphicsScene
       void copyItems(QList<QucsItem*> items);
       void paste();
 
+      void processForSpecialMove(QList<QucsItem*> items);
+      void moveSpecialItemsBy(const QPointF& delta);
+      void endSpecialMovingItems();
+
    public slots:
       void setModified(bool m = true);
 
@@ -200,7 +204,6 @@ class SchematicScene : public QGraphicsScene
       bool m_areItemsMoving;
       Wire *eventWire;
       QList<Wire*> createdWires;
-      Wire *m_grabbedWire;
       Node *helperNode;
       QList<Node*> m_movingNodes;
       QList<Wire*> m_resizingWires;

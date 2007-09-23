@@ -161,9 +161,9 @@ AC_ARG_ENABLE([mt],
 if test $QT_VER = 4; then
   QT_LDF=""
   if test x$WIN32 = xyes; then
-    QT_LIB="-lQtCore4 -lQtGui4 -lQtXml4"
+    QT_LIB="-lQtCore4 -lQtGui4 -lQtXml4 -lQtSvg4"
   else
-    QT_LIB="-lQtCore -lQtGui -lQtXml"
+    QT_LIB="-lQtCore -lQtGui -lQtXml -lQtSvg"
   fi
   QT_INC="$QT_DEF"
   QT_MTS="non-threaded"

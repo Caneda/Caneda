@@ -56,7 +56,6 @@ SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 SchematicScene::SchematicScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent ) : QGraphicsScene(x,y,width,height,parent)
 {
    init();
-//   testInsertingItems();
 }
 
 void SchematicScene::init()
@@ -72,7 +71,6 @@ void SchematicScene::init()
 
    eventWire = 0;
    helperNode = 0;
-   m_grabbedWire = 0;
    m_areItemsMoving = false;
    setCurrentMouseAction(Normal);
 }
@@ -108,7 +106,7 @@ Node* SchematicScene::nodeAt(const QPointF& centre)
 
 Node* SchematicScene::createNode(const QPointF& centre)
 {
-   Node *n = new Node(QString("FH"),this);
+   Node *n = new Node(QString("1"),this);
    //TODO: Implement node numbering/suffix
    n->setPos(centre);
    return n;
@@ -122,7 +120,9 @@ void SchematicScene::removeNode(Node *n)
 
 void SchematicScene::setGrabbedWire(Wire *w)
 {
-   m_grabbedWire = w;
+   if(w && !m_moveResizingWires.contains(w)) {
+      m_moveResizingWires << w;
+   }
 }
 
 void SchematicScene::insertComponent(Component *comp)
@@ -336,7 +336,6 @@ void SchematicScene::setCurrentMouseAction(MouseAction action)
    }
 
    m_areItemsMoving = false;
-   m_grabbedWire = 0;
 
    if(eventWire) {
       Node *n = eventWire->node1();
@@ -424,6 +423,8 @@ void SchematicScene::paste()
 {
    QString clipText = QApplication::clipboard()->text();
    Qucs::XmlReader *reader = new Qucs::XmlReader(clipText);
+   m_insertingItems.clear();
+
    while(!reader->atEnd()) {
       reader->readNext();
 
@@ -448,7 +449,8 @@ void SchematicScene::paste()
                reader->raiseError(QObject::tr("Component %1 doesn't exist").arg(model));
             else {
                c->readXml(reader);
-               c->checkForConnections();
+               m_insertingItems << c;
+               //c->checkForConnections();
             }
          }
          else if(reader->name() == "wire") {
@@ -480,13 +482,9 @@ void SchematicScene::paste()
 
 
 
-            Node *n1 = nodeAt(n1Pos);
-            if(!n1)
-               n1 = createNode(n1Pos);
+            Node *n1 = createNode(n1Pos);
 
-            Node *n2 = nodeAt(n2Pos);
-            if(!n2)
-               n2 = createNode(n2Pos);
+            Node *n2 = createNode(n2Pos);
 
             Wire *wire = new Wire(this, n1, n2);
             reader->readFurther();
@@ -496,9 +494,11 @@ void SchematicScene::paste()
                delete wire;
                break;
             }
-
-            reader->readFurther();
-            Q_ASSERT(reader->isEndElement() && reader->name() == "wire");
+            else {
+               reader->readFurther();
+               m_insertingItems << wire;
+               Q_ASSERT(reader->isEndElement() && reader->name() == "wire");
+            }
          }
       }
    }
@@ -506,8 +506,161 @@ void SchematicScene::paste()
 
    if(reader->hasError()) {
       QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
+      qDeleteAll(m_insertingItems);
+      m_insertingItems.clear();
       delete reader;
    }
+   else if(!m_insertingItems.isEmpty()) {
+      clearSelection();
+      setCurrentMouseAction(InsertingItems);
+      QRectF rect = m_insertingItems.first()->sceneBoundingRect();
+      foreach(QucsItem *i, m_insertingItems) {
+         rect |= i->sceneBoundingRect();
+         i->setSelected(true);
+      }
+      QPointF delta = m_insertingItems.first()->activeView()->viewport()->mapFromGlobal(QCursor::pos());
+      delta = m_insertingItems.first()->activeView()->mapToScene(delta.toPoint());
+      delta = delta - rect.center();
+      foreach(QucsItem *i, m_insertingItems)
+         i->moveBy(delta.x(), delta.y());
+   }
+}
+
+void SchematicScene::processForSpecialMove(QList<QucsItem*> _items)
+{
+   // Clear the containers from previous call
+   m_movingNodes.clear();
+   m_resizingWires.clear();
+   m_moveResizingWires.clear();
+
+   // Navigate through all items and add them to the
+   // corresponding containers for further processing.
+   foreach(QucsItem *item, _items) {
+      Component *component = qucsitem_cast<Component*>(item);
+      Wire *theWire = qucsitem_cast<Wire*>(item);
+      if(component) {
+         foreach(ComponentPort *port, component->componentPorts()) {
+            Node *portNode = port->node();
+
+            if(m_movingNodes.contains(portNode))
+               continue; // already processed
+
+            m_movingNodes << portNode;
+            portNode->setController(component);
+
+            if(portNode->areAllComponentsSelected()) {
+               foreach(Wire *wire, portNode->wires()) {
+                  if(!wire->isSelected() && !m_resizingWires.contains(wire))
+                     m_resizingWires << wire;
+               }
+            }
+         }
+      }
+      else if(theWire && theWire->isSelected()) {
+         bool shouldMoveAndResize = true;
+         bool n1s = !theWire->node1()->areAllComponentsSelected();
+         bool n2s = !theWire->node2()->areAllComponentsSelected();
+         shouldMoveAndResize = !m_moveResizingWires.contains(theWire) && n1s && n2s;
+         if(shouldMoveAndResize) {
+            m_moveResizingWires << theWire;
+         }
+         else if((n1s || n2s) && !m_resizingWires.contains(theWire)) {
+            //m_resizingWires << theWire;
+         }
+      }
+   }
+}
+
+void SchematicScene::moveSpecialItemsBy(const QPointF& delta)
+{
+   foreach(Node *node, m_movingNodes) {
+      Q_ASSERT(node->controller());
+      Component* controller = node->controller();
+      ComponentPort *port = controller->portWithNode(node);
+      Q_ASSERT(controller && port);
+      QPointF oldPos = node->pos();
+      QPointF newPos = controller->mapToScene(port->centrePos());
+
+      //Note: Here wires selection isn't taken into account
+      if(node->areAllComponentsSelected())
+         node->setPos(newPos);
+      else {
+         Node *newNode = createNode(oldPos);
+         foreach(Component *component,node->components()) {
+            if(!component->isSelected()) {
+               component->replaceNode(node,newNode);
+               node->removeComponent(component);
+               newNode->addComponent(component);
+            }
+         }
+         foreach(Wire *wire, node->wires()) {
+            if(!wire->isSelected()) {
+               wire->replaceNode(node,newNode);
+               node->removeWire(wire);
+               newNode->addWire(wire);
+            }
+         }
+
+         Wire *newWire = new Wire(this,node,newNode);
+         m_resizingWires << newWire;
+      }
+   }
+
+   foreach(Wire *wire, m_resizingWires) {
+      if(wire->isVisible())
+         wire->hide();
+      wire->rebuild();
+   }
+
+   foreach(Wire *wire, m_moveResizingWires) {
+      if(wire->isVisible())
+         wire->startMoveAndResize();
+      wire->moveAndResizeBy(delta.x(),delta.y());
+   }
+}
+
+void SchematicScene::endSpecialMovingItems()
+{
+   QSet<Node*> deletions;
+
+   foreach(Node *node, m_movingNodes) {
+      if(deletions.contains(node))
+         continue;
+      node->setController(0);
+      foreach(QGraphicsItem *item, node->collidingItems()) {
+         Node *otherNode = qucsitem_cast<Node*>(item);
+         if(!otherNode || deletions.contains(node) || m_movingNodes.contains(otherNode))
+            continue;
+
+         QPointF delta = otherNode->pos() - node->pos();
+         m_areItemsMoving = true;
+         m_alreadyMoved.clear();
+         adjustPositions(node,delta);
+         m_alreadyMoved.clear();
+         m_areItemsMoving = false;
+         connectNodes(node,otherNode);
+
+         deletions.insert(node);
+         break;
+      }
+   }
+
+   foreach(Wire *wire,m_resizingWires) {
+      wire->show();
+      wire->rebuild();
+      wire->deleteNullLines();
+   }
+
+   foreach(Wire *wire, m_moveResizingWires) {
+      wire->stopMoveAndResize();
+      wire->setSelected(true);
+   }
+
+   qDeleteAll(deletions);
+
+   deletions.clear();
+   m_movingNodes.clear();
+   m_resizingWires.clear();
 }
 
 void SchematicScene::setModified(bool m)
@@ -539,9 +692,13 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
    // grid sizes are very small
 
    while(gridWidth < 20)
-      gridWidth = int(gridWidth * 1.5);
+      gridWidth *= 2;
    while(gridHeight < 20)
-      gridHeight = int(gridHeight * 1.5);
+      gridHeight *= 2;
+   while(gridWidth > 60)
+      gridWidth /= 2;
+   while(gridHeight > 60)
+      gridHeight /= 2;
 
    qreal left = int(rect.left()) + gridWidth - (int(rect.left()) % gridWidth);
    qreal top = int(rect.top()) + gridHeight - (int(rect.top()) % gridHeight);
@@ -549,12 +706,9 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
    qreal bottom = int(rect.bottom()) - (int(rect.bottom()) % gridHeight);
    qreal x,y;
 
-
-
    for( x = left; x <= right; x += gridWidth)
       for( y = top; y <=bottom; y += gridHeight)
          painter->drawPoint(QPointF(x,y));
-
 
    painter->setRenderHint(QPainter::Antialiasing,true);
 }
@@ -675,6 +829,7 @@ void SchematicScene::wiringEvent(MouseActionEvent *event)
             eventWire->show();
             eventWire->rebuild();
             createdWires << eventWire;
+            setModified(true);
          }
 
          n = 0;
@@ -715,7 +870,10 @@ void SchematicScene::deletingEvent(MouseActionEvent *event)
             break;
          }
       }
-      deleteItems(_items);
+      if(!_items.isEmpty()) {
+         deleteItems(_items);
+         setModified(true);
+      }
    }
 }
 
@@ -738,7 +896,10 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
             break;
          }
       }
-      rotateItems(_items);
+      if(!_list.isEmpty()) {
+         rotateItems(_items);
+         setModified(true);
+      }
    }
 }
 
@@ -755,7 +916,10 @@ void SchematicScene::mirroringXEvent(MouseActionEvent *event)
             break;
          }
       }
-      mirrorXItems(_items);
+      if(!_list.isEmpty()) {
+         mirrorXItems(_items);
+         setModified(true);
+      }
    }
 }
 
@@ -772,7 +936,10 @@ void SchematicScene::mirroringYEvent(MouseActionEvent *event)
             break;
          }
       }
-      mirrorYItems(_items);
+      if(!_list.isEmpty()) {
+         mirrorYItems(_items);
+         setModified(true);
+      }
    }
 }
 
@@ -796,7 +963,10 @@ void SchematicScene::settingOnGridEvent(MouseActionEvent *event)
             break;
          }
       }
-      setItemsOnGrid(_items);
+      if(!_list.isEmpty()) {
+         setItemsOnGrid(_items);
+         setModified(true);
+      }
    }
 }
 
@@ -839,6 +1009,7 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
          }
       }
       m_insertingItems = newList;
+      setModified(true);
       //m_insertingItems.clear();
       //setCurrentMouseAction(Normal);
    }
@@ -882,8 +1053,6 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
    switch(e->type()) {
       case QEvent::GraphicsSceneMousePress:
       {
-         // This has to be before Scene::mousePress since, wire sets this variable if it is grabbed
-         m_grabbedWire = 0;
          //Cache the mouse press position
          lastPos = nearingGridPoint(e->scenePos());
 
@@ -893,36 +1062,15 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
          m_resizingWires.clear();
          m_moveResizingWires.clear();
 
-         // Navigate through selected items and add them to the
-         // corresponding containers for further processing.
+         QList<QucsItem*> _items;
          foreach(QGraphicsItem *item, selectedItems()) {
-            Component *component = qucsitem_cast<Component*>(item);
-            Wire *theWire = qucsitem_cast<Wire*>(item);
-            if(component) {
-               foreach(ComponentPort *port, component->componentPorts()) {
-                  Node *portNode = port->node();
-                  portNode->setController(component);
-
-                  if(!m_movingNodes.contains(portNode))
-                     m_movingNodes << portNode;
-                  if(portNode->areAllComponentsSelected()) {
-                     foreach(Wire *wire, portNode->wires()) {
-                        if(!m_resizingWires.contains(wire))
-                           m_resizingWires << wire;
-                     }
-                  }
-               }
-            }
-            else if(theWire && theWire->isSelected() &&
-                    theWire != m_grabbedWire &&
-                    theWire->node1()->components().size() != 0 &&
-                    theWire->node2()->components().size() != 0 &&
-                    theWire->node1()->selectedComponents().size() == 0 &&
-                    theWire->node2()->selectedComponents().size() == 0 &&
-                    !m_moveResizingWires.contains(theWire)) {
-               m_moveResizingWires << theWire;
+            QucsItem *qitem = qucsitem_cast<QucsItem*>(item);
+            if(qitem) {
+               _items << qitem;
             }
          }
+
+         processForSpecialMove(_items);
       }
       break;
 
@@ -952,64 +1100,8 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
 
          if(!m_areItemsMoving) return;
 
-
-
-         // Send event to hidden wire since the framework doesn't do that
-         if(m_grabbedWire)
-            m_grabbedWire->grabMoveEvent(e);
-         QPointF delta;
-         foreach(Node *node, m_movingNodes) {
-            Q_ASSERT(node->controller());
-            Component* controller = node->controller();
-            ComponentPort *port = controller->portWithNode(node);
-            Q_ASSERT(controller && port);
-            QPointF oldPos = node->pos();
-            QPointF newPos = controller->mapToScene(port->centrePos());
-            if(delta.isNull())
-               delta = newPos - oldPos;
-            //Note: Here wires selection isn't taken into account
-            if(node->areAllComponentsSelected())
-               node->setPos(newPos);
-            else {
-               Node *newNode = createNode(oldPos);
-               foreach(Component *component,node->components()) {
-                  if(!component->isSelected()) {
-                     component->replaceNode(node,newNode);
-                     node->removeComponent(component);
-                     newNode->addComponent(component);
-                  }
-               }
-               foreach(Wire *wire, node->wires()) {
-                  if(!wire->isSelected()) {
-                     wire->replaceNode(node,newNode);
-                     node->removeWire(wire);
-                     newNode->addWire(wire);
-                  }
-               }
-
-               Wire *newWire = new Wire(this,node,newNode);
-               m_resizingWires << newWire;
-            }
-         }
-
-         foreach(Wire *wire, m_resizingWires) {
-            if(wire != m_grabbedWire && wire->isVisible())
-               wire->hide();
-            wire->rebuild();
-         }
-         if(m_moveResizingWires.count() && m_grabbedWire)
-            m_moveResizingWires.removeAll(m_grabbedWire);
-         qreal dx = e->scenePos().x() - e->lastScenePos().x();
-         qreal dy = e->scenePos().y() - e->lastScenePos().y();
-
-         foreach(Wire *wire, m_moveResizingWires) {
-            if(wire != m_grabbedWire) {
-               if(wire->isVisible())
-                  wire->startMoveAndResize();
-               wire->moveAndResizeBy(dx,dy);
-            }
-         }
-
+         QPointF delta = e->scenePos() - e->lastScenePos();
+         moveSpecialItemsBy(delta);
       }
       break;
 
@@ -1017,71 +1109,24 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
       case QEvent::GraphicsSceneMouseRelease:
       {
          lastPos = QPointF();
-         if(m_grabbedWire) {
-            m_grabbedWire->grabReleaseEvent(e);
-            m_grabbedWire = 0;
-         }
          if(!m_areItemsMoving)
             return QGraphicsScene::mouseReleaseEvent(e);
 
          m_areItemsMoving = false;
-
-         QSet<Node*> deletions;
-
-         foreach(Node *node, m_movingNodes) {
-            if(deletions.contains(node))
-               continue;
-            node->setController(0);
-            foreach(QGraphicsItem *item, node->collidingItems()) {
-               Node *otherNode = qucsitem_cast<Node*>(item);
-               if(!otherNode || deletions.contains(node))
-                  continue;
-
-               QPointF delta = otherNode->pos() - node->pos();
-               m_areItemsMoving = true;
-               m_alreadyMoved.clear();
-               adjustPositions(node,delta);
-               m_alreadyMoved.clear();
-               m_areItemsMoving = false;
-               connectNodes(node,otherNode);
-
-               deletions.insert(node);
-               break;
-            }
-         }
-
-         foreach(Wire *wire,m_resizingWires) {
-            wire->show();
-            wire->rebuild();
-            wire->delNullLines();
-         }
-
-         foreach(Wire *wire, m_moveResizingWires) {
-            wire->stopMoveAndResize();
-            wire->setSelected(true);
-         }
-
-         qDeleteAll(deletions);
-         deletions.clear();
-
-         m_movingNodes.clear();
-         m_resizingWires.clear();
-
+         endSpecialMovingItems();
+         setModified(true);
          QGraphicsScene::mouseReleaseEvent(e); // other behaviour by base
       }
       break;
 
       case QEvent::GraphicsSceneMouseDoubleClick:
-         m_grabbedWire = 0;
          QGraphicsScene::mouseDoubleClickEvent(e);
          break;
 
       default:
-         qDebug("SchematicScene::normalEvent() :Unknown event type");
+         qDebug("SchematicScene::normalEvent() :  Unknown event type");
    };
 }
-
-
 
 void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
 {

@@ -202,7 +202,10 @@ void SchematicView::copy() const
 void SchematicView::cut()
 {
    QList<QucsItem*> _items = qucsItemsFromGraphicsItems(schematicScene()->selectedItems());
-   schematicScene()->cutItems(_items);
+   if(!_items.isEmpty()) {
+      schematicScene()->cutItems(_items);
+      setModified(true);
+   }
 }
 
 void SchematicView::paste()
