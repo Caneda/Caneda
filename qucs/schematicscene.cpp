@@ -338,42 +338,24 @@ void SchematicScene::setCurrentMouseAction(MouseAction action)
    m_areItemsMoving = false;
 
    if(eventWire) {
-      Node *n = eventWire->node1();
-      n->show();
-      delete eventWire;
-      delete helperNode;
-      if(n->wires().isEmpty() && n->components().isEmpty())
-         delete n;
-      else if(!createdWires.isEmpty()) {
-         Wire *finalWire = createdWires.takeFirst();
-         //n = createdWires.last()->node2();
-         QList<WireLine> wLines = finalWire->wireLines();
-         QSet<Node*> delNodes;
-         foreach(Wire *w, createdWires) {
-            foreach(WireLine line, w->wireLines()) {
-               QPointF p1 = finalWire->mapFromItem(w, line.p1());
-               QPointF p2 = finalWire->mapFromItem(w, line.p2());
-               wLines << WireLine(p1, p2);
-            }
-            Node *n1 = w->node1();
-            Node *n2 = w->node2();
-            delete w;
-            if(n1 != n) delNodes << n1;
-            if(n2 != n) delNodes << n2;
-         }
-
-         qDeleteAll(delNodes);
-         createdWires.clear();
-         finalWire->setNode2(n);
-         n->show();
-         n->addWire(finalWire);
-         finalWire->show();
-         finalWire->setWireLines(wLines);
+      QList<WireLine> wirelines = eventWire->wireLines();
+      Q_ASSERT(wirelines.size() > 1);
+      wirelines.erase(wirelines.end()-2, wirelines.end());
+      if(!wirelines.isEmpty()) {
+         delete eventWire->node2();
+         Node *n = createNode(wirelines.last().p2());
+         n->addWire(eventWire);
+         eventWire->setNode2(n);
+         eventWire->setWireLines(wirelines);
+         eventWire->deleteNullLines();
+         eventWire->show();
+      }
+      else {
+         delete eventWire;
       }
    }
    eventWire = 0;
    helperNode = 0;
-   createdWires.clear();
    m_currentMouseAction = action;
 
    QGraphicsView::DragMode dragMode = (action == Normal) ? QGraphicsView::RubberBandDrag : QGraphicsView::NoDrag;
@@ -761,11 +743,22 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 
 void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
+   //Cache the mouse press position
+   lastPos = nearingGridPoint(e->scenePos());
    sendMouseActionEvent(e);
 }
 
 void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
 {
+   //HACK: Fool the event receivers by changing event parameters with new grid position.
+   QPointF point = nearingGridPoint(e->scenePos());
+   e->setScenePos(point);
+   e->setPos(point);
+   e->setLastScenePos(lastPos);
+   e->setLastPos(lastPos);
+   //Now cache this point for next move
+   lastPos = point;
+
    sendMouseActionEvent(e);
 }
 
@@ -786,64 +779,40 @@ void SchematicScene::wiringEvent(MouseActionEvent *event)
 
    switch(event->type()) {
       case QEvent::GraphicsSceneMousePress:
-         if(eventWire) {
-            QPointF pos = helperNode->pos();
-
-            foreach(QGraphicsItem *item, helperNode->collidingItems()) {
-               n = qucsitem_cast<Node*>(item);
-               if(n) break;
+         if(!eventWire) {
+            foreach(QGraphicsItem *item, items(event->scenePos())) {
+               if(qucsitem_cast<Node*>(item)) {
+                  n = static_cast<Node*>(item);
+                  break;
+               }
             }
-            delete helperNode;
-            helperNode = 0;
+            if(!n)
+               n = createNode(event->scenePos());
+            helperNode = createNode(event->scenePos());
+            eventWire = new Wire(this, n, helperNode);
+            eventWire->hide();
+         }
+         else {
+            foreach(QGraphicsItem *item, helperNode->collidingItems()) {
+               if(qucsitem_cast<Node*>(item)) {
+                  n = static_cast<Node*>(item);
+                  break;
+               }
+            }
             if(n) {
                eventWire->setNode2(n);
                n->addWire(eventWire);
-               createdWires << eventWire;
-               Wire *finalWire = createdWires.takeFirst();
-               QList<WireLine> wLines = finalWire->wireLines();
-               QSet<Node*> delNodes;
-               foreach(Wire *w, createdWires) {
-                  foreach(WireLine line, w->wireLines()) {
-                     QPointF p1 = finalWire->mapFromItem(w, line.p1());
-                     QPointF p2 = finalWire->mapFromItem(w, line.p2());
-                     wLines << WireLine(p1, p2);
-                  }
-                  Node *n1 = w->node1();
-                  Node *n2 = w->node2();
-                  delete w;
-                  if(n1 != n) delNodes << n1;
-                  if(n2 != n) delNodes << n2;
-               }
-               qDeleteAll(delNodes);
-               createdWires.clear();
-               finalWire->setNode2(n);
-               n->addWire(finalWire);
-               finalWire->setWireLines(wLines);
-
+               delete helperNode;
+               eventWire->deleteNullLines();
+               eventWire->show();
                eventWire = 0;
-               break;
             }
-            n = createNode(pos);
-            eventWire->setNode2(n);
-            n->addWire(eventWire);
-            eventWire->show();
-            eventWire->rebuild();
-            createdWires << eventWire;
-            setModified(true);
+            else {
+               QList<WireLine> wirelines = eventWire->wireLines();
+               wirelines << WireLine(wirelines.last().p2(), wirelines.last().p2());
+               eventWire->setWireLines(wirelines);
+            }
          }
-
-         n = 0;
-         foreach(QGraphicsItem *item, items(event->scenePos())) {
-            n = qucsitem_cast<Node*>(item);
-            if(n) break;
-         }
-         if(!n) n = createNode(event->scenePos());
-         if(eventWire)
-            n->hide();
-         helperNode = createNode(event->scenePos());
-         eventWire = new Wire(this,n,helperNode);
-         eventWire->hide();
-
          break;
 
       case QEvent::GraphicsSceneMouseMove:
@@ -1053,9 +1022,6 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
    switch(e->type()) {
       case QEvent::GraphicsSceneMousePress:
       {
-         //Cache the mouse press position
-         lastPos = nearingGridPoint(e->scenePos());
-
          QGraphicsScene::mousePressEvent(e);
          // Clear the containers from previous press
          m_movingNodes.clear();
@@ -1082,20 +1048,8 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
                m_areItemsMoving = true;
          }
 
-
-         QPointF point = nearingGridPoint(e->scenePos());
-
          if(!m_areItemsMoving)
             return;
-
-         //HACK: Fool the event receivers by changing event parameters with new grid position.
-         e->setScenePos(point);
-         e->setPos(point);
-         e->setLastScenePos(lastPos);
-         e->setLastPos(lastPos);
-         //Now cache this point for next move
-         lastPos = point;
-
          QGraphicsScene::mouseMoveEvent(e);
 
          if(!m_areItemsMoving) return;

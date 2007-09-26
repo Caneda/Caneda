@@ -203,7 +203,6 @@ class SchematicScene : public QGraphicsScene
       //These are helper variables (aka state holders)
       bool m_areItemsMoving;
       Wire *eventWire;
-      QList<Wire*> createdWires;
       Node *helperNode;
       QList<Node*> m_movingNodes;
       QList<Wire*> m_resizingWires;
