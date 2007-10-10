@@ -16,6 +16,11 @@
  * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
+/*!\file
+  \author Gopala Krishna A <krishna.ggk@gmail.com>
+
+  Implement Node class
+*/
 
 #include "node.h"
 #include "wire.h"
@@ -26,8 +31,21 @@
 #include <QtCore/QDebug>
 
 #include <cmath>
-const qreal Node::Radius = 3.0;
 
+/*!\brief Radius of node
+  Radius of node in pixels
+  \todo Allow custumization. Is this really needed ?
+*/
+const qreal Node::Radius = 3.0;
+const qreal Node::ZValue = 1.0;
+const QRectF Node::BoundRect = QRectF(-Node::Radius, -Node::Radius,
+                                      2*Node::Radius, 2*Node::Radius);
+QPainterPath Node::Shape;
+/*!\brief Compute euclidian distance between two points
+  \todo Why not use
+  Qpoint d = p1 - p2;
+  return hypot(d.x(),d.y());
+*/
 inline qreal distance(const QPointF& p1, const QPointF& p2)
 {
    qreal dx = p1.x() - p2.x();
@@ -35,19 +53,36 @@ inline qreal distance(const QPointF& p1, const QPointF& p2)
    return std::sqrt((dx*dx)+(dy*dy));
 }
 
+/*!\brief Construct a new node
+
+  Construct a new node named by name. A node does not react to mouse
+  and is always drawn before wires and components.
+  Node must be in the foreground of component and wires.
+*/
 Node::Node(const QString& name,SchematicScene *scene) : QucsItem(0,scene)
 {
    setName(name);
+   //Ensure flags is zero so that no useless checks are made on node.
    setFlags(0);
    setAcceptedMouseButtons(0);
-   setZValue(1.0);
+   setZValue(Node::ZValue);
    m_controller = 0;
+   if(Node::Shape.isEmpty()) {
+      Node::Shape.addEllipse(Node::BoundRect);
+   }
 }
 
+/*!\brief Destructor */
 Node::~Node()
 {
 }
 
+/*!\brief Add a component to node
+
+  Add a component and update node
+  \param comp component to add
+  \todo Comp is const
+*/
 void Node::addComponent(Component *comp)
 {
    if(!m_components.contains(comp)) {
@@ -56,6 +91,13 @@ void Node::addComponent(Component *comp)
    }
 }
 
+/*!\brief Remove a component to node
+
+  Remove a component and update node
+  \param comp component to delete
+  \todo Why update()?
+  \todo Comp is const
+*/
 void Node::removeComponent(Component* comp)
 {
    int index =  m_components.indexOf(comp);
@@ -65,6 +107,7 @@ void Node::removeComponent(Component* comp)
    }
 }
 
+//!\brief Returns a list of selected components which belong to this node.
 QList<Component*> Node::selectedComponents() const
 {
    QList<Component*> selCom;
@@ -75,6 +118,7 @@ QList<Component*> Node::selectedComponents() const
    return selCom;
 }
 
+//!\brief Return if all the components belonging to this node are selected./
 bool Node::areAllComponentsSelected() const
 {
    QList<Component*>::const_iterator it = m_components.constBegin();
@@ -86,7 +130,12 @@ bool Node::areAllComponentsSelected() const
    return true;
 }
 
-void Node::addAllComponentsFrom(Node *n)
+/*!\brief Add all components from node n to this node
+
+  Add all components from node n to this node and update node
+  \param n: origin node
+*/
+void Node::addAllComponentsFrom(const Node *n)
 {
    foreach(Component *c, n->m_components) {
       if(!m_components.contains(c))
@@ -95,14 +144,29 @@ void Node::addAllComponentsFrom(Node *n)
    update();
 }
 
+/*!\brief Add a wire to this node
+
+  Add a wire to this node and update node
+  \param w wire to add
+  \todo w is const....
+*/
 void Node::addWire(Wire *w)
 {
    if(!m_wires.contains(w)) {
       m_wires << w;
+      //signal repaint since node changes its
+      //appearance(not necessarily though)
       update();
    }
 }
 
+/*!\brief Remove a wire to node
+
+  Remove a wire to node and update node
+  \param w wire to remove
+  \todo w const...
+  \todo why update
+*/
 void Node::removeWire(Wire *w)
 {
    int index = m_wires.indexOf(w);
@@ -112,6 +176,7 @@ void Node::removeWire(Wire *w)
    }
 }
 
+//!\brief Return the list of selected wire belonging to this node.
 QList<Wire*> Node::selectedWires() const
 {
    QList<Wire*> selWires;
@@ -122,15 +187,27 @@ QList<Wire*> Node::selectedWires() const
    return selWires;
 }
 
-void Node::addAllWiresFrom(Node *n)
+/*!\brief Add all wire of node n to this node
+  \param n node to copy
+  \todo n const...
+*/
+void Node::addAllWiresFrom(const Node *n)
 {
-   foreach(Wire *w, n->m_wires) {
-      if(!m_wires.contains(w))
-         m_wires << w;
+   if(!n->m_wires.isEmpty()) {
+      foreach(Wire *w, n->m_wires) {
+         if(!m_wires.contains(w))
+            m_wires << w;
+      }
+      update();
    }
-   update();
 }
 
+
+/*!\brief Draw a node
+
+  Draw a node ie a little circle
+  \todo Color should be customisable
+*/
 void Node::paint(QPainter* p,const QStyleOptionGraphicsItem *o, QWidget *w)
 {
    Q_UNUSED(o);
@@ -141,25 +218,26 @@ void Node::paint(QPainter* p,const QStyleOptionGraphicsItem *o, QWidget *w)
    p->drawEllipse(boundingRect());
 }
 
-bool Node::contains(const QPointF& pt) const
-{
-   qreal dist = distance(QPointF(0,0),pt);
-   return (((dist * dist) - (Node::Radius*Node::Radius)) <= 0);
-}
-
+/*!\brief Test if object collide this another object
+  \param other another object
+  \return true if this item collides with other; otherwise returns false.
+*/
 bool Node::collidesWithItem(QGraphicsItem *other) const
 {
+   //Check if the other item is also a node.
    Node *port = qucsitem_cast<Node*>(other);
+   //If other is not a node call base implementation.
    if(!port)
       return QGraphicsSvgItem::collidesWithItem(other);
+   //Else use this faster way to determine collision.
    qreal dist = distance(pos(),port->pos());
 
    return (dist <= (2. * Node::Radius));
 }
 
-QPainterPath Node::shape() const
-{
-   QPainterPath path;
-   path.addEllipse(boundingRect());
-   return path;
+/*!\brief Set name of node
+  \todo Take care of updating wirelabels.
+*/
+void Node::setName(const QString& name){
+   m_name = name;
 }

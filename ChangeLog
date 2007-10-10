@@ -1,3 +1,7 @@
+2007-10-10 Bastien Roucaries initiated api documentation.
+	* qucs/node.h, qucs/node.cpp, qucs/wire.h, qucs/wire.cpp,
+	qucs/wireline.h, qucs/item.h, qucs/item.cpp: Add doxygen comments.
+
 2007-03-05  Martín Ribelotta and Lisandro Damián Nicanor Pérez Meyer
 	* Ported qucs-edit to qt4
 	* Ported qucs-lib to qt4
@@ -11,7 +15,7 @@
 
 2006-08-08  Stefan Jahn  <stefan@lkcc.org>
 
-	* qucs-attenuator/qucsattenuator.cpp (slotSetText_Zin): 
+	* qucs-attenuator/qucsattenuator.cpp (slotSetText_Zin):
 	Synchronized Zout and Zin when specifying a bridged-tee.
 
 	* qucs-attenuator/attenuatorfunc.cpp (Calc): Fixed computation
@@ -249,7 +253,7 @@
 
 2003-11-29  Stefan Jahn  <stefan@lkcc.org>
 
-	* configure.ac: Added a LANGUAGEDIR path for translations.  
+	* configure.ac: Added a LANGUAGEDIR path for translations.
 	Slightly changed the BITMAPDIR.
 
 2003-10-30  Stefan Jahn  <jahn@mwt.ee.tu-berlin.de>

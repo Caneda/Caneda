@@ -24,6 +24,7 @@
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
 
+/* forward declaration */
 class QGraphicsScene;
 class QGraphicsView;
 class SchematicScene;
@@ -35,9 +36,15 @@ namespace Qucs {
    class XmlWriter;
 }
 
+/*!\brief Qucs item - The base class for components, wires, nodes..
+    \todo Better documentation
+*/
 class QucsItem : public QGraphicsSvgItem
 {
    public:
+      /*!\brief Component type
+	 \todo Document each type
+       */
       enum QucsItemTypes {
          QucsItemType = (UserType << 14),
          ComponentType = (UserType << 13) | QucsItemType,
@@ -48,10 +55,14 @@ class QucsItem : public QGraphicsSvgItem
          DisplayType = (UserType << 8) | QucsItemType
       };
 
+      /*!\brief XXXX
+	 \todo Document
+      */
       enum {
          Type = QucsItemType
       };
 
+      //Pull the base implementation to be accesible here.
       using QGraphicsItem::rotate;
 
       QucsItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
@@ -59,17 +70,29 @@ class QucsItem : public QGraphicsSvgItem
 
       virtual void copyTo(QucsItem *_item) const;
 
+      /*!\brief Return type of item */
       int type() const { return QucsItemType; }
+      /*!\brief Return bounding box
+	 \todo Why not inline
+       */
       QRectF boundingRect() const { return m_boundingRect; }
 
       SchematicScene* schematicScene() const;
       QGraphicsView* activeView() const;
       QucsMainWindow* mainWindow() const;
 
+      /*!\brief set pen color */
       void setPenColor(QColor _color);
+      /*!\brief return pen color */
       QColor penColor() const { return m_penColor; }
 
+      /*!\brief XXXX
+	\todo Document
+      */
       virtual QString saveString() const { return QString(""); }
+      /*!\brief XXXX
+	 \todo Document
+      */
       virtual bool loadFromString(QString ) { return true; }
 
       virtual void writeXml(Qucs::XmlWriter *writer);
@@ -79,14 +102,20 @@ class QucsItem : public QGraphicsSvgItem
       virtual void mirrorY();
       virtual void rotate();
 
-      //TODO:Make this pure virtual
+      /*!\brief Invoke properties dialog of item
+	\todo Make this pure virtual
+      */
       virtual void invokePropertiesDialog() {}
 
+      /*!\brief Context menu of item */
       QMenu* defaultContextMenu() const;
 
    protected:
+      /*!\brief Set bounding box */
       void setBoundingRect(const QRectF& rect);
+      /*!\brief pen color of item */
       QColor m_penColor;
+      /*!\brief Bounding box */
       QRectF m_boundingRect;
 };
 

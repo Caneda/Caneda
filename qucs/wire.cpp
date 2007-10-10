@@ -16,6 +16,12 @@
  * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
+/*!\file
+  \author Gopala Krishna A <krishna.ggk@gmail.com>
+
+  Implement Node class
+*/
+
 
 #include "wire.h"
 #include "node.h"
@@ -36,6 +42,13 @@
 
 #include "xmlutilities.h"
 
+/*!\brief Construct a wire between node n1 and node n2
+   \details A wire connect two nodes and is fully selectable, movable
+   \param scene: scene
+   \param n1: node1
+   \param n2: node2
+   \todo Better documentation
+*/
 Wire::Wire(SchematicScene *scene,Node *n1,Node *n2) : QucsItem(0,scene),m_node1(n1),m_node2(n2)
 {
    n1->addWire(this);
@@ -51,7 +64,9 @@ Wire::Wire(SchematicScene *scene,Node *n1,Node *n2) : QucsItem(0,scene),m_node1(
       deleteNullLines();
    }
 }
-
+/*!\brief Destruct a wire
+   Destruct a wire and remove from endpoints
+*/
 Wire::~Wire()
 {
    clearProxyWires();
@@ -61,6 +76,11 @@ Wire::~Wire()
       schematicScene()->removeWire(this);
 }
 
+/*!\brief Rebuild a wire
+   \details Rebuild a wire for instance after moving some part of it
+   \todo Create little helper for each case of wires
+   \todo Better documentation
+*/
 void Wire::rebuild()
 {
    if(isVisible()) {
@@ -71,9 +91,12 @@ void Wire::rebuild()
    QPointF node2Pos = mapFromScene(m_node2->scenePos());
 
    if(!m_lines.isEmpty()) {
-      bool bothMoved = m_lines.first().p1() != node1Pos && m_lines.last().p2() != node2Pos;
-      Q_ASSERT_X(!bothMoved, "Wire::rebuild()", "Against logical assumption that only one node is moved.");
-      bool noneMoved = m_lines.first().p1() == node1Pos && m_lines.last().p2() == node2Pos;
+      bool bothMoved = m_lines.first().p1() != node1Pos &&
+         m_lines.last().p2() != node2Pos;
+      Q_ASSERT_X(!bothMoved, "Wire::rebuild()",
+                 "Against logical assumption that only one node is moved.");
+      bool noneMoved = m_lines.first().p1() == node1Pos &&
+         m_lines.last().p2() == node2Pos;
       if(noneMoved)
          return; // Nothing to do.
    }
@@ -89,10 +112,14 @@ void Wire::rebuild()
       QPointF referencePos = (node1Moved ? node1Pos : node2Pos);
 
       if(m_lines.size() == 1) {
-         if(node1Moved)
-            m_lines.append(WireLine(m_lines.first().p2(), m_lines.first().p2()));
-         else
-            m_lines.prepend(WireLine(m_lines.last().p1(), m_lines.last().p1()));
+         if(node1Moved) {
+            m_lines.append(WireLine(m_lines.first().p2(),
+                                    m_lines.first().p2()));
+         }
+         else {
+            m_lines.prepend(WireLine(m_lines.last().p1(),
+                                     m_lines.last().p1()));
+         }
       }
       QList<WireLine>::iterator it,it1;
       if(node1Moved) {
@@ -105,7 +132,8 @@ void Wire::rebuild()
       }
 
       bool notOblique = it->isNull() || it->isHorizontal() || it->isVertical();
-      notOblique = notOblique && (it1->isNull() || it1->isHorizontal() || it1->isVertical());
+      notOblique = notOblique && (it1->isNull() || it1->isHorizontal() ||
+                                  it1->isVertical());
       Q_ASSERT_X(notOblique, "Wire::rebuild()", "Oblique lines found!");
       if(it->isNull()) {
          if(it1->isNull() || it1->isHorizontal())
@@ -150,16 +178,30 @@ void Wire::rebuild()
       updateProxyWires();
 }
 
+/*!\brief Replace an node by another node
+   \param oldNode old node
+   \param newNode new node
+
+*/
 void Wire::replaceNode(Node *oldNode, Node *newNode)
 {
+   Q_ASSERT_X( oldNode == m_node1 || oldNode == m_node2, "Wire::replaceNode()",
+                 "Some bug in node varible. The param oldNode doesn't belong"
+               "to this wire at all!");
    if(oldNode == m_node1)
       m_node1 = newNode;
-   else if(oldNode == m_node2)
-      m_node2 = newNode;
    else
-      qFatal("Wire::replaceNode() : Some bug in node variable");
+      m_node2 = newNode;
+   //TODO: Take care of updating or rebuilding.
 }
 
+/*!\brief Returns bounding box of wire
+   \details Bounding box is composed of all the line
+   composing the wire +/- adjust.
+   \todo Document adjust why only 1.0
+   \todo Allow custumization of adjust
+   \todo Better wording
+*/
 QRectF Wire::boundingRect() const
 {
    QRectF rect;
@@ -173,6 +215,12 @@ QRectF Wire::boundingRect() const
    return rect.adjusted(-adjust,-adjust,+adjust,+adjust);
 }
 
+/*!\brief Shape of wire
+   \details Wire lines are represented by rectangles of negligible
+   width and slightly more height than corresponding line. This
+   helps users to select the wire even the mouse is not exacly on
+   line belonging to wire, but slightly near to the line.
+*/
 QPainterPath Wire::shape() const
 {
    QPainterPath path;
@@ -185,6 +233,11 @@ QPainterPath Wire::shape() const
    return path;
 }
 
+/*!\brief Test if point is in wire
+   \details The hit test is done for all the lines, but instead of checking
+   point exactly on line, it is checked against a rectangle bounding the
+   corresponding line to facilitate easier seletion of thin wire.
+*/
 bool Wire::contains( const QPointF & point ) const
 {
    QList<WireLine>::const_iterator it = m_lines.constBegin();
@@ -196,6 +249,10 @@ bool Wire::contains( const QPointF & point ) const
    return false;
 }
 
+/*!\brief Paint wire
+  \details Paint wire using a list of wire
+  \todo allow customization of colors.
+*/
 void Wire::paint(QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w)
 {
    Q_UNUSED(w);
@@ -209,16 +266,25 @@ void Wire::paint(QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w)
       p->drawLine(*it);
 }
 
+/*!\brief Static helper to determine if a wire exists between two nodes.
+  \details If there exists such a wire, return it otherwise return nullptr.
+*/
 Wire* Wire::connectedWire(const Node* n1, const Node* n2)
 {
    Node *n = const_cast<Node*>(n1);
    foreach(Wire *w, n->wires()) {
-      if((w->node1() == n1 && w->node2() == n2) || (w->node2() == n1 && w->node1() == n2))
+      if((w->node1() == n1 && w->node2() == n2) ||
+         (w->node2() == n1 && w->node1() == n2))
          return w;
    }
    return 0;
 }
 
+/*!\brief Initiates the moving of wire after grabbing it.
+   \details document it(seems quite complex to explain it!)
+   \sa moveAndResizeBy(), stopMoveAndResize()
+   \todo Better wording. Any suggestions ?
+*/
 void Wire::startMoveAndResize()
 {
    if(m_grabbedLineIndex == -1)
@@ -237,14 +303,23 @@ void Wire::startMoveAndResize()
    hide();
 }
 
+/*!\brief Adjusts the list of wirelines to simulate wire movement.
+   \details Actually this translates the wireline corresponding to
+   grabbed line, and adjust all other wirelines to accomodate this
+   movement.
+   \sa startMoveAndResize(), stopMoveAndResize()
+*/
 void Wire::moveAndResizeBy(qreal dx, qreal dy)
 {
-   Q_ASSERT(m_grabbedLineIndex >= 2 && (m_lines.size()-1-m_grabbedLineIndex) >= 2);
+   Q_ASSERT(m_grabbedLineIndex >= 2 &&
+            (m_lines.size()-1-m_grabbedLineIndex) >= 2);
 
    QPointF node1Pos = mapFromScene(m_node1->scenePos());
    QPointF node2Pos = mapFromScene(m_node2->scenePos());
-   QPointF refPos1 = m_grabbedLineIndex == 2 ? node1Pos : m_lines[m_grabbedLineIndex-3].p2();
-   QPointF refPos2 = m_lines.size()-1-m_grabbedLineIndex == 2 ? node2Pos : m_lines[m_grabbedLineIndex+3].p1();
+   QPointF refPos1 = m_grabbedLineIndex == 2 ?
+      node1Pos : m_lines[m_grabbedLineIndex-3].p2();
+   QPointF refPos2 = m_lines.size()-1-m_grabbedLineIndex == 2 ?
+      node2Pos : m_lines[m_grabbedLineIndex+3].p1();
    QPointF inter1, inter2;
 
    WireLine& grabbedLine = m_lines[m_grabbedLineIndex];
@@ -269,6 +344,9 @@ void Wire::moveAndResizeBy(qreal dx, qreal dy)
    updateProxyWires();
 }
 
+/*!\brief Finishes the wiring event.
+   \sa startMoveAndResize(), moveAndResizeBy()
+*/
 void Wire::stopMoveAndResize()
 {
    m_grabbedLineIndex = -1;
@@ -278,6 +356,9 @@ void Wire::stopMoveAndResize()
    prepareGeometryChange();
 }
 
+/*!\brief Sets the wire's line representation to lines list.
+   \details This mechanism allows to modify wire shape externally.
+*/
 void Wire::setWireLines(const QList<WireLine>& lines)
 {
    if(isVisible())
@@ -288,6 +369,16 @@ void Wire::setWireLines(const QList<WireLine>& lines)
       updateProxyWires();
 }
 
+/*!\brief Delete lines of length 0
+   \details Delete lines of length 0 (simplify)
+   \todo Better explanation of algortihm
+   \todo Split in three part delette null line and simplify
+   second part is really simplify
+   \todo create three function
+         simplify (main fonction)
+	 deleteNullLines
+	 dosimplify
+*/
 void Wire::deleteNullLines()
 {
    prepareGeometryChange();
@@ -322,16 +413,27 @@ void Wire::deleteNullLines()
    }
 }
 
+/*!\brief XXXX
+   \todo Document it
+   \todo Col  > 80
+*/
 QString Wire::saveString() const
 {
    using Qucs::realToString;
-   QString s  = "<" + realToString(m_node1->pos().x()) + " " + realToString(m_node1->pos().y());
-   s += " "+realToString(m_node2->pos().x()) + " " + realToString(m_node2->pos().y());
+   QString s  = "<" + realToString(m_node1->pos().x()) +
+      " " + realToString(m_node1->pos().y());
+   s += " "+realToString(m_node2->pos().x()) + " " +
+      realToString(m_node2->pos().y());
    //TODO: Wire label
    s += " \"\" 0 0 0 \"\">";
    return s;
 }
 
+/*!\brief Save wire to xml file
+   \details To be completed
+   \todo Take care of wirelabels.
+   \todo Give full specification of format in some documentation
+*/
 void Wire::writeXml(Qucs::XmlWriter *writer)
 {
    Q_ASSERT(!m_lines.isEmpty());
@@ -364,11 +466,18 @@ void Wire::writeXml(Qucs::XmlWriter *writer)
    //TODO: Wirelabel
 }
 
+
+/*!\brief Read wire data from xml file
+   \details To be completed
+   \todo Complete
+   \todo Give full specification of format in some documentation
+*/
 void Wire::readXml(Qucs::XmlReader *reader)
 {
    //NOTE: This assumes initial part is parsed already
    if(!reader->isStartElement() || reader->name() != "wirelines") {
-      reader->raiseError(QObject::tr("Unidentified tag %1. Expected %2").arg(reader->name().toString()).arg("wire"));
+      reader->raiseError(QObject::tr("Unidentified tag %1. Expected %2")
+                         .arg(reader->name().toString()).arg("wire"));
    }
    QList<WireLine> lines;
    while(!reader->atEnd()) {
@@ -414,6 +523,11 @@ void Wire::readXml(Qucs::XmlReader *reader)
    }
 }
 
+/*!\brief Callback called by framwork wire's position or matrix is changed
+   \details XXXX
+   \sa QGraphicsItem::itemChange()
+   \todo Better documentation
+*/
 QVariant Wire::itemChange(GraphicsItemChange change, const QVariant &value)
 {
    if(change == ItemPositionChange) {
@@ -427,6 +541,10 @@ QVariant Wire::itemChange(GraphicsItemChange change, const QVariant &value)
    return QGraphicsSvgItem::itemChange(change,value);
 }
 
+/*!\brief Callback called when mouse button is pressed
+  \details Call the base implementation of callback, and
+  determine the wireline clicked.
+*/
 void Wire::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
    m_grabbedLineIndex = -1;
@@ -435,25 +553,38 @@ void Wire::mousePressEvent(QGraphicsSceneMouseEvent * event)
    m_grabbedLineIndex = indexForPos(mapFromScene(event->scenePos()));
 }
 
+
+/*!\brief Callback called when wire is moved
+   \details This sets itself as the grabbed wire and hides iteself
+   so that QRubberBands appear in place of actual wire. The wire
+   loses focus because of that so wire has to be moved/resized explicitly
+   from scene.
+*/
 void Wire::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
-      event->ignore();
+   event->ignore();
 
    schematicScene()->setGrabbedWire(this);
    startMoveAndResize();
 }
 
+/*!\brief Callback called when mouse is released
+*/
 void Wire::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
    QucsItem::mouseReleaseEvent(event);
 }
 
-
+/*!\brief Callback called when mouse is double clicked
+*/
 void Wire::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * mouseEvent )
 {
    Q_UNUSED(mouseEvent);
 }
 
+/*!\brief The rectangle is returned corresponding to wireline line.
+   \details This rect is set on QRubberBand which simulates wires.
+*/
 QRect Wire::proxyRect(const WireLine& line) const
 {
    QRectF rect;
@@ -474,6 +605,13 @@ QRect Wire::proxyRect(const WireLine& line) const
    return rect.toRect();
 }
 
+/*!\brief Transform a line to rectangle
+    \details Line are not easilly selectable therefore we must
+    convert the line to rectangle
+    \todo Better wording
+    \param line line to convert
+    \return line converted to rectangle
+*/
 QRectF Wire::rectForLine(const WireLine& line) const
 {
    qreal x = qMin(line.p1().x() , line.p2().x()) - 3.0;
@@ -483,6 +621,11 @@ QRectF Wire::rectForLine(const WireLine& line) const
    return QRectF(x,y,w,h);
 }
 
+/*!\brief Updates the QRubberBand representation of wires.
+   \details It makesure the number of proxywires(lines) is equal to
+   number of wirelines and also sets the appropriate corresponding
+   dimensions on QRubberBands.
+*/
 void Wire::updateProxyWires()
 {
    QGraphicsView *view = activeView();
@@ -510,12 +653,16 @@ void Wire::updateProxyWires()
    }
 }
 
+/*!\brief Deletes the QRubberBand s and clears the list.
+*/
 void Wire::clearProxyWires()
 {
    qDeleteAll(m_proxyWires);
    m_proxyWires.clear();
 }
 
+/*!\brief Returns the index of wireline on which pos coincides.
+*/
 int Wire::indexForPos(const QPointF& pos) const
 {
    int retVal = 0;

@@ -16,6 +16,11 @@
  * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
+/*!\file 
+  \author Gopala Krishna A <krishna.ggk@gmail.com>
+  
+  Implement QucsItem class
+*/
 
 #include "item.h"
 #include "undocommands.h"
@@ -26,16 +31,21 @@
 
 #include <QtXml/QXmlStreamWriter>
 
+/*!\brief Create a new item and add to scene */
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) : QGraphicsSvgItem(parent)
 {
    if(scene)
       scene->addItem(this);
 }
 
+/*!\brief Destructor */
 QucsItem::~QucsItem()
 {
 }
 
+/*!\brief Copy item to another item
+   \param _item[in]: copy of this item
+*/
 void QucsItem::copyTo(QucsItem *_item) const
 {
    _item->setPenColor(m_penColor);
@@ -45,6 +55,9 @@ void QucsItem::copyTo(QucsItem *_item) const
    _item->update();
 }
 
+/*!\brief Set bounding box
+  \todo Document adjust use
+*/
 void QucsItem::setBoundingRect(const QRectF& rect)
 {
    static qreal pw = 1.0;
@@ -55,12 +68,19 @@ void QucsItem::setBoundingRect(const QRectF& rect)
    update();
 }
 
+/*!\brief XXXX
+   \todo Document it 
+*/
 SchematicScene* QucsItem::schematicScene() const
 {
    SchematicScene *s = qobject_cast<SchematicScene*>(this->scene());
    return s;
 }
 
+
+/*!\brief XXXX
+   \todo Document it 
+*/
 QGraphicsView* QucsItem::activeView() const
 {
    if(!scene() || scene()->views().isEmpty())
@@ -68,6 +88,9 @@ QGraphicsView* QucsItem::activeView() const
    return scene()->views()[0];
 }
 
+/*!\brief XXXX
+   \todo Document it 
+*/
 QucsMainWindow* QucsItem::mainWindow() const
 {
    QGraphicsView *view = activeView();
@@ -82,29 +105,38 @@ void QucsItem::setPenColor(QColor color)
    m_penColor = color;
 }
 
+/*!\brief Save component to xml file
+   \todo Why not pure virtual
+*/
 void QucsItem::writeXml(Qucs::XmlWriter *writer)
 {
    Q_UNUSED(writer);
 }
 
+/*!\brief Load component to xml file
+   \todo Why not pure virtual
+*/
 void QucsItem::readXml(Qucs::XmlReader *reader)
 {
    if(reader->isStartElement())
       reader->readUnknownElement();
 }
 
+/*!\brief Graphically mirror item according to x axis */
 void QucsItem::mirrorX()
 {
    update();
    scale(1.0,-1.0);
 }
 
+/*!\brief Graphically mirror item according to y axis */
 void QucsItem::mirrorY()
 {
    update();
    scale(-1.0,1.0);
 }
 
+/*\brief Rotate item of -90° */
 void QucsItem::rotate()
 {
    update();

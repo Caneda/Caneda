@@ -26,13 +26,21 @@
 
 #include <QtCore/QList>
 
+//!\brief forward declaration.
 class SchematicScene;
 class QGraphicsLineItem;
 class QRubberBand;
 
+/*!\brief Wire class
+
+  This class implement wiring system
+*/
 class Wire : public QucsItem
 {
    public:
+      /*!\brief GraphicsView framework requirement for casting.
+
+        \sa qucsitem_cast */
       enum {
          Type = QucsItem::WireType
       };
@@ -42,10 +50,22 @@ class Wire : public QucsItem
 
       void rebuild();
 
+      /*!\brief Return node 1
+	\todo Why not access directly
+      */
       Node* node1() const { return m_node1; }
+      /*!\brief Set node 1
+	\todo Why not access directly
+      */
       void setNode1(Node *n1) { m_node1 = n1; }
 
+      /*!\brief Return node 2
+	\todo Why not access directly
+      */
       Node* node2() const { return m_node2; }
+      /*!\brief Set node 2
+	\todo Why not access directly
+      */
       void setNode2(Node *n2) { m_node2 = n2; }
 
       void replaceNode(Node *oldNode,Node *newNode);
@@ -54,6 +74,9 @@ class Wire : public QucsItem
       QPainterPath shape() const;
       bool contains ( const QPointF & point ) const;
 
+      /*!\brief qucsitem_cast identifier
+	 \sa qucsitem_cast
+      */
       int type() const { return Wire::Type; }
 
       void paint(QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w = 0 );
@@ -64,6 +87,7 @@ class Wire : public QucsItem
       void moveAndResizeBy(qreal dx, qreal dy);
       void stopMoveAndResize();
 
+      /*!\brief Return all the line constituing a wire */
       QList<WireLine> wireLines() const { return m_lines; }
       void setWireLines(const QList<WireLine>& lines);
       void deleteNullLines();
@@ -72,9 +96,20 @@ class Wire : public QucsItem
       void writeXml(Qucs::XmlWriter *writer);
       void readXml(Qucs::XmlReader *reader);
 
-      // Reimplemented virtuals to not to react
+      /*!\brief Rotate
+         \details Wire are not allowed to rotate
+	 \todo Implement not allowed to rotate (block command)
+       */
       void rotate() {}
+      /*!\brief mirrorX
+         \details Wires are not allowed to be mirrored
+	 \todo Block command
+       */
       void mirrorX() {}
+      /*!\brief mirrorY
+         \details Wires are not allowed to be mirrored
+	 \todo Block command
+       */
       void mirrorY() {}
 
    protected:
@@ -93,10 +128,31 @@ class Wire : public QucsItem
 
       int indexForPos(const QPointF& pos) const;
 
+      /*!\brief List of line constituing a wire */
       QList<WireLine> m_lines;
+      /*!\brief They represent wires visually when wires are moved or resized.
+
+        This is used because, modifying the shape of a QGraphicsItem very often
+        continously results in frequent changes in QGraphicsScene's bsp indices
+        Hence resizing will be very slow.
+        So the wire is hidden and the lines are represented by QRubberBand
+        widgets and only the rubberband widget is updated until the resizing or
+        moving is going on. RubberBand widgets being toplevel widgets doesn't
+        belong to scene. Therefore they won't affect Bsp indexing and thus
+        speed is obtained. Finally when the wire resizing stops, RubberBands
+        are destroyed and the item is reshown resulting in change of index
+        only once.
+      */
       QList<QRubberBand*> m_proxyWires;
+      /*!\brief first Node */
       Node *m_node1;
+      /*!\brief second node */
       Node *m_node2;
+      /*!\brief Represents the index of m_lines list corresponding to mouse
+	 click.
+
+	 This is used to caculate the exact wire movement when it is dragged.
+      */
       int m_grabbedLineIndex;
 };
 
