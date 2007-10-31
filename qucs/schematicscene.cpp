@@ -30,6 +30,9 @@
 #include "xmlutilities.h"
 #include "qucs-tools/global.h"
 
+#include "svgtest.h"
+#include "qucssvgrenderer.h"
+
 #include <QtCore/QMimeData>
 #include <QtCore/QtDebug>
 #include <QtCore/QVarLengthArray>
@@ -73,6 +76,9 @@ void SchematicScene::init()
    helperNode = 0;
    m_areItemsMoving = false;
    setCurrentMouseAction(Normal);
+
+   ResistorItem *item = new ResistorItem(this);
+   item->setPos(100,100);
 }
 
 SchematicScene::~SchematicScene()
@@ -197,19 +203,19 @@ void SchematicScene::removeWire(Wire *w)
 void SchematicScene::mirrorXItems(QList<QucsItem*>& items)
 {
    foreach(QucsItem* item, items)
-      item->mirrorX();
+      item->mirrorAlong(Qt::XAxis);
 }
 
 void SchematicScene::mirrorYItems(QList<QucsItem*>& items)
 {
    foreach(QucsItem* item, items)
-      item->mirrorY();
+      item->mirrorAlong(Qt::YAxis);
 }
 
 void SchematicScene::rotateItems(QList<QucsItem*>& items)
 {
    foreach(QucsItem* item, items)
-      item->rotate();
+      item->rotate90();
 }
 
 void SchematicScene::deleteItems(QList<QucsItem*>& items)
@@ -744,6 +750,11 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
    //Cache the mouse press position
+   if(0 && e->buttons() & Qt::MidButton == Qt::MidButton) {
+      qDebug() << "Mouse press";
+      QucsSvgRenderer::setCachingEnabled(!QucsSvgRenderer::isCachingEnabled());
+      //return;
+   }
    lastPos = nearingGridPoint(e->scenePos());
    sendMouseActionEvent(e);
 }

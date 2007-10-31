@@ -1,4 +1,4 @@
- /***************************************************************************
+/***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
@@ -20,9 +20,13 @@
 #ifndef __ITEM_H
 #define __ITEM_H
 
-#include <QtSvg/QGraphicsSvgItem>
-#include <QtGui/QPen>
-#include <QtGui/QBrush>
+#include <QtGui/QGraphicsItem>
+#include <limits>
+
+/*!\brief This macro determines the pattern for derived class.
+ * \details The macro accepts two parameter base and shift and returns the
+ * the pattern corresponding to derived class.*/
+#define PATTERN(base,shift) (((base) >> (shift)) | (base))
 
 /* forward declaration */
 class QGraphicsScene;
@@ -36,87 +40,75 @@ namespace Qucs {
    class XmlWriter;
 }
 
-/*!\brief Qucs item - The base class for components, wires, nodes..
-    \todo Better documentation
-*/
-class QucsItem : public QGraphicsSvgItem
+//!\brief Qucs item - The base class for components, wires, nodes..
+class QucsItem : public QGraphicsItem
 {
    public:
-      /*!\brief Component type
-	 \todo Document each type
-       */
+      /*!\brief This enum helps in polymorphic cast without using dynamic_cast.
+        \details Actually a bitpattern is used to determine whether the cast
+        is valid or not. The cast function is approximately defined like this
+        cast(a,b) {
+        return (a&b) == a;
+        }
+        \sa qucsitem_cast and PATTERN.
+      */
       enum QucsItemTypes {
-         QucsItemType = (UserType << 14),
-         ComponentType = (UserType << 13) | QucsItemType,
-         MultiSymbolComponentType = (UserType << 12) | ComponentType,
-         NodeType = (UserType << 11) | QucsItemType,
-         WireType = (UserType << 10) | QucsItemType,
-         PaintingType = (UserType << 9) | QucsItemType,
-         DisplayType = (UserType << 8) | QucsItemType
+         //!Recognizes all classes derived from QucsItem
+         QucsItemType = (1 << (std::numeric_limits<int>::digits-1)),
+         //!Recognizes classes derived from Component
+         ComponentType = PATTERN(QucsItemType,1),
+         //!Recognizes classes derived from MultiSymbolComponent
+         MultiSymbolComponentType = PATTERN(ComponentType, 1),
+         //!Recognizes classes derived from Node
+         NodeType = PATTERN(QucsItemType,3),
+         //!Recognizes classes derived from Wire
+         WireType = PATTERN(QucsItemType, 4),
+         //!Recognizes classes derived from Painting
+         PaintingType = PATTERN(QucsItemType, 5),
+         //!Recognizes classes derived from Display
+         DisplayType = PATTERN(QucsItemType, 6)
       };
 
-      /*!\brief XXXX
-	 \todo Document
+      /*!\brief Item identifier
+        \sa QucsItemTypes
       */
       enum {
          Type = QucsItemType
       };
 
-      //Pull the base implementation to be accesible here.
-      using QGraphicsItem::rotate;
-
       QucsItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
       virtual ~QucsItem();
 
-      virtual void copyTo(QucsItem *_item) const;
-
-      /*!\brief Return type of item */
+      //!\brief Return type of item
       int type() const { return QucsItemType; }
-      /*!\brief Return bounding box
-	 \todo Why not inline
-       */
+      //!\brief Return bounding box
       QRectF boundingRect() const { return m_boundingRect; }
 
       SchematicScene* schematicScene() const;
       QGraphicsView* activeView() const;
       QucsMainWindow* mainWindow() const;
 
-      /*!\brief set pen color */
-      void setPenColor(QColor _color);
-      /*!\brief return pen color */
-      QColor penColor() const { return m_penColor; }
+      //! Pure virtual method to write item's properties to writer
+      virtual void writeXml(Qucs::XmlWriter *writer) = 0;
+      //! Pure virtual method to read item's properties from reader
+      virtual void readXml(Qucs::XmlReader *reader) = 0;
 
-      /*!\brief XXXX
-	\todo Document
-      */
-      virtual QString saveString() const { return QString(""); }
-      /*!\brief XXXX
-	 \todo Document
-      */
-      virtual bool loadFromString(QString ) { return true; }
+      virtual void mirrorAlong(Qt::Axis axis);
+      virtual void rotate90();
 
-      virtual void writeXml(Qucs::XmlWriter *writer);
-      virtual void readXml(Qucs::XmlReader *reader);
+      virtual void invokePropertiesDialog() = 0;
 
-      virtual void mirrorX();
-      virtual void mirrorY();
-      virtual void rotate();
-
-      /*!\brief Invoke properties dialog of item
-	\todo Make this pure virtual
-      */
-      virtual void invokePropertiesDialog() {}
-
-      /*!\brief Context menu of item */
       QMenu* defaultContextMenu() const;
 
    protected:
-      /*!\brief Set bounding box */
-      void setBoundingRect(const QRectF& rect);
-      /*!\brief pen color of item */
-      QColor m_penColor;
-      /*!\brief Bounding box */
+      void setShapeAndBoundRect(const QPainterPath& path,
+                                const QRectF& rect, qreal penWidth = 1.0);
+      void init();
+
+      //!\brief Bounding box cache
       QRectF m_boundingRect;
+      //!\brief Shape cache
+      QPainterPath m_shape;
 };
 
 #endif //__ITEM_H

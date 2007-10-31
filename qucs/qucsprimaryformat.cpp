@@ -93,8 +93,10 @@ QString QucsPrimaryFormat::saveText()
    stream << "</Properties>\n";
 
    stream << "<Symbol>\n";     // save all paintings for symbol
-   foreach(Painting *p, scene->symbolPaintings())
-      stream << "  <" << p->saveString() << ">\n";
+   foreach(Painting *p, scene->symbolPaintings()) {
+      int warnMe;
+      //stream << "  <" << p->saveString() << ">\n";
+   }
    stream << "</Symbol>\n";
 
    stream << "<Components>\n";    // save all components
@@ -112,13 +114,15 @@ QString QucsPrimaryFormat::saveText()
    stream << "</Wires>\n";
 
    stream << "<Diagrams>\n";    // save all diagrams
-   foreach(Diagram *pd,scene->diagrams())
-      stream << "  " << pd->saveString() << "\n";
+   foreach(Diagram *pd,scene->diagrams()) {
+      //stream << "  " << pd->saveString() << "\n";
+   }
    stream << "</Diagrams>\n";
 
    stream << "<Paintings>\n";     // save all paintings
-   foreach(Painting *p, scene->paintings())
-      stream << "  <" << p->saveString() << ">\n";
+   foreach(Painting *p, scene->paintings()) {
+      //stream << "  <" << p->saveString() << ">\n";
+   }
    stream << "</Paintings>\n";
 
    return retVal;

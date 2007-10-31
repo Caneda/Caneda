@@ -24,6 +24,7 @@
 #include "components/componentproperty.h"
 
 #include <QtGui/QPen>
+#include <QtGui/QBrush>
 
 class Component;
 class Node;
@@ -81,6 +82,8 @@ class Component : public QucsItem
 
       void writeXml(Qucs::XmlWriter *writer);
       void readXml(Qucs::XmlReader *reader);
+
+      void invokePropertiesDialog();
 
       QString getNetlist() const;
       QString getVHDLCode(int numOfPorts) const;

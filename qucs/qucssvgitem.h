@@ -17,42 +17,50 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "volt_dc.h"
-#include "shapes.h"
+#ifndef __QUCSSVGITEM_H
+#define __QUCSSVGITEM_H
 
-Volt_dc::Volt_dc(SchematicScene *s) : Component(s)
+#include "item.h"
+
+/*!\brief Base class for items which can be rendered using svg.
+ * \details This class implements an interface needed by QucsSvgRenderer
+ * to render svg's.
+ * \sa QucsSvgRenderer
+ **/
+class QucsSvgItem : public QucsItem
 {
-   initConstants();
-   initPorts();
-   initProperties();
-   rotate90();
-}
+   public:
+      enum {
+         Type = QucsItemType+1
+      };
 
-void Volt_dc::initConstants()
-{
-   m_boundingRect = QRectF( -30, -14, 60, 28);
+      QucsSvgItem(const QString& file, const QByteArray& _stylesheet,
+                  SchematicScene *scene);
+      QucsSvgItem(const QByteArray& contents, const QByteArray& _stylesheet,
+                  SchematicScene *scene);
+      ~QucsSvgItem();
 
-   model = "Vdc";
-   name = "V";
-   description =  QObject::tr("ideal dc voltage source");
+      int type() const { return QucsSvgItem::Type; }
 
-   m_shapes.append(new Line(  4,-13,  4, 13, Component::getPen(Qt::darkBlue,2)));
-   m_shapes.append(new Line( -4, -6, -4,  6, Component::getPen(Qt::darkBlue,4)));
-   m_shapes.append(new Line( 30,  0,  4,  0, Component::getPen(Qt::darkBlue,2)));
-   m_shapes.append(new Line( -4,  0,-30,  0, Component::getPen(Qt::darkBlue,2)));
-   m_shapes.append(new Line( 11,  5, 11, 11, Component::getPen(Qt::red,1)));
-   m_shapes.append(new Line( 14,  8,  8,  8, Component::getPen(Qt::red,1)));
-   m_shapes.append(new Line(-11,  5,-11, 11, Component::getPen(Qt::black,1)));
-}
+      virtual QString uniqueId() const = 0;
 
-void Volt_dc::initPorts()
-{
-   addPort(QPointF(30,0));
-   addPort(QPointF(-30,0));
-}
+      QByteArray svgContent() const { return m_content; }
+      QByteArray svgContentWithStyleSheet() const;
 
-void Volt_dc::initProperties()
-{
-   addProperty("U","1 V",QObject::tr("voltage in Volts"),true);
-}
+      void setSvgContent(const QByteArray& content);
+      void setSvgContent(const QString& file);
 
+      void setStyleSheet(const QByteArray& _stylesheet);
+      QByteArray styleSheet() const { return m_styleSheet; }
+
+   private:
+      void calcBoundingRect();
+
+      QByteArray m_styleSheet;
+      QByteArray m_content;
+      QByteArray m_styleSheetWithContent;
+
+      qreal m_strokeWidth;
+};
+
+#endif //__QUCSSVGITEM_H

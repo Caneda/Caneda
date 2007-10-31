@@ -51,20 +51,20 @@ class Wire : public QucsItem
       void rebuild();
 
       /*!\brief Return node 1
-	\todo Why not access directly
+        \todo Why not access directly
       */
       Node* node1() const { return m_node1; }
       /*!\brief Set node 1
-	\todo Why not access directly
+        \todo Why not access directly
       */
       void setNode1(Node *n1) { m_node1 = n1; }
 
       /*!\brief Return node 2
-	\todo Why not access directly
+        \todo Why not access directly
       */
       Node* node2() const { return m_node2; }
       /*!\brief Set node 2
-	\todo Why not access directly
+        \todo Why not access directly
       */
       void setNode2(Node *n2) { m_node2 = n2; }
 
@@ -75,7 +75,7 @@ class Wire : public QucsItem
       bool contains ( const QPointF & point ) const;
 
       /*!\brief qucsitem_cast identifier
-	 \sa qucsitem_cast
+        \sa qucsitem_cast
       */
       int type() const { return Wire::Type; }
 
@@ -97,20 +97,17 @@ class Wire : public QucsItem
       void readXml(Qucs::XmlReader *reader);
 
       /*!\brief Rotate
-         \details Wire are not allowed to rotate
-	 \todo Implement not allowed to rotate (block command)
-       */
-      void rotate() {}
+        \details Wire are not allowed to rotate
+        \todo Implement not allowed to rotate (block command)
+      */
+      void rotate90() {}
       /*!\brief mirrorX
-         \details Wires are not allowed to be mirrored
-	 \todo Block command
-       */
-      void mirrorX() {}
-      /*!\brief mirrorY
-         \details Wires are not allowed to be mirrored
-	 \todo Block command
-       */
-      void mirrorY() {}
+        \details Wires are not allowed to be mirrored
+        \todo Block command
+      */
+      void mirrorAlong(Qt::Axis) {}
+
+      void invokePropertiesDialog();
 
    protected:
       QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -149,9 +146,9 @@ class Wire : public QucsItem
       /*!\brief second node */
       Node *m_node2;
       /*!\brief Represents the index of m_lines list corresponding to mouse
-	 click.
+        click.
 
-	 This is used to caculate the exact wire movement when it is dragged.
+        This is used to caculate the exact wire movement when it is dragged.
       */
       int m_grabbedLineIndex;
 };

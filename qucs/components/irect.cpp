@@ -25,7 +25,7 @@ iRect::iRect(SchematicScene *s) : Component(s)
    initConstants();
    initPorts();
    initProperties();
-   rotate();
+   rotate90();
 }
 
 void iRect::initConstants()

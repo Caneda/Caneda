@@ -16,9 +16,9 @@
  * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
-/*!\file 
+/*!\file
   \author Gopala Krishna A <krishna.ggk@gmail.com>
-  
+
   Implement QucsItem class
 */
 
@@ -32,45 +32,41 @@
 #include <QtXml/QXmlStreamWriter>
 
 /*!\brief Create a new item and add to scene */
-QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) : QGraphicsSvgItem(parent)
+QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene)
+   : QGraphicsItem(parent)
 {
+   init();
    if(scene)
       scene->addItem(this);
 }
 
-/*!\brief Destructor */
+void QucsItem::init()
+{
+   // An empty bounding rect sometime's cause 100% cpu usage.
+   m_boundingRect = QRectF(-2, -2, 4, 4);
+   m_shape = QPainterPath();
+   m_shape.addRect(m_boundingRect);
+}
+
+//!\brief Destructor
 QucsItem::~QucsItem()
 {
 }
 
-/*!\brief Copy item to another item
-   \param _item[in]: copy of this item
-*/
-void QucsItem::copyTo(QucsItem *_item) const
+//!\brief Sets the shape cache as well as boundbox cache
+void QucsItem::setShapeAndBoundRect(const QPainterPath& path,
+                                    const QRectF& rect, qreal pw)
 {
-   _item->setPenColor(m_penColor);
-   _item->setBoundingRect(m_boundingRect);
-   _item->setTransform(transform());
-   _item->setPos(pos());
-   _item->update();
-}
-
-/*!\brief Set bounding box
-  \todo Document adjust use
-*/
-void QucsItem::setBoundingRect(const QRectF& rect)
-{
-   static qreal pw = 1.0;
    prepareGeometryChange();
    m_boundingRect = rect;
-
    m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
-   update();
+   m_shape = path;
+   if(m_shape.isEmpty()) {
+      m_shape.addRect(m_boundingRect);
+   }
 }
 
-/*!\brief XXXX
-   \todo Document it 
-*/
+//!\brief returns a pointer to the schematic scene to which the item belongs.
 SchematicScene* QucsItem::schematicScene() const
 {
    SchematicScene *s = qobject_cast<SchematicScene*>(this->scene());
@@ -78,70 +74,52 @@ SchematicScene* QucsItem::schematicScene() const
 }
 
 
-/*!\brief XXXX
-   \todo Document it 
-*/
+//!\brief Returns a pointer to the view which is currently active(having foucs)
 QGraphicsView* QucsItem::activeView() const
 {
    if(!scene() || scene()->views().isEmpty())
       return 0;
+   //for now return the first view in the views list since multiple view
+   //support is not yet there.
    return scene()->views()[0];
 }
 
-/*!\brief XXXX
-   \todo Document it 
-*/
+//!\brief Returns a pointer to the applications main window.
 QucsMainWindow* QucsItem::mainWindow() const
 {
    QGraphicsView *view = activeView();
    if(!view) return 0;
-
+   //Fetch indirectly.
    QucsMainWindow *mw = qobject_cast<QucsMainWindow*>(view->parent());
    return mw;
 }
 
-void QucsItem::setPenColor(QColor color)
-{
-   m_penColor = color;
-}
-
-/*!\brief Save component to xml file
-   \todo Why not pure virtual
-*/
-void QucsItem::writeXml(Qucs::XmlWriter *writer)
-{
-   Q_UNUSED(writer);
-}
-
-/*!\brief Load component to xml file
-   \todo Why not pure virtual
-*/
-void QucsItem::readXml(Qucs::XmlReader *reader)
-{
-   if(reader->isStartElement())
-      reader->readUnknownElement();
-}
-
-/*!\brief Graphically mirror item according to x axis */
-void QucsItem::mirrorX()
+//!\brief Graphically mirror item according to x axis
+void QucsItem::mirrorAlong(Qt::Axis axis)
 {
    update();
-   scale(1.0,-1.0);
+   if(axis == Qt::ZAxis) {
+      qWarning("Using unsupported mirroring axis - zaxis. Falling back"
+               " to x axis");
+      axis = Qt::XAxis;
+   }
+   if(axis == Qt::XAxis) {
+      scale(1.0,-1.0);
+   }
+   else /*axis = Qt::YAxis*/ {
+      scale(-1.0,1.0);
+   }
 }
 
-/*!\brief Graphically mirror item according to y axis */
-void QucsItem::mirrorY()
-{
-   update();
-   scale(-1.0,1.0);
-}
-
-/*\brief Rotate item of -90° */
-void QucsItem::rotate()
+//!\brief Rotate item by -90°
+void QucsItem::rotate90()
 {
    update();
    rotate(-90.0);
 }
+
+/*!\brief Constructs and returns a menu with default actions inderted.
+ * \todo Implement this function. */
 
 QMenu* QucsItem::defaultContextMenu() const
 {

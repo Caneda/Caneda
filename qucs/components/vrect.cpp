@@ -25,7 +25,7 @@ vRect::vRect(SchematicScene *s) : Component(s)
    initConstants();
    initPorts();
    initProperties();
-   rotate();
+   rotate90();
 }
 
 void vRect::initConstants()

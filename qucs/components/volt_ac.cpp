@@ -25,7 +25,7 @@ Volt_ac::Volt_ac(SchematicScene *s) : Component(s)
    initConstants();
    initPorts();
    initProperties();
-   rotate();
+   rotate90();
 }
 
 void Volt_ac::initConstants()

@@ -25,7 +25,7 @@ Volt_noise::Volt_noise(SchematicScene *s) : Component(s)
    initConstants();
    initPorts();
    initProperties();
-   rotate();
+   rotate90();
 }
 
 void Volt_noise::initConstants()

@@ -25,7 +25,7 @@ Ampere_ac::Ampere_ac(SchematicScene *s) : Component(s)
    initConstants();
    initPorts();
    initProperties();
-   rotate();
+   rotate90();
 }
 
 void Ampere_ac::initConstants()

@@ -25,7 +25,7 @@ Source_ac::Source_ac(SchematicScene *s) : Component(s)
    initConstants();
    initPorts();
    initProperties();
-   rotate();
+   rotate90();
 }
 
 void Source_ac::initConstants()

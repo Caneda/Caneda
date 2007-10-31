@@ -538,7 +538,7 @@ QVariant Wire::itemChange(GraphicsItemChange change, const QVariant &value)
       if(m_node2->components().isEmpty() && m_node2->wires().size() == 1)
          m_node2->moveBy(delta.x(), delta.y());
    }
-   return QGraphicsSvgItem::itemChange(change,value);
+   return QGraphicsItem::itemChange(change,value);
 }
 
 /*!\brief Callback called when mouse button is pressed
@@ -548,7 +548,7 @@ QVariant Wire::itemChange(GraphicsItemChange change, const QVariant &value)
 void Wire::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
    m_grabbedLineIndex = -1;
-   QGraphicsSvgItem::mousePressEvent(event);
+   QGraphicsItem::mousePressEvent(event);
 
    m_grabbedLineIndex = indexForPos(mapFromScene(event->scenePos()));
 }
@@ -675,4 +675,9 @@ int Wire::indexForPos(const QPointF& pos) const
    }
 
    return -1;
+}
+
+void Wire::invokePropertiesDialog()
+{
+   //TODO:
 }

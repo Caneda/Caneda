@@ -25,7 +25,7 @@ iPulse::iPulse(SchematicScene *s) : Component(s)
    initConstants();
    initPorts();
    initProperties();
-   rotate();
+   rotate90();
 }
 
 void iPulse::initConstants()

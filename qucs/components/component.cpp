@@ -76,7 +76,7 @@ Component* Component::newOne() const
 
 void Component::copyTo(Component *component) const
 {
-   QucsItem::copyTo(component);
+   //QucsItem::copyTo(component);
 
    m_propertyGroup->copyTo(component->m_propertyGroup);
 
@@ -163,7 +163,7 @@ bool Component::loadFromString(QString s)
    if(model.at(0) != '.') {  // is simulation component (dc, ac, ...) ?
 
       n  = s.section(' ',7,7);    // mirroredX
-      if(n.toInt(&ok) == 1) mirrorX();
+      if(n.toInt(&ok) == 1) mirrorAlong(Qt::XAxis);
 
       if(!ok) return false;
 
@@ -171,7 +171,7 @@ bool Component::loadFromString(QString s)
       n  = s.section(' ',8,8);    // rotated
       uint m_rotated = n.toInt(&ok);
       if(!ok) return false;
-      QGraphicsSvgItem::rotate(m_rotated*-90.0);
+      QGraphicsItem::rotate(m_rotated * -90.0);
 
    }
 
@@ -317,6 +317,11 @@ void Component::readXml(Qucs::XmlReader *reader)
    } //end of topmost while
    propertyGroup()->realignItems();
    checkForConnections();
+}
+
+void Component::invokePropertiesDialog()
+{
+   //TODO:
 }
 
 QString Component::netlist() const
@@ -475,22 +480,32 @@ void Component::setInitialPropertyPosition()
    m_propertyGroup->moveBy(delta.x(), delta.y());
 }
 
-void Component::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
+void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                      QWidget *w)
 {
    Q_UNUSED(w);
-
-   p->setPen(penColor());
 
    QList<Shape*>::const_iterator it = m_shapes.constBegin();
    const QList<Shape*>::const_iterator end = m_shapes.constEnd();
    for(; it != end; ++it)
-      (*it)->draw(p,o);
+      (*it)->draw(painter, option);
 
    // For testing purpose
-   if( 1 && o->state & QStyle::State_Selected) {
-      p->setPen(QPen(Qt::black, 0));
-      qreal pw = .5;
-      p->drawRect(m_boundingRect.adjusted(pw/2, pw/2, -pw, -pw));
+   if( 1 && option->state & QStyle::State_Selected) {
+      const QColor fgcolor = option->palette.windowText().color();
+      const QColor bgcolor( // ensure good contrast against fgcolor
+         fgcolor.red()   > 127 ? 0 : 255,
+         fgcolor.green() > 127 ? 0 : 255,
+         fgcolor.blue()  > 127 ? 0 : 255);
+      const qreal pad = 0.5;
+
+      painter->setPen(QPen(bgcolor, 0, Qt::SolidLine));
+      painter->setBrush(Qt::NoBrush);
+      painter->drawRect(boundingRect().adjusted(pad, pad, -pad, -pad));
+
+      painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
+      painter->setBrush(Qt::NoBrush);
+      painter->drawRect(boundingRect().adjusted(pad, pad, -pad, -pad));
    }
 }
 
@@ -552,7 +567,7 @@ QVariant Component::itemChange(GraphicsItemChange change,const QVariant& value)
       }
       return QVariant(newTransform);
    }
-   return QGraphicsSvgItem::itemChange(change,value);
+   return QGraphicsItem::itemChange(change,value);
 }
 
 Component* Component::componentFromModel(const QString& _model, SchematicScene *scene)

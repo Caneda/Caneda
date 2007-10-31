@@ -25,7 +25,7 @@ Ampere_noise::Ampere_noise(SchematicScene *s) : Component(s)
    initConstants();
    initPorts();
    initProperties();
-   rotate();
+   rotate90();
 }
 
 void Ampere_noise::initConstants()

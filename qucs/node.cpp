@@ -228,7 +228,7 @@ bool Node::collidesWithItem(QGraphicsItem *other) const
    Node *port = qucsitem_cast<Node*>(other);
    //If other is not a node call base implementation.
    if(!port)
-      return QGraphicsSvgItem::collidesWithItem(other);
+      return QGraphicsItem::collidesWithItem(other);
    //Else use this faster way to determine collision.
    qreal dist = distance(pos(),port->pos());
 

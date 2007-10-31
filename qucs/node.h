@@ -115,7 +115,7 @@ class Node : public QucsItem
       }
 
       /*!\brief Return name of node
-	\sa setName
+        \sa setName
       */
       QString name() const {
          return m_name;
@@ -147,12 +147,16 @@ class Node : public QucsItem
       int type() const { return QucsItem::NodeType; }
 
       //!\brief Empty because circle at any rotation is the same.
-      void rotate() {}
+      virtual void rotate() {}
       //!\brief Empty because circle when mirrored is the same.
-      void mirrorX() {}
-      //!\brief Empty because circle when mirrored is the same.
-      void mirrorY() {}
-
+      void mirrorAlong(Qt::Axis) {}
+      void writeXml(Qucs::XmlWriter *) {
+         qWarning("Node::writeXml(): Nothing to write.");
+      }
+      void readXml(Qucs::XmlReader *) {
+         qWarning("Node::readXml(): Nothing to read.");
+      }
+      void invokePropertiesDialog() { }
    private:
       /*!\brief List of components attached to this node */
       QList<Component*> m_components;
