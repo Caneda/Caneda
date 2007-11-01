@@ -1,13 +1,17 @@
+#ifndef __SVGTEST_H
+#define __SVGTEST_H
+
 #include "qucssvgitem.h"
 
-class ResistorItem : public QucsSvgItem
+class SvgItem : public QucsSvgItem
 {
    public:
-      ResistorItem(SchematicScene *scene);
-      QString uniqueId() const { return "inductor"; }
-      void paint (QPainter * painter, const QStyleOptionGraphicsItem * option,
-                   QWidget * widget = 0 );
+      SvgItem(const QString& id, SchematicScene *scene);
       void writeXml(Qucs::XmlWriter *) {}
       void readXml(Qucs::XmlReader *) {}
       void invokePropertiesDialog() {}
+
+      static void createTestItems(SchematicScene *scene);
 };
+
+#endif

@@ -77,8 +77,7 @@ void SchematicScene::init()
    m_areItemsMoving = false;
    setCurrentMouseAction(Normal);
 
-   ResistorItem *item = new ResistorItem(this);
-   item->setPos(100,100);
+   SvgItem::createTestItems(this);
 }
 
 SchematicScene::~SchematicScene()

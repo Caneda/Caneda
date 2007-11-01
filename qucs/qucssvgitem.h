@@ -34,32 +34,35 @@ class QucsSvgItem : public QucsItem
          Type = QucsItemType+1
       };
 
-      QucsSvgItem(const QString& file, const QByteArray& _stylesheet,
+      QucsSvgItem(const QString& file, const QString& id,
                   SchematicScene *scene);
-      QucsSvgItem(const QByteArray& contents, const QByteArray& _stylesheet,
+      QucsSvgItem(const QString& file, const QString& id,
+                  const QByteArray& _stylesheet, SchematicScene *scene);
+      QucsSvgItem(const QByteArray& contents, const QString& id,
+                  SchematicScene *scene);
+      QucsSvgItem(const QByteArray& contents, const QString& id,
+                  const QByteArray& _stylesheet,
                   SchematicScene *scene);
       ~QucsSvgItem();
 
       int type() const { return QucsSvgItem::Type; }
+      void paint(QPainter *p, const QStyleOptionGraphicsItem* o, QWidget *w);
 
-      virtual QString uniqueId() const = 0;
+      QString uniqueId() const { return m_uniqueId; }
 
       QByteArray svgContent() const { return m_content; }
-      QByteArray svgContentWithStyleSheet() const;
 
       void setSvgContent(const QByteArray& content);
       void setSvgContent(const QString& file);
 
       void setStyleSheet(const QByteArray& _stylesheet);
-      QByteArray styleSheet() const { return m_styleSheet; }
+      QByteArray styleSheet() const;
 
    private:
       void calcBoundingRect();
 
-      QByteArray m_styleSheet;
+      QString m_uniqueId;
       QByteArray m_content;
-      QByteArray m_styleSheetWithContent;
-
       qreal m_strokeWidth;
 };
 

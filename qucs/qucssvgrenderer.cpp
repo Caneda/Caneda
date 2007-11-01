@@ -42,7 +42,6 @@ QMap<QString, bool> QucsSvgRenderer::m_reloadSvgFlags;
  **/
 void QucsSvgRenderer::render(QPainter *painter, QucsSvgItem *item)
 {
-   qDebug() << "QucsSvgRenderer::render() begin";
    if(!isRegistered(item)) {
       qWarning("Trying to render an unregistered item which is not allowed");
       return;
