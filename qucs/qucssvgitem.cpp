@@ -24,14 +24,11 @@
 #include <QtCore/QFile>
 
 #include <QtSvg/QSvgRenderer>
+#include <QtGui/QPainter>
+#include <QtGui/QStyleOptionGraphicsItem>
 #include <QtXml>
 
 static const QByteArray defaultStyle = "g[id]{stroke: black; fill: none; stroke-width: 0.5}";
-
-static bool isRealNumber(char ch)
-{
-   return ch == '.' || (ch >= '0' && ch <= '9');
-}
 
 /*!\internal
  * \brief This method returns a new bytearray with its stylesheet content
@@ -190,62 +187,21 @@ static qreal getPenWidth(const QByteArray &content, bool *ok = 0)
 QucsSvgItem::QucsSvgItem(const QString& filename, const QString& id,
                          SchematicScene *scene)
    : QucsItem(0, scene),
-     m_uniqueId(id)
+     m_uniqueId(id),
+     m_firstTime(1)
 {
-   QFile file(filename);
-   if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      qWarning() << "QucsSvgItem::QucsSvgItem() : Couldn't open "
-                 << filename;
-   }
-   else {
-      m_content = file.readAll();
-      file.close();
-   }
-   calcBoundingRect();
-
-}
-
-QucsSvgItem::QucsSvgItem(const QString& filename, const QString& id,
-                         const QByteArray& _stylesheet,
-                         SchematicScene *scene)
-   : QucsItem(0, scene),
-     m_uniqueId(id)
-{
-   QFile file(filename);
-   if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      qWarning() << "QucsSvgItem::QucsSvgItem() : Couldn't open "
-                 << filename;
-   }
-   else {
-      m_content = file.readAll();
-      if(!_stylesheet.isEmpty()) {
-         m_content = insertStyleSheet(m_content, _stylesheet);
-      }
-      file.close();
-   }
-   calcBoundingRect();
-
+   setSvgContent(filename);
+   QucsSvgRenderer::registerItem(this);
 }
 
 QucsSvgItem::QucsSvgItem(const QByteArray& contents, const QString& id,
                          SchematicScene *scene)
    : QucsItem(0, scene),
-     m_uniqueId(id)
+     m_uniqueId(id),
+     m_content(contents),
+     m_firstTime(1)
 {
-   m_content = contents;
-   calcBoundingRect();
-}
-
-QucsSvgItem::QucsSvgItem(const QByteArray& contents, const QString& id,
-                         const QByteArray& _stylesheet, SchematicScene *scene)
-   : QucsItem(0, scene),
-     m_uniqueId(id)
-{
-   m_content = contents;
-   if(!_stylesheet.isEmpty()) {
-      m_content = insertStyleSheet(m_content, _stylesheet);
-   }
-   calcBoundingRect();
+   QucsSvgRenderer::registerItem(this);
 }
 
 QucsSvgItem::~QucsSvgItem()
@@ -271,7 +227,12 @@ void QucsSvgItem::setSvgContent(const QString& filename)
       file.close();
    }
    calcBoundingRect();
-   QucsSvgRenderer::reloadSvgFor(this);
+   if(m_firstTime) {
+      m_firstTime = 0;
+   }
+   else {
+      QucsSvgRenderer::reloadSvgFor(this);
+   }
 }
 
 QByteArray QucsSvgItem::styleSheet() const
@@ -286,6 +247,7 @@ void QucsSvgItem::setStyleSheet(const QByteArray& _stylesheet)
       //qDebug() << m_content;
    }
    calcBoundingRect();
+
    QucsSvgRenderer::reloadSvgFor(this);
 }
 
@@ -302,8 +264,44 @@ void QucsSvgItem::calcBoundingRect()
    setShapeAndBoundRect(QPainterPath(), bound, m_strokeWidth);
 }
 
+/*!\internal
+ * \brief This code draws the highlighted rect around the item
+ * \note This code is stolen from source of qt ;-)
+ */
+static void highlightSelectedSvgItem(
+   QucsSvgItem *item, QPainter *painter, const QStyleOptionGraphicsItem *option)
+{
+   const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
+    if (qFuzzyCompare(qMax(murect.width(), murect.height()), qreal(0.0)))
+        return;
+
+    const QRectF mbrect = painter->transform().mapRect(item->boundingRect());
+    if (qMin(mbrect.width(), mbrect.height()) < qreal(1.0))
+        return;
+
+    qreal itemPenWidth = item->strokeWidth();
+    const qreal pad = itemPenWidth / 2;
+    const qreal penWidth = 0; // cosmetic pen
+
+    const QColor fgcolor = option->palette.windowText().color();
+    const QColor bgcolor( // ensure good contrast against fgcolor
+        fgcolor.red()   > 127 ? 0 : 255,
+        fgcolor.green() > 127 ? 0 : 255,
+        fgcolor.blue()  > 127 ? 0 : 255);
+
+    painter->setPen(QPen(bgcolor, penWidth, Qt::SolidLine));
+    painter->setBrush(Qt::NoBrush);
+    painter->drawRect(item->boundingRect().adjusted(pad, pad, -pad, -pad));
+
+    painter->setPen(QPen(option->palette.windowText(), 0, Qt::DashLine));
+    painter->setBrush(Qt::NoBrush);
+    painter->drawRect(item->boundingRect().adjusted(pad, pad, -pad, -pad));
+}
+
 void QucsSvgItem::paint(QPainter *painter,
                         const QStyleOptionGraphicsItem * option, QWidget *)
 {
    QucsSvgRenderer::render(painter, this);
+   if(option->state & QStyle::State_Selected)
+      highlightSelectedSvgItem(this, painter, option);
 }

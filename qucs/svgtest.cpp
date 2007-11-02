@@ -7,9 +7,8 @@ static const QString svgPath = "/home/gopala/svgs/";
 SvgItem::SvgItem(const QString& id, SchematicScene *scene) :
    QucsSvgItem(svgPath + id + ".svg", id, scene)
 {
-   QucsSvgRenderer::registerItem(this);
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-   setStyleSheet("g{stroke:green; stroke-width: 2.5; fill: red}");
+//   setStyleSheet("g{stroke:green; stroke-width: 2.5; fill: red}");
 }
 
 void SvgItem::createTestItems(SchematicScene *scene)

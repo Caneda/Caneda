@@ -36,18 +36,16 @@ class QucsSvgItem : public QucsItem
 
       QucsSvgItem(const QString& file, const QString& id,
                   SchematicScene *scene);
-      QucsSvgItem(const QString& file, const QString& id,
-                  const QByteArray& _stylesheet, SchematicScene *scene);
       QucsSvgItem(const QByteArray& contents, const QString& id,
                   SchematicScene *scene);
-      QucsSvgItem(const QByteArray& contents, const QString& id,
-                  const QByteArray& _stylesheet,
-                  SchematicScene *scene);
+
       ~QucsSvgItem();
 
       int type() const { return QucsSvgItem::Type; }
+
       void paint(QPainter *p, const QStyleOptionGraphicsItem* o, QWidget *w);
 
+      qreal strokeWidth() const { return m_strokeWidth; }
       QString uniqueId() const { return m_uniqueId; }
 
       QByteArray svgContent() const { return m_content; }
@@ -60,10 +58,11 @@ class QucsSvgItem : public QucsItem
 
    private:
       void calcBoundingRect();
-
       QString m_uniqueId;
       QByteArray m_content;
       qreal m_strokeWidth;
+      unsigned m_firstTime:1;
+      unsigned m_hasTransformation:1;
 };
 
 #endif //__QUCSSVGITEM_H

@@ -55,8 +55,8 @@ void QucsSvgRenderer::render(QPainter *painter, QucsSvgItem *item)
    QMatrix m = painter->worldMatrix();
    QRect deviceRect = m.mapRect(item->boundingRect()).toRect();
 
-   //Caching disabled, so render using QSvgRenderer.
-   if (!m_cachingEnabled) {
+   // If Caching disabled or if there is transformation render without cache.
+   if (!m_cachingEnabled || painter->worldTransform().isScaling()) {
       qDebug() << "Rendering without cache" << item->uniqueId();
       rendererFor(item)->render(painter, item->uniqueId(),
                                 item->boundingRect());
@@ -106,8 +106,6 @@ void QucsSvgRenderer::render(QPainter *painter, QucsSvgItem *item)
 void QucsSvgRenderer::registerItem(QucsSvgItem *item)
 {
    if(isRegistered(item)) {
-      //The following qDebug is needed only needed for testing.
-      qDebug("QucsSvgRenderer::registerItem(): Item already registered!");
       return;
    }
    QByteArray svgContent = item->svgContent();
