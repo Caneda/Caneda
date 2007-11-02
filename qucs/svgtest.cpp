@@ -17,5 +17,7 @@ void SvgItem::createTestItems(SchematicScene *scene)
    for(int i=0; i < 10; i++) {
       SvgItem *s = new SvgItem(array[i%3], scene);
       s->setPos(qrand() % int(scene->width()), qrand() % int(scene->height()));
+      if(i == -1)
+         s->setStyleSheet("g[id]{stroke: darkgray; fill: darkgreen; stroke-width: 2.5;}");
    }
 }

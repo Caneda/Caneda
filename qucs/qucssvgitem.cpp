@@ -188,7 +188,7 @@ QucsSvgItem::QucsSvgItem(const QString& filename, const QString& id,
                          SchematicScene *scene)
    : QucsItem(0, scene),
      m_uniqueId(id),
-     m_firstTime(1)
+     m_strokeWidth(0.0)
 {
    setSvgContent(filename);
    QucsSvgRenderer::registerItem(this);
@@ -198,9 +198,9 @@ QucsSvgItem::QucsSvgItem(const QByteArray& contents, const QString& id,
                          SchematicScene *scene)
    : QucsItem(0, scene),
      m_uniqueId(id),
-     m_content(contents),
-     m_firstTime(1)
+     m_strokeWidth(0.0)
 {
+   setSvgContent(contents);
    QucsSvgRenderer::registerItem(this);
 }
 
@@ -210,29 +210,32 @@ QucsSvgItem::~QucsSvgItem()
 
 void QucsSvgItem::setSvgContent(const QByteArray& content)
 {
-   m_content = content;
-   calcBoundingRect();
-   QucsSvgRenderer::reloadSvgFor(this);
+   if(m_content != content && !content.isEmpty()) {
+      bool shouldReload = !m_content.isEmpty();
+      m_content = content;
+      if(getStyleSheet(m_content).isEmpty()) {
+         m_content = insertStyleSheet(m_content, defaultStyle);
+      }
+      calcBoundingRect();
+      if(shouldReload) {
+         QucsSvgRenderer::reloadSvgFor(this);
+      }
+   }
 }
 
 void QucsSvgItem::setSvgContent(const QString& filename)
 {
    QFile file(filename);
+   QByteArray temp;
    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
       qWarning() << "QucsSvgItem::setSvgContent() : Couldn't open "
                  << filename;
    }
    else {
-      m_content = file.readAll();
+      temp = file.readAll();
       file.close();
    }
-   calcBoundingRect();
-   if(m_firstTime) {
-      m_firstTime = 0;
-   }
-   else {
-      QucsSvgRenderer::reloadSvgFor(this);
-   }
+   setSvgContent(temp);
 }
 
 QByteArray QucsSvgItem::styleSheet() const
@@ -244,7 +247,6 @@ void QucsSvgItem::setStyleSheet(const QByteArray& _stylesheet)
 {
    if(!_stylesheet.isEmpty()) {
       m_content = insertStyleSheet(m_content, _stylesheet);
-      //qDebug() << m_content;
    }
    calcBoundingRect();
 
@@ -254,8 +256,6 @@ void QucsSvgItem::setStyleSheet(const QByteArray& _stylesheet)
 void QucsSvgItem::calcBoundingRect()
 {
    bool ok;
-   if(getStyleSheet(m_content).isEmpty())
-      m_content = insertStyleSheet(m_content, defaultStyle);
    m_strokeWidth = getPenWidth(m_content, &ok);
    QRectF bound = getBounds(m_content, m_uniqueId);
    if(!ok || bound.isNull()) {

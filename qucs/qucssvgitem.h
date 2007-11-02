@@ -61,8 +61,6 @@ class QucsSvgItem : public QucsItem
       QString m_uniqueId;
       QByteArray m_content;
       qreal m_strokeWidth;
-      unsigned m_firstTime:1;
-      unsigned m_hasTransformation:1;
 };
 
 #endif //__QUCSSVGITEM_H
