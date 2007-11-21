@@ -1,3 +1,9 @@
+2007-11-21  Gopala Krishna  <gopala@localhost>
+
+	* svgitem.h, svgitem.cpp: Added these files which provide svg support classes.
+	Removed the buggy qucssvgitem.* and qucssvgrenderer.* files.
+	Also added 3 test svg files.
+
 2007-09-10  Gopala Krishna  <gopala@localhost>
 
 	* schematicscene.cpp, schematicscene.h: Scene items are now moved only along grid.

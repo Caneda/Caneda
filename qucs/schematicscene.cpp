@@ -10,7 +10,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
  * GNU General Public License for more details.                            *
- *                                                                         *
+//  *                                                                         *
  * You should have received a copy of the GNU General Public License       *
  * along with this package; see the file COPYING.  If not, write to        *
  * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
@@ -31,7 +31,6 @@
 #include "qucs-tools/global.h"
 
 #include "svgtest.h"
-#include "qucssvgrenderer.h"
 
 #include <QtCore/QMimeData>
 #include <QtCore/QtDebug>
@@ -77,7 +76,8 @@ void SchematicScene::init()
    m_areItemsMoving = false;
    setCurrentMouseAction(Normal);
 
-   SvgItem::createTestItems(this);
+   SvgTestItem::registerSvgs();
+   SvgTestItem::createTestItems(this);
 }
 
 SchematicScene::~SchematicScene()
@@ -673,11 +673,11 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
       painter->drawLine(QLineF(0.0, -3.0, 0.0, 3.0));
    }
 
-   int gridWidth = m_gridWidth,gridHeight = m_gridHeight;
+   int gridWidth = m_gridWidth, gridHeight = m_gridHeight;
 
    // Adjust visual representation of grid to be multiple, if
    // grid sizes are very small
-
+#if 0
    while(gridWidth < 20)
       gridWidth *= 2;
    while(gridHeight < 20)
@@ -686,7 +686,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
       gridWidth /= 2;
    while(gridHeight > 60)
       gridHeight /= 2;
-
+#endif
    qreal left = int(rect.left()) + gridWidth - (int(rect.left()) % gridWidth);
    qreal top = int(rect.top()) + gridHeight - (int(rect.top()) % gridHeight);
    qreal right = int(rect.right()) - (int(rect.right()) % gridWidth);
@@ -749,11 +749,6 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
    //Cache the mouse press position
-   if(0 && e->buttons() & Qt::MidButton == Qt::MidButton) {
-      qDebug() << "Mouse press";
-      QucsSvgRenderer::setCachingEnabled(!QucsSvgRenderer::isCachingEnabled());
-      //return;
-   }
    lastPos = nearingGridPoint(e->scenePos());
    sendMouseActionEvent(e);
 }

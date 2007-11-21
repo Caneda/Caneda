@@ -33,16 +33,16 @@ endif
 bin_PROGRAMS = qucs
 
 MOCHEADERS = schematicscene.h schematicview.h mainwindowbase.h \
-			 qucsmainwindow.h componentssidebar.h
+			 qucsmainwindow.h componentssidebar.h svgitem.h svgtest.h
 
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
 qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp \
-				qucssvgitem.cpp schematicscene.cpp  sidebarmodel.cpp \
+				schematicscene.cpp  sidebarmodel.cpp \
                 main.cpp mainwindowbase.cpp qucsmainwindow.cpp qucsview.cpp \
 				schematicview.cpp  undocommands.cpp fileformathandler.cpp \
 				qucsprimaryformat.cpp xmlutilities.cpp xmlformat.cpp \
-				qucssvgrenderer.cpp svgtest.cpp
+				svgitem.cpp svgtest.cpp
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
@@ -53,7 +53,7 @@ qucs_LDADD = ../qucs-tools/libqucstools.a components/libcomponents.a dialogs/lib
 
 noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h qucsview.h \
                                sidebarmodel.h fileformathandler.h qucsprimaryformat.h xmlformat.h \
-                               xmlutilities.h qucssvgrenderer.h qucssvgitem.h svgtest.h
+                               xmlutilities.h svgitem.h
 
 # rules for translations
 TRANSLATIONS = qucs_de.ts qucs_pl.ts qucs_fr.ts qucs_it.ts qucs_ro.ts \

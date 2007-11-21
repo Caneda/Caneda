@@ -55,11 +55,8 @@ SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
 
    connect(this, SIGNAL(stateUpdated()), this, SLOT(updateTabs()));
 
-#if QT_VERSION >= 0x040300
-   //Enormous performance improvement!
    setViewportUpdateMode(SmartViewportUpdate);
-#endif
-
+   ensureVisible(0, 0, 5, 5);
 }
 
 SchematicView::~SchematicView()

@@ -25,7 +25,7 @@
 int main(int argc,char *argv[])
 {
    QApplication app(argc,argv);
-   app.setFont(Qucs::font());
+   //app.setFont(Qucs::font());
    QucsMainWindow mw;
 
    QTimer::singleShot(100,&mw,SLOT(show()));

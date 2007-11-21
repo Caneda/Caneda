@@ -1,17 +1,24 @@
 #ifndef __SVGTEST_H
 #define __SVGTEST_H
 
-#include "qucssvgitem.h"
+#include "svgitem.h"
 
-class SvgItem : public QucsSvgItem
+class SvgTestItem : public SvgItem
 {
+      Q_OBJECT;
    public:
-      SvgItem(const QString& id, SchematicScene *scene);
+      SvgTestItem(const QString& id, SchematicScene *scene);
       void writeXml(Qucs::XmlWriter *) {}
       void readXml(Qucs::XmlReader *) {}
       void invokePropertiesDialog() {}
 
       static void createTestItems(SchematicScene *scene);
+      static void registerSvgs();
+      static SvgPainter *globalSvgPainter;
+      static SvgItem *svgitem;
+
+   private slots:
+      void changeStyleSheet();
 };
 
 #endif

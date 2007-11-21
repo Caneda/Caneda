@@ -3,5 +3,6 @@ Makefile.in
 .deps
 *.moc.cpp
 *.qm
+*.o
 qucs
 resources.cpp
