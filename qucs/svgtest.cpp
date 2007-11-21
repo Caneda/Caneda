@@ -4,29 +4,32 @@
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 
+#include <QtGui/QMessageBox>
+
 static const char* array[] = { "resistor", "inductor", "current" };
 
-SvgPainter* SvgTestItem::globalSvgPainter = 0;
-SvgItem* SvgTestItem::svgitem = 0;
+SvgItem* SvgTestItem::styleSheetChangingItem = 0;
 static bool firsttime = true;
+
 SvgTestItem::SvgTestItem(const QString& id, SchematicScene *scene) :
    SvgItem(scene)
 {
-   registerConnections(id, globalSvgPainter);
+   registerConnections(id, scene->svgPainter());
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
    if(firsttime) {
-      QTimer::singleShot(1500, this, SLOT(changeStyleSheet()));
+      QTimer::singleShot(2500, this, SLOT(changeStyleSheet()));
       firsttime = false;
    }
 }
 
 void SvgTestItem::changeStyleSheet()
 {
-   qDebug("CAlled");
-   if(svgitem) {
-      globalSvgPainter->setStyleSheet(svgitem->groupId(),
+   if(styleSheetChangingItem) {
+      schematicScene()->svgPainter()->setStyleSheet(styleSheetChangingItem->groupId(),
                                       "g{stroke: blue; fill: cyan; stroke-width: .5;}");
-      svgitem = 0;
+      styleSheetChangingItem = 0;
+      QMessageBox::information(0, "Style change",
+                               "The stylesheet of resistors changed! It is working :-)");
    }
 }
 
@@ -37,19 +40,17 @@ void SvgTestItem::createTestItems(SchematicScene *scene)
       QPointF randomPos(qrand() % int(scene->width()/2), qrand() % int(scene->height()/2));
       s->setPos(scene->nearingGridPoint(randomPos));
       if(i == 0)
-         svgitem = s;
-         //s->setStyleSheet("g[id]{stroke: darkgray; fill: darkgreen; stroke-width: 2.5;}");
+         styleSheetChangingItem = s;
    }
 }
 
-void SvgTestItem::registerSvgs()
+void SvgTestItem::registerSvgs(SchematicScene *scene)
 {
-   globalSvgPainter = new SvgPainter;
    for(int i=0; i < 3; ++i) {
       QString fileName = QString(array[i]) + ".svg";
       QFile file(fileName);
       file.open(QIODevice::ReadOnly | QIODevice::Text);
       QByteArray content = file.readAll();
-      globalSvgPainter->registerSvg(array[i], content);
+      scene->svgPainter()->registerSvg(array[i], content);
    }
 }

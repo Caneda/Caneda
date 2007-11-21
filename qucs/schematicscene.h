@@ -33,6 +33,7 @@ class Wire;
 class QucsItem;
 class Diagram;
 class Painting;
+class SvgPainter;
 
 namespace Qucs
 {
@@ -156,6 +157,8 @@ class SchematicScene : public QGraphicsScene
       void moveSpecialItemsBy(const QPointF& delta);
       void endSpecialMovingItems();
 
+      SvgPainter* svgPainter() const { return m_svgPainter; }
+
    public slots:
       void setModified(bool m = true);
 
@@ -235,6 +238,8 @@ class SchematicScene : public QGraphicsScene
       bool m_modified;
       bool m_opensDataDisplay;
       bool m_frameVisible;
+
+      SvgPainter* m_svgPainter;
 };
 
 #endif //__SCHEMATICSCENE_H

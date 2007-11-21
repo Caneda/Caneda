@@ -76,12 +76,14 @@ void SchematicScene::init()
    m_areItemsMoving = false;
    setCurrentMouseAction(Normal);
 
-   SvgTestItem::registerSvgs();
+   m_svgPainter = new SvgPainter;
+   SvgTestItem::registerSvgs(this);
    SvgTestItem::createTestItems(this);
 }
 
 SchematicScene::~SchematicScene()
 {
+   delete m_svgPainter;
 }
 
 Node* SchematicScene::nodeAt(qreal x, qreal y)

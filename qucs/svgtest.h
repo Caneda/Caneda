@@ -13,9 +13,8 @@ class SvgTestItem : public SvgItem
       void invokePropertiesDialog() {}
 
       static void createTestItems(SchematicScene *scene);
-      static void registerSvgs();
-      static SvgPainter *globalSvgPainter;
-      static SvgItem *svgitem;
+      static void registerSvgs(SchematicScene *scene);
+      static SvgItem *styleSheetChangingItem;
 
    private slots:
       void changeStyleSheet();

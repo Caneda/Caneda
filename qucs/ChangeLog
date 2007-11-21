@@ -1,3 +1,7 @@
+2007-11-22  Gopala Krishna  <gopala@localhost>
+
+	* svgitem.cpp, svgitem.h: Documented the code.
+
 2007-11-21  Gopala Krishna  <gopala@localhost>
 
 	* svgitem.h, svgitem.cpp: Added these files which provide svg support classes.
