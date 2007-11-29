@@ -24,6 +24,7 @@
 
 SUBDIRS = components dialogs bitmaps diagrams paintings
 
+
 if COND_WIN32
 bin_SCRIPTS = qucsdigi.bat
 else
@@ -33,27 +34,29 @@ endif
 bin_PROGRAMS = qucs
 
 MOCHEADERS = schematicscene.h schematicview.h mainwindowbase.h \
-			 qucsmainwindow.h componentssidebar.h svgitem.h svgtest.h
+			 qucsmainwindow.h componentssidebar.h svgitem.h svgtest.h \
+			 propertyitem.h propertygroup.h
 
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-qucs_SOURCES = wire.cpp node.cpp componentssidebar.cpp  item.cpp \
+qucs_SOURCES = 	wire.cpp node.cpp componentssidebar.cpp  item.cpp \
 				schematicscene.cpp  sidebarmodel.cpp \
                 main.cpp mainwindowbase.cpp qucsmainwindow.cpp qucsview.cpp \
 				schematicview.cpp  undocommands.cpp fileformathandler.cpp \
 				qucsprimaryformat.cpp xmlutilities.cpp xmlformat.cpp \
-				svgitem.cpp svgtest.cpp
+				svgitem.cpp svgtest.cpp property.cpp propertyitem.cpp \
+				propertygroup.cpp
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
 INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)
 qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
-qucs_LDADD = ../qucs-tools/libqucstools.a components/libcomponents.a dialogs/libdialogs.a \
-  $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a
+qucs_LDADD = ../qucs-tools/libqucstools.a dialogs/libdialogs.a \
+  $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a components/libcomponents.a
 
 noinst_HEADERS = $(MOCHEADERS) wire.h node.h shapes.h wireline.h item.h undocommands.h qucsview.h \
                                sidebarmodel.h fileformathandler.h qucsprimaryformat.h xmlformat.h \
-                               xmlutilities.h svgitem.h
+                               xmlutilities.h svgitem.h property.h
 
 # rules for translations
 TRANSLATIONS = qucs_de.ts qucs_pl.ts qucs_fr.ts qucs_it.ts qucs_ro.ts \

@@ -1,3 +1,8 @@
+2007-11-29  Gopala Krishna  <gopala@localhost>
+
+	* Port, Property, PropertyItem, PropertiesGroup: These new classes added to support and accomodate the new
+	changes with sharing support enabled.
+
 2007-11-22  Gopala Krishna  <gopala@localhost>
 
 	* svgitem.cpp, svgitem.h: Documented the code.

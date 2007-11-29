@@ -125,6 +125,13 @@ namespace Qucs
       return retVal;
    }
 
+   inline QString localePrefix()
+   {
+      QString retVal = Qucs::language();
+      retVal = retVal.left(retVal.indexOf('_'));
+      return retVal;
+   }
+
    inline QFont font()
    {
       Qucs::Settings settings("qucsrc");

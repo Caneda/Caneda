@@ -56,6 +56,8 @@ namespace Qucs
          QRectF readRect(const QString& tag = QString("rect"));
          QTransform readTransform(const QString& tag = QString("transform"));
 
+         QString readLocaleText(const QString& localePrefix);
+
          void readFurther();
          void readUnknownElement();
    };

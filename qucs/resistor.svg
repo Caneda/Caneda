@@ -3,7 +3,7 @@
      version="1.2" baseProfile="tiny"
      viewBox="-20 -5 40 10">
    <defs>
-      <style type="text/css"><![CDATA[
+      <style type="text/css"> <![CDATA[
                                       g {
                                       stroke: black;
                                       fill: white;

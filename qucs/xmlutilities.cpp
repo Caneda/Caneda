@@ -217,6 +217,43 @@ namespace Qucs
 
    }
 
+   QString XmlReader::readLocaleText(const QString& localePrefix)
+   {
+      QString c, actual;
+      Q_ASSERT(isStartElement());
+
+      bool matchFound = false;
+      while(!atEnd()) {
+         readNext();
+
+         if(isEndElement())
+            break;
+
+         if(isStartElement() && name() == "lang") {
+            if(!matchFound) {
+               QString lang = attributes().value("lang").toString();
+               if(lang == "C") {
+                  c = readElementText();
+                  if(localePrefix == "C") {
+                     actual = c;
+                     matchFound = true;
+                  }
+               }
+               else if(lang == localePrefix) {
+                  actual = readElementText();
+                  matchFound = true;
+               }
+            }
+            else {
+               readUnknownElement();
+            }
+         }
+      }
+      if(actual.isEmpty())
+         actual = c;
+      return actual;
+   }
+
    void XmlReader::readFurther()
    {
       readNext();
