@@ -25,7 +25,7 @@
 //! Default constructor
 PropertyData::PropertyData()
 {
-   options = NULL;
+   options = 0;
    visible = false;
    netlistProperty = true;
    valueType = QVariant::String;
@@ -85,7 +85,10 @@ Property::Property(const QString& _name, const QString& _description,
    data->netlistProperty = _isNetlistProp;
    data->value = _value;
    data->valueType = _valueType;
-   Q_ASSERT(data->value.convert(_valueType));
+   if(!data->value.isNull()) {
+      bool conversion = data->value.convert(_valueType);
+      Q_ASSERT(conversion == true);
+   }
 
    if(!_options.isEmpty())
       data->options = new QStringList(_options);
@@ -100,20 +103,6 @@ Property::Property(Qucs::XmlReader *reader)
 {
    d = new PropertyData;
    readXml(reader);
-}
-
-/*! \brief Convienience constructor.
- * This constructor fetches details from \a xmlContent
- */
-Property::Property(const QByteArray& xmlContent)
-{
-   d = new PropertyData;
-   Qucs::XmlReader reader(xmlContent);
-   readXml(&reader);
-   if(reader.hasError()) {
-      qWarning() << "Failed to load property from " << xmlContent;
-      qWarning() << "The error is " << reader.errorString();
-   }
 }
 
 //! Copy constructor
@@ -142,49 +131,6 @@ void Property::setValue(const QVariant& newValue)
       "options";
 }
 
-/*! Writes the save information of property in xml.
- * \note Assumes the value type variant can be converted to string.
- */
-void Property::writeSaveData(Qucs::XmlWriter *writer) const
-{
-   const PropertyData *data = d.constData();
-   writer->writeStartElement("property");
-   writer->writeAttribute("name", data->name);
-   writer->writeAttribute("visible", Qucs::boolToString(data->visible));
-   //FIXME: Assumes the variant can be converted to string.
-   writer->writeCharacters(data->value.toString());
-   writer->writeEndElement(); // </property>
-}
-
-//! Reads the saved infromation in xml into this object.
-void Property::readSavedData(Qucs::XmlReader *reader)
-{
-   if(!reader->isStartElement() || reader->name() != "property") {
-      qWarning("Property::readXml() : No property tag found!");
-      return;
-   }
-
-   PropertyData *data = d.data();
-
-   data->name = reader->attributes().value("name").toString();
-
-   QString att = reader->attributes().value("visible").toString();
-   att = att.toLower();
-   if(att != "true" && att != "false") {
-      reader->raiseError(QObject::tr("Invalid bool attribute"));
-      return;
-   }
-   data->visible = (att == "true");
-
-   data->value = reader->readElementText();
-   bool conversion = data->value.convert(data->valueType);
-   Q_ASSERT(conversion == true);
-
-   if(!reader->isEndElement() || reader->name() != "property") {
-      reader->raiseError("Property::readXml() : No </property> found");
-   }
-}
-
 //! Reads the property from component's description xml file.
 void Property::readXml(Qucs::XmlReader *reader)
 {
@@ -199,12 +145,7 @@ void Property::readXml(Qucs::XmlReader *reader)
    data->valueType = stringToType(attributes.value("type").toString());
 
    QString visible = attributes.value("visible").toString();
-   if(visible.isEmpty() || visible == "false") {
-      data->visible = false;
-   }
-   else {
-      data->visible = true;
-   }
+   data->visible = !(visible.isEmpty() || visible == "false");
 
    QString options = attributes.value("options").toString();
    if(!options.isEmpty()) {
@@ -226,10 +167,15 @@ void Property::readXml(Qucs::XmlReader *reader)
       if(reader->isEndElement())
          break;
 
-      if(reader->isStartElement() && reader->name() == "description") {
-         data->description = reader->readLocaleText(Qucs::localePrefix());
+      if(reader->isStartElement()) {
+         if(reader->name() == "description") {
+            data->description = reader->readLocaleText(Qucs::localePrefix());
+         }
+         else {
+            reader->readUnknownElement();
+         }
       }
-   };
+   }
 
    if(!defaultVal.isNull())
       setValue(defaultVal);
@@ -239,43 +185,42 @@ void Property::readXml(Qucs::XmlReader *reader)
 void writeProperties(Qucs::XmlWriter *writer, const PropertyMap& propMap)
 {
    writer->writeStartElement("properties");
-   foreach(Property p, propMap) {
-      p.writeSaveData(writer);
+   foreach(const Property p, propMap) {
+      writer->writeEmptyElement("property");
+      writer->writeAttribute("name", p.name());
+      writer->writeAttribute("value", p.value().toString());
+      writer->writeAttribute("visible", Qucs::boolToString(p.isVisible()));
    }
    writer->writeEndElement(); // </properties>
 }
 
 //! Helper function to read the saved properties into \a propMap.
-void readSavedPropertiesIntoMap(Qucs::XmlReader *reader, PropertyMap &propMap)
+void readProperties(Qucs::XmlReader *reader, PropertyMap &propMap)
 {
-   if(!reader->isStartElement() || reader->name() != "properties") {
-      qWarning("readProperties() : Can't read properties. Wrong format!");
-      return;
-   }
+   Q_ASSERT(reader->isStartElement() && reader->name() == "properties");
 
    while(!reader->atEnd()) {
       reader->readNext();
 
       if(reader->isEndElement()) {
-         if(reader->name() != "properties") {
-            qWarning("readProperties() : Can't read end properties tag."
-                     "Wrong format!");
-            reader->raiseError("Can't find </properties");
-         }
          break;
       }
 
       if(reader->isStartElement()) {
          if(reader->name() == "property") {
-            QString propName = reader->attributes().value("name").toString();
+            QXmlStreamAttributes attribs(reader->attributes());
+            QString propName = attribs.value("name").toString();
             if(!propMap.contains(propName)) {
                qWarning() << "readProperties() : " << "Property " << propName
                           << "not found in map!";
             }
             else {
                Property &prop = propMap[propName];
-               prop.readXml(reader);
+               prop.setValue(QVariant(attribs.value("value").toString()));
+               prop.setVisible(attribs.value("visible") == "true");
             }
+            // now read till end element
+            reader->readUnknownElement();
          }
          else {
             reader->readUnknownElement();
@@ -284,6 +229,7 @@ void readSavedPropertiesIntoMap(Qucs::XmlReader *reader, PropertyMap &propMap)
    }
 }
 
+//! A function which returns corresponding variant type from given \a atring.
 QVariant::Type stringToType(const QString& _string)
 {
    char first = _string.at(0).toAscii();
@@ -308,21 +254,26 @@ QVariant::Type stringToType(const QString& _string)
          break;
    };
    if(retVal == QVariant::Invalid) {
-      qDebug() << "Invalid qvariant type found" << _string;
+      qDebug() << "stringToType() : Invalid qvariant type found" << _string;
    }
    return retVal;
 }
 
+//! Returns string corresponding to \a type.
 QString typeToString(QVariant::Type type)
 {
    switch(type)
    {
-      case QVariant::String: return QString("string");
-      case QVariant::Bool: return QString("boolean");
-      case QVariant::Int: return QString("int");
-      case QVariant::Double: return QString("double");
+      case QVariant::String:
+         return QString("string");
+      case QVariant::Bool:
+         return QString("boolean");
+      case QVariant::Int:
+         return QString("int");
+      case QVariant::Double:
+         return QString("double");
       default: ;
    };
-   qDebug() << "Sorry unused type" << type;
+   qDebug() << "typeToString() : Invalid type" << type;
    return QString();
 }

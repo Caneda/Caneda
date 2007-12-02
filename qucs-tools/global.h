@@ -127,7 +127,7 @@ namespace Qucs
 
    inline QString localePrefix()
    {
-      QString retVal = Qucs::language();
+      QString retVal = QLocale::system().name();
       retVal = retVal.left(retVal.indexOf('_'));
       return retVal;
    }

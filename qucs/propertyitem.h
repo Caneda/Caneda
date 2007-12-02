@@ -20,22 +20,21 @@
 #ifndef __PROPERTYITEM_H
 #define __PROPERTYITEM_H
 
-#include "property.h"
+#include "propertygroup.h"
 #include <QtGui/QGraphicsTextItem>
 
 //Forwasrd declarations.
 class SchematicScene;
 
+//! Class used to represent the text corresponding to property on schematic.
 class PropertyItem : public QGraphicsTextItem
 {
    Q_OBJECT;
    public:
-      PropertyItem(const QString& name, PropertyMap& propMap,
-                   SchematicScene *scene);
+      PropertyItem(const QString& name, SchematicScene *scene);
 
       QRectF boundingRect() const;
       QPainterPath shape() const;
-      //FIXME: Check whether contains method implementation is needed.
 
       void setFont(const QFont& f);
 
@@ -45,6 +44,10 @@ class PropertyItem : public QGraphicsTextItem
       bool eventFilter(QObject* object, QEvent* event);
       void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
                  QWidget * widget = 0 );
+
+      Qucs::Component* component() const {
+         return static_cast<PropertiesGroup*>(group())->component();
+      }
 
    protected:
       bool sceneEvent(QEvent *event);
@@ -67,7 +70,6 @@ class PropertyItem : public QGraphicsTextItem
       QString m_staticText;
       QPointF m_staticPos;
       const QString m_propertyName;
-      PropertyMap &m_propertyMapRef;
 };
 
 #endif //__PROPERTYITEM_H

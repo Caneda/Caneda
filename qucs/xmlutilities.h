@@ -21,10 +21,11 @@
 #define __XMLUTILITIES_H
 
 #include <QtXml/QXmlStreamReader>
+#include <QtXml/QXmlStreamWriter>
+
 #include <QtCore/QMap>
 
-class QXmlStreamWriter;
-
+// Forward declarations
 class QRectF;
 class QSize;
 class QTransform;
@@ -39,37 +40,53 @@ namespace Qucs
 
    const QMap<QString,Transformation>& transformMap();
 
+   /*! \brief This class adds a few more helper methods to qt's
+    * QXmlStreamReader class.
+    * \warning QXmlStreamReader doesn't have virtual destructor. Don't delete any
+    * instance of this class from base pointer.
+    */
    class XmlReader : public QXmlStreamReader
    {
       public:
+         //! Constructs an xml stream reader acting on \a device.
          XmlReader(QIODevice * device) : QXmlStreamReader(device) {}
+         //! Constructs an xml stream reader acting on \a data.
          XmlReader(const QByteArray & data) : QXmlStreamReader(data) {}
+         //! Constructs an xml stream reader acting on \a data.
          XmlReader(const QString & data) : QXmlStreamReader(data) {}
-         ~XmlReader() {}
 
-         int readInt(const QString& tag = QString());
-         double readDouble(const QString& tag = QString());
-         QString readText(const QString& tag);
+         QString readText();
+         int readInt();
+         double readDouble();
 
-         QPointF readPoint(const QString& tag = QString("point"));
-         QSize readSize(const QString& tag = QString("size"));
-         QRectF readRect(const QString& tag = QString("rect"));
-         QTransform readTransform(const QString& tag = QString("transform"));
+         QPointF readPoint();
+         QSize readSize();
 
-         QString readLocaleText(const QString& localePrefix);
+         QRectF readRect();
+         QTransform readTransform();
+
+         QString readLocaleText(const QString& localePrefix = QString("C"));
 
          void readFurther();
          void readUnknownElement();
+
+         QString readXmlFragment();
    };
 
+   /*! \brief This class adds a few more helper methods to qt's
+    * QXmlStreamWriter class.
+    * \warning QXmlStreamWriter doesn't have virtual destructor. Don't delete any
+    * instance of this class from base pointer.
+    */
    class XmlWriter : public QXmlStreamWriter
    {
       public:
+         //! Constructs an xml stream writer acting on \a device.
          XmlWriter(QIODevice *device) : QXmlStreamWriter(device) {}
+         //! Constructs an xml stream writer acting on \a bytearray.
          XmlWriter(QByteArray *bytearray) : QXmlStreamWriter(bytearray) {}
+         //! Constructs an xml stream writer acting on \a string.
          XmlWriter(QString *string) : QXmlStreamWriter(string) {}
-
-         ~XmlWriter() {}
 
          void writeElement(const QString& tag, const QString& value);
          void writeElement(const QString& tag, int value);

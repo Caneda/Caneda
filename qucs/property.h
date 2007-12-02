@@ -69,18 +69,14 @@ class Property
                QVariant::Type _valueType = QVariant::String,
                bool _visible=false,
                bool _isNetlistProp=true,
-               const QVariant& _defaultValue = QVariant(),
+               const QVariant& _defaultValue = QVariant(QString()),
                const QStringList& _options = QStringList());
 
       Property(Qucs::XmlReader *reader);
-      Property(const QByteArray& xmlContent);
+
       Property(const Property& prop);
       Property& operator=(const Property& prop);
 
-      ~Property() {}
-
-      //! Set the description of property to \a des.
-      void setDescription(const QString& des) { d->description = des; }
       //! Returns the description of property.
       QString description() const { return d->description; }
       //! Returns the property name.
@@ -103,9 +99,6 @@ class Property
       //! Returns whether this property should be written to netlist or not.
       bool isNetlistProperty() const { return d->netlistProperty; }
 
-      void writeSaveData(Qucs::XmlWriter *writer) const;
-      void readSavedData(Qucs::XmlReader *reader);
-
    private:
       void readXml(Qucs::XmlReader *reader);
       //! d pointer enabling sharing of data implicitly.
@@ -114,7 +107,7 @@ class Property
 };
 
 void writeProperties(Qucs::XmlWriter *writer, const PropertyMap& prMap);
-void readSavedPropertiesIntoMap(Qucs::XmlReader *reader, PropertyMap &propMap);
+void readProperties(Qucs::XmlReader *reader, PropertyMap &propMap);
 
 QVariant::Type stringToType(const QString& string);
 QString typeToString(QVariant::Type type);

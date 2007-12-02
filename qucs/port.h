@@ -27,26 +27,29 @@
 #include <QtGui/QGraphicsItem>
 #include <QtCore/QSharedData>
 
-class Wire;
-class Component;
+namespace Qucs
+{
+   class Wire;
+   class Component;
+}
 
-class Element
+class PortOwner
 {
    public:
-      Element(Wire *wire);
-      Element(Component *comp);
+      PortOwner(Qucs::Wire *wire);
+      PortOwner(Qucs::Component *comp);
 
-      Wire* wire() const { return m_wire; }
-      Component* component() const { return m_component; }
+      Qucs::Wire* wire() const { return m_wire; }
+      Qucs::Component* component() const { return m_component; }
 
       QGraphicsItem* item() const {
          return m_wire != NULL ? (QGraphicsItem*)m_wire : (QGraphicsItem*)m_component;
       }
    private:
-      Wire *const m_wire;
-      Component *const m_component;
+      Qucs::Wire *const m_wire;
+      Qucs::Component *const m_component;
       //Disable copy
-      Element(const Element& other);
+      PortOwner(const PortOwner& other);
 };
 
 struct PortData : public QSharedData
@@ -59,25 +62,26 @@ struct PortData : public QSharedData
 class Port
 {
    public:
-      Port(Wire *owner, const QSharedDataPointer<PortData> &data);
-      Port(Wire *owner, QPointF _pos, QString portName = QString());
+      Port(Qucs::Wire *owner, const QSharedDataPointer<PortData> &data);
+      Port(Qucs::Wire *owner, QPointF _pos, QString portName = QString());
 
-      Port(Component *owner, const QSharedDataPointer<PortData> &data);
-      Port(Component *owner, QPointF _pos, QString portName = QString());
+      Port(Qucs::Component *owner, const QSharedDataPointer<PortData> &data);
+      Port(Qucs::Component *owner, QPointF _pos, QString portName = QString());
 
       ~Port();
 
-      inline void copyDataTo(Port *other) { other->d = d; }
-      inline void copyDataFrom(Port *other) { d = other->d; }
+      void copyDataTo(Port *other) { other->d = d; }
+      void copyDataFrom(Port *other) { d = other->d; }
 
       QPointF pos() const { return d->pos; }
       QPointF scenePos(bool *ok = 0) const;
 
       QString name() const { return d->name; }
 
-      Wire* wireOwner() const { return m_owner->wire(); }
-      Component* componentOwner() const { return m_owner->component(); }
-      Element* owner() const { return m_owner; }
+      Qucs::Wire* wireOwner() const { return m_owner->wire(); }
+      Qucs::Component* componentOwner() const { return m_owner->component(); }
+
+      PortOwner* owner() const { return m_owner; }
       QGraphicsItem* ownerItem() const { return m_owner->item(); }
 
       QList<Port*> * connections() const { return m_connections; }
@@ -86,8 +90,8 @@ class Port
       static void disconnect(Port *port, Port *from);
       static bool isConnected(Port *port1, Port* port2);
 
-      void connect(Port *other);
-      void disconnect(Port *from);
+      void connectTo(Port *other);
+      void disconnectFrom(Port *from);
 
       Port* findIntersectingPort() const;
       Port* findCoincidingPort() const;
@@ -99,11 +103,13 @@ class Port
       Port* findCoincidingPort(const QList<Port*> &ports) const;
 
       QSharedDataPointer<PortData> d;
-      Element *m_owner;
+      PortOwner *m_owner;
       QList<Port*> *m_connections;
 };
 
 void drawPorts(const QList<Port*> & ports, QPainter *painter,
                const QStyleOptionGraphicsItem* option);
+
+QRectF portsRect(const QList<Port*> &ports, const QRectF& rect);
 
 #endif //__PORT_H

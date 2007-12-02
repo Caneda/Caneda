@@ -296,9 +296,11 @@ void Component::readXml(Qucs::XmlReader *reader)
                      bool vis = (att == "true");
 
                      reader->readFurther();
-                     QString propName = reader->readText("name");
+                     //read name
+                     QString propName = reader->readElementText();
                      reader->readFurther();
-                     QString propValue = reader->readText("value");
+                     //read value
+                     QString propValue = reader->readElementText();
                      reader->readFurther();
 
                      ComponentProperty *prop = property(propName);

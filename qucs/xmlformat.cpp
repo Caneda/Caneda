@@ -255,9 +255,9 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
          }
          else if(reader->name() == "scrollbarvalues") {
             reader->readFurther();
-            horizontalScroll = reader->readInt("horizontal");
+            horizontalScroll = reader->readInt(/*horizontal*/);
             reader->readFurther();
-            verticalScroll = reader->readInt("vertical");
+            verticalScroll = reader->readInt(/*vertical*/);
             reader->readFurther();
             Q_ASSERT(reader->isEndElement() && reader->name() == "scrollbarvalues");
          }
@@ -276,11 +276,11 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
          }
          else if(reader->name() == "data") {
             reader->readFurther();
-            dataSet = reader->readText("dataset");
+            dataSet = reader->readElementText(/*dataset*/);
             reader->readFurther();
-            dataDisplay = reader->readText("datadisplay");
+            dataDisplay = reader->readElementText(/*datadisplay*/);
             reader->readFurther();
-            opensDataDisplay = (reader->readText("opensdatadisplay") == "true");
+            opensDataDisplay = (reader->readElementText(/*opensdatadisplay*/) == "true");
             reader->readFurther();
             Q_ASSERT(reader->isEndElement() && reader->name() == "data");
          }
@@ -304,7 +304,7 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
 
                   if(reader->isStartElement()) {
                      if(reader->name() == "text") {
-                        QString text = reader->readText("text");
+                        QString text = reader->readElementText();
                         frameTexts << text;
                      }
                      else

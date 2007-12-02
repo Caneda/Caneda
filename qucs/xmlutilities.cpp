@@ -47,174 +47,165 @@ namespace Qucs
       return _map;
    }
 
+   //! Just skips through unknown tag by reading and discarding tokens parsed.
    void XmlReader::readUnknownElement()
    {
       Q_ASSERT(isStartElement());
 
+      QString startName = name().toString();
+      int depth = 1;
+
       while (!atEnd()) {
          readNext();
 
-         if (isEndElement())
+         if (isEndElement() && name() == startName && --depth <= 0)
             break;
 
-         if (isStartElement())
-            readUnknownElement();
+         if (isStartElement() && name() == startName)
+            ++depth;
       }
+
+      Q_ASSERT(depth == 0);
    }
 
-   int XmlReader::readInt(const QString& tag)
+   /*! \brief Returns an xml fragment, as string. Thus embedded svgs for
+    * example can be extracted from an xml file.
+    */
+   QString XmlReader::readXmlFragment()
    {
-      int retVal = 0;
-      bool ok = false;
-      retVal = readText(tag).toInt(&ok);
-      if(!ok && !hasError()) {
-         raiseError(QObject::tr("Couldn't read int element. Text malformatted."));
-      }
-      return retVal;
-   }
+      Q_ASSERT(isStartElement());
 
-   double XmlReader::readDouble(const QString& tag)
-   {
-      double retVal = 0;
-      bool ok = false;
-      retVal = readText(tag).toDouble(&ok);
-      if(!ok && !hasError()) {
-         raiseError(QObject::tr("Couldn't read double element. Text malformatted."));
-      }
-      return retVal;
-   }
-
-   QString XmlReader::readText(const QString& tag)
-   {
       QString retVal;
-      if(!isStartElement() || (!tag.isEmpty() && name().toString() != tag)) {
-         raiseError(QObject::tr("Unidentified tag %1. Expected %2").arg(name().toString()).arg(tag));
+      int depth = 1;
+      Qucs::XmlWriter writer(&retVal);
+
+      writer.setCodec("UTF-8");
+
+      // Write the starting tag
+      writer.writeCurrentToken(*this);
+      QString startName = name().toString();
+
+      // Loop through the tokens till the starting tag's end element is found.
+      while(!atEnd()) {
+         readNext();
+
+         if(isEndElement() && name() == startName && --depth <= 0)
+            break;
+
+         else if(isStartElement() && name() == startName)
+            depth++;
+
+         // write the token
+         writer.writeCurrentToken(*this);
       }
-      else
-         retVal = readElementText();
+      // Make sure depth is 0
+      Q_ASSERT(depth == 0);
+
+      writer.writeCurrentToken(*this);
       return retVal;
    }
 
-   QPointF XmlReader::readPoint(const QString& tag)
+   int XmlReader::readInt()
    {
-      QPointF retVal;
-      if(!isStartElement() || tag != name()) {
-         raiseError(QObject::tr("Unidentified tag %1. Expected %2").arg(name().toString()).arg(tag));
+      bool ok;
+      QString text = readElementText();
+      int retVal = text.toInt(&ok);
+      if(!ok) {
+         raiseError(QObject::tr("Expected int but found %1").arg(text));
       }
-
-      while(!atEnd()) {
-         readNext();
-
-         if(isEndElement())
-            break;
-
-         if(isStartElement()) {
-            if(name() == "x")
-               retVal.setX(readDouble("x"));
-            else if(name() == "y")
-               retVal.setY(readDouble("y"));
-            else
-               readUnknownElement();
-         }
-      }
-
       return retVal;
    }
 
-   QSize XmlReader::readSize(const QString& tag)
+   double XmlReader::readDouble()
    {
-      QSize retVal;
-      if(!isStartElement() || tag != name()) {
-         raiseError(QObject::tr("Unidentified tag %1. Expected %2").arg(name().toString()).arg(tag));
+      bool ok;
+      QString text = readElementText();
+      double retVal = text.toDouble(&ok);
+      if(!ok) {
+         raiseError(QObject::tr("Expected double but found %1").arg(text));
       }
-
-      while(!atEnd()) {
-         readNext();
-
-         if(isEndElement())
-            break;
-
-         if(isStartElement()) {
-            if(name() == "width")
-               retVal.setWidth(readInt("width"));
-            else if(name() == "height")
-               retVal.setHeight(readInt("height"));
-            else
-               readUnknownElement();
-         }
-      }
-
       return retVal;
    }
 
-   QRectF XmlReader::readRect(const QString& tag)
+   QPointF XmlReader::readPoint()
    {
-      QRectF rect;
-      if(!isStartElement() || tag != name()) {
-         raiseError(QObject::tr("Unidentified tag %1. Expected %2").arg(name().toString()).arg(tag));
+      Q_ASSERT(isStartElement());
+
+      bool ok1, ok2;
+      QXmlStreamAttributes attribs = attributes();
+
+      qreal x = attribs.value("x").toString().toDouble(&ok1);
+      qreal y = attribs.value("y").toString().toDouble(&ok2);
+
+      if(!ok1 || !ok2) {
+         raiseError(QObject::tr("String to double conversion failed"));
       }
 
-      while(!atEnd()) {
-         readNext();
+      // read till end tag
+      readUnknownElement();
 
-         if(isEndElement())
-            break;
-
-         if(isStartElement()) {
-            if(name() == "x")
-               rect.setX(readDouble("x"));
-            else if(name() == "y")
-               rect.setY(readDouble("y"));
-            else if(name() == "width")
-               rect.setWidth(readDouble("width"));
-            else if(name() == "height")
-               rect.setHeight(readDouble("height"));
-            else
-               readUnknownElement();
-         }
-      }
-
-      return rect;
+      return QPointF(x, y);
    }
 
-   QTransform XmlReader::readTransform(const QString& tag)
+   QSize XmlReader::readSize()
    {
-      if(!isStartElement() || tag != name()) {
-         raiseError(QObject::tr("Unidentified tag %1. Expected %2").arg(name().toString()).arg(tag));
+      Q_ASSERT(isStartElement());
+
+      bool ok1, ok2;
+      QXmlStreamAttributes attribs = attributes();
+
+      int w = attribs.value("width").toString().toInt(&ok1);
+      int h = attribs.value("height").toString().toInt(&ok2);
+
+      if(!ok1 || !ok2) {
+         raiseError(QObject::tr("String to int conversion failed"));
       }
 
-      const QMap<QString, Transformation>& _map = Qucs::transformMap();
-      QMap<Transformation,qreal> retVal;
-      retVal[m11] = 1.;
-      retVal[m12] = 0.;
-      retVal[m13] = 1.;
-      retVal[m21] = 0.;
-      retVal[m22] = 1.;
-      retVal[m23] = 0.;
-      retVal[m31] = 0.;
-      retVal[m32] = 0.;
-      retVal[m33] = 0.;
+      // read till end tag
+      readUnknownElement();
 
-      while(!atEnd()) {
-         readNext();
+      return QSize(w, h);
+   }
 
-         if(isEndElement())
-            break;
+   QRectF XmlReader::readRect()
+   {
+      Q_ASSERT(isStartElement());
 
-         if(isStartElement()) {
-            if(_map.contains(name().toString())) {
-               Transformation t = _map[name().toString()];
-               retVal[t] = readDouble(name().toString());
-            }
-            else
-               readUnknownElement();
-         }
+      bool ok1, ok2, ok3, ok4;
+      QXmlStreamAttributes attribs = attributes();
+
+      qreal x = attribs.value("x").toString().toDouble(&ok1);
+      qreal y = attribs.value("y").toString().toDouble(&ok2);
+      qreal w = attribs.value("width").toString().toDouble(&ok3);
+      qreal h = attribs.value("height").toString().toDouble(&ok4);
+
+      if(!ok1 || !ok2 || !ok3 || !ok4) {
+         raiseError(QObject::tr("String to double conversion failed"));
       }
 
-      return QTransform(retVal[m11], retVal[m12], retVal[m13],
-                        retVal[m21], retVal[m22], retVal[m23],
-                        retVal[m31], retVal[m32], retVal[m33]);
+      // read till end tag
+      readUnknownElement();
 
+      return QRectF(x, y, w, h);
+   }
+
+   QTransform XmlReader::readTransform()
+   {
+      Q_ASSERT(isStartElement());
+
+      QString matrix = attributes().value("matrix").toString();
+      QStringList ele = matrix.split(',');
+      bool oks[6];
+      if(ele.size() != 6) {
+         raiseError(QObject::tr("Invalid transform matrix %1").arg(matrix));
+         return QTransform();
+      }
+      //TODO: implement after confusion is resolved
+
+      // read till end tag
+      readUnknownElement();
+
+      return QTransform();
    }
 
    QString XmlReader::readLocaleText(const QString& localePrefix)
@@ -229,20 +220,20 @@ namespace Qucs
          if(isEndElement())
             break;
 
-         if(isStartElement() && name() == "lang") {
-            if(!matchFound) {
-               QString lang = attributes().value("lang").toString();
-               if(lang == "C") {
-                  c = readElementText();
-                  if(localePrefix == "C") {
-                     actual = c;
-                     matchFound = true;
-                  }
-               }
-               else if(lang == localePrefix) {
-                  actual = readElementText();
+         if(isStartElement() && (matchFound || name() != "lang"))
+            readUnknownElement();
+
+         if(!matchFound && isStartElement() && name() == "lang") {
+            QString lang = attributes().value("lang").toString();
+            if(lang == "C") {
+               c = readElementText();
+               if(localePrefix == "C") {
                   matchFound = true;
                }
+            }
+            else if(lang == localePrefix) {
+               actual = readElementText();
+               matchFound = true;
             }
             else {
                readUnknownElement();
@@ -250,7 +241,7 @@ namespace Qucs
          }
       }
       if(actual.isEmpty())
-         actual = c;
+         return c;
       return actual;
    }
 
@@ -283,42 +274,30 @@ namespace Qucs
 
    void XmlWriter::writeRect(const QRectF& rect)
    {
-      writeStartElement("rect");
-      writeElement("x", rect.x());
-      writeElement("y", rect.y());
-      writeElement("width", rect.width());
-      writeElement("height", rect.height());
-      writeEndElement(); //</rect>
+      writeEmptyElement("rect");
+      writeAttribute("x", QString::number(rect.x()));
+      writeAttribute("y", QString::number(rect.y()));
+      writeAttribute("width", QString::number(rect.width()));
+      writeAttribute("height", QString::number(rect.height()));
    }
 
    void XmlWriter::writeTransform(const QTransform& transform)
    {
-      writeStartElement("transform");
-      writeElement("m11", transform.m11());
-      writeElement("m12", transform.m12());
-      writeElement("m13", transform.m13());
-      writeElement("m21", transform.m21());
-      writeElement("m22", transform.m22());
-      writeElement("m23", transform.m23());
-      writeElement("m31", transform.m31());
-      writeElement("m32", transform.m32());
-      writeElement("m33", transform.m33());
-      writeEndElement(); //</transform>
+      writeEmptyElement("transform");
+      //TODO: yet to do
    }
 
    void XmlWriter::writeSize(const QSize& size)
    {
-      writeStartElement("size");
-      writeElement("width", size.width());
-      writeElement("height", size.height());
-      writeEndElement(); //</size>
+      writeEmptyElement("size");
+      writeAttribute("width", QString::number(size.width()));
+      writeAttribute("height", QString::number(size.height()));
    }
 
    void XmlWriter::writePoint(const QPointF& point)
    {
-      writeStartElement("point");
-      writeElement("x", point.x());
-      writeElement("y", point.y());
-      writeEndElement(); //</point>
+      writeEmptyElement("point");
+      writeAttribute("x", QString::number(point.x()));
+      writeAttribute("y", QString::number(point.y()));
    }
 }

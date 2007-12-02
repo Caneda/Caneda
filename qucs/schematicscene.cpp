@@ -751,6 +751,8 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
    //Cache the mouse press position
+   if((e->buttons() & Qt::MidButton) == Qt::MidButton)
+      qDebug() << "pressed" << e->scenePos();
    lastPos = nearingGridPoint(e->scenePos());
    sendMouseActionEvent(e);
 }

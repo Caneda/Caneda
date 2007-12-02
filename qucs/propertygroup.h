@@ -20,13 +20,15 @@
 #ifndef __PROPERTYGROUP_H
 #define __PROPERTYGROUP_H
 
-#include "property.h"
 #include <QtCore/QObject>
 #include <QtGui/QGraphicsItemGroup>
 
 // Forward declarations.
 class PropertyItem;
 class SchematicScene;
+namespace Qucs {
+   class Component;
+}
 
 /*! This class groups the properties of a item.
  * \details This takes care of creation and destruction of property items as
@@ -40,8 +42,7 @@ class PropertiesGroup : public QObject, public QGraphicsItemGroup
       enum { PropertiesGroupType = UserType + 73 };
       enum { Type = PropertiesGroupType };
 
-      PropertiesGroup(PropertyMap &propMap, SchematicScene *scene = 0);
-      ~PropertiesGroup();
+      PropertiesGroup(SchematicScene *scene = 0);
 
       int type() { return PropertiesGroupType; }
 
@@ -49,13 +50,12 @@ class PropertiesGroup : public QObject, public QGraphicsItemGroup
       void forceUpdate();
 
       SchematicScene* schematicScene() const;
+      Qucs::Component* component() const;
 
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
    private:
-      //! Reference to the actual property map.
-      PropertyMap &m_propertyMapRef;
       //! Internal storage of property items for book keeping.
       QMap<QString, PropertyItem*> m_propertyItemsMap;
 };

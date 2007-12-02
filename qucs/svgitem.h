@@ -34,18 +34,17 @@ class SvgPainter;
 class SvgItemData
 {
    public:
-      SvgItemData(const QString& _groupId, const QByteArray& _content);
+      SvgItemData(const QByteArray& _content);
 
       void setStyleSheet(const QByteArray& stylesheet);
       QByteArray styleSheet() const;
 
-      //! Returns the bounding rect of the svg element with group id = \a groupId.
-      QRectF boundingRect() const { return renderer.boundsOnElement(groupId); }
+      //! Returns the bounding rect of the svg element.
+      QRectF boundingRect() const { return renderer.boundsOnElement("svg"); }
 
    private:
       friend class SvgPainter;
 
-      const QString groupId; //!< Represents group id of svg element.
       QByteArray content; //!< Represents raw svg content.
       qreal cachedStrokeWidth; //!< Represents stroke width , which is cached.
       QSvgRenderer renderer; //!< Represents svg renderer which renders svg.
@@ -57,7 +56,7 @@ typedef QHash<QString, SvgItemData*> DataHash;
 
 /*!\brief A class used to take care of rendering svg.
  *
- * This class renders an svg given the group id. The svg to be rendered should
+ * This class renders an svg given the svg id. The svg to be rendered should
  * be first registered with the instance of this class. This class also
  * supports modifying style of svg using css.
  * \sa registerSvg()
@@ -69,29 +68,29 @@ struct SvgPainter : public QObject
       SvgPainter();
       ~SvgPainter();
 
-      void registerSvg(const QString& _groupId, const QByteArray& content);
-      /*! Returns whether the svg corresponding to \_groupId is registered
+      void registerSvg(const QString& svg_id, const QByteArray& content);
+      /*! Returns whether the svg corresponding to \svg_id is registered
        * or not with \a registerSvg.
        */
-      bool isSvgRegistered(const QString& _groupId) const {
-         return m_dataHash.contains(_groupId);
+      bool isSvgRegistered(const QString& svg_id) const {
+         return m_dataHash.contains(svg_id);
       }
 
-      QSvgRenderer *rendererFor(const QString& _groupId) const;
-      QRectF boundingRect(const QString& _groupId) const;
+      QSvgRenderer *rendererFor(const QString& svg_id) const;
+      QRectF boundingRect(const QString& svg_id) const;
 
-      void paint(QPainter *painter, const QString& _groupId);
-      SvgItemData* svgData(const QString& _groupId) const;
+      void paint(QPainter *painter, const QString& svg_id);
+      SvgItemData* svgData(const QString& svg_id) const;
 
-      QByteArray svgContent(const QString& _groupId) const;
-      qreal strokeWidth(const QString& _groupId) const;
+      QByteArray svgContent(const QString& svg_id) const;
+      qreal strokeWidth(const QString& svg_id) const;
 
       //! Returns whether caching is enabled for the svgs or not.
       bool isCachingEnabled() const { return m_cachingEnabled; }
       void setCachingEnabled(bool caching);
 
-      void setStyleSheet(const QString& _groupId, const QByteArray& stylesheet);
-      QByteArray styleSheet(const QString& _groupId) const;
+      void setStyleSheet(const QString& svg_id, const QByteArray& stylesheet);
+      QByteArray styleSheet(const QString& svg_id) const;
 
    private:
       QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
@@ -125,8 +124,8 @@ class SvgItem : public QObject, public QucsItem
       qreal strokeWidth() const;
 
       void registerConnections(const QString& id, SvgPainter *painter);
-      //! Returns the svg group id of this item.
-      QString groupId() const { return m_groupId; }
+      //! Returns the svg id of this item.
+      QString svgId() const { return m_svgId; }
 
       QByteArray svgContent() const;
       /*! \brief Returns the \a SvgPainter to which the item is connected to.
@@ -147,7 +146,7 @@ class SvgItem : public QObject, public QucsItem
 
    private:
       SvgPainter *m_svgPainter;
-      QString m_groupId;
+      QString m_svgId;
 };
 
 #endif //__SVGITEM_H

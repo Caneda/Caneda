@@ -1,3 +1,9 @@
+2007-12-02  Gopala Krishna  <gopala@localhost>
+
+	* component.h, component.cpp:  Added these new files supporting components represented by xml and svg.
+	* svgitem.h, svgitem.cpp: Removed group id dependancy.
+	* Property* classes: Made this classes to work seamlessly with the new Component class.
+
 2007-11-29  Gopala Krishna  <gopala@localhost>
 
 	* Port, Property, PropertyItem, PropertiesGroup: These new classes added to support and accomodate the new

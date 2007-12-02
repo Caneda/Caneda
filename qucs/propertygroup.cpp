@@ -20,31 +20,25 @@
 #include "propertygroup.h"
 #include "propertyitem.h"
 #include "schematicscene.h"
+#include "component.h"
 
 #include <QtGui/QFontMetricsF>
+#include <QtCore/QDebug>
 
 /*! Constructor
  * \param propMap A reference to PropertyMap of a component.
  * \param scene The schematic scene to which this property should belong.
  */
-PropertiesGroup::PropertiesGroup(PropertyMap &propMap,SchematicScene *scene)
-   : m_propertyMapRef(propMap)
+PropertiesGroup::PropertiesGroup(SchematicScene *scene)
 {
    if(scene) {
       scene->addItem(this);
    }
 }
 
-//! Destructor
-PropertiesGroup::~PropertiesGroup()
+Qucs::Component* PropertiesGroup::component() const
 {
-   //delete only non child items, The child items
-   //are deleted by destructor of base.
-   foreach(PropertyItem *item, m_propertyItemsMap) {
-      if(item->group() != this && !item->group()) {
-         delete item;
-      }
-   }
+   return static_cast<Qucs::Component*>(parentItem());
 }
 
 /*! \brief Realigns all the child items of this group (deletes hidden items).
@@ -60,38 +54,52 @@ void PropertiesGroup::realignItems()
    if(!scene()) {
       return;
    }
-   // Remove all property items from group.
+   qDebug() << "Enter realignItems()";
+   QPointF savePos;
+   if(boundingRect().isNull())
+      savePos = parentItem()->sceneBoundingRect().bottomLeft();
+   else
+      savePos = sceneBoundingRect().topLeft();
+
+   //Remove items from group and make them top level items.
    foreach(PropertyItem *item, m_propertyItemsMap) {
-      removeFromGroup(item);
-      //Also update the property's value.
       item->updateValue();
+      removeFromGroup(item);
+      item->setParentItem(0);
    }
    int visibleItemsCount = 0;
-   // Navigate through all properties and decide.
-   foreach(const Property property, m_propertyMapRef) {
+
+   foreach(const Property property, component()->propertyMap()) {
       if(property.isVisible()) {
-         // Create new property item if the item is not yet created.
-         // That is , if item was made visible now.
+         bool newlyCreated = false;
+         //Create new property item if it doesn't exist.
          if(!m_propertyItemsMap.contains(property.name())) {
-            PropertyItem *item =
-                  new PropertyItem(property.name(), m_propertyMapRef, schematicScene());
+            PropertyItem *item = new PropertyItem(property.name(),
+                                                  schematicScene());
             m_propertyItemsMap.insert(property.name(), item);
+            newlyCreated = true;
+
          }
+
          PropertyItem *item = m_propertyItemsMap[property.name()];
          visibleItemsCount++;
-         // If child property items exist already, this just puts the new item
-         // below them.
-         if(!QGraphicsItemGroup::children().isEmpty()) {
-            //Calculate bottom left of group in terms of scene coords.
+
+         QList<QGraphicsItem*> _children = QGraphicsItemGroup::children();
+         if(!_children.isEmpty()) {
+
+            //Place the new item at bottom, properly aligned with group.
             QPointF itemPos = this->mapToScene(boundingRect().bottomLeft());
-            // Add some offset correspondign to font.
-            itemPos.ry() += QFontMetricsF(item->font()).height();
-            // Make the item's left coord to conincide with that of group
             itemPos.rx() -= item->boundingRect().left();
-            // Set items new position.
             item->setPos(itemPos);
          }
+         else {
+            savePos.rx() -= item->boundingRect().left();
+            item->setPos(savePos);
+         }
          addToGroup(item);
+         if(newlyCreated) {
+            item->updateValue();
+         }
       }
       else {
          // Delete item if it existed before as it is being hidden now.
@@ -109,6 +117,7 @@ void PropertiesGroup::realignItems()
       //Disables moving , selection and focussing of empty groups.
       setFlags(0);
    }
+   forceUpdate();
 }
 
 //! Forces the updation of the geometry of the property group.
@@ -116,7 +125,7 @@ void PropertiesGroup::forceUpdate()
 {
    static const QLineF line(-5, -5, 5, 5);
    //HACK:This adds and removes a dummy item from group to update its geometry
-   QGraphicsLineItem *dummy = new QGraphicsLineItem(-5,-5,5,5);
+   QGraphicsLineItem *dummy = new QGraphicsLineItem(line);
    addToGroup(dummy);
    removeFromGroup(dummy);
    delete dummy;

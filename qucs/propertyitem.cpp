@@ -19,7 +19,7 @@
 
 #include "propertyitem.h"
 #include "propertygroup.h"
-#include "components/component.h"
+#include "component.h"
 #include "schematicscene.h"
 #include "schematicview.h"
 #include "qucsmainwindow.h"
@@ -40,16 +40,14 @@
  * \param propMap The reference of property map. The property is fetched from here.
  * \param scene The schematic scene to which this item should belong.
  */
-PropertyItem::PropertyItem(const QString &propName, PropertyMap& propMap,
-   SchematicScene *scene) : m_propertyName(propName), m_propertyMapRef(propMap)
+PropertyItem::PropertyItem(const QString &propName , SchematicScene *scene):
+   m_propertyName(propName)
 {
    m_staticText = m_propertyName + QString(" = ");
    setTextInteractionFlags(Qt::TextEditorInteraction);
    setFlags(ItemIsMovable | ItemIsFocusable);
    //caculate the pos of static text initially.
    calculatePos();
-   // Set the text display.
-   updateValue();
    setAcceptsHoverEvents(false);
    if(scene) {
       scene->addItem(this);
@@ -63,6 +61,7 @@ QRectF PropertyItem::boundingRect() const
    bounds.setLeft(m_staticPos.x());
    return bounds;
 }
+
 //! Returns the shape of the item.
 QPainterPath PropertyItem::shape() const
 {
@@ -94,7 +93,7 @@ void PropertyItem::validateText()
  */
 void PropertyItem::updateValue()
 {
-   QString newValue = m_propertyMapRef.value(m_propertyName).value().toString();
+   QString newValue = component()->property(m_propertyName).toString();
    if(newValue != toPlainText()) {
       setPlainText(newValue);
    }
@@ -317,7 +316,7 @@ void PropertyItem::focusOutEvent(QFocusEvent *event)
    QGraphicsTextItem::focusOutEvent(event);
 
    validateText();
-   m_propertyMapRef[m_propertyName].setValue(QVariant(toPlainText()));
+   component()->setProperty(m_propertyName, QVariant(toPlainText()));
    updateGroupGeometry();
 
    qApp->removeEventFilter(this);
@@ -371,7 +370,7 @@ bool PropertyItem::isSendable(QGraphicsSceneMouseEvent *event) const
  */
 void PropertyItem::updateGroupGeometry() const
 {
-   PropertiesGroup *propGroup = qgraphicsitem_cast<PropertiesGroup*>(group());
+   PropertiesGroup *propGroup = static_cast<PropertiesGroup*>(group());
    if(propGroup) {
       propGroup->forceUpdate();
    }
