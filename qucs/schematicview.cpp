@@ -20,9 +20,7 @@
 #include "schematicview.h"
 #include "schematicscene.h"
 #include "qucsmainwindow.h"
-#include "components/resistor.h"
 #include "wire.h"
-#include "node.h"
 #include "qucsprimaryformat.h"
 #include "xmlformat.h"
 
@@ -63,6 +61,10 @@ SchematicView::~SchematicView()
 {
 }
 
+void SchematicView::test()
+{
+   schematicScene()->test();
+}
 
 SchematicScene* SchematicView::schematicScene() const
 {
@@ -86,10 +88,10 @@ bool SchematicView::load()
    //Assumes file name is set
    FileFormatHandler *format = 0;
    QFileInfo info(fileName());
-   if(info.suffix() == "sch")
-      format = new QucsPrimaryFormat(this);
-   else if(info.suffix() == "xsch")
-      format = new XmlFormat(this);
+//    if(info.suffix() == "sch")
+//       format = new QucsPrimaryFormat(this);
+//    else if(info.suffix() == "xsch")
+//       format = new XmlFormat(this);
    if(!format) {
       //TODO: Try to determine the file format dynamically
       QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
@@ -104,7 +106,8 @@ bool SchematicView::load()
 
    setModified(false);
 
-   return format->loadFromText(stream.readAll());
+   return false;
+   //format->loadFromText(stream.readAll());
 }
 
 bool SchematicView::save()
@@ -119,10 +122,10 @@ bool SchematicView::save()
    QTextStream stream(&file);
    QFileInfo info(fileName());
    FileFormatHandler *format = 0;
-   if(info.suffix() == "sch")
-      format = new QucsPrimaryFormat(this);
-   else if(info.suffix() == "xsch")
-      format = new XmlFormat(this);
+//    if(info.suffix() == "sch")
+//       format = new QucsPrimaryFormat(this);
+//    else if(info.suffix() == "xsch")
+//       format = new XmlFormat(this);
 
    if(!format) {
       QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
@@ -227,8 +230,9 @@ void SchematicView::updateTabs()
 
 void SchematicView::repaintWires()
 {
-   foreach(Wire *w, schematicScene()->wires())
-      w->rebuild();
+   bool fixSchematicViewrepaintWires;
+//foreach(Wire *w, schematicScene()->wires())
+   //   w->rebuild();
 }
 
 QList<QucsItem*> SchematicView::qucsItemsFromGraphicsItems(QList<QGraphicsItem*> _items) const
@@ -244,12 +248,4 @@ QList<QucsItem*> SchematicView::qucsItemsFromGraphicsItems(QList<QGraphicsItem*>
 
 void SchematicView::addTestComponents()
 {
-   SchematicScene *s = schematicScene();
-   for( int j=1; j<6; ++j)
-      for(int i=1; i <11; i++)
-      {
-         Resistor *r = new Resistor(s);
-         r->setPos(j*200, i*50);
-      }
-   setModified(true);
 }

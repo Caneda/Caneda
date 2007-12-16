@@ -23,6 +23,7 @@
 #include <QtCore/QAbstractItemModel>
 
 class CategoryItem;
+class Library;
 
 class SidebarModel : public QAbstractItemModel
 {
@@ -39,10 +40,11 @@ class SidebarModel : public QAbstractItemModel
       QStringList mimeTypes() const;
       bool isComponent(const QModelIndex& index) const;
       QMimeData* mimeData(const QModelIndexList& indexes) const;
+
+      void plugLibrary(const QString& libraryName);
    private:
 
       CategoryItem *rootItem;
-      void fillData();
 };
 
 #endif //__SIDEBARMODEL_H

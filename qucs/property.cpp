@@ -20,6 +20,7 @@
 #include "property.h"
 #include "xmlutilities.h"
 #include "qucs-tools/global.h"
+
 #include <QtCore/QDebug>
 
 //! Default constructor
@@ -28,7 +29,9 @@ PropertyData::PropertyData()
    options = 0;
    visible = false;
    netlistProperty = true;
+   //default property type is string.
    valueType = QVariant::String;
+   value = QVariant(QString());
 }
 
 //! Copy constructor
@@ -45,21 +48,6 @@ PropertyData::PropertyData(const PropertyData& p) : QSharedData(p)
    options = p.options ? new QStringList(*p.options) : 0;
 }
 
-//! Assignment opearator.
-PropertyData& PropertyData::operator=(const PropertyData& p)
-{
-   name = p.name;
-   value = p.value;
-   valueType = p.valueType;
-   Q_ASSERT(value.type() == valueType);
-   description = p.description;
-   visible = p.visible;
-   netlistProperty = p.netlistProperty;
-
-   options = p.options ? new QStringList(*p.options) : 0;
-   return *this;
-}
-
 /*! Constructs a property object
  * \param _name Name of property object.
  * \param _description Description of property.
@@ -71,6 +59,7 @@ PropertyData& PropertyData::operator=(const PropertyData& p)
  * \param _options Represents a list of available options for the value.
  * If _options is empty, then any value can be set otherwise the value should
  * be only one of _options.
+ * \note The value's data type is assumed to be string type if it has options.
  */
 Property::Property(const QString& _name, const QString& _description,
                    QVariant::Type _valueType,
@@ -78,107 +67,39 @@ Property::Property(const QString& _name, const QString& _description,
                    const QStringList& _options)
 {
    d = new PropertyData;
-   PropertyData *data = d.data();
-   data->name = _name;
-   data->description = _description;
-   data->visible = _visible;
-   data->netlistProperty = _isNetlistProp;
-   data->value = _value;
-   data->valueType = _valueType;
-   if(!data->value.isNull()) {
-      bool conversion = data->value.convert(_valueType);
-      Q_ASSERT(conversion == true);
-   }
+   d->name = _name;
+   d->description = _description;
+   d->visible = _visible;
+   d->netlistProperty = _isNetlistProp;
+   d->value = _value;
+   d->valueType = _valueType;
 
-   if(!_options.isEmpty())
-      data->options = new QStringList(_options);
-   else
-      data->options = 0;
+   bool conversion = d->value.convert(_valueType);
+   Q_ASSERT(conversion == true);
+
+   d->options = _options.isEmpty() ? 0 : new QStringList(_options);
 }
 
-/*! \brief Convienience constructor.
- * This constructor fetches the property details from \a reader.
+//! Construct property from shared data.
+Property::Property(QSharedDataPointer<PropertyData> data) : d(data)
+{
+}
+
+/*! \brief Sets the value of property to \a newValue if it is valid to do so.
+ * \return Returns whether the property could be succesfully set or not.
  */
-Property::Property(Qucs::XmlReader *reader)
-{
-   d = new PropertyData;
-   readXml(reader);
-}
-
-//! Copy constructor
-Property::Property(const Property& prop) : d(prop.d)
-{
-}
-
-//! Assingment operator.
-Property& Property::operator=(const Property& prop)
-{
-   d = prop.d;
-   return *this;
-}
-
-//! Sets the value of property to \a newValue
-void Property::setValue(const QVariant& newValue)
+bool Property::setValue(const QVariant& newValue)
 {
    if(d.constData()->options == 0 ||
       d.constData()->options->contains(newValue.toString())) {
 
       d->value = newValue;
       Q_ASSERT(d->value.convert(d->valueType));
-      return;
+      return true;
    }
-   qWarning() << "Property::setValue(): " << "Trying to assign value out of"
+   qDebug() << "Property::setValue(): " << "Trying to assign value out of"
       "options";
-}
-
-//! Reads the property from component's description xml file.
-void Property::readXml(Qucs::XmlReader *reader)
-{
-   Q_ASSERT(reader->isStartElement() && reader->name() == "property");
-   QXmlStreamAttributes attributes = reader->attributes();
-
-   PropertyData *data = d.data();
-   data->name = attributes.value("name").toString();
-   Q_ASSERT(!data->name.isEmpty());
-
-   Q_ASSERT(!attributes.value("type").isEmpty());
-   data->valueType = stringToType(attributes.value("type").toString());
-
-   QString visible = attributes.value("visible").toString();
-   data->visible = !(visible.isEmpty() || visible == "false");
-
-   QString options = attributes.value("options").toString();
-   if(!options.isEmpty()) {
-      delete data->options;
-      options.replace(' ', "");
-      QStringList splitList = options.split(',', QString::SkipEmptyParts);
-      data->options = new QStringList(splitList);
-   }
-
-   QString defaultValStr = attributes.value("default").toString();
-   QVariant defaultVal;
-   if(!defaultValStr.isEmpty()) {
-      defaultVal.setValue(defaultValStr);
-   }
-
-   while(!reader->atEnd()) {
-      reader->readNext();
-
-      if(reader->isEndElement())
-         break;
-
-      if(reader->isStartElement()) {
-         if(reader->name() == "description") {
-            data->description = reader->readLocaleText(Qucs::localePrefix());
-         }
-         else {
-            reader->readUnknownElement();
-         }
-      }
-   }
-
-   if(!defaultVal.isNull())
-      setValue(defaultVal);
+   return false;
 }
 
 //! Helper function to write all properties in \a propMap in xml.
@@ -276,4 +197,73 @@ QString typeToString(QVariant::Type type)
    };
    qDebug() << "typeToString() : Invalid type" << type;
    return QString();
+}
+
+//! This static object is used to represent common empty property.
+Property PropertyFactory::sharedNull;
+
+/*! \brief This factory method is used to create property from xml.
+ * \param reader XmlReader which is in use for parsing.
+ */
+Property PropertyFactory::createProperty(Qucs::XmlReader *reader)
+{
+   Q_ASSERT(reader->isStartElement() && reader->name() == "property");
+   QSharedDataPointer<PropertyData> data(new PropertyData);
+
+   QXmlStreamAttributes attributes = reader->attributes();
+
+   data->name = attributes.value("name").toString();
+   if(data->name.isEmpty()) {
+      reader->raiseError("Couldn't find name attribute in property description");
+      return sharedNull;
+   }
+
+   if(attributes.value("type").isEmpty()) {
+      reader->raiseError("Couldn't find 'type' attribute in property description");
+      return sharedNull;
+   }
+   QString vt(attributes.value("type").toString());
+   data->valueType = stringToType(vt);
+   if(data->valueType == QVariant::Invalid) {
+      reader->raiseError(QObject::tr("Invalid property type %1 found").arg(vt));
+      return sharedNull;
+   }
+
+   QString visible = attributes.value("visible").toString();
+   data->visible = !(visible.isEmpty() || visible == "false");
+
+   QString options = attributes.value("options").toString();
+   if(!options.isEmpty()) {
+      options.replace(' ', "");
+      QStringList splitList = options.split(',', QString::SkipEmptyParts);
+      data->options = new QStringList(splitList);
+   }
+
+   QString defaultValStr = attributes.value("default").toString();
+   QVariant defaultVal;
+   if(!defaultValStr.isEmpty()) {
+      defaultVal.setValue(defaultValStr);
+   }
+
+   while(!reader->atEnd()) {
+      reader->readNext();
+
+      if(reader->isEndElement())
+         break;
+
+      if(reader->isStartElement()) {
+         if(reader->name() == "description") {
+            data->description = reader->readLocaleText(Qucs::localePrefix());
+         }
+         else {
+            reader->readUnknownElement();
+         }
+      }
+   }
+
+   if(!defaultVal.isNull() && defaultVal.convert(data->valueType)) {
+      data->value = defaultVal;
+   }
+
+   return Property(data);
 }

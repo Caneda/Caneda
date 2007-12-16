@@ -23,7 +23,7 @@
 #include "propertygroup.h"
 #include <QtGui/QGraphicsTextItem>
 
-//Forwasrd declarations.
+//Forward declarations.
 class SchematicScene;
 
 //! Class used to represent the text corresponding to property on schematic.
@@ -38,7 +38,6 @@ class PropertyItem : public QGraphicsTextItem
 
       void setFont(const QFont& f);
 
-      void validateText();
       void updateValue();
 
       bool eventFilter(QObject* object, QEvent* event);
@@ -62,14 +61,17 @@ class PropertyItem : public QGraphicsTextItem
 
       void keyPressEvent(QKeyEvent *event);
 
+   private slots:
+      void textChanged();
    private:
       void calculatePos();
       bool isSendable(QGraphicsSceneMouseEvent *event) const;
       void updateGroupGeometry() const;
 
+      const QString m_propertyName;
       QString m_staticText;
       QPointF m_staticPos;
-      const QString m_propertyName;
+      bool m_edited;
 };
 
 #endif //__PROPERTYITEM_H

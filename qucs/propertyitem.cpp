@@ -23,15 +23,17 @@
 #include "schematicscene.h"
 #include "schematicview.h"
 #include "qucsmainwindow.h"
-
+#include "undocommands.h"
 
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QFontMetricsF>
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QPainter>
+#include <QtGui/QTextDocument>
 #include <QtGui/QApplication>
 #include <QtGui/QTextCursor>
+
 #include <QtCore/QPointF>
 #include <QtCore/QtDebug>
 
@@ -41,9 +43,9 @@
  * \param scene The schematic scene to which this item should belong.
  */
 PropertyItem::PropertyItem(const QString &propName , SchematicScene *scene):
-   m_propertyName(propName)
+   m_propertyName(propName), m_staticText(m_propertyName), m_edited(false)
 {
-   m_staticText = m_propertyName + QString(" = ");
+   m_staticText.append(" = ");
    setTextInteractionFlags(Qt::TextEditorInteraction);
    setFlags(ItemIsMovable | ItemIsFocusable);
    //caculate the pos of static text initially.
@@ -52,6 +54,7 @@ PropertyItem::PropertyItem(const QString &propName , SchematicScene *scene):
    if(scene) {
       scene->addItem(this);
    }
+   m_edited = false;
 }
 
 //! Returns the bounds of the item.
@@ -71,20 +74,12 @@ QPainterPath PropertyItem::shape() const
 }
 
 /*!\brief Set font and calculate the static position again.
- * \note This hides the base implementation!
+ * \note This hides the base implementation as base method isn't virtual!
  */
 void PropertyItem::setFont(const QFont& f)
 {
    QGraphicsTextItem::setFont(f);
    calculatePos();
-}
-
-/*!\brief Validate the set property text.
- * \todo Yet to implement this method.
- */
-void PropertyItem::validateText()
-{
-   //TODO: Validate the text here
 }
 
 /*! \brief Updates visual display of property value.
@@ -93,6 +88,10 @@ void PropertyItem::validateText()
  */
 void PropertyItem::updateValue()
 {
+   if(!component()) {
+      qDebug() << "PropertyItem::updateValue() : Component is null!";
+      return;
+   }
    QString newValue = component()->property(m_propertyName).toString();
    if(newValue != toPlainText()) {
       setPlainText(newValue);
@@ -105,7 +104,7 @@ bool PropertyItem::eventFilter(QObject* object, QEvent* event)
    bool condition = (event->type() == QEvent::Shortcut ||
          event->type() == QEvent::ShortcutOverride) &&
          !object->inherits("QGraphicsView");
-   if(condition) {
+   if(condition == true) {
       event->accept();
       return true;
    }
@@ -158,12 +157,12 @@ void PropertyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
                            fgcolor.green() > 127 ? 0 : 255,
                            fgcolor.blue()  > 127 ? 0 : 255);
 
-      painter->setPen(QPen(bgcolor, 0, Qt::SolidLine));
+      painter->setPen(QPen(bgcolor, penWidth, Qt::SolidLine));
       painter->setBrush(Qt::NoBrush);
       painter->drawRect(QGraphicsTextItem::boundingRect().
             adjusted(pad, pad, -pad, -pad));
 
-      painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
+      painter->setPen(QPen(fgcolor, penWidth, Qt::DashLine));
       painter->setBrush(Qt::NoBrush);
       painter->drawRect(QGraphicsTextItem::boundingRect().
             adjusted(pad, pad, -pad, -pad));
@@ -305,6 +304,8 @@ void PropertyItem::focusInEvent(QFocusEvent *event)
 {
    QGraphicsTextItem::focusInEvent(event);
    qApp->installEventFilter(this);
+   m_edited = false;
+   connect(document(), SIGNAL(contentsChanged()), this, SLOT(textChanged()));
 }
 
 /*! \brief Focus out event handler.
@@ -315,9 +316,9 @@ void PropertyItem::focusOutEvent(QFocusEvent *event)
 {
    QGraphicsTextItem::focusOutEvent(event);
 
-   validateText();
-   component()->setProperty(m_propertyName, QVariant(toPlainText()));
-   updateGroupGeometry();
+   if(m_edited) {
+      updateValue();
+   }
 
    qApp->removeEventFilter(this);
 
@@ -325,6 +326,8 @@ void PropertyItem::focusOutEvent(QFocusEvent *event)
    QTextCursor c = textCursor();
    c.clearSelection();
    setTextCursor(c);
+   disconnect(document(), SIGNAL(contentsChanged()), this,
+              SLOT(textChanged()));
 }
 
 //! Clears focus if escape key pressed. Otherwise calls base method.
@@ -334,6 +337,24 @@ void PropertyItem::keyPressEvent(QKeyEvent *e)
       clearFocus();
       return;
    }
+   QVariant oldProperty(component()->property(m_propertyName));
+   if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
+      if(m_edited &&
+         component()->setProperty(m_propertyName, QVariant(toPlainText())))
+      {
+         updateGroupGeometry();
+         m_edited = false;
+         QVariant newProperty(component()->property(m_propertyName));
+         PropertiesGroup *parentGroup = static_cast<PropertiesGroup*>(group());
+         Q_ASSERT(parentGroup);
+         SchematicScene *schScene = parentGroup->schematicScene();
+         schScene->undoStack()->push(new PropertyChangeCmd(m_propertyName,
+                        newProperty, oldProperty, component()));
+      }
+      clearFocus();
+      return;
+   }
+   m_edited = true;
    QGraphicsTextItem::keyPressEvent(e);
 }
 
@@ -344,11 +365,8 @@ void PropertyItem::calculatePos()
    QFontMetricsF fm(font());
    QPointF temp = QPointF(-fm.width(m_staticText), fm.ascent() +
                         magicNumberAdjust);
-   //FIXME: Implement fuzzy comaparison.
-   if(temp != m_staticPos) {
-      prepareGeometryChange();
-      m_staticPos = temp;
-   }
+   prepareGeometryChange();
+   m_staticPos = temp;
 }
 
 /*!\brief Checks whether the given \a event can be sent to parent group or not
@@ -374,4 +392,11 @@ void PropertyItem::updateGroupGeometry() const
    if(propGroup) {
       propGroup->forceUpdate();
    }
+}
+
+//! \brief Slot to keep track of change of data.
+void PropertyItem::textChanged()
+{
+   m_edited = true;
+   disconnect(document(), SIGNAL(contentsChanged()), this, SLOT(textChanged()));
 }

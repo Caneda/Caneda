@@ -24,6 +24,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 
+//Forward declarations
 namespace Qucs {
    class XmlWriter;
    class XmlReader;
@@ -42,7 +43,7 @@ struct PropertyData : public QSharedData
 {
       PropertyData();
       PropertyData(const PropertyData& p);
-      PropertyData& operator=(const PropertyData& p);
+
       ~PropertyData() { delete options; }
 
       QString name;
@@ -72,11 +73,6 @@ class Property
                const QVariant& _defaultValue = QVariant(QString()),
                const QStringList& _options = QStringList());
 
-      Property(Qucs::XmlReader *reader);
-
-      Property(const Property& prop);
-      Property& operator=(const Property& prop);
-
       //! Returns the description of property.
       QString description() const { return d->description; }
       //! Returns the property name.
@@ -86,9 +82,10 @@ class Property
          return d->options ? *d->options : QStringList();
       }
 
-      void setValue(const QVariant& newValue);
+      bool setValue(const QVariant& newValue);
       //! Returns the value of property.
       QVariant value() const { return d->value; }
+      //! Returns the value's data type.
       QVariant::Type valueType() const { return d->valueType; }
 
       //! Sets the visibility of property tp \a visible .
@@ -100,10 +97,10 @@ class Property
       bool isNetlistProperty() const { return d->netlistProperty; }
 
    private:
-      void readXml(Qucs::XmlReader *reader);
       //! d pointer enabling sharing of data implicitly.
       QSharedDataPointer<PropertyData> d;
-      friend void readSavedPropertiesIntoMap(Qucs::XmlReader *reader, PropertyMap &propMap);
+      Property(QSharedDataPointer<PropertyData> data);
+      friend class PropertyFactory;
 };
 
 void writeProperties(Qucs::XmlWriter *writer, const PropertyMap& prMap);
@@ -111,5 +108,12 @@ void readProperties(Qucs::XmlReader *reader, PropertyMap &propMap);
 
 QVariant::Type stringToType(const QString& string);
 QString typeToString(QVariant::Type type);
+
+//! This is factory class used to construct properties.
+struct PropertyFactory
+{
+      static Property createProperty(Qucs::XmlReader *reader);
+      static Property sharedNull;
+};
 
 #endif //__PROPERTY_H

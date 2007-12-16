@@ -69,6 +69,9 @@ MainWindowBase::~MainWindowBase()
 void MainWindowBase::addChildWidget(QWidget *widget)
 {
    m_tabWidget->addTab(widget, widget->windowIcon(), widget->windowTitle());
+   if(m_tabWidget->count() == 1) {
+      emit currentWidgetChanged(0);
+   }
    if(m_tabCloseButton->isHidden())
       m_tabCloseButton->show();
 }

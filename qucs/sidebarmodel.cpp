@@ -19,6 +19,7 @@
 
 #include "qucs-tools/global.h"
 #include "sidebarmodel.h"
+#include "library.h"
 
 #include <QtCore/QList>
 #include <QtCore/QtAlgorithms>
@@ -26,44 +27,48 @@
 #include <QtGui/QIcon>
 #include <QtCore/QDebug>
 #include <QtCore/QMimeData>
-
+#include <QtGui/QPainter>
 
 class CategoryItem
 {
    public:
-      CategoryItem(const QString& n, const QString& m="",const QString& f=QString(),CategoryItem *parent = 0,bool isc = true);
+      CategoryItem(const QString& name, bool _isComponent, CategoryItem *parent = 0);
       ~CategoryItem();
 
-      CategoryItem *parent() const;
+      CategoryItem *parent() const { return m_parentItem; }
+
       CategoryItem *child(int row) const;
-      int childCount() const;
-      void addChild(CategoryItem* c);
-      void addChild(const QString& name,const QString& m,const QString& fname = QString(),bool isc = true);
+      int childCount() const { return m_childItems.size(); }
+
       int row() const;
       QString name() const { return m_name; }
-      QString model() const { return m_model; }
-      QString fileName() const { return m_fileName; }
+
+      QPixmap iconPixmap() const { return m_iconPixmap; }
       bool isComponent() const { return m_isComponent; }
 
    private:
+      void addChild(CategoryItem* c);
+
       QString m_name;
-      QString m_fileName;
-      QString m_model;
       bool m_isComponent;
+      QPixmap m_iconPixmap;
       QList<CategoryItem*> m_childItems;
       CategoryItem *m_parentItem;
-
 };
 
-CategoryItem::CategoryItem(const QString& n, const QString& m,const QString& f, CategoryItem *parent, bool isc)
+CategoryItem::CategoryItem(const QString& name, bool _isComponent, CategoryItem *parent) :
+   m_name(name), m_isComponent(_isComponent), m_parentItem(parent)
 {
-   m_name = n;
-   m_model = m;
-   m_fileName = f;
-   m_isComponent = isc;
-   m_parentItem = parent;
-   if(parent)
-      parent->addChild(this);
+   if(m_parentItem) {
+      m_parentItem->addChild(this);
+      if(_isComponent) {
+         const LibraryItem *libItem =
+            Library::defaultInstance()->libraryItem(m_parentItem->name());
+         if(libItem) {
+            m_iconPixmap = libItem->renderedPixmap(m_name);
+         }
+      }
+   }
 }
 
 CategoryItem::~CategoryItem()
@@ -71,36 +76,17 @@ CategoryItem::~CategoryItem()
    qDeleteAll(m_childItems);
 }
 
-CategoryItem* CategoryItem::parent() const
-{
-   return m_parentItem;
-}
-
 CategoryItem* CategoryItem::child(int row) const
 {
-   if(m_childItems.isEmpty())
+   if(m_childItems.isEmpty() || row >= m_childItems.size())
       return 0;
-   if(row < m_childItems.size())
-      return m_childItems.value(row);
-   return m_childItems.value(0);
-}
-
-int CategoryItem::childCount() const
-{
-   return m_childItems.size();
+   return m_childItems.value(row < m_childItems.size() ? row : 0);
 }
 
 void CategoryItem::addChild(CategoryItem *c)
 {
    c->m_parentItem = const_cast<CategoryItem*>(this);
    m_childItems << c;
-}
-
-void CategoryItem::addChild(const QString& name,const QString& m,const QString& fname,bool isc)
-{
-   CategoryItem *n = new CategoryItem(name,m,fname,0,isc);
-   n->m_parentItem = const_cast<CategoryItem*>(this);
-   m_childItems << n;
 }
 
 int CategoryItem::row() const
@@ -113,92 +99,18 @@ int CategoryItem::row() const
 
 SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
 {
-   rootItem = new CategoryItem("Root");
-   fillData();
+   rootItem = new CategoryItem("Root", false);
 }
 
-void SidebarModel::fillData()
+void SidebarModel::plugLibrary(const QString& libraryName)
 {
-   CategoryItem *lumped = new CategoryItem(tr("Lumped Components"),"","",rootItem,false);
-   CategoryItem *sources = new CategoryItem(tr("Sources"),"","",rootItem,false);
-   CategoryItem *transmission = new CategoryItem(tr("Transmission lines"),"","",rootItem,false);
-   CategoryItem *nonlinear = new CategoryItem(tr("Non linear components"),"","",rootItem,false);
-   CategoryItem *digital = new CategoryItem(tr("Digital"),"","",rootItem,false);
+   const LibraryItem *libItem = Library::defaultInstance()->libraryItem(libraryName);
+   if(!libItem) return;
 
-   lumped->addChild( QObject::tr("Resistor"), "R", "resistor.png");
-   lumped->addChild( QObject::tr("Resistor"), "Rus", "resistor_us.png");
-   lumped->addChild( QObject::tr("Amplifier"), "Amp", "amplifier.png");
-   lumped->addChild( QObject::tr("Attenuator"), "Attenuator", "attenuator.png");
-   lumped->addChild( QObject::tr("Bias T"), "BiasT", "biast.png");
-   lumped->addChild( QObject::tr("Circulator"), "Circulator", "circulator.png");
-   lumped->addChild( QObject::tr("Coupler"), "Coupler", "coupler.png");
-   lumped->addChild( QObject::tr("dc Block"), "DCBlock", "dcblock.png");
-   lumped->addChild( QObject::tr("dc Feed"), "DCFeed", "dcfeed.png");
-   lumped->addChild( QObject::tr("Ground"), "GND", "gnd.png");
-   lumped->addChild( QObject::tr("Gyrator"), "Gyrator", "gyrator.png");
-   lumped->addChild( QObject::tr("Inductor"), "L", "inductor.png");
-   lumped->addChild( QObject::tr("Current Probe"), "IProbe", "iprobe.png");
-   lumped->addChild( QObject::tr("Isolator"), "Isolator", "isolator.png");
-   lumped->addChild( QObject::tr("3 Mutual Inductors"), "MUT2", "mutual2.png");
-   lumped->addChild( QObject::tr("Mutual Inductors"), "MUT", "mutual.png");
-   lumped->addChild( QObject::tr("Phase Shifter"), "PShift", "pshifter.png");
-   lumped->addChild( QObject::tr("Relay"), "Relais", "relais.png");
-   lumped->addChild( QObject::tr("symmetric Transformer"), "sTr", "symtrans.png");
-   lumped->addChild( QObject::tr("Transformer"), "Tr", "transformer.png");
-   lumped->addChild( QObject::tr("Voltage Probe"), "VProbe", "vprobe.png");
-
-
-   sources->addChild( QObject::tr("AM modulated Source"), "AM_Mod", "am_mod.png");
-   sources->addChild( QObject::tr("ac Current Source"), "Iac", "ac_current.png");
-   sources->addChild( QObject::tr("dc Current Source"), "Idc", "dc_current.png");
-   sources->addChild( QObject::tr("Noise Current Source"), "Inoise", "noise_current.png");
-   sources->addChild( QObject::tr("Current Controlled Current Source"), "CCCS", "cccs.png");
-   sources->addChild( QObject::tr("Current Controlled Voltage Source"), "CCVS", "ccvs.png");
-   sources->addChild( QObject::tr("Current Pulse"), "Ipulse", "ipulse.png");
-   sources->addChild( QObject::tr("Rectangle Current"), "Irect", "irect.png");
-   sources->addChild( QObject::tr("Correlated Noise Sources"), "IInoise", "noise_ii.png");
-   sources->addChild( QObject::tr("Correlated Noise Sources"), "IVnoise", "noise_iv.png");
-   sources->addChild( QObject::tr("Correlated Noise Sources"), "VVnoise", "noise_vv.png");
-   sources->addChild( QObject::tr("PM modulated Source"), "PM_Mod", "pm_mod.png");
-   sources->addChild( QObject::tr("Power Source"), "Pac", "source.png");
-   sources->addChild( QObject::tr("Voltage Controlled Current Source"), "VCCS", "vccs.png");
-   sources->addChild( QObject::tr("Voltage Controlled Voltage Source"), "VCVS", "vcvs.png");
-   sources->addChild( QObject::tr("ac Voltage Source"), "Vac", "ac_voltage.png");
-   sources->addChild( QObject::tr("dc Voltage Source"), "Vdc", "dc_voltage.png");
-   sources->addChild( QObject::tr("Noise Voltage Source"), "Vnoise", "noise_volt.png");
-   sources->addChild( QObject::tr("Voltage Pulse"), "Vpulse", "vpulse.png");
-   sources->addChild( QObject::tr("Rectangle Voltage"), "Vrect", "vrect.png");
-
-
-   transmission->addChild( QObject::tr("Bond Wire"), "BOND", "bondwire.png");
-   transmission->addChild( QObject::tr("Coaxial Line"), "COAX", "coaxial.png");
-   transmission->addChild( QObject::tr("Coplanar Line"), "CLIN", "coplanar.png");
-   transmission->addChild( QObject::tr("Coplanar Gap"), "CGAP", "cpwgap.png");
-   transmission->addChild( QObject::tr("Coplanar Open"), "COPEN", "cpwopen.png");
-   transmission->addChild( QObject::tr("Coplanar Short"), "CSHORT", "cpwshort.png");
-   transmission->addChild( QObject::tr("Coplanar Step"), "CSTEP", "cpwstep.png");
-   transmission->addChild( QObject::tr("Microstrip Corner"), "MCORN", "mscorner.png");
-   transmission->addChild( QObject::tr("Coupled Microstrip Line"), "MCOUPLED", "mscoupled.png");
-   transmission->addChild( QObject::tr("Microstrip Gap"), "MGAP", "msgap.png");
-   transmission->addChild( QObject::tr("Microstrip Line"), "MLIN", "msline.png");
-   transmission->addChild( QObject::tr("Microstrip Mitered Bend"), "MMBEND", "msmbend.png");
-   transmission->addChild( QObject::tr("Microstrip Open"), "MOPEN", "msopen.png");
-   transmission->addChild( QObject::tr("Microstrip Step"), "MSTEP", "msstep.png");
-   transmission->addChild( QObject::tr("Microstrip Via"), "MVIA", "msvia.png");
-   transmission->addChild( QObject::tr("Substrate"), "SUBST", "substrate.png");
-   transmission->addChild( QObject::tr("4-Terminal Transmission Line"), "TLIN4P", "tline_4port.png");
-   transmission->addChild( QObject::tr("Transmission Line"), "TLIN", "tline.png");
-   transmission->addChild( QObject::tr("Twisted-Pair"), "TWIST", "twistedpair.png");
-
-
-   nonlinear->addChild( QObject::tr("OpAmp"), "OpAmp", "opamp.png");
-
-
-   digital->addChild( QObject::tr("D-FlipFlop"), "DFF", "dflipflop.png");
-   digital->addChild( QObject::tr("digital source"), "DigiSource", "digi_source.png");
-   digital->addChild( QObject::tr("JK-FlipFlop"), "JKFF", "jkflipflop.png");
-   digital->addChild( QObject::tr("RS-FlipFlop"), "RSFF", "rsflipflop.png");
-
+   CategoryItem *libRoot = new CategoryItem(libraryName, false, rootItem);
+   foreach(const ComponentDataPtr data, libItem->components().values()) {
+      new CategoryItem(data->name, true, libRoot);
+   }
 }
 
 QModelIndex SidebarModel::index ( int row, int column, const QModelIndex & parent ) const
@@ -206,28 +118,15 @@ QModelIndex SidebarModel::index ( int row, int column, const QModelIndex & paren
    if(column != 0)
       return QModelIndex();
    CategoryItem *parentItem;
-
-   if (!parent.isValid())
-      parentItem = rootItem;
-   else
-      parentItem = static_cast<CategoryItem*>(parent.internalPointer());
-
+   parentItem = !parent.isValid() ? rootItem : static_cast<CategoryItem*>(parent.internalPointer());
    CategoryItem *childItem = parentItem->child(row);
-   if (childItem)
-      return createIndex(row, 0, childItem);
-   else
-      return QModelIndex();
+   return childItem ? createIndex(row, 0, childItem) : QModelIndex();
 }
 
 int SidebarModel::rowCount ( const QModelIndex & parent) const
 {
    CategoryItem *parentItem;
-
-   if (!parent.isValid())
-      parentItem = rootItem;
-   else
-      parentItem = static_cast<CategoryItem*>(parent.internalPointer());
-
+   parentItem = !parent.isValid() ? rootItem : static_cast<CategoryItem*>(parent.internalPointer());
    return parentItem->childCount();
 }
 
@@ -253,14 +152,40 @@ QVariant SidebarModel::data ( const QModelIndex & index, int role ) const
    CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
    if (role == Qt::DisplayRole)
       return QVariant(item->name());
-   else if(role == Qt::DecorationRole && item->isComponent())
-      return QVariant(QIcon(Qucs::bitmapDirectory() + item->fileName()));
+   else if(role == Qt::DecorationRole && item->isComponent()) {
+      return QVariant(item->iconPixmap());
+   }
+   else if(role == Qt::EditRole && item->isComponent()) {
+      //HACK: Using unsed role for sending topleft of item.
+      const LibraryItem *libItem =
+         Library::defaultInstance()->libraryItem(item->parent()->name());
+      if(libItem) {
+         const ComponentDataPtr data = libItem->componentDataPtr(item->name());
+         if(data.constData()) {
+            const QString symbol = data->propertyMap["symbol"].value().toString();
+            const QString svgId = item->name() + '/' + symbol;
+
+            QPointF translateHint = SvgPainter::defaultSvgPainter()->boundingRect(svgId).topLeft();
+            translateHint *= -1;
+            return QVariant(translateHint);
+         }
+      }
+   }
+   else if(role == Qt::SizeHintRole) {
+      QSize sz(150, 25);
+      int height = item->iconPixmap().size().height();
+      if(height > sz.height()) {
+         sz.setHeight(height);
+      }
+      return sz;
+   }
    return QVariant();
 }
 
 bool SidebarModel::isComponent(const QModelIndex& index) const
 {
-   return (index.isValid() && static_cast<CategoryItem*>(index.internalPointer())->isComponent());
+   return (index.isValid() &&
+           static_cast<CategoryItem*>(index.internalPointer())->isComponent());
 }
 
 Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const
@@ -291,8 +216,7 @@ QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
       if (index.isValid())
       {
          CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
-         //QString text = data(index, Qt::DisplayRole).toString();
-         stream << item->model();
+         stream << item->name();
       }
    }
 

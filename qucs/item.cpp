@@ -23,29 +23,22 @@
 */
 
 #include "item.h"
-#include "undocommands.h"
 #include "schematicscene.h"
 #include "schematicview.h"
 #include "qucsmainwindow.h"
-#include "xmlutilities.h"
 
 #include <QtXml/QXmlStreamWriter>
 
-/*!\brief Create a new item and add to scene */
+//! Create a new item and add to scene.
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene)
-   : QGraphicsItem(parent)
+   : QGraphicsItem(parent),
+      m_boundingRect(-2., -2., 4., 4.), /* Non empty default bound rect.*/
+      m_shape()
 {
-   init();
-   if(scene)
-      scene->addItem(this);
-}
-
-void QucsItem::init()
-{
-   // An empty bounding rect sometime's cause 100% cpu usage.
-   m_boundingRect = QRectF(-2, -2, 4, 4);
-   m_shape = QPainterPath();
    m_shape.addRect(m_boundingRect);
+   if(scene) {
+      scene->addItem(this);
+   }
 }
 
 //!\brief Destructor
@@ -53,12 +46,21 @@ QucsItem::~QucsItem()
 {
 }
 
-//!\brief Sets the shape cache as well as boundbox cache
+/*!\brief Sets the shape cache as well as boundbox cache
+ *
+ * This method abstracts the method of changing the geometry with support for
+ * cache as well.
+ * \param path The path to be cached. If empty, bound rect is added.
+ * \param rect The bound rect to be cached.
+ * \param pw Pen width of pen used to paint outer stroke of item.
+ */
 void QucsItem::setShapeAndBoundRect(const QPainterPath& path,
                                     const QRectF& rect, qreal pw)
 {
+   // Inform scene about change in geometry.
    prepareGeometryChange();
    m_boundingRect = rect;
+   // Adjust the bounding rect by half pen width as required by graphicsview.
    m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
    m_shape = path;
    if(m_shape.isEmpty()) {
@@ -69,17 +71,19 @@ void QucsItem::setShapeAndBoundRect(const QPainterPath& path,
 //!\brief returns a pointer to the schematic scene to which the item belongs.
 SchematicScene* QucsItem::schematicScene() const
 {
-   SchematicScene *s = qobject_cast<SchematicScene*>(this->scene());
+   SchematicScene *s = qobject_cast<SchematicScene*>(scene());
    return s;
 }
 
 
-//!\brief Returns a pointer to the view which is currently active(having foucs)
+/*!\brief Returns a pointer to the view which is currently active(having foucs)
+ * \warning Now returns the first view rather than the actual active view!
+ */
 QGraphicsView* QucsItem::activeView() const
 {
    if(!scene() || scene()->views().isEmpty())
       return 0;
-   //for now return the first view in the views list since multiple view
+   //FIXME: for now return the first view in the views list since multiple view
    //support is not yet there.
    return scene()->views()[0];
 }
@@ -104,10 +108,10 @@ void QucsItem::mirrorAlong(Qt::Axis axis)
       axis = Qt::XAxis;
    }
    if(axis == Qt::XAxis) {
-      scale(1.0,-1.0);
+      scale(1.0, -1.0);
    }
    else /*axis = Qt::YAxis*/ {
-      scale(-1.0,1.0);
+      scale(-1.0, 1.0);
    }
 }
 
@@ -120,9 +124,26 @@ void QucsItem::rotate90()
 
 /*!\brief Constructs and returns a menu with default actions inderted.
  * \todo Implement this function. */
-
 QMenu* QucsItem::defaultContextMenu() const
 {
    //TODO:
    return 0;
+}
+
+/*! \brief Stores the item's current position in data field of item.
+ *
+ * This method is required for handling undo/redo.
+ */
+void storePos(QGraphicsItem *item)
+{
+   item->setData(PointKey, QVariant(item->scenePos()));
+}
+
+/*! \brief Returns the stored point by fetching from item's data field.
+ *
+ * This method is required for handling undo/redo.
+ */
+QPointF storedPos(QGraphicsItem *item)
+{
+   return item->data(PointKey).toPointF();
 }

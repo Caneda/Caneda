@@ -1,44 +1,55 @@
-2007-12-02  Gopala Krishna  <gopala@localhost>
+2007-12-17  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* component.*, componentssidebar.*, item.*, port.*, property*, wire.*, schematic*,
+	* undocommands.* : Commited a bunch of changes to enable loading xml-svg components,
+	made them reactible to mouse events as before.
+	* Removed old node based code and made all code compatible with Port* classes.
+	* Xmlized all the components representation. Now components can simply be defined in xml & svg.
+	* library.h, library.cpp: Added these files which implement xml library format.
+	* Undo/redo support is back again!
+	* Finally documented many blocks of code.
+
+2007-12-02  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* component.h, component.cpp:  Added these new files supporting components represented by xml and svg.
 	* svgitem.h, svgitem.cpp: Removed group id dependancy.
 	* Property* classes: Made this classes to work seamlessly with the new Component class.
 
-2007-11-29  Gopala Krishna  <gopala@localhost>
+2007-11-29  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* Port, Property, PropertyItem, PropertiesGroup: These new classes added to support and accomodate the new
 	changes with sharing support enabled.
 
-2007-11-22  Gopala Krishna  <gopala@localhost>
+2007-11-22  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* svgitem.cpp, svgitem.h: Documented the code.
 
-2007-11-21  Gopala Krishna  <gopala@localhost>
+2007-11-21  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* svgitem.h, svgitem.cpp: Added these files which provide svg support classes.
 	Removed the buggy qucssvgitem.* and qucssvgrenderer.* files.
 	Also added 3 test svg files.
 
-2007-09-10  Gopala Krishna  <gopala@localhost>
+2007-09-10  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* schematicscene.cpp, schematicscene.h: Scene items are now moved only along grid.
 
-2007-08-03  Gopala Krishna  <gopala@localhost>
+2007-08-03  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* schematicscene.cpp and other files: Made Qt-4.3 the requirement to build qucs.
 
-2007-07-02  Gopala Krishna  <gopala@localhost>
+2007-07-02  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* schematicscene.cpp (SchematicScene::zoomingAtPointEvent): Made this mouse action to work appropriately.
 	Now the scroll pos is maintained appropriately after scale.
 
-2007-06-28  Gopala Krishna  <gopala@localhost>
+2007-06-28  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* item.cpp (QucsItem::activeView): Fixed segfault when item hasn't been added to scene.
 
 	* shapes.h (class Rectangle): Added this new shape
 
-2007-06-24  Gopala Krishna  <gopala@localhost>
+2007-06-24  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* schematicscene.cpp (SchematicScene::wiringEvent): Now wires can
 	be added by selecting from toolbar. Mouse actions fixed to work properly.
@@ -46,7 +57,7 @@
 	* wire.cpp (Wire::rebuild): Fixed a bug the end part of wire used
 	to become invisible while moving wire.
 
-2007-06-20  Gopala Krishna  <gopala@localhost>
+2007-06-20  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* schematicscene.h, item.h: Refactored them as well as added code usable for future like contextmenu.
 

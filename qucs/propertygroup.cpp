@@ -54,12 +54,13 @@ void PropertiesGroup::realignItems()
    if(!scene()) {
       return;
    }
-   qDebug() << "Enter realignItems()";
    QPointF savePos;
-   if(boundingRect().isNull())
+   if(boundingRect().isNull()) {
       savePos = parentItem()->sceneBoundingRect().bottomLeft();
-   else
+   }
+   else {
       savePos = sceneBoundingRect().topLeft();
+   }
 
    //Remove items from group and make them top level items.
    foreach(PropertyItem *item, m_propertyItemsMap) {

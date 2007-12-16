@@ -22,6 +22,7 @@
 
 #include <QtGui/QWidget>
 
+// Forward declarations
 class QPixmap;
 class FilterProxyModel;
 class QLineEdit;
@@ -29,12 +30,15 @@ class SidebarModel;
 class TreeView;
 class QToolButton;
 
+//! Represents sidebar which allows components to be selected.
 class ComponentsSidebar : public QWidget
 {
-Q_OBJECT
+      Q_OBJECT;
    public:
       ComponentsSidebar(QWidget *parent = 0);
       ~ComponentsSidebar() {}
+
+      void plugLibrary(QString str);
 
    private slots:
       void filterTextChanged();

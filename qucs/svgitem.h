@@ -56,16 +56,17 @@ typedef QHash<QString, SvgItemData*> DataHash;
 
 /*!\brief A class used to take care of rendering svg.
  *
- * This class renders an svg given the svg id. The svg to be rendered should
+ * This class renders a svg, given the svg id. The svg to be rendered should
  * be first registered with the instance of this class. This class also
- * supports modifying style of svg using css.
+ * supports modifying style of svg using css. This class is currently made
+ * singleton. Further support involves usage of multiple instances of this
+ * class, each of which can render different set of styles.
  * \sa registerSvg()
  */
 struct SvgPainter : public QObject
 {
       Q_OBJECT;
    public:
-      SvgPainter();
       ~SvgPainter();
 
       void registerSvg(const QString& svg_id, const QByteArray& content);
@@ -89,10 +90,14 @@ struct SvgPainter : public QObject
       bool isCachingEnabled() const { return m_cachingEnabled; }
       void setCachingEnabled(bool caching);
 
+      static SvgPainter* defaultSvgPainter();
+
       void setStyleSheet(const QString& svg_id, const QByteArray& stylesheet);
       QByteArray styleSheet(const QString& svg_id) const;
 
    private:
+      SvgPainter();
+
       QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
       bool m_cachingEnabled; //!< State to hold whether caching is enabled or not.
 };
@@ -102,7 +107,7 @@ struct SvgPainter : public QObject
  * This class implements an interface needed by SvgPainter to render the svg.
  * To use the svg registered to \a SvgPainter the connection's of this item
  * to SvgPainter should be made using \a registerConnections.
- * \sa SvgPainter, registerConnections()
+ * \sa SvgPainter, SvgItem::registerConnections()
  */
 class SvgItem : public QObject, public QucsItem
 {
@@ -110,7 +115,7 @@ class SvgItem : public QObject, public QucsItem
    public:
       //! Item identifier. \sa QucsItemTypes
       enum {
-         Type = QucsItemType+1
+         Type = QucsItem::SvgItemType
       };
 
       explicit SvgItem(SchematicScene *scene = 0);
@@ -124,6 +129,7 @@ class SvgItem : public QObject, public QucsItem
       qreal strokeWidth() const;
 
       void registerConnections(const QString& id, SvgPainter *painter);
+
       //! Returns the svg id of this item.
       QString svgId() const { return m_svgId; }
 
@@ -145,8 +151,8 @@ class SvgItem : public QObject, public QucsItem
       QVariant itemChange(GraphicsItemChange change, const QVariant& value);
 
    private:
-      SvgPainter *m_svgPainter;
-      QString m_svgId;
+      SvgPainter *m_svgPainter; //!< The pointer to SvgPainter responsible for painting item.
+      QString m_svgId; //!< The svg id registered with painter.
 };
 
 #endif //__SVGITEM_H

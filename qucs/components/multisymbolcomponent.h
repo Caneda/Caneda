@@ -65,7 +65,7 @@ inline void MultiSymbolComponent::setSymbol(const QString& symbol)
       return;
    prepareGeometryChange();
    m_shapes = symbolMap[symbol]->shapesList;
-   m_boundingRect = symbolMap[symbol]->boundRect;
+   setShapeAndBoundRect(QPainterPath(), symbolMap[symbol]->boundRect);
 }
 
 #endif //__MULTISYMBOLCOMPONENT_H

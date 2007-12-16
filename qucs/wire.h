@@ -22,7 +22,6 @@
 
 #include "item.h"
 #include "wireline.h"
-#include "node.h"
 
 #include <QtCore/QList>
 
@@ -30,127 +29,98 @@
 class SchematicScene;
 class QGraphicsLineItem;
 class QRubberBand;
+class Port;
 
-/*!\brief Wire class
-
-  This class implement wiring system
-*/
-class Wire : public QucsItem
+namespace  Qucs
 {
-   public:
-      /*!\brief GraphicsView framework requirement for casting.
+   typedef QList<WireLine> WireLines;
 
-        \sa qucsitem_cast */
-      enum {
-         Type = QucsItem::WireType
-      };
+   /*!
+    * \brief This class represents a wire on schematic.
+    */
+   class Wire : public QucsItem
+   {
+      public:
+         enum { Type = QucsItem::WireType };
 
-      Wire(SchematicScene *scene, Node *n1,Node *n2);
-      ~Wire();
+         //! A struct to store wire's details.
+         struct Store {
+               WireLines wLines;
+               QPointF port1Pos;
+               QPointF port2Pos;
+         };
 
-      void rebuild();
+         Wire(const QPointF &startPos, const QPointF &endPos,
+              SchematicScene *scene = 0);
+         Wire(Port *startPort, Port *endPort, SchematicScene *scene = 0);
+         ~Wire();
 
-      /*!\brief Return node 1
-        \todo Why not access directly
-      */
-      Node* node1() const { return m_node1; }
-      /*!\brief Set node 1
-        \todo Why not access directly
-      */
-      void setNode1(Node *n1) { m_node1 = n1; }
+         //! Return's the wire's ports list.
+         QList<Port*> ports() const { return m_ports; }
+         //! Return's the list's first member.
+         Port* port1() const { return m_ports[0]; }
+         //! Returns the list's second member.
+         Port* port2() const { return m_ports[1]; }
 
-      /*!\brief Return node 2
-        \todo Why not access directly
-      */
-      Node* node2() const { return m_node2; }
-      /*!\brief Set node 2
-        \todo Why not access directly
-      */
-      void setNode2(Node *n2) { m_node2 = n2; }
+         void movePort(QList<Port*> *connections, const QPointF& scenePos);
+         void movePort1(const QPointF& newLocalPos);
+         void movePort2(const QPointF& newLocalPos);
 
-      void replaceNode(Node *oldNode,Node *newNode);
+         //! Wire identifier.
+         int type() const { return Qucs::Wire::Type; }
 
-      QRectF boundingRect() const;
-      QPainterPath shape() const;
-      bool contains ( const QPointF & point ) const;
+         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                    QWidget *widget = 0);
 
-      /*!\brief qucsitem_cast identifier
-        \sa qucsitem_cast
-      */
-      int type() const { return Wire::Type; }
+         void beginGrabMode();
+         void grabMoveBy(qreal dx, qreal dy);
+         void endGrabMode();
 
-      void paint(QPainter * p, const QStyleOptionGraphicsItem * o, QWidget * w = 0 );
+         //! Returns the internal representation of wires as line's list.
+         WireLines wireLines() const { return m_wLines; }
+         void setWireLines(const WireLines& wirelines);
 
-      static Wire* connectedWire(const Node *n1,const Node *n2);
+         void removeNullLines();
 
-      void startMoveAndResize();
-      void moveAndResizeBy(qreal dx, qreal dy);
-      void stopMoveAndResize();
+         void saveData(Qucs::XmlWriter *writer) const;
+         void loadData(Qucs::XmlReader *reader);
 
-      /*!\brief Return all the line constituing a wire */
-      QList<WireLine> wireLines() const { return m_lines; }
-      void setWireLines(const QList<WireLine>& lines);
-      void deleteNullLines();
+         //! No rotate defined for wires.
+         void rotate90() {}
+         //! No mirroring defined for wires.
+         void mirrorAlong(Qt::Axis) {}
 
-      QString saveString() const;
-      void writeXml(Qucs::XmlWriter *writer);
-      void readXml(Qucs::XmlReader *reader);
+         void storeState();
+         Store storedState() const;
 
-      /*!\brief Rotate
-        \details Wire are not allowed to rotate
-        \todo Implement not allowed to rotate (block command)
-      */
-      void rotate90() {}
-      /*!\brief mirrorX
-        \details Wires are not allowed to be mirrored
-        \todo Block command
-      */
-      void mirrorAlong(Qt::Axis) {}
+         Store currentState() const;
+         void setState(Store state);
 
-      void invokePropertiesDialog();
+         void checkAndConnect(bool pushUndoCommands = true);
 
-   protected:
-      QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+      protected:
+         void mousePressEvent(QGraphicsSceneMouseEvent *event);
+         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
-   private:
-      QRect proxyRect(const WireLine& line) const;
-      QRectF rectForLine(const WireLine& line) const;
+      private:
+         QRect proxyRect(const WireLine& wline) const;
+         QRectF wireLineBound(const WireLine& wline) const;
 
-      void updateProxyWires();
-      void clearProxyWires();
+         void updateProxyWires();
+         void deleteProxyWires();
 
-      int indexForPos(const QPointF& pos) const;
+         void updateGeometry();
 
-      /*!\brief List of line constituing a wire */
-      QList<WireLine> m_lines;
-      /*!\brief They represent wires visually when wires are moved or resized.
+         int indexForPos(const QPointF& pos) const;
 
-        This is used because, modifying the shape of a QGraphicsItem very often
-        continously results in frequent changes in QGraphicsScene's bsp indices
-        Hence resizing will be very slow.
-        So the wire is hidden and the lines are represented by QRubberBand
-        widgets and only the rubberband widget is updated until the resizing or
-        moving is going on. RubberBand widgets being toplevel widgets doesn't
-        belong to scene. Therefore they won't affect Bsp indexing and thus
-        speed is obtained. Finally when the wire resizing stops, RubberBands
-        are destroyed and the item is reshown resulting in change of index
-        only once.
-      */
-      QList<QRubberBand*> m_proxyWires;
-      /*!\brief first Node */
-      Node *m_node1;
-      /*!\brief second node */
-      Node *m_node2;
-      /*!\brief Represents the index of m_lines list corresponding to mouse
-        click.
+         int m_grabbedIndex; //!< Represents the index of wireline being dragged.
 
-        This is used to caculate the exact wire movement when it is dragged.
-      */
-      int m_grabbedLineIndex;
-};
+         QList<Port*> m_ports;//!< The ports of wires (always contain only 2 elements).
+         WireLines m_wLines;//!< Internal line representation of wires.
+         QList<QRubberBand*> m_proxyWires;//!< Represent wires while being dragged
+         Qucs::Wire::Store store; //!< Stores the wire data when needed(undo/redo).
+   };
+}
 
 #endif //__WIRE_H

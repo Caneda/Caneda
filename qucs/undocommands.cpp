@@ -18,198 +18,228 @@
  ***************************************************************************/
 
 #include "undocommands.h"
-#include "components/component.h"
-#include "node.h"
-#include "wire.h"
+#include "component.h"
 #include "schematicscene.h"
-
+#include "port.h"
 #include <QtCore/QDebug>
 
-UndoCommand::UndoCommand() : firstTime(true)
-{
-}
-
-void UndoCommand::undo()
-{
-   this->undoIt();
-}
-
-void UndoCommand::redo()
-{
-   if(firstTime == true)
-      firstTime = false;
-   else
-      this->redoIt();
-}
-
-MoveCommand::MoveCommand(QucsItem *i,const QPointF& init,const QPointF& end) : item(i), initialPoint(init),endPoint(end)
-{
-   setText(QObject::tr("Move Component"));
-}
-
-void MoveCommand::undoIt()
-{
-   item->setPos(initialPoint);
-   item->scene()->clearSelection();
-}
-
-void MoveCommand::redoIt()
-{
-   item->setPos(endPoint);
-}
-
-int MoveCommand::id() const
-{
-   return UndoCommand::Move;
-}
-
-/*ConnectCommand::ConnectCommand(ComponentPort *p1,ComponentPort *p2) : port1(p1),port2(p2)
-{
-   setText("Connect component");
-}
-
-ConnectCommand::~ConnectCommand()
-{
-
-}
-
-int ConnectCommand::id() const
-{
-   return UndoCommand::Connect;
-}
-
-void ConnectCommand::undoIt()
-{
-   Node *n1 = 0;
-   if(port1->node() == port2->node())
-   {
-      n1 = port1->owner()->schematicScene()->createNode(port1->node()->pos());
-      n1->addComponent(port1->owner());
-      port1->setNode(n1);
-   }
-   else
-      Q_ASSERT(0);
-   {
-      //Wire *w = Wire::connectedWire(port1->node(),port2->node());
-      //if(w)
-      //{
-	// port1->node()->removeComponent(w);
-	// port2->node()->removeComponent(w);
-	// delete w;
-	// }
-   }
-   port2->node()->removeComponent(port1->owner());
-   port1->node()->removeComponent(port2->owner());
-}
-
-void ConnectCommand::redoIt()
-{
-   Q_ASSERT(port1->node() != port2->node());
-   port2->node()->connectedComponents().unite(port1->node()->connectedComponents());
-   Node *n = port1->node();
-   foreach(Component *c, n->connectedComponents())
-   {
-      ComponentPort *p = c->portWithNode(n);
-      if(p)
-	 p->setNode(port2->node());
-   }
-   delete n;
-   qDebug("ConnectCommand::redoIt()  port1Size : %d,   port2Size: %d",port1->node()->connectedComponents().size(),port2->node()->connectedComponents().size());
-}
-
-
-DisconnectCommand::DisconnectCommand(ComponentPort *p1,ComponentPort *p2) : port1(p1),port2(p2)
-{
-   setText("Disconnect component");
-}
-
-
-int DisconnectCommand::id() const
-{
-   return UndoCommand::Disconnect;
-}
-
-void DisconnectCommand::undoIt()
-{
-   Q_ASSERT(port1->node() != port2->node());
-   port2->node()->connectedComponents().unite(port1->node()->connectedComponents());
-   Node *n = port1->node();
-   foreach(Component *c, n->connectedComponents())
-   {
-      ComponentPort *p = c->portWithNode(n);
-      if(p)
-	 p->setNode(port2->node());
-   }
-   delete n;
-   qDebug("DisconnectCommand::undoIt()  port1Size : %d,   port2Size: %d",port1->node()->connectedComponents().size(),
-	  port2->node()->connectedComponents().size());
-}
-
-void DisconnectCommand::redoIt()
-{
-   Q_ASSERT(port1->node() == port2->node());
-   Node *n1 = 0;
-   n1 = port1->owner()->schematicScene()->createNode(port1->node()->pos());
-   n1->addComponent(port1->owner());
-   port1->setNode(n1);
-
-   port2->node()->removeComponent(port1->owner());
-   port1->node()->removeComponent(port2->owner());
-   qDebug() << "DisconnectCommand::redoIt()";
-}
-
-
-
-AddWireCommand::AddWireCommand(ComponentPort *p1, ComponentPort *p2,Wire *w) :port1(p1),port2(p2),wire(w)
-{
-   setText(QObject::tr("Add wire"));
-}
-
-int AddWireCommand::id() const
-{
-   return AddWire;
-}
-
-void AddWireCommand::undoIt()
-{
-   Q_ASSERT(wire != 0);
-   qDebug() << "AddWireCommand::undoIt()";
-
-   delete wire;
-   wire = 0;
-}
-
-void AddWireCommand::redoIt()
-{
-   Q_ASSERT(port1->node() != port2->node());
-   Q_ASSERT(wire == 0);
-   wire = new Wire(port1->owner()->schematicScene(),port1->node(),port2->node());
-   qDebug() << "AddWireCommand::redoIt()";
-}
-
-RemoveWireCommand::RemoveWireCommand(ComponentPort *p1, ComponentPort *p2) :port1(p1),port2(p2)
-{
-   wire = 0;
-   setText(QObject::tr("Remove wire"));
-}
-
-int RemoveWireCommand::id() const
-{
-   return RemoveWire;
-}
-
-void RemoveWireCommand::undoIt()
-{
-   Q_ASSERT(port1->node() != port2->node());
-   Q_ASSERT(wire == 0);
-   wire = new Wire(port1->owner()->schematicScene(),port1->node(),port2->node());
-}
-
-void RemoveWireCommand::redoIt()
-{
-   Q_ASSERT(wire != 0);
-   Q_ASSERT(port1->node() != port2->node());
-   delete wire;
-   wire = 0;
-}
+/*
+  ##########################################################################
+  #                            PropertyChangeCmd                           #
+  ##########################################################################
 */
+
+static QString debugString;
+
+static QDebug debug()
+{
+
+   return qDebug();
+}
+
+PropertyChangeCmd::PropertyChangeCmd(const QString& propertyName,
+                                     const QVariant& newValue,
+                                     const QVariant& oldValue,
+                                     Qucs::Component *const component) :
+   m_property(propertyName), m_newValue(newValue), m_oldValue(oldValue),
+   m_component(component)
+{
+}
+
+void PropertyChangeCmd::undo()
+{
+   m_component->setProperty(m_property, m_oldValue);
+}
+
+void PropertyChangeCmd::redo()
+{
+   m_component->setProperty(m_property, m_newValue);
+   qDebug() << "\n\n" << debugString;
+}
+
+/*
+  ##########################################################################
+  #                                 MoveCmd                                #
+  ##########################################################################
+*/
+
+MoveCmd::MoveCmd(QGraphicsItem *i,const QPointF& init,const QPointF& end) :
+   m_item(i), m_initialPos(init), m_finalPos(end)
+{
+}
+
+void MoveCmd::undo()
+{
+   if(m_item->parentItem()) {
+      QPointF p = m_item->mapFromScene(m_initialPos);
+      p = m_item->mapToParent(p);
+      m_item->setPos(p);
+   }
+   else {
+      m_item->setPos(m_initialPos);
+   }
+   debug() << "\n######################  MoveCmd::undo()  #######\n"
+            << "Moving from " << m_finalPos << "to " << m_initialPos
+            <<"\n#######################\n";
+
+}
+
+void MoveCmd::redo()
+{
+   if(m_item->parentItem()) {
+      QPointF p = m_item->mapFromScene(m_finalPos);
+      p = m_item->mapToParent(p);
+      m_item->setPos(p);
+   }
+   else {
+      m_item->setPos(m_finalPos);
+   }
+   debug() << "\n######################  MoveCmd::redo()  #######\n"
+            << "Moving from " << m_initialPos << "to " << m_finalPos
+            <<"\n##################################\n";
+}
+
+/*
+  ##########################################################################
+  #                            ConnectCmd                                  #
+  ##########################################################################
+*/
+
+ConnectCmd::ConnectCmd(Port *p1, Port *p2) : m_port1(p1), m_port2(p2)
+{
+}
+
+void ConnectCmd::undo()
+{
+   debug() << "\n######################  ConnectCmd::undo()  ############################";
+   QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
+   QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
+   debug() << "Disconencting "
+            << port1Name <<  " from " << port2Name
+            <<"\n##################################\n";
+   m_port1->disconnectFrom(m_port2);
+}
+
+void ConnectCmd::redo()
+{
+   debug() << "\n######################  ConnectCmd::redo()  ############################";
+   QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
+   QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
+   debug() << "Conencting "
+            << port1Name <<  " to " << port2Name
+            <<"\n##################################\n";
+   m_port1->connectTo(m_port2);
+}
+
+/*
+  ##########################################################################
+  #                           DisconnectCmd                                #
+  ##########################################################################
+*/
+
+DisconnectCmd::DisconnectCmd(Port *p1, Port *p2) : m_port1(p1), m_port2(p2)
+{
+}
+
+void DisconnectCmd::undo()
+{
+   debug() << "\n######################  DisConnectCmd::undo()  ############################";
+   QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
+   QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
+   debug() << "Conencting "
+            << port1Name <<  " to " << port2Name
+            <<"\n##################################\n";
+   m_port1->connectTo(m_port2);
+}
+
+void DisconnectCmd::redo()
+{
+   QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
+   QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
+   debug() << "\n######################  DisConnectCmd::redo()  ############################";
+   debug() << "Disconencting "
+            << port1Name <<  " from " << port2Name
+            <<"\n##################################\n";
+   m_port1->disconnectFrom(m_port2);
+}
+
+
+/*
+  ##########################################################################
+  #                              AddWireCmd                                #
+  ##########################################################################
+*/
+
+AddWireCmd::AddWireCmd(Port *p1, Port *p2) : m_port1(p1), m_port2(p2)
+{
+   m_scene = m_port1->schematicScene();
+   m_wire = new Qucs::Wire(m_port1, m_port2, m_scene);
+   m_pos = m_wire->scenePos();
+}
+
+void AddWireCmd::undo()
+{
+   debug() << "\n######################  AddWireCmd::undo()  ############################";
+   QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
+   QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
+   debug() << "Removing wire between "
+            << port1Name <<  "and"  << port2Name
+            <<"\n##################################\n";
+   m_wire->port1()->disconnectFrom(m_port1);
+   m_wire->port2()->disconnectFrom(m_port2);
+   m_scene->removeItem(m_wire);
+}
+
+void AddWireCmd::redo()
+{
+   debug() << "\n######################  AddWireCmd::redo()  ############################";
+   QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
+   QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
+   debug() << "Adding wire between "
+            << port1Name <<  "and"  << port2Name
+            <<"\n##################################\n";
+
+   m_scene->addItem(m_wire);
+   m_wire->setPos(m_pos);
+   m_wire->port1()->connectTo(m_port1);
+   m_wire->port2()->connectTo(m_port2);
+
+   Q_ASSERT(m_wire->port1()->connections() == m_port1->connections());
+   Q_ASSERT(m_wire->port2()->connections() == m_port2->connections());
+}
+
+/*
+  ##########################################################################
+  #                           WireStateChangeCmd                           #
+  ##########################################################################
+*/
+
+WireStateChangeCmd::WireStateChangeCmd(Qucs::Wire *wire, WireStore initState,
+                                       WireStore finalState) :
+   m_wire(wire), m_initState(initState), m_finalState(finalState)
+{
+}
+
+void WireStateChangeCmd::undo()
+{
+   debug() << "\n######################  WireStateChangeCmd::undo()  ############################";
+   debug() << "Setting intial state"
+            << "\nWirelines is " << m_initState.wLines
+            << "\nPort1 pos = " << m_initState.port1Pos
+            << "\nPort2 pos = " << m_initState.port2Pos
+            <<"\n##################################\n";
+   m_wire->setState(m_initState);
+   m_wire->/*schematicScene()->*/update();
+}
+
+void WireStateChangeCmd::redo()
+{
+   debug() << "\n######################  WireStateChangeCmd::redo()  ############################";
+   debug() << "Setting fina state"
+            << "\nWirelines is " << m_finalState.wLines
+            << "\nPort1 pos = " << m_finalState.port1Pos
+            << "\nPort2 pos = " << m_finalState.port2Pos
+            <<"\n##################################\n";
+   m_wire->setState(m_finalState);
+   m_wire->/*schematicScene()->*/update();
+}

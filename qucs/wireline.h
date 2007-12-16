@@ -22,11 +22,11 @@
 
 #include <QtCore/QLineF>
 
-/*!\brief Wire class helper 
+/*!\brief Wire class helper
    \details This class transform a line to something more
-           usable for wiring purpose. For instance you 
+           usable for wiring purpose. For instance you
 	   can test horizontallity.
-*/         
+*/
 class WireLine
 {
    public:
@@ -34,8 +34,10 @@ class WireLine
       inline WireLine(const QLineF& line);
       inline WireLine(const QPointF& p2, const QPointF& p2);
       inline WireLine(qreal x1,qreal y1, qreal x2,qreal y2);
+
       inline bool isHorizontal() const;
       inline bool isVertical() const;
+      inline bool isOblique() const;
       inline bool isNull() const;
 
       inline void setP1(const QPointF& pt);
@@ -72,20 +74,20 @@ class WireLine
 /*!\brief Default constructor */
 inline WireLine::WireLine() {}
 
-/*!\brief Construct a wire from a line 
+/*!\brief Construct a wire from a line
    \param line: line to use
 */
 inline WireLine::WireLine(const QLineF& line) : m_line(line) {}
 
-/*!\brief Construct a wire from two point 
+/*!\brief Construct a wire from two point
    \param p1 origin point
    \param p2 end point
 */
 inline WireLine::WireLine(const QPointF& p1, const QPointF& p2) : m_line(p1,p2) {}
 
-/*!\brief Construct a wire from two tupple of coordinate 
+/*!\brief Construct a wire from two tupple of coordinate
    \param x1: origin  abscissa
-   \param x2: end abscissa 
+   \param x2: end abscissa
    \param y1: origin ordinate
    \param y2: end ordinate
 */
@@ -103,13 +105,18 @@ inline bool WireLine::isVertical() const
    return m_line.p1().x() == m_line.p2().x();
 }
 
+inline bool WireLine::isOblique() const
+{
+   return !isNull() && !isHorizontal() && !isVertical();
+}
+
 /*!\brief return true if line is Null ie length zero */
 inline bool WireLine::isNull() const
 {
    return m_line.isNull();
 }
 
-/*!\brief Set orign point 
+/*!\brief Set orign point
    \param pt new orign point
 */
 inline void WireLine::setP1(const QPointF& pt)
@@ -117,7 +124,7 @@ inline void WireLine::setP1(const QPointF& pt)
    m_line = QLineF(pt,m_line.p2());
 }
 
-/*!\brief Set end point 
+/*!\brief Set end point
    \param pt new end point
 */
 inline void WireLine::setP2(const QPointF& pt)
@@ -125,7 +132,7 @@ inline void WireLine::setP2(const QPointF& pt)
    m_line = QLineF(m_line.p1(),pt);
 }
 
-/*!\brief set abscissa of both end points 
+/*!\brief set abscissa of both end points
    \param x new abscissa
 */
 inline void WireLine::setX(qreal x)
@@ -137,7 +144,7 @@ inline void WireLine::setX(qreal x)
    m_line = QLineF(p1,p2);
 }
 
-/*!\brief set ordinate of both end points 
+/*!\brief set ordinate of both end points
    \param y new ordinate
 */
 inline void WireLine::setY(qreal y)
@@ -240,8 +247,8 @@ inline qreal WireLine::length() const
    return m_line.length();
 }
 
-/*!\brief Cast operation 
-  \return line 
+/*!\brief Cast operation
+  \return line
 */
 inline WireLine::operator const QLineF() const
 {

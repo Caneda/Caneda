@@ -17,7 +17,7 @@ class SvgTestItem : public SvgItem
       static SvgItem *styleSheetChangingItem;
 
    private slots:
-      void changeStyleSheet();
+      void asynchronousChange();
 };
 
 #endif

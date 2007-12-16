@@ -21,7 +21,7 @@
 #include "node.h"
 #include "wire.h"
 #include "xmlutilities.h"
-#include "components.h"
+#include "resistor.h"
 #include "schematicscene.h"
 #include "propertytext.h"
 #include "undocommands.h"
@@ -586,7 +586,7 @@ Component* Component::componentFromModel(const QString& _model, SchematicScene *
          c = new Resistor(scene);  // backward capatible
          static_cast<MultiSymbolComponent*>(c)->setSymbol("US");
       }
-      else if(cstr == "SFF") c = new RS_FlipFlop(scene);
+/*      else if(cstr == "SFF") c = new RS_FlipFlop(scene);
       else if(cstr == "elais") c = new Relais(scene);
          break;
       case 'C' : if(cstr.isEmpty()) c = 0;//new Capacitor(scene);
@@ -690,7 +690,7 @@ Component* Component::componentFromModel(const QString& _model, SchematicScene *
 //          break;
       case 'O' : if(cstr == "pAmp") c = new OpAmp(scene);
 //          else if(cstr == "R") c = new Logical_OR(scene);
-         break;
+         break;*/
 //       case 'N' : if(cstr == "OR") c = new Logical_NOR(scene);
 //          else if(cstr == "AND") c = new Logical_NAND(scene);
 //          break;

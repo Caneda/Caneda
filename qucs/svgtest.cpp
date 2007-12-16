@@ -1,7 +1,10 @@
+
 #include "svgtest.h"
 #include "schematicscene.h"
 #include "component.h"
 #include "xmlutilities.h"
+#include "wire.h"
+#include "library.h"
 
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
@@ -13,6 +16,7 @@
 static const char* array[] = { "resistor", "inductor", "current" };
 
 SvgItem* SvgTestItem::styleSheetChangingItem = 0;
+Qucs::Component *cap = 0;
 static bool firsttime = true;
 Qucs::Component *c = 0;
 
@@ -21,54 +25,75 @@ SvgTestItem::SvgTestItem(const QString& id, SchematicScene *scene) :
 {
    registerConnections(id, scene->svgPainter());
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-   if(firsttime) {
-      QTimer::singleShot(2500, this, SLOT(changeStyleSheet()));
-      firsttime = false;
-   }
+
 }
 
-void SvgTestItem::changeStyleSheet()
+void SvgTestItem::asynchronousChange()
 {
-   c->setPropertyVisible("symbol", true);
-   if(0 && styleSheetChangingItem) {
-      schematicScene()->svgPainter()->setStyleSheet(styleSheetChangingItem->svgId(),
-                                      "g{stroke: blue; fill: cyan; stroke-width: .5;}");
-      styleSheetChangingItem = 0;
-      QMessageBox::information(0, "Style change",
-                               "The stylesheet of resistors changed! It is working :-)");
-   }
+
 }
 
 void SvgTestItem::createTestItems(SchematicScene *scene)
 {
-   for(int i=0; i < 10; i++) {
-      SvgTestItem *s = new SvgTestItem(array[i%3], scene);
-      QPointF randomPos(qrand() % int(scene->width()/2), qrand() % int(scene->height()/2));
-      s->setPos(scene->nearingGridPoint(randomPos));
-      if(i == 0)
-         styleSheetChangingItem = s;
-   }
+//   Qucs::Component *comp = ;
+//    for(int i=0; i < 10; i++) {
+//       SvgTestItem *s = new SvgTestItem(array[i%3], scene);
+//       QPointF randomPos(qrand() % int(scene->width()/2), qrand() % int(scene->height()/2));
+//       s->setPos(scene->nearingGridPoint(randomPos));
+//       if(i == 0)
+//          styleSheetChangingItem = s;
+//    }
 
-   const QString path(QDir::homePath() + "/.qucs/lib/");
-   const QString xmlFile(path + "resistor.xml");
+//    const QString path(QDir::homePath() + "/.qucs/lib/");
+//    QString xmlFile(path + "resistor.xml");
+//    {
+//       QFile file(xmlFile);
+//       if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+//          return;
+//       QTextStream in(&file);
+//       in.setCodec("UTF-8");
+//       QString data = in.readAll();
+//       Qucs::XmlReader reader(data);
+//       while(!reader.atEnd()) {
+//          reader.readNext();
 
-   QFile file(xmlFile);
-   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-      return;
-   QTextStream in(&file);
-   in.setCodec("UTF-8");
-   QString data = in.readAll();
-   Qucs::XmlReader reader(data);
-   while(!reader.atEnd()) {
-      reader.readNext();
+//          if(reader.isStartElement() && reader.name() == "component")
+//             break;
+//       }
+//       c = new Qucs::Component(&reader, path, scene);
+//       c->setPos(scene->nearingGridPoint(QPointF(120, 20)));
+//       qDebug() << "Size = " << c->ports().size();
 
-      if(reader.isStartElement() && reader.name() == "component")
-         break;
-   }
-   c = new Qucs::Component(&reader, path, scene);
-   c->setPos(scene->nearingGridPoint(QPointF(120, 20)));
-   c->setPropertyVisible("Tc1", true);
-   c->setPropertyVisible("Tnom", true);
+//       c->setPropertyVisible("Tc1", true);
+//       c->setPropertyVisible("Tnom", true);
+//       c->setPropertyVisible("symbol", true);
+//       c->setSymbol("old2");
+//    }
+
+//    {
+//       xmlFile = path + "capacitor.xml";
+//       QFile file(xmlFile);
+//       if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+//          return;
+//       QTextStream in(&file);
+//       in.setCodec("UTF-8");
+//       QString data = in.readAll();
+//       Qucs::XmlReader reader(data);
+//       while(!reader.atEnd()) {
+//          reader.readNext();
+
+//          if(reader.isStartElement() && reader.name() == "component")
+//             break;
+//       }
+//       cap = new Qucs::Component(&reader, path, scene);
+//       cap->setPos(scene->nearingGridPoint(QPointF(520, 90)));
+//       cap->updatePropertyGroup();
+//       cap->setPropertyVisible("symbol", true);
+//       cap->setSymbol("qucs0");
+
+//       new Qucs::Wire(c->ports()[1], cap->ports()[0], scene);
+//       Q_ASSERT(!reader.hasError());
+//    }
 }
 
 void SvgTestItem::registerSvgs(SchematicScene *scene)

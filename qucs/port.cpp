@@ -20,19 +20,28 @@
 #include "port.h"
 
 #include "component.h"
+#include "wire.h"
 #include "schematicscene.h"
 
 #include <QtGui/QPainter>
 #include <QtCore/QDebug>
 
+//! \todo Make these constants settings.
 static const QPen connectedPen(Qt::red, 0);
+//! \todo Make these constants settings.
 static const QBrush connectedBrush(Qt::cyan);
+//! \todo Make these constants settings.
 static const QPen unconnectedPen(Qt::darkRed, 0);
+//! \todo Make these constants settings.
 static const QBrush unconnectedBrush(Qt::NoBrush);
+//! \todo Make these constants settings.
 static const qreal portRadius(3.0);
+//! \todo Make these constants settings.
 static const QRectF portEllipse(-portRadius, -portRadius, 2*portRadius,
                                  2*portRadius);
 
+
+//! Returns whether two circle's of same radii intersect's or not.
 bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
 {
    qreal x_sqr = (c1.x() - c2.x()) * (c1.x() * c2.x());
@@ -40,44 +49,66 @@ bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
    return x_sqr + y_sqr - (4 * radius * radius) <= 0;
 }
 
+//! Construct portowner with wire as owner.
 PortOwner::PortOwner(Qucs::Wire *wire) : m_wire(wire), m_component(0)
 {
-   Q_ASSERT(m_wire != 0 || m_component != 0);
+   Q_ASSERT(m_wire != 0);
 }
 
-PortOwner::PortOwner(Qucs::Component *component) : m_wire(0), m_component(component)
+//! Construct portowner with component as owner.
+PortOwner::PortOwner(Qucs::Component *component) :
+      m_wire(0), m_component(component)
 {
-   Q_ASSERT(m_wire != 0 || m_component != 0);
+   Q_ASSERT(m_component != 0);
 }
 
+QGraphicsItem* PortOwner::item() const
+{
+   QGraphicsItem *item = static_cast<QGraphicsItem*>(m_component);
+   if(item) return item;
+   item = static_cast<QGraphicsItem*>(m_wire);
+   //Cast should always succeed as both are graphics items.
+   Q_ASSERT(item);
+   return item;
+}
+
+//! Construct port with wire as owner and shared data \data.
 Port::Port(Qucs::Wire *owner, const QSharedDataPointer<PortData> &data) :
       d(data),
       m_owner(new PortOwner(owner)),
-      m_connections(0)
+      m_connections(0),
+      m_nodeName(0)
 {
 }
 
+//! Construct port with wire as owner, position \pos and port's name \portName.
 Port::Port(Qucs::Wire *owner, QPointF _pos, QString portName) :
       d(new PortData(_pos, portName)),
       m_owner(new PortOwner(owner)),
-      m_connections(0)
+      m_connections(0),
+      m_nodeName(0)
 {
 }
 
+//! Construct port with component as owner and shared data \data.
 Port::Port(Qucs::Component *owner, const QSharedDataPointer<PortData> &data) :
       d(data),
       m_owner(new PortOwner(owner)),
-      m_connections(0)
+      m_connections(0),
+      m_nodeName(0)
 {
 }
 
+//! Construct port with component as owner, position \pos and port's name \portName.
 Port::Port(Qucs::Component *owner, QPointF _pos, QString portName) :
       d(new PortData(_pos, portName)),
       m_owner(new PortOwner(owner)),
-      m_connections(0)
+      m_connections(0),
+      m_nodeName(0)
 {
 }
 
+//! Destructor : Remove all connections from this node before destruction.
 Port::~Port()
 {
    if(m_connections) {
@@ -89,7 +120,7 @@ Port::~Port()
          }
       }
       if(other) {
-         Port::disconnect(this, other);
+         disconnectFrom(other);
       }
       else {
          Q_ASSERT(m_connections->size() <= 1);
@@ -100,6 +131,10 @@ Port::~Port()
    delete m_owner;
 }
 
+/*!
+ * Returns position mapped to scene.
+ * \param ok It is set to success state if non null.
+ */
 QPointF Port::scenePos(bool *ok) const
 {
    if(ok) {
@@ -108,17 +143,42 @@ QPointF Port::scenePos(bool *ok) const
    return m_owner->item()->mapToScene(d->pos);
 }
 
+/*!
+ * This is private method needed only for wires as components do not
+ * change relative port position.
+ */
+void Port::setPos(const QPointF& newPos)
+{
+   d->pos = newPos;
+}
+
+SchematicScene* Port::schematicScene() const
+{
+   if(owner()->wire())
+      return owner()->wire()->schematicScene();
+   else
+      return owner()->component()->schematicScene();
+}
+
+
+//! Shorhand for Port::connect(this, other)
 void Port::connectTo(Port *other)
 {
    Port::connect(this, other);
 }
 
+//! \brief Connect the ports \a port1 and \a port2.
 void Port::connect(Port *port1, Port *port2)
 {
    bool ok1, ok2;
 
    if(port1 == port2 || !port1 || !port2)
       return;
+
+   if(port1->ownerItem() == port2->ownerItem()) {
+      qWarning() << "Cannot connect nodes of same component/wire";
+      return;
+   }
 
    QPointF p1 = port1->scenePos(&ok1);
    QPointF p2 = port2->scenePos(&ok2);
@@ -134,24 +194,31 @@ void Port::connect(Port *port1, Port *port2)
       return;
    }
 
+   //create new connection list if both the ports are not at all connected.
    if(!port1->m_connections && !port2->m_connections) {
       port1->m_connections = port2->m_connections = new QList<Port*>;
       *(port1->m_connections) << port1 << port2;
    }
+   //use port2->m_connections if port1->m_connections is null
    else if(!port1->m_connections) {
       port1->m_connections = port2->m_connections;
       //Q_ASSERT(!m_connections->contains(m_port1));
       *(port1->m_connections) << port1;
    }
+   //use port1->m_connections if port2->m_connections is null
    else if(!port2->m_connections) {
       port2->m_connections = port1->m_connections;
       *(port2->m_connections) << port2;
    }
+   // else both the m_connections exist.
    else {
+      // the connections are same indicates they are already connected.
       if(port1->m_connections == port2->m_connections) {
          Q_ASSERT(port1->m_connections->contains(port1));
          Q_ASSERT(port1->m_connections->contains(port2));
+         qWarning() << "Port::connect() : The ports are already connected";
       }
+      // else use the biggest list to hold all others..
       else if(port1->m_connections->size() >= port2->m_connections->size()) {
          *(port1->m_connections) += *(port2->m_connections);
          QList<Port*> *save = port2->m_connections;
@@ -170,15 +237,22 @@ void Port::connect(Port *port1, Port *port2)
       }
    }
 
+   // Update all ports owner.
    foreach(Port *p, *(port1->m_connections))
       p->ownerItem()->update();
 }
 
+//! Shorthand for Port::disconnect(this, from)
 void Port::disconnectFrom(Port *from)
 {
    Port::disconnect(this, from);
 }
 
+/*!
+ * Disconnect two ports
+ * \param port The port to be disconnected.
+ * \param from The port from which \a port will be disconnected.
+ */
 void Port::disconnect(Port *port, Port *from)
 {
    if(port == from || !port || !from) {
@@ -188,6 +262,7 @@ void Port::disconnect(Port *port, Port *from)
       qWarning() << "Cannot disconnect already disconnected ports or null list";
       return;
    }
+   //Initially remove 'port' from the list.
    port->m_connections->removeAll(port);
    port->m_connections = 0;
    if(from->m_connections->size() <= 1) {
@@ -205,6 +280,7 @@ void Port::disconnect(Port *port, Port *from)
    }
 }
 
+//! Check whether two ports are connected or not.
 bool Port::isConnected(Port *port1, Port *port2)
 {
    bool retVal = port1->m_connections == port2->m_connections &&
@@ -218,6 +294,7 @@ bool Port::isConnected(Port *port1, Port *port2)
    return retVal;
 }
 
+//! Finds an intersecting port in a given list of ports.
 Port* Port::findIntersectingPort(const QList<Port*> &ports) const
 {
    foreach(Port *p, ports) {
@@ -229,6 +306,7 @@ Port* Port::findIntersectingPort(const QList<Port*> &ports) const
    return 0;
 }
 
+//! Finds an interecting port on schematic.
 Port* Port::findIntersectingPort() const
 {
    SchematicScene *scene =
@@ -258,6 +336,7 @@ Port* Port::findIntersectingPort() const
    return 0;
 }
 
+//! Finds a coinciding port in a given list of ports.
 Port* Port::findCoincidingPort(const QList<Port*> &ports) const
 {
    foreach(Port *p, ports) {
@@ -269,6 +348,7 @@ Port* Port::findCoincidingPort(const QList<Port*> &ports) const
    return 0;
 }
 
+//! Finds a coinciding port on schematic.
 Port* Port::findCoincidingPort() const
 {
    SchematicScene *scene =
@@ -298,6 +378,22 @@ Port* Port::findCoincidingPort() const
    return 0;
 }
 
+//! Returns true only if all the connected components are selected.
+bool Port::areAllOwnersSelected() const
+{
+   if(!m_connections) {
+      return ownerItem()->isSelected();
+   }
+
+   foreach(Port *p, *m_connections) {
+      if(!p->ownerItem()->isSelected()) {
+         return false;
+      }
+   }
+   return true;
+}
+
+//! Draws the port based on the current connection status.
 void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option)
 {
    Q_UNUSED(option);
@@ -312,13 +408,16 @@ void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option)
    painter->drawEllipse(portEllipse.translated(pos()));
 }
 
-void drawPorts(const QList<Port*> &ports, QPainter *painter, const QStyleOptionGraphicsItem* option)
+//! A helper method used to draw multiple ports.
+void drawPorts(const QList<Port*> &ports, QPainter *painter,
+               const QStyleOptionGraphicsItem* option)
 {
    foreach(Port *port, ports) {
       port->paint(painter, option);
    }
 }
 
+//! Returns a rect accomodating pRect as well as all ports.
 QRectF portsRect(const QList<Port*> &ports, const QRectF& pRect)
 {
    QRectF rect = pRect;
@@ -326,4 +425,12 @@ QRectF portsRect(const QList<Port*> &ports, const QRectF& pRect)
       rect |= portEllipse.translated(port->pos());
    }
    return rect;
+}
+
+//! Adds the port's as ellipses to painterpath \a path.
+void addPortEllipses(const QList<Port*> &ports, QPainterPath &path)
+{
+   foreach(Port *port, ports) {
+      path.addEllipse(portEllipse.translated(port->pos()));
+   }
 }

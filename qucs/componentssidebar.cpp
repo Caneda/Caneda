@@ -20,8 +20,7 @@
 #include "qucs-tools/global.h"
 #include "componentssidebar.h"
 #include "sidebarmodel.h"
-#include "components/component.h"
-#include "node.h"
+#include "component.h"
 
 #include <QtGui/QHeaderView>
 #include <QtGui/QDrag>
@@ -52,88 +51,28 @@ TreeView::TreeView(QWidget *parent) : QTreeView(parent)
    setDragDropMode(QAbstractItemView::DragOnly);
    setDragEnabled(true);
    setAlternatingRowColors(true);
+   setIconSize(QSize(128, 128));
    expandAll();
 }
 
+//! Custom drag The drag pixmap is drawn from svg.
 void TreeView::startDrag( Qt::DropActions supportedActions)
 {
-   QModelIndexList indexes = selectedIndexes();
-   QMimeData *data = model()->mimeData(indexes);
-   if (!data) return;
+   //there can never be more that one index dragged at a time.
+   Q_ASSERT(selectedIndexes().size() == 1);
+   QModelIndex index = selectedIndexes().first();
+   QPixmap pix = qVariantValue<QPixmap>(model()->data(index, Qt::DecorationRole));
+   QPointF translateHint = model()->data(index, Qt::EditRole).toPointF();
 
-   QRect rect;
-   QPointF hotSpot;
-   QPixmap pixmap = renderToPixmap(data, &rect, hotSpot);
-   if(pixmap.isNull())
-      return QAbstractItemView::startDrag(supportedActions);
    QDrag *drag = new QDrag(this);
-   drag->setPixmap(pixmap);
-   drag->setMimeData(data);
-   drag->setHotSpot(hotSpot.toPoint());
+   drag->setPixmap(pix);
+   drag->setMimeData(model()->mimeData(selectedIndexes()));
+   drag->setHotSpot(translateHint.toPoint());
    if (drag->start(supportedActions) == Qt::MoveAction)
       clearSelection();
 }
 
-QPixmap TreeView::renderToPixmap(const QMimeData* data, QRect *r, QPointF& hotSpot)
-{
-   QRectF rect;// = visualRect(indexes.at(0));
-   Component *c = 0;
-   QString text;
-   if(data->formats().contains("application/qucs.sidebarItem"))
-   {
-      QByteArray encodedData = data->data("application/qucs.sidebarItem");
-      QDataStream stream(&encodedData, QIODevice::ReadOnly);
-
-      stream >> text;
-      c = Component::componentFromModel(text,0);
-   }
-   if(!c)
-   {
-      if(r)
-         *r = rect.toRect();
-      return QPixmap();
-   }
-   rect = c->boundingRect();
-
-   QList<ComponentPort*>::const_iterator it = c->componentPorts().constBegin();
-   const QList<ComponentPort*>::const_iterator end = c->componentPorts().constEnd();
-   for(; it != end; ++it)
-      rect |= (*it)->node()->boundingRect().translated((*it)->centrePos());
-   rect = rect.adjusted(-1,-1,1,1);
-   rect = c->matrix().mapRect(rect);
-   QPainter p;
-   QStyleOptionGraphicsItem so;
-   so.state |= QStyle::State_Open;
-   QPixmap pix(int(rect.width()),int(rect.height()));
-   pix.fill(QColor(255,255,255,0));
-   p.begin(&pix);
-   QPen pen = QPen(Qt::darkGray);
-   pen.setStyle(Qt::DashLine);
-   pen.setWidth(1);
-   p.setPen(pen);
-
-   p.setRenderHint(QPainter::Antialiasing,true);
-   p.setRenderHint(QPainter::TextAntialiasing,true);
-   p.setRenderHint(QPainter::SmoothPixmapTransform,true);
-   p.translate(-rect.left(),-rect.top());
-
-   p.setTransform(c->transform(),true);
-
-   c->paint(&p,&so,0);
-   c->drawNodes(&p);
-   p.end();
-
-   if(r)
-   {
-      hotSpot = QPointF(-rect.left(),-rect.top());
-      rect.translate(-rect.left(),-rect.top());
-      *r = rect.toRect();
-   }
-   delete c;
-   return pix;
-}
-
-
+//! This helps in filtering sidebar display corresponding to lineedit.
 class FilterProxyModel : public QSortFilterProxyModel
 {
    public:
@@ -189,4 +128,15 @@ void ComponentsSidebar::filterTextChanged()
    m_clearButton->setEnabled(!text.isEmpty());
    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
    m_proxyModel->setFilterRegExp(regExp);
+}
+
+/*!
+ * \brief Plugs library \a lib to sidebar display.
+ */
+void ComponentsSidebar::plugLibrary(QString lib)
+{
+   m_model->plugLibrary(lib);
+   m_proxyModel->setSourceModel(m_model);
+   m_treeView->setModel(m_model);
+   m_treeView->expandAll();
 }

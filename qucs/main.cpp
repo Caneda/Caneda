@@ -17,18 +17,17 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicview.h"
 #include "qucsmainwindow.h"
 #include "qucs-tools/global.h"
+#include "library.h"
 #include <QtGui>
 
 int main(int argc,char *argv[])
 {
    QApplication app(argc,argv);
    //app.setFont(Qucs::font());
-   QucsMainWindow mw;
-
-   QTimer::singleShot(100,&mw,SLOT(show()));
+   QucsMainWindow *mw = new QucsMainWindow();
+   QTimer::singleShot(100, mw,SLOT(show()));
 
    return app.exec();
 }

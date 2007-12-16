@@ -17,117 +17,105 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __UNDOCOMMANDS_H
-#define __UNDOCOMMANDS_H
+#ifndef __UNDOCMDS_H
+#define __UNDOCMDS_H
+
+#include "wire.h"
 
 #include <QtGui/QUndoCommand>
 #include <QtCore/QPointF>
+#include <QtCore/QVariant>
 
 class QucsItem;
+namespace Qucs {
+   class Component;
+}
+class Port;
 
-class UndoCommand : public QUndoCommand
+class PropertyChangeCmd : public QUndoCommand
 {
    public:
-      enum CommandIds
-      {
-	 Move = 0,
-	 Connect,
-	 Disconnect,
-	 AddWire,
-	 RemoveWire
-      };
-      
-      UndoCommand();
+      PropertyChangeCmd(const QString& propertyName,
+                        const QVariant& newValue,
+                        const QVariant& oldValue,
+                        Qucs::Component *const component);
+
+      virtual void undo();
+      virtual void redo();
+
+   private:
+      const QString m_property;
+      const QVariant m_newValue;
+      const QVariant m_oldValue;
+      Qucs::Component *const m_component;
+};
+
+class MoveCmd : public QUndoCommand
+{
+   public:
+      MoveCmd(QGraphicsItem *i,const QPointF& init, const QPointF& final);
+      void undo();
+      void redo();
+
+   private:
+      QGraphicsItem * const m_item;
+      QPointF m_initialPos;
+      QPointF m_finalPos;
+};
+
+class ConnectCmd : public QUndoCommand
+{
+   public:
+      ConnectCmd(Port *p1, Port *p2);
+      void undo();
+      void redo();
+
+   private:
+      Port * const m_port1;
+      Port * const m_port2;
+};
+
+class DisconnectCmd : public QUndoCommand
+{
+   public:
+      DisconnectCmd(Port *p1, Port *p2);
+      void undo();
+      void redo();
+
+   private:
+      Port * const m_port1;
+      Port * const m_port2;
+};
+
+class AddWireCmd : public QUndoCommand
+{
+   public:
+      AddWireCmd(Port *p1, Port* p2);
+      void undo();
+      void redo();
+
+      Qucs::Wire* wire() const { return m_wire; }
+
+   private:
+      Port * const m_port1;
+      Port * const m_port2;
+      SchematicScene *m_scene;
+      Qucs::Wire *m_wire;
+      QPointF m_pos;
+};
+
+class WireStateChangeCmd : public QUndoCommand
+{
+   public:
+      typedef Qucs::Wire::Store WireStore;
+      WireStateChangeCmd(Qucs::Wire *wire,WireStore initState, WireStore finalState);
 
       void undo();
       void redo();
 
-   protected:
-      virtual void undoIt()=0;
-      virtual void redoIt()=0;
    private:
-      bool firstTime;
-};
-
-class MoveCommand : public UndoCommand
-{
-   public:
-      MoveCommand(QucsItem *i,const QPointF& init,const QPointF& end);
-      int id() const;
-   protected:
-      void undoIt();
-      void redoIt();
-   private:
-      QucsItem * const item;
-      QPointF initialPoint;
-      QPointF endPoint;
-};
-
-class ComponentPort;
-
-class ConnectCommand : public UndoCommand
-{
-   public:
-      ConnectCommand(ComponentPort *p1,ComponentPort *p2);
-      ~ConnectCommand();
-      int id() const;
-   protected:
-      void undoIt();
-      void redoIt();
-
-   private:
-      ComponentPort * const port1;
-      ComponentPort * const port2;
-};
-
-class DisconnectCommand : public UndoCommand
-{
-   public:
-      DisconnectCommand(ComponentPort *p1,ComponentPort *p2);
-      //~ConnectCommand();
-      int id() const;
-   protected:
-      void undoIt();
-      void redoIt();
-
-   private:
-      ComponentPort * const port1;
-      ComponentPort * const port2;
-};
-
-class Wire;
-
-class AddWireCommand : public UndoCommand
-{
-   public:
-      AddWireCommand(ComponentPort *p1, ComponentPort *p2, Wire *w);
-      ~AddWireCommand(){};
-      int id() const;
-   protected:
-      void undoIt();
-      void redoIt();
-
-   private:
-      
-      ComponentPort * const port1;
-      ComponentPort * const port2;
-      Wire *wire;
-};
-
-class RemoveWireCommand : public UndoCommand
-{
-   public:
-      RemoveWireCommand(ComponentPort *p1, ComponentPort *p2);
-      ~RemoveWireCommand(){};
-      int id() const;
-   protected:
-      void undoIt();
-      void redoIt();
-
-   private:
-      Wire *wire;
-      ComponentPort * const port1;
-      ComponentPort * const port2; 
+      Qucs::Wire *m_wire;
+      Qucs::Wire::Store m_initState, m_finalState;
 };
 
 #endif

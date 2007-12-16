@@ -43,6 +43,7 @@ class QucsMainWindow : public MainWindowBase
 
       void addView(SchematicView *view);
       void saveSettings();
+      void test();
 
    public slots:
       void slotFileNew();

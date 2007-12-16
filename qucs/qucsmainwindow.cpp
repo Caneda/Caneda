@@ -24,6 +24,7 @@
 #include "schematicscene.h"
 #include "qucsview.h"
 #include "item.h"
+#include "library.h"
 #include "dialogs/qucssettingsdialog.h"
 
 #include <QtGui/QStatusBar>
@@ -74,7 +75,17 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w),
    connect(this, SIGNAL(currentWidgetChanged(QWidget *)), this, SLOT(updateTitleText()));
 
    newView();
+   SchematicView *v = qobject_cast<SchematicView*>(currentWidget());
+   m_undoGroup->setActiveStack(v->schematicScene()->undoStack());
    loadSettings();
+
+}
+
+void QucsMainWindow::test()
+{
+   SchematicView *v = qobject_cast<SchematicView*>(currentWidget());
+   if(v)
+      v->test();
 }
 
 void QucsMainWindow::initActions()
@@ -308,20 +319,20 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotEditFindAgain()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "undo.png"), tr("&Undo"), this);
+   action = m_undoGroup->createUndoAction(this);
+   action->setIcon(QIcon(Qucs::bitmapDirectory() + "undo.png"));
    action->setShortcut(CTRL+Key_Z);
    action->setStatusTip(tr("Undoes the last command"));
    action->setWhatsThis(tr("Undo\n\nMakes the last action undone"));
    action->setObjectName("undo");
-   connect( action, SIGNAL(triggered()), SLOT(slotEditUndo()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "redo.png"), tr("&Redo"), this);
+   action = m_undoGroup->createRedoAction(this);
+   action->setIcon(QIcon(Qucs::bitmapDirectory() + "redo.png"));
    action->setShortcut(CTRL+Key_Y);
    action->setStatusTip(tr("Redoes the last command"));
    action->setWhatsThis(tr("Redo\n\nRepeats the last action once more"));
    action->setObjectName("redo");
-   connect( action, SIGNAL(triggered()), SLOT(slotEditRedo()));
    addActionToMap(action);
 
    action = new QAction( tr("&New Project..."), this);
@@ -1547,7 +1558,7 @@ void QucsMainWindow::slotHelpAboutQt()
 
 void QucsMainWindow::loadSettings()
 {
-   Qucs::Settings settings("qucsrc");
+   Qucs::Settings settings("qucs-qt4rc");
 
    settings.beginGroup("MainWindow");
    resize(settings.value("size", QSize(600, 400)).toSize());
@@ -1576,7 +1587,7 @@ void QucsMainWindow::loadSettings()
    VHDL_Types.setNamedColor(
      settings.value("types", QColor(Qt::darkRed).name()).toString());
    VHDL_Attributes.setNamedColor(
-     settings.value("attributes", QColor(Qt::darkCyan).name()).toString());
+      settings.value("attributes", QColor(Qt::darkCyan).name()).toString());
    settings.endGroup();
    settings.endGroup();
 
@@ -1589,11 +1600,49 @@ void QucsMainWindow::loadSettings()
      it++;
    }
    settings.endGroup();
+
+   bool foundPathInRcFile = false;
+   QString str = settings.value("SidebarLibrary", QString()).toString();
+   if(str.isEmpty()) {
+      str = QFileDialog::getOpenFileName(0, "Sidebar library file", QDir::homePath());
+      if(str.isEmpty()) {
+         QMessageBox::warning(0, "No sidebar library", "Sidebar won't have any library"
+                              "as you haven't selected any!");
+         return;
+      }
+   }
+   else {
+      foundPathInRcFile = true;
+   }
+
+   Library *library = Library::defaultInstance();
+   if(library->loadLibrary(str)) {
+      if(!foundPathInRcFile) {
+         QMessageBox::information(0, "Load library (only testing for now)",
+                                  "Succesfully loaded library!");
+         settings.setValue("SidebarLibrary", str);
+      }
+      else
+         qDebug() << "Succesfully loaded library!";
+   }
+   else {
+      QMessageBox::warning(0, "Load library", tr("Failed to load %1\nEnter new library").arg(str));
+      str = QFileDialog::getOpenFileName(0, "Sidebar library file", QDir::homePath());
+      if(str.isEmpty()) {
+         QMessageBox::warning(0, "No sidebar library", "Sidebar won't have any library"
+                              "as you haven't selected any!");
+         return;
+      }
+      Q_ASSERT(library->loadLibrary(str));
+      settings.setValue("SidebarLibrary", str);
+   }
+   m_componentsSidebar->plugLibrary("passive");
+   test();
 }
 
 void QucsMainWindow::saveSettings()
 {
-   Qucs::Settings settings("qucsrc");
+   Qucs::Settings settings("qucs-qt4rc");
 
    settings.beginGroup("MainWindow");
    settings.setValue("size", size());

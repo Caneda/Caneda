@@ -44,6 +44,7 @@ class PropertiesGroup : public QObject, public QGraphicsItemGroup
 
       PropertiesGroup(SchematicScene *scene = 0);
 
+      //! Class identifier.
       int type() { return PropertiesGroupType; }
 
       void realignItems();

@@ -34,6 +34,7 @@ class SchematicView : public QGraphicsView, public QucsView
 
       SchematicView(SchematicScene *sc = 0,QucsMainWindow *parent = 0);
       ~SchematicView();
+      void test();
 
       SchematicScene* schematicScene() const;
 

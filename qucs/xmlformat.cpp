@@ -20,8 +20,7 @@
 #include "xmlformat.h"
 #include "schematicview.h"
 #include "schematicscene.h"
-#include "components/component.h"
-#include "components/componentproperty.h"
+#include "component.h"
 #include "paintings/painting.h"
 #include "wire.h"
 #include "wireline.h"
@@ -101,8 +100,8 @@ QString XmlFormat::saveText()
 
    //Write all the components now
    writer->writeStartElement("components");
-   foreach(Component *c, scene->components())
-      c->writeXml(writer);
+   foreach(Qucs::Component *c, scene->components())
+      c->saveData(writer);
    writer->writeEndElement(); //</components>
 
    writer->writeStartElement("wires");

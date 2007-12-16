@@ -22,41 +22,68 @@
 #include "port.h"
 #include "xmlutilities.h"
 #include "schematicscene.h"
+#include "wire.h"
+#include "undocommands.h"
 #include "qucs-tools/global.h"
 
 #include <QtCore/QDebug>
+#include <QtGui/QPainter>
 
 namespace Qucs
 {
-   Component::Component(SchematicScene *scene) : SvgItem(scene)
+   //! Constructs and initializes default empty component object.
+   Component::Component(SchematicScene *scene) :
+      SvgItem(scene),
+      d(new ComponentData()), m_propertyGroup(0)
    {
-      d = new ComponentData();
-      m_propertyGroup = 0;
-      m_activeStatus = Active;
-      setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+      init();
    }
 
+   //! Constructs a component from \a other data.
+   Component::Component(const QSharedDataPointer<ComponentData>& other,
+                        SchematicScene *scene) :
+      SvgItem(scene),
+      d(other), m_propertyGroup(0)
+   {
+      init();
+   }
+
+   //! Constructs a component from xml stream.
    Component::Component(Qucs::XmlReader *reader, const QString& path,
-                        SchematicScene *scene) : SvgItem(scene)
+                        SchematicScene *scene) :
+      SvgItem(scene),
+      d(new ComponentData()), m_propertyGroup(0)
    {
-      d = new ComponentData();
-      m_propertyGroup = 0;
-      m_activeStatus = Active;
-      setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
       readXml(reader, path);
+      init();
    }
 
+   //! Destructor.
    Component::~Component()
    {
       delete m_propertyGroup;
    }
 
+   void Component::init()
+   {
+      setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+      Property _label("label", tr("Label"), QVariant::String, true,
+                      false);
+      d->propertyMap.insert("label", _label);
+   }
+
+   /*!
+    * \brief This method updates the property display on schematic.
+    *
+    * This also takes care of creating new property group if it didn't
+    * exist before and also deletes it if none of property are visible.
+    */
    void Component::updatePropertyGroup()
    {
-      qDebug() << "Component::updatePropertyGroup() called";
       bool itemsVisible = false;
-      PropertyMap::const_iterator it = propertyMap().constBegin();
-      while (it != propertyMap().constEnd()) {
+      PropertyMap::const_iterator it = propertyMap().constBegin(),
+         end = propertyMap().constEnd();
+      while (it != end) {
          if(it->isVisible()) {
             itemsVisible = true;
             break;
@@ -78,25 +105,49 @@ namespace Qucs
       }
    }
 
+   //! Creates property group for the first time.
    void Component::createPropertyGroup()
    {
-      qDebug() << "creating";
+      //delete the old group if it exists.
+      delete m_propertyGroup;
       m_propertyGroup = new PropertiesGroup(schematicScene());
       m_propertyGroup->setParentItem(this);
       m_propertyGroup->realignItems();
    }
 
-   void Component::setProperty(const QString& propName, const QVariant& value)
+   /*!
+    * \brief Method used to set property's value.
+    *
+    * This also handles the property change of special properties such as
+    * symbol, label and forwards the call to those methods on match.
+    * It also updates the textual display of property on schematic.
+    *
+    * \param propName The property which is to be set.
+    * \param value The new value to be set.
+    * \return Returns true if successful, else returns false.
+    */
+   bool Component::setProperty(const QString& propName, const QVariant& value)
    {
       if(!propertyMap().contains(propName)) {
-         qWarning() << "Component::setPropertyValue(): Property " << propName
-                    << " doesn't exist!";
-         return;
+         qDebug() << "Component::setPropertyValue(): Property '" << propName
+                  << "' doesn't exist!";
+         return false;
       }
-      d->propertyMap[propName].setValue(value);
-      updatePropertyGroup();
+      if(propName == "symbol") {
+         return setSymbol(value.toString());
+      }
+      if(propName == "label") {
+         return setLabel(value.toString());
+      }
+
+      bool state = d->propertyMap[propName].setValue(value);
+      if(state) {
+         updatePropertyGroup();
+      }
+      return state;
    }
 
+   //! Takes care of visibility of property text on schematic.
    void Component::setPropertyVisible(const QString& propName, bool visiblity)
    {
       if(!propertyMap().contains(propName)) {
@@ -108,47 +159,157 @@ namespace Qucs
       updatePropertyGroup();
    }
 
+   /*
+    *  \brief Sets the symbol of component to newSymbol if it exists.
+    *
+    * This method sets the symbol property's value and then takes care
+    * of geometry changes as well.
+    *
+    * \param newSymbol The symbol to be set now
+    * \return True on success, and false on failure.
+    * \todo Take care of undo\redo as well as connection changes.
+    */
+   bool Component::setSymbol(const QString& newSymbol)
+   {
+      QString svgid = newSymbol;
+      QString prefix(name());
+      prefix.append('/');
+      if(!propertyMap().contains("symbol")) {
+         qDebug() << "Component::setSymbol() : 'symbol' property not found";
+         return false;
+      }
+      if(!d->propertyMap["symbol"].setValue(svgid)) {
+         return false;
+      }
+
+      qDeleteAll(m_ports);
+      m_ports.clear();
+      const QList<PortData*> portDatas = d.constData()->schematicPortMap[svgid];
+      foreach(const PortData *data, portDatas) {
+         m_ports << new Port(this, data->pos, data->name);
+      }
+      svgid.prepend(prefix);
+
+      //now register the new connections for new symbol.
+      registerConnections(svgid, schematicScene()->svgPainter());
+      updatePropertyGroup();
+
+      return true;
+   }
+
+   /*! \brief Sets the label of component.
+    *
+    * This also handles lable prefix and number suffix appropriately.
+    * \param newLabel The label to be set now.
+    * \return Returns true on success and false on failure.
+    * \todo Yet to implement label prefix and number suffixing.
+    */
+   bool Component::setLabel(const QString& newLabel)
+   {
+      if(!propertyMap().contains("label")) {
+         qDebug() << "Component::setLabel() : 'label property not found";
+         return false;
+      }
+      //TODO: Yet to implement label prefix and number suffixing.
+      bool state = d->propertyMap["label"].setValue(newLabel);
+      if(state) {
+         updatePropertyGroup();
+      }
+      return state;
+   }
+
+   //! Sets the component's activeStatus to \a status.
    void Component::setActiveStatus(ActiveStatus status)
    {
       if(status == Short && m_ports.size() <= 1) {
          qWarning() << "Cannot short components with <= 1 ports";
          return;
       }
-      m_activeStatus = status;
+      d->activeStatus = status;
       update();
    }
 
+   /*! Toggles active status appropriately also taking care of special
+    * condition where components with <= 1 port shouldn't be shorted.
+    */
    void Component::toggleActiveStatus()
    {
-      ActiveStatus status = (ActiveStatus)((m_activeStatus + 1) % 3);
+      ActiveStatus status = (ActiveStatus)((d->activeStatus + 1) % 3);
       if(status == Short && m_ports.size() <= 1) {
          status = (ActiveStatus)((status + 1) % 3);
       }
       setActiveStatus(status);
    }
 
-   void Component::readSavedData(Qucs::XmlReader *reader)
+   //! \todo implement.
+   void Component::loadData(Qucs::XmlReader *reader)
    {
+      //TODO: Implement.
    }
 
-   void Component::writeSaveData(Qucs::XmlWriter *writer) const
+   //! \todo implement.
+   void Component::saveData(Qucs::XmlWriter *writer) const
    {
+      //TODO: Implement.
    }
 
-   void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *w)
+   //! Draw the compnent using svg painter. Also handle active status.
+   void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
+                         QWidget *w)
    {
       SvgItem::paint(painter, o, w);
       drawPorts(m_ports, painter, o);
+
+      if(activeStatus() != Qucs::Active) {
+         painter->setPen(activeStatus() == Qucs::Short ? Qt::darkGreen :
+                         Qt::darkRed);
+         painter->drawRect(boundingRect());
+
+         QPointF tl = boundingRect().topLeft();
+         QPointF br = boundingRect().bottomRight();
+         QPointF tr = boundingRect().topRight();
+         QPointF bl = boundingRect().bottomLeft();
+
+         painter->drawLine(tl, br);
+         painter->drawLine(bl, tr);
+      }
    }
 
+   //! Check for connections and connect the coinciding ports.
+   void Component::checkAndConnect(bool pushUndoCommands)
+   {
+      foreach(Port *port, m_ports) {
+         Port *other = port->findCoincidingPort();
+         if(other) {
+            if(pushUndoCommands) {
+               ConnectCmd *cmd = new ConnectCmd(port, other);
+               schematicScene()->undoStack()->push(cmd);
+            } else {
+               port->connectTo(other);
+            }
+         }
+      }
+   }
+
+   //! Returns the rect adjusted to accomodate ports too.
    QRectF Component::adjustedBoundRect(const QRectF& rect)
    {
       return portsRect(m_ports, rect);
    }
 
+   //! React to change of item position.
+   QVariant Component::itemChange(GraphicsItemChange change,
+                                  const QVariant &value)
+   {
+      return SvgItem::itemChange(change, value);
+   }
+
+   /*! This method reads component from xml stream
+    * \param reader XmlReader pointing to component's xml.
+    * \param path Absolute path of xml file being processed.
+    */
    void Component::readXml(Qucs::XmlReader *reader, const QString& path)
    {
-      qDebug() << "Entered Component::readXml()";
       Q_ASSERT(reader->isStartElement() && reader->name() == "component");
       QXmlStreamAttributes attributes = reader->attributes();
 
@@ -165,15 +326,12 @@ namespace Qucs
 
          if(reader->isStartElement()) {
             if(reader->name() == "displaytext") {
-               qDebug() << "Locale prefix = " << Qucs::localePrefix();
-               d->displayText = reader->readLocaleText("uk");//Qucs::localePrefix());
-               qDebug() << "reading displaytext = " << d->displayText;
-               qDebug() << reader->name().toString();
-               Q_ASSERT(reader->isEndElement() && reader->name() == "displaytext");
+               d->displayText = reader->readLocaleText(Qucs::localePrefix());
+               Q_ASSERT(reader->isEndElement() &&
+                        reader->name() == "displaytext");
             }
             else if(reader->name() == "description") {
                d->description = reader->readLocaleText(Qucs::localePrefix());
-               qDebug() << "reading description" << d->description;
                Q_ASSERT(reader->isEndElement());
             }
             else if(reader->name() == "schematics") {
@@ -187,19 +345,18 @@ namespace Qucs
             }
          }
       }
-      qDebug() << "Leaving Component::readXml()";
    }
 
    void Component::readSchematics(Qucs::XmlReader *reader, const QString& svgPath)
    {
-      qDebug() << "Entered Component::readSchematics()";
       Q_ASSERT(reader->isStartElement() && reader->name() == "schematics");
 
       QStringList parsedSymbols;
 
-      QString defaultSchematic = reader->attributes().value("default").toString();
+      QString defaultSchematic =
+         reader->attributes().value("default").toString();
       Q_ASSERT(!defaultSchematic.isEmpty());
-      int schematicsFound = 0;
+
       while(!reader->atEnd()) {
          reader->readNext();
 
@@ -207,13 +364,13 @@ namespace Qucs
 
          if(reader->isStartElement()) {
             if(reader->name() == "schematic") {
-               QString schName = reader->attributes().value("name").toString();
+               QString schName =
+                  reader->attributes().value("name").toString();
 
                Q_ASSERT(!schName.isEmpty());
 
-               parsedSymbols << schName.prepend(d.constData()->name + '/');
+               parsedSymbols << schName;
 
-               ++schematicsFound;
                readSchematic(reader, svgPath);
             }
             else {
@@ -226,34 +383,31 @@ namespace Qucs
          return;
       }
 
-      defaultSchematic.prepend(d.constData()->name + '/');
       Q_ASSERT(parsedSymbols.contains(defaultSchematic));
-      QString symbolDescription = tr("Represents the current symbol of component.");
+      QString symbolDescription =
+         tr("Represents the current symbol of component.");
       QVariant defValue(defaultSchematic);
       Q_ASSERT(defValue.convert(QVariant::String));
-      Property symb("symbol", symbolDescription, QVariant::String, false, false,
-                    defValue, parsedSymbols);
+      Property symb("symbol", symbolDescription, QVariant::String, false,
+                    false, defValue, parsedSymbols);
       d->propertyMap.insert("symbol", symb);
-      registerConnections(defaultSchematic, schematicScene()->svgPainter());
-      qDebug() << "Leaving Component::readSchematics()";
+      setSymbol(defaultSchematic);
    }
 
    void Component::readSchematic(Qucs::XmlReader *reader, const QString& svgPath)
    {
-      qDebug() << "Entered Component::readSchematic()";
       Q_ASSERT(reader->isStartElement() && reader->name() == "schematic");
 
       QString schName = reader->attributes().value("name").toString();
       QString schType = reader->attributes().value("href").toString();
 
       if(!schType.isEmpty()) {
-         QFile svgFile(svgPath + schType);
+         QFile svgFile(svgPath + "/" + schType);
          svgFile.open(QIODevice::ReadOnly | QIODevice::Text);
 
          QByteArray svgContent(svgFile.readAll());
 
          QString svgId = d.constData()->name + "/" + schName;
-         qDebug() << "Component::readSchematic() : Registering svg id " << svgId;
          schematicScene()->svgPainter()->registerSvg(svgId, svgContent);
       }
 
@@ -266,8 +420,9 @@ namespace Qucs
          if(reader->isStartElement()) {
             if(reader->name() == "svg") {
                Q_ASSERT(schType.isEmpty());
-               qDebug() << "Yet to implement internal svg support";
-               reader->readUnknownElement();
+               QByteArray svgContent = reader->readXmlFragment().toLocal8Bit();
+               QString svgId = d.constData()->name + "/" + schName;
+               schematicScene()->svgPainter()->registerSvg(svgId, svgContent);
             }
             else if(reader->name() == "port") {
                QXmlStreamAttributes attribs = reader->attributes();
@@ -277,8 +432,8 @@ namespace Qucs
                qreal y = attribs.value("y").toString().toDouble(&ok);
                Q_ASSERT(ok);
                QString portName = attribs.value("name").toString();
-
-               m_ports << new Port(this, QPointF(x, y), portName);
+               d->schematicPortMap[schName] <<
+                  new PortData(QPointF(x, y), portName);
 
                while(!reader->isEndElement())
                   reader->readNext();
@@ -288,7 +443,6 @@ namespace Qucs
             }
          }
       }
-      qDebug() << "Leaving Component::readSchematic()";
    }
 
    void Component::readProperties(Qucs::XmlReader *reader)
@@ -302,7 +456,7 @@ namespace Qucs
 
          else if(reader->isStartElement()) {
             if(reader->name() == "property") {
-               Property prop(reader);
+               Property prop = PropertyFactory::createProperty(reader);
                d->propertyMap.insert(prop.name(), prop);
             }
             else {

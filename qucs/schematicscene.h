@@ -25,11 +25,7 @@
 #include <QtCore/QPair>
 #include <QtGui/QGraphicsItem>
 
-class Node;
 class QUndoStack;
-class Component;
-class ComponentPort;
-class Wire;
 class QucsItem;
 class Diagram;
 class Painting;
@@ -41,17 +37,9 @@ namespace Qucs
       SchematicMode,
       SymbolMode
    };
+   class Component;
+   class Wire;
 }
-
-template<typename T> T qucsitem_cast(QGraphicsItem *item)
-{
-   bool firstCond = int(static_cast<T>(0)->Type) == int(QGraphicsItem::Type);
-   bool secondCond = !firstCond && item &&
-      ((int(static_cast<T>(0)->Type) & item->type()) == (int(static_cast<T>(0)->Type)));
-   bool result = firstCond | secondCond;
-   return result ? static_cast<T>(item)  : 0;
-}
-
 
 typedef QGraphicsSceneMouseEvent MouseActionEvent;
 
@@ -81,25 +69,13 @@ class SchematicScene : public QGraphicsScene
       SchematicScene(qreal x, qreal y, qreal width, qreal height, QObject * parent = 0);
       ~SchematicScene();
 
-      Node* nodeAt(qreal cx, qreal cy);
-      Node* nodeAt(const QPointF& centre);
-      Node* createNode(const QPointF& pos);
-      void removeNode(Node *n);
+      void test();
 
       bool areItemsMoving() const { return m_areItemsMoving; }
-      void setGrabbedWire(Wire *w);
 
-      void insertComponent(Component *comp);
-      void removeComponent(Component *comp);
-      void insertWire(Wire *w);
-      void removeWire(Wire *w);
-
-      QList<Component*> components() const { return m_components; }
       QList<Painting*> paintings() const { return m_paintings; }
-      QList<Wire*> wires() const { return m_wires; }
       QList<Diagram*> diagrams() const { return m_diagrams; }
       QList<Painting*> symbolPaintings() const { return m_symbolPaintings; }
-      QList<Node*> nodes() const { return m_nodes; }
 
       void mirrorXItems(QList<QucsItem*>& items);
       void mirrorYItems(QList<QucsItem*>& items);
@@ -153,11 +129,8 @@ class SchematicScene : public QGraphicsScene
       void copyItems(QList<QucsItem*> items);
       void paste();
 
-      void processForSpecialMove(QList<QucsItem*> items);
-      void moveSpecialItemsBy(const QPointF& delta);
-      void endSpecialMovingItems();
-
       SvgPainter* svgPainter() const { return m_svgPainter; }
+      void setSvgPainter(SvgPainter *painter);
 
    public slots:
       void setModified(bool m = true);
@@ -199,25 +172,18 @@ class SchematicScene : public QGraphicsScene
    private:
       void init();
       void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
-      void connectNodes(Node *from, Node *to);
-      // A very helpful recursive function to move components after connection
-      void adjustPositions(Node *of,const QPointF& delta);
-      void testInsertingItems();
+
+      void processForSpecialMove(QList<QGraphicsItem*> _items);
+      void specialMove(qreal dx, qreal dy);
+      void endSpecialMove();
+
       //These are helper variables (aka state holders)
       bool m_areItemsMoving;
-      Wire *eventWire;
-      Node *helperNode;
-      QList<Node*> m_movingNodes;
-      QList<Wire*> m_resizingWires;
-      QList<Wire*> m_moveResizingWires;
-      QList<QucsItem*> m_alreadyMoved;
-      QList<QucsItem*> m_insertingItems;
+      QList<Qucs::Component*> disconnectibles;
+      QList<Qucs::Wire*> movingWires, grabMovingWires;
       QPointF lastPos;
       // These are the various qucs-items on scene
-      QList<Component*> m_components;
-      QList<Wire*> m_wires;
       QList<Diagram*> m_diagrams;
-      QList<Node*> m_nodes;
       QList<Painting*> m_paintings;
       QList<Painting*> m_symbolPaintings;
 
@@ -238,8 +204,9 @@ class SchematicScene : public QGraphicsScene
       bool m_modified;
       bool m_opensDataDisplay;
       bool m_frameVisible;
-
+      bool m_snapToGrid;
       SvgPainter* m_svgPainter;
+      bool m_macroProgress;
 };
 
 #endif //__SCHEMATICSCENE_H
