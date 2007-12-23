@@ -27,6 +27,7 @@ class Library;
 
 class SidebarModel : public QAbstractItemModel
 {
+      Q_OBJECT;
    public:
       SidebarModel(QObject *parent=0);
       ~SidebarModel(){};
@@ -41,6 +42,7 @@ class SidebarModel : public QAbstractItemModel
       bool isComponent(const QModelIndex& index) const;
       QMimeData* mimeData(const QModelIndexList& indexes) const;
 
+      QPixmap pixmap(const QModelIndex& index) const;
       void plugLibrary(const QString& libraryName);
    private:
 

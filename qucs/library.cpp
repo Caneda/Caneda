@@ -87,7 +87,7 @@ QPixmap LibraryItem::renderedPixmap(QString component,
       pix = QPixmap(rect.toRect().size());
       pix.fill(Qt::transparent);
       QPainter painter(&pix);
-      painter.translate(rect.topLeft()*-1);
+      painter.setWindow(rect.toRect());
       m_svgPainter->paint(&painter, svgId);
    }
    return pix;

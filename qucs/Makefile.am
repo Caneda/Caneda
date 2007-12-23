@@ -36,7 +36,7 @@ bin_PROGRAMS = qucs
 
 MOCHEADERS = schematicscene.h schematicview.h mainwindowbase.h \
 			 qucsmainwindow.h componentssidebar.h svgitem.h svgtest.h \
-			 propertyitem.h propertygroup.h component.h
+			 propertyitem.h propertygroup.h component.h sidebarmodel.h
 
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
@@ -58,8 +58,8 @@ qucs_LDADD = ../qucs-tools/libqucstools.a dialogs/libdialogs.a \
 # components/libcomponents.a
 
 noinst_HEADERS = $(MOCHEADERS) wire.h wireline.h item.h undocommands.h qucsview.h \
-                               sidebarmodel.h fileformathandler.h  \
-                               xmlutilities.h svgitem.h property.h port.h library.h
+                               fileformathandler.h  xmlutilities.h svgitem.h \
+							   property.h port.h library.h
 # qucsprimaryformat.h xmlformat.h
 
 # rules for translations

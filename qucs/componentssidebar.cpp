@@ -51,17 +51,22 @@ TreeView::TreeView(QWidget *parent) : QTreeView(parent)
    setDragDropMode(QAbstractItemView::DragOnly);
    setDragEnabled(true);
    setAlternatingRowColors(true);
-   setIconSize(QSize(128, 128));
+   setIconSize(QSize(32, 32));
    expandAll();
 }
 
 //! Custom drag The drag pixmap is drawn from svg.
-void TreeView::startDrag( Qt::DropActions supportedActions)
+void TreeView::startDrag(Qt::DropActions supportedActions)
 {
    //there can never be more that one index dragged at a time.
    Q_ASSERT(selectedIndexes().size() == 1);
    QModelIndex index = selectedIndexes().first();
-   QPixmap pix = qVariantValue<QPixmap>(model()->data(index, Qt::DecorationRole));
+   SidebarModel *sm = qobject_cast<SidebarModel*>(model());
+   if(!sm) {
+      QTreeView::startDrag(supportedActions);
+      return;
+   }
+   QPixmap pix = sm->pixmap(index);
    QPointF translateHint = model()->data(index, Qt::EditRole).toPointF();
 
    QDrag *drag = new QDrag(this);
@@ -118,7 +123,7 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
            this, SLOT(filterTextChanged()));
 
    connect(m_clearButton,SIGNAL(clicked()),m_filterEdit,SLOT(clear()));
-
+   connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
    setWindowTitle(tr("Components"));
 }
 
@@ -136,7 +141,4 @@ void ComponentsSidebar::filterTextChanged()
 void ComponentsSidebar::plugLibrary(QString lib)
 {
    m_model->plugLibrary(lib);
-   m_proxyModel->setSourceModel(m_model);
-   m_treeView->setModel(m_model);
-   m_treeView->expandAll();
 }

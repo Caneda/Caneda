@@ -108,9 +108,11 @@ void SidebarModel::plugLibrary(const QString& libraryName)
    if(!libItem) return;
 
    CategoryItem *libRoot = new CategoryItem(libraryName, false, rootItem);
-   foreach(const ComponentDataPtr data, libItem->components().values()) {
+   QList<ComponentDataPtr> components = libItem->components().values();
+   foreach(const ComponentDataPtr data, components) {
       new CategoryItem(data->name, true, libRoot);
    }
+   reset();
 }
 
 QModelIndex SidebarModel::index ( int row, int column, const QModelIndex & parent ) const
@@ -153,7 +155,7 @@ QVariant SidebarModel::data ( const QModelIndex & index, int role ) const
    if (role == Qt::DisplayRole)
       return QVariant(item->name());
    else if(role == Qt::DecorationRole && item->isComponent()) {
-      return QVariant(item->iconPixmap());
+      return QVariant(QIcon(item->iconPixmap()));
    }
    else if(role == Qt::EditRole && item->isComponent()) {
       //HACK: Using unsed role for sending topleft of item.
@@ -172,11 +174,7 @@ QVariant SidebarModel::data ( const QModelIndex & index, int role ) const
       }
    }
    else if(role == Qt::SizeHintRole) {
-      QSize sz(150, 25);
-      int height = item->iconPixmap().size().height();
-      if(height > sz.height()) {
-         sz.setHeight(height);
-      }
+      QSize sz(150, 32);
       return sz;
    }
    return QVariant();
@@ -203,6 +201,15 @@ QStringList SidebarModel::mimeTypes() const
    QStringList l;
    l << "application/qucs.sidebarItem";
    return l;
+}
+
+QPixmap SidebarModel::pixmap(const QModelIndex& index) const
+{
+   if (!index.isValid())
+      return QPixmap();
+
+   CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
+   return item->iconPixmap();
 }
 
 QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
