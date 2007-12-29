@@ -1,3 +1,8 @@
+2007-12-29  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* svgitem.cpp (SvgItemData::boundingRect): Fixed to use viewbox for bounds when svg provides it.
+	* componentssidebar.cpp (TreeView::startDrag): Fixed drag pixmap to use svg one.
+
 2007-12-17  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* component.*, componentssidebar.*, item.*, port.*, property*, wire.*, schematic*,

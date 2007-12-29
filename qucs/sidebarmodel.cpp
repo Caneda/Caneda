@@ -205,8 +205,9 @@ QStringList SidebarModel::mimeTypes() const
 
 QPixmap SidebarModel::pixmap(const QModelIndex& index) const
 {
-   if (!index.isValid())
+   if (!index.isValid()) {
       return QPixmap();
+   }
 
    CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
    return item->iconPixmap();

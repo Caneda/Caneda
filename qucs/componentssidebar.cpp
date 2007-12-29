@@ -61,12 +61,20 @@ void TreeView::startDrag(Qt::DropActions supportedActions)
    //there can never be more that one index dragged at a time.
    Q_ASSERT(selectedIndexes().size() == 1);
    QModelIndex index = selectedIndexes().first();
-   SidebarModel *sm = qobject_cast<SidebarModel*>(model());
-   if(!sm) {
+   QAbstractProxyModel *proxyModel = qobject_cast<QAbstractProxyModel*>(model());
+   if(!proxyModel) {
+      qDebug() << "TreeView::startDrag() : Failed to identify filter model";
       QTreeView::startDrag(supportedActions);
       return;
    }
-   QPixmap pix = sm->pixmap(index);
+   SidebarModel *sm = qobject_cast<SidebarModel*>(proxyModel->sourceModel());
+   if(!sm) {
+      qDebug() << "TreeView::startDrag() : Failed to identify sidebar model";
+      QTreeView::startDrag(supportedActions);
+      return;
+   }
+   QModelIndex proxyIndex = proxyModel->mapToSource(index);
+   QPixmap pix = sm->pixmap(proxyIndex);
    QPointF translateHint = model()->data(index, Qt::EditRole).toPointF();
 
    QDrag *drag = new QDrag(this);

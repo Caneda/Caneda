@@ -256,6 +256,21 @@ QByteArray SvgItemData::styleSheet() const
    return getStyleSheet(content);
 }
 
+/*!
+ * Returns the bounding rect of the svg element.
+ *
+ * Use viewBox (if exist) and as a fallback use boundsOnElement
+*/
+QRectF SvgItemData::boundingRect() const
+{
+   QRectF viewbox;
+   viewbox = renderer.viewBox();
+
+   if(viewbox.isNull())
+      return renderer.boundsOnElement("svg");
+   return viewbox;
+}
+
 /*
   ##########################################################################
   #                          SvgPainter methods                            #

@@ -39,8 +39,7 @@ class SvgItemData
       void setStyleSheet(const QByteArray& stylesheet);
       QByteArray styleSheet() const;
 
-      //! Returns the bounding rect of the svg element.
-      QRectF boundingRect() const { return renderer.boundsOnElement("svg"); }
+      QRectF boundingRect() const;
 
    private:
       friend class SvgPainter;
@@ -54,7 +53,8 @@ class SvgItemData
 //! A typedef for string a hash table with string keys and pointer to svg data.
 typedef QHash<QString, SvgItemData*> DataHash;
 
-/*!\brief A class used to take care of rendering svg.
+/*
+ *!\brief A class used to take care of rendering svg.
  *
  * This class renders a svg, given the svg id. The svg to be rendered should
  * be first registered with the instance of this class. This class also
