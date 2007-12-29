@@ -78,10 +78,16 @@ void TreeView::startDrag(Qt::DropActions supportedActions)
    QPointF translateHint = model()->data(index, Qt::EditRole).toPointF();
 
    QDrag *drag = new QDrag(this);
+
+   QPixmap plainPixmap(32, 32);
+   plainPixmap.fill(Qt::transparent);
+   drag->setDragCursor(plainPixmap, Qt::MoveAction);
+   drag->setDragCursor(plainPixmap, Qt::CopyAction);
+
    drag->setPixmap(pix);
    drag->setMimeData(model()->mimeData(selectedIndexes()));
    drag->setHotSpot(translateHint.toPoint());
-   if (drag->start(supportedActions) == Qt::MoveAction)
+   if (drag->exec(supportedActions) == Qt::MoveAction)
       clearSelection();
 }
 
