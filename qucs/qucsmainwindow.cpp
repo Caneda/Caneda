@@ -985,17 +985,13 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
 
    do {
       if(!(selectedItems.isEmpty() || func == 0)) {
-         QList<QucsItem*> funcable;
+         QList<QucsItem*> funcable = QucsItem::filterQucsItems(selectedItems);
 
-         foreach(QGraphicsItem *item, selectedItems) {
-            QucsItem *i = qucsitem_cast<QucsItem*>(item);
-            if(i)
-               funcable << i;
-         }
          if(funcable.isEmpty())
             break;
-         (scene->*func)(funcable);
-         scene->setModified(true);
+
+         (scene->*func)(funcable, true, 0);
+
          foreach(QAction *act, checkableActions) {
             if(act != norm) {
                act->blockSignals(true);
@@ -1601,7 +1597,6 @@ void QucsMainWindow::loadSettings()
    }
    settings.endGroup();
 
-   bool foundPathInRcFile = false;
    QString str = settings.value("SidebarLibrary", QString()).toString();
    if(str.isEmpty()) {
       str = QFileDialog::getOpenFileName(0, "Sidebar library file", QDir::homePath());
@@ -1611,31 +1606,21 @@ void QucsMainWindow::loadSettings()
          return;
       }
    }
+
+   LibraryLoader *library = LibraryLoader::defaultInstance();
+
+   if(library->load(str)) {
+      settings.setValue("SidebarLibrary", str);
+      qDebug() << "Succesfully loaded library!";
+   }
    else {
-      foundPathInRcFile = true;
+      //invalidate entry.
+      qWarning() << "QucsMainWindow::loadSettings() : Entry is invalid. Run once more to set"
+                 << "the appropriate path.";
+      settings.setValue("SidebarLibrary", "");
+      return;
    }
 
-   Library *library = Library::defaultInstance();
-   if(library->loadLibrary(str)) {
-      if(!foundPathInRcFile) {
-         QMessageBox::information(0, "Load library (only testing for now)",
-                                  "Succesfully loaded library!");
-         settings.setValue("SidebarLibrary", str);
-      }
-      else
-         qDebug() << "Succesfully loaded library!";
-   }
-   else {
-      QMessageBox::warning(0, "Load library", tr("Failed to load %1\nEnter new library").arg(str));
-      str = QFileDialog::getOpenFileName(0, "Sidebar library file", QDir::homePath());
-      if(str.isEmpty()) {
-         QMessageBox::warning(0, "No sidebar library", "Sidebar won't have any library"
-                              "as you haven't selected any!");
-         return;
-      }
-      Q_ASSERT(library->loadLibrary(str));
-      settings.setValue("SidebarLibrary", str);
-   }
    m_componentsSidebar->plugLibrary("passive");
    test();
 }

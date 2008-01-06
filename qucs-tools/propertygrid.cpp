@@ -116,53 +116,53 @@ QIntValidator* PropertyBox::intValidator()
 }
 
 void PropertyBox::addDoubleProperty(const QString& name,const QString &tip,double val,
-		    Units::UnitType ut,int curUnit,bool isSelectable)
+                                    Units::UnitType ut,int curUnit,bool isSelectable)
 {
-  if(paramMap.contains(name))
-    return;
-  PropertyRow *row = new PropertyRow();
-  row->l = new QLabel(name);
-  row->l->setToolTip(tip);
-  row->le = new QLineEdit();
-  row->le->setValidator(doubleValidator());
-  connect(row->le, SIGNAL(textEdited(const QString&)), this, SLOT(storeLineEditValues()));
-  if(ut != Units::None) {
-    row->cb = new QComboBox();
-    connect(row->cb, SIGNAL(activated(int)), this, SLOT(storeComboValues()));
-    switch(ut)
-    {
-    case Units::Frequency:
-      row->cb->addItems(Units::freqList);
-      break;
-    case Units::Resistance:
-      row->cb->addItems(Units::resList);
-      break;
-    case Units::Length:
-      row->cb->addItems(Units::lenList);
-      break;
-    case Units::Angle:
-      row->cb->addItems(Units::angleList);
-      break;
-    default:break;
-    };
-  }
-  if(isSelectable)
-    {
+   if(paramMap.contains(name))
+      return;
+   PropertyRow *row = new PropertyRow();
+   row->l = new QLabel(name);
+   row->l->setToolTip(tip);
+   row->le = new QLineEdit();
+   row->le->setValidator(doubleValidator());
+   connect(row->le, SIGNAL(textEdited(const QString&)), this, SLOT(storeLineEditValues()));
+   if(ut != Units::None) {
+      row->cb = new QComboBox();
+      connect(row->cb, SIGNAL(activated(int)), this, SLOT(storeComboValues()));
+      switch(ut)
+      {
+         case Units::Frequency:
+            row->cb->addItems(Units::freqList);
+            break;
+         case Units::Resistance:
+            row->cb->addItems(Units::resList);
+            break;
+         case Units::Length:
+            row->cb->addItems(Units::lenList);
+            break;
+         case Units::Angle:
+            row->cb->addItems(Units::angleList);
+            break;
+         default:break;
+      };
+   }
+   if(isSelectable)
+   {
       row->rb = new QRadioButton();
-    }
-  row->val = Value(val,ut,curUnit);
-  if(ut != Units::None)
-    row->cb->setCurrentIndex(curUnit);
-  row->le->setText(row->val.toString());
-  
-  layout->addWidget(row->l,lastRow,0);
-  layout->addWidget(row->le,lastRow,1);
-  if(ut != Units::None)
-    layout->addWidget(row->cb,lastRow,2);
-  if(isSelectable)
-    layout->addWidget(row->rb,lastRow,3);
-  paramMap[name] = row;
-  ++lastRow; 
+   }
+   row->val = Value(val,ut,curUnit);
+   if(ut != Units::None)
+      row->cb->setCurrentIndex(curUnit);
+   row->le->setText(row->val.toString());
+
+   layout->addWidget(row->l,lastRow,0);
+   layout->addWidget(row->le,lastRow,1);
+   if(ut != Units::None)
+      layout->addWidget(row->cb,lastRow,2);
+   if(isSelectable)
+      layout->addWidget(row->rb,lastRow,3);
+   paramMap[name] = row;
+   ++lastRow;
 }
 
 void PropertyBox::addIntProperty(const QString& name,const QString &tip,int value)
@@ -334,7 +334,7 @@ QTextStream& operator<<(QTextStream &str, const PropertyBox& box)
     i.next();
     PropertyBox::PropertyRow *r = i.value();
     if(r->val.unitType() != Units::None)
-      str << "  " << i.key() << " " << r->val.value() << " " 
+      str << "  " << i.key() << " " << r->val.value() << " "
 	  << Units::toString(r->val.currentUnit(), r->val.unitType()) << "\n";
     else
       str << "  " << i.key() << " " << r->val.value() << " " << "NA\n";

@@ -116,10 +116,9 @@ void QucsItem::mirrorAlong(Qt::Axis axis)
 }
 
 //!\brief Rotate item by -90°
-void QucsItem::rotate90()
+void QucsItem::rotate90(Qucs::AngleDirection dir)
 {
-   update();
-   rotate(-90.0);
+   rotate(dir == Qucs::AntiClockwise ? -90.0 : 90.0);
 }
 
 /*!\brief Constructs and returns a menu with default actions inderted.
@@ -128,6 +127,18 @@ QMenu* QucsItem::defaultContextMenu() const
 {
    //TODO:
    return 0;
+}
+
+QList<QucsItem*> QucsItem::filterQucsItems(const QList<QGraphicsItem*> &gItems)
+{
+   QList<QucsItem*> qucsItems;
+   QucsItem *qItem = 0;
+   foreach(QGraphicsItem *item, gItems) {
+      if((qItem = qucsitem_cast<QucsItem*>(item))) {
+         qucsItems << qItem;
+      }
+   }
+   return qucsItems;
 }
 
 /*! \brief Stores the item's current position in data field of item.

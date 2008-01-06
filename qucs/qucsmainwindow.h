@@ -27,12 +27,14 @@
 
 class ComponentsSidebar;
 class QUndoGroup;
+class QUndoCommand;
+
 class SchematicView;
 class SchematicScene;
 class QucsView;
 class QucsItem;
 
-typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>&);
+typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>,bool,QUndoCommand*);
 
 class QucsMainWindow : public MainWindowBase
 {

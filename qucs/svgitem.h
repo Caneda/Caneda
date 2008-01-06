@@ -28,8 +28,9 @@
 /* Forward declarations */
 class SvgPainter;
 
-/*! \brief This class packs some information needed by svg items which are
- *         shared by many items.
+/*!
+ * \brief This class packs some information needed by svg items which are
+ * shared by many items.
  */
 class SvgItemData
 {
@@ -58,19 +59,19 @@ typedef QHash<QString, SvgItemData*> DataHash;
  *
  * This class renders a svg, given the svg id. The svg to be rendered should
  * be first registered with the instance of this class. This class also
- * supports modifying style of svg using css. This class is currently made
- * singleton. Further support involves usage of multiple instances of this
- * class, each of which can render different set of styles.
+ * supports modifying style of svg using css.
  * \sa registerSvg()
  */
 struct SvgPainter : public QObject
 {
       Q_OBJECT;
    public:
+      SvgPainter();
       ~SvgPainter();
 
       void registerSvg(const QString& svg_id, const QByteArray& content);
-      /*! Returns whether the svg corresponding to \svg_id is registered
+      /*!
+       * Returns whether the svg corresponding to \svg_id is registered
        * or not with \a registerSvg.
        */
       bool isSvgRegistered(const QString& svg_id) const {
@@ -90,14 +91,12 @@ struct SvgPainter : public QObject
       bool isCachingEnabled() const { return m_cachingEnabled; }
       void setCachingEnabled(bool caching);
 
-      static SvgPainter* defaultSvgPainter();
+      static SvgPainter* defaultInstance();
 
       void setStyleSheet(const QString& svg_id, const QByteArray& stylesheet);
       QByteArray styleSheet(const QString& svg_id) const;
 
    private:
-      SvgPainter();
-
       QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
       bool m_cachingEnabled; //!< State to hold whether caching is enabled or not.
 };
@@ -118,7 +117,7 @@ class SvgItem : public QObject, public QucsItem
          Type = QucsItem::SvgItemType
       };
 
-      explicit SvgItem(SchematicScene *scene = 0);
+      explicit SvgItem(SvgPainter *_svgPainter = 0, SchematicScene *scene = 0);
       ~SvgItem();
 
       //! Item identifier.
@@ -139,6 +138,8 @@ class SvgItem : public QObject, public QucsItem
        */
       SvgPainter* svgPainter() const { return m_svgPainter; }
 
+      bool isRegistered() const;
+
    public slots:
       void updateBoundingRect();
 
@@ -148,7 +149,6 @@ class SvgItem : public QObject, public QucsItem
        * Reimplement in derived classes to adjust accordingly.
        */
       virtual QRectF adjustedBoundRect(const QRectF &rect) { return rect; }
-      QVariant itemChange(GraphicsItemChange change, const QVariant& value);
 
    private:
       SvgPainter *m_svgPainter; //!< The pointer to SvgPainter responsible for painting item.

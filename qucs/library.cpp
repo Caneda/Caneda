@@ -32,25 +32,39 @@
 #include <QtGui/QPixmapCache>
 
 //! Constructs library item from reader with file path \a path and svgpainter \a painter.
-LibraryItem::LibraryItem(Qucs::XmlReader *reader, QString path, SvgPainter *painter) :
+Library::Library(Qucs::XmlReader *reader, QString path, SvgPainter *painter) :
    m_svgPainter(painter)
 {
+   Q_ASSERT(m_svgPainter);
    m_valid = parseLibrary(reader, path);
 }
 
+/*!
+ * \brief Destructor
+ * \warning No need to touch svgPainter because there can be objects on schematic using
+ * that svg's which will miserably crash on deleting svgPainter object!
+ */
+Library::~Library()
+{
+   //frees the component data ptrs automatically
+   if(m_svgPainter != SvgPainter::defaultInstance()) {
+      qWarning() << "Library::~Library() leaving behind an instance undeleted";
+   }
+}
+
 //! Returns the shared data of component from given name.
-ComponentDataPtr LibraryItem::componentDataPtr(const QString& name) const
+ComponentDataPtr Library::componentDataPtr(const QString& name) const
 {
    return !m_componentHash.contains(name) ?
       ComponentDataPtr() : m_componentHash[name];
 }
 
 //! Renders an svg to given painter given \a component and \a symbol.
-void LibraryItem::render(QPainter *painter, QString component, QString symbol) const
+void Library::render(QPainter *painter, QString component, QString symbol) const
 {
    const ComponentDataPtr dataPtr = componentDataPtr(component);
    if(!dataPtr.constData()) {
-      qWarning() << "LibraryItem::render() : " <<  component << " not found";
+      qWarning() << "Library::render() : " <<  component << " not found";
       return;
    }
    if(symbol.isEmpty() ||
@@ -67,12 +81,12 @@ void LibraryItem::render(QPainter *painter, QString component, QString symbol) c
  * \param component Component to be rendered.
  * \param symbol Symbol to be rendered. Empty string if default is to rendered.
  */
-QPixmap LibraryItem::renderedPixmap(QString component,
+QPixmap Library::renderedPixmap(QString component,
                                      QString symbol) const
 {
    const ComponentDataPtr dataPtr = componentDataPtr(component);
    if(!dataPtr.constData()) {
-      qWarning() << "LibraryItem::renderToPixmap() : " <<  component << " not found";
+      qWarning() << "Library::renderToPixmap() : " <<  component << " not found";
       return QPixmap();
    }
    if(symbol.isEmpty() ||
@@ -93,11 +107,14 @@ QPixmap LibraryItem::renderedPixmap(QString component,
    return pix;
 }
 
-bool LibraryItem::parseLibrary(Qucs::XmlReader *reader, QString filePath)
+/*!
+ * Parses the library xml file.
+ * \param reader XmlReader corresponding to file.
+ * \param filePath Represents the path of parent directory of library file.
+ */
+bool Library::parseLibrary(Qucs::XmlReader *reader, QString filePath)
 {
    Q_ASSERT(reader->isStartElement() && reader->name() == "library");
-   SchematicScene *dummyScene = new SchematicScene(0,0,500,500);
-   dummyScene->setSvgPainter(m_svgPainter);
    QDir fileDir(filePath);
 
    m_libraryName = reader->attributes().value("name").toString();
@@ -124,11 +141,11 @@ bool LibraryItem::parseLibrary(Qucs::XmlReader *reader, QString filePath)
          else if(reader->name() == "component") {
             QString externalPath = reader->attributes().value("href").toString();
             if(externalPath.isEmpty()) {
-               registerComponentData(reader, filePath, dummyScene);
+               registerComponentData(reader, filePath);
             }
             else {
                QString absFilePath = fileDir.absoluteFilePath(externalPath);
-               bool status = parseExternalComponent(absFilePath, dummyScene);
+               bool status = parseExternalComponent(absFilePath);
                if(!status) {
                   QString errorString("Parsing external component data file %1"
                                       "failed");
@@ -145,11 +162,13 @@ bool LibraryItem::parseLibrary(Qucs::XmlReader *reader, QString filePath)
          }
       }
    }
-   delete dummyScene;
-   return true;
+   return !reader->hasError();
 }
 
-bool LibraryItem::parseExternalComponent(QString path, SchematicScene *scene)
+/*!
+ * Parses the component data from file \a path.
+ */
+bool Library::parseExternalComponent(QString path)
 {
    QFile file(path);
    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -171,47 +190,53 @@ bool LibraryItem::parseExternalComponent(QString path, SchematicScene *scene)
    if(reader.isStartElement() && reader.name() == "component") {
       QFileInfo info(path);
       QString parentPath = info.dir().absolutePath();
-      registerComponentData(&reader, parentPath, scene);
+      registerComponentData(&reader, parentPath);
    }
    return !reader.hasError();
 }
 
 //! Registers svg as well as the component's shared data.
-void LibraryItem::registerComponentData(Qucs::XmlReader *reader, QString path, SchematicScene *scene)
+void Library::registerComponentData(Qucs::XmlReader *reader, QString path)
 {
+   Q_ASSERT(m_svgPainter);
    //Automatically registers svgs on success
-   Qucs::Component *dummy = new Qucs::Component(reader, path, scene);
-   if(!reader->hasError()) {
-      Q_ASSERT(!m_componentHash.contains(dummy->name()));
-      m_componentHash.insert(dummy->name(), dummy->dataPtr());
+   ComponentDataPtr dataPtr(new ComponentData);
+   Qucs::readComponentData(reader, path, m_svgPainter, dataPtr);
+
+   if(dataPtr.constData() == 0 || reader->hasError()) {
+      qWarning() << "\nWarning: Failed to read data from\n" << path;
+      return;
    }
-   delete dummy;
+
+   if(!m_componentHash.contains(dataPtr->name)) {
+      m_componentHash.insert(dataPtr->name, dataPtr);
+   }
 }
 
-Library::Library()
+//! Constructor
+LibraryLoader::LibraryLoader()
 {
-   m_svgPainter = SvgPainter::defaultSvgPainter();
 }
 
-Library::~Library()
+//! Destructor
+LibraryLoader::~LibraryLoader()
 {
-   qDebug() << "Library::~Library()";
 }
 
 /*!
  * Returns default instance of library.
  */
-Library* Library::defaultInstance()
+LibraryLoader* LibraryLoader::defaultInstance()
 {
-   static Library *library = new Library();
+   static LibraryLoader *library = new LibraryLoader();
    return library;
 }
 
 //! Returns library item corresponding to name.
-const LibraryItem* Library::libraryItem(const QString& str) const
+const Library* LibraryLoader::library(const QString& str) const
 {
    if(!m_libraryHash.contains(str)) {
-      qWarning() << "Library::libraryItem : Library item " << str << " not found";
+      qWarning() << "LibraryLoader::library : LibraryLoader item " << str << " not found";
       return 0;
    }
    return m_libraryHash[str];
@@ -226,15 +251,17 @@ const LibraryItem* Library::libraryItem(const QString& str) const
  *  it searches for all libraries for component and returns first match.
  * \return Component on success and null pointer on failure.
  */
-Qucs::Component* Library::newComponent(QString componentName, SchematicScene *scene,
+Component* LibraryLoader::newComponent(QString componentName, SchematicScene *scene,
                                        QString library)
 {
    ComponentDataPtr data;
+   SvgPainter *svgPainter = 0;
    if(library.isEmpty()) {
       LibraryHash::const_iterator it = m_libraryHash.constBegin(),
          end = m_libraryHash.constEnd();
       while(it != end) {
          data = it.value()->componentDataPtr(componentName);
+         svgPainter = it.value()->svgPainter();
          if(data.constData())
             break;
          ++it;
@@ -243,10 +270,12 @@ Qucs::Component* Library::newComponent(QString componentName, SchematicScene *sc
    else {
       if(m_libraryHash.contains(library)) {
          data = m_libraryHash[library]->componentDataPtr(componentName);
+         svgPainter = m_libraryHash[library]->svgPainter();
       }
    }
    if(data.constData()) {
-      Qucs::Component* comp = new Qucs::Component(data, scene);
+      Q_ASSERT(svgPainter);
+      Component* comp = new Component(data, svgPainter, scene);
       comp->setSymbol(comp->symbol());
       return comp;
    }
@@ -254,12 +283,15 @@ Qucs::Component* Library::newComponent(QString componentName, SchematicScene *sc
 }
 
 //! Load's library indicated by path \a libPath.
-bool Library::loadLibrary(const QString& libPath)
+bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
 {
+   if(svgPainter_ == 0) {
+      svgPainter_ = SvgPainter::defaultInstance();
+   }
    QFile file(libPath);
    if(!file.open(QIODevice::ReadOnly)) {
       QMessageBox::warning(0, QObject::tr("File open"),
-                           QObject::tr("Cannot open file %1").arg(libPath));
+                           QObject::tr("Cannot open file %1\n").arg(libPath));
       return false;
    }
    QString libParentPath = QFileInfo(libPath).dir().absolutePath();
@@ -277,7 +309,7 @@ bool Library::loadLibrary(const QString& libPath)
 
       if(reader.isStartElement()) {
          if(reader.name() == "library") {
-            LibraryItem *info = new LibraryItem(&reader, libParentPath, m_svgPainter);
+            Library *info = new Library(&reader, libParentPath, svgPainter_);
             if(reader.hasError()) {
                QMessageBox::critical(0, QObject::tr("Load library"),
                                      QObject::tr("Parsing library failed with following error"
@@ -294,4 +326,19 @@ bool Library::loadLibrary(const QString& libPath)
       }
    }
    return !reader.hasError();
+}
+
+/*!
+ * \brief Unloads given library freeing memory pool.
+ * \sa Library::~Library()
+ */
+bool LibraryLoader::unload(const QString& libName)
+{
+   Library *lib = m_libraryHash.contains(libName) ? m_libraryHash[libName] : 0;
+   if(!lib) {
+      return false;
+   }
+   m_libraryHash.remove(libName);
+   delete lib;
+   return true;
 }

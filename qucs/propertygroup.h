@@ -26,11 +26,10 @@
 // Forward declarations.
 class PropertyItem;
 class SchematicScene;
-namespace Qucs {
-   class Component;
-}
+class Component;
 
-/*! This class groups the properties of a item.
+/*!
+ * This class groups the properties of a item.
  * \details This takes care of creation and destruction of property items as
  * well. This stores a reference to the actual property map.
  * \sa Property, PropertyItem
@@ -51,7 +50,9 @@ class PropertiesGroup : public QObject, public QGraphicsItemGroup
       void forceUpdate();
 
       SchematicScene* schematicScene() const;
-      Qucs::Component* component() const;
+      Component* component() const;
+
+      void setFontSize(int pointSize);
 
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -59,6 +60,7 @@ class PropertiesGroup : public QObject, public QGraphicsItemGroup
    private:
       //! Internal storage of property items for book keeping.
       QMap<QString, PropertyItem*> m_propertyItemsMap;
+      int m_pointSize;
 };
 
 #endif //__PROPERTYGROUP_H

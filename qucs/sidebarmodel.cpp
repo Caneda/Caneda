@@ -62,8 +62,8 @@ CategoryItem::CategoryItem(const QString& name, bool _isComponent, CategoryItem 
    if(m_parentItem) {
       m_parentItem->addChild(this);
       if(_isComponent) {
-         const LibraryItem *libItem =
-            Library::defaultInstance()->libraryItem(m_parentItem->name());
+         const Library *libItem =
+            LibraryLoader::defaultInstance()->library(m_parentItem->name());
          if(libItem) {
             m_iconPixmap = libItem->renderedPixmap(m_name);
          }
@@ -104,7 +104,7 @@ SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
 
 void SidebarModel::plugLibrary(const QString& libraryName)
 {
-   const LibraryItem *libItem = Library::defaultInstance()->libraryItem(libraryName);
+   const Library *libItem = LibraryLoader::defaultInstance()->library(libraryName);
    if(!libItem) return;
 
    CategoryItem *libRoot = new CategoryItem(libraryName, false, rootItem);
@@ -159,15 +159,15 @@ QVariant SidebarModel::data ( const QModelIndex & index, int role ) const
    }
    else if(role == Qt::EditRole && item->isComponent()) {
       //HACK: Using unsed role for sending topleft of item.
-      const LibraryItem *libItem =
-         Library::defaultInstance()->libraryItem(item->parent()->name());
+      const Library *libItem =
+         LibraryLoader::defaultInstance()->library(item->parent()->name());
       if(libItem) {
          const ComponentDataPtr data = libItem->componentDataPtr(item->name());
          if(data.constData()) {
             const QString symbol = data->propertyMap["symbol"].value().toString();
             const QString svgId = item->name() + '/' + symbol;
 
-            QPointF translateHint = SvgPainter::defaultSvgPainter()->boundingRect(svgId).topLeft();
+            QPointF translateHint = SvgPainter::defaultInstance()->boundingRect(svgId).topLeft();
             translateHint *= -1;
             return QVariant(translateHint);
          }

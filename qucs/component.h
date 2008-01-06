@@ -26,126 +26,135 @@
 class PropertiesGroup;
 class Port;
 class PortData;
+class QUndoCommand;
 
+
+//! Represents status of component - short, open or just active.
 namespace Qucs
 {
-   //! Represents status of component - short, open or just active.
    enum ActiveStatus {
       Open=0, Active, Short
    };
+}
 
-   /*!
-    * \brief Represents the shareable data of component.
-    *
-    * This class inherits \a QSharedData which enables implicit sharing
-    * of this class.
-    */
-   struct ComponentData : public QSharedData
-   {
-      public:
-         ComponentData(ActiveStatus a = Active) : activeStatus(a) {}
-         QString name;
-         QString displayText;
-         QString description;
-         PropertyMap propertyMap;
-         ActiveStatus activeStatus;
-         QMap<QString, QList<PortData*> > schematicPortMap;
-   };
+/*!
+ * \brief Represents the shareable data of component.
+ *
+ * This class inherits \a QSharedData which enables implicit sharing
+ * of this class.
+ */
+struct ComponentData : public QSharedData
+{
+   public:
+      ComponentData(Qucs::ActiveStatus a = Qucs::Active) : activeStatus(a) {}
+      QString name;
+      QString displayText;
+      QString description;
+      PropertyMap propertyMap;
+      Qucs::ActiveStatus activeStatus;
+      QMap<QString, QList<PortData*> > schematicPortMap;
+};
 
-   /*!
-    * \brief Represents the component on schematic.
-    *
-    * This component can either be directly loaded from an xml doc or
-    * manually set data if it requires.
-    */
-   class Component : public SvgItem
-   {
-         Q_OBJECT;
-      public:
-         enum { Type = QucsItem::ComponentType };
+/*!
+ * \brief Represents the component on schematic.
+ *
+ * This component can either be directly loaded from an xml doc or
+ * manually set data if it requires.
+ */
+class Component : public SvgItem
+{
+      Q_OBJECT;
+   public:
+      enum { Type = QucsItem::ComponentType };
 
-         Component(SchematicScene *scene = 0);
-         Component(const QSharedDataPointer<ComponentData>& other,
-                   SchematicScene *scene = 0);
-         Component(Qucs::XmlReader *reader, const QString& path,
-                   SchematicScene *scene);
-         ~Component();
+      Component(SchematicScene *scene = 0);
+      Component(const QSharedDataPointer<ComponentData>& other,
+                SvgPainter *svgPainter,
+                SchematicScene *scene = 0);
+      ~Component();
 
-         //! Returns the sharable data pointer.
-         QSharedDataPointer<ComponentData> dataPtr() const {
-            return d;
-         }
-         //! Returns a list of ports of the component.
-         QList<Port*> ports() const { return m_ports; }
-         //! Used for component identification at runtime.
-         int type() const { return Qucs::Component::Type; }
-         //! Returns name of the component.
-         QString name() const { return d->name; }
-         //! Represents model of component, which is infact a property.
-         QString model() const { return property("model").toString(); }
-         //! Returns string to be displayed in sidebar, toolbar or ..
-         QString displayText() const { return d->displayText; }
-         //! Returns a helpful text corresponding to component.
-         QString description() const { return d->description; }
-         //! Returns the property map (actually copy of property map)
-         PropertyMap propertyMap() const { return d->propertyMap; }
-         //! Returns property group of the component.
-         PropertiesGroup* propertyGroup() const { return m_propertyGroup; }
+      //! Returns a list of ports of the component.
+      QList<Port*> ports() const { return m_ports; }
+      //! Used for component identification at runtime.
+      int type() const { return Component::Type; }
+      //! Returns name of the component.
+      QString name() const { return d->name; }
+      //! Represents model of component, which is infact a property.
+      QString model() const { return property("model").toString(); }
+      //! Returns string to be displayed in sidebar, toolbar or ..
+      QString displayText() const { return d->displayText; }
+      //! Returns a helpful text corresponding to component.
+      QString description() const { return d->description; }
+      //! Returns the property map (actually copy of property map)
+      PropertyMap propertyMap() const { return d->propertyMap; }
+      //! Returns property group of the component.
+      PropertiesGroup* propertyGroup() const { return m_propertyGroup; }
 
-         void updatePropertyGroup();
-         void createPropertyGroup();
+      void updatePropertyGroup();
+      void createPropertyGroup();
 
-         bool setProperty(const QString& propName, const QVariant& value);
-         /*! \brief Method to obtain property's value.
-          * \param propName The name of property.
-          * \return Returns corresponding property if it exists otherwise
-          * returns empty QVariant().
-          */
-         QVariant property(const QString& propName) const {
-            return d->propertyMap.contains(propName) ? d->propertyMap[propName].value() :
-               QVariant();
-         }
+      bool setProperty(const QString& propName, const QVariant& value);
+      /*! \brief Method to obtain property's value.
+       * \param propName The name of property.
+       * \return Returns corresponding property if it exists otherwise
+       * returns empty QVariant().
+       */
+      QVariant property(const QString& propName) const {
+         return d->propertyMap.contains(propName) ? d->propertyMap[propName].value() :
+            QVariant();
+      }
 
-         void setPropertyVisible(const QString& propName, bool visibility);
+      void setPropertyVisible(const QString& propName, bool visibility);
 
-         /*! Returns the label of the component which is of form
-          * {label_prefix}{number_suffix}
-          */
-         QString label() const { return property("label").toString(); }
-         bool setLabel(const QString& _label);
+      /*! Returns the label of the component which is of form
+       * {label_prefix}{number_suffix}
+       */
+      QString label() const { return property("label").toString(); }
+      bool setLabel(const QString& _label);
 
-         //! Returns current symbol of component.
-         QString symbol() const { return property("symbol").toString(); }
-         bool setSymbol(const QString& newSymbol);
+      //! Returns current symbol of component.
+      QString symbol() const { return property("symbol").toString(); }
+      bool setSymbol(const QString& newSymbol);
 
-         //! Returns the active status of the component.
-         ActiveStatus activeStatus() const { return d->activeStatus; }
-         void setActiveStatus(ActiveStatus status);
-         void toggleActiveStatus();
+      //! Returns the active status of the component.
+      Qucs::ActiveStatus activeStatus() const { return d->activeStatus; }
+      void setActiveStatus(Qucs::ActiveStatus status);
+      void toggleActiveStatus();
 
-         void loadData(Qucs::XmlReader *reader);
-         void saveData(Qucs::XmlWriter *writer) const;
+      void loadData(Qucs::XmlReader *reader);
+      void saveData(Qucs::XmlWriter *writer) const;
 
-         void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
+      void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
 
-         void checkAndConnect(bool pushUndoCommands = true);
+      void checkAndConnect(bool pushUndoCommands = true, QUndoCommand *parent = 0);
 
-      protected:
-         QRectF adjustedBoundRect(const QRectF& rect);
-         QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+      virtual void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise);
+      virtual void mirrorAlong(Qt::Axis axis);
 
-      private:
-         void init();
-         void readXml(Qucs::XmlReader *reader, const QString& path);
-         void readSchematic(Qucs::XmlReader *reader, const QString& path);
-         void readSchematics(Qucs::XmlReader *reader, const QString& path);
-         void readProperties(Qucs::XmlReader *reader);
+   protected:
+      QRectF adjustedBoundRect(const QRectF& rect);
+      QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
-         QSharedDataPointer<ComponentData> d;
+   private:
+      void init();
 
-         PropertiesGroup *m_propertyGroup;
-         QList<Port*> m_ports;
-   };
+      QSharedDataPointer<ComponentData> d;
+      PropertiesGroup *m_propertyGroup;
+      QList<Port*> m_ports;
+};
+
+namespace Qucs
+{
+   void readComponentData(Qucs::XmlReader *reader, const QString& path,
+                          SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d);
+   void readSchematics(Qucs::XmlReader *reader,
+                       const QString& path,
+                       SvgPainter *svgPainter,
+                       QSharedDataPointer<ComponentData> &d);
+   void readSchematic(Qucs::XmlReader *reader,
+                      const QString& path,
+                      SvgPainter *svgPainter,
+                      QSharedDataPointer<ComponentData> &d);
 }
 
 #endif //__COMPONENT_H

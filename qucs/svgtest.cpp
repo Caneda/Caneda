@@ -16,14 +16,14 @@
 static const char* array[] = { "resistor", "inductor", "current" };
 
 SvgItem* SvgTestItem::styleSheetChangingItem = 0;
-Qucs::Component *cap = 0;
+Component *cap = 0;
 static bool firsttime = true;
-Qucs::Component *c = 0;
+Component *c = 0;
 
 SvgTestItem::SvgTestItem(const QString& id, SchematicScene *scene) :
-   SvgItem(scene)
+   SvgItem(0, scene)
 {
-   registerConnections(id, scene->svgPainter());
+   registerConnections(id, SvgPainter::defaultInstance());
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
 
 }
@@ -35,7 +35,7 @@ void SvgTestItem::asynchronousChange()
 
 void SvgTestItem::createTestItems(SchematicScene *scene)
 {
-//   Qucs::Component *comp = ;
+//   Component *comp = ;
 //    for(int i=0; i < 10; i++) {
 //       SvgTestItem *s = new SvgTestItem(array[i%3], scene);
 //       QPointF randomPos(qrand() % int(scene->width()/2), qrand() % int(scene->height()/2));
@@ -60,7 +60,7 @@ void SvgTestItem::createTestItems(SchematicScene *scene)
 //          if(reader.isStartElement() && reader.name() == "component")
 //             break;
 //       }
-//       c = new Qucs::Component(&reader, path, scene);
+//       c = new Component(&reader, path, scene);
 //       c->setPos(scene->nearingGridPoint(QPointF(120, 20)));
 //       qDebug() << "Size = " << c->ports().size();
 
@@ -85,13 +85,13 @@ void SvgTestItem::createTestItems(SchematicScene *scene)
 //          if(reader.isStartElement() && reader.name() == "component")
 //             break;
 //       }
-//       cap = new Qucs::Component(&reader, path, scene);
+//       cap = new Component(&reader, path, scene);
 //       cap->setPos(scene->nearingGridPoint(QPointF(520, 90)));
 //       cap->updatePropertyGroup();
 //       cap->setPropertyVisible("symbol", true);
 //       cap->setSymbol("qucs0");
 
-//       new Qucs::Wire(c->ports()[1], cap->ports()[0], scene);
+//       new Wire(c->ports()[1], cap->ports()[0], scene);
 //       Q_ASSERT(!reader.hasError());
 //    }
 }
@@ -103,6 +103,6 @@ void SvgTestItem::registerSvgs(SchematicScene *scene)
       QFile file(fileName);
       file.open(QIODevice::ReadOnly | QIODevice::Text);
       QByteArray content = file.readAll();
-      scene->svgPainter()->registerSvg(array[i], content);
+      SvgPainter::defaultInstance()->registerSvg(array[i], content);
    }
 }

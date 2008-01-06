@@ -23,22 +23,36 @@
 #include "component.h"
 
 #include <QtGui/QFontMetricsF>
+#include <QtGui/QApplication>
 #include <QtCore/QDebug>
 
 /*! Constructor
  * \param propMap A reference to PropertyMap of a component.
  * \param scene The schematic scene to which this property should belong.
  */
-PropertiesGroup::PropertiesGroup(SchematicScene *scene)
+PropertiesGroup::PropertiesGroup(SchematicScene *scene) :
+   m_pointSize(qApp->font().pointSize())
 {
    if(scene) {
       scene->addItem(this);
    }
 }
 
-Qucs::Component* PropertiesGroup::component() const
+Component* PropertiesGroup::component() const
 {
-   return static_cast<Qucs::Component*>(parentItem());
+   return static_cast<Component*>(parentItem());
+}
+
+
+void PropertiesGroup::setFontSize(int pointSize)
+{
+   if(m_pointSize == pointSize) {
+      return;
+   }
+   qDeleteAll(m_propertyItemsMap.values());
+   m_propertyItemsMap.clear();
+   m_pointSize = pointSize;
+   realignItems();
 }
 
 /*! \brief Realigns all the child items of this group (deletes hidden items).
@@ -77,6 +91,12 @@ void PropertiesGroup::realignItems()
          if(!m_propertyItemsMap.contains(property.name())) {
             PropertyItem *item = new PropertyItem(property.name(),
                                                   schematicScene());
+            QFont font = item->font();
+            if(font.pointSize() != m_pointSize) {
+               font.setPointSize(m_pointSize);
+               item->setFont(font);
+            }
+
             m_propertyItemsMap.insert(property.name(), item);
             newlyCreated = true;
 

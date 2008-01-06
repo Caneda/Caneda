@@ -27,10 +27,10 @@
 #include <QtCore/QVariant>
 
 class QucsItem;
-namespace Qucs {
-   class Component;
-}
+class Component;
 class Port;
+
+static const QPointF InvalidPoint(-30000, -30000);
 
 class PropertyChangeCmd : public QUndoCommand
 {
@@ -38,7 +38,8 @@ class PropertyChangeCmd : public QUndoCommand
       PropertyChangeCmd(const QString& propertyName,
                         const QVariant& newValue,
                         const QVariant& oldValue,
-                        Qucs::Component *const component);
+                        Component *const component,
+                        QUndoCommand *parent = 0);
 
       virtual void undo();
       virtual void redo();
@@ -47,13 +48,14 @@ class PropertyChangeCmd : public QUndoCommand
       const QString m_property;
       const QVariant m_newValue;
       const QVariant m_oldValue;
-      Qucs::Component *const m_component;
+      Component *const m_component;
 };
 
 class MoveCmd : public QUndoCommand
 {
    public:
-      MoveCmd(QGraphicsItem *i,const QPointF& init, const QPointF& final);
+      MoveCmd(QGraphicsItem *i,const QPointF& init, const QPointF& final,
+              QUndoCommand *parent = 0);
       void undo();
       void redo();
 
@@ -63,22 +65,29 @@ class MoveCmd : public QUndoCommand
       QPointF m_finalPos;
 };
 
+class WireConnectionInfo;
 class ConnectCmd : public QUndoCommand
 {
    public:
-      ConnectCmd(Port *p1, Port *p2);
+      ConnectCmd(Port *p1, Port *p2, const QList<Wire*> &wires,
+                 SchematicScene *scene, QUndoCommand *parent = 0);
+      ~ConnectCmd();
+
       void undo();
       void redo();
 
    private:
       Port * const m_port1;
       Port * const m_port2;
+      QList<WireConnectionInfo*> m_wireConnectionInfos;
+
+      SchematicScene *const m_scene;
 };
 
 class DisconnectCmd : public QUndoCommand
 {
    public:
-      DisconnectCmd(Port *p1, Port *p2);
+      DisconnectCmd(Port *p1, Port *p2, QUndoCommand *parent = 0);
       void undo();
       void redo();
 
@@ -90,32 +99,79 @@ class DisconnectCmd : public QUndoCommand
 class AddWireCmd : public QUndoCommand
 {
    public:
-      AddWireCmd(Port *p1, Port* p2);
+      AddWireCmd(Port *p1, Port* p2, QUndoCommand *parent = 0);
       void undo();
       void redo();
 
-      Qucs::Wire* wire() const { return m_wire; }
+      Wire* wire() const { return m_wire; }
 
    private:
       Port * const m_port1;
       Port * const m_port2;
       SchematicScene *m_scene;
-      Qucs::Wire *m_wire;
+      Wire *m_wire;
       QPointF m_pos;
 };
 
 class WireStateChangeCmd : public QUndoCommand
 {
    public:
-      typedef Qucs::Wire::Store WireStore;
-      WireStateChangeCmd(Qucs::Wire *wire,WireStore initState, WireStore finalState);
+      typedef Wire::Store WireStore;
+      WireStateChangeCmd(Wire *wire,WireStore initState, WireStore finalState,
+                         QUndoCommand *parent = 0);
 
       void undo();
       void redo();
 
    private:
-      Qucs::Wire *m_wire;
-      Qucs::Wire::Store m_initState, m_finalState;
+      Wire *m_wire;
+      Wire::Store m_initState, m_finalState;
+};
+
+class InsertItemCmd : public QUndoCommand
+{
+   public:
+      InsertItemCmd(QGraphicsItem *const item, SchematicScene *scene,
+                    QPointF pos = InvalidPoint, QUndoCommand *parent = 0);
+      ~InsertItemCmd();
+
+      void undo();
+      void redo();
+
+   protected:
+      QGraphicsItem *const m_item;
+      SchematicScene *const m_scene;
+      QPointF m_pos;
+};
+
+QUndoCommand* insertComponentCmd(Component *const item, SchematicScene *scene,
+                            QPointF pos = InvalidPoint, QUndoCommand *parent = 0);
+
+class RotateItemsCmd : public QUndoCommand
+{
+   public:
+      RotateItemsCmd(QList<QucsItem*> items, QUndoCommand *parent = 0);
+      RotateItemsCmd(QucsItem *item, QUndoCommand *parent = 0);
+
+      void undo();
+      void redo();
+
+   protected:
+      QList<QucsItem*> m_items;
+};
+
+class MirrorItemsCmd : public QUndoCommand
+{
+   public:
+      MirrorItemsCmd(QList<QucsItem*> items, Qt::Axis axis, QUndoCommand *parent = 0);
+      MirrorItemsCmd(QucsItem *item, Qt::Axis axis, QUndoCommand *parent = 0);
+
+      void undo();
+      void redo();
+
+   protected:
+      QList<QucsItem*> m_items;
+      Qt::Axis m_axis;
 };
 
 #endif

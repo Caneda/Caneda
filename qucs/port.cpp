@@ -50,13 +50,13 @@ bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
 }
 
 //! Construct portowner with wire as owner.
-PortOwner::PortOwner(Qucs::Wire *wire) : m_wire(wire), m_component(0)
+PortOwner::PortOwner(Wire *wire) : m_wire(wire), m_component(0)
 {
    Q_ASSERT(m_wire != 0);
 }
 
 //! Construct portowner with component as owner.
-PortOwner::PortOwner(Qucs::Component *component) :
+PortOwner::PortOwner(Component *component) :
       m_wire(0), m_component(component)
 {
    Q_ASSERT(m_component != 0);
@@ -73,7 +73,7 @@ QGraphicsItem* PortOwner::item() const
 }
 
 //! Construct port with wire as owner and shared data \data.
-Port::Port(Qucs::Wire *owner, const QSharedDataPointer<PortData> &data) :
+Port::Port(Wire *owner, const QSharedDataPointer<PortData> &data) :
       d(data),
       m_owner(new PortOwner(owner)),
       m_connections(0),
@@ -82,7 +82,7 @@ Port::Port(Qucs::Wire *owner, const QSharedDataPointer<PortData> &data) :
 }
 
 //! Construct port with wire as owner, position \pos and port's name \portName.
-Port::Port(Qucs::Wire *owner, QPointF _pos, QString portName) :
+Port::Port(Wire *owner, QPointF _pos, QString portName) :
       d(new PortData(_pos, portName)),
       m_owner(new PortOwner(owner)),
       m_connections(0),
@@ -91,7 +91,7 @@ Port::Port(Qucs::Wire *owner, QPointF _pos, QString portName) :
 }
 
 //! Construct port with component as owner and shared data \data.
-Port::Port(Qucs::Component *owner, const QSharedDataPointer<PortData> &data) :
+Port::Port(Component *owner, const QSharedDataPointer<PortData> &data) :
       d(data),
       m_owner(new PortOwner(owner)),
       m_connections(0),
@@ -100,7 +100,7 @@ Port::Port(Qucs::Component *owner, const QSharedDataPointer<PortData> &data) :
 }
 
 //! Construct port with component as owner, position \pos and port's name \portName.
-Port::Port(Qucs::Component *owner, QPointF _pos, QString portName) :
+Port::Port(Component *owner, QPointF _pos, QString portName) :
       d(new PortData(_pos, portName)),
       m_owner(new PortOwner(owner)),
       m_connections(0),
@@ -248,6 +248,67 @@ void Port::disconnectFrom(Port *from)
    Port::disconnect(this, from);
 }
 
+Port* Port::getAnyConnectedPort()
+{
+   if(!m_connections) return 0;
+
+   if((*m_connections).size() <= 1) {
+      qDebug() << "Connections size <= 1 detected. Might be a bug";
+      delete m_connections;
+      m_connections = 0;
+      return 0;
+   }
+
+   Port *other = 0;
+   foreach(Port *port, *m_connections) {
+      if(port != this) {
+         other = port;
+         break;
+      }
+   }
+   Q_ASSERT(other);
+   return other;
+}
+
+void Port::removeConnections()
+{
+   Port *other = getAnyConnectedPort();
+   if(other) {
+      disconnectFrom(other);
+   }
+}
+
+QList<Wire*> Port::wiresBetween(Port* port1, Port* port2)
+{
+   Q_ASSERT(port1 != port2);
+   QSet<Wire*> wires;
+
+   QSet<Wire*> port1Wires, port2Wires;
+
+   QList<Port*> *_connections = 0;
+
+   _connections = port1->connections();
+   if(_connections) {
+      foreach(Port *other, *_connections) {
+         if(!other->owner()->isWire())
+            continue;
+         port1Wires << other->owner()->wire();
+      }
+   }
+
+   _connections = port2->connections();
+   if(_connections) {
+      foreach(Port *other, *_connections) {
+         if(!other->owner()->isWire())
+            continue;
+         port2Wires << other->owner()->wire();
+      }
+   }
+
+   wires = port1Wires.intersect(port2Wires);
+   return wires.toList();
+}
+
 /*!
  * Disconnect two ports
  * \param port The port to be disconnected.
@@ -318,11 +379,11 @@ Port* Port::findIntersectingPort() const
          ownerItem()->collidingItems(Qt::IntersectsItemBoundingRect);
    QList<Port*> ports;
    foreach(QGraphicsItem *item, collisions) {
-      if(qucsitem_cast<Qucs::Component*>(item)) {
-         ports = qucsitem_cast<Qucs::Component*>(item)->ports();
+      if(qucsitem_cast<Component*>(item)) {
+         ports = qucsitem_cast<Component*>(item)->ports();
       }
-      else if(qucsitem_cast<Qucs::Wire*>(item)) {
-         ports = qucsitem_cast<Qucs::Wire*>(item)->ports();
+      else if(qucsitem_cast<Wire*>(item)) {
+         ports = qucsitem_cast<Wire*>(item)->ports();
       }
       else {
          continue;
@@ -340,10 +401,10 @@ Port* Port::findIntersectingPort() const
 Port* Port::findCoincidingPort(const QList<Port*> &ports) const
 {
    foreach(Port *p, ports) {
-      if(p->scenePos() == scenePos() &&
+      if(p->scenePos() == scenePos() && p->owner() != owner() &&
          (!m_connections || !m_connections->contains(p))) {
          return p;
-         }
+      }
    }
    return 0;
 }
@@ -360,11 +421,11 @@ Port* Port::findCoincidingPort() const
          ownerItem()->collidingItems(Qt::IntersectsItemBoundingRect);
    QList<Port*> ports;
    foreach(QGraphicsItem *item, collisions) {
-      if(qucsitem_cast<Qucs::Component*>(item)) {
-         ports = qucsitem_cast<Qucs::Component*>(item)->ports();
+      if(qucsitem_cast<Component*>(item)) {
+         ports = qucsitem_cast<Component*>(item)->ports();
       }
-      else if(qucsitem_cast<Qucs::Wire*>(item)) {
-         ports = qucsitem_cast<Qucs::Wire*>(item)->ports();
+      else if(qucsitem_cast<Wire*>(item)) {
+         ports = qucsitem_cast<Wire*>(item)->ports();
       }
       else {
          continue;

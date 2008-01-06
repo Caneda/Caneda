@@ -23,7 +23,7 @@
 #include <QtCore/QAbstractItemModel>
 
 class CategoryItem;
-class Library;
+class LibraryLoader;
 
 class SidebarModel : public QAbstractItemModel
 {

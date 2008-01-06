@@ -100,7 +100,7 @@ QString XmlFormat::saveText()
 
    //Write all the components now
    writer->writeStartElement("components");
-   foreach(Qucs::Component *c, scene->components())
+   foreach(Component *c, scene->components())
       c->saveData(writer);
    writer->writeEndElement(); //</components>
 

@@ -39,6 +39,11 @@ class QMenu;
 namespace Qucs {
    class XmlReader;
    class XmlWriter;
+
+   enum AngleDirection {
+      Clockwise,
+      AntiClockwise
+   };
 }
 
 //!\brief Qucs item - The base class for components, wires, nodes..
@@ -94,9 +99,11 @@ class QucsItem : public QGraphicsItem
       virtual void loadData(Qucs::XmlReader *) {}
 
       virtual void mirrorAlong(Qt::Axis axis);
-      virtual void rotate90();
+      virtual void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise);
 
       QMenu* defaultContextMenu() const;
+
+      static QList<QucsItem*> filterQucsItems(const QList<QGraphicsItem*> &gItems);
 
    protected:
       void setShapeAndBoundRect(const QPainterPath& path,

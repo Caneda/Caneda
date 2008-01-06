@@ -30,6 +30,7 @@ class QucsItem;
 class Diagram;
 class Painting;
 class SvgPainter;
+class QUndoCommand;
 
 namespace Qucs
 {
@@ -37,9 +38,10 @@ namespace Qucs
       SchematicMode,
       SymbolMode
    };
-   class Component;
-   class Wire;
 }
+
+class Component;
+class Wire;
 
 typedef QGraphicsSceneMouseEvent MouseActionEvent;
 
@@ -77,12 +79,18 @@ class SchematicScene : public QGraphicsScene
       QList<Diagram*> diagrams() const { return m_diagrams; }
       QList<Painting*> symbolPaintings() const { return m_symbolPaintings; }
 
-      void mirrorXItems(QList<QucsItem*>& items);
-      void mirrorYItems(QList<QucsItem*>& items);
-      void rotateItems(QList<QucsItem*>& items);
-      void deleteItems(QList<QucsItem*>& items);
-      void setItemsOnGrid(QList<QucsItem*>& items);
-      void toggleActiveStatus(QList<QucsItem*>& components);
+      void mirrorXItems(QList<QucsItem*> items, bool pushUndoCommands = true,
+                        QUndoCommand *parent = 0);
+      void mirrorYItems(QList<QucsItem*> items, bool pushUndoCommands = true,
+                        QUndoCommand *parent = 0);
+      void rotateItems(QList<QucsItem*> items, bool pushUndoCommands = true,
+                       QUndoCommand *parent = 0);
+      void deleteItems(QList<QucsItem*> items, bool pushUndoCommands = true,
+                       QUndoCommand *parent = 0);
+      void setItemsOnGrid(QList<QucsItem*> items, bool pushUndoCommands = true,
+                          QUndoCommand *parent = 0);
+      void toggleActiveStatus(QList<QucsItem*> components, bool pushUndoCommands = true,
+                              QUndoCommand *parent = 0);
 
       QString fileName() const { return m_fileName; }
       void setFileName(const QString& fn);
@@ -129,9 +137,6 @@ class SchematicScene : public QGraphicsScene
       void copyItems(QList<QucsItem*> items);
       void paste();
 
-      SvgPainter* svgPainter() const { return m_svgPainter; }
-      void setSvgPainter(SvgPainter *painter);
-
    public slots:
       void setModified(bool m = true);
 
@@ -174,13 +179,14 @@ class SchematicScene : public QGraphicsScene
       void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
 
       void processForSpecialMove(QList<QGraphicsItem*> _items);
+      void disconnectDisconnectibles();
       void specialMove(qreal dx, qreal dy);
       void endSpecialMove();
 
       //These are helper variables (aka state holders)
       bool m_areItemsMoving;
-      QList<Qucs::Component*> disconnectibles;
-      QList<Qucs::Wire*> movingWires, grabMovingWires;
+      QList<Component*> disconnectibles;
+      QList<Wire*> movingWires, grabMovingWires;
       QPointF lastPos;
       // These are the various qucs-items on scene
       QList<Diagram*> m_diagrams;
@@ -205,7 +211,6 @@ class SchematicScene : public QGraphicsScene
       bool m_opensDataDisplay;
       bool m_frameVisible;
       bool m_snapToGrid;
-      SvgPainter* m_svgPainter;
       bool m_macroProgress;
 };
 

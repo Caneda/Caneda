@@ -23,15 +23,17 @@
 #include "component.h"
 #include <QtCore/QHash>
 
-typedef QSharedDataPointer<Qucs::ComponentData> ComponentDataPtr;
+typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
 
 /*!
  * \brief This represents individual library unit.
  */
-class LibraryItem
+class Library
 {
    public:
-      LibraryItem(Qucs::XmlReader *reader, QString path, SvgPainter *painter);
+      Library(Qucs::XmlReader *reader, QString path, SvgPainter *painter);
+      ~Library();
+
       ComponentDataPtr componentDataPtr(const QString& name) const;
 
       //! Returns svg painter in use.
@@ -56,10 +58,9 @@ class LibraryItem
 
    private:
       bool parseLibrary(Qucs::XmlReader *reader, QString path);
-      bool parseExternalComponent(QString path, SchematicScene *scene);
+      bool parseExternalComponent(QString path);
 
-      void registerComponentData(Qucs::XmlReader *reader, QString path,
-                                 SchematicScene *scene);
+      void registerComponentData(Qucs::XmlReader *reader, QString path);
       QString m_libraryName;
       QString m_defaultSymbolId;
       QString m_displayText;
@@ -70,36 +71,35 @@ class LibraryItem
       bool m_valid;
 };
 
-typedef QHash<QString, LibraryItem*> LibraryHash;
+typedef QHash<QString, Library*> LibraryHash;
 
 /*!
- * \brief This class acts as container for \a LibraryItem s
+ * \brief This class acts as container for \a Library s
  *
  * This class is singleton class and its only static instance returned by
  * \a defaultInstance is to be used.
  */
-class Library
+class LibraryLoader
 {
    public:
-      ~Library();
+      static LibraryLoader* defaultInstance();
+      ~LibraryLoader();
 
-      static Library* defaultInstance();
-      Qucs::Component* newComponent(QString componentName,
+      Component* newComponent(QString componentName,
                                     SchematicScene *scene,
                                     QString library = QString());
-      bool loadLibrary(const QString& libPath);
+
+      bool load(const QString& libPath, SvgPainter* svg = 0);
+      bool unload(const QString& libName);
+
       //! Returns library hash table
       const LibraryHash& libraries() const { return m_libraryHash; }
 
-      const LibraryItem* libraryItem(const QString& libName) const;
-
-      //! Returns svg painter used.
-      SvgPainter* svgPainter() const { return m_svgPainter; }
+      const Library* library(const QString& libName) const;
 
    private:
-      Library();
+      LibraryLoader();
       LibraryHash m_libraryHash;
-      SvgPainter *m_svgPainter;
 };
 
 #endif //__LIBRARY_H

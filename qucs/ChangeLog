@@ -1,3 +1,12 @@
+2008-01-06  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* Component and wire connection management robustified(as stated in todo in wiki).
+	* Undo and redo seems to be almost complete and robust.
+	* Undo redo supported for many more operations.
+	* PropertyGroup now always maintains the property unrotated and unmirroed.
+	* Some refactoring code related to Library.
+	* Removed Qucs namespacing of component and wire classes as there is no conflict now.
+
 2007-12-29  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* svgitem.cpp (SvgItemData::boundingRect): Fixed to use viewbox for bounds when svg provides it.

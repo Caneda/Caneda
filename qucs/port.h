@@ -28,30 +28,30 @@
 #include <QtCore/QSharedData>
 
 //Forward declarations.
-namespace Qucs
-{
-   class Wire;
-   class Component;
-}
+class Wire;
+class Component;
 class SchematicScene;
 
 //! Thin class used to abstract owner of port.
 class PortOwner
 {
    public:
-      PortOwner(Qucs::Wire *wire);
-      PortOwner(Qucs::Component *comp);
+      PortOwner(Wire *wire);
+      PortOwner(Component *comp);
 
       //! Return the wire if stored, or null otherwise.
-      Qucs::Wire* wire() const { return m_wire; }
+      Wire* wire() const { return m_wire; }
       //! Return the component if stored, or null otherwise.
-      Qucs::Component* component() const { return m_component; }
+      Component* component() const { return m_component; }
       //! Returns the owner item as graphicsitem.
       QGraphicsItem* item() const;
 
+      bool isWire() const { return m_wire != 0; }
+      bool isComponent() const { return m_component != 0; }
+
    private:
-      Qucs::Wire *const m_wire;
-      Qucs::Component *const m_component;
+      Wire *const m_wire;
+      Component *const m_component;
       //Disable copy
       PortOwner(const PortOwner& other);
 };
@@ -68,11 +68,11 @@ struct PortData : public QSharedData
 class Port
 {
    public:
-      Port(Qucs::Wire *owner, const QSharedDataPointer<PortData> &data);
-      Port(Qucs::Wire *owner, QPointF _pos, QString portName = QString());
+      Port(Wire *owner, const QSharedDataPointer<PortData> &data);
+      Port(Wire *owner, QPointF _pos, QString portName = QString());
 
-      Port(Qucs::Component *owner, const QSharedDataPointer<PortData> &data);
-      Port(Qucs::Component *oner, QPointF _pos, QString portName = QString());
+      Port(Component *owner, const QSharedDataPointer<PortData> &data);
+      Port(Component *oner, QPointF _pos, QString portName = QString());
 
       ~Port();
 
@@ -99,6 +99,11 @@ class Port
       void connectTo(Port *other);
       void disconnectFrom(Port *from);
 
+      Port* getAnyConnectedPort();
+      void removeConnections();
+
+      static QList<Wire*> wiresBetween(Port* port1, Port* port2);
+
       Port* findIntersectingPort() const;
       Port* findCoincidingPort() const;
 
@@ -111,7 +116,7 @@ class Port
 
       void setPos(const QPointF& newPos);
 
-      friend class Qucs::Wire;
+      friend class Wire;
 
       QSharedDataPointer<PortData> d;
       PortOwner *m_owner;

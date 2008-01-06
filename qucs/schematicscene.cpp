@@ -31,6 +31,7 @@
 #include "library.h"
 #include "svgtest.h"
 
+#include "propertygroup.h"
 #include <QtCore/QMimeData>
 #include <QtCore/QtDebug>
 #include <QtCore/QVarLengthArray>
@@ -71,52 +72,65 @@ void SchematicScene::init()
    m_areItemsMoving = false;
    setCurrentMouseAction(Normal);
 
-   m_svgPainter = SvgPainter::defaultSvgPainter();
 }
 
 SchematicScene::~SchematicScene()
 {
-   if(m_svgPainter != SvgPainter::defaultSvgPainter()) {
-      delete m_svgPainter;
-   }
 }
 
 void SchematicScene::test()
 {
-   Library *library = Library::defaultInstance();
-   Qucs::Component *c = library->newComponent("resistor", this);
-   c->setPos(100, 100);
-   c->setPropertyVisible("symbol", true);
-   c = library->newComponent("Capacitor", this);
-   c->setPos(200, 200);
 }
 
-void SchematicScene::mirrorXItems(QList<QucsItem*>& items)
+void SchematicScene::mirrorXItems(QList<QucsItem*> items, bool pushUndoCmds,
+                                  QUndoCommand *parent)
 {
-   foreach(QucsItem* item, items)
-      item->mirrorAlong(Qt::XAxis);
+   MirrorItemsCmd *cmd = new MirrorItemsCmd(items, Qt::XAxis, parent);
+   if(pushUndoCmds && !parent) {
+      m_undoStack->push(cmd);
+   }
+   else if(!parent) {
+      cmd->redo();
+      delete cmd;
+   }
 }
 
-void SchematicScene::mirrorYItems(QList<QucsItem*>& items)
+void SchematicScene::mirrorYItems(QList<QucsItem*> items, bool pushUndoCmds,
+                                  QUndoCommand *parent)
 {
-   foreach(QucsItem* item, items)
-      item->mirrorAlong(Qt::YAxis);
+   MirrorItemsCmd *cmd = new MirrorItemsCmd(items, Qt::YAxis, parent);
+   if(pushUndoCmds && !parent) {
+      m_undoStack->push(cmd);
+   }
+   else if(!parent) {
+      cmd->redo();
+      delete cmd;
+   }
 }
 
-void SchematicScene::rotateItems(QList<QucsItem*>& items)
+void SchematicScene::rotateItems(QList<QucsItem*> items, bool pushUndoCmds,
+                                  QUndoCommand *parent)
 {
-   foreach(QucsItem* item, items)
-      item->rotate90();
+   RotateItemsCmd *cmd = new RotateItemsCmd(items, parent);
+   if(pushUndoCmds && !parent) {
+      m_undoStack->push(cmd);
+   }
+   else if(!parent) {
+      cmd->redo();
+      delete cmd;
+   }
 }
 
-void SchematicScene::deleteItems(QList<QucsItem*>& items)
+void SchematicScene::deleteItems(QList<QucsItem*> items, bool pushUndoCmds,
+                                  QUndoCommand *parent)
 {
    foreach(QucsItem* item, items) {
       delete item;
    }
 }
 
-void SchematicScene::setItemsOnGrid(QList<QucsItem*>& items)
+void SchematicScene::setItemsOnGrid(QList<QucsItem*> items, bool pushUndoCmds,
+                                  QUndoCommand *parent)
 {
    foreach(QucsItem* item, items) {
       QPointF pos = item->pos();
@@ -125,7 +139,8 @@ void SchematicScene::setItemsOnGrid(QList<QucsItem*>& items)
    }
 }
 
-void SchematicScene::toggleActiveStatus(QList<QucsItem*>& components)
+void SchematicScene::toggleActiveStatus(QList<QucsItem*> components, bool pushUndoCmds,
+                                  QUndoCommand *parent)
 {
    Q_UNUSED(components);
    //TODO:
@@ -263,13 +278,6 @@ void SchematicScene::paste()
    //TODO:
 }
 
-void SchematicScene::setSvgPainter(SvgPainter *s)
-{
-   if(m_svgPainter != SvgPainter::defaultSvgPainter())
-      delete m_svgPainter;
-   m_svgPainter = s;
-}
-
 void SchematicScene::setModified(bool m)
 {
    if(m_modified != m) {
@@ -350,15 +358,17 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
       QDataStream stream(&encodedData, QIODevice::ReadOnly);
       QString text;
       stream >> text;
-      Qucs::Component *c = Library::defaultInstance()->newComponent(text, this);
+      Component *c = LibraryLoader::defaultInstance()->newComponent(text, 0);
       if(c) {
-         if(m_snapToGrid)
-            c->setPos(nearingGridPoint(event->scenePos()));
-         else
-            c->setPos(event->scenePos());
-         c->setPropertyVisible("symbol", true);
+         QPointF dest = m_snapToGrid ? nearingGridPoint(event->scenePos()) :
+            event->scenePos();
+
+         QUndoCommand *cmd = insertComponentCmd(c, this, dest);
+         m_undoStack->push(cmd);
+
          v->horizontalScrollBar()->setValue(hor);
          v->verticalScrollBar()->setValue(ver);
+
          event->acceptProposedAction();
          setModified(true);
       }
@@ -383,6 +393,10 @@ void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
    if(m_snapToGrid) {
       //HACK: Fool the event receivers by changing event parameters with new grid position.
       QPointF point = nearingGridPoint(e->scenePos());
+      if(point == lastPos && m_currentMouseAction != Normal) {
+         e->accept();
+         return;
+      }
       e->setScenePos(point);
       e->setPos(point);
       e->setLastScenePos(lastPos);
@@ -532,8 +546,10 @@ void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
       QPointF afterScalePoint(sv->mapFromScene(event->scenePos()));
       int dx = (afterScalePoint - viewPoint).toPoint().x();
       int dy = (afterScalePoint - viewPoint).toPoint().y();
+
       QScrollBar *hb = sv->horizontalScrollBar();
       QScrollBar *vb = sv->verticalScrollBar();
+
       hb->setValue(hb->value() + dx);
       vb->setValue(vb->value() + dy);
    }
@@ -593,8 +609,9 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
 
          if(!m_areItemsMoving)
             return;
+         disconnectDisconnectibles();
          QGraphicsScene::mouseMoveEvent(e);
-         QPointF delta = e->scenePos()-e->lastScenePos();
+         QPointF delta = e->scenePos() - e->lastScenePos();
          specialMove(delta.x(), delta.y());
       }
       break;
@@ -628,8 +645,9 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
    disconnectibles.clear();
    movingWires.clear();
    grabMovingWires.clear();
+
    foreach(QGraphicsItem *item, _items) {
-      Qucs::Component *c = qucsitem_cast<Qucs::Component*>(item);
+      Component *c = qucsitem_cast<Component*>(item);
       storePos(item);
       if(c) {
          //check for disconnections and wire resizing.
@@ -641,7 +659,7 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
                if(other == port ) continue;
 
 
-               Qucs::Component *otherComponent = 0;
+               Component *otherComponent = 0;
                if((otherComponent = other->owner()->component())
                   && !otherComponent->isSelected()) {
                   disconnectibles << c;
@@ -649,7 +667,7 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
                }
 
 
-               Qucs::Wire *wire = other->owner()->wire();
+               Wire *wire = other->owner()->wire();
                if(wire) {
                   Port* otherPort = wire->port1() == other ? wire->port2() :
                      wire->port1();
@@ -662,7 +680,7 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
          }
       }
 
-      Qucs::Wire *wire = qucsitem_cast<Qucs::Wire*>(item);
+      Wire *wire = qucsitem_cast<Wire*>(item);
       if(wire && !movingWires.contains(wire)) {
          bool condition = wire->isSelected();
          condition = condition && (!wire->port1()->areAllOwnersSelected() ||
@@ -681,12 +699,10 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
             <<"\n#############\n";
 }
 
-void SchematicScene::specialMove(qreal dx, qreal dy)
+void SchematicScene::disconnectDisconnectibles()
 {
-//   if((int)dx == 0 && (int)dy == 0)
-//      return;
-   QSet<Qucs::Component*> remove;
-   foreach(Qucs::Component *c, disconnectibles) {
+   QSet<Component*> remove;
+   foreach(Component *c, disconnectibles) {
       int disconnections = 0;
       foreach(Port *port, c->ports()) {
          if(!port->connections()) continue;
@@ -701,13 +717,10 @@ void SchematicScene::specialMove(qreal dx, qreal dy)
          }
 
          if(fromPort) {
-            qDebug() << "Disconnecting "
-                     << port->owner()->component()->name() << port->scenePos() << "\t"
-                     << fromPort->owner()->component()->name() << fromPort->scenePos();
             m_undoStack->push(new DisconnectCmd(port, fromPort));
             ++disconnections;
             AddWireCmd *wc = new AddWireCmd(port, fromPort);
-            Qucs::Wire *wire = wc->wire();
+            Wire *wire = wc->wire();
             m_undoStack->push(wc);
             movingWires << wire;
          }
@@ -716,10 +729,13 @@ void SchematicScene::specialMove(qreal dx, qreal dy)
          remove << c;
       }
    }
-   foreach(Qucs::Component *c, remove)
+   foreach(Component *c, remove)
       disconnectibles.removeAll(c);
+}
 
-   foreach(Qucs::Wire *wire, movingWires) {
+void SchematicScene::specialMove(qreal dx, qreal dy)
+{
+   foreach(Wire *wire, movingWires) {
       wire->hide();
       if(wire->port1()->connections()) {
          Port *other = 0;
@@ -747,7 +763,7 @@ void SchematicScene::specialMove(qreal dx, qreal dy)
       }
    }
 
-   foreach(Qucs::Wire *wire, grabMovingWires) {
+   foreach(Wire *wire, grabMovingWires) {
       wire->hide();
       wire->grabMoveBy(dx, dy);
    }
@@ -758,18 +774,18 @@ void SchematicScene::endSpecialMove()
    disconnectibles.clear();
    foreach(QGraphicsItem *item, selectedItems()) {
       m_undoStack->push(new MoveCmd(item, storedPos(item), item->scenePos()));
-      Qucs::Component * comp = qucsitem_cast<Qucs::Component*>(item);
+      Component * comp = qucsitem_cast<Component*>(item);
       if(comp) {
          comp->checkAndConnect();
       }
-      Qucs::Wire *wire = qucsitem_cast<Qucs::Wire*>(item);
+      Wire *wire = qucsitem_cast<Wire*>(item);
       if(wire) {
          wire->checkAndConnect();
       }
 
    }
 
-   foreach(Qucs::Wire *wire, movingWires) {
+   foreach(Wire *wire, movingWires) {
       wire->removeNullLines();
       wire->show();
       wire->movePort1(wire->port1()->pos());
@@ -777,7 +793,7 @@ void SchematicScene::endSpecialMove()
                                                wire->currentState()));
       wire->checkAndConnect();
    }
-   foreach(Qucs::Wire *wire, grabMovingWires) {
+   foreach(Wire *wire, grabMovingWires) {
       wire->removeNullLines();
       wire->show();
       wire->movePort(wire->port1()->connections(), wire->port1()->scenePos());

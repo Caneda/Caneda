@@ -38,15 +38,16 @@ class PropertyItem : public QGraphicsTextItem
 
       void setFont(const QFont& f);
 
-      void updateValue();
-
       bool eventFilter(QObject* object, QEvent* event);
       void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
                  QWidget * widget = 0 );
 
-      Qucs::Component* component() const {
+      Component* component() const {
          return static_cast<PropertiesGroup*>(group())->component();
       }
+
+   public slots:
+      void updateValue();
 
    protected:
       bool sceneEvent(QEvent *event);
@@ -63,6 +64,7 @@ class PropertyItem : public QGraphicsTextItem
 
    private slots:
       void textChanged();
+
    private:
       void calculatePos();
       bool isSendable(QGraphicsSceneMouseEvent *event) const;

@@ -36,6 +36,7 @@
 
 #include <QtCore/QPointF>
 #include <QtCore/QtDebug>
+#include <QtCore/QTimer>
 
 /*!\brief Constructor.
  * \param propName The name of property.
@@ -46,8 +47,12 @@ PropertyItem::PropertyItem(const QString &propName , SchematicScene *scene):
    m_propertyName(propName), m_staticText(m_propertyName), m_edited(false)
 {
    m_staticText.append(" = ");
+   if(m_staticText.startsWith("label", Qt::CaseInsensitive)) {
+      m_staticText = "";
+   }
    setTextInteractionFlags(Qt::TextEditorInteraction);
    setFlags(ItemIsMovable | ItemIsFocusable);
+
    //caculate the pos of static text initially.
    calculatePos();
    setAcceptsHoverEvents(false);
@@ -55,6 +60,7 @@ PropertyItem::PropertyItem(const QString &propName , SchematicScene *scene):
       scene->addItem(this);
    }
    m_edited = false;
+   QTimer::singleShot(10, this, SLOT(updateValue()));
 }
 
 //! Returns the bounds of the item.
@@ -93,9 +99,10 @@ void PropertyItem::updateValue()
       return;
    }
    QString newValue = component()->property(m_propertyName).toString();
-   if(newValue != toPlainText()) {
-      setPlainText(newValue);
+   if(newValue.isEmpty()) {
+      newValue = " ";
    }
+   setPlainText(newValue);
 }
 
 //!\brief Event filter used to avoid interfence of shortcut events while edit.

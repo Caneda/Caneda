@@ -37,7 +37,8 @@
   ##########################################################################
 */
 
-/*! \brief This method hooks stylesheet to raw svg \a content.
+/*!
+ *\brief This method hooks stylesheet to raw svg \a content.
  *
  * \param svgContent The raw svg to which stylesheet should be hooked to.
  * \param stylesheet The stylesheet which is to be hooked.
@@ -92,7 +93,8 @@ static void hookStyleSheetTo(QByteArray &svgContent,
    svgContent = doc.toByteArray();
 }
 
-/*! \brief This method extracts stylesheet content from given svg \a content.
+/*!
+ *\brief This method extracts stylesheet content from given svg \a content.
  *
  * This also parses and checks for any violations of svg related to css
  * styling.
@@ -136,7 +138,8 @@ static QByteArray getStyleSheet(const QByteArray &content)
    return cdata.data().toAscii();
 }
 
-/*! \param content The actual svg file with style info in it.
+/*!
+ * \param content The actual svg file with style info in it.
  * \param ok If non null, this will indicate success state of this method.
  * \return Returns the parsed stroke width if found, else return 0.
  */
@@ -174,7 +177,8 @@ static qreal getStrokeWidth(const QByteArray &content, bool *ok = 0)
    return 0.0;
 }
 
-/*!\internal
+/*!
+ * \internal
  * \brief This code draws the highlighted rect around the item
  * \note This code is stolen from source of qt ;-)
  */
@@ -214,7 +218,8 @@ static void highlightSelectedSvgItem(
   ##########################################################################
  */
 
-/*! \brief Constructs an SvgItemData with raw svg content.
+/*!
+ * \brief Constructs an SvgItemData with raw svg content.
  * \param _content Raw svg content.
  */
 SvgItemData::SvgItemData(const QByteArray& _content) :
@@ -227,7 +232,8 @@ SvgItemData::SvgItemData(const QByteArray& _content) :
    Q_ASSERT(!content.isEmpty());
 }
 
-/*!\brief Hooks in the stylesheet to raw svg and updates the renderer and the
+/*!
+ * \brief Hooks in the stylesheet to raw svg and updates the renderer and the
  * cached values.
  */
 void SvgItemData::setStyleSheet(const QByteArray& stylesheet)
@@ -294,7 +300,8 @@ SvgPainter::~SvgPainter()
    }
 }
 
-/*! \brief Registers svg with svg id \a svg_id with this instance.
+/*!
+ *\brief Registers svg with svg id \a svg_id with this instance.
  *
  * Registering is required for rendering any svg with the instance of this
  * class. If the \a svg_id is already registered does nothing.
@@ -302,11 +309,10 @@ SvgPainter::~SvgPainter()
 void SvgPainter::registerSvg(const QString& svg_id, const QByteArray& svg)
 {
    Q_ASSERT(!svg_id.isEmpty());
-
    if(isSvgRegistered(svg_id)) {
       return;
    }
-
+   qDebug() << "SvgPainter::registerSvg() : Registering " << svg_id;
    m_dataHash[svg_id] = new SvgItemData(svg);
 }
 
@@ -322,7 +328,8 @@ QRectF SvgPainter::boundingRect(const QString& svg_id) const
    return svgData(svg_id)->boundingRect();
 }
 
-/*! \brief This method paints( or renders) a registerd svg using \a painter.
+/*!
+ *\brief This method paints( or renders) a registerd svg using \a painter.
  *
  * This also takes care of updating the cache if caching is enabled.
  * \param painter Painter with which svg should be rendered.
@@ -409,10 +416,11 @@ void SvgPainter::setCachingEnabled(bool caching)
    }
 }
 
-/*! \brief Returns the default svg painter object, shared by default schematics
+/*!
+ * \brief Returns the default svg painter object, shared by default schematics
  * and owned by an auto_ptr.
  */
-SvgPainter* SvgPainter::defaultSvgPainter()
+SvgPainter* SvgPainter::defaultInstance()
 {
    static std::auto_ptr<SvgPainter> singleton(new SvgPainter());
    return singleton.get();
@@ -436,15 +444,16 @@ QByteArray SvgPainter::styleSheet(const QString& svg_id) const
   ##########################################################################
  */
 
-/*! \brief Constructs an unregistered, initially unrenderable svg item.
+/*!
+ *\brief Constructs an unregistered, initially unrenderable svg item.
  *
  * To render this item it should first be connected to SvgPainter and the
  * svg id should already be registered with SvgPainter.
  * \sa SvgItem::registerConnections, SvgPainter::registerSvg()
  */
-SvgItem::SvgItem(SchematicScene *_scene)
+SvgItem::SvgItem(SvgPainter *svgP, SchematicScene *_scene)
    : QucsItem(0, _scene),
-     m_svgPainter(0)
+     m_svgPainter(svgP)
 {
 }
 
@@ -453,22 +462,19 @@ SvgItem::~SvgItem()
 {
 }
 
-/*! \brief Paints the item using SvgPainter::paint method, peforms sanity
+/*!
+ * \brief Paints the item using SvgPainter::paint method, peforms sanity
  * checks and takes care of drawing selection rectangle.
  */
 void SvgItem::paint(QPainter *painter,
                         const QStyleOptionGraphicsItem * option, QWidget *)
 {
-   SvgPainter *svg = svgPainter();
-   if(!svg) {
+   if(!isRegistered()) {
       qWarning() << "SvgItem::paint() : called when unregistered";
       return;
    }
-   if(m_svgId.isEmpty()) {
-      qWarning() << "SvgItem::paint() : called when svg id is null";
-      return;
-   }
-   svg->paint(painter, m_svgId);
+
+   svgPainter()->paint(painter, m_svgId);
 
    if(option->state & QStyle::State_Selected)
       highlightSelectedSvgItem(this, painter, option);
@@ -477,13 +483,14 @@ void SvgItem::paint(QPainter *painter,
 //! Returns stroke width used in svg.
 qreal SvgItem::strokeWidth() const
 {
-   if(svgPainter() && svgPainter()->isSvgRegistered(m_svgId)) {
+   if(isRegistered()) {
       return svgPainter()->strokeWidth(m_svgId);
    }
    return 0.;
 }
 
-/*! \brief Registers connections of this item with SvgPainter \a painter.
+/*!
+ *\brief Registers connections of this item with SvgPainter \a painter.
  *
  * Unless this item is connected this way, it won't be rendered. The svg
  * corresponding to svg id \a svg_id should already be registered with
@@ -503,9 +510,7 @@ void SvgItem::registerConnections(const QString& svg_id, SvgPainter *painter)
    }
 
    // Disconnect if this was connected to a different SvgPainter before.
-   if(m_svgPainter) {
-      Q_ASSERT(m_svgPainter->isSvgRegistered(m_svgId));
-
+   if(isRegistered()) {
       disconnect(m_svgPainter->rendererFor(m_svgId), SIGNAL(repaintNeeded()),
                  this, SLOT(updateBoundingRect()));
    }
@@ -522,13 +527,14 @@ void SvgItem::registerConnections(const QString& svg_id, SvgPainter *painter)
 //! Returns svg corresponding to this item.
 QByteArray SvgItem::svgContent() const
 {
-   if(m_svgPainter && m_svgPainter->isSvgRegistered(m_svgId)) {
+   if(isRegistered()) {
       return m_svgPainter->svgContent(m_svgId);
    }
    return QByteArray();
 }
 
-/*! \brief Updates the bounding rect of this item.
+/*!
+ *\brief Updates the bounding rect of this item.
  *
  * This is public slot which is connected to QSvgRenderer::repaintNeeded()
  * signal.
@@ -536,7 +542,7 @@ QByteArray SvgItem::svgContent() const
 void SvgItem::updateBoundingRect()
 {
    qDebug() << "SvgItem::updateBoundingRect() called";
-   if(!m_svgPainter || !m_svgPainter->isSvgRegistered(m_svgId)) {
+   if(!isRegistered()) {
       qWarning() << "SvgItem::updateBoundingRect()  : Cant update"
                  << "unregistered items";
       return;
@@ -553,25 +559,10 @@ void SvgItem::updateBoundingRect()
    setShapeAndBoundRect(QPainterPath(), adjustedRect, strokeWidth());
 }
 
-/*! \brief This handles the updation of connections when this item is cut and
- * pasted in different scene.
+/*!
+ * Returns whether item is registered to an svg or not.
  */
-QVariant SvgItem::itemChange(GraphicsItemChange change, const QVariant& value)
+bool SvgItem::isRegistered() const
 {
-   if(change == QGraphicsItem::ItemSceneChange) {
-      // Disconnect if this was connected to a different SvgPainter before.
-      if(m_svgPainter) {
-         Q_ASSERT(m_svgPainter->isSvgRegistered(m_svgId));
-
-         disconnect(m_svgPainter->rendererFor(m_svgId), SIGNAL(repaintNeeded()),
-                    this, SLOT(updateBoundingRect()));
-      }
-
-      SchematicScene *newScene = qobject_cast<SchematicScene*>(
-         qvariant_cast<QGraphicsScene*>(value));
-      if(newScene) {
-         registerConnections(m_svgId, newScene->svgPainter());
-      }
-   }
-   return QucsItem::itemChange(change, value);
+   return svgPainter() && !m_svgId.isEmpty() && svgPainter()->isSvgRegistered(m_svgId);
 }
