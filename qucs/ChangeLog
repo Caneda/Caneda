@@ -1,3 +1,9 @@
+2008-01-09  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* Added methods to save and load component.
+	* Saving file partially works.
+	* Some attributes like labelPrefix added to component.
+
 2008-01-06  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* Component and wire connection management robustified(as stated in todo in wiki).

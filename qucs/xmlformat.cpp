@@ -20,10 +20,13 @@
 #include "xmlformat.h"
 #include "schematicview.h"
 #include "schematicscene.h"
+#include "item.h"
+
 #include "component.h"
 #include "paintings/painting.h"
 #include "wire.h"
 #include "wireline.h"
+#include "port.h"
 #include "xmlutilities.h"
 #include "diagrams/diagram.h"
 
@@ -40,6 +43,43 @@
 
 XmlFormat::XmlFormat(SchematicView *view) : FileFormatHandler(view)
 {
+}
+
+void getConnectedWires(Wire *wire, QList<Wire*> &out)
+{
+   if(out.contains(wire)) return;
+
+   out << wire;
+
+   QList<Port*> *port1_connections = wire->port1()->connections();
+   QList<Port*> *port2_connections = wire->port2()->connections();
+
+   if(port1_connections) {
+      foreach(Port *port, *port1_connections) {
+         if(port->owner()->isWire())
+            getConnectedWires(port->owner()->wire(), out);
+      }
+   }
+
+   if(port2_connections) {
+      foreach(Port *port, *port2_connections) {
+         if(port->owner()->isWire()) {
+            getConnectedWires(port->owner()->wire(), out);
+         }
+      }
+   }
+}
+
+void writeEquiWires(Qucs::XmlWriter *writer, int id, int wireStartId, const QList<Wire*> &wires)
+{
+   writer->writeStartElement("equipotential");
+   writer->writeAttribute("id", QString::number(id));
+
+   foreach(Wire *wire, wires) {
+      wire->saveData(writer, wireStartId++);
+   }
+
+   writer->writeEndElement();
 }
 
 QString XmlFormat::saveText()
@@ -98,16 +138,40 @@ QString XmlFormat::saveText()
    writer->writeEndElement(); //</frame>
    writer->writeEndElement(); //</view>
 
+   QList<QGraphicsItem*> items = scene->items();
    //Write all the components now
    writer->writeStartElement("components");
-   foreach(Component *c, scene->components())
+   QList<Component*> components = filterItems<Component>(items, RemoveItems);
+   foreach(Component *c, components)
       c->saveData(writer);
    writer->writeEndElement(); //</components>
 
-   writer->writeStartElement("wires");
-   foreach(Wire *w, scene->wires())
-      w->writeXml(writer);
-   writer->writeEndElement(); //</wires>
+   QList<Wire*> wires = filterItems<Wire>(items, RemoveItems);
+   if(!wires.isEmpty()) {
+      int wireId = 0;
+      int equiId = 0;
+      writer->writeStartElement("wires");
+
+      QList<Wire*> parsedWires;
+      foreach(Wire *w, wires) {
+         if(parsedWires.contains(w))
+            continue;
+
+         QList<Wire*> equi;
+         getConnectedWires(w, equi);
+         writeEquiWires(writer, equiId++, wireId, equi);
+
+         parsedWires += equi;
+         wireId += equi.size();
+      }
+
+      writer->writeEndElement(); //</wires>
+   }
+
+   QList<QucsItem*> qItems = filterItems<QucsItem>(items, RemoveItems);
+   if(!qItems.isEmpty()) {
+      qDebug() << "Some items not saved. Should implement them still.";
+   }
 
    writer->writeEndDocument(); //</qucs>
 
@@ -174,37 +238,37 @@ void XmlFormat::readQucs(Qucs::XmlReader* reader)
 
 void XmlFormat::loadComponents(Qucs::XmlReader *reader)
 {
-   SchematicScene *scene = m_view->schematicScene();
-   if(!scene) {
-      reader->raiseError(QObject::tr("XmlFormat::loadComponents() : Scene doesn't exist.\n"
-                                     "So raising xml error to stop parsing"));
-      return;
-   }
-   if(!reader->isStartElement() || reader->name() != "components")
-      reader->raiseError(QObject::tr("Malformatted file"));
+//    SchematicScene *scene = m_view->schematicScene();
+//    if(!scene) {
+//       reader->raiseError(QObject::tr("XmlFormat::loadComponents() : Scene doesn't exist.\n"
+//                                      "So raising xml error to stop parsing"));
+//       return;
+//    }
+//    if(!reader->isStartElement() || reader->name() != "components")
+//       reader->raiseError(QObject::tr("Malformatted file"));
 
-   while(!reader->atEnd()) {
-      reader->readNext();
+//    while(!reader->atEnd()) {
+//       reader->readNext();
 
-      if(reader->isEndElement()) {
-         Q_ASSERT(reader->name() == "components");
-         break;
-      }
-      if(reader->isStartElement()) {
-         if(reader->name() == "component") {
-            QString model = reader->attributes().value("model").toString();
-            Component *c = Component::componentFromModel(model, scene);
-            if(!c)
-               reader->raiseError(QObject::tr("Component %1 doesn't exist").arg(model));
-            else {
-               scene->insertComponent(c);
-               c->readXml(reader);
-            }
-         }
-         else
-            reader->readUnknownElement();
-      }
-   }
+//       if(reader->isEndElement()) {
+//          Q_ASSERT(reader->name() == "components");
+//          break;
+//       }
+//       if(reader->isStartElement()) {
+//          if(reader->name() == "component") {
+//             QString model = reader->attributes().value("model").toString();
+//             Component *c = Component::componentFromModel(model, scene);
+//             if(!c)
+//                reader->raiseError(QObject::tr("Component %1 doesn't exist").arg(model));
+//             else {
+//                scene->insertComponent(c);
+//                c->readXml(reader);
+//             }
+//          }
+//          else
+//             reader->readUnknownElement();
+//       }
+//    }
 }
 
 void XmlFormat::loadView(Qucs::XmlReader *reader)
@@ -336,78 +400,78 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
 
 void XmlFormat::loadWires(Qucs::XmlReader* reader)
 {
-   SchematicScene *scene = m_view->schematicScene();
-   if(!scene) {
-      reader->raiseError(QObject::tr("XmlFormat::loadWires() : Scene doesn't exist.\n"
-                                     "So raising xml error to stop parsing"));
-      return;
-   }
+//    SchematicScene *scene = m_view->schematicScene();
+//    if(!scene) {
+//       reader->raiseError(QObject::tr("XmlFormat::loadWires() : Scene doesn't exist.\n"
+//                                      "So raising xml error to stop parsing"));
+//       return;
+//    }
 
-   if(!reader->isStartElement() || reader->name() != "wires")
-      reader->raiseError(QObject::tr("Malformatted file"));
+//    if(!reader->isStartElement() || reader->name() != "wires")
+//       reader->raiseError(QObject::tr("Malformatted file"));
 
-   while(!reader->atEnd()) {
-      reader->readNext();
+//    while(!reader->atEnd()) {
+//       reader->readNext();
 
-      if(reader->isEndElement()) {
-         Q_ASSERT(reader->name() == "wires");
-         break;
-      }
+//       if(reader->isEndElement()) {
+//          Q_ASSERT(reader->name() == "wires");
+//          break;
+//       }
 
-      if(reader->isStartElement()) {
-         if(reader->name() == "wire") {
-            QPointF n1Pos, n2Pos;
+//       if(reader->isStartElement()) {
+//          if(reader->name() == "wire") {
+//             QPointF n1Pos, n2Pos;
 
-            reader->readFurther();
+//             reader->readFurther();
 
-            if(reader->isStartElement() && reader->name() == "node1pos") {
-               reader->readFurther();
-               n1Pos = reader->readPoint();
-               reader->readFurther();
-               Q_ASSERT(reader->isEndElement() && reader->name() == "node1pos");
-            }
-            else {
-               reader->raiseError(QObject::tr("Couldn't read node 1 position of wire"));
-               break;
-            }
+//             if(reader->isStartElement() && reader->name() == "node1pos") {
+//                reader->readFurther();
+//                n1Pos = reader->readPoint();
+//                reader->readFurther();
+//                Q_ASSERT(reader->isEndElement() && reader->name() == "node1pos");
+//             }
+//             else {
+//                reader->raiseError(QObject::tr("Couldn't read node 1 position of wire"));
+//                break;
+//             }
 
-            reader->readFurther();
+//             reader->readFurther();
 
-            if(reader->isStartElement() && reader->name() == "node2pos") {
-               reader->readFurther();
-               n2Pos = reader->readPoint();
-               reader->readFurther();
-               Q_ASSERT(reader->isEndElement() && reader->name() == "node2pos");
-            }
-            else {
-               reader->raiseError(QObject::tr("Couldn't read node 2 position of wire"));
-               break;
-            }
+//             if(reader->isStartElement() && reader->name() == "node2pos") {
+//                reader->readFurther();
+//                n2Pos = reader->readPoint();
+//                reader->readFurther();
+//                Q_ASSERT(reader->isEndElement() && reader->name() == "node2pos");
+//             }
+//             else {
+//                reader->raiseError(QObject::tr("Couldn't read node 2 position of wire"));
+//                break;
+//             }
 
 
 
-            Node *n1 = scene->nodeAt(n1Pos);
-            if(!n1)
-               n1 = scene->createNode(n1Pos);
+//             Node *n1 = scene->nodeAt(n1Pos);
+//             if(!n1)
+//                n1 = scene->createNode(n1Pos);
 
-            Node *n2 = scene->nodeAt(n2Pos);
-            if(!n2)
-               n2 = scene->createNode(n2Pos);
+//             Node *n2 = scene->nodeAt(n2Pos);
+//             if(!n2)
+//                n2 = scene->createNode(n2Pos);
 
-            Wire *wire = new Wire(scene, n1, n2);
-            reader->readFurther();
-            Q_ASSERT(reader->isStartElement() && reader->name() == "wirelines");
-            wire->readXml(reader);
-            if(reader->hasError()) {
-               delete wire;
-               break;
-            }
+//             Wire *wire = new Wire(scene, n1, n2);
+//             reader->readFurther();
+//             Q_ASSERT(reader->isStartElement() && reader->name() == "wirelines");
+//             wire->readXml(reader);
+//             if(reader->hasError()) {
+//                delete wire;
+//                break;
+//             }
 
-            reader->readFurther();
-            Q_ASSERT(reader->isEndElement() && reader->name() == "wire");
-         }
-         else
-            reader->readUnknownElement();
-      }
-   }
+//             reader->readFurther();
+//             Q_ASSERT(reader->isEndElement() && reader->name() == "wire");
+//          }
+//          else
+//             reader->readUnknownElement();
+//       }
+//    }
 }

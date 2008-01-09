@@ -985,7 +985,7 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
 
    do {
       if(!(selectedItems.isEmpty() || func == 0)) {
-         QList<QucsItem*> funcable = QucsItem::filterQucsItems(selectedItems);
+         QList<QucsItem*> funcable = filterItems<QucsItem>(selectedItems);
 
          if(funcable.isEmpty())
             break;

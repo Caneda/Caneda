@@ -127,6 +127,14 @@ namespace Qucs
       return retVal;
    }
 
+   qreal XmlReader::readDoubleAttribute(QString tag)
+   {
+      bool ok;
+      qreal val = attributes().value(tag).toString().toDouble(&ok);
+      Q_ASSERT(ok);
+      return val;
+   }
+
    QPointF XmlReader::readPoint()
    {
       Q_ASSERT(isStartElement());
@@ -145,6 +153,24 @@ namespace Qucs
       readUnknownElement();
 
       return QPointF(x, y);
+   }
+
+   QPointF XmlReader::readPointAttribute(QString tag)
+   {
+      Q_ASSERT(isStartElement());
+
+      QString pointStr = attributes().value(tag).toString();
+      int commaPos = pointStr.indexOf(',');
+      Q_ASSERT(commaPos != -1);
+
+      QPointF point;
+      bool ok;
+      point.setX(pointStr.left(commaPos).toDouble(&ok));
+      Q_ASSERT(ok);
+      point.setY(pointStr.mid(commaPos+1).toDouble(&ok));
+      Q_ASSERT(ok);
+
+      return point;
    }
 
    QSize XmlReader::readSize()
@@ -272,9 +298,9 @@ namespace Qucs
       writeTextElement(tag, Qucs::boolToString(value));
    }
 
-   void XmlWriter::writeRect(const QRectF& rect)
+   void XmlWriter::writeRect(const QRectF& rect, QString tag)
    {
-      writeEmptyElement("rect");
+      writeEmptyElement(tag);
       writeAttribute("x", QString::number(rect.x()));
       writeAttribute("y", QString::number(rect.y()));
       writeAttribute("width", QString::number(rect.width()));
@@ -287,17 +313,23 @@ namespace Qucs
       //TODO: yet to do
    }
 
-   void XmlWriter::writeSize(const QSize& size)
+   void XmlWriter::writeSize(const QSize& size, QString tag)
    {
-      writeEmptyElement("size");
+      writeEmptyElement(tag);
       writeAttribute("width", QString::number(size.width()));
       writeAttribute("height", QString::number(size.height()));
    }
 
-   void XmlWriter::writePoint(const QPointF& point)
+   void XmlWriter::writePoint(const QPointF& point, QString tag)
    {
-      writeEmptyElement("point");
+      writeEmptyElement(tag);
       writeAttribute("x", QString::number(point.x()));
       writeAttribute("y", QString::number(point.y()));
+   }
+
+   void XmlWriter::writePointAttribute(const QPointF& point, QString tag)
+   {
+      QString pointStr = QString("%1,%2").arg(point.x()).arg(point.y());
+      writeAttribute(tag, pointStr);
    }
 }

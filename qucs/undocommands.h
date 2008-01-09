@@ -116,8 +116,8 @@ class AddWireCmd : public QUndoCommand
 class WireStateChangeCmd : public QUndoCommand
 {
    public:
-      typedef Wire::Store WireStore;
-      WireStateChangeCmd(Wire *wire,WireStore initState, WireStore finalState,
+      typedef Wire::Data WireData;
+      WireStateChangeCmd(Wire *wire,WireData initState, WireData finalState,
                          QUndoCommand *parent = 0);
 
       void undo();
@@ -125,7 +125,7 @@ class WireStateChangeCmd : public QUndoCommand
 
    private:
       Wire *m_wire;
-      Wire::Store m_initState, m_finalState;
+      Wire::Data m_initState, m_finalState;
 };
 
 class InsertItemCmd : public QUndoCommand

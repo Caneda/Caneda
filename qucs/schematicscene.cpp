@@ -315,6 +315,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
    while(gridHeight > 60)
       gridHeight /= 2;
 #endif
+
    qreal left = int(rect.left()) + gridWidth - (int(rect.left()) % gridWidth);
    qreal top = int(rect.top()) + gridHeight - (int(rect.top()) % gridHeight);
    qreal right = int(rect.right()) - (int(rect.right()) % gridWidth);
@@ -453,18 +454,10 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
    if(event->type() != QEvent::GraphicsSceneMousePress)
       return;
    QList<QGraphicsItem*> _list = items(event->scenePos());
-   if(!_list.isEmpty()) {
-      QList<QucsItem*> _items;
-      foreach(QGraphicsItem *item, _list) {
-         if(qucsitem_cast<QucsItem*>(item)) {
-            _items << static_cast<QucsItem*>(item);
-            break;
-         }
-      }
-      if(!_list.isEmpty()) {
-         rotateItems(_items);
-         setModified(true);
-      }
+   QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
+   if(!qItems.isEmpty()) {
+      rotateItems(QList<QucsItem*>() << qItems.first());
+      setModified(true);
    }
 }
 
@@ -473,18 +466,10 @@ void SchematicScene::mirroringXEvent(MouseActionEvent *event)
    if(event->type() != QEvent::GraphicsSceneMousePress)
       return;
    QList<QGraphicsItem*> _list = items(event->scenePos());
-   if(!_list.isEmpty()) {
-      QList<QucsItem*> _items;
-      foreach(QGraphicsItem *item, _list) {
-         if(qucsitem_cast<QucsItem*>(item)) {
-            _items << static_cast<QucsItem*>(item);
-            break;
-         }
-      }
-      if(!_list.isEmpty()) {
-         mirrorXItems(_items);
-         setModified(true);
-      }
+   QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
+   if(!qItems.isEmpty()) {
+      mirrorXItems(QList<QucsItem*>() << qItems.first());
+      setModified(true);
    }
 }
 
@@ -493,18 +478,10 @@ void SchematicScene::mirroringYEvent(MouseActionEvent *event)
    if(event->type() != QEvent::GraphicsSceneMousePress)
       return;
    QList<QGraphicsItem*> _list = items(event->scenePos());
-   if(!_list.isEmpty()) {
-      QList<QucsItem*> _items;
-      foreach(QGraphicsItem *item, _list) {
-         if(qucsitem_cast<QucsItem*>(item)) {
-            _items << static_cast<QucsItem*>(item);
-            break;
-         }
-      }
-      if(!_list.isEmpty()) {
-         mirrorYItems(_items);
-         setModified(true);
-      }
+   QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
+   if(!qItems.isEmpty()) {
+      mirrorYItems(QList<QucsItem*>() << qItems.first());
+      setModified(true);
    }
 }
 

@@ -42,8 +42,9 @@ class Wire : public QucsItem
       enum { Type = QucsItem::WireType };
 
       //! A struct to store wire's details.
-      struct Store {
+      struct Data {
             WireLines wLines;
+            QPointF pos;
             QPointF port1Pos;
             QPointF port2Pos;
       };
@@ -81,6 +82,8 @@ class Wire : public QucsItem
       void removeNullLines();
 
       void saveData(Qucs::XmlWriter *writer) const;
+      void saveData(Qucs::XmlWriter *writer, int id) const;
+
       void loadData(Qucs::XmlReader *reader);
 
       //! No rotate defined for wires.
@@ -92,10 +95,10 @@ class Wire : public QucsItem
       void mirrorAlong(Qt::Axis) {}
 
       void storeState();
-      Store storedState() const;
+      Data storedState() const;
 
-      Store currentState() const;
-      void setState(Store state);
+      Data currentState() const;
+      void setState(Data state);
 
       void checkAndConnect(bool pushUndoCommands = true);
 
@@ -120,7 +123,12 @@ class Wire : public QucsItem
       QList<Port*> m_ports;//!< The ports of wires (always contain only 2 elements).
       WireLines m_wLines;//!< Internal line representation of wires.
       QList<QRubberBand*> m_proxyWires;//!< Represent wires while being dragged
-      Wire::Store store; //!< Stores the wire data when needed(undo/redo).
+      Wire::Data store; //!< Stores the wire data when needed(undo/redo).
 };
+
+namespace Qucs
+{
+   Wire::Data readWireData(Qucs::XmlReader *reader);
+}
 
 #endif //__WIRE_H

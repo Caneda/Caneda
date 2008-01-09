@@ -60,6 +60,10 @@ namespace Qucs
          double readDouble();
 
          QPointF readPoint();
+         QPointF readPointAttribute(QString tag = "point");
+
+         qreal readDoubleAttribute(QString tag);
+
          QSize readSize();
 
          QRectF readRect();
@@ -93,10 +97,12 @@ namespace Qucs
          void writeElement(const QString& tag, qreal value);
          void writeElement(const QString& tag, bool value);
 
-         void writeRect(const QRectF& rect);
+         void writeRect(const QRectF& rect, QString tag = "rect");
          void writeTransform(const QTransform& transform);
-         void writeSize(const QSize& size);
-         void writePoint(const QPointF& point);
+         void writeSize(const QSize& size, QString tag = "size");
+         void writePoint(const QPointF& point, QString tag = "point");
+
+         void writePointAttribute(const QPointF& point, QString tag = "point");
    };
 }
 

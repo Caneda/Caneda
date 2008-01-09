@@ -88,9 +88,8 @@ bool SchematicView::load()
    //Assumes file name is set
    FileFormatHandler *format = 0;
    QFileInfo info(fileName());
-//    if(info.suffix() == "sch")
-//       format = new QucsPrimaryFormat(this);
-//    else if(info.suffix() == "xsch")
+
+//    if(info.suffix() == "xsch")
 //       format = new XmlFormat(this);
    if(!format) {
       //TODO: Try to determine the file format dynamically
@@ -124,8 +123,8 @@ bool SchematicView::save()
    FileFormatHandler *format = 0;
 //    if(info.suffix() == "sch")
 //       format = new QucsPrimaryFormat(this);
-//    else if(info.suffix() == "xsch")
-//       format = new XmlFormat(this);
+   if(info.suffix() == "xsch")
+      format = new XmlFormat(this);
 
    if(!format) {
       QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));

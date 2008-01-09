@@ -59,7 +59,7 @@ void Component::init()
 {
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
    Property _label("label", tr("Label"), QVariant::String, true,
-                   false, "R1");
+                   false, labelPrefix().append('1'));
    d->propertyMap.insert("label", _label);
 }
 
@@ -234,16 +234,69 @@ void Component::toggleActiveStatus()
    setActiveStatus(status);
 }
 
-//! \todo implement.
+//! \reimp
 void Component::loadData(Qucs::XmlReader *reader)
 {
-   //TODO: Implement.
+   Q_ASSERT(reader->isStartElement() && reader->name() == "component");
+
+   d->name = reader->attributes().value("name").toString();
+   d->library = reader->attributes().value("library").toString();
+
+   QString activeStr = reader->attributes().value("activeStatus").toString();
+   if(activeStr.isEmpty())
+      activeStr = "active";
+   setActiveStatus(activeStr == "active" ? Qucs::Active :
+                   activeStr == "open" ? Qucs::Open : Qucs::Short);
+
+   while(!reader->atEnd()) {
+      reader->readNext();
+
+      if(reader->isEndElement())
+         break;
+
+      if(reader->isStartElement()) {
+         if(reader->name() == "pos") {
+            setPos(reader->readPoint());
+         }
+         else if(reader->name() == "propertyPos" && m_propertyGroup) {
+            m_propertyGroup->setPos(reader->readPoint());
+         }
+         else if(reader->name() == "transform") {
+            setTransform(reader->readTransform());
+         }
+         else if(reader->name() == "properties") {
+            //note the usage as it expects reference of property map.
+            readProperties(reader, d->propertyMap);
+         }
+         else {
+            qWarning() << "Warning: Found unknown element" << reader->name().toString();
+            reader->readUnknownElement();
+         }
+      }
+   }
 }
 
-//! \todo implement.
+//! \reimp
 void Component::saveData(Qucs::XmlWriter *writer) const
 {
-   //TODO: Implement.
+   writer->writeStartElement("component");
+   writer->writeAttribute("name", name());
+   writer->writeAttribute("library", library());
+
+   QLatin1String activeStr(d->activeStatus == Qucs::Active ? "active" :
+                           d->activeStatus == Qucs::Open ? "open" : "short");
+   writer->writeAttribute("activeStatus", activeStr);
+
+   writer->writePoint(pos(), "pos");
+   if(m_propertyGroup) {
+      writer->writePoint(m_propertyGroup->pos(), "propertyPos");
+   }
+
+   writer->writeTransform(transform());
+
+   writeProperties(writer, d.constData()->propertyMap);
+
+   writer->writeEndElement();
 }
 
 //! Draw the compnent using svg painter. Also handle active status.
@@ -289,24 +342,6 @@ void Component::checkAndConnect(bool pushUndoCommands, QUndoCommand *parent)
    }
 }
 
-//! Reimplemented to apply opposite transformation to property text.
-void Component::rotate90(Qucs::AngleDirection dir)
-{
-   SvgItem::rotate90(dir);
-   if(m_propertyGroup) {
-      m_propertyGroup->setTransform(transform().inverted());
-   }
-}
-
-//! Reimplemented to apply opposite transformation to property text.
-void Component::mirrorAlong(Qt::Axis axis)
-{
-   SvgItem::mirrorAlong(axis);
-   if(m_propertyGroup) {
-      m_propertyGroup->setTransform(transform().inverted());
-   }
-}
-
 //! Returns the rect adjusted to accomodate ports too.
 QRectF Component::adjustedBoundRect(const QRectF& rect)
 {
@@ -317,6 +352,11 @@ QRectF Component::adjustedBoundRect(const QRectF& rect)
 QVariant Component::itemChange(GraphicsItemChange change,
                                const QVariant &value)
 {
+   if(change == ItemTransformHasChanged && m_propertyGroup) {
+      //set the inverse of component's matrix to property group so that
+      //it maintains identity when transformed.
+      m_propertyGroup->setTransform(transform().inverted());
+   }
    return SvgItem::itemChange(change, value);
 }
 
@@ -328,10 +368,12 @@ namespace Qucs
       Q_ASSERT(reader->isStartElement() && reader->name() == "component");
       QXmlStreamAttributes attributes = reader->attributes();
 
+      Qucs::checkVersion(attributes.value("version").toString());
+
       d->name = attributes.value("name").toString();
       Q_ASSERT(!d->name.isEmpty());
-
-      Qucs::checkVersion(attributes.value("version").toString());
+      d->labelPrefix = attributes.value("label").toString();
+      Q_ASSERT(!d->labelPrefix.isEmpty());
 
       while(!reader->atEnd()) {
          reader->readNext();
@@ -478,11 +520,5 @@ namespace Qucs
       Property symb("symbol", symbolDescription, QVariant::String, false,
                     false, defValue, parsedSymbols);
       d->propertyMap.insert("symbol", symb);
-   }
-
-   void readProperties(Qucs::XmlReader *reader)
-   {
-      Q_ASSERT(reader->isStartElement() && reader->name() == "properties");
-
    }
 }

@@ -256,8 +256,8 @@ void AddWireCmd::redo()
   ##########################################################################
 */
 
-WireStateChangeCmd::WireStateChangeCmd(Wire *wire, WireStore initState,
-                                       WireStore finalState, QUndoCommand *parent) :
+WireStateChangeCmd::WireStateChangeCmd(Wire *wire, WireData initState,
+                                       WireData finalState, QUndoCommand *parent) :
    QUndoCommand(parent),
    m_wire(wire), m_initState(initState), m_finalState(finalState)
 {

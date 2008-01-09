@@ -201,6 +201,7 @@ void Library::registerComponentData(Qucs::XmlReader *reader, QString path)
    Q_ASSERT(m_svgPainter);
    //Automatically registers svgs on success
    ComponentDataPtr dataPtr(new ComponentData);
+   dataPtr->library = libraryName();
    Qucs::readComponentData(reader, path, m_svgPainter, dataPtr);
 
    if(dataPtr.constData() == 0 || reader->hasError()) {

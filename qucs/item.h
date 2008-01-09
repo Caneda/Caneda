@@ -23,7 +23,8 @@
 #include <QtGui/QGraphicsItem>
 #include <limits>
 
-/*!\brief This macro determines the pattern for derived class.
+/*!
+ * \brief This macro determines the pattern for derived class.
  *
  * The macro accepts two parameter base and shift and returns the
  * the pattern corresponding to derived class.*/
@@ -50,7 +51,8 @@ namespace Qucs {
 class QucsItem : public QGraphicsItem
 {
    public:
-      /*!\brief This enum helps in polymorphic cast without using dynamic_cast.
+      /*!
+       * \brief This enum helps in polymorphic cast without using dynamic_cast.
        *
        * Actually a bitpattern is used to determine whether the cast
        * is valid or not. The cast function is approximately defined like this
@@ -103,8 +105,6 @@ class QucsItem : public QGraphicsItem
 
       QMenu* defaultContextMenu() const;
 
-      static QList<QucsItem*> filterQucsItems(const QList<QGraphicsItem*> &gItems);
-
    protected:
       void setShapeAndBoundRect(const QPainterPath& path,
                                 const QRectF& rect,
@@ -114,7 +114,8 @@ class QucsItem : public QGraphicsItem
       QPainterPath m_shape; //!< Shape cache
 };
 
-/*\brief rtti cast function with polymorphic support.
+/*
+ * \brief rtti cast function with polymorphic support.
  *
  * This function actually works for items following the rules.
  * Firstly, items should use appropriate Type constant.
@@ -128,6 +129,37 @@ template<typename T> T qucsitem_cast(QGraphicsItem *item)
          ((int(static_cast<T>(0)->Type) & item->type()) == (int(static_cast<T>(0)->Type)));
    bool result = firstCond | secondCond;
    return result ? static_cast<T>(item)  : 0;
+}
+
+
+enum FilterOption {
+   DontRemoveItems,
+   RemoveItems
+};
+
+/*
+ * \brief This function returns a list of qucsitems present in \a items.
+ */
+template<typename T>
+QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRemoveItems)
+{
+   QList<T*> tItems;
+   QList<QGraphicsItem*>::iterator it = items.begin();
+   while(it != items.end()) {
+      QGraphicsItem *item = *it;
+      T *tItem = qucsitem_cast<T*>(item);
+      if(tItem) {
+         tItems << tItem;
+         if(option == RemoveItems)
+            it = items.erase(it);
+         else
+            ++it;
+      }
+      else {
+         ++it;
+      }
+   }
+   return tItems;
 }
 
 //! Key used to store the current position of an item in it's data field.

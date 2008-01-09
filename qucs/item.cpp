@@ -32,8 +32,7 @@
 //! Create a new item and add to scene.
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene)
    : QGraphicsItem(parent),
-      m_boundingRect(-2., -2., 4., 4.), /* Non empty default bound rect.*/
-      m_shape()
+     m_boundingRect(-2., -2., 4., 4.) /* Non empty default bound rect.*/
 {
    m_shape.addRect(m_boundingRect);
    if(scene) {
@@ -46,7 +45,8 @@ QucsItem::~QucsItem()
 {
 }
 
-/*!\brief Sets the shape cache as well as boundbox cache
+/*!
+ * \brief Sets the shape cache as well as boundbox cache
  *
  * This method abstracts the method of changing the geometry with support for
  * cache as well.
@@ -71,12 +71,12 @@ void QucsItem::setShapeAndBoundRect(const QPainterPath& path,
 //!\brief returns a pointer to the schematic scene to which the item belongs.
 SchematicScene* QucsItem::schematicScene() const
 {
-   SchematicScene *s = qobject_cast<SchematicScene*>(scene());
-   return s;
+   return qobject_cast<SchematicScene*>(scene());
 }
 
 
-/*!\brief Returns a pointer to the view which is currently active(having foucs)
+/*!
+ * \brief Returns a pointer to the view which is currently active(having foucs)
  * \warning Now returns the first view rather than the actual active view!
  */
 QGraphicsView* QucsItem::activeView() const
@@ -92,10 +92,7 @@ QGraphicsView* QucsItem::activeView() const
 QucsMainWindow* QucsItem::mainWindow() const
 {
    QGraphicsView *view = activeView();
-   if(!view) return 0;
-   //Fetch indirectly.
-   QucsMainWindow *mw = qobject_cast<QucsMainWindow*>(view->parent());
-   return mw;
+   return view ? qobject_cast<QucsMainWindow*>(view->parent()) : 0;
 }
 
 //!\brief Graphically mirror item according to x axis
@@ -121,7 +118,8 @@ void QucsItem::rotate90(Qucs::AngleDirection dir)
    rotate(dir == Qucs::AntiClockwise ? -90.0 : 90.0);
 }
 
-/*!\brief Constructs and returns a menu with default actions inderted.
+/*!
+ * \brief Constructs and returns a menu with default actions inderted.
  * \todo Implement this function. */
 QMenu* QucsItem::defaultContextMenu() const
 {
@@ -129,19 +127,8 @@ QMenu* QucsItem::defaultContextMenu() const
    return 0;
 }
 
-QList<QucsItem*> QucsItem::filterQucsItems(const QList<QGraphicsItem*> &gItems)
-{
-   QList<QucsItem*> qucsItems;
-   QucsItem *qItem = 0;
-   foreach(QGraphicsItem *item, gItems) {
-      if((qItem = qucsitem_cast<QucsItem*>(item))) {
-         qucsItems << qItem;
-      }
-   }
-   return qucsItems;
-}
-
-/*! \brief Stores the item's current position in data field of item.
+/*!
+ * \brief Stores the item's current position in data field of item.
  *
  * This method is required for handling undo/redo.
  */
@@ -150,7 +137,8 @@ void storePos(QGraphicsItem *item)
    item->setData(PointKey, QVariant(item->scenePos()));
 }
 
-/*! \brief Returns the stored point by fetching from item's data field.
+/*!
+ * \brief Returns the stored point by fetching from item's data field.
  *
  * This method is required for handling undo/redo.
  */

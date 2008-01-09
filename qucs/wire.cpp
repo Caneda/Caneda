@@ -76,8 +76,6 @@ Wire::Wire(const QPointF& startPos, const QPointF& endPos,
    if(p) {
       port2()->connectTo(p);
    }
-
-
 }
 
 /*!
@@ -450,41 +448,94 @@ void Wire::removeNullLines()
 
 void Wire::saveData(Qucs::XmlWriter *writer) const
 {
+   writer->writeStartElement("wire");
 
+   QPointF p1 = port1()->scenePos();
+   QPointF p2 = port2()->scenePos();
+
+   QString start = QString("%1,%2").arg(p1.x()).arg(p1.y());
+   QString end = QString("%1,%2").arg(p2.x()).arg(p2.y());
+
+   writer->writeAttribute("start", start);
+   writer->writeAttribute("end", end);
+
+   //write the lines
+   foreach(WireLine line, m_wLines) {
+      writer->writeEmptyElement("line");
+
+      writer->writeAttribute("x1", QString::number(line.x1()));
+      writer->writeAttribute("x2", QString::number(line.x2()));
+      writer->writeAttribute("y1", QString::number(line.y1()));
+      writer->writeAttribute("x2", QString::number(line.x2()));
+   }
+
+   writer->writeEndElement();
+}
+
+void Wire::saveData(Qucs::XmlWriter *writer, int id) const
+{
+   writer->writeStartElement("wire");
+
+   writer->writeAttribute("id", QString::number(id));
+
+   QPointF p1 = port1()->scenePos();
+   QPointF p2 = port2()->scenePos();
+
+   QString start = QString("%1,%2").arg(p1.x()).arg(p1.y());
+   QString end = QString("%1,%2").arg(p2.x()).arg(p2.y());
+
+   writer->writeAttribute("start", start);
+   writer->writeAttribute("end", end);
+
+   //write the lines
+   foreach(WireLine line, m_wLines) {
+      writer->writeEmptyElement("line");
+
+      writer->writeAttribute("x1", QString::number(line.x1()));
+      writer->writeAttribute("x2", QString::number(line.x2()));
+      writer->writeAttribute("y1", QString::number(line.y1()));
+      writer->writeAttribute("x2", QString::number(line.x2()));
+   }
+
+   writer->writeEndElement();
 }
 
 void Wire::loadData(Qucs::XmlReader *reader)
 {
-
+   Wire::Data data = readWireData(reader);
+   setState(data);
 }
 
 //! Stores wire's status. Required for undo/redo.
 void Wire::storeState()
 {
    store.wLines = m_wLines;
+   store.pos = pos();
    store.port1Pos = port1()->pos();
    store.port2Pos = port2()->pos();
 }
 
 //! Returns the wire's stored status. Required for undo/redo.
-Wire::Store Wire::storedState() const
+Wire::Data Wire::storedState() const
 {
    return store;
 }
 
 //! Returns current wire status. Required for undo/redo.
-Wire::Store Wire::currentState() const
+Wire::Data Wire::currentState() const
 {
-   Wire::Store retVal;
+   Wire::Data retVal;
    retVal.wLines = m_wLines;
+   retVal.pos = pos();
    retVal.port1Pos = port1()->pos();
    retVal.port2Pos = port2()->pos();
    return retVal;
 }
 
 //! Set's the wire status to \a state. Required for undo/redo.
-void Wire::setState(Wire::Store state)
+void Wire::setState(Wire::Data state)
 {
+   setPos(state.pos);
    port1()->setPos(state.port1Pos);
    port2()->setPos(state.port2Pos);
    m_wLines = state.wLines;
@@ -642,4 +693,43 @@ int Wire::indexForPos(const QPointF& pos) const
    }
 
    return -1;
+}
+
+namespace Qucs
+{
+   Wire::Data readWireData(Qucs::XmlReader *reader)
+   {
+      Q_ASSERT(reader->isStartElement() && reader->name() == "wire");
+
+      Wire::Data data;
+
+      data.port1Pos = reader->readPointAttribute("start");
+      data.port2Pos = reader->readPointAttribute("end");
+      data.pos = ( data.port1Pos + data.port2Pos ) / 2;
+
+      while(!reader->atEnd()) {
+         reader->readNext();
+
+         if(reader->isEndElement())
+            break;
+
+         if(reader->isStartElement()) {
+            if(reader->name() == "line") {
+               qreal x1 = reader->readDoubleAttribute("x1");
+               qreal y1 = reader->readDoubleAttribute("y1");
+               qreal x2 = reader->readDoubleAttribute("x2");
+               qreal y2 = reader->readDoubleAttribute("y2");
+               data.wLines << WireLine(x1, y1, x2, y2);
+
+               //read till end now of line tag now
+               reader->readUnknownElement();
+            }
+            else {
+               reader->readUnknownElement();
+            }
+         }
+      }
+
+      return data;
+   }
 }

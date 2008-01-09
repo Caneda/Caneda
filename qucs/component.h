@@ -48,8 +48,10 @@ struct ComponentData : public QSharedData
    public:
       ComponentData(Qucs::ActiveStatus a = Qucs::Active) : activeStatus(a) {}
       QString name;
+      QString labelPrefix;
       QString displayText;
       QString description;
+      QString library;
       PropertyMap propertyMap;
       Qucs::ActiveStatus activeStatus;
       QMap<QString, QList<PortData*> > schematicPortMap;
@@ -79,12 +81,16 @@ class Component : public SvgItem
       int type() const { return Component::Type; }
       //! Returns name of the component.
       QString name() const { return d->name; }
+      //! Returns label prefix of component.
+      QString labelPrefix() const { return d->labelPrefix; }
       //! Represents model of component, which is infact a property.
       QString model() const { return property("model").toString(); }
       //! Returns string to be displayed in sidebar, toolbar or ..
       QString displayText() const { return d->displayText; }
       //! Returns a helpful text corresponding to component.
       QString description() const { return d->description; }
+      //! Returns the library to which this component belongs.
+      QString library() const { return d->library; }
       //! Returns the property map (actually copy of property map)
       PropertyMap propertyMap() const { return d->propertyMap; }
       //! Returns property group of the component.
@@ -127,9 +133,6 @@ class Component : public SvgItem
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
 
       void checkAndConnect(bool pushUndoCommands = true, QUndoCommand *parent = 0);
-
-      virtual void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise);
-      virtual void mirrorAlong(Qt::Axis axis);
 
    protected:
       QRectF adjustedBoundRect(const QRectF& rect);
