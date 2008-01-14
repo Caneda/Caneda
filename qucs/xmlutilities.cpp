@@ -22,6 +22,7 @@
 
 #include <QtCore/QRectF>
 #include <QtCore/QSize>
+#include <QtCore/QDebug>
 
 #include <QtGui/QTransform>
 
@@ -30,23 +31,6 @@
 
 namespace Qucs
 {
-   const QMap<QString,Transformation>& transformMap()
-   {
-      static QMap<QString,Transformation> _map;
-      if(_map.isEmpty()) {
-         _map[QString("m11")] = Qucs::m11;
-         _map[QString("m12")] = Qucs::m12;
-         _map[QString("m13")] = Qucs::m13;
-         _map[QString("m21")] = Qucs::m21;
-         _map[QString("m22")] = Qucs::m22;
-         _map[QString("m23")] = Qucs::m23;
-         _map[QString("m31")] = Qucs::m31;
-         _map[QString("m32")] = Qucs::m32;
-         _map[QString("m33")] = Qucs::m33;
-      }
-      return _map;
-   }
-
    //! Just skips through unknown tag by reading and discarding tokens parsed.
    void XmlReader::readUnknownElement()
    {
@@ -158,7 +142,6 @@ namespace Qucs
    QPointF XmlReader::readPointAttribute(QString tag)
    {
       Q_ASSERT(isStartElement());
-
       QString pointStr = attributes().value(tag).toString();
       int commaPos = pointStr.indexOf(',');
       Q_ASSERT(commaPos != -1);
@@ -220,18 +203,39 @@ namespace Qucs
       Q_ASSERT(isStartElement());
 
       QString matrix = attributes().value("matrix").toString();
-      QStringList ele = matrix.split(',');
-      bool oks[6];
-      if(ele.size() != 6) {
+      QStringList eleStr = matrix.split(',');
+
+      if(eleStr.size() != 6) {
          raiseError(QObject::tr("Invalid transform matrix %1").arg(matrix));
          return QTransform();
       }
-      //TODO: implement after confusion is resolved
+
+      bool ok, finalOk = true;
+      qreal ele[6];
+      for(int i = 0; i < 6; ++i) {
+         ele[i] = eleStr[i].toDouble(&ok);
+         finalOk = finalOk && ok;
+      }
+
+      if(!finalOk) {
+         raiseError(QObject::tr("Invalid transform matrix %1").arg(matrix));
+         return QTransform();
+      }
 
       // read till end tag
       readUnknownElement();
 
-      return QTransform();
+      QTransform svgLike
+         (ele[0], ele[2], ele[4],
+          ele[1], ele[3], ele[5],
+          0,      0,          1);
+
+      QTransform retVal = svgLike.inverted(&ok);
+
+      if(!ok) {
+         qWarning() << Q_FUNC_INFO << "Singular matrix found";
+      }
+      return retVal;
    }
 
    QString XmlReader::readLocaleText(const QString& localePrefix)
@@ -310,7 +314,22 @@ namespace Qucs
    void XmlWriter::writeTransform(const QTransform& transform)
    {
       writeEmptyElement("transform");
-      //TODO: yet to do
+      bool ok;
+      QTransform svgLike = transform.inverted(&ok);
+      if(!ok) {
+         qWarning() << Q_FUNC_INFO << "Singular matrix found";
+      }
+
+      QStringList svgVec;
+
+      svgVec << QString::number(svgLike.m11())
+             << QString::number(svgLike.m21())
+             << QString::number(svgLike.m12())
+             << QString::number(svgLike.m22())
+             << QString::number(svgLike.m13())
+             << QString::number(svgLike.m23());
+
+      writeAttribute("matrix", svgVec.join(","));
    }
 
    void XmlWriter::writeSize(const QSize& size, QString tag)

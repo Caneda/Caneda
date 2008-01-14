@@ -312,7 +312,7 @@ void SvgPainter::registerSvg(const QString& svg_id, const QByteArray& svg)
    if(isSvgRegistered(svg_id)) {
       return;
    }
-   qDebug() << "SvgPainter::registerSvg() : Registering " << svg_id;
+
    m_dataHash[svg_id] = new SvgItemData(svg);
 }
 
@@ -541,7 +541,7 @@ QByteArray SvgItem::svgContent() const
  */
 void SvgItem::updateBoundingRect()
 {
-   qDebug() << "SvgItem::updateBoundingRect() called";
+
    if(!isRegistered()) {
       qWarning() << "SvgItem::updateBoundingRect()  : Cant update"
                  << "unregistered items";

@@ -21,20 +21,21 @@
 #define __QUCSMAINWINDOW_H
 
 #include "mainwindowbase.h"
+#include "undocommands.h"
+
 #include <QtCore/QMap>
 #include <QtGui/QToolBar>
 #include <QtGui/QMenu>
 
 class ComponentsSidebar;
 class QUndoGroup;
-class QUndoCommand;
 
 class SchematicView;
 class SchematicScene;
 class QucsView;
 class QucsItem;
 
-typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>,bool,QUndoCommand*);
+typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>, Qucs::UndoOption);
 
 class QucsMainWindow : public MainWindowBase
 {
@@ -43,7 +44,7 @@ class QucsMainWindow : public MainWindowBase
       QucsMainWindow(QWidget *w=0);
       ~QucsMainWindow() {}
 
-      void addView(SchematicView *view);
+      void addSchematicView(SchematicView *view);
       void saveSettings();
       void test();
 
@@ -102,9 +103,9 @@ class QucsMainWindow : public MainWindowBase
       void slotIntoHierarchy();
       void slotPopHierarchy();
       void slotEditActivate(bool);
-      void slotInsertEquation(bool);
-      void slotInsertGround(bool);
-      void slotInsertPort(bool);
+      void slotInsertEquation();
+      void slotInsertGround();
+      void slotInsertPort();
       void slotSetWire(bool);
       void slotInsertLabel(bool);
       void slotInsertEntity();
@@ -128,17 +129,23 @@ class QucsMainWindow : public MainWindowBase
       void slotHelpAbout();
       void slotHelpAboutQt();
 
+      void slotInsertItemAction(bool state);
+
       void setDocumentTitle(const QString& title);
-      void updateTitleText();
+      void updateTitleTabText();
+
+      void slotSidebarItemSelected(const QString& item);
 
    protected:
       void closeEvent( QCloseEvent *closeEvent);
 
    private slots:
-      void activateStackOf(QWidget *w);
-      void newView();
       void loadSettings();
       void setTabTitle(const QString& str);
+
+      void slotCurrentChanged(QWidget *current, QWidget *prev);
+      void slotViewClosed(QWidget *widget);
+
    private:
       void initActions();
       void initMenus();
@@ -146,6 +153,8 @@ class QucsMainWindow : public MainWindowBase
       void performToggleAction(bool on, pActionFunc func, QAction *action);
       void setNormalAction();
       QucsView* viewFromWidget(QWidget *widget);//Returns QucsView* appropriately
+
+      void resetCurrentSceneState();
       // The following aim at reducing clutter by substituting
       // action pointers with a map container using object names
       // to identify them.

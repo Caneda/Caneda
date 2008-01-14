@@ -25,6 +25,8 @@
 #include <QtCore/QPair>
 #include <QtGui/QGraphicsItem>
 
+#include "undocommands.h"
+
 class QUndoStack;
 class QucsItem;
 class Diagram;
@@ -42,6 +44,7 @@ namespace Qucs
 
 class Component;
 class Wire;
+class SchematicView;
 
 typedef QGraphicsSceneMouseEvent MouseActionEvent;
 
@@ -60,9 +63,6 @@ class SchematicScene : public QGraphicsScene
          SettingOnGrid,
          ZoomingAtPoint,
          InsertingItems,
-         InsertingEquation,
-         InsertingGround,
-         InsertingPort,
          InsertingWireLabel,
          Normal
       };
@@ -75,22 +75,18 @@ class SchematicScene : public QGraphicsScene
 
       bool areItemsMoving() const { return m_areItemsMoving; }
 
-      QList<Painting*> paintings() const { return m_paintings; }
-      QList<Diagram*> diagrams() const { return m_diagrams; }
-      QList<Painting*> symbolPaintings() const { return m_symbolPaintings; }
+      //toggle action methods.
+      void mirrorXItems(QList<QucsItem*> items, Qucs::UndoOption);
+      void mirrorYItems(QList<QucsItem*> items, Qucs::UndoOption);
+      void rotateItems(QList<QucsItem*> items, Qucs::UndoOption);
+      void deleteItems(QList<QucsItem*> items, Qucs::UndoOption);
+      void setItemsOnGrid(QList<QucsItem*> items, Qucs::UndoOption);
+      void toggleActiveStatus(QList<QucsItem*> components, Qucs::UndoOption);
 
-      void mirrorXItems(QList<QucsItem*> items, bool pushUndoCommands = true,
-                        QUndoCommand *parent = 0);
-      void mirrorYItems(QList<QucsItem*> items, bool pushUndoCommands = true,
-                        QUndoCommand *parent = 0);
-      void rotateItems(QList<QucsItem*> items, bool pushUndoCommands = true,
-                       QUndoCommand *parent = 0);
-      void deleteItems(QList<QucsItem*> items, bool pushUndoCommands = true,
-                       QUndoCommand *parent = 0);
-      void setItemsOnGrid(QList<QucsItem*> items, bool pushUndoCommands = true,
-                          QUndoCommand *parent = 0);
-      void toggleActiveStatus(QList<QucsItem*> components, bool pushUndoCommands = true,
-                              QUndoCommand *parent = 0);
+      //these aren't toggle actions.
+      void cutItems(QList<QucsItem*> items, Qucs::UndoOption = Qucs::PushUndoCmd);
+      void copyItems(QList<QucsItem*> items);
+      void paste();
 
       QString fileName() const { return m_fileName; }
       void setFileName(const QString& fn);
@@ -133,20 +129,29 @@ class SchematicScene : public QGraphicsScene
       MouseAction currentMouseAction() const { return m_currentMouseAction; }
       void setCurrentMouseAction(MouseAction ma);
 
-      void cutItems(QList<QucsItem*> items);
-      void copyItems(QList<QucsItem*> items);
-      void paste();
+      SchematicView* activeView() const;
+
+      void resetState();
+      void beginInsertingItems(const QList<QucsItem*> &items);
+
+      bool eventFilter(QObject *object, QEvent *event);
+
+      bool shortcutsBlocked() const { return m_shortcutsBlocked; }
+      void blockShortcuts(bool block);
 
    public slots:
       void setModified(bool m = true);
+      void setInsertingItem(const QString &item);
 
    signals:
       void modificationChanged(bool changed);
       void fileNameChanged(const QString& file);
-      void stateUpdated();
+      void titleToBeUpdated();
 
    protected:
       void drawBackground(QPainter *p, const QRectF& r);
+
+      bool event(QEvent *event);
 
       void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
       void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
@@ -168,9 +173,6 @@ class SchematicScene : public QGraphicsScene
       void settingOnGridEvent(MouseActionEvent *e);
       void zoomingAtPointEvent(MouseActionEvent *e);
       void insertingItemsEvent(MouseActionEvent *e);
-      void insertingEquationEvent(MouseActionEvent *event);
-      void insertingGroundEvent(MouseActionEvent *event);
-      void insertingPortEvent(MouseActionEvent *event);
       void insertingWireLabelEvent(MouseActionEvent *event);
       void normalEvent(MouseActionEvent *e);
 
@@ -183,15 +185,18 @@ class SchematicScene : public QGraphicsScene
       void specialMove(qreal dx, qreal dy);
       void endSpecialMove();
 
+      void placeItem(QucsItem *item, QPointF pos, Qucs::UndoOption opt);
+      void disconnectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt);
+      void connectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt);
+
       //These are helper variables (aka state holders)
       bool m_areItemsMoving;
       QList<Component*> disconnectibles;
       QList<Wire*> movingWires, grabMovingWires;
       QPointF lastPos;
-      // These are the various qucs-items on scene
-      QList<Diagram*> m_diagrams;
-      QList<Painting*> m_paintings;
-      QList<Painting*> m_symbolPaintings;
+
+      QPointF m_insertActionMousePos;
+      QList<QucsItem*> m_insertibles;
 
       //Document properties
       QUndoStack *m_undoStack;
@@ -212,6 +217,7 @@ class SchematicScene : public QGraphicsScene
       bool m_frameVisible;
       bool m_snapToGrid;
       bool m_macroProgress;
+      bool m_shortcutsBlocked;
 };
 
 #endif //__SCHEMATICSCENE_H

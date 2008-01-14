@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-# 
+#
 # qucs/components/Makefile.am
 #
 # Automake input file.
@@ -10,25 +10,27 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
-# 
+#
 # This software is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this package; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
-# Boston, MA 02110-1301, USA.  
+# Boston, MA 02110-1301, USA.
 #
 
 noinst_LIBRARIES = libcomponents.a
 
-MOCHEADERS = propertytext.h componentproperty.h
+MOCHEADERS =
+# propertytext.h componentproperty.h
 # componentdialog.h spicedialog.h optimizedialog.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-libcomponents_a_SOURCES = component.cpp resistor.cpp componentproperty.cpp propertytext.cpp
+libcomponents_a_SOURCES =
+# component.cpp resistor.cpp componentproperty.cpp propertytext.cpp
 # 					am_modulator.cpp ampere_ac.cpp ampere_dc.cpp ampere_noise.cpp amplifier.cpp\
 # 					attenuator.cpp biast.cpp bondwire.cpp cccs.cpp ccvs.cpp circulator.cpp \
 # 					coaxialline.cpp coplanar.cpp coupler.cpp cpwgap.cpp cpwopen.cpp \
@@ -44,7 +46,8 @@ libcomponents_a_SOURCES = component.cpp resistor.cpp componentproperty.cpp prope
 
 nodist_libcomponents_a_SOURCES = $(MOCFILES)
 
-noinst_HEADERS = $(MOCHEADERS) component.h multisymbolcomponent.h components.h resistor.h
+noinst_HEADERS = $(MOCHEADERS)
+# component.h multisymbolcomponent.h components.h resistor.h
 # 						am_modulator.h ampere_ac.h ampere_dc.h ampere_noise.h amplifier.h \
 # 						attenuator.h biast.h bondwire.h cccs.h ccvs.h circulator.h \
 # 						coaxialline.h coplanar.h coupler.h cpwgap.h cpwopen.h cpwshort.h \

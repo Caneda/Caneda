@@ -20,15 +20,35 @@
 #ifndef __COMPONENTSSIDEBAR_H
 #define __COMPONENTSSIDEBAR_H
 
-#include <QtGui/QWidget>
+#include <QtGui/QTreeView>
+#include "sidebarmodel.h"
 
 // Forward declarations
 class QPixmap;
 class FilterProxyModel;
 class QLineEdit;
-class SidebarModel;
-class TreeView;
 class QToolButton;
+
+class TreeView : public QTreeView
+{
+      Q_OBJECT;
+   public:
+      TreeView(QWidget *parent = 0);
+      ~TreeView() {}
+
+      void startDrag( Qt::DropActions supportedActions);
+      QPixmap renderToPixmap(const QMimeData *d, QRect *r, QPointF& hotSpot);
+
+   signals:
+      void invalidAreaClicked(const QModelIndex &index);
+
+   protected:
+      void mousePressEvent(QMouseEvent *event);
+      void mouseMoveEvent(QMouseEvent *event);
+      void mouseReleaseEvent(QMouseEvent *event);
+
+      bool invalidPressed;
+};
 
 //! Represents sidebar which allows components to be selected.
 class ComponentsSidebar : public QWidget
@@ -40,8 +60,12 @@ class ComponentsSidebar : public QWidget
 
       void plugLibrary(QString str);
 
+   signals:
+      void itemClicked(const QString& str);
+
    private slots:
       void filterTextChanged();
+      void slotOnClicked(const QModelIndex& index);
 
    private:
       SidebarModel *m_model;

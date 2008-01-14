@@ -22,8 +22,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
-SUBDIRS = dialogs bitmaps diagrams paintings
-# components
+SUBDIRS = dialogs bitmaps diagrams paintings components
 
 
 if COND_WIN32
@@ -48,7 +47,6 @@ qucs_SOURCES = 	wire.cpp componentssidebar.cpp  item.cpp \
 				svgitem.cpp svgtest.cpp property.cpp propertyitem.cpp \
 				propertygroup.cpp component.cpp port.cpp library.cpp \
 				xmlformat.cpp
-# qucsprimaryformat.cpp
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
@@ -61,7 +59,6 @@ qucs_LDADD = ../qucs-tools/libqucstools.a dialogs/libdialogs.a \
 noinst_HEADERS = $(MOCHEADERS) wire.h wireline.h item.h undocommands.h qucsview.h \
                                fileformathandler.h  xmlutilities.h svgitem.h \
 							   property.h port.h library.h xmlformat.h
-# qucsprimaryformat.h
 
 # rules for translations
 TRANSLATIONS = qucs_de.ts qucs_pl.ts qucs_fr.ts qucs_it.ts qucs_ro.ts \

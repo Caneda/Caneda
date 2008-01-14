@@ -32,15 +32,9 @@ class QTransform;
 
 namespace Qucs
 {
-   enum Transformation {
-      m11, m12, m13,
-      m21, m22, m23,
-      m31, m32, m33
-   };
 
-   const QMap<QString,Transformation>& transformMap();
-
-   /*! \brief This class adds a few more helper methods to qt's
+   /*!
+    * \brief This class adds a few more helper methods to qt's
     * QXmlStreamReader class.
     * \warning QXmlStreamReader doesn't have virtual destructor. Don't delete any
     * instance of this class from base pointer.

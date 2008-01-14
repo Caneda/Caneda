@@ -221,10 +221,11 @@ QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
    QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
    foreach (QModelIndex index, indexes) {
-      if (index.isValid())
-      {
+      if (index.isValid()) {
          CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
-         stream << item->name();
+         if(item->isComponent()) {
+            stream << item->name();
+         }
       }
    }
 

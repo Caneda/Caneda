@@ -52,6 +52,8 @@ class QucsView
       virtual void showAll() = 0;
       virtual void showNoZoom() = 0;
 
+      virtual bool isSchematicView() const = 0;
+
       virtual QWidget* toWidget() const = 0;
       virtual SchematicView* toSchematicView() const;
       //TODO: Add other view convienience methods
@@ -67,7 +69,7 @@ class QucsView
       QString tabText() const;
       int tabIndex() const;
 
-      //A helper function for setFileName and load
+      // A helper function for setFileName and load
       bool load(const QString& name);
 
       static QIcon modifiedTabIcon();
@@ -77,7 +79,7 @@ class QucsView
       virtual void modificationChanged(bool b) = 0;
       virtual void fileNameChanged(const QString& filename) = 0;
       // This signal is emitted with the above for convienience.
-      virtual void stateUpdated() = 0;
+      virtual void titleToBeUpdated() = 0;
 
    protected:
       // To check for external modification

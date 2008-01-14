@@ -25,6 +25,7 @@
 #include "wire.h"
 #include "undocommands.h"
 #include "qucs-tools/global.h"
+#include "library.h"
 
 #include <QtCore/QDebug>
 #include <QtGui/QPainter>
@@ -55,6 +56,7 @@ Component::~Component()
    qDeleteAll(m_ports);
 }
 
+//! Intialize the component.
 void Component::init()
 {
    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
@@ -74,6 +76,7 @@ void Component::updatePropertyGroup()
    bool itemsVisible = false;
    PropertyMap::const_iterator it = propertyMap().constBegin(),
       end = propertyMap().constEnd();
+   // determine if any item is visible.
    while (it != end) {
       if(it->isVisible()) {
          itemsVisible = true;
@@ -94,6 +97,7 @@ void Component::updatePropertyGroup()
    else {
       m_propertyGroup->realignItems();
    }
+
 }
 
 //! Creates property group for the first time.
@@ -103,6 +107,7 @@ void Component::createPropertyGroup()
    delete m_propertyGroup;
    m_propertyGroup = new PropertiesGroup(schematicScene());
    m_propertyGroup->setParentItem(this);
+   m_propertyGroup->setTransform(transform().inverted());
    m_propertyGroup->realignItems();
 }
 
@@ -203,6 +208,10 @@ bool Component::setLabel(const QString& newLabel)
       qDebug() << "Component::setLabel() : 'label property not found";
       return false;
    }
+
+   if(!newLabel.startsWith(labelPrefix()))
+      return false;
+
    //TODO: Yet to implement label prefix and number suffixing.
    bool state = d->propertyMap["label"].setValue(newLabel);
    if(state) {
@@ -222,8 +231,11 @@ void Component::setActiveStatus(Qucs::ActiveStatus status)
    update();
 }
 
-/*! Toggles active status appropriately also taking care of special
- * condition where components with <= 1 port shouldn't be shorted.
+/*!
+ * \brief Toggles active status appropriately.
+ *
+ * Also taking care of special condition where components with <= 1 port
+ * shouldn't be shorted.
  */
 void Component::toggleActiveStatus()
 {
@@ -232,6 +244,34 @@ void Component::toggleActiveStatus()
       status = (Qucs::ActiveStatus)((status + 1) % 3);
    }
    setActiveStatus(status);
+}
+
+/*!
+ * \brief Convenience static method to load component saved as xml.
+ *
+ * \param reader The xmlreader used to read xml data.
+ * \param scene SchematicScene to which component should be parented to.
+ * \return Returns new component pointer on success and null on failure.
+ */
+Component* Component::loadComponentData(Qucs::XmlReader *reader, SchematicScene *scene)
+{
+   Component *retVal = 0;
+   Q_ASSERT(reader->isStartElement() && reader->name() == "component");
+
+   QString compName = reader->attributes().value("name").toString();
+   QString libName = reader->attributes().value("library").toString();
+
+   Q_ASSERT(!compName.isEmpty());
+
+   retVal = LibraryLoader::defaultInstance()->newComponent(compName, scene, libName);
+   if(retVal) {
+      retVal->loadData(reader);
+   }
+   else {
+      //read upto end if component is not found in any of qucs identified libraries.
+      reader->readUnknownElement();
+   }
+   return retVal;
 }
 
 //! \reimp
@@ -258,8 +298,11 @@ void Component::loadData(Qucs::XmlReader *reader)
          if(reader->name() == "pos") {
             setPos(reader->readPoint());
          }
-         else if(reader->name() == "propertyPos" && m_propertyGroup) {
-            m_propertyGroup->setPos(reader->readPoint());
+         else if(reader->name() == "propertyPos") {
+            QPointF point = reader->readPoint();
+            if(m_propertyGroup) {
+               m_propertyGroup->setPos(point);
+            }
          }
          else if(reader->name() == "transform") {
             setTransform(reader->readTransform());
@@ -322,24 +365,48 @@ void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
 }
 
 //! Check for connections and connect the coinciding ports.
-void Component::checkAndConnect(bool pushUndoCommands, QUndoCommand *parent)
+void Component::checkAndConnect(Qucs::UndoOption opt)
 {
+   if(opt == Qucs::PushUndoCmd)
+      schematicScene()->undoStack()->beginMacro(QString());
    foreach(Port *port, m_ports) {
       Port *other = port->findCoincidingPort();
       if(other) {
          QList<Wire*> wires = Port::wiresBetween(port, other);
 
-         if(pushUndoCommands) {
-            ConnectCmd *cmd = new ConnectCmd(port, other, wires, schematicScene(), parent);
-            if(!parent) {
-               schematicScene()->undoStack()->push(cmd);
-            }
-         } else {
+         if(opt == Qucs::PushUndoCmd) {
+            ConnectCmd *cmd = new ConnectCmd(port, other, wires, schematicScene());
+            schematicScene()->undoStack()->push(cmd);
+         }
+         else {
             qDeleteAll(wires);
             port->connectTo(other);
          }
       }
    }
+
+   if(opt == Qucs::PushUndoCmd)
+      schematicScene()->undoStack()->endMacro();
+}
+
+//! Returns a copy of this component.
+QucsItem* Component::copy(SchematicScene *scene) const
+{
+   Component *retVal = new Component(d, svgPainter(), scene);
+   //no need for Component::copyDataTo() because the data is already copied from d pointer.
+   QucsItem::copyDataTo(static_cast<QucsItem*>(retVal));
+   retVal->setSymbol(symbol()); //to register svg connections
+   retVal->updatePropertyGroup();
+   return retVal;
+}
+
+//! Copies the data to \a component.
+void Component::copyDataTo(Component *component) const
+{
+   QucsItem::copyDataTo(static_cast<QucsItem*>(component));
+   component->d = d;
+   component->updatePropertyGroup();
+   component->update();
 }
 
 //! Returns the rect adjusted to accomodate ports too.
@@ -362,13 +429,26 @@ QVariant Component::itemChange(GraphicsItemChange change,
 
 namespace Qucs
 {
+   /*!
+    * \brief Reads component data from component description xml file.
+    *
+    * \param reader XmlReader responsible for reading xml data.
+    * \param path The path of the xml file being processed.
+    * \param svgPainter The SvgPainter object to which the symbols should be exported to.
+    * \param d (Output variable) The data ptr where data should be uploaded.
+    */
    void readComponentData(Qucs::XmlReader *reader, const QString& path,
                           SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d)
    {
       Q_ASSERT(reader->isStartElement() && reader->name() == "component");
       QXmlStreamAttributes attributes = reader->attributes();
 
-      Qucs::checkVersion(attributes.value("version").toString());
+      //check version compatibility first.
+      if(!Qucs::checkVersion(attributes.value("version").toString())) {
+         reader->readUnknownElement(); //read till end tag to ignore this component.
+         d = static_cast<ComponentData*>(0);
+         return;
+      }
 
       d->name = attributes.value("name").toString();
       Q_ASSERT(!d->name.isEmpty());
@@ -423,6 +503,55 @@ namespace Qucs
       }
    }
 
+   //! Read schematics section of component description xml file.
+   void readSchematics(Qucs::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
+                       QSharedDataPointer<ComponentData> &d)
+   {
+      Q_ASSERT(reader->isStartElement() && reader->name() == "schematics");
+
+      QStringList parsedSymbols;
+
+      QString defaultSchematic =
+         reader->attributes().value("default").toString();
+      Q_ASSERT(!defaultSchematic.isEmpty());
+
+      while(!reader->atEnd()) {
+         reader->readNext();
+
+         if(reader->isEndElement()) break;
+
+         if(reader->isStartElement()) {
+            if(reader->name() == "schematic") {
+               QString schName =
+                  reader->attributes().value("name").toString();
+
+               Q_ASSERT(!schName.isEmpty());
+
+               parsedSymbols << schName;
+
+               readSchematic(reader, svgPath, svgPainter, d);
+            }
+            else {
+               reader->readUnknownElement();
+            }
+         }
+      }
+      if(reader->hasError()) {
+         qWarning() << "Some error found.";
+         return;
+      }
+
+      Q_ASSERT(parsedSymbols.contains(defaultSchematic));
+      QString symbolDescription =
+         QObject::tr("Represents the current symbol of component.");
+      QVariant defValue(defaultSchematic);
+      Q_ASSERT(defValue.convert(QVariant::String));
+      Property symb("symbol", symbolDescription, QVariant::String, false,
+                    false, defValue, parsedSymbols);
+      d->propertyMap.insert("symbol", symb);
+   }
+
+   //! Reads the schematic tag of component description xml file.
    void readSchematic(Qucs::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
                       QSharedDataPointer<ComponentData> &d)
    {
@@ -473,52 +602,5 @@ namespace Qucs
             }
          }
       }
-   }
-
-   void readSchematics(Qucs::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
-                       QSharedDataPointer<ComponentData> &d)
-   {
-      Q_ASSERT(reader->isStartElement() && reader->name() == "schematics");
-
-      QStringList parsedSymbols;
-
-      QString defaultSchematic =
-         reader->attributes().value("default").toString();
-      Q_ASSERT(!defaultSchematic.isEmpty());
-
-      while(!reader->atEnd()) {
-         reader->readNext();
-
-         if(reader->isEndElement()) break;
-
-         if(reader->isStartElement()) {
-            if(reader->name() == "schematic") {
-               QString schName =
-                  reader->attributes().value("name").toString();
-
-               Q_ASSERT(!schName.isEmpty());
-
-               parsedSymbols << schName;
-
-               readSchematic(reader, svgPath, svgPainter, d);
-            }
-            else {
-               reader->readUnknownElement();
-            }
-         }
-      }
-      if(reader->hasError()) {
-         qWarning() << "Some error found.";
-         return;
-      }
-
-      Q_ASSERT(parsedSymbols.contains(defaultSchematic));
-      QString symbolDescription =
-         QObject::tr("Represents the current symbol of component.");
-      QVariant defValue(defaultSchematic);
-      Q_ASSERT(defValue.convert(QVariant::String));
-      Property symb("symbol", symbolDescription, QVariant::String, false,
-                    false, defValue, parsedSymbols);
-      d->propertyMap.insert("symbol", symb);
    }
 }

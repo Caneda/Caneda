@@ -68,17 +68,21 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w),
    initActions();
    initMenus();
    initToolBars();
+
    m_componentsSidebar = new ComponentsSidebar(this);
+   connect(m_componentsSidebar, SIGNAL(itemClicked(const QString&)), this,
+           SLOT(slotSidebarItemSelected(const QString&)));
    addAsDockWidget(m_componentsSidebar, tr("Components"));
 
-   connect(this,SIGNAL(currentWidgetChanged(QWidget *)),this,SLOT(activateStackOf(QWidget *)));
-   connect(this, SIGNAL(currentWidgetChanged(QWidget *)), this, SLOT(updateTitleText()));
+   connect(this, SIGNAL(currentWidgetChanged(QWidget*, QWidget*)), this,
+           SLOT(slotCurrentChanged(QWidget*, QWidget*)));
+   connect(this, SIGNAL(closedWidget(QWidget*)), this,
+           SLOT(slotViewClosed(QWidget*)));
 
-   newView();
-   SchematicView *v = qobject_cast<SchematicView*>(currentWidget());
-   m_undoGroup->setActiveStack(v->schematicScene()->undoStack());
+   SchematicView *view = new SchematicView(0, this);
+   addSchematicView(view);
+   m_undoGroup->setActiveStack(view->schematicScene()->undoStack());
    loadSettings();
-
 }
 
 void QucsMainWindow::test()
@@ -536,30 +540,21 @@ void QucsMainWindow::initActions()
    action->setShortcut(CTRL+Key_Less);
    action->setWhatsThis(tr("Insert Equation\n\nInserts a user defined equation"));
    action->setObjectName("insEquation");
-   action->setData(QVariant(SchematicScene::InsertingEquation));
-   action->setCheckable(true);
-   connect( action, SIGNAL(toggled(bool)), SLOT(slotInsertEquation(bool)));
+   connect(action, SIGNAL(triggered()), SLOT(slotInsertEquation()));
    addActionToMap(action);
-   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "ground.png"), tr("Insert Ground"), this);
    action->setShortcut(CTRL+Key_G);
    action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
    action->setObjectName("insGround");
-   action->setData(QVariant(SchematicScene::InsertingGround));
-   action->setCheckable(true);
-   connect( action, SIGNAL(toggled(bool)), SLOT(slotInsertGround(bool)));
+   connect(action, SIGNAL(triggered()), SLOT(slotInsertGround()));
    addActionToMap(action);
-   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "port.png"), tr("Insert Port"), this);
    action->setWhatsThis(tr("Insert Port\n\nInserts a port symbol"));
    action->setObjectName("insPort");
-   action->setData(QVariant(SchematicScene::InsertingPort));
-   action->setCheckable(true);
-   connect( action, SIGNAL(toggled(bool)), SLOT(slotInsertPort(bool)));
+   connect( action, SIGNAL(triggered()), SLOT(slotInsertPort()));
    addActionToMap(action);
-   checkableActions << action;
 
    action = new QAction(QIcon(Qucs::bitmapDirectory() + "wire.png"), tr("Wire"), this);
    action->setShortcut(CTRL+Key_E);
@@ -742,6 +737,14 @@ void QucsMainWindow::initActions()
 
    action = QWhatsThis::createAction(this);
    action->setObjectName("whatsThis");
+   addActionToMap(action);
+
+   action = new QAction(tr("Insert item action"), this);
+   action->setObjectName("insertItem");
+   action->setData(QVariant(SchematicScene::InsertingItems));
+   action->setCheckable(true);
+   connect(action, SIGNAL(toggled(bool)), this, SLOT(slotInsertItemAction(bool)));
+   checkableActions << action;
    addActionToMap(action);
 }
 
@@ -990,7 +993,7 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
          if(funcable.isEmpty())
             break;
 
-         (scene->*func)(funcable, true, 0);
+         (scene->*func)(funcable, Qucs::PushUndoCmd);
 
          foreach(QAction *act, checkableActions) {
             if(act != norm) {
@@ -1024,29 +1027,35 @@ void QucsMainWindow::setNormalAction()
    performToggleAction(true, 0, action("select"));
 }
 
-void QucsMainWindow::newView()
-{
-   SchematicView *vv = new SchematicView(0,this);
-   addView(vv);
-}
-
-void QucsMainWindow::addView(SchematicView *view)
+void QucsMainWindow::addSchematicView(SchematicView *view)
 {
    m_undoGroup->addStack(view->schematicScene()->undoStack());
-   connect(view, SIGNAL(stateUpdated()), this, SLOT(updateTitleText()));
    addChildWidget(view);
    tabWidget()->setCurrentWidget(view);
-   //Force fully cause modificationChanged signal to be emitted to set
-   //tab text and title bar text
-   view->setModified(true);
-   view->setModified(false);
 }
 
-void QucsMainWindow::activateStackOf(QWidget *w)
+void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
 {
-   SchematicView *v = qobject_cast<SchematicView*>(w);
-   if(v)
-      m_undoGroup->setActiveStack(v->schematicScene()->undoStack());
+   SchematicView *prevView = qobject_cast<SchematicView*>(prev);
+   if(prevView) {
+      prevView->disconnect(this);
+      prevView->resetState();
+   }
+
+   SchematicView *currView = qobject_cast<SchematicView*>(current);
+   if(currView) {
+      connect(currView, SIGNAL(titleToBeUpdated()), this, SLOT(updateTitleTabText()));
+      m_undoGroup->setActiveStack(currView->schematicScene()->undoStack());
+      updateTitleTabText();
+   }
+}
+
+void QucsMainWindow::slotViewClosed(QWidget *widget)
+{
+   SchematicView *view = qobject_cast<SchematicView*>(widget);
+   if(view) {
+      m_undoGroup->removeStack(view->schematicScene()->undoStack());
+   }
 }
 
 void QucsMainWindow::closeEvent( QCloseEvent *e )
@@ -1058,7 +1067,7 @@ void QucsMainWindow::closeEvent( QCloseEvent *e )
 void QucsMainWindow::slotFileNew()
 {
    setNormalAction();
-   newView();
+   addSchematicView(new SchematicView(0, this));
 }
 
 void QucsMainWindow::slotTextNew()
@@ -1072,18 +1081,24 @@ void QucsMainWindow::slotFileOpen()
    setNormalAction();
    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "", qucsFilter);
-   if ( fileName.isEmpty() ) return;
+   if(fileName.isEmpty()) return;
 
-   newView();
-   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
-   if(!v) return;
+   QucsView *view = viewFromWidget(currentWidget());
 
-   bool b = v->load(fileName);
+   bool canReuseCurrentView = view && view->fileName().isEmpty() && !view->isModified();
+   canReuseCurrentView = canReuseCurrentView && view->isSchematicView();
+
+   //open new view if it cant be reused
+   if(!canReuseCurrentView) {
+      addSchematicView(new SchematicView(0, this));
+      view = viewFromWidget(tabWidget()->currentWidget());
+   }
+
+   bool b = view->load(fileName);
    if(!b) {
       QMessageBox::critical(0,QObject::tr("Error"),
                             QObject::tr("Cannot load document!\nParse Error"));
       slotFileClose();
-      newView();
    }
 }
 
@@ -1239,6 +1254,7 @@ void QucsMainWindow::slotEditPaste()
    setNormalAction();
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
+   slotInsertItemAction(true);
    v->paste();
 }
 
@@ -1409,19 +1425,17 @@ void QucsMainWindow::slotEditActivate(bool on)
    performToggleAction(on, &SchematicScene::toggleActiveStatus, action("editActivate"));
 }
 
-void QucsMainWindow::slotInsertEquation(bool on)
+void QucsMainWindow::slotInsertEquation()
 {
-   performToggleAction(on, 0, action("insEquation"));
 }
 
-void QucsMainWindow::slotInsertGround(bool on)
+void QucsMainWindow::slotInsertGround()
 {
-   performToggleAction(on, 0, action("insGround"));
+   slotSidebarItemSelected("Ground");
 }
 
-void QucsMainWindow::slotInsertPort(bool on)
+void QucsMainWindow::slotInsertPort()
 {
-   performToggleAction(on, 0, action("insPort"));
 }
 
 void QucsMainWindow::slotSetWire(bool on)
@@ -1552,6 +1566,11 @@ void QucsMainWindow::slotHelpAboutQt()
    QApplication::aboutQt();
 }
 
+void QucsMainWindow::slotInsertItemAction(bool on)
+{
+   performToggleAction(on, 0, action("insertItem"));
+}
+
 void QucsMainWindow::loadSettings()
 {
    Qucs::Settings settings("qucs-qt4rc");
@@ -1677,7 +1696,9 @@ void QucsMainWindow::setTabTitle(const QString& title)
 QucsView* QucsMainWindow::viewFromWidget(QWidget *widget)
 {
    SchematicView *v = qobject_cast<SchematicView*>(widget);
-   if(v) return (QucsView*)v;
+   if(v) {
+      return static_cast<QucsView*>(v);
+   }
    qDebug("QucsMainWindow::viewFromWidget() : Couldn't identify view type.");
    return 0;
 }
@@ -1687,11 +1708,34 @@ void QucsMainWindow::setDocumentTitle(const QString& filename)
    setWindowTitle(titleText.arg(filename));
 }
 
-void QucsMainWindow::updateTitleText()
+void QucsMainWindow::updateTitleTabText()
 {
-   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+   QucsView *view = viewFromWidget(currentWidget());
    if(view) {
+      int index = tabWidget()->indexOf(currentWidget());
+      tabWidget()->setTabText(index, view->tabText());
+      QIcon icon = view->isModified() ? view->modifiedTabIcon() :
+         view->unmodifiedTabIcon();
+      tabWidget()->setTabIcon(index, icon);
+
       setDocumentTitle(view->tabText());
       setWindowModified(view->isModified());
+   }
+}
+
+void QucsMainWindow::slotSidebarItemSelected(const QString& str)
+{
+   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if(view) {
+      slotInsertItemAction(true);
+      view->schematicScene()->setInsertingItem(str);
+   }
+}
+
+void QucsMainWindow::resetCurrentSceneState()
+{
+   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if(view) {
+      view->resetState();
    }
 }

@@ -24,6 +24,12 @@
 
 #include <QtCore/QDebug>
 
+QDebug _debug()
+{
+   static QString *_str = new QString;
+   return QDebug(_str);
+}
+
 /*
   ##########################################################################
   #                            PropertyChangeCmd                           #
@@ -46,13 +52,13 @@ PropertyChangeCmd::PropertyChangeCmd(const QString& propertyName,
 void PropertyChangeCmd::undo()
 {
    m_component->setProperty(m_property, m_oldValue);
-   qDebug() << "PropertyChangeCmd::undo()\n";
+   _debug() << "PropertyChangeCmd::undo()\n";
 }
 
 void PropertyChangeCmd::redo()
 {
    m_component->setProperty(m_property, m_newValue);
-   qDebug() << "PropertyChangeCmd::redo()\n";
+   _debug() << "PropertyChangeCmd::redo()\n";
 }
 
 /*
@@ -78,7 +84,7 @@ void MoveCmd::undo()
    else {
       m_item->setPos(m_initialPos);
    }
-   qDebug() << "MoveCmd::undo()\n";
+   _debug() << "MoveCmd::undo()\n";
 
 }
 
@@ -92,7 +98,7 @@ void MoveCmd::redo()
    else {
       m_item->setPos(m_finalPos);
    }
-   qDebug() << "MoveCmd::redo()\n";
+   _debug() << "MoveCmd::redo()\n";
 }
 
 /*
@@ -111,7 +117,7 @@ struct WireConnectionInfo
       ~WireConnectionInfo()
       {
          if(!wire->scene()) {
-            qDebug() << "WireConnectionInfo::destructor Deleted sceneless wire";
+            _debug() << "WireConnectionInfo::destructor Deleted sceneless wire";
             delete wire;
          }
       }
@@ -141,7 +147,7 @@ void ConnectCmd::undo()
 {
    QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
    QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
-   qDebug() << "ConnectCmd::undo() : Disconencting "
+   _debug() << "ConnectCmd::undo() : Disconencting "
             << port1Name <<  " from " << port2Name << '\n';
 
    m_port1->disconnectFrom(m_port2);
@@ -159,7 +165,7 @@ void ConnectCmd::redo()
 {
    QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
    QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
-   qDebug() << "ConnectCmd::redo() : Conencting "
+   _debug() << "ConnectCmd::redo() : Conencting "
             << port1Name <<  " to " << port2Name << '\n';
    foreach(WireConnectionInfo *info, m_wireConnectionInfos) {
       info->port1 = info->wire->port1()->getAnyConnectedPort();
@@ -194,7 +200,7 @@ void DisconnectCmd::undo()
 {
    QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
    QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
-   qDebug() << "DisconnectCmd::undo() : Conencting "
+   _debug() << "DisconnectCmd::undo() : Conencting "
             << port1Name <<  " to " << port2Name << '\n';
    m_port1->connectTo(m_port2);
 }
@@ -203,7 +209,7 @@ void DisconnectCmd::redo()
 {
    QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
    QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
-   qDebug() << "DisconnectCmd::undo() : Disconencting "
+   _debug() << "DisconnectCmd::undo() : Disconencting "
             << port1Name <<  " from " << port2Name << '\n';
    m_port1->disconnectFrom(m_port2);
 }
@@ -227,7 +233,7 @@ void AddWireCmd::undo()
 {
    QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
    QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
-   qDebug() << "AddWireCmd::undo() : Removing wire between "
+   _debug() << "AddWireCmd::undo() : Removing wire between "
             << port1Name <<  "and"  << port2Name << '\n';
    m_wire->port1()->disconnectFrom(m_port1);
    m_wire->port2()->disconnectFrom(m_port2);
@@ -238,7 +244,7 @@ void AddWireCmd::redo()
 {
    QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
    QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
-   qDebug() << "AddWireCmd::redo() : Adding wire between "
+   _debug() << "AddWireCmd::redo() : Adding wire between "
             << port1Name <<  "and"  << port2Name << '\n';
 
    m_scene->addItem(m_wire);
@@ -265,7 +271,7 @@ WireStateChangeCmd::WireStateChangeCmd(Wire *wire, WireData initState,
 
 void WireStateChangeCmd::undo()
 {
-   qDebug() << "WireStateChangeCmd::undo() : Setting intial state"
+   _debug() << "WireStateChangeCmd::undo() : Setting intial state"
             << "\nWirelines is " << m_initState.wLines
             << "\nPort1 pos = " << m_initState.port1Pos
             << "\nPort2 pos = " << m_initState.port2Pos
@@ -276,7 +282,7 @@ void WireStateChangeCmd::undo()
 
 void WireStateChangeCmd::redo()
 {
-   qDebug() << "WireStateChangeCmd::redo() : Setting final state"
+   _debug() << "WireStateChangeCmd::redo() : Setting final state"
             << "\nWirelines is " << m_finalState.wLines
             << "\nPort1 pos = " << m_finalState.port1Pos
             << "\nPort2 pos = " << m_finalState.port2Pos
@@ -308,20 +314,20 @@ InsertItemCmd::InsertItemCmd(QGraphicsItem *const item, SchematicScene *scene,
 InsertItemCmd::~InsertItemCmd()
 {
    if(!m_item->scene()) {
-      qDebug() << "InsertItemCmd destructor: Destructing item";
+      _debug() << "InsertItemCmd destructor: Destructing item";
       delete m_item;
    }
 }
 
 void InsertItemCmd::undo()
 {
-   qDebug() << "InsertItemCmd::undo()\n";
+   _debug() << "InsertItemCmd::undo()\n";
    m_scene->removeItem(m_item);
 }
 
 void InsertItemCmd::redo()
 {
-   qDebug() << "InsertItemCmd::redo()\n";
+   _debug() << "InsertItemCmd::redo()\n";
    if(m_scene != m_item->scene()) {
       m_scene->addItem(m_item);
    }
@@ -332,15 +338,46 @@ void InsertItemCmd::redo()
    }
 }
 
-QUndoCommand* insertComponentCmd(Component *const item, SchematicScene *scene,
-                                 QPointF pos, QUndoCommand *parent)
+/*
+  ##########################################################################
+  #                           RemoveItemsCmd                               #
+  ##########################################################################
+*/
+
+RemoveItemsCmd::RemoveItemsCmd(const QList<QucsItem*> &items, SchematicScene *scene,
+                               QUndoCommand *parent) :
+   QUndoCommand(parent),
+   m_scene(scene)
 {
-   QUndoCommand *complexCmd = new QUndoCommand(parent);
-   InsertItemCmd *cmd = new InsertItemCmd(item, scene, pos, complexCmd);
-   cmd->redo();
-   item->checkAndConnect(true, complexCmd);
-   return complexCmd;
+   foreach(QucsItem *item, items) {
+      m_itemPointPairs << ItemPointPair(item, item->pos());
+   }
 }
+
+RemoveItemsCmd::~RemoveItemsCmd()
+{
+   foreach(ItemPointPair p, m_itemPointPairs) {
+      if(p.first->scene() != m_scene) {
+         delete p.first;
+      }
+   }
+}
+
+void RemoveItemsCmd::undo()
+{
+   foreach(ItemPointPair p, m_itemPointPairs) {
+      m_scene->addItem(p.first);
+      p.first->setPos(p.second);
+   }
+}
+
+void RemoveItemsCmd::redo()
+{
+   foreach(ItemPointPair p, m_itemPointPairs) {
+      m_scene->removeItem(p.first);
+   }
+}
+
 
 /*
   ##########################################################################
@@ -406,4 +443,33 @@ void MirrorItemsCmd::redo()
    foreach(QucsItem *item, m_items) {
       item->mirrorAlong(m_axis);
    }
+}
+
+
+/*
+  ##########################################################################
+  #                        ToggleActiveStatusCmd                           #
+  ##########################################################################
+*/
+
+
+ToggleActiveStatusCmd::ToggleActiveStatusCmd(const QList<Component*> &components,
+                                             QUndoCommand *parent) :
+   QUndoCommand(parent)
+{
+   foreach(Component *component, components) {
+      m_componentStatusPairs << qMakePair(component, component->activeStatus());
+   }
+}
+
+void ToggleActiveStatusCmd::undo()
+{
+   foreach(ComponentStatusPair p, m_componentStatusPairs)
+      p.first->setActiveStatus(p.second);
+}
+
+void ToggleActiveStatusCmd::redo()
+{
+   foreach(ComponentStatusPair p, m_componentStatusPairs)
+      p.first->toggleActiveStatus();
 }

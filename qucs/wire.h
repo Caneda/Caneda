@@ -49,7 +49,7 @@ class Wire : public QucsItem
             QPointF port2Pos;
       };
 
-      Wire(const QPointF &startPos, const QPointF &endPos,
+      Wire(const QPointF &startPos, const QPointF &endPos, bool doConnect = true,
            SchematicScene *scene = 0);
       Wire(Port *startPort, Port *endPort, SchematicScene *scene = 0);
       ~Wire();
@@ -84,6 +84,7 @@ class Wire : public QucsItem
       void saveData(Qucs::XmlWriter *writer) const;
       void saveData(Qucs::XmlWriter *writer, int id) const;
 
+      static Wire* loadWireData(Qucs::XmlReader *reader, SchematicScene *scene);
       void loadData(Qucs::XmlReader *reader);
 
       //! No rotate defined for wires.
@@ -100,7 +101,13 @@ class Wire : public QucsItem
       Data currentState() const;
       void setState(Data state);
 
-      void checkAndConnect(bool pushUndoCommands = true);
+      void checkAndConnect(Qucs::UndoOption opt);
+
+      QucsItem* copy(SchematicScene *scene = 0) const;
+      void copyDataTo(Wire *wire) const;
+
+      bool isComponent() const { return false; }
+      bool isWire() const { return true; }
 
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);

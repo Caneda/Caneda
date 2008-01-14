@@ -26,7 +26,6 @@
 class PropertiesGroup;
 class Port;
 class PortData;
-class QUndoCommand;
 
 
 //! Represents status of component - short, open or just active.
@@ -77,22 +76,31 @@ class Component : public SvgItem
 
       //! Returns a list of ports of the component.
       QList<Port*> ports() const { return m_ports; }
+
       //! Used for component identification at runtime.
       int type() const { return Component::Type; }
+
       //! Returns name of the component.
       QString name() const { return d->name; }
+
       //! Returns label prefix of component.
       QString labelPrefix() const { return d->labelPrefix; }
+
       //! Represents model of component, which is infact a property.
       QString model() const { return property("model").toString(); }
+
       //! Returns string to be displayed in sidebar, toolbar or ..
       QString displayText() const { return d->displayText; }
+
       //! Returns a helpful text corresponding to component.
       QString description() const { return d->description; }
+
       //! Returns the library to which this component belongs.
       QString library() const { return d->library; }
+
       //! Returns the property map (actually copy of property map)
       PropertyMap propertyMap() const { return d->propertyMap; }
+
       //! Returns property group of the component.
       PropertiesGroup* propertyGroup() const { return m_propertyGroup; }
 
@@ -100,6 +108,7 @@ class Component : public SvgItem
       void createPropertyGroup();
 
       bool setProperty(const QString& propName, const QVariant& value);
+
       /*! \brief Method to obtain property's value.
        * \param propName The name of property.
        * \return Returns corresponding property if it exists otherwise
@@ -127,12 +136,21 @@ class Component : public SvgItem
       void setActiveStatus(Qucs::ActiveStatus status);
       void toggleActiveStatus();
 
+      static Component* loadComponentData(Qucs::XmlReader *reader, SchematicScene *scene);
       void loadData(Qucs::XmlReader *reader);
       void saveData(Qucs::XmlWriter *writer) const;
 
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
 
-      void checkAndConnect(bool pushUndoCommands = true, QUndoCommand *parent = 0);
+      void checkAndConnect(Qucs::UndoOption opt);
+
+      QucsItem *copy(SchematicScene *scene = 0) const;
+      void copyDataTo(Component *comp) const;
+
+      //! \reimp Reimplemented to return rtti info.
+      bool isComponent() const { return true; }
+      //! \reimp Reimplemented to return rtti info.
+      bool isWire() const { return false; }
 
    protected:
       QRectF adjustedBoundRect(const QRectF& rect);

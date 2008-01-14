@@ -64,6 +64,7 @@ void QucsItem::setShapeAndBoundRect(const QPainterPath& path,
    m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
    m_shape = path;
    if(m_shape.isEmpty()) {
+      //if path is empry just add the bounding rect itself to the path.
       m_shape.addRect(m_boundingRect);
    }
 }
@@ -77,15 +78,11 @@ SchematicScene* QucsItem::schematicScene() const
 
 /*!
  * \brief Returns a pointer to the view which is currently active(having foucs)
- * \warning Now returns the first view rather than the actual active view!
+ * \sa SchematicScene::activeView()
  */
-QGraphicsView* QucsItem::activeView() const
+SchematicView* QucsItem::activeView() const
 {
-   if(!scene() || scene()->views().isEmpty())
-      return 0;
-   //FIXME: for now return the first view in the views list since multiple view
-   //support is not yet there.
-   return scene()->views()[0];
+   return schematicScene() ? schematicScene()->activeView() : 0;
 }
 
 //!\brief Returns a pointer to the applications main window.
@@ -95,7 +92,10 @@ QucsMainWindow* QucsItem::mainWindow() const
    return view ? qobject_cast<QucsMainWindow*>(view->parent()) : 0;
 }
 
-//!\brief Graphically mirror item according to x axis
+/*!
+ * \brief Graphically mirror item according to x axis
+ * \note Items can be mirrored only along x and y axis.
+ */
 void QucsItem::mirrorAlong(Qt::Axis axis)
 {
    update();
@@ -119,11 +119,35 @@ void QucsItem::rotate90(Qucs::AngleDirection dir)
 }
 
 /*!
+ * \brief This returns a copy of the current item parented to \a scene.
+ *
+ * Now it returns null but subclasses should reimplement this to return the
+ * appropriate copy of that reimplemented item.
+ */
+QucsItem* QucsItem::copy(SchematicScene *scene) const
+{
+   return 0;
+}
+
+/*!
+ * \brief Copies data of current-item to \a item.
+ *
+ * Sublasses should reimplement it to copy their data.
+ */
+void QucsItem::copyDataTo(QucsItem *item) const
+{
+   item->setTransform(transform());
+   item->prepareGeometryChange();
+   item->m_boundingRect = m_boundingRect;
+   item->m_shape = m_shape;
+}
+
+/*!
  * \brief Constructs and returns a menu with default actions inderted.
- * \todo Implement this function. */
+ * \todo Implement this function.
+ */
 QMenu* QucsItem::defaultContextMenu() const
 {
-   //TODO:
    return 0;
 }
 

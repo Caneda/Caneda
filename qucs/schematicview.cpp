@@ -20,13 +20,13 @@
 #include "schematicview.h"
 #include "schematicscene.h"
 #include "qucsmainwindow.h"
-#include "wire.h"
-#include "qucsprimaryformat.h"
+#include "item.h"
 #include "xmlformat.h"
 
 #include <QtGui/QWheelEvent>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
+#include <QtGui/QScrollBar>
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QTimer>
@@ -35,7 +35,8 @@
 const qreal SchematicView::zoomFactor = 1.2f;
 
 SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
-   QGraphicsView(sc,parent), QucsView(parent)
+   QGraphicsView(sc,parent), QucsView(parent),
+   m_horizontalScroll(0), m_verticalScroll(0)
 {
    if(sc == 0) {
       sc = new SchematicScene(0, 0, 1024, 768);
@@ -49,9 +50,9 @@ SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
 
    connect(sc, SIGNAL(modificationChanged(bool)), this, SIGNAL(modificationChanged(bool)));
    connect(sc, SIGNAL(fileNameChanged(const QString&)), this, SIGNAL(fileNameChanged(const QString&)));
-   connect(sc, SIGNAL(stateUpdated()), this, SIGNAL(stateUpdated()));
+   connect(sc, SIGNAL(titleToBeUpdated()), this, SIGNAL(titleToBeUpdated()));
 
-   connect(this, SIGNAL(stateUpdated()), this, SLOT(updateTabs()));
+   connect(this, SIGNAL(titleToBeUpdated()), this, SLOT(updateTabs()));
 
    setViewportUpdateMode(SmartViewportUpdate);
    ensureVisible(0, 0, 5, 5);
@@ -194,15 +195,18 @@ bool SchematicView::isModified() const
 
 void SchematicView::copy() const
 {
-   QList<QucsItem*> _items = qucsItemsFromGraphicsItems(schematicScene()->selectedItems());
-   schematicScene()->copyItems(_items);
+   QList<QGraphicsItem*> items = scene()->selectedItems();
+   QList<QucsItem*> qItems = filterItems<QucsItem>(items);
+   schematicScene()->copyItems(qItems);
 }
 
 void SchematicView::cut()
 {
-   QList<QucsItem*> _items = qucsItemsFromGraphicsItems(schematicScene()->selectedItems());
-   if(!_items.isEmpty()) {
-      schematicScene()->cutItems(_items);
+   QList<QGraphicsItem*> items = scene()->selectedItems();
+   QList<QucsItem*> qItems = filterItems<QucsItem>(items);
+
+   if(!qItems.isEmpty()) {
+      schematicScene()->cutItems(qItems);
       setModified(true);
    }
 }
@@ -210,6 +214,23 @@ void SchematicView::cut()
 void SchematicView::paste()
 {
    schematicScene()->paste();
+}
+
+void SchematicView::resetState()
+{
+   schematicScene()->resetState();
+}
+
+void SchematicView::saveScrollState()
+{
+   m_horizontalScroll = horizontalScrollBar()->value();
+   m_verticalScroll  = verticalScrollBar()->value();
+}
+
+void SchematicView::restoreScrollState()
+{
+   horizontalScrollBar()->setValue(m_horizontalScroll);
+   verticalScrollBar()->setValue(m_verticalScroll);
 }
 
 void SchematicView::setModified(bool m)
@@ -232,17 +253,6 @@ void SchematicView::repaintWires()
    bool fixSchematicViewrepaintWires;
 //foreach(Wire *w, schematicScene()->wires())
    //   w->rebuild();
-}
-
-QList<QucsItem*> SchematicView::qucsItemsFromGraphicsItems(QList<QGraphicsItem*> _items) const
-{
-   QList<QucsItem*> retVal;
-   foreach(QGraphicsItem *_item, _items) {
-      QucsItem *qitem = qucsitem_cast<QucsItem*>(_item);
-      if(qitem)
-         retVal << qitem;
-   }
-   return retVal;
 }
 
 void SchematicView::addTestComponents()

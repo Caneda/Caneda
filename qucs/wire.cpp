@@ -25,6 +25,7 @@
 
 #include "wire.h"
 #include "schematicscene.h"
+#include "schematicview.h"
 #include "undocommands.h"
 #include "port.h"
 #include "xmlutilities.h"
@@ -51,7 +52,7 @@ static const QPen unselectedWire(Qt::blue);
  *
  * Also connects the wire's port's to coinciding ports.
  */
-Wire::Wire(const QPointF& startPos, const QPointF& endPos,
+Wire::Wire(const QPointF& startPos, const QPointF& endPos, bool doConnect,
            SchematicScene *scene) : QucsItem(0, scene), m_grabbedIndex(-1)
 {
    setPos((startPos + endPos)/2);
@@ -67,14 +68,16 @@ Wire::Wire(const QPointF& startPos, const QPointF& endPos,
       removeNullLines();
    }
 
-   Port *p = port1()->findCoincidingPort();
-   if(p) {
-      port1()->connectTo(p);
-   }
+   if(doConnect) {
+      Port *p = port1()->findCoincidingPort();
+      if(p) {
+         port1()->connectTo(p);
+      }
 
-   p = port2()->findCoincidingPort();
-   if(p) {
-      port2()->connectTo(p);
+      p = port2()->findCoincidingPort();
+      if(p) {
+         port2()->connectTo(p);
+      }
    }
 }
 
@@ -455,18 +458,20 @@ void Wire::saveData(Qucs::XmlWriter *writer) const
 
    QString start = QString("%1,%2").arg(p1.x()).arg(p1.y());
    QString end = QString("%1,%2").arg(p2.x()).arg(p2.y());
+   QString pos_str = QString("%1,%2").arg(pos().x()).arg(pos().y());
 
    writer->writeAttribute("start", start);
    writer->writeAttribute("end", end);
+   writer->writeAttribute("pos", pos_str);
 
    //write the lines
    foreach(WireLine line, m_wLines) {
       writer->writeEmptyElement("line");
 
       writer->writeAttribute("x1", QString::number(line.x1()));
-      writer->writeAttribute("x2", QString::number(line.x2()));
       writer->writeAttribute("y1", QString::number(line.y1()));
       writer->writeAttribute("x2", QString::number(line.x2()));
+      writer->writeAttribute("y2", QString::number(line.y2()));
    }
 
    writer->writeEndElement();
@@ -483,27 +488,41 @@ void Wire::saveData(Qucs::XmlWriter *writer, int id) const
 
    QString start = QString("%1,%2").arg(p1.x()).arg(p1.y());
    QString end = QString("%1,%2").arg(p2.x()).arg(p2.y());
+   QString pos_str = QString("%1,%2").arg(pos().x()).arg(pos().y());
 
    writer->writeAttribute("start", start);
    writer->writeAttribute("end", end);
+   writer->writeAttribute("pos", pos_str);
 
    //write the lines
    foreach(WireLine line, m_wLines) {
       writer->writeEmptyElement("line");
 
       writer->writeAttribute("x1", QString::number(line.x1()));
-      writer->writeAttribute("x2", QString::number(line.x2()));
       writer->writeAttribute("y1", QString::number(line.y1()));
       writer->writeAttribute("x2", QString::number(line.x2()));
+      writer->writeAttribute("y2", QString::number(line.y2()));
    }
 
    writer->writeEndElement();
 }
 
+Wire* Wire::loadWireData(Qucs::XmlReader *reader, SchematicScene *scene)
+{
+   Wire *retVal = new Wire(QPointF(10, 10), QPointF(50,50), false, scene);
+   retVal->loadData(reader);
+
+   return retVal;
+}
+
 void Wire::loadData(Qucs::XmlReader *reader)
 {
    Wire::Data data = readWireData(reader);
-   setState(data);
+   setPos(data.pos);
+   port1()->setPos(mapFromScene(data.port1Pos));
+   port2()->setPos(mapFromScene(data.port2Pos));
+   m_wLines = data.wLines;
+   updateGeometry();
 }
 
 //! Stores wire's status. Required for undo/redo.
@@ -545,20 +564,47 @@ void Wire::setState(Wire::Data state)
 }
 
 //! Check for connections and connect the coinciding ports.
-void Wire::checkAndConnect(bool pushUndoCommands)
+void Wire::checkAndConnect(Qucs::UndoOption opt)
 {
+   if(opt == Qucs::PushUndoCmd)
+      schematicScene()->undoStack()->beginMacro(QString());
+
    foreach(Port *port, m_ports) {
       Port *other = port->findCoincidingPort();
       if(other) {
-         if(pushUndoCommands) {
+         if(opt == Qucs::PushUndoCmd) {
             QList<Wire*> wires = Port::wiresBetween(port, other);
             ConnectCmd *cmd = new ConnectCmd(port, other, wires, schematicScene());
             schematicScene()->undoStack()->push(cmd);
-         } else {
+         }
+         else {
             port->connectTo(other);
          }
       }
    }
+
+   if(opt == Qucs::PushUndoCmd)
+      schematicScene()->undoStack()->endMacro();
+}
+
+QucsItem* Wire::copy(SchematicScene *scene) const
+{
+   Wire *wire = new Wire(QPointF(1,1), QPointF(5,5), false, scene);
+   Wire::copyDataTo(wire);
+   return wire;
+}
+
+void Wire::copyDataTo(Wire *wire) const
+{
+   QucsItem::copyDataTo(static_cast<QucsItem*>(wire));
+   Wire::Data _data;
+
+   _data.wLines = m_wLines;
+   _data.pos = pos();
+   _data.port1Pos = port1()->pos();
+   _data.port2Pos = port2()->pos();
+
+   wire->setState(_data);
 }
 
 //! Mouse press event. Prepare for grab mode.
@@ -591,7 +637,7 @@ QRect Wire::proxyRect(const WireLine& wline) const
 {
    QRectF rect;
    if(!wline.isNull()) {
-      QGraphicsView *view = activeView();
+      SchematicView *view = activeView();
       if(!view) {
          return rect.toRect();
       }
@@ -705,16 +751,19 @@ namespace Qucs
 
       data.port1Pos = reader->readPointAttribute("start");
       data.port2Pos = reader->readPointAttribute("end");
-      data.pos = ( data.port1Pos + data.port2Pos ) / 2;
+      qDebug() << Q_FUNC_INFO << data.port1Pos << data.port2Pos;
+      data.pos = reader->readPointAttribute("pos");
 
       while(!reader->atEnd()) {
          reader->readNext();
-
+         qDebug() << reader->tokenString();
          if(reader->isEndElement())
             break;
 
          if(reader->isStartElement()) {
+            qDebug() << reader->name().toString();
             if(reader->name() == "line") {
+               qDebug() << "line tag";
                qreal x1 = reader->readDoubleAttribute("x1");
                qreal y1 = reader->readDoubleAttribute("y1");
                qreal x2 = reader->readDoubleAttribute("x2");
@@ -729,7 +778,9 @@ namespace Qucs
             }
          }
       }
-
+      qDebug() << data.wLines.size();
+      foreach(WireLine line, data.wLines)
+         qDebug() << (QLineF)line;
       return data;
    }
 }

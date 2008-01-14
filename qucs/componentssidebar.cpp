@@ -26,26 +26,17 @@
 #include <QtGui/QDrag>
 #include <QtGui/QPainter>
 #include <QtGui/QVBoxLayout>
-#include <QtGui/QTreeView>
 #include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QLineEdit>
 #include <QtGui/QToolButton>
 #include <QtGui/QAction>
+#include <QtGui/QMouseEvent>
 
 #include <QtCore/QMimeData>
 #include <QtCore/QDebug>
 
-class TreeView : public QTreeView
-{
-   public:
-      TreeView(QWidget *parent = 0);
-      ~TreeView() {}
-
-      void startDrag( Qt::DropActions supportedActions);
-      QPixmap renderToPixmap(const QMimeData *d, QRect *r, QPointF& hotSpot);
-};
-
-TreeView::TreeView(QWidget *parent) : QTreeView(parent)
+TreeView::TreeView(QWidget *parent) : QTreeView(parent),
+                                      invalidPressed(false)
 {
    header()->hide();
    setDragDropMode(QAbstractItemView::DragOnly);
@@ -53,6 +44,25 @@ TreeView::TreeView(QWidget *parent) : QTreeView(parent)
    setAlternatingRowColors(true);
    setIconSize(QSize(32, 32));
    expandAll();
+}
+
+void TreeView::mousePressEvent(QMouseEvent *event)
+{
+   invalidPressed = !indexAt(event->pos()).isValid();
+   QTreeView::mousePressEvent(event);
+}
+
+void TreeView::mouseMoveEvent(QMouseEvent *event)
+{
+   QTreeView::mouseMoveEvent(event);
+}
+
+void TreeView::mouseReleaseEvent(QMouseEvent *event)
+{
+   if(invalidPressed && !indexAt(event->pos()).isValid()) {
+      emit invalidAreaClicked(QModelIndex());
+   }
+   QTreeView::mouseReleaseEvent(event);
 }
 
 //! Custom drag The drag pixmap is drawn from svg.
@@ -138,6 +148,11 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
 
    connect(m_clearButton,SIGNAL(clicked()),m_filterEdit,SLOT(clear()));
    connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
+   connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this,
+           SLOT(slotOnClicked(const QModelIndex&)));
+   connect(m_treeView, SIGNAL(invalidAreaClicked(const QModelIndex&)), this,
+           SLOT(slotOnClicked(const QModelIndex&)));
+
    setWindowTitle(tr("Components"));
 }
 
@@ -147,6 +162,24 @@ void ComponentsSidebar::filterTextChanged()
    m_clearButton->setEnabled(!text.isEmpty());
    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
    m_proxyModel->setFilterRegExp(regExp);
+}
+
+void ComponentsSidebar::slotOnClicked(const QModelIndex& index)
+{
+   if(index.isValid()) {
+      QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
+      if(mime) {
+         QByteArray encodedData = mime->data("application/qucs.sidebarItem");
+         QDataStream stream(&encodedData, QIODevice::ReadOnly);
+         QString text;
+         stream >> text;
+         emit itemClicked(text);
+      }
+   }
+   else {
+      QString empty;
+      emit itemClicked(empty);
+   }
 }
 
 /*!

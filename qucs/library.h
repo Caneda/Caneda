@@ -86,8 +86,8 @@ class LibraryLoader
       ~LibraryLoader();
 
       Component* newComponent(QString componentName,
-                                    SchematicScene *scene,
-                                    QString library = QString());
+                              SchematicScene *scene,
+                              QString library = QString());
 
       bool load(const QString& libPath, SvgPainter* svg = 0);
       bool unload(const QString& libName);

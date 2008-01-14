@@ -70,7 +70,7 @@ void MainWindowBase::addChildWidget(QWidget *widget)
 {
    m_tabWidget->addTab(widget, widget->windowIcon(), widget->windowTitle());
    if(m_tabWidget->count() == 1) {
-      emit currentWidgetChanged(0);
+      emit currentWidgetChanged(widget, 0);
    }
    if(m_tabCloseButton->isHidden())
       m_tabCloseButton->show();
@@ -81,10 +81,19 @@ void MainWindowBase::removeChildWidget(QWidget *widget, bool deleteWidget)
    int index = m_tabWidget->indexOf(widget);
    if ( index >= 0 ) {
       QWidget *w = m_tabWidget->widget(index);
-      m_tabWidget->removeTab( index );
-      if(deleteWidget)
-         delete w;
+
+      if(w->close()) {
+         emit closedWidget(w);
+         if(deleteWidget)
+            w->deleteLater();
+      }
+      else {
+         return;
+      }
+
+      m_tabWidget->removeTab(index);
    }
+
    if( m_tabWidget->count() == 0 )
       m_tabCloseButton->hide();
 }
@@ -96,11 +105,11 @@ void MainWindowBase::addAsDockWidget(QWidget *w, const QString& title, Qt::DockW
    addDockWidget(area, dw);
 }
 
-void MainWindowBase::closeCurrentTab(bool deleteWidget)
+void MainWindowBase::closeCurrentTab()
 {
    int index = m_tabWidget->currentIndex();
-   if ( index >= 0 )
-      removeChildWidget(m_tabWidget->widget(index), deleteWidget);
+   if (index >= 0)
+      removeChildWidget(m_tabWidget->widget(index), true);
 }
 
 void MainWindowBase::setupTabWidget()
@@ -112,12 +121,19 @@ void MainWindowBase::setupTabWidget()
    m_tabCloseButton->adjustSize();
    m_tabCloseButton->hide();
    m_tabWidget->setCornerWidget(m_tabCloseButton, Qt::TopRightCorner);
+
    connect(m_tabCloseButton, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
    connect(m_tabWidget, SIGNAL(currentChanged ( int)), this, SLOT(emitWidgetChanged( int )));
+
+   m_lastCurrentWidget = m_tabWidget->currentWidget();
 }
 
 void MainWindowBase::emitWidgetChanged(int index)
 {
-   QWidget *w = m_tabWidget->widget(index);
-   emit currentWidgetChanged( w );
+   QWidget *current = m_tabWidget->widget(index);
+   int lastIndex = m_tabWidget->indexOf(m_lastCurrentWidget);
+   QWidget *prev = m_tabWidget->widget(lastIndex);
+
+   emit currentWidgetChanged(current, prev);
+   m_lastCurrentWidget = current;
 }

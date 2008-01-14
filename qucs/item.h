@@ -33,17 +33,25 @@
 /* forward declaration */
 class QGraphicsScene;
 class QGraphicsView;
-class SchematicScene;
-class QucsMainWindow;
 class QMenu;
+
+class SchematicScene;
+class SchematicView;
+class QucsMainWindow;
 
 namespace Qucs {
    class XmlReader;
    class XmlWriter;
 
+   //! This enum determines the rotation direction.
    enum AngleDirection {
       Clockwise,
       AntiClockwise
+   };
+
+   enum UndoOption {
+      DontPushUndoCmd,
+      PushUndoCmd
    };
 }
 
@@ -92,7 +100,7 @@ class QucsItem : public QGraphicsItem
       QPainterPath shape() const { return m_shape; }
 
       SchematicScene* schematicScene() const;
-      QGraphicsView* activeView() const;
+      SchematicView* activeView() const;
       QucsMainWindow* mainWindow() const;
 
       //! Virtual method to write item's properties to writer.
@@ -102,6 +110,14 @@ class QucsItem : public QGraphicsItem
 
       virtual void mirrorAlong(Qt::Axis axis);
       virtual void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise);
+
+      virtual QucsItem* copy(SchematicScene *scene = 0) const;
+      virtual void copyDataTo(QucsItem *item) const;
+
+      //! This is convenience method used for rtti.
+      virtual bool isComponent() const { return false; }
+      //! This is convenience method used for rtti.
+      virtual bool isWire() const { return false; }
 
       QMenu* defaultContextMenu() const;
 
@@ -131,7 +147,7 @@ template<typename T> T qucsitem_cast(QGraphicsItem *item)
    return result ? static_cast<T>(item)  : 0;
 }
 
-
+//! This enum is used in \a filterItems method to determine filtering.
 enum FilterOption {
    DontRemoveItems,
    RemoveItems
@@ -147,6 +163,31 @@ QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRe
    QList<QGraphicsItem*>::iterator it = items.begin();
    while(it != items.end()) {
       QGraphicsItem *item = *it;
+      T *tItem = qucsitem_cast<T*>(item);
+      if(tItem) {
+         tItems << tItem;
+         if(option == RemoveItems)
+            it = items.erase(it);
+         else
+            ++it;
+      }
+      else {
+         ++it;
+      }
+   }
+   return tItems;
+}
+
+/*
+ * \brief This function returns a list of qucsitems present in \a items.
+ */
+template<typename T>
+QList<T*> filterItems(QList<QucsItem*> &items, FilterOption option = DontRemoveItems)
+{
+   QList<T*> tItems;
+   QList<QucsItem*>::iterator it = items.begin();
+   while(it != items.end()) {
+      QucsItem *item = *it;
       T *tItem = qucsitem_cast<T*>(item);
       if(tItem) {
          tItems << tItem;

@@ -53,6 +53,8 @@ class SchematicView : public QGraphicsView, public QucsView
       void showAll();
       void showNoZoom();
 
+      bool isSchematicView() const { return true; }
+
       QWidget* toWidget() const;
       SchematicView* toSchematicView() const;
 
@@ -62,6 +64,11 @@ class SchematicView : public QGraphicsView, public QucsView
       void cut();
       void paste();
 
+      void resetState();
+
+      void saveScrollState();
+      void restoreScrollState();
+
    public slots:
       void setModified(bool m);
       //update tab's text and modification status
@@ -70,11 +77,13 @@ class SchematicView : public QGraphicsView, public QucsView
    signals:
       void modificationChanged(bool modified);
       void fileNameChanged(const QString& file);
-      void stateUpdated();
+      void titleToBeUpdated();
 
    private:
       void repaintWires();
-      QList<QucsItem*> qucsItemsFromGraphicsItems(QList<QGraphicsItem*> _items) const;
+
+      int m_horizontalScroll;
+      int m_verticalScroll;
 
    private slots:
       void addTestComponents();

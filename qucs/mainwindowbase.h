@@ -40,22 +40,30 @@ class MainWindowBase : public QMainWindow
 
       void addChildWidget(QWidget *widget);
       void removeChildWidget(QWidget *widget, bool deleteWidget = false);
-      void addAsDockWidget(QWidget *w, const QString& title = "", Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
+
+      void addAsDockWidget(QWidget *w, const QString& title = "",
+                           Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
+
       QTabWidget* tabWidget() const { return m_tabWidget; }
       QWidget* currentWidget() const { return m_tabWidget->currentWidget(); }
+
    signals:
-      void currentWidgetChanged(QWidget *widget);
+      void currentWidgetChanged(QWidget *current, QWidget *prev);
+      void closedWidget(QWidget *widget);
 
    public slots:
-      void closeCurrentTab(bool deleteWidget = false);
+      void closeCurrentTab();
 
    private slots:
       void emitWidgetChanged(int index);
 
    private:
+      void setupTabWidget();
+
       TabWidgetPrivate *m_tabWidget;
       QToolButton *m_tabCloseButton;
-      void setupTabWidget();
+      QWidget *m_lastCurrentWidget;
+
 };
 
 #endif //__MAINWINDOWBASE_H

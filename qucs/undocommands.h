@@ -21,10 +21,12 @@
 #define __UNDOCMDS_H
 
 #include "wire.h"
+#include "component.h"
 
 #include <QtGui/QUndoCommand>
 #include <QtCore/QPointF>
 #include <QtCore/QVariant>
+#include <QtCore/QPair>
 
 class QucsItem;
 class Component;
@@ -144,8 +146,22 @@ class InsertItemCmd : public QUndoCommand
       QPointF m_pos;
 };
 
-QUndoCommand* insertComponentCmd(Component *const item, SchematicScene *scene,
-                            QPointF pos = InvalidPoint, QUndoCommand *parent = 0);
+class RemoveItemsCmd : public QUndoCommand
+{
+   public:
+      typedef QPair<QucsItem*, QPointF> ItemPointPair;
+
+      RemoveItemsCmd(const QList<QucsItem*> &items, SchematicScene *scene,
+                     QUndoCommand *parent = 0);
+      ~RemoveItemsCmd();
+
+      void undo();
+      void redo();
+
+   protected:
+      QList<ItemPointPair> m_itemPointPairs;
+      SchematicScene *const m_scene;
+};
 
 class RotateItemsCmd : public QUndoCommand
 {
@@ -172,6 +188,19 @@ class MirrorItemsCmd : public QUndoCommand
    protected:
       QList<QucsItem*> m_items;
       Qt::Axis m_axis;
+};
+
+class ToggleActiveStatusCmd : public QUndoCommand
+{
+   public:
+      ToggleActiveStatusCmd(const QList<Component*> &components, QUndoCommand *parent = 0);
+
+      void undo();
+      void redo();
+
+   protected:
+      typedef QPair<Component*, Qucs::ActiveStatus> ComponentStatusPair;
+      QList<ComponentStatusPair> m_componentStatusPairs;
 };
 
 #endif
