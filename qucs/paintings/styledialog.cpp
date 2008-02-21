@@ -18,23 +18,34 @@
  ***************************************************************************/
 
 #include "styledialog.h"
-#include "painting.h"
+#include "paintings.h"
 
 #include <QtGui/QColorDialog>
 #include <QtGui/QPainter>
 
-PreviewWidget::PreviewWidget(QWidget *parent) :
+#include <QtCore/QTimer>
+
+PreviewWidget::PreviewWidget(int paintingType, QWidget *parent) :
    QWidget(parent),
    m_lightPixmap(10, 10),
    m_darkPixmap(10, 10),
-   m_headStyle(1)
-
+   m_headStyle(1),
+   m_headWidth(20),
+   m_headHeight(40),
+   m_startAngle(0),
+   m_spanAngle(180),
+   m_drawBackground(true),
+   m_paintingType(paintingType)
 {
    m_lightPixmap.fill(Qt::white);
    m_darkPixmap.fill(Qt::lightGray);
-   resize(140, 140);
-   calcHeadPoints(20, 40);
    setMinimumSize(QSize(140, 140));
+   resize(140, 140);
+   if(m_paintingType == Painting::ArrowType) {
+      calcHeadPoints();
+   }
+
+   QTimer::singleShot(100, this, SLOT(update()));
 }
 
 void PreviewWidget::setPen(QPen pen)
@@ -46,52 +57,177 @@ void PreviewWidget::setPen(QPen pen)
 
 void PreviewWidget::setBrush(QBrush brush)
 {
-   if(brush == m_brush) return;
+   if(m_paintingType == Painting::GraphicLineType || brush == m_brush) return;
    m_brush = brush;
    update();
 }
 
 void PreviewWidget::setHeadStyle(int style)
 {
-   if(style == m_headStyle || (style != 0 && style != 1))
+   if(m_paintingType != Painting::ArrowType ||
+      style == m_headStyle || (style != 0 && style != 1)) {
       return;
+   }
    m_headStyle = style;
    update();
+}
+
+void PreviewWidget::setHeadWidth(int width)
+{
+   if(m_paintingType != Painting::ArrowType) return;
+   m_headWidth = width;
+   calcHeadPoints();
+   update();
+}
+
+void PreviewWidget::setHeadHeight(int height)
+{
+   if(m_paintingType != Painting::ArrowType) return;
+   m_headHeight = height;
+   calcHeadPoints();
+   update();
+}
+
+void PreviewWidget::setHeadSize(QSize size)
+{
+   if(m_paintingType != Painting::ArrowType) return;
+   m_headWidth = size.width();
+   m_headHeight = size.height();
+   calcHeadPoints();
+   update();
+}
+
+void PreviewWidget::setStartAngle(int angle)
+{
+   if(m_paintingType == Painting::EllipseArcType) {
+      m_startAngle = angle;
+      update();
+   }
+}
+
+void PreviewWidget::setSpanAngle(int angle)
+{
+   if(m_paintingType == Painting::EllipseArcType) {
+      m_spanAngle = angle;
+      update();
+   }
+}
+
+void PreviewWidget::resizeEvent(QResizeEvent *event)
+{
+   if(m_paintingType == Painting::ArrowType)
+      calcHeadPoints();
+   return QWidget::resizeEvent(event);
+}
+
+QRect PreviewWidget::adjustedRect() const
+{
+   QRect rect;
+   if(m_paintingType == Painting::ArrowType) {
+      rect = geometry();
+
+      int sqr_size = qMin(rect.width(), rect.height());
+      rect.setSize(QSize(sqr_size, sqr_size));
+
+      rect.adjust(10, 10, -10, -10);
+   }
+   else {
+      rect = geometry();
+      rect.adjust(10, 10, -10, -10);
+   }
+
+   rect.moveCenter(QPoint(width()/2, height()/2));
+   return rect;
+}
+
+void PreviewWidget::drawBackgroundBoxes(QPainter *painter)
+{
+   for(int i=0; i <= width(); i += 10) {
+      for(int j=0; j <= height(); j += 10) {
+         int shouldDrawLight = (i/10 + j/10) % 2;
+
+         if(shouldDrawLight)
+            painter->drawPixmap(i, j, m_lightPixmap);
+         else
+            painter->drawPixmap(i, j, m_darkPixmap);
+      }
+   }
+}
+
+void PreviewWidget::drawArrow(QPainter *painter)
+{
+   QRect rect = adjustedRect();
+
+   painter->drawLine(rect.bottomLeft(), rect.topRight());
+   if(m_headStyle == 1) {
+      painter->drawConvexPolygon(m_headPolygon);
+   }
+   else {
+      painter->drawLine(m_headPolygon[0], m_headPolygon[1]);
+      painter->drawLine(m_headPolygon[1], m_headPolygon[2]);
+   }
+}
+
+void PreviewWidget::drawEllipse(QPainter *painter)
+{
+   QRect rect = adjustedRect();
+   painter->drawEllipse(rect);
+}
+
+void PreviewWidget::drawEllipseArc(QPainter *painter)
+{
+   QRect rect = adjustedRect();
+   painter->drawArc(rect, m_startAngle*16, m_spanAngle*16);
+}
+
+void PreviewWidget::drawLine(QPainter *painter)
+{
+   QRect rect = adjustedRect();
+   painter->drawLine(rect.bottomLeft(), rect.topRight());
+}
+
+void PreviewWidget::drawRectangle(QPainter *painter)
+{
+   QRect rect = adjustedRect();
+   painter->drawRect(rect);
 }
 
 void PreviewWidget::paintEvent(QPaintEvent *)
 {
    QPainter painter(this);
-   for(int i=0; i <= width(); i += 10) {
-      for(int j=0; j <= height(); j += 10) {
-         QPixmap pix = (((i/10) + (j/10)) % 2) == 0 ? m_darkPixmap : m_lightPixmap;
-         painter.drawPixmap(QPoint(i, j), pix);
-      }
+   if(m_drawBackground) {
+      drawBackgroundBoxes(&painter);
    }
+
    painter.setPen(pen());
    painter.setBrush(brush());
-//   int adjust = 15;
-//   QRect rect(frameGeometry().adjusted(adjust, adjust, -adjust, -adjust));
-//   rect.moveCenter(QPoint(width()/2, height()/2));
 
-   QRect rect = QRect(0,0, 100, 100);
-   rect.moveCenter(QPoint(width()/2, height()/2));
-   painter.drawLine(rect.bottomLeft(), rect.topRight());
-   drawHead(&painter);
+   switch(m_paintingType) {
+      case Painting::ArrowType:
+         drawArrow(&painter); break;
+      case Painting::EllipseType:
+         drawEllipse(&painter); break;
+      case Painting::EllipseArcType:
+         drawEllipseArc(&painter); break;
+      case Painting::GraphicLineType:
+         drawLine(&painter); break;
+      case Painting::RectangleType:
+         drawRectangle(&painter); break;
+      default: ;
+   }
 }
 
-void PreviewWidget::calcHeadPoints(int headWidth, int headHeight)
+void PreviewWidget::calcHeadPoints()
 {
-   QRect rect = QRect(0, 0, 100, 100);
-   rect.moveCenter(QPoint(width()/2, height()/2));
+   QRect rect = adjustedRect();
    int angle = -45;
 
    QMatrix mapper;
    mapper.rotate(angle);
 
    QPoint arrowTipPos = mapper.map(rect.topRight());
-   QPoint bottomLeft(arrowTipPos.x() - headWidth/2, arrowTipPos.y() + headHeight);
-   QPoint bottomRight(arrowTipPos.x() + headWidth/2, arrowTipPos.y() + headHeight);
+   QPoint bottomLeft(arrowTipPos.x() - m_headWidth/2, arrowTipPos.y() + m_headHeight);
+   QPoint bottomRight(arrowTipPos.x() + m_headWidth/2, arrowTipPos.y() + m_headHeight);
 
    mapper = mapper.inverted();
 
@@ -104,42 +240,72 @@ void PreviewWidget::calcHeadPoints(int headWidth, int headHeight)
    m_headPolygon.translate(rect.topRight() - mapper.map(arrowTipPos));
 }
 
-void PreviewWidget::drawHead(QPainter *painter)
+void PreviewWidget::toggleBackground(bool state)
 {
-   if(m_headStyle == 1) {
-      painter->drawConvexPolygon(m_headPolygon);
-   }
-   else {
-      painter->drawLine(m_headPolygon[0], m_headPolygon[1]);
-      painter->drawLine(m_headPolygon[1], m_headPolygon[2]);
-   }
+   m_drawBackground = state;
+   update();
 }
 
-StyleDialog::StyleDialog(QWidget *parent) :
+StyleDialog::StyleDialog(Painting *_painting, QWidget *parent) :
    QDialog(parent),
    lineColor(defaultPaintingPen.color()),
    fillColor(Qt::white),
    lineColorPixmap(32, 32),
-   fillColorPixmap(32, 32)
+   fillColorPixmap(32, 32),
+   painting(_painting)
 {
    lineColorPixmap.fill(lineColor);
    fillColorPixmap.fill(fillColor);
 
    setupUi(this);
    setupStyleWidgets();
+   adjustSize();
 }
 
 void StyleDialog::setupStyleWidgets()
 {
-   previewWidget = new PreviewWidget();
-   QHBoxLayout *layout = new QHBoxLayout(previewGroupBox);
-   layout->addWidget(previewWidget);
+   QPen pen = painting->pen();
+   QBrush brush = painting->brush();
+
+   lineWidthSpinBox->setValue(pen.width());
+   lineColorPixmap.fill(pen.color());
+   lineStyleComboBox->setCurrentIndex(pen.style());
+
+   fillColorPixmap.fill(brush.color());
+   fillStyleComboBox->setCurrentIndex(brush.style());
+
+   if(painting->type() == Painting::ArrowType) {
+      Arrow *arrow = qucsitem_cast<Arrow*>(painting);
+      arrowStyleComboBox->setCurrentIndex(arrow->headStyle());
+      arrowWidthSpinBox->setValue(static_cast<int>(arrow->headWidth()));
+      arrowHeightSpinBox->setValue(static_cast<int>(arrow->headHeight()));
+   }
+   else {
+      arrowGroupBox->hide();
+   }
+
+   if(painting->type() == Painting::EllipseArcType) {
+      EllipseArc *arc = qucsitem_cast<EllipseArc*>(painting);
+      startAngleSpinBox->setValue(arc->startAngle());
+      spanAngleSpinBox->setValue(arc->spanAngle());
+      fillGroupBox->hide();
+   }
+   else {
+      arcGroupBox->hide();
+   }
+
+   if(painting->type() == Painting::GraphicLineType) {
+      fillGroupBox->hide();
+   }
 
    lineColorButton->setIcon(lineColorPixmap);
    fillColorButton->setIcon(fillColorPixmap);
 
    arrowWidthSpinBox->setValue(12);
    arrowHeightSpinBox->setValue(20);
+
+   connect(startAngleSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updatePreview()));
+   connect(spanAngleSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updatePreview()));
 
    connect(arrowStyleComboBox, SIGNAL(activated(int)), this, SLOT(updatePreview()));
    connect(arrowWidthSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updatePreview()));
@@ -152,8 +318,18 @@ void StyleDialog::setupStyleWidgets()
    connect(fillColorButton, SIGNAL(clicked()), this, SLOT(launchColorDialog()));
    connect(fillStyleComboBox, SIGNAL(activated(int)), this, SLOT(updatePreview()));
 
+   connect(this, SIGNAL(accepted()), this, SLOT(applySettings()));
+
+   previewWidget = new PreviewWidget(painting->type());
+
+   QHBoxLayout *layout = new QHBoxLayout(previewGroupBox);
+   layout->addWidget(previewWidget);
+   connect(backgroundCheckBox, SIGNAL(toggled(bool)), previewWidget, SLOT(toggleBackground(bool)));
+
    lineStyleComboBox->setCurrentIndex(1);
    updatePreview();
+   previewWidget->setPen(pen);
+   previewWidget->setBrush(brush);
 }
 
 void StyleDialog::updatePreview()
@@ -167,9 +343,11 @@ void StyleDialog::updatePreview()
    brush.setStyle((Qt::BrushStyle)fillStyleComboBox->currentIndex());
 
    previewWidget->setHeadStyle(arrowStyleComboBox->currentIndex());
-   previewWidget->calcHeadPoints(arrowWidthSpinBox->value(), arrowHeightSpinBox->value());
+   previewWidget->setHeadSize(QSize(arrowWidthSpinBox->value(), arrowHeightSpinBox->value()));
    previewWidget->setPen(pen);
    previewWidget->setBrush(brush);
+   previewWidget->setStartAngle(startAngleSpinBox->value());
+   previewWidget->setSpanAngle(spanAngleSpinBox->value());
    previewWidget->update();
 }
 
@@ -195,5 +373,24 @@ void StyleDialog::launchColorDialog()
          fillColorButton->setIcon(fillColorPixmap);
          updatePreview();
       }
+   }
+}
+
+void StyleDialog::applySettings()
+{
+   painting->setPen(previewWidget->pen());
+   if(painting->type() != Painting::GraphicLineType)
+      painting->setBrush(previewWidget->brush());
+
+   if(painting->type() == Painting::ArrowType) {
+      Arrow *arrow = qucsitem_cast<Arrow*>(painting);
+      arrow->setHeadStyle(static_cast<Arrow::HeadStyle>(previewWidget->headStyle()));
+      arrow->setHeadHeight(previewWidget->headHeight());
+      arrow->setHeadWidth(previewWidget->headHeight());
+   }
+   else if(painting->type() == Painting::EllipseArcType) {
+      EllipseArc *arc = static_cast<EllipseArc*>(painting);
+      arc->setStartAngle(previewWidget->startAngle());
+      arc->setSpanAngle(previewWidget->spanAngle());
    }
 }

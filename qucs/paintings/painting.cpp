@@ -291,7 +291,7 @@ void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void Painting::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
    if(event->buttons().testFlag(Qt::LeftButton)) {
-      StyleDialog dia;
+      StyleDialog dia(this);
       dia.exec();
    }
 }

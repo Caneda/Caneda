@@ -33,6 +33,7 @@ GraphicText::GraphicText(const QString &text, SchematicScene *scene)
 {
    m_textItem = new QGraphicsSimpleTextItem(this);
    setText(text);
+   setPen(Qt::NoPen);
    m_textItem->setAcceptedMouseButtons(0);
 }
 

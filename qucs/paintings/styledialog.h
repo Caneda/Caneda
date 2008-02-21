@@ -25,11 +25,13 @@
 #include <QtGui/QBrush>
 #include <QtGui/QPolygon>
 
+class Painting;
+
 class PreviewWidget : public QWidget
 {
       Q_OBJECT;
    public:
-      PreviewWidget(QWidget *widget = 0);
+      PreviewWidget(int paintingType, QWidget *widget = 0);
 
       QPen pen() const { return m_pen; }
       void setPen(QPen pen);
@@ -40,12 +42,40 @@ class PreviewWidget : public QWidget
       int headStyle() const { return m_headStyle; }
       void setHeadStyle(int style);
 
+      int headWidth() const { return m_headWidth; }
+      void setHeadWidth(int width);
+
+      int headHeight() const { return m_headHeight; }
+      void setHeadHeight(int height);
+
+      QSize headSize() const { return QSize(m_headWidth, m_headHeight); }
+      void setHeadSize(QSize size);
+
+      int startAngle() const { return m_startAngle; }
+      void setStartAngle(int angle);
+
+      int spanAngle() const { return m_spanAngle; }
+      void setSpanAngle(int angle);
+
       void paintEvent(QPaintEvent *event);
 
-      void calcHeadPoints(int width, int height);
+      void calcHeadPoints();
+
+   public slots:
+      void toggleBackground(bool state);
+
+   protected:
+      void resizeEvent(QResizeEvent *event);
 
    private:
-      void drawHead(QPainter *painter);
+      QRect adjustedRect() const;
+      void drawBackgroundBoxes(QPainter *painter);
+
+      void drawArrow(QPainter *painter);
+      void drawEllipse(QPainter *painter);
+      void drawEllipseArc(QPainter *painter);
+      void drawLine(QPainter *painter);
+      void drawRectangle(QPainter *painter);
 
       QPen m_pen;
       QBrush m_brush;
@@ -54,6 +84,15 @@ class PreviewWidget : public QWidget
 
       int m_headStyle;
       QPolygon m_headPolygon;
+      int m_headWidth;
+      int m_headHeight;
+
+      int m_startAngle;
+      int m_spanAngle;
+
+      bool m_drawBackground;
+
+      int m_paintingType;
 };
 
 class StyleDialog : public QDialog, public Ui::Dialog
@@ -61,13 +100,15 @@ class StyleDialog : public QDialog, public Ui::Dialog
       Q_OBJECT;
 
    public:
-      StyleDialog(QWidget *parent = 0);
+      StyleDialog(Painting *painting, QWidget *parent = 0);
 
    public slots:
       void setupStyleWidgets();
       void updatePreview();
 
       void launchColorDialog();
+      void applySettings();
+
    private:
       PreviewWidget *previewWidget;
       QColor lineColor;
@@ -77,6 +118,8 @@ class StyleDialog : public QDialog, public Ui::Dialog
       QPixmap fillColorPixmap;
 
       QPolygon headPolygon;
+
+      Painting *painting;
 };
 
 #endif //__DIALOG_H

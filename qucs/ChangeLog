@@ -1,3 +1,9 @@
+2008-02-22  Gopala Krishna  <gopala@localhost>
+
+	* styledialog.cpp Implemented this dialog universally for arc,line,rectangle,ellipse and arrow painting items.
+	Also implemented the preview part in this dialog appropriately.
+	Now the style of painting items can be modified using this dialogbox by double clicking the painting.
+
 2008-02-18  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* First step towards implementing Painting support.
