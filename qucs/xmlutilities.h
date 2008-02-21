@@ -25,6 +25,8 @@
 
 #include <QtCore/QMap>
 
+#include <QtGui/QPolygonF>
+
 // Forward declarations
 class QRectF;
 class QSize;
@@ -54,14 +56,20 @@ namespace Qucs
          double readDouble();
 
          QPointF readPoint();
-         QPointF readPointAttribute(QString tag = "point");
 
+         QPointF readPointAttribute(QString tag = "point");
+         QLineF readLineAttribute(QString tag="line");
+         QRectF readRectAttribute(QLatin1String tag = QLatin1String("rect"));
          qreal readDoubleAttribute(QString tag);
 
          QSize readSize();
 
          QRectF readRect();
          QTransform readTransform();
+
+         QPen readPen();
+         QBrush readBrush();
+         QFont readFont();
 
          QString readLocaleText(const QString& localePrefix = QString("C"));
 
@@ -97,6 +105,13 @@ namespace Qucs
          void writePoint(const QPointF& point, QString tag = "point");
 
          void writePointAttribute(const QPointF& point, QString tag = "point");
+         void writeLineAttribute(const QLineF& line, QLatin1String tag = QLatin1String("line"));
+         void writeRectAttribute(const QRectF& rect, QLatin1String tag = QLatin1String("rect"));
+         void writePolygonAttribute(const QPolygonF& polygon, QString tag="polygon");
+
+         void writePen(const QPen& pen, QLatin1String tag = QLatin1String("pen"));
+         void writeBrush(const QBrush& brush, QLatin1String tag = QLatin1String("brush"));
+         void writeFont(const QFont& font, QLatin1String tag = QLatin1String("font"));
    };
 }
 

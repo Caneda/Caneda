@@ -21,6 +21,7 @@
 #define __SIDEBARMODEL_H
 
 #include <QtCore/QAbstractItemModel>
+#include <QtCore/QPair>
 
 class CategoryItem;
 class LibraryLoader;
@@ -29,24 +30,38 @@ class SidebarModel : public QAbstractItemModel
 {
       Q_OBJECT;
    public:
-      SidebarModel(QObject *parent=0);
-      ~SidebarModel(){};
+      enum {
+         DragPixmapRole = Qt::UserRole + 1,
+      };
 
-      int columnCount(const QModelIndex & parent = QModelIndex()) const {Q_UNUSED(parent);return 1;}
-      QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
-      QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
-      QModelIndex parent ( const QModelIndex & index ) const;
-      int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
+      SidebarModel(QObject *parent=0);
+
+      int columnCount(const QModelIndex & parent = QModelIndex()) const {
+         Q_UNUSED(parent);
+         return 1;
+      }
+      int rowCount(const QModelIndex & parent) const;
+
+      QVariant data(const QModelIndex & index, int role) const;
+      QModelIndex index(int row, int column, const QModelIndex & parent) const;
+
+      QModelIndex parent(const QModelIndex & index) const;
+
       Qt::ItemFlags flags(const QModelIndex& index) const;
+
+      bool isLeaf(const QModelIndex& index) const;
+
       QStringList mimeTypes() const;
-      bool isComponent(const QModelIndex& index) const;
       QMimeData* mimeData(const QModelIndexList& indexes) const;
 
-      QPixmap pixmap(const QModelIndex& index) const;
       void plugLibrary(const QString& libraryName);
-   private:
 
+      void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
+      void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
+
+   private:
       CategoryItem *rootItem;
+      CategoryItem *libComp;
 };
 
 #endif //__SIDEBARMODEL_H

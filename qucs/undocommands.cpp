@@ -214,14 +214,43 @@ void DisconnectCmd::redo()
    m_port1->disconnectFrom(m_port2);
 }
 
-
 /*
   ##########################################################################
-  #                              AddWireCmd                                #
+  #                                AddWireCmd                              #
   ##########################################################################
 */
 
-AddWireCmd::AddWireCmd(Port *p1, Port *p2, QUndoCommand *parent) :
+AddWireCmd::AddWireCmd(Wire *wire, SchematicScene *scene, QUndoCommand *parent) :
+   QUndoCommand(parent),
+   m_wire(wire),
+   m_scene(scene),
+   m_pos(m_wire->pos())
+{
+}
+
+AddWireCmd::~AddWireCmd()
+{
+   if(!m_wire->scene())
+      delete m_wire;
+}
+
+void AddWireCmd::undo()
+{
+   m_scene->removeItem(m_wire);
+}
+
+void AddWireCmd::redo()
+{
+   m_scene->addItem(m_wire);
+}
+
+/*
+  ##########################################################################
+  #                         AddWireBetweenPortsCmd                         #
+  ##########################################################################
+*/
+
+AddWireBetweenPortsCmd::AddWireBetweenPortsCmd(Port *p1, Port *p2, QUndoCommand *parent) :
    QUndoCommand(parent), m_port1(p1), m_port2(p2)
 {
    m_scene = m_port1->schematicScene();
@@ -229,22 +258,22 @@ AddWireCmd::AddWireCmd(Port *p1, Port *p2, QUndoCommand *parent) :
    m_pos = m_wire->scenePos();
 }
 
-void AddWireCmd::undo()
+void AddWireBetweenPortsCmd::undo()
 {
    QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
    QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
-   _debug() << "AddWireCmd::undo() : Removing wire between "
-            << port1Name <<  "and"  << port2Name << '\n';
+   _debug() << Q_FUNC_INFO << "Removing wire between " << port1Name <<  "and"  << port2Name << '\n';
+
    m_wire->port1()->disconnectFrom(m_port1);
    m_wire->port2()->disconnectFrom(m_port2);
    m_scene->removeItem(m_wire);
 }
 
-void AddWireCmd::redo()
+void AddWireBetweenPortsCmd::redo()
 {
    QString port1Name = m_port1->owner()->component() ? m_port1->owner()->component()->name() : "Wire";
    QString port2Name = m_port2->owner()->component() ? m_port2->owner()->component()->name() : "Wire";
-   _debug() << "AddWireCmd::redo() : Adding wire between "
+   _debug() << Q_FUNC_INFO << "Adding wire between "
             << port1Name <<  "and"  << port2Name << '\n';
 
    m_scene->addItem(m_wire);
@@ -286,7 +315,7 @@ void WireStateChangeCmd::redo()
             << "\nWirelines is " << m_finalState.wLines
             << "\nPort1 pos = " << m_finalState.port1Pos
             << "\nPort2 pos = " << m_finalState.port2Pos
-            <<"\n\n";
+            << "\n\n";
    m_wire->setState(m_finalState);
    m_wire->update();
 }

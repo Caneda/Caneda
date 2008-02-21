@@ -310,7 +310,6 @@ AC_CONFIG_FILES([Makefile
 		 qucs-attenuator/bitmaps/Makefile
 		 qucs/Makefile
 		 qucs/bitmaps/Makefile
-		 qucs/components/Makefile
 		 qucs/diagrams/Makefile
 		 qucs/paintings/Makefile
 		 qucs/dialogs/Makefile])

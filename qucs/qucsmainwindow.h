@@ -130,11 +130,12 @@ class QucsMainWindow : public MainWindowBase
       void slotHelpAboutQt();
 
       void slotInsertItemAction(bool state);
+      void slotPaintingDrawAction(bool state);
 
       void setDocumentTitle(const QString& title);
       void updateTitleTabText();
 
-      void slotSidebarItemSelected(const QString& item);
+      void slotSidebarItemClicked(const QString& item, const QString& category);
 
    protected:
       void closeEvent( QCloseEvent *closeEvent);
@@ -173,6 +174,8 @@ class QucsMainWindow : public MainWindowBase
       const QString titleText;
 
    public:
+      void setupSidebar();
+
       int x, y, dx, dy;     // position and size
       float largeFontSize;
       unsigned int maxUndo; // size of undo stack

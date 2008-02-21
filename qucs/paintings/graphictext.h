@@ -1,54 +1,56 @@
 /***************************************************************************
-                                graphictext.h
-                               ---------------
-    begin                : Mon Nov 24 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
+ * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef GRAPHICTEXT_H
-#define GRAPHICTEXT_H
+#ifndef __GRAPHICTEXT_H
+#define __GRAPHICTEXT_H
 
 #include "painting.h"
 
+//! \brief Represent's text item on schematic.
+class GraphicText : public Painting
+{
+   public:
+      enum {
+         Type = Painting::GraphicTextType
+      };
 
-class GraphicText : public Painting  {
-public:
-  GraphicText();
-  ~GraphicText();
+      GraphicText(const QString &text, SchematicScene *scene = 0);
+      ~GraphicText();
 
-  void paintScheme(QPainter*);
-  void getCenter(int&, int&);
-  void setCenter(int, int, bool relative=false);
+      void setText(const QString &text);
+      QString text() const;
 
-  Painting* newOne();
-  static Element* info(QString&, char* &, bool getNewOne=false);
-  bool load(const QString&);
-  QString save();
-  void paint(ViewPainter*);
-  void MouseMoving(QPainter*, int, int, int, int, QPainter*, int, int, bool);
-  bool MousePressing();
-  bool getSelected(int, int);
-  void Bounding(int&, int&, int&, int&);
+      void setFont(const QFont &font);
+      QFont font() const;
 
-  void rotate();
-  void mirrorX();
-  void mirrorY();
-  bool Dialog();
+      void setPen(const QPen& pen);
 
-  QColor   Color;
-  QFont    Font;
-  QString  Text;
-  int      Angle;
+      void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
+
+      int type() const { return GraphicText::Type; }
+      QucsItem* copy(SchematicScene *scene = 0) const;
+
+      void saveData(Qucs::XmlWriter *writer) const;
+      void loadData(Qucs::XmlReader *reader);
+
+   private:
+      QGraphicsSimpleTextItem *m_textItem;
 };
 
-#endif
+#endif //__GRAPHICTEXT_H

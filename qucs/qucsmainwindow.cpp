@@ -69,10 +69,8 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w),
    initMenus();
    initToolBars();
 
-   m_componentsSidebar = new ComponentsSidebar(this);
-   connect(m_componentsSidebar, SIGNAL(itemClicked(const QString&)), this,
-           SLOT(slotSidebarItemSelected(const QString&)));
-   addAsDockWidget(m_componentsSidebar, tr("Components"));
+   setupSidebar();
+
 
    connect(this, SIGNAL(currentWidgetChanged(QWidget*, QWidget*)), this,
            SLOT(slotCurrentChanged(QWidget*, QWidget*)));
@@ -83,6 +81,24 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w),
    addSchematicView(view);
    m_undoGroup->setActiveStack(view->schematicScene()->undoStack());
    loadSettings();
+}
+
+void QucsMainWindow::setupSidebar()
+{
+   m_componentsSidebar = new ComponentsSidebar(this);
+   connect(m_componentsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
+           SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+   addAsDockWidget(m_componentsSidebar, m_componentsSidebar->windowTitle());
+
+   QList<QPair<QString, QPixmap> > paintingItems;
+   paintingItems << qMakePair(QObject::tr("Line"), Qucs::pixmapFor("line"));
+   paintingItems << qMakePair(QObject::tr("Arrow"), Qucs::pixmapFor("arrow"));
+   paintingItems << qMakePair(QObject::tr("Text"), Qucs::pixmapFor("text"));
+   paintingItems << qMakePair(QObject::tr("Ellipse"), Qucs::pixmapFor("ellipse"));
+   paintingItems << qMakePair(QObject::tr("Rectangle"), Qucs::pixmapFor("rectangle"));
+   paintingItems << qMakePair(QObject::tr("Elliptic Arc"), Qucs::pixmapFor("ellipsearc"));
+
+   m_componentsSidebar->plugItems(paintingItems, QObject::tr("paintings"));
 }
 
 void QucsMainWindow::test()
@@ -744,6 +760,14 @@ void QucsMainWindow::initActions()
    action->setData(QVariant(SchematicScene::InsertingItems));
    action->setCheckable(true);
    connect(action, SIGNAL(toggled(bool)), this, SLOT(slotInsertItemAction(bool)));
+   checkableActions << action;
+   addActionToMap(action);
+
+   action = new QAction(tr("Painting draw action"), this);
+   action->setObjectName("paintingDraw");
+   action->setData(QVariant(SchematicScene::PaintingDrawEvent));
+   action->setCheckable(true);
+   connect(action, SIGNAL(toggled(bool)), this, SLOT(slotPaintingDrawAction(bool)));
    checkableActions << action;
    addActionToMap(action);
 }
@@ -1431,7 +1455,7 @@ void QucsMainWindow::slotInsertEquation()
 
 void QucsMainWindow::slotInsertGround()
 {
-   slotSidebarItemSelected("Ground");
+   slotSidebarItemClicked("Ground", "passive");
 }
 
 void QucsMainWindow::slotInsertPort()
@@ -1569,6 +1593,11 @@ void QucsMainWindow::slotHelpAboutQt()
 void QucsMainWindow::slotInsertItemAction(bool on)
 {
    performToggleAction(on, 0, action("insertItem"));
+}
+
+void QucsMainWindow::slotPaintingDrawAction(bool on)
+{
+   performToggleAction(on, 0, action("paintingDraw"));
 }
 
 void QucsMainWindow::loadSettings()
@@ -1723,12 +1752,15 @@ void QucsMainWindow::updateTitleTabText()
    }
 }
 
-void QucsMainWindow::slotSidebarItemSelected(const QString& str)
+void QucsMainWindow::slotSidebarItemClicked(const QString& item, const QString& category)
 {
    SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
-   if(view) {
-      slotInsertItemAction(true);
-      view->schematicScene()->setInsertingItem(str);
+   SchematicScene *scene = view->schematicScene();
+   if(view && scene->sidebarItemClicked(item, category)) {
+      if(scene->currentMouseAction() == SchematicScene::InsertingItems)
+         slotInsertItemAction(true);
+      else if(scene->currentMouseAction() == SchematicScene::PaintingDrawEvent)
+         slotPaintingDrawAction(true);
    }
 }
 

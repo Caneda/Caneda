@@ -563,9 +563,14 @@ void Wire::setState(Wire::Data state)
    }
 }
 
-//! Check for connections and connect the coinciding ports.
-void Wire::checkAndConnect(Qucs::UndoOption opt)
+/*!
+ * \brief Check for connections and connect the coinciding ports.
+ * \return Returns the number of connections made.
+ */
+int Wire::checkAndConnect(Qucs::UndoOption opt)
 {
+   int num_of_connections = 0;
+
    if(opt == Qucs::PushUndoCmd)
       schematicScene()->undoStack()->beginMacro(QString());
 
@@ -580,11 +585,14 @@ void Wire::checkAndConnect(Qucs::UndoOption opt)
          else {
             port->connectTo(other);
          }
+         ++num_of_connections;
       }
    }
 
    if(opt == Qucs::PushUndoCmd)
       schematicScene()->undoStack()->endMacro();
+
+   return num_of_connections;
 }
 
 QucsItem* Wire::copy(SchematicScene *scene) const

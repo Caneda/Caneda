@@ -24,7 +24,6 @@
 #include "sidebarmodel.h"
 
 // Forward declarations
-class QPixmap;
 class FilterProxyModel;
 class QLineEdit;
 class QToolButton;
@@ -36,8 +35,7 @@ class TreeView : public QTreeView
       TreeView(QWidget *parent = 0);
       ~TreeView() {}
 
-      void startDrag( Qt::DropActions supportedActions);
-      QPixmap renderToPixmap(const QMimeData *d, QRect *r, QPointF& hotSpot);
+      void startDrag(Qt::DropActions supportedActions);
 
    signals:
       void invalidAreaClicked(const QModelIndex &index);
@@ -58,10 +56,20 @@ class ComponentsSidebar : public QWidget
       ComponentsSidebar(QWidget *parent = 0);
       ~ComponentsSidebar() {}
 
-      void plugLibrary(QString str);
+      void plugLibrary(QString str) {
+         m_model->plugLibrary(str);
+      }
+
+      void plugItem(QString itemName, const QPixmap& itemPixmap, QString category) {
+         m_model->plugItem(itemName, itemPixmap, category);
+      }
+
+      void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category) {
+         m_model->plugItems(items, category);
+      }
 
    signals:
-      void itemClicked(const QString& str);
+      void itemClicked(const QString& item, const QString& category);
 
    private slots:
       void filterTextChanged();

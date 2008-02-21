@@ -25,6 +25,8 @@
 #include <QtCore/QDebug>
 
 #include <QtGui/QTransform>
+#include <QtGui/QPen>
+#include <QtGui/QBrush>
 
 #include "xmlutilities.h"
 #include "qucs-tools/global.h"
@@ -156,6 +158,56 @@ namespace Qucs
       return point;
    }
 
+   QLineF XmlReader::readLineAttribute(QString tag)
+   {
+      Q_ASSERT(isStartElement());
+      QString errorString = QObject::tr("Invalid line attribute");
+      QStringList lineCoordsStr = attributes().value(tag).toString().
+         split(",",QString::SkipEmptyParts);
+
+      if(lineCoordsStr.size() != 4) {
+         raiseError(errorString);
+         return QLineF();
+      }
+
+      qreal lineCoords[4];
+      bool ok;
+      for(int i=0; i < 4; ++i) {
+         lineCoords[i] = lineCoordsStr.at(i).trimmed().toDouble(&ok);
+         if(!ok) {
+            raiseError(errorString);
+            return QLineF();
+         }
+      }
+
+      return QLineF(lineCoords[0], lineCoords[1], lineCoords[2], lineCoords[3]);
+   }
+
+   QRectF XmlReader::readRectAttribute(QLatin1String tag)
+   {
+      Q_ASSERT(isStartElement());
+      QString errorString = QObject::tr("Invalid rect attribute");
+      QStringList rectCoordsStr = attributes().value(tag).toString().
+         split(",",QString::SkipEmptyParts);
+
+      if(rectCoordsStr.size() != 4) {
+         raiseError(errorString);
+         return QRectF();
+      }
+
+      qreal rectCoords[4];
+      bool ok;
+      for(int i=0; i < 4; ++i) {
+         rectCoords[i] = rectCoordsStr.at(i).trimmed().toDouble(&ok);
+         if(!ok) {
+            raiseError(errorString);
+            return QRectF();
+         }
+      }
+
+      return QRectF(rectCoords[0], rectCoords[1], rectCoords[2], rectCoords[3]);
+   }
+
    QSize XmlReader::readSize()
    {
       Q_ASSERT(isStartElement());
@@ -236,6 +288,77 @@ namespace Qucs
          qWarning() << Q_FUNC_INFO << "Singular matrix found";
       }
       return retVal;
+   }
+
+   QPen XmlReader::readPen()
+   {
+      Q_ASSERT(isStartElement());
+
+      bool ok1, ok2;
+      QColor color(attributes().value("color").toString());
+      int width(attributes().value("width").toString().toInt(&ok1));
+      int style(attributes().value("style").toString().toInt(&ok2));
+
+      QPen retVal;
+      if(color.isValid() && ok1 && ok2) {
+         retVal =  QPen(color, width, (Qt::PenStyle)style);
+      }
+      else {
+         raiseError(QObject::tr("Invalid pen attribute"));
+      }
+
+      readUnknownElement();//read till end tag
+
+      return retVal;
+   }
+
+   QBrush XmlReader::readBrush()
+   {
+      Q_ASSERT(isStartElement());
+
+      bool ok;
+      QColor color(attributes().value("color").toString());
+      int style(attributes().value("style").toString().toInt(&ok));
+
+      QBrush brush;
+      if(color.isValid() && ok) {
+         brush = QBrush(color, (Qt::BrushStyle)style);
+      }
+      else {
+         raiseError(QObject::tr("Invalid brush attribute"));
+      }
+
+      readUnknownElement(); //read till end tag
+
+      return brush;
+   }
+
+   QFont XmlReader::readFont()
+   {
+      Q_ASSERT(isStartElement());
+
+      QXmlStreamAttributes attribs = attributes();
+      QFont font;
+      font.setFamily(attribs.value("family").toString());
+
+      bool ok1, ok2, ok3;
+
+      int pointSize(attribs.value("pointSize").toString().toInt(&ok1));
+      int pixelSize(attribs.value("pixelSize").toString().toInt(&ok2));
+      if(pointSize == -1)
+         font.setPixelSize(pixelSize);
+      else
+         font.setPointSize(pointSize);
+
+      font.setWeight(attribs.value("weight").toString().toInt(&ok3));
+
+      readUnknownElement(); //read till end tag
+
+      if(!ok1 || !ok2 || !ok3) {
+         raiseError(QObject::tr("Invalid font attribute"));
+      }
+
+      return font;
    }
 
    QString XmlReader::readLocaleText(const QString& localePrefix)
@@ -350,5 +473,49 @@ namespace Qucs
    {
       QString pointStr = QString("%1,%2").arg(point.x()).arg(point.y());
       writeAttribute(tag, pointStr);
+   }
+
+   void XmlWriter::writeLineAttribute(const QLineF& line, QLatin1String tag)
+   {
+      QString lineStr = QString("%1,%2,%3,%4")
+         .arg(line.x1())
+         .arg(line.y1())
+         .arg(line.x2())
+         .arg(line.y2());
+      writeAttribute(tag, lineStr);
+   }
+
+   void XmlWriter::writeRectAttribute(const QRectF& rect, QLatin1String tag)
+   {
+      QString rectStr = QString("%1,%2,%3,%4")
+         .arg(rect.x())
+         .arg(rect.y())
+         .arg(rect.width())
+         .arg(rect.height());
+      writeAttribute(tag, rectStr);
+   }
+
+   void XmlWriter::writePen(const QPen& pen, QLatin1String tag)
+   {
+      writeEmptyElement(tag);
+      writeAttribute("width", QString::number(pen.width()));
+      writeAttribute("color", pen.color().name());
+      writeAttribute("style", QString::number((int)pen.style()));
+   }
+
+   void XmlWriter::writeBrush(const QBrush& brush, QLatin1String tag)
+   {
+      writeEmptyElement(tag);
+      writeAttribute("color", brush.color().name());
+      writeAttribute("style", QString::number((int)brush.style()));
+   }
+
+   void XmlWriter::writeFont(const QFont& font, QLatin1String tag)
+   {
+      writeEmptyElement(tag);
+      writeAttribute("family", font.family());
+      writeAttribute("pixelSize", QString::number(font.pixelSize()));
+      writeAttribute("pointSize", QString::number(font.pointSize()));
+      writeAttribute("weight", QString::number(font.weight()));
    }
 }

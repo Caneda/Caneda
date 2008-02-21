@@ -1,3 +1,10 @@
+2008-02-18  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* First step towards implementing Painting support.
+	* Implemented wiring with undo support.
+	* Made it possible to add different kinds of items(other than components) to sidebar.
+	* Enhanced XmlReader & XmlWriter with more flexible ways to store and retrieved data.
+
 2008-01-15  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* Implemented cut, copy and paste.

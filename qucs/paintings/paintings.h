@@ -1,34 +1,32 @@
 /***************************************************************************
-                          paintings.h  -  description
-                             -------------------
-    begin                : Sat Aug 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
+ * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef PAINTINGS_H
-#define PAINTINGS_H
-
-// This header file includes the header files of all paintings.
-
-#include "painting.h"
+#ifndef __PAINTINGS_H
+#define __PAINTINGS_H
 
 #include "rectangle.h"
 #include "ellipse.h"
-#include "arrow.h"
 #include "graphicline.h"
+#include "arrow.h"
 #include "graphictext.h"
-#include "portsymbol.h"
 #include "ellipsearc.h"
 #include "id_text.h"
+#include "portsymbol.h"
 
-#endif
+#endif //__PAINTINGS_H

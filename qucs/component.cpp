@@ -220,6 +220,13 @@ bool Component::setLabel(const QString& newLabel)
    return state;
 }
 
+//! Returns the label's suffix part.
+QString Component::labelSuffix() const
+{
+   QString _label = label();
+   return _label.mid(labelPrefix().length());
+}
+
 //! Sets the component's activeStatus to \a status.
 void Component::setActiveStatus(Qucs::ActiveStatus status)
 {
@@ -352,6 +359,8 @@ void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
    if(activeStatus() != Qucs::Active) {
       painter->setPen(activeStatus() == Qucs::Short ? Qt::darkGreen :
                       Qt::darkRed);
+      painter->setBrush(Qt::NoBrush);
+
       painter->drawRect(boundingRect());
 
       QPointF tl = boundingRect().topLeft();
@@ -364,9 +373,14 @@ void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
    }
 }
 
-//! Check for connections and connect the coinciding ports.
-void Component::checkAndConnect(Qucs::UndoOption opt)
+/*!
+ * \brief Check for connections and connect the coinciding ports.
+ * \return Returns the number of connections made.
+ */
+int Component::checkAndConnect(Qucs::UndoOption opt)
 {
+   int num_of_connections = 0;
+
    if(opt == Qucs::PushUndoCmd)
       schematicScene()->undoStack()->beginMacro(QString());
    foreach(Port *port, m_ports) {
@@ -382,11 +396,15 @@ void Component::checkAndConnect(Qucs::UndoOption opt)
             qDeleteAll(wires);
             port->connectTo(other);
          }
+
+         num_of_connections++;
       }
    }
 
    if(opt == Qucs::PushUndoCmd)
       schematicScene()->undoStack()->endMacro();
+
+   return num_of_connections;
 }
 
 //! Returns a copy of this component.

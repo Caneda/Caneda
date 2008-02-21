@@ -23,23 +23,7 @@
 #include "wire.h"
 #include "schematicscene.h"
 
-#include <QtGui/QPainter>
 #include <QtCore/QDebug>
-
-//! \todo Make these constants settings.
-static const QPen connectedPen(Qt::red, 0);
-//! \todo Make these constants settings.
-static const QBrush connectedBrush(Qt::cyan);
-//! \todo Make these constants settings.
-static const QPen unconnectedPen(Qt::darkRed, 0);
-//! \todo Make these constants settings.
-static const QBrush unconnectedBrush(Qt::NoBrush);
-//! \todo Make these constants settings.
-static const qreal portRadius(3.0);
-//! \todo Make these constants settings.
-static const QRectF portEllipse(-portRadius, -portRadius, 2*portRadius,
-                                 2*portRadius);
-
 
 //! Returns whether two circle's of same radii intersect's or not.
 bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
@@ -351,6 +335,16 @@ bool Port::isConnected(Port *port1, Port *port2)
       bool ok1, ok2;
       Q_ASSERT(port1->scenePos(&ok1) == port2->scenePos(&ok2));
       Q_ASSERT(ok1 && ok2);
+   }
+   return retVal;
+}
+
+//! Returns true if this port is connected to any other port
+bool Port::hasConnection() const
+{
+   bool retVal = (m_connections != 0);
+   if(retVal) {
+      Q_ASSERT(m_connections->size() > 1);
    }
    return retVal;
 }

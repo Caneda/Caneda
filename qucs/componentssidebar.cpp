@@ -35,10 +35,12 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QDebug>
 
-TreeView::TreeView(QWidget *parent) : QTreeView(parent),
-                                      invalidPressed(false)
+TreeView::TreeView(QWidget *parent) :
+   QTreeView(parent),
+   invalidPressed(false)
 {
    header()->hide();
+
    setDragDropMode(QAbstractItemView::DragOnly);
    setDragEnabled(true);
    setAlternatingRowColors(true);
@@ -68,37 +70,15 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
 //! Custom drag The drag pixmap is drawn from svg.
 void TreeView::startDrag(Qt::DropActions supportedActions)
 {
-   //there can never be more that one index dragged at a time.
-   Q_ASSERT(selectedIndexes().size() == 1);
    QModelIndex index = selectedIndexes().first();
-   QAbstractProxyModel *proxyModel = qobject_cast<QAbstractProxyModel*>(model());
-   if(!proxyModel) {
-      qDebug() << "TreeView::startDrag() : Failed to identify filter model";
-      QTreeView::startDrag(supportedActions);
-      return;
-   }
-   SidebarModel *sm = qobject_cast<SidebarModel*>(proxyModel->sourceModel());
-   if(!sm) {
-      qDebug() << "TreeView::startDrag() : Failed to identify sidebar model";
-      QTreeView::startDrag(supportedActions);
-      return;
-   }
-   QModelIndex proxyIndex = proxyModel->mapToSource(index);
-   QPixmap pix = sm->pixmap(proxyIndex);
-   QPointF translateHint = model()->data(index, Qt::EditRole).toPointF();
+   QPixmap pix = qVariantValue<QPixmap>(model()->data(index, SidebarModel::DragPixmapRole));
 
    QDrag *drag = new QDrag(this);
 
-   QPixmap plainPixmap(32, 32);
-   plainPixmap.fill(Qt::transparent);
-   drag->setDragCursor(plainPixmap, Qt::MoveAction);
-   drag->setDragCursor(plainPixmap, Qt::CopyAction);
-
    drag->setPixmap(pix);
    drag->setMimeData(model()->mimeData(selectedIndexes()));
-   drag->setHotSpot(translateHint.toPoint());
-   if (drag->exec(supportedActions) == Qt::MoveAction)
-      clearSelection();
+   drag->setHotSpot(QPoint(pix.width()/2, pix.height()/2));
+   drag->exec(supportedActions);
 }
 
 //! This helps in filtering sidebar display corresponding to lineedit.
@@ -106,13 +86,14 @@ class FilterProxyModel : public QSortFilterProxyModel
 {
    public:
       FilterProxyModel(QObject *parent = 0) : QSortFilterProxyModel(parent)
-      {}
+      {
+      }
 
       bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
       {
          QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
          SidebarModel *sm = static_cast<SidebarModel*>(sourceModel());
-         if(sm->isComponent(index0) == false)
+         if(sm->isLeaf(index0) == false)
             return true;
          return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
       }
@@ -146,14 +127,14 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
    connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
            this, SLOT(filterTextChanged()));
 
-   connect(m_clearButton,SIGNAL(clicked()),m_filterEdit,SLOT(clear()));
+   connect(m_clearButton, SIGNAL(clicked()), m_filterEdit, SLOT(clear()));
    connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
    connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this,
            SLOT(slotOnClicked(const QModelIndex&)));
    connect(m_treeView, SIGNAL(invalidAreaClicked(const QModelIndex&)), this,
            SLOT(slotOnClicked(const QModelIndex&)));
 
-   setWindowTitle(tr("Components"));
+   setWindowTitle(tr("Schematic Items"));
 }
 
 void ComponentsSidebar::filterTextChanged()
@@ -171,21 +152,13 @@ void ComponentsSidebar::slotOnClicked(const QModelIndex& index)
       if(mime) {
          QByteArray encodedData = mime->data("application/qucs.sidebarItem");
          QDataStream stream(&encodedData, QIODevice::ReadOnly);
-         QString text;
-         stream >> text;
-         emit itemClicked(text);
+         QString item, category;
+         stream >> item >> category;
+         emit itemClicked(item, category);
       }
    }
    else {
       QString empty;
-      emit itemClicked(empty);
+      emit itemClicked(empty, empty);
    }
-}
-
-/*!
- * \brief Plugs library \a lib to sidebar display.
- */
-void ComponentsSidebar::plugLibrary(QString lib)
-{
-   m_model->plugLibrary(lib);
 }

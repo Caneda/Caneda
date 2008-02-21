@@ -23,6 +23,8 @@
 #include <QtGui/QGraphicsScene>
 #include <QtCore/QList>
 #include <QtCore/QPair>
+#include <QtCore/QVarLengthArray>
+
 #include <QtGui/QGraphicsItem>
 
 #include "undocommands.h"
@@ -62,6 +64,7 @@ class SchematicScene : public QGraphicsScene
          ChangingActiveStatus,
          SettingOnGrid,
          ZoomingAtPoint,
+         PaintingDrawEvent,
          InsertingItems,
          InsertingWireLabel,
          Normal
@@ -141,7 +144,7 @@ class SchematicScene : public QGraphicsScene
 
    public slots:
       void setModified(bool m = true);
-      void setInsertingItem(const QString &item);
+      bool sidebarItemClicked(const QString &item, const QString& category);
 
    signals:
       void modificationChanged(bool changed);
@@ -152,6 +155,8 @@ class SchematicScene : public QGraphicsScene
       void drawBackground(QPainter *p, const QRectF& r);
 
       bool event(QEvent *event);
+
+      void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
 
       void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
       void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
@@ -172,6 +177,7 @@ class SchematicScene : public QGraphicsScene
       void changingActiveStatusEvent(MouseActionEvent *e);
       void settingOnGridEvent(MouseActionEvent *e);
       void zoomingAtPointEvent(MouseActionEvent *e);
+      void paintingDrawEvent(MouseActionEvent *e);
       void insertingItemsEvent(MouseActionEvent *e);
       void insertingWireLabelEvent(MouseActionEvent *event);
       void normalEvent(MouseActionEvent *e);
@@ -185,7 +191,14 @@ class SchematicScene : public QGraphicsScene
       void specialMove(qreal dx, qreal dy);
       void endSpecialMove();
 
+      QucsItem* itemForName(const QString& name, const QString& category);
       void placeItem(QucsItem *item, QPointF pos, Qucs::UndoOption opt);
+      int componentLabelSuffix(const QString& labelPrefix) const;
+
+      int unusedPortNumber();
+      bool isPortNumberUsed(int num) const;
+      void setNumberUnused(int num);
+
       void disconnectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt);
       void connectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt);
 
@@ -197,6 +210,16 @@ class SchematicScene : public QGraphicsScene
 
       QPointF m_insertActionMousePos;
       QList<QucsItem*> m_insertibles;
+
+      bool m_isWireCmdAdded;
+      Wire *m_currentWiringWire;
+
+      Painting *m_paintingDrawItem;
+      int m_paintingDrawClicks;
+      QString m_paintingDrawString;
+
+      QList<int> m_usedPortNumbers;
+      QList<int> m_usablePortNumbers;
 
       //Document properties
       QUndoStack *m_undoStack;

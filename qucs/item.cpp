@@ -28,6 +28,110 @@
 #include "qucsmainwindow.h"
 
 #include <QtXml/QXmlStreamWriter>
+#include <QtGui/QStyleOptionGraphicsItem>
+
+namespace Qucs
+{
+   void drawHighlightRect(QPainter *painter, QRectF rect, qreal pw,
+                          const QStyleOptionGraphicsItem *option)
+   {
+      const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
+      if (qFuzzyCompare(qMax(murect.width(), murect.height()), qreal(0.0)))
+         return;
+
+      const QPen savePen = painter->pen();
+      const QBrush saveBrush = painter->brush();
+
+      const QRectF mbrect = painter->transform().mapRect(rect);
+      if (qMin(mbrect.width(), mbrect.height()) < qreal(1.0))
+         return;
+
+      qreal itemStrokeWidth = pw;
+      const qreal pad = itemStrokeWidth / 2;
+      const qreal strokeWidth = 0; // cosmetic pen
+
+      const QColor fgcolor = option->palette.windowText().color();
+      const QColor bgcolor( // ensure good contrast against fgcolor
+         fgcolor.red()   > 127 ? 0 : 255,
+         fgcolor.green() > 127 ? 0 : 255,
+         fgcolor.blue()  > 127 ? 0 : 255);
+
+      rect.adjust(pad, pad, -pad, -pad);
+
+      painter->setPen(QPen(bgcolor, strokeWidth, Qt::SolidLine));
+      painter->setBrush(Qt::NoBrush);
+      painter->drawRect(rect);
+
+      painter->setPen(QPen(option->palette.windowText(), 0, Qt::DashLine));
+      painter->setBrush(Qt::NoBrush);
+      painter->drawRect(rect);
+
+      painter->setPen(savePen);
+      painter->setBrush(saveBrush);
+   }
+
+   void drawResizeHandle(const QPointF &centrePos, QPainter *painter)
+   {
+      QPen savedPen = painter->pen();
+      QBrush savedBrush = painter->brush();
+
+      painter->setPen(Qucs::handlePen);
+      painter->setBrush(Qucs::handleBrush);
+
+      painter->drawRect(Qucs::handleRect.translated(centrePos));
+
+      painter->setPen(savedPen);
+      painter->setBrush(savedBrush);
+   }
+
+   void drawResizeHandles(ResizeHandles handles, const QRectF& rect, QPainter *painter)
+   {
+      if(handles.testFlag(Qucs::TopLeftHandle))
+         drawResizeHandle(rect.topLeft(), painter);
+
+      if(handles.testFlag(Qucs::TopRightHandle))
+         drawResizeHandle(rect.topRight(), painter);
+
+      if(handles.testFlag(Qucs::BottomLeftHandle))
+         drawResizeHandle(rect.bottomLeft(), painter);
+
+      if(handles.testFlag(Qucs::BottomRightHandle))
+         drawResizeHandle(rect.bottomRight(), painter);
+   }
+
+   ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles, const QRectF& recta)
+   {
+      if(handles == Qucs::NoHandle)
+         return Qucs::NoHandle;
+
+      QRectF rect = recta.normalized();
+      if(handles.testFlag(Qucs::TopLeftHandle)) {
+         if(Qucs::handleRect.translated(rect.topLeft()).contains(point)) {
+            return Qucs::TopLeftHandle;
+         }
+      }
+
+      if(handles.testFlag(Qucs::TopRightHandle)) {
+         if(Qucs::handleRect.translated(rect.topRight()).contains(point)) {
+            return Qucs::TopRightHandle;
+         }
+      }
+
+      if(handles.testFlag(Qucs::BottomLeftHandle)){
+         if(Qucs::handleRect.translated(rect.bottomLeft()).contains(point)) {
+            return Qucs::BottomLeftHandle;
+         }
+      }
+
+      if(handles.testFlag(Qucs::BottomRightHandle)){
+         if(Qucs::handleRect.translated(rect.bottomRight()).contains(point)) {
+            return Qucs::BottomRightHandle;
+         }
+      }
+
+      return Qucs::NoHandle;
+   }
+}
 
 //! Create a new item and add to scene.
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene)

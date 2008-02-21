@@ -25,12 +25,28 @@
 #include <QtCore/QList>
 
 #include <QtGui/QGraphicsItem>
+#include <QtGui/QPainter>
 #include <QtCore/QSharedData>
 
 //Forward declarations.
 class Wire;
 class Component;
 class SchematicScene;
+
+//! \todo Make these constants settings.
+static const QPen connectedPen(Qt::red, 0);
+//! \todo Make these constants settings.
+static const QBrush connectedBrush(Qt::cyan);
+//! \todo Make these constants settings.
+static const QPen unconnectedPen(Qt::darkRed, 0);
+//! \todo Make these constants settings.
+static const QBrush unconnectedBrush(Qt::NoBrush);
+//! \todo Make these constants settings.
+static const qreal portRadius(3.0);
+//! \todo Make these constants settings.
+static const QRectF portEllipse(-portRadius, -portRadius, 2*portRadius,
+                                2*portRadius);
+
 
 //! Thin class used to abstract owner of port.
 class PortOwner
@@ -95,6 +111,8 @@ class Port
       static void disconnect(Port *port, Port *from);
 
       static bool isConnected(Port *port1, Port* port2);
+
+      bool hasConnection() const;
 
       void connectTo(Port *other);
       void disconnectFrom(Port *from);

@@ -1,172 +1,251 @@
 /***************************************************************************
-                        id_text.cpp  -  description
-                             -------------------
-    begin                : Thu Oct 14 2004
-    copyright            : (C) 2004 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "id_text.h"
+#include "xmlutilities.h"
+#include "qucs-tools/global.h"
 
-#include "id_dialog.h"
+#include <QtGui/QPainter>
+#include <QtGui/QStyleOptionGraphicsItem>
+#include <QtGui/QFontMetrics>
 
-#include <qlineedit.h>
-
-
-ID_Text::ID_Text(int cx_, int cy_)
+//! \brief Returns the parameter name and value as combined string.
+QString SubParameter::text() const
 {
-  Name = ".ID ";
-  isSelected = false;
-  cx = cx_;
-  cy = cy_;
-  x2 = y2 = 20;
-
-  Prefix = "SUB";
+   return QString("%1=%2").arg(name).arg(defaultValue);
 }
 
-ID_Text::~ID_Text()
-{
-}
-
-// --------------------------------------------------------------------------
-void ID_Text::paint(ViewPainter *p)
-{
-  int Width1, x, y;
-  p->Painter->setPen(QPen(QPen::black,1));
-  p->map(cx, cy, x, y);
-
-  QRect r;
-  p->Painter->drawText(x, y, 0, 0, Qt::DontClip, Prefix, -1, &r);
-  Width1 = r.width();
-  y2 = p->LineSpacing;
-
-  p->Painter->drawText(x, y+y2, 0, 0, Qt::DontClip, "File=name", -1, &r);
-  y2 += y2;
-  if(Width1 > r.width())  x2 = Width1;
-  else  x2 = r.width();
-
-  if(isSelected) {
-    p->Painter->setPen(QPen(QPen::darkGray,3));
-    p->Painter->drawRoundRect(x-4, y-4, x2+8, y2+8);
-  }
-}
-
-// --------------------------------------------------------------------------
-void ID_Text::paintScheme(QPainter *p)
-{
-  p->drawRect(cx, cy, x2, y2);
-}
-
-// --------------------------------------------------------------------------
-void ID_Text::getCenter(int& x, int &y)
-{
-  x = cx+(x2>>1);
-  y = cy+(y2>>1);
-}
-
-// --------------------------------------------------------------------------
-// Sets the center of the painting to x/y.
-void ID_Text::setCenter(int x, int y, bool relative)
-{
-  if(relative) { cx += x;  cy += y; }
-  else { cx = x-(x2>>1);  cy = y-(y2>>1); }
-}
-
-// --------------------------------------------------------------------------
-bool ID_Text::load(const QString& s)
-{
-  bool ok;
-
-  QString n;
-  n  = s.section(' ',1,1);    // cx
-  cx = n.toInt(&ok);
-  if(!ok) return false;
-
-  n  = s.section(' ',2,2);    // cy
-  cy = n.toInt(&ok);
-  if(!ok) return false;
-
-  Prefix = s.section(' ',3,3);    // Prefix
-  if(Prefix.isEmpty()) return false;
-
-  return true;
-}
-
-// --------------------------------------------------------------------------
-QString ID_Text::save()
-{
-  QString s = Name+QString::number(cx)+" "+QString::number(cy)+" ";
-  s += Prefix;
-  return s;
-}
-
-// --------------------------------------------------------------------------
-// Checks if the coordinates x/y point to the painting.
-bool ID_Text::getSelected(int x, int y)
-{
-  if(x < cx)  return false;
-  if(y < cy)  return false;
-  if(x > cx+x2)  return false;
-  if(y > cy+y2)  return false;
-
-  return true;
-}
-
-// --------------------------------------------------------------------------
-void ID_Text::Bounding(int& _x1, int& _y1, int& _x2, int& _y2)
-{
-  _x1 = cx;     _y1 = cy;
-  _x2 = cx+x2;  _y2 = cy+y2;
-}
-
-// --------------------------------------------------------------------------
-// Rotates around the center.
-void ID_Text::rotate()
+//! \brief Constructs IdText item with default prefix set to SUB.
+IdText::IdText(SchematicScene *scene) :
+   Painting(scene),
+   m_prefix("SUB")
 {
 }
 
-// --------------------------------------------------------------------------
-// Mirrors about center line.
-void ID_Text::mirrorX()
+//! \brief Destructs parameters.
+IdText::~IdText()
 {
+   qDeleteAll(m_parameters);
 }
 
-// --------------------------------------------------------------------------
-// Mirrors about center line.
-void ID_Text::mirrorY()
+//! \brief Set the subckt netlist prefix to \a prefix.
+void IdText::setPrefix(const QString &prefix)
 {
+   prepareGeometryChange();
+   m_prefix = prefix;
+   updateGeometry();
 }
 
-// --------------------------------------------------------------------------
-// Calls the property dialog for the painting and changes them accordingly.
-// If there were changes, it returns 'true'.
-bool ID_Text::Dialog()
+//! \brief Set the font to \a font.
+void IdText::setFont(const QFont &font)
 {
-  bool changed = false;
+   prepareGeometryChange();
+   m_font = font;
+   updateGeometry();
+}
 
-  ID_Dialog *d = new ID_Dialog();
-  d->Prefix->setText(Prefix);
+/*!
+ * \brief Adds a parameter to subckt.
+ * \param display Whether this parameter should be displayed by default or not.
+ * \param name Name of the property.
+ * \param description A short description of item.
+ * \param defVal The default value of property.
+ */
+void IdText::addParameter(bool display, QString name,
+                          QString description, QString defVal)
+{
+   prepareGeometryChange();
+   m_parameters << new SubParameter(display, name, description, defVal);
+   updateGeometry();
+}
 
-  if(d->exec() == QDialog::Rejected) {
-    delete d;
-    return false;
-  }
+/*!
+ * \brief Removes the parameters named \a name.
+ */
+void IdText::removeParameter(QString name)
+{
+   QList<SubParameter*>::iterator it = m_parameters.begin();
+   while(it != m_parameters.end()) {
+      if((*it)->name == name)
+         break;
+      it++;
+   }
+   if(it != m_parameters.end()) {
+      prepareGeometryChange();
+      m_parameters.erase(it);
+      updateGeometry();
+   }
+}
 
-  if(!d->Prefix->text().isEmpty())
-    if(Prefix  != d->Prefix->text()) {
-      Prefix = d->Prefix->text();
-      changed = true;
-    }
+//! \brief Returns a pointer to parameter object named \a name.
+SubParameter* IdText::parameter(const QString &name) const
+{
+   QList<SubParameter*>::const_iterator it = m_parameters.constBegin();
+   while(it != m_parameters.constEnd()) {
+      if((*it)->name == name)
+         return *it;
+      it++;
+   }
+   return 0;
+}
 
-  delete d;
-  return changed;
+//! \brief Draws this item taking care of alignment as well.
+void IdText::paint(QPainter* painter, const QStyleOptionGraphicsItem *option, QWidget*)
+{
+   painter->setPen(pen());
+   painter->setBrush(Qt::NoBrush);
+
+   painter->setFont(font());
+   int lineSpacing = QFontMetrics(m_font).lineSpacing();
+
+   QPointF drawPos;
+   drawPos.ry() += lineSpacing;
+
+   painter->drawText(drawPos, prefix());
+
+   drawPos.ry() += lineSpacing;
+   foreach(SubParameter *param, m_parameters) {
+      if(param->display) {
+
+         painter->drawText(drawPos, param->text());
+         drawPos.ry() += lineSpacing;
+      }
+   }
+
+   if(option->state & QStyle::State_Selected) {
+      painter->setPen(Qt::darkGray);
+      painter->drawRect(boundingRect());
+   }
+}
+
+//! \brief Updates geometry of this item (paintingRect).
+void IdText::updateGeometry()
+{
+   qreal width, height;
+   QFontMetrics fm(m_font);
+
+   int lineSpacing = fm.lineSpacing();
+   int fontHeight = fm.height();
+
+   height = lineSpacing;
+   width = fm.width(m_prefix);
+   foreach(SubParameter *param, m_parameters) {
+      if(param->display) {
+         height += fontHeight;
+         width = qMax((qreal)fm.width(param->text()), width);
+      }
+   }
+   height += fm.descent() + 1;
+   setPaintingRect(QRectF(0, 0, width, height));
+}
+
+//! \brief Returns a copy of this item parented to scene \a scene.
+QucsItem* IdText::copy(SchematicScene *scene) const
+{
+   IdText *id = new IdText(scene);
+
+   id->setPrefix(prefix());
+   id->setFont(font());
+   id->m_parameters = m_parameters;
+   id->updateGeometry();
+
+   Painting::copyDataTo(id);
+
+   return id;
+}
+
+//! \brief Saves data as xml referred by \a writer.
+void IdText::saveData(Qucs::XmlWriter *writer) const
+{
+   writer->writeStartElement("painting");
+   writer->writeAttribute("name", "idText");
+
+   writer->writeEmptyElement("properties");
+   writer->writeAttribute("prefix", prefix());
+   writer->writePointAttribute(pos(), "pos");
+
+   writer->writeFont(font());
+
+   writer->writeStartElement("subParameters");
+   foreach(SubParameter *sub, m_parameters) {
+      writer->writeEmptyElement("param");
+      writer->writeAttribute("name", sub->name);
+      writer->writeAttribute("description", sub->description);
+      writer->writeAttribute("default", sub->defaultValue);
+      writer->writeAttribute("display", Qucs::boolToString(sub->display));
+   }
+   writer->writeEndElement();
+
+   writer->writeEndElement(); // </painting>
+}
+
+//! \brief Loads IdText data from xml referred by \a reader.
+void IdText::loadData(Qucs::XmlReader *reader)
+{
+   Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+   Q_ASSERT(reader->attributes().value("name") == "idText");
+
+   while(!reader->atEnd()) {
+      reader->readNext();
+
+      if(reader->isEndElement())
+         break;
+
+      if(reader->isStartElement()) {
+         if(reader->name() == "properties") {
+            setPrefix(reader->attributes().value("prefix").toString());
+
+            setPos(reader->readPointAttribute("pos"));
+            reader->readUnknownElement(); //read till end tag
+         }
+
+         else if(reader->name() == "font") {
+            setFont(reader->readFont());
+         }
+
+         else if(reader->name() == "subParameters") {
+            while(!reader->atEnd()) {
+               reader->readNext();
+
+               if(reader->isEndElement())
+                  break;
+
+               if(reader->isStartElement()) {
+                  if(reader->name() == "param") {
+                     QXmlStreamAttributes attribs = reader->attributes();
+                     QString name = attribs.value("name").toString();
+                     QString des = attribs.value("description").toString();
+                     QString def = attribs.value("default").toString();
+                     bool dis = Qucs::stringToBool(attribs.value("display").toString());
+
+                     m_parameters << new SubParameter(dis, name, des, def);
+
+                     reader->readUnknownElement(); //read till end tag
+                  }
+               }
+            }
+         }
+
+         else {
+            reader->readUnknownElement();
+         }
+      }
+   }
+   updateGeometry();
 }

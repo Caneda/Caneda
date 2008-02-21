@@ -30,121 +30,55 @@
 #include <QtCore/QLocale>
 
 #include <QtGui/QFont>
-
-//Prototypes
-namespace Qucs
-{
-   inline QString pathForFile(const QString& fileName);
-   static QString getenv();
-   inline QString bitmapDirectory();
-   inline QString langDirectory();
-   inline QString language();
-   inline QFont font();
-
-   QString boolToString(bool b);
-   QString complexRect(double real, double imag, int Precision);
-   QString complexDeg(double real, double imag, int Precision);
-   QString complexRad (double real, double imag, int Precision);
-   QString StringNum(double num, char form, int Precision);
-   QString StringNiceNum(double num);
-   QString num2str(double Num);
-   void str2num(const QString& s_, double& Number, QString& Unit, double& Factor);
-   QString realToString(qreal val);
-   void convert2Unicode(QString& Text);
-   void convert2ASCII(QString& Text);
-   QString properName (const QString& Name);
-   bool VHDL_Time(QString& t, const QString& Name);
-   bool Verilog_Time(QString& t, const QString& Name);
-   bool checkVersion(const QString& Line);
-
-   class Settings;
-}
+#include <QtGui/QPixmap>
 
 namespace Qucs
 {
-   const QString binaryDir = QString(BINARYDIR);
-   const QString bitmapDir = QString(BITMAPDIR);
-   const QString docDir = QString(DOCDIR);
-   const QString langDir = QString(LANGUAGEDIR);
-   const QString libDir = QString(LIBRARYDIR);
-   const QString version = QString(PACKAGE_VERSION);
-   const QString versionString = QString(PACKAGE_STRING);
+   const QString binaryDir(BINARYDIR);
+   const QString bitmapDir(BITMAPDIR);
+   const QString docDir(DOCDIR);
+   const QString langDir(LANGUAGEDIR);
+   const QString libDir(LIBRARYDIR);
+   const QString version(PACKAGE_VERSION);
+   const QString versionString(PACKAGE_STRING);
+   const QString rcFile("qucs-qt4rc");
+
+   QString pathForQucsFile(const QString& fileName);
 
    class Settings : public QSettings
    {
       public:
          Settings(const QString& filename):
-            QSettings(Qucs::pathForFile(filename),QSettings::IniFormat)
+            QSettings(Qucs::pathForQucsFile(filename), QSettings::IniFormat)
          {}
    };
 
-   inline QString pathForFile(const QString& fileName)
-   {
-      QString retVal = QDir::homePath();
-      retVal += QDir::convertSeparators(QString("/.qucs/")+fileName);
-      return retVal;
+   QString getenv();
+
+   QString bitmapDirectory();
+   QString langDirectory();
+
+   inline QPixmap pixmapFor(const QString& name) {
+      return QPixmap(bitmapDirectory() + name + ".png");
    }
 
-   static QString getenv()
-   {
-      // is application relocated?
-      static QString var(::getenv("QUCSDIR"));
-      return var;
+   QString language();
+   QString localePrefix();
+   QFont font();
+
+   bool checkVersion(const QString& line);
+
+   inline QString boolToString(bool boolean) {
+      return boolean ? QString("true") : QString("false");
    }
 
-   inline QString bitmapDirectory()
-   {
-      QString var = Qucs::getenv();
-      if(!var.isEmpty())
-      {
-         QDir QucsDir = QDir (var);
-         return QDir::convertSeparators (QucsDir.canonicalPath () + "/share/qucs/bitmaps/");
-      }
-      return Qucs::bitmapDir;
+   inline bool stringToBool(const QString& str) {
+      return str == "true" ? true : false;
    }
 
-   inline QString langDirectory()
-   {
-
-      QString var = Qucs::getenv();
-      if(!var.isEmpty())
-      {
-         QDir QucsDir = QDir (var);
-         return QDir::convertSeparators (QucsDir.canonicalPath () + "/share/qucs/lang/");
-      }
-      return Qucs::langDir;
+   inline QString realToString(qreal val) {
+      return QString::number(val,'f',2);
    }
-
-   inline QString language()
-   {
-      QString _default = QLocale().name();
-      Qucs::Settings settings("qucsrc");
-      settings.beginGroup("MainWindow");
-      QString retVal = settings.value("language",_default).toString();
-      settings.endGroup();
-      return retVal;
-   }
-
-   inline QString localePrefix()
-   {
-      QString retVal = QLocale::system().name();
-      retVal = retVal.left(retVal.indexOf('_'));
-      return retVal;
-   }
-
-   inline QFont font()
-   {
-      Qucs::Settings settings("qucsrc");
-      settings.beginGroup("MainWindow");
-      QString fontStr = settings.value("font").toString();
-      QFont fnt;
-      fnt.fromString(fontStr);
-      settings.endGroup();
-      return fnt;
-   }
-
 }
-
-
 
 #endif //__GLOBAL_H

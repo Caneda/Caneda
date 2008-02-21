@@ -131,7 +131,7 @@ QString XmlFormat::saveText()
 
    writer->writeStartElement("frametexts");
    foreach(QString text, scene->frameTexts()) {
-      Qucs::convert2ASCII(text);
+      //Qucs::convert2ASCII(text);
       writer->writeElement("text",text);
    }
    writer->writeEndElement(); //</frametexts>

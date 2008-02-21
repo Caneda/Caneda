@@ -22,7 +22,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
-SUBDIRS = dialogs bitmaps diagrams paintings components
+SUBDIRS = dialogs bitmaps diagrams paintings
 
 
 if COND_WIN32
@@ -34,7 +34,7 @@ endif
 bin_PROGRAMS = qucs
 
 MOCHEADERS = schematicscene.h schematicview.h mainwindowbase.h \
-			 qucsmainwindow.h componentssidebar.h svgitem.h svgtest.h \
+			 qucsmainwindow.h componentssidebar.h svgitem.h \
 			 propertyitem.h propertygroup.h component.h sidebarmodel.h
 
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
@@ -43,8 +43,7 @@ qucs_SOURCES = 	wire.cpp componentssidebar.cpp  item.cpp \
 				schematicscene.cpp  sidebarmodel.cpp \
                 main.cpp mainwindowbase.cpp qucsmainwindow.cpp qucsview.cpp \
 				schematicview.cpp  undocommands.cpp fileformathandler.cpp \
-				xmlutilities.cpp  \
-				svgitem.cpp svgtest.cpp property.cpp propertyitem.cpp \
+				xmlutilities.cpp svgitem.cpp property.cpp propertyitem.cpp \
 				propertygroup.cpp component.cpp port.cpp library.cpp \
 				xmlformat.cpp
 
@@ -54,7 +53,6 @@ INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)
 qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
 qucs_LDADD = ../qucs-tools/libqucstools.a dialogs/libdialogs.a \
   $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a
-# components/libcomponents.a
 
 noinst_HEADERS = $(MOCHEADERS) wire.h wireline.h item.h undocommands.h qucsview.h \
                                fileformathandler.h  xmlutilities.h svgitem.h \

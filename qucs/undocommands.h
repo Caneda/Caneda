@@ -101,7 +101,22 @@ class DisconnectCmd : public QUndoCommand
 class AddWireCmd : public QUndoCommand
 {
    public:
-      AddWireCmd(Port *p1, Port* p2, QUndoCommand *parent = 0);
+      AddWireCmd(Wire *wire, SchematicScene *scene, QUndoCommand *parent = 0);
+      ~AddWireCmd();
+
+      void undo();
+      void redo();
+
+   private:
+      Wire *m_wire;
+      SchematicScene *m_scene;
+      QPointF m_pos;
+};
+
+class AddWireBetweenPortsCmd : public QUndoCommand
+{
+   public:
+      AddWireBetweenPortsCmd(Port *p1, Port* p2, QUndoCommand *parent = 0);
       void undo();
       void redo();
 

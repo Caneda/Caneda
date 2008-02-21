@@ -1,207 +1,202 @@
 /***************************************************************************
-                        portsymbol.cpp  -  description
-                             -------------------
-    begin                : Sun Sep 5 2004
-    copyright            : (C) 2004 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
+ * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#include "main.h"
 #include "portsymbol.h"
+#include "port.h"
+#include "xmlutilities.h"
+#include "qucs-tools/global.h"
 
+#include <QtGui/QPainter>
+#include <QtGui/QStyleOptionGraphicsItem>
+#include <QtGui/QFontMetrics>
 
-PortSymbol::PortSymbol(int cx_, int cy_, const QString& numberStr_,
-                                         const QString& nameStr_)
+#include <QtCore/QDebug>
+
+int portSymbolOffset = 3;
+
+/*!
+ * \brief Constructs a port symbol painting item.
+ * \param nameStr_ Represents the name part of port id.
+ * \param numberStr_ Represents the number part of port id.
+ * \param scene SchematicScene on which this item should be added.
+ */
+PortSymbol::PortSymbol(const QString& nameStr_, const QString& numberStr_,
+                       SchematicScene *scene) :
+   Painting(scene),
+   m_mirrored(false),
+
+   m_numberString(numberStr_),
+   m_nameString(nameStr_)
 {
-  Name = ".PortSym ";
-  isSelected = false;
-  cx = cx_;
-  cy = cy_;
-
-  Angel = 0;
-  nameStr = nameStr_;
-  numberStr = numberStr_;
-  QFontMetrics  metrics(QucsSettings.font);
-  QSize r = metrics.size(0, nameStr);
-  x1 = -r.width() - 8;
-  y1 = -((r.height() + 8) >> 1);
-  x2 = 8 - x1;
-  y2 = r.height() + 8;
+   updateGeometry();
 }
 
-PortSymbol::~PortSymbol()
+//! \brief Draw port ellipse and id.
+void PortSymbol::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
 {
+   painter->setPen(unconnectedPen);  // like open node
+   painter->drawEllipse(portEllipse);
+
+   QPointF textPos = m_mirrored ? portEllipse.bottomLeft() : portEllipse.bottomRight();
+   if(m_mirrored) {
+      textPos.rx() -= portSymbolOffset;
+      textPos.rx() -= QFontMetrics(font()).width(text());
+   }
+   else {
+      textPos.rx() += portSymbolOffset;
+   }
+
+   painter->setPen(pen());
+   painter->setFont(font());
+
+   painter->drawText(textPos, text());
+
+   painter->setPen(Qt::lightGray);
+   painter->drawRect(paintingRect());
+
+   if(option->state & QStyle::State_Selected) {
+      painter->setPen(Qt::darkGray);
+      painter->drawRoundRect(boundingRect());
+   }
 }
 
-// --------------------------------------------------------------------------
-void PortSymbol::paint(ViewPainter *p)
+//! \brief Set number part of port id to \a str.
+void PortSymbol::setNumberString(QString str)
 {
-  p->Painter->setPen(QPen(QPen::red,1));  // like open node
-  p->drawEllipse(cx-4, cy-4, 8, 8);
-
-
-  QFontMetrics  metrics(p->Painter->font());
-  QSize r = metrics.size(0, nameStr);
-  int Unit = int(8.0 * p->Scale);
-  x1 = -r.width() - Unit;
-  y1 = -((r.height() + Unit) >> 1);
-  x2 = Unit - x1;
-  y2 = r.height() + Unit;
-
-  QWMatrix wm = p->Painter->worldMatrix();
-  QWMatrix Mat(1.0, 0.0, 0.0, 1.0, p->DX + float(cx) * p->Scale,
-				   p->DY + float(cy) * p->Scale);
-  p->Painter->setWorldMatrix(Mat);
-
-  int tmp, tx, ty;
-  tx = x1 + (Unit >> 1);
-  ty = y1 + (Unit >> 1);
-  switch(Angel) {
-    case 0:
-      tx = x1 + (Unit >> 1);
-      ty = y1 + (Unit >> 1);
-      break;
-    case 90:
-      x1 = y1;
-      y1 = -Unit;
-      tmp = x2;  x2 = y2;  y2 = tmp;
-      p->Painter->rotate(-90.0); // automatically enables transformation
-      break;
-    case 180:
-      x1 = -Unit;
-      tx = Unit >> 1;
-      break;
-    case 270:
-      tx = Unit >> 1;
-      tmp = x1;  x1 = y1;  y1 = tmp;
-      tmp = x2;  x2 = y2;  y2 = tmp;
-      p->Painter->rotate(-90.0); // automatically enables transformation
-      break;
-  }
-
-  p->Painter->setPen(Qt::black);
-  p->Painter->drawText(tx, ty, 0, 0, Qt::DontClip, nameStr);
-
-
-  p->Painter->setWorldMatrix(wm);
-  p->Painter->setWorldXForm(false);
-  x1 = int(float(x1) / p->Scale);
-  x2 = int(float(x2) / p->Scale);
-  y1 = int(float(y1) / p->Scale);
-  y2 = int(float(y2) / p->Scale);
-
-  p->Painter->setPen(Qt::lightGray);
-  p->drawRect(cx+x1, cy+y1, x2, y2);
-
-  if(isSelected) {
-    p->Painter->setPen(QPen(QPen::darkGray,3));
-    p->drawRoundRect(cx+x1-4, cy+y1-4, x2+8, y2+8);
-  }
+   prepareGeometryChange();
+   m_numberString = str;
+   updateGeometry();
 }
 
-// --------------------------------------------------------------------------
-void PortSymbol::paintScheme(QPainter *p)
+//! \brief Set name part of port id to \a str.
+void PortSymbol::setNameString(QString str)
 {
-  p->drawEllipse(cx-4, cy-4, 8, 8);
-  p->drawRect(cx+x1, cy+y1, x2, y2);
+   prepareGeometryChange();
+   m_nameString = str;
+   updateGeometry();
 }
 
-// --------------------------------------------------------------------------
-void PortSymbol::getCenter(int& x, int &y)
+//! \brief Updates the geometry once a font is set or it is mirrored.
+void PortSymbol::updateGeometry()
 {
-  x = cx;
-  y = cy;
+   QFontMetrics fm(font());
+   qreal height = qMax(portEllipse.bottom(), qreal(fm.height() + fm.descent()));
+
+   QPointF topLeft(0, -height/2.);
+   QPointF bottomRight(0, height/2.);
+
+   if(m_mirrored) {
+      topLeft.rx() = portEllipse.left() - portSymbolOffset - fm.width(text());
+      bottomRight.rx() = portEllipse.right();
+   } else {
+      topLeft.rx() = portEllipse.left();
+      bottomRight.rx() = portEllipse.right() + portSymbolOffset + fm.width(text());
+   }
+
+   QRectF rect(topLeft, bottomRight);
+   setPaintingRect(rect);
 }
 
-// --------------------------------------------------------------------------
-// Sets the center of the painting to x/y.
-void PortSymbol::setCenter(int x, int y, bool relative)
+//! \brief Sets the font used to draw port id to \a font.
+void PortSymbol::setFont(const QFont& font)
 {
-  if(relative) { cx += x;  cy += y; }
-  else { cx = x;  cy = y; }
+   m_font = font;
+   updateGeometry();
 }
 
-// --------------------------------------------------------------------------
-bool PortSymbol::load(const QString& s)
+//! \brief Reimplement mirror method to take care of mirror along Y axis.
+void PortSymbol::mirrorAlong(Qt::Axis axis)
 {
-  bool ok;
-
-  QString n;
-  n  = s.section(' ',1,1);    // cx
-  cx = n.toInt(&ok);
-  if(!ok) return false;
-
-  n  = s.section(' ',2,2);    // cy
-  cy = n.toInt(&ok);
-  if(!ok) return false;
-
-  numberStr  = s.section(' ',3,3);    // number
-  if(numberStr.isEmpty()) return false;
-
-  n  = s.section(' ',4,4);      // Angel
-  if(n.isEmpty()) return true;  // be backward-compatible
-  Angel = n.toInt(&ok);
-  if(!ok) return false;
-
-  return true;
+   if(axis == Qt::YAxis) {
+      prepareGeometryChange();
+      m_mirrored = !m_mirrored;
+      updateGeometry();
+   }
+   //ignore other axis
 }
 
-// --------------------------------------------------------------------------
-QString PortSymbol::save()
+//! \brief Returns a copy of port symbol item parented to scene \a scene.
+QucsItem* PortSymbol::copy(SchematicScene *scene) const
 {
-  QString s = Name+QString::number(cx)+" "+QString::number(cy)+" ";
-  s += numberStr+" "+QString::number(Angel);
-  return s;
+   PortSymbol *port = new PortSymbol(m_numberString, m_nameString, scene);
+   port->m_mirrored = m_mirrored;
+   port->m_font = m_font;
+   port->updateGeometry();
+
+   Painting::copyDataTo(port);
+
+   return port;
 }
 
-// --------------------------------------------------------------------------
-// Checks if the coordinates x/y point to the painting.
-bool PortSymbol::getSelected(int x, int y)
+//! \brief Saves data as xml.
+void PortSymbol::saveData(Qucs::XmlWriter *writer) const
 {
-  if(x < cx+x1)  return false;
-  if(y < cy+y1)  return false;
-  if(x > cx+x1+x2)  return false;
-  if(y > cy+y1+y2)  return false;
+   writer->writeStartElement("painting");
+   writer->writeAttribute("name", "portSymbol");
 
-  return true;
+   writer->writeEmptyElement("properties");
+   writer->writeAttribute("nameString", m_nameString);
+   writer->writeAttribute("numberString", m_numberString);
+   writer->writeAttribute("mirrored", Qucs::boolToString(m_mirrored));
+   writer->writePointAttribute(pos(), "pos");
+
+   writer->writeFont(font());
+   writer->writeTransform(transform());
+
+   writer->writeEndElement(); // < /painting>
 }
 
-// --------------------------------------------------------------------------
-void PortSymbol::Bounding(int& _x1, int& _y1, int& _x2, int& _y2)
+//! \brief Loads portSymbol from xml referred by \a reader.
+void PortSymbol::loadData(Qucs::XmlReader *reader)
 {
-  _x1 = cx+x1;     _y1 = cy+y1;
-  _x2 = cx+x1+x2;  _y2 = cy+y1+y2;
-}
+   Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+   Q_ASSERT(reader->attributes().value("name") == "portSymbol");
 
-// --------------------------------------------------------------------------
-// Rotates around the center.
-void PortSymbol::rotate()
-{
-  if(Angel < 270)  Angel += 90;
-  else  Angel = 0;
-}
+   while(!reader->atEnd()) {
+      reader->readNext();
 
-// --------------------------------------------------------------------------
-// Mirrors about connection node (not center line !).
-void PortSymbol::mirrorX()
-{
-  if(Angel == 90)  Angel = 270;
-  else  if(Angel == 270)  Angel = 90;
-}
+      if(reader->isEndElement())
+         break;
 
-// --------------------------------------------------------------------------
-// Mirrors about connection node (not center line !).
-void PortSymbol::mirrorY()
-{
-  if(Angel == 0)  Angel = 180;
-  else  if(Angel == 180)  Angel = 0;
+      if(reader->isStartElement()) {
+         if(reader->name() == "properties") {
+
+            setNumberString(reader->attributes().value("numberString").toString());
+            setNameString(reader->attributes().value("nameString").toString());
+
+            setPos(reader->readPointAttribute("pos"));
+            m_mirrored = Qucs::stringToBool(reader->attributes().value("mirrored").toString());
+            updateGeometry();
+            reader->readUnknownElement(); //read till end tag
+         }
+
+         else if(reader->name() == "font") {
+            setFont(reader->readFont());
+         }
+
+         else if(reader->name() == "transform") {
+            setTransform(reader->readTransform());
+         }
+
+         else {
+            reader->readUnknownElement();
+         }
+      }
+   }
 }

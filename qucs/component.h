@@ -85,6 +85,7 @@ class Component : public SvgItem
 
       //! Returns label prefix of component.
       QString labelPrefix() const { return d->labelPrefix; }
+      QString labelSuffix() const;
 
       //! Represents model of component, which is infact a property.
       QString model() const { return property("model").toString(); }
@@ -142,7 +143,7 @@ class Component : public SvgItem
 
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
 
-      void checkAndConnect(Qucs::UndoOption opt);
+      int checkAndConnect(Qucs::UndoOption opt);
 
       QucsItem *copy(SchematicScene *scene = 0) const;
       void copyDataTo(Component *comp) const;

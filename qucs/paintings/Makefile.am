@@ -24,21 +24,20 @@
 
 noinst_LIBRARIES = libpaintings.a
 
-MOCHEADERS =
+MOCHEADERS = styledialog.h
 # arrowdialog.h graphictextdialog.h filldialog.h id_dialog.h
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-libpaintings_a_SOURCES =  painting.cpp
-#   rectangle.cpp arrow.cpp  \
-#   graphictextdialog.cpp graphictext.cpp graphicline.cpp ellipse.cpp           \
-#   arrowdialog.cpp filldialog.cpp portsymbol.cpp ellipsearc.cpp id_text.cpp    \
-#   id_dialog.cpp
+libpaintings_a_SOURCES =  painting.cpp rectangle.cpp ellipse.cpp graphicline.cpp \
+						  arrow.cpp graphictext.cpp ellipsearc.cpp id_text.cpp \
+						  portsymbol.cpp styledialog.cpp
+#   graphictextdialog.cpp arrowdialog.cpp filldialog.cpp id_dialog.cpp
 
 nodist_libpaintings_a_SOURCES = $(MOCFILES)
 
-noinst_HEADERS = $(MOCHEADERS) painting.h
-#    arrow.h ellipse.h graphicline.h graphictext.h  \
-#    paintings.h rectangle.h portsymbol.h ellipsearc.h id_text.h
+noinst_HEADERS = $(MOCHEADERS) painting.h paintings.h rectangle.h ellipse.h \
+				 graphicline.h arrow.h graphictext.h ellipsearc.h id_text.h \
+				 portsymbol.h ui_filldialog.h
 
 INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) -I$(top_srcdir)/qucs
 

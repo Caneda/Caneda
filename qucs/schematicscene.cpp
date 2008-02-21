@@ -21,7 +21,7 @@
 #include "schematicview.h"
 #include "wire.h"
 #include "port.h"
-#include "paintings/painting.h"
+#include "paintings/paintings.h"
 #include "diagrams/diagram.h"
 #include "undocommands.h"
 #include "xmlutilities.h"
@@ -29,12 +29,12 @@
 #include "component.h"
 #include "library.h"
 #include "qucsmainwindow.h"
-
 #include "propertygroup.h"
+
 #include <QtCore/QMimeData>
 #include <QtCore/QtDebug>
-#include <QtCore/QVarLengthArray>
 #include <QtCore/QFileInfo>
+
 #include <QtGui/QGraphicsView>
 #include <QtGui/QGraphicsSceneEvent>
 #include <QtGui/QUndoStack>
@@ -47,8 +47,10 @@
 #include <QtGui/QCursor>
 #include <QtGui/QShortcutEvent>
 #include <QtGui/QKeySequence>
+
 #include <cmath>
 #include <memory>
+
 template <typename T>
 QPointF centerOfItems(const QList<T*> &items)
 {
@@ -88,6 +90,10 @@ void SchematicScene::init()
    m_macroProgress = false;
    m_areItemsMoving = false;
    m_shortcutsBlocked = false;
+   m_currentWiringWire = 0;
+   m_paintingDrawItem = 0;
+   m_paintingDrawClicks = 0;
+   m_isWireCmdAdded = false;
    setCurrentMouseAction(Normal);
 }
 
@@ -98,27 +104,6 @@ SchematicScene::~SchematicScene()
 
 void SchematicScene::test()
 {
-   return;
-   QList<QucsItem*> _items;
-   LibraryLoader *l = LibraryLoader::defaultInstance();
-
-   Component *c1 = l->newComponent("resistor", this);
-   c1->setPos(10, 10);
-
-   Component *c2 = l->newComponent("resistor", this);
-   c2->setPos(210, 10);
-
-   Wire *wire = new Wire(c1->ports().last(), c2->ports().first(), this);
-
-   _items << c1 << c2 << wire;
-
-   QWidget *mw =  activeView()->parentWidget()->parentWidget()->parentWidget();
-   QucsMainWindow *w = qobject_cast<QucsMainWindow*>(mw);
-   Q_ASSERT(w);
-   w->slotInsertItemAction(true);
-
-   beginInsertingItems(_items);
-   qDebug() << "test";
 }
 
 void SchematicScene::mirrorXItems(QList<QucsItem*> items, Qucs::UndoOption opt)
@@ -367,8 +352,29 @@ void SchematicScene::resetState()
 {
    setFocusItem(0);
    clearSelection();
+
    qDeleteAll(m_insertibles);
    m_insertibles.clear();
+
+   if(m_currentWiringWire) {
+      if(!m_isWireCmdAdded) {
+         delete m_currentWiringWire;
+      }
+      else {
+         m_currentWiringWire->show();
+         m_currentWiringWire->setState(m_currentWiringWire->storedState());
+         m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
+      }
+   }
+
+   m_currentWiringWire = 0;
+
+   m_isWireCmdAdded = false;
+
+   delete m_paintingDrawItem;
+   m_paintingDrawItem = 0;
+   m_paintingDrawClicks = 0;
+   m_paintingDrawString.clear();
 }
 
 void SchematicScene::cutItems(QList<QucsItem*> _items, Qucs::UndoOption opt)
@@ -432,6 +438,9 @@ void SchematicScene::paste()
          else if(reader.name() == "wire") {
             readItem = Wire::loadWireData(&reader, this);
          }
+         else if(reader.name() == "painting")  {
+            readItem = Painting::loadPainting(&reader, this);
+         }
 
          if(readItem)
             _items << readItem;
@@ -465,6 +474,11 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
    foreach(QucsItem *item, m_insertibles) {
       item->setSelected(true);
       item->setVisible(cursorOnScene);
+      if(item->isComponent()) {
+         Component *comp = qucsitem_cast<Component*>(item);
+         if(comp->propertyGroup())
+            comp->propertyGroup()->hide();
+      }
    }
 
    QPointF delta = active->mapToScene(pos) - centerOfItems(m_insertibles);
@@ -521,14 +535,33 @@ void SchematicScene::setModified(bool m)
    }
 }
 
-void SchematicScene::setInsertingItem(const QString& item)
+bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& category)
 {
-   setCurrentMouseAction(InsertingItems);
-   if(item.isEmpty()) return;
+   if(itemName.isEmpty()) return false;
 
-   Component *c = LibraryLoader::defaultInstance()->newComponent(item, this);
-   if(c) {
-      beginInsertingItems(QList<QucsItem*>() << c);
+   if(category == "paintings") {
+      Painting *painting = Painting::fromName(itemName);
+      if(!painting) {
+         setCurrentMouseAction(Normal);
+         return false;
+      }
+      delete painting;
+
+      setCurrentMouseAction(PaintingDrawEvent);
+      m_paintingDrawString = itemName;
+
+      return true;
+   }
+
+   else {
+      QucsItem *item = itemForName(itemName, category);
+      if(!item) return false;
+
+      addItem(item);
+      setCurrentMouseAction(InsertingItems);
+      beginInsertingItems(QList<QucsItem*>() << item);
+
+      return true;
    }
 }
 
@@ -546,7 +579,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
       painter->drawLine(QLineF(0.0, -3.0, 0.0, 3.0));
    }
 
-   int gridWidth = m_gridWidth, gridHeight = m_gridHeight;
+   int gridWidth = m_gridWidth*2, gridHeight = m_gridHeight*2;
 
    // Adjust visual representation of grid to be multiple, if
    // grid sizes are very small
@@ -600,6 +633,23 @@ bool SchematicScene::event(QEvent *event)
    return QGraphicsScene::event(event);
 }
 
+void SchematicScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+   switch(selectedItems().size()) {
+      case 0:
+         //launch a general menu
+         break;
+
+      case 1:
+         //launch context menu of item.
+         QGraphicsScene::contextMenuEvent(event);
+         break;
+
+      default: ;
+         //launch a common menu
+   }
+}
+
 void SchematicScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event)
 {
    if(event->mimeData()->formats().contains("application/qucs.sidebarItem")) {
@@ -626,23 +676,21 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 
       QByteArray encodedData = event->mimeData()->data("application/qucs.sidebarItem");
       QDataStream stream(&encodedData, QIODevice::ReadOnly);
-      QString text;
-      stream >> text;
-      Component *c = LibraryLoader::defaultInstance()->newComponent(text, 0);
+      QString item, category;
+      stream >> item >> category;
+      QucsItem *qItem = itemForName(item, category);
+      if(qItem) {
+         QPointF dest = m_snapToGrid ? nearingGridPoint(event->scenePos()) : event->scenePos();
 
-      if(c) {
-         QPointF dest = m_snapToGrid ? nearingGridPoint(event->scenePos()) :
-            event->scenePos();
-         placeItem(c, dest, Qucs::PushUndoCmd);
-
+         placeItem(qItem, dest, Qucs::PushUndoCmd);
          view->restoreScrollState();
-
          event->acceptProposedAction();
          setModified(true);
       }
    }
-   else
+   else {
       event->ignore();
+   }
 
    blockShortcuts(false);
 }
@@ -685,11 +733,63 @@ void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
 void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 {
    sendMouseActionEvent(e);
-
 }
 
 void SchematicScene::wiringEvent(MouseActionEvent *event)
 {
+   if(event->type() == QEvent::GraphicsSceneMousePress) {
+      if(!m_currentWiringWire) {
+         m_currentWiringWire = new Wire(event->scenePos(), event->scenePos(), false, this);
+         m_currentWiringWire->hide();
+         return;
+      }
+
+      if(m_currentWiringWire->port1()->scenePos() == m_currentWiringWire->port2()->scenePos())
+         return;
+
+      m_undoStack->beginMacro(QString());
+
+      if(!m_isWireCmdAdded) {
+         m_currentWiringWire->removeNullLines();
+
+         m_undoStack->push(new AddWireCmd(m_currentWiringWire, this));
+         m_isWireCmdAdded = true;
+      }
+      else {
+         m_currentWiringWire->removeNullLines();
+         m_undoStack->push(
+            new WireStateChangeCmd(m_currentWiringWire,m_currentWiringWire->storedState(),
+                                   m_currentWiringWire->currentState()));
+
+      }
+      m_currentWiringWire->checkAndConnect(Qucs::PushUndoCmd);
+
+      m_undoStack->endMacro();
+
+      if(m_currentWiringWire->port2()->hasConnection()) {
+
+         m_currentWiringWire->show();
+         m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
+         m_currentWiringWire->updateGeometry();
+
+         m_currentWiringWire = 0;
+         m_isWireCmdAdded = false;
+      }
+      else {
+         m_currentWiringWire->storeState();
+
+         WireLines& wLinesRef = m_currentWiringWire->wireLinesRef();
+         WireLine toAppend(wLinesRef.last().p2(), wLinesRef.last().p2());
+         wLinesRef << toAppend << toAppend;
+      }
+   }
+
+   else if(event->type() == QEvent::GraphicsSceneMouseMove) {
+      if(m_currentWiringWire) {
+         QPointF newPos = m_currentWiringWire->mapFromScene(event->scenePos());
+         m_currentWiringWire->movePort2(newPos);
+      }
+   }
 }
 
 void SchematicScene::deletingEvent(MouseActionEvent *event)
@@ -799,6 +899,78 @@ void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
    //TODO: Add zooming by drawing a rectangle for zoom area.
 }
 
+void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
+{
+   if(event->type() == QEvent::GraphicsSceneMousePress) {
+      clearSelection();
+      if(!m_paintingDrawItem) {
+         m_paintingDrawItem = Painting::fromName(m_paintingDrawString);
+         if(!m_paintingDrawItem) return;
+
+         m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
+         if(m_paintingDrawString == QLatin1String("ellipseArc") ||
+            m_paintingDrawString == QObject::tr("Elliptic Arc")) {
+
+            EllipseArc *arc = static_cast<EllipseArc*>(m_paintingDrawItem);
+            arc->setStartAngle(0);
+            arc->setSpanAngle(360);
+            m_paintingDrawClicks++;
+         }
+
+         addItem(m_paintingDrawItem);
+
+         m_paintingDrawItem->setPos(event->scenePos() - QPointF(-2, -2));
+      }
+      else {
+         EllipseArc *arc = qucsitem_cast<EllipseArc*>(m_paintingDrawItem);
+         if(arc) {
+            switch(m_paintingDrawClicks) {
+               case 1:arc->setSpanAngle(180);break;
+               case 2: break;
+               case 3: break;
+               case 4:
+                  m_paintingDrawClicks = 0;
+                  m_paintingDrawItem = 0;
+                  return;
+            }
+            m_paintingDrawClicks++;
+         }
+         else {
+            m_paintingDrawItem = 0;
+         }
+      }
+   }
+
+   else if(event->type() == QEvent::GraphicsSceneMouseMove) {
+      if(m_paintingDrawItem) {
+         EllipseArc *arc = qucsitem_cast<EllipseArc*>(m_paintingDrawItem);
+         if(arc && m_paintingDrawClicks > 1) {
+            QPointF delta = event->scenePos() - arc->scenePos();
+            int angle = int(180/M_PI * std::atan2(-delta.y(), delta.x()));
+
+            if(m_paintingDrawClicks == 2) {
+               while(angle < 0)
+                  angle += 360;
+               arc->setStartAngle(int(angle));
+            }
+
+            else if(m_paintingDrawClicks == 3) {
+               int span = angle - arc->startAngle();
+               while(span < 0) span += 360.;
+
+               arc->setSpanAngle(span);
+            }
+         }
+
+         else {
+            QRectF rect = m_paintingDrawItem->paintingRect();
+            rect.setBottomRight(m_paintingDrawItem->mapFromScene(event->scenePos()));
+            m_paintingDrawItem->setPaintingRect(rect);
+         }
+      }
+   }
+}
+
 void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
 {
    if(event->type() == QEvent::GraphicsSceneMousePress) {
@@ -808,7 +980,7 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
       }
       m_undoStack->beginMacro(QString());
       foreach(QucsItem *item, m_insertibles) {
-         QucsItem *copied = item->copy(this);
+         QucsItem *copied = item->copy(0);
          placeItem(copied, item->pos(), Qucs::PushUndoCmd);
       }
       m_undoStack->endMacro();
@@ -932,8 +1104,11 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
       Wire *wire = qucsitem_cast<Wire*>(item);
       if(wire && !movingWires.contains(wire)) {
          bool condition = wire->isSelected();
-         condition = condition && (!wire->port1()->areAllOwnersSelected() ||
-                                   !wire->port2()->areAllOwnersSelected());
+         condition = condition && ((!wire->port1()->areAllOwnersSelected() ||
+                                    !wire->port2()->areAllOwnersSelected()) ||
+                                   (wire->port1()->connections() == 0 &&
+                                    wire->port2()->connections() == 0));
+            ;
          if(condition) {
             grabMovingWires << wire;
             wire->storeState();
@@ -968,7 +1143,7 @@ void SchematicScene::disconnectDisconnectibles()
          if(fromPort) {
             m_undoStack->push(new DisconnectCmd(port, fromPort));
             ++disconnections;
-            AddWireCmd *wc = new AddWireCmd(port, fromPort);
+            AddWireBetweenPortsCmd *wc = new AddWireBetweenPortsCmd(port, fromPort);
             Wire *wire = wc->wire();
             m_undoStack->push(wc);
             movingWires << wire;
@@ -1056,9 +1231,22 @@ void SchematicScene::endSpecialMove()
 
 void SchematicScene::placeItem(QucsItem *item, QPointF pos, Qucs::UndoOption opt)
 {
+   if(item->scene() == this)
+      removeItem(item);
+
+   if(item->isComponent()) {
+      Component *component = qucsitem_cast<Component*>(item);
+
+      int labelSuffix = componentLabelSuffix(component->labelPrefix());
+      QString label = QString("%1%2").
+         arg(component->labelPrefix()).
+         arg(labelSuffix);
+
+      component->setLabel(label);
+   }
+
    if(opt == Qucs::DontPushUndoCmd) {
-      if(item->scene() != this)
-         addItem(item);
+      addItem(item);
       item->setPos(pos);
 
       if(item->isComponent()) {
@@ -1082,6 +1270,56 @@ void SchematicScene::placeItem(QucsItem *item, QPointF pos, Qucs::UndoOption opt
 
       m_undoStack->endMacro();
    }
+}
+
+QucsItem* SchematicScene::itemForName(const QString& name, const QString& category)
+{
+   if(category == QObject::tr("paintings")) {
+      return Painting::fromName(name);
+   }
+
+   return LibraryLoader::defaultInstance()->newComponent(name, 0, category);
+}
+
+int SchematicScene::componentLabelSuffix(const QString& prefix) const
+{
+   int _max = 1;
+   foreach(QGraphicsItem *item, items()) {
+      Component *comp = qucsitem_cast<Component*>(item);
+      if(comp && comp->labelPrefix() == prefix) {
+         bool ok;
+         int suffix = comp->labelSuffix().toInt(&ok);
+         if(ok) {
+            _max = qMax(_max, suffix+1);
+         }
+      }
+   }
+   return _max;
+}
+
+int SchematicScene::unusedPortNumber()
+{
+   int retVal = -1;
+   if(m_usablePortNumbers.isEmpty()) {
+      retVal = m_usablePortNumbers.takeFirst();
+   }
+   else {
+      retVal = m_usedPortNumbers.last() + 1;
+
+      while(m_usedPortNumbers.contains(retVal)) {
+         retVal++;
+      }
+   }
+   return retVal;
+}
+
+bool SchematicScene::isPortNumberUsed(int num) const
+{
+   return false;
+}
+
+void SchematicScene::setNumberUnused(int num)
+{
 }
 
 void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt)
@@ -1166,6 +1404,10 @@ void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
 
       case ZoomingAtPoint:
          zoomingAtPointEvent(e);
+         break;
+
+      case PaintingDrawEvent:
+         paintingDrawEvent(e);
          break;
 
       case InsertingItems:

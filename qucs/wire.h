@@ -77,6 +77,10 @@ class Wire : public QucsItem
 
       //! Returns the internal representation of wires as line's list.
       WireLines wireLines() const { return m_wLines; }
+
+      //! Returns a reference of internal representaion of wire lines.
+      WireLines& wireLinesRef() { return m_wLines; }
+
       void setWireLines(const WireLines& wirelines);
 
       void removeNullLines();
@@ -101,7 +105,7 @@ class Wire : public QucsItem
       Data currentState() const;
       void setState(Data state);
 
-      void checkAndConnect(Qucs::UndoOption opt);
+      int checkAndConnect(Qucs::UndoOption opt);
 
       QucsItem* copy(SchematicScene *scene = 0) const;
       void copyDataTo(Wire *wire) const;
@@ -109,6 +113,7 @@ class Wire : public QucsItem
       bool isComponent() const { return false; }
       bool isWire() const { return true; }
 
+      void updateGeometry();
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -120,8 +125,6 @@ class Wire : public QucsItem
 
       void updateProxyWires();
       void deleteProxyWires();
-
-      void updateGeometry();
 
       int indexForPos(const QPointF& pos) const;
 

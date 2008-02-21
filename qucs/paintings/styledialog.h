@@ -17,38 +17,66 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __ELLIPSE_H
-#define __ELLIPSE_H
+#ifndef __STYLEDIALOG_H
+#define __STYLEDIALOG_H
 
-#include "painting.h"
+#include "ui_filldialog.h"
+#include <QtGui/QPen>
+#include <QtGui/QBrush>
+#include <QtGui/QPolygon>
 
-/*!
- * \brief Represents an ellipse on schematic.
- */
-class Ellipse : public Painting
+class PreviewWidget : public QWidget
 {
+      Q_OBJECT;
    public:
-      enum {
-         Type = Painting::EllipseType
-      };
+      PreviewWidget(QWidget *widget = 0);
 
-      Ellipse(QRectF rect, SchematicScene *scene = 0);
-      ~Ellipse();
+      QPen pen() const { return m_pen; }
+      void setPen(QPen pen);
 
-      QRectF boundForRect(const QRectF &rect) const;
-      QPainterPath shapeForRect(const QRectF &rect) const;
+      QBrush brush() const { return m_brush; }
+      void setBrush(QBrush brush);
 
-      void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+      int headStyle() const { return m_headStyle; }
+      void setHeadStyle(int style);
 
-      //! \brief Returns ellipse rect represented by this item.
-      QRectF ellipse() const { return paintingRect(); }
-      void setEllipse(const QRectF& rect) { setPaintingRect(rect); }
+      void paintEvent(QPaintEvent *event);
 
-      int type() const { return Ellipse::Type; }
-      QucsItem* copy(SchematicScene *scene = 0) const;
+      void calcHeadPoints(int width, int height);
 
-      void saveData(Qucs::XmlWriter *writer) const;
-      void loadData(Qucs::XmlReader *reader);
+   private:
+      void drawHead(QPainter *painter);
+
+      QPen m_pen;
+      QBrush m_brush;
+      QPixmap m_lightPixmap;
+      QPixmap m_darkPixmap;
+
+      int m_headStyle;
+      QPolygon m_headPolygon;
 };
 
-#endif //__ELLIPSE_H
+class StyleDialog : public QDialog, public Ui::Dialog
+{
+      Q_OBJECT;
+
+   public:
+      StyleDialog(QWidget *parent = 0);
+
+   public slots:
+      void setupStyleWidgets();
+      void updatePreview();
+
+      void launchColorDialog();
+   private:
+      PreviewWidget *previewWidget;
+      QColor lineColor;
+      QColor fillColor;
+
+      QPixmap lineColorPixmap;
+      QPixmap fillColorPixmap;
+
+      QPolygon headPolygon;
+};
+
+#endif //__DIALOG_H

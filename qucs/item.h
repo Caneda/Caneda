@@ -21,6 +21,10 @@
 #define __ITEM_H
 
 #include <QtGui/QGraphicsItem>
+#include <QtGui/QPen>
+#include <QtGui/QBrush>
+
+#include <QtCore/QFlags>
 #include <limits>
 
 /*!
@@ -53,7 +57,31 @@ namespace Qucs {
       DontPushUndoCmd,
       PushUndoCmd
    };
+
+   enum ResizeHandle {
+      NoHandle = 0,
+      TopLeftHandle = 1, //0001
+      TopRightHandle = 2, //0010
+      BottomRightHandle = 4, //0100
+      BottomLeftHandle = 8, //1000
+   };
+
+   Q_DECLARE_FLAGS(ResizeHandles, ResizeHandle)
+   Q_DECLARE_OPERATORS_FOR_FLAGS(Qucs::ResizeHandles)
+
+   static const QPen handlePen(Qt::darkRed);
+   static const QBrush handleBrush(Qt::NoBrush);
+   static const QRectF handleRect(-5, -5, 10, 10);
+
+   void drawHighlightRect(QPainter *p, QRectF rect, qreal pw = 1, const QStyleOptionGraphicsItem *o = 0);
+
+   void drawResizeHandle(const QPointF &centrePos, QPainter *painter);
+   void drawResizeHandles(ResizeHandles handles, const QRectF& rect, QPainter *painter);
+
+   ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles, const QRectF& rect);
+
 }
+
 
 //!\brief Qucs item - The base class for components, wires, nodes..
 class QucsItem : public QGraphicsItem

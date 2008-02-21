@@ -1,456 +1,267 @@
 /***************************************************************************
-                                arrow.cpp
-                               -----------
-    begin                : Sun Nov 23 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
- ***************************************************************************/
-
-/***************************************************************************
+ * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
  *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
 #include "arrow.h"
-#include "arrowdialog.h"
+#include "xmlutilities.h"
 
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qcombobox.h>
+#include <QtGui/QStyleOptionGraphicsItem>
+#include <QtGui/QPainter>
 
-#include <math.h>
+#include <QtCore/QDebug>
 
+#include <cmath>
 
-Arrow::Arrow()
+/*!
+ * \brief Constructor.
+ *
+ * \param line The line used to represent the arrow's line part(local coords).
+ * \param style The arrow's head style. See \a HeadStyle
+ * \param headWidth The base width of triangle of arrow's head.
+ * \param headHeight The height of triangle of arrow head.
+ * \param scene The schematic to which this arrow is to be added.
+ */
+Arrow::Arrow(const QLineF &line, HeadStyle style, qreal headWidth, qreal headHeight,
+             SchematicScene *scene) :
+   Painting(scene),
+   m_headStyle(style),
+   m_headWidth(headWidth),
+   m_headHeight(headHeight)
 {
-  Name = "Arrow ";
-  isSelected = false;
-  Pen = QPen(QColor());
-  cx = cy = 0;
-  x1 = x2 = 0;
-  y1 = y2 = 0;
-
-  Height = 20.0;
-  Width  =  8.0;
-  Style  = 0;   // arrow head not filled
-  beta   = atan2(double(Width), double(Height));
-  Length = sqrt(Width*Width + Height*Height);
+   setLine(line);
+   setResizeHandles(Qucs::TopLeftHandle | Qucs::BottomRightHandle);
 }
 
+//! Destructor
 Arrow::~Arrow()
 {
 }
 
-// --------------------------------------------------------------------------
-void Arrow::paint(ViewPainter *p)
+//! \copydoc Painting::shapeForRect()
+QPainterPath Arrow::shapeForRect(const QRectF &rect) const
 {
-  QPointArray Points;
-  int x1_, y1_, x2_, y2_, x3_, y3_;
-  if(isSelected) {
-    p->Painter->setPen(QPen(QPen::darkGray,Pen.width()+5));
-    p->drawLine(cx, cy, cx+x2, cy+y2);
-    p->drawLine(cx+x2, cy+y2, cx+xp1, cy+yp1);
-    p->drawLine(cx+x2, cy+y2, cx+xp2, cy+yp2);
-    if(Style == 0) {   // arrow head with two lines ?
-      p->Painter->setPen(QPen(QPen::white, Pen.width(), Pen.style()));
-      p->drawLine(cx, cy, cx+x2, cy+y2);
-      p->Painter->setPen(QPen(QPen::white, Pen.width(), Qt::SolidLine));
-      p->drawLine(cx+x2, cy+y2, cx+xp1, cy+yp1);
-      p->drawLine(cx+x2, cy+y2, cx+xp2, cy+yp2);
-    }
-    else {   // filled arrow head
-      p->drawLine(cx+xp1, cy+yp1, cx+xp2, cy+yp2);
-      p->Painter->setPen(QPen(QPen::white, Pen.width(), Pen.style()));
-      p->drawLine(cx, cy, cx+x2, cy+y2);
+   QPainterPath path;
+   path.moveTo(rect.topLeft());
+   path.lineTo(rect.bottomRight());
 
-      p->Painter->setPen(QPen(QPen::white, Pen.width(), Qt::SolidLine));
-      p->Painter->setBrush(QPen::white);
-      p->map(cx+xp1, cy+yp1, x1_, y1_);
-      p->map(cx+x2, cy+y2, x2_, y2_);
-      p->map(cx+xp2, cy+yp2, x3_, y3_);
-      Points.setPoints(3, x1_, y1_, x2_, y2_, x3_, y3_);
-      p->Painter->drawConvexPolygon(Points);
-      p->Painter->setBrush(QBrush::NoBrush); // no filling for next paintings
-    }
+   path.addPolygon(m_head);
+   path.closeSubpath();
 
-    p->Painter->setPen(QPen(QPen::darkRed,2));
-    p->drawResizeRect(cx, cy);  // markers for changing the size
-    p->drawResizeRect(cx+x2, cy+y2);
-    return;
-  }
-  p->Painter->setPen(Pen);
-  p->drawLine(cx, cy, cx+x2, cy+y2);
-  p->Painter->setPen(QPen(Pen.color(), Pen.width(), Qt::SolidLine));
-  if(Style == 0) {   // arrow head with two lines ?
-    p->drawLine(cx+x2, cy+y2, cx+xp1, cy+yp1);
-    p->drawLine(cx+x2, cy+y2, cx+xp2, cy+yp2);
-  }
-  else {   // filled arrow head
-    p->Painter->setBrush(Pen.color());
-    p->map(cx+xp1, cy+yp1, x1_, y1_);
-    p->map(cx+x2, cy+y2, x2_, y2_);
-    p->map(cx+xp2, cy+yp2, x3_, y3_);
-    Points.setPoints(3, x1_, y1_, x2_, y2_, x3_, y3_);
-    p->Painter->drawConvexPolygon(Points);
-    p->Painter->setBrush(QBrush::NoBrush); // no filling for next paintings
-  }
+   return path;
 }
 
-// --------------------------------------------------------------------------
-void Arrow::paintScheme(QPainter *p)
+//! \copydoc Painting::boundForRect()
+QRectF Arrow::boundForRect(const QRectF &rect) const
 {
-  p->drawLine(cx, cy, cx+x2, cy+y2);
-  p->drawLine(cx+x2, cy+y2, cx+xp1, cy+yp1);
-  p->drawLine(cx+x2, cy+y2, cx+xp2, cy+yp2);
+   QRectF arrowRect  = m_head.boundingRect();
+   qreal adjust((pen().width() + 5) / 2.);
+   arrowRect.adjust(-adjust, -adjust, adjust, adjust);
+   return (rect | arrowRect);
 }
 
-// --------------------------------------------------------------------------
-void Arrow::getCenter(int& x, int &y)
+//! Draw's the arrow and arrow head based on \a style.
+void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                  QWidget *w)
 {
-  x = cx+(x2>>1);
-  y = cy+(y2>>1);
+   painter->setBrush(Qt::NoBrush);
+
+   QLineF line = lineFromRect(paintingRect());
+
+   // give the double line effect!
+   if(option->state & QStyle::State_Selected) {
+      QPen _pen(pen());
+      _pen.setColor(Qt::darkGray);
+      _pen.setWidth(pen().width() + 5);
+
+      painter->setPen(_pen);
+
+      painter->drawLine(line);
+      drawHead(painter);
+
+      _pen.setWidth(pen().width());
+      _pen.setColor(Qt::white);
+
+      painter->setPen(_pen);
+   }
+   else {
+      painter->setPen(pen());
+   }
+
+   painter->drawLine(line);
+
+   if(headStyle() == FilledArrow)
+      painter->setBrush(brush());
+
+   drawHead(painter);
+
+   Painting::paint(painter, option, w);
 }
 
-// --------------------------------------------------------------------------
-// Sets the center of the painting to x/y.
-void Arrow::setCenter(int x, int y, bool relative)
+//! \brief Returns a copy of this arrow.
+QucsItem* Arrow::copy(SchematicScene *scene) const
 {
-  if(relative) { cx += x;  cy += y; }
-  else { cx = x-(x2>>1);  cy = y-(y2>>1); }
+   Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), scene);
+   Painting::copyDataTo(arrow);
+   return arrow;
 }
 
-// --------------------------------------------------------------------------
-Painting* Arrow::newOne()
+//! \brief Save arrow data to xml referred by writer.
+void Arrow::saveData(Qucs::XmlWriter *writer) const
 {
-  return new Arrow();
+   writer->writeStartElement("painting");
+   writer->writeAttribute("name", "arrow");
+
+   writer->writeEmptyElement("properties");
+   writer->writeLineAttribute(line());
+   writer->writePointAttribute(pos(), "pos");
+   writer->writeAttribute("headStyle", QString::number(int(m_headStyle)));
+   writer->writePointAttribute(QPointF(m_headWidth, m_headHeight), "headSize");
+
+   writer->writePen(pen());
+   writer->writeBrush(brush());
+   writer->writeTransform(transform());
+
+   writer->writeEndElement(); // </painting>
 }
 
-// --------------------------------------------------------------------------
-Element* Arrow::info(QString& Name, char* &BitmapFile, bool getNewOne)
+//! \brief Loads arrow from xml reffered by reader.
+void Arrow::loadData(Qucs::XmlReader *reader)
 {
-  Name = QObject::tr("Arrow");
-  BitmapFile = "arrow";
+   Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+   Q_ASSERT(reader->attributes().value("name") == "arrow");
 
-  if(getNewOne)  return new Arrow();
-  return 0;
+   while(!reader->atEnd()) {
+      reader->readNext();
+
+      if(reader->isEndElement())
+         break;
+
+      if(reader->isStartElement()) {
+         if(reader->name() == "properties") {
+            QLineF line = reader->readLineAttribute("line");
+            setPaintingRect(QRectF(line.p1(), line.p2()));
+
+            QPointF pos = reader->readPointAttribute("pos");
+            setPos(pos);
+
+            int style = reader->attributes().value("headStyle").toString().toInt();
+            setHeadStyle((HeadStyle)style);
+
+            QPointF headSize = reader->readPointAttribute("headSize");
+            setHeadWidth(headSize.x());
+            setHeadHeight(headSize.y());
+
+            reader->readUnknownElement(); //read till end tag
+         }
+
+         else if(reader->name() == "pen") {
+            setPen(reader->readPen());
+         }
+
+         else if(reader->name() == "brush") {
+            setBrush(reader->readBrush());
+         }
+
+         else if(reader->name() == "transform") {
+            setTransform(reader->readTransform());
+         }
+
+         else {
+            reader->readUnknownElement();
+         }
+      }
+   }
 }
 
-// --------------------------------------------------------------------------
-bool Arrow::load(const QString& s)
+//! \brief Sets arrow's head style to \a style.
+void Arrow::setHeadStyle(HeadStyle style)
 {
-  bool ok;
-
-  QString n;
-  n  = s.section(' ',1,1);    // cx
-  cx = n.toInt(&ok);
-  if(!ok) return false;
-
-  n  = s.section(' ',2,2);    // cy
-  cy = n.toInt(&ok);
-  if(!ok) return false;
-
-  n  = s.section(' ',3,3);    // x2
-  x2 = n.toInt(&ok);
-  if(!ok) return false;
-
-  n  = s.section(' ',4,4);    // y2
-  y2 = n.toInt(&ok);
-  if(!ok) return false;
-
-  n  = s.section(' ',5,5);    // height
-  Height = n.toDouble(&ok);
-  if(!ok) return false;
-
-  n  = s.section(' ',6,6);    // width
-  Width = n.toDouble(&ok);
-  if(!ok) return false;
-
-  n  = s.section(' ',7,7);    // color
-  QColor co;
-  co.setNamedColor(n);
-  Pen.setColor(co);
-  if(!Pen.color().isValid()) return false;
-
-  n  = s.section(' ',8,8);    // thickness
-  Pen.setWidth(n.toInt(&ok));
-  if(!ok) return false;
-
-  n  = s.section(' ',9,9);    // line style
-  Pen.setStyle((Qt::PenStyle)n.toInt(&ok));
-  if(!ok) return false;
-
-  n  = s.section(' ',10,10);    // arrow style
-  if(!n.isEmpty()) {            // backward compatible
-    Style = n.toInt(&ok);
-    if(!ok) return false;
-  }
-
-  beta   = atan2(double(Width), double(Height));
-  Length = sqrt(Width*Width + Height*Height);
-  calcArrowHead();
-  return true;
+   m_headStyle = style;
+   calcHeadPoints();
+   update();
 }
 
-// --------------------------------------------------------------------------
-QString Arrow::save()
+//! \brief Sets arrow's head width to \a width.
+void Arrow::setHeadWidth(qreal width)
 {
-  QString s = Name+QString::number(cx)+" "+QString::number(cy)+" ";
-  s += QString::number(x2)+" "+QString::number(y2)+" ";
-  s += QString::number(int(Height))+" "+QString::number(int(Width))+" ";
-  s += Pen.color().name()+" "+QString::number(Pen.width())+" ";
-  s += QString::number(Pen.style()) + " " + QString::number(Style);
-  return s;
+   m_headWidth = width;
+   setLine(line());//recalc geometry
 }
 
-// --------------------------------------------------------------------------
-// Checks if the resize area was clicked.
-bool Arrow::ResizeTouched(int x, int y, int len)
+//! \brief Sets arrow's head height to \a height.
+void Arrow::setHeadHeight(qreal height)
 {
-  if(x < cx+len) if(x > cx-len) if(y < cy+len) if(y > cy-len) {
-    State = 1;
-    return true;
-  }
-
-  if(x < cx+x2+len) if(x > cx+x2-len) if(y < cy+y2+len) if(y > cy+y2-len) {
-    State = 2;
-    return true;
-  }
-
-  State = 0;
-  return false;
+   m_headHeight = height;
+   setLine(line());//recalc geometry
 }
 
-// --------------------------------------------------------------------------
-// Mouse move action during resize.
-void Arrow::MouseResizeMoving(int x, int y, QPainter *p)
+//! \brief Sets arrow's line to \a line.
+void Arrow::setLine(const QLineF& line)
 {
-  paintScheme(p);  // erase old painting
-  if(State == 1) { x2 += cx-x; y2 += cy-y; cx = x; cy = y; } // moving shaft
-  else { x2 = x-cx;  y2 = y-cy; }  // moving head
-
-  calcArrowHead();
-  paintScheme(p);  // paint new painting
+   setPaintingRect(QRectF(line.p1(), line.p2()));
 }
 
-// --------------------------------------------------------------------------
-void Arrow::calcArrowHead()
+//! \copydoc Painting::geometryChange()
+void Arrow::geometryChange()
 {
-  double phi  = atan2(double(y2), double(x2));
-
-  double w = beta+phi;
-  xp1 = x2-int(Length*cos(w));
-  yp1 = y2-int(Length*sin(w));
-
-  w = phi-beta;
-  xp2 = x2-int(Length*cos(w));
-  yp2 = y2-int(Length*sin(w));
+   calcHeadPoints();
 }
 
-// --------------------------------------------------------------------------
-// fx/fy are the precise coordinates, gx/gy are the coordinates set on grid.
-// x/y are coordinates without scaling.
-void Arrow::MouseMoving(
-	QPainter *paintScale, int, int, int gx, int gy,
-	QPainter *p, int x, int y, bool drawn)
+//! \brief Calculates arrow's head polygon based on style, width and height.
+void Arrow::calcHeadPoints()
 {
-  if(State > 0) {
-    if(State > 1) {
-      calcArrowHead();
-      paintScheme(paintScale);  // erase old painting
-    }
-    State++;
-    x2 = gx-cx;
-    y2 = gy-cy;
-    calcArrowHead();
-    paintScheme(paintScale);  // paint new painting
-  }
-  else { cx = gx; cy = gy; }
+   QRectF rect = paintingRect();
 
+   qreal angle = (std::atan2(-rect.height(), rect.width()));
+   angle = -270 + (angle * 180 / M_PI);
 
-  p->setPen(Qt::SolidLine);
-  if(drawn) {
-    p->drawLine(x1+25, y1, x1+13, y1+12);  // erase old cursor symbol
-    p->drawLine(x1+18, y1+2, x1+25, y1);
-    p->drawLine(x1+23, y1+7, x1+25, y1);
-  }
-  x1 = x;
-  y1 = y;
-  p->drawLine(x1+25, y1, x1+13, y1+12);  // paint new cursor symbol
-  p->drawLine(x1+18, y1+2, x1+25, y1);
-  p->drawLine(x1+23, y1+7, x1+25, y1);
+   QMatrix mapper;
+   mapper.rotate(angle);
+
+   //qreal lengthFromOrigin = QLineF(QPointF(), rect.bottomRight()).length();
+
+   QPointF arrowTipPos = mapper.map(rect.bottomRight());
+   QPointF bottomLeft(arrowTipPos.x() - m_headWidth/2, arrowTipPos.y() - m_headHeight);
+   QPointF bottomRight(arrowTipPos.x() + m_headWidth/2, arrowTipPos.y() - m_headHeight);
+
+   mapper = mapper.inverted();
+
+   if(m_head.size() != 3)
+      m_head.resize(3);
+   m_head[0] = mapper.map(bottomLeft);
+   m_head[1] = mapper.map(arrowTipPos);
+   m_head[2] = mapper.map(bottomRight);
 }
 
-// --------------------------------------------------------------------------
-bool Arrow::MousePressing()
+//! \brief Returns line representation of rect - topleft to bottom right.
+QLineF Arrow::lineFromRect(const QRectF& rect) const
 {
-  State++;
-  if(State > 2) {
-    x1 = y1 = 0;
-    State = 0;
-
-    calcArrowHead();
-    return true;    // painting is ready
-  }
-  return false;
+   return QLineF(rect.topLeft(), rect.bottomRight());
 }
 
-// --------------------------------------------------------------------------
-// Checks if the coordinates x/y point to the painting.
-// 5 is the precision the user must point onto the painting.
-bool Arrow::getSelected(int x, int y)
+//! \brief Draws arrow head based on current head style.
+void Arrow::drawHead(QPainter *painter)
 {
-  int A, xn, yn;
-  // first check if coordinates match the arrow body
-  x  -= cx;
-  y  -= cy;
-
-  if(x < -5) { if(x < x2-5) goto Head1; } // is point between x coordinates ?
-  else { if(x > 5) if(x > x2+5) goto Head1; }
-  if(y < -5) { if(y < y2-5) goto Head1; } // is point between y coordinates ?
-  else { if(y > 5) if(y > y2+5) goto Head1; }
-
-  A  = x2*y - x*y2;         // calculate the rectangle area spanned
-  A *= A;                   // avoid the need for square root
-  A -= 25*(x2*x2 + y2*y2);  // substract selectable area
-
-  if(A <= 0)  return true;     // lies x/y onto the graph line ?
-
-Head1:    // check if coordinates match the first arrow head line
-  xn = xp1-x2;  x  -= x2;
-  yn = yp1-y2;  y  -= y2;
-
-  if(x < -5) { if(x < xn-5) goto Head2; } // is point between x coordinates ?
-  else { if(x > 5) if(x > xn+5) goto Head2; }
-  if(y < -5) { if(y < yn-5) goto Head2; } // is point between y coordinates ?
-  else { if(y > 5) if(y > yn+5) goto Head2; }
-
-  A  = xn*y - x*yn;         // calculate the rectangle area spanned
-  A *= A;                   // avoid the need for square root
-  A -= 25*(xn*xn + yn*yn);  // substract selectable area
-
-  if(A <= 0)  return true;     // lies x/y onto the graph line ?
-
-Head2:    // check if coordinates match the second arrow head line
-  xn = xp2-x2;
-  yn = yp2-y2;
-
-  if(x < -5) { if(x < xn-5) return false; }// is point between x coordinates ?
-  else { if(x > 5) if(x > xn+5) return false; }
-  if(y < -5) { if(y < yn-5) return false; }// is point between y coordinates ?
-  else { if(y > 5) if(y > yn+5) return false; }
-
-  A  = xn*y - x*yn;         // calculate the rectangle area spanned
-  A *= A;                   // avoid the need for square root
-  A -= 25*(xn*xn + yn*yn);  // substract selectable area
-
-  if(A <= 0)  return true;     // lies x/y onto the graph line ?
-
-  return false;
-}
-
-// --------------------------------------------------------------------------
-void Arrow::Bounding(int& _x1, int& _y1, int& _x2, int& _y2)
-{
-  if(x2 < 0) { _x1 = cx+x2; _x2 = cx; }
-  else { _x1 = cx; _x2 = cx+x2; }
-
-  if(y2 < 0) { _y1 = cy+y2; _y2 = cy; }
-  else { _y1 = cy; _y2 = cy+y2; }
-}
-
-// --------------------------------------------------------------------------
-// Rotates around the center.
-void Arrow::rotate()
-{
-  cx += (x2>>1) - (y2>>1);
-  cy += (x2>>1) + (y2>>1);
-
-  int tmp = x2;
-  x2  =  y2;
-  y2  = -tmp;
-
-  tmp =  xp1;
-  xp1 =  yp1;
-  yp1 = -tmp;
-
-  tmp =  xp2;
-  xp2 =  yp2;
-  yp2 = -tmp;
-}
-
-// --------------------------------------------------------------------------
-// Mirrors about center line.
-void Arrow::mirrorX()
-{
-  yp1 = -yp1;
-  yp2 = -yp2;
-  cy +=  y2;   // change cy after the other changes !
-  y2  = -y2;
-}
-
-// --------------------------------------------------------------------------
-// Mirrors about center line.
-void Arrow::mirrorY()
-{
-  xp1 = -xp1;
-  xp2 = -xp2;
-  cx +=  x2;   // change cx after the other changes !
-  x2  = -x2;
-}
-
-// --------------------------------------------------------------------------
-// Calls the property dialog for the painting and changes them accordingly.
-// If there were changes, it returns 'true'.
-bool Arrow::Dialog()
-{
-  bool changed = false;
-
-  ArrowDialog *d = new ArrowDialog();
-  d->HeadWidth->setText(QString::number(Width));
-  d->HeadLength->setText(QString::number(Height));
-  d->ColorButt->setPaletteBackgroundColor(Pen.color());
-  d->LineWidth->setText(QString::number(Pen.width()));
-  d->SetComboBox(Pen.style());
-  d->ArrowStyleBox->setCurrentItem(Style);
-
-  if(d->exec() == QDialog::Rejected) {
-    delete d;
-    return false;
-  }
-
-  if(Width != d->HeadWidth->text().toDouble()) {
-    Width = d->HeadWidth->text().toDouble();
-    changed = true;
-  }
-  if(Height != d->HeadLength->text().toDouble()) {
-    Height = d->HeadLength->text().toDouble();
-    changed = true;
-  }
-  if(Pen.color() != d->ColorButt->paletteBackgroundColor()) {
-    Pen.setColor(d->ColorButt->paletteBackgroundColor());
-    changed = true;
-  }
-  if(Pen.width() != d->LineWidth->text().toUInt()) {
-    Pen.setWidth(d->LineWidth->text().toUInt());
-    changed = true;
-  }
-  if(Pen.style() != d->LineStyle) {
-    Pen.setStyle(d->LineStyle);
-    changed = true;
-  }
-  if(Style != d->ArrowStyleBox->currentItem()) {
-    Style = d->ArrowStyleBox->currentItem();
-    changed = true;
-  }
-
-  beta   = atan2(double(Width), double(Height));
-  Length = sqrt(Width*Width + Height*Height);
-  calcArrowHead();
-
-  delete d;
-  return changed;
+   if(m_headStyle == FilledArrow) {
+      painter->drawConvexPolygon(m_head);
+   }
+   else {
+      painter->drawLine(m_head[0], m_head[1]);
+      painter->drawLine(m_head[1], m_head[2]);
+   }
 }
