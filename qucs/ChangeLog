@@ -1,4 +1,4 @@
-2008-02-22  Gopala Krishna  <gopala@localhost>
+2008-02-22  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* styledialog.cpp Implemented this dialog universally for arc,line,rectangle,ellipse and arrow painting items.
 	Also implemented the preview part in this dialog appropriately.
