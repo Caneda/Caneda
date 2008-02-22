@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'filldialog.ui'
 **
-** Created: Thu Feb 21 23:09:02 2008
+** Created: Fri Feb 22 15:47:07 2008
 **      by: Qt User Interface Compiler version 4.3.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -107,15 +107,13 @@ public:
     hboxLayout->addLayout(vboxLayout1);
 
     vboxLayout2 = new QVBoxLayout();
-#ifndef Q_OS_MAC
-    vboxLayout2->setSpacing(-1);
-#endif
     vboxLayout2->setObjectName(QString::fromUtf8("vboxLayout2"));
     vboxLayout2->setContentsMargins(2, 5, -1, -1);
     arcGroupBox = new QGroupBox(Dialog);
     arcGroupBox->setObjectName(QString::fromUtf8("arcGroupBox"));
     gridLayout = new QGridLayout(arcGroupBox);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+    gridLayout->setContentsMargins(2, 2, 2, 2);
     label_9 = new QLabel(arcGroupBox);
     label_9->setObjectName(QString::fromUtf8("label_9"));
 
@@ -151,6 +149,7 @@ public:
     arrowGroupBox->setSizePolicy(sizePolicy1);
     gridLayout1 = new QGridLayout(arrowGroupBox);
     gridLayout1->setObjectName(QString::fromUtf8("gridLayout1"));
+    gridLayout1->setContentsMargins(2, 2, 2, 2);
     label_5 = new QLabel(arrowGroupBox);
     label_5->setObjectName(QString::fromUtf8("label_5"));
 
@@ -190,6 +189,7 @@ public:
     lineGroupBox->setSizePolicy(sizePolicy1);
     gridLayout2 = new QGridLayout(lineGroupBox);
     gridLayout2->setObjectName(QString::fromUtf8("gridLayout2"));
+    gridLayout2->setContentsMargins(2, 2, 2, 2);
     label = new QLabel(lineGroupBox);
     label->setObjectName(QString::fromUtf8("label"));
 
@@ -231,6 +231,7 @@ public:
     fillGroupBox->setSizePolicy(sizePolicy1);
     gridLayout3 = new QGridLayout(fillGroupBox);
     gridLayout3->setObjectName(QString::fromUtf8("gridLayout3"));
+    gridLayout3->setContentsMargins(2, 2, 2, 2);
     label_4 = new QLabel(fillGroupBox);
     label_4->setObjectName(QString::fromUtf8("label_4"));
 

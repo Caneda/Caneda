@@ -33,7 +33,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QHeaderView>
 
-#include "global.h"
+#include "qucs-tools/global.h"
 #include "qucsmainwindow.h"
 #include "qucssettingsdialog.h"
 
@@ -392,7 +392,7 @@ void QucsSettingsDialog::slotApply()
 
   App->Language =
       LanguageCombo->currentText().section('(',1,1).remove(')');
-  
+
   if(App->VHDL_Comment != getForegroundColor(ColorComment)) {
     App->VHDL_Comment = getForegroundColor(ColorComment);
     changed = true;

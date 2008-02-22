@@ -268,9 +268,11 @@ void StyleDialog::setupStyleWidgets()
    QBrush brush = painting->brush();
 
    lineWidthSpinBox->setValue(pen.width());
-   lineColorPixmap.fill(pen.color());
+   lineColor = pen.color();
+   lineColorPixmap.fill(lineColor);
    lineStyleComboBox->setCurrentIndex(pen.style());
 
+   fillColor = brush.color();
    fillColorPixmap.fill(brush.color());
    fillStyleComboBox->setCurrentIndex(brush.style());
 
@@ -301,9 +303,6 @@ void StyleDialog::setupStyleWidgets()
    lineColorButton->setIcon(lineColorPixmap);
    fillColorButton->setIcon(fillColorPixmap);
 
-   arrowWidthSpinBox->setValue(12);
-   arrowHeightSpinBox->setValue(20);
-
    connect(startAngleSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updatePreview()));
    connect(spanAngleSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updatePreview()));
 
@@ -326,10 +325,7 @@ void StyleDialog::setupStyleWidgets()
    layout->addWidget(previewWidget);
    connect(backgroundCheckBox, SIGNAL(toggled(bool)), previewWidget, SLOT(toggleBackground(bool)));
 
-   lineStyleComboBox->setCurrentIndex(1);
    updatePreview();
-   previewWidget->setPen(pen);
-   previewWidget->setBrush(brush);
 }
 
 void StyleDialog::updatePreview()
