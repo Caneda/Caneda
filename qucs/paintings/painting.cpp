@@ -286,12 +286,3 @@ void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
    QucsItem::mouseReleaseEvent(event);
    m_activeHandle = Qucs::NoHandle;
 }
-
-//for testing purpose
-void Painting::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-{
-   if(event->buttons().testFlag(Qt::LeftButton)) {
-      StyleDialog dia(this);
-      dia.exec();
-   }
-}

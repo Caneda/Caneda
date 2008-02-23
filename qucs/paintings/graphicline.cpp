@@ -19,6 +19,7 @@
 
 #include "graphicline.h"
 #include "xmlutilities.h"
+#include "styledialog.h"
 
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QPainter>
@@ -142,4 +143,10 @@ void GraphicLine::loadData(Qucs::XmlReader *reader)
 void GraphicLine::setLine(const QLineF& line)
 {
    setPaintingRect(QRectF(line.p1(), line.p2()));
+}
+
+void GraphicLine::launchPropertyDialog()
+{
+   StyleDialog dia(this);
+   dia.exec();
 }

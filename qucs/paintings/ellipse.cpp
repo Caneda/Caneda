@@ -19,6 +19,7 @@
 
 #include "ellipse.h"
 #include "xmlutilities.h"
+#include "styledialog.h"
 
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QPainter>
@@ -147,4 +148,10 @@ void Ellipse::loadData(Qucs::XmlReader *reader)
          }
       }
    }
+}
+
+void Ellipse::launchPropertyDialog()
+{
+   StyleDialog dia(this);
+   dia.exec();
 }

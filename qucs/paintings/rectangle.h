@@ -52,6 +52,8 @@ class Rectangle : public Painting
 
       void saveData(Qucs::XmlWriter *writer) const;
       void loadData(Qucs::XmlReader *reader);
+
+      void launchPropertyDialog();
 };
 
 #endif //__RECTANGLE_H

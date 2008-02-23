@@ -1,49 +1,110 @@
 /***************************************************************************
-                            graphictextdialog.h
-                           ---------------------
-    begin                : Wed Nov 26 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
+ * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* Note: Part of the code is taken from qt4.3/demos/textedit.h under GPL V2.0 */
 
-#ifndef GRAPHICTEXTDIALOG_H
-#define GRAPHICTEXTDIALOG_H
+#ifndef GRAPHICTEXTDLG_H
+#define GRAPHICTEXTDLG_H
 
-#include <qdialog.h>
+#include <QtGui/QDialog>
+#include <QtGui/QTextFormat>
 
-class QLineEdit;
+class GraphicText;
+
+class QAction;
+class QComboBox;
+class QFontComboBox;
 class QTextEdit;
-class QPushButton;
+class QTextCharFormat;
+class QToolBar;
+class QHBoxLayout;
 class QVBoxLayout;
-class QIntValidator;
 
+class GraphicTextDialog : public QDialog
+{
+      Q_OBJECT;
 
-class GraphicTextDialog : public QDialog  {
-Q_OBJECT
-public:
-  GraphicTextDialog(QWidget *parent=0, const char *name=0);
- ~GraphicTextDialog();
+   public:
+      GraphicTextDialog(GraphicText *text = 0, QWidget *parent = 0);
+      ~GraphicTextDialog();
 
-private slots:
-  void slotSetColor();
-  void slotOkButton();
+      QString plainText() const;
+      QString richText() const;
 
-public:
-  QLineEdit   *TextSize, *Angle;
-  QPushButton *ColorButt;
-  QTextEdit   *text;
+   public slots:
+      void accept();
 
-  QVBoxLayout *vert;
-  QIntValidator *val50, *val360;
+   private slots:
+      void textBold();
+      void textUnderline();
+      void textItalic();
+      void textFamily(const QString &f);
+      void textSize(const QString &p);
+      void textStyle(int styleIndex);
+      void textColor();
+      void textAlign(QAction *a);
+
+      void textAlignSubSuperScript(QAction *);
+      void currentCharFormatChanged(const QTextCharFormat &format);
+      void cursorPositionChanged();
+
+      void clipboardDataChanged();
+
+   private:
+      void setupEditActions();
+      void setupTextActions();
+
+      void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
+      void fontChanged(const QFont &f);
+      void colorChanged(const QColor &c);
+      void alignmentChanged(Qt::Alignment a);
+      void subSuperAlignmentChanged(QTextCharFormat::VerticalAlignment a);
+
+      QAction *actionTextBold;
+      QAction *actionTextUnderline;
+      QAction *actionTextItalic;
+      QAction *actionTextColor;
+      QAction *actionAlignLeft;
+      QAction *actionAlignCenter;
+      QAction *actionAlignRight;
+      QAction *actionAlignJustify;
+      QAction *actionAlignSubscript;
+      QAction *actionAlignSupersript;
+      QAction *actionAlignNormalscript;
+      QAction *actionUndo;
+      QAction *actionRedo;
+      QAction *actionCut;
+      QAction *actionCopy;
+      QAction *actionPaste;
+
+      QComboBox *comboStyle;
+      QFontComboBox *comboFont;
+      QComboBox *comboSize;
+
+      QToolBar *toolBar;
+      QString fileName;
+      QTextEdit *textEdit;
+
+      QHBoxLayout *toolBarLayout;
+      QVBoxLayout *mainLayout;
+
+      GraphicText *textItem;
 };
 
 #endif

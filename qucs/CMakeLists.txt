@@ -14,7 +14,7 @@ SET(QUCS_SRCS wire.cpp componentssidebar.cpp item.cpp
 				schematicview.cpp  undocommands.cpp fileformathandler.cpp
 				xmlutilities.cpp svgitem.cpp property.cpp propertyitem.cpp
 				propertygroup.cpp component.cpp port.cpp library.cpp
-				xmlformat.cpp
+				xmlformat.cpp mnemo.cpp
 )
 
 SET(QUCS_MOC_HDRS schematicscene.h schematicview.h mainwindowbase.h

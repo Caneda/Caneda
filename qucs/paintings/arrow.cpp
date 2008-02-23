@@ -19,6 +19,7 @@
 
 #include "arrow.h"
 #include "xmlutilities.h"
+#include "styledialog.h"
 
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QPainter>
@@ -264,4 +265,10 @@ void Arrow::drawHead(QPainter *painter)
       painter->drawLine(m_head[0], m_head[1]);
       painter->drawLine(m_head[1], m_head[2]);
    }
+}
+
+void Arrow::launchPropertyDialog()
+{
+   StyleDialog dia(this);
+   dia.exec();
 }

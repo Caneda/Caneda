@@ -113,7 +113,9 @@ void QucsMainWindow::initActions()
    QAction *action = 0;
    using namespace Qt;
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "filenew.png"), tr("&New"), this);
+   QString bitmapPath = Qucs::bitmapDirectory();
+
+   action = new QAction(QIcon(bitmapPath + "filenew.png"), tr("&New"), this);
    action->setShortcut(CTRL+Key_N);
    action->setStatusTip(tr("Creates a new document"));
    action->setWhatsThis(tr("New\n\nCreates a new schematic or data display document"));
@@ -121,7 +123,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFileNew()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "textnew.png"), tr("New &Text"), this);
+   action = new QAction(QIcon(bitmapPath + "textnew.png"), tr("New &Text"), this);
    action->setShortcut(CTRL+SHIFT+Key_V);
    action->setStatusTip(tr("Creates a new text document"));
    action->setWhatsThis(tr("New Text\n\nCreates a new text document"));
@@ -129,7 +131,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotTextNew()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "fileopen.png"), tr("&Open..."), this);
+   action = new QAction(QIcon(bitmapPath + "fileopen.png"), tr("&Open..."), this);
    action->setShortcut(CTRL+Key_O);
    action->setStatusTip(tr("Opens an existing document"));
    action->setWhatsThis(tr("Open File\n\nOpens an existing document"));
@@ -137,7 +139,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFileOpen()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "filesave.png"), tr("&Save"), this);
+   action = new QAction(QIcon(bitmapPath + "filesave.png"), tr("&Save"), this);
    action->setShortcut(CTRL+Key_S);
    action->setStatusTip(tr("Saves the current document"));
    action->setWhatsThis(tr("Save File\n\nSaves the current document"));
@@ -153,7 +155,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFileSaveAs()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "filesaveall.png"), tr("Save &All"), this);
+   action = new QAction(QIcon(bitmapPath + "filesaveall.png"), tr("Save &All"), this);
    action->setShortcut(CTRL+Key_Plus);
    action->setStatusTip(tr("Saves all open documents"));
    action->setWhatsThis(tr("Save All Files\n\nSaves all open documents"));
@@ -161,7 +163,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFileSaveAll()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "fileclose.png"), tr("&Close"), this);
+   action = new QAction(QIcon(bitmapPath + "fileclose.png"), tr("&Close"), this);
    action->setShortcut(CTRL+Key_W);
    action->setStatusTip(tr("Closes the current document"));
    action->setWhatsThis(tr("Close File\n\nCloses the current document"));
@@ -184,7 +186,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFileSettings()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "fileprint.png"), tr("&Print..."), this);
+   action = new QAction(QIcon(bitmapPath + "fileprint.png"), tr("&Print..."), this);
    action->setShortcut(CTRL+Key_P);
    action->setStatusTip(tr("Prints the current document"));
    action->setWhatsThis(tr("Print File\n\nPrints the current document"));
@@ -288,7 +290,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotChangeProps()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "editcut.png"), tr("Cu&t"), this);
+   action = new QAction(QIcon(bitmapPath + "editcut.png"), tr("Cu&t"), this);
    action->setShortcut(CTRL+Key_X);
    action->setStatusTip(tr("Cuts out the selection and puts it into the clipboard"));
    action->setWhatsThis(tr("Cut\n\nCuts out the selection and puts it into the clipboard"));
@@ -296,7 +298,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotEditCut()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "editcopy.png"), tr("&Copy"), this);
+   action = new QAction(QIcon(bitmapPath + "editcopy.png"), tr("&Copy"), this);
    action->setShortcut(CTRL+Key_C);
    action->setStatusTip(tr("Copies the selection into the clipboard"));
    action->setWhatsThis(tr("Copy\n\nCopies the selection into the clipboard"));
@@ -304,7 +306,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotEditCopy()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "editpaste.png"), tr("&Paste"), this);
+   action = new QAction(QIcon(bitmapPath + "editpaste.png"), tr("&Paste"), this);
    action->setShortcut(CTRL+Key_V);
    action->setStatusTip(tr("Pastes the clipboard contents to the cursor position"));
    action->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to the cursor position"));
@@ -312,7 +314,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotEditPaste()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "editdelete.png"), tr("&Delete"), this);
+   action = new QAction(QIcon(bitmapPath + "editdelete.png"), tr("&Delete"), this);
    action->setShortcut(Key_Delete);
    action->setStatusTip(tr("Deletes the selected components"));
    action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
@@ -340,7 +342,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = m_undoGroup->createUndoAction(this);
-   action->setIcon(QIcon(Qucs::bitmapDirectory() + "undo.png"));
+   action->setIcon(QIcon(bitmapPath + "undo.png"));
    action->setShortcut(CTRL+Key_Z);
    action->setStatusTip(tr("Undoes the last command"));
    action->setWhatsThis(tr("Undo\n\nMakes the last action undone"));
@@ -348,7 +350,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = m_undoGroup->createRedoAction(this);
-   action->setIcon(QIcon(Qucs::bitmapDirectory() + "redo.png"));
+   action->setIcon(QIcon(bitmapPath + "redo.png"));
    action->setShortcut(CTRL+Key_Y);
    action->setStatusTip(tr("Redoes the last command"));
    action->setWhatsThis(tr("Redo\n\nRepeats the last action once more"));
@@ -432,7 +434,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotExportGraphAsCsv()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "viewmagfit.png"), tr("View All"), this);
+   action = new QAction(QIcon(bitmapPath + "viewmagfit.png"), tr("View All"), this);
    action->setShortcut(Key_0);
    action->setStatusTip(tr("Show the whole page"));
    action->setWhatsThis(tr("View All\n\nShows the whole page content"));
@@ -440,7 +442,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotShowAll()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "viewmag1.png"), tr("View 1:1"), this);
+   action = new QAction(QIcon(bitmapPath + "viewmag1.png"), tr("View 1:1"), this);
    action->setShortcut(Key_1);
    action->setStatusTip(tr("Views without magnification"));
    action->setWhatsThis(tr("View 1:1\n\nShows the page content without magnification"));
@@ -448,7 +450,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotShowOne()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "viewmag+.png"), tr("Zoom in"), this);
+   action = new QAction(QIcon(bitmapPath + "viewmag+.png"), tr("Zoom in"), this);
    action->setShortcut(Key_Plus);
    action->setStatusTip(tr("Zooms into the current view"));
    action->setWhatsThis(tr("Zoom in\n\nZooms the current view"));
@@ -459,7 +461,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "viewmag-.png"), tr("Zoom out"), this);
+   action = new QAction(QIcon(bitmapPath + "viewmag-.png"), tr("Zoom out"), this);
    action->setShortcut(Key_Minus);
    action->setStatusTip(tr("Zooms out the current view"));
    action->setWhatsThis(tr("Zoom out\n\nZooms out the current view"));
@@ -467,7 +469,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotZoomOut()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "pointer.png"), tr("Select"), this);
+   action = new QAction(QIcon(bitmapPath + "pointer.png"), tr("Select"), this);
    action->setShortcut(Key_Escape);
    action->setStatusTip(tr("Activate select mode"));
    action->setWhatsThis(tr("Select\n\nActivates select mode"));
@@ -495,7 +497,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotSelectMarker()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "rotate_ccw.png"), tr("Rotate"), this);
+   action = new QAction(QIcon(bitmapPath + "rotate_ccw.png"), tr("Rotate"), this);
    action->setShortcut(CTRL+Key_R);
    action->setStatusTip(tr("Rotates the selected component by 90°"));
    action->setWhatsThis(tr("Rotate\n\nRotates the selected component by 90° counter-clockwise"));
@@ -506,7 +508,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "mirror.png"), tr("Mirror about X Axis"), this);
+   action = new QAction(QIcon(bitmapPath + "mirror.png"), tr("Mirror about X Axis"), this);
    action->setShortcut(CTRL+Key_J);
    action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
    action->setObjectName("editMirror");
@@ -516,7 +518,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "mirrory.png"), tr("Mirror about Y Axis"), this);
+   action = new QAction(QIcon(bitmapPath + "mirrory.png"), tr("Mirror about Y Axis"), this);
    action->setShortcut(CTRL+Key_M);
    action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
    action->setObjectName("editMirrorY");
@@ -526,14 +528,14 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "bottom.png"), tr("Go into Subcircuit"), this);
+   action = new QAction(QIcon(bitmapPath + "bottom.png"), tr("Go into Subcircuit"), this);
    action->setShortcut(CTRL+Key_I);
    action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
    action->setObjectName("intoH");
    connect( action, SIGNAL(triggered()), SLOT(slotIntoHierarchy()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "top.png"), tr("Pop out"), this);
+   action = new QAction(QIcon(bitmapPath + "top.png"), tr("Pop out"), this);
    action->setShortcut(CTRL+Key_H);
    action->setStatusTip(tr("Pop outside subcircuit"));
    action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
@@ -541,7 +543,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotPopHierarchy()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "deactiv.png"), tr("Deactivate/Activate"), this);
+   action = new QAction(QIcon(bitmapPath + "deactiv.png"), tr("Deactivate/Activate"), this);
    action->setShortcut(CTRL+Key_D);
    action->setStatusTip(tr("Deactivate/Activate selected components"));
    action->setWhatsThis(tr("Deactivate/Activate\n\nDeactivate/Activate the selected components"));
@@ -552,27 +554,27 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "equation.png"), tr("Insert Equation"), this);
+   action = new QAction(QIcon(bitmapPath + "equation.png"), tr("Insert Equation"), this);
    action->setShortcut(CTRL+Key_Less);
    action->setWhatsThis(tr("Insert Equation\n\nInserts a user defined equation"));
    action->setObjectName("insEquation");
    connect(action, SIGNAL(triggered()), SLOT(slotInsertEquation()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "ground.png"), tr("Insert Ground"), this);
+   action = new QAction(QIcon(bitmapPath + "ground.png"), tr("Insert Ground"), this);
    action->setShortcut(CTRL+Key_G);
    action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
    action->setObjectName("insGround");
    connect(action, SIGNAL(triggered()), SLOT(slotInsertGround()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "port.png"), tr("Insert Port"), this);
+   action = new QAction(QIcon(bitmapPath + "port.png"), tr("Insert Port"), this);
    action->setWhatsThis(tr("Insert Port\n\nInserts a port symbol"));
    action->setObjectName("insPort");
    connect( action, SIGNAL(triggered()), SLOT(slotInsertPort()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "wire.png"), tr("Wire"), this);
+   action = new QAction(QIcon(bitmapPath + "wire.png"), tr("Wire"), this);
    action->setShortcut(CTRL+Key_E);
    action->setWhatsThis(tr("Wire\n\nInserts a wire"));
    action->setObjectName("insWire");
@@ -582,7 +584,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "nodename.png"), tr("Wire Label"), this);
+   action = new QAction(QIcon(bitmapPath + "nodename.png"), tr("Wire Label"), this);
    action->setShortcut(CTRL+Key_L);
    action->setStatusTip(tr("Inserts a wire or pin label"));
    action->setWhatsThis(tr("Wire Label\n\nInserts a wire or pin label"));
@@ -649,7 +651,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotCallAtt()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "gear.png"), tr("Simulate"), this);
+   action = new QAction(QIcon(bitmapPath + "gear.png"), tr("Simulate"), this);
    action->setShortcut(Key_F2);
    action->setStatusTip(tr("Simulates the current schematic"));
    action->setWhatsThis(tr("Simulate\n\nSimulates the current schematic"));
@@ -657,7 +659,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotSimulate()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "rebuild.png"), tr("View Data Display/Schematic"), this);
+   action = new QAction(QIcon(bitmapPath + "rebuild.png"), tr("View Data Display/Schematic"), this);
    action->setShortcut(Key_F4);
    action->setStatusTip(tr("Changes to data display or schematic page"));
    action->setWhatsThis(tr("View Data Display/Schematic\n\n")+tr("Changes to data display or schematic page"));
@@ -673,7 +675,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotDCbias()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(Qucs::bitmapDirectory() + "marker.png"), tr("Set Marker on Graph"), this);
+   action = new QAction(QIcon(bitmapPath + "marker.png"), tr("Set Marker on Graph"), this);
    action->setShortcut(CTRL+Key_B);
    action->setStatusTip(tr("Sets a marker on a diagram's graph"));
    action->setWhatsThis(tr("Set Marker\n\nSets a marker on a diagram's graph"));

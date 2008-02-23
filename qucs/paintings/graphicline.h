@@ -47,6 +47,8 @@ class GraphicLine : public Painting
       void saveData(Qucs::XmlWriter *writer) const;
       void loadData(Qucs::XmlReader *reader);
 
+      void launchPropertyDialog();
+
    private:
       //! \brief Returns line from rect.
       QLineF lineFromRect(const QRectF &rect) const {

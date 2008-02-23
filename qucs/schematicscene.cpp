@@ -671,6 +671,7 @@ void SchematicScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event)
 void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 {
    if(event->mimeData()->formats().contains("application/qucs.sidebarItem")) {
+      event->accept();
       SchematicView *view = activeView();
       view->saveScrollState();
 
@@ -679,6 +680,17 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
       QString item, category;
       stream >> item >> category;
       QucsItem *qItem = itemForName(item, category);
+      if(qItem->type() == GraphicText::Type) {
+         GraphicTextDialog dialog;
+         if(dialog.exec() == QDialog::Accepted) {
+            GraphicText *textItem = static_cast<GraphicText*>(qItem);
+            textItem->setRichText(dialog.richText());
+         }
+         else {
+            delete qItem;
+            return;
+         }
+      }
       if(qItem) {
          QPointF dest = m_snapToGrid ? nearingGridPoint(event->scenePos()) : event->scenePos();
 
@@ -903,7 +915,28 @@ void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
 {
    if(event->type() == QEvent::GraphicsSceneMousePress) {
       clearSelection();
+
       if(!m_paintingDrawItem) {
+         QPointF resultantPos = event->scenePos();
+         // there is first click for drawing the painting item
+         // create the item using name.
+
+         if(m_paintingDrawString == QLatin1String("text") ||
+            m_paintingDrawString == QObject::tr("Text")) {
+
+            GraphicTextDialog dialog;
+            if(dialog.exec() == QDialog::Accepted) {
+               m_paintingDrawItem = Painting::fromName(m_paintingDrawString);
+               GraphicText *textItem = static_cast<GraphicText*>(m_paintingDrawItem);
+               textItem->setRichText(dialog.richText());
+               addItem(m_paintingDrawItem);
+               m_paintingDrawItem->setPos(event->scenePos());
+            }
+
+            m_paintingDrawItem = 0;
+            return;
+         }
+
          m_paintingDrawItem = Painting::fromName(m_paintingDrawString);
          if(!m_paintingDrawItem) return;
 
@@ -917,10 +950,13 @@ void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
             m_paintingDrawClicks++;
          }
 
-         addItem(m_paintingDrawItem);
+         resultantPos.rx() -= 2;
+         resultantPos.ry() -= 2;
 
-         m_paintingDrawItem->setPos(event->scenePos() - QPointF(-2, -2));
+         addItem(m_paintingDrawItem);
+         m_paintingDrawItem->setPos(resultantPos);
       }
+
       else {
          EllipseArc *arc = qucsitem_cast<EllipseArc*>(m_paintingDrawItem);
          if(arc) {

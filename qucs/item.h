@@ -147,9 +147,14 @@ class QucsItem : public QGraphicsItem
       //! This is convenience method used for rtti.
       virtual bool isWire() const { return false; }
 
+      //! Subclasses should implement this to launch its own dialog.
+      virtual void launchPropertyDialog() {}
+
       QMenu* defaultContextMenu() const;
 
    protected:
+      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
       void setShapeAndBoundRect(const QPainterPath& path,
                                 const QRectF& rect,
                                 qreal penWidth = 1.0);

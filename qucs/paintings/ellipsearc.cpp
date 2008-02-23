@@ -19,6 +19,7 @@
 
 #include "ellipsearc.h"
 #include "xmlutilities.h"
+#include "styledialog.h"
 
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QPainter>
@@ -177,4 +178,10 @@ void EllipseArc::loadData(Qucs::XmlReader *reader)
          }
       }
    }
+}
+
+void EllipseArc::launchPropertyDialog()
+{
+   StyleDialog dialog(this);
+   dialog.exec();
 }

@@ -29,4 +29,6 @@
 #include "id_text.h"
 #include "portsymbol.h"
 
+#include "graphictextdialog.h"
+
 #endif //__PAINTINGS_H

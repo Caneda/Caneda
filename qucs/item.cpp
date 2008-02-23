@@ -29,6 +29,7 @@
 
 #include <QtXml/QXmlStreamWriter>
 #include <QtGui/QStyleOptionGraphicsItem>
+#include <QtGui/QGraphicsSceneEvent>
 
 namespace Qucs
 {
@@ -147,6 +148,13 @@ QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene)
 //!\brief Destructor
 QucsItem::~QucsItem()
 {
+}
+
+void QucsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+   if(event->buttons().testFlag(Qt::LeftButton)) {
+      launchPropertyDialog();
+   }
 }
 
 /*!

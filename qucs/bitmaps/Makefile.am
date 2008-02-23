@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-# 
+#
 # qucs/bitmaps/Makefile.am
 #
 # Automake input file.
@@ -10,16 +10,16 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
-# 
+#
 # This software is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this package; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
-# Boston, MA 02110-1301, USA.  
+# Boston, MA 02110-1301, USA.
 #
 
 # component pictures
@@ -51,7 +51,9 @@ PNGS = fileopen.png filesave.png editdelete.png editcut.png editcopy.png      \
   port.png rebuild.png redo.png rotate_ccw.png top.png undo.png viewmag1.png  \
   viewmag+.png viewmag-.png viewmagfit.png wire.png filenew.png mirrory.png   \
   ground.png textnew.png quit.png back.png forward.png home.png previous.png  \
-  next.png close_tab.png clearFilterText.png
+  next.png close_tab.png clearFilterText.png sub.png textbold.png textitalic.png \
+  textleft.png textright.png super.png textcenter.png textjustify.png text.png \
+  textunder.png
 
 # application pictures
 ICONS = big.button.qucs.xpm big.qucs.xpm tiny.button.qucs.xpm tiny.qucs.xpm

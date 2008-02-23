@@ -33,13 +33,13 @@ class GraphicText : public Painting
       GraphicText(const QString &text, SchematicScene *scene = 0);
       ~GraphicText();
 
+      QString plainText() const;
+      void setPlainText(const QString &text);
+
+      QString richText() const;
+      void setRichText(const QString &text);
+
       void setText(const QString &text);
-      QString text() const;
-
-      void setFont(const QFont &font);
-      QFont font() const;
-
-      void setPen(const QPen& pen);
 
       void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
 
@@ -49,8 +49,10 @@ class GraphicText : public Painting
       void saveData(Qucs::XmlWriter *writer) const;
       void loadData(Qucs::XmlReader *reader);
 
+      void launchPropertyDialog();
+
    private:
-      QGraphicsSimpleTextItem *m_textItem;
+      QGraphicsTextItem *m_textItem;
 };
 
 #endif //__GRAPHICTEXT_H

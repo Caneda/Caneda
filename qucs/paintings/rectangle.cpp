@@ -19,6 +19,7 @@
 
 #include "rectangle.h"
 #include "xmlutilities.h"
+#include "styledialog.h"
 
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QPainter>
@@ -152,4 +153,10 @@ void Rectangle::loadData(Qucs::XmlReader *reader)
          }
       }
    }
+}
+
+void Rectangle::launchPropertyDialog()
+{
+   StyleDialog dia(this);
+   dia.exec();
 }

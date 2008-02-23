@@ -61,6 +61,8 @@ class PreviewWidget : public QWidget
 
       void calcHeadPoints();
 
+      int heightForWidth(int w) const { return w; }
+
    public slots:
       void toggleBackground(bool state);
 

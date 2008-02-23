@@ -113,8 +113,6 @@ class Painting : public QucsItem
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
-      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
    private:
       /*!
        * Represents the rectangle withing which painting should be drawn.

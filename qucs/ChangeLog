@@ -1,3 +1,8 @@
+2008-02-23  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* paintings/graphictextdialog.h (class GraphicTextDialog): Implemented this dialog to edit rich text.
+	* paintings/graphictext.h and .cpp : Made the GraphicText painting item rich text compatible.
+
 2008-02-22  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* paintings/styledialog.cpp (StyleDialog::setupStyleWidgets): Fixed a bug of unsynchronized pen settings in
