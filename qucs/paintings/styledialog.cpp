@@ -45,6 +45,9 @@ PreviewWidget::PreviewWidget(int paintingType, QWidget *parent) :
       calcHeadPoints();
    }
 
+   QSizePolicy policy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+   policy.setHeightForWidth(true);
+   setSizePolicy(policy);
    QTimer::singleShot(100, this, SLOT(update()));
 }
 

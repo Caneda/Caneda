@@ -32,7 +32,7 @@ class WireLine
    public:
       inline WireLine();
       inline WireLine(const QLineF& line);
-      inline WireLine(const QPointF& p2, const QPointF& p2);
+      inline WireLine(const QPointF& p1, const QPointF& p2);
       inline WireLine(qreal x1,qreal y1, qreal x2,qreal y2);
 
       inline bool isHorizontal() const;
