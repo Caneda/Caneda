@@ -25,6 +25,7 @@
 #include "item.h"
 #include "schematicscene.h"
 #include "schematicview.h"
+#include "xmlutilities.h"
 #include "qucsmainwindow.h"
 
 #include <QtXml/QXmlStreamWriter>
@@ -100,12 +101,11 @@ namespace Qucs
          drawResizeHandle(rect.bottomRight(), painter);
    }
 
-   ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles, const QRectF& recta)
+   ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles, const QRectF& rect)
    {
       if(handles == Qucs::NoHandle)
          return Qucs::NoHandle;
 
-      QRectF rect = recta.normalized();
       if(handles.testFlag(Qucs::TopLeftHandle)) {
          if(Qucs::handleRect.translated(rect.topLeft()).contains(point)) {
             return Qucs::TopLeftHandle;
@@ -153,7 +153,7 @@ QucsItem::~QucsItem()
 void QucsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
    if(event->buttons().testFlag(Qt::LeftButton)) {
-      launchPropertyDialog();
+      launchPropertyDialog(Qucs::PushUndoCmd);
    }
 }
 
@@ -205,6 +205,43 @@ QucsMainWindow* QucsItem::mainWindow() const
 }
 
 /*!
+ * \brief Convienience method to just get the saved text as string.
+ *
+ * Though this is simple, this method shouldn't be used in too many places as
+ * there will be unnecessary creation of xml writer and reader instances which
+ * will render the program inefficient.
+ */
+QString QucsItem::saveDataText() const
+{
+   QString retVal;
+   Qucs::XmlWriter writer(&retVal);
+   saveData(&writer);
+   return retVal;
+}
+
+/*!
+ * \brief Convienience method to just load data from string.
+ *
+ * Though this is simple, this method shouldn't be used in too many places as
+ * there will be unnecessary creation of xml writer and reader instances which
+ * will render the program inefficient.
+ */
+void QucsItem::loadDataFromText(const QString &text)
+{
+   Qucs::XmlReader reader(text);
+   while(!reader.atEnd()) {
+      reader.readNext();
+
+      if(reader.isEndElement())
+         break;
+
+      if(reader.isStartElement()) {
+         loadData(&reader);
+      }
+   }
+}
+
+/*!
  * \brief Graphically mirror item according to x axis
  * \note Items can be mirrored only along x and y axis.
  */
@@ -236,7 +273,7 @@ void QucsItem::rotate90(Qucs::AngleDirection dir)
  * Now it returns null but subclasses should reimplement this to return the
  * appropriate copy of that reimplemented item.
  */
-QucsItem* QucsItem::copy(SchematicScene *scene) const
+QucsItem* QucsItem::copy(SchematicScene *) const
 {
    return 0;
 }

@@ -238,8 +238,12 @@ void Painting::mousePressEvent(QGraphicsSceneMouseEvent *event)
    }
 
    //call base method to get move behaviour as no handle is pressed
-   if(m_activeHandle == Qucs::NoHandle)
+   if(m_activeHandle == Qucs::NoHandle) {
       QucsItem::mousePressEvent(event);
+   }
+   else {
+      storePaintingRect();
+   }
 }
 
 //! Takes care of handle resizing on mouse move event.
@@ -284,5 +288,9 @@ void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
    QucsItem::mouseReleaseEvent(event);
+   if(m_activeHandle != Qucs::NoHandle && m_paintingRect != m_store) {
+      schematicScene()->undoStack()->push(
+         new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect));
+   }
    m_activeHandle = Qucs::NoHandle;
 }

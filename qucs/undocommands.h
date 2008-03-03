@@ -31,6 +31,7 @@
 class QucsItem;
 class Component;
 class Port;
+class Painting;
 
 static const QPointF InvalidPoint(-30000, -30000);
 
@@ -216,6 +217,37 @@ class ToggleActiveStatusCmd : public QUndoCommand
    protected:
       typedef QPair<Component*, Qucs::ActiveStatus> ComponentStatusPair;
       QList<ComponentStatusPair> m_componentStatusPairs;
+};
+
+
+class PaintingRectChangeCmd : public QUndoCommand
+{
+   public:
+      PaintingRectChangeCmd(Painting *paintng, QRectF oldRect, QRectF newRect,
+         QUndoCommand *parent = 0);
+
+      void undo();
+      void redo();
+
+   protected:
+      Painting *const m_painting;
+      QRectF m_oldRect;
+      QRectF m_newRect;
+};
+
+class PaintingPropertyChangeCmd : public QUndoCommand
+{
+   public:
+      PaintingPropertyChangeCmd(Painting *painting, QString oldText,
+                                QUndoCommand *parent = 0);
+
+      void undo();
+      void redo();
+
+   protected:
+      Painting *const m_painting;
+      QString m_oldPropertyText;
+      QString m_newPropertyText;
 };
 
 #endif

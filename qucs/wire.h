@@ -114,6 +114,7 @@ class Wire : public QucsItem
       bool isWire() const { return true; }
 
       void updateGeometry();
+
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

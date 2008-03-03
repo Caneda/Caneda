@@ -19,6 +19,8 @@
 
 #include "styledialog.h"
 #include "paintings.h"
+#include "schematicscene.h"
+#include "undocommands.h"
 
 #include <QtGui/QColorDialog>
 #include <QtGui/QPainter>
@@ -249,13 +251,14 @@ void PreviewWidget::toggleBackground(bool state)
    update();
 }
 
-StyleDialog::StyleDialog(Painting *_painting, QWidget *parent) :
+StyleDialog::StyleDialog(Painting *_painting, Qucs::UndoOption option, QWidget *parent) :
    QDialog(parent),
    lineColor(defaultPaintingPen.color()),
    fillColor(Qt::white),
    lineColorPixmap(32, 32),
    fillColorPixmap(32, 32),
-   painting(_painting)
+   painting(_painting),
+   undoOption(option)
 {
    lineColorPixmap.fill(lineColor);
    fillColorPixmap.fill(fillColor);
@@ -377,6 +380,8 @@ void StyleDialog::launchColorDialog()
 
 void StyleDialog::applySettings()
 {
+   QString saveData = painting->saveDataText();
+
    painting->setPen(previewWidget->pen());
    if(painting->type() != Painting::GraphicLineType)
       painting->setBrush(previewWidget->brush());
@@ -391,5 +396,9 @@ void StyleDialog::applySettings()
       EllipseArc *arc = static_cast<EllipseArc*>(painting);
       arc->setStartAngle(previewWidget->startAngle());
       arc->setSpanAngle(previewWidget->spanAngle());
+   }
+   if(painting->schematicScene()) {
+      QUndoCommand *cmd = new PaintingPropertyChangeCmd(painting, saveData);
+      painting->schematicScene()->undoStack()->push(cmd);
    }
 }

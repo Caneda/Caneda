@@ -267,8 +267,8 @@ void Arrow::drawHead(QPainter *painter)
    }
 }
 
-void Arrow::launchPropertyDialog()
+int Arrow::launchPropertyDialog(Qucs::UndoOption opt)
 {
-   StyleDialog dia(this);
-   dia.exec();
+   StyleDialog dia(this, opt);
+   return dia.exec();
 }

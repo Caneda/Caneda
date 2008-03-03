@@ -23,6 +23,7 @@
 #include <QtGui/QGraphicsItem>
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
+#include <QtGui/QDialog>
 
 #include <QtCore/QFlags>
 #include <limits>
@@ -136,6 +137,9 @@ class QucsItem : public QGraphicsItem
       //! Virtual method to read item's properties from reader.
       virtual void loadData(Qucs::XmlReader *) {}
 
+      QString saveDataText() const;
+      void loadDataFromText(const QString &str);
+
       virtual void mirrorAlong(Qt::Axis axis);
       virtual void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise);
 
@@ -148,7 +152,7 @@ class QucsItem : public QGraphicsItem
       virtual bool isWire() const { return false; }
 
       //! Subclasses should implement this to launch its own dialog.
-      virtual void launchPropertyDialog() {}
+      virtual int launchPropertyDialog(Qucs::UndoOption) { return QDialog::Accepted; }
 
       QMenu* defaultContextMenu() const;
 

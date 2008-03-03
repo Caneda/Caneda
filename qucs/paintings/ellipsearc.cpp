@@ -180,8 +180,8 @@ void EllipseArc::loadData(Qucs::XmlReader *reader)
    }
 }
 
-void EllipseArc::launchPropertyDialog()
+int EllipseArc::launchPropertyDialog(Qucs::UndoOption opt)
 {
-   StyleDialog dialog(this);
-   dialog.exec();
+   StyleDialog dialog(this, opt);
+   return dialog.exec();
 }

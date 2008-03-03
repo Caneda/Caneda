@@ -150,8 +150,8 @@ void Ellipse::loadData(Qucs::XmlReader *reader)
    }
 }
 
-void Ellipse::launchPropertyDialog()
+int Ellipse::launchPropertyDialog(Qucs::UndoOption opt)
 {
-   StyleDialog dia(this);
-   dia.exec();
+   StyleDialog dia(this, opt);
+   return dia.exec();
 }

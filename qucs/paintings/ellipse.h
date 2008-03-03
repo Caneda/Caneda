@@ -50,7 +50,7 @@ class Ellipse : public Painting
       void saveData(Qucs::XmlWriter *writer) const;
       void loadData(Qucs::XmlReader *reader);
 
-      void launchPropertyDialog();
+      int launchPropertyDialog(Qucs::UndoOption opt);
 };
 
 #endif //__ELLIPSE_H

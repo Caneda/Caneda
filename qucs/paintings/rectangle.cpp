@@ -155,8 +155,8 @@ void Rectangle::loadData(Qucs::XmlReader *reader)
    }
 }
 
-void Rectangle::launchPropertyDialog()
+int Rectangle::launchPropertyDialog(Qucs::UndoOption opt)
 {
-   StyleDialog dia(this);
-   dia.exec();
+   StyleDialog dia(this, opt);
+   return dia.exec();
 }

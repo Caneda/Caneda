@@ -93,6 +93,7 @@ void SchematicScene::init()
    m_currentWiringWire = 0;
    m_paintingDrawItem = 0;
    m_paintingDrawClicks = 0;
+   m_zoomBand = 0;
    m_isWireCmdAdded = false;
    setCurrentMouseAction(Normal);
 }
@@ -374,7 +375,9 @@ void SchematicScene::resetState()
    delete m_paintingDrawItem;
    m_paintingDrawItem = 0;
    m_paintingDrawClicks = 0;
-   m_paintingDrawString.clear();
+
+   delete m_zoomBand;
+   m_zoomBand = 0;
 }
 
 void SchematicScene::cutItems(QList<QucsItem*> _items, Qucs::UndoOption opt)
@@ -540,16 +543,13 @@ bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& 
    if(itemName.isEmpty()) return false;
 
    if(category == "paintings") {
-      Painting *painting = Painting::fromName(itemName);
-      if(!painting) {
+      setCurrentMouseAction(PaintingDrawEvent);
+      m_paintingDrawItem = Painting::fromName(itemName);
+      if(!m_paintingDrawItem) {
          setCurrentMouseAction(Normal);
          return false;
       }
-      delete painting;
-
-      setCurrentMouseAction(PaintingDrawEvent);
-      m_paintingDrawString = itemName;
-
+      m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
       return true;
    }
 
@@ -891,118 +891,139 @@ void SchematicScene::settingOnGridEvent(MouseActionEvent *event)
 
 void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
 {
-   if(event->type() != QEvent::GraphicsSceneMousePress)
-      return;
    QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
    SchematicView *sv = qobject_cast<SchematicView*>(v);
-   if(sv) {
-      QPointF viewPoint(sv->mapFromScene(event->scenePos()));
-      sv->zoomIn();
-      QPointF afterScalePoint(sv->mapFromScene(event->scenePos()));
-      int dx = (afterScalePoint - viewPoint).toPoint().x();
-      int dy = (afterScalePoint - viewPoint).toPoint().y();
+   if(!sv) return;
+   QPoint viewPoint = sv->mapFromScene(event->scenePos());
 
-      QScrollBar *hb = sv->horizontalScrollBar();
-      QScrollBar *vb = sv->verticalScrollBar();
-
-      hb->setValue(hb->value() + dx);
-      vb->setValue(vb->value() + dy);
+   if(event->type() == QEvent::GraphicsSceneMousePress) {
+      if(!m_zoomBand) m_zoomBand = new QRubberBand(QRubberBand::Rectangle);
+      m_zoomBand->setParent(sv->viewport());
+      m_zoomBand->show();
+      m_zoomRect.setRect(event->scenePos().x(), event->scenePos().y(), 0, 0);
+      QRect rrect = sv->mapFromScene(m_zoomRect).boundingRect().normalized();
+      m_zoomBand->setGeometry(rrect);
    }
-   //TODO: Add zooming by drawing a rectangle for zoom area.
+   else if(event->type() == QEvent::GraphicsSceneMouseMove) {
+      if(m_zoomBand && m_zoomBand->isVisible() && m_zoomBand->parent() == sv->viewport()) {
+         m_zoomRect.setBottomRight(event->scenePos());
+         QRect rrect = sv->mapFromScene(m_zoomRect).boundingRect().normalized();
+         m_zoomBand->setGeometry(rrect);
+      }
+   }
+   else {
+      if(m_zoomBand->geometry().isNull()) {
+
+         sv->zoomIn();
+         QPointF afterScalePoint(sv->mapFromScene(event->scenePos()));
+         int dx = (afterScalePoint - viewPoint).toPoint().x();
+         int dy = (afterScalePoint - viewPoint).toPoint().y();
+
+         QScrollBar *hb = sv->horizontalScrollBar();
+         QScrollBar *vb = sv->verticalScrollBar();
+
+         hb->setValue(hb->value() + dx);
+         vb->setValue(vb->value() + dy);
+      }
+      else {
+         sv->fitInView(m_zoomRect, Qt::KeepAspectRatio);
+      }
+      m_zoomBand->hide();
+   }
+}
+
+void SchematicScene::placeAndDuplicatePainting()
+{
+   if(!m_paintingDrawItem) return;
+
+   QPointF dest = m_paintingDrawItem->pos();
+   placeItem(m_paintingDrawItem, dest, Qucs::PushUndoCmd);
+
+   m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
+   m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
+   if(m_paintingDrawItem->type() == GraphicText::Type)
+      static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
 }
 
 void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
 {
+   if(!m_paintingDrawItem)
+      return;
+   EllipseArc *arc = 0;
+   GraphicText *text = 0;
+   QPointF dest = event->scenePos();
+   dest += m_paintingDrawItem->paintingRect().topLeft();
+
+   if(m_paintingDrawItem->type() == EllipseArc::Type)
+      arc = static_cast<EllipseArc*>(m_paintingDrawItem);
+   if(m_paintingDrawItem->type() == GraphicText::Type)
+      text = static_cast<GraphicText*>(m_paintingDrawItem);
+
+
    if(event->type() == QEvent::GraphicsSceneMousePress) {
       clearSelection();
+      ++m_paintingDrawClicks;
 
-      if(!m_paintingDrawItem) {
-         QPointF resultantPos = event->scenePos();
-         // there is first click for drawing the painting item
-         // create the item using name.
-
-         if(m_paintingDrawString == QLatin1String("text") ||
-            m_paintingDrawString == QObject::tr("Text")) {
-
-            GraphicTextDialog dialog;
-            if(dialog.exec() == QDialog::Accepted) {
-               m_paintingDrawItem = Painting::fromName(m_paintingDrawString);
-               GraphicText *textItem = static_cast<GraphicText*>(m_paintingDrawItem);
-               textItem->setRichText(dialog.richText());
-               addItem(m_paintingDrawItem);
-               m_paintingDrawItem->setPos(event->scenePos());
-            }
-
-            m_paintingDrawItem = 0;
-            return;
-         }
-
-         m_paintingDrawItem = Painting::fromName(m_paintingDrawString);
-         if(!m_paintingDrawItem) return;
-
-         m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
-         if(m_paintingDrawString == QLatin1String("ellipseArc") ||
-            m_paintingDrawString == QObject::tr("Elliptic Arc")) {
-
-            EllipseArc *arc = static_cast<EllipseArc*>(m_paintingDrawItem);
+      // First handle special painting items
+      if(arc && m_paintingDrawClicks < 4) {
+         if(m_paintingDrawClicks == 1) {
             arc->setStartAngle(0);
             arc->setSpanAngle(360);
-            m_paintingDrawClicks++;
+            arc->setPos(dest);
+            addItem(arc);
          }
-
-         resultantPos.rx() -= 2;
-         resultantPos.ry() -= 2;
-
-         addItem(m_paintingDrawItem);
-         m_paintingDrawItem->setPos(resultantPos);
+         else if(m_paintingDrawClicks == 2) {
+            arc->setSpanAngle(180);
+         }
+         return;
       }
 
+      else if(text) {
+         Q_ASSERT(m_paintingDrawClicks == 1);
+         text->setPos(dest);
+         int result = text->launchPropertyDialog(Qucs::DontPushUndoCmd);
+         if(result == QDialog::Accepted) {
+            placeAndDuplicatePainting();
+         }
+
+         // this means the text is set through the dialog.
+         m_paintingDrawClicks = 0;
+         return;
+      }
+
+      // This is generic case
+      if(m_paintingDrawClicks == 1) {
+         m_paintingDrawItem->setPos(dest);
+         addItem(m_paintingDrawItem);
+      }
       else {
-         EllipseArc *arc = qucsitem_cast<EllipseArc*>(m_paintingDrawItem);
-         if(arc) {
-            switch(m_paintingDrawClicks) {
-               case 1:arc->setSpanAngle(180);break;
-               case 2: break;
-               case 3: break;
-               case 4:
-                  m_paintingDrawClicks = 0;
-                  m_paintingDrawItem = 0;
-                  return;
-            }
-            m_paintingDrawClicks++;
-         }
-         else {
-            m_paintingDrawItem = 0;
-         }
+         m_paintingDrawClicks = 0;
+         placeAndDuplicatePainting();
       }
    }
 
    else if(event->type() == QEvent::GraphicsSceneMouseMove) {
-      if(m_paintingDrawItem) {
-         EllipseArc *arc = qucsitem_cast<EllipseArc*>(m_paintingDrawItem);
-         if(arc && m_paintingDrawClicks > 1) {
-            QPointF delta = event->scenePos() - arc->scenePos();
-            int angle = int(180/M_PI * std::atan2(-delta.y(), delta.x()));
+      if(arc && m_paintingDrawClicks > 1) {
+         QPointF delta = event->scenePos() - arc->scenePos();
+         int angle = int(180/M_PI * std::atan2(-delta.y(), delta.x()));
 
-            if(m_paintingDrawClicks == 2) {
-               while(angle < 0)
-                  angle += 360;
-               arc->setStartAngle(int(angle));
-            }
-
-            else if(m_paintingDrawClicks == 3) {
-               int span = angle - arc->startAngle();
-               while(span < 0) span += 360.;
-
-               arc->setSpanAngle(span);
-            }
+         if(m_paintingDrawClicks == 2) {
+            while(angle < 0)
+               angle += 360;
+            arc->setStartAngle(int(angle));
          }
 
-         else {
-            QRectF rect = m_paintingDrawItem->paintingRect();
-            rect.setBottomRight(m_paintingDrawItem->mapFromScene(event->scenePos()));
-            m_paintingDrawItem->setPaintingRect(rect);
+         else if(m_paintingDrawClicks == 3) {
+            int span = angle - arc->startAngle();
+            while(span < 0) span += 360;
+            arc->setSpanAngle(span);
          }
+      }
+
+      else if(m_paintingDrawClicks == 1) {
+         QRectF rect = m_paintingDrawItem->paintingRect();
+         rect.setBottomRight(m_paintingDrawItem->mapFromScene(event->scenePos()));
+         m_paintingDrawItem->setPaintingRect(rect);
       }
    }
 }

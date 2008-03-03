@@ -21,6 +21,8 @@
 #include "component.h"
 #include "schematicscene.h"
 #include "port.h"
+#include "xmlutilities.h"
+#include "paintings/paintings.h"
 
 #include <QtCore/QDebug>
 
@@ -501,4 +503,57 @@ void ToggleActiveStatusCmd::redo()
 {
    foreach(ComponentStatusPair p, m_componentStatusPairs)
       p.first->toggleActiveStatus();
+}
+
+
+/*
+  ##########################################################################
+  #                        PaintingRectChangeCmd                           #
+  ##########################################################################
+*/
+
+
+PaintingRectChangeCmd::PaintingRectChangeCmd(Painting *painting, QRectF oldRect, QRectF newRect,
+                                             QUndoCommand *parent) :
+   QUndoCommand(parent),
+   m_painting(painting),
+   m_oldRect(oldRect),
+   m_newRect(newRect)
+{
+}
+
+void PaintingRectChangeCmd::undo()
+{
+   m_painting->setPaintingRect(m_oldRect);
+}
+
+void PaintingRectChangeCmd::redo()
+{
+   m_painting->setPaintingRect(m_newRect);
+}
+
+/*
+  ##########################################################################
+  #                       PaintingPropertyChangeCmd                        #
+  ##########################################################################
+*/
+
+PaintingPropertyChangeCmd::PaintingPropertyChangeCmd(Painting *painting, QString oldText,
+                                                     QUndoCommand *parent) :
+   QUndoCommand(parent),
+   m_painting(painting),
+   m_oldPropertyText(oldText),
+   m_newPropertyText(m_painting->saveDataText())
+{
+   qDebug(m_newPropertyText.toAscii().constData());
+}
+
+void PaintingPropertyChangeCmd::undo()
+{
+   m_painting->loadDataFromText(m_oldPropertyText);
+}
+
+void PaintingPropertyChangeCmd::redo()
+{
+   m_painting->loadDataFromText(m_newPropertyText);
 }

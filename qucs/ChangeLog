@@ -1,3 +1,10 @@
+2008-03-04  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* schematicscene.cpp (SchematicScene::zoomingAtPointEvent): Implemented zooming contents through dragging
+	the mouse and drawing a rect.
+	* schematicscene.cpp (SchematicScene::paintingDrawEvent): Implemented it in better way with also undo/redo
+	being taken care.
+
 2008-02-23  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* paintings/graphictextdialog.h (class GraphicTextDialog): Implemented this dialog to edit rich text.

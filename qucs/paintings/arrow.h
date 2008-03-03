@@ -73,7 +73,7 @@ class Arrow : public Painting
       QLineF line() const { return lineFromRect(paintingRect()); }
       void setLine(const QLineF &line);
 
-      void launchPropertyDialog();
+      int launchPropertyDialog(Qucs::UndoOption opt);
 
    protected:
       void geometryChange();

@@ -202,6 +202,8 @@ class SchematicScene : public QGraphicsScene
       void disconnectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt);
       void connectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt);
 
+      void placeAndDuplicatePainting();
+
       //These are helper variables (aka state holders)
       bool m_areItemsMoving;
       QList<Component*> disconnectibles;
@@ -216,7 +218,9 @@ class SchematicScene : public QGraphicsScene
 
       Painting *m_paintingDrawItem;
       int m_paintingDrawClicks;
-      QString m_paintingDrawString;
+
+      QRubberBand * m_zoomBand;
+      QRectF m_zoomRect;
 
       QList<int> m_usedPortNumbers;
       QList<int> m_usablePortNumbers;

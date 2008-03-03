@@ -21,6 +21,8 @@
 #define __STYLEDIALOG_H
 
 #include "ui_filldialog.h"
+#include "item.h"
+
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
 #include <QtGui/QPolygon>
@@ -102,7 +104,7 @@ class StyleDialog : public QDialog, public Ui::Dialog
       Q_OBJECT;
 
    public:
-      StyleDialog(Painting *painting, QWidget *parent = 0);
+      StyleDialog(Painting *painting, Qucs::UndoOption opt, QWidget *parent = 0);
 
    public slots:
       void setupStyleWidgets();
@@ -122,6 +124,7 @@ class StyleDialog : public QDialog, public Ui::Dialog
       QPolygon headPolygon;
 
       Painting *painting;
+      Qucs::UndoOption undoOption;
 };
 
 #endif //__DIALOG_H

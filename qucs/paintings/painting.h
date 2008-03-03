@@ -41,6 +41,7 @@ class Painting : public QucsItem
 {
    public:
       enum {
+         NoPaintingType = 0,
          Type = QucsItem::PaintingType
       };
 
@@ -100,6 +101,9 @@ class Painting : public QucsItem
       static Painting* fromName(const QString& name);
       static Painting* loadPainting(Qucs::XmlReader *reader, SchematicScene *scene = 0);
 
+      QRectF storedPaintingRect() const { return m_store; }
+      void storePaintingRect() { m_store = paintingRect(); }
+
    protected:
       /*!
        * Subclasses should reimplement to do calculations this is notified
@@ -127,6 +131,7 @@ class Painting : public QucsItem
       QBrush m_brush;
       Qucs::ResizeHandles m_resizeHandles;
       Qucs::ResizeHandle m_activeHandle;
+      QRectF m_store;
 };
 
 #endif //__PAINTING_H

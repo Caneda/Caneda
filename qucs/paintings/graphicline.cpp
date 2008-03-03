@@ -145,8 +145,8 @@ void GraphicLine::setLine(const QLineF& line)
    setPaintingRect(QRectF(line.p1(), line.p2()));
 }
 
-void GraphicLine::launchPropertyDialog()
+int GraphicLine::launchPropertyDialog(Qucs::UndoOption opt)
 {
-   StyleDialog dia(this);
-   dia.exec();
+   StyleDialog dia(this, opt);
+   return dia.exec();
 }
