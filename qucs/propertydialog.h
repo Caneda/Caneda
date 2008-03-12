@@ -78,7 +78,7 @@ class PropertyValueDelegate : public QItemDelegate
 
 class Component;
 
-class PropertyDialog : public QDialog, public Ui::Dialog
+class PropertyDialog : public QDialog, public Ui::PropertyDialogBase
 {
       Q_OBJECT;
    public:

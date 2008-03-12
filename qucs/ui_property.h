@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'property.ui'
 **
-** Created: Wed Mar 12 15:58:11 2008
+** Created: Wed Mar 12 20:13:24 2008
 **      by: Qt User Interface Compiler version 4.3.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -20,7 +20,7 @@
 #include <QtGui/QTableView>
 #include <QtGui/QVBoxLayout>
 
-class Ui_Dialog
+class Ui_PropertyDialogBase
 {
 public:
     QVBoxLayout *vboxLayout;
@@ -28,21 +28,21 @@ public:
     QTableView *tableView;
     QDialogButtonBox *buttonBox;
 
-    void setupUi(QDialog *Dialog)
+    void setupUi(QDialog *PropertyDialogBase)
     {
-    if (Dialog->objectName().isEmpty())
-        Dialog->setObjectName(QString::fromUtf8("Dialog"));
+    if (PropertyDialogBase->objectName().isEmpty())
+        PropertyDialogBase->setObjectName(QString::fromUtf8("PropertyDialogBase"));
     QSize size(592, 311);
-    size = size.expandedTo(Dialog->minimumSizeHint());
-    Dialog->resize(size);
-    vboxLayout = new QVBoxLayout(Dialog);
+    size = size.expandedTo(PropertyDialogBase->minimumSizeHint());
+    PropertyDialogBase->resize(size);
+    vboxLayout = new QVBoxLayout(PropertyDialogBase);
     vboxLayout->setObjectName(QString::fromUtf8("vboxLayout"));
-    label = new QLabel(Dialog);
+    label = new QLabel(PropertyDialogBase);
     label->setObjectName(QString::fromUtf8("label"));
 
     vboxLayout->addWidget(label);
 
-    tableView = new QTableView(Dialog);
+    tableView = new QTableView(PropertyDialogBase);
     tableView->setObjectName(QString::fromUtf8("tableView"));
     tableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
     tableView->setAlternatingRowColors(true);
@@ -55,7 +55,7 @@ public:
 
     vboxLayout->addWidget(tableView);
 
-    buttonBox = new QDialogButtonBox(Dialog);
+    buttonBox = new QDialogButtonBox(PropertyDialogBase);
     buttonBox->setObjectName(QString::fromUtf8("buttonBox"));
     buttonBox->setOrientation(Qt::Horizontal);
     buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok);
@@ -63,24 +63,24 @@ public:
     vboxLayout->addWidget(buttonBox);
 
 
-    retranslateUi(Dialog);
-    QObject::connect(buttonBox, SIGNAL(accepted()), Dialog, SLOT(accept()));
-    QObject::connect(buttonBox, SIGNAL(rejected()), Dialog, SLOT(reject()));
+    retranslateUi(PropertyDialogBase);
+    QObject::connect(buttonBox, SIGNAL(accepted()), PropertyDialogBase, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), PropertyDialogBase, SLOT(reject()));
 
-    QMetaObject::connectSlotsByName(Dialog);
+    QMetaObject::connectSlotsByName(PropertyDialogBase);
     } // setupUi
 
-    void retranslateUi(QDialog *Dialog)
+    void retranslateUi(QDialog *PropertyDialogBase)
     {
-    Dialog->setWindowTitle(QApplication::translate("Dialog", "Dialog", 0, QApplication::UnicodeUTF8));
-    label->setText(QApplication::translate("Dialog", "Tip: Check the properties to be shown on schematic.", 0, QApplication::UnicodeUTF8));
-    Q_UNUSED(Dialog);
+    PropertyDialogBase->setWindowTitle(QApplication::translate("PropertyDialogBase", "Edit Component properties", 0, QApplication::UnicodeUTF8));
+    label->setText(QApplication::translate("PropertyDialogBase", "Tip: Check the properties to be shown on schematic.", 0, QApplication::UnicodeUTF8));
+    Q_UNUSED(PropertyDialogBase);
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class Dialog: public Ui_Dialog {};
+    class PropertyDialogBase: public Ui_PropertyDialogBase {};
 } // namespace Ui
 
 #endif // UI_PROPERTY_H

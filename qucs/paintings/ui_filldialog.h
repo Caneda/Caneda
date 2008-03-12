@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'filldialog.ui'
 **
-** Created: Fri Feb 22 15:47:07 2008
+** Created: Wed Mar 12 20:05:41 2008
 **      by: Qt User Interface Compiler version 4.3.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -18,6 +18,7 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QDialog>
 #include <QtGui/QDialogButtonBox>
+#include <QtGui/QFrame>
 #include <QtGui/QGridLayout>
 #include <QtGui/QGroupBox>
 #include <QtGui/QHBoxLayout>
@@ -27,10 +28,11 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QVBoxLayout>
 
-class Ui_Dialog
+class Ui_StyleDialogBase
 {
 public:
     QVBoxLayout *vboxLayout;
+    QFrame *frame;
     QHBoxLayout *hboxLayout;
     QVBoxLayout *vboxLayout1;
     QGroupBox *previewGroupBox;
@@ -67,22 +69,25 @@ public:
     QComboBox *fillStyleComboBox;
     QDialogButtonBox *buttonBox;
 
-    void setupUi(QDialog *Dialog)
+    void setupUi(QDialog *StyleDialogBase)
     {
-    if (Dialog->objectName().isEmpty())
-        Dialog->setObjectName(QString::fromUtf8("Dialog"));
+    if (StyleDialogBase->objectName().isEmpty())
+        StyleDialogBase->setObjectName(QString::fromUtf8("StyleDialogBase"));
     QSize size(487, 508);
-    size = size.expandedTo(Dialog->minimumSizeHint());
-    Dialog->resize(size);
-    vboxLayout = new QVBoxLayout(Dialog);
+    size = size.expandedTo(StyleDialogBase->minimumSizeHint());
+    StyleDialogBase->resize(size);
+    StyleDialogBase->setAutoFillBackground(true);
+    vboxLayout = new QVBoxLayout(StyleDialogBase);
     vboxLayout->setObjectName(QString::fromUtf8("vboxLayout"));
-    hboxLayout = new QHBoxLayout();
+    frame = new QFrame(StyleDialogBase);
+    frame->setObjectName(QString::fromUtf8("frame"));
+    frame->setFrameShape(QFrame::StyledPanel);
+    frame->setFrameShadow(QFrame::Raised);
+    hboxLayout = new QHBoxLayout(frame);
     hboxLayout->setObjectName(QString::fromUtf8("hboxLayout"));
     vboxLayout1 = new QVBoxLayout();
-    vboxLayout1->setSpacing(3);
     vboxLayout1->setObjectName(QString::fromUtf8("vboxLayout1"));
-    vboxLayout1->setContentsMargins(-1, 5, 2, 2);
-    previewGroupBox = new QGroupBox(Dialog);
+    previewGroupBox = new QGroupBox(frame);
     previewGroupBox->setObjectName(QString::fromUtf8("previewGroupBox"));
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     sizePolicy.setHorizontalStretch(0);
@@ -93,7 +98,7 @@ public:
 
     vboxLayout1->addWidget(previewGroupBox);
 
-    backgroundCheckBox = new QCheckBox(Dialog);
+    backgroundCheckBox = new QCheckBox(frame);
     backgroundCheckBox->setObjectName(QString::fromUtf8("backgroundCheckBox"));
     backgroundCheckBox->setChecked(true);
 
@@ -108,8 +113,7 @@ public:
 
     vboxLayout2 = new QVBoxLayout();
     vboxLayout2->setObjectName(QString::fromUtf8("vboxLayout2"));
-    vboxLayout2->setContentsMargins(2, 5, -1, -1);
-    arcGroupBox = new QGroupBox(Dialog);
+    arcGroupBox = new QGroupBox(frame);
     arcGroupBox->setObjectName(QString::fromUtf8("arcGroupBox"));
     gridLayout = new QGridLayout(arcGroupBox);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
@@ -140,7 +144,7 @@ public:
 
     vboxLayout2->addWidget(arcGroupBox);
 
-    arrowGroupBox = new QGroupBox(Dialog);
+    arrowGroupBox = new QGroupBox(frame);
     arrowGroupBox->setObjectName(QString::fromUtf8("arrowGroupBox"));
     QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
     sizePolicy1.setHorizontalStretch(0);
@@ -183,7 +187,7 @@ public:
 
     vboxLayout2->addWidget(arrowGroupBox);
 
-    lineGroupBox = new QGroupBox(Dialog);
+    lineGroupBox = new QGroupBox(frame);
     lineGroupBox->setObjectName(QString::fromUtf8("lineGroupBox"));
     sizePolicy1.setHeightForWidth(lineGroupBox->sizePolicy().hasHeightForWidth());
     lineGroupBox->setSizePolicy(sizePolicy1);
@@ -225,7 +229,7 @@ public:
 
     vboxLayout2->addWidget(lineGroupBox);
 
-    fillGroupBox = new QGroupBox(Dialog);
+    fillGroupBox = new QGroupBox(frame);
     fillGroupBox->setObjectName(QString::fromUtf8("fillGroupBox"));
     sizePolicy1.setHeightForWidth(fillGroupBox->sizePolicy().hasHeightForWidth());
     fillGroupBox->setSizePolicy(sizePolicy1);
@@ -260,9 +264,9 @@ public:
     hboxLayout->addLayout(vboxLayout2);
 
 
-    vboxLayout->addLayout(hboxLayout);
+    vboxLayout->addWidget(frame);
 
-    buttonBox = new QDialogButtonBox(Dialog);
+    buttonBox = new QDialogButtonBox(StyleDialogBase);
     buttonBox->setObjectName(QString::fromUtf8("buttonBox"));
     buttonBox->setOrientation(Qt::Horizontal);
     buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok);
@@ -270,73 +274,73 @@ public:
     vboxLayout->addWidget(buttonBox);
 
 
-    retranslateUi(Dialog);
-    QObject::connect(buttonBox, SIGNAL(accepted()), Dialog, SLOT(accept()));
-    QObject::connect(buttonBox, SIGNAL(rejected()), Dialog, SLOT(reject()));
+    retranslateUi(StyleDialogBase);
+    QObject::connect(buttonBox, SIGNAL(accepted()), StyleDialogBase, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), StyleDialogBase, SLOT(reject()));
 
-    QMetaObject::connectSlotsByName(Dialog);
+    QMetaObject::connectSlotsByName(StyleDialogBase);
     } // setupUi
 
-    void retranslateUi(QDialog *Dialog)
+    void retranslateUi(QDialog *StyleDialogBase)
     {
-    Dialog->setWindowTitle(QApplication::translate("Dialog", "Style Dialog", 0, QApplication::UnicodeUTF8));
-    previewGroupBox->setTitle(QApplication::translate("Dialog", "Preview", 0, QApplication::UnicodeUTF8));
-    backgroundCheckBox->setText(QApplication::translate("Dialog", "Draw background boxes.", 0, QApplication::UnicodeUTF8));
-    arcGroupBox->setTitle(QApplication::translate("Dialog", "A&rc property", 0, QApplication::UnicodeUTF8));
-    label_9->setText(QApplication::translate("Dialog", "Start angle", 0, QApplication::UnicodeUTF8));
-    label_10->setText(QApplication::translate("Dialog", "Span angle", 0, QApplication::UnicodeUTF8));
-    arrowGroupBox->setTitle(QApplication::translate("Dialog", "&Arrow property", 0, QApplication::UnicodeUTF8));
-    label_5->setText(QApplication::translate("Dialog", "Head style", 0, QApplication::UnicodeUTF8));
+    StyleDialogBase->setWindowTitle(QApplication::translate("StyleDialogBase", "Style Dialog", 0, QApplication::UnicodeUTF8));
+    previewGroupBox->setTitle(QApplication::translate("StyleDialogBase", "Preview", 0, QApplication::UnicodeUTF8));
+    backgroundCheckBox->setText(QApplication::translate("StyleDialogBase", "Draw background boxes.", 0, QApplication::UnicodeUTF8));
+    arcGroupBox->setTitle(QApplication::translate("StyleDialogBase", "A&rc property", 0, QApplication::UnicodeUTF8));
+    label_9->setText(QApplication::translate("StyleDialogBase", "Start angle", 0, QApplication::UnicodeUTF8));
+    label_10->setText(QApplication::translate("StyleDialogBase", "Span angle", 0, QApplication::UnicodeUTF8));
+    arrowGroupBox->setTitle(QApplication::translate("StyleDialogBase", "&Arrow property", 0, QApplication::UnicodeUTF8));
+    label_5->setText(QApplication::translate("StyleDialogBase", "Head style", 0, QApplication::UnicodeUTF8));
     arrowStyleComboBox->clear();
     arrowStyleComboBox->insertItems(0, QStringList()
-     << QApplication::translate("Dialog", "two lines", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "filled", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "two lines", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "filled", 0, QApplication::UnicodeUTF8)
     );
-    label_7->setText(QApplication::translate("Dialog", "Head width", 0, QApplication::UnicodeUTF8));
-    label_6->setText(QApplication::translate("Dialog", "Head height", 0, QApplication::UnicodeUTF8));
-    lineGroupBox->setTitle(QApplication::translate("Dialog", "&Line Style", 0, QApplication::UnicodeUTF8));
-    label->setText(QApplication::translate("Dialog", "Width", 0, QApplication::UnicodeUTF8));
-    label_2->setText(QApplication::translate("Dialog", "Color", 0, QApplication::UnicodeUTF8));
+    label_7->setText(QApplication::translate("StyleDialogBase", "Head width", 0, QApplication::UnicodeUTF8));
+    label_6->setText(QApplication::translate("StyleDialogBase", "Head height", 0, QApplication::UnicodeUTF8));
+    lineGroupBox->setTitle(QApplication::translate("StyleDialogBase", "&Line Style", 0, QApplication::UnicodeUTF8));
+    label->setText(QApplication::translate("StyleDialogBase", "Width", 0, QApplication::UnicodeUTF8));
+    label_2->setText(QApplication::translate("StyleDialogBase", "Color", 0, QApplication::UnicodeUTF8));
     lineColorButton->setText(QString());
-    label_3->setText(QApplication::translate("Dialog", "Style", 0, QApplication::UnicodeUTF8));
+    label_3->setText(QApplication::translate("StyleDialogBase", "Style", 0, QApplication::UnicodeUTF8));
     lineStyleComboBox->clear();
     lineStyleComboBox->insertItems(0, QStringList()
-     << QApplication::translate("Dialog", "no line", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "solid line", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dash line", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dot line", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dash dot line", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dash dot dot line", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "no line", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "solid line", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dash line", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dot line", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dash dot line", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dash dot dot line", 0, QApplication::UnicodeUTF8)
     );
-    fillGroupBox->setTitle(QApplication::translate("Dialog", "&Filling Style", 0, QApplication::UnicodeUTF8));
-    label_4->setText(QApplication::translate("Dialog", "Color", 0, QApplication::UnicodeUTF8));
+    fillGroupBox->setTitle(QApplication::translate("StyleDialogBase", "&Filling Style", 0, QApplication::UnicodeUTF8));
+    label_4->setText(QApplication::translate("StyleDialogBase", "Color", 0, QApplication::UnicodeUTF8));
     fillColorButton->setText(QString());
-    label_8->setText(QApplication::translate("Dialog", "Style", 0, QApplication::UnicodeUTF8));
+    label_8->setText(QApplication::translate("StyleDialogBase", "Style", 0, QApplication::UnicodeUTF8));
     fillStyleComboBox->clear();
     fillStyleComboBox->insertItems(0, QStringList()
-     << QApplication::translate("Dialog", "no fill", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "solid", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dense1 (densest)", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dense2", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dense3", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dense4", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dense5", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dense6", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "dense 7 (least dense)", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "horizontal line", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "vertical line", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "crossed lines", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "hatched backward", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "hatched forward", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("Dialog", "diagonal crossed", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "no fill", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "solid", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dense1 (densest)", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dense2", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dense3", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dense4", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dense5", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dense6", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "dense 7 (least dense)", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "horizontal line", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "vertical line", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "crossed lines", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "hatched backward", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "hatched forward", 0, QApplication::UnicodeUTF8)
+     << QApplication::translate("StyleDialogBase", "diagonal crossed", 0, QApplication::UnicodeUTF8)
     );
-    Q_UNUSED(Dialog);
+    Q_UNUSED(StyleDialogBase);
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class Dialog: public Ui_Dialog {};
+    class StyleDialogBase: public Ui_StyleDialogBase {};
 } // namespace Ui
 
 #endif // UI_FILLDIALOG_H

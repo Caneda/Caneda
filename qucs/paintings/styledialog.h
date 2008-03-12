@@ -99,7 +99,7 @@ class PreviewWidget : public QWidget
       int m_paintingType;
 };
 
-class StyleDialog : public QDialog, public Ui::Dialog
+class StyleDialog : public QDialog, public Ui::StyleDialogBase
 {
       Q_OBJECT;
 
