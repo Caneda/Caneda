@@ -23,6 +23,7 @@
 #include "port.h"
 #include "xmlutilities.h"
 #include "paintings/paintings.h"
+#include "paintings/graphictext.h"
 
 #include <QtCore/QDebug>
 
@@ -556,4 +557,54 @@ void PaintingPropertyChangeCmd::undo()
 void PaintingPropertyChangeCmd::redo()
 {
    m_painting->loadDataFromText(m_newPropertyText);
+}
+
+/*
+  ##########################################################################
+  #                         GraphicTextChangeCmd                           #
+  ##########################################################################
+*/
+
+GraphicTextChangeCmd::GraphicTextChangeCmd(GraphicText *text, QString oldText, QString newText,
+                                           QUndoCommand *parent) :
+   QUndoCommand(parent),
+   m_graphicText(text),
+   m_oldText(oldText),
+   m_newText(newText)
+{
+}
+
+void GraphicTextChangeCmd::undo()
+{
+   m_graphicText->setRichText(m_oldText);
+}
+
+void GraphicTextChangeCmd::redo()
+{
+   m_graphicText->setRichText(m_newText);
+}
+
+/*
+  ##########################################################################
+  #                            PropertyMapCmd                              #
+  ##########################################################################
+*/
+
+PropertyMapCmd::PropertyMapCmd(Component *comp, const PropertyMap& old,
+                               const PropertyMap& newMap, QUndoCommand *parent) :
+   QUndoCommand(parent),
+   m_component(comp),
+   m_oldMap(old),
+   m_newMap(newMap)
+{
+}
+
+void PropertyMapCmd::undo()
+{
+   m_component->setPropertyMap(m_oldMap);
+}
+
+void PropertyMapCmd::redo()
+{
+   m_component->setPropertyMap(m_newMap);
 }

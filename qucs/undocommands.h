@@ -250,4 +250,36 @@ class PaintingPropertyChangeCmd : public QUndoCommand
       QString m_newPropertyText;
 };
 
+class GraphicText;
+
+class GraphicTextChangeCmd : public QUndoCommand
+{
+   public:
+      GraphicTextChangeCmd(GraphicText *text, QString oldText, QString newText,
+                           QUndoCommand *parent = 0);
+
+      void undo();
+      void redo();
+
+   protected:
+      GraphicText *const m_graphicText;
+      QString m_oldText;
+      QString m_newText;
+};
+
+class PropertyMapCmd : public QUndoCommand
+{
+   public:
+      PropertyMapCmd(Component *comp, const PropertyMap& old, const PropertyMap& newMap,
+                     QUndoCommand *parent = 0);
+
+      void undo();
+      void redo();
+
+   private:
+      Component *m_component;
+      PropertyMap m_oldMap;
+      PropertyMap m_newMap;
+};
+
 #endif

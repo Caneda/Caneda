@@ -56,6 +56,7 @@ class PropertiesGroup : public QObject, public QGraphicsItemGroup
 
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
+      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
    private:
       //! Internal storage of property items for book keeping.

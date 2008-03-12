@@ -222,10 +222,11 @@ bool SidebarModel::isLeaf(const QModelIndex& index) const
 
 Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const
 {
+   Qt::ItemFlags flag = Qt::ItemIsEnabled;
    if(isLeaf(index)) {
-      return (Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled);
+      flag |= Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
    }
-   return Qt::ItemIsEnabled;
+   return flag;
 }
 
 QStringList SidebarModel::mimeTypes() const

@@ -153,6 +153,6 @@ void GraphicText::loadData(Qucs::XmlReader *reader)
 //! \brief Launch rich text edit dialog.
 int GraphicText::launchPropertyDialog(Qucs::UndoOption opt)
 {
-   GraphicTextDialog dialog(this);
+   GraphicTextDialog dialog(this, opt);
    return dialog.exec();
 }

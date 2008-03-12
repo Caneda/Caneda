@@ -22,10 +22,10 @@
 #ifndef GRAPHICTEXTDLG_H
 #define GRAPHICTEXTDLG_H
 
+#include "graphictext.h"
+
 #include <QtGui/QDialog>
 #include <QtGui/QTextFormat>
-
-class GraphicText;
 
 class QAction;
 class QComboBox;
@@ -41,7 +41,8 @@ class GraphicTextDialog : public QDialog
       Q_OBJECT;
 
    public:
-      GraphicTextDialog(GraphicText *text = 0, QWidget *parent = 0);
+      GraphicTextDialog(GraphicText *text, Qucs::UndoOption opt,
+                        QWidget *parent = 0);
       ~GraphicTextDialog();
 
       QString plainText() const;
@@ -105,6 +106,7 @@ class GraphicTextDialog : public QDialog
       QVBoxLayout *mainLayout;
 
       GraphicText *textItem;
+      Qucs::UndoOption undoOption;
 };
 
 #endif

@@ -144,7 +144,7 @@ Painting* Painting::fromName(const QString& name)
       else if(name == QObject::tr("Elliptic Arc"))
          return new EllipseArc(rect, 100, 300);
       else if(name == QObject::tr("Text"))
-         return new GraphicText("text");
+         return new GraphicText;
    }
 
    // This is true usually when painting is being read from xml file.
@@ -160,7 +160,7 @@ Painting* Painting::fromName(const QString& name)
       else if(name == QLatin1String("ellipseArc"))
          return new EllipseArc(rect, 100, 300);
       else if(name == QLatin1String("text"))
-         return new GraphicText("text");
+         return new GraphicText;
    }
    return 0;
 }

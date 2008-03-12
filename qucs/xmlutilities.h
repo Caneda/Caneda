@@ -34,7 +34,6 @@ class QTransform;
 
 namespace Qucs
 {
-
    /*!
     * \brief This class adds a few more helper methods to qt's
     * QXmlStreamReader class.

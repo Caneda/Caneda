@@ -21,7 +21,8 @@
 
 #include "graphictextdialog.h"
 #include "qucs-tools/global.h"
-#include "graphictext.h"
+#include "undocommands.h"
+#include "schematicscene.h"
 #include "mnemo.h"
 
 #include <QtGui/QAction>
@@ -43,8 +44,8 @@
 
 #include <QtCore/QtDebug>
 
-GraphicTextDialog::GraphicTextDialog(GraphicText *text, QWidget *parent)
-   : QDialog(parent), textItem(text)
+GraphicTextDialog::GraphicTextDialog(GraphicText *text, Qucs::UndoOption opt, QWidget *parent)
+   : QDialog(parent), textItem(text), undoOption(opt)
 {
    mainLayout = new QVBoxLayout(this);
 
@@ -138,7 +139,19 @@ void GraphicTextDialog::accept()
    }
    else {
       if(textItem) {
-         textItem->setRichText(richText());
+         SchematicScene *scene = textItem->schematicScene();
+
+         QString oldText = textItem->richText();
+         QString newText = richText();
+         if(oldText != newText) {
+            if(undoOption == Qucs::PushUndoCmd) {
+               QUndoCommand *cmd = new GraphicTextChangeCmd(textItem, oldText, newText);
+               scene->undoStack()->push(cmd);
+            }
+            else {
+               textItem->setText(newText);
+            }
+         }
       }
       QDialog::accept();
    }

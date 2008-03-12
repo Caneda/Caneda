@@ -30,7 +30,7 @@ class GraphicText : public Painting
          Type = Painting::GraphicTextType
       };
 
-      GraphicText(const QString &text, SchematicScene *scene = 0);
+      GraphicText(const QString &text = QString(), SchematicScene *scene = 0);
       ~GraphicText();
 
       QString plainText() const;

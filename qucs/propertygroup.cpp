@@ -179,3 +179,8 @@ void PropertiesGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
    QGraphicsItemGroup::mousePressEvent(event);
 }
+
+void PropertiesGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
+{
+   component()->launchPropertyDialog(Qucs::PushUndoCmd);
+}

@@ -1,3 +1,8 @@
+2008-03-12  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* propertydialog.h: Implemented property dialog to edit component properties. (with undo/redo)
+	Also implemented undo/redo for setting the rich text of GraphicText item.
+
 2008-03-04  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* schematicscene.cpp (SchematicScene::zoomingAtPointEvent): Implemented zooming contents through dragging

@@ -681,7 +681,7 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
       stream >> item >> category;
       QucsItem *qItem = itemForName(item, category);
       if(qItem->type() == GraphicText::Type) {
-         GraphicTextDialog dialog;
+         GraphicTextDialog dialog(0, Qucs::DontPushUndoCmd);
          if(dialog.exec() == QDialog::Accepted) {
             GraphicText *textItem = static_cast<GraphicText*>(qItem);
             textItem->setRichText(dialog.richText());

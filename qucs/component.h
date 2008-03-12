@@ -101,6 +101,8 @@ class Component : public SvgItem
 
       //! Returns the property map (actually copy of property map)
       PropertyMap propertyMap() const { return d->propertyMap; }
+      void setPropertyMap(const PropertyMap& propMap);
+
 
       //! Returns property group of the component.
       PropertiesGroup* propertyGroup() const { return m_propertyGroup; }
@@ -152,6 +154,8 @@ class Component : public SvgItem
       bool isComponent() const { return true; }
       //! \reimp Reimplemented to return rtti info.
       bool isWire() const { return false; }
+
+      int launchPropertyDialog(Qucs::UndoOption opt);
 
    protected:
       QRectF adjustedBoundRect(const QRectF& rect);

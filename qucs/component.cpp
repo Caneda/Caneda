@@ -19,6 +19,7 @@
 
 #include "component.h"
 #include "propertygroup.h"
+#include "propertydialog.h"
 #include "port.h"
 #include "xmlutilities.h"
 #include "schematicscene.h"
@@ -227,6 +228,18 @@ QString Component::labelSuffix() const
    return _label.mid(labelPrefix().length());
 }
 
+//! Sets the propertyMap of this component to \a propMap
+void Component::setPropertyMap(const PropertyMap& propMap)
+{
+   bool symChanged = (propMap["symbol"].value().toString() !=
+                      d->propertyMap["symbol"].value().toString());
+   d->propertyMap = propMap;
+   if(symChanged)
+      setSymbol(propMap["symbol"].value().toString());
+   else
+      updatePropertyGroup();
+}
+
 //! Sets the component's activeStatus to \a status.
 void Component::setActiveStatus(Qucs::ActiveStatus status)
 {
@@ -425,6 +438,13 @@ void Component::copyDataTo(Component *component) const
    component->d = d;
    component->updatePropertyGroup();
    component->update();
+}
+
+/*! \copydoc QucsItem::launchPropertyDialog() */
+int Component::launchPropertyDialog(Qucs::UndoOption)
+{
+   PropertyDialog dia(this, Qucs::PushUndoCmd);
+   return dia.exec();
 }
 
 //! Returns the rect adjusted to accomodate ports too.
