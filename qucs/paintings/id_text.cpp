@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include "id_text.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "qucs-tools/global.h"
 
 #include <QtGui/QPainter>

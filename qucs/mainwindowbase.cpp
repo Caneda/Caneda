@@ -20,6 +20,8 @@
 #include "mainwindowbase.h"
 #include "qucs-tools/global.h"
 
+#include "xmlutilities/validators.h"
+
 #include <QtGui/QTabBar>
 #include <QtGui/QDockWidget>
 #include <QtGui/QToolButton>

@@ -1,5 +1,6 @@
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/qucs} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
+ADD_SUBDIRECTORY( xmlutilities )
 ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( bitmaps )
 ADD_SUBDIRECTORY( diagrams )
@@ -12,7 +13,7 @@ SET(QUCS_SRCS wire.cpp componentssidebar.cpp item.cpp
 				schematicscene.cpp  sidebarmodel.cpp
                 main.cpp mainwindowbase.cpp qucsmainwindow.cpp qucsview.cpp
 				schematicview.cpp  undocommands.cpp fileformathandler.cpp
-				xmlutilities.cpp svgitem.cpp property.cpp propertyitem.cpp
+				svgitem.cpp property.cpp propertyitem.cpp
 				propertygroup.cpp component.cpp port.cpp library.cpp
 				xmlformat.cpp mnemo.cpp propertydialog.cpp
 )
@@ -29,8 +30,8 @@ LINK_DIRECTORIES( ${Qucs_BINARY_DIR}/qucs-tools )
 
 ADD_EXECUTABLE( qucs ${QUCS_SRCS} ${QUCS_MOC_SRCS} )
 
-TARGET_LINK_LIBRARIES( qucs ${QT_LIBRARIES} )
-TARGET_LINK_LIBRARIES( qucs qucstools )
-TARGET_LINK_LIBRARIES( qucs	paintings dialogs diagrams)
+TARGET_LINK_LIBRARIES( qucs ${QT_LIBRARIES} qucstools paintings dialogs
+                       ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES}
+                       diagrams xmlutilities)
 
 INSTALL(TARGETS qucs DESTINATION bin)

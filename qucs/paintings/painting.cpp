@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include "paintings.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "schematicscene.h"
 #include "styledialog.h"
 

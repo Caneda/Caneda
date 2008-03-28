@@ -21,7 +21,7 @@
 #include "propertygroup.h"
 #include "propertydialog.h"
 #include "port.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "schematicscene.h"
 #include "wire.h"
 #include "undocommands.h"
@@ -488,11 +488,14 @@ namespace Qucs
          return;
       }
 
+      /* get name */
       d->name = attributes.value("name").toString();
       Q_ASSERT(!d->name.isEmpty());
+      /* get label */
       d->labelPrefix = attributes.value("label").toString();
       Q_ASSERT(!d->labelPrefix.isEmpty());
 
+      /* read the component body */
       while(!reader->atEnd()) {
          reader->readNext();
 
@@ -500,18 +503,25 @@ namespace Qucs
             break;
 
          if(reader->isStartElement()) {
+	    /* read display text */
             if(reader->name() == "displaytext") {
                d->displayText = reader->readLocaleText(Qucs::localePrefix());
                Q_ASSERT(reader->isEndElement() &&
                         reader->name() == "displaytext");
             }
+
+	    /* Read description */
             else if(reader->name() == "description") {
                d->description = reader->readLocaleText(Qucs::localePrefix());
                Q_ASSERT(reader->isEndElement());
             }
+
+	    /* Read schematic */
             else if(reader->name() == "schematics") {
                readSchematics(reader, path, svgPainter, d);
             }
+
+	    /* Read properties */
             else if(reader->name() == "properties") {
                while(!reader->atEnd()) {
                   reader->readNext();
@@ -541,22 +551,26 @@ namespace Qucs
       }
    }
 
-   //! Read schematics section of component description xml file.
+  /*! Read schematics section of component description xml file */
    void readSchematics(Qucs::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
                        QSharedDataPointer<ComponentData> &d)
    {
       Q_ASSERT(reader->isStartElement() && reader->name() == "schematics");
 
+      /* list of symbols */
       QStringList parsedSymbols;
 
+      /* get default value */
       QString defaultSchematic =
          reader->attributes().value("default").toString();
       Q_ASSERT(!defaultSchematic.isEmpty());
 
+      /* read different schematic */
       while(!reader->atEnd()) {
          reader->readNext();
 
-         if(reader->isEndElement()) break;
+         if(reader->isEndElement())
+	    break;
 
          if(reader->isStartElement()) {
             if(reader->name() == "schematic") {
@@ -579,7 +593,10 @@ namespace Qucs
          return;
       }
 
+      /* check if default is present */
       Q_ASSERT(parsedSymbols.contains(defaultSchematic));
+
+      /* add symbols to property list */
       QString symbolDescription =
          QObject::tr("Represents the current symbol of component.");
       QVariant defValue(defaultSchematic);

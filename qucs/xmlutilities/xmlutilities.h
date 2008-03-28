@@ -20,8 +20,9 @@
 #ifndef __XMLUTILITIES_H
 #define __XMLUTILITIES_H
 
-#include <QtXml/QXmlStreamReader>
 #include <QtXml/QXmlStreamWriter>
+
+#include "QXmlStreamReaderExt.h"
 
 #include <QtCore/QMap>
 
@@ -40,15 +41,18 @@ namespace Qucs
     * \warning QXmlStreamReader doesn't have virtual destructor. Don't delete any
     * instance of this class from base pointer.
     */
-   class XmlReader : public QXmlStreamReader
+   class XmlReader : public QXmlStreamReaderExt
    {
       public:
          //! Constructs an xml stream reader acting on \a device.
-         XmlReader(QIODevice * device) : QXmlStreamReader(device) {}
+         //XmlReader(QIODevice * device) : QXmlStreamReader(device) {}
          //! Constructs an xml stream reader acting on \a data.
-         XmlReader(const QByteArray & data) : QXmlStreamReader(data) {}
+         XmlReader(const QByteArray & data, 
+		   const QRelaxNGvalidator * schema = NULL,
+		   const QXsltTransformer * xslt = NULL)
+	   : QXmlStreamReaderExt(data, schema, xslt) {}
          //! Constructs an xml stream reader acting on \a data.
-         XmlReader(const QString & data) : QXmlStreamReader(data) {}
+         //XmlReader(const QString & data) : QXmlStreamReader(data) {}
 
          QString readText();
          int readInt();

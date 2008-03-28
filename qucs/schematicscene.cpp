@@ -24,7 +24,7 @@
 #include "paintings/paintings.h"
 #include "diagrams/diagram.h"
 #include "undocommands.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "qucs-tools/global.h"
 #include "component.h"
 #include "library.h"
@@ -411,7 +411,7 @@ void SchematicScene::paste()
 {
    const QString text = qApp->clipboard()->text();
 
-   Qucs::XmlReader reader(text);
+   Qucs::XmlReader reader(text.toUtf8());
 
    while(!reader.atEnd()) {
       reader.readNext();

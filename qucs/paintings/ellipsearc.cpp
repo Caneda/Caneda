@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include "ellipsearc.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "styledialog.h"
 
 #include <QtGui/QStyleOptionGraphicsItem>

@@ -25,7 +25,7 @@
 #include "item.h"
 #include "schematicscene.h"
 #include "schematicview.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "qucsmainwindow.h"
 
 #include <QtXml/QXmlStreamWriter>
@@ -228,7 +228,7 @@ QString QucsItem::saveDataText() const
  */
 void QucsItem::loadDataFromText(const QString &text)
 {
-   Qucs::XmlReader reader(text);
+  Qucs::XmlReader reader(text.toUtf8());
    while(!reader.atEnd()) {
       reader.readNext();
 

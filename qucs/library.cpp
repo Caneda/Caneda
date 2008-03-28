@@ -18,9 +18,14 @@
  ***************************************************************************/
 
 #include "library.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "schematicscene.h"
 #include "qucs-tools/global.h"
+
+#include "xmlutilities/validators.h"
+
+#include <QtCore/QByteArray>
+#include <QtCore/QString>
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -147,7 +152,7 @@ bool Library::parseLibrary(Qucs::XmlReader *reader, QString filePath)
                QString absFilePath = fileDir.absoluteFilePath(externalPath);
                bool status = parseExternalComponent(absFilePath);
                if(!status) {
-                  QString errorString("Parsing external component data file %1"
+                  QString errorString("Parsing external component data file %1 "
                                       "failed");
                   errorString = errorString.arg(absFilePath);
                   reader->raiseError(errorString);
@@ -178,9 +183,11 @@ bool Library::parseExternalComponent(QString path)
    }
    QTextStream in(&file);
    in.setCodec("UTF-8");
-   QString data = in.readAll();
+   QByteArray data = in.readAll().toUtf8();
 
-   Qucs::XmlReader reader(data);
+   Qucs::XmlReader reader(data,
+			  Qucs::validators::defaultInstance()->components());
+
    while(!reader.atEnd()) {
       reader.readNext();
 
@@ -283,6 +290,14 @@ Component* LibraryLoader::newComponent(QString componentName, SchematicScene *sc
    return 0;
 }
 
+/*! \brief Load a library tree
+    \todo Implement a true loader
+*/
+bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_)
+{
+  return this->load( libpathtree+"components/basic/passive.xml",svgPainter_);
+}
+
 //! Load's library indicated by path \a libPath.
 bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
 {
@@ -299,7 +314,7 @@ bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
 
    QTextStream in(&file);
    in.setCodec("UTF-8");
-   QString data = in.readAll();
+   QByteArray data = in.readAll().toUtf8();
 
    Qucs::XmlReader reader(data);
    while(!reader.atEnd()) {

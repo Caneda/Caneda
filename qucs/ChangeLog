@@ -1,3 +1,10 @@
+2008-03-12  Bastien Roucaries  <roucaries.bastien@gmail.com>
+
+	* xmlutilities/*.h,*.cpp: Implemented relaxNG validator and XSLT transformer as classes which can be used
+	to easily validate the xml component files, library files and svg files. Also xslt transformations can be
+	applied quite easily.
+	Thanks a lot Bastein for his contribution.
+
 2008-03-12  Gopala Krishna  <krishna.ggk@gmail.com>
 
 	* propertydialog.h: Implemented property dialog to edit component properties. (with undo/redo)

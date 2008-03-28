@@ -90,6 +90,7 @@ class LibraryLoader
                               QString library = QString());
 
       bool load(const QString& libPath, SvgPainter* svg = 0);
+      bool loadtree(const QString& libpathtree, SvgPainter *svgPainter_ = 0);
       bool unload(const QString& libName);
 
       //! Returns library hash table

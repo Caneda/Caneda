@@ -19,7 +19,7 @@
 
 #include "portsymbol.h"
 #include "port.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "qucs-tools/global.h"
 
 #include <QtGui/QPainter>

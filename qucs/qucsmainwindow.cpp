@@ -25,6 +25,7 @@
 #include "qucsview.h"
 #include "item.h"
 #include "library.h"
+#include "xmlutilities/validators.h"
 #include "dialogs/qucssettingsdialog.h"
 
 #include <QtGui/QStatusBar>
@@ -1647,20 +1648,35 @@ void QucsMainWindow::loadSettings()
    }
    settings.endGroup();
 
-   QString str = settings.value("SidebarLibrary", QString()).toString();
-   if(str.isEmpty()) {
-      str = QFileDialog::getOpenFileName(0, "Sidebar library file", QDir::homePath());
-      if(str.isEmpty()) {
+   /* Load library database settings */
+   QString libpath = settings.value("SidebarLibrary", QString()).toString();
+   if(libpath.isEmpty()) {
+      libpath = QFileDialog::getExistingDirectory(0, tr("Component database tree"),
+                                                 QDir::homePath(),
+                                                 QFileDialog::ShowDirsOnly);
+      if(libpath.isEmpty()) {
          QMessageBox::warning(0, "No sidebar library", "Sidebar won't have any library"
                               "as you haven't selected any!");
          return;
       }
    }
 
-   LibraryLoader *library = LibraryLoader::defaultInstance();
+   /* Load validators */
+   Qucs::validators * validator = Qucs::validators::defaultInstance();
+   if(validator->load(libpath)) {
+     qDebug() << "Succesfully loaded validators!";
+   }
+   else {
+      //invalidate entry.
+      qWarning() << "QucsMainWindow::loadSettings() : Could not load validators. "
+                 << "Expect crashing in case of incorrect xml file";
+   }
 
-   if(library->load(str)) {
-      settings.setValue("SidebarLibrary", str);
+   LibraryLoader *library = LibraryLoader::defaultInstance();
+   
+
+   if(library->loadtree(libpath)) {
+      settings.setValue("SidebarLibrary", libpath);
       qDebug() << "Succesfully loaded library!";
    }
    else {

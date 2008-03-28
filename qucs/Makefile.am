@@ -22,7 +22,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
-SUBDIRS = dialogs bitmaps diagrams paintings
+SUBDIRS = dialogs bitmaps diagrams paintings xmlutilities
 
 
 if COND_WIN32
@@ -44,19 +44,19 @@ qucs_SOURCES = 	wire.cpp componentssidebar.cpp  item.cpp \
 				schematicscene.cpp  sidebarmodel.cpp \
                 main.cpp mainwindowbase.cpp qucsmainwindow.cpp qucsview.cpp \
 				schematicview.cpp  undocommands.cpp fileformathandler.cpp \
-				xmlutilities.cpp svgitem.cpp property.cpp propertyitem.cpp \
+				svgitem.cpp property.cpp propertyitem.cpp \
 				propertygroup.cpp component.cpp port.cpp library.cpp \
 				xmlformat.cpp mnemo.cpp propertydialog.cpp
 
 nodist_qucs_SOURCES = $(MOCFILES)
 
-INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) -I$(top_srcdir)
-qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS)
+INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(QT_EXTRA_INCLUDES) $(LIBXML2_INCLUDES) $(LIBXSLT_INCLUDES)-I$(top_srcdir)
+qucs_LDFLAGS = $(X11_LDFLAGS) $(QT_LDFLAGS) $(LIBXML2_LDFLAGS) $(LIBXSLT_LDFLAGS) 
 qucs_LDADD = ../qucs-tools/libqucstools.a dialogs/libdialogs.a \
-  $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a
+  $(X11_LIBS) $(QT_LIBS) diagrams/libdiagrams.a paintings/libpaintings.a xmlutilities/libxmlutilities.a
 
 noinst_HEADERS = $(MOCHEADERS) wire.h wireline.h item.h undocommands.h qucsview.h \
-                               fileformathandler.h  xmlutilities.h svgitem.h \
+                               fileformathandler.h svgitem.h \
 							   property.h port.h library.h xmlformat.h mnemo.h \
 							   ui_property.h
 

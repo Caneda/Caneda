@@ -116,6 +116,28 @@ if test x$WIN32 != xyes; then
   AC_SUBST(X11_LIBS)
 fi
 
+
+# Check for libxml2 usability.
+AC_CHECK_LIB(xml2, xmlParseMemory, HAVE_XML2=yes, HAVE_XML2=no)
+if test "x$HAVE_XML2" = "xyes"; then
+  AC_MSG_CHECKING([for libxml headers])
+  LIBXML2_INCLUDES="-I/usr/include/libxml2"
+  LIBXML2_LDFLAGS="-lxml2"
+fi
+AC_SUBST(LIBXML2_INCLUDES)
+AC_SUBST(LIBXML2_LDFLAGS)
+
+
+# Check for libxml2 usability.
+AC_CHECK_LIB(xslt, xsltParseStylesheetFile, HAVE_XSLT=yes, HAVE_XSLT=no)
+if test "x$HAVE_XSLT" = "xyes"; then
+  AC_MSG_CHECKING([for libxslt headers])
+  LIBXSLT_INCLUDES="-I/usr/include/libxml2"
+  LIBXSLT_LDFLAGS="-lxslt"
+fi
+AC_SUBST(LIBXSLT_INCLUDES)
+AC_SUBST(LIBXSLT_LDFLAGS)
+
 dnl Check include path to Qt.
 QT_INCLUDES=""
 QT_VER=2
@@ -312,6 +334,7 @@ AC_CONFIG_FILES([Makefile
 		 qucs/bitmaps/Makefile
 		 qucs/diagrams/Makefile
 		 qucs/paintings/Makefile
+		 qucs/xmlutilities/Makefile
 		 qucs/dialogs/Makefile])
 AC_OUTPUT
 

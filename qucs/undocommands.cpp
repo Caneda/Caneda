@@ -21,7 +21,7 @@
 #include "component.h"
 #include "schematicscene.h"
 #include "port.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "paintings/paintings.h"
 #include "paintings/graphictext.h"
 

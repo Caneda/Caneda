@@ -20,7 +20,7 @@
 #include "graphictext.h"
 #include "graphictextdialog.h"
 #include "mnemo.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 
 #include <QtGui/QPainter>
 #include <QtGui/QStyleOptionGraphicsItem>

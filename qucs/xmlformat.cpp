@@ -27,7 +27,7 @@
 #include "wire.h"
 #include "wireline.h"
 #include "port.h"
-#include "xmlutilities.h"
+#include "xmlutilities/xmlutilities.h"
 #include "diagrams/diagram.h"
 
 #include "qucs-tools/global.h"
@@ -184,7 +184,7 @@ bool XmlFormat::loadFromText(const QString& text)
    if(!m_view) return false;
 
 
-   Qucs::XmlReader *reader = new Qucs::XmlReader(text);
+   Qucs::XmlReader *reader = new Qucs::XmlReader(text.toUtf8());
    while(!reader->atEnd()) {
       reader->readNext();
 
