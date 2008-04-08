@@ -40,19 +40,26 @@
 #include <QtGui/QWhatsThis>
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
-#include <QtCore/QDebug>
 #include <QtGui/QFileDialog>
 #include <QtGui/QGraphicsItem>
+#include <QtGui/QDialogButtonBox>
+#include <QtGui/QDialog>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QListWidget>
+
+#include <QtCore/QDebug>
 #include <QtCore/QTimer>
 
 static QString qucsFilter;
 
-
-QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w),
-                                             titleText(QString("Qucs ") + (Qucs::version) + QString(" : %1[*]"))
+/*!
+ * \brief Construct and setup the mainwindow for qucs.
+ */
+QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
 {
-   setObjectName("QucsMainWindow"); //for debugging purpose
+   titleText = QString("Qucs ") + (Qucs::version) + QString(" : %1[*]");
 
+   setObjectName("QucsMainWindow"); //for debugging purpose
    setDocumentTitle("Untitled");
 
    qucsFilter =
@@ -79,11 +86,61 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w),
            SLOT(slotViewClosed(QWidget*)));
 
    SchematicView *view = new SchematicView(0, this);
-   addSchematicView(view);
+   addView(view);
    m_undoGroup->setActiveStack(view->schematicScene()->undoStack());
    loadSettings();
 }
 
+QucsMainWindow::~QucsMainWindow()
+{
+}
+
+/*!
+ * \brief Switches to \a fileName tab if it is opened else tries opening it
+ * and then switches to that tab on success.
+ */
+bool QucsMainWindow::gotoPage(QString fileName)
+{
+   fileName = QDir::toNativeSeparators(fileName);
+
+   QucsView *view = 0;
+   int i = 0;
+   while(i < tabWidget()->count()) {
+      view = viewFromWidget(tabWidget()->widget(i));
+      if(QDir::toNativeSeparators(view->fileName()) == fileName)
+         break;
+      view = 0;
+      ++i;
+   }
+
+   if(view) {
+      tabWidget()->setCurrentIndex(i-1);
+      return true;
+   }
+
+   QFileInfo info(fileName);
+   if(info.suffix() == "sch") {
+      view = new SchematicView(0, this);
+   }
+   else {
+      //TODO: create text view here
+   }
+
+   if(!view->load(fileName)) {
+      delete view;
+      return false;
+   }
+
+   addView(view);
+   return true;
+}
+
+/*!
+ * \brief This initializes the components sidebar.
+ *
+ * \todo This method only fill the sidebar with painting items. The components
+ * are loaded in loadSettings() as of now. This should be corrected.
+ */
 void QucsMainWindow::setupSidebar()
 {
    m_componentsSidebar = new ComponentsSidebar(this);
@@ -102,6 +159,7 @@ void QucsMainWindow::setupSidebar()
    m_componentsSidebar->plugItems(paintingItems, QObject::tr("paintings"));
 }
 
+
 void QucsMainWindow::test()
 {
    SchematicView *v = qobject_cast<SchematicView*>(currentWidget());
@@ -109,13 +167,15 @@ void QucsMainWindow::test()
       v->test();
 }
 
+/*!
+ * \brief Creates and intializes all the actions used.
+ */
 void QucsMainWindow::initActions()
 {
    QAction *action = 0;
    using namespace Qt;
 
    QString bitmapPath = Qucs::bitmapDirectory();
-
    action = new QAction(QIcon(bitmapPath + "filenew.png"), tr("&New"), this);
    action->setShortcut(CTRL+Key_N);
    action->setStatusTip(tr("Creates a new document"));
@@ -207,7 +267,7 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Quits the application"));
    action->setWhatsThis(tr("Exit\n\nQuits the application"));
    action->setObjectName("fileQuit");
-   connect( action, SIGNAL(triggered()), SLOT(slotFileQuit()));
+   connect( action, SIGNAL(triggered()), SLOT(close()));
    addActionToMap(action);
 
    action = new QAction( tr("Application Settings..."), this);
@@ -775,6 +835,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 }
 
+//! \brief Create and initialize menus.
 void QucsMainWindow::initMenus()
 {
    fileMenu = menuBar()->addMenu(tr("&File"));
@@ -930,6 +991,7 @@ void QucsMainWindow::initMenus()
 
 }
 
+//! \brief Create and intialize the toolbars
 void QucsMainWindow::initToolBars()
 {
    fileToolbar  = addToolBar(tr("File"));
@@ -981,7 +1043,11 @@ void QucsMainWindow::initToolBars()
    workToolbar->addAction(action("whatsThis"));
 }
 
-
+/*!
+ * \brief This method toggles the action and calls the function pointed by
+ * \a func if on is true. This method takes care to preserve the mutual
+ * exclusiveness off the checkable actions.
+ */
 void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *action)
 {
    SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
@@ -994,6 +1060,7 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
    SchematicScene::MouseAction ma = SchematicScene::MouseAction(action->data().toInt());
    QAction *norm = this->action("select");
 
+   //toggling off any action switches normal select action "on"
    if(!on) {
       if(ma != SchematicScene::Normal) {
          foreach(QAction *act, checkableActions) {
@@ -1011,6 +1078,7 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
       return;
    }
 
+   //else part
    QList<QGraphicsItem*> selectedItems = scene->selectedItems();
 
    do {
@@ -1049,18 +1117,31 @@ void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *act
    scene->setCurrentMouseAction(ma);
 }
 
+//! \brief Toggles the normal select action on.
 void QucsMainWindow::setNormalAction()
 {
    performToggleAction(true, 0, action("select"));
 }
 
-void QucsMainWindow::addSchematicView(SchematicView *view)
+/*!
+ * \brief Adds the view to the tabwidget and also adds its undostack if it is
+ * scematicview..
+ * Also the added view is set as current tab in tabwidget.
+ */
+void QucsMainWindow::addView(QucsView *view)
 {
-   m_undoGroup->addStack(view->schematicScene()->undoStack());
-   addChildWidget(view);
-   tabWidget()->setCurrentWidget(view);
+   if(view->isSchematicView()) {
+      m_undoGroup->addStack(view->toSchematicView()->schematicScene()->undoStack());
+   }
+   addChildWidget(view->toWidget());
+   tabWidget()->setCurrentWidget(view->toWidget());
 }
 
+/*!
+ * \brief This slot updates the current undostack of undogroup and also updates
+ * the tab's as well as window's title text. Also necessary connections between
+ * view and this main window are made.
+ */
 void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
 {
    SchematicView *prevView = qobject_cast<SchematicView*>(prev);
@@ -1077,6 +1158,9 @@ void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
    }
 }
 
+/*!
+ * \brief Remove the undostack of widget from undogroup on view close.
+ */
 void QucsMainWindow::slotViewClosed(QWidget *widget)
 {
    SchematicView *view = qobject_cast<SchematicView*>(widget);
@@ -1085,115 +1169,162 @@ void QucsMainWindow::slotViewClosed(QWidget *widget)
    }
 }
 
+/*!
+ * \brief Sync the settings to configuration file and close window.
+ */
 void QucsMainWindow::closeEvent( QCloseEvent *e )
 {
    saveSettings();
    MainWindowBase::closeEvent(e);
 }
 
+/*!
+ * \brief Creates a new schematic view and adds it the tabwidget.
+ */
 void QucsMainWindow::slotFileNew()
 {
-   setNormalAction();
-   addSchematicView(new SchematicView(0, this));
+   addView(new SchematicView(0, this));
 }
 
+/*!
+ * \brief Creates a new text(vhdl-verilog-simple) view.
+ * \todo Implement this.
+ */
 void QucsMainWindow::slotTextNew()
 {
    setNormalAction();
    //TODO: implement this or rather port directly
 }
 
+/*!
+ * \brief Tries to open a file by prompting the user for fileName.
+ *
+ * If the file is already opened, that tab is set as current. Otherwise the file
+ * opened is set as current tab.
+ */
 void QucsMainWindow::slotFileOpen()
 {
-   setNormalAction();
    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "", qucsFilter);
-   if(fileName.isEmpty()) return;
-
-   QucsView *view = viewFromWidget(currentWidget());
-
-   bool canReuseCurrentView = view && view->fileName().isEmpty() && !view->isModified();
-   canReuseCurrentView = canReuseCurrentView && view->isSchematicView();
-
-   //open new view if it cant be reused
-   if(!canReuseCurrentView) {
-      addSchematicView(new SchematicView(0, this));
-      view = viewFromWidget(tabWidget()->currentWidget());
-   }
-
-   bool b = view->load(fileName);
-   if(!b) {
-      QMessageBox::critical(0,QObject::tr("Error"),
-                            QObject::tr("Cannot load document!\nParse Error"));
-      slotFileClose();
+   if(!fileName.isEmpty()) {
+      bool isLoaded = gotoPage(fileName);
+      if(!isLoaded)
+         QMessageBox::critical(0, tr("File load error"),
+                               tr("Cannot open file %1").arg(fileName));
    }
 }
 
+/*!
+ * \brief Saves the file corresponding to current tab.
+ */
 void QucsMainWindow::slotFileSave()
 {
-   setNormalAction();
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
    if(v->fileName().isEmpty())
-      return slotFileSaveAs();
-   v->save();
+      slotFileSaveAs();
+   else {
+      if(!v->save()) {
+         QMessageBox::critical(this, tr("File save error"),
+                               tr("Cannot save file %1").arg(v->fileName()));
+      }
+   }
 }
 
+/*!
+ * \brief Pops up dialog to select new filename and saves the file corresponding
+ * to current tab.
+ */
 void QucsMainWindow::slotFileSaveAs()
 {
-   setNormalAction();
    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
    if(!v) return;
    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     "", qucsFilter);
    if(fileName.isEmpty()) return;
+   QString oldFileName = v->fileName();
    v->setFileName(fileName);
-   slotFileSave();
+   if(!v->save()) {
+      QMessageBox::critical(this, tr("File save error"),
+                            tr("Cannot save file %1").arg(v->fileName()));
+      v->setFileName(oldFileName);
+   }
 }
 
+/*!
+ * \brief Switches to each opened tab and issues save to that.
+ */
 void QucsMainWindow::slotFileSaveAll()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   for(int i=0; i < tabWidget()->count(); ++i) {
+      tabWidget()->setCurrentIndex(i);
+      slotFileSave();
+   }
 }
 
+/*!
+ * \brief Closes the current tab.
+ *
+ * Before closing it prompts user whether to save or not if the document is
+ * modified and takes necessary actions.
+ * If the tab being closed is the last tab open, then it creates a new
+ * schematic view and sets it as current tab.
+ */
 void QucsMainWindow::slotFileClose()
 {
-   setNormalAction();
-   //TODO: Verify if page document is modified
+   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+   if(view->isModified()) {
+      QMessageBox::StandardButton res =
+         QMessageBox::warning(0, tr("Closing qucs document"),
+                              tr("The document contains unsaved changes!\n"
+                                 "Do you want to save the changes ?"),
+                              QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+      if(res == QMessageBox::Save)
+         slotFileSave();
+      else if(res == QMessageBox::Cancel)
+         return;
+   }
    closeCurrentTab();
+   if(tabWidget()->count() == 0)
+      slotFileNew();
 }
 
+/*!
+ * \todo Implement this
+ */
 void QucsMainWindow::slotSymbolEdit()
 {
    setNormalAction();
    //TODO: implement this or rather port directly
 }
 
+/*!
+ * \todo Implement this.
+ */
 void QucsMainWindow::slotFileSettings()
 {
-   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
+/*!
+ * \todo Implement this.
+ */
 void QucsMainWindow::slotFilePrint()
 {
-   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
+/*!
+ * \todo Implement this.
+ */
 void QucsMainWindow::slotFilePrintFit()
 {
-   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotFileQuit()
-{
-   setNormalAction();
-   close();
-}
-
+/*!
+ * \todo Complete this.
+ */
 void QucsMainWindow::slotApplSettings()
 {
    setNormalAction();
@@ -1201,52 +1332,83 @@ void QucsMainWindow::slotApplSettings()
    d->exec();
 }
 
+/*!
+ * \brief Align selected elements appropriately based on \a alignment
+ */
+void QucsMainWindow::alignElements(Qt::Alignment alignment)
+{
+   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if(!view) return;
+
+   if(!view->schematicScene()->alignElements(alignment)) {
+      QMessageBox::information(this, tr("Info"),
+                               tr("At least two elements must be selected !"));
+   }
+}
+
+/*!
+ * \brief Align elements in a row correponding to top most elements coords.
+ */
 void QucsMainWindow::slotAlignTop()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   alignElements(Qt::AlignTop);
 }
 
+/*!
+ * \brief Align elements in a row correponding to bottom most elements coords.
+ */
 void QucsMainWindow::slotAlignBottom()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   alignElements(Qt::AlignBottom);
 }
 
+/*!
+ * \brief Align elements in a column correponding to left most elements coords.
+ */
 void QucsMainWindow::slotAlignLeft()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   alignElements(Qt::AlignLeft);
 }
 
+/*!
+ * \brief Align elements in a column correponding to right most elements
+ * coords.
+ */
 void QucsMainWindow::slotAlignRight()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   alignElements(Qt::AlignRight);
 }
 
 void QucsMainWindow::slotDistribHoriz()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if(!view) return;
+
+   if(!view->schematicScene()->distributeElements(Qt::Horizontal)) {
+      QMessageBox::information(this, tr("Info"),
+                               tr("At least two elements must be selected !"));
+   }
 }
 
 void QucsMainWindow::slotDistribVert()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+   if(!view) return;
+
+   if(!view->schematicScene()->distributeElements(Qt::Vertical)) {
+      QMessageBox::information(this, tr("Info"),
+                               tr("At least two elements must be selected !"));
+   }
 }
 
 void QucsMainWindow::slotCenterHorizontal()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   alignElements(Qt::AlignHCenter);
 }
 
 void QucsMainWindow::slotCenterVertical()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   alignElements(Qt::AlignVCenter);
 }
 
 void QucsMainWindow::slotOnGrid(bool on)

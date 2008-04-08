@@ -246,10 +246,10 @@ void XmlFormat::loadComponents(Qucs::XmlReader *reader)
 //    }
 //    if(!reader->isStartElement() || reader->name() != "components")
 //       reader->raiseError(QObject::tr("Malformatted file"));
-
+// 
 //    while(!reader->atEnd()) {
 //       reader->readNext();
-
+// 
 //       if(reader->isEndElement()) {
 //          Q_ASSERT(reader->name() == "components");
 //          break;

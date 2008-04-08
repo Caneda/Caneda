@@ -18,7 +18,22 @@
  ***************************************************************************/
 
 #include "fileformathandler.h"
+#include "xmlformat.h"
 
 FileFormatHandler::FileFormatHandler(SchematicView *view) : m_view(view)
 {
+}
+
+/*!
+ * \brief Factory method to return appropritate file handler based on file
+ * format.
+ *
+ * Returns NULL if there doesn't exist a handler for given extension.
+ */
+FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
+                                                           SchematicView *view)
+{
+   if(ext == "xsch")
+      return new XmlFormat(view);
+   return 0;
 }

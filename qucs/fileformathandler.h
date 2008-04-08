@@ -42,6 +42,9 @@ class FileFormatHandler
       SchematicView* view() const { return m_view; }
       void setView(SchematicView *view) { m_view = view; }
 
+      static FileFormatHandler* handlerFromSuffix(const QString& extension,
+                                                     SchematicView *view = 0);
+
    protected:
       SchematicView *m_view;
 

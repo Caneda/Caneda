@@ -491,6 +491,120 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
    }
 }
 
+bool SchematicScene::alignElements(Qt::Alignment alignment)
+{
+   QList<QGraphicsItem*> gItems = selectedItems();
+   QList<QucsItem*> items = filterItems<QucsItem>(gItems, DontRemoveItems);
+   if(items.size() < 2) return false;
+
+   bool debugMsgPrinted = false;
+
+   m_undoStack->beginMacro("");
+   disconnectItems(items, Qucs::PushUndoCmd);
+
+   QRectF rect = items.first()->sceneBoundingRect();
+   QList<QucsItem*>::iterator it = items.begin()+1;
+   while(it != items.end()) {
+      rect |= (*it)->sceneBoundingRect();
+      ++it;
+   }
+
+   it = items.begin();
+   while(it != items.end()) {
+      if((*it)->isWire()) {
+         ++it;
+         continue;
+      }
+
+      QRectF itemRect = (*it)->sceneBoundingRect();
+      QPointF delta;
+
+      switch(alignment) {
+         case Qt::AlignLeft :
+            delta.rx() =  rect.left() - itemRect.left(); break;
+
+         case Qt::AlignRight :
+            delta.rx() = rect.right() - itemRect.right(); break;
+
+         case Qt::AlignTop :
+            delta.ry() = rect.top() - itemRect.top(); break;
+
+         case Qt::AlignBottom :
+            delta.ry() = rect.bottom() - itemRect.bottom(); break;
+
+         case Qt::AlignHCenter :
+            delta.rx() = rect.center().x() - itemRect.center().x(); break;
+
+         case Qt::AlignVCenter :
+            delta.ry() = rect.center().y() - itemRect.center().y(); break;
+
+         default:
+            if(!debugMsgPrinted) {
+               qDebug() << Q_FUNC_INFO << "Wrong alignment flag " << alignment;
+               debugMsgPrinted = true;
+            }
+      }
+
+      QPointF itemPos = (*it)->pos();
+      m_undoStack->push(new MoveCmd(*it, itemPos, itemPos + delta));;
+      ++it;
+   }
+
+   connectItems(items, Qucs::PushUndoCmd);
+   m_undoStack->endMacro();
+   return true;
+}
+
+bool pointCmpFunction_X(QucsItem *lhs, QucsItem  *rhs)
+{
+   return lhs->pos().x() < rhs->pos().x();
+}
+
+bool pointCmpFunction_Y(QucsItem *lhs, QucsItem  *rhs)
+{
+   return lhs->pos().y() < rhs->pos().y();
+}
+
+bool SchematicScene::distributeElements(Qt::Orientation orientation)
+{
+   QList<QGraphicsItem*> gItems = selectedItems();
+   QList<QucsItem*> items = filterItems<QucsItem>(gItems);
+   if(items.size() < 2) return false;
+
+   m_undoStack->beginMacro(QString());
+   disconnectItems(items, Qucs::PushUndoCmd);
+
+   qSort(items.begin(), items.end(),
+         orientation == Qt::Horizontal ? pointCmpFunction_X : pointCmpFunction_Y);
+
+   qreal x1 = items.first()->pos().x(), y1 = items.first()->pos().y();
+   qreal x2 = items.last()->pos().x(), y2 = items.last()->pos().y();
+
+   qreal dx = (x2 - x1) / (items.size() - 1);
+   qreal dy = (y2 - y1) / (items.size() - 1);
+
+   qreal x = x1, y = y1;
+   foreach(QucsItem *item, items) {
+      if(item->isWire()) continue;
+
+      QPointF newPos = item->pos();
+      if(orientation == Qt::Horizontal) {
+         newPos.setX(x);
+         x += dx;
+      }
+      else {
+         newPos.setY(y);
+         y += dy;
+      }
+
+      m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+   }
+
+   connectItems(items, Qucs::PushUndoCmd);
+   m_undoStack->endMacro();
+   return true;
+}
+
 bool SchematicScene::eventFilter(QObject *watched, QEvent *event)
 {
    if(event->type() != QEvent::Shortcut && event->type() != QEvent::ShortcutOverride)

@@ -137,6 +137,9 @@ class SchematicScene : public QGraphicsScene
       void resetState();
       void beginInsertingItems(const QList<QucsItem*> &items);
 
+      bool alignElements(Qt::Alignment);
+      bool distributeElements(Qt::Orientation orientation);
+
       bool eventFilter(QObject *object, QEvent *event);
 
       bool shortcutsBlocked() const { return m_shortcutsBlocked; }

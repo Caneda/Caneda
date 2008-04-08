@@ -42,9 +42,10 @@ class QucsMainWindow : public MainWindowBase
       Q_OBJECT;
    public:
       QucsMainWindow(QWidget *w=0);
-      ~QucsMainWindow() {}
+      ~QucsMainWindow();
 
-      void addSchematicView(SchematicView *view);
+      bool gotoPage(QString fileName);
+      void addView(QucsView *view);
       void saveSettings();
       void test();
 
@@ -60,8 +61,8 @@ class QucsMainWindow : public MainWindowBase
       void slotFileSettings();
       void slotFilePrint();
       void slotFilePrintFit();
-      void slotFileQuit();
       void slotApplSettings();
+
       void slotAlignTop();
       void slotAlignBottom();
       void slotAlignLeft();
@@ -72,6 +73,7 @@ class QucsMainWindow : public MainWindowBase
       void slotCenterVertical();
       void slotOnGrid(bool);
       void slotChangeProps();
+
       void slotEditCut();
       void slotEditCopy();
       void slotEditPaste();
@@ -153,7 +155,9 @@ class QucsMainWindow : public MainWindowBase
       void initToolBars();
       void performToggleAction(bool on, pActionFunc func, QAction *action);
       void setNormalAction();
-      QucsView* viewFromWidget(QWidget *widget);//Returns QucsView* appropriately
+      void alignElements(Qt::Alignment alignment);
+
+      QucsView* viewFromWidget(QWidget *widget);
 
       void resetCurrentSceneState();
       // The following aim at reducing clutter by substituting
@@ -171,7 +175,7 @@ class QucsMainWindow : public MainWindowBase
       QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
       QUndoGroup *m_undoGroup;
       ComponentsSidebar *m_componentsSidebar;
-      const QString titleText;
+      QString titleText;
 
    public:
       void setupSidebar();

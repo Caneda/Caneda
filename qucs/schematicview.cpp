@@ -87,27 +87,27 @@ QString SchematicView::fileName() const
 bool SchematicView::load()
 {
    //Assumes file name is set
-   FileFormatHandler *format = 0;
-   QFileInfo info(fileName());
+   FileFormatHandler *format =
+      FileFormatHandler::handlerFromSuffix(QFileInfo(fileName()).suffix(), this);
 
-//    if(info.suffix() == "xsch")
-//       format = new XmlFormat(this);
    if(!format) {
-      //TODO: Try to determine the file format dynamically
       QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
       return false;
    }
+
    QFile file(fileName());
    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
       QMessageBox::critical(0, tr("Error"), tr("Cannot load document ")+fileName());
       return false;
    }
+
    QTextStream stream(&file);
+   bool result = format->loadFromText(stream.readAll());
 
-   setModified(false);
+   if(result == true)
+      setModified(false);
 
-   return false;
-   //format->loadFromText(stream.readAll());
+   return result;
 }
 
 bool SchematicView::save()
@@ -121,11 +121,8 @@ bool SchematicView::save()
    }
    QTextStream stream(&file);
    QFileInfo info(fileName());
-   FileFormatHandler *format = 0;
-//    if(info.suffix() == "sch")
-//       format = new QucsPrimaryFormat(this);
-   if(info.suffix() == "xsch")
-      format = new XmlFormat(this);
+   FileFormatHandler *format =
+      FileFormatHandler::handlerFromSuffix(info.suffix(), this);
 
    if(!format) {
       QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
@@ -133,7 +130,7 @@ bool SchematicView::save()
    }
 
    QString saveText = format->saveText();
-   if(saveText.isNull()) {
+   if(saveText.isEmpty()) {
       qDebug("Looks buggy! Null data to save! Was this expected ??");
    }
    stream << saveText;

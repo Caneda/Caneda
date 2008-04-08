@@ -1,3 +1,9 @@
+2008-04-08  Gopala Krishna  <krishna.ggk@gmail.com>
+
+	* schematicscene.cpp (SchematicScene::alignElements): Implemented aligning of selected items.
+	* schematicscene.cpp (SchematicScene::distributeElements): Implemented distribution of selected items.
+	* qucsmainwindow.cpp Documentation and implementation of gotoPage fucntion.
+
 2008-03-12  Bastien Roucaries  <roucaries.bastien@gmail.com>
 
 	* xmlutilities/*.h,*.cpp: Implemented relaxNG validator and XSLT transformer as classes which can be used
