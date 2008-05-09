@@ -21,6 +21,7 @@
 #include "qucs-tools/global.h"
 
 #include "xmlutilities/validators.h"
+#include "xmlutilities/transformers.h"
 
 #include <QtGui/QTabBar>
 #include <QtGui/QDockWidget>

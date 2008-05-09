@@ -43,6 +43,12 @@ public:
 
   /* friend class */
   friend class QXmlStreamReaderExt;
+
+  /*!Return error status */
+  bool hasError() const { return this->errorflag; };
+  
+  /*!Return error string */
+  QString ErrorString() const { return this->Error; };
   
 private:  
   void * rng;
@@ -51,15 +57,16 @@ private:
   /*!\brief Cached filename */
   QString filename;
 
-  /*!\brief Construct an empty object */
-  void bless() {
-    this->rng = NULL;
-    this->vctxt = NULL;
-    this->filename = "";
-  }
+  void bless();
 
   /* finish construction */
   void finish(const void * pctxt);
+
+  void raiseError(const QString &error);
+  /*! error flag */
+  bool errorflag;
+  /*! error string */
+  QString Error;
 protected:
   /* validate document */
   bool validate(const void * doc) const;

@@ -60,7 +60,7 @@ class Library
       bool parseLibrary(Qucs::XmlReader *reader, QString path);
       bool parseExternalComponent(QString path);
 
-      void registerComponentData(Qucs::XmlReader *reader, QString path);
+      bool registerComponentData(Qucs::XmlReader *reader, QString path);
       QString m_libraryName;
       QString m_defaultSymbolId;
       QString m_displayText;

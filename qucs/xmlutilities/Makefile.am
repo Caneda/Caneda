@@ -24,10 +24,12 @@
 
 noinst_LIBRARIES = libxmlutilities.a
 
-libxmlutilities_a_SOURCES = QRelaxNGvalidator.cpp  QXmlStreamReaderExt.cpp  QXsltTransformer.cpp  validators.cpp \
-						xmlutilities.cpp
+libxmlutilities_a_SOURCES = QRelaxNGvalidator.cpp  QXmlStreamReaderExt.cpp \
+			    QXsltTransformer.cpp  transformers.cpp validators.cpp \
+			    xmlutilities.cpp
 
-noinst_HEADERS = QRelaxNGvalidator.h  QXmlStreamReaderExt.h  QXsltTransformer.h  validators.h xmlutilities.h
+noinst_HEADERS = QRelaxNGvalidator.h  QXmlStreamReaderExt.h  QXsltTransformer.h  \
+		 transformers.h validators.h xmlutilities.h
 
 INCLUDES = $(X11_INCLUDES) $(QT_INCLUDES) $(LIBXML2_INCLUDES) -I$(top_srcdir)/qucs
 

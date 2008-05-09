@@ -119,6 +119,7 @@ QPixmap Library::renderedPixmap(QString component,
  */
 bool Library::parseLibrary(Qucs::XmlReader *reader, QString filePath)
 {
+   bool readok = true;
    Q_ASSERT(reader->isStartElement() && reader->name() == "library");
    QDir fileDir(filePath);
 
@@ -146,7 +147,7 @@ bool Library::parseLibrary(Qucs::XmlReader *reader, QString filePath)
          else if(reader->name() == "component") {
             QString externalPath = reader->attributes().value("href").toString();
             if(externalPath.isEmpty()) {
-               registerComponentData(reader, filePath);
+               readok = registerComponentData(reader, filePath);
             }
             else {
                QString absFilePath = fileDir.absoluteFilePath(externalPath);
@@ -167,7 +168,7 @@ bool Library::parseLibrary(Qucs::XmlReader *reader, QString filePath)
          }
       }
    }
-   return !reader->hasError();
+   return !reader->hasError() && readok;
 }
 
 /*!
@@ -175,7 +176,9 @@ bool Library::parseLibrary(Qucs::XmlReader *reader, QString filePath)
  */
 bool Library::parseExternalComponent(QString path)
 {
+   bool readok = true;
    QFile file(path);
+   
    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
       QMessageBox::warning(0, QObject::tr("File open"),
                            QObject::tr("Cannot open file %1").arg(path));
@@ -197,28 +200,31 @@ bool Library::parseExternalComponent(QString path)
    if(reader.isStartElement() && reader.name() == "component") {
       QFileInfo info(path);
       QString parentPath = info.dir().absolutePath();
-      registerComponentData(&reader, parentPath);
+      readok = registerComponentData(&reader, parentPath);
    }
-   return !reader.hasError();
+   return !reader.hasError() && readok;
 }
 
 //! Registers svg as well as the component's shared data.
-void Library::registerComponentData(Qucs::XmlReader *reader, QString path)
+bool Library::registerComponentData(Qucs::XmlReader *reader, QString path)
 {
    Q_ASSERT(m_svgPainter);
+   bool readok;
+
    //Automatically registers svgs on success
    ComponentDataPtr dataPtr(new ComponentData);
    dataPtr->library = libraryName();
-   Qucs::readComponentData(reader, path, m_svgPainter, dataPtr);
+   readok = Qucs::readComponentData(reader, path, m_svgPainter, dataPtr);
 
-   if(dataPtr.constData() == 0 || reader->hasError()) {
+   if(dataPtr.constData() == 0 || reader->hasError() || !readok) {
       qWarning() << "\nWarning: Failed to read data from\n" << path;
-      return;
+      return false;
    }
 
    if(!m_componentHash.contains(dataPtr->name)) {
       m_componentHash.insert(dataPtr->name, dataPtr);
    }
+   return true;
 }
 
 //! Constructor

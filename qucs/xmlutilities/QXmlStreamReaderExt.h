@@ -24,6 +24,7 @@
 */
 
 #include <QtXml/QXmlStreamReader>
+#include <QtCore/QByteArray>
 
 #include "QRelaxNGvalidator.h"
 #include "QXsltTransformer.h"
@@ -48,6 +49,10 @@ public:
   QXmlStreamReaderExt (const QByteArray &array, const QRelaxNGvalidator * schema = NULL,
 		       const QXsltTransformer *xslt = NULL);
   ~QXmlStreamReaderExt();
+/*!\brief Get a const copy of transformed xml */
+  const char * constData() {
+    return data.constData();
+  }
 
 protected:
   /*!\brief The xml file loaded in memory */
@@ -59,7 +64,7 @@ private:
   /*!\brief Default and safe initialisation */
   void bless()
   {
-    this->data = NULL;
+    this->data = QByteArray();
     this->xmlout = NULL;
   };
   /* finalize construction */

@@ -55,6 +55,12 @@ public:
   
   /* friend class */
   friend class QXmlStreamReaderExt;
+
+  /*!Return error status */
+  bool hasError() const { return this->errorflag; };
+  
+  /*!Return error string */
+  QString ErrorString() const { return this->Error; };
   
 private:  
   /*! pointer to in memory parsed script */
@@ -82,6 +88,14 @@ private:
   /* insert pair argument/value */
   bool insert(const QString &key, const QString &value, 
 	      const unsigned int pos);
+
+  
+  void raiseError(const QString &error);
+  /*!\brief Error String */
+  QString Error;
+  /*!\brief Set in case of error */
+  bool errorflag;
+
 protected:
   /* validate document */
   void * transform(const void * doc) const;

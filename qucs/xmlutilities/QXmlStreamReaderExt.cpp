@@ -120,13 +120,23 @@ void QXmlStreamReaderExt::finalize(const void * docvoid,
   xmlDocPtr xslteddoc = NULL;
   int size;
   
-  if(schema != NULL)
+  if(schema != NULL) {
+    if(schema->hasError())
+      {
+	this->raiseError(schema->ErrorString());
+	goto notvalid;
+      }
     /* validate */
     if(schema->validate(doc) == false)
       goto notvalid;
-
+  }
+  
   /* apply xslt */
   if(xslt != NULL) {
+    if(xslt->hasError()) {
+      this->raiseError(xslt->ErrorString());
+      goto outxslterror;
+    }
     xslteddoc = (xmlDocPtr) xslt->transform(doc);
     if( xslteddoc == NULL)
       goto outxslterror;

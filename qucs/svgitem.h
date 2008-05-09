@@ -36,17 +36,12 @@ class SvgItemData
 {
    public:
       SvgItemData(const QByteArray& _content);
-
-      void setStyleSheet(const QByteArray& stylesheet);
-      QByteArray styleSheet() const;
-
       QRectF boundingRect() const;
 
    private:
       friend class SvgPainter;
 
       QByteArray content; //!< Represents raw svg content.
-      qreal cachedStrokeWidth; //!< Represents stroke width , which is cached.
       QSvgRenderer renderer; //!< Represents svg renderer which renders svg.
       bool pixmapDirty; //!< Takes care of dirtyness of the pixmap cache.
 };
@@ -85,16 +80,12 @@ struct SvgPainter : public QObject
       SvgItemData* svgData(const QString& svg_id) const;
 
       QByteArray svgContent(const QString& svg_id) const;
-      qreal strokeWidth(const QString& svg_id) const;
 
       //! Returns whether caching is enabled for the svgs or not.
       bool isCachingEnabled() const { return m_cachingEnabled; }
       void setCachingEnabled(bool caching);
 
       static SvgPainter* defaultInstance();
-
-      void setStyleSheet(const QString& svg_id, const QByteArray& stylesheet);
-      QByteArray styleSheet(const QString& svg_id) const;
 
    private:
       QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
@@ -124,8 +115,6 @@ class SvgItem : public QObject, public QucsItem
       int type() const { return SvgItem::Type; }
 
       void paint(QPainter *p, const QStyleOptionGraphicsItem* o, QWidget *w);
-
-      qreal strokeWidth() const;
 
       void registerConnections(const QString& id, SvgPainter *painter);
 

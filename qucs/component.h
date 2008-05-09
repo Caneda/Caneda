@@ -44,16 +44,30 @@ namespace Qucs
  */
 struct ComponentData : public QSharedData
 {
-   public:
-      ComponentData(Qucs::ActiveStatus a = Qucs::Active) : activeStatus(a) {}
-      QString name;
-      QString labelPrefix;
-      QString displayText;
-      QString description;
-      QString library;
-      PropertyMap propertyMap;
-      Qucs::ActiveStatus activeStatus;
-      QMap<QString, QList<PortData*> > schematicPortMap;
+public:
+  ComponentData(Qucs::ActiveStatus a = Qucs::Active) : activeStatus(a) {}
+  /*!\brief Component name */
+  QString name;
+  /*!\brief Component prefix */
+  QString labelPrefix;
+  /*!\brief Component display text 
+     \todo Create a localization class   
+   */
+  QString displayText;
+  /*!\brief Component description 
+     \todo Create a localization class   
+  */
+  QString description;
+  /*!\brief library 
+      \todo replace whith path
+  */
+  QString library;
+  /*!\brief Properties */
+  PropertyMap propertyMap;
+  /*!\brief Status of component */
+  Qucs::ActiveStatus activeStatus;
+  /*!\brief Map of component port (common port data)*/
+  QMap<QString, QList<PortData*> > schematicPortMap;
 };
 
 /*!
@@ -163,24 +177,19 @@ class Component : public SvgItem
 
    private:
       void init();
-
+       
+      /*!\brief Component Shared datas */
       QSharedDataPointer<ComponentData> d;
+      /*!\brief Property group (ie property of this component) */
       PropertiesGroup *m_propertyGroup;
+      /*!\brief Ports list */
       QList<Port*> m_ports;
 };
 
 namespace Qucs
 {
-   void readComponentData(Qucs::XmlReader *reader, const QString& path,
+   bool readComponentData(Qucs::XmlReader *reader, const QString& path,
                           SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d);
-   void readSchematics(Qucs::XmlReader *reader,
-                       const QString& path,
-                       SvgPainter *svgPainter,
-                       QSharedDataPointer<ComponentData> &d);
-   void readSchematic(Qucs::XmlReader *reader,
-                      const QString& path,
-                      SvgPainter *svgPainter,
-                      QSharedDataPointer<ComponentData> &d);
 }
 
 #endif //__COMPONENT_H

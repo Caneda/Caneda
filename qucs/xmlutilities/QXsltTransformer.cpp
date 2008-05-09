@@ -69,9 +69,10 @@ QXsltTransformer::QXsltTransformer (const QByteArray &array)
   return;
   
  cannotparse:
-  qDebug() << "Could not parse from memory";
+  this->raiseError("Could not parse from memory");
+  return;
  couldnotload:
-  qDebug() << "Could not load from memory\n";
+  this->raiseError("Could not load from memory");
   return;
 }
 
@@ -98,7 +99,7 @@ QXsltTransformer::QXsltTransformer (const QString & filename)
   return;
 
  couldnotload:
-  qDebug() << "Could not load xslt file " << this->filename ;
+  this->raiseError("Could not load xslt file"+this->filename);
   return;
 }
 
@@ -109,6 +110,8 @@ void QXsltTransformer::init() {
     this->xslt = NULL;
     this->filename = "";
     this->emptylist();
+    this->Error = "";
+    this->errorflag = false;
 }
 
 
@@ -224,6 +227,15 @@ void * QXsltTransformer::transform(const void * doc) const {
   return (void *) xsltApplyStylesheet((xsltStylesheetPtr) this->xslt, 
 				      (xmlDocPtr) doc, 
 				      (const char **) this->charparam);
+}
+
+/*!\brief Raise an error 
+   \param error: error String
+ */
+void QXsltTransformer::raiseError(const QString& error)
+{
+  this->Error += error;
+  this->errorflag = true;
 }
 
 /*!\brief Default destructor 

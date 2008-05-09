@@ -37,145 +37,11 @@
   ##########################################################################
 */
 
-/*!
- *\brief This method hooks stylesheet to raw svg \a content.
- *
- * \param svgContent The raw svg to which stylesheet should be hooked to.
- * \param stylesheet The stylesheet which is to be hooked.
- */
-static void hookStyleSheetTo(QByteArray &svgContent,
-                                   const QByteArray& stylesheet)
-{
-   // No new stylesheet to insert.
-   if(stylesheet.isEmpty()) {
-      return;
-   }
+/*!\brief Item stroke width 
+   \todo should be cnfigurable 
+*/
+static const double itemstrokewidth = 1.0; 
 
-   QDomDocument doc("svg");
-   QString errorMsg;
-   if(!doc.setContent(svgContent, &errorMsg)) {
-      qWarning() << "SVG parse failed" << errorMsg << "\n" << svgContent;
-      return;
-   }
-
-   QDomNode docEle = doc.documentElement();
-   //style tag should be in defs tag
-   QDomNode defs = docEle.firstChildElement("defs");
-   if(defs.isNull()) {
-      defs = doc.createElement("defs");
-      defs = docEle.insertBefore(defs, docEle.firstChild());
-   }
-   QDomNode style = defs.firstChildElement("style");
-   if(style.isNull()) {
-      style = doc.createElement("style");
-      QDomElement ele = style.toElement();
-      ele.setAttribute("type", "text/css");
-      style = defs.insertBefore(ele, defs.firstChild());
-   }
-   QDomNode n = style.firstChild();
-   QDomCDATASection cdata = n.toCDATASection();
-
-   if(!n.isNull() && !n.isCDATASection()) {
-      qWarning() << "Please use cdata section to specify style in svg"
-                 << svgContent;
-      //reset cdata to null node to force insertion as cdata.
-      cdata = QDomCDATASection();
-   }
-
-   if(cdata.isNull()) {
-      cdata = doc.createCDATASection(stylesheet);
-      cdata = style.insertBefore(cdata, style.firstChild()).toCDATASection();
-   }
-   else {
-      cdata.setData(stylesheet);
-   }
-
-   svgContent = doc.toByteArray();
-}
-
-/*!
- *\brief This method extracts stylesheet content from given svg \a content.
- *
- * This also parses and checks for any violations of svg related to css
- * styling.
- * \param content Bytearray corresponding to svg.
- * \return An empty byte array if any error occurs, else stylesheet.
- */
-static QByteArray getStyleSheet(const QByteArray &content)
-{
-   QDomDocument doc("svg");
-   QString errorMsg;
-   if(!doc.setContent(content, &errorMsg)) {
-      qWarning() << "SVG parse failed" << errorMsg << "\n" << content;
-      return QByteArray();
-   }
-
-   QDomNode docEle = doc.documentElement();
-   //style tag should be in defs tag
-   QDomNode defs = docEle.firstChildElement("defs");
-   if(defs.isNull()) {
-      qWarning() << "getStyleSheet() : " << "No defs tag found"
-                 << "\n" << content;
-      return QByteArray();
-   }
-
-   QDomNode style = defs.firstChildElement("style");
-   if(style.isNull()) {
-      qWarning() << "getStyleSheet() : " << "No style tag found"
-                 << "\n" << content;
-      return QByteArray();
-   }
-
-   QDomNode n = style.firstChild();
-   QDomCDATASection cdata = n.toCDATASection();
-
-   if(n.isNull() || !n.isCDATASection()) {
-      qWarning() << "Please use cdata section to specify style in svg"
-                 << "\n" << content;
-      return QByteArray();
-   }
-
-   return cdata.data().toAscii();
-}
-
-/*!
- * \param content The actual svg file with style info in it.
- * \param ok If non null, this will indicate success state of this method.
- * \return Returns the parsed stroke width if found, else return 0.
- */
-static qreal getStrokeWidth(const QByteArray &content, bool *ok = 0)
-{
-   QByteArray stylesheet = getStyleSheet(content).simplified();
-   stylesheet.replace(QByteArray(" "),"");
-
-   int indStart = stylesheet.indexOf("{");
-   int indEnd = stylesheet.indexOf("}", indStart);
-
-   if(indStart == -1 || indEnd == -1 || indEnd < indStart) {
-      qWarning() << "getStrokeWidth() : Parse error.";
-      if(ok) *ok = false;
-      return 0.0;
-   }
-   QList<QByteArray> attrList = stylesheet.mid(indStart+1, indEnd - indStart)
-      .split(';');
-   foreach(QByteArray attr, attrList) {
-      int index = attr.indexOf("stroke-width");
-      if(index != -1) {
-         index = attr.indexOf(':', index);
-         if(index == -1) {
-            if(ok) *ok = false;
-            return 0.0;
-         }
-         return attr.right(attr.size() - index -1).toDouble(ok);
-      }
-   }
-   if(ok) {
-      *ok = false;
-      qWarning() << "Couldn't obtain pen width from the stylesheet:\n"
-                 << stylesheet;
-   }
-   return 0.0;
-}
 
 /*!
  * \internal
@@ -185,31 +51,31 @@ static qreal getStrokeWidth(const QByteArray &content, bool *ok = 0)
 static void highlightSelectedSvgItem(
    SvgItem *item, QPainter *painter, const QStyleOptionGraphicsItem *option)
 {
-   const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
-    if (qFuzzyCompare(qMax(murect.width(), murect.height()), qreal(0.0)))
-        return;
+  const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
+  if (qFuzzyCompare(qMax(murect.width(), murect.height()), qreal(0.0)))
+    return;
 
-    const QRectF mbrect = painter->transform().mapRect(item->boundingRect());
-    if (qMin(mbrect.width(), mbrect.height()) < qreal(1.0))
-        return;
+  const QRectF mbrect = painter->transform().mapRect(item->boundingRect());
+  if (qMin(mbrect.width(), mbrect.height()) < qreal(1.0))
+    return;
+  
+  qreal itemStrokeWidth = itemstrokewidth;
+  const qreal pad = itemStrokeWidth / 2;
+  const qreal strokeWidth = 0; // cosmetic pen
 
-    qreal itemStrokeWidth = item->strokeWidth();
-    const qreal pad = itemStrokeWidth / 2;
-    const qreal strokeWidth = 0; // cosmetic pen
+  const QColor fgcolor = option->palette.windowText().color();
+  const QColor bgcolor( // ensure good contrast against fgcolor
+		       fgcolor.red()   > 127 ? 0 : 255,
+		       fgcolor.green() > 127 ? 0 : 255,
+		       fgcolor.blue()  > 127 ? 0 : 255);
 
-    const QColor fgcolor = option->palette.windowText().color();
-    const QColor bgcolor( // ensure good contrast against fgcolor
-        fgcolor.red()   > 127 ? 0 : 255,
-        fgcolor.green() > 127 ? 0 : 255,
-        fgcolor.blue()  > 127 ? 0 : 255);
-
-    painter->setPen(QPen(bgcolor, strokeWidth, Qt::SolidLine));
-    painter->setBrush(Qt::NoBrush);
-    painter->drawRect(item->boundingRect().adjusted(pad, pad, -pad, -pad));
-
-    painter->setPen(QPen(option->palette.windowText(), 0, Qt::DashLine));
-    painter->setBrush(Qt::NoBrush);
-    painter->drawRect(item->boundingRect().adjusted(pad, pad, -pad, -pad));
+  painter->setPen(QPen(bgcolor, strokeWidth, Qt::SolidLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(item->boundingRect().adjusted(pad, pad, -pad, -pad));
+  
+  painter->setPen(QPen(option->palette.windowText(), 0, Qt::DashLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(item->boundingRect().adjusted(pad, pad, -pad, -pad));
 }
 
 /*
@@ -224,7 +90,6 @@ static void highlightSelectedSvgItem(
  */
 SvgItemData::SvgItemData(const QByteArray& _content) :
    content(_content),
-   cachedStrokeWidth(getStrokeWidth(content)),
    renderer(content),
    pixmapDirty(true)
 {
@@ -232,35 +97,6 @@ SvgItemData::SvgItemData(const QByteArray& _content) :
    Q_ASSERT(!content.isEmpty());
 }
 
-/*!
- * \brief Hooks in the stylesheet to raw svg and updates the renderer and the
- * cached values.
- */
-void SvgItemData::setStyleSheet(const QByteArray& stylesheet)
-{
-   if(getStyleSheet(content).isEmpty()) {
-      qWarning() << "SvgItemData::setStyleSheet()  :  "
-                 << "Cannot apply stylesheet to svg without stylesheet present"
-                 << " beforehand in the svg";
-      return;
-   }
-   hookStyleSheetTo(content, stylesheet);
-   pixmapDirty = true;
-   cachedStrokeWidth = getStrokeWidth(content);
-
-   /*NOTE: This load should be called only after all the state variables are
-           updated as the repaintNeeded signal is emitted requiring immediate
-           availability of new state variables.
-   */
-   renderer.load(content);
-   Q_ASSERT(renderer.isValid());
-}
-
-//! Returns the style sheet associated with the svg.
-QByteArray SvgItemData::styleSheet() const
-{
-   return getStyleSheet(content);
-}
 
 /*!
  * Returns the bounding rect of the svg element.
@@ -394,12 +230,6 @@ QByteArray SvgPainter::svgContent(const QString& svg_id) const
    return svgData(svg_id)->content;
 }
 
-//! Returns stroke width corresponding to svg id \a svg_id.
-qreal SvgPainter::strokeWidth(const QString& svg_id) const
-{
-   return svgData(svg_id)->cachedStrokeWidth;
-}
-
 //! Enables/Disables caching based on \a caching.
 void SvgPainter::setCachingEnabled(bool caching)
 {
@@ -426,17 +256,6 @@ SvgPainter* SvgPainter::defaultInstance()
    return singleton.get();
 }
 
-//! Hooks the stylesheet to svg. \sa SvgItemData::setStyleSheet()
-void SvgPainter::setStyleSheet(const QString& svg_id, const QByteArray& stylesheet)
-{
-   svgData(svg_id)->setStyleSheet(stylesheet);
-}
-
-//! Returns stylesheet of svg corresponding to svg id \a svg_id.
-QByteArray SvgPainter::styleSheet(const QString& svg_id) const
-{
-   return svgData(svg_id)->styleSheet();
-}
 
 /*
   ##########################################################################
@@ -480,14 +299,6 @@ void SvgItem::paint(QPainter *painter,
       highlightSelectedSvgItem(this, painter, option);
 }
 
-//! Returns stroke width used in svg.
-qreal SvgItem::strokeWidth() const
-{
-   if(isRegistered()) {
-      return svgPainter()->strokeWidth(m_svgId);
-   }
-   return 0.;
-}
 
 /*!
  *\brief Registers connections of this item with SvgPainter \a painter.
@@ -556,7 +367,7 @@ void SvgItem::updateBoundingRect()
    // accomodating extra stuff like ports.
    QRectF adjustedRect = adjustedBoundRect(bound);
 
-   setShapeAndBoundRect(QPainterPath(), adjustedRect, strokeWidth());
+   setShapeAndBoundRect(QPainterPath(), adjustedRect, itemstrokewidth);
 }
 
 /*!

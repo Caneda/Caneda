@@ -26,6 +26,7 @@
 #include "item.h"
 #include "library.h"
 #include "xmlutilities/validators.h"
+#include "xmlutilities/transformers.h"
 #include "dialogs/qucssettingsdialog.h"
 
 #include <QtGui/QStatusBar>
@@ -1832,6 +1833,17 @@ void QucsMainWindow::loadSettings()
       //invalidate entry.
       qWarning() << "QucsMainWindow::loadSettings() : Could not load validators. "
                  << "Expect crashing in case of incorrect xml file";
+   }
+
+   /* Load transformers */
+   Qucs::transformers * transformer = Qucs::transformers::defaultInstance();
+   if(transformer->load(libpath)) {
+     qDebug() << "Succesfully loaded transformers!";
+   }
+   else {
+      //invalidate entry.
+      qWarning() << "QucsMainWindow::loadSettings() : Could not load XSLT transformers. "
+                 << "Expect strange schematic symbols";
    }
 
    LibraryLoader *library = LibraryLoader::defaultInstance();
