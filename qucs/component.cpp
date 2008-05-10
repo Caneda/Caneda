@@ -172,10 +172,10 @@ bool Component::setSymbol(const QString& newSymbol)
    QString svgid = newSymbol;
    QString prefix(name());
    prefix.append('/');
-   if(!propertyMap().contains("symbol")) {
-      qDebug() << "Component::setSymbol() : 'symbol' property not found";
-      return false;
-   }
+
+   Q_ASSERT_X(propertyMap().contains("symbol"),
+	      __FUNCTION__,"Component::setSymbol() : 'symbol' property not found");
+   
    if(!d->propertyMap["symbol"].setValue(svgid)) {
       return false;
    }
@@ -206,10 +206,8 @@ bool Component::setSymbol(const QString& newSymbol)
  */
 bool Component::setLabel(const QString& newLabel)
 {
-   if(!propertyMap().contains("label")) {
-      qDebug() << "Component::setLabel() : 'label property not found";
-      return false;
-   }
+   Q_ASSERT_X(propertyMap().contains("label"),
+	      __FUNCTION__,"label property not found");
 
    if(!newLabel.startsWith(labelPrefix()))
       return false;
