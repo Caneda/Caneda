@@ -22,6 +22,7 @@
 
 #include "item.h"
 #include "wireline.h"
+#include "port.h"
 
 #include <QtCore/QList>
 
@@ -114,6 +115,11 @@ class Wire : public QucsItem
       bool isWire() const { return true; }
 
       void updateGeometry();
+      
+      /*! check if port 1 and 2 overlap */
+      bool overlap() const {
+	return this->port1()->scenePos() == this->port2()->scenePos();
+      }
 
    protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);

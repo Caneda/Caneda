@@ -1163,8 +1163,7 @@ void SchematicScene::wiringEventLeftMouseClick(const QPointF &pos)
     return this->wiringEventNewWire(pos);
   
   /* check overlap */
-  if(this->m_currentWiringWire->port1()->scenePos() 
-     == this->m_currentWiringWire->port2()->scenePos())
+  if(this->m_currentWiringWire->overlap()) 
     return;
     
   /* add undo information */
@@ -1192,8 +1191,7 @@ void SchematicScene::wiringEventRightMouseClick()
     return;
 
   /* check overlap */
-  if(this->m_currentWiringWire->port1()->scenePos() 
-     == this->m_currentWiringWire->port2()->scenePos())
+  if(this->m_currentWiringWire->overlap()) 
     return;
     
   /* add undo information */
