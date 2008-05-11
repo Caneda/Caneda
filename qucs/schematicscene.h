@@ -26,6 +26,7 @@
 #include <QtCore/QVarLengthArray>
 
 #include <QtGui/QGraphicsItem>
+#include <QtGui/QColor>
 
 #include "undocommands.h"
 
@@ -116,18 +117,32 @@ class SchematicScene : public QGraphicsScene
 
       QPointF nearingGridPoint(const QPointF &pos);
 
+      /*! return current undo stack */
       QUndoStack* undoStack() { return m_undoStack; }
 
+      /*! return grid width */
       uint gridWidth() const { return m_gridWidth; }
+      /*! set grid witdh */
       void setGridWidth(uint width) { setGridSize(width, gridHeight()); }
 
+      /*! return grid  height */
       uint gridHeight() const { return m_gridHeight; }
+      /*! set grid height */
       void setGridHeight(uint height) { setGridSize(gridWidth(), height); }
 
       void setGridSize(uint width, uint height);
 
+      /*! return grid visibility */
       bool isGridVisible() const { return m_gridVisible; }
-      void setGridVisible(bool visibility);
+      void setGridVisible(const bool visibility);
+
+      /*! get origin drawing status */
+      bool isOriginDrawn() const { return m_OriginDrawn; }
+      void setOriginDrawn(const bool visibility);
+
+      /*! get grid color */
+      QColor GridColor() const { return m_gridcolor; }
+      void setGridColor(const QColor & color);
 
       QString dataSet() const { return m_dataSet; }
       void setDataSet(const QString& str);
@@ -259,6 +274,8 @@ class SchematicScene : public QGraphicsScene
       uint m_gridHeight;
       /*! Grid is visible */
       bool m_gridVisible;
+      /*! Grid color */
+      QColor m_gridcolor;
 
       /*! Data Set file name */ 
       QString m_dataSet;
@@ -273,6 +290,8 @@ class SchematicScene : public QGraphicsScene
       bool m_frameVisible;
       /*! Snap component to grid */
       bool m_snapToGrid;
+      /*! Draw origin boolean */
+      bool m_OriginDrawn;
       bool m_macroProgress;
       bool m_shortcutsBlocked;
 };

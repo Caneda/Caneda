@@ -47,6 +47,7 @@
 #include <QtGui/QCursor>
 #include <QtGui/QShortcutEvent>
 #include <QtGui/QKeySequence>
+#include <QtGui/QColor>
 
 #include <cmath>
 #include <memory>
@@ -93,16 +94,23 @@ SchematicScene::SchematicScene ( qreal x, qreal y, qreal width, qreal height, QO
 */
 static const uint DEFAULT_GRID_SPACE = 10;
 
+/*!\brief Default grid color 
+   \todo Must be configurable 
+*/
+#define DEFAULT_GRID_COLOR Qt::darkGray;
+
 /*!\brief Initialize a schematic scene  */
 void SchematicScene::init()
 {
    m_undoStack = new QUndoStack(this);
    m_gridWidth = m_gridHeight = DEFAULT_GRID_SPACE;
+   m_gridcolor = DEFAULT_GRID_COLOR;
    m_currentMode = Qucs::SchematicMode;
    m_frameVisible = false;
    m_modified = false;
    m_snapToGrid = true;
    m_gridVisible = true;
+   m_OriginDrawn = true;
    m_opensDataDisplay = true;
    m_frameTexts = QStringList() << tr("Title") << tr("Drawn By:") << tr("Date:") << tr("Revision:");
    m_macroProgress = false;
@@ -383,11 +391,37 @@ void SchematicScene::setGridSize(const uint width, const uint height)
 */
 void SchematicScene::setGridVisible(const bool visibility)
 {
+  /* avoid updating */
    if(m_gridVisible == visibility) 
      return;
    m_gridVisible = visibility;
    update();
 }
+
+/*! Set grid visibility 
+  \param visibility: Grid visibility 
+*/
+void SchematicScene::setGridColor(const QColor &color)
+{
+  /* avoid updating */
+   if(m_gridcolor == color) 
+     return;
+   m_gridcolor = color;
+   update();
+}
+
+/*! Set origin visibility
+  \param visibility: origin visibility 
+*/
+void SchematicScene::setOriginDrawn(const bool visibility)
+{
+  /* avoid updating */
+   if(m_OriginDrawn == visibility) 
+     return;
+   m_OriginDrawn = visibility;
+   update();
+}
+
 /*!\todo Document */
 void SchematicScene::setDataSet(const QString& _dataSet)
 {
@@ -825,25 +859,35 @@ bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& 
     \param painter: Where to draw
     \param rect: Visible area
     \todo Finish visual representation
-    \bug Why multiply by two
+    \note draw origin 
+    \todo draw origin should be configurable 
 */
 void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 {
-   if(!isGridVisible())
-      return QGraphicsScene::drawBackground(painter,rect);
+  int gridWidth = this->gridWidth();
+  int gridHeight = this->gridHeight();
+  QPen savedpen;
 
-   painter->setPen(QPen(Qt::black,0));
-   painter->setBrush(Qt::NoBrush);
-   painter->setRenderHint(QPainter::Antialiasing,false);
+  /* no grid */
+  if(!this->isGridVisible())
+    return QGraphicsScene::drawBackground(painter,rect);
 
-   if(rect.contains(QPointF(0.0,0.0))) {
-      painter->drawLine(QLineF(-3.0, 0.0, 3.0, 0.0));
-      painter->drawLine(QLineF(0.0, -3.0, 0.0, 3.0));
-   }
+  /* configure pen */
+  savedpen = painter->pen();
+  painter->setPen(QPen(this->GridColor(),0));
+  painter->setBrush(Qt::NoBrush);
 
-   /* XXX: why */
-   int gridWidth = m_gridWidth*2, gridHeight = m_gridHeight*2;
+  /* disable anti aliasing */
+  painter->setRenderHint(QPainter::Antialiasing,false);
 
+  /* draw origin */
+  if(this->isOriginDrawn() == true &&
+     rect.contains(QPointF(0.0,0.0))) {
+    painter->drawLine(QLineF(-3.0, 0.0, 3.0, 0.0));
+    painter->drawLine(QLineF(0.0, -3.0, 0.0, 3.0));
+  }
+
+   
    // Adjust  visual representation of grid to be multiple, if
    // grid sizes are very small
 #if 0
@@ -857,7 +901,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
       gridHeight /= 2;
 #endif
    
-   /* first grid poin */
+   /* extrema grid points */
    qreal left = int(rect.left()) + gridWidth - (int(rect.left()) % gridWidth);
    qreal top = int(rect.top()) + gridHeight - (int(rect.top()) % gridHeight);
    qreal right = int(rect.right()) - (int(rect.right()) % gridWidth);
@@ -869,7 +913,9 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
       for( y = top; y <=bottom; y += gridHeight)
          painter->drawPoint(QPointF(x,y));
 
+   /* restore painter */
    painter->setRenderHint(QPainter::Antialiasing,true);
+   painter->setPen(savedpen);
 }
 
 /*! \todo Document */
