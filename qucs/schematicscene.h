@@ -27,6 +27,7 @@
 
 #include <QtGui/QGraphicsItem>
 #include <QtGui/QColor>
+#include <QtCore/QPointF>
 
 #include "undocommands.h"
 
@@ -229,7 +230,16 @@ class SchematicScene : public QGraphicsScene
       void disconnectDisconnectibles();
       void specialMove(qreal dx, qreal dy);
       void endSpecialMove();
-
+      
+      /* private wiring function */
+      void wiringEventNewWire(const QPointF& pos);
+      void wiringEventMouseClickUndoState(void);
+      void wiringEventLeftMouseClick(const QPointF &pos);
+      void wiringEventRightMouseClick();
+      void wiringEventMouseClickFinalize();
+      void wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos);
+      void wiringEventMouseMove(const QPointF &pos);
+      
       QucsItem* itemForName(const QString& name, const QString& category);
       void placeItem(QucsItem *item, QPointF pos, Qucs::UndoOption opt);
       int componentLabelSuffix(const QString& labelPrefix) const;

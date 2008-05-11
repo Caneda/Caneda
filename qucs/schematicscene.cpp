@@ -49,6 +49,7 @@
 #include <QtGui/QKeySequence>
 #include <QtGui/QColor>
 
+
 #include <cmath>
 #include <memory>
 
@@ -1099,6 +1100,137 @@ void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
    sendMouseActionEvent(e);
 }
 
+
+/*!\brief Create a new wire 
+   \note Only active on left button 
+*/
+void SchematicScene::wiringEventNewWire(const QPointF &pos)
+{ 
+  this->m_currentWiringWire = new Wire(pos, pos, false, this);
+  return;
+}
+
+
+/*!\brief Add a wiring control point 
+   \param pos: current mouse position  
+   \todo remove tracing
+   \todo better documentation
+*/
+void SchematicScene::wiringEventMouseClickUndoState(void)
+{
+  this->m_undoStack->beginMacro(QString());
+
+  /* clean up line */
+  this->m_currentWiringWire->removeNullLines();
+
+  if(!this->m_isWireCmdAdded) {
+    qDebug() << "first wire action";
+    this->m_undoStack->push(new AddWireCmd(m_currentWiringWire, this));
+    m_isWireCmdAdded = true;
+  }
+  else {
+    qDebug() << "next wire action";
+    this->m_undoStack->push(new WireStateChangeCmd(this->m_currentWiringWire,
+						   this->m_currentWiringWire->storedState(),
+						   this->m_currentWiringWire->currentState()));
+  }
+  this->m_currentWiringWire->checkAndConnect(Qucs::PushUndoCmd);
+  
+  this->m_undoStack->endMacro();
+}
+
+
+/*!\brief Finalize wire ie last control point == end */
+void SchematicScene::wiringEventMouseClickFinalize() 
+{
+  this->m_currentWiringWire->show();
+  this->m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
+  this->m_currentWiringWire->updateGeometry();
+  
+  m_currentWiringWire = NULL;
+  m_isWireCmdAdded = false; 
+}
+
+
+/*!\brief Left mouse click wire event 
+   \param Event: mouse event
+   \param rounded: coordinate of mouse action point (rounded if needed)
+*/
+void SchematicScene::wiringEventLeftMouseClick(const QPointF &pos)
+{
+  /* create new wire */
+  if(this->m_currentWiringWire == NULL)
+    return this->wiringEventNewWire(pos);
+  
+  /* check overlap */
+  if(this->m_currentWiringWire->port1()->scenePos() 
+     == this->m_currentWiringWire->port2()->scenePos())
+    return;
+    
+  /* add undo information */
+  this->wiringEventMouseClickUndoState();
+
+  if(this->m_currentWiringWire->port2()->hasConnection())
+    /* finalize */
+    return this->wiringEventMouseClickFinalize();  
+  else {
+    /* add segment */
+    this->m_currentWiringWire->storeState();
+    
+    WireLines& wLinesRef = m_currentWiringWire->wireLinesRef();
+    WireLine toAppend(wLinesRef.last().p2(), wLinesRef.last().p2());
+    wLinesRef << toAppend << toAppend;
+  }
+}
+
+/*!\brief Right mouse click wire event. This is finish wire event
+*/
+void SchematicScene::wiringEventRightMouseClick()
+{
+  /* right click could not begin a wire */
+  if(this->m_currentWiringWire == NULL)
+    return;
+
+  /* check overlap */
+  if(this->m_currentWiringWire->port1()->scenePos() 
+     == this->m_currentWiringWire->port2()->scenePos())
+    return;
+    
+  /* add undo information */
+  this->wiringEventMouseClickUndoState();
+
+  /* finalize */
+  return this->wiringEventMouseClickFinalize(); 
+}
+
+/*!\brief Mouse click wire event 
+   \param Event: mouse event
+   \param pos: coordinate of mouse action point (rounded if needed)
+   \todo right click
+*/
+void SchematicScene::wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos)
+{
+  /* left click */
+  if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) 
+    return wiringEventLeftMouseClick(pos);
+  /* right click */
+  if((event->buttons() & Qt::RightButton) == Qt::RightButton) 
+    return wiringEventRightMouseClick();
+  return;
+}
+
+
+/*!\brief Mouse move wire event 
+   \param pos: coordinate of mouse action point (rounded if needed)
+*/
+void SchematicScene::wiringEventMouseMove(const QPointF &pos)
+{
+  if(this->m_currentWiringWire != NULL) {
+    QPointF newPos = this->m_currentWiringWire->mapFromScene(pos);
+    this->m_currentWiringWire->movePort2(newPos);
+  }
+}
+
 /*!\brief Wiring event 
    \todo undo scheme 
    \todo document
@@ -1107,69 +1239,16 @@ void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 */
 void SchematicScene::wiringEvent(MouseActionEvent *event)
 {
-  /* rounded */
-   QPointF rounded;
+   /* round */
+   QPointF pos;
+   pos = this->smartNearingGridPoint(event->scenePos());
 
-   if(event->type() == QEvent::GraphicsSceneMousePress) {
-      rounded = this->smartNearingGridPoint(event->scenePos());
-
-      /* create new wire */
-      if(this->m_currentWiringWire == NULL) {
-         this->m_currentWiringWire = new Wire(rounded, rounded, false, this);
-         this->m_currentWiringWire->hide();
-         return;
-      }
-
-      if(this->m_currentWiringWire->port1()->scenePos() 
-	 == this->m_currentWiringWire->port2()->scenePos())
-         return;
-
-      this->m_undoStack->beginMacro(QString());
-
-      if(!this->m_isWireCmdAdded) {
-	 qDebug() << "first wire action";
-         this->m_currentWiringWire->removeNullLines();
-
-         this->m_undoStack->push(new AddWireCmd(m_currentWiringWire, this));
-         m_isWireCmdAdded = true;
-      }
-      else {
-	 qDebug() << "next wire action";
-         this->m_currentWiringWire->removeNullLines();
-         this->m_undoStack->push(new WireStateChangeCmd(this->m_currentWiringWire,
-						       this->m_currentWiringWire->storedState(),
-						       this->m_currentWiringWire->currentState()));
-
-      }
-      this->m_currentWiringWire->checkAndConnect(Qucs::PushUndoCmd);
-
-      this->m_undoStack->endMacro();
-
-      if(this->m_currentWiringWire->port2()->hasConnection()) {
-
-         this->m_currentWiringWire->show();
-         this->m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
-         this->m_currentWiringWire->updateGeometry();
-
-         m_currentWiringWire = NULL;
-         m_isWireCmdAdded = false;
-      }
-      else {
-         m_currentWiringWire->storeState();
-
-         WireLines& wLinesRef = m_currentWiringWire->wireLinesRef();
-         WireLine toAppend(wLinesRef.last().p2(), wLinesRef.last().p2());
-         wLinesRef << toAppend << toAppend;
-      }
-   }
-   /*! move action */
-   else if(event->type() == QEvent::GraphicsSceneMouseMove) {
-      rounded = this->smartNearingGridPoint(event->scenePos());
-      if(this->m_currentWiringWire != NULL) {
-         QPointF newPos = this->m_currentWiringWire->mapFromScene(rounded);
-         this->m_currentWiringWire->movePort2(newPos);
-      }
-   }
+   /* press mouse */
+   if(event->type() == QEvent::GraphicsSceneMousePress) 
+     return this->wiringEventMouseClick(event,pos);
+   /* move mouse */
+   else if(event->type() == QEvent::GraphicsSceneMouseMove) 
+      return this->wiringEventMouseMove(pos);
 }
 
 /*! delete items 
