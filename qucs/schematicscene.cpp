@@ -1153,8 +1153,8 @@ void SchematicScene::wiringEventMouseClickFinalize()
   this->m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
   this->m_currentWiringWire->updateGeometry();
   
-  m_currentWiringWire = NULL;
-  m_isWireCmdAdded = false; 
+  this->m_currentWiringWire = NULL;
+  this->m_isWireCmdAdded = false; 
 }
 
 
