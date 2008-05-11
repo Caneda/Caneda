@@ -1120,6 +1120,7 @@ void SchematicScene::wiringEventNewWire(const QPointF &pos)
    \param pos: current mouse position  
    \todo remove tracing
    \todo better documentation
+   \todo Add undo string 
 */
 void SchematicScene::wiringEventMouseClickUndoState(void)
 {
@@ -1234,12 +1235,7 @@ void SchematicScene::wiringEventMouseMove(const QPointF &pos)
   }
 }
 
-/*!\brief Wiring event 
-   \todo undo scheme 
-   \todo document
-   \todo remove tracing
-   \todo change mouse action
-*/
+/*!\brief Wiring event */
 void SchematicScene::wiringEvent(MouseActionEvent *event)
 {
    /* round */
