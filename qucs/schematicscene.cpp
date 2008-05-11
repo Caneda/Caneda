@@ -1029,7 +1029,7 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
          }
       }
       if(qItem) {
-         QPointF dest = m_snapToGrid ? nearingGridPoint(event->scenePos()) : event->scenePos();
+         QPointF dest = smartNearingGridPoint(event->scenePos());
 
          placeItem(qItem, dest, Qucs::PushUndoCmd);
          view->restoreScrollState();
