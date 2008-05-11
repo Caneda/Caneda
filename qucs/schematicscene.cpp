@@ -1100,6 +1100,11 @@ void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
    sendMouseActionEvent(e);
 }
 
+/*********************************************************************
+ *
+ *            WIRING ACTION
+ *
+ *********************************************************************/
 
 /*!\brief Create a new wire 
    \note Only active on left button 
