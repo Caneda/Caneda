@@ -1049,7 +1049,7 @@ void QucsMainWindow::initToolBars()
  * \a func if on is true. This method takes care to preserve the mutual
  * exclusiveness off the checkable actions.
  */
-void QucsMainWindow::performToggleAction(bool on, pActionFunc func, QAction *action)
+void QucsMainWindow::performToggleAction(const bool on, pActionFunc func, QAction *action)
 {
    SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
    if(!view) {

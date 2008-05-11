@@ -65,21 +65,39 @@ QPointF centerOfItems(const QList<T*> &items)
    return rect.center();
 }
 
+/*!\brief Default Constructor */
 SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 {
    init();
 }
 
+/*!\brief Constructs a SchematicScene object, 
+          using the rectangle specified by (x, y), 
+          and the given width and height for its scene rectangle. 
+          The parent parameter is passed to QObject's constructor.
+   \param x: first coordinate of rectangle
+   \param y: second coordinate of rectangle
+   \param width: schematic width
+   \param height: schematic height
+   \param parent: passed to  QObject's constructor.
+*/
 SchematicScene::SchematicScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent ) :
    QGraphicsScene(x,y,width,height,parent)
 {
    init();
 }
 
+
+/*!\brief Default grid spacing
+  \todo Must be configurable 
+*/
+static const uint DEFAULT_GRID_SPACE = 10;
+
+/*!\brief Initialize a schematic scene  */
 void SchematicScene::init()
 {
    m_undoStack = new QUndoStack(this);
-   m_gridWidth = m_gridHeight = 10;
+   m_gridWidth = m_gridHeight = DEFAULT_GRID_SPACE;
    m_currentMode = Qucs::SchematicMode;
    m_frameVisible = false;
    m_modified = false;
@@ -98,16 +116,26 @@ void SchematicScene::init()
    setCurrentMouseAction(Normal);
 }
 
+/*!\brief Default Destructor */
 SchematicScene::~SchematicScene()
 {
    delete m_undoStack;
 }
 
+/*!\todo Chck usefulness */
 void SchematicScene::test()
 {
 }
 
-void SchematicScene::mirrorXItems(QList<QucsItem*> items, Qucs::UndoOption opt)
+/*!\brief Mirror an item list 
+   \param items: item list
+   \param opt: undo option
+   \todo Document
+   \todo Create a custom undo class for avoiding if
+   \todo Add string to begin macro
+*/
+void SchematicScene::mirrorXItems(QList<QucsItem*> &items, 
+				  const Qucs::UndoOption opt)
 {
    if(opt == Qucs::PushUndoCmd)
       m_undoStack->beginMacro(QString());
@@ -129,7 +157,17 @@ void SchematicScene::mirrorXItems(QList<QucsItem*> items, Qucs::UndoOption opt)
       m_undoStack->endMacro();
 }
 
-void SchematicScene::mirrorYItems(QList<QucsItem*> items, Qucs::UndoOption opt)
+
+/*!\brief Mirror an item list 
+   \param items: item list
+   \param opt: undo option
+   \todo Document
+   \todo Create a custom undo class for avoiding if
+   \todo Add string to begin macro
+   \todo Factorize with previous command 
+*/
+void SchematicScene::mirrorYItems(QList<QucsItem*> &items, 
+				  const Qucs::UndoOption opt)
 {
    if(opt == Qucs::PushUndoCmd)
       m_undoStack->beginMacro(QString());
@@ -151,7 +189,15 @@ void SchematicScene::mirrorYItems(QList<QucsItem*> items, Qucs::UndoOption opt)
       m_undoStack->endMacro();
 }
 
-void SchematicScene::rotateItems(QList<QucsItem*> items, Qucs::UndoOption opt)
+/*!\brief Rotate an item list 
+   \param items: item list
+   \param opt: undo option
+   \todo Document
+   \todo Create a custom undo class for avoiding if
+   \todo Add string to begin macro
+*/
+void SchematicScene::rotateItems(QList<QucsItem*> &items, 
+				 const Qucs::UndoOption opt)
 {
    if(opt == Qucs::PushUndoCmd)
       m_undoStack->beginMacro(QString());
@@ -173,7 +219,15 @@ void SchematicScene::rotateItems(QList<QucsItem*> items, Qucs::UndoOption opt)
       m_undoStack->endMacro();
 }
 
-void SchematicScene::deleteItems(QList<QucsItem*> items, Qucs::UndoOption opt)
+/*!\brief delete an item list 
+   \param items: item list
+   \param opt: undo option
+   \todo Document
+   \todo Create a custom undo class for avoiding if
+   \todo Add string to begin macro
+*/
+void SchematicScene::deleteItems(QList<QucsItem*> &items, 
+				 const Qucs::UndoOption opt)
 {
    if(opt == Qucs::DontPushUndoCmd) {
       foreach(QucsItem* item, items) {
@@ -191,7 +245,15 @@ void SchematicScene::deleteItems(QList<QucsItem*> items, Qucs::UndoOption opt)
    }
 }
 
-void SchematicScene::setItemsOnGrid(QList<QucsItem*> items, Qucs::UndoOption opt)
+/*!\brief Set item on list 
+   \param items: item list
+   \param opt: undo option
+   \todo Document
+   \todo Create a custom undo class for avoiding if
+   \todo Add string to begin macro
+*/
+void SchematicScene::setItemsOnGrid(QList<QucsItem*> &items, 
+				    const Qucs::UndoOption opt)
 {
    QList<QucsItem*> itemsNotOnGrid;
    foreach(QucsItem* item, items) {
@@ -228,7 +290,15 @@ void SchematicScene::setItemsOnGrid(QList<QucsItem*> items, Qucs::UndoOption opt
       m_undoStack->endMacro();
 }
 
-void SchematicScene::toggleActiveStatus(QList<QucsItem*> items, Qucs::UndoOption opt)
+/*!\brief Set item on list 
+   \param items: item list
+   \param opt: undo option
+   \todo Document
+   \todo Create a custom undo class for avoiding if
+   \todo Add string to begin macro
+*/
+void SchematicScene::toggleActiveStatus(QList<QucsItem*> &items, 
+					const Qucs::UndoOption opt)
 {
    QList<Component*> components = filterItems<Component>(items);
    if(components.isEmpty())
@@ -244,39 +314,63 @@ void SchematicScene::toggleActiveStatus(QList<QucsItem*> items, Qucs::UndoOption
    }
 }
 
+/*!\brief Data set file suffix 
+   \todo use something more explicit 
+*/
+static const char dataSetSuffix[] = ".dat"; 
+/*!\brief Data display file suffix */
+static const char dataDisplaySuffix[] = ".dpl";
+
+/*!\brief Set schematic and datafile name 
+   \param name: name to set
+*/
 void SchematicScene::setFileName(const QString& name)
 {
    if(name == m_fileName || name.isEmpty())
       return;
    m_fileName = name;
    QFileInfo info(m_fileName);
-   m_dataSet = info.baseName() + ".dat";
-   m_dataDisplay = info.baseName() + ".dpl";
+   m_dataSet = info.baseName() + dataSetSuffix;
+   m_dataDisplay = info.baseName() + dataDisplaySuffix;
    emit fileNameChanged(m_fileName);
    emit titleToBeUpdated();
 }
 
+/*! Get nearest point on grid 
+    \param pos: current position to be rounded
+    \return rounded position
+*/
 QPointF SchematicScene::nearingGridPoint(const QPointF &pos)
 {
    QPoint point = pos.toPoint();
    int x = point.x();
    int y = point.y();
 
-   if(x<0) x -= (m_gridWidth >> 1) - 1;
-   else x += m_gridWidth >> 1;
+   if(x<0) 
+     x -= (m_gridWidth >> 1) - 1;
+   else 
+     x += m_gridWidth >> 1;
    x -= x % m_gridWidth;
 
-   if(y<0) y -= (m_gridHeight >> 1) - 1;
-   else y += m_gridHeight >> 1;
+   if(y<0) 
+     y -= (m_gridHeight >> 1) - 1;
+   else 
+     y += m_gridHeight >> 1;
    y -= y % m_gridHeight;
 
    return QPointF(x,y);
 }
 
-void SchematicScene::setGridSize(uint width, uint height)
+/*! Set grid size 
+    \param width: grid width in pixel
+    \param height: grid height in pixel
+*/
+void SchematicScene::setGridSize(const uint width, const uint height)
 {
+  /* avoid redrawing */
    if(m_gridWidth == width && m_gridHeight == height)
       return;
+
    m_gridWidth = width;
    m_gridHeight = height;
 
@@ -284,35 +378,44 @@ void SchematicScene::setGridSize(uint width, uint height)
       update();
 }
 
-void SchematicScene::setGridVisible(bool visibility)
+/*! Set grid visibility 
+  \param visibility: Grid visibility 
+*/
+void SchematicScene::setGridVisible(const bool visibility)
 {
-   if(m_gridVisible == visibility) return;
+   if(m_gridVisible == visibility) 
+     return;
    m_gridVisible = visibility;
    update();
 }
-
+/*!\todo Document */
 void SchematicScene::setDataSet(const QString& _dataSet)
 {
    m_dataSet = _dataSet;
 }
 
+/*!\todo Documenent */
 void SchematicScene::setDataDisplay(const QString& display)
 {
    m_dataDisplay = display;
 }
 
-void SchematicScene::setOpensDataDisplay(bool state)
+/*!\todo Documenent */
+void SchematicScene::setOpensDataDisplay(const bool state)
 {
    m_opensDataDisplay = state;
 }
 
-void SchematicScene::setFrameVisible(bool visibility)
+/*!\todo Documenent */
+void SchematicScene::setFrameVisible(const bool visibility)
 {
-   if(m_frameVisible == visibility) return;
+   if(m_frameVisible == visibility) 
+     return;
    m_frameVisible = visibility;
    update();
 }
 
+/*!\brief Todo document */
 void SchematicScene::setFrameTexts(const QStringList& texts)
 {
    m_frameTexts = texts;
@@ -320,17 +423,24 @@ void SchematicScene::setFrameTexts(const QStringList& texts)
       update();
 }
 
-void SchematicScene::setMode(Qucs::Mode mode)
+/*!\brief Todo document */
+void SchematicScene::setMode(const Qucs::Mode mode)
 {
-   if(m_currentMode == mode) return;
+   if(m_currentMode == mode) 
+     return;
    m_currentMode = mode;
    update();
    //TODO:
 }
 
-void SchematicScene::setCurrentMouseAction(MouseAction action)
+/*!\brief Set mouse action
+  \param MouseAction: mouse action to set
+  \todo document
+*/
+void SchematicScene::setCurrentMouseAction(const MouseAction action)
 {
-   if(m_currentMouseAction == action) return;
+   if(m_currentMouseAction == action) 
+     return;
 
    if(m_currentMouseAction == InsertingItems)
       blockShortcuts(false);
@@ -349,6 +459,7 @@ void SchematicScene::setCurrentMouseAction(MouseAction action)
    //TODO: Implemement this appropriately for all mouse actions
 }
 
+/*!\todo Document */
 void SchematicScene::resetState()
 {
    setFocusItem(0);
@@ -380,13 +491,18 @@ void SchematicScene::resetState()
    m_zoomBand = 0;
 }
 
-void SchematicScene::cutItems(QList<QucsItem*> _items, Qucs::UndoOption opt)
+/*! Cut items */
+void SchematicScene::cutItems(QList<QucsItem*> &_items, const Qucs::UndoOption opt)
 {
    copyItems(_items);
    deleteItems(_items, opt);
 }
 
-void SchematicScene::copyItems(QList<QucsItem*> _items)
+/*!\brief Copy item
+   \todo Document format 
+   \todo Use own mime type
+*/
+void SchematicScene::copyItems(QList<QucsItem*> &_items)
 {
    if(_items.isEmpty())
       return;
@@ -407,6 +523,9 @@ void SchematicScene::copyItems(QList<QucsItem*> _items)
    clipboard->setText(clipText);
 }
 
+/*!\brief Paste item 
+   \todo Use own mime type
+ */
 void SchematicScene::paste()
 {
    const QString text = qApp->clipboard()->text();
@@ -453,6 +572,7 @@ void SchematicScene::paste()
    beginInsertingItems(_items);
 }
 
+/*!\todo document */
 SchematicView* SchematicScene::activeView() const
 {
    if(views().isEmpty())
@@ -460,6 +580,7 @@ SchematicView* SchematicScene::activeView() const
    return qobject_cast<SchematicView*>(views().first());
 }
 
+/*!\todo document */
 void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
 {
    resetState();
@@ -491,7 +612,14 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
    }
 }
 
-bool SchematicScene::alignElements(Qt::Alignment alignment)
+/*!align element 
+  \param alignment: alignement used
+  \todo use smart alignment ie: port alignement
+  \todo implement snap on grid
+  \todo string of undo
+*/
+
+bool SchematicScene::alignElements(const Qt::Alignment alignment)
 {
    QList<QGraphicsItem*> gItems = selectedItems();
    QList<QucsItem*> items = filterItems<QucsItem>(gItems, DontRemoveItems);
@@ -555,16 +683,19 @@ bool SchematicScene::alignElements(Qt::Alignment alignment)
    return true;
 }
 
+/*!\todo Document */
 bool pointCmpFunction_X(QucsItem *lhs, QucsItem  *rhs)
 {
    return lhs->pos().x() < rhs->pos().x();
 }
 
+/*!\todo Document */
 bool pointCmpFunction_Y(QucsItem *lhs, QucsItem  *rhs)
 {
    return lhs->pos().y() < rhs->pos().y();
 }
 
+/*!\todo document */
 bool SchematicScene::distributeElements(Qt::Orientation orientation)
 {
    QList<QGraphicsItem*> gItems = selectedItems();
@@ -605,6 +736,7 @@ bool SchematicScene::distributeElements(Qt::Orientation orientation)
    return true;
 }
 
+/*!\todo document */
 bool SchematicScene::eventFilter(QObject *watched, QEvent *event)
 {
    if(event->type() != QEvent::Shortcut && event->type() != QEvent::ShortcutOverride)
@@ -625,6 +757,7 @@ bool SchematicScene::eventFilter(QObject *watched, QEvent *event)
    }
 }
 
+/*!\todo document */
 void SchematicScene::blockShortcuts(bool block)
 {
    if(!activeView()) return;
@@ -643,6 +776,7 @@ void SchematicScene::blockShortcuts(bool block)
    }
 }
 
+/*! \todo document */
 void SchematicScene::setModified(bool m)
 {
    if(m_modified != m) {
@@ -652,9 +786,16 @@ void SchematicScene::setModified(bool m)
    }
 }
 
+/*! This function is called when a side bar item is clicked 
+    \param itemName: name of item
+    \param category: categoy name
+    \todo Add tracing
+    \todo Split in two function
+*/
 bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& category)
 {
-   if(itemName.isEmpty()) return false;
+   if(itemName.isEmpty()) 
+     return false;
 
    if(category == "paintings") {
       setCurrentMouseAction(PaintingDrawEvent);
@@ -669,7 +810,8 @@ bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& 
 
    else {
       QucsItem *item = itemForName(itemName, category);
-      if(!item) return false;
+      if(!item) 
+	return false;
 
       addItem(item);
       setCurrentMouseAction(InsertingItems);
@@ -679,6 +821,12 @@ bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& 
    }
 }
 
+/*! Draw background of schematic including grid
+    \param painter: Where to draw
+    \param rect: Visible area
+    \todo Finish visual representation
+    \bug Why multiply by two
+*/
 void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 {
    if(!isGridVisible())
@@ -688,14 +836,15 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
    painter->setBrush(Qt::NoBrush);
    painter->setRenderHint(QPainter::Antialiasing,false);
 
-   if(rect.contains(QPointF(0.,0.))) {
+   if(rect.contains(QPointF(0.0,0.0))) {
       painter->drawLine(QLineF(-3.0, 0.0, 3.0, 0.0));
       painter->drawLine(QLineF(0.0, -3.0, 0.0, 3.0));
    }
 
+   /* XXX: why */
    int gridWidth = m_gridWidth*2, gridHeight = m_gridHeight*2;
 
-   // Adjust visual representation of grid to be multiple, if
+   // Adjust  visual representation of grid to be multiple, if
    // grid sizes are very small
 #if 0
    while(gridWidth < 20)
@@ -707,13 +856,15 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
    while(gridHeight > 60)
       gridHeight /= 2;
 #endif
-
+   
+   /* first grid poin */
    qreal left = int(rect.left()) + gridWidth - (int(rect.left()) % gridWidth);
    qreal top = int(rect.top()) + gridHeight - (int(rect.top()) % gridHeight);
    qreal right = int(rect.right()) - (int(rect.right()) % gridWidth);
    qreal bottom = int(rect.bottom()) - (int(rect.bottom()) % gridHeight);
    qreal x,y;
 
+   /* draw grid */
    for( x = left; x <= right; x += gridWidth)
       for( y = top; y <=bottom; y += gridHeight)
          painter->drawPoint(QPointF(x,y));
@@ -721,6 +872,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
    painter->setRenderHint(QPainter::Antialiasing,true);
 }
 
+/*! \todo Document */
 bool SchematicScene::event(QEvent *event)
 {
    if(m_currentMouseAction == InsertingItems) {
@@ -747,6 +899,9 @@ bool SchematicScene::event(QEvent *event)
    return QGraphicsScene::event(event);
 }
 
+/*!\brief Context menu
+   \todo Implement 
+*/
 void SchematicScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
    switch(selectedItems().size()) {
@@ -764,6 +919,12 @@ void SchematicScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
    }
 }
 
+/*! \brief Event handler, for event drag enter event 
+    
+    Drag enter events are generated as the cursor enters the item's area.
+    Accept event from sidebar 
+    \param event event to be accepted
+*/
 void SchematicScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event)
 {
    if(event->mimeData()->formats().contains("application/qucs.sidebarItem")) {
@@ -774,6 +935,13 @@ void SchematicScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event)
       event->ignore();
 }
 
+/*! \brief Event handler, for event drag move event 
+    
+    Drag move events are generated as the cursor moves around inside the item's area.
+    It is used to indicate that only parts of the item can accept drops.
+    Accept event from sidebar 
+    \param event event to be accepted
+*/
 void SchematicScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event)
 {
    if(event->mimeData()->formats().contains("application/qucs.sidebarItem"))
@@ -782,6 +950,14 @@ void SchematicScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event)
       event->ignore();
 }
 
+/*! \brief Event handler, for event drop event 
+     
+     Receive drop events for SchematicScene     
+     Items can only receive drop events if the last drag move event was accepted
+     Accept event only from sidebar
+     \param event event to be accepted
+     \todo factorize
+*/
 void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 {
    if(event->mimeData()->formats().contains("application/qucs.sidebarItem")) {
@@ -794,6 +970,7 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
       QString item, category;
       stream >> item >> category;
       QucsItem *qItem = itemForName(item, category);
+      /* XXX: extract and factorize */
       if(qItem->type() == GraphicText::Type) {
          GraphicTextDialog dialog(0, Qucs::DontPushUndoCmd);
          if(dialog.exec() == QDialog::Accepted) {
@@ -821,17 +998,26 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
    blockShortcuts(false);
 }
 
+/*!\brief Event called when mouse is pressed 
+   \todo Remove debug 
+   \todo finish grid snap mode
+*/
 void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
    //Cache the mouse press position
    if((e->buttons() & Qt::MidButton) == Qt::MidButton)
       qDebug() << "pressed" << e->scenePos();
+   
+   /* grid snap mode */
    if(m_snapToGrid) {
       lastPos = nearingGridPoint(e->scenePos());
    }
    sendMouseActionEvent(e);
 }
 
+/*!\brief mouse move event 
+   \todo document 
+*/
 void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
 {
    if(m_snapToGrid) {
@@ -851,20 +1037,34 @@ void SchematicScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
    sendMouseActionEvent(e);
 }
 
+/*!\brief release mouse 
+   \todo Document 
+*/
 void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
 {
    sendMouseActionEvent(e);
 }
 
+/*!\brief Mouse double click 
+   \todo Document 
+*/
 void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 {
    sendMouseActionEvent(e);
 }
 
+/*!\brief Wiring event 
+   \todo undo scheme 
+   \todo document
+   \todo remove tracing
+   \todo change mouse action
+*/
 void SchematicScene::wiringEvent(MouseActionEvent *event)
 {
    if(event->type() == QEvent::GraphicsSceneMousePress) {
+      /* create new wire */
       if(!m_currentWiringWire) {
+	 qDebug() << "create new wire";
          m_currentWiringWire = new Wire(event->scenePos(), event->scenePos(), false, this);
          m_currentWiringWire->hide();
          return;
@@ -876,12 +1076,14 @@ void SchematicScene::wiringEvent(MouseActionEvent *event)
       m_undoStack->beginMacro(QString());
 
       if(!m_isWireCmdAdded) {
+	qDebug() << "first wire action";
          m_currentWiringWire->removeNullLines();
 
          m_undoStack->push(new AddWireCmd(m_currentWiringWire, this));
          m_isWireCmdAdded = true;
       }
       else {
+	 qDebug() << "next wire action";
          m_currentWiringWire->removeNullLines();
          m_undoStack->push(
             new WireStateChangeCmd(m_currentWiringWire,m_currentWiringWire->storedState(),
@@ -918,6 +1120,9 @@ void SchematicScene::wiringEvent(MouseActionEvent *event)
    }
 }
 
+/*! delete items 
+  \todo document 
+*/
 void SchematicScene::deletingEvent(MouseActionEvent *event)
 {
    if(event->type() != QEvent::GraphicsSceneMousePress ||
@@ -934,12 +1139,16 @@ void SchematicScene::deletingEvent(MouseActionEvent *event)
    }
 }
 
+/*!\todo document */
 void SchematicScene::markingEvent(MouseActionEvent *event)
 {
    Q_UNUSED(event);
    //TODO:
 }
 
+/*!Rotate item 
+  \todo implement left : trigonometric sense right inverse sense
+*/  
 void SchematicScene::rotatingEvent(MouseActionEvent *event)
 {
    if(event->type() != QEvent::GraphicsSceneMousePress)
@@ -952,6 +1161,10 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
    }
 }
 
+/*! mirror X event 
+   \todo implement left : X right Y
+   \todo Factorie with Y
+*/
 void SchematicScene::mirroringXEvent(MouseActionEvent *event)
 {
    if(event->type() != QEvent::GraphicsSceneMousePress)
@@ -964,6 +1177,10 @@ void SchematicScene::mirroringXEvent(MouseActionEvent *event)
    }
 }
 
+/*! mirror Y event 
+   \todo implement left : Y right X
+   \todo Factorie with X 
+*/
 void SchematicScene::mirroringYEvent(MouseActionEvent *event)
 {
    if(event->type() != QEvent::GraphicsSceneMousePress)
@@ -976,6 +1193,9 @@ void SchematicScene::mirroringYEvent(MouseActionEvent *event)
    }
 }
 
+/*! Activate deactivate 
+    \todo implement lef right behavior
+*/
 void SchematicScene::changingActiveStatusEvent(MouseActionEvent *event)
 {
    if(event->type() != QEvent::GraphicsSceneMousePress)
@@ -988,6 +1208,9 @@ void SchematicScene::changingActiveStatusEvent(MouseActionEvent *event)
    }
 }
 
+/*! Set on grid event 
+    \todo check correctness
+*/
 void SchematicScene::settingOnGridEvent(MouseActionEvent *event)
 {
    if(event->type() != QEvent::GraphicsSceneMousePress)
@@ -1003,6 +1226,9 @@ void SchematicScene::settingOnGridEvent(MouseActionEvent *event)
    }
 }
 
+/*! Zoom at point event 
+    \todo document
+*/
 void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
 {
    QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
@@ -1048,7 +1274,8 @@ void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
 
 void SchematicScene::placeAndDuplicatePainting()
 {
-   if(!m_paintingDrawItem) return;
+   if(!m_paintingDrawItem) 
+     return;
 
    QPointF dest = m_paintingDrawItem->pos();
    placeItem(m_paintingDrawItem, dest, Qucs::PushUndoCmd);
@@ -1059,6 +1286,7 @@ void SchematicScene::placeAndDuplicatePainting()
       static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
 }
 
+/*!\todo Document */
 void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
 {
    if(!m_paintingDrawItem)
@@ -1142,6 +1370,7 @@ void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
    }
 }
 
+/*!\todo Document */
 void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
 {
    if(event->type() == QEvent::GraphicsSceneMousePress) {
@@ -1170,12 +1399,14 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
    }
 }
 
+/*!\todo Document */
 void SchematicScene::insertingWireLabelEvent(MouseActionEvent *event)
 {
    Q_UNUSED(event);
    //TODO:
 }
 
+/*!\todo Document */
 void SchematicScene::normalEvent(MouseActionEvent *e)
 {
    switch(e->type()) {
@@ -1232,6 +1463,7 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
    };
 }
 
+/*!\todo Document */
 void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
 {
    disconnectibles.clear();
@@ -1294,6 +1526,7 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
 //             <<"\n#############\n";
 }
 
+/*!\todo Document */
 void SchematicScene::disconnectDisconnectibles()
 {
    QSet<Component*> remove;
@@ -1328,6 +1561,7 @@ void SchematicScene::disconnectDisconnectibles()
       disconnectibles.removeAll(c);
 }
 
+/*!\todo Document */
 void SchematicScene::specialMove(qreal dx, qreal dy)
 {
    foreach(Wire *wire, movingWires) {
@@ -1364,6 +1598,7 @@ void SchematicScene::specialMove(qreal dx, qreal dy)
    }
 }
 
+/*!\todo document */
 void SchematicScene::endSpecialMove()
 {
    disconnectibles.clear();
@@ -1400,6 +1635,7 @@ void SchematicScene::endSpecialMove()
    movingWires.clear();
 }
 
+/*!\todo document */
 void SchematicScene::placeItem(QucsItem *item, QPointF pos, Qucs::UndoOption opt)
 {
    if(item->scene() == this)
@@ -1443,6 +1679,7 @@ void SchematicScene::placeItem(QucsItem *item, QPointF pos, Qucs::UndoOption opt
    }
 }
 
+/*!\todo document */
 QucsItem* SchematicScene::itemForName(const QString& name, const QString& category)
 {
    if(category == QObject::tr("paintings")) {
@@ -1452,6 +1689,7 @@ QucsItem* SchematicScene::itemForName(const QString& name, const QString& catego
    return LibraryLoader::defaultInstance()->newComponent(name, 0, category);
 }
 
+/*\todo document */
 int SchematicScene::componentLabelSuffix(const QString& prefix) const
 {
    int _max = 1;
@@ -1468,6 +1706,7 @@ int SchematicScene::componentLabelSuffix(const QString& prefix) const
    return _max;
 }
 
+/*\todo document */
 int SchematicScene::unusedPortNumber()
 {
    int retVal = -1;
@@ -1484,15 +1723,20 @@ int SchematicScene::unusedPortNumber()
    return retVal;
 }
 
+/*!\todo document */
 bool SchematicScene::isPortNumberUsed(int num) const
 {
+  (void) num;
    return false;
 }
 
+/*!\todo document */
 void SchematicScene::setNumberUnused(int num)
 {
+  (void) num;
 }
 
+/*!\todo document */
 void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt)
 {
    if(opt == Qucs::PushUndoCmd)
@@ -1522,6 +1766,7 @@ void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems, Qucs::UndoO
       m_undoStack->endMacro();
 }
 
+/*!\todo document */
 void SchematicScene::connectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt)
 {
    if(opt == Qucs::PushUndoCmd)
@@ -1538,6 +1783,7 @@ void SchematicScene::connectItems(const QList<QucsItem*> &qItems, Qucs::UndoOpti
       m_undoStack->endMacro();
 }
 
+/*!\todo Document */
 void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
 {
    switch(m_currentMouseAction) {

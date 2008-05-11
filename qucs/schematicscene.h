@@ -50,24 +50,42 @@ class SchematicView;
 
 typedef QGraphicsSceneMouseEvent MouseActionEvent;
 
+/*! SchematicScene 
+    class provides a surface for managing a large number of schematic element
+*/
 class SchematicScene : public QGraphicsScene
 {
       Q_OBJECT;
    public:
+      /*!\brief The different mouse action possible */
       enum MouseAction {
-         Wiring,
-         Deleting,
-         Marking,
-         Rotating,
-         MirroringX,
-         MirroringY,
-         ChangingActiveStatus,
-         SettingOnGrid,
-         ZoomingAtPoint,
-         PaintingDrawEvent,
-         InsertingItems,
-         InsertingWireLabel,
-         Normal
+	/*!Wire action */
+	Wiring,
+	/*! Delete */
+	Deleting,
+	/*! Mark 
+	  \todo What is */
+	Marking,
+	/*!Rotate */
+	Rotating,
+	/*!Mirror X */
+	MirroringX,
+	/*! Mirror Y */
+	MirroringY,
+	/*! Change status ie short, open */
+	ChangingActiveStatus,
+	/*! Set on grid */
+	SettingOnGrid,
+	/*! Zoom at point */
+	ZoomingAtPoint,
+	/*! \todo describe */
+	PaintingDrawEvent,
+	/*! insert an item */
+	InsertingItems,
+	/*! insert a wire label */
+	InsertingWireLabel,
+	/*! Normal (ie select) */
+	Normal
       };
 
       SchematicScene(QObject *parent =0);
@@ -79,16 +97,16 @@ class SchematicScene : public QGraphicsScene
       bool areItemsMoving() const { return m_areItemsMoving; }
 
       //toggle action methods.
-      void mirrorXItems(QList<QucsItem*> items, Qucs::UndoOption);
-      void mirrorYItems(QList<QucsItem*> items, Qucs::UndoOption);
-      void rotateItems(QList<QucsItem*> items, Qucs::UndoOption);
-      void deleteItems(QList<QucsItem*> items, Qucs::UndoOption);
-      void setItemsOnGrid(QList<QucsItem*> items, Qucs::UndoOption);
-      void toggleActiveStatus(QList<QucsItem*> components, Qucs::UndoOption);
+      void mirrorXItems(QList<QucsItem*> &items, const Qucs::UndoOption);
+      void mirrorYItems(QList<QucsItem*> &items, const Qucs::UndoOption);
+      void rotateItems(QList<QucsItem*> &items, const Qucs::UndoOption);
+      void deleteItems(QList<QucsItem*> &items, const Qucs::UndoOption);
+      void setItemsOnGrid(QList<QucsItem*> &items, const Qucs::UndoOption);
+      void toggleActiveStatus(QList<QucsItem*> &components, const Qucs::UndoOption);
 
       //these aren't toggle actions.
-      void cutItems(QList<QucsItem*> items, Qucs::UndoOption = Qucs::PushUndoCmd);
-      void copyItems(QList<QucsItem*> items);
+      void cutItems(QList<QucsItem*> &items, const Qucs::UndoOption = Qucs::PushUndoCmd);
+      void copyItems(QList<QucsItem*> &items);
       void paste();
 
       QString fileName() const { return m_fileName; }
@@ -127,17 +145,17 @@ class SchematicScene : public QGraphicsScene
       void setFrameTexts(const QStringList& texts);
 
       Qucs::Mode currentMode() const { return m_currentMode; }
-      void setMode(Qucs::Mode mode);
+      void setMode(const Qucs::Mode mode);
 
       MouseAction currentMouseAction() const { return m_currentMouseAction; }
-      void setCurrentMouseAction(MouseAction ma);
+      void setCurrentMouseAction(const MouseAction ma);
 
       SchematicView* activeView() const;
 
       void resetState();
       void beginInsertingItems(const QList<QucsItem*> &items);
 
-      bool alignElements(Qt::Alignment);
+      bool alignElements(const Qt::Alignment alignment);
       bool distributeElements(Qt::Orientation orientation);
 
       bool eventFilter(QObject *object, QEvent *event);
@@ -229,22 +247,31 @@ class SchematicScene : public QGraphicsScene
       QList<int> m_usablePortNumbers;
 
       //Document properties
+      /*! Undo stack state */
       QUndoStack *m_undoStack;
+      /*! Current mouse action */
       MouseAction m_currentMouseAction;
       Qucs::Mode m_currentMode;
 
+      /*! Grid width in pixel */
       uint m_gridWidth;
+      /*! Grid height in pixel */
       uint m_gridHeight;
+      /*! Grid is visible */
       bool m_gridVisible;
 
+      /*! Data Set file name */ 
       QString m_dataSet;
+      /*! Data display file name */
       QString m_dataDisplay;
+      /*! File name */
       QString m_fileName;
       QStringList m_frameTexts;
 
       bool m_modified;
       bool m_opensDataDisplay;
       bool m_frameVisible;
+      /*! Snap component to grid */
       bool m_snapToGrid;
       bool m_macroProgress;
       bool m_shortcutsBlocked;

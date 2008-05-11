@@ -35,7 +35,7 @@ class SchematicScene;
 class QucsView;
 class QucsItem;
 
-typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>, Qucs::UndoOption);
+typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>&, const Qucs::UndoOption);
 
 class QucsMainWindow : public MainWindowBase
 {
@@ -153,7 +153,7 @@ class QucsMainWindow : public MainWindowBase
       void initActions();
       void initMenus();
       void initToolBars();
-      void performToggleAction(bool on, pActionFunc func, QAction *action);
+      void performToggleAction(const bool on, pActionFunc func, QAction *action);
       void setNormalAction();
       void alignElements(Qt::Alignment alignment);
 

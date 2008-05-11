@@ -34,6 +34,10 @@
 
 namespace Qucs
 {
+   /* Draw an hightlight rectangle arround an item 
+      \param painter painter where the item is highlighted
+      \todo Document other param
+   */
    void drawHighlightRect(QPainter *painter, QRectF rect, qreal pw,
                           const QStyleOptionGraphicsItem *option)
    {

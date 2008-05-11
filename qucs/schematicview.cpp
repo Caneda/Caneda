@@ -143,7 +143,10 @@ bool SchematicView::save()
 
 void SchematicView::print(QPainter *p, bool printAll, bool fitToPage)
 {
-   if(p && printAll && fitToPage); // To avoid warning
+  (void) p;
+  (void) printAll;
+  (void) fitToPage;
+   // To avoid warning
 }
 
 void SchematicView::zoomIn()
