@@ -116,7 +116,7 @@ void SchematicScene::init()
    m_macroProgress = false;
    m_areItemsMoving = false;
    m_shortcutsBlocked = false;
-   m_currentWiringWire = 0;
+   m_currentWiringWire = NULL;
    m_paintingDrawItem = 0;
    m_paintingDrawClicks = 0;
    m_zoomBand = 0;
@@ -1107,46 +1107,51 @@ void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 */
 void SchematicScene::wiringEvent(MouseActionEvent *event)
 {
+  /* rounded */
+   QPointF rounded;
+
    if(event->type() == QEvent::GraphicsSceneMousePress) {
+      rounded = this->smartNearingGridPoint(event->scenePos());
+
       /* create new wire */
-      if(!m_currentWiringWire) {
-	 qDebug() << "create new wire";
-         m_currentWiringWire = new Wire(event->scenePos(), event->scenePos(), false, this);
-         m_currentWiringWire->hide();
+      if(this->m_currentWiringWire == NULL) {
+         this->m_currentWiringWire = new Wire(rounded, rounded, false, this);
+         this->m_currentWiringWire->hide();
          return;
       }
 
-      if(m_currentWiringWire->port1()->scenePos() == m_currentWiringWire->port2()->scenePos())
+      if(this->m_currentWiringWire->port1()->scenePos() 
+	 == this->m_currentWiringWire->port2()->scenePos())
          return;
 
-      m_undoStack->beginMacro(QString());
+      this->m_undoStack->beginMacro(QString());
 
-      if(!m_isWireCmdAdded) {
-	qDebug() << "first wire action";
-         m_currentWiringWire->removeNullLines();
+      if(!this->m_isWireCmdAdded) {
+	 qDebug() << "first wire action";
+         this->m_currentWiringWire->removeNullLines();
 
-         m_undoStack->push(new AddWireCmd(m_currentWiringWire, this));
+         this->m_undoStack->push(new AddWireCmd(m_currentWiringWire, this));
          m_isWireCmdAdded = true;
       }
       else {
 	 qDebug() << "next wire action";
-         m_currentWiringWire->removeNullLines();
-         m_undoStack->push(
-            new WireStateChangeCmd(m_currentWiringWire,m_currentWiringWire->storedState(),
-                                   m_currentWiringWire->currentState()));
+         this->m_currentWiringWire->removeNullLines();
+         this->m_undoStack->push(new WireStateChangeCmd(this->m_currentWiringWire,
+						       this->m_currentWiringWire->storedState(),
+						       this->m_currentWiringWire->currentState()));
 
       }
-      m_currentWiringWire->checkAndConnect(Qucs::PushUndoCmd);
+      this->m_currentWiringWire->checkAndConnect(Qucs::PushUndoCmd);
 
-      m_undoStack->endMacro();
+      this->m_undoStack->endMacro();
 
-      if(m_currentWiringWire->port2()->hasConnection()) {
+      if(this->m_currentWiringWire->port2()->hasConnection()) {
 
-         m_currentWiringWire->show();
-         m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
-         m_currentWiringWire->updateGeometry();
+         this->m_currentWiringWire->show();
+         this->m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
+         this->m_currentWiringWire->updateGeometry();
 
-         m_currentWiringWire = 0;
+         m_currentWiringWire = NULL;
          m_isWireCmdAdded = false;
       }
       else {
@@ -1157,11 +1162,12 @@ void SchematicScene::wiringEvent(MouseActionEvent *event)
          wLinesRef << toAppend << toAppend;
       }
    }
-
+   /*! move action */
    else if(event->type() == QEvent::GraphicsSceneMouseMove) {
-      if(m_currentWiringWire) {
-         QPointF newPos = m_currentWiringWire->mapFromScene(event->scenePos());
-         m_currentWiringWire->movePort2(newPos);
+      rounded = this->smartNearingGridPoint(event->scenePos());
+      if(this->m_currentWiringWire != NULL) {
+         QPointF newPos = this->m_currentWiringWire->mapFromScene(rounded);
+         this->m_currentWiringWire->movePort2(newPos);
       }
    }
 }

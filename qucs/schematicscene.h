@@ -115,7 +115,10 @@ class SchematicScene : public QGraphicsScene
 
       bool isModified() const { return m_modified; }
 
-      QPointF nearingGridPoint(const QPointF &pos);
+      /*! round to nearest grid point according to grid snapping setting */
+      QPointF smartNearingGridPoint(const QPointF &pos) { 
+	return m_snapToGrid == true ? nearingGridPoint(pos) : pos;
+      }
 
       /*! return current undo stack */
       QUndoStack* undoStack() { return m_undoStack; }
@@ -240,6 +243,8 @@ class SchematicScene : public QGraphicsScene
 
       void placeAndDuplicatePainting();
 
+      QPointF nearingGridPoint(const QPointF &pos);
+
       //These are helper variables (aka state holders)
       bool m_areItemsMoving;
       QList<Component*> disconnectibles;
@@ -250,6 +255,7 @@ class SchematicScene : public QGraphicsScene
       QList<QucsItem*> m_insertibles;
 
       bool m_isWireCmdAdded;
+      /* Current wire */
       Wire *m_currentWiringWire;
 
       Painting *m_paintingDrawItem;
