@@ -127,13 +127,13 @@ void SchematicScene::init()
   this->m_paintingDrawClicks = 0;
   this->m_zoomBand = 0;
   this->m_isWireCmdAdded = false;
-  setCurrentMouseAction(Normal);
+  this->setCurrentMouseAction(Normal);
 }
 
 /*!\brief Default Destructor */
 SchematicScene::~SchematicScene()
 {
-   delete m_undoStack;
+   delete this->m_undoStack;
 }
 
 /*!\todo Chck usefulness */
