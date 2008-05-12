@@ -103,26 +103,31 @@ static const uint DEFAULT_GRID_SPACE = 10;
 /*!\brief Initialize a schematic scene  */
 void SchematicScene::init()
 {
-   m_undoStack = new QUndoStack(this);
-   m_gridWidth = m_gridHeight = DEFAULT_GRID_SPACE;
-   m_gridcolor = DEFAULT_GRID_COLOR;
-   m_currentMode = Qucs::SchematicMode;
-   m_frameVisible = false;
-   m_modified = false;
-   m_snapToGrid = true;
-   m_gridVisible = true;
-   m_OriginDrawn = true;
-   m_opensDataDisplay = true;
-   m_frameTexts = QStringList() << tr("Title") << tr("Drawn By:") << tr("Date:") << tr("Revision:");
-   m_macroProgress = false;
-   m_areItemsMoving = false;
-   m_shortcutsBlocked = false;
-   m_currentWiringWire = NULL;
-   m_paintingDrawItem = 0;
-   m_paintingDrawClicks = 0;
-   m_zoomBand = 0;
-   m_isWireCmdAdded = false;
-   setCurrentMouseAction(Normal);
+  /* setup undo stack */
+  this->m_undoStack = new QUndoStack(this);
+
+  /* setup grid */
+  this->m_gridWidth = this->m_gridHeight = DEFAULT_GRID_SPACE;
+  this->m_gridcolor = DEFAULT_GRID_COLOR;
+  this->m_snapToGrid = true;
+  this->m_gridVisible = true;
+  this->m_OriginDrawn = true;
+  
+  this->m_currentMode = Qucs::SchematicMode;
+  this->m_frameVisible = false;
+  this->m_modified = false;
+  
+  this->m_opensDataDisplay = true;
+  this->m_frameTexts = QStringList() << tr("Title") << tr("Drawn By:") << tr("Date:") << tr("Revision:");
+  this->m_macroProgress = false;
+  this->m_areItemsMoving = false;
+  this->m_shortcutsBlocked = false;
+  this->m_currentWiringWire = NULL;
+  this->m_paintingDrawItem = 0;
+  this->m_paintingDrawClicks = 0;
+  this->m_zoomBand = 0;
+  this->m_isWireCmdAdded = false;
+  setCurrentMouseAction(Normal);
 }
 
 /*!\brief Default Destructor */
