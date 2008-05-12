@@ -169,30 +169,6 @@ void SchematicScene::deleteItems(QList<QucsItem*> &items,
 }
 
 
-/*!\brief Set item on list 
-   \param items: item list
-   \param opt: undo option
-   \todo Document
-   \todo Create a custom undo class for avoiding if
-   \todo Add string to begin macro
-*/
-void SchematicScene::toggleActiveStatus(QList<QucsItem*> &items, 
-					const Qucs::UndoOption opt)
-{
-   QList<Component*> components = filterItems<Component>(items);
-   if(components.isEmpty())
-      return;
-
-   ToggleActiveStatusCmd *cmd = new ToggleActiveStatusCmd(components);
-   if(opt == Qucs::PushUndoCmd) {
-      m_undoStack->push(cmd);
-   }
-   else {
-      cmd->redo();
-      delete cmd;
-   }
-}
-
 /*!\brief Data set file suffix 
    \todo use something more explicit 
 */
@@ -1404,23 +1380,62 @@ void SchematicScene::settingOnGridEvent(const MouseActionEvent *event)
   }
 }
 
+/******************************************************************************
+ *
+ *     Active status
+ *
+ *****************************************************************************/
 
+/*!\brief Toggle active status 
+   \param items: item list
+   \param opt: undo option
+   \todo Create a custom undo class for avoiding if
+   \todo Change direction of toogle
+*/
+void SchematicScene::toggleActiveStatus(QList<QucsItem*> &items, 
+					const Qucs::UndoOption opt)
+{
+  /* Apply only to components */
+  QList<Component*> components = filterItems<Component>(items);
+  if(components.isEmpty())
+    return;
 
+  /* setup undo */
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack->beginMacro(QString("Toggle active status"));
+
+  /* toogle */
+  ToggleActiveStatusCmd *cmd = new ToggleActiveStatusCmd(components);
+  if(opt == Qucs::PushUndoCmd) {
+    this->m_undoStack->push(cmd);
+  }
+  else {
+    cmd->redo();
+    delete cmd;
+  }
+
+  /* finalize undo */
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack->endMacro();
+}
 
 
 /*! Activate deactivate 
     \todo implement left right behavior
 */
-void SchematicScene::changingActiveStatusEvent(MouseActionEvent *event)
+void SchematicScene::changingActiveStatusEvent(const MouseActionEvent *event)
 {
-   if(event->type() != QEvent::GraphicsSceneMousePress)
-      return;
-   QList<QGraphicsItem*> _list = items(event->scenePos());
-   QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
-   if(!qItems.isEmpty()) {
-      toggleActiveStatus(QList<QucsItem*>() << qItems.first(), Qucs::PushUndoCmd);
-      setModified(true);
-   }
+  if(event->type() != QEvent::GraphicsSceneMousePress)
+    return;
+  if((event->buttons() & Qt::LeftButton) != Qt::LeftButton)
+    return;
+  
+  QList<QGraphicsItem*> _list = items(event->scenePos());
+  QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
+  if(!qItems.isEmpty()) {
+    this->toggleActiveStatus(QList<QucsItem*>() << qItems.first(), Qucs::PushUndoCmd);
+    this->setModified(true);
+  }
 }
 
 

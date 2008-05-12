@@ -99,7 +99,11 @@ class SchematicScene : public QGraphicsScene
 
       bool areItemsMoving() const { return m_areItemsMoving; }
 
-      /* geometry change */
+      /*
+       * geometry change 
+       */
+
+      /* mirror */
       void mirrorItems(QList<QucsItem*> &itemsenum,
 		       const Qucs::UndoOption opt,
 		       const Qt::Axis axis);
@@ -111,6 +115,7 @@ class SchematicScene : public QGraphicsScene
 	mirrorItems(items, opt, Qt::YAxis);
       }
 
+      /* rotate */
       /* for qucsmainwindows */
       void rotateItems(QList<QucsItem*> &items, const Qucs::UndoOption undo) 
       {
@@ -229,7 +234,7 @@ class SchematicScene : public QGraphicsScene
       void deletingEvent(MouseActionEvent *e);
       void markingEvent(MouseActionEvent *e);
       void rotatingEvent(MouseActionEvent *e);
-      void changingActiveStatusEvent(MouseActionEvent *e);
+      void changingActiveStatusEvent(const MouseActionEvent *e);
       void settingOnGridEvent(const MouseActionEvent *e);
       void zoomingAtPointEvent(MouseActionEvent *e);
       void paintingDrawEvent(MouseActionEvent *e);
