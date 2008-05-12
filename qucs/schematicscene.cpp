@@ -1355,9 +1355,12 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
   if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)
     angle = Qucs::Clockwise;
   /* right == anticlock wise */
-  if((event->buttons() & Qt::RightButton) == Qt::RightButton)
+  else if((event->buttons() & Qt::RightButton) == Qt::RightButton)
     angle = Qucs::AntiClockwise;
-  
+  /* avoid angle unitialized */
+  else
+    return;
+
   /* get items */
   QList<QGraphicsItem*> _list = this->items(event->scenePos());
   /* filter item */
