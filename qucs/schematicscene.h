@@ -99,8 +99,18 @@ class SchematicScene : public QGraphicsScene
       bool areItemsMoving() const { return m_areItemsMoving; }
 
       //toggle action methods.
-      void mirrorXItems(QList<QucsItem*> &items, const Qucs::UndoOption);
-      void mirrorYItems(QList<QucsItem*> &items, const Qucs::UndoOption);
+      /* mirror */
+      void mirrorItems(QList<QucsItem*> &itemsenum,
+		       const Qucs::UndoOption opt,
+		       const Qt::Axis axis);
+      /*! Mirror X */
+      void mirrorXItems(QList<QucsItem*> &items, const Qucs::UndoOption opt){ 
+	mirrorItems(items, opt, Qt::XAxis);
+      }
+      /*! Mirror Y */
+      void mirrorYItems(QList<QucsItem*> &items, const Qucs::UndoOption opt) { 
+	mirrorItems(items, opt, Qt::YAxis);
+      }
       void rotateItems(QList<QucsItem*> &items, const Qucs::UndoOption);
       void deleteItems(QList<QucsItem*> &items, const Qucs::UndoOption);
       void setItemsOnGrid(QList<QucsItem*> &items, const Qucs::UndoOption);
@@ -248,8 +258,8 @@ class SchematicScene : public QGraphicsScene
       bool isPortNumberUsed(int num) const;
       void setNumberUnused(int num);
 
-      void disconnectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt);
-      void connectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt);
+      void disconnectItems(const QList<QucsItem*> &qItems, const Qucs::UndoOption opt);
+      void connectItems(const QList<QucsItem*> &qItems, const Qucs::UndoOption opt);
 
       void placeAndDuplicatePainting();
 

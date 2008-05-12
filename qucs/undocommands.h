@@ -195,8 +195,8 @@ class RotateItemsCmd : public QUndoCommand
 class MirrorItemsCmd : public QUndoCommand
 {
    public:
-      MirrorItemsCmd(QList<QucsItem*> items, Qt::Axis axis, QUndoCommand *parent = 0);
-      MirrorItemsCmd(QucsItem *item, Qt::Axis axis, QUndoCommand *parent = 0);
+      MirrorItemsCmd(QList<QucsItem*> items, const Qt::Axis axis, QUndoCommand *parent = 0);
+      MirrorItemsCmd(QucsItem *item, const Qt::Axis axis, QUndoCommand *parent = 0);
 
       void undo();
       void redo();

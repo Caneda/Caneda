@@ -137,65 +137,44 @@ void SchematicScene::test()
 }
 
 /*!\brief Mirror an item list 
-   \param items: item list
+   \param items: item to mirror
    \param opt: undo option
-   \todo Document
+   \param axis: mirror axis
    \todo Create a custom undo class for avoiding if
-   \todo Add string to begin macro
+   \note assert X or Y axis
 */
-void SchematicScene::mirrorXItems(QList<QucsItem*> &items, 
-				  const Qucs::UndoOption opt)
+void SchematicScene::mirrorItems(QList<QucsItem*> &items,
+				 const Qucs::UndoOption opt,
+				 const Qt::Axis axis)
 {
-   if(opt == Qucs::PushUndoCmd)
-      m_undoStack->beginMacro(QString());
-
-   disconnectItems(items, opt);
-
-   MirrorItemsCmd *cmd = new MirrorItemsCmd(items, Qt::XAxis);
+  Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
+  
+  /* prepare undo stack */
+  if(opt == Qucs::PushUndoCmd)
+    if(axis == Qt::XAxis)
+      this->m_undoStack->beginMacro(QString("Mirror X"));
+    else
+      this->m_undoStack->beginMacro(QString("Mirror Y"));
+  
+  /* disconnect item before mirroring */
+  this->disconnectItems(items, opt);
+  
+  /* mirror */
+  MirrorItemsCmd *cmd = new MirrorItemsCmd(items, axis);
    if(opt == Qucs::PushUndoCmd) {
-      m_undoStack->push(cmd);
+      this->m_undoStack->push(cmd);
    }
    else {
       cmd->redo();
       delete cmd;
    }
 
-   connectItems(items, opt);
+   /* try to reconnect */
+   this->connectItems(items, opt);
 
+   /* end undo */
    if(opt == Qucs::PushUndoCmd)
-      m_undoStack->endMacro();
-}
-
-
-/*!\brief Mirror an item list 
-   \param items: item list
-   \param opt: undo option
-   \todo Document
-   \todo Create a custom undo class for avoiding if
-   \todo Add string to begin macro
-   \todo Factorize with previous command 
-*/
-void SchematicScene::mirrorYItems(QList<QucsItem*> &items, 
-				  const Qucs::UndoOption opt)
-{
-   if(opt == Qucs::PushUndoCmd)
-      m_undoStack->beginMacro(QString());
-
-   disconnectItems(items, opt);
-
-   MirrorItemsCmd *cmd = new MirrorItemsCmd(items, Qt::YAxis);
-   if(opt == Qucs::PushUndoCmd) {
-      m_undoStack->push(cmd);
-   }
-   else {
-      cmd->redo();
-      delete cmd;
-   }
-
-   connectItems(items, opt);
-
-   if(opt == Qucs::PushUndoCmd)
-      m_undoStack->endMacro();
+      this->m_undoStack->endMacro();
 }
 
 /*!\brief Rotate an item list 
@@ -1883,7 +1862,8 @@ void SchematicScene::setNumberUnused(int num)
 }
 
 /*!\todo document */
-void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt)
+void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
+				     const Qucs::UndoOption opt)
 {
    if(opt == Qucs::PushUndoCmd)
       m_undoStack->beginMacro(QString());
@@ -1913,7 +1893,8 @@ void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems, Qucs::UndoO
 }
 
 /*!\todo document */
-void SchematicScene::connectItems(const QList<QucsItem*> &qItems, Qucs::UndoOption opt)
+void SchematicScene::connectItems(const QList<QucsItem*> &qItems, 
+				  const Qucs::UndoOption opt)
 {
    if(opt == Qucs::PushUndoCmd)
       m_undoStack->beginMacro(QString());

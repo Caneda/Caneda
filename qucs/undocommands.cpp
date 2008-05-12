@@ -449,14 +449,14 @@ void RotateItemsCmd::redo()
   ##########################################################################
 */
 
-MirrorItemsCmd::MirrorItemsCmd(QList<QucsItem*> items, Qt::Axis axis, QUndoCommand *parent) :
+MirrorItemsCmd::MirrorItemsCmd(QList<QucsItem*> items, const Qt::Axis axis, QUndoCommand *parent) :
    QUndoCommand(parent),
    m_items(items),
    m_axis(axis)
 {
 }
 
-MirrorItemsCmd::MirrorItemsCmd(QucsItem *item, Qt::Axis axis, QUndoCommand *parent) :
+MirrorItemsCmd::MirrorItemsCmd(QucsItem *item, const Qt::Axis axis, QUndoCommand *parent) :
    QUndoCommand(parent),
    m_axis(axis)
 {
