@@ -1270,9 +1270,9 @@ void SchematicScene::mirroringXEvent(const MouseActionEvent *event)
    if(event->type() != QEvent::GraphicsSceneMousePress)
       return;
    
-   if((event->buttons() | Qt::LeftButton) == Qt::LeftButton)
+   if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)
      return this->mirroringEvent(event, Qt::XAxis);
-   if((event->buttons() | Qt::RightButton) == Qt::RightButton)
+   if((event->buttons() & Qt::RightButton) == Qt::RightButton)
      return this->mirroringEvent(event, Qt::YAxis);
 
    return;
@@ -1285,15 +1285,21 @@ void SchematicScene::mirroringYEvent(const MouseActionEvent *event)
 {
   if(event->type() != QEvent::GraphicsSceneMousePress)
       return;
-  
-  if((event->buttons() | Qt::LeftButton) == Qt::LeftButton)
+
+  if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)
     return this->mirroringEvent(event, Qt::YAxis);
-  if((event->buttons() | Qt::RightButton) == Qt::RightButton)
+  if((event->buttons() & Qt::RightButton) == Qt::RightButton)
     return this->mirroringEvent(event, Qt::XAxis);
   
   return;
 }
 
+
+/******************************************************************
+ *
+ *                   Rotate
+ *
+ *****************************************************************/
 
 
 /*!\brief Rotate an item list 
@@ -1345,9 +1351,11 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
   if(event->type() != QEvent::GraphicsSceneMousePress)
     return;
    
-  if((event->buttons() | Qt::LeftButton) == Qt::LeftButton)
+  /* left == clock wise */
+  if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)
     angle = Qucs::Clockwise;
-  if((event->buttons() | Qt::RightButton) == Qt::RightButton)
+  /* right == anticlock wise */
+  if((event->buttons() & Qt::RightButton) == Qt::RightButton)
     angle = Qucs::AntiClockwise;
   
   /* get items */
@@ -1362,7 +1370,7 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
 
 
 /*! Activate deactivate 
-    \todo implement lef right behavior
+    \todo implement left right behavior
 */
 void SchematicScene::changingActiveStatusEvent(MouseActionEvent *event)
 {
