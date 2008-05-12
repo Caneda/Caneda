@@ -222,8 +222,6 @@ class SchematicScene : public QGraphicsScene
       void deletingEvent(MouseActionEvent *e);
       void markingEvent(MouseActionEvent *e);
       void rotatingEvent(MouseActionEvent *e);
-      void mirroringXEvent(MouseActionEvent *e);
-      void mirroringYEvent(MouseActionEvent *e);
       void changingActiveStatusEvent(MouseActionEvent *e);
       void settingOnGridEvent(MouseActionEvent *e);
       void zoomingAtPointEvent(MouseActionEvent *e);
@@ -250,6 +248,11 @@ class SchematicScene : public QGraphicsScene
       void wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos);
       void wiringEventMouseMove(const QPointF &pos);
       
+      /* mirror */
+      void mirroringEvent(const MouseActionEvent *event, const Qt::Axis axis);
+      void mirroringXEvent(const MouseActionEvent *e);
+      void mirroringYEvent(const MouseActionEvent *e);
+
       QucsItem* itemForName(const QString& name, const QString& category);
       void placeItem(QucsItem *item, const QPointF &pos, const Qucs::UndoOption opt);
       int componentLabelSuffix(const QString& labelPrefix) const;

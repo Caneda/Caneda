@@ -141,47 +141,6 @@ void SchematicScene::test()
 {
 }
 
-/*!\brief Mirror an item list 
-   \param items: item to mirror
-   \param opt: undo option
-   \param axis: mirror axis
-   \todo Create a custom undo class for avoiding if
-   \note assert X or Y axis
-*/
-void SchematicScene::mirrorItems(QList<QucsItem*> &items,
-				 const Qucs::UndoOption opt,
-				 const Qt::Axis axis)
-{
-  Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
-  
-  /* prepare undo stack */
-  if(opt == Qucs::PushUndoCmd)
-    if(axis == Qt::XAxis)
-      this->m_undoStack->beginMacro(QString("Mirror X"));
-    else
-      this->m_undoStack->beginMacro(QString("Mirror Y"));
-  
-  /* disconnect item before mirroring */
-  this->disconnectItems(items, opt);
-  
-  /* mirror */
-  MirrorItemsCmd *cmd = new MirrorItemsCmd(items, axis);
-   if(opt == Qucs::PushUndoCmd) {
-      this->m_undoStack->push(cmd);
-   }
-   else {
-      cmd->redo();
-      delete cmd;
-   }
-
-   /* try to reconnect */
-   this->connectItems(items, opt);
-
-   /* end undo */
-   if(opt == Qucs::PushUndoCmd)
-      this->m_undoStack->endMacro();
-}
-
 /*!\brief Rotate an item list 
    \param items: item list
    \param opt: undo option
@@ -1276,36 +1235,104 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
    }
 }
 
-/*! mirror X event 
-   \todo implement left : X right Y
-   \todo Factorie with Y
+/***************************************************************************
+ *
+ *             Mirror
+ *
+ *
+ ***************************************************************************/
+
+
+/*!\brief Mirror an item list 
+   \param items: item to mirror
+   \param opt: undo option
+   \param axis: mirror axis
+   \todo Create a custom undo class for avoiding if
+   \note assert X or Y axis
 */
-void SchematicScene::mirroringXEvent(MouseActionEvent *event)
+void SchematicScene::mirrorItems(QList<QucsItem*> &items,
+				 const Qucs::UndoOption opt,
+				 const Qt::Axis axis)
+{
+  Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
+  
+  /* prepare undo stack */
+  if(opt == Qucs::PushUndoCmd)
+    if(axis == Qt::XAxis)
+      this->m_undoStack->beginMacro(QString("Mirror X"));
+    else
+      this->m_undoStack->beginMacro(QString("Mirror Y"));
+  
+  /* disconnect item before mirroring */
+  this->disconnectItems(items, opt);
+  
+  /* mirror */
+  MirrorItemsCmd *cmd = new MirrorItemsCmd(items, axis);
+   if(opt == Qucs::PushUndoCmd) {
+      this->m_undoStack->push(cmd);
+   }
+   else {
+      cmd->redo();
+      delete cmd;
+   }
+
+   /* try to reconnect */
+   this->connectItems(items, opt);
+
+   /* end undo */
+   if(opt == Qucs::PushUndoCmd)
+      this->m_undoStack->endMacro();
+}
+
+
+/*! Mirror event 
+    \param event: event
+    \param axis: mirror axis
+*/
+void SchematicScene::mirroringEvent(const MouseActionEvent *event, 
+				    const Qt::Axis axis)
+{
+  /* select item */
+  QList<QGraphicsItem*> _list = this->items(event->scenePos());
+  /* filters item */
+  QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
+  if(!qItems.isEmpty()) {
+    /* mirror */
+    this->mirrorItems(QList<QucsItem*>() << qItems.first(), Qucs::PushUndoCmd, axis);
+    this->setModified(true);
+   } 
+}
+
+/*! mirror X event
+    \note right button mirror Y
+*/
+void SchematicScene::mirroringXEvent(const MouseActionEvent *event)
 {
    if(event->type() != QEvent::GraphicsSceneMousePress)
       return;
-   QList<QGraphicsItem*> _list = items(event->scenePos());
-   QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
-   if(!qItems.isEmpty()) {
-      mirrorXItems(QList<QucsItem*>() << qItems.first(), Qucs::PushUndoCmd);
-      setModified(true);
-   }
+   
+   if((event->buttons() | Qt::LeftButton) == Qt::LeftButton)
+     return this->mirroringEvent(event, Qt::XAxis);
+   if((event->buttons() | Qt::RightButton) == Qt::RightButton)
+     return this->mirroringEvent(event, Qt::YAxis);
+
+   return;
 }
 
 /*! mirror Y event 
-   \todo implement left : Y right X
-   \todo Factorie with X 
+    \note right button mirror X
 */
-void SchematicScene::mirroringYEvent(MouseActionEvent *event)
+void SchematicScene::mirroringYEvent(const MouseActionEvent *event)
 {
-   if(event->type() != QEvent::GraphicsSceneMousePress)
+  if(event->type() != QEvent::GraphicsSceneMousePress)
       return;
-   QList<QGraphicsItem*> _list = items(event->scenePos());
-   QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
-   if(!qItems.isEmpty()) {
-      mirrorYItems(QList<QucsItem*>() << qItems.first(), Qucs::PushUndoCmd);
-      setModified(true);
-   }
+  
+  if((event->buttons() | Qt::LeftButton) == Qt::LeftButton)
+    return this->mirroringEvent(event, Qt::YAxis);
+  if((event->buttons() | Qt::RightButton) == Qt::RightButton)
+    return this->mirroringEvent(event, Qt::XAxis);
+  
+  return;
 }
 
 /*! Activate deactivate 
