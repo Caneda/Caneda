@@ -168,50 +168,6 @@ void SchematicScene::deleteItems(QList<QucsItem*> &items,
    }
 }
 
-/*!\brief Set item on list 
-   \param items: item list
-   \param opt: undo option
-   \todo Document
-   \todo Create a custom undo class for avoiding if
-   \todo Add string to begin macro
-*/
-void SchematicScene::setItemsOnGrid(QList<QucsItem*> &items, 
-				    const Qucs::UndoOption opt)
-{
-   QList<QucsItem*> itemsNotOnGrid;
-   foreach(QucsItem* item, items) {
-      QPointF pos = item->pos();
-      QPointF gpos = nearingGridPoint(pos);
-
-      if(pos != gpos)
-         itemsNotOnGrid << item;
-   }
-
-   if(itemsNotOnGrid.isEmpty())
-      return;
-
-   if(opt == Qucs::PushUndoCmd)
-      m_undoStack->beginMacro(QString());
-
-   disconnectItems(itemsNotOnGrid, opt);
-
-   foreach(QucsItem *item, itemsNotOnGrid) {
-      QPointF pos = item->pos();
-      QPointF gridPos = nearingGridPoint(pos);
-
-      if(opt == Qucs::PushUndoCmd) {
-         m_undoStack->push(new MoveCmd(item, pos, gridPos));
-      }
-      else {
-         item->setPos(gridPos);
-      }
-   }
-
-   connectItems(itemsNotOnGrid, opt);
-
-   if(opt == Qucs::PushUndoCmd)
-      m_undoStack->endMacro();
-}
 
 /*!\brief Set item on list 
    \param items: item list
@@ -1372,6 +1328,86 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
 }
 
 
+/*************************************************************************
+ *
+ *         Set on grid
+ *
+ *
+ *************************************************************************/
+
+
+/*!\brief Set item on grid 
+   \param items: item list
+   \param opt: undo option
+   \todo Create a custom undo class for avoiding if
+*/
+void SchematicScene::setItemsOnGrid(QList<QucsItem*> &items, 
+				    const Qucs::UndoOption opt)
+{
+  QList<QucsItem*> itemsNotOnGrid;
+  /* create a list of item not on grid */
+  foreach(QucsItem* item, items) {
+    QPointF pos = item->pos();
+    QPointF gpos = this->nearingGridPoint(pos);
+    if(pos != gpos)
+      itemsNotOnGrid << item;
+  }
+  
+  if(itemsNotOnGrid.isEmpty())
+    return;
+  
+  /* setup undo */
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack->beginMacro(QString("Set on grid"));
+  
+  /* disconnect item */
+  this->disconnectItems(itemsNotOnGrid, opt);
+  
+  /* put item on grid */
+  foreach(QucsItem *item, itemsNotOnGrid) {
+    QPointF pos = item->pos();
+    QPointF gridPos = this->nearingGridPoint(pos);
+    
+    if(opt == Qucs::PushUndoCmd)
+      this->m_undoStack->push(new MoveCmd(item, pos, gridPos));
+    else 
+      item->setPos(gridPos);
+  }
+  
+  /* try to create connection */
+  this->connectItems(itemsNotOnGrid, opt);
+  
+  /* finalize undo */
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack->endMacro();
+}
+
+
+/*! Set on grid event */
+void SchematicScene::settingOnGridEvent(const MouseActionEvent *event)
+{
+  /*! only left click */
+  if(event->type() != QEvent::GraphicsSceneMousePress)
+    return;
+  if((event->buttons() & Qt::LeftButton) != Qt::LeftButton)
+    return;
+  
+  /* do action */
+  QList<QGraphicsItem*> _list = this->items(event->scenePos());
+  if(!_list.isEmpty()) {
+    QList<QucsItem*> _items = filterItems<QucsItem>(_list);
+    
+    if(!_list.isEmpty()) {
+      setItemsOnGrid(QList<QucsItem*>() << _items.first(), Qucs::PushUndoCmd);
+      setModified(true);
+    }
+  }
+}
+
+
+
+
+
 /*! Activate deactivate 
     \todo implement left right behavior
 */
@@ -1387,23 +1423,6 @@ void SchematicScene::changingActiveStatusEvent(MouseActionEvent *event)
    }
 }
 
-/*! Set on grid event 
-    \todo check correctness
-*/
-void SchematicScene::settingOnGridEvent(MouseActionEvent *event)
-{
-   if(event->type() != QEvent::GraphicsSceneMousePress)
-      return;
-   QList<QGraphicsItem*> _list = items(event->scenePos());
-   if(!_list.isEmpty()) {
-      QList<QucsItem*> _items = filterItems<QucsItem>(_list);
-
-      if(!_list.isEmpty()) {
-         setItemsOnGrid(QList<QucsItem*>() << _items.first(), Qucs::PushUndoCmd);
-         setModified(true);
-      }
-   }
-}
 
 /*! Zoom at point event 
     \todo document

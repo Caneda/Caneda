@@ -118,8 +118,9 @@ class SchematicScene : public QGraphicsScene
       }
       void rotateItems(QList<QucsItem*> &items, const Qucs::AngleDirection dir,
 		       const Qucs::UndoOption);
-      void deleteItems(QList<QucsItem*> &items, const Qucs::UndoOption);
       void setItemsOnGrid(QList<QucsItem*> &items, const Qucs::UndoOption);
+
+      void deleteItems(QList<QucsItem*> &items, const Qucs::UndoOption);
       void toggleActiveStatus(QList<QucsItem*> &components, const Qucs::UndoOption);
 
       //these aren't toggle actions.
@@ -229,7 +230,7 @@ class SchematicScene : public QGraphicsScene
       void markingEvent(MouseActionEvent *e);
       void rotatingEvent(MouseActionEvent *e);
       void changingActiveStatusEvent(MouseActionEvent *e);
-      void settingOnGridEvent(MouseActionEvent *e);
+      void settingOnGridEvent(const MouseActionEvent *e);
       void zoomingAtPointEvent(MouseActionEvent *e);
       void paintingDrawEvent(MouseActionEvent *e);
       void insertingItemsEvent(MouseActionEvent *e);
