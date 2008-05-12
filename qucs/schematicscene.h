@@ -241,7 +241,7 @@ class SchematicScene : public QGraphicsScene
       void wiringEventMouseMove(const QPointF &pos);
       
       QucsItem* itemForName(const QString& name, const QString& category);
-      void placeItem(QucsItem *item, QPointF pos, Qucs::UndoOption opt);
+      void placeItem(QucsItem *item, const QPointF &pos, const Qucs::UndoOption opt);
       int componentLabelSuffix(const QString& labelPrefix) const;
 
       int unusedPortNumber();

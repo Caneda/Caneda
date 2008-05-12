@@ -243,7 +243,7 @@ QList<T*> filterItems(QList<QucsItem*> &items, FilterOption option = DontRemoveI
 //! Key used to store the current position of an item in it's data field.
 static const int PointKey = 10;
 
-void storePos(QGraphicsItem *item);
+void storePos(QGraphicsItem *item, const QPointF& pos);
 QPointF storedPos(QGraphicsItem *item);
 
 #endif //__ITEM_H

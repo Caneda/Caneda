@@ -309,9 +309,9 @@ QMenu* QucsItem::defaultContextMenu() const
  *
  * This method is required for handling undo/redo.
  */
-void storePos(QGraphicsItem *item)
+void storePos(QGraphicsItem *item, const QPointF &pos)
 {
-   item->setData(PointKey, QVariant(item->scenePos()));
+   item->setData(PointKey, QVariant(pos));
 }
 
 /*!

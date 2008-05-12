@@ -1250,6 +1250,7 @@ void SchematicScene::wiringEvent(MouseActionEvent *event)
       return this->wiringEventMouseMove(pos);
 }
 
+
 /*! delete items 
   \todo document 
 */
@@ -1363,7 +1364,8 @@ void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
 {
    QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
    SchematicView *sv = qobject_cast<SchematicView*>(v);
-   if(!sv) return;
+   if(!sv) 
+     return;
    QPoint viewPoint = sv->mapFromScene(event->scenePos());
 
    if(event->type() == QEvent::GraphicsSceneMousePress) {
@@ -1511,7 +1513,8 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
       m_undoStack->beginMacro(QString());
       foreach(QucsItem *item, m_insertibles) {
          QucsItem *copied = item->copy(0);
-         placeItem(copied, item->pos(), Qucs::PushUndoCmd);
+	 /* round */
+	 placeItem(copied, this->smartNearingGridPoint(item->pos()), Qucs::PushUndoCmd);
       }
       m_undoStack->endMacro();
       foreach(QucsItem *item, m_insertibles) {
@@ -1523,7 +1526,7 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
       QPointF delta = event->scenePos() - m_insertActionMousePos;
 
       foreach(QucsItem *item, m_insertibles) {
-         item->moveBy(delta.x(), delta.y());
+	 item->setPos(this->smartNearingGridPoint(item->pos() + delta));
       }
       m_insertActionMousePos = event->scenePos();
    }
@@ -1564,7 +1567,7 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
             return;
          disconnectDisconnectibles();
          QGraphicsScene::mouseMoveEvent(e);
-         QPointF delta = e->scenePos() - e->lastScenePos();
+         QPointF delta = this->smartNearingGridPoint(e->scenePos()) - e->lastScenePos();
          specialMove(delta.x(), delta.y());
       }
       break;
@@ -1602,7 +1605,7 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
 
    foreach(QGraphicsItem *item, _items) {
       Component *c = qucsitem_cast<Component*>(item);
-      storePos(item);
+      storePos(item, item->scenePos());
       if(c) {
          //check for disconnections and wire resizing.
          foreach(Port *port, c->ports()) {
@@ -1733,7 +1736,8 @@ void SchematicScene::endSpecialMove()
 {
    disconnectibles.clear();
    foreach(QGraphicsItem *item, selectedItems()) {
-      m_undoStack->push(new MoveCmd(item, storedPos(item), item->scenePos()));
+     m_undoStack->push(new MoveCmd(item, storedPos(item),
+				   this->smartNearingGridPoint(item->scenePos())));
       Component * comp = qucsitem_cast<Component*>(item);
       if(comp) {
          comp->checkAndConnect(Qucs::PushUndoCmd);
@@ -1765,8 +1769,20 @@ void SchematicScene::endSpecialMove()
    movingWires.clear();
 }
 
-/*!\todo document */
-void SchematicScene::placeItem(QucsItem *item, QPointF pos, Qucs::UndoOption opt)
+
+/**********************************************************************
+ *
+ *                           place item
+ *
+ **********************************************************************/
+
+/*! Place an item on the scene 
+    \param item: item to place
+    \param: pos position where to place
+    \param opt: undo option
+    \warning: pos is not rounded
+*/
+void SchematicScene::placeItem(QucsItem *item, const QPointF &pos, const Qucs::UndoOption opt)
 {
    if(item->scene() == this)
       removeItem(item);
