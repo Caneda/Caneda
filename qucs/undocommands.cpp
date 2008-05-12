@@ -417,22 +417,24 @@ void RemoveItemsCmd::redo()
   ##########################################################################
 */
 
-RotateItemsCmd::RotateItemsCmd(QList<QucsItem*> items, QUndoCommand *parent) :
+RotateItemsCmd::RotateItemsCmd(QList<QucsItem*> items, const Qucs::AngleDirection dir, QUndoCommand *parent) :
    QUndoCommand(parent),
    m_items(items)
 {
+  this->dir = dir;
 }
 
-RotateItemsCmd::RotateItemsCmd(QucsItem *item, QUndoCommand *parent) :
+RotateItemsCmd::RotateItemsCmd(QucsItem *item, const Qucs::AngleDirection dir, QUndoCommand *parent) :
    QUndoCommand(parent)
 {
    m_items << item;
+   this->dir = dir;
 }
 
 void RotateItemsCmd::undo()
 {
    foreach(QucsItem *item, m_items) {
-      item->rotate90(Qucs::Clockwise);
+     item->rotate90(dir == Qucs::Clockwise ? Qucs::AntiClockwise : Qucs::Clockwise);
    }
 }
 

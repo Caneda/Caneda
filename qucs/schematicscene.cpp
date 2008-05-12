@@ -141,35 +141,6 @@ void SchematicScene::test()
 {
 }
 
-/*!\brief Rotate an item list 
-   \param items: item list
-   \param opt: undo option
-   \todo Document
-   \todo Create a custom undo class for avoiding if
-   \todo Add string to begin macro
-*/
-void SchematicScene::rotateItems(QList<QucsItem*> &items, 
-				 const Qucs::UndoOption opt)
-{
-   if(opt == Qucs::PushUndoCmd)
-      m_undoStack->beginMacro(QString());
-
-   disconnectItems(items, opt);
-
-   RotateItemsCmd *cmd = new RotateItemsCmd(items);
-   if(opt == Qucs::PushUndoCmd) {
-      m_undoStack->push(cmd);
-   }
-   else {
-      cmd->redo();
-      delete cmd;
-   }
-
-   connectItems(items, opt);
-
-   if(opt == Qucs::PushUndoCmd)
-      m_undoStack->endMacro();
-}
 
 /*!\brief delete an item list 
    \param items: item list
@@ -1220,20 +1191,8 @@ void SchematicScene::markingEvent(MouseActionEvent *event)
    //TODO:
 }
 
-/*!Rotate item 
-  \todo implement left : trigonometric sense right inverse sense
-*/  
-void SchematicScene::rotatingEvent(MouseActionEvent *event)
-{
-   if(event->type() != QEvent::GraphicsSceneMousePress)
-      return;
-   QList<QGraphicsItem*> _list = items(event->scenePos());
-   QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
-   if(!qItems.isEmpty()) {
-      rotateItems(QList<QucsItem*>() << qItems.first(), Qucs::PushUndoCmd);
-      setModified(true);
-   }
-}
+
+
 
 /***************************************************************************
  *
@@ -1334,6 +1293,73 @@ void SchematicScene::mirroringYEvent(const MouseActionEvent *event)
   
   return;
 }
+
+
+
+/*!\brief Rotate an item list 
+   \param items: item list
+   \param opt: undo option
+   \param diect: is rotation in trigonometric sense
+   \todo Create a custom undo class for avoiding if
+*/
+void SchematicScene::rotateItems(QList<QucsItem*> &items, 
+				 const Qucs::AngleDirection dir,
+				 const Qucs::UndoOption opt)
+{
+  /* setup undo */
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack
+      ->beginMacro(dir == Qucs::Clockwise ?
+		   QString("Rotate Clockwise") :
+		   QString("Rotate Anti-Clockwise"));
+  
+  /* disconnect */
+  this->disconnectItems(items, opt);
+  
+  /* rotate */
+  RotateItemsCmd *cmd = new RotateItemsCmd(items, dir);
+  if(opt == Qucs::PushUndoCmd) {
+      this->m_undoStack->push(cmd);
+   }
+   else {
+     cmd->redo();
+     delete cmd;
+   }
+
+  /* reconnect */
+  this->connectItems(items, opt);
+  
+  /* finish undo */
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack->endMacro();
+}
+
+
+/*!Rotate item 
+  \note right anticlockwise 
+*/  
+void SchematicScene::rotatingEvent(MouseActionEvent *event)
+{
+  Qucs::AngleDirection angle;
+  
+  if(event->type() != QEvent::GraphicsSceneMousePress)
+    return;
+   
+  if((event->buttons() | Qt::LeftButton) == Qt::LeftButton)
+    angle = Qucs::Clockwise;
+  if((event->buttons() | Qt::RightButton) == Qt::RightButton)
+    angle = Qucs::AntiClockwise;
+  
+  /* get items */
+  QList<QGraphicsItem*> _list = this->items(event->scenePos());
+  /* filter item */
+  QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
+  if(!qItems.isEmpty()) {
+    this->rotateItems(QList<QucsItem*>() << qItems.first(), angle, Qucs::PushUndoCmd);
+    this->setModified(true);
+  }
+}
+
 
 /*! Activate deactivate 
     \todo implement lef right behavior

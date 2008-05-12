@@ -182,14 +182,17 @@ class RemoveItemsCmd : public QUndoCommand
 class RotateItemsCmd : public QUndoCommand
 {
    public:
-      RotateItemsCmd(QList<QucsItem*> items, QUndoCommand *parent = 0);
-      RotateItemsCmd(QucsItem *item, QUndoCommand *parent = 0);
+      RotateItemsCmd(QList<QucsItem*> items, const  Qucs::AngleDirection=Qucs::Clockwise, 
+		     QUndoCommand *parent = 0);
+      RotateItemsCmd(QucsItem *item, const  Qucs::AngleDirection=Qucs::Clockwise, 
+		     QUndoCommand *parent = 0);
 
       void undo();
       void redo();
 
    protected:
       QList<QucsItem*> m_items;
+      Qucs::AngleDirection dir;
 };
 
 class MirrorItemsCmd : public QUndoCommand

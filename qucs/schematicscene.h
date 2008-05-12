@@ -90,6 +90,7 @@ class SchematicScene : public QGraphicsScene
 	Normal
       };
 
+      /* constructor/destructor */
       SchematicScene(QObject *parent =0);
       SchematicScene(qreal x, qreal y, qreal width, qreal height, QObject * parent = 0);
       ~SchematicScene();
@@ -98,20 +99,25 @@ class SchematicScene : public QGraphicsScene
 
       bool areItemsMoving() const { return m_areItemsMoving; }
 
-      //toggle action methods.
-      /* mirror */
+      /* geometry change */
       void mirrorItems(QList<QucsItem*> &itemsenum,
 		       const Qucs::UndoOption opt,
 		       const Qt::Axis axis);
-      /*! Mirror X */
       void mirrorXItems(QList<QucsItem*> &items, const Qucs::UndoOption opt){ 
 	mirrorItems(items, opt, Qt::XAxis);
       }
-      /*! Mirror Y */
+     
       void mirrorYItems(QList<QucsItem*> &items, const Qucs::UndoOption opt) { 
 	mirrorItems(items, opt, Qt::YAxis);
       }
-      void rotateItems(QList<QucsItem*> &items, const Qucs::UndoOption);
+
+      /* for qucsmainwindows */
+      void rotateItems(QList<QucsItem*> &items, const Qucs::UndoOption undo) 
+      {
+	rotateItems(items,Qucs::Clockwise,undo);
+      }
+      void rotateItems(QList<QucsItem*> &items, const Qucs::AngleDirection dir,
+		       const Qucs::UndoOption);
       void deleteItems(QList<QucsItem*> &items, const Qucs::UndoOption);
       void setItemsOnGrid(QList<QucsItem*> &items, const Qucs::UndoOption);
       void toggleActiveStatus(QList<QucsItem*> &components, const Qucs::UndoOption);
