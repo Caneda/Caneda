@@ -244,6 +244,10 @@ class SchematicScene : public QGraphicsScene
 
    private:
       void init();
+
+      /* private reset state wiring */
+      void resetStateWiring();
+
       void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
 
       void processForSpecialMove(QList<QGraphicsItem*> _items);

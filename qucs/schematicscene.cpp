@@ -322,7 +322,42 @@ void SchematicScene::setCurrentMouseAction(const MouseAction action)
   //TODO: Implemement this appropriately for all mouse actions
 }
 
-/*!\todo Document */
+
+/***********************************************************************
+ *
+ *       RESET STATE
+ *
+ ***********************************************************************/
+
+
+/*!\brief Reset state helper wire part 
+   \todo check if we could simplify wiring machinery
+*/
+void SchematicScene::resetStateWiring()
+{
+  /* if wiring is on course */
+  if(this->m_currentWiringWire) {
+    /* no wire cmd */
+    if(!this->m_isWireCmdAdded) {
+      delete this->m_currentWiringWire;
+    }
+    else {
+      /* transform last wiring command (direction change) to end point */
+      this->m_currentWiringWire->show();
+      this->m_currentWiringWire->setState(this->m_currentWiringWire->storedState());
+      this->m_currentWiringWire->movePort1(this->m_currentWiringWire->port1()->pos());
+    }
+  }
+  
+  this->m_currentWiringWire = NULL;
+  this->m_isWireCmdAdded = false;
+}
+
+/*!\brief Reset the state 
+
+   This callback is called when for instance you press esc key
+   \todo document each step
+*/
 void SchematicScene::resetState()
 {
   this->setFocusItem(0);
@@ -331,25 +366,14 @@ void SchematicScene::resetState()
   qDeleteAll(this->m_insertibles);
   this->m_insertibles.clear();
 
-  if(this->m_currentWiringWire) {
-    if(!this->m_isWireCmdAdded) {
-      delete this->m_currentWiringWire;
-    }
-    else {
-      this->m_currentWiringWire->show();
-      this->m_currentWiringWire->setState(m_currentWiringWire->storedState());
-      this->m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
-    }
-  }
+  /* reset wiring */
+  this->resetStateWiring();
 
-  this->m_currentWiringWire = 0;
-
-  this->m_isWireCmdAdded = false;
-
+  /* reset drawing item */
   delete this->m_paintingDrawItem;
-  this->m_paintingDrawItem = 0;
+  this->m_paintingDrawItem = NULL;
   this->m_paintingDrawClicks = 0;
-
+  
   delete this->m_zoomBand;
   this->m_zoomBand = NULL;
 }
@@ -369,6 +393,7 @@ void SchematicScene::copyItems(QList<QucsItem*> &_items)
 {
   if(_items.isEmpty())
     return;
+
   QString clipText;
   Qucs::XmlWriter *writer = new Qucs::XmlWriter(&clipText);
   writer->setAutoFormatting(true);
@@ -432,7 +457,7 @@ void SchematicScene::paste()
     }
   }
 
-  beginInsertingItems(_items);
+  this->beginInsertingItems(_items);
 }
 
 /*!\todo document */
@@ -443,24 +468,31 @@ SchematicView* SchematicScene::activeView() const
   return qobject_cast<SchematicView*>(views().first());
 }
 
-/*!\todo document */
+/*!\todo document 
+   \todo create a insert qucscomponents property in order to avoid ugly cast 
+*/
 void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
 {
-  resetState();
-
-  m_insertibles = items;
-
-  SchematicView *active = activeView();
-  if(!active) return;
+  SchematicView *active = this->activeView();
+  if(!active) 
+    return;
+  
+  /* why ??? */
+  this->resetState();
+  
+  /* add to insert list */
+  this->m_insertibles = items;
 
   QPoint pos = active->viewport()->mapFromGlobal(QCursor::pos());
   bool cursorOnScene = active->viewport()->rect().contains(pos);
 
-  m_insertActionMousePos = active->mapToScene(pos);
+  this->m_insertActionMousePos = active->mapToScene(pos);
 
-  foreach(QucsItem *item, m_insertibles) {
+  /* add items */
+  foreach(QucsItem *item, this->m_insertibles) {
     item->setSelected(true);
     item->setVisible(cursorOnScene);
+    /* replace by item->insertonscene() */
     if(item->isComponent()) {
       Component *comp = qucsitem_cast<Component*>(item);
       if(comp->propertyGroup())
@@ -468,9 +500,9 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
     }
   }
 
-  QPointF delta = active->mapToScene(pos) - centerOfItems(m_insertibles);
-
-  foreach(QucsItem *item, m_insertibles) {
+  /* why two loop */ 
+  QPointF delta = active->mapToScene(pos) - centerOfItems(this->m_insertibles);
+  foreach(QucsItem *item, this->m_insertibles) {
     item->moveBy(delta.x(), delta.y());
   }
 }
