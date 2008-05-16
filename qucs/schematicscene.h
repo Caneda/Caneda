@@ -231,7 +231,7 @@ class SchematicScene : public QGraphicsScene
 
       // Custom handlers
       void wiringEvent(MouseActionEvent *e);
-      void deletingEvent(MouseActionEvent *e);
+      void deletingEvent(const MouseActionEvent *e);
       void markingEvent(MouseActionEvent *e);
       void rotatingEvent(MouseActionEvent *e);
       void changingActiveStatusEvent(const MouseActionEvent *e);
@@ -265,6 +265,10 @@ class SchematicScene : public QGraphicsScene
       void mirroringXEvent(const MouseActionEvent *e);
       void mirroringYEvent(const MouseActionEvent *e);
 
+      /* private delete */
+      void deletingEventRightMouseClick(const QPointF &pos);
+      void deletingEventLeftMouseClick(const QPointF &pos);
+
       QucsItem* itemForName(const QString& name, const QString& category);
       void placeItem(QucsItem *item, const QPointF &pos, const Qucs::UndoOption opt);
       int componentLabelSuffix(const QString& labelPrefix) const;
@@ -273,7 +277,7 @@ class SchematicScene : public QGraphicsScene
       bool isPortNumberUsed(int num) const;
       void setNumberUnused(int num);
 
-      void disconnectItems(const QList<QucsItem*> &qItems, const Qucs::UndoOption opt);
+      void disconnectItems(const QList<QucsItem*> &qItems, const Qucs::UndoOption opt = Qucs::PushUndoCmd);
       void connectItems(const QList<QucsItem*> &qItems, const Qucs::UndoOption opt);
 
       void placeAndDuplicatePainting();

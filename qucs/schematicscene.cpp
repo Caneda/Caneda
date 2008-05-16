@@ -142,31 +142,6 @@ void SchematicScene::test()
 }
 
 
-/*!\brief delete an item list 
-   \param items: item list
-   \param opt: undo option
-   \todo Document
-   \todo Create a custom undo class for avoiding if
-   \todo Add string to begin macro
-*/
-void SchematicScene::deleteItems(QList<QucsItem*> &items, 
-				 const Qucs::UndoOption opt)
-{
-   if(opt == Qucs::DontPushUndoCmd) {
-      foreach(QucsItem* item, items) {
-         delete item;
-      }
-   }
-   else {
-
-      m_undoStack->beginMacro(QString());
-
-      disconnectItems(items, opt);
-      m_undoStack->push(new RemoveItemsCmd(items, this));
-
-      m_undoStack->endMacro();
-   }
-}
 
 
 /*!\brief Data set file suffix 
@@ -1097,24 +1072,6 @@ void SchematicScene::wiringEvent(MouseActionEvent *event)
 }
 
 
-/*! delete items 
-  \todo document 
-*/
-void SchematicScene::deletingEvent(MouseActionEvent *event)
-{
-   if(event->type() != QEvent::GraphicsSceneMousePress ||
-      !((event->buttons() | Qt::LeftButton) == Qt::LeftButton))
-      return;
-   QList<QGraphicsItem*> _list = items(event->scenePos());
-   if(!_list.isEmpty()) {
-      QList<QucsItem*> _items = filterItems<QucsItem>(_list);
-
-      if(!_items.isEmpty()) {
-         deleteItems(QList<QucsItem*>() << _items.first(), Qucs::PushUndoCmd);
-         setModified(true);
-      }
-   }
-}
 
 /*!\todo document */
 void SchematicScene::markingEvent(MouseActionEvent *event)
@@ -1437,6 +1394,98 @@ void SchematicScene::changingActiveStatusEvent(const MouseActionEvent *event)
     this->setModified(true);
   }
 }
+
+
+/*************************************************************
+ *
+ *          DELETE
+ *
+ *************************************************************/
+
+
+
+/*!\brief delete an item list 
+   \param items: item list
+   \param opt: undo option
+   \todo Document
+   \todo Create a custom undo class for avoiding if
+   \todo removeitems delete item use asingle name scheme
+*/
+void SchematicScene::deleteItems(QList<QucsItem*> &items, 
+				 const Qucs::UndoOption opt)
+{
+  if(opt == Qucs::DontPushUndoCmd) {
+    foreach(QucsItem* item, items) {
+      delete item;
+    }
+  }
+  else {
+    /* configure undo */
+    this->m_undoStack->beginMacro(QString("Delete items"));
+    
+    /* diconnect then remove */
+    this->disconnectItems(items, opt);
+    this->m_undoStack->push(new RemoveItemsCmd(items, this));
+
+    this->m_undoStack->endMacro();
+   }
+}
+
+/*!\brief Left button deleting event: delete items 
+   \param pos: pos clicked
+*/ 
+void SchematicScene::deletingEventLeftMouseClick(const QPointF &pos)
+{
+  /* create a list of items */
+  QList<QGraphicsItem*> _list = items(pos);
+  if(!_list.isEmpty()) {
+    QList<QucsItem*> _items = filterItems<QucsItem>(_list);
+    
+    if(!_items.isEmpty()) {
+      this->deleteItems(QList<QucsItem*>() << _items.first(), Qucs::PushUndoCmd);
+      this->setModified(true);
+    }
+  }
+}
+
+
+/*!\brief Left button deleting event: delete items 
+   \param pos: pos clicked
+*/ 
+void SchematicScene::deletingEventRightMouseClick(const QPointF &pos)
+{
+  /* create a list of items */
+  QList<QGraphicsItem*> _list = items(pos);
+  if(!_list.isEmpty()) {
+    QList<QucsItem*> _items = filterItems<QucsItem>(_list);
+    
+    if(!_items.isEmpty()) {
+      this->disconnectItems(QList<QucsItem*>() << _items.first(), Qucs::PushUndoCmd);
+      this->setModified(true);
+    }
+  }
+}
+
+
+/*!\brief delete action
+   
+  Delete action: left click delete, right click disconnect item
+*/
+void SchematicScene::deletingEvent(const MouseActionEvent *event)
+{
+  if(event->type() != QEvent::GraphicsSceneMousePress)
+    return;
+
+  QPointF pos = event->scenePos();
+  /* left click */
+  if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) 
+    return this->deletingEventLeftMouseClick(pos);
+  /* right click */
+  if((event->buttons() & Qt::RightButton) == Qt::RightButton) 
+    return this->deletingEventRightMouseClick(pos);
+  return;
+}
+
 
 
 /*! Zoom at point event 
