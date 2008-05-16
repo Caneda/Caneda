@@ -70,7 +70,7 @@ QPointF centerOfItems(const QList<T*> &items)
 /*!\brief Default Constructor */
 SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 {
-   init();
+   this->init();
 }
 
 /*!\brief Constructs a SchematicScene object, 
@@ -86,7 +86,7 @@ SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 SchematicScene::SchematicScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent ) :
    QGraphicsScene(x,y,width,height,parent)
 {
-   init();
+   this->init();
 }
 
 
