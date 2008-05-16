@@ -281,18 +281,18 @@ void SchematicScene::setFrameVisible(const bool visibility)
 /*!\brief Todo document */
 void SchematicScene::setFrameTexts(const QStringList& texts)
 {
-  m_frameTexts = texts;
-  if(isFrameVisible())
+  this->m_frameTexts = texts;
+  if(this->isFrameVisible())
     update();
 }
 
 /*!\brief Todo document */
 void SchematicScene::setMode(const Qucs::Mode mode)
 {
-  if(m_currentMode == mode) 
+  if(this->m_currentMode == mode) 
     return;
-  m_currentMode = mode;
-  update();
+  this->m_currentMode = mode;
+  this->update();
   //TODO:
 }
 
@@ -302,56 +302,56 @@ void SchematicScene::setMode(const Qucs::Mode mode)
 */
 void SchematicScene::setCurrentMouseAction(const MouseAction action)
 {
-  if(m_currentMouseAction == action) 
+  if(this->m_currentMouseAction == action) 
     return;
 
-  if(m_currentMouseAction == InsertingItems)
-    blockShortcuts(false);
+  if(this->m_currentMouseAction == InsertingItems)
+    this->blockShortcuts(false);
 
   if(action == InsertingItems)
-    blockShortcuts(true);
+    this->blockShortcuts(true);
 
-  m_areItemsMoving = false;
-  m_currentMouseAction = action;
+  this->m_areItemsMoving = false;
+  this->m_currentMouseAction = action;
 
   QGraphicsView::DragMode dragMode = (action == Normal) ?
     QGraphicsView::RubberBandDrag : QGraphicsView::NoDrag;
   foreach(QGraphicsView *view, views())
     view->setDragMode(dragMode);
-  resetState();
+  this->resetState();
   //TODO: Implemement this appropriately for all mouse actions
 }
 
 /*!\todo Document */
 void SchematicScene::resetState()
 {
-  setFocusItem(0);
-  clearSelection();
+  this->setFocusItem(0);
+  this->clearSelection();
 
-  qDeleteAll(m_insertibles);
-  m_insertibles.clear();
+  qDeleteAll(this->m_insertibles);
+  this->m_insertibles.clear();
 
-  if(m_currentWiringWire) {
-    if(!m_isWireCmdAdded) {
-      delete m_currentWiringWire;
+  if(this->m_currentWiringWire) {
+    if(!this->m_isWireCmdAdded) {
+      delete this->m_currentWiringWire;
     }
     else {
-      m_currentWiringWire->show();
-      m_currentWiringWire->setState(m_currentWiringWire->storedState());
-      m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
+      this->m_currentWiringWire->show();
+      this->m_currentWiringWire->setState(m_currentWiringWire->storedState());
+      this->m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
     }
   }
 
-  m_currentWiringWire = 0;
+  this->m_currentWiringWire = 0;
 
-  m_isWireCmdAdded = false;
+  this->m_isWireCmdAdded = false;
 
-  delete m_paintingDrawItem;
-  m_paintingDrawItem = 0;
-  m_paintingDrawClicks = 0;
+  delete this->m_paintingDrawItem;
+  this->m_paintingDrawItem = 0;
+  this->m_paintingDrawClicks = 0;
 
-  delete m_zoomBand;
-  m_zoomBand = 0;
+  delete this->m_zoomBand;
+  this->m_zoomBand = NULL;
 }
 
 /*! Cut items */
