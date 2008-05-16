@@ -153,6 +153,7 @@ static const char dataDisplaySuffix[] = ".dpl";
 
 /*!\brief Set schematic and datafile name 
    \param name: name to set
+   \todo document
 */
 void SchematicScene::setFileName(const QString& name)
 {
@@ -169,26 +170,27 @@ void SchematicScene::setFileName(const QString& name)
 /*! Get nearest point on grid 
     \param pos: current position to be rounded
     \return rounded position
+    \todo explain algorithm
 */
 QPointF SchematicScene::nearingGridPoint(const QPointF &pos)
 {
-   QPoint point = pos.toPoint();
-   int x = point.x();
-   int y = point.y();
-
-   if(x<0) 
-     x -= (m_gridWidth >> 1) - 1;
-   else 
-     x += m_gridWidth >> 1;
-   x -= x % m_gridWidth;
-
-   if(y<0) 
-     y -= (m_gridHeight >> 1) - 1;
-   else 
-     y += m_gridHeight >> 1;
-   y -= y % m_gridHeight;
-
-   return QPointF(x,y);
+  QPoint point = pos.toPoint();
+  int x = point.x();
+  int y = point.y();
+  
+  if(x<0) 
+    x -= (this->m_gridWidth * 2) - 1;
+  else 
+    x += this->m_gridWidth * 2; 
+  x -= x % this->m_gridWidth;
+  
+  if(y<0) 
+    y -= (this->m_gridHeight * 2) - 1;
+  else 
+    y += this->m_gridHeight * 2;
+  y -= y % this->m_gridHeight;
+  
+  return QPointF(x,y);
 }
 
 /*! Set grid size 
@@ -198,14 +200,14 @@ QPointF SchematicScene::nearingGridPoint(const QPointF &pos)
 void SchematicScene::setGridSize(const uint width, const uint height)
 {
   /* avoid redrawing */
-   if(m_gridWidth == width && m_gridHeight == height)
-      return;
-
-   m_gridWidth = width;
-   m_gridHeight = height;
-
-   if(isGridVisible())
-      update();
+  if(this->m_gridWidth == width && this->m_gridHeight == height)
+    return;
+  
+  this->m_gridWidth = width;
+  this->m_gridHeight = height;
+  
+  if(isGridVisible())
+    this->update();
 }
 
 /*! Set grid visibility 
@@ -214,10 +216,11 @@ void SchematicScene::setGridSize(const uint width, const uint height)
 void SchematicScene::setGridVisible(const bool visibility)
 {
   /* avoid updating */
-   if(m_gridVisible == visibility) 
-     return;
-   m_gridVisible = visibility;
-   update();
+  if(this->m_gridVisible == visibility) 
+    return;
+  
+  this->m_gridVisible = visibility;
+  this->update();
 }
 
 /*! Set grid visibility 
@@ -226,10 +229,11 @@ void SchematicScene::setGridVisible(const bool visibility)
 void SchematicScene::setGridColor(const QColor &color)
 {
   /* avoid updating */
-   if(m_gridcolor == color) 
-     return;
-   m_gridcolor = color;
-   update();
+  if(this->m_gridcolor == color) 
+    return;
+
+  this->m_gridcolor = color;
+  this->update();
 }
 
 /*! Set origin visibility
@@ -238,37 +242,40 @@ void SchematicScene::setGridColor(const QColor &color)
 void SchematicScene::setOriginDrawn(const bool visibility)
 {
   /* avoid updating */
-   if(m_OriginDrawn == visibility) 
-     return;
-   m_OriginDrawn = visibility;
-   update();
+  if(this->m_OriginDrawn == visibility) 
+    return;
+
+  this->m_OriginDrawn = visibility;
+  this->update();
 }
 
 /*!\todo Document */
 void SchematicScene::setDataSet(const QString& _dataSet)
 {
-   m_dataSet = _dataSet;
+  this->m_dataSet = _dataSet;
 }
 
 /*!\todo Documenent */
 void SchematicScene::setDataDisplay(const QString& display)
 {
-   m_dataDisplay = display;
+  this->m_dataDisplay = display;
 }
 
 /*!\todo Documenent */
 void SchematicScene::setOpensDataDisplay(const bool state)
 {
-   m_opensDataDisplay = state;
+  this->m_opensDataDisplay = state;
 }
 
-/*!\todo Documenent */
+/*!\to-sdo Documenent */
 void SchematicScene::setFrameVisible(const bool visibility)
 {
-   if(m_frameVisible == visibility) 
-     return;
-   m_frameVisible = visibility;
-   update();
+  /* avoid updating */
+  if(this->m_frameVisible == visibility) 
+    return;
+  
+  this->m_frameVisible = visibility;
+  this->update();
 }
 
 /*!\brief Todo document */
