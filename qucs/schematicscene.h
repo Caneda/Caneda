@@ -130,7 +130,7 @@ class SchematicScene : public QGraphicsScene
 
       //these aren't toggle actions.
       void cutItems(QList<QucsItem*> &items, const Qucs::UndoOption = Qucs::PushUndoCmd);
-      void copyItems(QList<QucsItem*> &items);
+      void copyItems(QList<QucsItem*> &items) const;
       void paste();
 
       QString fileName() const { return m_fileName; }
@@ -139,7 +139,7 @@ class SchematicScene : public QGraphicsScene
       bool isModified() const { return m_modified; }
 
       /*! round to nearest grid point according to grid snapping setting */
-      QPointF smartNearingGridPoint(const QPointF &pos) { 
+      QPointF smartNearingGridPoint(const QPointF &pos) const { 
 	return m_snapToGrid == true ? nearingGridPoint(pos) : pos;
       }
 
@@ -197,7 +197,7 @@ class SchematicScene : public QGraphicsScene
       void beginInsertingItems(const QList<QucsItem*> &items);
 
       bool alignElements(const Qt::Alignment alignment);
-      bool distributeElements(Qt::Orientation orientation);
+      bool distributeElements(const Qt::Orientation orientation);
 
       bool eventFilter(QObject *object, QEvent *event);
 
@@ -205,7 +205,7 @@ class SchematicScene : public QGraphicsScene
       void blockShortcuts(bool block);
 
    public slots:
-      void setModified(bool m = true);
+      void setModified(const bool m = true);
       bool sidebarItemClicked(const QString &item, const QString& category);
 
    signals:
@@ -286,7 +286,7 @@ class SchematicScene : public QGraphicsScene
 
       void placeAndDuplicatePainting();
 
-      QPointF nearingGridPoint(const QPointF &pos);
+      QPointF nearingGridPoint(const QPointF &pos) const;
 
       //These are helper variables (aka state holders)
       bool m_areItemsMoving;

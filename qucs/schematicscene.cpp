@@ -141,9 +141,6 @@ void SchematicScene::test()
 {
 }
 
-
-
-
 /*!\brief Data set file suffix 
   \todo use something more explicit 
 */
@@ -157,13 +154,13 @@ static const char dataDisplaySuffix[] = ".dpl";
 */
 void SchematicScene::setFileName(const QString& name)
 {
-  if(name == m_fileName || name.isEmpty())
+  if(name == this->m_fileName || name.isEmpty())
     return;
-  m_fileName = name;
-  QFileInfo info(m_fileName);
-  m_dataSet = info.baseName() + dataSetSuffix;
-  m_dataDisplay = info.baseName() + dataDisplaySuffix;
-  emit fileNameChanged(m_fileName);
+  this->m_fileName = name;
+  QFileInfo info(this->m_fileName);
+  this->m_dataSet = info.baseName() + dataSetSuffix;
+  this->m_dataDisplay = info.baseName() + dataDisplaySuffix;
+  emit fileNameChanged(this->m_fileName);
   emit titleToBeUpdated();
 }
 
@@ -172,7 +169,7 @@ void SchematicScene::setFileName(const QString& name)
   \return rounded position
   \todo explain algorithm
 */
-QPointF SchematicScene::nearingGridPoint(const QPointF &pos)
+QPointF SchematicScene::nearingGridPoint(const QPointF &pos) const
 {
   QPoint point = pos.toPoint();
   int x = point.x();
@@ -381,15 +378,15 @@ void SchematicScene::resetState()
 /*! Cut items */
 void SchematicScene::cutItems(QList<QucsItem*> &_items, const Qucs::UndoOption opt)
 {
-  copyItems(_items);
-  deleteItems(_items, opt);
+  this->copyItems(_items);
+  this->deleteItems(_items, opt);
 }
 
 /*!\brief Copy item
   \todo Document format 
   \todo Use own mime type
 */
-void SchematicScene::copyItems(QList<QucsItem*> &_items)
+void SchematicScene::copyItems(QList<QucsItem*> &_items) const
 {
   if(_items.isEmpty())
     return;
@@ -470,6 +467,7 @@ SchematicView* SchematicScene::activeView() const
 
 /*!\todo document 
    \todo create a insert qucscomponents property in order to avoid ugly cast 
+   \todo gpk: why two loop??
 */
 void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
 {
@@ -518,13 +516,14 @@ bool SchematicScene::alignElements(const Qt::Alignment alignment)
 {
   QList<QGraphicsItem*> gItems = selectedItems();
   QList<QucsItem*> items = filterItems<QucsItem>(gItems, DontRemoveItems);
-  if(items.size() < 2) return false;
+  if(items.size() < 2) 
+    return false;
 
   bool debugMsgPrinted = false;
 
-  m_undoStack->beginMacro("");
+  this->m_undoStack->beginMacro("");
   disconnectItems(items, Qucs::PushUndoCmd);
-
+  
   QRectF rect = items.first()->sceneBoundingRect();
   QList<QucsItem*>::iterator it = items.begin()+1;
   while(it != items.end()) {
@@ -538,7 +537,7 @@ bool SchematicScene::alignElements(const Qt::Alignment alignment)
       ++it;
       continue;
     }
-
+    
     QRectF itemRect = (*it)->sceneBoundingRect();
     QPointF delta;
 
@@ -569,35 +568,35 @@ bool SchematicScene::alignElements(const Qt::Alignment alignment)
     }
 
     QPointF itemPos = (*it)->pos();
-    m_undoStack->push(new MoveCmd(*it, itemPos, itemPos + delta));;
+    this->m_undoStack->push(new MoveCmd(*it, itemPos, itemPos + delta));;
     ++it;
   }
 
   connectItems(items, Qucs::PushUndoCmd);
-  m_undoStack->endMacro();
+  this->m_undoStack->endMacro();
   return true;
 }
 
 /*!\todo Document */
-bool pointCmpFunction_X(QucsItem *lhs, QucsItem  *rhs)
+static inline bool pointCmpFunction_X(const QucsItem *lhs, const QucsItem  *rhs)
 {
   return lhs->pos().x() < rhs->pos().x();
 }
 
 /*!\todo Document */
-bool pointCmpFunction_Y(QucsItem *lhs, QucsItem  *rhs)
+static inline bool pointCmpFunction_Y(const QucsItem *lhs, const QucsItem  *rhs)
 {
   return lhs->pos().y() < rhs->pos().y();
 }
 
 /*!\todo document */
-bool SchematicScene::distributeElements(Qt::Orientation orientation)
+bool SchematicScene::distributeElements(const Qt::Orientation orientation)
 {
   QList<QGraphicsItem*> gItems = selectedItems();
   QList<QucsItem*> items = filterItems<QucsItem>(gItems);
   if(items.size() < 2) return false;
 
-  m_undoStack->beginMacro(QString());
+  this->m_undoStack->beginMacro(QString());
   disconnectItems(items, Qucs::PushUndoCmd);
 
   qSort(items.begin(), items.end(),
@@ -623,11 +622,11 @@ bool SchematicScene::distributeElements(Qt::Orientation orientation)
       y += dy;
     }
 
-    m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+    this->m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
   }
 
-  connectItems(items, Qucs::PushUndoCmd);
-  m_undoStack->endMacro();
+  this->connectItems(items, Qucs::PushUndoCmd);
+  this->m_undoStack->endMacro();
   return true;
 }
 
@@ -653,30 +652,31 @@ bool SchematicScene::eventFilter(QObject *watched, QEvent *event)
 }
 
 /*!\todo document */
-void SchematicScene::blockShortcuts(bool block)
+void SchematicScene::blockShortcuts(const bool block)
 {
-  if(!activeView()) return;
+  if(!activeView()) 
+    return;
 
   if(block) {
-    if(!m_shortcutsBlocked) {
+    if(!this->m_shortcutsBlocked) {
       qApp->installEventFilter(this);
-      m_shortcutsBlocked = true;
+      this->m_shortcutsBlocked = true;
     }
   }
   else {
-    if(m_shortcutsBlocked) {
+    if(this->m_shortcutsBlocked) {
       qApp->removeEventFilter(this);
-      m_shortcutsBlocked = false;
+      this->m_shortcutsBlocked = false;
     }
   }
 }
 
 /*! \todo document */
-void SchematicScene::setModified(bool m)
+void SchematicScene::setModified(const bool m)
 {
-  if(m_modified != m) {
-    m_modified = m;
-    emit modificationChanged(m_modified);
+  if(this->m_modified != m) {
+    this->m_modified = m;
+    emit modificationChanged(this->m_modified);
     emit titleToBeUpdated();
   }
 }
@@ -693,13 +693,13 @@ bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& 
     return false;
 
   if(category == "paintings") {
-    setCurrentMouseAction(PaintingDrawEvent);
-    m_paintingDrawItem = Painting::fromName(itemName);
-    if(!m_paintingDrawItem) {
-      setCurrentMouseAction(Normal);
+    this->setCurrentMouseAction(PaintingDrawEvent);
+    this->m_paintingDrawItem = Painting::fromName(itemName);
+    if(!this->m_paintingDrawItem) {
+      this->setCurrentMouseAction(Normal);
       return false;
     }
-    m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
+    this->m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
     return true;
   }
 
@@ -708,9 +708,9 @@ bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& 
     if(!item) 
       return false;
 
-    addItem(item);
-    setCurrentMouseAction(InsertingItems);
-    beginInsertingItems(QList<QucsItem*>() << item);
+    this->addItem(item);
+    this->setCurrentMouseAction(InsertingItems);
+    this->beginInsertingItems(QList<QucsItem*>() << item);
 
     return true;
   }
@@ -782,17 +782,18 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 /*! \todo Document */
 bool SchematicScene::event(QEvent *event)
 {
-  if(m_currentMouseAction == InsertingItems) {
+  if(this->m_currentMouseAction == InsertingItems) {
     if(event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
       bool visible = (event->type() == QEvent::Enter);
       foreach(QucsItem *item, m_insertibles)
 	item->setVisible(visible);
       if(visible) {
 	SchematicView *active = activeView();
-	if(!active) return QGraphicsScene::event(event);
+	if(!active) 
+	  return QGraphicsScene::event(event);
 
 	QPoint pos = active->viewport()->mapFromGlobal(QCursor::pos());
-	m_insertActionMousePos = active->mapToScene(pos);
+	this->m_insertActionMousePos = active->mapToScene(pos);
 
 	QPointF delta = m_insertActionMousePos - centerOfItems(m_insertibles);
 
@@ -836,7 +837,7 @@ void SchematicScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event)
 {
   if(event->mimeData()->formats().contains("application/qucs.sidebarItem")) {
     event->acceptProposedAction();
-    blockShortcuts(true);
+    this->blockShortcuts(true);
   }
   else
     event->ignore();
