@@ -273,6 +273,10 @@ class SchematicScene : public QGraphicsScene
       void deletingEventRightMouseClick(const QPointF &pos);
       void deletingEventLeftMouseClick(const QPointF &pos);
 
+      /* private distribute */
+      void distributeElementsHorizontally(QList<QucsItem*> items);
+      void distributeElementsVertically(QList<QucsItem*> items);
+
       QucsItem* itemForName(const QString& name, const QString& category);
       void placeItem(QucsItem *item, const QPointF &pos, const Qucs::UndoOption opt);
       int componentLabelSuffix(const QString& labelPrefix) const;

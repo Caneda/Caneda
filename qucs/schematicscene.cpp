@@ -1,5 +1,6 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2006 Gopala Krishna A <krishna.ggk@gmail.com>             *
+ * Copyright (C) 2008 Bastien ROUCARIES <roucaries.bastien+qucs@gmail.com> *                                               
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -577,58 +578,6 @@ bool SchematicScene::alignElements(const Qt::Alignment alignment)
   return true;
 }
 
-/*!\todo Document */
-static inline bool pointCmpFunction_X(const QucsItem *lhs, const QucsItem  *rhs)
-{
-  return lhs->pos().x() < rhs->pos().x();
-}
-
-/*!\todo Document */
-static inline bool pointCmpFunction_Y(const QucsItem *lhs, const QucsItem  *rhs)
-{
-  return lhs->pos().y() < rhs->pos().y();
-}
-
-/*!\todo document */
-bool SchematicScene::distributeElements(const Qt::Orientation orientation)
-{
-  QList<QGraphicsItem*> gItems = selectedItems();
-  QList<QucsItem*> items = filterItems<QucsItem>(gItems);
-  if(items.size() < 2) return false;
-
-  this->m_undoStack->beginMacro(QString());
-  disconnectItems(items, Qucs::PushUndoCmd);
-
-  qSort(items.begin(), items.end(),
-	orientation == Qt::Horizontal ? pointCmpFunction_X : pointCmpFunction_Y);
-
-  qreal x1 = items.first()->pos().x(), y1 = items.first()->pos().y();
-  qreal x2 = items.last()->pos().x(), y2 = items.last()->pos().y();
-
-  qreal dx = (x2 - x1) / (items.size() - 1);
-  qreal dy = (y2 - y1) / (items.size() - 1);
-
-  qreal x = x1, y = y1;
-  foreach(QucsItem *item, items) {
-    if(item->isWire()) continue;
-
-    QPointF newPos = item->pos();
-    if(orientation == Qt::Horizontal) {
-      newPos.setX(x);
-      x += dx;
-    }
-    else {
-      newPos.setY(y);
-      y += dy;
-    }
-
-    this->m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
-  }
-
-  this->connectItems(items, Qucs::PushUndoCmd);
-  this->m_undoStack->endMacro();
-  return true;
-}
 
 /*!\todo document */
 bool SchematicScene::eventFilter(QObject *watched, QEvent *event)
@@ -1298,6 +1247,138 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
     this->rotateItems(QList<QucsItem*>() << qItems.first(), angle, Qucs::PushUndoCmd);
     this->setModified(true);
   }
+}
+/***************************************************************************
+ *
+ *   Distribute element 
+ *
+ ***************************************************************************/
+
+
+/*!Short function for qsort sort by abscissa */
+static inline bool pointCmpFunction_X(const QucsItem *lhs, const QucsItem  *rhs)
+{
+  return lhs->pos().x() < rhs->pos().x();
+}
+
+/*!Short function for qsort sort by abscissa */
+static inline bool pointCmpFunction_Y(const QucsItem *lhs, const QucsItem  *rhs)
+{
+  return lhs->pos().y() < rhs->pos().y();
+}
+
+/* Distribute horizontally
+   \param items: items to distribute 
+   \todo Why not filter wire ??
+*/
+void SchematicScene::distributeElementsHorizontally(QList<QucsItem*> items)
+{
+  qreal x1, x2, x, dx;
+  QPointF newPos;
+
+  /* undo */
+  this->m_undoStack->beginMacro("Distribute horizontally");
+
+  /* disconnect */
+  this->disconnectItems(items, Qucs::PushUndoCmd);
+
+  /*sort item */
+  qSort(items.begin(), items.end(), pointCmpFunction_X);
+  x1 = items.first()->pos().x();
+  x2 = items.last()->pos().x();
+
+  /* compute step */
+  dx = (x2 - x1) / (items.size() - 1);
+  x = x1;
+  
+  foreach(QucsItem *item, items) {
+    /* why not filter wire ??? */
+    if(item->isWire()) 
+      continue;
+    
+    /* compute new position */
+    newPos = item->pos();
+    newPos.setX(x);
+    x += dx;
+
+    /* move to new pos */
+    this->m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+  }
+
+  /* try to reconnect */
+  this->connectItems(items, Qucs::PushUndoCmd);
+
+  /* end command */
+  this->m_undoStack->endMacro();
+
+}
+
+/* Distribute vertically
+   \param items: items to distribute 
+   \todo Why not filter wire ??
+*/
+void SchematicScene::distributeElementsVertically(QList<QucsItem*> items)
+{
+  qreal y1, y2, y, dy;
+  QPointF newPos;
+
+  /* undo */
+  this->m_undoStack->beginMacro("Distribute vertically");
+
+  /* disconnect */
+  this->disconnectItems(items, Qucs::PushUndoCmd);
+
+  /*sort item */
+  qSort(items.begin(), items.end(), pointCmpFunction_Y);
+  y1 = items.first()->pos().y();
+  y2 = items.last()->pos().y();
+
+  /* compute step */
+  dy = (y2 - y1) / (items.size() - 1);
+  y = y1;
+  
+  foreach(QucsItem *item, items) {
+    /* why not filter wire ??? */
+    if(item->isWire()) 
+      continue;
+    
+    /* compute new position */
+    newPos = item->pos();
+    newPos.setY(y);
+    y += dy;
+
+    /* move to new pos */
+    this->m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+  }
+
+  /* try to reconnect */
+  this->connectItems(items, Qucs::PushUndoCmd);
+
+  /* end command */
+  this->m_undoStack->endMacro();
+
+}
+
+/*!\brief Distribute elements 
+  
+  Distribute elements ie each element is equally spaced
+  \param orientation: distribute according to orientation
+  \todo filter wire ??? Do not distribute wire ??
+ */
+bool SchematicScene::distributeElements(const Qt::Orientation orientation)
+{
+  QList<QGraphicsItem*> gItems = selectedItems();
+  QList<QucsItem*> items = filterItems<QucsItem>(gItems);
+
+  /* could not distribute single items */
+  if(items.size() < 2) 
+    return false;
+
+  if(orientation == Qt::Horizontal) 
+    this->distributeElementsHorizontally(items);
+  else
+    this->distributeElementsVertically(items);
+  return true;
 }
 
 
