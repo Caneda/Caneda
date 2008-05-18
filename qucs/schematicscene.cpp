@@ -176,15 +176,15 @@ QPointF SchematicScene::nearingGridPoint(const QPointF &pos) const
   int y = point.y();
   
   if(x<0) 
-    x -= (this->m_gridWidth * 2) - 1;
+    x -= (this->m_gridWidth / 2) - 1;
   else 
-    x += this->m_gridWidth * 2; 
+    x += this->m_gridWidth / 2; 
   x -= x % this->m_gridWidth;
   
   if(y<0) 
-    y -= (this->m_gridHeight * 2) - 1;
+    y -= (this->m_gridHeight / 2) - 1;
   else 
-    y += this->m_gridHeight * 2;
+    y += this->m_gridHeight / 2;
   y -= y % this->m_gridHeight;
   
   return QPointF(x,y);
