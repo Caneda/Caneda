@@ -198,7 +198,7 @@ SchematicScene* QucsItem::schematicScene() const
  */
 SchematicView* QucsItem::activeView() const
 {
-   return this->chematicScene() ? this->schematicScene()->activeView() : NULL;
+   return this->schematicScene() ? this->schematicScene()->activeView() : NULL;
 }
 
 //!\brief Returns a pointer to the applications main window.

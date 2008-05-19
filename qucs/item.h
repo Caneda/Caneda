@@ -1,4 +1,4 @@
-A/***************************************************************************
+/***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
@@ -122,7 +122,7 @@ class QucsItem : public QGraphicsItem
       virtual ~QucsItem();
 
       //! Return type of item
-      int type() const { return this->QucsItemType; }
+      int type() const { return QucsItemType; }
       //! Return bounding box
       QRectF boundingRect() const { return this->m_boundingRect; }
       //! Return the shape of the item.
