@@ -143,7 +143,7 @@ QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene)
    : QGraphicsItem(parent),
      m_boundingRect(-2., -2., 4., 4.) /* Non empty default bound rect.*/
 {
-   m_shape.addRect(m_boundingRect);
+   this->m_shape.addRect(m_boundingRect);
    if(scene) {
       scene->addItem(this);
    }
@@ -174,21 +174,21 @@ void QucsItem::setShapeAndBoundRect(const QPainterPath& path,
                                     const QRectF& rect, qreal pw)
 {
    // Inform scene about change in geometry.
-   prepareGeometryChange();
-   m_boundingRect = rect;
+   this->prepareGeometryChange();
+   this->m_boundingRect = rect;
    // Adjust the bounding rect by half pen width as required by graphicsview.
-   m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
-   m_shape = path;
-   if(m_shape.isEmpty()) {
+   this->m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
+   this->m_shape = path;
+   if(this->m_shape.isEmpty()) {
       //if path is empry just add the bounding rect itself to the path.
-      m_shape.addRect(m_boundingRect);
+      this->m_shape.addRect(this->m_boundingRect);
    }
 }
 
 //!\brief returns a pointer to the schematic scene to which the item belongs.
 SchematicScene* QucsItem::schematicScene() const
 {
-   return qobject_cast<SchematicScene*>(scene());
+   return qobject_cast<SchematicScene*>(this->scene());
 }
 
 
@@ -198,14 +198,14 @@ SchematicScene* QucsItem::schematicScene() const
  */
 SchematicView* QucsItem::activeView() const
 {
-   return schematicScene() ? schematicScene()->activeView() : 0;
+   return this->chematicScene() ? this->schematicScene()->activeView() : NULL;
 }
 
 //!\brief Returns a pointer to the applications main window.
 QucsMainWindow* QucsItem::mainWindow() const
 {
-   QGraphicsView *view = activeView();
-   return view ? qobject_cast<QucsMainWindow*>(view->parent()) : 0;
+   QGraphicsView *view = this->activeView();
+   return view ? qobject_cast<QucsMainWindow*>(view->parent()) : NULL;
 }
 
 /*!
@@ -219,7 +219,7 @@ QString QucsItem::saveDataText() const
 {
    QString retVal;
    Qucs::XmlWriter writer(&retVal);
-   saveData(&writer);
+   this->saveData(&writer);
    return retVal;
 }
 
@@ -240,7 +240,7 @@ void QucsItem::loadDataFromText(const QString &text)
          break;
 
       if(reader.isStartElement()) {
-         loadData(&reader);
+         this->loadData(&reader);
       }
    }
 }
@@ -251,24 +251,19 @@ void QucsItem::loadDataFromText(const QString &text)
  */
 void QucsItem::mirrorAlong(Qt::Axis axis)
 {
-   update();
-   if(axis == Qt::ZAxis) {
-      qWarning("Using unsupported mirroring axis - zaxis. Falling back"
-               " to x axis");
-      axis = Qt::XAxis;
-   }
-   if(axis == Qt::XAxis) {
-      scale(1.0, -1.0);
-   }
-   else /*axis = Qt::YAxis*/ {
-      scale(-1.0, 1.0);
-   }
+   this->update();
+   
+   Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
+   if(axis == Qt::XAxis) 
+      this->scale(1.0, -1.0);
+   else /*axis = Qt::YAxis*/ 
+      this->scale(-1.0, 1.0);
 }
 
-//!\brief Rotate item by -90Â°
+//!\brief Rotate item by -90°
 void QucsItem::rotate90(Qucs::AngleDirection dir)
 {
-   rotate(dir == Qucs::AntiClockwise ? -90.0 : 90.0);
+   this->rotate(dir == Qucs::AntiClockwise ? -90.0 : 90.0);
 }
 
 /*!
@@ -289,10 +284,10 @@ QucsItem* QucsItem::copy(SchematicScene *) const
  */
 void QucsItem::copyDataTo(QucsItem *item) const
 {
-   item->setTransform(transform());
+   item->setTransform(this->transform());
    item->prepareGeometryChange();
-   item->m_boundingRect = m_boundingRect;
-   item->m_shape = m_shape;
+   item->m_boundingRect = this->m_boundingRect;
+   item->m_shape = this->m_shape;
 }
 
 /*!
