@@ -1680,6 +1680,77 @@ void SchematicScene::deletingEvent(const MouseActionEvent *event)
   return;
 }
 
+/*********************************************************************
+ *
+ *  Connect -- disconnect 
+ *
+ ********************************************************************/
+
+/*! Automatically connect items if port or wire overlap 
+    \param qItems: item to connect
+    \param opt: undo option
+    \todo remove the cast and create a class connectable item
+*/
+  
+void SchematicScene::connectItems(const QList<QucsItem*> &qItems, 
+				  const Qucs::UndoOption opt)
+{
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack->beginMacro(tr("Connect items"));
+
+  /* remove this cast */
+  foreach(QucsItem *qItem, qItems) {
+    if(qItem->isComponent())
+      qucsitem_cast<Component*>(qItem)->checkAndConnect(opt);
+    else if(qItem->isWire())
+      qucsitem_cast<Wire*>(qItem)->checkAndConnect(opt);
+  }
+
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack->endMacro();
+}
+
+
+/*! Disconnect an item from wire or other components
+    \param qItems: item to connect
+    \param opt: undo option
+    \todo remove the cast and create a class connectable item
+    \todo allow disconnect from NULL
+ */
+void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
+				     const Qucs::UndoOption opt)
+{
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack->beginMacro(QString());
+
+  foreach(QucsItem *item, qItems) {
+    QList<Port*> ports;
+    
+    /* remove this cast */
+    if(item->isComponent()) {
+      ports = qucsitem_cast<Component*>(item)->ports();
+    }
+    else if(item->isWire()) {
+      ports = qucsitem_cast<Wire*>(item)->ports();
+    }
+
+    foreach(Port *p, ports) {
+      Port *other = p->getAnyConnectedPort();
+      if(other) {
+	if(opt == Qucs::PushUndoCmd)
+	  m_undoStack->push(new DisconnectCmd(p, other));
+	else
+	  /* allow disconnect from NULL */
+	  p->disconnectFrom(other);
+      }
+    }
+  }
+
+  if(opt == Qucs::PushUndoCmd)
+    this->m_undoStack->endMacro();
+}
+
+
 
 
 /*! Zoom at point event 
@@ -2207,54 +2278,7 @@ void SchematicScene::setNumberUnused(int num)
   (void) num;
 }
 
-/*!\todo document */
-void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
-				     const Qucs::UndoOption opt)
-{
-  if(opt == Qucs::PushUndoCmd)
-    m_undoStack->beginMacro(QString());
 
-  foreach(QucsItem *item, qItems) {
-    QList<Port*> ports;
-    if(item->isComponent()) {
-      ports = qucsitem_cast<Component*>(item)->ports();
-    }
-    else if(item->isWire()) {
-      ports = qucsitem_cast<Wire*>(item)->ports();
-    }
-
-    foreach(Port *p, ports) {
-      Port *other = p->getAnyConnectedPort();
-      if(other) {
-	if(opt == Qucs::PushUndoCmd)
-	  m_undoStack->push(new DisconnectCmd(p, other));
-	else
-	  p->disconnectFrom(other);
-      }
-    }
-  }
-
-  if(opt == Qucs::PushUndoCmd)
-    m_undoStack->endMacro();
-}
-
-/*!\todo document */
-void SchematicScene::connectItems(const QList<QucsItem*> &qItems, 
-				  const Qucs::UndoOption opt)
-{
-  if(opt == Qucs::PushUndoCmd)
-    m_undoStack->beginMacro(QString());
-
-  foreach(QucsItem *qItem, qItems) {
-    if(qItem->isComponent())
-      qucsitem_cast<Component*>(qItem)->checkAndConnect(opt);
-    else if(qItem->isWire())
-      qucsitem_cast<Wire*>(qItem)->checkAndConnect(opt);
-  }
-
-  if(opt == Qucs::PushUndoCmd)
-    m_undoStack->endMacro();
-}
 
 /*!\todo Document */
 void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
