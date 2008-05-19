@@ -49,11 +49,19 @@
 #include <QtGui/QShortcutEvent>
 #include <QtGui/QKeySequence>
 #include <QtGui/QColor>
-
+#include <QtGlobal>
 
 #include <cmath>
 #include <memory>
 
+
+/*\file Schematicscene 
+  
+  This file implement the schematic scene ie the place where you draw components
+*/
+
+
+/*\todo document */
 template <typename T>
 QPointF centerOfItems(const QList<T*> &items)
 {
@@ -506,77 +514,6 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
   }
 }
 
-/*!align element 
-  \param alignment: alignement used
-  \todo use smart alignment ie: port alignement
-  \todo implement snap on grid
-  \todo string of undo
-*/
-
-bool SchematicScene::alignElements(const Qt::Alignment alignment)
-{
-  QList<QGraphicsItem*> gItems = selectedItems();
-  QList<QucsItem*> items = filterItems<QucsItem>(gItems, DontRemoveItems);
-  if(items.size() < 2) 
-    return false;
-
-  bool debugMsgPrinted = false;
-
-  this->m_undoStack->beginMacro("");
-  disconnectItems(items, Qucs::PushUndoCmd);
-  
-  QRectF rect = items.first()->sceneBoundingRect();
-  QList<QucsItem*>::iterator it = items.begin()+1;
-  while(it != items.end()) {
-    rect |= (*it)->sceneBoundingRect();
-    ++it;
-  }
-
-  it = items.begin();
-  while(it != items.end()) {
-    if((*it)->isWire()) {
-      ++it;
-      continue;
-    }
-    
-    QRectF itemRect = (*it)->sceneBoundingRect();
-    QPointF delta;
-
-    switch(alignment) {
-    case Qt::AlignLeft :
-      delta.rx() =  rect.left() - itemRect.left(); break;
-
-    case Qt::AlignRight :
-      delta.rx() = rect.right() - itemRect.right(); break;
-
-    case Qt::AlignTop :
-      delta.ry() = rect.top() - itemRect.top(); break;
-
-    case Qt::AlignBottom :
-      delta.ry() = rect.bottom() - itemRect.bottom(); break;
-
-    case Qt::AlignHCenter :
-      delta.rx() = rect.center().x() - itemRect.center().x(); break;
-
-    case Qt::AlignVCenter :
-      delta.ry() = rect.center().y() - itemRect.center().y(); break;
-
-    default:
-      if(!debugMsgPrinted) {
-	qDebug() << Q_FUNC_INFO << "Wrong alignment flag " << alignment;
-	debugMsgPrinted = true;
-      }
-    }
-
-    QPointF itemPos = (*it)->pos();
-    this->m_undoStack->push(new MoveCmd(*it, itemPos, itemPos + delta));;
-    ++it;
-  }
-
-  connectItems(items, Qucs::PushUndoCmd);
-  this->m_undoStack->endMacro();
-  return true;
-}
 
 
 /*!\todo document */
@@ -1382,10 +1319,146 @@ bool SchematicScene::distributeElements(const Qt::Orientation orientation)
 }
 
 
+/***********************************************************************
+ *
+ * Alignement
+ *
+ ***********************************************************************/
+
+
+/* Check if alignement flags are compatible used in assert */
+static bool checkAlignementFlag(const Qt::Alignment alignment)
+{
+  switch(alignment) {
+  case Qt::AlignLeft :
+  case Qt::AlignRight :
+  case Qt::AlignTop :
+  case Qt::AlignBottom :
+  case Qt::AlignHCenter :
+  case Qt::AlignVCenter :
+  case Qt::AlignCenter:
+    return true;
+  default:
+    return false;
+  }
+}
+
+
+/* return a string corresponding to alignement */
+const QString SchematicScene::Alignment2QString(const Qt::Alignment alignment)
+{
+  Q_ASSERT(checkAlignementFlag(alignment));
+
+  switch(alignment) {
+  case Qt::AlignLeft :
+    return tr("Align left");
+  case Qt::AlignRight :
+    return tr("Align right");
+  case Qt::AlignTop :
+    return tr("Align top");
+  case Qt::AlignBottom :
+    return tr("Align bottom");
+  case Qt::AlignHCenter :
+    return tr("Centers horizontally");
+  case Qt::AlignVCenter :
+    return tr("Centers vertically");
+  case Qt::AlignCenter:
+    return tr("Center both vertically and horizontally");
+  /* impossible case */
+  default:
+    return "";
+  }
+}
+
+/*!\brief align element 
+  \param alignment: alignement used
+  \todo use smart alignment ie: port alignement
+  \todo implement snap on grid
+  \todo string of undo
+  \todo filter wires ???
+*/
+bool SchematicScene::alignElements(const Qt::Alignment alignment)
+{
+  Q_ASSERT(checkAlignementFlag(alignment));
+
+  QList<QGraphicsItem*> gItems = selectedItems();
+  QList<QucsItem*> items = filterItems<QucsItem>(gItems, DontRemoveItems);
+  
+
+  /* Could not align less than two elements */
+  if(items.size() < 2) 
+    return false;
+
+  /* setup undo */
+  this->m_undoStack->beginMacro(Alignment2QString(alignment));
+
+  /* disconnect */
+  disconnectItems(items, Qucs::PushUndoCmd);
+  
+  /* compute bounding rectangle */
+  QRectF rect = items.first()->sceneBoundingRect();
+  QList<QucsItem*>::iterator it = items.begin()+1;
+  while(it != items.end()) {
+    rect |= (*it)->sceneBoundingRect();
+    ++it;
+  }
+
+  it = items.begin();
+  while(it != items.end()) {
+    if((*it)->isWire()) {
+      ++it;
+      continue;
+    }
+    
+    QRectF itemRect = (*it)->sceneBoundingRect();
+    QPointF delta;
+
+    switch(alignment) {
+    case Qt::AlignLeft :
+      delta.rx() =  rect.left() - itemRect.left(); 
+      break;
+    case Qt::AlignRight :
+      delta.rx() = rect.right() - itemRect.right(); 
+      break;
+    case Qt::AlignTop :
+      delta.ry() = rect.top() - itemRect.top(); 
+      break;
+    case Qt::AlignBottom :
+      delta.ry() = rect.bottom() - itemRect.bottom(); 
+      break;
+    case Qt::AlignHCenter :
+      delta.rx() = rect.center().x() - itemRect.center().x(); 
+      break;
+    case Qt::AlignVCenter :
+      delta.ry() = rect.center().y() - itemRect.center().y(); 
+      break;
+    case Qt::AlignCenter:
+      delta.rx() = rect.center().x() - itemRect.center().x(); 
+      delta.ry() = rect.center().y() - itemRect.center().y(); 
+      break;
+    default:
+      /* impossible */
+      break;
+    }
+
+    /* move item */
+    QPointF itemPos = (*it)->pos();
+    this->m_undoStack->push(new MoveCmd(*it, itemPos, itemPos + delta));;
+    ++it;
+  }
+
+  /* reconnect items */
+  connectItems(items, Qucs::PushUndoCmd);
+
+  /* finish undo */
+  this->m_undoStack->endMacro();
+  return true;
+}
+
+
 /*************************************************************************
  *
  *         Set on grid
- *
  *
  *************************************************************************/
 

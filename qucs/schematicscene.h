@@ -277,6 +277,9 @@ class SchematicScene : public QGraphicsScene
       void distributeElementsHorizontally(QList<QucsItem*> items);
       void distributeElementsVertically(QList<QucsItem*> items);
 
+      /* alignment */
+      static const QString Alignment2QString(const Qt::Alignment alignment);
+
       QucsItem* itemForName(const QString& name, const QString& category);
       void placeItem(QucsItem *item, const QPointF &pos, const Qucs::UndoOption opt);
       int componentLabelSuffix(const QString& labelPrefix) const;
