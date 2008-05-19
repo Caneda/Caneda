@@ -108,18 +108,18 @@ class SchematicScene : public QGraphicsScene
 		       const Qucs::UndoOption opt,
 		       const Qt::Axis axis);
       void mirrorXItems(QList<QucsItem*> &items, const Qucs::UndoOption opt){ 
-	mirrorItems(items, opt, Qt::XAxis);
+	this->mirrorItems(items, opt, Qt::XAxis);
       }
      
       void mirrorYItems(QList<QucsItem*> &items, const Qucs::UndoOption opt) { 
-	mirrorItems(items, opt, Qt::YAxis);
+	this->mirrorItems(items, opt, Qt::YAxis);
       }
 
       /* rotate */
       /* for qucsmainwindows */
       void rotateItems(QList<QucsItem*> &items, const Qucs::UndoOption undo) 
       {
-	rotateItems(items,Qucs::Clockwise,undo);
+	this->rotateItems(items,Qucs::Clockwise,undo);
       }
       void rotateItems(QList<QucsItem*> &items, const Qucs::AngleDirection dir,
 		       const Qucs::UndoOption);
@@ -133,62 +133,62 @@ class SchematicScene : public QGraphicsScene
       void copyItems(QList<QucsItem*> &items) const;
       void paste();
 
-      QString fileName() const { return m_fileName; }
+      QString fileName() const { return this->m_fileName; }
       void setFileName(const QString& fn);
 
-      bool isModified() const { return m_modified; }
+      bool isModified() const { return this->m_modified; }
 
       /*! round to nearest grid point according to grid snapping setting */
       QPointF smartNearingGridPoint(const QPointF &pos) const { 
-	return m_snapToGrid == true ? nearingGridPoint(pos) : pos;
+	return this->m_snapToGrid == true ? this->nearingGridPoint(pos) : pos;
       }
 
       /*! return current undo stack */
-      QUndoStack* undoStack() { return m_undoStack; }
+      QUndoStack* undoStack() { return this->m_undoStack; }
 
       /*! return grid width */
-      uint gridWidth() const { return m_gridWidth; }
+      uint gridWidth() const { return this->m_gridWidth; }
       /*! set grid witdh */
-      void setGridWidth(uint width) { setGridSize(width, gridHeight()); }
+      void setGridWidth(uint width) { this->setGridSize(width, this->gridHeight()); }
 
       /*! return grid  height */
-      uint gridHeight() const { return m_gridHeight; }
+      uint gridHeight() const { return this->m_gridHeight; }
       /*! set grid height */
-      void setGridHeight(uint height) { setGridSize(gridWidth(), height); }
+      void setGridHeight(uint height) { this->setGridSize(this->gridWidth(), height); }
 
       void setGridSize(uint width, uint height);
 
       /*! return grid visibility */
-      bool isGridVisible() const { return m_gridVisible; }
+      bool isGridVisible() const { return this->m_gridVisible; }
       void setGridVisible(const bool visibility);
 
       /*! get origin drawing status */
-      bool isOriginDrawn() const { return m_OriginDrawn; }
+      bool isOriginDrawn() const { return this->m_OriginDrawn; }
       void setOriginDrawn(const bool visibility);
 
       /*! get grid color */
-      QColor GridColor() const { return m_gridcolor; }
+      QColor GridColor() const { return this->m_gridcolor; }
       void setGridColor(const QColor & color);
 
-      QString dataSet() const { return m_dataSet; }
+      QString dataSet() const { return this->m_dataSet; }
       void setDataSet(const QString& str);
 
-      QString dataDisplay() const { return m_dataDisplay; }
+      QString dataDisplay() const { return this->m_dataDisplay; }
       void setDataDisplay(const QString& disp);
 
-      bool opensDataDisplay() const { return m_opensDataDisplay; }
+      bool opensDataDisplay() const { return this->m_opensDataDisplay; }
       void setOpensDataDisplay(bool b);
 
-      bool isFrameVisible() const { return m_frameVisible; }
+      bool isFrameVisible() const { return this->m_frameVisible; }
       void setFrameVisible(bool vis);
 
-      QStringList frameTexts() const { return m_frameTexts; }
+      QStringList frameTexts() const { return this->m_frameTexts; }
       void setFrameTexts(const QStringList& texts);
 
-      Qucs::Mode currentMode() const { return m_currentMode; }
+      Qucs::Mode currentMode() const { return this->m_currentMode; }
       void setMode(const Qucs::Mode mode);
 
-      MouseAction currentMouseAction() const { return m_currentMouseAction; }
+      MouseAction currentMouseAction() const { return this->m_currentMouseAction; }
       void setCurrentMouseAction(const MouseAction ma);
 
       SchematicView* activeView() const;
@@ -201,7 +201,7 @@ class SchematicScene : public QGraphicsScene
 
       bool eventFilter(QObject *object, QEvent *event);
 
-      bool shortcutsBlocked() const { return m_shortcutsBlocked; }
+      bool shortcutsBlocked() const { return this->m_shortcutsBlocked; }
       void blockShortcuts(bool block);
 
    public slots:
