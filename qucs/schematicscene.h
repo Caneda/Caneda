@@ -296,25 +296,36 @@ class SchematicScene : public QGraphicsScene
       QPointF nearingGridPoint(const QPointF &pos) const;
 
       //These are helper variables (aka state holders)
+/*!\todo document */
       bool m_areItemsMoving;
+/*!\todo document */
       QList<Component*> disconnectibles;
+/*!\todo document */
       QList<Wire*> movingWires, grabMovingWires;
+/*!\todo document */
       QPointF lastPos;
-
+/*!\todo document */
       QPointF m_insertActionMousePos;
+/*!\todo document */
       QList<QucsItem*> m_insertibles;
 
+/*!\todo program as a state machine*/
       bool m_isWireCmdAdded;
       /* Current wire */
       Wire *m_currentWiringWire;
 
+/*!\todo document */
       Painting *m_paintingDrawItem;
+/*!\todo document */
       int m_paintingDrawClicks;
-
+/*!\todo document */
       QRubberBand * m_zoomBand;
+/*!\todo document */
       QRectF m_zoomRect;
 
+/*!\todo document */
       QList<int> m_usedPortNumbers;
+/*!\todo document */
       QList<int> m_usablePortNumbers;
 
       //Document properties
@@ -341,14 +352,21 @@ class SchematicScene : public QGraphicsScene
       QString m_fileName;
       QStringList m_frameTexts;
 
+  /*!\todo explain why we need this
+     \todo explain when to set it up 
+   */
       bool m_modified;
+  /*!\todo document */
       bool m_opensDataDisplay;
+ /*!\todo document */
       bool m_frameVisible;
       /*! Snap component to grid */
       bool m_snapToGrid;
       /*! Draw origin boolean */
       bool m_OriginDrawn;
+/*!\todo document */
       bool m_macroProgress;
+/*!\todo document */
       bool m_shortcutsBlocked;
 };
 

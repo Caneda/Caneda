@@ -1738,7 +1738,7 @@ void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
       Port *other = p->getAnyConnectedPort();
       if(other) {
 	if(opt == Qucs::PushUndoCmd)
-	  m_undoStack->push(new DisconnectCmd(p, other));
+	  this->m_undoStack->push(new DisconnectCmd(p, other));
 	else
 	  /* allow disconnect from NULL */
 	  p->disconnectFrom(other);
