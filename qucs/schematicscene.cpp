@@ -865,43 +865,9 @@ void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
  *
  *********************************************************************/
 
-/*!\brief Add a wiring control point 
-  \param pos: current mouse position  
-  \todo remove tracing
-  \todo better documentation
-  \todo Add undo string 
+/*!\brief Finalize wire ie last control point == end 
+   \todo Why not a wire operation ?
 */
-void SchematicScene::wiringEventMouseSingletonComplexWire(void)
-{
-  Q_ASSERT(this->m_wiringState == SINGLETON_WIRE 
-	   || this->m_wiringState == COMPLEX_WIRE);
-
-  this->m_undoStack->beginMacro(tr("Add wiring control point"));
-
-  /* clean up line */
-  this->m_currentWiringWire->removeNullLines();
-
-  switch(this->m_wiringState) {
-  case SINGLETON_WIRE:
-    this->m_undoStack->push(new AddWireCmd(m_currentWiringWire, this));
-    this->m_wiringState = COMPLEX_WIRE;
-    break;
-  case COMPLEX_WIRE:
-    this->m_undoStack->push(new WireStateChangeCmd(this->m_currentWiringWire,
-						   this->m_currentWiringWire->storedState(),
-						   this->m_currentWiringWire->currentState()));
-    this->m_wiringState = COMPLEX_WIRE;
-    break;
-  default:
-    qFatal("error impossible case");
-    return;
-  }
-  this->m_currentWiringWire->checkAndConnect(Qucs::PushUndoCmd);
-  this->m_undoStack->endMacro();
-}
-
-
-/*!\brief Finalize wire ie last control point == end */
 void SchematicScene::wiringEventMouseClickFinalize() 
 {
   this->m_currentWiringWire->show();
@@ -912,8 +878,10 @@ void SchematicScene::wiringEventMouseClickFinalize()
   this->m_currentWiringWire = NULL;
 }
 
-/*! Common part between Singleton and complex wire */
-void SchematicScene::wiringEventLeftMouseClickCommonSingletonComplex()
+/*! Add a wire segment 
+    \todo Why not a wire operation
+*/
+void SchematicScene::wiringEventLeftMouseClickAddSegment()
 {
   /* add segment */
   this->m_currentWiringWire->storeState();
@@ -923,44 +891,77 @@ void SchematicScene::wiringEventLeftMouseClickCommonSingletonComplex()
   wLinesRef << toAppend << toAppend;
 }
 
+/*! Common wiring part 
+    \param cmd: undo command to run
+*/
+void SchematicScene::wiringEventLeftMouseClickCommonComplexSingletonWire(QUndoCommand * cmd)
+{
+  /* configure undo */
+  this->m_undoStack->beginMacro(tr("Add wiring control point"));
+  
+  /* clean up line */
+  this->m_currentWiringWire->removeNullLines();
+  
+  /* wiring command */
+  this->m_undoStack->push(cmd);
+  
+  /* check and connect */
+  this->m_currentWiringWire->checkAndConnect(Qucs::PushUndoCmd);
+  
+  this->m_undoStack->endMacro();
+}
+
+
 /*!\brief Left mouse click wire event 
   \param Event: mouse event
   \param rounded: coordinate of mouse action point (rounded if needed)
 */
 void SchematicScene::wiringEventLeftMouseClick(const QPointF &pos)
 {
-  switch(this->m_wiringState) {
-  case NO_WIRE:
+  if(this->m_wiringState == NO_WIRE) {
+    /* create a new wire */
     this->m_currentWiringWire = new Wire(pos, pos, false, this);
     this->m_wiringState = SINGLETON_WIRE;
     return;
-  case SINGLETON_WIRE:
+  }
+  if(this->m_wiringState == SINGLETON_WIRE) {
+    /* check if wire do not overlap */
     if(this->m_currentWiringWire->overlap()) 
       return;
-    this->wiringEventMouseSingletonComplexWire();
-    this->wiringEventLeftMouseClickCommonSingletonComplex();
+    
+    QUndoCommand * singleton_wire = new AddWireCmd(m_currentWiringWire, this);
+    this->wiringEventLeftMouseClickCommonComplexSingletonWire(singleton_wire);
+    
+    /* if connect finalize */
+    if(this->m_currentWiringWire->port2()->hasConnection()) {
+      this->wiringEventMouseClickFinalize(); 
+      this->m_wiringState = NO_WIRE;
+    }
+    else  {
+      wiringEventLeftMouseClickAddSegment();
+      this->m_wiringState = COMPLEX_WIRE;
+    }
+    return;
+  }
+  if(this->m_wiringState == COMPLEX_WIRE) {
+    if(this->m_currentWiringWire->overlap()) 
+      return;
+    
+    QUndoCommand * complex_wire = new WireStateChangeCmd(this->m_currentWiringWire,
+							 this->m_currentWiringWire->storedState(),
+							 this->m_currentWiringWire->currentState());
+    
+    this->wiringEventLeftMouseClickCommonComplexSingletonWire(complex_wire);
+    
     if(this->m_currentWiringWire->port2()->hasConnection()) {
       /* finalize */
       this->wiringEventMouseClickFinalize(); 
       this->m_wiringState = NO_WIRE;
-      return;
+    } else  {
+      wiringEventLeftMouseClickAddSegment();
+      this->m_wiringState = COMPLEX_WIRE;
     }
-    this->wiringEventLeftMouseClickCommonSingletonComplex();
-    this->m_wiringState = COMPLEX_WIRE;
     return;
-  case COMPLEX_WIRE:
-    if(this->m_currentWiringWire->overlap()) 
-      return;
-   this->wiringEventMouseSingletonComplexWire();
-   if(this->m_currentWiringWire->port2()->hasConnection()) {
-     /* finalize */
-     this->wiringEventMouseClickFinalize(); 
-     this->m_wiringState = NO_WIRE;
-     return;
-   }
-   this->wiringEventLeftMouseClickCommonSingletonComplex();
-   this->m_wiringState = COMPLEX_WIRE;
-   return;
   }
 }
 
@@ -968,19 +969,41 @@ void SchematicScene::wiringEventLeftMouseClick(const QPointF &pos)
  */
 void SchematicScene::wiringEventRightMouseClick()
 {
-  /* right click could not begin a wire */
-  if(this->m_wiringState == NO_WIRE)
-    return;
  
-  /* check overlap */
-  if(this->m_currentWiringWire->overlap()) 
+  /* state machine */
+  if(this->m_wiringState == NO_WIRE) {
+    this->m_wiringState = NO_WIRE;
     return;
+  }
+  if(this->m_wiringState ==  SINGLETON_WIRE) {
+    /* check overlap */
+    if(this->m_currentWiringWire->overlap())
+      return;
     
-  /* add undo information */
-  this->wiringEventMouseSingletonComplexWire();
-
-  /* finalize */
-  return this->wiringEventMouseClickFinalize(); 
+    /* do wiring */
+    QUndoCommand * singleton_wire = new AddWireCmd(m_currentWiringWire, this);
+    this->wiringEventLeftMouseClickCommonComplexSingletonWire(singleton_wire);
+    
+    /* finalize */
+    this->wiringEventMouseClickFinalize(); 
+    this->m_wiringState = NO_WIRE;
+    return;
+  }
+  if(this->m_wiringState == COMPLEX_WIRE) {
+    if(this->m_currentWiringWire->overlap())
+      return;
+    
+    /* do wiring */
+    QUndoCommand * complex_wire = new WireStateChangeCmd(this->m_currentWiringWire,
+							 this->m_currentWiringWire->storedState(),
+							 this->m_currentWiringWire->currentState());
+    this->wiringEventLeftMouseClickCommonComplexSingletonWire(complex_wire);
+    
+    /* finalize */
+    this->wiringEventMouseClickFinalize(); 
+    this->m_wiringState = NO_WIRE;
+    return;
+  }
 }
 
 /*!\brief Mouse click wire event 

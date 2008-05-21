@@ -256,8 +256,8 @@ private:
   void endSpecialMove();
       
   /* private wiring function */
-  void wiringEventMouseSingletonComplexWire();
-  void wiringEventLeftMouseClickCommonSingletonComplex();
+  void wiringEventLeftMouseClickCommonComplexSingletonWire(QUndoCommand * cmd);
+  void wiringEventLeftMouseClickAddSegment();
   void wiringEventLeftMouseClick(const QPointF &pos);
   void wiringEventRightMouseClick();
   void wiringEventMouseClickFinalize();
