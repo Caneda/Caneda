@@ -342,9 +342,7 @@ void SchematicScene::setCurrentMouseAction(const MouseAction action)
  ***********************************************************************/
 
 
-/*!\brief Reset state helper wire part 
-   \todo check if we could simplify wiring machinery
-*/
+/*!\brief Reset state helper wire part */
 void SchematicScene::resetStateWiring()
 {
   switch(this->m_wiringState) {
