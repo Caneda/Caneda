@@ -922,6 +922,16 @@ void SchematicScene::wiringEventMouseClickFinalize()
   this->m_wiringState = NO_WIRE;
 }
 
+/*! Common part between Singleton and complex wire */
+void SchematicScene::wiringEventLeftMouseClickCommonSingletonComplex()
+{
+  /* add segment */
+  this->m_currentWiringWire->storeState();
+  
+  WireLines& wLinesRef = m_currentWiringWire->wireLinesRef();
+  WireLine toAppend(wLinesRef.last().p2(), wLinesRef.last().p2());
+  wLinesRef << toAppend << toAppend;
+}
 
 /*!\brief Left mouse click wire event 
   \param Event: mouse event
@@ -929,28 +939,38 @@ void SchematicScene::wiringEventMouseClickFinalize()
 */
 void SchematicScene::wiringEventLeftMouseClick(const QPointF &pos)
 {
-  /* wiring state machine */
-  if(this->m_wiringState == NO_WIRE) {
+  switch(this->m_wiringState) {
+  case NO_WIRE:
     this->m_currentWiringWire = new Wire(pos, pos, false, this);
     this->m_wiringState = SINGLETON_WIRE;
-  }
-
-  if(this->m_currentWiringWire->overlap()) 
+    return;
+  case SINGLETON_WIRE:
+    if(this->m_currentWiringWire->overlap()) 
       return;
-  
-  /* add undo information */
-  this->wiringEventMouseSingletonComplexWire();
-
-  if(this->m_currentWiringWire->port2()->hasConnection())
-    /* finalize */
-    return this->wiringEventMouseClickFinalize();  
-  else {
-    /* add segment */
-    this->m_currentWiringWire->storeState();
-    
-    WireLines& wLinesRef = m_currentWiringWire->wireLinesRef();
-    WireLine toAppend(wLinesRef.last().p2(), wLinesRef.last().p2());
-    wLinesRef << toAppend << toAppend;
+    this->wiringEventMouseSingletonComplexWire();
+    this->wiringEventLeftMouseClickCommonSingletonComplex();
+    if(this->m_currentWiringWire->port2()->hasConnection()) {
+      /* finalize */
+      this->wiringEventMouseClickFinalize(); 
+      this->m_wiringState = NO_WIRE;
+      return;
+    }
+    this->wiringEventLeftMouseClickCommonSingletonComplex();
+    this->m_wiringState = COMPLEX_WIRE;
+    return;
+  case COMPLEX_WIRE:
+    if(this->m_currentWiringWire->overlap()) 
+      return;
+   this->wiringEventMouseSingletonComplexWire();
+   if(this->m_currentWiringWire->port2()->hasConnection()) {
+     /* finalize */
+     this->wiringEventMouseClickFinalize(); 
+     this->m_wiringState = NO_WIRE;
+     return;
+   }
+   this->wiringEventLeftMouseClickCommonSingletonComplex();
+   this->m_wiringState = COMPLEX_WIRE;
+   return;
   }
 }
 

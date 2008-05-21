@@ -258,6 +258,7 @@ private:
   /* private wiring function */
   void wiringEventNewWire(const QPointF& pos);
   void wiringEventMouseSingletonComplexWire();
+  void wiringEventLeftMouseClickCommonSingletonComplex();
   void wiringEventLeftMouseClick(const QPointF &pos);
   void wiringEventRightMouseClick();
   void wiringEventMouseClickFinalize();
