@@ -115,7 +115,14 @@ class Port
       bool hasConnection() const;
 
       void connectTo(Port *other);
-      void disconnectFrom(Port *from);
+      /*! Shorthand for Port::disconnect(this, from)
+	\note from == NULL is allowed 
+      */  
+      void disconnectFrom(Port *from) {
+	Port::disconnect(this, from);
+      }
+
+      
 
       Port* getAnyConnectedPort();
       void removeConnections();

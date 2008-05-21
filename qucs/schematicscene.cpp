@@ -1007,7 +1007,6 @@ void SchematicScene::wiringEventRightMouseClick()
 /*!\brief Mouse click wire event 
   \param Event: mouse event
   \param pos: coordinate of mouse action point (rounded if needed)
-  \todo right click
 */
 void SchematicScene::wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos)
 {
@@ -1765,7 +1764,6 @@ void SchematicScene::connectItems(const QList<QucsItem*> &qItems,
     \param qItems: item to connect
     \param opt: undo option
     \todo remove the cast and create a class connectable item
-    \todo allow disconnect from NULL
  */
 void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
 				     const Qucs::UndoOption opt)
@@ -1786,13 +1784,10 @@ void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
 
     foreach(Port *p, ports) {
       Port *other = p->getAnyConnectedPort();
-      if(other) {
-	if(opt == Qucs::PushUndoCmd)
-	  this->m_undoStack->push(new DisconnectCmd(p, other));
-	else
-	  /* allow disconnect from NULL */
-	  p->disconnectFrom(other);
-      }
+      if(opt == Qucs::PushUndoCmd)
+	this->m_undoStack->push(new DisconnectCmd(p, other));
+      else
+	p->disconnectFrom(other);
     }
   }
 

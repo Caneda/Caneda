@@ -92,7 +92,9 @@ Port::Port(Component *owner, QPointF _pos, QString portName) :
 {
 }
 
-//! Destructor : Remove all connections from this node before destruction.
+/*! Destructor : Remove all connections from this node before destruction.
+    \bug GPK: see comment 
+*/
 Port::~Port()
 {
    if(m_connections) {
@@ -103,6 +105,7 @@ Port::~Port()
             break;
          }
       }
+      /* GPK: this test is strange */
       if(other) {
          disconnectFrom(other);
       }
@@ -226,11 +229,6 @@ void Port::connect(Port *port1, Port *port2)
       p->ownerItem()->update();
 }
 
-//! Shorthand for Port::disconnect(this, from)
-void Port::disconnectFrom(Port *from)
-{
-   Port::disconnect(this, from);
-}
 
 Port* Port::getAnyConnectedPort()
 {
@@ -257,9 +255,7 @@ Port* Port::getAnyConnectedPort()
 void Port::removeConnections()
 {
    Port *other = getAnyConnectedPort();
-   if(other) {
-      disconnectFrom(other);
-   }
+   disconnectFrom(other);
 }
 
 QList<Wire*> Port::wiresBetween(Port* port1, Port* port2)
@@ -297,6 +293,7 @@ QList<Wire*> Port::wiresBetween(Port* port1, Port* port2)
  * Disconnect two ports
  * \param port The port to be disconnected.
  * \param from The port from which \a port will be disconnected.
+ * \note port == from , port == NULL, from == NULL are allowed
  */
 void Port::disconnect(Port *port, Port *from)
 {
