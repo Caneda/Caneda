@@ -865,16 +865,6 @@ void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
  *
  *********************************************************************/
 
-/*!\brief Create a new wire 
-  \note Only active on left button 
-*/
-void SchematicScene::wiringEventNewWire(const QPointF &pos)
-{ 
-  this->m_currentWiringWire = new Wire(pos, pos, false, this);
-  return;
-}
-
-
 /*!\brief Add a wiring control point 
   \param pos: current mouse position  
   \todo remove tracing
@@ -918,8 +908,8 @@ void SchematicScene::wiringEventMouseClickFinalize()
   this->m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
   this->m_currentWiringWire->updateGeometry();
   
+  /* detach current wire */
   this->m_currentWiringWire = NULL;
-  this->m_wiringState = NO_WIRE;
 }
 
 /*! Common part between Singleton and complex wire */
