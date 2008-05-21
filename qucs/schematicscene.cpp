@@ -55,13 +55,13 @@
 #include <memory>
 
 
-/*\file Schematicscene 
+/*!\file Schematicscene 
   
   This file implement the schematic scene ie the place where you draw components
 */
 
 
-/*\todo document */
+/*!\todo document */
 template <typename T>
 QPointF centerOfItems(const QList<T*> &items)
 {
@@ -160,6 +160,8 @@ static const char dataDisplaySuffix[] = ".dpl";
 /*!\brief Set schematic and datafile name 
   \param name: name to set
   \todo document
+  \todo Why do we need this. A new theme will be each project is a subdirectory. 
+  Schematic name is only a prefix
 */
 void SchematicScene::setFileName(const QString& name)
 {
