@@ -257,7 +257,7 @@ private:
       
   /* private wiring function */
   void wiringEventNewWire(const QPointF& pos);
-  void wiringEventMouseClickUndoState(void);
+  void wiringEventMouseSingletonComplexWire();
   void wiringEventLeftMouseClick(const QPointF &pos);
   void wiringEventRightMouseClick();
   void wiringEventMouseClickFinalize();
@@ -309,9 +309,16 @@ private:
   /*!\todo document */
   QList<QucsItem*> m_insertibles;
 
-  /*!\todo program as a state machine*/
-  bool m_isWireCmdAdded;
-  /* Current wire */
+  /*!Wiring state machine state  enum */
+  enum wiringStateEnum {
+    NO_WIRE,               /*!< They are no wire */
+    SINGLETON_WIRE,        /*!< Wire is a singleton, ie only one single point */
+    COMPLEX_WIRE           /*!< Wire is composed by more than one point */
+  };
+
+  /*! State variable for the wire state machine */
+  wiringStateEnum m_wiringState;
+  /*! Current wire */
   Wire *m_currentWiringWire;
 
   /*!\todo document */
