@@ -1784,6 +1784,11 @@ void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
 
     foreach(Port *p, ports) {
       Port *other = p->getAnyConnectedPort();
+
+      /* do not register new undo if nothing to do */
+      if( other == NULL)
+	continue;
+
       if(opt == Qucs::PushUndoCmd)
 	this->m_undoStack->push(new DisconnectCmd(p, other));
       else
@@ -1796,10 +1801,8 @@ void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
 }
 
 
-
-
 /*! Zoom at point event 
-  \todo document
+    \todo document
 */
 void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
 {
