@@ -503,7 +503,7 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
   QPoint pos = active->viewport()->mapFromGlobal(QCursor::pos());
   bool cursorOnScene = active->viewport()->rect().contains(pos);
 
-  this->m_insertActionMousePos = active->mapToScene(pos);
+  this->m_insertActionMousePos = this->smartNearingGridPoint(active->mapToScene(pos));
 
   /* add items */
   foreach(QucsItem *item, this->m_insertibles) {
@@ -518,7 +518,8 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
   }
 
   /* why two loop */ 
-  QPointF delta = active->mapToScene(pos) - centerOfItems(this->m_insertibles);
+  QPointF delta = this->smartNearingGridPoint(active->mapToScene(pos)) 
+                    - this->smartNearingGridPoint(centerOfItems(this->m_insertibles));
   foreach(QucsItem *item, this->m_insertibles) {
     item->moveBy(delta.x(), delta.y());
   }
@@ -655,9 +656,10 @@ bool SchematicScene::event(QEvent *event)
 	  return QGraphicsScene::event(event);
 
 	QPoint pos = active->viewport()->mapFromGlobal(QCursor::pos());
-	this->m_insertActionMousePos = active->mapToScene(pos);
+	this->m_insertActionMousePos = this->smartNearingGridPoint(active->mapToScene(pos));
 
-	QPointF delta = m_insertActionMousePos - centerOfItems(m_insertibles);
+	QPointF delta = this->smartNearingGridPoint(m_insertActionMousePos) 
+	  - this->smartNearingGridPoint(centerOfItems(m_insertibles));
 
 	foreach(QucsItem *item, m_insertibles) {
 	  item->moveBy(delta.x(), delta.y());
@@ -1991,7 +1993,7 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
     foreach(QucsItem *item, m_insertibles) {
       item->setPos(this->smartNearingGridPoint(item->pos() + delta));
     }
-    m_insertActionMousePos = event->scenePos();
+    m_insertActionMousePos = this->smartNearingGridPoint(event->scenePos());
   }
 }
 
@@ -2030,7 +2032,7 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
 	return;
       disconnectDisconnectibles();
       QGraphicsScene::mouseMoveEvent(e);
-      QPointF delta = this->smartNearingGridPoint(e->scenePos()) - e->lastScenePos();
+      QPointF delta = this->smartNearingGridPoint(e->scenePos() - e->lastScenePos());
       specialMove(delta.x(), delta.y());
     }
     break;
@@ -2068,7 +2070,7 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
 
   foreach(QGraphicsItem *item, _items) {
     Component *c = qucsitem_cast<Component*>(item);
-    storePos(item, item->scenePos());
+    storePos(item, this->smartNearingGridPoint(item->scenePos()));
     if(c) {
       //check for disconnections and wire resizing.
       foreach(Port *port, c->ports()) {
@@ -2171,7 +2173,7 @@ void SchematicScene::specialMove(qreal dx, qreal dy)
 	}
       }
       if(other) {
-	wire->movePort(wire->port1()->connections(), other->scenePos());
+	wire->movePort(wire->port1()->connections(), this->smartNearingGridPoint(other->scenePos()));
       }
     }
     if(wire->port2()->connections()) {
@@ -2183,7 +2185,7 @@ void SchematicScene::specialMove(qreal dx, qreal dy)
 	}
       }
       if(other) {
-	wire->movePort(wire->port2()->connections(), other->scenePos());
+	wire->movePort(wire->port2()->connections(), this->smartNearingGridPoint(other->scenePos()));
       }
     }
   }
