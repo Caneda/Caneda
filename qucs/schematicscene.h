@@ -280,6 +280,10 @@ private:
   /* alignment */
   static const QString Alignment2QString(const Qt::Alignment alignment);
 
+  /* sidebar click */
+  bool sidebarItemClickedPaintingsItems(const QString& itemName);
+  bool sidebarItemClickedNormalItems(const QString& itemName, const QString& category);
+
   QucsItem* itemForName(const QString& name, const QString& category);
   void placeItem(QucsItem *item, const QPointF &pos, const Qucs::UndoOption opt);
   int componentLabelSuffix(const QString& labelPrefix) const;

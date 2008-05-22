@@ -577,40 +577,6 @@ void SchematicScene::setModified(const bool m)
   }
 }
 
-/*! This function is called when a side bar item is clicked 
-  \param itemName: name of item
-  \param category: categoy name
-  \todo Add tracing
-  \todo Split in two function
-*/
-bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& category)
-{
-  if(itemName.isEmpty()) 
-    return false;
-
-  if(category == "paintings") {
-    this->setCurrentMouseAction(PaintingDrawEvent);
-    this->m_paintingDrawItem = Painting::fromName(itemName);
-    if(!this->m_paintingDrawItem) {
-      this->setCurrentMouseAction(Normal);
-      return false;
-    }
-    this->m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
-    return true;
-  }
-
-  else {
-    QucsItem *item = itemForName(itemName, category);
-    if(!item) 
-      return false;
-
-    this->addItem(item);
-    this->setCurrentMouseAction(InsertingItems);
-    this->beginInsertingItems(QList<QucsItem*>() << item);
-
-    return true;
-  }
-}
 
 /*! Draw background of schematic including grid
   \param painter: Where to draw
@@ -856,6 +822,59 @@ void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 {
   sendMouseActionEvent(e);
 }
+
+
+/******************************************************************************
+ *
+ *          Sidebar
+ *
+ *****************************************************************************/
+
+/*!Action when a painting item is selected 
+   \param itemName: name of item
+*/
+bool SchematicScene::sidebarItemClickedPaintingsItems(const QString& itemName)
+{
+  this->setCurrentMouseAction(PaintingDrawEvent);
+  this->m_paintingDrawItem = Painting::fromName(itemName);
+  if(!this->m_paintingDrawItem) {
+    this->setCurrentMouseAction(Normal);
+    return false;
+  }
+  this->m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
+  return true;
+}
+
+bool SchematicScene::sidebarItemClickedNormalItems(const QString& itemName, const QString& category) 
+{
+  QucsItem *item = itemForName(itemName, category);
+  if(!item) 
+    return false;
+  
+  this->addItem(item);
+  this->setCurrentMouseAction(InsertingItems);
+  this->beginInsertingItems(QList<QucsItem*>() << item);
+  
+  return true;
+}
+
+
+/*! This function is called when a side bar item is clicked 
+  \param itemName: name of item
+  \param category: categoy name
+  \todo Add tracing
+*/
+bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& category)
+{
+  if(itemName.isEmpty()) 
+    return false;
+
+  if(category == "paintings") 
+    return this->sidebarItemClickedPaintingsItems(itemName);
+  else 
+    return this->sidebarItemClickedNormalItems(itemName, category);
+}
+
 
 /*********************************************************************
  *
