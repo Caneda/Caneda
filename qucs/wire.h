@@ -49,10 +49,10 @@ public:
     QPointF port1Pos;
     QPointF port2Pos;
   };
-
+  
   Wire(const QPointF &startPos, const QPointF &endPos, bool doConnect = true,
-       SchematicScene *scene = 0);
-  Wire(Port *startPort, Port *endPort, SchematicScene *scene = 0);
+       SchematicScene *scene = 0); 
+  Wire(Port *startPort, Port *endPort, SchematicScene *scene = 0); 
   ~Wire();
 
   //! Return's the wire's ports list.
@@ -120,6 +120,9 @@ public:
   bool overlap() const {
     return this->port1()->scenePos() == this->port2()->scenePos();
   }
+  
+  void tryConnectPorts();
+  void tryConnectPort(Port * port);
 
 protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -130,6 +133,7 @@ private:
   QRect proxyRect(const WireLine& wline) const;
   QRectF wireLineBound(const WireLine& wline) const;
 
+ 
   void updateProxyWires();
   void deleteProxyWires();
 

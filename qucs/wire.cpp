@@ -55,59 +55,89 @@ static QColor invertcolor(const QColor & color)
   return inverted;
 }
 
+/*! Try to connect a port 
+    \param port: port to connect 
+    \todo handle more than one coinciding port
+    \bug the todo is a bug...
+*/
+void Wire::tryConnectPort(Port * port)
+{
+  Port * p = port->findCoincidingPort();
+  if(p)
+    p->connectTo(p);
+}
+
+/*! Try to connect ports */
+void Wire::tryConnectPorts() {
+  this->tryConnectPort(this->port1());
+  this->tryConnectPort(this->port2());
+}
+
+
 /*!
  * \brief Constructs a wire between \a startPos and \a endPos.
  *
  * Also connects the wire's port's to coinciding ports.
+ * \todo try to remove doconnect and do another operation for do connect
  */
 Wire::Wire(const QPointF& startPos, const QPointF& endPos, bool doConnect,
            SchematicScene *scene) : QucsItem(0, scene), m_grabbedIndex(-1)
 {
-   setPos((startPos + endPos)/2);
-   QPointF localStartPos = mapFromScene(startPos);
-   QPointF localEndPos = mapFromScene(endPos);
-   m_ports << new Port(this, localStartPos);
-   m_ports << new Port(this, localEndPos);
+  /* set position */
+  this->setPos((startPos + endPos)/2);
 
-   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+  /* set flags */
+  this->setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
 
-   if(scene) {
-      movePort1(localStartPos);
-      removeNullLines();
-   }
+  /* create port */
+  QPointF localStartPos = this->mapFromScene(startPos);
+  QPointF localEndPos = this->mapFromScene(endPos);
+  
+  this->m_ports << new Port(this, localStartPos);
+  this->m_ports << new Port(this, localEndPos);
+  
+  /* show in scene */
+  if(scene) {
+    this->movePort1(localStartPos);
+    this->movePort2(localEndPos);
+    this->removeNullLines();
+  }
 
-   if(doConnect) {
-      Port *p = port1()->findCoincidingPort();
-      if(p) {
-         port1()->connectTo(p);
-      }
-
-      p = port2()->findCoincidingPort();
-      if(p) {
-         port2()->connectTo(p);
-      }
-   }
+  if(doConnect) 
+    this->tryConnectPorts();
 }
 
 /*!
  * \brief Constructs a wire between \a startPort and \a endPort.
  *
  * Also connects the wire's port's to coinciding ports.
+ * \bug br->gpk: does the new port is a purpose??
  */
 Wire::Wire(Port *startPort, Port *endPort, SchematicScene *scene) :
    QucsItem(0, scene), m_grabbedIndex(-1)
 {
-   QPointF pos = (startPort->scenePos() + endPort->scenePos()) / 2;
-   setPos(pos);
-   QPointF localStartPos = mapFromScene(startPort->scenePos());
-   QPointF localEndPos = mapFromScene(endPort->scenePos());
-   m_ports << new Port(this, localStartPos);
-   m_ports << new Port(this, localEndPos);
-   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-   if(scene) {
-      movePort1(port1()->pos());
-      removeNullLines();
-   }
+  QPointF startPos = startPort->scenePos();
+  QPointF endPos = endPort->scenePos();
+
+  /* set position */
+  this->setPos((startPos + endPos)/2);
+  
+  /* set flags */
+  this->setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+
+  /* create port 
+     BR->GPK: Why not add startport and endport
+  */
+  QPointF localStartPos = this->mapFromScene(startPos);
+  QPointF localEndPos = this->mapFromScene(endPos);
+ 
+  m_ports << new Port(this, localStartPos);
+  m_ports << new Port(this, localEndPos);
+  
+  if(scene) {
+    movePort1(port1()->pos());
+    removeNullLines();
+  }
 
    port1()->connectTo(startPort);
    port2()->connectTo(endPort);
