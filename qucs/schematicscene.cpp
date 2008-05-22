@@ -659,7 +659,7 @@ bool SchematicScene::event(QEvent *event)
 	this->m_insertActionMousePos = this->smartNearingGridPoint(active->mapToScene(pos));
 
 	QPointF delta = this->smartNearingGridPoint(m_insertActionMousePos 
-						    - this->smartNearingGridPoint(centerOfItems(m_insertibles));
+						    - centerOfItems(m_insertibles));
 
 	foreach(QucsItem *item, m_insertibles) {
 	  item->moveBy(delta.x(), delta.y());
