@@ -308,6 +308,8 @@ void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
          painter->drawPath(shape());
       }
       }*/
+
+   /* restore pen */
    painter->setPen(savedPen);
    drawPorts(m_ports, painter, option);
 

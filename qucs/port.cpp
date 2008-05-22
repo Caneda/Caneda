@@ -445,22 +445,36 @@ bool Port::areAllOwnersSelected() const
    return true;
 }
 
-//! Draws the port based on the current connection status.
+/*!\brief Draws the port based on the current connection status.
+ *
+ *  Port are drawn only if:
+ *         - port is not connected
+ *         - port they are more than two connection to port
+ */
 void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option)
 {
    Q_UNUSED(option);
-
-   if(m_connections) {
-      painter->setPen(connectedPen);
-      painter->setBrush(connectedBrush);
-   } else {
-      painter->setPen(unconnectedPen);
-      painter->setBrush(unconnectedBrush);
+   
+   /* save pen */
+   QPen savedPen = painter->pen();
+   
+   if(this->m_connections == NULL) {
+     painter->setPen(unconnectedPen);
+     painter->setBrush(unconnectedBrush);
+     painter->drawEllipse(portEllipse.translated(pos()));
+   } else if(this->m_connections->size() > 2) {
+     painter->setPen(connectedPen);
+     painter->setBrush(connectedBrush);
+     painter->drawEllipse(portEllipseConnected.translated(pos()));
    }
-   painter->drawEllipse(portEllipse.translated(pos()));
+
+   /* restore pen */
+   painter->setPen(savedPen);
 }
 
-//! A helper method used to draw multiple ports.
+/*! A helper method used to draw multiple ports. 
+    \todo create a QList<Port *> ports class and avoid this call
+*/
 void drawPorts(const QList<Port*> &ports, QPainter *painter,
                const QStyleOptionGraphicsItem* option)
 {

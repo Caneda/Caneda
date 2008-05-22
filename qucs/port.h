@@ -34,9 +34,9 @@ class Component;
 class SchematicScene;
 
 //! \todo Make these constants settings.
-static const QPen connectedPen(Qt::red, 0);
+static const QPen connectedPen(Qt::blue, 0);
 //! \todo Make these constants settings.
-static const QBrush connectedBrush(Qt::cyan);
+static const QBrush connectedBrush(Qt::blue);
 //! \todo Make these constants settings.
 static const QPen unconnectedPen(Qt::darkRed, 0);
 //! \todo Make these constants settings.
@@ -46,6 +46,11 @@ static const qreal portRadius(3.0);
 //! \todo Make these constants settings.
 static const QRectF portEllipse(-portRadius, -portRadius, 2*portRadius,
                                 2*portRadius);
+//! \todo Make these constants settings.
+static const qreal portConnectedRadius(2.0);
+//! \todo Make these constants settings.
+static const QRectF portEllipseConnected(-portConnectedRadius, -portConnectedRadius, 2*portConnectedRadius,
+                                2*portConnectedRadius);
 
 
 //! Thin class used to abstract owner of port.
