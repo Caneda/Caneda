@@ -518,8 +518,8 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
   }
 
   /* why two loop */ 
-  QPointF delta = this->smartNearingGridPoint(active->mapToScene(pos)) 
-                    - this->smartNearingGridPoint(centerOfItems(this->m_insertibles));
+  QPointF delta = this->smartNearingGridPoint(active->mapToScene(pos) 
+					      - centerOfItems(this->m_insertibles));
   foreach(QucsItem *item, this->m_insertibles) {
     item->moveBy(delta.x(), delta.y());
   }
@@ -658,8 +658,8 @@ bool SchematicScene::event(QEvent *event)
 	QPoint pos = active->viewport()->mapFromGlobal(QCursor::pos());
 	this->m_insertActionMousePos = this->smartNearingGridPoint(active->mapToScene(pos));
 
-	QPointF delta = this->smartNearingGridPoint(m_insertActionMousePos) 
-	  - this->smartNearingGridPoint(centerOfItems(m_insertibles));
+	QPointF delta = this->smartNearingGridPoint(m_insertActionMousePos 
+						    - this->smartNearingGridPoint(centerOfItems(m_insertibles));
 
 	foreach(QucsItem *item, m_insertibles) {
 	  item->moveBy(delta.x(), delta.y());
