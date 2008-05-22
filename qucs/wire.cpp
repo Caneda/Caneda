@@ -43,9 +43,17 @@
 
 
 //! \todo Make these constants settings.
-static const QPen selectedWire(Qt::darkRed);
-//! \todo Make these constants settings.
-static const QPen unselectedWire(Qt::blue);
+static const QColor unselectedWire(Qt::blue);
+static const qreal wirewidth = 1.0;
+
+/*! Invert a color
+  \todo Put in a header */
+static QColor invertcolor(const QColor & color)
+{
+  QColor inverted;
+  inverted.setRgbF(1.0 - color.redF(), 1.0 - color.greenF(), 1.0 - color.blueF(),1.0);
+  return inverted;
+}
 
 /*!
  * \brief Constructs a wire between \a startPos and \a endPos.
@@ -274,13 +282,17 @@ void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                  QWidget *widget)
 {
    Q_UNUSED(widget);
-   if(option->state & QStyle::State_Selected) {
-      painter->setPen(selectedWire);
-   }
-   else {
-      painter->setPen(unselectedWire);
-   }
+   QPen savedPen;
 
+   /* save painter */
+   savedPen = painter->pen();
+   
+   if(option->state & QStyle::State_Selected) {
+     painter->setPen(QPen(invertcolor(unselectedWire), wirewidth));
+   }
+   else 
+     painter->setPen(QPen(unselectedWire, wirewidth));
+   
    QList<WireLine>::const_iterator it = m_wLines.constBegin();
    QList<WireLine>::const_iterator end = m_wLines.constEnd();
 
@@ -288,15 +300,17 @@ void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
       painter->drawLine(*it);
       ++it;
    }
+   /*
    {
       //debugging purpose only.
       if(0) {
          painter->setPen(Qt::darkGreen);
          painter->drawPath(shape());
       }
-   }
-
+      }*/
+   painter->setPen(savedPen);
    drawPorts(m_ports, painter, option);
+
 }
 
 /*!
@@ -717,21 +731,27 @@ void Wire::deleteProxyWires()
 }
 
 //! Updates the wire's geometry and caches it.
+
 void Wire::updateGeometry()
 {
-   if(!isVisible()) return;
-   QRectF rect;
-   QPainterPath path;
+  QRectF rect;
+  QPainterPath path;
+  
+  if(!isVisible()) 
+    return;
 
-   QList<WireLine>::const_iterator it = m_wLines.constBegin();
-   QList<WireLine>::const_iterator end = m_wLines.constEnd();
-   for(; it != end; ++it) {
-      rect |= wireLineBound(*it);
-      path.addRect(wireLineBound(*it));
-   }
-   addPortEllipses(m_ports, path);
-   rect = portsRect(m_ports, rect);
-   QucsItem::setShapeAndBoundRect(path, path.boundingRect());
+  QList<WireLine>::const_iterator it = m_wLines.constBegin();
+  QList<WireLine>::const_iterator end = m_wLines.constEnd();
+  for(; it != end; ++it) {
+    rect |= wireLineBound(*it);
+    path.addRect(wireLineBound(*it));
+  }
+
+  addPortEllipses(m_ports, path);
+  rect = portsRect(m_ports, rect);
+  QucsItem::setShapeAndBoundRect(path, path.boundingRect());
+  
+  
 }
 
 //! Returns index corresponding to position \a pos.

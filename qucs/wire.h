@@ -141,6 +141,9 @@ private:
   WireLines m_wLines;//!< Internal line representation of wires.
   QList<QRubberBand*> m_proxyWires;//!< Represent wires while being dragged
   Wire::Data store; //!< Stores the wire data when needed(undo/redo).
+  
+  QColor m_wireColor;
+  qreal m_width;
 };
 
 namespace Qucs
