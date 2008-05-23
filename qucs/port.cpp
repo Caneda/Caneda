@@ -25,6 +25,10 @@
 
 #include <QtCore/QDebug>
 
+
+/*! Define to 1 to print number of port connection in schematic */
+#define DEBUG_PORT_CONNECTION 1
+
 //! Returns whether two circle's of same radii intersect's or not.
 bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
 {
@@ -461,14 +465,28 @@ void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option)
    if(this->m_connections == NULL) {
      painter->setPen(unconnectedPen);
      painter->setBrush(unconnectedBrush);
-     painter->drawEllipse(portEllipse.translated(pos()));
+     painter->drawEllipse(portEllipse.translated(this->pos()));
    } else if(this->m_connections->size() > 2) {
      painter->setPen(connectedPen);
      painter->setBrush(connectedBrush);
-     painter->drawEllipse(portEllipseConnected.translated(pos()));
+     painter->drawEllipse(portEllipseConnected.translated(this->pos()));
    }
 
-   /* restore pen */
+   
+
+   /* dump number of connection near each port */
+   if(DEBUG_PORT_CONNECTION) {
+     painter->setPen(QPen(Qt::red, 0));
+     QFont savedFont = painter->font();
+     painter->setFont(QFont ("Helvetica", 6));
+     painter->drawText(this->pos() + QPointF(5,5),
+		       this->m_connections != NULL ?
+		       QString::number(this->m_connections->size()):
+		       QString("0"));
+     painter->setFont(savedFont);
+   }
+     
+    /* restore pen */
    painter->setPen(savedPen);
 }
 
