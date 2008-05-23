@@ -467,39 +467,47 @@ void Wire::setWireLines(const WireLines& wlines)
 /*!
  * \brief Removes zero length lines and optimizes multiple straight lines
  * to one big straight line.
+ * \todo rename to optimize
  */
 void Wire::removeNullLines()
 {
   QList<WireLine>::iterator it = m_wLines.begin(), it1;
-  while(it != m_wLines.end()) {
-    if(it->isNull()) {
-      it = m_wLines.erase(it);
-    }
-    else {
+
+  /* erase null line */
+  while(it != this->m_wLines.end()) {
+    if(it->isNull()) 
+      it = this->m_wLines.erase(it);
+    else 
       ++it;
-    }
   }
 
-  if(m_wLines.size() <= 1)
+  /* do not do further optimization if only one segment */
+  if(this->m_wLines.size() <= 1)
     return;
-  it = m_wLines.begin() + 1;
-  while(it != m_wLines.end()) {
+  
+  /* optimize multiple straight line */
+  it = this->m_wLines.begin() + 1;
+  while(it != this->m_wLines.end()) {
     it1 = it - 1;
+    
+    /* horizontal straight line */
     if(it->isHorizontal() && it1->isHorizontal()) {
       Q_ASSERT(it1->p2() == it->p1());
       it1->setP2(it->p2());
-      it = m_wLines.erase(it);
+      it = this->m_wLines.erase(it);
     }
+    /* horizontal case */
     else if(it->isVertical() && it1->isVertical()) {
       Q_ASSERT(it1->p2() == it->p1());
       it1->setP2(it->p2());
-      it = m_wLines.erase(it);
+      it = this->m_wLines.erase(it);
     }
+    /* other */
     else {
       ++it;
     }
   }
-  if(isVisible()) {
+  if(this->isVisible()) {
     updateGeometry();
   }
 }
