@@ -21,6 +21,7 @@
 #define __WIRE_LINE_UTILITIES_H
 
 #include <QtCore/QLineF>
+#include <QtCore/QRectF>
 
 /*!\brief Wire class helper
    \details This class transform a line to something more
@@ -66,10 +67,24 @@ class WireLine
       friend inline bool operator==(const WireLine& l1, const WireLine& l2);
 
       friend inline bool operator!=(const WireLine& l1, const WireLine& l2);
+
+      QRectF boundingRect () const;
+      
+      /*! Get adjust value */
+      static unsigned int getAdjust() { return m_adjust;};
+      static void setAdjust(unsigned int adjust) { m_adjust = adjust; };
    private:
       /*!\brief Line object */
       QLineF m_line;
+      /*!\brief Bounding rectangle adjustement
+
+	Normally a wireline has a height of zero quantity to add in order 
+	to have a true rectangle
+	\todo Made Configurable
+      */
+      static unsigned int m_adjust;
 };
+
 
 /*!\brief Default constructor */
 inline WireLine::WireLine() {}
