@@ -74,6 +74,29 @@ void Wire::tryConnectPorts() {
 }
 
 
+/*! Initialize wire line used on wire creation 
+    \note assert this->m_wLines.isEmpty()
+    \todo BR->GPK document inter
+*/
+void Wire::initWireline()
+{
+  Q_ASSERT(this->m_wLines.isEmpty());
+  
+  
+  QPointF inter = QPointF(this->port1()->pos().x(), this->port2()->pos().y());
+  /* create two wire line */
+  this->m_wLines << WireLine(port1()->pos(), inter);
+  this->m_wLines << WireLine(inter, port2()->pos());
+
+  /* update wire */
+  if(!this->isVisible()) 
+    updateProxyWires();
+  else
+    updateGeometry();
+  return;
+}
+
+
 /*!
  * \brief Constructs a wire between \a startPos and \a endPos.
  *
@@ -96,12 +119,11 @@ Wire::Wire(const QPointF& startPos, const QPointF& endPos, bool doConnect,
   this->m_ports << new Port(this, localStartPos);
   this->m_ports << new Port(this, localEndPos);
   
+  this->initWireline();
+
   /* show in scene */
-  if(scene) {
-    this->movePort1(localStartPos);
-    this->movePort2(localEndPos);
+  if(scene) 
     this->removeNullLines();
-  }
 
   if(doConnect) 
     this->tryConnectPorts();
@@ -131,22 +153,21 @@ Wire::Wire(Port *startPort, Port *endPort, SchematicScene *scene) :
   QPointF localStartPos = this->mapFromScene(startPos);
   QPointF localEndPos = this->mapFromScene(endPos);
  
-  m_ports << new Port(this, localStartPos);
-  m_ports << new Port(this, localEndPos);
+  this->m_ports << new Port(this, localStartPos);
+  this->m_ports << new Port(this, localEndPos);
   
-  if(scene) {
-    movePort1(port1()->pos());
-    removeNullLines();
-  }
+  this->initWireline();
 
-   port1()->connectTo(startPort);
-   port2()->connectTo(endPort);
+  if(scene) 
+    this->removeNullLines();
+
+   this->port1()->connectTo(startPort);
+   this->port2()->connectTo(endPort);
 }
 
 //! Destructor.
-Wire::~Wire()
-{
-   deleteProxyWires();
+Wire::~Wire(){
+   this->deleteProxyWires();
    qDeleteAll(m_ports);
 }
 
@@ -164,29 +185,20 @@ void Wire::movePort(QList<Port*> *connections, const QPointF& scenePos)
    }
 }
 
+
+
 //! Moves port1 to \a newLocalPos and adjust's the wire's lines.
 void Wire::movePort1(const QPointF& newLocalPos)
 {
-   if(isVisible()) {
-      deleteProxyWires();
-      //prepareGeometryChange();
-   }
-
-   port1()->setPos(newLocalPos);
+  /* delete proxy wires */
+  if(this->isVisible()) 
+    this->deleteProxyWires();
+  
+  this->port1()->setPos(newLocalPos);
 
    // This is true when wire is created
-   if(m_wLines.isEmpty()) {
-      QPointF inter = QPointF(port1()->pos().x(), port2()->pos().y());
-      m_wLines << WireLine(port1()->pos(), inter);
-      m_wLines << WireLine(inter, port2()->pos());
-
-      if(!isVisible()) {
-         updateProxyWires();
-      } else {
-         updateGeometry();
-      }
-      return;
-   }
+   if(m_wLines.isEmpty()) 
+     return this->initWireline();
 
    QPointF referencePos = port1()->pos();
 
@@ -249,11 +261,8 @@ void Wire::movePort2(const QPointF& newLocalPos)
 
    port2()->setPos(newLocalPos);
 
-   if(m_wLines.isEmpty()) {
-      //reusing code.
-      movePort1(port1()->pos());
-      return;
-   }
+   if(m_wLines.isEmpty()) 
+     return this->initWireline();
 
    QPointF referencePos = port2()->pos();
 
