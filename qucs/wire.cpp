@@ -722,16 +722,6 @@ QRect Wire::proxyRect(const WireLine& wline) const
    return rect.toRect();
 }
 
-//! Returns bounding rect of given wire line \a wline.
-QRectF Wire::wireLineBound(const WireLine& wline) const
-{
-   QRectF rect;
-   rect.setTopLeft(wline.p1());
-   rect.setBottomRight(wline.p2());
-   rect = rect.normalized();
-   rect.adjust(-3, -3, +3, +3);
-   return rect;
-}
 
 //! Updates the geometry of proxy wires.
 void Wire::updateProxyWires()
@@ -777,15 +767,15 @@ void Wire::updateGeometry()
 {
   QRectF rect;
   QPainterPath path;
-  
+ 
   if(!isVisible()) 
     return;
 
   QList<WireLine>::const_iterator it = m_wLines.constBegin();
   QList<WireLine>::const_iterator end = m_wLines.constEnd();
   for(; it != end; ++it) {
-    rect |= wireLineBound(*it);
-    path.addRect(wireLineBound(*it));
+    rect |= it->boundingRect();
+    path.addRect(it->boundingRect());
   }
 
   addPortEllipses(m_ports, path);
@@ -803,7 +793,7 @@ int Wire::indexForPos(const QPointF& pos) const
    const QList<WireLine>::const_iterator end = m_wLines.end();
 
    for( ; it != end; ++it , ++retVal) {
-      if(wireLineBound(*it).contains(pos))
+     if(it->boundingRect().contains(pos))
          return retVal;
    }
 

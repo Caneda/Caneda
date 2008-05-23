@@ -82,7 +82,7 @@ class WireLine
 	to have a true rectangle
 	\todo Made Configurable
       */
-      static unsigned int m_adjust;
+      static qreal m_adjust;
 };
 
 

@@ -131,7 +131,6 @@ protected:
 
 private:
   QRect proxyRect(const WireLine& wline) const;
-  QRectF wireLineBound(const WireLine& wline) const;
 
   void initWireline();
  

@@ -18,9 +18,10 @@
  ***************************************************************************/
 
 #include "wireline.h"
-
+#include <QtCore/QtGlobal>
+#include <QtCore/QDebug>
 /* made configurable */
-unsigned int WireLine::m_adjust = 3;
+qreal WireLine::m_adjust = 3.0;
 
 /*! Return bounding rectangle arround a wireline */
 QRectF WireLine::boundingRect() const
