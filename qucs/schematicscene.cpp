@@ -886,12 +886,15 @@ bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& 
 
 /*!\brief Finalize wire ie last control point == end 
    \todo Why not a wire operation ?
+   \todo Add undo operation for this 
 */
 void SchematicScene::wiringEventMouseClickFinalize() 
 {
   this->m_currentWiringWire->show();
   this->m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
+  this->m_currentWiringWire->removeNullLines();
   this->m_currentWiringWire->updateGeometry();
+  
   
   /* detach current wire */
   this->m_currentWiringWire = NULL;

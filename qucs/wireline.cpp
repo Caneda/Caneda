@@ -18,8 +18,7 @@
  ***************************************************************************/
 
 #include "wireline.h"
-#include <QtCore/QtGlobal>
-#include <QtCore/QDebug>
+
 /* made configurable */
 qreal WireLine::m_adjust = 3.0;
 
