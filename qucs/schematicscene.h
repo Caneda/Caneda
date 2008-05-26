@@ -65,8 +65,7 @@ public:
     Wiring,
     /*! Delete */
     Deleting,
-    /*! Mark 
-      \todo What is */
+    /*! Placing a mark on the graph. */
     Marking,
     /*!Rotate */
     Rotating,
@@ -80,7 +79,7 @@ public:
     SettingOnGrid,
     /*! Zoom at point */
     ZoomingAtPoint,
-    /*! \todo describe */
+    /*! Painting item's drawing (like Ellipse, Rectangle) */
     PaintingDrawEvent,
     /*! insert an item */
     InsertingItems,
@@ -300,17 +299,49 @@ private:
   QPointF nearingGridPoint(const QPointF &pos) const;
 
   //These are helper variables (aka state holders)
-  /*!\todo document */
+  /*!
+   * \brief A flag to determine whether items are being moved or not
+   * using mouse click + drag (not drag and drop) on scene.
+   * \note Used in normalEvent
+   */
   bool m_areItemsMoving;
-  /*!\todo document */
+  /*!
+   * \brief A list of components whose port's needs to be disconencted
+   * due to mouse events
+   * \sa disconnectDisconnectibles
+   */
   QList<Component*> disconnectibles;
-  /*!\todo document */
-  QList<Wire*> movingWires, grabMovingWires;
-  /*!\todo document */
+  /*!
+   * \brief A list of wire's requiring segment changes due to mouse event
+   *
+   * When a component is moved(click + drag) and one of the connected wire isn't
+   * selected its segments needs to be altered to retain connection to the wire
+   * and also the wire should be composed of only horizontal and vertical
+   * segments only
+   * Hence these kinds of wires are predetermined in processForSpecialMove and
+   * are resized( + or - wire segments) in specialMove
+   */
+  QList<Wire*> movingWires;
+  /*!
+   * \brief A list of wires which needs to be literally moved
+   * (no change in segments)
+   *
+   * These wires are predetermined in processForSpecialMove.
+   * A wire is scheduled for grabMove if its both ports have all their owners
+   * selected (the wire being scheduled may or may not be selected)
+   * In the grabMove method, only a delta is added to the wire.
+   */
+  QList<Wire*> grabMovingWires;
+  /*!\brief A helper variable to hold last grid position of mouse cursor */
   QPointF lastPos;
-  /*!\todo document */
+  /* \brief A helper variable to calc the grid based point on scene required
+   * to move the m_insertibles items
+   */
   QPointF m_insertActionMousePos;
-  /*!\todo document */
+  
+  /* \brief A list of QucsItem which are to be placed/pasted.
+   * \sa beginInsertingItems
+   */
   QList<QucsItem*> m_insertibles;
 
   /*!Wiring state machine state  enum */
@@ -325,13 +356,25 @@ private:
   /*! Current wire */
   Wire *m_currentWiringWire;
 
-  /*!\todo document */
+  /*!\brief The Painting(Ellipse,Rectangle..) being drawn currently */
   Painting *m_paintingDrawItem;
-  /*!\todo document */
+  /*!
+   * \brief Helper which holds the number of mouse clicks happened.
+   *
+   * This is used to determine what feedback to show while painting
+   * For example
+   * One click of arc should determine corresponding elliptical point
+   * Second click should fix this ellipse and let select the start angle
+   * of ellipse
+   * Third click should finalize by selecing span of the elliptical arc.
+   */
   int m_paintingDrawClicks;
-  /*!\todo document */
+  /*!
+   * \brief A rectangular dotted line widget to show feedback of
+   * an area being selected for zooming
+   */
   QRubberBand * m_zoomBand;
-  /*!\todo document */
+  /*!\brief An area to be zoomed */
   QRectF m_zoomRect;
 
   /*!\todo document */
@@ -363,21 +406,39 @@ private:
   QString m_fileName;
   QStringList m_frameTexts;
 
-  /*!\todo explain why we need this
-    \todo explain when to set it up 
-  */
+  /*!
+   * \brief A flag to hold whether a schematic is modified or not
+   * i.e to determine whether a file should be saved or not on closing. 
+   *
+   * This flag should be set as and when any modification is done to schematic
+   * and usually these are done in event handlers. Usually programmatic changes
+   * to the schematic won't set this flag.
+   * \sa setModified
+   */
   bool m_modified;
-  /*!\todo document */
+  /*!
+   * \brief A flag to hold whether a plot diagram should be opened on completion
+   * of simulation.
+   *
+   * This is user configurable and only for convienience of the user.
+   */
   bool m_opensDataDisplay;
-  /*!\todo document */
+  /*!
+   * \brief Flag to hold whether a frame should be drawn or not
+   * Check setFrameVisible for understanding what a frame is.
+   * \sa setFrameVisible
+   */
   bool m_frameVisible;
   /*! Snap component to grid */
   bool m_snapToGrid;
   /*! Draw origin boolean */
   bool m_OriginDrawn;
-  /*!\todo document */
+  /*!\brief A state holder whether an UndoStack's macro is started or not */
   bool m_macroProgress;
-  /*!\todo document */
+  /*!
+   * \brief A state holder to know whether shortcut events are blocked or not
+   * \sa SchematicScene::eventFilter, SchematicScene::blockShortcuts
+   */
   bool m_shortcutsBlocked;
 };
 

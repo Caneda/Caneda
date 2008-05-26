@@ -61,7 +61,16 @@
 */
 
 
-/*!\todo document */
+/*!
+ * \brief This template method calculates the center of the items on the scene
+ *
+ * It actually unites the boundingRect of the items sent as param and then
+ * returns the center of the united rectangle. This center is used as
+ * reference point while copy/paste/inserting items on the scene.
+ * \param items The items with respect to which the geometrical center has to
+ * be calculated.
+ * \return Returns the geometrical center of the items sent through parameter.
+ */
 template <typename T>
 QPointF centerOfItems(const QList<T*> &items)
 {
@@ -182,7 +191,8 @@ void SchematicScene::setFileName(const QString& name)
 /*! Get nearest point on grid 
   \param pos: current position to be rounded
   \return rounded position
-  \todo explain algorithm
+   \todo explain algorithm (Should ask Stefan/Michael)
+   \todo Bastien, if you can write your own algo.
 */
 QPointF SchematicScene::nearingGridPoint(const QPointF &pos) const
 {
@@ -261,7 +271,7 @@ void SchematicScene::setOriginDrawn(const bool visibility)
   this->update();
 }
 
-/*!\todo Document */
+/*!\brief Set the dataset filename(file which holds the plot data) */
 void SchematicScene::setDataSet(const QString& _dataSet)
 {
   this->m_dataSet = _dataSet;
@@ -279,7 +289,14 @@ void SchematicScene::setOpensDataDisplay(const bool state)
   this->m_opensDataDisplay = state;
 }
 
-/*!\to-sdo Documenent */
+/*!
+ * \brief Makes the outer frame visible.
+ * \param visibility Set true of false to show or hide the frame.
+ *
+ * Frame is the outer rectangles with printed fields to enter name and other
+ * properties of the schematic diagram.
+ * \todo Yet to implement the actual drawing of frame.
+ */
 void SchematicScene::setFrameVisible(const bool visibility)
 {
   /* avoid updating */
@@ -298,7 +315,7 @@ void SchematicScene::setFrameTexts(const QStringList& texts)
     update();
 }
 
-/*!\brief Todo document */
+/*! \brief Set the current mode (one of symbol mode and schematic mode */
 void SchematicScene::setMode(const Qucs::Mode mode)
 {
   if(this->m_currentMode == mode) 
@@ -308,28 +325,37 @@ void SchematicScene::setMode(const Qucs::Mode mode)
   //TODO:
 }
 
-/*!\brief Set mouse action
-  \param MouseAction: mouse action to set
-  \todo document
+/*!
+ * \brief Set mouse action
+ * \param MouseAction: mouse action to set
+ *
+ * This method takes care to disable the shortcuts while items are being added
+ * to the schematic thus preventing sideeffects. It also sets the appropriate
+ * drag mode for all the views associated with this scene.
+ * Finally the state variables are reset.
 */
 void SchematicScene::setCurrentMouseAction(const MouseAction action)
 {
   if(this->m_currentMouseAction == action) 
     return;
 
+  // Remove the shortcut blocking if the current action uptil now was InsertItems
   if(this->m_currentMouseAction == InsertingItems)
     this->blockShortcuts(false);
 
+  // Blocks shortcut if the new action to be set is InsertingItems
   if(action == InsertingItems)
     this->blockShortcuts(true);
 
   this->m_areItemsMoving = false;
   this->m_currentMouseAction = action;
 
+  // Set the appropriate drag mode for all views associated with this scene.
   QGraphicsView::DragMode dragMode = (action == Normal) ?
     QGraphicsView::RubberBandDrag : QGraphicsView::NoDrag;
   foreach(QGraphicsView *view, views())
     view->setDragMode(dragMode);
+
   this->resetState();
   //TODO: Implemement this appropriately for all mouse actions
 }
@@ -376,9 +402,12 @@ void SchematicScene::resetStateWiring()
 */
 void SchematicScene::resetState()
 {
+  // Clear focus on any item on this scene.
   this->setFocusItem(0);
+  // Clear selection.
   this->clearSelection();
-
+  
+  // Clear the list holding items to be pasted/placed on schematic scene.
   qDeleteAll(this->m_insertibles);
   this->m_insertibles.clear();
 
@@ -476,7 +505,11 @@ void SchematicScene::paste()
   this->beginInsertingItems(_items);
 }
 
-/*!\todo document */
+/*!
+ * There can be more than one view associate with this scene.
+ * For example think of split views.
+ * \return Returns the active view associated with this scene.
+ */
 SchematicView* SchematicScene::activeView() const
 {
   if(views().isEmpty())
@@ -484,9 +517,39 @@ SchematicView* SchematicScene::activeView() const
   return qobject_cast<SchematicView*>(views().first());
 }
 
-/*!\todo document 
-   \todo create a insert qucscomponents property in order to avoid ugly cast 
+/*!
+   \brief Starts insertItem mode.
+
+   This is the mode which is used while pasting components or inserting
+   components after selecting it from the sidebar. This initiates the process
+   by filling the internal m_insertibles list whose contents will be moved on
+   mouse events.
+   Meanwhile it also prepares for this process by hiding component's properties
+   which should not be shown while responding to mouse events in this mode.
+
+   \todo create a insert qucscomponents property in order to avoid ugly cast
    \todo gpk: why two loop??
+
+   \note Follow up for the above question:
+   Actually there are 3 loops involved here one encapsulated in centerOfItems
+   method.
+   The first loop prepares the items for insertion by either hiding/showing
+   based on cursor position.
+   Then we have to calculate center of these items with respect to which the
+   items have to be moved. (encapsulated in centerOfItems method)
+   Finally, the third loop actually moves the items.
+   Now the second implicit loop is very much required to run completely as
+   we have to parse each item's bounding rect to calcuate final center.
+   So best approach would be to call centerOfItems first to find delta.
+   Then combine the first and the third loop.
+   Bastein can you look into that ?
+
+   \note Regarding ugly cast:
+   I think a virtual member function - prepareForInsertion() should be added
+   to QucsItem which does nothing. Then classes like component can specialize
+   this method to do necessary operation like hiding properties.
+        Then in the loop, there is no need for cast. Just call that prepare method
+        on all items.
 */
 void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
 {
@@ -527,7 +590,19 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
 
 
 
-/*!\todo document */
+/*!
+ * \brief Event filter filter's out some events on the watched object.
+ * 
+ * This filter is used to install on QApplication object to filter our
+ * shortcut events.
+ * This filter is installed by \a setCurrentMouseAction method if the new action
+ * is InsertingItems and removed if the new action is different, thus blocking
+ * shortcuts on InsertItems and unblocking for other mouse actions
+ * \sa SchematicScene::setCurrentMouseAction, SchematicScene::blockShortcuts
+ * \sa QObject::eventFilter
+ *
+ * \todo Take care if multiple scenes install event filters.
+ */
 bool SchematicScene::eventFilter(QObject *watched, QEvent *event)
 {
   if(event->type() != QEvent::Shortcut && event->type() != QEvent::ShortcutOverride)
@@ -548,7 +623,11 @@ bool SchematicScene::eventFilter(QObject *watched, QEvent *event)
   }
 }
 
-/*!\todo document */
+/*!
+ * \brief Blocks/unblocks the shortcuts on the QApplication.
+ * \param block True blocks while false unblocks the shortcuts.
+ * \sa SchematicScene::eventFilter
+ */
 void SchematicScene::blockShortcuts(const bool block)
 {
   if(!activeView()) 
@@ -568,7 +647,12 @@ void SchematicScene::blockShortcuts(const bool block)
   }
 }
 
-/*! \todo document */
+/*!
+ * \brief Set whether this schematic is modified or not
+ * \param m True/false to set it to modified/unmodified.
+ * This method emits the signal modificationChanged(bool) as well
+ * as the signal titleToBeUpdated()
+ */
 void SchematicScene::setModified(const bool m)
 {
   if(this->m_modified != m) {
@@ -642,7 +726,18 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
   painter->setPen(savedpen);
 }
 
-/*! \todo Document */
+/*!
+ * \brief Handle some events at lower level. This callback is called before the
+ * specialized event handler methods (like mousePressEvent) are called.
+ *
+ * Here this call back is mainly reimplemented to handle the QEvent::Enter and
+ * QEvent::Leave event while the current mouse actions is InsertingItems.
+ * When the mouse cursor goes out of the scene, this hides the items to be inserted
+ * and the items are shown back once the cursor enters the scene.
+ * This actually is used to optimize by not causing much changes on scene when
+ * cursor is moved outside the scene.
+ * Hint: Hidden items don't result in any changes to the scene's states.
+ */
 bool SchematicScene::event(QEvent *event)
 {
   if(this->m_currentMouseAction == InsertingItems) {
@@ -817,9 +912,11 @@ void SchematicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
   sendMouseActionEvent(e);
 }
 
-/*!\brief Mouse double click 
-  \todo Document 
-*/
+/*!\brief Mouse double click
+ *
+ * Encapsulates the mouseDoubleClickEvent as one of MouseAction and calls
+ * corresponding callback.
+ */
 void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 {
   sendMouseActionEvent(e);
@@ -1280,6 +1377,12 @@ static inline bool pointCmpFunction_Y(const QucsItem *lhs, const QucsItem  *rhs)
 /* Distribute horizontally
    \param items: items to distribute 
    \todo Why not filter wire ??
+   +     * Ans: Because wires need special treatment. Wire's don't have single
+   +     * x and y coord (think of several segments of wires which form single
+   +     * Wire object)
+   +     * Therefore distribution needs separate check for segments which make it
+   +     * hard now. We should come out with some good solution for this.
+   +     * Bastein: Do you have any solution ?
 */
 void SchematicScene::distributeElementsHorizontally(QList<QucsItem*> items)
 {
@@ -1826,7 +1929,15 @@ void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
 
 
 /*! Zoom at point event 
-    \todo document
+ * \brief Zoom in event handles zooming of the view based on mouse signals.
+ *
+ * If just a point is clicked(mouse press + release) then, an ordinary zoomIn
+ * is done (similar to selecting from menu)
+ *
+ * On the otherhand if mouse is pressed and dragged and then release,
+ * corresponding feedback (zoom band) is shown which indiates area that will
+ * be zoomed. On mouse release, the area (rect) selected is zoomed.
+ * \todo Should i doucment the code ?
 */
 void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
 {
@@ -1970,7 +2081,14 @@ void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
   }
 }
 
-/*!\todo Document */
+/*!
+ * \brief This event corresponds to placing/pasting items on scene.
+ *
+ * When the mouse is moved without pressing, then feed back of all
+ * m_insertibles items moving is done here.
+ * On mouse press, these items are placed on the scene and a duplicate is
+ * retained to support further placing/insertion/paste.
+ */
 void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
 {
   if(event->type() == QEvent::GraphicsSceneMousePress) {
@@ -2000,14 +2118,24 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
   }
 }
 
-/*!\todo Document */
+/*! 
+ * \brief Here the wireLabel placing is handled. WireLabel should be
+ * placed only if the clicked point is wire or node.
+ * \todo Implement
+ */
 void SchematicScene::insertingWireLabelEvent(MouseActionEvent *event)
 {
   Q_UNUSED(event);
   //TODO:
 }
 
-/*!\todo Document */
+/*!
+ * \brief Here events other than the specized mouse actions are handled.
+ *
+ * This involves moving items when selected items are dragged in a special way
+ * so that wires are created if a connected component is moved away from
+ * unselected component.
+ */
 void SchematicScene::normalEvent(MouseActionEvent *e)
 {
   switch(e->type()) {
@@ -2064,7 +2192,9 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
   };
 }
 
-/*!\todo Document */
+/*! \brief Check which all selected items should be moved specially
+ *  and where there is possible wirable nodes.
+ */
 void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
 {
   disconnectibles.clear();
@@ -2073,6 +2203,7 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
 
   foreach(QGraphicsItem *item, _items) {
     Component *c = qucsitem_cast<Component*>(item);
+    // save item's position for later use.
     storePos(item, this->smartNearingGridPoint(item->scenePos()));
     if(c) {
       //check for disconnections and wire resizing.
@@ -2085,6 +2216,8 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
 
 
 	  Component *otherComponent = 0;
+	  // Determine whether the "other" and "port" should be disconnected and wired
+          // on mouse move later.
 	  if((otherComponent = other->owner()->component())
 	     && !otherComponent->isSelected()) {
 	    disconnectibles << c;
@@ -2094,6 +2227,9 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
 
 	  Wire *wire = other->owner()->wire();
 	  if(wire) {
+	    // Determine whether this wire should be resized or not.
+	    // resized means = creating and deleting segments of wire.
+	    // on mouse moves later.
 	    Port* otherPort = wire->port1() == other ? wire->port2() :
 	      wire->port1();
 	    if(!otherPort->areAllOwnersSelected()) {
@@ -2106,6 +2242,8 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
     }
 
     Wire *wire = qucsitem_cast<Wire*>(item);
+     // Now determine whether the wire should just be moved rather than resized
+     // resized means = creating and deleting segments of wire.
     if(wire && !movingWires.contains(wire)) {
       bool condition = wire->isSelected();
       condition = condition && ((!wire->port1()->areAllOwnersSelected() ||
@@ -2127,7 +2265,11 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
   //             <<"\n#############\n";
 }
 
-/*!\todo Document */
+/*!
+ * \brief Disconnect the ports in the disconnectibles list and add wire's in
+ * between them. This happens when two(or more) components are connected and one of
+ * them is clicked and dragged.
+ */
 void SchematicScene::disconnectDisconnectibles()
 {
   QSet<Component*> remove;
@@ -2162,7 +2304,10 @@ void SchematicScene::disconnectDisconnectibles()
     disconnectibles.removeAll(c);
 }
 
-/*!\todo Document */
+/*!
+ * \brief Move the selected items specially to allow proper wire movements
+ * and as well as checking for possible disconnections.
+ */
 void SchematicScene::specialMove(qreal dx, qreal dy)
 {
   foreach(Wire *wire, movingWires) {
@@ -2199,7 +2344,10 @@ void SchematicScene::specialMove(qreal dx, qreal dy)
   }
 }
 
-/*!\todo document */
+/*!
+ * \brief End the special move by pushing the UndoCommands for position change
+ * of items on scene. Also fwire's segements are finalized here.
+ */
 void SchematicScene::endSpecialMove()
 {
   disconnectibles.clear();
@@ -2293,7 +2441,12 @@ void SchematicScene::placeItem(QucsItem *item, const QPointF &pos, const Qucs::U
   }
 }
 
-/*!\todo document */
+/*!
+ * \brief Return a component or painting based on \a name and \a category.
+ *
+ * The painting is processed in a special hard coded way(no library)
+ * On the other hand components are loaded from the library.
+ */
 QucsItem* SchematicScene::itemForName(const QString& name, const QString& category)
 {
   if(category == QObject::tr("paintings")) {
@@ -2303,7 +2456,14 @@ QucsItem* SchematicScene::itemForName(const QString& name, const QString& catego
   return LibraryLoader::defaultInstance()->newComponent(name, 0, category);
 }
 
-/*\todo document */
+/*!
+ * \brief Returns an appropriate label suffix as 1 and 2 in R1, R2
+ *
+ * This method walks through all the items present on scene matching the
+ * labelprefix "prefix" and uses the
+ * highest of these corresponding suffixes + 1
+ * as the new suffix candidate.
+ */
 int SchematicScene::componentLabelSuffix(const QString& prefix) const
 {
   int _max = 1;
@@ -2320,7 +2480,10 @@ int SchematicScene::componentLabelSuffix(const QString& prefix) const
   return _max;
 }
 
-/*\todo document */
+/*!
+ * \todo document
+ * Looks like i am not using this. If so please remove.
+ */
 int SchematicScene::unusedPortNumber()
 {
   int retVal = -1;
@@ -2337,22 +2500,27 @@ int SchematicScene::unusedPortNumber()
   return retVal;
 }
 
-/*!\todo document */
+/*!
+ * \todo document
+ * Looks like i am not using this. If so please remove.
+ */
 bool SchematicScene::isPortNumberUsed(int num) const
 {
   (void) num;
   return false;
 }
-
-/*!\todo document */
+/*!
+ * \todo document
+ * Looks like i am not using this. If so please remove.
+ */
 void SchematicScene::setNumberUnused(int num)
 {
   (void) num;
 }
 
-
-
-/*!\todo Document */
+/*!
+ * \brief Call the appropriate mouseAction event based on current mouse action.
+ */
 void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
 {
   switch(m_currentMouseAction) {
