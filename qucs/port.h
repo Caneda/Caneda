@@ -28,6 +28,8 @@
 #include <QtGui/QPainter>
 #include <QtCore/QSharedData>
 
+#include "item.h"
+
 //Forward declarations.
 class Wire;
 class Component;
@@ -57,23 +59,26 @@ static const QRectF portEllipseConnected(-portConnectedRadius, -portConnectedRad
 class PortOwner
 {
    public:
-      PortOwner(Wire *wire);
-      PortOwner(Component *comp);
+      PortOwner(QucsItem * item);
 
-      //! Return the wire if stored, or null otherwise.
-      Wire* wire() const { return m_wire; }
+      /*! return type of owner */
+      int type() const { return m_item->type(); }
+      
+      Wire* wire() const; 
       //! Return the component if stored, or null otherwise.
-      Component* component() const { return m_component; }
+      Component* component() const;
       //! Returns the owner item as graphicsitem.
       QGraphicsItem* item() const;
 
-      bool isWire() const { return m_wire != 0; }
-      bool isComponent() const { return m_component != 0; }
+      //! return weather item is a wire
+      bool isWire() const { return this->m_item->isWire(); }
+      //! return weather item is a component 
+      bool isComponent() const { return this->m_item->isComponent(); }
 
    private:
-      Wire *const m_wire;
-      Component *const m_component;
-      //Disable copy
+      /*! owner of the port */
+      QucsItem *const m_item;
+      //! Disable copy
       PortOwner(const PortOwner& other);
 };
 
@@ -89,11 +94,8 @@ struct PortData : public QSharedData
 class Port
 {
    public:
-      Port(Wire *owner, const QSharedDataPointer<PortData> &data);
-      Port(Wire *owner, QPointF _pos, QString portName = QString());
-
-      Port(Component *owner, const QSharedDataPointer<PortData> &data);
-      Port(Component *oner, QPointF _pos, QString portName = QString());
+      Port(QucsItem  *owner, const QSharedDataPointer<PortData> &data);
+      Port(QucsItem  *owner, QPointF _pos, QString portName = QString());
 
       ~Port();
 

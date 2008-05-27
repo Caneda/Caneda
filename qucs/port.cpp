@@ -22,6 +22,7 @@
 #include "component.h"
 #include "wire.h"
 #include "schematicscene.h"
+#include "item.h"
 
 #include <QtCore/QDebug>
 
@@ -37,31 +38,56 @@ bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
    return x_sqr + y_sqr - (4 * radius * radius) <= 0;
 }
 
+/*************************************************************
+ *
+ *  PORT OWNER
+ *
+ *************************************************************/
+
+
 //! Construct portowner with wire as owner.
-PortOwner::PortOwner(Wire *wire) : m_wire(wire), m_component(0)
+PortOwner::PortOwner(QucsItem * item)
+  : m_item(item)
 {
-   Q_ASSERT(m_wire != 0);
+  Q_ASSERT(this->isWire() || this->isComponent());
 }
 
-//! Construct portowner with component as owner.
-PortOwner::PortOwner(Component *component) :
-      m_wire(0), m_component(component)
-{
-   Q_ASSERT(m_component != 0);
-}
-
+/*! Return port owner as  QGraphicsItem
+ *\todo check why is it needed 
+ */
 QGraphicsItem* PortOwner::item() const
 {
-   QGraphicsItem *item = static_cast<QGraphicsItem*>(m_component);
-   if(item) return item;
-   item = static_cast<QGraphicsItem*>(m_wire);
+   QGraphicsItem *item = static_cast<QGraphicsItem*>(m_item);
    //Cast should always succeed as both are graphics items.
    Q_ASSERT(item);
    return item;
 }
 
-//! Construct port with wire as owner and shared data \data.
-Port::Port(Wire *owner, const QSharedDataPointer<PortData> &data) :
+//! Return the wire if stored, or null otherwise.
+Wire* PortOwner::wire() const {
+  if(this->m_item->type() == QucsItem::WireType)
+    return static_cast<Wire*>(this->m_item);
+  else
+    return NULL;
+}
+
+//! Return the wire if stored, or null otherwise.
+Component* PortOwner::component() const {
+  if(this->m_item->type() == QucsItem::ComponentType)
+    return static_cast<Component*>(this->m_item);
+  else
+    return NULL;
+}
+
+
+/**************************************************************************
+ *
+ *         port
+ *
+ ***************************************************************************/
+
+//! Construct port with qucsitem as owner and shared data \data.
+Port::Port(QucsItem *owner, const QSharedDataPointer<PortData> &data) :
       d(data),
       m_owner(new PortOwner(owner)),
       m_connections(0),
@@ -69,26 +95,8 @@ Port::Port(Wire *owner, const QSharedDataPointer<PortData> &data) :
 {
 }
 
-//! Construct port with wire as owner, position \pos and port's name \portName.
-Port::Port(Wire *owner, QPointF _pos, QString portName) :
-      d(new PortData(_pos, portName)),
-      m_owner(new PortOwner(owner)),
-      m_connections(0),
-      m_nodeName(0)
-{
-}
-
-//! Construct port with component as owner and shared data \data.
-Port::Port(Component *owner, const QSharedDataPointer<PortData> &data) :
-      d(data),
-      m_owner(new PortOwner(owner)),
-      m_connections(0),
-      m_nodeName(0)
-{
-}
-
-//! Construct port with component as owner, position \pos and port's name \portName.
-Port::Port(Component *owner, QPointF _pos, QString portName) :
+//! Construct port with qucsitem as owner, position \pos and port's name \portName.
+Port::Port(QucsItem *owner, QPointF _pos, QString portName) :
       d(new PortData(_pos, portName)),
       m_owner(new PortOwner(owner)),
       m_connections(0),
