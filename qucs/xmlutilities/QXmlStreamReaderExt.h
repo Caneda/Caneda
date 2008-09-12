@@ -43,13 +43,13 @@ public:
   /* construct from a file name */
   /*
   QXmlStreamReaderExt (const QString &name, const QRelaxNGvalidator * schema = NULL,
-		       const QXsltTransformer * xslt = NULL);
+		       const QXsltTransformer * xslt = NULL, bool usexinclude = true);
   */
   /* construct from memory */
   QXmlStreamReaderExt (const QByteArray &array, const QRelaxNGvalidator * schema = NULL,
-		       const QXsltTransformer *xslt = NULL);
+		       const QXsltTransformer *xslt = NULL, bool usexinclude = true);
   ~QXmlStreamReaderExt();
-/*!\brief Get a const copy of transformed xml */
+  /*!\brief Get a const copy of transformed xml */
   const char * constData() {
     return data.constData();
   }
@@ -70,7 +70,8 @@ private:
   /* finalize construction */
   void finalize(const void *docvoid,
 		const QRelaxNGvalidator * schema,
-		const QXsltTransformer *xslt);
+		const QXsltTransformer *xslt,
+		bool usexinclude);
 };
 
 } // namespace qucs

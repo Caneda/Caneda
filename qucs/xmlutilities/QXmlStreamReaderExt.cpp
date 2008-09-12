@@ -30,6 +30,7 @@
 extern "C" {
 #include <libxml/parser.h>
 #include <libxml/relaxng.h>
+#include <libxml/xinclude.h>
 }
 
 #include <iostream>
@@ -41,12 +42,14 @@ namespace Qucs {
 /*!\brief Construct a XML reader from a filename 
    \param name[in]: Name of the file
    \param schema[in]: Schema in order to control file (NULL is no schema)
+   \param xslt[in]: xslt file 
    \todo Check if we need tonative
 */
 #if 0
 QXmlStreamReaderExt::QXmlStreamReaderExt ( const QString &name, 
 					   const QRelaxNGvalidator * schema,
-					   const QXsltTransformer *xslt):
+					   const QXsltTransformer *xslt,
+					   bool usexinclude):
   QXmlStreamReader()
 {
   xmlDocPtr doc;
@@ -61,7 +64,7 @@ QXmlStreamReaderExt::QXmlStreamReaderExt ( const QString &name,
   if(doc == NULL)
     goto cannotparse;
   
-  this->finalize(doc, schema, xslt);
+  this->finalize(doc, schema, xslt, usexinclude);
   return;
 
  cannotparse:
@@ -75,10 +78,13 @@ QXmlStreamReaderExt::QXmlStreamReaderExt ( const QString &name,
    \param name[in]: Name of the file
    \param schema[in]: Schema in order to control file (NULL is no schema)
    \param xslt[in]: xslt engine pointer for transformation (NULL is no xslt)
+   \param usexinclude[in]: use xinclude substitution
+   
 */
 QXmlStreamReaderExt::QXmlStreamReaderExt ( const QByteArray &array, 
 					   const QRelaxNGvalidator * schema,
-					   const QXsltTransformer * xslt):
+					   const QXsltTransformer * xslt,
+					   bool usexinclude):
   QXmlStreamReader()
 {
   xmlDocPtr doc;
@@ -89,7 +95,7 @@ QXmlStreamReaderExt::QXmlStreamReaderExt ( const QByteArray &array,
   if(doc == NULL)
     goto cannotparse;
  
-  this->finalize(doc, schema, xslt);
+  this->finalize(doc, schema, xslt, usexinclude);
   return;
 
  cannotparse:
@@ -114,12 +120,19 @@ QXmlStreamReaderExt::QXmlStreamReaderExt ( const QByteArray &array,
 */
 void QXmlStreamReaderExt::finalize(const void * docvoid, 
 				   const QRelaxNGvalidator * schema,
-				   const QXsltTransformer *xslt)
+				   const QXsltTransformer *xslt,
+				   bool usexinclude)
 {
   xmlDocPtr doc = (xmlDocPtr) docvoid;
   xmlDocPtr xslteddoc = NULL;
   int size;
-  
+
+  /* apply xinclude */
+  if(usexinclude)
+    if (xmlXIncludeProcess(doc) < 0) 
+      goto errorxinclude;
+
+  /* control schema */
   if(schema != NULL) {
     if(schema->hasError())
       {
@@ -162,6 +175,10 @@ void QXmlStreamReaderExt::finalize(const void * docvoid,
   this->addData(this->data);
   return;
 
+ errorxinclude:
+  xmlFreeDoc(doc);
+  qDebug() << "Xinclude error";
+  raiseError ("Xinclude error");
  notvalid:
   xmlFreeDoc(doc);
   qDebug() << "Could not validate";

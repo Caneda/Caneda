@@ -301,7 +301,7 @@ Component* LibraryLoader::newComponent(QString componentName, SchematicScene *sc
 */
 bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_)
 {
-  return this->load( libpathtree+"components/basic/passive.xml",svgPainter_);
+  return this->load( libpathtree+"/components/basic/passive.xml",svgPainter_);
 }
 
 //! Load's library indicated by path \a libPath.
@@ -310,13 +310,22 @@ bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
    if(svgPainter_ == 0) {
       svgPainter_ = SvgPainter::defaultInstance();
    }
+
+   /* open file */
    QFile file(libPath);
    if(!file.open(QIODevice::ReadOnly)) {
       QMessageBox::warning(0, QObject::tr("File open"),
                            QObject::tr("Cannot open file %1\n").arg(libPath));
       return false;
    }
+   
+   /* goto base dir */
    QString libParentPath = QFileInfo(libPath).dir().absolutePath();
+   QString current = QDir::currentPath();
+   if(!QDir::setCurrent(libParentPath)) {
+     (void) QDir::setCurrent(current);
+     return false;
+   }
 
    QTextStream in(&file);
    in.setCodec("UTF-8");
@@ -347,6 +356,7 @@ bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
          }
       }
    }
+   (void) QDir::setCurrent(current);
    return !reader.hasError();
 }
 
