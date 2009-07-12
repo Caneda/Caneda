@@ -40,7 +40,7 @@ MOCHEADERS = schematicscene.h schematicview.h mainwindowbase.h \
 
 MOCFILES = $(MOCHEADERS:.h=.moc.cpp)
 
-qucs_SOURCES = 	wire.cpp componentssidebar.cpp  item.cpp \
+qucs_SOURCES = 	wire.cpp wireline.cpp componentssidebar.cpp  item.cpp \
 				schematicscene.cpp  sidebarmodel.cpp \
                 main.cpp mainwindowbase.cpp qucsmainwindow.cpp qucsview.cpp \
 				schematicview.cpp  undocommands.cpp fileformathandler.cpp \

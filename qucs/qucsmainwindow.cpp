@@ -1822,6 +1822,13 @@ void QucsMainWindow::loadSettings()
                               "as you haven't selected any!");
          return;
       }
+
+      // Ensure libpath always ends with separator as other subpaths are
+      // built by appending to libpath.
+      libpath = QDir::toNativeSeparators(libpath);
+      if (!libpath.endsWith(QDir::separator())) {
+          libpath.append(QDir::separator());
+      }
    }
 
    /* Load validators */
