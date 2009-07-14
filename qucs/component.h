@@ -28,9 +28,9 @@ class Port;
 class PortData;
 
 
-//! Represents status of component - short, open or just active.
 namespace Qucs
 {
+   //! Represents status of component - short, open or just active.
    enum ActiveStatus {
       Open=0, Active, Short
    };
@@ -177,7 +177,7 @@ class Component : public SvgItem
 
    private:
       void init();
-       
+
       /*!\brief Component Shared datas */
       QSharedDataPointer<ComponentData> d;
       /*!\brief Property group (ie property of this component) */

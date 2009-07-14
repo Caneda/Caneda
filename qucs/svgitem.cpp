@@ -224,7 +224,7 @@ SvgItemData* SvgPainter::svgData(const QString& svg_id) const
    return m_dataHash[svg_id];
 }
 
-//! Returns svg contentcorresponding to svg id \a svg_id.
+//! Returns svg content corresponding to svg id \a svg_id.
 QByteArray SvgPainter::svgContent(const QString& svg_id) const
 {
    return svgData(svg_id)->content;

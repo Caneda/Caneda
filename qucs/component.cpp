@@ -35,36 +35,36 @@
 
 //! Constructs and initializes default empty component object.
 Component::Component(SchematicScene *scene) :
-   SvgItem(0, scene),
-   d(new ComponentData()), m_propertyGroup(0)
+  SvgItem(0, scene),
+  d(new ComponentData()), m_propertyGroup(0)
 {
-   init();
+  init();
 }
 
 //! Constructs a component from \a other data.
 Component::Component(const QSharedDataPointer<ComponentData>& other,
-                     SvgPainter *svgPainter_,
-                     SchematicScene *scene) :
-   SvgItem(svgPainter_, scene),
-   d(other), m_propertyGroup(0)
+    SvgPainter *svgPainter_,
+    SchematicScene *scene) :
+  SvgItem(svgPainter_, scene),
+  d(other), m_propertyGroup(0)
 {
-   init();
+  init();
 }
 
 //! Destructor.
 Component::~Component()
 {
-   delete m_propertyGroup;
-   qDeleteAll(m_ports);
+  delete m_propertyGroup;
+  qDeleteAll(m_ports);
 }
 
 //! Intialize the component.
 void Component::init()
 {
-   setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-   Property _label("label", tr("Label"), QVariant::String, true,
-                   false, labelPrefix().append('1'));
-   d->propertyMap.insert("label", _label);
+  setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+  Property _label("label", tr("Label"), QVariant::String, true,
+      false, labelPrefix().append('1'));
+  d->propertyMap.insert("label", _label);
 }
 
 /*!
@@ -75,42 +75,42 @@ void Component::init()
  */
 void Component::updatePropertyGroup()
 {
-   bool itemsVisible = false;
-   PropertyMap::const_iterator it = propertyMap().constBegin(),
-      end = propertyMap().constEnd();
-   // determine if any item is visible.
-   while (it != end) {
-      if(it->isVisible()) {
-         itemsVisible = true;
-         break;
-      }
-      ++it;
-   }
-   // Delete the group if none of the properties are visible.
-   if(!itemsVisible) {
-      delete m_propertyGroup;
-      m_propertyGroup = 0;
-      return;
-   }
+  bool itemsVisible = false;
+  PropertyMap::const_iterator it = propertyMap().constBegin(),
+    end = propertyMap().constEnd();
+  // determine if any item is visible.
+  while (it != end) {
+    if(it->isVisible()) {
+      itemsVisible = true;
+      break;
+    }
+    ++it;
+  }
+  // Delete the group if none of the properties are visible.
+  if(!itemsVisible) {
+    delete m_propertyGroup;
+    m_propertyGroup = 0;
+    return;
+  }
 
-   if(!m_propertyGroup) {
-      createPropertyGroup();
-   }
-   else {
-      m_propertyGroup->realignItems();
-   }
+  if(!m_propertyGroup) {
+    createPropertyGroup();
+  }
+  else {
+    m_propertyGroup->realignItems();
+  }
 
 }
 
 //! Creates property group for the first time.
 void Component::createPropertyGroup()
 {
-   //delete the old group if it exists.
-   delete m_propertyGroup;
-   m_propertyGroup = new PropertiesGroup(schematicScene());
-   m_propertyGroup->setParentItem(this);
-   m_propertyGroup->setTransform(transform().inverted());
-   m_propertyGroup->realignItems();
+  //delete the old group if it exists.
+  delete m_propertyGroup;
+  m_propertyGroup = new PropertiesGroup(schematicScene());
+  m_propertyGroup->setParentItem(this);
+  m_propertyGroup->setTransform(transform().inverted());
+  m_propertyGroup->realignItems();
 }
 
 /*!
@@ -126,35 +126,35 @@ void Component::createPropertyGroup()
  */
 bool Component::setProperty(const QString& propName, const QVariant& value)
 {
-   if(!propertyMap().contains(propName)) {
-      qDebug() << "Component::setPropertyValue(): Property '" << propName
-               << "' doesn't exist!";
-      return false;
-   }
-   if(propName == "symbol") {
-      return setSymbol(value.toString());
-   }
-   if(propName == "label") {
-      return setLabel(value.toString());
-   }
+  if(!propertyMap().contains(propName)) {
+    qDebug() << "Component::setPropertyValue(): Property '" << propName
+                                                << "' doesn't exist!";
+    return false;
+  }
+  if(propName == "symbol") {
+    return setSymbol(value.toString());
+  }
+  if(propName == "label") {
+    return setLabel(value.toString());
+  }
 
-   bool state = d->propertyMap[propName].setValue(value);
-   if(state) {
-      updatePropertyGroup();
-   }
-   return state;
+  bool state = d->propertyMap[propName].setValue(value);
+  if(state) {
+    updatePropertyGroup();
+  }
+  return state;
 }
 
 //! Takes care of visibility of property text on schematic.
 void Component::setPropertyVisible(const QString& propName, bool visiblity)
 {
-   if(!propertyMap().contains(propName)) {
-      qWarning() << "Component::setPropertyVisible() : Property " << propName
-                 << " doesn't exist!";
-      return;
-   }
-   d->propertyMap[propName].setVisible(visiblity);
-   updatePropertyGroup();
+  if(!propertyMap().contains(propName)) {
+    qWarning() << "Component::setPropertyVisible() : Property " << propName
+                                                     << " doesn't exist!";
+    return;
+  }
+  d->propertyMap[propName].setVisible(visiblity);
+  updatePropertyGroup();
 }
 
 /*
@@ -169,31 +169,31 @@ void Component::setPropertyVisible(const QString& propName, bool visiblity)
  */
 bool Component::setSymbol(const QString& newSymbol)
 {
-   QString svgid = newSymbol;
-   QString prefix(name());
-   prefix.append('/');
+  QString svgid = newSymbol;
+  QString prefix(name());
+  prefix.append('/');
 
-   Q_ASSERT_X(propertyMap().contains("symbol"),
-	      __FUNCTION__,"Component::setSymbol() : 'symbol' property not found");
-   
-   if(!d->propertyMap["symbol"].setValue(svgid)) {
-      return false;
-   }
+  Q_ASSERT_X(propertyMap().contains("symbol"),
+      __FUNCTION__,"Component::setSymbol() : 'symbol' property not found");
 
-   qDeleteAll(m_ports);
-   m_ports.clear();
+  if(!d->propertyMap["symbol"].setValue(svgid)) {
+    return false;
+  }
 
-   const QList<PortData*> portDatas = d.constData()->schematicPortMap[svgid];
-   foreach(const PortData *data, portDatas) {
-      m_ports << new Port(this, data->pos, data->name);
-   }
-   svgid.prepend(prefix);
+  qDeleteAll(m_ports);
+  m_ports.clear();
 
-   registerConnections(svgid, svgPainter());
+  const QList<PortData*> portDatas = d.constData()->schematicPortMap[svgid];
+  foreach(const PortData *data, portDatas) {
+    m_ports << new Port(this, data->pos, data->name);
+  }
+  svgid.prepend(prefix);
 
-   updatePropertyGroup();
+  registerConnections(svgid, svgPainter());
 
-   return true;
+  updatePropertyGroup();
+
+  return true;
 }
 
 /*!
@@ -206,48 +206,48 @@ bool Component::setSymbol(const QString& newSymbol)
  */
 bool Component::setLabel(const QString& newLabel)
 {
-   Q_ASSERT_X(propertyMap().contains("label"),
-	      __FUNCTION__,"label property not found");
+  Q_ASSERT_X(propertyMap().contains("label"),
+      __FUNCTION__,"label property not found");
 
-   if(!newLabel.startsWith(labelPrefix()))
-      return false;
+  if(!newLabel.startsWith(labelPrefix()))
+    return false;
 
-   //TODO: Yet to implement label prefix and number suffixing.
-   bool state = d->propertyMap["label"].setValue(newLabel);
-   if(state) {
-      updatePropertyGroup();
-   }
-   return state;
+  //TODO: Yet to implement label prefix and number suffixing.
+  bool state = d->propertyMap["label"].setValue(newLabel);
+  if(state) {
+    updatePropertyGroup();
+  }
+  return state;
 }
 
 //! Returns the label's suffix part.
 QString Component::labelSuffix() const
 {
-   QString _label = label();
-   return _label.mid(labelPrefix().length());
+  QString _label = label();
+  return _label.mid(labelPrefix().length());
 }
 
 //! Sets the propertyMap of this component to \a propMap
 void Component::setPropertyMap(const PropertyMap& propMap)
 {
-   bool symChanged = (propMap["symbol"].value().toString() !=
-                      d->propertyMap["symbol"].value().toString());
-   d->propertyMap = propMap;
-   if(symChanged)
-      setSymbol(propMap["symbol"].value().toString());
-   else
-      updatePropertyGroup();
+  bool symChanged = (propMap["symbol"].value().toString() !=
+      d->propertyMap["symbol"].value().toString());
+  d->propertyMap = propMap;
+  if(symChanged)
+    setSymbol(propMap["symbol"].value().toString());
+  else
+    updatePropertyGroup();
 }
 
 //! Sets the component's activeStatus to \a status.
 void Component::setActiveStatus(Qucs::ActiveStatus status)
 {
-   if(status == Qucs::Short && m_ports.size() <= 1) {
-      qWarning() << "Cannot short components with <= 1 ports";
-      return;
-   }
-   d->activeStatus = status;
-   update();
+  if(status == Qucs::Short && m_ports.size() <= 1) {
+    qWarning() << "Cannot short components with <= 1 ports";
+    return;
+  }
+  d->activeStatus = status;
+  update();
 }
 
 /*!
@@ -258,11 +258,11 @@ void Component::setActiveStatus(Qucs::ActiveStatus status)
  */
 void Component::toggleActiveStatus()
 {
-   Qucs::ActiveStatus status = (Qucs::ActiveStatus)((d->activeStatus + 1) % 3);
-   if(status == Qucs::Short && m_ports.size() <= 1) {
-      status = (Qucs::ActiveStatus)((status + 1) % 3);
-   }
-   setActiveStatus(status);
+  Qucs::ActiveStatus status = (Qucs::ActiveStatus)((d->activeStatus + 1) % 3);
+  if(status == Qucs::Short && m_ports.size() <= 1) {
+    status = (Qucs::ActiveStatus)((status + 1) % 3);
+  }
+  setActiveStatus(status);
 }
 
 /*!
@@ -274,115 +274,115 @@ void Component::toggleActiveStatus()
  */
 Component* Component::loadComponentData(Qucs::XmlReader *reader, SchematicScene *scene)
 {
-   Component *retVal = 0;
-   Q_ASSERT(reader->isStartElement() && reader->name() == "component");
+  Component *retVal = 0;
+  Q_ASSERT(reader->isStartElement() && reader->name() == "component");
 
-   QString compName = reader->attributes().value("name").toString();
-   QString libName = reader->attributes().value("library").toString();
+  QString compName = reader->attributes().value("name").toString();
+  QString libName = reader->attributes().value("library").toString();
 
-   Q_ASSERT(!compName.isEmpty());
+  Q_ASSERT(!compName.isEmpty());
 
-   retVal = LibraryLoader::defaultInstance()->newComponent(compName, scene, libName);
-   if(retVal) {
-      retVal->loadData(reader);
-   }
-   else {
-      //read upto end if component is not found in any of qucs identified libraries.
-      reader->readUnknownElement();
-   }
-   return retVal;
+  retVal = LibraryLoader::defaultInstance()->newComponent(compName, scene, libName);
+  if(retVal) {
+    retVal->loadData(reader);
+  }
+  else {
+    //read upto end if component is not found in any of qucs identified libraries.
+    reader->readUnknownElement();
+  }
+  return retVal;
 }
 
 //! \reimp
 void Component::loadData(Qucs::XmlReader *reader)
 {
-   Q_ASSERT(reader->isStartElement() && reader->name() == "component");
+  Q_ASSERT(reader->isStartElement() && reader->name() == "component");
 
-   d->name = reader->attributes().value("name").toString();
-   d->library = reader->attributes().value("library").toString();
+  d->name = reader->attributes().value("name").toString();
+  d->library = reader->attributes().value("library").toString();
 
-   QString activeStr = reader->attributes().value("activeStatus").toString();
-   if(activeStr.isEmpty())
-      activeStr = "active";
-   setActiveStatus(activeStr == "active" ? Qucs::Active :
-                   activeStr == "open" ? Qucs::Open : Qucs::Short);
+  QString activeStr = reader->attributes().value("activeStatus").toString();
+  if(activeStr.isEmpty())
+    activeStr = "active";
+  setActiveStatus(activeStr == "active" ? Qucs::Active :
+      activeStr == "open" ? Qucs::Open : Qucs::Short);
 
-   while(!reader->atEnd()) {
-      reader->readNext();
+  while(!reader->atEnd()) {
+    reader->readNext();
 
-      if(reader->isEndElement())
-         break;
+    if(reader->isEndElement())
+      break;
 
-      if(reader->isStartElement()) {
-         if(reader->name() == "pos") {
-            setPos(reader->readPoint());
-         }
-         else if(reader->name() == "propertyPos") {
-            QPointF point = reader->readPoint();
-            if(m_propertyGroup) {
-               m_propertyGroup->setPos(point);
-            }
-         }
-         else if(reader->name() == "transform") {
-            setTransform(reader->readTransform());
-         }
-         else if(reader->name() == "properties") {
-            //note the usage as it expects reference of property map.
-            readProperties(reader, d->propertyMap);
-         }
-         else {
-            qWarning() << "Warning: Found unknown element" << reader->name().toString();
-            reader->readUnknownElement();
-         }
+    if(reader->isStartElement()) {
+      if(reader->name() == "pos") {
+        setPos(reader->readPoint());
       }
-   }
+      else if(reader->name() == "propertyPos") {
+        QPointF point = reader->readPoint();
+        if(m_propertyGroup) {
+          m_propertyGroup->setPos(point);
+        }
+      }
+      else if(reader->name() == "transform") {
+        setTransform(reader->readTransform());
+      }
+      else if(reader->name() == "properties") {
+        //note the usage as it expects reference of property map.
+        readProperties(reader, d->propertyMap);
+      }
+      else {
+        qWarning() << "Warning: Found unknown element" << reader->name().toString();
+        reader->readUnknownElement();
+      }
+    }
+  }
 }
 
 //! \reimp
 void Component::saveData(Qucs::XmlWriter *writer) const
 {
-   writer->writeStartElement("component");
-   writer->writeAttribute("name", name());
-   writer->writeAttribute("library", library());
+  writer->writeStartElement("component");
+  writer->writeAttribute("name", name());
+  writer->writeAttribute("library", library());
 
-   QLatin1String activeStr(d->activeStatus == Qucs::Active ? "active" :
-                           d->activeStatus == Qucs::Open ? "open" : "short");
-   writer->writeAttribute("activeStatus", activeStr);
+  QLatin1String activeStr(d->activeStatus == Qucs::Active ? "active" :
+      d->activeStatus == Qucs::Open ? "open" : "short");
+  writer->writeAttribute("activeStatus", activeStr);
 
-   writer->writePoint(pos(), "pos");
-   if(m_propertyGroup) {
-      writer->writePoint(m_propertyGroup->pos(), "propertyPos");
-   }
+  writer->writePoint(pos(), "pos");
+  if(m_propertyGroup) {
+    writer->writePoint(m_propertyGroup->pos(), "propertyPos");
+  }
 
-   writer->writeTransform(transform());
+  writer->writeTransform(transform());
 
-   writeProperties(writer, d.constData()->propertyMap);
+  writeProperties(writer, d.constData()->propertyMap);
 
-   writer->writeEndElement();
+  writer->writeEndElement();
 }
 
 //! Draw the compnent using svg painter. Also handle active status.
 void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
-                      QWidget *w)
+    QWidget *w)
 {
-   SvgItem::paint(painter, o, w);
-   drawPorts(m_ports, painter, o);
+  SvgItem::paint(painter, o, w);
+  drawPorts(m_ports, painter, o);
 
-   if(activeStatus() != Qucs::Active) {
-      painter->setPen(activeStatus() == Qucs::Short ? Qt::darkGreen :
-                      Qt::darkRed);
-      painter->setBrush(Qt::NoBrush);
+  if(activeStatus() != Qucs::Active) {
+    painter->setPen(activeStatus() == Qucs::Short ? Qt::darkGreen :
+        Qt::darkRed);
+    painter->setBrush(Qt::NoBrush);
 
-      painter->drawRect(boundingRect());
+    painter->drawRect(boundingRect());
 
-      QPointF tl = boundingRect().topLeft();
-      QPointF br = boundingRect().bottomRight();
-      QPointF tr = boundingRect().topRight();
-      QPointF bl = boundingRect().bottomLeft();
+    QPointF tl = boundingRect().topLeft();
+    QPointF br = boundingRect().bottomRight();
+    QPointF tr = boundingRect().topRight();
+    QPointF bl = boundingRect().bottomLeft();
 
-      painter->drawLine(tl, br);
-      painter->drawLine(bl, tr);
-   }
+    painter->drawLine(tl, br);
+    painter->drawLine(bl, tr);
+  }
 }
 
 /*!
@@ -391,77 +391,77 @@ void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
  */
 int Component::checkAndConnect(Qucs::UndoOption opt)
 {
-   int num_of_connections = 0;
+  int num_of_connections = 0;
 
-   if(opt == Qucs::PushUndoCmd)
-      schematicScene()->undoStack()->beginMacro(QString());
-   foreach(Port *port, m_ports) {
-      Port *other = port->findCoincidingPort();
-      if(other) {
-         QList<Wire*> wires = Port::wiresBetween(port, other);
+  if(opt == Qucs::PushUndoCmd)
+    schematicScene()->undoStack()->beginMacro(QString());
+  foreach(Port *port, m_ports) {
+    Port *other = port->findCoincidingPort();
+    if(other) {
+      QList<Wire*> wires = Port::wiresBetween(port, other);
 
-         if(opt == Qucs::PushUndoCmd) {
-            ConnectCmd *cmd = new ConnectCmd(port, other, wires, schematicScene());
-            schematicScene()->undoStack()->push(cmd);
-         }
-         else {
-            qDeleteAll(wires);
-            port->connectTo(other);
-         }
-
-         num_of_connections++;
+      if(opt == Qucs::PushUndoCmd) {
+        ConnectCmd *cmd = new ConnectCmd(port, other, wires, schematicScene());
+        schematicScene()->undoStack()->push(cmd);
       }
-   }
+      else {
+        qDeleteAll(wires);
+        port->connectTo(other);
+      }
 
-   if(opt == Qucs::PushUndoCmd)
-      schematicScene()->undoStack()->endMacro();
+      num_of_connections++;
+    }
+  }
 
-   return num_of_connections;
+  if(opt == Qucs::PushUndoCmd)
+    schematicScene()->undoStack()->endMacro();
+
+  return num_of_connections;
 }
 
 //! Returns a copy of this component.
 QucsItem* Component::copy(SchematicScene *scene) const
 {
-   Component *retVal = new Component(d, svgPainter(), scene);
-   //no need for Component::copyDataTo() because the data is already copied from d pointer.
-   QucsItem::copyDataTo(static_cast<QucsItem*>(retVal));
-   retVal->setSymbol(symbol()); //to register svg connections
-   retVal->updatePropertyGroup();
-   return retVal;
+  Component *retVal = new Component(d, svgPainter(), scene);
+  //no need for Component::copyDataTo() because the data is already copied from d pointer.
+  QucsItem::copyDataTo(static_cast<QucsItem*>(retVal));
+  retVal->setSymbol(symbol()); //to register svg connections
+  retVal->updatePropertyGroup();
+  return retVal;
 }
 
 //! Copies the data to \a component.
 void Component::copyDataTo(Component *component) const
 {
-   QucsItem::copyDataTo(static_cast<QucsItem*>(component));
-   component->d = d;
-   component->updatePropertyGroup();
-   component->update();
+  QucsItem::copyDataTo(static_cast<QucsItem*>(component));
+  component->d = d;
+  component->updatePropertyGroup();
+  component->update();
 }
 
 /*! \copydoc QucsItem::launchPropertyDialog() */
 int Component::launchPropertyDialog(Qucs::UndoOption)
 {
-   PropertyDialog dia(this, Qucs::PushUndoCmd);
-   return dia.exec();
+  PropertyDialog dia(this, Qucs::PushUndoCmd);
+  return dia.exec();
 }
 
 //! Returns the rect adjusted to accomodate ports too.
 QRectF Component::adjustedBoundRect(const QRectF& rect)
 {
-   return portsRect(m_ports, rect);
+  return portsRect(m_ports, rect);
 }
 
 //! React to change of item position.
 QVariant Component::itemChange(GraphicsItemChange change,
-                               const QVariant &value)
+    const QVariant &value)
 {
-   if(change == ItemTransformHasChanged && m_propertyGroup) {
-      //set the inverse of component's matrix to property group so that
-      //it maintains identity when transformed.
-      m_propertyGroup->setTransform(transform().inverted());
-   }
-   return SvgItem::itemChange(change, value);
+  if(change == ItemTransformHasChanged && m_propertyGroup) {
+    //set the inverse of component's matrix to property group so that
+    //it maintains identity when transformed.
+    m_propertyGroup->setTransform(transform().inverted());
+  }
+  return SvgItem::itemChange(change, value);
 }
 
 
@@ -473,25 +473,25 @@ QVariant Component::itemChange(GraphicsItemChange change,
  *  \todo Check error 
  */
 static bool readSchematicSvg(const QByteArray &svgContent,
-			     const QString &schName,
-			     SvgPainter *svgPainter,
-			     QSharedDataPointer<ComponentData> &d)
+    const QString &schName,
+    SvgPainter *svgPainter,
+    QSharedDataPointer<ComponentData> &d)
 {
   /* process using xslt */
-  Qucs::QXmlStreamReaderExt QXmlSvg(svgContent, NULL, 
-				    Qucs::transformers::defaultInstance()->componentsvg());
-	
+  Qucs::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
+      Qucs::transformers::defaultInstance()->componentsvg());
+
   QString svgId = d.constData()->name + "/" + schName;
   svgPainter->registerSvg(svgId, QXmlSvg.constData());
   if(QXmlSvg.hasError())
-    {
-      qWarning() << "Could not read svg file" << schName << ": " << QXmlSvg.errorString();
-      return false;
-    }
-  
+  {
+    qWarning() << "Could not read svg file" << schName << ": " << QXmlSvg.errorString();
+    return false;
+  }
+
   return true;;
 }
-    
+
 
 /*! Reads the schematic port tag of component description xml file.
  * \param reader XmlReader responsible for reading xml data.
@@ -499,8 +499,9 @@ static bool readSchematicSvg(const QByteArray &svgContent,
  * \param d (Output variable) The data ptr where data should be uploaded.
  */
 static void readSchematicPort(Qucs::XmlReader *reader, const QString & schName, 
-			      QSharedDataPointer<ComponentData> &d)
+    QSharedDataPointer<ComponentData> &d)
 {
+  Q_ASSERT(reader->isStartElement());
   QXmlStreamAttributes attribs = reader->attributes();
   bool ok;
 
@@ -509,13 +510,13 @@ static void readSchematicPort(Qucs::XmlReader *reader, const QString & schName,
 
   qreal y = attribs.value("y").toString().toDouble(&ok);
   Q_ASSERT(ok);
-    
+
   QString portName = attribs.value("name").toString();
   d->schematicPortMap[schName] <<
     new PortData(QPointF(x, y), portName);
-    
-  while(!reader->isEndElement())
-    reader->readNext();
+
+  // Read until end element as all data we require is already obtained.
+  reader->readUnknownElement();
 }
 
 /*! Reads the schematic tag of component description xml file.
@@ -525,20 +526,20 @@ static void readSchematicPort(Qucs::XmlReader *reader, const QString & schName,
  * \param d (Output variable) The data ptr where data should be uploaded.
  */
 static bool readSchematic(Qucs::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
-			  QSharedDataPointer<ComponentData> &d)
+    QSharedDataPointer<ComponentData> &d)
 {
   Q_ASSERT(reader->isStartElement() && reader->name() == "schematic");
-    
+
   QString schName = reader->attributes().value("name").toString();
   QString schType = reader->attributes().value("href").toString();
   bool readok;
-  
+
   /* if external svg file */
   if(!schType.isEmpty()) {
     QFile svgFile(svgPath + "/" + schType);
     if(!svgFile.open(QIODevice::ReadOnly | QIODevice::Text))
       return false;
-    
+
     QByteArray svgContent(svgFile.readAll());
     if(svgContent.isEmpty())
       return false;
@@ -550,24 +551,26 @@ static bool readSchematic(Qucs::XmlReader *reader, const QString& svgPath, SvgPa
 
   while(!reader->atEnd()) {
     reader->readNext();
-    
+
     if(reader->isEndElement())
       break;
-    
+
     if(reader->isStartElement()) {
       /* internal svg */
       if(reader->name() == "svg") {
-	Q_ASSERT(schType.isEmpty());
-	QByteArray svgContent = reader->readXmlFragment().toUtf8();
-	// todo return error
-	readok = readSchematicSvg(svgContent,schName,svgPainter,d);
-	if(!readok) 
-	  return false;
+        Q_ASSERT(schType.isEmpty());
+        QByteArray svgContent = reader->readXmlFragment().toUtf8();
+        // todo return error
+        readok = readSchematicSvg(svgContent,schName,svgPainter,d);
+        if(!readok) 
+          return false;
       }
-      else if(reader->name() == "port") 
-	readSchematicPort(reader,schName,d);
-      else 
-	Q_ASSERT(!sizeof("unknow element in schematic element"));
+      else if(reader->name() == "port") {
+        readSchematicPort(reader,schName,d);
+      }
+      else {
+        Q_ASSERT(!sizeof("unknow element in schematic element"));
+      }
     }
   }
   return true;
@@ -581,39 +584,39 @@ static bool readSchematic(Qucs::XmlReader *reader, const QString& svgPath, SvgPa
  * \param d (Output variable) The data ptr where data should be uploaded.
  */
 static bool readSchematics(Qucs::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
-			   QSharedDataPointer<ComponentData> &d)
+    QSharedDataPointer<ComponentData> &d)
 {
   /* list of symbols */
   QStringList parsedSymbols;
-    
+
   /* get default value */
   QString defaultSchematic =
     reader->attributes().value("default").toString();
 
   Q_ASSERT(reader->isStartElement() && reader->name() == "schematics");
   Q_ASSERT(!defaultSchematic.isEmpty());
-    
+
   /* read different schematic */
   while(!reader->atEnd()) {
     reader->readNext();
-      
+
     if(reader->isEndElement())
       break;
 
     if(reader->isStartElement()) {
       if(reader->name() == "schematic") {
-	QString schName =
-	  reader->attributes().value("name").toString();
-	  
-	Q_ASSERT(!schName.isEmpty());
-	  
-	parsedSymbols << schName;
-	if(!readSchematic(reader, svgPath, svgPainter, d))
-	  return false;
+        QString schName =
+          reader->attributes().value("name").toString();
+
+        Q_ASSERT(!schName.isEmpty());
+
+        parsedSymbols << schName;
+        if(!readSchematic(reader, svgPath, svgPainter, d))
+          return false;
       }
-	
+
       else
-	Q_ASSERT(!sizeof("unknow element in schematics element"));
+        Q_ASSERT(!sizeof("unknow element in schematics element"));
     }
   }
 
@@ -626,7 +629,7 @@ static bool readSchematics(Qucs::XmlReader *reader, const QString& svgPath, SvgP
   QVariant defValue(defaultSchematic);
   Q_ASSERT(defValue.convert(QVariant::String));
   Property symb("symbol", symbolDescription, QVariant::String, false,
-		false, defValue, parsedSymbols);
+      false, defValue, parsedSymbols);
   d->propertyMap.insert("symbol", symb);
 
   return true;
@@ -638,23 +641,23 @@ static bool readSchematics(Qucs::XmlReader *reader, const QString& svgPath, SvgP
  * \param reader XmlReader responsible for reading xml data.
  * \param d (Output variable) The data ptr where data should be uploaded.
  */
-static void readComponentPoperties(Qucs::XmlReader *reader,
-				   QSharedDataPointer<ComponentData> &d)
+static void readComponentProperties(Qucs::XmlReader *reader,
+    QSharedDataPointer<ComponentData> &d)
 {
   while(!reader->atEnd()) {
     reader->readNext();
-      
+
     if(reader->isEndElement())
       break;
-      
+
     else if(reader->isStartElement()) {
       if(reader->name() == "property") {
-	Property prop = PropertyFactory::createProperty(reader);
-	d->propertyMap.insert(prop.name(), prop);
+        Property prop = PropertyFactory::createProperty(reader);
+        d->propertyMap.insert(prop.name(), prop);
       }
       /* default */
       else 
-	Q_ASSERT(!sizeof("unknow element in properties element"));
+        Q_ASSERT(!sizeof("unknow element in properties element"));
     }
   }
 }
@@ -672,19 +675,19 @@ namespace Qucs
    * \note Policy is to assert well formed xml.
    */
   bool readComponentData(Qucs::XmlReader *reader, const QString& path,
-			 SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d)
+      SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d)
   {
     QXmlStreamAttributes attributes = reader->attributes();
-    
+
     Q_ASSERT(reader->isStartElement() && reader->name() == "component");
-    
+
     //check version compatibility first.
     Q_ASSERT(Qucs::checkVersion(attributes.value("version").toString()));
-     
+
     /* get name */
     d->name = attributes.value("name").toString();
     Q_ASSERT(!d->name.isEmpty());
-     
+
     /* get label */
     d->labelPrefix = attributes.value("label").toString();
     Q_ASSERT(!d->labelPrefix.isEmpty());
@@ -692,49 +695,50 @@ namespace Qucs
     /* read the component body */
     while(!reader->atEnd()) {
       reader->readNext();
-       
+
       if(reader->isEndElement())
-	break;
-       
+        break;
+
       if(reader->isStartElement()) {
-	/* read display text */
-	if(reader->name() == "displaytext") {
-	  d->displayText = reader->readLocaleText(Qucs::localePrefix());
-	  Q_ASSERT(reader->isEndElement());
-	}
+        /* read display text */
+        if(reader->name() == "displaytext") {
+          d->displayText = reader->readLocaleText(Qucs::localePrefix());
+          Q_ASSERT(reader->isEndElement());
+        }
 
-	/* Read description */
-	else if(reader->name() == "description") {
-	  d->description = reader->readLocaleText(Qucs::localePrefix());
-	  Q_ASSERT(reader->isEndElement());
-	}
+        /* Read description */
+        else if(reader->name() == "description") {
+          d->description = reader->readLocaleText(Qucs::localePrefix());
+          Q_ASSERT(reader->isEndElement());
+        }
 
-	/* Read schematic */
-	else if(reader->name() == "schematics") {
-	  if(readSchematics(reader, path, svgPainter, d)==false)
-	    goto out_error;
-	}
-	/* Read properties */
-	else if(reader->name() == "properties") {
-	  readComponentPoperties(reader,d);
-	}
-	/* default (be quiet)*/
-	else if(reader->name() == "ports") {
-	  /* todos */
-	  do {} while(0);
-	}
-	else {
-	  reader->readUnknownElement();
-	}
+        /* Read schematic */
+        else if(reader->name() == "schematics") {
+          if(readSchematics(reader, path, svgPainter, d)==false)
+            goto out_error;
+        }
+        /* Read properties */
+        else if(reader->name() == "properties") {
+          readComponentProperties(reader,d);
+        }
+        /* default (be quiet)*/
+        else if(reader->name() == "ports") {
+          /* todos */
+          do {} while(0);
+        }
+        else {
+          reader->readUnknownElement();
+        }
       }
     }
-     
+
     if(reader->hasError()) 
       goto out_error;
     return true;
-    
-  out_error:
-    d = static_cast<ComponentData*>(NULL);
+
+out_error:
+    d = static_cast<ComponentData*>(0);
     return false;
   }
 } // namespace qucs
+

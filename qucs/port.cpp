@@ -25,6 +25,7 @@
 #include "item.h"
 
 #include <QtCore/QDebug>
+#include <QtGui/QApplication>
 
 
 /*! Define to 1 to print number of port connection in schematic */
@@ -512,9 +513,19 @@ void drawPorts(const QList<Port*> &ports, QPainter *painter,
 //! Returns a rect accomodating pRect as well as all ports.
 QRectF portsRect(const QList<Port*> &ports, const QRectF& pRect)
 {
+   QRectF debugTextRect;
+   QPointF delta(5, 5);
+   if (DEBUG_PORT_CONNECTION) {
+       QFontMetricsF fm(qApp->font());
+       debugTextRect = fm.boundingRect(QString("W"));
+       debugTextRect.adjust(-1, -1, 1, 1);
+   }
    QRectF rect = pRect;
    foreach(Port *port, ports) {
       rect |= portEllipse.translated(port->pos());
+      if (DEBUG_PORT_CONNECTION) {
+          rect |= debugTextRect.translated(port->pos() + delta);
+      }
    }
    return rect;
 }

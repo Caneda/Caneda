@@ -34,10 +34,12 @@
 
 namespace Qucs
 {
-   /* Draw an hightlight rectangle arround an item 
-      \param painter painter where the item is highlighted
-      \todo Document other param
-   */
+    /*! Draw an hightlight rectangle arround an item 
+     * \param painter painter where the item is highlighted
+     * \param rect    The rectangular area to be drawn
+     * \param pw      Pen width of highlight rectangle drawn.
+     * \param option  The style option which contains palette and other information.
+     */
    void drawHighlightRect(QPainter *painter, QRectF rect, qreal pw,
                           const QStyleOptionGraphicsItem *option)
    {
@@ -76,6 +78,12 @@ namespace Qucs
       painter->setBrush(saveBrush);
    }
 
+   /*!
+    * Utility function to draw resize handle for painting and other items.
+    * \param centrePos The point which will be center for the handle rectangle
+    *                  drawn.
+    * \param painter   The painter used to draw handle rectangle.
+    */
    void drawResizeHandle(const QPointF &centrePos, QPainter *painter)
    {
       QPen savedPen = painter->pen();
@@ -84,12 +92,19 @@ namespace Qucs
       painter->setPen(Qucs::handlePen);
       painter->setBrush(Qucs::handleBrush);
 
+      // handleRect is defined as QRectF(-w/2, -h/2, w, h)
       painter->drawRect(Qucs::handleRect.translated(centrePos));
 
       painter->setPen(savedPen);
       painter->setBrush(savedBrush);
    }
 
+   /*!
+    * Utility method to draw four resize handles along four corners of rectangle passed.
+    * \param handles  The handle areas where handle rectangles neeed to be drawn.
+    * \param rect     The rectangle around which resize handles are to be drawn.
+    * \param painter  The painter used to draw resize handles.
+    */
    void drawResizeHandles(ResizeHandles handles, const QRectF& rect, QPainter *painter)
    {
       if(handles.testFlag(Qucs::TopLeftHandle))
@@ -105,6 +120,12 @@ namespace Qucs
          drawResizeHandle(rect.bottomRight(), painter);
    }
 
+   /*!
+    * Utility method that returns the resize handle area around rect for the point passed.
+    * \param point   The point to be tested for collision with handle rectangle around rect.
+    * \param handles The bitmask indicating the handle areas to be tested.
+    * \param rect    The rectangle around which resize handles are to be tested.
+    */
    ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles, const QRectF& rect)
    {
       if(handles == Qucs::NoHandle)
@@ -198,18 +219,18 @@ SchematicScene* QucsItem::schematicScene() const
  */
 SchematicView* QucsItem::activeView() const
 {
-   return this->schematicScene() ? this->schematicScene()->activeView() : NULL;
+   return this->schematicScene() ? this->schematicScene()->activeView() : 0;
 }
 
 //!\brief Returns a pointer to the applications main window.
 QucsMainWindow* QucsItem::mainWindow() const
 {
    QGraphicsView *view = this->activeView();
-   return view ? qobject_cast<QucsMainWindow*>(view->parent()) : NULL;
+   return view ? qobject_cast<QucsMainWindow*>(view->parent()) : 0;
 }
 
 /*!
- * \brief Convienience method to just get the saved text as string.
+ * \brief Convenience method to get the saved text as string.
  *
  * Though this is simple, this method shouldn't be used in too many places as
  * there will be unnecessary creation of xml writer and reader instances which
@@ -224,7 +245,7 @@ QString QucsItem::saveDataText() const
 }
 
 /*!
- * \brief Convienience method to just load data from string.
+ * \brief Convenience method to just load data from string.
  *
  * Though this is simple, this method shouldn't be used in too many places as
  * there will be unnecessary creation of xml writer and reader instances which
@@ -234,6 +255,7 @@ void QucsItem::loadDataFromText(const QString &text)
 {
   Qucs::XmlReader reader(text.toUtf8());
    while(!reader.atEnd()) {
+       // skip until end element is found.
       reader.readNext();
 
       if(reader.isEndElement())
@@ -252,7 +274,7 @@ void QucsItem::loadDataFromText(const QString &text)
 void QucsItem::mirrorAlong(Qt::Axis axis)
 {
    this->update();
-   
+
    Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
    if(axis == Qt::XAxis) 
       this->scale(1.0, -1.0);
