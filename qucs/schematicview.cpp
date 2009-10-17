@@ -113,13 +113,6 @@ bool SchematicView::load()
 bool SchematicView::save()
 {
    //Assumes filename is set before the call
-   QFile file(fileName());
-   if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-      QMessageBox::critical(0, QObject::tr("Error"),
-                            QObject::tr("Cannot save document!"));
-      return false;
-   }
-   QTextStream stream(&file);
    QFileInfo info(fileName());
    FileFormatHandler *format =
       FileFormatHandler::handlerFromSuffix(info.suffix(), this);
@@ -128,11 +121,18 @@ bool SchematicView::save()
       QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
       return false;
    }
-
    QString saveText = format->saveText();
    if(saveText.isEmpty()) {
       qDebug("Looks buggy! Null data to save! Was this expected ??");
    }
+
+   QFile file(fileName());
+   if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Cannot save document!"));
+      return false;
+   }
+   QTextStream stream(&file);
    stream << saveText;
    file.close();
 
