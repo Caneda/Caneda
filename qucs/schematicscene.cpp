@@ -178,12 +178,22 @@ static const char dataDisplaySuffix[] = ".dpl";
 */
 void SchematicScene::setFileName(const QString& name)
 {
-  if(name == this->m_fileName || name.isEmpty())
+  if(name == this->m_fileName)
+//  if(name == this->m_fileName || name.isEmpty())
     return;
-  this->m_fileName = name;
-  QFileInfo info(this->m_fileName);
-  this->m_dataSet = info.baseName() + dataSetSuffix;
-  this->m_dataDisplay = info.baseName() + dataDisplaySuffix;
+  else if(name.isEmpty()) {
+      this->m_fileName.clear();
+      QFileInfo info(this->m_fileName);
+      this->m_dataSet.clear();
+      this->m_dataDisplay.clear();
+  }
+  else {
+      this->m_fileName = name;
+      QFileInfo info(this->m_fileName);
+      this->m_dataSet = info.baseName() + dataSetSuffix;
+      this->m_dataDisplay = info.baseName() + dataDisplaySuffix;
+  }
+
   emit fileNameChanged(this->m_fileName);
   emit titleToBeUpdated();
 }
