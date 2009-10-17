@@ -120,11 +120,11 @@ bool QucsMainWindow::gotoPage(QString fileName)
    }
 
    QFileInfo info(fileName);
-   if(info.suffix() == "sch") {
+   if(info.suffix() == "xsch") {
       view = new SchematicView(0, this);
    }
    else {
-      //TODO: create text view here
+      //TODO: create text view here or emit error in case of unrecognized extension
    }
 
    if(!view->load(fileName)) {
