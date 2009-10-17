@@ -140,11 +140,14 @@ QString XmlFormat::saveText()
 
    QList<QGraphicsItem*> items = scene->items();
    //Write all the components now
-   writer->writeStartElement("components");
+
    QList<Component*> components = filterItems<Component>(items, RemoveItems);
-   foreach(Component *c, components)
-      c->saveData(writer);
-   writer->writeEndElement(); //</components>
+   if(!components.isEmpty()) {
+       writer->writeStartElement("components");
+       foreach(Component *c, components)
+           c->saveData(writer);
+       writer->writeEndElement(); //</components>
+   }
 
    QList<Wire*> wires = filterItems<Wire>(items, RemoveItems);
    if(!wires.isEmpty()) {
@@ -191,7 +194,6 @@ bool XmlFormat::loadFromText(const QString& text)
       if(reader->isStartElement()) {
          if(reader->name() == "qucs" &&
             Qucs::checkVersion(reader->attributes().value("version").toString())) {
-
             readQucs(reader);
          }
          else {
@@ -246,10 +248,10 @@ void XmlFormat::loadComponents(Qucs::XmlReader *reader)
 //    }
 //    if(!reader->isStartElement() || reader->name() != "components")
 //       reader->raiseError(QObject::tr("Malformatted file"));
-// 
+//
 //    while(!reader->atEnd()) {
 //       reader->readNext();
-// 
+//
 //       if(reader->isEndElement()) {
 //          Q_ASSERT(reader->name() == "components");
 //          break;
