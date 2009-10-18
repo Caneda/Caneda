@@ -288,6 +288,7 @@ Component* Component::loadComponentData(Qucs::XmlReader *reader, SchematicScene 
   }
   else {
     //read upto end if component is not found in any of qucs identified libraries.
+    qWarning() << "Warning: Found unknown element" << compName << ", skipping";
     reader->readUnknownElement();
   }
   return retVal;

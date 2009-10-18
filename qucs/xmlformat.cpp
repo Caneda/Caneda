@@ -240,37 +240,34 @@ void XmlFormat::readQucs(Qucs::XmlReader* reader)
 
 void XmlFormat::loadComponents(Qucs::XmlReader *reader)
 {
-//    SchematicScene *scene = m_view->schematicScene();
-//    if(!scene) {
-//       reader->raiseError(QObject::tr("XmlFormat::loadComponents() : Scene doesn't exist.\n"
-//                                      "So raising xml error to stop parsing"));
-//       return;
-//    }
-//    if(!reader->isStartElement() || reader->name() != "components")
-//       reader->raiseError(QObject::tr("Malformatted file"));
-//
-//    while(!reader->atEnd()) {
-//       reader->readNext();
-//
-//       if(reader->isEndElement()) {
-//          Q_ASSERT(reader->name() == "components");
-//          break;
-//       }
-//       if(reader->isStartElement()) {
-//          if(reader->name() == "component") {
-//             QString model = reader->attributes().value("model").toString();
-//             Component *c = Component::componentFromModel(model, scene);
-//             if(!c)
-//                reader->raiseError(QObject::tr("Component %1 doesn't exist").arg(model));
-//             else {
-//                scene->insertComponent(c);
-//                c->readXml(reader);
-//             }
-//          }
-//          else
-//             reader->readUnknownElement();
-//       }
-//    }
+    SchematicScene *scene = m_view->schematicScene();
+    if(!scene) {
+       reader->raiseError(QObject::tr("XmlFormat::loadComponents() : Scene doesn't exist.\n"
+                                      "So raising xml error to stop parsing"));
+       return;
+    }
+
+    if(!reader->isStartElement() || reader->name() != "components")
+       reader->raiseError(QObject::tr("Malformatted file"));
+
+    while(!reader->atEnd()) {
+       reader->readNext();
+
+       if(reader->isEndElement()) {
+          Q_ASSERT(reader->name() == "components");
+          break;
+       }
+
+       if(reader->isStartElement()) {
+          if(reader->name() == "component")
+              Component::loadComponentData(reader,scene);
+          else {
+              qWarning() << "Error: Found unknown component type" << reader->name().toString();
+              reader->readUnknownElement();
+              reader->raiseError(QObject::tr("Malformatted file"));
+          }
+       }
+    }
 }
 
 void XmlFormat::loadView(Qucs::XmlReader *reader)
@@ -402,78 +399,43 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
 
 void XmlFormat::loadWires(Qucs::XmlReader* reader)
 {
-//    SchematicScene *scene = m_view->schematicScene();
-//    if(!scene) {
-//       reader->raiseError(QObject::tr("XmlFormat::loadWires() : Scene doesn't exist.\n"
-//                                      "So raising xml error to stop parsing"));
-//       return;
-//    }
+    SchematicScene *scene = m_view->schematicScene();
+    if(!scene) {
+       reader->raiseError(QObject::tr("XmlFormat::loadWires() : Scene doesn't exist.\n"
+                                      "So raising xml error to stop parsing"));
+       return;
+    }
 
-//    if(!reader->isStartElement() || reader->name() != "wires")
-//       reader->raiseError(QObject::tr("Malformatted file"));
+    if(!reader->isStartElement() || reader->name() != "wires")
+       reader->raiseError(QObject::tr("Malformatted file"));
 
-//    while(!reader->atEnd()) {
-//       reader->readNext();
+    while(!reader->atEnd()) {
+       reader->readFurther();
 
-//       if(reader->isEndElement()) {
-//          Q_ASSERT(reader->name() == "wires");
-//          break;
-//       }
+       if(reader->isEndElement()) {
+          Q_ASSERT(reader->name() == "wires");
+          break;
+       }
 
-//       if(reader->isStartElement()) {
-//          if(reader->name() == "wire") {
-//             QPointF n1Pos, n2Pos;
+       if(!reader->isStartElement() || reader->name() != "equipotential")
+           reader->raiseError(QObject::tr("Malformatted file")+reader->name().toString());
 
-//             reader->readFurther();
+       while(!reader->atEnd()){
+           reader->readNext();
 
-//             if(reader->isStartElement() && reader->name() == "node1pos") {
-//                reader->readFurther();
-//                n1Pos = reader->readPoint();
-//                reader->readFurther();
-//                Q_ASSERT(reader->isEndElement() && reader->name() == "node1pos");
-//             }
-//             else {
-//                reader->raiseError(QObject::tr("Couldn't read node 1 position of wire"));
-//                break;
-//             }
+           if(reader->isEndElement()) {
+               Q_ASSERT(reader->name() == "equipotential");
+               break;
+           }
 
-//             reader->readFurther();
-
-//             if(reader->isStartElement() && reader->name() == "node2pos") {
-//                reader->readFurther();
-//                n2Pos = reader->readPoint();
-//                reader->readFurther();
-//                Q_ASSERT(reader->isEndElement() && reader->name() == "node2pos");
-//             }
-//             else {
-//                reader->raiseError(QObject::tr("Couldn't read node 2 position of wire"));
-//                break;
-//             }
-
-
-
-//             Node *n1 = scene->nodeAt(n1Pos);
-//             if(!n1)
-//                n1 = scene->createNode(n1Pos);
-
-//             Node *n2 = scene->nodeAt(n2Pos);
-//             if(!n2)
-//                n2 = scene->createNode(n2Pos);
-
-//             Wire *wire = new Wire(scene, n1, n2);
-//             reader->readFurther();
-//             Q_ASSERT(reader->isStartElement() && reader->name() == "wirelines");
-//             wire->readXml(reader);
-//             if(reader->hasError()) {
-//                delete wire;
-//                break;
-//             }
-
-//             reader->readFurther();
-//             Q_ASSERT(reader->isEndElement() && reader->name() == "wire");
-//          }
-//          else
-//             reader->readUnknownElement();
-//       }
-//    }
+           if(reader->isStartElement()) {
+               if(reader->name() == "wire")
+                   Wire::loadWireData(reader,scene);
+               else {
+                   reader->readUnknownElement();
+                   reader->raiseError(QObject::tr("Malformatted file"));
+               }
+           }
+       }
+   }
 }
