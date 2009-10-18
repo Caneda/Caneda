@@ -429,8 +429,10 @@ void XmlFormat::loadWires(Qucs::XmlReader* reader)
            }
 
            if(reader->isStartElement()) {
-               if(reader->name() == "wire")
-                   Wire::loadWireData(reader,scene);
+               if(reader->name() == "wire") {
+                   Wire *w = Wire::loadWireData(reader,scene);
+                   w->checkAndConnect(Qucs::DontPushUndoCmd);
+               }
                else {
                    reader->readUnknownElement();
                    reader->raiseError(QObject::tr("Malformatted file"));
