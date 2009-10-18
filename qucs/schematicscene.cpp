@@ -179,7 +179,6 @@ static const char dataDisplaySuffix[] = ".dpl";
 void SchematicScene::setFileName(const QString& name)
 {
   if(name == this->m_fileName)
-//  if(name == this->m_fileName || name.isEmpty())
     return;
   else if(name.isEmpty()) {
       this->m_fileName.clear();
