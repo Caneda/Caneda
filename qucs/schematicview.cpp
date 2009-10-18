@@ -114,6 +114,12 @@ bool SchematicView::save()
 {
    //Assumes filename is set before the call
    QFileInfo info(fileName());
+
+   if(QString(info.suffix()).isEmpty()) {
+       setFileName(fileName()+".xsch");
+       info = QFileInfo(fileName());
+   }
+
    FileFormatHandler *format =
       FileFormatHandler::handlerFromSuffix(info.suffix(), this);
 
