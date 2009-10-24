@@ -50,6 +50,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QTimer>
+#include <QtCore/QProcess>
 
 static QString qucsFilter;
 
@@ -157,7 +158,7 @@ void QucsMainWindow::setupSidebar()
    paintingItems << qMakePair(QObject::tr("Rectangle"), Qucs::pixmapFor("rectangle"));
    paintingItems << qMakePair(QObject::tr("Elliptic Arc"), Qucs::pixmapFor("ellipsearc"));
 
-   m_componentsSidebar->plugItems(paintingItems, QObject::tr("paintings"));
+   m_componentsSidebar->plugItems(paintingItems, QObject::tr("Paint Tools"));
 }
 
 
@@ -1176,6 +1177,7 @@ void QucsMainWindow::slotViewClosed(QWidget *widget)
 void QucsMainWindow::closeEvent( QCloseEvent *e )
 {
    saveSettings();
+   emit(signalKillEmAll());
    MainWindowBase::closeEvent(e);
 }
 
@@ -1621,7 +1623,7 @@ void QucsMainWindow::slotInsertEquation()
 
 void QucsMainWindow::slotInsertGround()
 {
-   slotSidebarItemClicked("Ground", "passive");
+   slotSidebarItemClicked("Ground", "Passive");
 }
 
 void QucsMainWindow::slotInsertPort()
@@ -1643,15 +1645,29 @@ void QucsMainWindow::slotInsertEntity()
    setNormalAction();
 }
 
+/*!
+ * \brief Opens the editor given a filename
+ */
+void QucsMainWindow::editFile(const QString& File)
+{
+  QStringList arguments;
+  if (!File.isEmpty()) arguments << File;
+  QProcess *QucsEditor = new QProcess(this);
+  QucsEditor->start(Editor,arguments);
+
+  //TODO Emit error in case there are problems
+  // Kill editor before qucs ends
+  connect(this, SIGNAL(signalKillEmAll()), QucsEditor, SLOT(kill()));
+}
+
 void QucsMainWindow::slotCallEditor()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+   editFile(QString(""));
 }
 
 void QucsMainWindow::slotCallFilter()
 {
-   setNormalAction();
    //TODO: implement this or rather port directly
 }
 
@@ -1705,13 +1721,13 @@ void QucsMainWindow::slotSetMarker(bool on)
 void QucsMainWindow::slotShowLastMsg()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+   editFile(Qucs::pathForQucsFile("log.txt"));
 }
 
 void QucsMainWindow::slotShowLastNetlist()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+   editFile(Qucs::pathForQucsFile("netlist.txt"));
 }
 
 void QucsMainWindow::slotViewToolBar(bool)
@@ -1868,7 +1884,7 @@ void QucsMainWindow::loadSettings()
       return;
    }
 
-   m_componentsSidebar->plugLibrary("passive");
+   m_componentsSidebar->plugLibrary("Passive");
    test();
 }
 

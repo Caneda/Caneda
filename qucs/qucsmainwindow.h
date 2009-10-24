@@ -139,6 +139,10 @@ class QucsMainWindow : public MainWindowBase
 
       void slotSidebarItemClicked(const QString& item, const QString& category);
 
+   signals:
+      void signalKillEmAll();
+
+
    protected:
       void closeEvent( QCloseEvent *closeEvent);
 
@@ -156,6 +160,7 @@ class QucsMainWindow : public MainWindowBase
       void performToggleAction(const bool on, pActionFunc func, QAction *action);
       void setNormalAction();
       void alignElements(Qt::Alignment alignment);
+      void editFile(const QString& File);
 
       QucsView* viewFromWidget(QWidget *widget);
 
