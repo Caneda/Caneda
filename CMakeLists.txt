@@ -33,3 +33,10 @@ ${LIBXSLT_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR})
 
 ADD_SUBDIRECTORY( qucs-tools )
 ADD_SUBDIRECTORY( qucs )
+
+ADD_SUBDIRECTORY( qucs-attenuator )
+ADD_SUBDIRECTORY( qucs-edit )
+ADD_SUBDIRECTORY( qucs-filter )
+ADD_SUBDIRECTORY( qucs-help )
+ADD_SUBDIRECTORY( qucs-lib )
+ADD_SUBDIRECTORY( qucs-transcalc )
