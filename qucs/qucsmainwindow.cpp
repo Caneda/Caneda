@@ -1668,19 +1668,38 @@ void QucsMainWindow::slotCallEditor()
 
 void QucsMainWindow::slotCallFilter()
 {
-   //TODO: implement this or rather port directly
+   setNormalAction();
+
+   QProcess *QucsFilter = new QProcess(this);
+   QucsFilter->start(QString(Qucs::binaryDir + "qucsfilter"));
+
+   //TODO Emit error in case there are problems
+   // Kill editor before qucs ends
+   connect(this, SIGNAL(signalKillEmAll()), QucsFilter, SLOT(kill()));
 }
 
 void QucsMainWindow::slotCallLine()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+
+   QProcess *QucsLine = new QProcess(this);
+   QucsLine->start(QString(Qucs::binaryDir + "qucstrans"));
+
+   //TODO Emit error in case there are problems
+   // Kill editor before qucs ends
+   connect(this, SIGNAL(signalKillEmAll()), QucsLine, SLOT(kill()));
 }
 
 void QucsMainWindow::slotCallLibrary()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+
+   QProcess *QucsLib = new QProcess(this);
+   QucsLib->start(QString(Qucs::binaryDir + "qucslib"));
+
+   //TODO Emit error in case there are problems
+   // Kill editor before qucs ends
+   connect(this, SIGNAL(signalKillEmAll()), QucsLib, SLOT(kill()));
 }
 
 void QucsMainWindow::slotCallMatch()
@@ -1692,7 +1711,13 @@ void QucsMainWindow::slotCallMatch()
 void QucsMainWindow::slotCallAtt()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+
+   QProcess *QucsAtt = new QProcess(this);
+   QucsAtt->start(QString(Qucs::binaryDir + "qucsattenuator"));
+
+   //TODO Emit error in case there are problems
+   // Kill editor before qucs ends
+   connect(this, SIGNAL(signalKillEmAll()), QucsAtt, SLOT(kill()));
 }
 
 void QucsMainWindow::slotSimulate()
@@ -1748,16 +1773,28 @@ void QucsMainWindow::slotViewBrowseDock(bool)
    //TODO: implement this or rather port directly
 }
 
+void QucsMainWindow::showHTML(const QString& Page)
+{
+  QStringList arguments;
+  if (!Page.isEmpty()) arguments << Page;
+  QProcess *QucsHelp = new QProcess(this);
+  QucsHelp->start(QString(Qucs::binaryDir + "qucshelp"),arguments);
+
+  //TODO Emit error in case there are problems
+  // Kill editor before qucs ends
+  connect(this, SIGNAL(signalKillEmAll()), QucsHelp, SLOT(kill()));
+}
+
 void QucsMainWindow::slotHelpIndex()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+   showHTML("index.html");
 }
 
 void QucsMainWindow::slotGettingStarted()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+   showHTML("start.html");
 }
 
 void QucsMainWindow::slotHelpAbout()

@@ -161,6 +161,7 @@ class QucsMainWindow : public MainWindowBase
       void setNormalAction();
       void alignElements(Qt::Alignment alignment);
       void editFile(const QString& File);
+      void showHTML(const QString& Page);
 
       QucsView* viewFromWidget(QWidget *widget);
 
