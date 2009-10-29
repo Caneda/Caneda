@@ -150,6 +150,8 @@ void SchematicScene::init()
   this->m_zoomBand = 0;
 
   this->setCurrentMouseAction(Normal);
+
+  connect(undoStack(), SIGNAL(indexChanged(int)), this, SLOT(setModified()));
 }
 
 /*!\brief Default Destructor */
@@ -158,7 +160,7 @@ SchematicScene::~SchematicScene()
   delete this->m_undoStack;
 }
 
-/*!\todo Chck usefulness */
+/*!\todo Check usefulness */
 void SchematicScene::test()
 {
 }
@@ -977,7 +979,7 @@ bool SchematicScene::sidebarItemClicked(const QString& itemName, const QString& 
   if(itemName.isEmpty()) 
     return false;
 
-  if(category == "paintings") 
+  if(category == "Paint Tools")
     return this->sidebarItemClickedPaintingsItems(itemName);
   else 
     return this->sidebarItemClickedNormalItems(itemName, category);
@@ -2458,7 +2460,7 @@ void SchematicScene::placeItem(QucsItem *item, const QPointF &pos, const Qucs::U
  */
 QucsItem* SchematicScene::itemForName(const QString& name, const QString& category)
 {
-  if(category == QObject::tr("paintings")) {
+  if(category == QObject::tr("Paint Tools")) {
     return Painting::fromName(name);
   }
 

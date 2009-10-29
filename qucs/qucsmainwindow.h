@@ -123,6 +123,7 @@ class QucsMainWindow : public MainWindowBase
       void slotSetMarker(bool);
       void slotShowLastMsg();
       void slotShowLastNetlist();
+      void slotViewGrid(bool toogle);
       void slotViewToolBar(bool);
       void slotViewStatusBar(bool);
       void slotViewBrowseDock(bool);
@@ -140,7 +141,7 @@ class QucsMainWindow : public MainWindowBase
       void slotSidebarItemClicked(const QString& item, const QString& category);
 
    signals:
-      void signalKillEmAll();
+      void signalKillWidgets();
 
 
    protected:

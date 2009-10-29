@@ -151,12 +151,12 @@ void QucsMainWindow::setupSidebar()
    addAsDockWidget(m_componentsSidebar, m_componentsSidebar->windowTitle());
 
    QList<QPair<QString, QPixmap> > paintingItems;
-   paintingItems << qMakePair(QObject::tr("Line"), Qucs::pixmapFor("line"));
-   paintingItems << qMakePair(QObject::tr("Arrow"), Qucs::pixmapFor("arrow"));
-   paintingItems << qMakePair(QObject::tr("Text"), Qucs::pixmapFor("text"));
-   paintingItems << qMakePair(QObject::tr("Ellipse"), Qucs::pixmapFor("ellipse"));
-   paintingItems << qMakePair(QObject::tr("Rectangle"), Qucs::pixmapFor("rectangle"));
-   paintingItems << qMakePair(QObject::tr("Elliptic Arc"), Qucs::pixmapFor("ellipsearc"));
+   paintingItems << qMakePair(QObject::tr("Arrow"), QPixmap(Qucs::bitmapDirectory() + "arrow.svg"));
+   paintingItems << qMakePair(QObject::tr("Ellipse"), QPixmap(Qucs::bitmapDirectory() + "ellipse.svg"));
+   paintingItems << qMakePair(QObject::tr("Elliptic Arc"), QPixmap(Qucs::bitmapDirectory() + "ellipsearc.svg"));
+   paintingItems << qMakePair(QObject::tr("Line"), QPixmap(Qucs::bitmapDirectory() + "line.svg"));
+   paintingItems << qMakePair(QObject::tr("Rectangle"), QPixmap(Qucs::bitmapDirectory() + "rectangle.svg"));
+   paintingItems << qMakePair(QObject::tr("Text"), QPixmap(Qucs::bitmapDirectory() + "text.svg"));
 
    m_componentsSidebar->plugItems(paintingItems, QObject::tr("Paint Tools"));
 }
@@ -765,6 +765,15 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotShowLastNetlist()));
    addActionToMap(action);
 
+   action = new QAction( tr("&Grid"), this);
+   action->setStatusTip(tr("Enables/disables the grid"));
+   action->setWhatsThis(tr("Grid\n\nEnables/disables the grid"));
+   action->setObjectName("viewGrid");
+   action->setCheckable(true);
+   action->setChecked(true);
+   connect( action, SIGNAL(toggled(bool)), SLOT(slotViewGrid(bool)));
+   addActionToMap(action);
+
    action = new QAction( tr("Tool&bar"), this);
    action->setStatusTip(tr("Enables/disables the toolbar"));
    action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
@@ -974,6 +983,10 @@ void QucsMainWindow::initMenus()
 
    viewMenu->addSeparator();
 
+   viewMenu->addAction(action("viewGrid"));
+
+   viewMenu->addSeparator();
+
    viewMenu->addAction(action("viewToolBar"));
    viewMenu->addAction(action("viewStatusBar"));
    viewMenu->addAction(action("viewBrowseDock"));
@@ -1177,7 +1190,7 @@ void QucsMainWindow::slotViewClosed(QWidget *widget)
 void QucsMainWindow::closeEvent( QCloseEvent *e )
 {
    saveSettings();
-   emit(signalKillEmAll());
+   emit(signalKillWidgets());
    MainWindowBase::closeEvent(e);
 }
 
@@ -1196,7 +1209,7 @@ void QucsMainWindow::slotFileNew()
 void QucsMainWindow::slotTextNew()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+   editFile(QString(""));
 }
 
 /*!
@@ -1275,21 +1288,21 @@ void QucsMainWindow::slotFileSaveAll()
  */
 void QucsMainWindow::slotFileClose()
 {
-   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
-   if(view->isModified()) {
-      QMessageBox::StandardButton res =
-         QMessageBox::warning(0, tr("Closing qucs document"),
-                              tr("The document contains unsaved changes!\n"
-                                 "Do you want to save the changes ?"),
-                              QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-      if(res == QMessageBox::Save)
-         slotFileSave();
-      else if(res == QMessageBox::Cancel)
-         return;
-   }
-   closeCurrentTab();
-   if(tabWidget()->count() == 0)
-      slotFileNew();
+    if(tabWidget()->count() > 0){
+        QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+        if(view->isModified()) {
+            QMessageBox::StandardButton res =
+                    QMessageBox::warning(0, tr("Closing qucs document"),
+                                         tr("The document contains unsaved changes!\n"
+                                            "Do you want to save the changes ?"),
+                                         QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+            if(res == QMessageBox::Save)
+                slotFileSave();
+            else if(res == QMessageBox::Cancel)
+                return;
+        }
+        closeCurrentTab();
+    }
 }
 
 /*!
@@ -1657,7 +1670,7 @@ void QucsMainWindow::editFile(const QString& File)
 
   //TODO Emit error in case there are problems
   // Kill editor before qucs ends
-  connect(this, SIGNAL(signalKillEmAll()), QucsEditor, SLOT(kill()));
+  connect(this, SIGNAL(signalKillWidgets()), QucsEditor, SLOT(kill()));
 }
 
 void QucsMainWindow::slotCallEditor()
@@ -1675,7 +1688,7 @@ void QucsMainWindow::slotCallFilter()
 
    //TODO Emit error in case there are problems
    // Kill editor before qucs ends
-   connect(this, SIGNAL(signalKillEmAll()), QucsFilter, SLOT(kill()));
+   connect(this, SIGNAL(signalKillWidgets()), QucsFilter, SLOT(kill()));
 }
 
 void QucsMainWindow::slotCallLine()
@@ -1687,7 +1700,7 @@ void QucsMainWindow::slotCallLine()
 
    //TODO Emit error in case there are problems
    // Kill editor before qucs ends
-   connect(this, SIGNAL(signalKillEmAll()), QucsLine, SLOT(kill()));
+   connect(this, SIGNAL(signalKillWidgets()), QucsLine, SLOT(kill()));
 }
 
 void QucsMainWindow::slotCallLibrary()
@@ -1699,7 +1712,7 @@ void QucsMainWindow::slotCallLibrary()
 
    //TODO Emit error in case there are problems
    // Kill editor before qucs ends
-   connect(this, SIGNAL(signalKillEmAll()), QucsLib, SLOT(kill()));
+   connect(this, SIGNAL(signalKillWidgets()), QucsLib, SLOT(kill()));
 }
 
 void QucsMainWindow::slotCallMatch()
@@ -1717,7 +1730,7 @@ void QucsMainWindow::slotCallAtt()
 
    //TODO Emit error in case there are problems
    // Kill editor before qucs ends
-   connect(this, SIGNAL(signalKillEmAll()), QucsAtt, SLOT(kill()));
+   connect(this, SIGNAL(signalKillWidgets()), QucsAtt, SLOT(kill()));
 }
 
 void QucsMainWindow::slotSimulate()
@@ -1755,6 +1768,15 @@ void QucsMainWindow::slotShowLastNetlist()
    editFile(Qucs::pathForQucsFile("netlist.txt"));
 }
 
+void QucsMainWindow::slotViewGrid(bool toogle)
+{
+    if(tabWidget()->count() > 0){
+        QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+        SchematicView *schema = view->toSchematicView();
+        schema->schematicScene()->setGridVisible(toogle);
+    }
+}
+
 void QucsMainWindow::slotViewToolBar(bool)
 {
    setNormalAction();
@@ -1782,7 +1804,7 @@ void QucsMainWindow::showHTML(const QString& Page)
 
   //TODO Emit error in case there are problems
   // Kill editor before qucs ends
-  connect(this, SIGNAL(signalKillEmAll()), QucsHelp, SLOT(kill()));
+  connect(this, SIGNAL(signalKillWidgets()), QucsHelp, SLOT(kill()));
 }
 
 void QucsMainWindow::slotHelpIndex()
@@ -2006,14 +2028,16 @@ void QucsMainWindow::updateTitleTabText()
 
 void QucsMainWindow::slotSidebarItemClicked(const QString& item, const QString& category)
 {
-   SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
-   SchematicScene *scene = view->schematicScene();
-   if(view && scene->sidebarItemClicked(item, category)) {
-      if(scene->currentMouseAction() == SchematicScene::InsertingItems)
-         slotInsertItemAction(true);
-      else if(scene->currentMouseAction() == SchematicScene::PaintingDrawEvent)
-         slotPaintingDrawAction(true);
-   }
+    if(tabWidget()->count() > 0){
+        SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+        SchematicScene *scene = view->schematicScene();
+        if(view && scene->sidebarItemClicked(item, category)) {
+            if(scene->currentMouseAction() == SchematicScene::InsertingItems)
+                slotInsertItemAction(true);
+            else if(scene->currentMouseAction() == SchematicScene::PaintingDrawEvent)
+                slotPaintingDrawAction(true);
+        }
+    }
 }
 
 void QucsMainWindow::resetCurrentSceneState()
