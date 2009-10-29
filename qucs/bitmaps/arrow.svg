@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="31pt" version="1.1" xmlns="http://www.w3.org/2000/svg" height="31pt" viewBox="0 0 31 31" xmlns:xlink="http://www.w3.org/1999/xlink" >
+ <desc>Amplifier (10-15-01)</desc>
+ <defs/>
+ <g id="Fondo" >
+  <g>
+   <path style="stroke:#161413; stroke-width:1; stroke-linecap:butt; stroke-linejoin:miter; stroke-dasharray:none;" d="M 0 0 L 27.9112 0" transform="translate(2.73019, 27.9163) rotate(-45)" />
+   <path style="fill:#161413; stroke:none;" d="M25.1926 -4.01772 L36.1185 -3.46945e-18 L25.1926 4.01772 C26.9381 1.64566 26.928 -1.59973 25.1926 -4.01772 Z" transform="translate(2.73019, 27.9163) rotate(-45)" />
+  </g>
+ </g>
+</svg>
