@@ -66,6 +66,35 @@ void PropertyChangeCmd::redo()
 
 /*
   ##########################################################################
+  #                         GridPropertyChangeCmd                          #
+  ##########################################################################
+*/
+
+GridPropertyChangeCmd::GridPropertyChangeCmd(const bool newGridVisibility,
+                                                       SchematicScene *const schematic,
+                                                       QUndoCommand *parent) :
+   QUndoCommand(parent),
+   m_newGridVisibility(newGridVisibility),
+   m_oldGridVisibility(schematic->isGridVisible()),
+   m_schematic(schematic)
+{
+    setText(QString("Toogle grid visibility"));
+}
+
+void GridPropertyChangeCmd::undo()
+{
+   m_schematic->setGridVisible(m_oldGridVisibility);
+   _debug() << "GridPropertyChangeCmd::undo()\n";
+}
+
+void GridPropertyChangeCmd::redo()
+{
+   m_schematic->setGridVisible(m_newGridVisibility);
+   _debug() << "GridPropertyChangeCmd::redo()\n";
+}
+
+/*
+  ##########################################################################
   #                                 MoveCmd                                #
   ##########################################################################
 */

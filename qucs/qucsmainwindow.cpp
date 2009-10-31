@@ -80,8 +80,9 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
    initToolBars();
 
    setupSidebar();
+   createUndoView();
 
-
+   connect(tabWidget(), SIGNAL(tabCloseRequested(int)), this, SLOT(slotFileClose(int)));
    connect(this, SIGNAL(currentWidgetChanged(QWidget*, QWidget*)), this,
            SLOT(slotCurrentChanged(QWidget*, QWidget*)));
    connect(this, SIGNAL(closedWidget(QWidget*)), this,
@@ -116,7 +117,7 @@ bool QucsMainWindow::gotoPage(QString fileName)
    }
 
    if(view) {
-      tabWidget()->setCurrentIndex(i-1);
+      tabWidget()->setCurrentIndex(i);
       return true;
    }
 
@@ -148,7 +149,11 @@ void QucsMainWindow::setupSidebar()
    m_componentsSidebar = new ComponentsSidebar(this);
    connect(m_componentsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
            SLOT(slotSidebarItemClicked(const QString&, const QString&)));
-   addAsDockWidget(m_componentsSidebar, m_componentsSidebar->windowTitle());
+
+   sidebarDockWidget = new QDockWidget(m_componentsSidebar->windowTitle(),this);
+   sidebarDockWidget->setWidget(m_componentsSidebar);
+   addDockWidget(Qt::LeftDockWidgetArea, sidebarDockWidget);
+   viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 
    QList<QPair<QString, QPixmap> > paintingItems;
    paintingItems << qMakePair(QObject::tr("Arrow"), QPixmap(Qucs::bitmapDirectory() + "arrow.svg"));
@@ -207,15 +212,15 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Saves the current document"));
    action->setWhatsThis(tr("Save File\n\nSaves the current document"));
    action->setObjectName("fileSave");
-   connect( action, SIGNAL(triggered()), SLOT(slotFileSave()));
+   connect( action, SIGNAL(triggered()), SLOT(slotFileSaveCurrent()));
    addActionToMap(action);
 
    action = new QAction( tr("Save as..."), this);
-   action->setShortcut(CTRL+Key_Minus);
+   action->setShortcut(CTRL+SHIFT+Key_S);
    action->setStatusTip(tr("Saves the current document under a new filename"));
    action->setWhatsThis(tr("Save As\n\nSaves the current document under a new filename"));
    action->setObjectName("fileSaveAs");
-   connect( action, SIGNAL(triggered()), SLOT(slotFileSaveAs()));
+   connect( action, SIGNAL(triggered()), SLOT(slotFileSaveAsCurrent()));
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "filesaveall.png"), tr("Save &All"), this);
@@ -231,22 +236,7 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Closes the current document"));
    action->setWhatsThis(tr("Close File\n\nCloses the current document"));
    action->setObjectName("fileClose");
-   connect( action, SIGNAL(triggered()), SLOT(slotFileClose()));
-   addActionToMap(action);
-
-   action = new QAction( tr("&Edit Circuit Symbol"), this);
-   action->setShortcut(Key_F9);
-   action->setStatusTip(tr("Edits the symbol for this schematic"));
-   action->setWhatsThis(tr("Edit Circuit Symbol\n\nEdits the symbol for this schematic"));
-   action->setObjectName("symEdit");
-   connect( action, SIGNAL(triggered()), SLOT(slotSymbolEdit()));
-   addActionToMap(action);
-
-   action = new QAction( tr("&Document Settings..."), this);
-   action->setShortcut(CTRL+Key_Period);
-   action->setWhatsThis(tr("Settings\n\nSets properties of the file"));
-   action->setObjectName("fileSettings");
-   connect( action, SIGNAL(triggered()), SLOT(slotFileSettings()));
+   connect( action, SIGNAL(triggered()), SLOT(slotFileCloseCurrent()));
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "fileprint.png"), tr("&Print..."), this);
@@ -264,12 +254,17 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFilePrintFit()));
    addActionToMap(action);
 
-   action = new QAction( tr("E&xit"), this);
-   action->setShortcut(CTRL+Key_Q);
-   action->setStatusTip(tr("Quits the application"));
-   action->setWhatsThis(tr("Exit\n\nQuits the application"));
-   action->setObjectName("fileQuit");
-   connect( action, SIGNAL(triggered()), SLOT(close()));
+   action = new QAction( tr("Export Image"), this);
+   action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
+   action->setObjectName("exportImage");
+   connect( action, SIGNAL(triggered()), SLOT(slotExportImage()));
+   addActionToMap(action);
+
+   action = new QAction( tr("&Document Settings..."), this);
+   action->setShortcut(CTRL+Key_Period);
+   action->setWhatsThis(tr("Settings\n\nSets properties of the file"));
+   action->setObjectName("fileSettings");
+   connect( action, SIGNAL(triggered()), SLOT(slotFileSettings()));
    addActionToMap(action);
 
    action = new QAction( tr("Application Settings..."), this);
@@ -279,8 +274,15 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotApplSettings()));
    addActionToMap(action);
 
+   action = new QAction( tr("E&xit"), this);
+   action->setShortcut(CTRL+Key_Q);
+   action->setStatusTip(tr("Quits the application"));
+   action->setWhatsThis(tr("Exit\n\nQuits the application"));
+   action->setObjectName("fileQuit");
+   connect( action, SIGNAL(triggered()), SLOT(close()));
+   addActionToMap(action);
+
    action = new QAction( tr("Align top"), this);
-   action->setShortcut(CTRL+Key_T);
    action->setStatusTip(tr("Align top selected elements"));
    action->setWhatsThis(tr("Align top\n\nAlign selected elements to their upper edge"));
    action->setObjectName("alignTop");
@@ -414,122 +416,10 @@ void QucsMainWindow::initActions()
 
    action = m_undoGroup->createRedoAction(this);
    action->setIcon(QIcon(bitmapPath + "redo.png"));
-   action->setShortcut(CTRL+Key_Y);
+   action->setShortcut(CTRL+SHIFT+Key_Z);
    action->setStatusTip(tr("Redoes the last command"));
    action->setWhatsThis(tr("Redo\n\nRepeats the last action once more"));
    action->setObjectName("redo");
-   addActionToMap(action);
-
-   action = new QAction( tr("&New Project..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_N);
-   action->setStatusTip(tr("Creates a new project"));
-   action->setWhatsThis(tr("New Project\n\nCreates a new project"));
-   action->setObjectName("projNew");
-   connect( action, SIGNAL(triggered()), SLOT(slotProjNewButt()));
-   addActionToMap(action);
-
-   action = new QAction( tr("&Open Project..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_O);
-   action->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
-   action->setObjectName("projOpen");
-   connect( action, SIGNAL(triggered()), SLOT(slotMenuOpenProject()));
-   addActionToMap(action);
-
-   action = new QAction( tr("&Delete Project..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_D);
-   action->setWhatsThis(tr("Delete Project\n\nDeletes an existing project"));
-   action->setObjectName("projDel");
-   connect( action, SIGNAL(triggered()), SLOT(slotMenuDelProject()));
-   addActionToMap(action);
-
-   action = new QAction( tr("&Close Project"), this);
-   action->setShortcut(CTRL+SHIFT+Key_W);
-   action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
-   action->setObjectName("projClose");
-   connect( action, SIGNAL(triggered()), SLOT(slotMenuCloseProject()));
-   addActionToMap(action);
-
-   action = new QAction( tr("&Add Files to Project..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_A);
-   action->setStatusTip(tr("Copies files to project directory"));
-   action->setWhatsThis(tr("Add Files to Project\n\nCopies files to project directory"));
-   action->setObjectName("addToProj");
-   connect( action, SIGNAL(triggered()), SLOT(slotAddToProject()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Create &Library..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_L);
-   action->setStatusTip(tr("Create Library from Subcircuits"));
-   action->setWhatsThis(tr("Create Library\n\nCreate Library from Subcircuits"));
-   action->setObjectName("createLib");
-   connect( action, SIGNAL(triggered()), SLOT(slotCreateLib()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Create &Package..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_Z);
-   action->setStatusTip(tr("Create compressed Package from Projects"));
-   action->setWhatsThis(tr("Create Package\n\nCreate compressed Package from complete Projects"));
-   action->setObjectName("createPkg");
-   connect( action, SIGNAL(triggered()), SLOT(slotCreatePackage()));
-   addActionToMap(action);
-
-   action = new QAction( tr("E&xtract Package..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_X);
-   action->setStatusTip(tr("Install Content of a Package"));
-   action->setWhatsThis(tr("Extract Package\n\nInstall Content of a Package"));
-   action->setObjectName("extractPkg");
-   connect( action, SIGNAL(triggered()), SLOT(slotExtractPackage()));
-   addActionToMap(action);
-
-   action = new QAction( tr("&Import Data..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_I);
-   action->setStatusTip(tr("Convert file to Qucs data file"));
-   action->setWhatsThis(tr("Import Data\n\nConvert data file to Qucs data file"));
-   action->setObjectName("importData");
-   connect( action, SIGNAL(triggered()), SLOT(slotImportData()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Export to &CSV..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_C);
-   action->setStatusTip(tr("Convert graph data to CSV file"));
-   action->setWhatsThis(tr("Export to CSV\n\nConvert graph data to CSV file"));
-   action->setObjectName("graph2csv");
-   connect( action, SIGNAL(triggered()), SLOT(slotExportGraphAsCsv()));
-   addActionToMap(action);
-
-   action = new QAction(QIcon(bitmapPath + "viewmagfit.png"), tr("View All"), this);
-   action->setShortcut(Key_0);
-   action->setStatusTip(tr("Show the whole page"));
-   action->setWhatsThis(tr("View All\n\nShows the whole page content"));
-   action->setObjectName("magAll");
-   connect( action, SIGNAL(triggered()), SLOT(slotShowAll()));
-   addActionToMap(action);
-
-   action = new QAction(QIcon(bitmapPath + "viewmag1.png"), tr("View 1:1"), this);
-   action->setShortcut(Key_1);
-   action->setStatusTip(tr("Views without magnification"));
-   action->setWhatsThis(tr("View 1:1\n\nShows the page content without magnification"));
-   action->setObjectName("magOne");
-   connect( action, SIGNAL(triggered()), SLOT(slotShowOne()));
-   addActionToMap(action);
-
-   action = new QAction(QIcon(bitmapPath + "viewmag+.png"), tr("Zoom in"), this);
-   action->setShortcut(Key_Plus);
-   action->setStatusTip(tr("Zooms into the current view"));
-   action->setWhatsThis(tr("Zoom in\n\nZooms the current view"));
-   action->setObjectName("magPlus");
-   action->setData(QVariant(SchematicScene::ZoomingAtPoint));
-   action->setCheckable(true);
-   connect( action, SIGNAL(toggled(bool)), SLOT(slotZoomIn(bool)));
-   addActionToMap(action);
-   checkableActions << action;
-
-   action = new QAction(QIcon(bitmapPath + "viewmag-.png"), tr("Zoom out"), this);
-   action->setShortcut(Key_Minus);
-   action->setStatusTip(tr("Zooms out the current view"));
-   action->setWhatsThis(tr("Zoom out\n\nZooms out the current view"));
-   action->setObjectName("magMinus");
-   connect( action, SIGNAL(triggered()), SLOT(slotZoomOut()));
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "pointer.png"), tr("Select"), this);
@@ -604,6 +494,91 @@ void QucsMainWindow::initActions()
    action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
    action->setObjectName("popH");
    connect( action, SIGNAL(triggered()), SLOT(slotPopHierarchy()));
+   addActionToMap(action);
+
+   action = new QAction( tr("&Edit Circuit Symbol"), this);
+   action->setShortcut(Key_F9);
+   action->setStatusTip(tr("Edits the symbol for this schematic"));
+   action->setWhatsThis(tr("Edit Circuit Symbol\n\nEdits the symbol for this schematic"));
+   action->setObjectName("symEdit");
+   connect( action, SIGNAL(triggered()), SLOT(slotSymbolEdit()));
+   addActionToMap(action);
+
+   action = new QAction( tr("&New Project..."), this);
+   action->setShortcut(CTRL+SHIFT+Key_N);
+   action->setStatusTip(tr("Creates a new project"));
+   action->setWhatsThis(tr("New Project\n\nCreates a new project"));
+   action->setObjectName("projNew");
+   connect( action, SIGNAL(triggered()), SLOT(slotProjNewButt()));
+   addActionToMap(action);
+
+   action = new QAction( tr("&Open Project..."), this);
+   action->setShortcut(CTRL+SHIFT+Key_O);
+   action->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
+   action->setObjectName("projOpen");
+   connect( action, SIGNAL(triggered()), SLOT(slotMenuOpenProject()));
+   addActionToMap(action);
+
+   action = new QAction( tr("&Delete Project..."), this);
+   action->setShortcut(CTRL+SHIFT+Key_D);
+   action->setWhatsThis(tr("Delete Project\n\nDeletes an existing project"));
+   action->setObjectName("projDel");
+   connect( action, SIGNAL(triggered()), SLOT(slotMenuDelProject()));
+   addActionToMap(action);
+
+   action = new QAction( tr("&Close Project"), this);
+   action->setShortcut(CTRL+SHIFT+Key_W);
+   action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
+   action->setObjectName("projClose");
+   connect( action, SIGNAL(triggered()), SLOT(slotMenuCloseProject()));
+   addActionToMap(action);
+
+   action = new QAction( tr("&Add Files to Project..."), this);
+   action->setShortcut(CTRL+SHIFT+Key_A);
+   action->setStatusTip(tr("Copies files to project directory"));
+   action->setWhatsThis(tr("Add Files to Project\n\nCopies files to project directory"));
+   action->setObjectName("addToProj");
+   connect( action, SIGNAL(triggered()), SLOT(slotAddToProject()));
+   addActionToMap(action);
+
+   action = new QAction( tr("Create &Library..."), this);
+   action->setShortcut(CTRL+SHIFT+Key_L);
+   action->setStatusTip(tr("Create Library from Subcircuits"));
+   action->setWhatsThis(tr("Create Library\n\nCreate Library from Subcircuits"));
+   action->setObjectName("createLib");
+   connect( action, SIGNAL(triggered()), SLOT(slotCreateLib()));
+   addActionToMap(action);
+
+   action = new QAction( tr("Create &Package..."), this);
+   action->setShortcut(CTRL+SHIFT+Key_K);
+   action->setStatusTip(tr("Create compressed Package from Projects"));
+   action->setWhatsThis(tr("Create Package\n\nCreate compressed Package from complete Projects"));
+   action->setObjectName("createPkg");
+   connect( action, SIGNAL(triggered()), SLOT(slotCreatePackage()));
+   addActionToMap(action);
+
+   action = new QAction( tr("E&xtract Package..."), this);
+   action->setShortcut(CTRL+SHIFT+Key_X);
+   action->setStatusTip(tr("Install Content of a Package"));
+   action->setWhatsThis(tr("Extract Package\n\nInstall Content of a Package"));
+   action->setObjectName("extractPkg");
+   connect( action, SIGNAL(triggered()), SLOT(slotExtractPackage()));
+   addActionToMap(action);
+
+   action = new QAction( tr("&Import Data..."), this);
+   action->setShortcut(CTRL+SHIFT+Key_I);
+   action->setStatusTip(tr("Convert file to Qucs data file"));
+   action->setWhatsThis(tr("Import Data\n\nConvert data file to Qucs data file"));
+   action->setObjectName("importData");
+   connect( action, SIGNAL(triggered()), SLOT(slotImportData()));
+   addActionToMap(action);
+
+   action = new QAction( tr("Export to &CSV..."), this);
+   action->setShortcut(CTRL+SHIFT+Key_C);
+   action->setStatusTip(tr("Convert graph data to CSV file"));
+   action->setWhatsThis(tr("Export to CSV\n\nConvert graph data to CSV file"));
+   action->setObjectName("graph2csv");
+   connect( action, SIGNAL(triggered()), SLOT(slotExportGraphAsCsv()));
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "deactiv.png"), tr("Deactivate/Activate"), this);
@@ -765,6 +740,44 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotShowLastNetlist()));
    addActionToMap(action);
 
+   action = new QAction(QIcon(bitmapPath + "viewmagfit.png"), tr("View All"), this);
+   action->setShortcut(Key_0);
+   action->setStatusTip(tr("Show the whole page"));
+   action->setWhatsThis(tr("View All\n\nShows the whole page content"));
+   action->setObjectName("magAll");
+   connect( action, SIGNAL(triggered()), SLOT(slotShowAll()));
+   addActionToMap(action);
+
+   action = new QAction(QIcon(bitmapPath + "viewmag1.png"), tr("View 1:1"), this);
+   action->setShortcut(Key_1);
+   action->setStatusTip(tr("Views without magnification"));
+   action->setWhatsThis(tr("View 1:1\n\nShows the page content without magnification"));
+   action->setObjectName("magOne");
+   connect( action, SIGNAL(triggered()), SLOT(slotShowOne()));
+   addActionToMap(action);
+
+   action = new QAction(QIcon(bitmapPath + "viewmag+.png"), tr("Zoom in"), this);
+   action->setShortcut(Key_Plus);
+   action->setStatusTip(tr("Zooms into the current view"));
+   action->setWhatsThis(tr("Zoom in\n\nZooms the current view"));
+   action->setObjectName("magPlus");
+   action->setData(QVariant(SchematicScene::ZoomingAtPoint));
+   action->setCheckable(true);
+   connect( action, SIGNAL(toggled(bool)), SLOT(slotZoomIn(bool)));
+   addActionToMap(action);
+   checkableActions << action;
+
+   action = new QAction(QIcon(bitmapPath + "viewmag-.png"), tr("Zoom out"), this);
+   action->setShortcut(Key_Minus);
+   action->setStatusTip(tr("Zooms out the current view"));
+   action->setWhatsThis(tr("Zoom out\n\nZooms out the current view"));
+   action->setObjectName("magMinus");
+   action->setData(QVariant(SchematicScene::ZoomingOutAtPoint));
+   action->setCheckable(true);
+   connect( action, SIGNAL(toggled(bool)), SLOT(slotZoomOut(bool)));
+   addActionToMap(action);
+   checkableActions << action;
+
    action = new QAction( tr("&Grid"), this);
    action->setStatusTip(tr("Enables/disables the grid"));
    action->setWhatsThis(tr("Grid\n\nEnables/disables the grid"));
@@ -779,6 +792,7 @@ void QucsMainWindow::initActions()
    action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
    action->setObjectName("viewToolBar");
    action->setCheckable(true);
+   action->setChecked(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotViewToolBar(bool)));
    addActionToMap(action);
 
@@ -787,15 +801,8 @@ void QucsMainWindow::initActions()
    action->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
    action->setObjectName("viewStatusBar");
    action->setCheckable(true);
+   action->setChecked(true);
    connect( action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
-   addActionToMap(action);
-
-   action = new QAction( tr("&Dock Window"), this);
-   action->setStatusTip(tr("Enables/disables the browse dock window"));
-   action->setWhatsThis(tr("Browse Window\n\nEnables/disables the browse dock window"));
-   action->setObjectName("viewBrowseDock");
-   action->setCheckable(true);
-   connect( action, SIGNAL(toggled(bool)), SLOT(slotViewBrowseDock(bool)));
    addActionToMap(action);
 
    action = new QAction( tr("Help Index..."), this);
@@ -863,14 +870,11 @@ void QucsMainWindow::initMenus()
    fileMenu->addAction(action("fileSaveAs"));
    fileMenu->addAction(action("filePrint"));
    fileMenu->addAction(action("filePrintFit"));
+   fileMenu->addAction(action("exportImage"));
 
    fileMenu->addSeparator();
 
    fileMenu->addAction(action("fileSettings"));
-   fileMenu->addAction(action("symEdit"));
-
-   fileMenu->addSeparator();
-
    fileMenu->addAction(action("applSettings"));
 
    fileMenu->addSeparator();
@@ -900,10 +904,10 @@ void QucsMainWindow::initMenus()
    editMenu->addAction(action("editRotate"));
    editMenu->addAction(action("editMirror"));
    editMenu->addAction(action("editMirrorY"));
-   editMenu->addAction(action("editActivate"));
 
    editMenu->addSeparator();
 
+   editMenu->addAction(action("symEdit"));
    editMenu->addAction(action("intoH"));
    editMenu->addAction(action("popH"));
 
@@ -928,16 +932,6 @@ void QucsMainWindow::initMenus()
    alignMenu->addAction(action("distrHor"));
    alignMenu->addAction(action("distrVert"));
 
-   insMenu = menuBar()->addMenu(tr("&Insert"));
-
-   insMenu->addAction(action("insWire"));
-   insMenu->addAction(action("insLabel"));
-   insMenu->addAction(action("insEquation"));
-   insMenu->addAction(action("insGround"));
-   insMenu->addAction(action("insPort"));
-   insMenu->addAction(action("setMarker"));
-   insMenu->addAction(action("insEntity"));
-
    projMenu = menuBar()->addMenu(tr("&Project"));
 
    projMenu->addAction(action("projNew"));
@@ -958,6 +952,17 @@ void QucsMainWindow::initMenus()
    projMenu->addAction(action("graph2csv"));
 
    toolMenu = menuBar()->addMenu(tr("&Tools"));
+
+   toolMenu->addAction(action("insWire"));
+   toolMenu->addAction(action("insLabel"));
+   toolMenu->addAction(action("insEquation"));
+   toolMenu->addAction(action("insGround"));
+   toolMenu->addAction(action("insPort"));
+   toolMenu->addAction(action("setMarker"));
+   toolMenu->addAction(action("insEntity"));
+   toolMenu->addAction(action("editActivate"));
+
+   toolMenu->addSeparator();
 
    toolMenu->addAction(action("callEditor"));
    toolMenu->addAction(action("callFilter"));
@@ -989,7 +994,8 @@ void QucsMainWindow::initMenus()
 
    viewMenu->addAction(action("viewToolBar"));
    viewMenu->addAction(action("viewStatusBar"));
-   viewMenu->addAction(action("viewBrowseDock"));
+//   viewMenu->addAction(action("viewBrowseDock"));
+//   viewMenu->addAction(action("viewUndoDock"));
 
    menuBar()->addSeparator();
 
@@ -1016,7 +1022,6 @@ void QucsMainWindow::initToolBars()
    fileToolbar->addAction(action("fileOpen"));
    fileToolbar->addAction(action("fileSave"));
    fileToolbar->addAction(action("fileSaveAll"));
-   fileToolbar->addAction(action("fileClose"));
    fileToolbar->addAction(action("filePrint"));
 
    editToolbar  = addToolBar(tr("Edit"));
@@ -1146,7 +1151,9 @@ void QucsMainWindow::setNormalAction()
 void QucsMainWindow::addView(QucsView *view)
 {
    if(view->isSchematicView()) {
-      m_undoGroup->addStack(view->toSchematicView()->schematicScene()->undoStack());
+       SchematicScene *schema = view->toSchematicView()->schematicScene();
+       m_undoGroup->addStack(schema->undoStack());
+       connect(schema, SIGNAL(gridChanged(bool)), this, SLOT(slotUpdateGridStatus(bool)));
    }
    addChildWidget(view->toWidget());
    tabWidget()->setCurrentWidget(view->toWidget());
@@ -1170,6 +1177,7 @@ void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
       connect(currView, SIGNAL(titleToBeUpdated()), this, SLOT(updateTitleTabText()));
       m_undoGroup->setActiveStack(currView->schematicScene()->undoStack());
       updateTitleTabText();
+      slotUpdateGridStatus(currView->toSchematicView()->schematicScene()->isGridVisible());
    }
 }
 
@@ -1182,6 +1190,16 @@ void QucsMainWindow::slotViewClosed(QWidget *widget)
    if(view) {
       m_undoGroup->removeStack(view->schematicScene()->undoStack());
    }
+}
+
+/*!
+ * \brief Updates menu grid visibility entry on grid change.
+ */
+void QucsMainWindow::slotUpdateGridStatus(bool status)
+{
+    foreach(QAction *act, viewMenu->actions())
+        if(act->objectName()=="viewGrid")
+            act->setChecked(status);
 }
 
 /*!
@@ -1231,14 +1249,14 @@ void QucsMainWindow::slotFileOpen()
 }
 
 /*!
- * \brief Saves the file corresponding to current tab.
+ * \brief Saves the file corresponding to index tab.
  */
-void QucsMainWindow::slotFileSave()
+void QucsMainWindow::slotFileSave(int index)
 {
-   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+   QucsView* v = viewFromWidget(tabWidget()->widget(index));
    if(!v) return;
    if(v->fileName().isEmpty())
-      slotFileSaveAs();
+      slotFileSaveAs(index);
    else {
       if(!v->save()) {
          QMessageBox::critical(this, tr("File save error"),
@@ -1248,12 +1266,20 @@ void QucsMainWindow::slotFileSave()
 }
 
 /*!
- * \brief Pops up dialog to select new filename and saves the file corresponding
- * to current tab.
+ * \brief Saves the file corresponding to current tab.
  */
-void QucsMainWindow::slotFileSaveAs()
+void QucsMainWindow::slotFileSaveCurrent()
 {
-   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+    slotFileSave(tabWidget()->currentIndex());
+}
+
+/*!
+ * \brief Pops up dialog to select new filename and saves the file corresponding
+ * to index tab.
+ */
+void QucsMainWindow::slotFileSaveAs(int index)
+{
+   QucsView* v = viewFromWidget(tabWidget()->widget(index));
    if(!v) return;
    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     "", qucsFilter);
@@ -1264,7 +1290,27 @@ void QucsMainWindow::slotFileSaveAs()
       QMessageBox::critical(this, tr("File save error"),
                             tr("Cannot save file %1").arg(v->fileName()));
       v->setFileName(oldFileName);
+      return;
    }
+
+   v = 0;
+   int i = 0;
+   while(i < tabWidget()->count()) {
+      v = viewFromWidget(tabWidget()->widget(i));
+      if(QDir::toNativeSeparators(v->fileName()) == fileName && i != index)
+         slotFileClose(i);
+      v = 0;
+      ++i;
+   }
+}
+
+/*!
+ * \brief Pops up dialog to select new filename and saves the file corresponding
+ * to current tab.
+ */
+void QucsMainWindow::slotFileSaveAsCurrent()
+{
+    slotFileSaveAs(tabWidget()->currentIndex());
 }
 
 /*!
@@ -1273,23 +1319,20 @@ void QucsMainWindow::slotFileSaveAs()
 void QucsMainWindow::slotFileSaveAll()
 {
    for(int i=0; i < tabWidget()->count(); ++i) {
-      tabWidget()->setCurrentIndex(i);
-      slotFileSave();
+      slotFileSave(i);
    }
 }
 
 /*!
- * \brief Closes the current tab.
+ * \brief Closes the selected tab.
  *
  * Before closing it prompts user whether to save or not if the document is
  * modified and takes necessary actions.
- * If the tab being closed is the last tab open, then it creates a new
- * schematic view and sets it as current tab.
  */
-void QucsMainWindow::slotFileClose()
+void QucsMainWindow::slotFileClose(int index)
 {
     if(tabWidget()->count() > 0){
-        QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+        QucsView *view = viewFromWidget(tabWidget()->widget(index));
         if(view->isModified()) {
             QMessageBox::StandardButton res =
                     QMessageBox::warning(0, tr("Closing qucs document"),
@@ -1297,12 +1340,20 @@ void QucsMainWindow::slotFileClose()
                                             "Do you want to save the changes ?"),
                                          QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
             if(res == QMessageBox::Save)
-                slotFileSave();
+                slotFileSave(index);
             else if(res == QMessageBox::Cancel)
                 return;
         }
-        closeCurrentTab();
+        closeTab(index);
     }
+}
+
+/*!
+ * \brief Closes the current tab.
+ */
+void QucsMainWindow::slotFileCloseCurrent()
+{
+    slotFileClose(tabWidget()->currentIndex());
 }
 
 /*!
@@ -1336,6 +1387,14 @@ void QucsMainWindow::slotFilePrint()
 void QucsMainWindow::slotFilePrintFit()
 {
    //TODO: implement this or rather port directly
+}
+
+/*!
+ * \todo Implement this.
+ */
+void QucsMainWindow::slotExportImage()
+{
+   //TODO: implement this
 }
 
 /*!
@@ -1573,12 +1632,9 @@ void QucsMainWindow::slotZoomIn(bool on)
    performToggleAction(on, 0, action("magPlus"));
 }
 
-void QucsMainWindow::slotZoomOut()
+void QucsMainWindow::slotZoomOut(bool on)
 {
-   setNormalAction();
-   QucsView *view = viewFromWidget(tabWidget()->currentWidget());
-   if(view)
-      view->zoomOut();
+   performToggleAction(on, 0, action("magMinus"));
 }
 
 void QucsMainWindow::slotSelect(bool on)
@@ -1589,7 +1645,9 @@ void QucsMainWindow::slotSelect(bool on)
 void QucsMainWindow::slotSelectAll()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+   QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+   foreach(QGraphicsItem* item, v->toSchematicView()->schematicScene()->items())
+        item->setSelected(true);
 }
 
 void QucsMainWindow::slotSelectMarker()
@@ -1770,29 +1828,31 @@ void QucsMainWindow::slotShowLastNetlist()
 
 void QucsMainWindow::slotViewGrid(bool toogle)
 {
+    setNormalAction();
     if(tabWidget()->count() > 0){
         QucsView *view = viewFromWidget(tabWidget()->currentWidget());
-        SchematicView *schema = view->toSchematicView();
-        schema->schematicScene()->setGridVisible(toogle);
+        SchematicScene *scene = view->toSchematicView()->schematicScene();
+        if(toogle != scene->isGridVisible()){
+            scene->undoStack()->push(new GridPropertyChangeCmd(toogle, scene));
+            scene->setGridVisible(toogle);
+        }
+
     }
 }
 
-void QucsMainWindow::slotViewToolBar(bool)
+void QucsMainWindow::slotViewToolBar(bool toogle)
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+   fileToolbar->setVisible(toogle);
+   editToolbar->setVisible(toogle);
+   viewToolbar->setVisible(toogle);
+   workToolbar->setVisible(toogle);
 }
 
-void QucsMainWindow::slotViewStatusBar(bool)
+void QucsMainWindow::slotViewStatusBar(bool toogle)
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
-}
-
-void QucsMainWindow::slotViewBrowseDock(bool)
-{
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   statusBar()->setVisible(toogle);
 }
 
 void QucsMainWindow::showHTML(const QString& Page)
@@ -1805,6 +1865,17 @@ void QucsMainWindow::showHTML(const QString& Page)
   //TODO Emit error in case there are problems
   // Kill editor before qucs ends
   connect(this, SIGNAL(signalKillWidgets()), QucsHelp, SLOT(kill()));
+}
+
+void QucsMainWindow::createUndoView()
+{
+    undoView = new QUndoView(m_undoGroup);
+    undoView->setWindowTitle(tr("Command List"));
+
+    sidebarDockWidget = new QDockWidget(undoView->windowTitle(),this);
+    sidebarDockWidget->setWidget(undoView);
+    addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
+    viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 }
 
 void QucsMainWindow::slotHelpIndex()

@@ -104,9 +104,6 @@ bool SchematicView::load()
    QTextStream stream(&file);
    bool result = format->loadFromText(stream.readAll());
 
-   if(result == true)
-      setModified(false);
-
    return result;
 }
 
@@ -142,7 +139,7 @@ bool SchematicView::save()
    stream << saveText;
    file.close();
 
-   setModified(false);
+   schematicScene()->undoStack()->clear();
 
    return true;
 }
@@ -211,10 +208,8 @@ void SchematicView::cut()
    QList<QGraphicsItem*> items = scene()->selectedItems();
    QList<QucsItem*> qItems = filterItems<QucsItem>(items);
 
-   if(!qItems.isEmpty()) {
+   if(!qItems.isEmpty())
       schematicScene()->cutItems(qItems);
-      setModified(true);
-   }
 }
 
 void SchematicView::paste()

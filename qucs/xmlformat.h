@@ -39,6 +39,7 @@ class XmlFormat : public FileFormatHandler
       void loadView(Qucs::XmlReader *reader);
       void loadComponents(Qucs::XmlReader *reader);
       void loadWires(Qucs::XmlReader *reader);
+      void loadPaintings(Qucs::XmlReader *reader);
 };
 
 #endif //__XML_FORMAT_H

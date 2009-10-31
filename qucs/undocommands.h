@@ -54,6 +54,22 @@ class PropertyChangeCmd : public QUndoCommand
       Component *const m_component;
 };
 
+class GridPropertyChangeCmd : public QUndoCommand
+{
+   public:
+      GridPropertyChangeCmd(const bool newGridVisibility,
+                                 SchematicScene *const schematic,
+                                 QUndoCommand *parent = 0);
+
+      virtual void undo();
+      virtual void redo();
+
+   private:
+      const bool m_newGridVisibility;
+      const bool m_oldGridVisibility;
+      SchematicScene *const m_schematic;
+};
+
 class MoveCmd : public QUndoCommand
 {
    public:

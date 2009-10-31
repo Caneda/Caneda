@@ -151,7 +151,7 @@ void SchematicScene::init()
 
   this->setCurrentMouseAction(Normal);
 
-  connect(undoStack(), SIGNAL(indexChanged(int)), this, SLOT(setModified()));
+  connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
 }
 
 /*!\brief Default Destructor */
@@ -254,6 +254,7 @@ void SchematicScene::setGridVisible(const bool visibility)
   
   this->m_gridVisible = visibility;
   this->update();
+  emit gridChanged(visibility);
 }
 
 /*! Set grid visibility 
@@ -660,19 +661,18 @@ void SchematicScene::blockShortcuts(const bool block)
 
 /*!
  * \brief Set whether this schematic is modified or not
- * \param m True/false to set it to modified/unmodified.
+ * \param m True/false to set it to unmodified/modified.
  * This method emits the signal modificationChanged(bool) as well
  * as the signal titleToBeUpdated()
  */
 void SchematicScene::setModified(const bool m)
 {
-  if(this->m_modified != m) {
-    this->m_modified = m;
+  if(this->m_modified != !m) {
+    this->m_modified = !m;
     emit modificationChanged(this->m_modified);
     emit titleToBeUpdated();
   }
 }
-
 
 /*! Draw background of schematic including grid
   \param painter: Where to draw
@@ -767,9 +767,8 @@ bool SchematicScene::event(QEvent *event)
 	QPointF delta = this->smartNearingGridPoint(m_insertActionMousePos 
 						    - centerOfItems(m_insertibles));
 
-	foreach(QucsItem *item, m_insertibles) {
+        foreach(QucsItem *item, m_insertibles)
 	  item->moveBy(delta.x(), delta.y());
-	}
       }
     }
   }
@@ -866,7 +865,6 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
       placeItem(qItem, dest, Qucs::PushUndoCmd);
       view->restoreScrollState();
       event->acceptProposedAction();
-      setModified(true);
     }
   }
   else {
@@ -1217,6 +1215,7 @@ void SchematicScene::mirrorItems(QList<QucsItem*> &items,
       this->m_undoStack->beginMacro(QString("Mirror X"));
     else
       this->m_undoStack->beginMacro(QString("Mirror Y"));
+
   
   /* disconnect item before mirroring */
   this->disconnectItems(items, opt);
@@ -1254,7 +1253,6 @@ void SchematicScene::mirroringEvent(const MouseActionEvent *event,
   if(!qItems.isEmpty()) {
     /* mirror */
     this->mirrorItems(QList<QucsItem*>() << qItems.first(), Qucs::PushUndoCmd, axis);
-    this->setModified(true);
   } 
 }
 
@@ -1363,7 +1361,6 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
   QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
   if(!qItems.isEmpty()) {
     this->rotateItems(QList<QucsItem*>() << qItems.first(), angle, Qucs::PushUndoCmd);
-    this->setModified(true);
   }
 }
 /***************************************************************************
@@ -1713,7 +1710,6 @@ void SchematicScene::settingOnGridEvent(const MouseActionEvent *event)
     
     if(!_list.isEmpty()) {
       setItemsOnGrid(QList<QucsItem*>() << _items.first(), Qucs::PushUndoCmd);
-      setModified(true);
     }
   }
 }
@@ -1772,7 +1768,6 @@ void SchematicScene::changingActiveStatusEvent(const MouseActionEvent *event)
   QList<QucsItem*> qItems = filterItems<QucsItem>(_list, DontRemoveItems);
   if(!qItems.isEmpty()) {
     this->toggleActiveStatus(QList<QucsItem*>() << qItems.first(), Qucs::PushUndoCmd);
-    this->setModified(true);
   }
 }
 
@@ -1824,7 +1819,6 @@ void SchematicScene::deletingEventLeftMouseClick(const QPointF &pos)
     
     if(!_items.isEmpty()) {
       this->deleteItems(QList<QucsItem*>() << _items.first(), Qucs::PushUndoCmd);
-      this->setModified(true);
     }
   }
 }
@@ -1842,7 +1836,6 @@ void SchematicScene::deletingEventRightMouseClick(const QPointF &pos)
     
     if(!_items.isEmpty()) {
       this->disconnectItems(QList<QucsItem*>() << _items.first(), Qucs::PushUndoCmd);
-      this->setModified(true);
     }
   }
 }
@@ -1883,7 +1876,7 @@ void SchematicScene::connectItems(const QList<QucsItem*> &qItems,
 				  const Qucs::UndoOption opt)
 {
   if(opt == Qucs::PushUndoCmd)
-    this->m_undoStack->beginMacro(tr("Connect items"));
+    this->m_undoStack->beginMacro(QString("Connect items"));
 
   /* remove this cast */
   foreach(QucsItem *qItem, qItems) {
@@ -1907,7 +1900,7 @@ void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
 				     const Qucs::UndoOption opt)
 {
   if(opt == Qucs::PushUndoCmd)
-    this->m_undoStack->beginMacro(QString());
+    this->m_undoStack->beginMacro(QString("Disconnect items"));
 
   foreach(QucsItem *item, qItems) {
     QList<Port*> ports;
@@ -1938,6 +1931,11 @@ void SchematicScene::disconnectItems(const QList<QucsItem*> &qItems,
     this->m_undoStack->endMacro();
 }
 
+/*********************************************************************
+ *
+ *  Zoom in -- Zoom out
+ *
+ ********************************************************************/
 
 /*! Zoom at point event 
  * \brief Zoom in event handles zooming of the view based on mouse signals.
@@ -1992,6 +1990,23 @@ void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
     }
     m_zoomBand->hide();
   }
+}
+
+/*! Zoom out event
+ * \brief Zoom out event handles zooming of the view based on mouse signals.
+ *
+ * If just a point is clicked(mouse press + release) then, an ordinary zoomOut
+ * is done (similar to selecting from menu)
+*/
+void SchematicScene::zoomingOutAtPointEvent(MouseActionEvent *event)
+{
+    QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
+    SchematicView *sv = qobject_cast<SchematicView*>(v);
+    if(!sv)
+        return;
+
+    if(event->type() == QEvent::GraphicsSceneMousePress)
+        sv->zoomOut();
 }
 
 void SchematicScene::placeAndDuplicatePainting()
@@ -2107,7 +2122,7 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
     foreach(QucsItem *item, m_insertibles) {
       removeItem(item);
     }
-    m_undoStack->beginMacro(QString());
+    m_undoStack->beginMacro(QString("Insert items"));
     foreach(QucsItem *item, m_insertibles) {
       QucsItem *copied = item->copy(0);
       /* round */
@@ -2165,7 +2180,7 @@ void SchematicScene::normalEvent(MouseActionEvent *e)
 	  m_areItemsMoving = true;
 	  if(!m_macroProgress) {
 	    m_macroProgress = true;
-	    m_undoStack->beginMacro(QString());
+            m_undoStack->beginMacro(QString("Move items"));
 	  }
 	}
       }
@@ -2438,7 +2453,7 @@ void SchematicScene::placeItem(QucsItem *item, const QPointF &pos, const Qucs::U
   }
 
   else {
-    m_undoStack->beginMacro(QString());
+    m_undoStack->beginMacro(QString("Use Paint Tool"));
 
     m_undoStack->push(new InsertItemCmd(item, this, pos));
     if(item->isComponent()) {
@@ -2569,6 +2584,10 @@ void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
 
   case ZoomingAtPoint:
     zoomingAtPointEvent(e);
+    break;
+
+  case ZoomingOutAtPoint:
+    zoomingOutAtPointEvent(e);
     break;
 
   case PaintingDrawEvent:

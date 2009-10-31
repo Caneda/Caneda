@@ -26,6 +26,7 @@
 #include <QtCore/QMap>
 #include <QtGui/QToolBar>
 #include <QtGui/QMenu>
+#include <QtGui/QUndoView>
 
 class ComponentsSidebar;
 class QUndoGroup;
@@ -53,14 +54,17 @@ class QucsMainWindow : public MainWindowBase
       void slotFileNew();
       void slotTextNew();
       void slotFileOpen();
-      void slotFileSave();
-      void slotFileSaveAs();
+      void slotFileSave(int index);
+      void slotFileSaveCurrent();
+      void slotFileSaveAs(int index);
+      void slotFileSaveAsCurrent();
       void slotFileSaveAll();
-      void slotFileClose();
-      void slotSymbolEdit();
-      void slotFileSettings();
+      void slotFileClose(int index);
+      void slotFileCloseCurrent();
       void slotFilePrint();
       void slotFilePrintFit();
+      void slotExportImage();
+      void slotFileSettings();
       void slotApplSettings();
 
       void slotAlignTop();
@@ -95,13 +99,14 @@ class QucsMainWindow : public MainWindowBase
       void slotShowAll();
       void slotShowOne();
       void slotZoomIn(bool);
-      void slotZoomOut();
+      void slotZoomOut(bool);
       void slotSelect(bool);
       void slotSelectAll();
       void slotSelectMarker();
       void slotEditRotate(bool);
       void slotEditMirrorX(bool);
       void slotEditMirrorY(bool);
+      void slotSymbolEdit();
       void slotIntoHierarchy();
       void slotPopHierarchy();
       void slotEditActivate(bool);
@@ -123,10 +128,9 @@ class QucsMainWindow : public MainWindowBase
       void slotSetMarker(bool);
       void slotShowLastMsg();
       void slotShowLastNetlist();
-      void slotViewGrid(bool toogle);
+      void slotViewGrid(bool);
       void slotViewToolBar(bool);
       void slotViewStatusBar(bool);
-      void slotViewBrowseDock(bool);
       void slotHelpIndex();
       void slotGettingStarted();
       void slotHelpAbout();
@@ -153,6 +157,7 @@ class QucsMainWindow : public MainWindowBase
 
       void slotCurrentChanged(QWidget *current, QWidget *prev);
       void slotViewClosed(QWidget *widget);
+      void slotUpdateGridStatus(bool status);
 
    private:
       void initActions();
@@ -163,6 +168,7 @@ class QucsMainWindow : public MainWindowBase
       void alignElements(Qt::Alignment alignment);
       void editFile(const QString& File);
       void showHTML(const QString& Page);
+      void createUndoView();
 
       QucsView* viewFromWidget(QWidget *widget);
 
@@ -180,7 +186,9 @@ class QucsMainWindow : public MainWindowBase
          *helpMenu, *alignMenu, *toolMenu;
 
       QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
+      QDockWidget *sidebarDockWidget;
       QUndoGroup *m_undoGroup;
+      QUndoView *undoView;
       ComponentsSidebar *m_componentsSidebar;
       QString titleText;
 

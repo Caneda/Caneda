@@ -75,8 +75,6 @@ void MainWindowBase::addChildWidget(QWidget *widget)
    if(m_tabWidget->count() == 1) {
       emit currentWidgetChanged(widget, 0);
    }
-   if(m_tabCloseButton->isHidden())
-      m_tabCloseButton->show();
 }
 
 void MainWindowBase::removeChildWidget(QWidget *widget, bool deleteWidget)
@@ -96,9 +94,6 @@ void MainWindowBase::removeChildWidget(QWidget *widget, bool deleteWidget)
 
       m_tabWidget->removeTab(index);
    }
-
-   if( m_tabWidget->count() == 0 )
-      m_tabCloseButton->hide();
 }
 
 void MainWindowBase::addAsDockWidget(QWidget *w, const QString& title, Qt::DockWidgetArea area)
@@ -108,10 +103,8 @@ void MainWindowBase::addAsDockWidget(QWidget *w, const QString& title, Qt::DockW
    addDockWidget(area, dw);
 }
 
-void MainWindowBase::closeCurrentTab()
+void MainWindowBase::closeTab(int index)
 {
-   int index = m_tabWidget->currentIndex();
-   if (index >= 0)
       removeChildWidget(m_tabWidget->widget(index), true);
 }
 
@@ -119,14 +112,10 @@ void MainWindowBase::setupTabWidget()
 {
    m_tabWidget = new TabWidgetPrivate(this);
    m_tabWidget->setFocusPolicy(Qt::NoFocus);
-   m_tabCloseButton = new QToolButton(m_tabWidget);
-   m_tabCloseButton->setIcon(QIcon(Qucs::bitmapDirectory() + "close_tab.png"));
-   m_tabCloseButton->adjustSize();
-   m_tabCloseButton->hide();
-   m_tabWidget->setCornerWidget(m_tabCloseButton, Qt::TopRightCorner);
+   m_tabWidget->setTabsClosable(true);
+   m_tabWidget->setMovable(true);
 
-   connect(m_tabCloseButton, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
-   connect(m_tabWidget, SIGNAL(currentChanged ( int)), this, SLOT(emitWidgetChanged( int )));
+   connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(emitWidgetChanged(int)));
 
    m_lastCurrentWidget = m_tabWidget->currentWidget();
 }

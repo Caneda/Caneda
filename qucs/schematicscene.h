@@ -79,6 +79,8 @@ public:
     SettingOnGrid,
     /*! Zoom at point */
     ZoomingAtPoint,
+    /*! Zoom out at point */
+    ZoomingOutAtPoint,
     /*! Painting item's drawing (like Ellipse, Rectangle) */
     PaintingDrawEvent,
     /*! insert an item */
@@ -211,6 +213,7 @@ signals:
   void modificationChanged(bool changed);
   void fileNameChanged(const QString& file);
   void titleToBeUpdated();
+  void gridChanged(bool state);
 
 protected:
   void drawBackground(QPainter *p, const QRectF& r);
@@ -236,6 +239,7 @@ protected:
   void changingActiveStatusEvent(const MouseActionEvent *e);
   void settingOnGridEvent(const MouseActionEvent *e);
   void zoomingAtPointEvent(MouseActionEvent *e);
+  void zoomingOutAtPointEvent(MouseActionEvent *e);
   void paintingDrawEvent(MouseActionEvent *e);
   void insertingItemsEvent(MouseActionEvent *e);
   void insertingWireLabelEvent(MouseActionEvent *event);

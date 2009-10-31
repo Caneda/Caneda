@@ -52,7 +52,7 @@ class MainWindowBase : public QMainWindow
       void closedWidget(QWidget *widget);
 
    public slots:
-      void closeCurrentTab();
+      void closeTab(int index);
 
    private slots:
       void emitWidgetChanged(int index);
@@ -61,7 +61,6 @@ class MainWindowBase : public QMainWindow
       void setupTabWidget();
 
       TabWidgetPrivate *m_tabWidget;
-      QToolButton *m_tabCloseButton;
       QWidget *m_lastCurrentWidget;
 
 };

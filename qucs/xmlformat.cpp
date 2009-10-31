@@ -171,6 +171,14 @@ QString XmlFormat::saveText()
       writer->writeEndElement(); //</wires>
    }
 
+   QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
+   if(!paintings.isEmpty()) {
+       writer->writeStartElement("paintings");
+       foreach(Painting *p, paintings)
+           p->saveData(writer);
+       writer->writeEndElement(); //</paintings>
+   }
+
    QList<QucsItem*> qItems = filterItems<QucsItem>(items, RemoveItems);
    if(!qItems.isEmpty()) {
       qDebug() << "Some items not saved. Should implement them still.";
@@ -232,6 +240,8 @@ void XmlFormat::readQucs(Qucs::XmlReader* reader)
             loadView(reader);
          else if(reader->name() == "wires")
             loadWires(reader);
+         else if(reader->name() == "paintings")
+            loadPaintings(reader);
          else
             reader->readUnknownElement();
       }
@@ -441,3 +451,36 @@ void XmlFormat::loadWires(Qucs::XmlReader* reader)
        }
    }
 }
+
+void XmlFormat::loadPaintings(Qucs::XmlReader *reader)
+{
+    SchematicScene *scene = m_view->schematicScene();
+    if(!scene) {
+       reader->raiseError(QObject::tr("XmlFormat::loadPaintings() : Scene doesn't exist.\n"
+                                      "So raising xml error to stop parsing"));
+       return;
+    }
+
+    if(!reader->isStartElement() || reader->name() != "paintings")
+       reader->raiseError(QObject::tr("Malformatted file"));
+
+    while(!reader->atEnd()) {
+       reader->readNext();
+
+       if(reader->isEndElement()) {
+          Q_ASSERT(reader->name() == "paintings");
+          break;
+       }
+
+       if(reader->isStartElement()) {
+          if(reader->name() == "painting")
+              Painting::loadPainting(reader,scene);
+          else {
+              qWarning() << "Error: Found unknown painting type" << reader->name().toString();
+              reader->readUnknownElement();
+              reader->raiseError(QObject::tr("Malformatted file"));
+          }
+       }
+    }
+}
+
