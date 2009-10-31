@@ -34,6 +34,7 @@
 
 namespace Qucs
 {
+   const QString baseDir(BASEDIR);
    const QString binaryDir(BINARYDIR);
    const QString bitmapDir(BITMAPDIR);
    const QString docDir(DOCDIR);
@@ -55,6 +56,7 @@ namespace Qucs
 
    QString getenv();
 
+   QString baseDirectory();
    QString bitmapDirectory();
    QString langDirectory();
 

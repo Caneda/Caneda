@@ -1,3 +1,4 @@
+#cmakedefine BASEDIR "${CMAKE_INSTALL_PREFIX}/"
 #cmakedefine BITMAPDIR "${CMAKE_INSTALL_PREFIX}/bitmaps/"
 #cmakedefine BINARYDIR "${CMAKE_INSTALL_PREFIX}/bin/"
 #cmakedefine DOCDIR "${CMAKE_INSTALL_PREFIX}/docs/"

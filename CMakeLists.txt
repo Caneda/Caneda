@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 PROJECT( Qucs )
 
+SET(BASEDIR 1)
 SET(BITMAPDIR 1)
 SET(BINARYDIR 1)
 SET(DOCDIR 1)
