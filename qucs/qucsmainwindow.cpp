@@ -994,8 +994,6 @@ void QucsMainWindow::initMenus()
 
    viewMenu->addAction(action("viewToolBar"));
    viewMenu->addAction(action("viewStatusBar"));
-//   viewMenu->addAction(action("viewBrowseDock"));
-//   viewMenu->addAction(action("viewUndoDock"));
 
    menuBar()->addSeparator();
 

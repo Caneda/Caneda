@@ -78,9 +78,8 @@ QPointF centerOfItems(const QList<T*> &items)
     items.first()->sceneBoundingRect();
 
 
-  foreach(T *item, items) {
+  foreach(T *item, items)
     rect |= item->sceneBoundingRect();
-  }
 
   return rect.center();
 }

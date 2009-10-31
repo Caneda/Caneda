@@ -252,8 +252,6 @@ void SchematicView::updateTabs()
 void SchematicView::repaintWires()
 {
    bool fixSchematicViewrepaintWires;
-//foreach(Wire *w, schematicScene()->wires())
-   //   w->rebuild();
 }
 
 void SchematicView::addTestComponents()
