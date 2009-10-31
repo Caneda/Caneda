@@ -1,7 +1,7 @@
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
-SET(DIALOGS_SRCS qucssettingsdialog.cpp)
-SET(DIALOGS_MOC_HDRS qucssettingsdialog.h)
+SET(DIALOGS_SRCS qucssettingsdialog.cpp aboutqucs.cpp)
+SET(DIALOGS_MOC_HDRS qucssettingsdialog.h aboutqucs.h)
 
 QT4_WRAP_CPP( DIALOGS_MOC_SRCS ${DIALOGS_MOC_HDRS} )
 

@@ -28,6 +28,7 @@
 #include "xmlutilities/validators.h"
 #include "xmlutilities/transformers.h"
 #include "dialogs/qucssettingsdialog.h"
+#include "dialogs/aboutqucs.h"
 
 #include <QtGui/QStatusBar>
 #include <QtGui/QMenu>
@@ -215,7 +216,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFileSaveCurrent()));
    addActionToMap(action);
 
-   action = new QAction( tr("Save as..."), this);
+   action = new QAction(QIcon(bitmapPath + "filesaveas.png"), tr("Save as..."), this);
    action->setShortcut(CTRL+SHIFT+Key_S);
    action->setStatusTip(tr("Saves the current document under a new filename"));
    action->setWhatsThis(tr("Save As\n\nSaves the current document under a new filename"));
@@ -1891,7 +1892,8 @@ void QucsMainWindow::slotGettingStarted()
 void QucsMainWindow::slotHelpAbout()
 {
    setNormalAction();
-   //TODO: implement this or rather port directly
+   AboutQUCS *about = new AboutQUCS();
+   about->exec();
 }
 
 void QucsMainWindow::slotHelpAboutQt()
