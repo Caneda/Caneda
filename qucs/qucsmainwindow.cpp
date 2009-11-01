@@ -248,13 +248,6 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFilePrint()));
    addActionToMap(action);
 
-   action = new QAction( tr("Print Fit to Page..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_P);
-   action->setWhatsThis(tr("Print Fit to Page\n\n""Print and fit content to the page size"));
-   action->setObjectName("filePrintFit");
-   connect( action, SIGNAL(triggered()), SLOT(slotFilePrintFit()));
-   addActionToMap(action);
-
    action = new QAction(QIcon(bitmapPath + "export-image.png"), tr("Export Image"), this);
    action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
    action->setObjectName("exportImage");
@@ -281,13 +274,6 @@ void QucsMainWindow::initActions()
    action->setWhatsThis(tr("Exit\n\nQuits the application"));
    action->setObjectName("fileQuit");
    connect( action, SIGNAL(triggered()), SLOT(close()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Replace..."), this);
-   action->setShortcut(Key_F7);
-   action->setWhatsThis(tr("Replace\n\nChange component properties\nor\ntext in VHDL code"));
-   action->setObjectName("changeProps");
-   connect( action, SIGNAL(triggered()), SLOT(slotChangeProps()));
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "editcut.png"), tr("Cu&t"), this);
@@ -333,12 +319,11 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotEditFind()));
    addActionToMap(action);
 
-   action = new QAction( tr("Find Again"), this);
-   action->setShortcut(Key_F3);
-   action->setStatusTip(tr("Find same text again"));
-   action->setWhatsThis(tr("Find\n\nSearches for the same piece of text again"));
-   action->setObjectName("editFindAgain");
-   connect( action, SIGNAL(triggered()), SLOT(slotEditFindAgain()));
+   action = new QAction( tr("Replace..."), this);
+   action->setShortcut(Key_F7);
+   action->setWhatsThis(tr("Replace\n\nChange component properties\nor\ntext in VHDL code"));
+   action->setObjectName("changeProps");
+   connect( action, SIGNAL(triggered()), SLOT(slotChangeProps()));
    addActionToMap(action);
 
    action = m_undoGroup->createUndoAction(this);
@@ -814,13 +799,6 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotHelpIndex()));
    addActionToMap(action);
 
-   action = new QAction( tr("Getting Started..."), this);
-   action->setStatusTip(tr("Getting Started with Qucs"));
-   action->setWhatsThis(tr("Getting Started\n\nShort introduction into Qucs"));
-   action->setObjectName("helpGetStart");
-   connect( action, SIGNAL(triggered()), SLOT(slotGettingStarted()));
-   addActionToMap(action);
-
    action = new QAction(QIcon(bitmapPath + "qucs.png"), tr("&About Qucs..."), this);
    action->setWhatsThis(tr("About\n\nAbout the application"));
    action->setObjectName("helpAboutApp");
@@ -870,7 +848,6 @@ void QucsMainWindow::initMenus()
    fileMenu->addAction(action("fileSaveAll"));
    fileMenu->addAction(action("fileSaveAs"));
    fileMenu->addAction(action("filePrint"));
-   fileMenu->addAction(action("filePrintFit"));
    fileMenu->addAction(action("exportImage"));
 
    fileMenu->addSeparator();
@@ -900,7 +877,6 @@ void QucsMainWindow::initMenus()
    editMenu->addAction(action("selectAll"));
    editMenu->addAction(action("selectMarker"));
    editMenu->addAction(action("editFind"));
-   editMenu->addAction(action("editFindAgain"));
    editMenu->addAction(action("changeProps"));
    editMenu->addAction(action("editRotate"));
    editMenu->addAction(action("editMirror"));
@@ -1001,7 +977,6 @@ void QucsMainWindow::initMenus()
    helpMenu = menuBar()->addMenu(tr("&Help"));
 
    helpMenu->addAction(action("helpIndex"));
-   helpMenu->addAction(action("helpGetStart"));
    helpMenu->addAction(action("whatsThis"));
 
    helpMenu->addSeparator();
@@ -1383,14 +1358,6 @@ void QucsMainWindow::slotFilePrint()
 /*!
  * \todo Implement this.
  */
-void QucsMainWindow::slotFilePrintFit()
-{
-   //TODO: implement this or rather port directly
-}
-
-/*!
- * \todo Implement this.
- */
 void QucsMainWindow::slotExportImage()
 {
    //TODO: implement this
@@ -1527,12 +1494,6 @@ void QucsMainWindow::slotEditDelete(bool on)
 }
 
 void QucsMainWindow::slotEditFind()
-{
-   setNormalAction();
-   //TODO: implement this or rather port directly
-}
-
-void QucsMainWindow::slotEditFindAgain()
 {
    setNormalAction();
    //TODO: implement this or rather port directly
@@ -1881,12 +1842,6 @@ void QucsMainWindow::slotHelpIndex()
 {
    setNormalAction();
    showHTML("index.html");
-}
-
-void QucsMainWindow::slotGettingStarted()
-{
-   setNormalAction();
-   showHTML("start.html");
 }
 
 void QucsMainWindow::slotHelpAbout()

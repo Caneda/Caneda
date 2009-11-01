@@ -62,7 +62,6 @@ class QucsMainWindow : public MainWindowBase
       void slotFileClose(int index);
       void slotFileCloseCurrent();
       void slotFilePrint();
-      void slotFilePrintFit();
       void slotExportImage();
       void slotFileSettings();
       void slotApplSettings();
@@ -83,7 +82,6 @@ class QucsMainWindow : public MainWindowBase
       void slotEditPaste();
       void slotEditDelete(bool);
       void slotEditFind();
-      void slotEditFindAgain();
       void slotEditUndo();
       void slotEditRedo();
       void slotProjNewButt();
@@ -132,7 +130,6 @@ class QucsMainWindow : public MainWindowBase
       void slotViewToolBar(bool);
       void slotViewStatusBar(bool);
       void slotHelpIndex();
-      void slotGettingStarted();
       void slotHelpAbout();
       void slotHelpAboutQt();
 
