@@ -66,38 +66,12 @@ class QucsMainWindow : public MainWindowBase
       void slotFileSettings();
       void slotApplSettings();
 
-      void slotAlignTop();
-      void slotAlignBottom();
-      void slotAlignLeft();
-      void slotAlignRight();
-      void slotDistribHoriz();
-      void slotDistribVert();
-      void slotCenterHorizontal();
-      void slotCenterVertical();
-      void slotOnGrid(bool);
-      void slotChangeProps();
-
       void slotEditCut();
       void slotEditCopy();
       void slotEditPaste();
       void slotEditDelete(bool);
       void slotEditFind();
-      void slotEditUndo();
-      void slotEditRedo();
-      void slotProjNewButt();
-      void slotMenuOpenProject();
-      void slotMenuDelProject();
-      void slotMenuCloseProject();
-      void slotAddToProject();
-      void slotCreateLib();
-      void slotCreatePackage();
-      void slotExtractPackage();
-      void slotImportData();
-      void slotExportGraphAsCsv();
-      void slotShowAll();
-      void slotShowOne();
-      void slotZoomIn(bool);
-      void slotZoomOut(bool);
+      void slotReplace();
       void slotSelect(bool);
       void slotSelectAll();
       void slotSelectMarker();
@@ -107,38 +81,65 @@ class QucsMainWindow : public MainWindowBase
       void slotSymbolEdit();
       void slotIntoHierarchy();
       void slotPopHierarchy();
-      void slotEditActivate(bool);
+
+      void slotOnGrid(bool);
+      void slotAlignTop();
+      void slotAlignBottom();
+      void slotAlignLeft();
+      void slotAlignRight();
+      void slotDistribHoriz();
+      void slotDistribVert();
+      void slotCenterHorizontal();
+      void slotCenterVertical();
+
+      void slotProjNewButt();
+      void slotMenuOpenProject();
+      void slotAddToProject();
+      void slotMenuDelProject();
+      void slotMenuCloseProject();
+      void slotCreateLib();
+      void slotCreatePackage();
+      void slotExtractPackage();
+      void slotImportData();
+      void slotExportGraphAsCsv();
+
+      void slotSetWire(bool);
+      void slotInsertLabel(bool);
       void slotInsertEquation();
       void slotInsertGround();
       void slotInsertPort();
-      void slotSetWire(bool);
-      void slotInsertLabel(bool);
       void slotInsertEntity();
+      void slotEditActivate(bool);
       void slotCallEditor();
       void slotCallFilter();
       void slotCallLine();
       void slotCallLibrary();
       void slotCallMatch();
       void slotCallAtt();
+
       void slotSimulate();
       void slotToPage();
       void slotDCbias();
       void slotSetMarker(bool);
       void slotShowLastMsg();
       void slotShowLastNetlist();
+
+      void slotShowAll();
+      void slotShowOne();
+      void slotZoomIn(bool);
+      void slotZoomOut(bool);
       void slotViewGrid(bool);
       void slotViewToolBar(bool);
       void slotViewStatusBar(bool);
+
       void slotHelpIndex();
       void slotHelpAbout();
       void slotHelpAboutQt();
 
       void slotInsertItemAction(bool state);
       void slotPaintingDrawAction(bool state);
-
       void setDocumentTitle(const QString& title);
       void updateTitleTabText();
-
       void slotSidebarItemClicked(const QString& item, const QString& category);
 
    signals:
@@ -160,12 +161,15 @@ class QucsMainWindow : public MainWindowBase
       void initActions();
       void initMenus();
       void initToolBars();
+
       void performToggleAction(const bool on, pActionFunc func, QAction *action);
       void setNormalAction();
       void alignElements(Qt::Alignment alignment);
       void editFile(const QString& File);
       void showHTML(const QString& Page);
+
       void createUndoView();
+      void setupSidebar();
 
       QucsView* viewFromWidget(QWidget *widget);
 
@@ -190,7 +194,6 @@ class QucsMainWindow : public MainWindowBase
       QString titleText;
 
    public:
-      void setupSidebar();
 
       int x, y, dx, dy;     // position and size
       float largeFontSize;
