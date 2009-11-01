@@ -821,13 +821,13 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotGettingStarted()));
    addActionToMap(action);
 
-   action = new QAction( tr("&About Qucs..."), this);
+   action = new QAction(QIcon(bitmapPath + "qucs.png"), tr("&About Qucs..."), this);
    action->setWhatsThis(tr("About\n\nAbout the application"));
    action->setObjectName("helpAboutApp");
    connect( action, SIGNAL(triggered()), SLOT(slotHelpAbout()));
    addActionToMap(action);
 
-   action = new QAction( tr("About Qt..."), this);
+   action = new QAction(QIcon(bitmapPath + "qt.png"), tr("About Qt..."), this);
    action->setWhatsThis(tr("About Qt\n\nAbout Qt by Trolltech"));
    action->setObjectName("helpAboutQt");
    connect( action, SIGNAL(triggered()), SLOT(slotHelpAboutQt()));
