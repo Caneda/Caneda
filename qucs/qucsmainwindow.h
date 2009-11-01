@@ -100,8 +100,6 @@ class QucsMainWindow : public MainWindowBase
       void slotCreateLib();
       void slotCreatePackage();
       void slotExtractPackage();
-      void slotImportData();
-      void slotExportGraphAsCsv();
 
       void slotSetWire(bool);
       void slotInsertLabel(bool);
@@ -110,17 +108,18 @@ class QucsMainWindow : public MainWindowBase
       void slotInsertPort();
       void slotInsertEntity();
       void slotEditActivate(bool);
-      void slotCallEditor();
       void slotCallFilter();
       void slotCallLine();
-      void slotCallLibrary();
       void slotCallMatch();
       void slotCallAtt();
+      void slotCallLibrary();
+      void slotImportData();
 
       void slotSimulate();
       void slotToPage();
       void slotDCbias();
       void slotSetMarker(bool);
+      void slotExportGraphAsCsv();
       void slotShowLastMsg();
       void slotShowLastNetlist();
 

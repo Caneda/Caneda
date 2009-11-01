@@ -259,6 +259,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "export-image.png"), tr("Export Image"), this);
+   action->setShortcut(CTRL+Key_E);
    action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
    action->setObjectName("exportImage");
    connect( action, SIGNAL(triggered()), SLOT(slotExportImage()));
@@ -392,7 +393,7 @@ void QucsMainWindow::initActions()
    checkableActions << action;
 
    action = new QAction(QIcon(bitmapPath + "mirror.png"), tr("Mirror about X Axis"), this);
-   action->setShortcut(CTRL+Key_J);
+   action->setShortcut(Key_V);
    action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
    action->setObjectName("editMirror");
    action->setData(QVariant(SchematicScene::MirroringX));
@@ -402,7 +403,7 @@ void QucsMainWindow::initActions()
    checkableActions << action;
 
    action = new QAction(QIcon(bitmapPath + "mirrory.png"), tr("Mirror about Y Axis"), this);
-   action->setShortcut(CTRL+Key_M);
+   action->setShortcut(Key_H);
    action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
    action->setObjectName("editMirrorY");
    action->setData(QVariant(SchematicScene::MirroringY));
@@ -427,7 +428,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "top.png"), tr("Pop out"), this);
-   action->setShortcut(CTRL+Key_H);
+   action->setShortcut(CTRL+SHIFT+Key_I);
    action->setStatusTip(tr("Pop outside subcircuit"));
    action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
    action->setObjectName("popH");
@@ -561,24 +562,8 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotExtractPackage()));
    addActionToMap(action);
 
-   action = new QAction( tr("&Import Data..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_I);
-   action->setStatusTip(tr("Convert file to Qucs data file"));
-   action->setWhatsThis(tr("Import Data\n\nConvert data file to Qucs data file"));
-   action->setObjectName("importData");
-   connect( action, SIGNAL(triggered()), SLOT(slotImportData()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Export to &CSV..."), this);
-   action->setShortcut(CTRL+SHIFT+Key_C);
-   action->setStatusTip(tr("Convert graph data to CSV file"));
-   action->setWhatsThis(tr("Export to CSV\n\nConvert graph data to CSV file"));
-   action->setObjectName("graph2csv");
-   connect( action, SIGNAL(triggered()), SLOT(slotExportGraphAsCsv()));
-   addActionToMap(action);
-
    action = new QAction(QIcon(bitmapPath + "wire.png"), tr("Wire"), this);
-   action->setShortcut(CTRL+Key_E);
+   action->setShortcut(Key_W);
    action->setWhatsThis(tr("Wire\n\nInserts a wire"));
    action->setObjectName("insWire");
    action->setData(QVariant(SchematicScene::Wiring));
@@ -588,7 +573,7 @@ void QucsMainWindow::initActions()
    checkableActions << action;
 
    action = new QAction(QIcon(bitmapPath + "nodename.png"), tr("Wire Label"), this);
-   action->setShortcut(CTRL+Key_L);
+   action->setShortcut(Key_L);
    action->setStatusTip(tr("Inserts a wire or pin label"));
    action->setWhatsThis(tr("Wire Label\n\nInserts a wire or pin label"));
    action->setObjectName("insLabel");
@@ -599,27 +584,28 @@ void QucsMainWindow::initActions()
    checkableActions << action;
 
    action = new QAction(QIcon(bitmapPath + "equation.png"), tr("Insert Equation"), this);
-   action->setShortcut(CTRL+Key_Less);
+   action->setShortcut(Key_E);
    action->setWhatsThis(tr("Insert Equation\n\nInserts a user defined equation"));
    action->setObjectName("insEquation");
    connect(action, SIGNAL(triggered()), SLOT(slotInsertEquation()));
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "ground.png"), tr("Insert Ground"), this);
-   action->setShortcut(CTRL+Key_G);
+   action->setShortcut(Key_G);
    action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
    action->setObjectName("insGround");
    connect(action, SIGNAL(triggered()), SLOT(slotInsertGround()));
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "port.png"), tr("Insert Port"), this);
+   action->setShortcut(Key_P);
    action->setWhatsThis(tr("Insert Port\n\nInserts a port symbol"));
    action->setObjectName("insPort");
    connect( action, SIGNAL(triggered()), SLOT(slotInsertPort()));
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "vhdl-code.png"), tr("VHDL entity"), this);
-   action->setShortcut(CTRL+Key_Space);
+   action->setShortcut(CTRL+SHIFT+Key_V);
    action->setStatusTip(tr("Inserts skeleton of VHDL entity"));
    action->setWhatsThis(tr("VHDL entity\n\nInserts the skeleton of a VHDL entity"));
    action->setObjectName("insEntity");
@@ -627,7 +613,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "deactiv.png"), tr("Deactivate/Activate"), this);
-   action->setShortcut(CTRL+Key_D);
+   action->setShortcut(Key_D);
    action->setStatusTip(tr("Deactivate/Activate selected components"));
    action->setWhatsThis(tr("Deactivate/Activate\n\nDeactivate/Activate the selected components"));
    action->setObjectName("editActivate");
@@ -637,16 +623,8 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction(QIcon(bitmapPath + "text-editor.png"), tr("Text Editor"), this);
-   action->setShortcut(CTRL+Key_1);
-   action->setStatusTip(tr("Starts the Qucs text editor"));
-   action->setWhatsThis(tr("Text editor\n\nStarts the Qucs text editor"));
-   action->setObjectName("callEditor");
-   connect( action, SIGNAL(triggered()), SLOT(slotCallEditor()));
-   addActionToMap(action);
-
    action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Filter synthesis"), this);
-   action->setShortcut(CTRL+Key_2);
+   action->setShortcut(CTRL+Key_1);
    action->setStatusTip(tr("Starts QucsFilter"));
    action->setWhatsThis(tr("Filter synthesis\n\nStarts QucsFilter"));
    action->setObjectName("callFilter");
@@ -654,23 +632,15 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Line calculation"), this);
-   action->setShortcut(CTRL+Key_3);
+   action->setShortcut(CTRL+Key_2);
    action->setStatusTip(tr("Starts QucsTrans"));
    action->setWhatsThis(tr("Line calculation\n\nStarts transmission line calculator"));
    action->setObjectName("callLine");
    connect( action, SIGNAL(triggered()), SLOT(slotCallLine()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(bitmapPath + "library.png"), tr("Component Library"), this);
-   action->setShortcut(CTRL+Key_4);
-   action->setStatusTip(tr("Starts QucsLib"));
-   action->setWhatsThis(tr("Component Library\n\nStarts component library program"));
-   action->setObjectName("callLib");
-   connect( action, SIGNAL(triggered()), SLOT(slotCallLibrary()));
-   addActionToMap(action);
-
    action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Matching Circuit"), this);
-   action->setShortcut(CTRL+Key_5);
+   action->setShortcut(CTRL+Key_3);
    action->setStatusTip(tr("Creates Matching Circuit"));
    action->setWhatsThis(tr("Matching Circuit\n\nDialog for Creating Matching Circuit"));
    action->setObjectName("callMatch");
@@ -678,15 +648,31 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Attenuator synthesis"), this);
-   action->setShortcut(CTRL+Key_6);
+   action->setShortcut(CTRL+Key_4);
    action->setStatusTip(tr("Starts QucsAttenuator"));
    action->setWhatsThis(tr("Attenuator synthesis\n\nStarts attenuator calculation program"));
    action->setObjectName("callAtt");
    connect( action, SIGNAL(triggered()), SLOT(slotCallAtt()));
    addActionToMap(action);
 
+   action = new QAction(QIcon(bitmapPath + "library.png"), tr("Component Library"), this);
+   action->setShortcut(CTRL+Key_5);
+   action->setStatusTip(tr("Starts QucsLib"));
+   action->setWhatsThis(tr("Component Library\n\nStarts component library program"));
+   action->setObjectName("callLib");
+   connect( action, SIGNAL(triggered()), SLOT(slotCallLibrary()));
+   addActionToMap(action);
+
+   action = new QAction( tr("&Import Data..."), this);
+   action->setShortcut(CTRL+Key_6);
+   action->setStatusTip(tr("Convert file to Qucs data file"));
+   action->setWhatsThis(tr("Import Data\n\nConvert data file to Qucs data file"));
+   action->setObjectName("importData");
+   connect( action, SIGNAL(triggered()), SLOT(slotImportData()));
+   addActionToMap(action);
+
    action = new QAction(QIcon(bitmapPath + "start.png"), tr("Simulate"), this);
-   action->setShortcut(Key_F2);
+   action->setShortcut(Key_F5);
    action->setStatusTip(tr("Simulates the current schematic"));
    action->setWhatsThis(tr("Simulate\n\nSimulates the current schematic"));
    action->setObjectName("simulate");
@@ -702,7 +688,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction( tr("Calculate DC bias"), this);
-   action->setShortcut(Key_F8);
+   action->setShortcut(Key_F3);
    action->setStatusTip(tr("Calculates DC bias and shows it"));
    action->setWhatsThis(tr("Calculate DC bias\n\nCalculates DC bias and shows it"));
    action->setObjectName("dcbias");
@@ -710,7 +696,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "marker.png"), tr("Set Marker on Graph"), this);
-   action->setShortcut(CTRL+Key_B);
+   action->setShortcut(Key_F2);
    action->setStatusTip(tr("Sets a marker on a diagram's graph"));
    action->setWhatsThis(tr("Set Marker\n\nSets a marker on a diagram's graph"));
    action->setObjectName("setMarker");
@@ -720,8 +706,16 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
+   action = new QAction( tr("Export to &CSV..."), this);
+   action->setShortcut(Key_F6);
+   action->setStatusTip(tr("Convert graph data to CSV file"));
+   action->setWhatsThis(tr("Export to CSV\n\nConvert graph data to CSV file"));
+   action->setObjectName("graph2csv");
+   connect( action, SIGNAL(triggered()), SLOT(slotExportGraphAsCsv()));
+   addActionToMap(action);
+
    action = new QAction(QIcon(bitmapPath + "document-preview.png"), tr("Show Last Messages"), this);
-   action->setShortcut(Key_F5);
+   action->setShortcut(Key_F7);
    action->setStatusTip(tr("Shows last simulation messages"));
    action->setWhatsThis(tr("Show Last Messages\n\nShows the messages of the last simulation"));
    action->setObjectName("showMsg");
@@ -729,7 +723,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "document-preview.png"), tr("Show Last Netlist"), this);
-   action->setShortcut(Key_F6);
+   action->setShortcut(Key_F8);
    action->setStatusTip(tr("Shows last simulation netlist"));
    action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
    action->setObjectName("showNet");
@@ -933,11 +927,6 @@ void QucsMainWindow::initMenus()
    projMenu->addAction(action("createPkg"));
    projMenu->addAction(action("extractPkg"));
 
-   projMenu->addSeparator();
-
-   projMenu->addAction(action("importData"));
-   projMenu->addAction(action("graph2csv"));
-
    toolMenu = menuBar()->addMenu(tr("&Tools"));
 
    toolMenu->addAction(action("insWire"));
@@ -950,19 +939,29 @@ void QucsMainWindow::initMenus()
 
    toolMenu->addSeparator();
 
-   toolMenu->addAction(action("callEditor"));
    toolMenu->addAction(action("callFilter"));
    toolMenu->addAction(action("callLine"));
-   toolMenu->addAction(action("callLib"));
    toolMenu->addAction(action("callMatch"));
    toolMenu->addAction(action("callAtt"));
+
+   toolMenu->addSeparator();
+
+   toolMenu->addAction(action("callLib"));
+   toolMenu->addAction(action("importData"));
 
    simMenu = menuBar()->addMenu(tr("&Simulation"));
 
    simMenu->addAction(action("simulate"));
    simMenu->addAction(action("dpl_sch"));
+
+   simMenu->addSeparator();
+
    simMenu->addAction(action("dcbias"));
    simMenu->addAction(action("setMarker"));
+   simMenu->addAction(action("graph2csv"));
+
+   simMenu->addSeparator();
+
    simMenu->addAction(action("showMsg"));
    simMenu->addAction(action("showNet"));
 
@@ -976,11 +975,10 @@ void QucsMainWindow::initMenus()
    viewMenu->addSeparator();
 
    viewMenu->addAction(action("viewGrid"));
-
-   viewMenu->addSeparator();
-
    viewMenu->addAction(action("viewToolBar"));
    viewMenu->addAction(action("viewStatusBar"));
+
+   viewMenu->addSeparator();
 
    menuBar()->addSeparator();
 
@@ -1031,13 +1029,19 @@ void QucsMainWindow::initToolBars()
    workToolbar->addAction(action("editMirror"));
    workToolbar->addAction(action("editMirrorY"));
    workToolbar->addAction(action("editRotate"));
-   workToolbar->addAction(action("intoH"));
-   workToolbar->addAction(action("popH"));
+
+   workToolbar->addSeparator();
+
    workToolbar->addAction(action("insWire"));
    workToolbar->addAction(action("insLabel"));
    workToolbar->addAction(action("insEquation"));
    workToolbar->addAction(action("insGround"));
    workToolbar->addAction(action("insPort"));
+   workToolbar->addAction(action("intoH"));
+   workToolbar->addAction(action("popH"));
+
+   workToolbar->addSeparator();
+
    workToolbar->addAction(action("simulate"));
    workToolbar->addAction(action("dpl_sch"));
    workToolbar->addAction(action("setMarker"));
@@ -1603,21 +1607,14 @@ void QucsMainWindow::slotExtractPackage()
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotImportData()
+void QucsMainWindow::slotSetWire(bool on)
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   performToggleAction(on, 0, action("insWire"));
 }
 
-void QucsMainWindow::slotExportGraphAsCsv()
+void QucsMainWindow::slotInsertLabel(bool on)
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
-}
-
-void QucsMainWindow::slotEditActivate(bool on)
-{
-   performToggleAction(on, &SchematicScene::toggleActiveStatus, action("editActivate"));
+   performToggleAction(on, 0, action("insLabel"));
 }
 
 void QucsMainWindow::slotInsertEquation()
@@ -1633,40 +1630,14 @@ void QucsMainWindow::slotInsertPort()
 {
 }
 
-void QucsMainWindow::slotSetWire(bool on)
-{
-   performToggleAction(on, 0, action("insWire"));
-}
-
-void QucsMainWindow::slotInsertLabel(bool on)
-{
-   performToggleAction(on, 0, action("insLabel"));
-}
-
 void QucsMainWindow::slotInsertEntity()
 {
    setNormalAction();
 }
 
-/*!
- * \brief Opens the editor given a filename
- */
-void QucsMainWindow::editFile(const QString& File)
+void QucsMainWindow::slotEditActivate(bool on)
 {
-  QStringList arguments;
-  if (!File.isEmpty()) arguments << File;
-  QProcess *QucsEditor = new QProcess(this);
-  QucsEditor->start(Editor,arguments);
-
-  //TODO Emit error in case there are problems
-  // Kill editor before qucs ends
-  connect(this, SIGNAL(signalKillWidgets()), QucsEditor, SLOT(kill()));
-}
-
-void QucsMainWindow::slotCallEditor()
-{
-   setNormalAction();
-   editFile(QString(""));
+   performToggleAction(on, &SchematicScene::toggleActiveStatus, action("editActivate"));
 }
 
 void QucsMainWindow::slotCallFilter()
@@ -1693,18 +1664,6 @@ void QucsMainWindow::slotCallLine()
    connect(this, SIGNAL(signalKillWidgets()), QucsLine, SLOT(kill()));
 }
 
-void QucsMainWindow::slotCallLibrary()
-{
-   setNormalAction();
-
-   QProcess *QucsLib = new QProcess(this);
-   QucsLib->start(QString(Qucs::binaryDir + "qucslib"));
-
-   //TODO Emit error in case there are problems
-   // Kill editor before qucs ends
-   connect(this, SIGNAL(signalKillWidgets()), QucsLib, SLOT(kill()));
-}
-
 void QucsMainWindow::slotCallMatch()
 {
    setNormalAction();
@@ -1721,6 +1680,24 @@ void QucsMainWindow::slotCallAtt()
    //TODO Emit error in case there are problems
    // Kill editor before qucs ends
    connect(this, SIGNAL(signalKillWidgets()), QucsAtt, SLOT(kill()));
+}
+
+void QucsMainWindow::slotCallLibrary()
+{
+   setNormalAction();
+
+   QProcess *QucsLib = new QProcess(this);
+   QucsLib->start(QString(Qucs::binaryDir + "qucslib"));
+
+   //TODO Emit error in case there are problems
+   // Kill editor before qucs ends
+   connect(this, SIGNAL(signalKillWidgets()), QucsLib, SLOT(kill()));
+}
+
+void QucsMainWindow::slotImportData()
+{
+   setNormalAction();
+   //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotSimulate()
@@ -1744,6 +1721,12 @@ void QucsMainWindow::slotDCbias()
 void QucsMainWindow::slotSetMarker(bool on)
 {
    performToggleAction(on, 0, action("selectMarker"));
+}
+
+void QucsMainWindow::slotExportGraphAsCsv()
+{
+   setNormalAction();
+   //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotShowLastMsg()
@@ -1811,6 +1794,21 @@ void QucsMainWindow::slotViewStatusBar(bool toogle)
 {
    setNormalAction();
    statusBar()->setVisible(toogle);
+}
+
+/*!
+ * \brief Opens the editor given a filename
+ */
+void QucsMainWindow::editFile(const QString& File)
+{
+  QStringList arguments;
+  if (!File.isEmpty()) arguments << File;
+  QProcess *QucsEditor = new QProcess(this);
+  QucsEditor->start(Editor,arguments);
+
+  //TODO Emit error in case there are problems
+  // Kill editor before qucs ends
+  connect(this, SIGNAL(signalKillWidgets()), QucsEditor, SLOT(kill()));
 }
 
 void QucsMainWindow::showHTML(const QString& Page)
