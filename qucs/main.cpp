@@ -21,14 +21,22 @@
 #include "qucs-tools/global.h"
 #include "library.h"
 #include <QtGui>
+ #include <QtGui/QSplashScreen>
 
 int main(int argc,char *argv[])
 {
    QApplication app(argc,argv);
    //app.setFont(Qucs::font());
+
+   QPixmap pixmap(Qucs::bitmapDirectory() + "splash.jpg");
+   QSplashScreen splash(pixmap);
+   splash.show();
+   app.processEvents();
+
    QucsMainWindow *mw = new QucsMainWindow();
    QTimer::singleShot(100, mw,SLOT(show()));
 
+   splash.finish(mw);
    return app.exec();
 }
 
