@@ -255,99 +255,33 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFilePrintFit()));
    addActionToMap(action);
 
-   action = new QAction( tr("Export Image"), this);
+   action = new QAction(QIcon(bitmapPath + "export-image.png"), tr("Export Image"), this);
    action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
    action->setObjectName("exportImage");
    connect( action, SIGNAL(triggered()), SLOT(slotExportImage()));
    addActionToMap(action);
 
-   action = new QAction( tr("&Document Settings..."), this);
+   action = new QAction(QIcon(bitmapPath + "document-edit.png"), tr("&Document Settings..."), this);
    action->setShortcut(CTRL+Key_Period);
    action->setWhatsThis(tr("Settings\n\nSets properties of the file"));
    action->setObjectName("fileSettings");
    connect( action, SIGNAL(triggered()), SLOT(slotFileSettings()));
    addActionToMap(action);
 
-   action = new QAction( tr("Application Settings..."), this);
+   action = new QAction(QIcon(bitmapPath + "configure.png"), tr("Application Settings..."), this);
    action->setShortcut(CTRL+Key_Comma);
    action->setWhatsThis(tr("Qucs Settings\n\nSets properties of the application"));
    action->setObjectName("applSettings");
    connect( action, SIGNAL(triggered()), SLOT(slotApplSettings()));
    addActionToMap(action);
 
-   action = new QAction( tr("E&xit"), this);
+   action = new QAction(QIcon(bitmapPath + "application-exit.png"), tr("E&xit"), this);
    action->setShortcut(CTRL+Key_Q);
    action->setStatusTip(tr("Quits the application"));
    action->setWhatsThis(tr("Exit\n\nQuits the application"));
    action->setObjectName("fileQuit");
    connect( action, SIGNAL(triggered()), SLOT(close()));
    addActionToMap(action);
-
-   action = new QAction( tr("Align top"), this);
-   action->setStatusTip(tr("Align top selected elements"));
-   action->setWhatsThis(tr("Align top\n\nAlign selected elements to their upper edge"));
-   action->setObjectName("alignTop");
-   connect( action, SIGNAL(triggered()), SLOT(slotAlignTop()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Align bottom"), this);
-   action->setStatusTip(tr("Align bottom selected elements"));
-   action->setWhatsThis(tr("Align bottom\n\nAlign selected elements to their lower edge"));
-   action->setObjectName("alignBottom");
-   connect( action, SIGNAL(triggered()), SLOT(slotAlignBottom()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Align left"), this);
-   action->setStatusTip(tr("Align left selected elements"));
-   action->setWhatsThis(tr("Align left\n\nAlign selected elements to their left edge"));
-   action->setObjectName("alignLeft");
-   connect( action, SIGNAL(triggered()), SLOT(slotAlignLeft()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Align right"), this);
-   action->setStatusTip(tr("Align right selected elements"));
-   action->setWhatsThis(tr("Align right\n\nAlign selected elements to their right edge"));
-   action->setObjectName("alignRight");
-   connect( action, SIGNAL(triggered()), SLOT(slotAlignRight()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Distribute horizontally"), this);
-   action->setStatusTip(tr("Distribute equally horizontally"));
-   action->setWhatsThis(tr("Distribute horizontally\n\n""Distribute horizontally selected elements"));
-   action->setObjectName("distrHor");
-   connect( action, SIGNAL(triggered()), SLOT(slotDistribHoriz()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Distribute vertically"), this);
-   action->setStatusTip(tr("Distribute equally vertically"));
-   action->setWhatsThis(tr("Distribute vertically\n\n""Distribute vertically selected elements"));
-   action->setObjectName("distrVert");
-   connect( action, SIGNAL(triggered()), SLOT(slotDistribVert()));
-   addActionToMap(action);
-
-   action = new QAction(tr("Center horizontally"), this);
-   action->setStatusTip(tr("Center horizontally selected elements"));
-   action->setWhatsThis(tr("Center horizontally\n\nCenter horizontally selected elements"));
-   action->setObjectName("centerHor");
-   connect(action, SIGNAL(triggered()), SLOT(slotCenterHorizontal()));
-   addActionToMap(action);
-
-   action = new QAction(tr("Center vertically"), this);
-   action->setStatusTip(tr("Center vertically selected elements"));
-   action->setWhatsThis(tr("Center vertically\n\nCenter vertically selected elements"));
-   action->setObjectName("centerVert");
-   connect(action, SIGNAL(triggered()), SLOT(slotCenterVertical()));
-   addActionToMap(action);
-
-   action = new QAction( tr("Set on Grid"), this);
-   action->setShortcut(CTRL+Key_U);
-   action->setWhatsThis(tr("Set on Grid\n\nSets selected elements on grid"));
-   action->setObjectName("onGrid");
-   action->setCheckable(true);
-   action->setData(QVariant(SchematicScene::SettingOnGrid));
-   connect( action, SIGNAL(toggled(bool)), SLOT(slotOnGrid(bool)));
-   addActionToMap(action);
-   checkableActions << action;
 
    action = new QAction( tr("Replace..."), this);
    action->setShortcut(Key_F7);
@@ -391,7 +325,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction( tr("Find..."), this);
+   action = new QAction(QIcon(bitmapPath + "editfind.png"), tr("Find..."), this);
    action->setShortcut(CTRL+Key_F);
    action->setStatusTip(tr("Find a piece of text"));
    action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
@@ -497,7 +431,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotPopHierarchy()));
    addActionToMap(action);
 
-   action = new QAction( tr("&Edit Circuit Symbol"), this);
+   action = new QAction(QIcon(bitmapPath + "symbol-edit.png"), tr("&Edit Circuit Symbol"), this);
    action->setShortcut(Key_F9);
    action->setStatusTip(tr("Edits the symbol for this schematic"));
    action->setWhatsThis(tr("Edit Circuit Symbol\n\nEdits the symbol for this schematic"));
@@ -505,7 +439,73 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotSymbolEdit()));
    addActionToMap(action);
 
-   action = new QAction( tr("&New Project..."), this);
+   action = new QAction( tr("Set on Grid"), this);
+   action->setShortcut(CTRL+Key_U);
+   action->setWhatsThis(tr("Set on Grid\n\nSets selected elements on grid"));
+   action->setObjectName("onGrid");
+   action->setCheckable(true);
+   action->setData(QVariant(SchematicScene::SettingOnGrid));
+   connect( action, SIGNAL(toggled(bool)), SLOT(slotOnGrid(bool)));
+   addActionToMap(action);
+   checkableActions << action;
+
+   action = new QAction(QIcon(bitmapPath + "align-vertical-top.png"), tr("Align top"), this);
+   action->setStatusTip(tr("Align top selected elements"));
+   action->setWhatsThis(tr("Align top\n\nAlign selected elements to their upper edge"));
+   action->setObjectName("alignTop");
+   connect( action, SIGNAL(triggered()), SLOT(slotAlignTop()));
+   addActionToMap(action);
+
+   action = new QAction(QIcon(bitmapPath + "align-vertical-bottom.png"), tr("Align bottom"), this);
+   action->setStatusTip(tr("Align bottom selected elements"));
+   action->setWhatsThis(tr("Align bottom\n\nAlign selected elements to their lower edge"));
+   action->setObjectName("alignBottom");
+   connect( action, SIGNAL(triggered()), SLOT(slotAlignBottom()));
+   addActionToMap(action);
+
+   action = new QAction(QIcon(bitmapPath + "align-horizontal-left.png"), tr("Align left"), this);
+   action->setStatusTip(tr("Align left selected elements"));
+   action->setWhatsThis(tr("Align left\n\nAlign selected elements to their left edge"));
+   action->setObjectName("alignLeft");
+   connect( action, SIGNAL(triggered()), SLOT(slotAlignLeft()));
+   addActionToMap(action);
+
+   action = new QAction(QIcon(bitmapPath + "align-horizontal-right.png"), tr("Align right"), this);
+   action->setStatusTip(tr("Align right selected elements"));
+   action->setWhatsThis(tr("Align right\n\nAlign selected elements to their right edge"));
+   action->setObjectName("alignRight");
+   connect( action, SIGNAL(triggered()), SLOT(slotAlignRight()));
+   addActionToMap(action);
+
+   action = new QAction(QIcon(bitmapPath + "align-horizontal-center.png"), tr("Center horizontally"), this);
+   action->setStatusTip(tr("Center horizontally selected elements"));
+   action->setWhatsThis(tr("Center horizontally\n\nCenter horizontally selected elements"));
+   action->setObjectName("centerHor");
+   connect(action, SIGNAL(triggered()), SLOT(slotCenterHorizontal()));
+   addActionToMap(action);
+
+   action = new QAction(QIcon(bitmapPath + "align-vertical-center.png"), tr("Center vertically"), this);
+   action->setStatusTip(tr("Center vertically selected elements"));
+   action->setWhatsThis(tr("Center vertically\n\nCenter vertically selected elements"));
+   action->setObjectName("centerVert");
+   connect(action, SIGNAL(triggered()), SLOT(slotCenterVertical()));
+   addActionToMap(action);
+
+   action = new QAction( tr("Distribute horizontally"), this);
+   action->setStatusTip(tr("Distribute equally horizontally"));
+   action->setWhatsThis(tr("Distribute horizontally\n\n""Distribute horizontally selected elements"));
+   action->setObjectName("distrHor");
+   connect( action, SIGNAL(triggered()), SLOT(slotDistribHoriz()));
+   addActionToMap(action);
+
+   action = new QAction( tr("Distribute vertically"), this);
+   action->setStatusTip(tr("Distribute equally vertically"));
+   action->setWhatsThis(tr("Distribute vertically\n\n""Distribute vertically selected elements"));
+   action->setObjectName("distrVert");
+   connect( action, SIGNAL(triggered()), SLOT(slotDistribVert()));
+   addActionToMap(action);
+
+   action = new QAction(QIcon(bitmapPath + "project-new.png"), tr("&New Project..."), this);
    action->setShortcut(CTRL+SHIFT+Key_N);
    action->setStatusTip(tr("Creates a new project"));
    action->setWhatsThis(tr("New Project\n\nCreates a new project"));
@@ -634,7 +634,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction( tr("VHDL entity"), this);
+   action = new QAction(QIcon(bitmapPath + "vhdl-code.png"), tr("VHDL entity"), this);
    action->setShortcut(CTRL+Key_Space);
    action->setStatusTip(tr("Inserts skeleton of VHDL entity"));
    action->setWhatsThis(tr("VHDL entity\n\nInserts the skeleton of a VHDL entity"));
@@ -642,7 +642,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotInsertEntity()));
    addActionToMap(action);
 
-   action = new QAction( tr("Text Editor"), this);
+   action = new QAction(QIcon(bitmapPath + "text-editor.png"), tr("Text Editor"), this);
    action->setShortcut(CTRL+Key_1);
    action->setStatusTip(tr("Starts the Qucs text editor"));
    action->setWhatsThis(tr("Text editor\n\nStarts the Qucs text editor"));
@@ -650,7 +650,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotCallEditor()));
    addActionToMap(action);
 
-   action = new QAction( tr("Filter synthesis"), this);
+   action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Filter synthesis"), this);
    action->setShortcut(CTRL+Key_2);
    action->setStatusTip(tr("Starts QucsFilter"));
    action->setWhatsThis(tr("Filter synthesis\n\nStarts QucsFilter"));
@@ -658,7 +658,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotCallFilter()));
    addActionToMap(action);
 
-   action = new QAction( tr("Line calculation"), this);
+   action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Line calculation"), this);
    action->setShortcut(CTRL+Key_3);
    action->setStatusTip(tr("Starts QucsTrans"));
    action->setWhatsThis(tr("Line calculation\n\nStarts transmission line calculator"));
@@ -666,7 +666,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotCallLine()));
    addActionToMap(action);
 
-   action = new QAction( tr("Component Library"), this);
+   action = new QAction(QIcon(bitmapPath + "library.png"), tr("Component Library"), this);
    action->setShortcut(CTRL+Key_4);
    action->setStatusTip(tr("Starts QucsLib"));
    action->setWhatsThis(tr("Component Library\n\nStarts component library program"));
@@ -674,7 +674,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotCallLibrary()));
    addActionToMap(action);
 
-   action = new QAction( tr("Matching Circuit"), this);
+   action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Matching Circuit"), this);
    action->setShortcut(CTRL+Key_5);
    action->setStatusTip(tr("Creates Matching Circuit"));
    action->setWhatsThis(tr("Matching Circuit\n\nDialog for Creating Matching Circuit"));
@@ -682,7 +682,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotCallMatch()));
    addActionToMap(action);
 
-   action = new QAction( tr("Attenuator synthesis"), this);
+   action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Attenuator synthesis"), this);
    action->setShortcut(CTRL+Key_6);
    action->setStatusTip(tr("Starts QucsAttenuator"));
    action->setWhatsThis(tr("Attenuator synthesis\n\nStarts attenuator calculation program"));
@@ -690,7 +690,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotCallAtt()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(bitmapPath + "gear.png"), tr("Simulate"), this);
+   action = new QAction(QIcon(bitmapPath + "start.png"), tr("Simulate"), this);
    action->setShortcut(Key_F2);
    action->setStatusTip(tr("Simulates the current schematic"));
    action->setWhatsThis(tr("Simulate\n\nSimulates the current schematic"));
@@ -725,7 +725,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction( tr("Show Last Messages"), this);
+   action = new QAction(QIcon(bitmapPath + "document-preview.png"), tr("Show Last Messages"), this);
    action->setShortcut(Key_F5);
    action->setStatusTip(tr("Shows last simulation messages"));
    action->setWhatsThis(tr("Show Last Messages\n\nShows the messages of the last simulation"));
@@ -733,7 +733,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotShowLastMsg()));
    addActionToMap(action);
 
-   action = new QAction( tr("Show Last Netlist"), this);
+   action = new QAction(QIcon(bitmapPath + "document-preview.png"), tr("Show Last Netlist"), this);
    action->setShortcut(Key_F6);
    action->setStatusTip(tr("Shows last simulation netlist"));
    action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
@@ -806,7 +806,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
    addActionToMap(action);
 
-   action = new QAction( tr("Help Index..."), this);
+   action = new QAction(QIcon(bitmapPath + "help.png"), tr("Help Index..."), this);
    action->setShortcut(Key_F1);
    action->setStatusTip(tr("Index of Qucs Help"));
    action->setWhatsThis(tr("Help Index\n\nIndex of intern Qucs help"));
