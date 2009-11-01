@@ -354,7 +354,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction( tr("Select All"), this);
+   action = new QAction(QIcon(bitmapPath + "select-all.png"), tr("Select All"), this);
    action->setShortcut(CTRL+Key_A);
    action->setStatusTip(tr("Selects all elements"));
    action->setWhatsThis(tr("Select All\n\nSelects all elements of the document"));
@@ -683,7 +683,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotSimulate()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(bitmapPath + "rebuild.png"), tr("View Data Display/Schematic"), this);
+   action = new QAction(QIcon(bitmapPath + "switch-view.png"), tr("View Data Display/Schematic"), this);
    action->setShortcut(Key_F4);
    action->setStatusTip(tr("Changes to data display or schematic page"));
    action->setWhatsThis(tr("View Data Display/Schematic\n\n")+tr("Changes to data display or schematic page"));
