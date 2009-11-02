@@ -64,6 +64,7 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
 
    setObjectName("QucsMainWindow"); //for debugging purpose
    setDocumentTitle("Untitled");
+   setIconSize(QSize(24,24));
 
    qucsFilter =
       tr("Schematic-xml")+" (*.xsch);;"+

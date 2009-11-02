@@ -376,7 +376,7 @@ void PropertyItem::calculatePos()
    m_staticPos = temp;
 }
 
-/*!\brief Checks whether the given \a event can be sent to parent group or not
+/*! \brief Checks whether the given \a event can be sent to parent group or not
  * \details The method checks whether the current mouse position is in
  * the static part of area and if so returns true in case of mouse press.
  * Otherwise it checks for buttonDownPos for the same check.
