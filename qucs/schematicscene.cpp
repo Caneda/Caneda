@@ -131,11 +131,11 @@ void SchematicScene::init()
   this->m_OriginDrawn = true;
   
   this->m_currentMode = Qucs::SchematicMode;
-  this->m_frameVisible = false;
+  this->m_frameVisible = true;
   this->m_modified = false;
   
   this->m_opensDataDisplay = true;
-  this->m_frameTexts = QStringList() << tr("Title") << tr("Drawn By:") << tr("Date:") << tr("Revision:");
+  this->m_frameTexts = QStringList() << tr("Title:") << tr("Drawn By:") << tr("Date:") << tr("Revision:");
   this->m_macroProgress = false;
   this->m_areItemsMoving = false;
   this->m_shortcutsBlocked = false;
@@ -700,11 +700,33 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 
   /* draw origin */
   if(this->isOriginDrawn() == true &&
-     rect.contains(QPointF(0.0,0.0))) {
-    painter->drawLine(QLineF(-3.0, 0.0, 3.0, 0.0));
-    painter->drawLine(QLineF(0.0, -3.0, 0.0, 3.0));
+     rect.contains(QPointF(this->width()/2,this->height()/2))) {
+      qreal width = this->width();
+      qreal height = this->height();
+      painter->drawLine(QLineF(width/2-3.0, height/2+0.0, width/2+3.0, height/2+0.0));
+      painter->drawLine(QLineF(width/2+0.0, height/2-3.0, width/2+0.0, height/2+3.0));
   }
 
+  /* draw frame */
+  //TODO make independant of scene size
+  if(this->isFrameVisible()) {
+      foreach(QString frame_text, m_frameTexts){
+          if(frame_text == "Title:")
+              painter->drawText(300,this->height()-30,frame_text);
+          else if(frame_text == "Drawn By:")
+              painter->drawText(10,this->height()-30,frame_text);
+          else if(frame_text == "Date:")
+              painter->drawText(10,this->height()-10,frame_text);
+          else if(frame_text == "Revision:")
+              painter->drawText(800,this->height()-30,frame_text);
+      }
+      painter->drawRect(this->sceneRect());
+      painter->drawLine(QLineF(0.0, this->height()-50, this->width(), this->height()-50));
+      painter->drawLine(QLineF(280, this->height()-50, 280, this->height()));
+      painter->drawLine(QLineF(780, this->height()-50, 780, this->height()));
+      painter->drawLine(QLineF(20, 0, 20, this->height()-50));
+      painter->drawLine(QLineF(0, 20, this->width(), 20));
+  }
    
   // Adjust  visual representation of grid to be multiple, if
   // grid sizes are very small

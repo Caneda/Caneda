@@ -27,7 +27,7 @@
 #include "library.h"
 #include "xmlutilities/validators.h"
 #include "xmlutilities/transformers.h"
-#include "dialogs/qucssettingsdialog.h"
+#include "dialogs/settingsdialog.h"
 #include "dialogs/aboutqucs.h"
 
 #include <QtGui/QStatusBar>
@@ -64,7 +64,6 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
 
    setObjectName("QucsMainWindow"); //for debugging purpose
    setDocumentTitle("Untitled");
-   setIconSize(QSize(24,24));
 
    qucsFilter =
       tr("Schematic-xml")+" (*.xsch);;"+
@@ -1357,14 +1356,6 @@ void QucsMainWindow::slotSymbolEdit()
 /*!
  * \todo Implement this.
  */
-void QucsMainWindow::slotFileSettings()
-{
-   //TODO: implement this or rather port directly
-}
-
-/*!
- * \todo Implement this.
- */
 void QucsMainWindow::slotFilePrint()
 {
    //TODO: implement this or rather port directly
@@ -1384,7 +1375,17 @@ void QucsMainWindow::slotExportImage()
 void QucsMainWindow::slotApplSettings()
 {
    setNormalAction();
-   QucsSettingsDialog *d = new QucsSettingsDialog(this);
+   SettingsDialog *d = new SettingsDialog(this);
+   d->exec();
+}
+
+/*!
+ * \todo Complete this.
+ */
+void QucsMainWindow::slotFileSettings()
+{
+   setNormalAction();
+   SettingsDialog *d = new SettingsDialog(this);
    d->exec();
 }
 

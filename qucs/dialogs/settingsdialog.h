@@ -1,56 +1,65 @@
 /***************************************************************************
-                              settingsdialog.h
-                             ------------------
-    begin                : Mon Oct 20 2003
-    copyright            : (C) 2003 by Michael Margraf
-    email                : michael.margraf@alumni.tu-berlin.de
+ * Copyright 2006-2009 Xavier Guerrin                                      *
+ * Copyright 2009 Pablo Daniel Pareja Obregon                              *
+ * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
+ * Obregon to be included in Qucs.                                         *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#ifndef SETTINGS_DIALOG_H
+#define SETTINGS_DIALOG_H
 
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#include <QDialog>
+#include "settingspages.h"
 
-#include <qdialog.h>
+class QucsMainWindow;
+class QListWidget;
+class QListWidgetItem;
+class QStackedWidget;
+class QDialogButtonBox;
 
-class Schematic;
-class QLineEdit;
-class QTextEdit;
-class QCheckBox;
-class QComboBox;
-class QVBoxLayout;
-class QRegExpValidator;
-
-
-class SettingsDialog : public QDialog  {
-   Q_OBJECT
-public:
-  SettingsDialog(Schematic*);
- ~SettingsDialog();
-
-private slots:
-  void slotOK();
-  void slotApply();
-
-public:
-  Schematic *Doc;
-
-  QComboBox *Combo_Frame;
-  QTextEdit *Input_Frame0;
-  QLineEdit *Input_Frame1, *Input_Frame2, *Input_Frame3;
-  QLineEdit *Input_DataSet, *Input_DataDisplay;
-  QLineEdit *Input_GridX, *Input_GridY;
-  QCheckBox *Check_OpenDpl, *Check_GridOn;
-
-  QVBoxLayout *all;
-  QRegExpValidator *valExpr;
+/**
+        This class represents the configuration dialog of Qucs.
+        This is a dialog showing "page setup".
+        Each configuration page should provide an icon and a title.
+*/
+class SettingsDialog : public QDialog {
+	Q_OBJECT
+        // Constructor, destructor
+	public:
+        SettingsDialog(QucsMainWindow *parent = 0);
+        virtual ~SettingsDialog();
+//	private:
+//        SettingsDialog(const SettingsDialog &);
+	
+        // methods
+	public slots:
+        void changePage(QListWidgetItem *, QListWidgetItem *);
+	void applyConf();
+        void addPage(SettingsPage *);
+	
+	private:
+	void buildPagesList();
+	
+        // attributes
+	private:
+	QListWidget *pages_list;
+	QStackedWidget *pages_widget;
+	QDialogButtonBox *buttons;
+        QList<SettingsPage *> pages;
 };
-
 #endif

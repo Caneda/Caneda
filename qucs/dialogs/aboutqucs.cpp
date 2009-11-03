@@ -1,22 +1,24 @@
-/*
-        Copyright 2006-2009 Xavier Guerrin
-        Copyright 2009 Pablo Daniel Pareja Obregon
-        This file was part of QElectroTech and modified by Pablo Daniel Pareja
-        Obregon to be included in Qucs.
-
-        Qucs is free software: you can redistribute it and/or modify
-        it under the terms of the GNU General Public License as published by
-        the Free Software Foundation, either version 2 of the License, or
-        (at your option) any later version.
-
-        Qucs is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-        GNU General Public License for more details.
-
-        You should have received a copy of the GNU General Public License
-        along with Qucs.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/***************************************************************************
+ * Copyright 2006-2009 Xavier Guerrin                                      *
+ * Copyright 2009 Pablo Daniel Pareja Obregon                              *
+ * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
+ * Obregon to be included in Qucs.                                         *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
+ ***************************************************************************/
 
 #include <QtGui>
 #include "aboutqucs.h"
@@ -160,12 +162,29 @@ QWidget *AboutQUCS::licenseTab() const
         QLabel *title_license = new QLabel(tr("This program is licensed under the GNU/GPL v2."));
 	
         // Text of the GNU/GPL v2 in a scrollable non-editable text box
-	QTextEdit *text_license = new QTextEdit();
-	text_license -> setReadOnly(true);
+
+
+        QFile *file = new QFile(Qucs::baseDir + "COPYING");
+        QString text;
+        // Verification that the file exists
+        if (!file -> exists())
+            text = QString(QObject::tr("The text file that contains the GNU/GPL is not found."));
+        else if (!file -> open(QIODevice::ReadOnly | QIODevice::Text))
+            text = QString(QObject::tr("The text file that contains the GNU/GPL exists but could not be opened."));
+        else {
+            QTextStream in(file);
+            text = QString("");
+            while (!in.atEnd()) text += in.readLine()+"\n";
+            file -> close();
+        }
+
+        QTextEdit *text_license = new QTextEdit();
+        text_license->setPlainText(text);
+        text_license -> setReadOnly(true);
 	
 	QVBoxLayout *license_layout = new QVBoxLayout();
-	license_layout -> addWidget(title_license);
-	license_layout -> addWidget(text_license);
+        license_layout -> addWidget(title_license);
+        license_layout -> addWidget(text_license);
 	license -> setLayout(license_layout);
 	return(license);
 }
