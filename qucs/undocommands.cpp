@@ -70,27 +70,28 @@ void PropertyChangeCmd::redo()
   ##########################################################################
 */
 
-GridPropertyChangeCmd::GridPropertyChangeCmd(const bool newGridVisibility,
+ScenePropertyChangeCmd::ScenePropertyChangeCmd(const QString& propertyName,
+                                             const QVariant& newValue,
+                                             const QVariant& oldValue,
                                                        SchematicScene *const schematic,
                                                        QUndoCommand *parent) :
    QUndoCommand(parent),
-   m_newGridVisibility(newGridVisibility),
-   m_oldGridVisibility(schematic->isGridVisible()),
+   m_property(propertyName), m_newValue(newValue), m_oldValue(oldValue),
    m_schematic(schematic)
 {
-    setText(QString("Toogle grid visibility"));
+    setText(QString("Changed ") + propertyName);
 }
 
-void GridPropertyChangeCmd::undo()
+void ScenePropertyChangeCmd::undo()
 {
-   m_schematic->setGridVisible(m_oldGridVisibility);
-   _debug() << "GridPropertyChangeCmd::undo()\n";
+   m_schematic->setProperty(m_property, m_oldValue);
+   _debug() << "ScenePropertyChangeCmd::undo()\n";
 }
 
-void GridPropertyChangeCmd::redo()
+void ScenePropertyChangeCmd::redo()
 {
-   m_schematic->setGridVisible(m_newGridVisibility);
-   _debug() << "GridPropertyChangeCmd::redo()\n";
+   m_schematic->setProperty(m_property, m_newValue);
+   _debug() << "ScenePropertyChangeCmd::redo()\n";
 }
 
 /*

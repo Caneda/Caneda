@@ -21,6 +21,7 @@
 #define SETTINGS_PAGES_H
 
 #include <QtGui>
+#include "schematicscene.h"
 
 class QucsMainWindow;
 
@@ -57,12 +58,12 @@ class GeneralConfigurationPage : public SettingsPage {
 	virtual ~GeneralConfigurationPage();
 
         private slots:
-//            void slotDefaultValues();
             void slotEditSuffix(QTableWidgetItem*);
             void slotAdd();
             void slotRemove();
             void slotFontDialog();
             void slotBGColorDialog();
+            void slotDefaultValues();
 	
 	public:
 	void applyConf();
@@ -76,10 +77,11 @@ class GeneralConfigurationPage : public SettingsPage {
 	QFrame *horiz_line_;
 
         QTableWidget *listSuffix;
-        QLineEdit *editUndoNum, *editEditor, *inputSuffix, *inputProgram;
+        QLineEdit *editEditor, *inputSuffix, *inputProgram;
         QFont font;
         QPushButton *buttonFont, *buttonBackground;
         QComboBox *comboLanguage;
+        QSpinBox *spinUndoNum, *spinIcons;
 };
 
 /**
@@ -103,6 +105,33 @@ class SimulationConfigurationPage : public SettingsPage {
 };
 
 /**
+        This class represents the document configuration page.
+*/
+class DocumentConfigurationPage : public SettingsPage {
+        Q_OBJECT
+
+        public:
+        DocumentConfigurationPage(SchematicScene *scene, QucsMainWindow *parent = 0);
+        virtual ~DocumentConfigurationPage();
+
+        public:
+        void applyConf();
+        QString title() const;
+        QIcon icon() const;
+
+        public:
+        SchematicScene *Scn;
+
+        QLabel *title_label_;
+        QFrame *horiz_line_;
+
+        QCheckBox *checkShowGrid, *checkShowFrame;
+        QSpinBox *spinGridX, *spinGridY;
+        QLineEdit *editName, *editTitle, *editDate, *editRevision;
+};
+
+
+/**
         This class represents the vhdl configuration page.
 */
 class VhdlConfigurationPage : public SettingsPage {
@@ -113,7 +142,6 @@ class VhdlConfigurationPage : public SettingsPage {
         virtual ~VhdlConfigurationPage();
 
         private slots:
-//            void slotDefaultValues();
             void slotColorComment();
             void slotColorString();
             void slotColorInteger();
@@ -121,6 +149,7 @@ class VhdlConfigurationPage : public SettingsPage {
             void slotColorCharacter();
             void slotColorDataType();
             void slotColorAttributes();
+            void slotDefaultValues();
 
         public:
         void applyConf();

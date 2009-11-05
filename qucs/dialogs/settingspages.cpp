@@ -74,19 +74,40 @@ GeneralConfigurationPage::GeneralConfigurationPage(QucsMainWindow *parent) : Set
 {
         App = parent;
 	
-        //First we set the general settings group of options
-        QGroupBox *general = new QGroupBox(tr("Settings"), this);
-        QGridLayout *generalLayout = new QGridLayout(general);
+        //First we set the appereance settings group of options
+        QGroupBox *appereance = new QGroupBox(tr("Appereance"), this);
+        QGridLayout *appereanceLayout = new QGridLayout(appereance);
 
         QLabel *labelFonts = new QLabel(tr("Fonts (set after reload):"));
-        buttonFont = new QPushButton(general);
+        buttonFont = new QPushButton(appereance);
         font = Qucs::font();
         buttonFont->setText(font.toString());
         QLabel *labelBackgroud = new QLabel(tr("Document Background Color:"));
-        buttonBackground = new QPushButton(general);
+        buttonBackground = new QPushButton(appereance);
         setBackgroundColor(buttonBackground, parent->BGColor);
+        QLabel *labelIcons = new QLabel(tr("Icons Size:"));
+        spinIcons = new QSpinBox(appereance);
+        spinIcons->setValue(parent->iconSize().height());
+        spinIcons->setMinimum(10);
+        spinIcons->setMaximum(48);
+
+        connect(buttonFont, SIGNAL(clicked()), SLOT(slotFontDialog()));
+        connect(buttonBackground, SIGNAL(clicked()), SLOT(slotBGColorDialog()));
+
+        appereanceLayout->addWidget(labelFonts, 0, 0, Qt::AlignLeft);
+        appereanceLayout->addWidget(buttonFont, 0, 1, Qt::AlignRight);
+        appereanceLayout->addWidget(labelBackgroud, 1,0, Qt::AlignLeft);
+        appereanceLayout->addWidget(buttonBackground, 1, 1, Qt::AlignRight);
+        appereanceLayout->addWidget(labelIcons, 2, 0, Qt::AlignLeft);
+        appereanceLayout->addWidget(spinIcons, 2, 1, Qt::AlignRight);
+
+
+        //Now we set the misc group of options
+        QGroupBox *misc = new QGroupBox(tr("Misc"), this);
+        QGridLayout *miscLayout = new QGridLayout(misc);
+
         QLabel *labelLanguage = new QLabel(tr("Language (set after reload):"));
-        comboLanguage = new QComboBox(general);
+        comboLanguage = new QComboBox(misc);
         comboLanguage->addItem(tr("system language"));
         comboLanguage->addItem(tr("English")+" (en)");
         comboLanguage->addItem(tr("German")+" (de)");
@@ -109,31 +130,23 @@ GeneralConfigurationPage::GeneralConfigurationPage(QucsMainWindow *parent) : Set
             if(comboLanguage->itemText(z).section('(',1,1).remove(')') == Qucs::language())
                 comboLanguage->setCurrentIndex(z);
         QLabel *labelUndoOps = new QLabel(tr("Maximum undo operations:"));
-        editUndoNum = new QLineEdit(general);
-        QIntValidator *val200 = new QIntValidator(0, 200, this);
-        editUndoNum->setValidator(val200);
-        editUndoNum->setText(QString::number(parent->maxUndo));
+        spinUndoNum = new QSpinBox(misc);
+        spinUndoNum->setValue(parent->maxUndo);
+        spinUndoNum->setMinimum(0);
+        spinUndoNum->setMaximum(200);
         QLabel *labelTextEditor = new QLabel(tr("Text Editor:"));
-        editEditor = new QLineEdit(general);
+        editEditor = new QLineEdit(misc);
         editEditor->setText(parent->Editor);
 
-        connect(buttonFont, SIGNAL(clicked()), SLOT(slotFontDialog()));
-        connect(buttonBackground, SIGNAL(clicked()), SLOT(slotBGColorDialog()));
-
-        generalLayout->addWidget(labelFonts, 0, 0, Qt::AlignLeft);
-        generalLayout->addWidget(buttonFont, 0, 1, Qt::AlignRight);
-        generalLayout->addWidget(labelBackgroud, 1,0, Qt::AlignLeft);
-        generalLayout->addWidget(buttonBackground, 1, 1, Qt::AlignRight);
-        generalLayout->addWidget(labelLanguage, 2,0, Qt::AlignLeft);
-        generalLayout->addWidget(comboLanguage, 2, 1, Qt::AlignRight);
-        generalLayout->addWidget(labelUndoOps, 3,0, Qt::AlignLeft);
-        generalLayout->addWidget(editUndoNum, 3, 1, Qt::AlignRight);
-        generalLayout->addWidget(labelTextEditor, 4,0, Qt::AlignLeft);
-        generalLayout->addWidget(editEditor, 4, 1, Qt::AlignRight);
+        miscLayout->addWidget(labelLanguage, 3, 0, Qt::AlignLeft);
+        miscLayout->addWidget(comboLanguage, 3, 1, Qt::AlignRight);
+        miscLayout->addWidget(labelUndoOps, 4, 0, Qt::AlignLeft);
+        miscLayout->addWidget(spinUndoNum, 4, 1, Qt::AlignRight);
+        miscLayout->addWidget(labelTextEditor, 5, 0, Qt::AlignLeft);
+        miscLayout->addWidget(editEditor, 5, 1, Qt::AlignRight);
 
 
         //Now we set the file extensions group of options
-
         QGroupBox *fileExtensions = new QGroupBox(tr("File Types"), this);
         QGridLayout *fileExtensionsLayout = new QGridLayout(fileExtensions);
 
@@ -197,7 +210,8 @@ GeneralConfigurationPage::GeneralConfigurationPage(QucsMainWindow *parent) : Set
         horiz_line_ -> setFrameShape(QFrame::HLine);
         vlayout1 -> addWidget(horiz_line_);
 
-        vlayout1 -> addWidget(general);
+        vlayout1 -> addWidget(appereance);
+        vlayout1 -> addWidget(misc);
         vlayout1 -> addWidget(fileExtensions);
 
         vlayout1 -> addStretch();
@@ -290,7 +304,15 @@ void GeneralConfigurationPage::slotBGColorDialog()
     setBackgroundColor(buttonBackground,c);
 }
 
-
+void GeneralConfigurationPage::slotDefaultValues()
+{
+  font = QFont("Helvetica", 12);
+  buttonFont->setText(font.toString());
+  comboLanguage->setCurrentIndex(0);
+  setBackgroundColor(buttonBackground,QColor(255,250,225));
+  spinUndoNum->setValue(20);
+  editEditor->setText(Qucs::binaryDir + "qucsedit");
+}
 
 /**
         Applies the configuration of this page
@@ -301,17 +323,6 @@ void GeneralConfigurationPage::applyConf() {
 
     if(App->BGColor != getBackgroundColor(buttonBackground)) {
         App->BGColor = getBackgroundColor(buttonBackground);
-
-    /*    int No=0;
-    QWidget *w;
-    while((w=App->DocumentTab->page(No++)) != 0)
-      if(w->inherits("QTextEdit"))
-        ((TextDoc*)w)->viewport()->setPaletteBackgroundColor(
-                                        QucsSettings.BGColor);
-      else
-        ((Schematic*)w)->viewport()->setPaletteBackgroundColor(
-                                        QucsSettings.BGColor);
-    */
         changed = true;
     }
 
@@ -320,18 +331,18 @@ void GeneralConfigurationPage::applyConf() {
         changed = true;
     }
 
+    if(App->iconSize().height() != spinIcons->value()) {
+        App->setIconSize(QSize(spinIcons->value(), spinIcons->value()));
+        App->iconsPixelSize = spinIcons->value();
+    }
+
     App->Language = comboLanguage->currentText().section('(',1,1).remove(')');
 
-    bool ok;
-    if(App->maxUndo != editUndoNum->text().toUInt(&ok)) {
-        App->maxUndo = editUndoNum->text().toInt(&ok);
-        changed = true;
-    }
+    if(App->maxUndo != spinUndoNum->value())
+        App->maxUndo = spinUndoNum->value();
 
-    if(App->Editor != editEditor->text()) {
+    if(App->Editor != editEditor->text())
         App->Editor = editEditor->text();
-        changed = true;
-    }
 
     QTableWidgetItem *Item0, *Item1;
     App->FileTypes.clear();
@@ -341,7 +352,7 @@ void GeneralConfigurationPage::applyConf() {
         App->FileTypes.append(Item0->text()+"/"+Item1->text());
     }
 
-    App->saveSettings();  // also sets the small and large font
+    App->saveSettings();
     if(changed)
         App->repaint();
 }
@@ -367,15 +378,47 @@ QString GeneralConfigurationPage::title() const {
 SimulationConfigurationPage::SimulationConfigurationPage(QucsMainWindow *parent) : SettingsPage(parent)
 {
 
-        //First we set the simulation group of options
+        //First we set the simulator group of options
         QGroupBox *groupSimulator = new QGroupBox(tr("Simulator Engine"), this);
         QRadioButton *qucsatorMode = new QRadioButton(tr("Use qucs engine"), groupSimulator);
         QRadioButton *ngspiceMode = new QRadioButton(tr("Use ngspice engine"), groupSimulator);
+
+        qucsatorMode->setChecked(true);
 
         QVBoxLayout *simulatorLayout = new QVBoxLayout();
         simulatorLayout->addWidget(qucsatorMode);
         simulatorLayout->addWidget(ngspiceMode);
         groupSimulator->setLayout(simulatorLayout);
+
+
+        //Now we set the simulation tab group of options
+        QGroupBox *groupSimTabMode = new QGroupBox(tr("Simulation Display Mode"), this);
+        QRadioButton *specialTabMode = new QRadioButton(tr("Use a special tab"), groupSimTabMode);
+        QRadioButton *sameTabMode = new QRadioButton(tr("Use same tab as schematic"), groupSimTabMode);
+
+        specialTabMode->setChecked(true);
+
+        QVBoxLayout *simTabModeLayout = new QVBoxLayout();
+        simTabModeLayout->addWidget(specialTabMode);
+        simTabModeLayout->addWidget(sameTabMode);
+        groupSimTabMode->setLayout(simTabModeLayout);
+
+
+        //Now we set the misc group of options
+        QGroupBox *misc = new QGroupBox(tr("Misc"), this);
+        QGridLayout *miscLayout = new QGridLayout(misc);
+
+        QLabel *labelOpenDataDisplay = new QLabel(tr("Open data display after simulation:"));
+        QCheckBox *checkOpenDataDisplay = new QCheckBox(misc);
+        checkOpenDataDisplay->setChecked(true);
+
+        QLabel *labelDataset = new QLabel(tr("Dataset:"));
+        QLineEdit *editDataset = new QLineEdit(misc);
+
+        miscLayout->addWidget(labelOpenDataDisplay, 0, 0, Qt::AlignLeft);
+        miscLayout->addWidget(checkOpenDataDisplay, 0, 1, Qt::AlignRight);
+        miscLayout->addWidget(labelDataset, 1, 0, Qt::AlignLeft);
+        miscLayout->addWidget(editDataset, 1, 1, Qt::AlignRight);
 
 
         //Finally we set the general layout of all groups
@@ -388,6 +431,8 @@ SimulationConfigurationPage::SimulationConfigurationPage(QucsMainWindow *parent)
         vlayout1 -> addWidget(horiz_line_);
 
         vlayout1 -> addWidget(groupSimulator);
+        vlayout1 -> addWidget(groupSimTabMode);
+        vlayout1 -> addWidget(misc);
 
         vlayout1 -> addStretch();
 
@@ -413,6 +458,164 @@ QIcon SimulationConfigurationPage::icon() const {
 /// @return Title of this page
 QString SimulationConfigurationPage::title() const {
         return(tr("Simulation", "simulation page title"));
+}
+
+
+//****************************************************
+// Document configuration pages
+//****************************************************
+/**
+        Constructor
+        @param QWidget *parent The parent of the dialog.
+*/
+DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene, QucsMainWindow *parent) : SettingsPage(parent)
+{
+
+        Scn = scene;
+
+        //First we set the grid group of options
+        QGroupBox *grid = new QGroupBox(tr("Grid"), this);
+        QGridLayout *gridLayout = new QGridLayout(grid);
+
+        QLabel *labelShowGrid = new QLabel(tr("Show grid:"));
+        checkShowGrid = new QCheckBox(grid);
+        checkShowGrid->setChecked(Scn->isGridVisible());
+
+        QLabel *labelGridX = new QLabel(tr("Horizontal Grid:"));
+        spinGridX = new QSpinBox(grid);
+        spinGridX->setValue(Scn->gridWidth());
+        spinGridX->setMinimum(2);
+        spinGridX->setMaximum(99);
+
+        QLabel *labelGridY = new QLabel(tr("Vertical Grid:"));
+        spinGridY = new QSpinBox(grid);
+        spinGridY->setValue(Scn->gridHeight());
+        spinGridY->setMinimum(2);
+        spinGridY->setMaximum(99);
+
+        gridLayout->addWidget(labelShowGrid, 0, 0, Qt::AlignLeft);
+        gridLayout->addWidget(checkShowGrid, 0, 1, Qt::AlignRight);
+        gridLayout->addWidget(labelGridX, 1, 0, Qt::AlignLeft);
+        gridLayout->addWidget(spinGridX, 1, 1, Qt::AlignRight);
+        gridLayout->addWidget(labelGridY, 2, 0, Qt::AlignLeft);
+        gridLayout->addWidget(spinGridY, 2, 1, Qt::AlignRight);
+
+
+        //Next we set the frame group of options
+        QGroupBox *frame = new QGroupBox(tr("Frame"), this);
+        QGridLayout *frameLayout = new QGridLayout(frame);
+
+        QLabel *labelShowFrame = new QLabel(tr("Show frame:"));
+        checkShowFrame = new QCheckBox(frame);
+        checkShowFrame->setChecked(Scn->isFrameVisible());
+
+        frameLayout->addWidget(labelShowFrame, 0, 0, Qt::AlignLeft);
+        frameLayout->addWidget(checkShowFrame, 0, 1, Qt::AlignRight);
+
+
+        //Next we set the document group of options
+        QGroupBox *document = new QGroupBox(tr("Document"), this);
+        QGridLayout *documentLayout = new QGridLayout(document);
+
+        QLabel *labelTitle = new QLabel(tr("Title:"));
+        editTitle = new QLineEdit(document);
+        QLabel *labelName = new QLabel(tr("Name:"));
+        editName = new QLineEdit(document);
+        QLabel *labelDate = new QLabel(tr("Date:"));
+        editDate = new QLineEdit(document);
+        QLabel *labelRevision = new QLabel(tr("Revision:"));
+        editRevision = new QLineEdit(document);
+        foreach(QString frame_text, Scn->frameTexts()){
+            if(frame_text.contains("Title:"))
+                editTitle->setText(frame_text.remove("Title:"));
+            else if(frame_text.contains("Drawn By:"))
+                editName->setText(frame_text.remove("Drawn By:"));
+            else if(frame_text.contains("Date:"))
+                editDate->setText(frame_text.remove("Date:"));
+            else if(frame_text.contains("Revision:"))
+                editRevision->setText(frame_text.remove("Revision:"));
+        }
+
+        documentLayout->addWidget(labelTitle, 0, 0, Qt::AlignLeft);
+        documentLayout->addWidget(editTitle, 0, 1, Qt::AlignRight);
+        documentLayout->addWidget(labelName, 1, 0, Qt::AlignLeft);
+        documentLayout->addWidget(editName, 1, 1, Qt::AlignRight);
+        documentLayout->addWidget(labelDate, 2, 0, Qt::AlignLeft);
+        documentLayout->addWidget(editDate, 2, 1, Qt::AlignRight);
+        documentLayout->addWidget(labelRevision, 3, 0, Qt::AlignLeft);
+        documentLayout->addWidget(editRevision, 3, 1, Qt::AlignRight);
+
+
+        //Finally we set the general layout of all groups
+        QVBoxLayout *vlayout1 = new QVBoxLayout();
+        QLabel *title_label_ = new QLabel(title());
+        vlayout1 -> addWidget(title_label_);
+
+        QFrame *horiz_line_ = new QFrame();
+        horiz_line_ -> setFrameShape(QFrame::HLine);
+        vlayout1 -> addWidget(horiz_line_);
+
+        vlayout1 -> addWidget(grid);
+        vlayout1 -> addWidget(frame);
+        vlayout1 -> addWidget(document);
+
+        vlayout1 -> addStretch();
+
+        setLayout(vlayout1);
+}
+
+/// Destructor
+DocumentConfigurationPage::~DocumentConfigurationPage() {
+}
+
+/**
+        Applies the configuration of this page
+*/
+void DocumentConfigurationPage::applyConf() {
+
+    if(Scn->isGridVisible() != checkShowGrid->isChecked()){
+        Scn->undoStack()->push(new ScenePropertyChangeCmd("grid visibility", checkShowGrid->isChecked(), Scn->isGridVisible(), Scn));
+        Scn->setGridVisible(checkShowGrid->isChecked());
+    }
+    if(Scn->isFrameVisible() != checkShowFrame->isChecked()){
+        Scn->undoStack()->push(new ScenePropertyChangeCmd("frame visibility", checkShowFrame->isChecked(), Scn->isFrameVisible(), Scn));
+        Scn->setFrameVisible(checkShowFrame->isChecked());
+    }
+    if(Scn->gridWidth() != spinGridX->value()){
+        Scn->undoStack()->push(new ScenePropertyChangeCmd("grid width", spinGridX->value(), Scn->gridWidth(), Scn));
+        Scn->setGridWidth(spinGridX->value());
+    }
+    if(Scn->gridHeight() != spinGridY->value()){
+        Scn->undoStack()->push(new ScenePropertyChangeCmd("grid height", spinGridY->value(), Scn->gridHeight(), Scn));
+        Scn->setGridHeight(spinGridY->value());
+    }
+
+    bool modified = false;
+    if(!Scn->frameTexts().contains(tr("Title:")+editTitle->text()))
+        modified = true;
+    else if(!Scn->frameTexts().contains(tr("Drawn By:")+editName->text()))
+        modified = true;
+    else if(!Scn->frameTexts().contains(tr("Date:")+editDate->text()))
+        modified = true;
+    else if(!Scn->frameTexts().contains(tr("Revision:")+editRevision->text()))
+        modified = true;
+
+    if(modified){
+        QStringList documentProperties = QStringList() << tr("Title:")+editTitle->text() << tr("Drawn By:")+editName->text() <<
+                           tr("Date:")+editDate->text() << tr("Revision:")+editRevision->text();
+        Scn->undoStack()->push(new ScenePropertyChangeCmd("document properties", documentProperties, Scn->frameTexts(), Scn));
+        Scn->setFrameTexts(documentProperties);
+    }
+}
+
+/// @return Icon of this page
+QIcon DocumentConfigurationPage::icon() const {
+        return(QIcon(Qucs::bitmapDirectory() + "document-edit.png"));
+}
+
+/// @return Title of this page
+QString DocumentConfigurationPage::title() const {
+        return(tr("General", "document page title"));
 }
 
 //****************************************************
@@ -548,7 +751,6 @@ void VhdlConfigurationPage::slotColorComment()
     setForegroundColor(commentButton,c);
 }
 
-// -----------------------------------------------------------
 void VhdlConfigurationPage::slotColorString()
 {
   QColor c = QColorDialog::getColor(
@@ -557,7 +759,6 @@ void VhdlConfigurationPage::slotColorString()
     setForegroundColor(stringButton,c);
 }
 
-// -----------------------------------------------------------
 void VhdlConfigurationPage::slotColorInteger()
 {
   QColor c = QColorDialog::getColor(
@@ -566,7 +767,6 @@ void VhdlConfigurationPage::slotColorInteger()
     setForegroundColor(integerButton,c);
 }
 
-// -----------------------------------------------------------
 void VhdlConfigurationPage::slotColorReal()
 {
   QColor c = QColorDialog::getColor(
@@ -575,7 +775,6 @@ void VhdlConfigurationPage::slotColorReal()
     setForegroundColor(realButton,c);
 }
 
-// -----------------------------------------------------------
 void VhdlConfigurationPage::slotColorCharacter()
 {
   QColor c = QColorDialog::getColor(
@@ -584,7 +783,6 @@ void VhdlConfigurationPage::slotColorCharacter()
     setForegroundColor(characterButton,c);
 }
 
-// -----------------------------------------------------------
 void VhdlConfigurationPage::slotColorDataType()
 {
   QColor c = QColorDialog::getColor(
@@ -593,11 +791,28 @@ void VhdlConfigurationPage::slotColorDataType()
     setForegroundColor(dataButton,c);
 }
 
-// -----------------------------------------------------------
 void VhdlConfigurationPage::slotColorAttributes()
 {
   QColor c = QColorDialog::getColor(
                 getForegroundColor(attributeButton), this);
   if(c.isValid())
     setForegroundColor(attributeButton,c);
+}
+
+void VhdlConfigurationPage::slotDefaultValues()
+{
+  setForegroundColor(commentButton,Qt::gray);
+  setBackgroundColor(commentButton,QColor(255,250,225));
+  setForegroundColor(stringButton,Qt::red);
+  setBackgroundColor(stringButton,QColor(255,250,225));
+  setForegroundColor(integerButton,Qt::blue);
+  setBackgroundColor(integerButton,QColor(255,250,225));
+  setForegroundColor(realButton,Qt::darkMagenta);
+  setBackgroundColor(realButton,QColor(255,250,225));
+  setForegroundColor(characterButton,Qt::magenta);
+  setBackgroundColor(characterButton,QColor(255,250,225));
+  setForegroundColor(dataButton,Qt::darkRed);
+  setBackgroundColor(dataButton,QColor(255,250,225));
+  setForegroundColor(attributeButton,Qt::darkCyan);
+  setBackgroundColor(attributeButton,QColor(255,250,225));
 }

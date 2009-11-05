@@ -93,6 +93,9 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
    addView(view);
    m_undoGroup->setActiveStack(view->schematicScene()->undoStack());
    loadSettings();
+
+   if(iconsPixelSize > 0)
+       setIconSize(QSize(iconsPixelSize, iconsPixelSize));
 }
 
 QucsMainWindow::~QucsMainWindow()
@@ -605,7 +608,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "vhdl-code.png"), tr("VHDL entity"), this);
-   action->setShortcut(CTRL+SHIFT+Key_V);
+   action->setShortcut(SHIFT+Key_V);
    action->setStatusTip(tr("Inserts skeleton of VHDL entity"));
    action->setWhatsThis(tr("VHDL entity\n\nInserts the skeleton of a VHDL entity"));
    action->setObjectName("insEntity");
@@ -1369,24 +1372,39 @@ void QucsMainWindow::slotExportImage()
    //TODO: implement this
 }
 
-/*!
- * \todo Complete this.
- */
 void QucsMainWindow::slotApplSettings()
 {
    setNormalAction();
-   SettingsDialog *d = new SettingsDialog(this);
+
+   QList<SettingsPage *> wantedPages;
+   SettingsPage *page = new GeneralConfigurationPage(this);
+   wantedPages << page;
+   page = new VhdlConfigurationPage(this);
+   wantedPages << page;
+   page = new SimulationConfigurationPage(this);
+   wantedPages << page;
+
+   SettingsDialog *d = new SettingsDialog(wantedPages, this);
    d->exec();
 }
 
-/*!
- * \todo Complete this.
- */
 void QucsMainWindow::slotFileSettings()
 {
    setNormalAction();
-   SettingsDialog *d = new SettingsDialog(this);
-   d->exec();
+
+   if(tabWidget()->count() > 0){
+       QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+       SchematicScene *scene = view->toSchematicView()->schematicScene();
+
+       QList<SettingsPage *> wantedPages;
+       SettingsPage *page = new DocumentConfigurationPage(scene, this);
+       wantedPages << page;
+       page = new SimulationConfigurationPage(this);
+       wantedPages << page;
+
+       SettingsDialog *d = new SettingsDialog(wantedPages, this);
+       d->exec();
+   }
 }
 
 void QucsMainWindow::slotEditCut()
@@ -1776,7 +1794,7 @@ void QucsMainWindow::slotViewGrid(bool toogle)
         QucsView *view = viewFromWidget(tabWidget()->currentWidget());
         SchematicScene *scene = view->toSchematicView()->schematicScene();
         if(toogle != scene->isGridVisible()){
-            scene->undoStack()->push(new GridPropertyChangeCmd(toogle, scene));
+            scene->undoStack()->push(new ScenePropertyChangeCmd("grid visibility", toogle, scene->isGridVisible(), scene));
             scene->setGridVisible(toogle);
         }
 
@@ -1862,6 +1880,7 @@ void QucsMainWindow::loadSettings()
    resize(settings.value("size", QSize(600, 400)).toSize());
    move(settings.value("pos", QPoint(0, 0)).toPoint());
    maxUndo = settings.value("undo", 20).toInt();
+   iconsPixelSize = settings.value("iconsPixelSize", 0).toInt();
    largeFontSize = settings.value("largefontsize", 16.0).toDouble();
    Editor = settings.value("editor", Qucs::binaryDir + "qucsedit").toString();
    Language = settings.value("language", "").toString();
@@ -1968,6 +1987,7 @@ void QucsMainWindow::saveSettings()
    settings.setValue("size", size());
    settings.setValue("pos", pos());
    settings.setValue("undo", maxUndo);
+   settings.setValue("iconsPixelSize", iconsPixelSize);
    settings.setValue("editor", Editor);
    settings.setValue("largefontsize", largeFontSize);
    settings.setValue("font", savingFont);

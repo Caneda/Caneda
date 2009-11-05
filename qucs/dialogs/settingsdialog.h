@@ -39,23 +39,18 @@ class QDialogButtonBox;
 */
 class SettingsDialog : public QDialog {
 	Q_OBJECT
-        // Constructor, destructor
+
 	public:
-        SettingsDialog(QucsMainWindow *parent = 0);
+        SettingsDialog(QList<SettingsPage *> pages, QucsMainWindow *parent = 0);
         virtual ~SettingsDialog();
-//	private:
-//        SettingsDialog(const SettingsDialog &);
 	
-        // methods
 	public slots:
         void changePage(QListWidgetItem *, QListWidgetItem *);
 	void applyConf();
-        void addPage(SettingsPage *);
 	
-	private:
-	void buildPagesList();
+        private:
+        void buildPagesList();
 	
-        // attributes
 	private:
 	QListWidget *pages_list;
 	QStackedWidget *pages_widget;

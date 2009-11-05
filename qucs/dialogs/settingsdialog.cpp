@@ -27,9 +27,11 @@
         Constructor
         @param QWidget *parent The parent of the dialog.
 */
-SettingsDialog::SettingsDialog(QucsMainWindow *parent) : QDialog(parent) {
+SettingsDialog::SettingsDialog(QList<SettingsPage *> wantedPages, QucsMainWindow *parent) : QDialog(parent) {
 	
         setWindowTitle(tr("Configure Qucs", "window title"));
+
+        pages = wantedPages;
 	
         // List of pages
 	pages_list = new QListWidget();
@@ -42,10 +44,9 @@ SettingsDialog::SettingsDialog(QucsMainWindow *parent) : QDialog(parent) {
 
 	// pages
 	pages_widget = new QStackedWidget();
-        addPage(new GeneralConfigurationPage(parent));
-        addPage(new VhdlConfigurationPage(parent));
-        addPage(new SimulationConfigurationPage(parent));
-	buildPagesList();
+        foreach(SettingsPage *page, pages)
+            pages_widget -> addWidget(page);
+        buildPagesList();
 	
         // buttons
         buttons = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
@@ -100,13 +101,4 @@ void SettingsDialog::applyConf() {
             page -> applyConf();
 
 	accept();
-}
-
-/**
-        Add a page setup dialog
-*/
-void SettingsDialog::addPage(SettingsPage *page) {
-	if (!page || pages.contains(page)) return;
-	pages << page;
-	pages_widget -> addWidget(page);
 }

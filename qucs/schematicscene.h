@@ -171,6 +171,9 @@ public:
   QColor GridColor() const { return this->m_gridcolor; }
   void setGridColor(const QColor & color);
 
+  /*! set grid witdh */
+  bool setProperty(const QString& propName, const QVariant& value);
+
   QString dataSet() const { return this->m_dataSet; }
   void setDataSet(const QString& str);
 

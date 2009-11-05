@@ -196,7 +196,7 @@ class QucsMainWindow : public MainWindowBase
 
       int x, y, dx, dy;     // position and size
       float largeFontSize;
-      unsigned int maxUndo; // size of undo stack
+      unsigned int maxUndo, iconsPixelSize; // size of undo stack
       QString savingFont;
       QString Editor;
       QString Language;
