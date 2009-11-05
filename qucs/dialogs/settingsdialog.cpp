@@ -35,11 +35,10 @@ SettingsDialog::SettingsDialog(QList<SettingsPage *> wantedPages, QucsMainWindow
 	
         // List of pages
 	pages_list = new QListWidget();
-	pages_list -> setViewMode(QListView::IconMode);
+        pages_list -> setViewMode(QListView::ListMode);
         pages_list -> setIconSize(QSize(32, 32));
 	pages_list -> setMovement(QListView::Static);
-        pages_list -> setMinimumWidth(90);
-        pages_list -> setMaximumWidth(90);
+        pages_list -> setMaximumWidth(150);
 	pages_list -> setSpacing(4);
 
 	// pages
@@ -47,7 +46,7 @@ SettingsDialog::SettingsDialog(QList<SettingsPage *> wantedPages, QucsMainWindow
         foreach(SettingsPage *page, pages)
             pages_widget -> addWidget(page);
         buildPagesList();
-	
+
         // buttons
         buttons = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
 	
@@ -83,12 +82,11 @@ void SettingsDialog::changePage(QListWidgetItem *current, QListWidgetItem *previ
         Builds a list of pages on the left
 */
 void SettingsDialog::buildPagesList() {
-	pages_list -> clear();
+        pages_list -> clear();
         foreach(SettingsPage *page, pages) {
 		QListWidgetItem *new_button = new QListWidgetItem(pages_list);
 		new_button -> setIcon(page -> icon());
 		new_button -> setText(page -> title());
-		new_button -> setTextAlignment(Qt::AlignHCenter);
 		new_button -> setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 	}
 }

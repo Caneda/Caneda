@@ -135,7 +135,7 @@ void SchematicScene::init()
   this->m_modified = false;
   
   this->m_opensDataDisplay = true;
-  this->m_frameTexts = QStringList() << tr("Title:") << tr("Drawn By:") << tr("Date:") << tr("Revision:");
+  this->m_frameTexts = QStringList() << tr("Title:") << tr("Drawn By:") << tr("Date:")+QDate::currentDate().toString() << tr("Revision:");
   this->m_macroProgress = false;
   this->m_areItemsMoving = false;
   this->m_shortcutsBlocked = false;

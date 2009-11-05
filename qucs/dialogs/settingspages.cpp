@@ -522,7 +522,7 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene, Qucs
         QLabel *labelName = new QLabel(tr("Name:"));
         editName = new QLineEdit(document);
         QLabel *labelDate = new QLabel(tr("Date:"));
-        editDate = new QLineEdit(document);
+        editDate = new QDateEdit(document);
         QLabel *labelRevision = new QLabel(tr("Revision:"));
         editRevision = new QLineEdit(document);
         foreach(QString frame_text, Scn->frameTexts()){
@@ -531,7 +531,7 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene, Qucs
             else if(frame_text.contains("Drawn By:"))
                 editName->setText(frame_text.remove("Drawn By:"));
             else if(frame_text.contains("Date:"))
-                editDate->setText(frame_text.remove("Date:"));
+                editDate->setDate(QDate::fromString(frame_text.remove("Date:")));
             else if(frame_text.contains("Revision:"))
                 editRevision->setText(frame_text.remove("Revision:"));
         }
@@ -540,10 +540,10 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene, Qucs
         documentLayout->addWidget(editTitle, 0, 1, Qt::AlignRight);
         documentLayout->addWidget(labelName, 1, 0, Qt::AlignLeft);
         documentLayout->addWidget(editName, 1, 1, Qt::AlignRight);
-        documentLayout->addWidget(labelDate, 2, 0, Qt::AlignLeft);
-        documentLayout->addWidget(editDate, 2, 1, Qt::AlignRight);
-        documentLayout->addWidget(labelRevision, 3, 0, Qt::AlignLeft);
-        documentLayout->addWidget(editRevision, 3, 1, Qt::AlignRight);
+        documentLayout->addWidget(labelRevision, 2, 0, Qt::AlignLeft);
+        documentLayout->addWidget(editRevision, 2, 1, Qt::AlignRight);
+        documentLayout->addWidget(labelDate, 3, 0, Qt::AlignLeft);
+        documentLayout->addWidget(editDate, 3, 1, Qt::AlignRight);
 
 
         //Finally we set the general layout of all groups
@@ -595,14 +595,14 @@ void DocumentConfigurationPage::applyConf() {
         modified = true;
     else if(!Scn->frameTexts().contains(tr("Drawn By:")+editName->text()))
         modified = true;
-    else if(!Scn->frameTexts().contains(tr("Date:")+editDate->text()))
+    else if(!Scn->frameTexts().contains(tr("Date:")+editDate->date().toString()))
         modified = true;
     else if(!Scn->frameTexts().contains(tr("Revision:")+editRevision->text()))
         modified = true;
 
     if(modified){
         QStringList documentProperties = QStringList() << tr("Title:")+editTitle->text() << tr("Drawn By:")+editName->text() <<
-                           tr("Date:")+editDate->text() << tr("Revision:")+editRevision->text();
+                           tr("Date:")+editDate->date().toString() << tr("Revision:")+editRevision->text();
         Scn->undoStack()->push(new ScenePropertyChangeCmd("document properties", documentProperties, Scn->frameTexts(), Scn));
         Scn->setFrameTexts(documentProperties);
     }
