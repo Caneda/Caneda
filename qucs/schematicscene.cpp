@@ -298,6 +298,14 @@ bool SchematicScene::setProperty(const QString& propName, const QVariant& value)
         setFrameTexts(value.toStringList());
         return true;
     }
+    else if(propName == "schematic width"){
+        setSceneRect(0, 0, value.toDouble(), height());
+        return true;
+    }
+    else if(propName == "schematic height"){
+        setSceneRect(0, 0, width(), value.toDouble());
+        return true;
+    }
 
     return false;
 }
@@ -731,20 +739,32 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
   if(this->isFrameVisible()) {
       foreach(QString frame_text, m_frameTexts){
           if(frame_text.contains("Title:"))
-              painter->drawText(this->width()/3,this->height()-30,frame_text);
+              painter->drawText(this->width()/3, this->height()-30, frame_text);
           else if(frame_text.contains("Drawn By:"))
-              painter->drawText(10,this->height()-30,frame_text);
+              painter->drawText(10, this->height()-30, frame_text);
           else if(frame_text.contains("Date:"))
-              painter->drawText(10,this->height()-10,frame_text);
+              painter->drawText(10, this->height()-10, frame_text);
           else if(frame_text.contains("Revision:"))
-              painter->drawText(this->width()*4/5,this->height()-30,frame_text);
+              painter->drawText(this->width()*4/5, this->height()-30, frame_text);
       }
-      painter->drawRect(this->sceneRect());
-      painter->drawLine(QLineF(0.0, this->height()-50, this->width(), this->height()-50));
-      painter->drawLine(QLineF(this->width()/3-20, this->height()-50, this->width()/3-20, this->height()));
-      painter->drawLine(QLineF(this->width()*4/5-20, this->height()-50, this->width()*4/5-20, this->height()));
-      painter->drawLine(QLineF(20, 0, 20, this->height()-50));
-      painter->drawLine(QLineF(0, 20, this->width(), 20));
+      painter->drawRect(this->sceneRect()); //Bounding rect
+      painter->drawLine(QLineF(0, this->height()-50, this->width(), this->height()-50)); //Upper footer line
+      painter->drawLine(QLineF(this->width()/3-20, this->height()-50, this->width()/3-20, this->height())); //Name division
+      painter->drawLine(QLineF(this->width()*4/5-20, this->height()-50, this->width()*4/5-20, this->height())); //Title division
+      painter->drawLine(QLineF(20, 0, 20, this->height()-50)); //Left line
+      painter->drawLine(QLineF(0, 20, this->width(), 20));  //Upper line
+      int step=60, i=1;
+      while(i*step+20 < this->height()-50){ //Row numbering
+          painter->drawLine(QLineF(0, i*step+20, 20, i*step+20));
+          painter->drawText(6, i*step-5, QString(QChar('A'+i-1)));
+          i++;
+      }
+      i = 1;
+      while(i*step+20 < this->width()){ //Column numbering
+          painter->drawLine(QLineF(i*step+20, 0, i*step+20, 20));
+          painter->drawText(i*step-15, 16, QString::number(i));
+          i++;
+      }
   }
 
   /* no grid */

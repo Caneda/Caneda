@@ -483,15 +483,15 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene, Qucs
 
         QLabel *labelGridX = new QLabel(tr("Horizontal Grid:"));
         spinGridX = new QSpinBox(grid);
-        spinGridX->setValue(Scn->gridWidth());
         spinGridX->setMinimum(2);
-        spinGridX->setMaximum(99);
+        spinGridX->setMaximum(500);
+        spinGridX->setValue(Scn->gridWidth());
 
         QLabel *labelGridY = new QLabel(tr("Vertical Grid:"));
         spinGridY = new QSpinBox(grid);
-        spinGridY->setValue(Scn->gridHeight());
         spinGridY->setMinimum(2);
-        spinGridY->setMaximum(99);
+        spinGridY->setMaximum(500);
+        spinGridY->setValue(Scn->gridHeight());
 
         gridLayout->addWidget(labelShowGrid, 0, 0, Qt::AlignLeft);
         gridLayout->addWidget(checkShowGrid, 0, 1, Qt::AlignRight);
@@ -509,8 +509,24 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene, Qucs
         checkShowFrame = new QCheckBox(frame);
         checkShowFrame->setChecked(Scn->isFrameVisible());
 
+        QLabel *labelSchemaX = new QLabel(tr("Schematic Width:"));
+        spinSchemaX = new QSpinBox(frame);
+        spinSchemaX->setMinimum(500);
+        spinSchemaX->setMaximum(10000);
+        spinSchemaX->setValue(Scn->width());
+
+        QLabel *labelSchemaY = new QLabel(tr("Schematic Height:"));
+        spinSchemaY = new QSpinBox(frame);
+        spinSchemaY->setMinimum(300);
+        spinSchemaY->setMaximum(10000);
+        spinSchemaY->setValue(Scn->height());
+
         frameLayout->addWidget(labelShowFrame, 0, 0, Qt::AlignLeft);
         frameLayout->addWidget(checkShowFrame, 0, 1, Qt::AlignRight);
+        frameLayout->addWidget(labelSchemaX, 1, 0, Qt::AlignLeft);
+        frameLayout->addWidget(spinSchemaX, 1, 1, Qt::AlignRight);
+        frameLayout->addWidget(labelSchemaY, 2, 0, Qt::AlignLeft);
+        frameLayout->addWidget(spinSchemaY, 2, 1, Qt::AlignRight);
 
 
         //Next we set the document group of options
@@ -588,6 +604,14 @@ void DocumentConfigurationPage::applyConf() {
     if(Scn->gridHeight() != spinGridY->value()){
         Scn->undoStack()->push(new ScenePropertyChangeCmd("grid height", spinGridY->value(), Scn->gridHeight(), Scn));
         Scn->setGridHeight(spinGridY->value());
+    }
+    if(Scn->width() != spinSchemaX->value()){
+        Scn->undoStack()->push(new ScenePropertyChangeCmd("schematic width", spinSchemaX->value(), Scn->width(), Scn));
+        Scn->setSceneRect(0, 0, spinSchemaX->value(), Scn->height());
+    }
+    if(Scn->height() != spinSchemaY->value()){
+        Scn->undoStack()->push(new ScenePropertyChangeCmd("schematic height", spinSchemaY->value(), Scn->height(), Scn));
+        Scn->setSceneRect(0, 0, Scn->width(), spinSchemaY->value());
     }
 
     bool modified = false;

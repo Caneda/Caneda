@@ -126,7 +126,7 @@ class DocumentConfigurationPage : public SettingsPage {
         QFrame *horiz_line_;
 
         QCheckBox *checkShowGrid, *checkShowFrame;
-        QSpinBox *spinGridX, *spinGridY;
+        QSpinBox *spinGridX, *spinGridY, *spinSchemaX, *spinSchemaY;
         QLineEdit *editName, *editTitle, *editRevision;
         QDateEdit *editDate;
 };

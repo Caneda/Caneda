@@ -41,7 +41,7 @@ class SettingsDialog : public QDialog {
 	Q_OBJECT
 
 	public:
-        SettingsDialog(QList<SettingsPage *> pages, QucsMainWindow *parent = 0);
+        SettingsDialog(QList<SettingsPage *> pages, const char *title, QucsMainWindow *parent = 0);
         virtual ~SettingsDialog();
 	
 	public slots:

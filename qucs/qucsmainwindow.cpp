@@ -1384,7 +1384,7 @@ void QucsMainWindow::slotApplSettings()
    page = new SimulationConfigurationPage(this);
    wantedPages << page;
 
-   SettingsDialog *d = new SettingsDialog(wantedPages, this);
+   SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Qucs", this);
    d->exec();
 }
 
@@ -1402,7 +1402,7 @@ void QucsMainWindow::slotFileSettings()
        page = new SimulationConfigurationPage(this);
        wantedPages << page;
 
-       SettingsDialog *d = new SettingsDialog(wantedPages, this);
+       SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document", this);
        d->exec();
    }
 }

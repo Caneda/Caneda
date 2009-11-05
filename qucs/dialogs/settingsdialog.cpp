@@ -27,9 +27,9 @@
         Constructor
         @param QWidget *parent The parent of the dialog.
 */
-SettingsDialog::SettingsDialog(QList<SettingsPage *> wantedPages, QucsMainWindow *parent) : QDialog(parent) {
+SettingsDialog::SettingsDialog(QList<SettingsPage *> wantedPages, const char *title, QucsMainWindow *parent) : QDialog(parent) {
 	
-        setWindowTitle(tr("Configure Qucs", "window title"));
+        setWindowTitle(tr(title, "window title"));
 
         pages = wantedPages;
 	

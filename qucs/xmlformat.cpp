@@ -103,7 +103,7 @@ QString XmlFormat::saveText()
    writer->writeStartElement("view");
 
    writer->writeStartElement("scenerect");
-   writer->writeRect(m_view->sceneRect());
+   writer->writeRect(scene->sceneRect());
    writer->writeEndElement(); //</scenerect>
 
    writer->writeStartElement("viewtransform");
@@ -316,6 +316,10 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
          if(reader->name() == "scenerect") {
             reader->readFurther();
             sceneRect = reader->readRect();
+            if(!sceneRect.isValid()) {
+               reader->raiseError(QObject::tr("Invalid QRect attribute"));
+               break;
+            }
             reader->readFurther();
             Q_ASSERT(reader->isEndElement() && reader->name() == "scenerect");
          }
@@ -398,6 +402,7 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
       m_view->verticalScrollBar()->setValue(verticalScroll);
       scene->setGridVisible(gridVisible);
       scene->setGridSize(gridSize.width(), gridSize.height());
+      scene->setSceneRect(sceneRect);
       scene->setDataSet(dataSet);
       scene->setDataDisplay(dataDisplay);
       scene->setOpensDataDisplay(opensDataDisplay);
