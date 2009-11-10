@@ -37,9 +37,6 @@ class AboutQUCS : public QDialog {
         AboutQUCS(QWidget * = 0);
         virtual ~AboutQUCS();
 	
-	private:
-        AboutQUCS(AboutQUCS &);
-	
         // methods
 	private:
 	QWidget *title() const;

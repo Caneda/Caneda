@@ -28,6 +28,7 @@
 #include "xmlutilities/validators.h"
 #include "xmlutilities/transformers.h"
 #include "dialogs/settingsdialog.h"
+#include "dialogs/exportdialog.h"
 #include "dialogs/aboutqucs.h"
 
 #include <QtGui/QStatusBar>
@@ -261,7 +262,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotFilePrint()));
    addActionToMap(action);
 
-   action = new QAction(QIcon(bitmapPath + "export-image.png"), tr("Export Image"), this);
+   action = new QAction(QIcon(bitmapPath + "export-image.png"), tr("&Export Image..."), this);
    action->setShortcut(CTRL+Key_E);
    action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
    action->setObjectName("exportImage");
@@ -1364,12 +1365,25 @@ void QucsMainWindow::slotFilePrint()
    //TODO: implement this or rather port directly
 }
 
-/*!
- * \todo Implement this.
- */
 void QucsMainWindow::slotExportImage()
 {
-   //TODO: implement this
+    setNormalAction();
+
+    QList<SchematicScene *> schemasToExport;
+
+    int i = 0;
+    QucsView *view = 0;
+    while(i < tabWidget()->count()) {
+      view = viewFromWidget(tabWidget()->widget(i));
+      SchematicScene *scene = view->toSchematicView()->schematicScene();
+      schemasToExport << scene;
+
+      view = 0;
+      ++i;
+   }
+
+    ExportDialog *expDial = new ExportDialog(schemasToExport, this);
+    expDial->exec();
 }
 
 void QucsMainWindow::slotApplSettings()

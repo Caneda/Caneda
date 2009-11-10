@@ -699,6 +699,64 @@ void SchematicScene::blockShortcuts(const bool block)
   }
 }
 
+/**
+        Exports the schematic to an image
+        @return QImage representing the schematic
+*/
+bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height, Qt::AspectRatioMode aspectRatioMode)
+{
+        QRectF source_area;
+        if(!isFrameVisible())
+            source_area = itemsBoundingRect();
+        else
+            source_area = QRectF(0.0, 0.0, this->width(), this->height());
+
+        // if the dimensions are not specified, the image is exported at 1:1 scale
+        QSize image_size = (width == -1 && height == -1) ? source_area.size().toSize() : QSize(width, height);
+
+        // prepare the device
+        QPainter p;
+        if(!p.begin(&pix)) return(false);
+
+        p.setRenderHint(QPainter::Antialiasing, true);
+        p.setRenderHint(QPainter::TextAntialiasing, true);
+        p.setRenderHint(QPainter::SmoothPixmapTransform, true);
+
+        // deselect the elements
+        QList<QGraphicsItem *> selected_elmts = selectedItems();
+        foreach(QGraphicsItem *qgi, selected_elmts) qgi->setSelected(false);
+
+        // performs rendering itself
+        render(&p, QRect(QPoint(0, 0), image_size), source_area, aspectRatioMode);
+        p.end();
+
+        // restores the selected items
+        foreach (QGraphicsItem *qgi, selected_elmts) qgi->setSelected(true);
+
+        return(true);
+}
+
+/**
+        Used to know the dimensions of the image
+        @return The size of the image
+*/
+QSize SchematicScene::imageSize() const
+{
+        qreal image_width, image_height;
+        if(!isFrameVisible()){
+            QRectF items_rect = itemsBoundingRect();
+            image_width  = items_rect.width();
+            image_height = items_rect.height();
+        }
+        else{
+            image_width  = this->width();
+            image_height = this->height();
+        }
+
+        return(QSizeF(image_width, image_height).toSize());
+}
+
+
 /*!
  * \brief Set whether this schematic is modified or not
  * \param m True/false to set it to unmodified/modified.

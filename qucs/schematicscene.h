@@ -208,6 +208,9 @@ public:
   bool shortcutsBlocked() const { return this->m_shortcutsBlocked; }
   void blockShortcuts(bool block);
 
+  bool toPaintDevice(QPaintDevice &, int = -1, int = -1, Qt::AspectRatioMode = Qt::KeepAspectRatio);
+  QSize imageSize() const;
+
 public slots:
   void setModified(const bool m = true);
   bool sidebarItemClicked(const QString &item, const QString& category);
