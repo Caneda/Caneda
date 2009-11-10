@@ -29,6 +29,7 @@
 #include "xmlutilities/transformers.h"
 #include "dialogs/settingsdialog.h"
 #include "dialogs/exportdialog.h"
+#include "dialogs/printdialog.h"
 #include "dialogs/aboutqucs.h"
 
 #include <QtGui/QStatusBar>
@@ -1357,12 +1358,16 @@ void QucsMainWindow::slotSymbolEdit()
    //TODO: implement this or rather port directly
 }
 
-/*!
- * \todo Implement this.
- */
 void QucsMainWindow::slotFilePrint()
 {
-   //TODO: implement this or rather port directly
+   setNormalAction();
+
+   if(tabWidget()->count() > 0){
+       QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+       SchematicScene *scene = view->toSchematicView()->schematicScene();
+
+       PrintDialog *p = new PrintDialog(scene, this);
+   }
 }
 
 void QucsMainWindow::slotExportImage()
