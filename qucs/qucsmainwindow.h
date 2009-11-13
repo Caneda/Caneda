@@ -29,6 +29,7 @@
 #include <QtGui/QUndoView>
 
 class ComponentsSidebar;
+class FolderBrowser;
 class QUndoGroup;
 
 class SchematicView;
@@ -53,7 +54,7 @@ class QucsMainWindow : public MainWindowBase
    public slots:
       void slotFileNew();
       void slotTextNew();
-      void slotFileOpen();
+      void slotFileOpen(QString fileName = 0);
       void slotFileSave(int index);
       void slotFileSaveCurrent();
       void slotFileSaveAs(int index);
@@ -168,6 +169,7 @@ class QucsMainWindow : public MainWindowBase
       void showHTML(const QString& Page);
 
       void createUndoView();
+      void createFolderView();
       void setupSidebar();
 
       QucsView* viewFromWidget(QWidget *widget);
@@ -190,6 +192,7 @@ class QucsMainWindow : public MainWindowBase
       QUndoGroup *m_undoGroup;
       QUndoView *undoView;
       ComponentsSidebar *m_componentsSidebar;
+      FolderBrowser *m_folderBrowser;
       QString titleText;
 
    public:

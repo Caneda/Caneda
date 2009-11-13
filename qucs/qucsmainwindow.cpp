@@ -19,6 +19,7 @@
 
 #include "qucs-tools/global.h"
 #include "componentssidebar.h"
+#include "folderbrowser.h"
 #include "qucsmainwindow.h"
 #include "schematicview.h"
 #include "schematicscene.h"
@@ -83,6 +84,7 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
    initToolBars();
 
    setupSidebar();
+   createFolderView();
    createUndoView();
 
    connect(tabWidget(), SIGNAL(tabCloseRequested(int)), this, SLOT(slotFileClose(int)));
@@ -130,14 +132,15 @@ bool QucsMainWindow::gotoPage(QString fileName)
    QFileInfo info(fileName);
    if(info.suffix() == "xsch") {
       view = new SchematicView(0, this);
-   }
+   }    //TODO: create other views (text, symbol, simulation) here
    else {
-      //TODO: create text view here or emit error in case of unrecognized extension
+       //Unrecognized file type
+       return false;
    }
 
    if(!view->load(fileName)) {
-      delete view;
-      return false;
+       delete view;
+       return false;
    }
 
    addView(view);
@@ -179,6 +182,18 @@ void QucsMainWindow::createUndoView()
 
     sidebarDockWidget = new QDockWidget(undoView->windowTitle(),this);
     sidebarDockWidget->setWidget(undoView);
+    addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
+    viewMenu->addAction(sidebarDockWidget->toggleViewAction());
+}
+
+void QucsMainWindow::createFolderView()
+{
+    m_folderBrowser = new FolderBrowser(this);
+
+    connect(m_folderBrowser, SIGNAL(itemDoubleClicked(QString)), this, SLOT(slotFileOpen(QString)));
+
+    sidebarDockWidget = new QDockWidget(m_folderBrowser->windowTitle(),this);
+    sidebarDockWidget->setWidget(m_folderBrowser);
     addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 }
@@ -1229,10 +1244,12 @@ void QucsMainWindow::slotTextNew()
  * If the file is already opened, that tab is set as current. Otherwise the file
  * opened is set as current tab.
  */
-void QucsMainWindow::slotFileOpen()
+void QucsMainWindow::slotFileOpen(QString fileName)
 {
-   QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                    "", qucsFilter);
+    if(fileName == 0)
+        fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                "", qucsFilter);
+
    if(!fileName.isEmpty()) {
       bool isLoaded = gotoPage(fileName);
       if(!isLoaded)
