@@ -466,7 +466,7 @@ QVariant Component::itemChange(GraphicsItemChange change,
 }
 
 
-/*!\brief Read an svg schematic
+/*! \brief Read an svg schematic
  * \param svgContent svg content as utf8
  * \param svgPainter The SvgPainter object to which the symbols should be exported to.
  * \param schName Schematic name

@@ -219,7 +219,6 @@ signals:
   void modificationChanged(bool changed);
   void fileNameChanged(const QString& file);
   void titleToBeUpdated();
-  void gridChanged(bool state);
 
 protected:
   void drawBackground(QPainter *p, const QRectF& r);

@@ -227,7 +227,7 @@ bool PropertyItem::sceneEvent(QEvent *event)
                mousePressEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
                return true;
             }
-            //Remove foucs of this
+            //Remove focus of this
             clearFocus();
             //Ignoring the event facilitates selection of new grabber,
             // which is most likely group

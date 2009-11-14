@@ -30,14 +30,16 @@ FolderBrowser::FolderBrowser(QWidget *parent) : QWidget(parent)
     buttonUp->setIcon(QIcon(Qucs::bitmapDirectory() + "previous.png"));
     buttonUp->setShortcut(Qt::Key_Backspace);
     buttonUp->setWhatsThis(tr("Go up one folder"));
-    QToolButton *buttonBack = new QToolButton();
+    buttonBack = new QToolButton();
     buttonBack->setIcon(QIcon(Qucs::bitmapDirectory() + "back.png"));
     buttonBack->setShortcut(Qt::ALT + Qt::Key_Left);
     buttonBack->setWhatsThis(tr("Go previous folder"));
-    QToolButton *buttonForward = new QToolButton();
+    buttonBack->setEnabled(false);
+    buttonForward = new QToolButton();
     buttonForward->setIcon(QIcon(Qucs::bitmapDirectory() + "forward.png"));
     buttonForward->setShortcut(Qt::ALT + Qt::Key_Right);
     buttonForward->setWhatsThis(tr("Go next folder"));
+    buttonForward->setEnabled(false);
     QToolButton *buttonHome = new QToolButton();
     buttonHome->setIcon(QIcon(Qucs::bitmapDirectory() + "home.png"));
     buttonHome->setShortcut(Qt::CTRL + Qt::Key_Home);
@@ -84,6 +86,9 @@ void FolderBrowser::slotOnDoubleClicked(const QModelIndex& index)
         previousPages << m_listView->rootIndex();
         m_listView->setRootIndex(index);
         nextPages.clear();
+
+        buttonBack->setEnabled(true);
+        buttonForward->setEnabled(false);
     }
     else /*if(m_fileModel->fileInfo(index).completeSuffix() == "xsch")*/
         emit itemDoubleClicked(m_fileModel->fileInfo(index).absoluteFilePath());
@@ -91,7 +96,12 @@ void FolderBrowser::slotOnDoubleClicked(const QModelIndex& index)
 
 void FolderBrowser::slotUpFolder()
 {
+    previousPages << m_listView->rootIndex();
     m_listView->setRootIndex(m_listView->rootIndex().parent());
+    nextPages.clear();
+
+    buttonBack->setEnabled(true);
+    buttonForward->setEnabled(false);
 }
 
 void FolderBrowser::slotBackFolder()
@@ -100,6 +110,10 @@ void FolderBrowser::slotBackFolder()
         nextPages << m_listView->rootIndex();
         m_listView->setRootIndex(previousPages.last());
         previousPages.removeLast();
+
+        buttonForward->setEnabled(true);
+        if(previousPages.isEmpty())
+            buttonBack->setEnabled(false);
     }
 }
 
@@ -109,12 +123,21 @@ void FolderBrowser::slotForwardFolder()
         previousPages << m_listView->rootIndex();
         m_listView->setRootIndex(nextPages.last());
         nextPages.removeLast();
+
+        buttonBack->setEnabled(true);
+        if(nextPages.isEmpty())
+            buttonForward->setEnabled(false);
     }
 }
 
 void FolderBrowser::slotHomeFolder()
 {
+    previousPages << m_listView->rootIndex();
     m_listView->setRootIndex(m_fileModel->index(QDir::homePath()));
+    nextPages.clear();
+
+    buttonBack->setEnabled(true);
+    buttonForward->setEnabled(false);
 }
 
 void FolderBrowser::slotNewFolder()

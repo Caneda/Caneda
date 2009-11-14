@@ -128,7 +128,6 @@ class QucsMainWindow : public MainWindowBase
       void slotShowOne();
       void slotZoomIn(bool);
       void slotZoomOut(bool);
-      void slotViewGrid(bool);
       void slotViewToolBar(bool);
       void slotViewStatusBar(bool);
 
@@ -155,7 +154,6 @@ class QucsMainWindow : public MainWindowBase
 
       void slotCurrentChanged(QWidget *current, QWidget *prev);
       void slotViewClosed(QWidget *widget);
-      void slotUpdateGridStatus(bool status);
 
    private:
       void initActions();

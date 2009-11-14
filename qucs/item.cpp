@@ -282,7 +282,7 @@ void QucsItem::mirrorAlong(Qt::Axis axis)
       this->scale(-1.0, 1.0);
 }
 
-//!\brief Rotate item by -90°
+//!\brief Rotate item by -90 degrees
 void QucsItem::rotate90(Qucs::AngleDirection dir)
 {
    this->rotate(dir == Qucs::AntiClockwise ? -90.0 : 90.0);

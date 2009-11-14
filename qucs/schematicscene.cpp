@@ -253,7 +253,6 @@ void SchematicScene::setGridVisible(const bool visibility)
   
   this->m_gridVisible = visibility;
   this->update();
-  emit gridChanged(visibility);
 }
 
 /*! Set grid visibility 

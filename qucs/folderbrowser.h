@@ -49,6 +49,8 @@ class FolderBrowser : public QWidget
       QListView *m_listView;
       QList<QModelIndex> previousPages;
       QList<QModelIndex> nextPages;
+
+      QToolButton *buttonBack, *buttonForward;
 };
 
 #endif // FOLDERBROWSER_H

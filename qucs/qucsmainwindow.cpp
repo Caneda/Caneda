@@ -788,15 +788,6 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
    checkableActions << action;
 
-   action = new QAction( tr("&Grid"), this);
-   action->setStatusTip(tr("Enables/disables the grid"));
-   action->setWhatsThis(tr("Grid\n\nEnables/disables the grid"));
-   action->setObjectName("viewGrid");
-   action->setCheckable(true);
-   action->setChecked(true);
-   connect( action, SIGNAL(toggled(bool)), SLOT(slotViewGrid(bool)));
-   addActionToMap(action);
-
    action = new QAction( tr("Tool&bar"), this);
    action->setStatusTip(tr("Enables/disables the toolbar"));
    action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
@@ -994,7 +985,6 @@ void QucsMainWindow::initMenus()
 
    viewMenu->addSeparator();
 
-   viewMenu->addAction(action("viewGrid"));
    viewMenu->addAction(action("viewToolBar"));
    viewMenu->addAction(action("viewStatusBar"));
 
@@ -1161,7 +1151,6 @@ void QucsMainWindow::addView(QucsView *view)
    if(view->isSchematicView()) {
        SchematicScene *schema = view->toSchematicView()->schematicScene();
        m_undoGroup->addStack(schema->undoStack());
-       connect(schema, SIGNAL(gridChanged(bool)), this, SLOT(slotUpdateGridStatus(bool)));
    }
    addChildWidget(view->toWidget());
    tabWidget()->setCurrentWidget(view->toWidget());
@@ -1185,7 +1174,6 @@ void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
       connect(currView, SIGNAL(titleToBeUpdated()), this, SLOT(updateTitleTabText()));
       m_undoGroup->setActiveStack(currView->schematicScene()->undoStack());
       updateTitleTabText();
-      slotUpdateGridStatus(currView->toSchematicView()->schematicScene()->isGridVisible());
    }
 }
 
@@ -1198,16 +1186,6 @@ void QucsMainWindow::slotViewClosed(QWidget *widget)
    if(view) {
       m_undoGroup->removeStack(view->schematicScene()->undoStack());
    }
-}
-
-/*!
- * \brief Updates menu grid visibility entry on grid change.
- */
-void QucsMainWindow::slotUpdateGridStatus(bool status)
-{
-    foreach(QAction *act, viewMenu->actions())
-        if(act->objectName()=="viewGrid")
-            act->setChecked(status);
 }
 
 /*!
@@ -1821,20 +1799,6 @@ void QucsMainWindow::slotZoomIn(bool on)
 void QucsMainWindow::slotZoomOut(bool on)
 {
    performToggleAction(on, 0, action("magMinus"));
-}
-
-void QucsMainWindow::slotViewGrid(bool toogle)
-{
-    setNormalAction();
-    if(tabWidget()->count() > 0){
-        QucsView *view = viewFromWidget(tabWidget()->currentWidget());
-        SchematicScene *scene = view->toSchematicView()->schematicScene();
-        if(toogle != scene->isGridVisible()){
-            scene->undoStack()->push(new ScenePropertyChangeCmd("grid visibility", toogle, scene->isGridVisible(), scene));
-            scene->setGridVisible(toogle);
-        }
-
-    }
 }
 
 void QucsMainWindow::slotViewToolBar(bool toogle)
