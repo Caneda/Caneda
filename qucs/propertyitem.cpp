@@ -60,7 +60,7 @@ PropertyItem::PropertyItem(const QString &propName , SchematicScene *scene):
       scene->addItem(this);
    }
    m_edited = false;
-   QTimer::singleShot(10, this, SLOT(updateValue()));
+//   QTimer::singleShot(10, this, SLOT(updateValue()));
 }
 
 //! Returns the bounds of the item.
@@ -202,78 +202,77 @@ bool PropertyItem::sceneEvent(QEvent *event)
          default: ;
    };
 
-   //Call event handlers of this and not send them to the parent - group
-   if(hasFocus()) {
-      switch (event->type()) {
-
-         case QEvent::KeyPress:
-            keyPressEvent(static_cast<QKeyEvent *>(event));
-            return true;
-
-         case QEvent::KeyRelease:
-            keyReleaseEvent(static_cast<QKeyEvent *>(event));
-            return true;
-
-         case QEvent::FocusIn:
-            focusInEvent(static_cast<QFocusEvent *>(event));
-            return true;
-
-         case QEvent::FocusOut:
-            focusOutEvent(static_cast<QFocusEvent *>(event));
-            return true;
-
-         case QEvent::GraphicsSceneMousePress:
-            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
-               mousePressEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-               return true;
-            }
-            //Remove focus of this
-            clearFocus();
-            //Ignoring the event facilitates selection of new grabber,
-            // which is most likely group
-            event->ignore();
-            //This prevents double sending of events when the scene is
-            // selecting mouse grabber
-            if(!group()->hasFocus())
-               return true;
-            break;
-
-         case QEvent::GraphicsSceneMouseMove:
-            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
-               mouseMoveEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-               return true;
-            }
-            break;
-
-         case QEvent::GraphicsSceneMouseRelease:
-            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
-               mouseReleaseEvent(static_cast<QGraphicsSceneMouseEvent *>
-                     (event));
-               return true;
-            }
-            break;
-
-         case QEvent::GraphicsSceneMouseDoubleClick:
-            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
-               mouseDoubleClickEvent(static_cast<QGraphicsSceneMouseEvent *>
-                     (event));
-               return true;
-            }
-            break;
-
-         case QEvent::GraphicsSceneContextMenu:
-            contextMenuEvent(static_cast<QGraphicsSceneContextMenuEvent *>
-                  (event));
-            break;
-
-            default: break;
-      };
-   }
-   else {
-      event->accept();
-      //TODO:  Review this code thoroughly
-   }
-
+//   //Call event handlers of this and not send them to the parent - group
+//   if(hasFocus()) {
+//      switch (event->type()) {
+//
+//         case QEvent::KeyPress:
+//            keyPressEvent(static_cast<QKeyEvent *>(event));
+//            return true;
+//
+//         case QEvent::KeyRelease:
+//            keyReleaseEvent(static_cast<QKeyEvent *>(event));
+//            return true;
+//
+//         case QEvent::FocusIn:
+//            focusInEvent(static_cast<QFocusEvent *>(event));
+//            return true;
+//
+//         case QEvent::FocusOut:
+//            focusOutEvent(static_cast<QFocusEvent *>(event));
+//            return true;
+//
+//         case QEvent::GraphicsSceneMousePress:
+//            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
+//               mousePressEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+//               return true;
+//            }
+//            //Remove focus of this
+//            clearFocus();
+//            //Ignoring the event facilitates selection of new grabber,
+//            // which is most likely group
+//            event->ignore();
+//            //This prevents double sending of events when the scene is
+//            // selecting mouse grabber
+//            if(!group()->hasFocus())
+//               return true;
+//            break;
+//
+//         case QEvent::GraphicsSceneMouseMove:
+//            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
+//               mouseMoveEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
+//               return true;
+//            }
+//            break;
+//
+//         case QEvent::GraphicsSceneMouseRelease:
+//            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
+//               mouseReleaseEvent(static_cast<QGraphicsSceneMouseEvent *>
+//                     (event));
+//               return true;
+//            }
+//            break;
+//
+//         case QEvent::GraphicsSceneMouseDoubleClick:
+//            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
+//               mouseDoubleClickEvent(static_cast<QGraphicsSceneMouseEvent *>
+//                     (event));
+//               return true;
+//            }
+//            break;
+//
+//         case QEvent::GraphicsSceneContextMenu:
+//            contextMenuEvent(static_cast<QGraphicsSceneContextMenuEvent *>
+//                  (event));
+//            break;
+//
+//            default: break;
+//      }
+//   }
+//   else {
+//      event->accept();
+//      //TODO:  Review this code thoroughly
+//   }
    return QGraphicsTextItem::sceneEvent(event);
 }
 
@@ -309,10 +308,11 @@ void PropertyItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! Installs an event filter after calling base method.
 void PropertyItem::focusInEvent(QFocusEvent *event)
 {
-   QGraphicsTextItem::focusInEvent(event);
    qApp->installEventFilter(this);
    m_edited = false;
    connect(document(), SIGNAL(contentsChanged()), this, SLOT(textChanged()));
+
+   QGraphicsTextItem::focusInEvent(event);
 }
 
 /*! \brief Focus out event handler.
@@ -321,8 +321,6 @@ void PropertyItem::focusInEvent(QFocusEvent *event)
  */
 void PropertyItem::focusOutEvent(QFocusEvent *event)
 {
-   QGraphicsTextItem::focusOutEvent(event);
-
    if(m_edited) {
       updateValue();
    }
@@ -335,6 +333,8 @@ void PropertyItem::focusOutEvent(QFocusEvent *event)
    setTextCursor(c);
    disconnect(document(), SIGNAL(contentsChanged()), this,
               SLOT(textChanged()));
+
+   QGraphicsTextItem::focusOutEvent(event);
 }
 
 //! Clears focus if escape key pressed. Otherwise calls base method.
@@ -361,6 +361,7 @@ void PropertyItem::keyPressEvent(QKeyEvent *e)
       clearFocus();
       return;
    }
+
    m_edited = true;
    QGraphicsTextItem::keyPressEvent(e);
 }

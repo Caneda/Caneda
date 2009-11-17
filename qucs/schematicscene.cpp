@@ -1061,6 +1061,35 @@ void SchematicScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
   sendMouseActionEvent(e);
 }
 
+void SchematicScene::wheelEvent(QGraphicsSceneWheelEvent *e)
+{
+    QGraphicsView *v = static_cast<QGraphicsView *>(e->widget()->parent());
+    SchematicView *sv = qobject_cast<SchematicView*>(v);
+    if(!sv)
+        return;
+
+    if(e->modifiers() & Qt::ControlModifier){
+        if(e->delta() > 0)
+            sv->zoomIn();
+        else
+            sv->zoomOut();
+    }
+    else if(e->modifiers() & Qt::ShiftModifier){
+        if(e->delta() > 0)
+            sv->horizontalScrollBar()->setValue(sv->horizontalScrollBar()->value()+50);
+        else
+            sv->horizontalScrollBar()->setValue(sv->horizontalScrollBar()->value()-50);
+    }
+    else{
+        if(e->delta() > 0)
+            sv->verticalScrollBar()->setValue(sv->verticalScrollBar()->value()-50);
+        else
+            sv->verticalScrollBar()->setValue(sv->verticalScrollBar()->value()+50);
+    }
+
+    e->accept();
+}
+
 
 /******************************************************************************
  *

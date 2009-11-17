@@ -235,6 +235,7 @@ protected:
   void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *e);
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e);
+  void wheelEvent(QGraphicsSceneWheelEvent *e);
 
   // Custom handlers
   void wiringEvent(MouseActionEvent *e);
