@@ -31,15 +31,12 @@
 #include "diagrams/diagram.h"
 
 #include "qucs-tools/global.h"
-#include <QtXml/QDomDocument>
 #include <QtCore/QRectF>
 #include <QtCore/QtDebug>
 
 #include <QtGui/QMessageBox>
 #include <QtGui/QMatrix>
 #include <QtGui/QScrollBar>
-
-#include <QtXml/QXmlStreamWriter>
 
 XmlFormat::XmlFormat(SchematicView *view) : FileFormatHandler(view)
 {

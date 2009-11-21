@@ -19,9 +19,8 @@
 
 #include "qucsmainwindow.h"
 #include "qucs-tools/global.h"
-#include "library.h"
 #include <QtGui>
- #include <QtGui/QSplashScreen>
+#include <QtGui/QSplashScreen>
 
 int main(int argc,char *argv[])
 {

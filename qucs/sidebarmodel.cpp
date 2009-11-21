@@ -47,8 +47,10 @@ class CategoryItem
       QPixmap iconPixmap() const { return m_iconPixmap; }
       bool isLeaf() const { return m_childItems.isEmpty(); }
 
-   private:
       void addChild(CategoryItem* c);
+      void removeChild(int c);
+
+   private:
 
       QString m_name;
       QPixmap m_iconPixmap;
@@ -82,6 +84,11 @@ void CategoryItem::addChild(CategoryItem *c)
    m_childItems << c;
 }
 
+void CategoryItem::removeChild(int c)
+{
+    m_childItems.removeAt(c);
+}
+
 int CategoryItem::row() const
 {
    if(m_parentItem) {
@@ -97,18 +104,58 @@ SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
                               QPixmap(), rootItem);
 }
 
-void SidebarModel::plugLibrary(const QString& libraryName)
+/**
+        Adding a library to the sidebar
+        @param QString &libraryName     Library name
+        @param QString &category        Category to place the library
+*/
+void SidebarModel::plugLibrary(const QString& libraryName, const QString& category)
 {
    const Library *libItem = LibraryLoader::defaultInstance()->library(libraryName);
    if(!libItem) return;
 
-   CategoryItem *libRoot = new CategoryItem(libraryName, QPixmap(), libComp);
-   QList<ComponentDataPtr> components = libItem->components().values();
+   CategoryItem *libRoot;
+   if(category == "root")
+       libRoot = new CategoryItem(libraryName, QPixmap(), rootItem);
+   else {
+       for(int i = 0; i < rootItem->childCount(); i++) {
+           if(rootItem->child(i)->name() == category) {
+               libRoot = new CategoryItem(libraryName, QPixmap(), rootItem->child(i));
+               break;
+           }
+       }
+   }
 
+   QList<ComponentDataPtr> components = libItem->components().values();
    foreach(const ComponentDataPtr data, components) {
       new CategoryItem(data->name, libItem->renderedPixmap(data->name), libRoot);
    }
    reset();
+}
+
+void SidebarModel::unPlugLibrary(const QString& libraryName, const QString& category)
+{
+    if(category == "root")
+        for(int i = 0; i < rootItem->childCount(); i++) {
+        if(rootItem->child(i)->name() == libraryName) {
+            rootItem->removeChild(i);
+            break;
+        }
+    }
+    else {
+        for(int i = 0; i < rootItem->childCount(); i++) {
+            if(rootItem->child(i)->name() == category) {
+                for(int j = 0; j < rootItem->child(i)->childCount(); j++) {
+                    if(rootItem->child(i)->child(j)->name() == libraryName) {
+                        rootItem->child(i)->removeChild(j);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    reset();
 }
 
 void SidebarModel::plugItem(QString itemName, const QPixmap& itemPixmap, QString category)

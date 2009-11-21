@@ -56,8 +56,12 @@ class ComponentsSidebar : public QWidget
       ComponentsSidebar(QWidget *parent = 0);
       ~ComponentsSidebar() {}
 
-      void plugLibrary(QString str) {
-         m_model->plugLibrary(str);
+      void plugLibrary(QString str, QString category) {
+         m_model->plugLibrary(str, category);
+      }
+
+      void unPlugLibrary(QString str, QString category) {
+         m_model->unPlugLibrary(str, category);
       }
 
       void plugItem(QString itemName, const QPixmap& itemPixmap, QString category) {

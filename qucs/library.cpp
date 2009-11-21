@@ -36,6 +36,11 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPixmapCache>
 
+
+//*************************************************************
+//*************************Library*****************************
+//*************************************************************
+
 //! Constructs library item from reader with file path \a path and svgpainter \a painter.
 Library::Library(Qucs::XmlReader *reader, QString path, SvgPainter *painter) :
    m_svgPainter(painter)
@@ -226,6 +231,10 @@ bool Library::registerComponentData(Qucs::XmlReader *reader, QString path)
    }
    return true;
 }
+
+//*************************************************************
+//**********************Library Loader*************************
+//*************************************************************
 
 //! Constructor
 LibraryLoader::LibraryLoader()

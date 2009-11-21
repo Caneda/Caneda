@@ -54,7 +54,8 @@ class SidebarModel : public QAbstractItemModel
       QStringList mimeTypes() const;
       QMimeData* mimeData(const QModelIndexList& indexes) const;
 
-      void plugLibrary(const QString& libraryName);
+      void plugLibrary(const QString& libraryName, const QString& category);
+      void unPlugLibrary(const QString& libraryName, const QString& category);
 
       void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
       void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);

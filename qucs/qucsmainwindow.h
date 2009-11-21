@@ -93,11 +93,11 @@ class QucsMainWindow : public MainWindowBase
       void slotCenterHorizontal();
       void slotCenterVertical();
 
-      void slotProjNewButt();
-      void slotMenuOpenProject();
+      void slotNewProject();
+      void slotOpenProject();
       void slotAddToProject();
-      void slotMenuDelProject();
-      void slotMenuCloseProject();
+      void slotDeleteProject();
+      void slotCloseProject();
       void slotCreateLib();
       void slotCreatePackage();
       void slotExtractPackage();

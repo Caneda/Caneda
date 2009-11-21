@@ -20,13 +20,10 @@
 #ifndef __XMLUTILITIES_H
 #define __XMLUTILITIES_H
 
-#include <QtXml/QXmlStreamWriter>
-
-#include "QXmlStreamReaderExt.h"
-
 #include <QtCore/QMap>
-
 #include <QtGui/QPolygonF>
+#include <QtXml/QXmlStreamWriter>
+#include "QXmlStreamReaderExt.h"
 
 // Forward declarations
 class QRectF;

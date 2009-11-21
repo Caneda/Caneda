@@ -526,28 +526,28 @@ void QucsMainWindow::initActions()
    action->setStatusTip(tr("Creates a new project"));
    action->setWhatsThis(tr("New Project\n\nCreates a new project"));
    action->setObjectName("projNew");
-   connect( action, SIGNAL(triggered()), SLOT(slotProjNewButt()));
+   connect( action, SIGNAL(triggered()), SLOT(slotNewProject()));
    addActionToMap(action);
 
    action = new QAction( tr("&Open Project..."), this);
    action->setShortcut(CTRL+SHIFT+Key_O);
    action->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
    action->setObjectName("projOpen");
-   connect( action, SIGNAL(triggered()), SLOT(slotMenuOpenProject()));
+   connect( action, SIGNAL(triggered()), SLOT(slotOpenProject()));
    addActionToMap(action);
 
    action = new QAction( tr("&Delete Project..."), this);
    action->setShortcut(CTRL+SHIFT+Key_D);
    action->setWhatsThis(tr("Delete Project\n\nDeletes an existing project"));
    action->setObjectName("projDel");
-   connect( action, SIGNAL(triggered()), SLOT(slotMenuDelProject()));
+   connect( action, SIGNAL(triggered()), SLOT(slotDeleteProject()));
    addActionToMap(action);
 
    action = new QAction( tr("&Close Project"), this);
    action->setShortcut(CTRL+SHIFT+Key_W);
    action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
    action->setObjectName("projClose");
-   connect( action, SIGNAL(triggered()), SLOT(slotMenuCloseProject()));
+   connect( action, SIGNAL(triggered()), SLOT(slotCloseProject()));
    addActionToMap(action);
 
    action = new QAction( tr("&Add Files to Project..."), this);
@@ -1593,28 +1593,41 @@ void QucsMainWindow::slotCenterVertical()
    alignElements(Qt::AlignVCenter);
 }
 
-void QucsMainWindow::slotProjNewButt()
+void QucsMainWindow::slotNewProject()
 {
    setNormalAction();
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotMenuOpenProject()
+void QucsMainWindow::slotOpenProject()
+{
+   QString fileName = QFileDialog::getOpenFileName(this, tr("Open Library"),
+                                                   "", tr("Projects (*.xml)"));
+   if(!fileName.isEmpty()) {
+       LibraryLoader *library = LibraryLoader::defaultInstance();
+
+       if(library->load(fileName))
+           qDebug() << "Succesfully loaded library!";
+       else {
+           QMessageBox::critical(this, tr("Error"),
+                                    tr("Invalid project file!"));
+           return;
+       }
+       m_componentsSidebar->plugLibrary("Projects", "root");
+   }
+}
+
+void QucsMainWindow::slotDeleteProject()
 {
    setNormalAction();
    //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotMenuDelProject()
+void QucsMainWindow::slotCloseProject()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
-}
-
-void QucsMainWindow::slotMenuCloseProject()
-{
-   setNormalAction();
-   //TODO: implement this or rather port directly
+   LibraryLoader *library = LibraryLoader::defaultInstance();
+   library->unload("Projects");
+   m_componentsSidebar->unPlugLibrary("Projects", "root");
 }
 
 void QucsMainWindow::slotAddToProject()
@@ -1975,7 +1988,7 @@ void QucsMainWindow::loadSettings()
       return;
    }
 
-   m_componentsSidebar->plugLibrary("Passive");
+   m_componentsSidebar->plugLibrary("Passive", "Components");
    test();
 }
 
