@@ -1,5 +1,7 @@
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/qucs-attenuator} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
+ADD_SUBDIRECTORY( bitmaps )
+
 SET(QUCSATTENUATOR_SRCS attenuatorfunc.cpp helpdialog.cpp main.cpp qucsattenuator.cpp)
 
 SET(QUCSATTENUATOR_MOC_HDRS qucsattenuator.h attenuatorfunc.h helpdialog.h)
@@ -12,4 +14,4 @@ ADD_EXECUTABLE( qucsattenuator ${QUCSATTENUATOR_SRCS} ${QUCSATTENUATOR_MOC_SRCS}
 
 TARGET_LINK_LIBRARIES( qucsattenuator ${QT_LIBRARIES} qucstools )
 
-INSTALL(TARGETS qucsattenuator DESTINATION bin)
+INSTALL(TARGETS qucsattenuator DESTINATION ${BINARYDIR})

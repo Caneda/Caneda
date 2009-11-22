@@ -1,5 +1,7 @@
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/qucs-help} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
+ADD_SUBDIRECTORY( docs )
+
 SET(QUCSHELP_SRCS qucshelp.cpp htmldatafetcher.cpp main.cpp)
 
 SET(QUCSHELP_MOC_HDRS htmldatafetcher.h qucshelp.h)
@@ -12,4 +14,4 @@ ADD_EXECUTABLE( qucshelp ${QUCSHELP_SRCS} ${QUCSHELP_MOC_SRCS} )
 
 TARGET_LINK_LIBRARIES( qucshelp ${QT_LIBRARIES} qucstools )
 
-INSTALL(TARGETS qucshelp DESTINATION bin)
+INSTALL(TARGETS qucshelp DESTINATION ${BINARYDIR})

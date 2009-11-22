@@ -4,5 +4,5 @@ SET(PNGS  align-horizontal-center.png configure.png filenew.png mirror.png selec
 # application pictures
 SET(ICONS  big.button.qucs.xpm big.qucs.xpm tiny.button.qucs.xpm tiny.qucs.xpm )
 
-INSTALL(FILES ${PNGS} DESTINATION bitmaps)
-INSTALL(FILES ${ICONS} DESTINATION bitmaps)
+INSTALL(FILES ${PNGS} DESTINATION ${BITMAPDIR})
+INSTALL(FILES ${ICONS} DESTINATION ${BITMAPDIR})

@@ -1,5 +1,8 @@
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/qucs-transcalc} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
+ADD_SUBDIRECTORY( bitmaps )
+ADD_SUBDIRECTORY( examples )
+
 SET(QUCSTRANSCALC_SRCS helpdialog.cpp microstrip.cpp coax.cpp qucstrans.cpp transline.cpp main.cpp optionsdialog.cpp c_microstrip.cpp rectwaveguide.cpp)
 
 SET(QUCSTRANSCALC_MOC_HDRS c_microstrip.h rectwaveguide.h helpdialog.h microstrip.h coax.h qucstrans.h transline.h optionsdialog.h)
@@ -12,4 +15,4 @@ ADD_EXECUTABLE( qucstrans ${QUCSTRANSCALC_SRCS} ${QUCSTRANSCALC_MOC_SRCS} )
 
 TARGET_LINK_LIBRARIES( qucstrans ${QT_LIBRARIES} qucstools )
 
-INSTALL(TARGETS qucstrans DESTINATION bin)
+INSTALL(TARGETS qucstrans DESTINATION ${BINARYDIR})

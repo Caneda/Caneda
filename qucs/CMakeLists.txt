@@ -35,4 +35,4 @@ TARGET_LINK_LIBRARIES( qucs ${QT_LIBRARIES} qucstools paintings dialogs
                        ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES}
                        diagrams xmlutilities)
 
-INSTALL(TARGETS qucs DESTINATION bin)
+INSTALL(TARGETS qucs DESTINATION ${BINARYDIR})

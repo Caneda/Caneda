@@ -17,9 +17,9 @@ be considered for the next release.
 The simplest way to compile this package is:
 
   1. `cd' to the directory containing the package's source code and type
-     `cmake CMakeLists.txt' to configure the package for your system.
+     `cmake ./' to configure the package for your system.
      If you're using `csh' on an old version of System V, you might need 
-     to type `sh ./cmake CMakeLists.txt' instead to prevent `csh' from 
+     to type `sh ./cmake ./' instead to prevent `csh' from 
      trying to execute `cmake' itself.
 
      Running `cmake' takes awhile.  While running, it prints some
