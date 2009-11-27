@@ -384,7 +384,7 @@ Component* LibraryLoader::newComponent(QString componentName, SchematicScene *sc
 */
 bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_)
 {
-  return this->load( libpathtree+"/components/basic/passive.xml",svgPainter_);
+  return this->load( libpathtree+"/components/basic/passive.xpro",svgPainter_);
 }
 
 //! Create library indicated by path \a libPath.
