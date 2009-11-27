@@ -72,8 +72,6 @@ int CategoryItem::row() const
 SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
 {
    rootItem = new CategoryItem("Root", "");
-   libComp = new CategoryItem(QObject::tr("Components"), "",
-                              QPixmap(), true, rootItem);
 }
 
 /**
@@ -88,11 +86,13 @@ void SidebarModel::plugLibrary(const QString& libraryName, const QString& catego
 
    CategoryItem *libRoot;
    if(category == "root")
-       libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryFileName(), QPixmap(), true, rootItem);
+       libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryFileName(),
+                                  QPixmap(), true, rootItem);
    else {
        for(int i = 0; i < rootItem->childCount(); i++) {
            if(rootItem->child(i)->name() == category) {
-               libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryFileName(), QPixmap(), true, rootItem->child(i));
+               libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryFileName(),
+                                          QPixmap(), true, rootItem->child(i));
                break;
            }
        }
@@ -137,19 +137,24 @@ void SidebarModel::plugItem(QString itemName, const QPixmap& itemPixmap, QString
 {
    CategoryItem *catItem = 0;
 
-   for(int i = 0; i < rootItem->childCount(); i++) {
-      if(rootItem->child(i)->name() == category) {
-         catItem = rootItem->child(i);
-         break;
-      }
-   }
+   if(category == "root")
+       catItem = new CategoryItem(itemName, "",
+                                  QPixmap(), true, rootItem);
+   else {
+       for(int i = 0; i < rootItem->childCount(); i++) {
+           if(rootItem->child(i)->name() == category) {
+               catItem = rootItem->child(i);
+               break;
+           }
+       }
 
-   if(!catItem) {
-      catItem = new CategoryItem(category, category, QPixmap(), false, rootItem);
-   }
+       if(!catItem) {
+           catItem = new CategoryItem(category, category, QPixmap(), false, rootItem);
+       }
 
-   new CategoryItem(itemName, "", itemPixmap, false, catItem);
-   reset();
+       new CategoryItem(itemName, category, itemPixmap, false, catItem);
+       reset();
+   }
 }
 
 void SidebarModel::plugItems(const QList<QPair<QString, QPixmap> > &items,
@@ -172,7 +177,7 @@ void SidebarModel::plugItems(const QList<QPair<QString, QPixmap> > &items,
       end = items.end();
 
    while(it != end) {
-      new CategoryItem(it->first, "", it->second, false, catItem);
+      new CategoryItem(it->first, category, it->second, false, catItem);
       ++it;
    }
    reset();

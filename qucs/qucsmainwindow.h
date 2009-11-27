@@ -170,6 +170,7 @@ class QucsMainWindow : public MainWindowBase
       void createUndoView();
       void createFolderView();
       void setupSidebar();
+      void setupProjectsSidebar();
 
       QucsView* viewFromWidget(QWidget *widget);
 
@@ -191,6 +192,7 @@ class QucsMainWindow : public MainWindowBase
       QUndoGroup *m_undoGroup;
       QUndoView *undoView;
       ComponentsSidebar *m_componentsSidebar;
+      ComponentsSidebar *m_projectsSidebar;
       Library *projectLibrary;
       FolderBrowser *m_folderBrowser;
       QString titleText;

@@ -96,7 +96,6 @@ class SidebarModel : public QAbstractItemModel
 
    private:
       CategoryItem *rootItem;
-      CategoryItem *libComp;
 };
 
 #endif //__SIDEBARMODEL_H

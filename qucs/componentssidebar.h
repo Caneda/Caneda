@@ -20,6 +20,7 @@
 #ifndef __COMPONENTSSIDEBAR_H
 #define __COMPONENTSSIDEBAR_H
 
+#include <QtGui>
 #include <QtGui/QTreeView>
 #include "sidebarmodel.h"
 
@@ -53,7 +54,7 @@ class ComponentsSidebar : public QWidget
 {
       Q_OBJECT;
    public:
-      ComponentsSidebar(QWidget *parent = 0);
+      ComponentsSidebar(QString windowTitle, QWidget *parent = 0);
       ~ComponentsSidebar() {}
 
       void plugLibrary(QString str, QString category) {
@@ -72,6 +73,10 @@ class ComponentsSidebar : public QWidget
           m_model->plugItems(items, category);
       }
 
+      void addToolbarButton(QAction *action) {
+          toolbar->addAction(action);
+      }
+
       QString currentComponent();
 
    signals:
@@ -88,6 +93,7 @@ class ComponentsSidebar : public QWidget
       TreeView *m_treeView;
       QToolButton *m_clearButton;
       QString m_currentComponent;
+      QToolBar *toolbar;
 };
 
 #endif

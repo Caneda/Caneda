@@ -99,9 +99,11 @@ class FilterProxyModel : public QSortFilterProxyModel
       }
 };
 
-ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
+ComponentsSidebar::ComponentsSidebar(QString windowTitle, QWidget *parent) : QWidget(parent)
 {
    QVBoxLayout *layout = new QVBoxLayout(this);
+   toolbar = new QToolBar;
+   layout->addWidget(toolbar);
    QHBoxLayout *hl = new QHBoxLayout();
    layout->addLayout(hl);
    m_filterEdit = new QLineEdit();
@@ -134,7 +136,7 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
    connect(m_treeView, SIGNAL(invalidAreaClicked(const QModelIndex&)), this,
            SLOT(slotOnClicked(const QModelIndex&)));
 
-   setWindowTitle(tr("Schematic Items"));
+   setWindowTitle(windowTitle);
    m_currentComponent = "";
 }
 
