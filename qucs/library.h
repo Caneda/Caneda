@@ -31,7 +31,7 @@ typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
 class Library
 {
    public:
-      Library(Qucs::XmlReader *reader, QString path, SvgPainter *painter);
+      Library(QString libraryPath, SvgPainter *painter);
       ~Library();
 
       ComponentDataPtr componentDataPtr(const QString& name) const;
@@ -40,6 +40,8 @@ class Library
       SvgPainter* svgPainter() const { return m_svgPainter; }
       //! Returns library name.
       QString libraryName() const { return m_libraryName; }
+      //! Returns library filename.
+      QString libraryFileName() const { return m_libraryFileName; }
       //! Returns symbol id corresponding to library.
       QString defaultSymbolId() const { return m_defaultSymbolId; }
       //! Returns brief text used to display.
@@ -56,12 +58,15 @@ class Library
       void render(QPainter *painter, QString component, QString symbol = QString()) const;
       QPixmap renderedPixmap(QString component, QString symbol = QString()) const;
 
-   private:
-      bool parseLibrary(Qucs::XmlReader *reader, QString path);
-      bool parseExternalComponent(QString path);
+      bool loadLibrary(Qucs::XmlReader *reader);
+      bool saveLibrary();
+      bool parseExternalComponent(QString componentPath);
+      bool removeComponent(QString componentName);
 
-      bool registerComponentData(Qucs::XmlReader *reader, QString path);
+   private:
+      bool registerComponentData(Qucs::XmlReader *reader, QString componentPath);
       QString m_libraryName;
+      QString m_libraryFileName;
       QString m_defaultSymbolId;
       QString m_displayText;
       QString m_description;
@@ -89,6 +94,7 @@ class LibraryLoader
                               SchematicScene *scene,
                               QString library = QString());
 
+      bool newLibrary(const QString& libPath, SvgPainter* svg = 0);
       bool load(const QString& libPath, SvgPainter* svg = 0);
       bool loadtree(const QString& libpathtree, SvgPainter *svgPainter_ = 0);
       bool unload(const QString& libName);
@@ -96,7 +102,7 @@ class LibraryLoader
       //! Returns library hash table
       const LibraryHash& libraries() const { return m_libraryHash; }
 
-      const Library* library(const QString& libName) const;
+      Library* library(const QString& libName) const;
 
    private:
       LibraryLoader();

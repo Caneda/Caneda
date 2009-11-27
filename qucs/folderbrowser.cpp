@@ -90,7 +90,7 @@ void FolderBrowser::slotOnDoubleClicked(const QModelIndex& index)
         buttonBack->setEnabled(true);
         buttonForward->setEnabled(false);
     }
-    else /*if(m_fileModel->fileInfo(index).completeSuffix() == "xsch")*/
+    else // it is a file so we let the main window handle the action
         emit itemDoubleClicked(m_fileModel->fileInfo(index).absoluteFilePath());
 }
 

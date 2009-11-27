@@ -31,11 +31,9 @@ class FolderBrowser : public QWidget
       ~FolderBrowser() {}
 
    signals:
-//      void itemClicked(const QString& item, const QString& category);
       void itemDoubleClicked(const QString& filename);
 
    private slots:
-//      void slotOnClicked(const QModelIndex& index);
       void slotOnDoubleClicked(const QModelIndex& index);
       void slotUpFolder();
       void slotBackFolder();

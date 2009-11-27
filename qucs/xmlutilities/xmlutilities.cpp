@@ -518,4 +518,12 @@ namespace Qucs
       writeAttribute("pointSize", QString::number(font.pointSize()));
       writeAttribute("weight", QString::number(font.weight()));
    }
+
+   void XmlWriter::writeLocaleText(const QString &lang, const QString& value)
+   {
+       writeStartElement("lang");
+       writeAttribute("lang", lang);
+       writeCharacters(value);
+       writeEndElement();
+   }
 }

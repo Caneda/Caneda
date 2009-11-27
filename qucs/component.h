@@ -48,6 +48,8 @@ public:
   ComponentData(Qucs::ActiveStatus a = Qucs::Active) : activeStatus(a) {}
   /*!\brief Component name */
   QString name;
+  /*!\brief Component filename */
+  QString filename;
   /*!\brief Component prefix */
   QString labelPrefix;
   /*!\brief Component display text 
@@ -58,9 +60,7 @@ public:
      \todo Create a localization class   
   */
   QString description;
-  /*!\brief library 
-      \todo replace whith path
-  */
+  /*!\brief library */
   QString library;
   /*!\brief Properties */
   PropertyMap propertyMap;

@@ -42,11 +42,25 @@
 //*************************************************************
 
 //! Constructs library item from reader with file path \a path and svgpainter \a painter.
-Library::Library(Qucs::XmlReader *reader, QString path, SvgPainter *painter) :
+Library::Library(QString libraryPath, SvgPainter *painter) :
    m_svgPainter(painter)
 {
-   Q_ASSERT(m_svgPainter);
-   m_valid = parseLibrary(reader, path);
+    Q_ASSERT(m_svgPainter);
+
+    m_libraryName = QFileInfo(libraryPath).baseName();
+    m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
+
+    m_libraryFileName = libraryPath;
+
+    if(m_libraryName.isEmpty()) {
+        qWarning() << "\nWarning: Invalid or no 'name' attribute in library tag";
+        return;
+    }
+
+    m_displayText = "User library";
+    m_description = "User created library";
+
+    m_valid = true;
 }
 
 /*!
@@ -120,18 +134,17 @@ QPixmap Library::renderedPixmap(QString component,
 /*!
  * Parses the library xml file.
  * \param reader XmlReader corresponding to file.
- * \param filePath Represents the path of parent directory of library file.
  */
-bool Library::parseLibrary(Qucs::XmlReader *reader, QString filePath)
+bool Library::loadLibrary(Qucs::XmlReader *reader)
 {
    bool readok = true;
    Q_ASSERT(reader->isStartElement() && reader->name() == "library");
-   QDir fileDir(filePath);
 
    m_libraryName = reader->attributes().value("name").toString();
    if(m_libraryName.isEmpty()) {
       reader->raiseError("Invalid or no 'name' attribute in library tag");
-      return false;
+      m_valid = false;
+      return m_valid;
    }
 
    while(!reader->atEnd()) {
@@ -151,16 +164,12 @@ bool Library::parseLibrary(Qucs::XmlReader *reader, QString filePath)
          }
          else if(reader->name() == "component") {
             QString externalPath = reader->attributes().value("href").toString();
-            if(externalPath.isEmpty()) {
-               readok = registerComponentData(reader, filePath);
-            }
-            else {
-               QString absFilePath = fileDir.absoluteFilePath(externalPath);
-               bool status = parseExternalComponent(absFilePath);
+            if(!externalPath.isEmpty()) {
+               bool status = parseExternalComponent(externalPath);
                if(!status) {
                   QString errorString("Parsing external component data file %1 "
                                       "failed");
-                  errorString = errorString.arg(absFilePath);
+                  errorString = errorString.arg(QFileInfo(externalPath).absoluteFilePath());
                   reader->raiseError(errorString);
                } else {
                   //ignore rest of component' tag as the main data is only external
@@ -173,20 +182,71 @@ bool Library::parseLibrary(Qucs::XmlReader *reader, QString filePath)
          }
       }
    }
-   return !reader->hasError() && readok;
+   m_valid = !reader->hasError() && readok;
+   return m_valid;
+}
+
+/*!
+ * Saves the library to a file.
+ */
+bool Library::saveLibrary()
+{
+    QString saveText;
+    Qucs::XmlWriter *writer = new Qucs::XmlWriter(&saveText);
+    writer->setAutoFormatting(true);
+
+    writer->writeStartDocument();
+    writer->writeStartElement("library");
+    writer->writeAttribute("name", libraryName());
+    writer->writeAttribute("version", Qucs::version);
+
+    writer->writeStartElement("displaytext");
+    writer->writeLocaleText("en", displayText());
+    writer->writeEndElement(); //</displaytext>
+
+    writer->writeStartElement("description");
+    writer->writeLocaleText("en", description());
+    writer->writeEndElement(); //</displaytext>
+
+    //Save all components in library
+    QList<ComponentDataPtr> components = this->components().values();
+    foreach(const ComponentDataPtr data, components) {
+        writer->writeEmptyElement("component");
+        writer->writeAttribute("href", data->filename);
+    }
+
+    writer->writeEndDocument(); //</library>
+    delete writer;
+
+
+    if(saveText.isEmpty()) {
+        qDebug("Looks buggy! Null data to save! Was this expected ??");
+    }
+
+    QFile file(libraryFileName());
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::critical(0, QObject::tr("Error"),
+                              QObject::tr("Cannot save library!"));
+        return false;
+    }
+    QTextStream stream(&file);
+    stream << saveText;
+    file.close();
+
+    return true;
 }
 
 /*!
  * Parses the component data from file \a path.
  */
-bool Library::parseExternalComponent(QString path)
+bool Library::parseExternalComponent(QString componentPath)
 {
    bool readok = true;
-   QFile file(path);
+   QFile file(QFileInfo(componentPath).absoluteFilePath());
    
    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
       QMessageBox::warning(0, QObject::tr("File open"),
-                           QObject::tr("Cannot open file %1").arg(path));
+                           QObject::tr("Cannot open file %1").arg(componentPath));
       return false;
    }
    QTextStream in(&file);
@@ -203,26 +263,40 @@ bool Library::parseExternalComponent(QString path)
          break;
    }
    if(reader.isStartElement() && reader.name() == "component") {
-      QFileInfo info(path);
-      QString parentPath = info.dir().absolutePath();
-      readok = registerComponentData(&reader, parentPath);
+      readok = registerComponentData(&reader, componentPath);
    }
    return !reader.hasError() && readok;
 }
 
+/*!
+ * Removes the component from library.
+ */
+bool Library::removeComponent(QString componentName)
+{
+    if(!m_componentHash.contains(componentName))
+        return false;
+    else
+        m_componentHash.remove(componentName);
+
+    return true;
+}
+
 //! Registers svg as well as the component's shared data.
-bool Library::registerComponentData(Qucs::XmlReader *reader, QString path)
+bool Library::registerComponentData(Qucs::XmlReader *reader, QString componentPath)
 {
    Q_ASSERT(m_svgPainter);
    bool readok;
 
    //Automatically registers svgs on success
    ComponentDataPtr dataPtr(new ComponentData);
-   dataPtr->library = libraryName();
-   readok = Qucs::readComponentData(reader, path, m_svgPainter, dataPtr);
+   dataPtr->library = libraryFileName();
+   dataPtr->filename = componentPath;
+
+   QString parentPath = QFileInfo(componentPath).absolutePath();
+   readok = Qucs::readComponentData(reader, parentPath, m_svgPainter, dataPtr);
 
    if(dataPtr.constData() == 0 || reader->hasError() || !readok) {
-      qWarning() << "\nWarning: Failed to read data from\n" << path;
+      qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();
       return false;
    }
 
@@ -256,7 +330,7 @@ LibraryLoader* LibraryLoader::defaultInstance()
 }
 
 //! Returns library item corresponding to name.
-const Library* LibraryLoader::library(const QString& str) const
+Library* LibraryLoader::library(const QString& str) const
 {
    if(!m_libraryHash.contains(str)) {
       qWarning() << "LibraryLoader::library : LibraryLoader item " << str << " not found";
@@ -313,7 +387,29 @@ bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_
   return this->load( libpathtree+"/components/basic/passive.xml",svgPainter_);
 }
 
-//! Load's library indicated by path \a libPath.
+//! Create library indicated by path \a libPath.
+bool LibraryLoader::newLibrary(const QString& libPath, SvgPainter *svgPainter_)
+{
+    if(svgPainter_ == 0) {
+        svgPainter_ = SvgPainter::defaultInstance();
+    }
+
+    /* goto base dir */
+    QString libParentPath = QFileInfo(libPath).dir().absolutePath();
+    QString current = QDir::currentPath();
+    if(!QDir::setCurrent(libParentPath)) {
+        (void) QDir::setCurrent(current);
+        return false;
+    }
+
+    Library *info = new Library(libPath, svgPainter_);
+
+    m_libraryHash.insert(info->libraryFileName(), info);
+
+    return info->isValid();
+}
+
+//! Load library indicated by path \a libPath.
 bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
 {
    if(svgPainter_ == 0) {
@@ -349,16 +445,17 @@ bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
 
       if(reader.isStartElement()) {
          if(reader.name() == "library") {
-            Library *info = new Library(&reader, libParentPath, svgPainter_);
+            Library *info = new Library(libPath, svgPainter_);
+            info->loadLibrary(&reader);
             if(reader.hasError()) {
                QMessageBox::critical(0, QObject::tr("Load library"),
-                                     QObject::tr("Parsing library failed with following error"
+                                     QObject::tr("Parsing library failed with following error: "
                                                  "\"%1\"").arg(reader.errorString()));
                delete info;
                return false;
             }
 
-            m_libraryHash.insert(info->libraryName(), info);
+            m_libraryHash.insert(info->libraryFileName(), info);
          }
          else {
             reader.readUnknownElement();

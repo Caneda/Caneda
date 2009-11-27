@@ -29,6 +29,7 @@
 #include <QtGui/QUndoView>
 
 class ComponentsSidebar;
+class Library;
 class FolderBrowser;
 class QUndoGroup;
 
@@ -96,7 +97,7 @@ class QucsMainWindow : public MainWindowBase
       void slotNewProject();
       void slotOpenProject();
       void slotAddToProject();
-      void slotDeleteProject();
+      void slotRemoveFromProject();
       void slotCloseProject();
       void slotCreateLib();
       void slotCreatePackage();
@@ -190,6 +191,7 @@ class QucsMainWindow : public MainWindowBase
       QUndoGroup *m_undoGroup;
       QUndoView *undoView;
       ComponentsSidebar *m_componentsSidebar;
+      Library *projectLibrary;
       FolderBrowser *m_folderBrowser;
       QString titleText;
 

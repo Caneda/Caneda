@@ -112,6 +112,8 @@ namespace Qucs
          void writePen(const QPen& pen, QLatin1String tag = QLatin1String("pen"));
          void writeBrush(const QBrush& brush, QLatin1String tag = QLatin1String("brush"));
          void writeFont(const QFont& font, QLatin1String tag = QLatin1String("font"));
+
+         void writeLocaleText(const QString &lang, const QString& value);
    };
 }
 

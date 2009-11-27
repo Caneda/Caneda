@@ -57,20 +57,22 @@ class ComponentsSidebar : public QWidget
       ~ComponentsSidebar() {}
 
       void plugLibrary(QString str, QString category) {
-         m_model->plugLibrary(str, category);
+          m_model->plugLibrary(str, category);
       }
 
       void unPlugLibrary(QString str, QString category) {
-         m_model->unPlugLibrary(str, category);
+          m_model->unPlugLibrary(str, category);
       }
 
       void plugItem(QString itemName, const QPixmap& itemPixmap, QString category) {
-         m_model->plugItem(itemName, itemPixmap, category);
+          m_model->plugItem(itemName, itemPixmap, category);
       }
 
       void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category) {
-         m_model->plugItems(items, category);
+          m_model->plugItems(items, category);
       }
+
+      QString currentComponent();
 
    signals:
       void itemClicked(const QString& item, const QString& category);
@@ -85,6 +87,7 @@ class ComponentsSidebar : public QWidget
       QLineEdit *m_filterEdit;
       TreeView *m_treeView;
       QToolButton *m_clearButton;
+      QString m_currentComponent;
 };
 
 #endif

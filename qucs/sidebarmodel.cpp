@@ -29,37 +29,9 @@
 #include <QtCore/QMimeData>
 #include <QtGui/QPainter>
 
-class CategoryItem
-{
-   public:
-      CategoryItem(const QString& name, const QPixmap &pixmap = QPixmap(),
-                   CategoryItem *parent = 0);
-      ~CategoryItem();
 
-      CategoryItem *parent() const { return m_parentItem; }
-
-      CategoryItem *child(int row) const;
-      int childCount() const { return m_childItems.size(); }
-
-      int row() const;
-      QString name() const { return m_name; }
-
-      QPixmap iconPixmap() const { return m_iconPixmap; }
-      bool isLeaf() const { return m_childItems.isEmpty(); }
-
-      void addChild(CategoryItem* c);
-      void removeChild(int c);
-
-   private:
-
-      QString m_name;
-      QPixmap m_iconPixmap;
-      QList<CategoryItem*> m_childItems;
-      CategoryItem *m_parentItem;
-};
-
-CategoryItem::CategoryItem(const QString& name, const QPixmap& pixmap, CategoryItem *parent) :
-   m_name(name), m_iconPixmap(pixmap), m_parentItem(parent)
+CategoryItem::CategoryItem(const QString& name, const QString& filename, const QPixmap& pixmap, bool isLibrary, CategoryItem *parent) :
+   m_name(name), m_filename(filename), m_iconPixmap(pixmap), m_isLibrary(isLibrary), m_parentItem(parent)
 {
    if(m_parentItem) {
       m_parentItem->addChild(this);
@@ -99,9 +71,9 @@ int CategoryItem::row() const
 
 SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
 {
-   rootItem = new CategoryItem("Root");
-   libComp = new CategoryItem(QObject::tr("Components"),
-                              QPixmap(), rootItem);
+   rootItem = new CategoryItem("Root", "");
+   libComp = new CategoryItem(QObject::tr("Components"), "",
+                              QPixmap(), true, rootItem);
 }
 
 /**
@@ -116,11 +88,11 @@ void SidebarModel::plugLibrary(const QString& libraryName, const QString& catego
 
    CategoryItem *libRoot;
    if(category == "root")
-       libRoot = new CategoryItem(libraryName, QPixmap(), rootItem);
+       libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryFileName(), QPixmap(), true, rootItem);
    else {
        for(int i = 0; i < rootItem->childCount(); i++) {
            if(rootItem->child(i)->name() == category) {
-               libRoot = new CategoryItem(libraryName, QPixmap(), rootItem->child(i));
+               libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryFileName(), QPixmap(), true, rootItem->child(i));
                break;
            }
        }
@@ -128,16 +100,19 @@ void SidebarModel::plugLibrary(const QString& libraryName, const QString& catego
 
    QList<ComponentDataPtr> components = libItem->components().values();
    foreach(const ComponentDataPtr data, components) {
-      new CategoryItem(data->name, libItem->renderedPixmap(data->name), libRoot);
+      new CategoryItem(data->name, data->filename, libItem->renderedPixmap(data->name), false, libRoot);
    }
    reset();
 }
 
 void SidebarModel::unPlugLibrary(const QString& libraryName, const QString& category)
 {
+   const Library *libItem = LibraryLoader::defaultInstance()->library(libraryName);
+   if(!libItem) return;
+
     if(category == "root")
         for(int i = 0; i < rootItem->childCount(); i++) {
-        if(rootItem->child(i)->name() == libraryName) {
+        if(rootItem->child(i)->filename() == libItem->libraryFileName()) {
             rootItem->removeChild(i);
             break;
         }
@@ -146,7 +121,7 @@ void SidebarModel::unPlugLibrary(const QString& libraryName, const QString& cate
         for(int i = 0; i < rootItem->childCount(); i++) {
             if(rootItem->child(i)->name() == category) {
                 for(int j = 0; j < rootItem->child(i)->childCount(); j++) {
-                    if(rootItem->child(i)->child(j)->name() == libraryName) {
+                    if(rootItem->child(i)->child(j)->filename() == libItem->libraryFileName()) {
                         rootItem->child(i)->removeChild(j);
                         break;
                     }
@@ -170,10 +145,10 @@ void SidebarModel::plugItem(QString itemName, const QPixmap& itemPixmap, QString
    }
 
    if(!catItem) {
-      catItem = new CategoryItem(category, QPixmap(), rootItem);
+      catItem = new CategoryItem(category, category, QPixmap(), false, rootItem);
    }
 
-   new CategoryItem(itemName, itemPixmap, catItem);
+   new CategoryItem(itemName, "", itemPixmap, false, catItem);
    reset();
 }
 
@@ -190,14 +165,14 @@ void SidebarModel::plugItems(const QList<QPair<QString, QPixmap> > &items,
    }
 
    if(!catItem) {
-      catItem = new CategoryItem(category, QPixmap(), rootItem);
+      catItem = new CategoryItem(category, category, QPixmap(), false, rootItem);
    }
 
    QList<QPair<QString, QPixmap> >::const_iterator it = items.begin(),
       end = items.end();
 
    while(it != end) {
-      new CategoryItem(it->first, it->second, catItem);
+      new CategoryItem(it->first, "", it->second, false, catItem);
       ++it;
    }
    reset();
@@ -245,7 +220,7 @@ QVariant SidebarModel::data(const QModelIndex & index, int role) const
       return QVariant(item->name());
    }
 
-   if(item->isLeaf()) {
+   if(item->isLeaf() && !item->isLibrary()) {
       switch(role) {
          case Qt::DecorationRole :
             return QVariant(QIcon(item->iconPixmap()));
@@ -267,10 +242,16 @@ bool SidebarModel::isLeaf(const QModelIndex& index) const
            static_cast<CategoryItem*>(index.internalPointer())->isLeaf());
 }
 
+bool SidebarModel::isLibrary(const QModelIndex& index) const
+{
+   return (index.isValid() &&
+           static_cast<CategoryItem*>(index.internalPointer())->isLibrary());
+}
+
 Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const
 {
    Qt::ItemFlags flag = Qt::ItemIsEnabled;
-   if(isLeaf(index)) {
+   if(isLeaf(index) && !isLibrary(index)) {
       flag |= Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
    }
    return flag;
@@ -288,11 +269,11 @@ QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
 
    QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
-   foreach (QModelIndex index, indexes) {
-      if (index.isValid()) {
+   foreach(QModelIndex index, indexes) {
+      if(index.isValid()) {
          CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
-         if(item->isLeaf()) {
-            QString category = item->parent()->name();
+         if(item->isLeaf() && !item->isLibrary()) {
+            QString category = item->parent()->filename();
             stream << item->name() << category;
          }
       }

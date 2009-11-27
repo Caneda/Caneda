@@ -135,6 +135,12 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
            SLOT(slotOnClicked(const QModelIndex&)));
 
    setWindowTitle(tr("Schematic Items"));
+   m_currentComponent = "";
+}
+
+QString ComponentsSidebar::currentComponent()
+{
+    return m_currentComponent;
 }
 
 void ComponentsSidebar::filterTextChanged()
@@ -155,6 +161,7 @@ void ComponentsSidebar::slotOnClicked(const QModelIndex& index)
          QString item, category;
          stream >> item >> category;
          emit itemClicked(item, category);
+         m_currentComponent = item;
       }
    }
    else {

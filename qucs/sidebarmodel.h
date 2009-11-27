@@ -22,9 +22,42 @@
 
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QPair>
+#include <QPixmap>
 
-class CategoryItem;
 class LibraryLoader;
+
+class CategoryItem
+{
+   public:
+      CategoryItem(const QString& name, const QString& filename, const QPixmap &pixmap = QPixmap(), bool isLibrary = false,
+                   CategoryItem *parent = 0);
+      ~CategoryItem();
+
+      CategoryItem *parent() const { return m_parentItem; }
+
+      CategoryItem *child(int row) const;
+      int childCount() const { return m_childItems.size(); }
+
+      int row() const;
+      QString name() const { return m_name; }
+      QString filename() const { return m_filename; }
+
+      QPixmap iconPixmap() const { return m_iconPixmap; }
+      bool isLeaf() const { return m_childItems.isEmpty(); }
+      bool isLibrary() const { return m_isLibrary; }
+
+      void addChild(CategoryItem* c);
+      void removeChild(int c);
+
+   private:
+
+      QString m_name;
+      QString m_filename;
+      bool m_isLibrary;
+      QPixmap m_iconPixmap;
+      QList<CategoryItem*> m_childItems;
+      CategoryItem *m_parentItem;
+};
 
 class SidebarModel : public QAbstractItemModel
 {
@@ -50,6 +83,7 @@ class SidebarModel : public QAbstractItemModel
       Qt::ItemFlags flags(const QModelIndex& index) const;
 
       bool isLeaf(const QModelIndex& index) const;
+      bool isLibrary(const QModelIndex& index) const;
 
       QStringList mimeTypes() const;
       QMimeData* mimeData(const QModelIndexList& indexes) const;
