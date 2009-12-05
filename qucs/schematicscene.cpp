@@ -135,7 +135,7 @@ void SchematicScene::init()
   this->m_modified = false;
   
   this->m_opensDataDisplay = true;
-  this->m_frameTexts = QStringList() << tr("Title:") << tr("Drawn By:") << tr("Date:")+QDate::currentDate().toString() << tr("Revision:");
+  this->m_frameTexts = QStringList() << tr("Title: ") << tr("Drawn By: ") << tr("Date: ")+QDate::currentDate().toString() << tr("Revision: ");
   this->m_macroProgress = false;
   this->m_areItemsMoving = false;
   this->m_shortcutsBlocked = false;
@@ -795,13 +795,13 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
   /* draw frame */
   if(this->isFrameVisible()) {
       foreach(QString frame_text, m_frameTexts){
-          if(frame_text.contains("Title:"))
+          if(frame_text.contains("Title: "))
               painter->drawText(this->width()/3, this->height()-30, frame_text);
-          else if(frame_text.contains("Drawn By:"))
+          else if(frame_text.contains("Drawn By: "))
               painter->drawText(10, this->height()-30, frame_text);
-          else if(frame_text.contains("Date:"))
+          else if(frame_text.contains("Date: "))
               painter->drawText(10, this->height()-10, frame_text);
-          else if(frame_text.contains("Revision:"))
+          else if(frame_text.contains("Revision: "))
               painter->drawText(this->width()*4/5, this->height()-30, frame_text);
       }
       painter->drawRect(this->sceneRect()); //Bounding rect

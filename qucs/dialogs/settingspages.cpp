@@ -537,19 +537,19 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene, Qucs
         editTitle = new QLineEdit(document);
         QLabel *labelName = new QLabel(tr("Name:"));
         editName = new QLineEdit(document);
-        QLabel *labelDate = new QLabel(tr("Date:"));
-        editDate = new QDateEdit(document);
         QLabel *labelRevision = new QLabel(tr("Revision:"));
         editRevision = new QLineEdit(document);
+        QLabel *labelDate = new QLabel(tr("Date:"));
+        editDate = new QDateEdit(document);
         foreach(QString frame_text, Scn->frameTexts()){
-            if(frame_text.contains("Title:"))
-                editTitle->setText(frame_text.remove("Title:"));
-            else if(frame_text.contains("Drawn By:"))
-                editName->setText(frame_text.remove("Drawn By:"));
-            else if(frame_text.contains("Date:"))
-                editDate->setDate(QDate::fromString(frame_text.remove("Date:")));
-            else if(frame_text.contains("Revision:"))
-                editRevision->setText(frame_text.remove("Revision:"));
+            if(frame_text.contains("Title: "))
+                editTitle->setText(frame_text.remove("Title: "));
+            else if(frame_text.contains("Drawn By: "))
+                editName->setText(frame_text.remove("Drawn By: "));
+            else if(frame_text.contains("Date: "))
+                editDate->setDate(QDate::fromString(frame_text.remove("Date: ")));
+            else if(frame_text.contains("Revision: "))
+                editRevision->setText(frame_text.remove("Revision: "));
         }
 
         documentLayout->addWidget(labelTitle, 0, 0, Qt::AlignLeft);
@@ -615,18 +615,18 @@ void DocumentConfigurationPage::applyConf() {
     }
 
     bool modified = false;
-    if(!Scn->frameTexts().contains(tr("Title:")+editTitle->text()))
+    if(!Scn->frameTexts().contains(tr("Title: ")+editTitle->text()))
         modified = true;
-    else if(!Scn->frameTexts().contains(tr("Drawn By:")+editName->text()))
+    else if(!Scn->frameTexts().contains(tr("Drawn By: ")+editName->text()))
         modified = true;
-    else if(!Scn->frameTexts().contains(tr("Date:")+editDate->date().toString()))
+    else if(!Scn->frameTexts().contains(tr("Date: ")+editDate->date().toString()))
         modified = true;
-    else if(!Scn->frameTexts().contains(tr("Revision:")+editRevision->text()))
+    else if(!Scn->frameTexts().contains(tr("Revision: ")+editRevision->text()))
         modified = true;
 
     if(modified){
-        QStringList documentProperties = QStringList() << tr("Title:")+editTitle->text() << tr("Drawn By:")+editName->text() <<
-                           tr("Date:")+editDate->date().toString() << tr("Revision:")+editRevision->text();
+        QStringList documentProperties = QStringList() << tr("Title: ")+editTitle->text() << tr("Drawn By: ")+editName->text() <<
+                           tr("Date: ")+editDate->date().toString() << tr("Revision: ")+editRevision->text();
         Scn->undoStack()->push(new ScenePropertyChangeCmd("document properties", documentProperties, Scn->frameTexts(), Scn));
         Scn->setFrameTexts(documentProperties);
     }
