@@ -136,6 +136,9 @@ bool QucsMainWindow::gotoPage(QString fileName)
    QFileInfo info(fileName);
    if(info.suffix() == "xsch") {
       view = new SchematicView(0, this);
+   }
+   else if(info.suffix() == "xsym") {
+       view = new SchematicView(0, this);
    }    //TODO: create other views (text, symbol, simulation) here
    else {
        //Unrecognized file type
@@ -1399,8 +1402,33 @@ void QucsMainWindow::slotFileCloseCurrent()
  */
 void QucsMainWindow::slotSymbolEdit()
 {
-   setNormalAction();
-   //TODO: implement this or rather port directly
+    QucsView *currentView = viewFromWidget(tabWidget()->currentWidget());
+    if(!currentView) return;
+
+    if(!currentView->fileName().isEmpty()) {
+
+        QString fileName = currentView->fileName();
+        fileName.replace(QString(QFileInfo(fileName).suffix()),"xsym");
+
+        //First, we try to open the corresponding symbol file
+        bool isLoaded = gotoPage(fileName);
+        //If it's a new symbol, we create it
+        if(!isLoaded){
+            addView(new SchematicView(0, this));
+
+            QucsView *v = viewFromWidget(tabWidget()->currentWidget());
+            SchematicScene *sc = v->toSchematicView()->schematicScene();
+            sc->setMode(Qucs::SymbolMode);
+
+            v->setFileName(fileName);
+            if(!v->save()) {
+                QMessageBox::critical(this, tr("File creation error"),
+                                      tr("Cannot create file %1").arg(v->fileName()));
+                tabWidget()->currentWidget()->close();
+                return;
+            }
+        }
+    }
 }
 
 void QucsMainWindow::slotFilePrint()

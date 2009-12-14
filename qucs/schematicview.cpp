@@ -113,7 +113,10 @@ bool SchematicView::save()
    QFileInfo info(fileName());
 
    if(QString(info.suffix()).isEmpty()) {
-       setFileName(fileName()+".xsch");
+       if(schematicScene()->currentMode() == Qucs::SchematicMode)
+           setFileName(fileName()+".xsch");
+       else if(schematicScene()->currentMode() == Qucs::SymbolMode)
+           setFileName(fileName()+".xsym");
        info = QFileInfo(fileName());
    }
 

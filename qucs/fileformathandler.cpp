@@ -35,5 +35,7 @@ FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
 {
    if(ext == "xsch")
       return new XmlFormat(view);
+   else if(ext == "xsym")
+      return new XmlFormat(view);
    return 0;
 }
