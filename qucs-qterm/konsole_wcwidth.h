@@ -1,5 +1,8 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright 2001 by Markus Kuhn                                           *
+ * Adaptions for KDE by Waldo Bastian <bastian@kde.org>                    *
+ * Copyright 2008 by e_k <e_k@users.sourceforge.net>                       *
+ * Rewritten for QT4 by e_k <e_k@users.sourceforge.net>                    *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,26 +20,19 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "fileformathandler.h"
-#include "xmlformat.h"
-#include "xmlsymbolformat.h"
 
-FileFormatHandler::FileFormatHandler(SchematicView *view) : m_view(view)
-{
-}
+#ifndef	_KONSOLE_WCWIDTH_H_
+#define	_KONSOLE_WCWIDTH_H_
 
-/*!
- * \brief Factory method to return appropritate file handler based on file
- * format.
- *
- * Returns NULL if there doesn't exist a handler for given extension.
- */
-FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
-                                                           SchematicView *view)
-{
-   if(ext == "xsch")
-      return new XmlFormat(view);
-   else if(ext == "xsym")
-      return new XmlSymbolFormat(view);
-   return 0;
-}
+// Qt
+#include <QtCore/QBool>
+#include <QtCore/QString>
+
+int konsole_wcwidth(quint16 ucs);
+#if 0
+int konsole_wcwidth_cjk(Q_UINT16 ucs);
+#endif
+
+int string_width( const QString &txt );
+
+#endif

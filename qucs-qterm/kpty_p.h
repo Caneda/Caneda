@@ -1,5 +1,8 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * This file is part of the KDE libraries.                                 *
+ * Copyright 2003,2007 by Oswald Buddenhagen <ossi@kde.org>                *
+ * Copyright 2008 by e_k <e_k@users.sourceforge.net>                       *
+ * Rewritten for QT4 by e_k <e_k@users.sourceforge.net>                    *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,26 +20,26 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "fileformathandler.h"
-#include "xmlformat.h"
-#include "xmlsymbolformat.h"
 
-FileFormatHandler::FileFormatHandler(SchematicView *view) : m_view(view)
-{
-}
+#ifndef kpty_p_h
+#define kpty_p_h
 
-/*!
- * \brief Factory method to return appropritate file handler based on file
- * format.
- *
- * Returns NULL if there doesn't exist a handler for given extension.
- */
-FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
-                                                           SchematicView *view)
-{
-   if(ext == "xsch")
-      return new XmlFormat(view);
-   else if(ext == "xsym")
-      return new XmlSymbolFormat(view);
-   return 0;
-}
+#include "kpty.h"
+
+#include <QtCore/QByteArray>
+
+struct KPtyPrivate {
+    Q_DECLARE_PUBLIC(KPty)
+
+    KPtyPrivate();
+    bool chownpty(bool grant);
+
+    int masterFd;
+    int slaveFd;
+
+    QByteArray ttyName;
+
+    KPty *q_ptr;
+};
+
+#endif

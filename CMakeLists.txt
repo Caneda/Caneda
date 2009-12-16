@@ -7,6 +7,7 @@ SET(BINARYDIR	"bin/")
 SET(DOCDIR	"share/qucs/docs/")
 SET(LANGUAGEDIR "share/qucs/lang/")
 SET(LIBRARYDIR	"share/qucs/library/")
+
 SET(CMAKE_BUILD_TYPE Debug)
 
 ADD_DEFINITIONS( -DHAVE_CONFIG_H )
@@ -41,6 +42,7 @@ ADD_SUBDIRECTORY( qucs-filter )
 ADD_SUBDIRECTORY( qucs-help )
 ADD_SUBDIRECTORY( qucs-lib )
 ADD_SUBDIRECTORY( qucs-transcalc )
+ADD_SUBDIRECTORY( qucs-qterm )
 
 # Licence and other files
 SET(MISC ChangeLog INSTALL PLATFORMS THANKS AUTHORS README TODO COPYING NEWS RELEASE)

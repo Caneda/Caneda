@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "qucs-tools/global.h"
+#include "qucs-qterm/qtermwidget.h"
 #include "componentssidebar.h"
 #include "folderbrowser.h"
 #include "qucsmainwindow.h"
@@ -424,7 +425,6 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction( tr("Replace..."), this);
-   action->setShortcut(Key_F7);
    action->setWhatsThis(tr("Replace\n\nChange component properties\nor\ntext in VHDL code"));
    action->setObjectName("changeProps");
    connect( action, SIGNAL(triggered()), SLOT(slotReplace()));
@@ -462,7 +462,7 @@ void QucsMainWindow::initActions()
    checkableActions << action;
 
    action = new QAction(QIcon(bitmapPath + "symbol-edit.png"), tr("&Edit Circuit Symbol"), this);
-   action->setShortcut(Key_F9);
+   action->setShortcut(Key_F7);
    action->setStatusTip(tr("Edits the symbol for this schematic"));
    action->setWhatsThis(tr("Edit Circuit Symbol\n\nEdits the symbol for this schematic"));
    action->setObjectName("symEdit");
@@ -723,6 +723,14 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotImportData()));
    addActionToMap(action);
 
+   action = new QAction( tr("&Show Console..."), this);
+   action->setShortcut(Key_F8);
+   action->setStatusTip(tr("Show Console"));
+   action->setWhatsThis(tr("Show Console\n\nOpen console terminal"));
+   action->setObjectName("showConsole");
+   connect( action, SIGNAL(triggered()), SLOT(slotShowConsole()));
+   addActionToMap(action);
+
    action = new QAction(QIcon(bitmapPath + "start.png"), tr("Simulate"), this);
    action->setShortcut(Key_F5);
    action->setStatusTip(tr("Simulates the current schematic"));
@@ -767,7 +775,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "document-preview.png"), tr("Show Last Messages"), this);
-   action->setShortcut(Key_F7);
+   action->setShortcut(Key_F9);
    action->setStatusTip(tr("Shows last simulation messages"));
    action->setWhatsThis(tr("Show Last Messages\n\nShows the messages of the last simulation"));
    action->setObjectName("showMsg");
@@ -775,7 +783,7 @@ void QucsMainWindow::initActions()
    addActionToMap(action);
 
    action = new QAction(QIcon(bitmapPath + "document-preview.png"), tr("Show Last Netlist"), this);
-   action->setShortcut(Key_F8);
+   action->setShortcut(Key_F10);
    action->setStatusTip(tr("Shows last simulation netlist"));
    action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
    action->setObjectName("showNet");
@@ -991,6 +999,10 @@ void QucsMainWindow::initMenus()
 
    toolMenu->addAction(action("callLib"));
    toolMenu->addAction(action("importData"));
+
+   toolMenu->addSeparator();
+
+   toolMenu->addAction(action("showConsole"));
 
    simMenu = menuBar()->addMenu(tr("&Simulation"));
 
@@ -1864,6 +1876,17 @@ void QucsMainWindow::slotImportData()
 {
    setNormalAction();
    //TODO: implement this or rather port directly
+}
+
+void QucsMainWindow::slotShowConsole()
+{
+//TODO Capture shortcuts when in focus
+    QTermWidget *console = new QTermWidget();
+    console->setScrollBarPosition(QTermWidget::ScrollBarRight);
+
+    sidebarDockWidget = new QDockWidget(this);
+    sidebarDockWidget->setWidget(console);
+    addDockWidget(Qt::BottomDockWidgetArea, sidebarDockWidget);
 }
 
 void QucsMainWindow::slotSimulate()

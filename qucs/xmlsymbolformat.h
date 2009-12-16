@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright 2009 Pablo Daniel Pareja Obregon                              *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,26 +17,29 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
+#ifndef __XMLSYMBOLFORMAT_H
+#define __XMLSYMBOLFORMAT_H
+
 #include "fileformathandler.h"
-#include "xmlformat.h"
-#include "xmlsymbolformat.h"
 
-FileFormatHandler::FileFormatHandler(SchematicView *view) : m_view(view)
-{
+namespace Qucs {
+   class XmlReader;
 }
 
-/*!
- * \brief Factory method to return appropritate file handler based on file
- * format.
- *
- * Returns NULL if there doesn't exist a handler for given extension.
- */
-FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
-                                                           SchematicView *view)
+class XmlSymbolFormat : public FileFormatHandler
 {
-   if(ext == "xsch")
-      return new XmlFormat(view);
-   else if(ext == "xsym")
-      return new XmlSymbolFormat(view);
-   return 0;
-}
+   public:
+      XmlSymbolFormat(SchematicView *view = 0);
+      ~XmlSymbolFormat() {}
+
+      QString saveText();
+      bool loadFromText(const QString& text);
+
+      void readQucs(Qucs::XmlReader *reader);
+      void loadView(Qucs::XmlReader *reader);
+      void loadComponents(Qucs::XmlReader *reader);
+      void loadWires(Qucs::XmlReader *reader);
+      void loadPaintings(Qucs::XmlReader *reader);
+};
+
+#endif //__XMLSYMBOLFORMAT_H

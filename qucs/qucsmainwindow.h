@@ -116,6 +116,7 @@ class QucsMainWindow : public MainWindowBase
       void slotCallAtt();
       void slotCallLibrary();
       void slotImportData();
+      void slotShowConsole();
 
       void slotSimulate();
       void slotToPage();
