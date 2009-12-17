@@ -723,7 +723,7 @@ void QucsMainWindow::initActions()
    connect( action, SIGNAL(triggered()), SLOT(slotImportData()));
    addActionToMap(action);
 
-   action = new QAction( tr("&Show Console..."), this);
+   action = new QAction(QIcon(bitmapPath + "console.png"), tr("&Show Console..."), this);
    action->setShortcut(Key_F8);
    action->setStatusTip(tr("Show Console"));
    action->setWhatsThis(tr("Show Console\n\nOpen console terminal"));
@@ -1884,7 +1884,7 @@ void QucsMainWindow::slotShowConsole()
     QTermWidget *console = new QTermWidget();
     console->setScrollBarPosition(QTermWidget::ScrollBarRight);
 
-    sidebarDockWidget = new QDockWidget(this);
+    sidebarDockWidget = new QDockWidget("Console",this);
     sidebarDockWidget->setWidget(console);
     addDockWidget(Qt::BottomDockWidgetArea, sidebarDockWidget);
 }
