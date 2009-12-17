@@ -1880,13 +1880,14 @@ void QucsMainWindow::slotImportData()
 
 void QucsMainWindow::slotShowConsole()
 {
-//TODO Capture shortcuts when in focus
     QTermWidget *console = new QTermWidget();
     console->setScrollBarPosition(QTermWidget::ScrollBarRight);
 
     sidebarDockWidget = new QDockWidget("Console",this);
     sidebarDockWidget->setWidget(console);
     addDockWidget(Qt::BottomDockWidgetArea, sidebarDockWidget);
+
+    connect(console, SIGNAL(finished()), sidebarDockWidget, SLOT(close()));
 }
 
 void QucsMainWindow::slotSimulate()

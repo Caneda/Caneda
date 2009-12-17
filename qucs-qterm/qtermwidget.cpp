@@ -1,5 +1,8 @@
 /***************************************************************************
  * Copyright 2008 by e_k <e_k@users.sourceforge.net>                       *
+ * Copyright 2009 Pablo Daniel Pareja Obregon                              *
+ * This file was modified by Pablo Daniel Pareja Obregon to be included    *
+ * in Qucs.                                                                *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -211,6 +214,18 @@ void QTermWidget::resizeEvent(QResizeEvent*)
     m_impl->m_terminalDisplay->resize(this->size());
 }
 
+
+// This captures shortcuts from main window in case the console has focus.
+bool QTermWidget::event( QEvent *e )
+{
+  if ( e->type() == QEvent::ShortcutOverride )
+  {
+      QKeyEvent* keyEvent = static_cast<QKeyEvent *>( e );
+        keyEvent->accept();
+        return true;
+  }
+  return QWidget::event( e );
+}
 
 
 void QTermWidget::sessionFinished()
