@@ -1723,7 +1723,7 @@ void QucsMainWindow::slotAddToProject()
     setNormalAction();
     if(projectLibrary){
         QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
-                                                        "", tr("Component-xml (*.xml)"));
+                                                        "", tr("Component-xml (*.xml *.xsym)"));
         if(!fileName.isEmpty()) {
             projectLibrary->parseExternalComponent(fileName);
             projectLibrary->saveLibrary();

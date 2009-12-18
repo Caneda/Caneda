@@ -206,7 +206,7 @@ bool Library::saveLibrary()
 
     writer->writeStartElement("description");
     writer->writeLocaleText("en", description());
-    writer->writeEndElement(); //</displaytext>
+    writer->writeEndElement(); //</description>
 
     //Save all components in library
     QList<ComponentDataPtr> components = this->components().values();

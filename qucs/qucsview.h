@@ -44,8 +44,6 @@ class QucsView
       virtual bool load() = 0;
       virtual bool save() = 0;
 
-      virtual void print(QPainter *p, bool printAll, bool fitToPage) = 0;
-
       virtual void zoomIn() = 0;
       virtual void zoomOut() = 0;
 

@@ -45,8 +45,6 @@ class SchematicView : public QGraphicsView, public QucsView
       bool load();
       bool save();
 
-      void print(QPainter *p, bool printAll, bool fitToPage);
-
       void zoomIn();
       void zoomOut();
 

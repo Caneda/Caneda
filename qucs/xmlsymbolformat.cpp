@@ -28,7 +28,6 @@
 #include "wireline.h"
 #include "port.h"
 #include "xmlutilities/xmlutilities.h"
-#include "diagrams/diagram.h"
 
 #include "qucs-tools/global.h"
 #include <QtCore/QRectF>
@@ -37,6 +36,8 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QMatrix>
 #include <QtGui/QScrollBar>
+#include <QSvgGenerator>
+#include <QPicture>
 
 XmlSymbolFormat::XmlSymbolFormat(SchematicView *view) : FileFormatHandler(view)
 {
@@ -54,90 +55,90 @@ QString XmlSymbolFormat::saveText()
    Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
    writer->setAutoFormatting(true);
    writer->writeStartDocument();
-   writer->writeDTD(QString("<!DOCTYPE qucs>"));
-   writer->writeStartElement("qucs");
-   writer->writeAttribute("version", Qucs::version);
 
-   //TODO:mainwindow geometry
-   //write all view details
-   writer->writeStartElement("view");
+   //Write all view details
+   writer->writeStartElement("component");
 
-   writer->writeStartElement("scenerect");
-   writer->writeRect(scene->sceneRect());
-   writer->writeEndElement(); //</scenerect>
+   QFileInfo info(scene->fileName());
+   writer->writeAttribute("name", info.baseName());
+   writer->writeAttribute("version","0.1.0");
+   writer->writeAttribute("label","comp");
 
-   writer->writeStartElement("viewtransform");
-   writer->writeTransform(m_view->transform());
-   writer->writeEndElement(); //</viewtransform>
+   writer->writeStartElement("displaytext");
+   writer->writeLocaleText("C", "User created component");
+//   TODO: When available use this to save user defined displaytext
+//   writer->writeLocaleText("C", scene->displayText());
+   writer->writeEndElement(); //</displaytext>
 
-   writer->writeStartElement("scrollbarvalues");
-   writer->writeElement("horizontal", m_view->horizontalScrollBar()->value());
-   writer->writeElement("vertical", m_view->verticalScrollBar()->value());
-   writer->writeEndElement(); //</scrollbarvalues>
+   writer->writeStartElement("description");
+   writer->writeLocaleText("C", "User created component based on user schematic");
+//   TODO: When available use this to save user defined description
+//   writer->writeLocaleText("C", scene->description());
+   writer->writeEndElement(); //</description>
 
-   writer->writeStartElement("grid");
-   writer->writeAttribute("visible", Qucs::boolToString(scene->isGridVisible()));
-   writer->writeSize(QSize(scene->gridWidth(), scene->gridHeight()));
-   writer->writeEndElement(); //</grid>
+   writer->writeStartElement("schematics");
+   writer->writeAttribute("default","userdefined");
+   writer->writeStartElement("schematic");
+   writer->writeAttribute("name","userdefined");
+   writer->writeAttribute("href",info.baseName()+".svg");
 
-   writer->writeStartElement("data");
-   writer->writeElement("dataset", scene->dataSet());
-   writer->writeElement("datadisplay", scene->dataDisplay());
-   writer->writeElement("opensdatadisplay", scene->opensDataDisplay());
-   writer->writeEndElement(); //</data>
-
-   writer->writeStartElement("frame");
-   writer->writeAttribute("visible", Qucs::boolToString(scene->isFrameVisible()));
-
-   writer->writeStartElement("frametexts");
-   foreach(QString text, scene->frameTexts()) {
-      //Qucs::convert2ASCII(text);
-      writer->writeElement("text",text);
-   }
-   writer->writeEndElement(); //</frametexts>
-   writer->writeEndElement(); //</frame>
-   writer->writeEndElement(); //</view>
-
+   //Write the ports positions
    QList<QGraphicsItem*> items = scene->items();
-   //Write all the components now
-
    QList<Component*> components = filterItems<Component>(items, RemoveItems);
    if(!components.isEmpty()) {
-       writer->writeStartElement("components");
-       foreach(Component *c, components)
-           c->saveData(writer);
-       writer->writeEndElement(); //</components>
+       foreach(Component *c, components){
+           if(c->name() == "Port"){
+               writer->writeEmptyElement("port");
+               writer->writeAttribute("name", c->label());
+               writer->writeAttribute("x", QString::number(c->pos().x()));
+               writer->writeAttribute("y", QString::number(c->pos().y()));
+           }
+       }
    }
 
-   QList<Wire*> wires = filterItems<Wire>(items, RemoveItems);
-   if(!wires.isEmpty()) {
-      int wireId = 0;
-      int equiId = 0;
-      writer->writeStartElement("wires");
+   writer->writeEndElement(); //</schematic>
+   writer->writeEndElement(); //</schematics>
 
-      QList<Wire*> parsedWires;
-      foreach(Wire *w, wires) {
-         if(parsedWires.contains(w))
-            continue;
-      }
-
-      writer->writeEndElement(); //</wires>
+   //Write ports properties
+   writer->writeStartElement("ports");
+   if(!components.isEmpty()) {
+       foreach(Component *c, components){
+           if(c->name() == "Port"){
+               writer->writeEmptyElement("port");
+               writer->writeAttribute("name", c->label());
+               writer->writeAttribute("type", "analog");
+//               TODO: To be replaced by the following line once properties are handled
+//               writer->writeAttribute("type", c->property("type").toString());
+           }
+       }
    }
+   writer->writeEndElement(); //</ports>
 
-   QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
-   if(!paintings.isEmpty()) {
-       writer->writeStartElement("paintings");
-       foreach(Painting *p, paintings)
-           p->saveData(writer);
-       writer->writeEndElement(); //</paintings>
-   }
+   //TODO Write properties
+   writer->writeStartElement("properties");
+   writer->writeEndElement(); //</properties>
 
-   QList<QucsItem*> qItems = filterItems<QucsItem>(items, RemoveItems);
-   if(!qItems.isEmpty()) {
-      qDebug() << "Some items not saved. Should implement them still.";
-   }
+   //Generate and save svg ************************************
+   bool state_useGrid = scene->isGridVisible();
+   scene->setGridVisible(false);
 
-   writer->writeEndDocument(); //</qucs>
+   QSvgGenerator svg_engine;
+   svg_engine.setSize(scene->imageSize());
+   QFile file(info.absolutePath()+"/"+info.baseName()+".svg");
+   svg_engine.setOutputDevice(&file);
+   QPainter svg_painter(&svg_engine);
+
+   QPicture picture;
+   //TODO Correct image symbol size here and place ports in the correct position
+   scene->toPaintDevice(picture, scene->imageSize().width()*2, scene->imageSize().height()*2);
+
+   // "plays" the QPicture with a QSvgGenerator
+   picture.play(&svg_painter);
+
+   scene->setGridVisible(state_useGrid);
+   //*********************************************************
+
+   writer->writeEndDocument(); //</component>
 
    delete writer;
    return retVal;

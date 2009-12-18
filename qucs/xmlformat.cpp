@@ -28,7 +28,6 @@
 #include "wireline.h"
 #include "port.h"
 #include "xmlutilities/xmlutilities.h"
-#include "diagrams/diagram.h"
 
 #include "qucs-tools/global.h"
 #include <QtCore/QRectF>
