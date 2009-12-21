@@ -90,8 +90,8 @@ QString XmlSymbolFormat::saveText()
            if(c->name() == "Port"){
                writer->writeEmptyElement("port");
                writer->writeAttribute("name", c->label());
-               writer->writeAttribute("x", QString::number(c->pos().x()));
-               writer->writeAttribute("y", QString::number(c->pos().y()));
+               writer->writeAttribute("x", QString::number(c->pos().x() - scene->imageBoundingRect().x()));
+               writer->writeAttribute("y", QString::number(c->pos().y() - scene->imageBoundingRect().y()));
            }
        }
    }
@@ -125,8 +125,6 @@ QString XmlSymbolFormat::saveText()
    QSvgGenerator svg_engine;
    svg_engine.setSize(scene->imageSize());
    svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
-
-   //TODO Place ports in the correct position
    scene->toPaintDevice(svg_engine, scene->imageSize().width(), scene->imageSize().height());
 
    scene->setGridVisible(state_useGrid);
