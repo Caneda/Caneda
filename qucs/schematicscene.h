@@ -210,6 +210,7 @@ public:
 
   bool toPaintDevice(QPaintDevice &, int = -1, int = -1, Qt::AspectRatioMode = Qt::KeepAspectRatio);
   QSize imageSize() const;
+  QRect imageBoundingRect() const;
 
 public slots:
   void setModified(const bool m = true);

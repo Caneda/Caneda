@@ -465,14 +465,9 @@ void ExportDialog::generateSvg(SchematicScene *sch, int width, int height, bool 
         QSvgGenerator svg_engine;
         svg_engine.setSize(QSize(width, height));
         svg_engine.setOutputDevice(&file);
-        QPainter svg_painter(&svg_engine);
 
-        QPicture picture;
-        sch->toPaintDevice(picture, width, height,
+        sch->toPaintDevice(svg_engine, width, height,
                            keep_aspect_ratio ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
-
-        // "plays" the QPicture with a QSvgGenerator
-        picture.play(&svg_painter);
 
         saveReloadDiagramParameters(sch, false);
 }

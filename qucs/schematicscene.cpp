@@ -700,39 +700,39 @@ void SchematicScene::blockShortcuts(const bool block)
 
 /**
         Exports the schematic to an image
-        @return QImage representing the schematic
+        @return bool True on success, false otherwise
 */
 bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height, Qt::AspectRatioMode aspectRatioMode)
 {
-        QRectF source_area;
-        if(!isFrameVisible())
-            source_area = itemsBoundingRect();
-        else
-            source_area = QRectF(0.0, 0.0, this->width(), this->height());
+    QRect source_area = imageBoundingRect();
 
-        // if the dimensions are not specified, the image is exported at 1:1 scale
-        QSize image_size = (width == -1 && height == -1) ? source_area.size().toSize() : QSize(width, height);
+    // if the dimensions are not specified, the image is exported at 1:1 scale
+    QRect dest_area;
+    if(width == -1 && height == -1)
+        dest_area = source_area;
+    else
+        dest_area = QRect(0, 0, width, height);
 
-        // prepare the device
-        QPainter p;
-        if(!p.begin(&pix)) return(false);
+    // prepare the device
+    QPainter p;
+    if(!p.begin(&pix)) return(false);
 
-        p.setRenderHint(QPainter::Antialiasing, true);
-        p.setRenderHint(QPainter::TextAntialiasing, true);
-        p.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    p.setRenderHint(QPainter::TextAntialiasing, true);
+    p.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-        // deselect the elements
-        QList<QGraphicsItem *> selected_elmts = selectedItems();
-        foreach(QGraphicsItem *qgi, selected_elmts) qgi->setSelected(false);
+    // deselect the elements
+    QList<QGraphicsItem *> selected_elmts = selectedItems();
+    foreach(QGraphicsItem *qgi, selected_elmts) qgi->setSelected(false);
 
-        // performs rendering itself
-        render(&p, QRect(QPoint(0, 0), image_size), source_area, aspectRatioMode);
-        p.end();
+    // performs rendering itself
+    render(&p, dest_area, source_area, aspectRatioMode);
+    p.end();
 
-        // restores the selected items
-        foreach (QGraphicsItem *qgi, selected_elmts) qgi->setSelected(true);
+    // restores the selected items
+    foreach (QGraphicsItem *qgi, selected_elmts) qgi->setSelected(true);
 
-        return(true);
+    return(true);
 }
 
 /**
@@ -741,20 +741,31 @@ bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height, Qt:
 */
 QSize SchematicScene::imageSize() const
 {
-        qreal image_width, image_height;
-        if(!isFrameVisible()){
-            QRectF items_rect = itemsBoundingRect();
-            image_width  = items_rect.width();
-            image_height = items_rect.height();
-        }
-        else{
-            image_width  = this->width();
-            image_height = this->height();
-        }
+    qreal image_width, image_height;
+    if(!isFrameVisible()){
+        QRectF items_rect = itemsBoundingRect();
+        image_width  = items_rect.width();
+        image_height = items_rect.height();
+    }
+    else{
+        image_width  = this->width();
+        image_height = this->height();
+    }
 
-        return(QSizeF(image_width, image_height).toSize());
+    return(QSizeF(image_width, image_height).toSize());
 }
 
+/**
+        Used to know the dimensions of the image
+        @return The bounding rect of the image
+*/
+QRect SchematicScene::imageBoundingRect() const
+{
+    if(!isFrameVisible())
+        return itemsBoundingRect().toRect();
+    else
+        return QRect(0, 0, this->width(), this->height());
+}
 
 /*!
  * \brief Set whether this schematic is modified or not

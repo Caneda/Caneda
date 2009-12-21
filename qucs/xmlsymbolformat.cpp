@@ -124,16 +124,10 @@ QString XmlSymbolFormat::saveText()
 
    QSvgGenerator svg_engine;
    svg_engine.setSize(scene->imageSize());
-   QFile file(info.absolutePath()+"/"+info.baseName()+".svg");
-   svg_engine.setOutputDevice(&file);
-   QPainter svg_painter(&svg_engine);
+   svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
 
-   QPicture picture;
-   //TODO Correct image symbol size here and place ports in the correct position
-   scene->toPaintDevice(picture, scene->imageSize().width()*2, scene->imageSize().height()*2);
-
-   // "plays" the QPicture with a QSvgGenerator
-   picture.play(&svg_painter);
+   //TODO Place ports in the correct position
+   scene->toPaintDevice(svg_engine, scene->imageSize().width(), scene->imageSize().height());
 
    scene->setGridVisible(state_useGrid);
    //*********************************************************
