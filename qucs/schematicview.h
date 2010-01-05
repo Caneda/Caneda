@@ -28,7 +28,9 @@ class QucsMainWindow;
 class QucsItem;
 
 class SchematicView : public QGraphicsView, public QucsView
-{      Q_OBJECT;
+{
+    Q_OBJECT;
+
    public:
       static const qreal zoomFactor;
 

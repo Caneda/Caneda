@@ -86,25 +86,19 @@ QString SchematicView::fileName() const
 
 bool SchematicView::load()
 {
-   //Assumes file name is set
-   FileFormatHandler *format =
-      FileFormatHandler::handlerFromSuffix(QFileInfo(fileName()).suffix(), this);
+    //Assumes file name is set
+    FileFormatHandler *format =
+            FileFormatHandler::handlerFromSuffix(QFileInfo(fileName()).suffix(), this);
 
-   if(!format) {
-      QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
-      return false;
-   }
+    if(!format) {
+        QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
+        return false;
+    }
 
-   QFile file(fileName());
-   if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      QMessageBox::critical(0, tr("Error"), tr("Cannot load document ")+fileName());
-      return false;
-   }
-
-   QTextStream stream(&file);
-   bool result = format->loadFromText(stream.readAll());
-
-   return result;
+    if(!format->load()) {
+        return false;
+    }
+    return true;
 }
 
 bool SchematicView::save()
@@ -127,22 +121,13 @@ bool SchematicView::save()
       QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
       return false;
    }
-   QString saveText = format->saveText();
-   if(saveText.isEmpty()) {
-      qDebug("Looks buggy! Null data to save! Was this expected ??");
-   }
 
-   QFile file(fileName());
-   if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-      QMessageBox::critical(0, QObject::tr("Error"),
-                            QObject::tr("Cannot save document!"));
-      return false;
+   if(!format->save()) {
+       return false;
    }
-   QTextStream stream(&file);
-   stream << saveText;
-   file.close();
-
-   schematicScene()->undoStack()->clear();
+   else {
+       schematicScene()->undoStack()->clear();
+   }
 
    return true;
 }

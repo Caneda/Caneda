@@ -24,6 +24,7 @@
 
 namespace Qucs {
    class XmlReader;
+   class XmlWriter;
 }
 
 class XmlFormat : public FileFormatHandler
@@ -32,10 +33,23 @@ class XmlFormat : public FileFormatHandler
       XmlFormat(SchematicView *view = 0);
       ~XmlFormat() {}
 
-      QString saveText();
-      bool loadFromText(const QString& text);
+      bool save();
+      bool saveSymbol();
+      bool load();
+      bool loadSymbol();
 
-      void readQucs(Qucs::XmlReader *reader);
+   private:
+      QString saveText();
+      void saveSchematics(Qucs::XmlWriter *writer);
+      void saveView(Qucs::XmlWriter *writer);
+      void saveComponents(Qucs::XmlWriter *writer);
+      void saveWires(Qucs::XmlWriter *writer);
+      void savePaintings(Qucs::XmlWriter *writer);
+
+      QString copySymbol();
+
+      bool loadFromText(const QString& text);
+      void loadSchematics(Qucs::XmlReader *reader);
       void loadView(Qucs::XmlReader *reader);
       void loadComponents(Qucs::XmlReader *reader);
       void loadWires(Qucs::XmlReader *reader);

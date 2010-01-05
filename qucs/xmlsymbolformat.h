@@ -32,14 +32,11 @@ class XmlSymbolFormat : public FileFormatHandler
       XmlSymbolFormat(SchematicView *view = 0);
       ~XmlSymbolFormat() {}
 
-      QString saveText();
-      bool loadFromText(const QString& text);
+      bool save();
+      bool load();
 
-      void readQucs(Qucs::XmlReader *reader);
-      void loadView(Qucs::XmlReader *reader);
-      void loadComponents(Qucs::XmlReader *reader);
-      void loadWires(Qucs::XmlReader *reader);
-      void loadPaintings(Qucs::XmlReader *reader);
+   private:
+      QString saveText();
 };
 
 #endif //__XMLSYMBOLFORMAT_H
