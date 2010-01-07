@@ -127,11 +127,10 @@ bool XmlFormat::load()
     bool result = false;
     if(scene->currentMode() == Qucs::SchematicMode)
         result = loadFromText(stream.readAll());
-//    else if(scene->currentMode() == Qucs::SymbolMode)
-//        bool result = loadSymbolFromText(stream.readAll());
+    else if(scene->currentMode() == Qucs::SymbolMode)
+        result = loadSymbolFromText(stream.readAll());
 
     file.close();
-
     return result;
 }
 
@@ -361,10 +360,33 @@ bool XmlFormat::loadFromText(const QString& text)
                     }
                     loadSchematics(reader);
                 }
-
             }
             else {
                 reader->raiseError(QObject::tr("Not a qucs file or probably malformatted file"));
+            }
+        }
+    }
+
+    if(reader->hasError()) {
+        QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
+        delete reader;
+        return false;
+    }
+
+    delete reader;
+    return true;
+}
+
+bool XmlFormat::loadSymbolFromText(const QString& text)
+{
+    Qucs::XmlReader *reader = new Qucs::XmlReader(text.toUtf8());
+    while(!reader->atEnd()) {
+        reader->readNext();
+        if(reader->isStartElement() && reader->name() == "symbol") {
+            reader->readNext();
+            while(!reader->isEndElement() || reader->name() != "symbol"){
+                loadSchematics(reader);
+                reader->readNext();
             }
         }
     }

@@ -21,6 +21,7 @@
 #define __QUCSMAINWINDOW_H
 
 #include "mainwindowbase.h"
+#include "schematicscene.h"
 #include "undocommands.h"
 
 #include <QtCore/QMap>
@@ -47,7 +48,7 @@ class QucsMainWindow : public MainWindowBase
       QucsMainWindow(QWidget *w=0);
       ~QucsMainWindow();
 
-      bool gotoPage(QString fileName);
+      bool gotoPage(QString fileName, Qucs::Mode mode=Qucs::SchematicMode);
       void addView(QucsView *view);
       void saveSettings();
       void test();

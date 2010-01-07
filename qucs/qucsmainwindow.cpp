@@ -115,7 +115,7 @@ QucsMainWindow::~QucsMainWindow()
  * \brief Switches to \a fileName tab if it is opened else tries opening it
  * and then switches to that tab on success.
  */
-bool QucsMainWindow::gotoPage(QString fileName)
+bool QucsMainWindow::gotoPage(QString fileName, Qucs::Mode mode)
 {
    fileName = QDir::toNativeSeparators(fileName);
 
@@ -123,7 +123,8 @@ bool QucsMainWindow::gotoPage(QString fileName)
    int i = 0;
    while(i < tabWidget()->count()) {
       view = viewFromWidget(tabWidget()->widget(i));
-      if(QDir::toNativeSeparators(view->fileName()) == fileName)
+      if(QDir::toNativeSeparators(view->fileName()) == fileName &&
+         view->toSchematicView()->schematicScene()->currentMode() == mode)
          break;
       view = 0;
       ++i;
@@ -137,10 +138,8 @@ bool QucsMainWindow::gotoPage(QString fileName)
    QFileInfo info(fileName);
    if(info.suffix() == "xsch") {
       view = new SchematicView(0, this);
-   }
-   else if(info.suffix() == "xsym") {
-       view = new SchematicView(0, this);
-   }    //TODO: create other views (text, symbol, simulation) here
+      view->toSchematicView()->schematicScene()->setMode(mode);
+   }  //TODO: create other views (text, symbol, simulation) here
    else {
        //Unrecognized file type
        return false;
@@ -1410,7 +1409,7 @@ void QucsMainWindow::slotFileCloseCurrent()
 }
 
 /*!
- * \todo Implement this
+ * \brief Opens the current schematics' symbol for editing
  */
 void QucsMainWindow::slotSymbolEdit()
 {
@@ -1421,8 +1420,8 @@ void QucsMainWindow::slotSymbolEdit()
         QString fileName = currentView->fileName();
 
         //First, we try to open the corresponding symbol file
-//        bool isLoaded = gotoPage(fileName);
-        bool isLoaded = false; //Remove once loading is complete
+        bool isLoaded = gotoPage(fileName, Qucs::SymbolMode);
+
         //If it's a new symbol, we create it
         if(!isLoaded){
             addView(new SchematicView(0, this));

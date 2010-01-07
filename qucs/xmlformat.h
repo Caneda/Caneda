@@ -49,6 +49,7 @@ class XmlFormat : public FileFormatHandler
       void copyQucsElement(const QString& qualifiedName , Qucs::XmlWriter *writer);
 
       bool loadFromText(const QString& text);
+      bool loadSymbolFromText(const QString& text);
       void loadSchematics(Qucs::XmlReader *reader);
       void loadView(Qucs::XmlReader *reader);
       void loadComponents(Qucs::XmlReader *reader);
