@@ -21,21 +21,13 @@
 #include "schematicview.h"
 #include "schematicscene.h"
 #include "item.h"
-
 #include "component.h"
-#include "paintings/painting.h"
-#include "wire.h"
-#include "wireline.h"
-#include "port.h"
+
 #include "xmlutilities/xmlutilities.h"
-
 #include "qucs-tools/global.h"
-#include <QtCore/QRectF>
-#include <QtCore/QtDebug>
 
+#include <QtCore/QtDebug>
 #include <QtGui/QMessageBox>
-#include <QtGui/QMatrix>
-#include <QtGui/QScrollBar>
 #include <QSvgGenerator>
 
 XmlSymbolFormat::XmlSymbolFormat(SchematicView *view) : FileFormatHandler(view)
