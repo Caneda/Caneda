@@ -21,6 +21,7 @@
 #define __XMLFORMAT_H
 
 #include "fileformathandler.h"
+#include "schematicscene.h"
 
 namespace Qucs {
    class XmlReader;
@@ -34,19 +35,18 @@ class XmlFormat : public FileFormatHandler
       ~XmlFormat() {}
 
       bool save();
-      bool saveSymbol();
       bool load();
-      bool loadSymbol();
 
    private:
       QString saveText();
+      QString saveSymbolText();
       void saveSchematics(Qucs::XmlWriter *writer);
       void saveView(Qucs::XmlWriter *writer);
       void saveComponents(Qucs::XmlWriter *writer);
       void saveWires(Qucs::XmlWriter *writer);
       void savePaintings(Qucs::XmlWriter *writer);
 
-      QString copySymbol();
+      void copyQucsElement(const QString& qualifiedName , Qucs::XmlWriter *writer);
 
       bool loadFromText(const QString& text);
       void loadSchematics(Qucs::XmlReader *reader);
@@ -54,6 +54,8 @@ class XmlFormat : public FileFormatHandler
       void loadComponents(Qucs::XmlReader *reader);
       void loadWires(Qucs::XmlReader *reader);
       void loadPaintings(Qucs::XmlReader *reader);
+
+      SchematicScene *scene;
 };
 
 #endif //__XML_FORMAT_H

@@ -1418,12 +1418,11 @@ void QucsMainWindow::slotSymbolEdit()
     if(!currentView) return;
 
     if(!currentView->fileName().isEmpty()) {
-
         QString fileName = currentView->fileName();
-        fileName.replace(QString(QFileInfo(fileName).suffix()),"xsym");
 
         //First, we try to open the corresponding symbol file
-        bool isLoaded = gotoPage(fileName);
+//        bool isLoaded = gotoPage(fileName);
+        bool isLoaded = false; //Remove once loading is complete
         //If it's a new symbol, we create it
         if(!isLoaded){
             addView(new SchematicView(0, this));
@@ -1433,12 +1432,6 @@ void QucsMainWindow::slotSymbolEdit()
             sc->setMode(Qucs::SymbolMode);
 
             v->setFileName(fileName);
-            if(!v->save()) {
-                QMessageBox::critical(this, tr("File creation error"),
-                                      tr("Cannot create file %1").arg(v->fileName()));
-                tabWidget()->currentWidget()->close();
-                return;
-            }
         }
     }
 }

@@ -76,17 +76,23 @@ void writeEquiWires(Qucs::XmlWriter *writer, int id, int wireStartId, const QLis
 
 XmlFormat::XmlFormat(SchematicView *view) : FileFormatHandler(view)
 {
+    if(m_view)
+        scene = m_view->schematicScene();
+    else
+        scene = 0;
 }
 
 bool XmlFormat::save()
 {
-    if(!m_view)
-        return false;
-    SchematicScene *scene = m_view->schematicScene();
     if(!scene)
         return false;
 
-    QString text = saveText();
+    QString text;
+    if(scene->currentMode() == Qucs::SchematicMode)
+        text = saveText();
+    else if(scene->currentMode() == Qucs::SymbolMode)
+        text = saveSymbolText();
+
     if(text.isEmpty()) {
         qDebug("Looks buggy! Null data to save! Was this expected?");
     }
@@ -104,15 +110,8 @@ bool XmlFormat::save()
     return true;
 }
 
-bool XmlFormat::saveSymbol()
-{
-}
-
 bool XmlFormat::load()
 {
-    if(!m_view)
-        return false;
-    SchematicScene *scene = m_view->schematicScene();
     if(!scene)
         return false;
 
@@ -124,40 +123,98 @@ bool XmlFormat::load()
     }
 
     QTextStream stream(&file);
-    bool result = loadFromText(stream.readAll());
+
+    bool result = false;
+    if(scene->currentMode() == Qucs::SchematicMode)
+        result = loadFromText(stream.readAll());
+//    else if(scene->currentMode() == Qucs::SymbolMode)
+//        bool result = loadSymbolFromText(stream.readAll());
+
+    file.close();
 
     return result;
 }
 
-bool XmlFormat::loadSymbol()
-{
-}
-
 QString XmlFormat::saveText()
 {
-   SchematicScene *scene = m_view->schematicScene();
+    QString retVal;
+    Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
+    writer->setAutoFormatting(true);
 
-   QString retVal;
-   Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
-   writer->setAutoFormatting(true);
+    //Fist we start the document and write current version
+    writer->writeStartDocument();
+    writer->writeDTD(QString("<!DOCTYPE qucs>"));
+    writer->writeStartElement("qucs");
+    writer->writeAttribute("version", Qucs::version);
 
-   //Fist we start the document and write current version
-   writer->writeStartDocument();
-   writer->writeDTD(QString("<!DOCTYPE qucs>"));
-   writer->writeStartElement("qucs");
-   writer->writeAttribute("version", Qucs::version);
+    //Now we copy all the elements and properties in the schematic
+    saveSchematics(writer);
 
-   //Now we copy all the elements and properties in the schematic
-   saveSchematics(writer);
+    //Now we copy the previously defined symbol if created
+    copyQucsElement("symbol", writer);
 
-   //Now we copy the previously defined symbol if created
-   writer->writeTextElement("symbol", copySymbol());
+    //Finally we finish the document
+    writer->writeEndDocument(); //</qucs>
 
-   //Finally we finish the document
-   writer->writeEndDocument(); //</qucs>
+    delete writer;
+    return retVal;
+}
 
-   delete writer;
-   return retVal;
+QString XmlFormat::saveSymbolText()
+{
+    QString retVal;
+    Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
+    writer->setAutoFormatting(true);
+
+    //Fist we start the document and write current version
+    writer->writeStartDocument();
+    writer->writeDTD(QString("<!DOCTYPE qucs>"));
+    writer->writeStartElement("qucs");
+    writer->writeAttribute("version", Qucs::version);
+
+    //Now we copy all the elements and properties previously defined in the schematic
+    QFile file(scene->fileName());
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return "";
+
+    QTextStream stream(&file);
+    QString text = stream.readAll();
+    file.close();
+    QXmlStreamReader *reader = new QXmlStreamReader(text.toUtf8());
+    while(!reader->atEnd()) {
+        reader->readNext();
+        if(reader->isStartElement() && reader->name() != "qucs"
+           && reader->name() != "symbol") {
+
+            QString qualifiedName = reader->name().toString();
+            writer->writeStartElement(qualifiedName);
+            reader->readNext();
+            while(!reader->isEndElement() || reader->name() != qualifiedName){
+                writer->writeCurrentToken(*reader);
+                reader->readNext();
+            }
+            writer->writeEndElement();
+        }
+        else if(reader->isStartElement() && reader->name() == "symbol"){
+            while(!reader->isEndElement() || reader->name() != "symbol")
+                reader->readNext();
+        }
+    }
+
+    //Now we save the symbol
+    writer->writeStartElement("symbol");
+    //saveSchematics(writer);
+    saveComponents(writer);
+    saveWires(writer);
+    savePaintings(writer);
+    writer->writeEndElement(); //</symbol>
+
+    //Finally we finish the document
+    writer->writeEndDocument(); //</qucs>
+
+    delete reader;
+    delete writer;
+    return retVal;
 }
 
 void XmlFormat::saveSchematics(Qucs::XmlWriter *writer)
@@ -170,8 +227,6 @@ void XmlFormat::saveSchematics(Qucs::XmlWriter *writer)
 
 void XmlFormat::saveView(Qucs::XmlWriter *writer)
 {
-    SchematicScene *scene = m_view->schematicScene();
-
     writer->writeStartElement("view");
 
     writer->writeStartElement("scenerect");
@@ -203,7 +258,6 @@ void XmlFormat::saveView(Qucs::XmlWriter *writer)
 
     writer->writeStartElement("frametexts");
     foreach(QString text, scene->frameTexts()) {
-        //Qucs::convert2ASCII(text);
         writer->writeElement("text",text);
     }
     writer->writeEndElement(); //</frametexts>
@@ -213,7 +267,6 @@ void XmlFormat::saveView(Qucs::XmlWriter *writer)
 
 void XmlFormat::saveComponents(Qucs::XmlWriter *writer)
 {
-    SchematicScene *scene = m_view->schematicScene();
     QList<QGraphicsItem*> items = scene->items();
     QList<Component*> components = filterItems<Component>(items, RemoveItems);
     if(!components.isEmpty()) {
@@ -226,7 +279,6 @@ void XmlFormat::saveComponents(Qucs::XmlWriter *writer)
 
 void XmlFormat::saveWires(Qucs::XmlWriter *writer)
 {
-    SchematicScene *scene = m_view->schematicScene();
     QList<QGraphicsItem*> items = scene->items();
     QList<Wire*> wires = filterItems<Wire>(items, RemoveItems);
     if(!wires.isEmpty()) {
@@ -253,7 +305,6 @@ void XmlFormat::saveWires(Qucs::XmlWriter *writer)
 
 void XmlFormat::savePaintings(Qucs::XmlWriter *writer)
 {
-    SchematicScene *scene = m_view->schematicScene();
     QList<QGraphicsItem*> items = scene->items();
     QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
     if(!paintings.isEmpty()) {
@@ -264,34 +315,36 @@ void XmlFormat::savePaintings(Qucs::XmlWriter *writer)
     }
 }
 
-
-//Returns the previously defined symbol if created. Empty otherwise
-QString XmlFormat::copySymbol()
+//Copies a previously defined element if created. Empty otherwise
+void XmlFormat::copyQucsElement(const QString& qualifiedName , Qucs::XmlWriter *writer)
 {
-    QString retVal;
+    writer->writeStartElement(qualifiedName);
 
-    QFile file(m_view->schematicScene()->fileName());
+    QFile file(scene->fileName());
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return "";
+        return;
 
     QTextStream stream(&file);
     QString text = stream.readAll();
-    Qucs::XmlReader *reader = new Qucs::XmlReader(text.toUtf8());
+    file.close();
+    QXmlStreamReader *reader = new QXmlStreamReader(text.toUtf8());
     while(!reader->atEnd()) {
         reader->readNext();
-        if(reader->isStartElement() && reader->name() == "symbol") {
-                retVal = reader->readElementText();
+        if(reader->isStartElement() && reader->name() == qualifiedName) {
+            reader->readNext();
+            while(!reader->isEndElement() || reader->name() != qualifiedName){
+                writer->writeCurrentToken(*reader);
+                reader->readNext();
+            }
         }
     }
 
-    return retVal;
+    writer->writeEndElement();
+    delete reader;
 }
-
 
 bool XmlFormat::loadFromText(const QString& text)
 {
-    if(!m_view) return false;
-
     Qucs::XmlReader *reader = new Qucs::XmlReader(text.toUtf8());
     while(!reader->atEnd()) {
         reader->readNext();
@@ -344,13 +397,6 @@ void XmlFormat::loadSchematics(Qucs::XmlReader* reader)
 
 void XmlFormat::loadView(Qucs::XmlReader *reader)
 {
-   SchematicScene *scene = m_view->schematicScene();
-   if(!scene) {
-      reader->raiseError(QObject::tr("XmlFormat::loadView() : Scene doesn't exist.\n"
-                                     "So raising xml error to stop parsing"));
-      return;
-   }
-
    if(!reader->isStartElement() || reader->name() != "view")
       reader->raiseError(QObject::tr("Malformatted file"));
 
@@ -476,13 +522,6 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
 
 void XmlFormat::loadComponents(Qucs::XmlReader *reader)
 {
-    SchematicScene *scene = m_view->schematicScene();
-    if(!scene) {
-       reader->raiseError(QObject::tr("XmlFormat::loadComponents() : Scene doesn't exist.\n"
-                                      "So raising xml error to stop parsing"));
-       return;
-    }
-
     if(!reader->isStartElement() || reader->name() != "components")
        reader->raiseError(QObject::tr("Malformatted file"));
 
@@ -508,13 +547,6 @@ void XmlFormat::loadComponents(Qucs::XmlReader *reader)
 
 void XmlFormat::loadWires(Qucs::XmlReader* reader)
 {
-    SchematicScene *scene = m_view->schematicScene();
-    if(!scene) {
-       reader->raiseError(QObject::tr("XmlFormat::loadWires() : Scene doesn't exist.\n"
-                                      "So raising xml error to stop parsing"));
-       return;
-    }
-
     if(!reader->isStartElement() || reader->name() != "wires")
        reader->raiseError(QObject::tr("Malformatted file"));
 
@@ -553,13 +585,6 @@ void XmlFormat::loadWires(Qucs::XmlReader* reader)
 
 void XmlFormat::loadPaintings(Qucs::XmlReader *reader)
 {
-    SchematicScene *scene = m_view->schematicScene();
-    if(!scene) {
-       reader->raiseError(QObject::tr("XmlFormat::loadPaintings() : Scene doesn't exist.\n"
-                                      "So raising xml error to stop parsing"));
-       return;
-    }
-
     if(!reader->isStartElement() || reader->name() != "paintings")
        reader->raiseError(QObject::tr("Malformatted file"));
 

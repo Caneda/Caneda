@@ -51,7 +51,6 @@ namespace Qucs
          //! Constructs an xml stream reader acting on \a data.
          //XmlReader(const QString & data) : QXmlStreamReader(data) {}
 
-         QString readText();
          int readInt();
          double readDouble();
 

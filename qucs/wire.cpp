@@ -818,19 +818,15 @@ namespace Qucs
 
     data.port1Pos = reader->readPointAttribute("start");
     data.port2Pos = reader->readPointAttribute("end");
-    qDebug() << Q_FUNC_INFO << data.port1Pos << data.port2Pos;
     data.pos = reader->readPointAttribute("pos");
 
     while(!reader->atEnd()) {
       reader->readNext();
-      qDebug() << reader->tokenString();
       if(reader->isEndElement())
 	break;
 
       if(reader->isStartElement()) {
-	qDebug() << reader->name().toString();
 	if(reader->name() == "line") {
-	  qDebug() << "line tag";
 	  qreal x1 = reader->readDoubleAttribute("x1");
 	  qreal y1 = reader->readDoubleAttribute("y1");
 	  qreal x2 = reader->readDoubleAttribute("x2");
@@ -845,9 +841,6 @@ namespace Qucs
 	}
       }
     }
-    qDebug() << data.wLines.size();
-    foreach(WireLine line, data.wLines)
-      qDebug() << (QLineF)line;
     return data;
   }
 }

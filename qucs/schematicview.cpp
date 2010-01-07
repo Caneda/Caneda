@@ -30,7 +30,6 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QTimer>
-#include <QtCore/QDebug>
 
 const qreal SchematicView::zoomFactor = 1.2f;
 
@@ -107,10 +106,7 @@ bool SchematicView::save()
    QFileInfo info(fileName());
 
    if(QString(info.suffix()).isEmpty()) {
-       if(schematicScene()->currentMode() == Qucs::SchematicMode)
-           setFileName(fileName()+".xsch");
-       else if(schematicScene()->currentMode() == Qucs::SymbolMode)
-           setFileName(fileName()+".xsym");
+       setFileName(fileName()+".xsch");
        info = QFileInfo(fileName());
    }
 

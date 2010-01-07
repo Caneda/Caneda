@@ -77,10 +77,6 @@ bool XmlSymbolFormat::save()
     scene->toPaintDevice(svg_engine, scene->imageSize().width(), scene->imageSize().height());
 
     scene->setGridVisible(state_useGrid);
-    //**********************************************************
-    //Save the symbol to the schematic for later modifications**
-
-    //**********************************************************
 
     return true;
 }
