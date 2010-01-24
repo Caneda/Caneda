@@ -4,7 +4,7 @@ ADD_SUBDIRECTORY( docs )
 
 SET(QUCSHELP_SRCS qucshelp.cpp htmldatafetcher.cpp main.cpp)
 
-SET(QUCSHELP_MOC_HDRS htmldatafetcher.h qucshelp.h)
+SET(QUCSHELP_MOC_HDRS qucshelp.h)
 
 QT4_WRAP_CPP( QUCSHELP_MOC_SRCS ${QUCSHELP_MOC_HDRS} )
 

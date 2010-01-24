@@ -5,7 +5,7 @@ ADD_SUBDIRECTORY( examples )
 
 SET(QUCSTRANSCALC_SRCS helpdialog.cpp microstrip.cpp coax.cpp qucstrans.cpp transline.cpp main.cpp optionsdialog.cpp c_microstrip.cpp rectwaveguide.cpp)
 
-SET(QUCSTRANSCALC_MOC_HDRS c_microstrip.h rectwaveguide.h helpdialog.h microstrip.h coax.h qucstrans.h transline.h optionsdialog.h)
+SET(QUCSTRANSCALC_MOC_HDRS helpdialog.h qucstrans.h optionsdialog.h)
 
 QT4_WRAP_CPP( QUCSTRANSCALC_MOC_SRCS ${QUCSTRANSCALC_MOC_HDRS} )
 

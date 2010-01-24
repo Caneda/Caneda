@@ -4,7 +4,7 @@ ADD_SUBDIRECTORY( bitmaps )
 
 SET(QUCSATTENUATOR_SRCS attenuatorfunc.cpp helpdialog.cpp main.cpp qucsattenuator.cpp)
 
-SET(QUCSATTENUATOR_MOC_HDRS qucsattenuator.h attenuatorfunc.h helpdialog.h)
+SET(QUCSATTENUATOR_MOC_HDRS qucsattenuator.h)
 
 QT4_WRAP_CPP( QUCSATTENUATOR_MOC_SRCS ${QUCSATTENUATOR_MOC_HDRS} )
 

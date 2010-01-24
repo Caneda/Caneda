@@ -1,6 +1,6 @@
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/qucs-qterm} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
-SET(QTermWidget_MOC_HEADERS  TerminalCharacterDecoder.h Character.h ColorTables.h CharacterColor.h DefaultTranslatorText.h KeyboardTranslator.h ExtendedDefaultTranslator.h Screen.h History.h BlockArray.h konsole_wcwidth.h ScreenWindow.h Emulation.h Vt102Emulation.h TerminalDisplay.h Filter.h LineFont.h Pty.h kpty.h kpty_p.h k3process.h k3processcontroller.h Session.h ShellCommand.h qtermwidget.h)
+SET(QTermWidget_MOC_HEADERS  ScreenWindow.h Emulation.h Vt102Emulation.h TerminalDisplay.h Filter.h Pty.h k3process.h k3processcontroller.h Session.h qtermwidget.h)
 
 SET(QTermWidget_SOURCES  TerminalCharacterDecoder.cpp KeyboardTranslator.cpp Screen.cpp History.cpp BlockArray.cpp konsole_wcwidth.cpp ScreenWindow.cpp Emulation.cpp Vt102Emulation.cpp TerminalDisplay.cpp Filter.cpp Pty.cpp kpty.cpp k3process.cpp k3processcontroller.cpp Session.cpp ShellCommand.cpp qtermwidget.cpp)
 

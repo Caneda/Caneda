@@ -22,7 +22,7 @@ SET(QUCS_SRCS wire.cpp componentssidebar.cpp item.cpp
 SET(QUCS_MOC_HDRS schematicscene.h schematicview.h mainwindowbase.h
   qucsmainwindow.h componentssidebar.h svgitem.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
-  propertydialog.h folderbrowser.h xmlsymbolformat.h
+  propertydialog.h folderbrowser.h
 )
 
 QT4_WRAP_CPP( QUCS_MOC_SRCS ${QUCS_MOC_HDRS} )
