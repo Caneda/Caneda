@@ -17,103 +17,108 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __XMLUTILITIES_H
-#define __XMLUTILITIES_H
+#ifndef XMLUTILITIES_H
+#define XMLUTILITIES_H
 
-#include <QtCore/QMap>
-#include <QtGui/QPolygonF>
-#include <QtXml/QXmlStreamWriter>
 #include "QXmlStreamReaderExt.h"
 
+#include <QMap>
+#include <QPolygonF>
+#include <QXmlStreamWriter>
+
 // Forward declarations
+class QBrush;
+class QFont;
+class QLineF;
+class QPen;
 class QRectF;
 class QSize;
 class QTransform;
 
 namespace Qucs
 {
-   /*!
-    * \brief This class adds a few more helper methods to qt's
-    * QXmlStreamReader class.
-    * \warning QXmlStreamReader doesn't have virtual destructor. Don't delete any
-    * instance of this class from base pointer.
-    */
-   class XmlReader : public QXmlStreamReaderExt
-   {
-      public:
-         //! Constructs an xml stream reader acting on \a device.
-         //XmlReader(QIODevice * device) : QXmlStreamReader(device) {}
-         //! Constructs an xml stream reader acting on \a data.
-         XmlReader(const QByteArray & data, 
-		   const QRelaxNGvalidator * schema = NULL,
-		   const QXsltTransformer * xslt = NULL)
-	   : QXmlStreamReaderExt(data, schema, xslt) {}
-         //! Constructs an xml stream reader acting on \a data.
-         //XmlReader(const QString & data) : QXmlStreamReader(data) {}
+    /*!
+     * \brief This class adds a few more helper methods to qt's QXmlStreamReader class.
+     * \warning QXmlStreamReader doesn't have virtual destructor. Don't delete any
+     * instance of this class from base pointer.
+     */
+    class XmlReader : public QXmlStreamReaderExt
+    {
+    public:
+        //! Constructs an xml stream reader acting on \a device.
+        //XmlReader(QIODevice * device) : QXmlStreamReader(device) {}
+        //! Constructs an xml stream reader acting on \a data.
+        XmlReader(const QByteArray & data,
+                const QRelaxNGvalidator * schema = NULL,
+                const QXsltTransformer * xslt = NULL)
+            : QXmlStreamReaderExt(data, schema, xslt) {}
+        //! Constructs an xml stream reader acting on \a data.
+        //XmlReader(const QString & data) : QXmlStreamReader(data) {}
 
-         int readInt();
-         double readDouble();
+        int readInt();
+        double readDouble();
 
-         QPointF readPoint();
+        QPointF readPoint();
 
-         QPointF readPointAttribute(QString tag = "point");
-         QLineF readLineAttribute(QString tag="line");
-         QRectF readRectAttribute(QLatin1String tag = QLatin1String("rect"));
-         qreal readDoubleAttribute(QString tag);
+        QPointF readPointAttribute(QString tag = "point");
+        QLineF readLineAttribute(QString tag="line");
+        QRectF readRectAttribute(QLatin1String tag = QLatin1String("rect"));
+        qreal readDoubleAttribute(QString tag);
 
-         QSize readSize();
+        QSize readSize();
 
-         QRectF readRect();
-         QTransform readTransform();
+        QRectF readRect();
+        QTransform readTransform();
 
-         QPen readPen();
-         QBrush readBrush();
-         QFont readFont();
+        QPen readPen();
+        QBrush readBrush();
+        QFont readFont();
 
-         QString readLocaleText(const QString& localePrefix = QString("C"));
+        QString readLocaleText(const QString& localePrefix = QString("C"));
 
-         void readFurther();
-         void readUnknownElement();
+        void readFurther();
+        void readUnknownElement();
 
-         QString readXmlFragment();
-   };
+        QString readXmlFragment();
+    };
 
-   /*! \brief This class adds a few more helper methods to qt's
-    * QXmlStreamWriter class.
-    * \warning QXmlStreamWriter doesn't have virtual destructor. Don't delete any
-    * instance of this class from base pointer.
-    */
-   class XmlWriter : public QXmlStreamWriter
-   {
-      public:
-         //! Constructs an xml stream writer acting on \a device.
-         XmlWriter(QIODevice *device) : QXmlStreamWriter(device) {}
-         //! Constructs an xml stream writer acting on \a bytearray.
-         XmlWriter(QByteArray *bytearray) : QXmlStreamWriter(bytearray) {}
-         //! Constructs an xml stream writer acting on \a string.
-         XmlWriter(QString *string) : QXmlStreamWriter(string) {}
+    /*!
+     * \brief This class adds a few more helper methods to qt's
+     * QXmlStreamWriter class.
+     * \warning QXmlStreamWriter doesn't have virtual destructor. Don't delete any
+     * instance of this class from base pointer.
+     */
+    class XmlWriter : public QXmlStreamWriter
+    {
+    public:
+        //! Constructs an xml stream writer acting on \a device.
+        XmlWriter(QIODevice *device) : QXmlStreamWriter(device) {}
+        //! Constructs an xml stream writer acting on \a bytearray.
+        XmlWriter(QByteArray *bytearray) : QXmlStreamWriter(bytearray) {}
+        //! Constructs an xml stream writer acting on \a string.
+        XmlWriter(QString *string) : QXmlStreamWriter(string) {}
 
-         void writeElement(const QString& tag, const QString& value);
-         void writeElement(const QString& tag, int value);
-         void writeElement(const QString& tag, qreal value);
-         void writeElement(const QString& tag, bool value);
+        void writeElement(const QString& tag, const QString& value);
+        void writeElement(const QString& tag, int value);
+        void writeElement(const QString& tag, qreal value);
+        void writeElement(const QString& tag, bool value);
 
-         void writeRect(const QRectF& rect, QString tag = "rect");
-         void writeTransform(const QTransform& transform);
-         void writeSize(const QSize& size, QString tag = "size");
-         void writePoint(const QPointF& point, QString tag = "point");
+        void writeRect(const QRectF& rect, QString tag = "rect");
+        void writeTransform(const QTransform& transform);
+        void writeSize(const QSize& size, QString tag = "size");
+        void writePoint(const QPointF& point, QString tag = "point");
 
-         void writePointAttribute(const QPointF& point, QString tag = "point");
-         void writeLineAttribute(const QLineF& line, QLatin1String tag = QLatin1String("line"));
-         void writeRectAttribute(const QRectF& rect, QLatin1String tag = QLatin1String("rect"));
-         void writePolygonAttribute(const QPolygonF& polygon, QString tag="polygon");
+        void writePointAttribute(const QPointF& point, QString tag = "point");
+        void writeLineAttribute(const QLineF& line, QLatin1String tag = QLatin1String("line"));
+        void writeRectAttribute(const QRectF& rect, QLatin1String tag = QLatin1String("rect"));
+        void writePolygonAttribute(const QPolygonF& polygon, QString tag="polygon");
 
-         void writePen(const QPen& pen, QLatin1String tag = QLatin1String("pen"));
-         void writeBrush(const QBrush& brush, QLatin1String tag = QLatin1String("brush"));
-         void writeFont(const QFont& font, QLatin1String tag = QLatin1String("font"));
+        void writePen(const QPen& pen, QLatin1String tag = QLatin1String("pen"));
+        void writeBrush(const QBrush& brush, QLatin1String tag = QLatin1String("brush"));
+        void writeFont(const QFont& font, QLatin1String tag = QLatin1String("font"));
 
-         void writeLocaleText(const QString &lang, const QString& value);
-   };
+        void writeLocaleText(const QString &lang, const QString& value);
+    };
 }
 
-#endif //__XMLUTILITIES_H
+#endif //XMLUTILITIES_H

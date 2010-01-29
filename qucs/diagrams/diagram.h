@@ -25,15 +25,15 @@
 
 class Diagram : public QucsItem
 {
-   public:
-      enum {
-         Type = QucsItem::DisplayType
-      };
+public:
+    enum {
+        Type = QucsItem::DisplayType
+    };
 
-      Diagram(SchematicScene* scene = 0);
-      ~Diagram();
+    Diagram(SchematicScene* scene = 0);
+    ~Diagram();
 
-      int type() const { return QucsItem::DisplayType; }
+    int type() const { return QucsItem::DisplayType; }
 };
 
 #endif

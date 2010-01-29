@@ -17,12 +17,13 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __COMPONENTSSIDEBAR_H
-#define __COMPONENTSSIDEBAR_H
+#ifndef COMPONENTSSIDEBAR_H
+#define COMPONENTSSIDEBAR_H
 
-#include <QtGui>
-#include <QtGui/QTreeView>
 #include "sidebarmodel.h"
+
+#include <QToolBar>
+#include <QTreeView>
 
 // Forward declarations
 class FilterProxyModel;
@@ -31,69 +32,69 @@ class QToolButton;
 
 class TreeView : public QTreeView
 {
-      Q_OBJECT;
-   public:
-      TreeView(QWidget *parent = 0);
-      ~TreeView() {}
+    Q_OBJECT;
+public:
+    TreeView(QWidget *parent = 0);
+    ~TreeView() {}
 
-      void startDrag(Qt::DropActions supportedActions);
+    void startDrag(Qt::DropActions supportedActions);
 
-   signals:
-      void invalidAreaClicked(const QModelIndex &index);
+signals:
+    void invalidAreaClicked(const QModelIndex &index);
 
-   protected:
-      void mousePressEvent(QMouseEvent *event);
-      void mouseMoveEvent(QMouseEvent *event);
-      void mouseReleaseEvent(QMouseEvent *event);
+    protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
-      bool invalidPressed;
+    bool invalidPressed;
 };
 
 //! Represents sidebar which allows components to be selected.
 class ComponentsSidebar : public QWidget
 {
-      Q_OBJECT;
-   public:
-      ComponentsSidebar(QString windowTitle, QWidget *parent = 0);
-      ~ComponentsSidebar() {}
+    Q_OBJECT;
+public:
+    ComponentsSidebar(QString windowTitle, QWidget *parent = 0);
+    ~ComponentsSidebar() {}
 
-      void plugLibrary(QString str, QString category) {
-          m_model->plugLibrary(str, category);
-      }
+    void plugLibrary(QString str, QString category) {
+        m_model->plugLibrary(str, category);
+    }
 
-      void unPlugLibrary(QString str, QString category) {
-          m_model->unPlugLibrary(str, category);
-      }
+    void unPlugLibrary(QString str, QString category) {
+        m_model->unPlugLibrary(str, category);
+    }
 
-      void plugItem(QString itemName, const QPixmap& itemPixmap, QString category) {
-          m_model->plugItem(itemName, itemPixmap, category);
-      }
+    void plugItem(QString itemName, const QPixmap& itemPixmap, QString category) {
+        m_model->plugItem(itemName, itemPixmap, category);
+    }
 
-      void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category) {
-          m_model->plugItems(items, category);
-      }
+    void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category) {
+        m_model->plugItems(items, category);
+    }
 
-      void addToolbarButton(QAction *action) {
-          toolbar->addAction(action);
-      }
+    void addToolbarButton(QAction *action) {
+        toolbar->addAction(action);
+    }
 
-      QString currentComponent();
+    QString currentComponent();
 
-   signals:
-      void itemClicked(const QString& item, const QString& category);
+signals:
+    void itemClicked(const QString& item, const QString& category);
 
-   private slots:
-      void filterTextChanged();
-      void slotOnClicked(const QModelIndex& index);
+    private slots:
+        void filterTextChanged();
+    void slotOnClicked(const QModelIndex& index);
 
-   private:
-      SidebarModel *m_model;
-      FilterProxyModel *m_proxyModel;
-      QLineEdit *m_filterEdit;
-      TreeView *m_treeView;
-      QToolButton *m_clearButton;
-      QString m_currentComponent;
-      QToolBar *toolbar;
+private:
+    SidebarModel *m_model;
+    FilterProxyModel *m_proxyModel;
+    QLineEdit *m_filterEdit;
+    TreeView *m_treeView;
+    QToolButton *m_clearButton;
+    QString m_currentComponent;
+    QToolBar *toolbar;
 };
 
 #endif

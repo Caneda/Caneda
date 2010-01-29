@@ -17,42 +17,42 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __GRAPHICTEXT_H
-#define __GRAPHICTEXT_H
+#ifndef GRAPHICTEXT_H
+#define GRAPHICTEXT_H
 
 #include "painting.h"
 
 //! \brief Represent's text item on schematic.
 class GraphicText : public Painting
 {
-   public:
-      enum {
-         Type = Painting::GraphicTextType
-      };
+public:
+    enum {
+        Type = Painting::GraphicTextType
+    };
 
-      GraphicText(const QString &text = QString(), SchematicScene *scene = 0);
-      ~GraphicText();
+    GraphicText(const QString &text = QString(), SchematicScene *scene = 0);
+    ~GraphicText();
 
-      QString plainText() const;
-      void setPlainText(const QString &text);
+    QString plainText() const;
+    void setPlainText(const QString &text);
 
-      QString richText() const;
-      void setRichText(const QString &text);
+    QString richText() const;
+    void setRichText(const QString &text);
 
-      void setText(const QString &text);
+    void setText(const QString &text);
 
-      void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
 
-      int type() const { return GraphicText::Type; }
-      QucsItem* copy(SchematicScene *scene = 0) const;
+    int type() const { return GraphicText::Type; }
+    QucsItem* copy(SchematicScene *scene = 0) const;
 
-      void saveData(Qucs::XmlWriter *writer) const;
-      void loadData(Qucs::XmlReader *reader);
+    void saveData(Qucs::XmlWriter *writer) const;
+    void loadData(Qucs::XmlReader *reader);
 
-      int launchPropertyDialog(Qucs::UndoOption opt);
+    int launchPropertyDialog(Qucs::UndoOption opt);
 
-   private:
-      QGraphicsTextItem *m_textItem;
+private:
+    QGraphicsTextItem *m_textItem;
 };
 
-#endif //__GRAPHICTEXT_H
+#endif //GRAPHICTEXT_H

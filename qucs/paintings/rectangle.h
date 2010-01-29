@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __RECTANGLE_H
-#define __RECTANGLE_H
+#ifndef RECTANGLE_H
+#define RECTANGLE_H
 
 #include "painting.h"
 
@@ -30,30 +30,30 @@
  */
 class Rectangle : public Painting
 {
-   public:
-      enum {
-         Type = Painting::RectangleType
-      };
+public:
+    enum {
+        Type = Painting::RectangleType
+    };
 
-      Rectangle(const QRectF &rect, SchematicScene *scene = 0);
-      ~Rectangle();
+    Rectangle(const QRectF &rect, SchematicScene *scene = 0);
+    ~Rectangle();
 
-      QPainterPath shapeForRect(const QRectF& rect) const;
-      QRectF boundForRect(const QRectF &rect) const;
+    QPainterPath shapeForRect(const QRectF& rect) const;
+    QRectF boundForRect(const QRectF &rect) const;
 
-      void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+    void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
-      //! \brief Returns rectangle coords as QRectF.
-      QRectF rect() const { return paintingRect(); }
-      void setRect(const QRectF& rect) { setPaintingRect(rect); }
+    //! \brief Returns rectangle coords as QRectF.
+    QRectF rect() const { return paintingRect(); }
+    void setRect(const QRectF& rect) { setPaintingRect(rect); }
 
-      int type() const { return Rectangle::Type; }
-      QucsItem* copy(SchematicScene *scene = 0) const;
+    int type() const { return Rectangle::Type; }
+    QucsItem* copy(SchematicScene *scene = 0) const;
 
-      void saveData(Qucs::XmlWriter *writer) const;
-      void loadData(Qucs::XmlReader *reader);
+    void saveData(Qucs::XmlWriter *writer) const;
+    void loadData(Qucs::XmlReader *reader);
 
-      int launchPropertyDialog(Qucs::UndoOption opt);
+    int launchPropertyDialog(Qucs::UndoOption opt);
 };
 
-#endif //__RECTANGLE_H
+#endif //RECTANGLE_H

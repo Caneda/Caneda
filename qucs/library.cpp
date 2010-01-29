@@ -18,23 +18,22 @@
  ***************************************************************************/
 
 #include "library.h"
-#include "xmlutilities/xmlutilities.h"
 #include "schematicscene.h"
+
 #include "qucs-tools/global.h"
 
+#include "xmlutilities/xmlutilities.h"
 #include "xmlutilities/validators.h"
 
-#include <QtCore/QByteArray>
-#include <QtCore/QString>
-
-#include <QtCore/QDir>
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
-#include <QtCore/QDebug>
-
-#include <QtGui/QMessageBox>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmapCache>
+#include <QByteArray>
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QMessageBox>
+#include <QPainter>
+#include <QPixmapCache>
+#include <QString>
+#include <QTextStream>
 
 
 //*************************************************************
@@ -43,7 +42,7 @@
 
 //! Constructs library item from reader with file path \a path and svgpainter \a painter.
 Library::Library(QString libraryPath, SvgPainter *painter) :
-   m_svgPainter(painter)
+    m_svgPainter(painter)
 {
     Q_ASSERT(m_svgPainter);
 
@@ -70,65 +69,64 @@ Library::Library(QString libraryPath, SvgPainter *painter) :
  */
 Library::~Library()
 {
-   //frees the component data ptrs automatically
-   if(m_svgPainter != SvgPainter::defaultInstance()) {
-      qWarning() << "Library::~Library() leaving behind an instance undeleted";
-   }
+    //frees the component data ptrs automatically
+    if(m_svgPainter != SvgPainter::defaultInstance()) {
+        qWarning() << "Library::~Library() leaving behind an instance undeleted";
+    }
 }
 
 //! Returns the shared data of component from given name.
 ComponentDataPtr Library::componentDataPtr(const QString& name) const
 {
-   return !m_componentHash.contains(name) ?
-      ComponentDataPtr() : m_componentHash[name];
+    return m_componentHash.contains(name) ?
+        m_componentHash[name] : ComponentDataPtr();
 }
 
 //! Renders an svg to given painter given \a component and \a symbol.
 void Library::render(QPainter *painter, QString component, QString symbol) const
 {
-   const ComponentDataPtr dataPtr = componentDataPtr(component);
-   if(!dataPtr.constData()) {
-      qWarning() << "Library::render() : " <<  component << " not found";
-      return;
-   }
-   if(symbol.isEmpty() ||
-      !dataPtr->propertyMap["symbol"].options().contains(symbol))
-   {
-      symbol = dataPtr->propertyMap["symbol"].value().toString();
-   }
-   QString svgId = dataPtr->name + '/' + symbol;
-   m_svgPainter->paint(painter, svgId);
+    const ComponentDataPtr dataPtr = componentDataPtr(component);
+    if(!dataPtr.constData()) {
+        qWarning() << "Library::render() : " <<  component << " not found";
+        return;
+    }
+    if(symbol.isEmpty() ||
+            !dataPtr->propertyMap["symbol"].options().contains(symbol)) {
+        symbol = dataPtr->propertyMap["symbol"].value().toString();
+    }
+    QString svgId = dataPtr->name + '/' + symbol;
+    m_svgPainter->paint(painter, svgId);
 }
 
-/*! Returns the component rendered to pixmap.
+/*!
+ * Returns the component rendered to pixmap.
  *
  * \param component Component to be rendered.
  * \param symbol Symbol to be rendered. Empty string if default is to rendered.
  */
 QPixmap Library::renderedPixmap(QString component,
-                                     QString symbol) const
+        QString symbol) const
 {
-   const ComponentDataPtr dataPtr = componentDataPtr(component);
-   if(!dataPtr.constData()) {
-      qWarning() << "Library::renderToPixmap() : " <<  component << " not found";
-      return QPixmap();
-   }
-   if(symbol.isEmpty() ||
-      !dataPtr->propertyMap["symbol"].options().contains(symbol))
-   {
-      symbol = dataPtr->propertyMap["symbol"].value().toString();
-   }
-   QString svgId = dataPtr->name + '/' + symbol;
-   QRectF rect = m_svgPainter->boundingRect(svgId);
-   QPixmap pix;
-   if (!QPixmapCache::find(svgId, pix)) {
-      pix = QPixmap(rect.toRect().size());
-      pix.fill(Qt::transparent);
-      QPainter painter(&pix);
-      painter.setWindow(rect.toRect());
-      m_svgPainter->paint(&painter, svgId);
-   }
-   return pix;
+    const ComponentDataPtr dataPtr = componentDataPtr(component);
+    if(!dataPtr.constData()) {
+        qWarning() << "Library::renderToPixmap() : " <<  component << " not found";
+        return QPixmap();
+    }
+    if(symbol.isEmpty() ||
+            !dataPtr->propertyMap["symbol"].options().contains(symbol)) {
+        symbol = dataPtr->propertyMap["symbol"].value().toString();
+    }
+    QString svgId = dataPtr->name + '/' + symbol;
+    QRectF rect = m_svgPainter->boundingRect(svgId);
+    QPixmap pix;
+    if(!QPixmapCache::find(svgId, pix)) {
+        pix = QPixmap(rect.toRect().size());
+        pix.fill(Qt::transparent);
+        QPainter painter(&pix);
+        painter.setWindow(rect.toRect());
+        m_svgPainter->paint(&painter, svgId);
+    }
+    return pix;
 }
 
 /*!
@@ -137,53 +135,54 @@ QPixmap Library::renderedPixmap(QString component,
  */
 bool Library::loadLibrary(Qucs::XmlReader *reader)
 {
-   bool readok = true;
-   Q_ASSERT(reader->isStartElement() && reader->name() == "library");
+    bool readok = true;
+    Q_ASSERT(reader->isStartElement() && reader->name() == "library");
 
-   m_libraryName = reader->attributes().value("name").toString();
-   if(m_libraryName.isEmpty()) {
-      reader->raiseError("Invalid or no 'name' attribute in library tag");
-      m_valid = false;
-      return m_valid;
-   }
+    m_libraryName = reader->attributes().value("name").toString();
+    if(m_libraryName.isEmpty()) {
+        reader->raiseError("Invalid or no 'name' attribute in library tag");
+        m_valid = false;
+        return m_valid;
+    }
 
-   while(!reader->atEnd()) {
-      reader->readNext();
+    while(!reader->atEnd()) {
+        reader->readNext();
 
-      if(reader->isEndElement())
-         break;
+        if(reader->isEndElement()) {
+            break;
+        }
 
-      if(reader->isStartElement()) {
-         if(reader->name() == "displaytext") {
-            m_displayText = reader->readLocaleText(Qucs::localePrefix());
-            Q_ASSERT(reader->isEndElement() && reader->name() == "displaytext");
-         }
-         else if(reader->name() == "description") {
-            m_description = reader->readLocaleText(Qucs::localePrefix());
-            Q_ASSERT(reader->isEndElement() && reader->name() == "description");
-         }
-         else if(reader->name() == "component") {
-            QString externalPath = reader->attributes().value("href").toString();
-            if(!externalPath.isEmpty()) {
-               bool status = parseExternalComponent(externalPath);
-               if(!status) {
-                  QString errorString("Parsing external component data file %1 "
-                                      "failed");
-                  errorString = errorString.arg(QFileInfo(externalPath).absoluteFilePath());
-                  reader->raiseError(errorString);
-               } else {
-                  //ignore rest of component' tag as the main data is only external
-                  reader->readUnknownElement();
-               }
+        if(reader->isStartElement()) {
+            if(reader->name() == "displaytext") {
+                m_displayText = reader->readLocaleText(Qucs::localePrefix());
+                Q_ASSERT(reader->isEndElement() && reader->name() == "displaytext");
             }
-         }
-         else {
-            reader->readUnknownElement();
-         }
-      }
-   }
-   m_valid = !reader->hasError() && readok;
-   return m_valid;
+            else if(reader->name() == "description") {
+                m_description = reader->readLocaleText(Qucs::localePrefix());
+                Q_ASSERT(reader->isEndElement() && reader->name() == "description");
+            }
+            else if(reader->name() == "component") {
+                QString externalPath = reader->attributes().value("href").toString();
+                if(!externalPath.isEmpty()) {
+                    bool status = parseExternalComponent(externalPath);
+                    if(!status) {
+                        QString errorString("Parsing external component data file %1 "
+                                "failed");
+                        errorString = errorString.arg(QFileInfo(externalPath).absoluteFilePath());
+                        reader->raiseError(errorString);
+                    } else {
+                        //ignore rest of component' tag as the main data is only external
+                        reader->readUnknownElement();
+                    }
+                }
+            }
+            else {
+                reader->readUnknownElement();
+            }
+        }
+    }
+    m_valid = !reader->hasError() && readok;
+    return m_valid;
 }
 
 /*!
@@ -226,7 +225,7 @@ bool Library::saveLibrary()
     QFile file(libraryFileName());
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::critical(0, QObject::tr("Error"),
-                              QObject::tr("Cannot save library!"));
+                QObject::tr("Cannot save library!"));
         return false;
     }
     QTextStream stream(&file);
@@ -241,31 +240,32 @@ bool Library::saveLibrary()
  */
 bool Library::parseExternalComponent(QString componentPath)
 {
-   bool readok = true;
-   QFile file(QFileInfo(componentPath).absoluteFilePath());
-   
-   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      QMessageBox::warning(0, QObject::tr("File open"),
-                           QObject::tr("Cannot open file %1").arg(componentPath));
-      return false;
-   }
-   QTextStream in(&file);
-   in.setCodec("UTF-8");
-   QByteArray data = in.readAll().toUtf8();
+    bool readok = true;
+    QFile file(QFileInfo(componentPath).absoluteFilePath());
 
-   Qucs::XmlReader reader(data,
-			  Qucs::validators::defaultInstance()->components());
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(0, QObject::tr("File open"),
+                QObject::tr("Cannot open file %1").arg(componentPath));
+        return false;
+    }
+    QTextStream in(&file);
+    in.setCodec("UTF-8");
+    QByteArray data = in.readAll().toUtf8();
 
-   while(!reader.atEnd()) {
-      reader.readNext();
+    Qucs::XmlReader reader(data,
+            Qucs::validators::defaultInstance()->components());
 
-      if(reader.isStartElement() && reader.name() == "component")
-         break;
-   }
-   if(reader.isStartElement() && reader.name() == "component") {
-      readok = registerComponentData(&reader, componentPath);
-   }
-   return !reader.hasError() && readok;
+    while(!reader.atEnd()) {
+        reader.readNext();
+
+        if(reader.isStartElement() && reader.name() == "component") {
+            break;
+        }
+    }
+    if(reader.isStartElement() && reader.name() == "component") {
+        readok = registerComponentData(&reader, componentPath);
+    }
+    return !reader.hasError() && readok;
 }
 
 /*!
@@ -273,10 +273,12 @@ bool Library::parseExternalComponent(QString componentPath)
  */
 bool Library::removeComponent(QString componentName)
 {
-    if(!m_componentHash.contains(componentName))
+    if(!m_componentHash.contains(componentName)) {
         return false;
-    else
+    }
+    else {
         m_componentHash.remove(componentName);
+    }
 
     return true;
 }
@@ -284,26 +286,26 @@ bool Library::removeComponent(QString componentName)
 //! Registers svg as well as the component's shared data.
 bool Library::registerComponentData(Qucs::XmlReader *reader, QString componentPath)
 {
-   Q_ASSERT(m_svgPainter);
-   bool readok;
+    Q_ASSERT(m_svgPainter);
+    bool readok;
 
-   //Automatically registers svgs on success
-   ComponentDataPtr dataPtr(new ComponentData);
-   dataPtr->library = libraryFileName();
-   dataPtr->filename = componentPath;
+    //Automatically registers svgs on success
+    ComponentDataPtr dataPtr(new ComponentData);
+    dataPtr->library = libraryFileName();
+    dataPtr->filename = componentPath;
 
-   QString parentPath = QFileInfo(componentPath).absolutePath();
-   readok = Qucs::readComponentData(reader, parentPath, m_svgPainter, dataPtr);
+    QString parentPath = QFileInfo(componentPath).absolutePath();
+    readok = Qucs::readComponentData(reader, parentPath, m_svgPainter, dataPtr);
 
-   if(dataPtr.constData() == 0 || reader->hasError() || !readok) {
-      qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();
-      return false;
-   }
+    if(dataPtr.constData() == 0 || reader->hasError() || !readok) {
+        qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();
+        return false;
+    }
 
-   if(!m_componentHash.contains(dataPtr->name)) {
-      m_componentHash.insert(dataPtr->name, dataPtr);
-   }
-   return true;
+    if(!m_componentHash.contains(dataPtr->name)) {
+        m_componentHash.insert(dataPtr->name, dataPtr);
+    }
+    return true;
 }
 
 //*************************************************************
@@ -325,18 +327,18 @@ LibraryLoader::~LibraryLoader()
  */
 LibraryLoader* LibraryLoader::defaultInstance()
 {
-   static LibraryLoader *library = new LibraryLoader();
-   return library;
+    static LibraryLoader *library = new LibraryLoader();
+    return library;
 }
 
 //! Returns library item corresponding to name.
 Library* LibraryLoader::library(const QString& str) const
 {
-   if(!m_libraryHash.contains(str)) {
-      qWarning() << "LibraryLoader::library : LibraryLoader item " << str << " not found";
-      return 0;
-   }
-   return m_libraryHash[str];
+    if(!m_libraryHash.contains(str)) {
+        qWarning() << "LibraryLoader::library : LibraryLoader item " << str << " not found";
+        return 0;
+    }
+    return m_libraryHash[str];
 }
 
 /*!
@@ -349,42 +351,44 @@ Library* LibraryLoader::library(const QString& str) const
  * \return Component on success and null pointer on failure.
  */
 Component* LibraryLoader::newComponent(QString componentName, SchematicScene *scene,
-                                       QString library)
+        QString library)
 {
-   ComponentDataPtr data;
-   SvgPainter *svgPainter = 0;
-   if(library.isEmpty()) {
-      LibraryHash::const_iterator it = m_libraryHash.constBegin(),
-         end = m_libraryHash.constEnd();
-      while(it != end) {
-         data = it.value()->componentDataPtr(componentName);
-         svgPainter = it.value()->svgPainter();
-         if(data.constData())
-            break;
-         ++it;
-      }
-   }
-   else {
-      if(m_libraryHash.contains(library)) {
-         data = m_libraryHash[library]->componentDataPtr(componentName);
-         svgPainter = m_libraryHash[library]->svgPainter();
-      }
-   }
-   if(data.constData()) {
-      Q_ASSERT(svgPainter);
-      Component* comp = new Component(data, svgPainter, scene);
-      comp->setSymbol(comp->symbol());
-      return comp;
-   }
-   return 0;
+    ComponentDataPtr data;
+    SvgPainter *svgPainter = 0;
+    if(library.isEmpty()) {
+        LibraryHash::const_iterator it = m_libraryHash.constBegin(),
+            end = m_libraryHash.constEnd();
+        while(it != end) {
+            data = it.value()->componentDataPtr(componentName);
+            svgPainter = it.value()->svgPainter();
+            if(data.constData()) {
+                break;
+            }
+            ++it;
+        }
+    }
+    else {
+        if(m_libraryHash.contains(library)) {
+            data = m_libraryHash[library]->componentDataPtr(componentName);
+            svgPainter = m_libraryHash[library]->svgPainter();
+        }
+    }
+    if(data.constData()) {
+        Q_ASSERT(svgPainter);
+        Component* comp = new Component(data, svgPainter, scene);
+        comp->setSymbol(comp->symbol());
+        return comp;
+    }
+    return 0;
 }
 
-/*! \brief Load a library tree
-    \todo Implement a true loader
-*/
+/*!
+ * \brief Load a library tree
+ * \todo Implement a true loader
+ */
 bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_)
 {
-  return this->load( libpathtree+"/components/basic/passive.xpro",svgPainter_);
+    return this->load( libpathtree+"/components/basic/passive.xpro",svgPainter_);
 }
 
 //! Create library indicated by path \a libPath.
@@ -412,58 +416,59 @@ bool LibraryLoader::newLibrary(const QString& libPath, SvgPainter *svgPainter_)
 //! Load library indicated by path \a libPath.
 bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
 {
-   if(svgPainter_ == 0) {
-      svgPainter_ = SvgPainter::defaultInstance();
-   }
+    if(svgPainter_ == 0) {
+        svgPainter_ = SvgPainter::defaultInstance();
+    }
 
-   /* open file */
-   QFile file(libPath);
-   if(!file.open(QIODevice::ReadOnly)) {
-      QMessageBox::warning(0, QObject::tr("File open"),
-                           QObject::tr("Cannot open file %1\n").arg(libPath));
-      return false;
-   }
-   
-   /* goto base dir */
-   QString libParentPath = QFileInfo(libPath).dir().absolutePath();
-   QString current = QDir::currentPath();
-   if(!QDir::setCurrent(libParentPath)) {
-     (void) QDir::setCurrent(current);
-     return false;
-   }
+    /* open file */
+    QFile file(libPath);
+    if(!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(0, QObject::tr("File open"),
+                QObject::tr("Cannot open file %1\n").arg(libPath));
+        return false;
+    }
 
-   QTextStream in(&file);
-   in.setCodec("UTF-8");
-   QByteArray data = in.readAll().toUtf8();
+    /* goto base dir */
+    QString libParentPath = QFileInfo(libPath).dir().absolutePath();
+    QString current = QDir::currentPath();
+    if(!QDir::setCurrent(libParentPath)) {
+        (void) QDir::setCurrent(current);
+        return false;
+    }
 
-   Qucs::XmlReader reader(data);
-   while(!reader.atEnd()) {
-      reader.readNext();
+    QTextStream in(&file);
+    in.setCodec("UTF-8");
+    QByteArray data = in.readAll().toUtf8();
 
-      if(reader.isEndElement())
-         break;
+    Qucs::XmlReader reader(data);
+    while(!reader.atEnd()) {
+        reader.readNext();
 
-      if(reader.isStartElement()) {
-         if(reader.name() == "library") {
-            Library *info = new Library(libPath, svgPainter_);
-            info->loadLibrary(&reader);
-            if(reader.hasError()) {
-               QMessageBox::critical(0, QObject::tr("Load library"),
-                                     QObject::tr("Parsing library failed with following error: "
-                                                 "\"%1\"").arg(reader.errorString()));
-               delete info;
-               return false;
+        if(reader.isEndElement()) {
+            break;
+        }
+
+        if(reader.isStartElement()) {
+            if(reader.name() == "library") {
+                Library *info = new Library(libPath, svgPainter_);
+                info->loadLibrary(&reader);
+                if(reader.hasError()) {
+                    QMessageBox::critical(0, QObject::tr("Load library"),
+                            QObject::tr("Parsing library failed with following error: "
+                                "\"%1\"").arg(reader.errorString()));
+                    delete info;
+                    return false;
+                }
+
+                m_libraryHash.insert(info->libraryFileName(), info);
             }
-
-            m_libraryHash.insert(info->libraryFileName(), info);
-         }
-         else {
-            reader.readUnknownElement();
-         }
-      }
-   }
-   (void) QDir::setCurrent(current);
-   return !reader.hasError();
+            else {
+                reader.readUnknownElement();
+            }
+        }
+    }
+    (void) QDir::setCurrent(current);
+    return !reader.hasError();
 }
 
 /*!
@@ -472,11 +477,12 @@ bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
  */
 bool LibraryLoader::unload(const QString& libName)
 {
-   Library *lib = m_libraryHash.contains(libName) ? m_libraryHash[libName] : 0;
-   if(!lib) {
-      return false;
-   }
-   m_libraryHash.remove(libName);
-   delete lib;
-   return true;
+    Library *lib = m_libraryHash.contains(libName) ? m_libraryHash[libName] : 0;
+    if(!lib) {
+        return false;
+    }
+    m_libraryHash.remove(libName);
+    delete lib;
+    return true;
 }
+

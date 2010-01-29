@@ -10,23 +10,23 @@
 #ifndef UI_FILLDIALOG_H
 #define UI_FILLDIALOG_H
 
-#include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QDialog>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QFrame>
-#include <QtGui/QGridLayout>
-#include <QtGui/QGroupBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QSpinBox>
-#include <QtGui/QToolButton>
-#include <QtGui/QVBoxLayout>
+#include <QVariant>
+#include <QAction>
+#include <QApplication>
+#include <QButtonGroup>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFrame>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QSpacerItem>
+#include <QSpinBox>
+#include <QToolButton>
+#include <QVBoxLayout>
 
 class Ui_StyleDialogBase
 {
@@ -71,7 +71,7 @@ public:
 
     void setupUi(QDialog *StyleDialogBase)
     {
-    if (StyleDialogBase->objectName().isEmpty())
+    if(StyleDialogBase->objectName().isEmpty())
         StyleDialogBase->setObjectName(QString::fromUtf8("StyleDialogBase"));
     QSize size(487, 508);
     size = size.expandedTo(StyleDialogBase->minimumSizeHint());

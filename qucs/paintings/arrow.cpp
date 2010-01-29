@@ -18,13 +18,14 @@
  ***************************************************************************/
 
 #include "arrow.h"
-#include "xmlutilities/xmlutilities.h"
+
 #include "styledialog.h"
 
-#include <QtGui/QStyleOptionGraphicsItem>
-#include <QtGui/QPainter>
+#include "xmlutilities/xmlutilities.h"
 
-#include <QtCore/QDebug>
+#include <QDebug>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 #include <cmath>
 
@@ -38,14 +39,14 @@
  * \param scene The schematic to which this arrow is to be added.
  */
 Arrow::Arrow(const QLineF &line, HeadStyle style, qreal headWidth, qreal headHeight,
-             SchematicScene *scene) :
-   Painting(scene),
-   m_headStyle(style),
-   m_headWidth(headWidth),
-   m_headHeight(headHeight)
+        SchematicScene *scene) :
+    Painting(scene),
+    m_headStyle(style),
+    m_headWidth(headWidth),
+    m_headHeight(headHeight)
 {
-   setLine(line);
-   setResizeHandles(Qucs::TopLeftHandle | Qucs::BottomRightHandle);
+    setLine(line);
+    setResizeHandles(Qucs::TopLeftHandle | Qucs::BottomRightHandle);
 }
 
 //! Destructor
@@ -56,219 +57,222 @@ Arrow::~Arrow()
 //! \copydoc Painting::shapeForRect()
 QPainterPath Arrow::shapeForRect(const QRectF &rect) const
 {
-   QPainterPath path;
-   path.moveTo(rect.topLeft());
-   path.lineTo(rect.bottomRight());
+    QPainterPath path;
+    path.moveTo(rect.topLeft());
+    path.lineTo(rect.bottomRight());
 
-   path.addPolygon(m_head);
-   path.closeSubpath();
+    path.addPolygon(m_head);
+    path.closeSubpath();
 
-   return path;
+    return path;
 }
 
 //! \copydoc Painting::boundForRect()
 QRectF Arrow::boundForRect(const QRectF &rect) const
 {
-   QRectF arrowRect  = m_head.boundingRect();
-   qreal adjust((pen().width() + 5) / 2.);
-   arrowRect.adjust(-adjust, -adjust, adjust, adjust);
-   return (rect | arrowRect);
+    QRectF arrowRect  = m_head.boundingRect();
+    qreal adjust((pen().width() + 5) / 2.);
+    arrowRect.adjust(-adjust, -adjust, adjust, adjust);
+    return (rect | arrowRect);
 }
 
 //! Draw's the arrow and arrow head based on \a style.
 void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-                  QWidget *w)
+        QWidget *w)
 {
-   painter->setBrush(Qt::NoBrush);
+    painter->setBrush(Qt::NoBrush);
 
-   QLineF line = lineFromRect(paintingRect());
+    QLineF line = lineFromRect(paintingRect());
 
-   // give the double line effect!
-   if(option->state & QStyle::State_Selected) {
-      QPen _pen(pen());
-      _pen.setColor(Qt::darkGray);
-      _pen.setWidth(pen().width() + 5);
+    // give the double line effect!
+    if(option->state & QStyle::State_Selected) {
+        QPen _pen(pen());
+        _pen.setColor(Qt::darkGray);
+        _pen.setWidth(pen().width() + 5);
 
-      painter->setPen(_pen);
+        painter->setPen(_pen);
 
-      painter->drawLine(line);
-      drawHead(painter);
+        painter->drawLine(line);
+        drawHead(painter);
 
-      _pen.setWidth(pen().width());
-      _pen.setColor(Qt::white);
+        _pen.setWidth(pen().width());
+        _pen.setColor(Qt::white);
 
-      painter->setPen(_pen);
-   }
-   else {
-      painter->setPen(pen());
-   }
+        painter->setPen(_pen);
+    }
+    else {
+        painter->setPen(pen());
+    }
 
-   painter->drawLine(line);
+    painter->drawLine(line);
 
-   if(headStyle() == FilledArrow)
-      painter->setBrush(brush());
+    if(headStyle() == FilledArrow) {
+        painter->setBrush(brush());
+    }
 
-   drawHead(painter);
+    drawHead(painter);
 
-   Painting::paint(painter, option, w);
+    Painting::paint(painter, option, w);
 }
 
 //! \brief Returns a copy of this arrow.
 QucsItem* Arrow::copy(SchematicScene *scene) const
 {
-   Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), scene);
-   Painting::copyDataTo(arrow);
-   return arrow;
+    Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), scene);
+    Painting::copyDataTo(arrow);
+    return arrow;
 }
 
 //! \brief Save arrow data to xml referred by writer.
 void Arrow::saveData(Qucs::XmlWriter *writer) const
 {
-   writer->writeStartElement("painting");
-   writer->writeAttribute("name", "arrow");
+    writer->writeStartElement("painting");
+    writer->writeAttribute("name", "arrow");
 
-   writer->writeEmptyElement("properties");
-   writer->writeLineAttribute(line());
-   writer->writePointAttribute(pos(), "pos");
-   writer->writeAttribute("headStyle", QString::number(int(m_headStyle)));
-   writer->writePointAttribute(QPointF(m_headWidth, m_headHeight), "headSize");
+    writer->writeEmptyElement("properties");
+    writer->writeLineAttribute(line());
+    writer->writePointAttribute(pos(), "pos");
+    writer->writeAttribute("headStyle", QString::number(int(m_headStyle)));
+    writer->writePointAttribute(QPointF(m_headWidth, m_headHeight), "headSize");
 
-   writer->writePen(pen());
-   writer->writeBrush(brush());
-   writer->writeTransform(transform());
+    writer->writePen(pen());
+    writer->writeBrush(brush());
+    writer->writeTransform(transform());
 
-   writer->writeEndElement(); // </painting>
+    writer->writeEndElement(); // </painting>
 }
 
 //! \brief Loads arrow from xml reffered by reader.
 void Arrow::loadData(Qucs::XmlReader *reader)
 {
-   Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-   Q_ASSERT(reader->attributes().value("name") == "arrow");
+    Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+    Q_ASSERT(reader->attributes().value("name") == "arrow");
 
-   while(!reader->atEnd()) {
-      reader->readNext();
+    while(!reader->atEnd()) {
+        reader->readNext();
 
-      if(reader->isEndElement())
-         break;
+        if(reader->isEndElement()) {
+            break;
+        }
 
-      if(reader->isStartElement()) {
-         if(reader->name() == "properties") {
-            QLineF line = reader->readLineAttribute("line");
-            setPaintingRect(QRectF(line.p1(), line.p2()));
+        if(reader->isStartElement()) {
+            if(reader->name() == "properties") {
+                QLineF line = reader->readLineAttribute("line");
+                setPaintingRect(QRectF(line.p1(), line.p2()));
 
-            QPointF pos = reader->readPointAttribute("pos");
-            setPos(pos);
+                QPointF pos = reader->readPointAttribute("pos");
+                setPos(pos);
 
-            int style = reader->attributes().value("headStyle").toString().toInt();
-            setHeadStyle((HeadStyle)style);
+                int style = reader->attributes().value("headStyle").toString().toInt();
+                setHeadStyle((HeadStyle)style);
 
-            QPointF headSize = reader->readPointAttribute("headSize");
-            setHeadWidth(headSize.x());
-            setHeadHeight(headSize.y());
+                QPointF headSize = reader->readPointAttribute("headSize");
+                setHeadWidth(headSize.x());
+                setHeadHeight(headSize.y());
 
-            reader->readUnknownElement(); //read till end tag
-         }
+                reader->readUnknownElement(); //read till end tag
+            }
 
-         else if(reader->name() == "pen") {
-            setPen(reader->readPen());
-         }
+            else if(reader->name() == "pen") {
+                setPen(reader->readPen());
+            }
 
-         else if(reader->name() == "brush") {
-            setBrush(reader->readBrush());
-         }
+            else if(reader->name() == "brush") {
+                setBrush(reader->readBrush());
+            }
 
-         else if(reader->name() == "transform") {
-            setTransform(reader->readTransform());
-         }
+            else if(reader->name() == "transform") {
+                setTransform(reader->readTransform());
+            }
 
-         else {
-            reader->readUnknownElement();
-         }
-      }
-   }
+            else {
+                reader->readUnknownElement();
+            }
+        }
+    }
 }
 
 //! \brief Sets arrow's head style to \a style.
 void Arrow::setHeadStyle(HeadStyle style)
 {
-   m_headStyle = style;
-   calcHeadPoints();
-   update();
+    m_headStyle = style;
+    calcHeadPoints();
+    update();
 }
 
 //! \brief Sets arrow's head width to \a width.
 void Arrow::setHeadWidth(qreal width)
 {
-   m_headWidth = width;
-   setLine(line());//recalc geometry
+    m_headWidth = width;
+    setLine(line());//recalc geometry
 }
 
 //! \brief Sets arrow's head height to \a height.
 void Arrow::setHeadHeight(qreal height)
 {
-   m_headHeight = height;
-   setLine(line());//recalc geometry
+    m_headHeight = height;
+    setLine(line());//recalc geometry
 }
 
 //! \brief Sets arrow's line to \a line.
 void Arrow::setLine(const QLineF& line)
 {
-   setPaintingRect(QRectF(line.p1(), line.p2()));
+    setPaintingRect(QRectF(line.p1(), line.p2()));
 }
 
 //! \copydoc Painting::geometryChange()
 void Arrow::geometryChange()
 {
-   calcHeadPoints();
+    calcHeadPoints();
 }
 
 //! \brief Calculates arrow's head polygon based on style, width and height.
 void Arrow::calcHeadPoints()
 {
-   QRectF rect = paintingRect();
+    QRectF rect = paintingRect();
 
-   qreal angle = (std::atan2(-rect.height(), rect.width()));
-   angle = -270 + (angle * 180 / M_PI);
+    qreal angle = (std::atan2(-rect.height(), rect.width()));
+    angle = -270 + (angle * 180 / M_PI);
 
-   QMatrix mapper;
-   mapper.rotate(angle);
+    QMatrix mapper;
+    mapper.rotate(angle);
 
-   //qreal lengthFromOrigin = QLineF(QPointF(), rect.bottomRight()).length();
+    //qreal lengthFromOrigin = QLineF(QPointF(), rect.bottomRight()).length();
 
-   QPointF arrowTipPos = mapper.map(rect.bottomRight());
-   QPointF bottomLeft(arrowTipPos.x() - m_headWidth/2, arrowTipPos.y() - m_headHeight);
-   QPointF bottomRight(arrowTipPos.x() + m_headWidth/2, arrowTipPos.y() - m_headHeight);
+    QPointF arrowTipPos = mapper.map(rect.bottomRight());
+    QPointF bottomLeft(arrowTipPos.x() - m_headWidth/2, arrowTipPos.y() - m_headHeight);
+    QPointF bottomRight(arrowTipPos.x() + m_headWidth/2, arrowTipPos.y() - m_headHeight);
 
-   mapper = mapper.inverted();
+    mapper = mapper.inverted();
 
-   if(m_head.size() != 3)
-      m_head.resize(3);
-   m_head[0] = mapper.map(bottomLeft);
-   m_head[1] = mapper.map(arrowTipPos);
-   m_head[2] = mapper.map(bottomRight);
+    if(m_head.size() != 3) {
+        m_head.resize(3);
+    }
+    m_head[0] = mapper.map(bottomLeft);
+    m_head[1] = mapper.map(arrowTipPos);
+    m_head[2] = mapper.map(bottomRight);
 }
 
 //! \brief Returns line representation of rect - topleft to bottom right.
 QLineF Arrow::lineFromRect(const QRectF& rect) const
 {
-   return QLineF(rect.topLeft(), rect.bottomRight());
+    return QLineF(rect.topLeft(), rect.bottomRight());
 }
 
 //! \brief Draws arrow head based on current head style.
 void Arrow::drawHead(QPainter *painter)
 {
-   if(m_headStyle == FilledArrow) {
-      painter->drawConvexPolygon(m_head);
-   }
-   else {
-      painter->drawLine(m_head[0], m_head[1]);
-      painter->drawLine(m_head[1], m_head[2]);
-   }
+    if(m_headStyle == FilledArrow) {
+        painter->drawConvexPolygon(m_head);
+    }
+    else {
+        painter->drawLine(m_head[0], m_head[1]);
+        painter->drawLine(m_head[1], m_head[2]);
+    }
 }
 
 int Arrow::launchPropertyDialog(Qucs::UndoOption opt)
 {
-   StyleDialog dia(this, opt);
-   return dia.exec();
+    StyleDialog dia(this, opt);
+    return dia.exec();
 }

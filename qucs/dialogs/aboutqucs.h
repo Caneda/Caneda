@@ -26,25 +26,24 @@
 
 class QLabel;
 
-/**
-This class represents the dialog "About Qucs".
-*/
+//! This class represents the dialog "About Qucs".
 class AboutQUCS : public QDialog {
-	Q_OBJECT
-	
+    Q_OBJECT
+
+public:
         // constructor, destructor
-	public:
         AboutQUCS(QWidget * = 0);
         virtual ~AboutQUCS();
-	
+
         // methods
-	private:
-	QWidget *title() const;
-	QWidget *aboutTab() const;
-	QWidget *authorsTab() const;
-	QWidget *translatorsTab() const;
-	QWidget *contributorsTab() const;
-	QWidget *licenseTab() const;
-	void addAuthor(QLabel *, const QString &, const QString &, const QString &) const;
+private:
+        QWidget *title() const;
+        QWidget *aboutTab() const;
+        QWidget *authorsTab() const;
+        QWidget *translatorsTab() const;
+        QWidget *contributorsTab() const;
+        QWidget *licenseTab() const;
+        void addAuthor(QLabel *, const QString &, const QString &, const QString &) const;
 };
+
 #endif

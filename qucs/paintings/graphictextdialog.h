@@ -24,8 +24,8 @@
 
 #include "graphictext.h"
 
-#include <QtGui/QDialog>
-#include <QtGui/QTextFormat>
+#include <QDialog>
+#include <QTextFormat>
 
 class QAction;
 class QComboBox;
@@ -38,75 +38,75 @@ class QVBoxLayout;
 
 class GraphicTextDialog : public QDialog
 {
-      Q_OBJECT;
+    Q_OBJECT;
 
-   public:
-      GraphicTextDialog(GraphicText *text, Qucs::UndoOption opt,
-                        QWidget *parent = 0);
-      ~GraphicTextDialog();
+public:
+    GraphicTextDialog(GraphicText *text, Qucs::UndoOption opt,
+            QWidget *parent = 0);
+    ~GraphicTextDialog();
 
-      QString plainText() const;
-      QString richText() const;
+    QString plainText() const;
+    QString richText() const;
 
-   public slots:
-      void accept();
+public Q_SLOTS:
+    void accept();
 
-   private slots:
-      void textBold();
-      void textUnderline();
-      void textItalic();
-      void textFamily(const QString &f);
-      void textSize(const QString &p);
-      void textStyle(int styleIndex);
-      void textColor();
-      void textAlign(QAction *a);
+private Q_SLOTS:
+    void textBold();
+    void textUnderline();
+    void textItalic();
+    void textFamily(const QString &f);
+    void textSize(const QString &p);
+    void textStyle(int styleIndex);
+    void textColor();
+    void textAlign(QAction *a);
 
-      void textAlignSubSuperScript(QAction *);
-      void currentCharFormatChanged(const QTextCharFormat &format);
-      void cursorPositionChanged();
+    void textAlignSubSuperScript(QAction *);
+    void currentCharFormatChanged(const QTextCharFormat &format);
+    void cursorPositionChanged();
 
-      void clipboardDataChanged();
+    void clipboardDataChanged();
 
-   private:
-      void setupEditActions();
-      void setupTextActions();
+private:
+    void setupEditActions();
+    void setupTextActions();
 
-      void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
-      void fontChanged(const QFont &f);
-      void colorChanged(const QColor &c);
-      void alignmentChanged(Qt::Alignment a);
-      void subSuperAlignmentChanged(QTextCharFormat::VerticalAlignment a);
+    void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
+    void fontChanged(const QFont &f);
+    void colorChanged(const QColor &c);
+    void alignmentChanged(Qt::Alignment a);
+    void subSuperAlignmentChanged(QTextCharFormat::VerticalAlignment a);
 
-      QAction *actionTextBold;
-      QAction *actionTextUnderline;
-      QAction *actionTextItalic;
-      QAction *actionTextColor;
-      QAction *actionAlignLeft;
-      QAction *actionAlignCenter;
-      QAction *actionAlignRight;
-      QAction *actionAlignJustify;
-      QAction *actionAlignSubscript;
-      QAction *actionAlignSupersript;
-      QAction *actionAlignNormalscript;
-      QAction *actionUndo;
-      QAction *actionRedo;
-      QAction *actionCut;
-      QAction *actionCopy;
-      QAction *actionPaste;
+    QAction *actionTextBold;
+    QAction *actionTextUnderline;
+    QAction *actionTextItalic;
+    QAction *actionTextColor;
+    QAction *actionAlignLeft;
+    QAction *actionAlignCenter;
+    QAction *actionAlignRight;
+    QAction *actionAlignJustify;
+    QAction *actionAlignSubscript;
+    QAction *actionAlignSupersript;
+    QAction *actionAlignNormalscript;
+    QAction *actionUndo;
+    QAction *actionRedo;
+    QAction *actionCut;
+    QAction *actionCopy;
+    QAction *actionPaste;
 
-      QComboBox *comboStyle;
-      QFontComboBox *comboFont;
-      QComboBox *comboSize;
+    QComboBox *comboStyle;
+    QFontComboBox *comboFont;
+    QComboBox *comboSize;
 
-      QToolBar *toolBar;
-      QString fileName;
-      QTextEdit *textEdit;
+    QToolBar *toolBar;
+    QString fileName;
+    QTextEdit *textEdit;
 
-      QHBoxLayout *toolBarLayout;
-      QVBoxLayout *mainLayout;
+    QHBoxLayout *toolBarLayout;
+    QVBoxLayout *mainLayout;
 
-      GraphicText *textItem;
-      Qucs::UndoOption undoOption;
+    GraphicText *textItem;
+    Qucs::UndoOption undoOption;
 };
 
 #endif

@@ -17,12 +17,12 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __PORTSYMBOL_H
-#define __PORTSYMBOL_H
+#ifndef PORTSYMBOL_H
+#define PORTSYMBOL_H
 
 #include "painting.h"
 
-#include <QtGui/QFont>
+#include <QFont>
 
 /*!
  * \brief Represents the port ellipse and port id on schematic.
@@ -32,49 +32,49 @@
  */
 class PortSymbol : public Painting
 {
-   public:
-      enum {
-         Type = Painting::PortSymbolType
-      };
+public:
+    enum {
+        Type = Painting::PortSymbolType
+    };
 
-      PortSymbol(const QString& nameStr_= "1",
-                 const QString& numberStr_= "",
-                 SchematicScene *scene = 0);
+    PortSymbol(const QString& nameStr_= "1",
+            const QString& numberStr_= "",
+            SchematicScene *scene = 0);
 
-      void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
+    void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-      //! \brief Returns the number part of port id.
-      QString numberString() const { return m_numberString; }
-      void setNumberString(int num) { setNumberString(QString::number(num)); }
-      void setNumberString(QString str);
+    //! \brief Returns the number part of port id.
+    QString numberString() const { return m_numberString; }
+    void setNumberString(int num) { setNumberString(QString::number(num)); }
+    void setNumberString(QString str);
 
-      //! \brief Returns the name part of port id.
-      QString nameString() const { return m_nameString; }
-      void setNameString(QString name);
+    //! \brief Returns the name part of port id.
+    QString nameString() const { return m_nameString; }
+    void setNameString(QString name);
 
-      //! \brief Returns name and number part combined into one string.
-      QString text() const { return m_numberString + m_nameString; }
+    //! \brief Returns name and number part combined into one string.
+    QString text() const { return m_numberString + m_nameString; }
 
-      void updateGeometry();
+    void updateGeometry();
 
-      //! \brief Returns the font used to draw port id.
-      QFont font() const { return m_font; }
-      void setFont(const QFont &font);
+    //! \brief Returns the font used to draw port id.
+    QFont font() const { return m_font; }
+    void setFont(const QFont &font);
 
-      void mirrorAlong(Qt::Axis axis);
+    void mirrorAlong(Qt::Axis axis);
 
-      int type() const { return PortSymbol::Type; }
-      QucsItem* copy(SchematicScene *scene = 0) const;
+    int type() const { return PortSymbol::Type; }
+    QucsItem* copy(SchematicScene *scene = 0) const;
 
-      void saveData(Qucs::XmlWriter *writer) const;
-      void loadData(Qucs::XmlReader *reader);
+    void saveData(Qucs::XmlWriter *writer) const;
+    void loadData(Qucs::XmlReader *reader);
 
-   private:
-      bool m_mirrored;
+private:
+    bool m_mirrored;
 
-      QString m_numberString;
-      QString m_nameString;
-      QFont m_font;
+    QString m_numberString;
+    QString m_nameString;
+    QFont m_font;
 };
 
-#endif //__PORTSYMBOL_H
+#endif //PORTSYMBOL_H

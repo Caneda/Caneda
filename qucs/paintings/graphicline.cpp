@@ -18,11 +18,13 @@
  ***************************************************************************/
 
 #include "graphicline.h"
-#include "xmlutilities/xmlutilities.h"
+
 #include "styledialog.h"
 
-#include <QtGui/QStyleOptionGraphicsItem>
-#include <QtGui/QPainter>
+#include "xmlutilities/xmlutilities.h"
+
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 /*!
  * \brief Constructs a line item.
@@ -113,8 +115,9 @@ void GraphicLine::loadData(Qucs::XmlReader *reader)
    while(!reader->atEnd()) {
       reader->readNext();
 
-      if(reader->isEndElement())
+      if(reader->isEndElement()) {
          break;
+      }
 
       if(reader->isStartElement()) {
          if(reader->name() == "properties") {

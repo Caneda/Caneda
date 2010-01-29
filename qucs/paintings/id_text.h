@@ -17,12 +17,12 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __ID_TEXT_H
-#define __ID_TEXT_H
+#ifndef ID_TEXT_H
+#define ID_TEXT_H
 
 #include "painting.h"
 
-#include <QtGui/QFont>
+#include <QFont>
 
 /*!
  * \brief Represents parameter of sub ckt.
@@ -32,20 +32,20 @@
  */
 struct SubParameter
 {
-      SubParameter(bool display_, const QString& Name_,
-                   QString Descr_ = QString(), QString defVal = QString()):
-         display(display_),
-         name(Name_),
-         description(Descr_),
-         defaultValue(defVal)
-      {};
+    SubParameter(bool display_, const QString& Name_,
+            QString Descr_ = QString(), QString defVal = QString()):
+        display(display_),
+        name(Name_),
+        description(Descr_),
+        defaultValue(defVal)
+    {};
 
-      QString text() const;
+    QString text() const;
 
-      bool display;
-      QString name;
-      QString description;
-      QString defaultValue;
+    bool display;
+    QString name;
+    QString description;
+    QString defaultValue;
 };
 
 /*!
@@ -55,48 +55,49 @@ struct SubParameter
  * can be defined by user as well which can be added to this using \a addParameter.
  * This also holds the subckt prefix which is later used in netlist.
  */
-class IdText : public Painting  {
-   public:
-      enum {
-         Type = Painting::IdTextType
-      };
+class IdText : public Painting
+{
+public:
+    enum {
+        Type = Painting::IdTextType
+    };
 
-      IdText(SchematicScene *scene = 0);
-      ~IdText();
+    IdText(SchematicScene *scene = 0);
+    ~IdText();
 
-      //! \brief Returns the prefix of subckt component.
-      QString prefix() const { return m_prefix; }
-      void setPrefix(const QString &prefix);
+    //! \brief Returns the prefix of subckt component.
+    QString prefix() const { return m_prefix; }
+    void setPrefix(const QString &prefix);
 
-      //! \brief Returns the font used to draw subckt text.
-      QFont font() const { return m_font; }
-      void setFont(const QFont &font);
+    //! \brief Returns the font used to draw subckt text.
+    QFont font() const { return m_font; }
+    void setFont(const QFont &font);
 
-      void addParameter(bool display, QString name, QString description = QString(),
-                        QString defVal = QString());
-      void removeParameter(QString name);
+    void addParameter(bool display, QString name, QString description = QString(),
+            QString defVal = QString());
+    void removeParameter(QString name);
 
-      SubParameter* parameter(const QString &name) const;
+    SubParameter* parameter(const QString &name) const;
 
-      //! \brief Disable rotate.
-      void rotate90(Qucs::AngleDirection) {};
-      //! \brief Disable mirroring.
-      void mirrorAlong(Qt::Axis) {};
+    //! \brief Disable rotate.
+    void rotate90(Qucs::AngleDirection) {};
+    //! \brief Disable mirroring.
+    void mirrorAlong(Qt::Axis) {};
 
-      void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
+    void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-      void updateGeometry();
+    void updateGeometry();
 
-      int type() const { return IdText::Type; }
-      QucsItem* copy(SchematicScene *scene) const;
+    int type() const { return IdText::Type; }
+    QucsItem* copy(SchematicScene *scene) const;
 
-      void saveData(Qucs::XmlWriter *writer) const;
-      void loadData(Qucs::XmlReader *reader);
+    void saveData(Qucs::XmlWriter *writer) const;
+    void loadData(Qucs::XmlReader *reader);
 
-   private:
-      QString m_prefix;
-      QFont m_font;
-      QList<SubParameter*> m_parameters;
+private:
+    QString m_prefix;
+    QFont m_font;
+    QList<SubParameter*> m_parameters;
 };
 
-#endif //__ID_TEXT_H
+#endif //ID_TEXT_H

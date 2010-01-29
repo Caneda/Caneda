@@ -17,46 +17,46 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __XMLFORMAT_H
-#define __XMLFORMAT_H
+#ifndef XMLFORMAT_H
+#define XMLFORMAT_H
 
 #include "fileformathandler.h"
 #include "schematicscene.h"
 
 namespace Qucs {
-   class XmlReader;
-   class XmlWriter;
+    class XmlReader;
+    class XmlWriter;
 }
 
 class XmlFormat : public FileFormatHandler
 {
-   public:
-      XmlFormat(SchematicView *view = 0);
-      ~XmlFormat() {}
+public:
+    XmlFormat(SchematicView *view = 0);
+    ~XmlFormat() {}
 
-      bool save();
-      bool load();
+    bool save();
+    bool load();
 
-   private:
-      QString saveText();
-      QString saveSymbolText();
-      void saveSchematics(Qucs::XmlWriter *writer);
-      void saveView(Qucs::XmlWriter *writer);
-      void saveComponents(Qucs::XmlWriter *writer);
-      void saveWires(Qucs::XmlWriter *writer);
-      void savePaintings(Qucs::XmlWriter *writer);
+private:
+    QString saveText();
+    QString saveSymbolText();
+    void saveSchematics(Qucs::XmlWriter *writer);
+    void saveView(Qucs::XmlWriter *writer);
+    void saveComponents(Qucs::XmlWriter *writer);
+    void saveWires(Qucs::XmlWriter *writer);
+    void savePaintings(Qucs::XmlWriter *writer);
 
-      void copyQucsElement(const QString& qualifiedName , Qucs::XmlWriter *writer);
+    void copyQucsElement(const QString& qualifiedName , Qucs::XmlWriter *writer);
 
-      bool loadFromText(const QString& text);
-      bool loadSymbolFromText(const QString& text);
-      void loadSchematics(Qucs::XmlReader *reader);
-      void loadView(Qucs::XmlReader *reader);
-      void loadComponents(Qucs::XmlReader *reader);
-      void loadWires(Qucs::XmlReader *reader);
-      void loadPaintings(Qucs::XmlReader *reader);
+    bool loadFromText(const QString& text);
+    bool loadSymbolFromText(const QString& text);
+    void loadSchematics(Qucs::XmlReader *reader);
+    void loadView(Qucs::XmlReader *reader);
+    void loadComponents(Qucs::XmlReader *reader);
+    void loadWires(Qucs::XmlReader *reader);
+    void loadPaintings(Qucs::XmlReader *reader);
 
-      SchematicScene *scene;
+    SchematicScene *scene;
 };
 
-#endif //__XML_FORMAT_H
+#endif //XML_FORMAT_H

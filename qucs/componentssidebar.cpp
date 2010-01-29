@@ -17,127 +17,131 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "qucs-tools/global.h"
+#include "component.h"
 #include "componentssidebar.h"
 #include "sidebarmodel.h"
-#include "component.h"
 
-#include <QtGui/QHeaderView>
-#include <QtGui/QDrag>
-#include <QtGui/QPainter>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QSortFilterProxyModel>
-#include <QtGui/QLineEdit>
-#include <QtGui/QToolButton>
-#include <QtGui/QAction>
-#include <QtGui/QMouseEvent>
+#include "qucs-tools/global.h"
 
-#include <QtCore/QMimeData>
-#include <QtCore/QDebug>
+#include <QAction>
+#include <QDebug>
+#include <QDrag>
+#include <QHeaderView>
+#include <QLineEdit>
+#include <QMimeData>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QSortFilterProxyModel>
+#include <QToolButton>
+#include <QVBoxLayout>
 
 TreeView::TreeView(QWidget *parent) :
-   QTreeView(parent),
-   invalidPressed(false)
+    QTreeView(parent),
+    invalidPressed(false)
 {
-   header()->hide();
+    header()->hide();
 
-   setDragDropMode(QAbstractItemView::DragOnly);
-   setDragEnabled(true);
-   setAlternatingRowColors(true);
-   setIconSize(QSize(32, 32));
-   expandAll();
+    setDragDropMode(QAbstractItemView::DragOnly);
+    setDragEnabled(true);
+    setAlternatingRowColors(true);
+    setIconSize(QSize(32, 32));
+    expandAll();
 }
 
 void TreeView::mousePressEvent(QMouseEvent *event)
 {
-   invalidPressed = !indexAt(event->pos()).isValid();
-   QTreeView::mousePressEvent(event);
+    invalidPressed = !indexAt(event->pos()).isValid();
+    QTreeView::mousePressEvent(event);
 }
 
 void TreeView::mouseMoveEvent(QMouseEvent *event)
 {
-   QTreeView::mouseMoveEvent(event);
+    QTreeView::mouseMoveEvent(event);
 }
 
 void TreeView::mouseReleaseEvent(QMouseEvent *event)
 {
-   if(invalidPressed && !indexAt(event->pos()).isValid()) {
-      emit invalidAreaClicked(QModelIndex());
-   }
-   QTreeView::mouseReleaseEvent(event);
+    if(invalidPressed && !indexAt(event->pos()).isValid()) {
+        emit invalidAreaClicked(QModelIndex());
+    }
+    QTreeView::mouseReleaseEvent(event);
 }
 
 //! Custom drag The drag pixmap is drawn from svg.
 void TreeView::startDrag(Qt::DropActions supportedActions)
 {
-   QModelIndex index = selectedIndexes().first();
-   QPixmap pix = qVariantValue<QPixmap>(model()->data(index, SidebarModel::DragPixmapRole));
+    QModelIndex index = selectedIndexes().first();
+    QPixmap pix = qVariantValue<QPixmap>(model()->data(index, SidebarModel::DragPixmapRole));
 
-   QDrag *drag = new QDrag(this);
+    QDrag *drag = new QDrag(this);
 
-   drag->setPixmap(pix);
-   drag->setMimeData(model()->mimeData(selectedIndexes()));
-   drag->setHotSpot(QPoint(pix.width()/2, pix.height()/2));
-   drag->exec(supportedActions);
+    drag->setPixmap(pix);
+    drag->setMimeData(model()->mimeData(selectedIndexes()));
+    drag->setHotSpot(QPoint(pix.width()/2, pix.height()/2));
+    drag->exec(supportedActions);
 }
 
 //! This helps in filtering sidebar display corresponding to lineedit.
 class FilterProxyModel : public QSortFilterProxyModel
 {
-   public:
-      FilterProxyModel(QObject *parent = 0) : QSortFilterProxyModel(parent)
-      {
-      }
+public:
+    FilterProxyModel(QObject *parent = 0) : QSortFilterProxyModel(parent)
+    {
+    }
 
-      bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
-      {
-         QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
-         SidebarModel *sm = static_cast<SidebarModel*>(sourceModel());
-         if(sm->isLeaf(index0) == false)
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+    {
+        QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
+        SidebarModel *sm = static_cast<SidebarModel*>(sourceModel());
+        if(sm->isLeaf(index0) == false) {
             return true;
-         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
-      }
+        }
+        return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+    }
 };
 
 ComponentsSidebar::ComponentsSidebar(QString windowTitle, QWidget *parent) : QWidget(parent)
 {
-   QVBoxLayout *layout = new QVBoxLayout(this);
-   toolbar = new QToolBar;
-   layout->addWidget(toolbar);
-   QHBoxLayout *hl = new QHBoxLayout();
-   layout->addLayout(hl);
-   m_filterEdit = new QLineEdit();
-   hl->addWidget(m_filterEdit);
-   m_clearButton = new QToolButton();
-   m_clearButton->setIcon(QIcon(Qucs::bitmapDirectory() + "clearFilterText.png"));
-   m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
-   m_clearButton->setWhatsThis(tr("Clear Filter Text\n\nClears the filter text thus reshowing all components"));
-   hl->addWidget(m_clearButton);
-   m_clearButton->setEnabled(false);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    toolbar = new QToolBar;
+    layout->addWidget(toolbar);
+    QHBoxLayout *hl = new QHBoxLayout();
+    layout->addLayout(hl);
+    m_filterEdit = new QLineEdit();
+    hl->addWidget(m_filterEdit);
 
-   m_treeView = new TreeView();
-   layout->addWidget(m_treeView);
+    m_clearButton = new QToolButton();
+    m_clearButton->setIcon(QIcon(Qucs::bitmapDirectory() + "clearFilterText.png"));
+    m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
+    m_clearButton->setWhatsThis(
+            tr("Clear Filter Text\n\nClears the filter text thus reshowing all components"));
 
-   m_model = new SidebarModel();
-   m_proxyModel = new FilterProxyModel();
-   m_proxyModel->setDynamicSortFilter(true);
-   m_proxyModel->setSourceModel(m_model);
-   m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
-   m_treeView->setModel(m_proxyModel);
-   m_treeView->expandAll();
+    hl->addWidget(m_clearButton);
+    m_clearButton->setEnabled(false);
 
-   connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
-           this, SLOT(filterTextChanged()));
+    m_treeView = new TreeView();
+    layout->addWidget(m_treeView);
 
-   connect(m_clearButton, SIGNAL(clicked()), m_filterEdit, SLOT(clear()));
-   connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
-   connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this,
-           SLOT(slotOnClicked(const QModelIndex&)));
-   connect(m_treeView, SIGNAL(invalidAreaClicked(const QModelIndex&)), this,
-           SLOT(slotOnClicked(const QModelIndex&)));
+    m_model = new SidebarModel();
+    m_proxyModel = new FilterProxyModel();
+    m_proxyModel->setDynamicSortFilter(true);
+    m_proxyModel->setSourceModel(m_model);
+    m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+    m_treeView->setModel(m_proxyModel);
+    m_treeView->expandAll();
 
-   setWindowTitle(windowTitle);
-   m_currentComponent = "";
+    connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
+            this, SLOT(filterTextChanged()));
+
+    connect(m_clearButton, SIGNAL(clicked()), m_filterEdit, SLOT(clear()));
+    connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
+    connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this,
+            SLOT(slotOnClicked(const QModelIndex&)));
+    connect(m_treeView, SIGNAL(invalidAreaClicked(const QModelIndex&)), this,
+            SLOT(slotOnClicked(const QModelIndex&)));
+
+    setWindowTitle(windowTitle);
+    m_currentComponent = "";
 }
 
 QString ComponentsSidebar::currentComponent()
@@ -147,27 +151,27 @@ QString ComponentsSidebar::currentComponent()
 
 void ComponentsSidebar::filterTextChanged()
 {
-   QString text = m_filterEdit->text();
-   m_clearButton->setEnabled(!text.isEmpty());
-   QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-   m_proxyModel->setFilterRegExp(regExp);
+    QString text = m_filterEdit->text();
+    m_clearButton->setEnabled(!text.isEmpty());
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    m_proxyModel->setFilterRegExp(regExp);
 }
 
 void ComponentsSidebar::slotOnClicked(const QModelIndex& index)
 {
-   if(index.isValid()) {
-      QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
-      if(mime) {
-         QByteArray encodedData = mime->data("application/qucs.sidebarItem");
-         QDataStream stream(&encodedData, QIODevice::ReadOnly);
-         QString item, category;
-         stream >> item >> category;
-         emit itemClicked(item, category);
-         m_currentComponent = item;
-      }
-   }
-   else {
-      QString empty;
-      emit itemClicked(empty, empty);
-   }
+    if(index.isValid()) {
+        QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
+        if(mime) {
+            QByteArray encodedData = mime->data("application/qucs.sidebarItem");
+            QDataStream stream(&encodedData, QIODevice::ReadOnly);
+            QString item, category;
+            stream >> item >> category;
+            emit itemClicked(item, category);
+            m_currentComponent = item;
+        }
+    }
+    else {
+        QString empty;
+        emit itemClicked(empty, empty);
+    }
 }

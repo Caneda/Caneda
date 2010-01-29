@@ -17,122 +17,124 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __SHAPES_H
-#define __SHAPES_H
+#ifndef SHAPES_H
+#define SHAPES_H
 
-#include <QtGui/QPainter>
-#include <QtGui/QPen>
-#include <QtGui/QStyleOptionGraphicsItem>
-#include <QtGui/QApplication>
+#include "component.h"
 
-#include "components/component.h"
-
+#include <QApplication>
+#include <QPainter>
+#include <QPen>
+#include <QStyleOptionGraphicsItem>
 
 struct Shape
 {
-      Shape(const QPen& _style) : style(_style) {}
-      virtual ~Shape() {}
-      virtual void draw(QPainter *p,const QStyleOptionGraphicsItem *o)
-      {
-         if(o->state & QStyle::State_Open)
-         {
-            QPen _pen = p->pen();
-            _pen.setWidth(style.width());
-            p->setPen(_pen);
-         }
-         else if(o->state & QStyle::State_Selected)
-            p->setPen(Component::getPen(Qt::darkGray,style.width()));
-         else
+    Shape(const QPen& _style) : style(_style) {}
+    virtual ~Shape() {}
+    virtual void draw(QPainter *p, const QStyleOptionGraphicsItem *o)
+    {
+        if(o->state & QStyle::State_Open) {
+            QPen pen = p->pen();
+            pen.setWidth(style.width());
+            p->setPen(pen);
+        }
+        else if(o->state & QStyle::State_Selected) {
+            p->setPen(Component::getPen(Qt::darkGray, style.width()));
+        }
+        else {
             p->setPen(style);
-      }
-      const QPen style;
+        }
+    }
+    const QPen style;
 };
 
 
 class Line : public Shape
 {
-   public:
-      Line(qreal x1, qreal y1, qreal x2, qreal y2, QPen _style)
-         : Shape(_style),
-           line(x1, y1, x2, y2)
-      {}
+public:
+    Line(qreal x1, qreal y1, qreal x2, qreal y2, QPen _style) : Shape(_style),
+        line(x1, y1, x2, y2)
+    {
+    }
 
-      inline void draw(QPainter *p,const QStyleOptionGraphicsItem *o)
-      {
-         Shape::draw(p,o);
-         p->drawLine(line);
-      }
+    inline void draw(QPainter *p, const QStyleOptionGraphicsItem *o)
+    {
+        Shape::draw(p, o);
+        p->drawLine(line);
+    }
 
-   private:
-      const QLineF line;
-
-
+private:
+    const QLineF line;
 };
 
 class Arc : public Shape
 {
-   public:
-      Arc(qreal x, qreal y, qreal w, qreal h, int _angle, int _arclen, QPen _style)
-         : Shape(_style),
-           rect(x, y, w, h),
-           angle(_angle),
-           arclen(_arclen)
-      {}
+public:
+    Arc(qreal x, qreal y, qreal w, qreal h, int _angle, int _arclen, QPen _style)
+        : Shape(_style),
+        rect(x, y, w, h),
+        angle(_angle),
+        arclen(_arclen)
+    {
+    }
 
-      inline void draw(QPainter *p,const QStyleOptionGraphicsItem *o)
-      {
-         Shape::draw(p,o);
-         p->drawArc(rect,angle,arclen);
-      }
+    inline void draw(QPainter *p, const QStyleOptionGraphicsItem *o)
+    {
+        Shape::draw(p, o);
+        p->drawArc(rect, angle, arclen);
+    }
 
-   private:
-      const QRectF rect;
-      const int angle, arclen;
+private:
+    const QRectF rect;
+    const int angle, arclen;
 };
 
 class Text : public Shape
 {
-   public:
-      Text(qreal _x, qreal _y, const QString& t, QColor _color = Qt::black, qreal _size = 10.0)
-         : Shape(QPen(_color)),
-           pos(_x,_y+12),//HACK: +12 here is easier to do than changing in each component
-           text(t),
-           size(_size)
-      {}
+public:
+    Text(qreal _x, qreal _y, const QString& t, QColor _color = Qt::black,
+            qreal _size = 10.0)
+        : Shape(QPen(_color)),
+        pos(_x, _y + 12), //HACK: +12 here is easier to do than changing in each component
+        text(t),
+        size(_size)
+    {
+    }
 
-      inline void draw(QPainter *p,const QStyleOptionGraphicsItem *o)
-      {
-         Shape::draw(p,o);
-         //QFont f = qApp->font();
-         //f.setPointSizeF(size);
-         p->drawText(pos,text);
-      }
+    inline void draw(QPainter *p, const QStyleOptionGraphicsItem *o)
+    {
+        Shape::draw(p, o);
+        //QFont f = qApp->font();
+        //f.setPointSizeF(size);
+        p->drawText(pos, text);
+    }
 
-   private:
-      const QPointF pos;
-      const QString text;
-      const qreal size;
+private:
+    const QPointF pos;
+    const QString text;
+    const qreal size;
 };
 
 class Rectangle : public Shape
 {
-   public:
-      Rectangle(qreal x, qreal y, qreal width, qreal height, QPen _style)
-         : Shape(_style),
-           rect(x,y,width,height)
-      {}
+public:
+    Rectangle(qreal x, qreal y, qreal width, qreal height, QPen _style)
+        : Shape(_style),
+        rect(x, y, width, height)
+    {
+    }
 
-      inline void draw(QPainter *p,const QStyleOptionGraphicsItem *o)
-      {
-         Shape::draw(p,o);
-         p->drawRect(rect);
-      }
+    inline void draw(QPainter *p, const QStyleOptionGraphicsItem *o)
+    {
+        Shape::draw(p, o);
+        p->drawRect(rect);
+    }
 
-   private:
-      const QRectF rect;
+private:
+    const QRectF rect;
 };
 
 
 typedef QList<Shape*> ShapesList;
 
-#endif //__SHAPES_H
+#endif //SHAPES_H

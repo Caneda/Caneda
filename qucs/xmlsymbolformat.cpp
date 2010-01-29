@@ -18,16 +18,18 @@
  ***************************************************************************/
 
 #include "xmlsymbolformat.h"
-#include "schematicview.h"
-#include "schematicscene.h"
-#include "item.h"
-#include "component.h"
 
-#include "xmlutilities/xmlutilities.h"
+#include "component.h"
+#include "item.h"
+#include "schematicscene.h"
+#include "schematicview.h"
+
 #include "qucs-tools/global.h"
 
-#include <QtCore/QtDebug>
-#include <QtGui/QMessageBox>
+#include "xmlutilities/xmlutilities.h"
+
+#include <QDebug>
+#include <QMessageBox>
 #include <QSvgGenerator>
 
 XmlSymbolFormat::XmlSymbolFormat(SchematicView *view) : FileFormatHandler(view)
@@ -36,11 +38,13 @@ XmlSymbolFormat::XmlSymbolFormat(SchematicView *view) : FileFormatHandler(view)
 
 bool XmlSymbolFormat::save()
 {
-    if(!m_view)
+    if(!m_view) {
         return false;
+    }
     SchematicScene *scene = m_view->schematicScene();
-    if(!scene)
+    if(!scene) {
         return false;
+    }
 
     //Generate and save the xml description ********************
     QString text = saveText();
@@ -51,7 +55,7 @@ bool XmlSymbolFormat::save()
     QFile file(scene->fileName());
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::critical(0, QObject::tr("Error"),
-                              QObject::tr("Cannot save document!"));
+                QObject::tr("Cannot save document!"));
         return false;
     }
     QTextStream stream(&file);
@@ -79,77 +83,77 @@ bool XmlSymbolFormat::load()
 
 QString XmlSymbolFormat::saveText()
 {
-   SchematicScene *scene = m_view->schematicScene();
+    SchematicScene *scene = m_view->schematicScene();
 
-   QString retVal;
-   Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
-   writer->setAutoFormatting(true);
-   writer->writeStartDocument();
+    QString retVal;
+    Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
+    writer->setAutoFormatting(true);
+    writer->writeStartDocument();
 
-   //Write all view details
-   writer->writeStartElement("component");
+    //Write all view details
+    writer->writeStartElement("component");
 
-   QFileInfo info(scene->fileName());
-   writer->writeAttribute("name", info.baseName());
-   writer->writeAttribute("version", Qucs::version);
-   writer->writeAttribute("label","comp");
+    QFileInfo info(scene->fileName());
+    writer->writeAttribute("name", info.baseName());
+    writer->writeAttribute("version", Qucs::version);
+    writer->writeAttribute("label", "comp");
 
-   writer->writeStartElement("displaytext");
-   writer->writeLocaleText("C", "User created component");
-//   TODO: When available use this to save user defined displaytext
-//   writer->writeLocaleText("C", scene->displayText());
-   writer->writeEndElement(); //</displaytext>
+    writer->writeStartElement("displaytext");
+    writer->writeLocaleText("C", "User created component");
+    //   TODO: When available use this to save user defined displaytext
+    //   writer->writeLocaleText("C", scene->displayText());
+    writer->writeEndElement(); //</displaytext>
 
-   writer->writeStartElement("description");
-   writer->writeLocaleText("C", "User created component based on user schematic");
-//   TODO: When available use this to save user defined description
-//   writer->writeLocaleText("C", scene->description());
-   writer->writeEndElement(); //</description>
+    writer->writeStartElement("description");
+    writer->writeLocaleText("C", "User created component based on user schematic");
+    //   TODO: When available use this to save user defined description
+    //   writer->writeLocaleText("C", scene->description());
+    writer->writeEndElement(); //</description>
 
-   writer->writeStartElement("schematics");
-   writer->writeAttribute("default","userdefined");
-   writer->writeStartElement("schematic");
-   writer->writeAttribute("name","userdefined");
-   writer->writeAttribute("href",info.baseName()+".svg");
+    writer->writeStartElement("schematics");
+    writer->writeAttribute("default", "userdefined");
+    writer->writeStartElement("schematic");
+    writer->writeAttribute("name", "userdefined");
+    writer->writeAttribute("href", info.baseName()+".svg");
 
-   //Write the ports positions
-   QList<QGraphicsItem*> items = scene->items();
-   QList<Component*> components = filterItems<Component>(items, RemoveItems);
-   if(!components.isEmpty()) {
-       foreach(Component *c, components){
-           if(c->name() == "Port"){
-               writer->writeEmptyElement("port");
-               writer->writeAttribute("name", c->label());
-               writer->writeAttribute("x", QString::number(c->pos().x() - scene->imageBoundingRect().x()));
-               writer->writeAttribute("y", QString::number(c->pos().y() - scene->imageBoundingRect().y()));
-           }
-       }
-   }
+    //Write the ports positions
+    QList<QGraphicsItem*> items = scene->items();
+    QList<Component*> components = filterItems<Component>(items, RemoveItems);
+    if(!components.isEmpty()) {
+        foreach(Component *c, components) {
+            if(c->name() == "Port") {
+                writer->writeEmptyElement("port");
+                writer->writeAttribute("name", c->label());
+                writer->writeAttribute("x", QString::number(c->pos().x() - scene->imageBoundingRect().x()));
+                writer->writeAttribute("y", QString::number(c->pos().y() - scene->imageBoundingRect().y()));
+            }
+        }
+    }
 
-   writer->writeEndElement(); //</schematic>
-   writer->writeEndElement(); //</schematics>
+    writer->writeEndElement(); //</schematic>
+    writer->writeEndElement(); //</schematics>
 
-   //Write ports properties
-   writer->writeStartElement("ports");
-   if(!components.isEmpty()) {
-       foreach(Component *c, components){
-           if(c->name() == "Port"){
-               writer->writeEmptyElement("port");
-               writer->writeAttribute("name", c->label());
-               writer->writeAttribute("type", "analog");
-//               TODO: To be replaced by the following line once properties are handled
-//               writer->writeAttribute("type", c->property("type").toString());
-           }
-       }
-   }
-   writer->writeEndElement(); //</ports>
+    //Write ports properties
+    writer->writeStartElement("ports");
+    if(!components.isEmpty()) {
+        foreach(Component *c, components) {
+            if(c->name() == "Port") {
+                writer->writeEmptyElement("port");
+                writer->writeAttribute("name", c->label());
+                writer->writeAttribute("type", "analog");
+                // TODO: To be replaced by the following line once properties are handled
+                //       writer->writeAttribute("type", c->property("type").toString());
+            }
+        }
+    }
+    writer->writeEndElement(); //</ports>
 
-   //TODO Write properties
-   writer->writeStartElement("properties");
-   writer->writeEndElement(); //</properties>
+    //TODO Write properties
+    writer->writeStartElement("properties");
+    writer->writeEndElement(); //</properties>
 
-   writer->writeEndDocument(); //</component>
+    writer->writeEndDocument(); //</component>
 
-   delete writer;
-   return retVal;
+    delete writer;
+    return retVal;
 }

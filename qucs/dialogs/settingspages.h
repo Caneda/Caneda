@@ -20,151 +20,155 @@
 #ifndef SETTINGS_PAGES_H
 #define SETTINGS_PAGES_H
 
-#include <QtGui>
 #include "schematicscene.h"
 
+class QComboBox;
+class QCheckBox;
+class QDateEdit;
+class QFrame;
+class QLabel;
+class QLineEdit;
+class QSpinBox;
+class QTableWidget;
+class QTableWidgetItem;
 class QucsMainWindow;
 
-/**
-        This abstract class contains methods that all pages
-        configuration must implement.
-*/
-class SettingsPage : public QWidget {
-	Q_OBJECT
+/*!
+ * This abstract class contains methods that all pages
+ * configuration must implement.
+ */
+class SettingsPage : public QWidget
+{
+    Q_OBJECT;
+public:
+    SettingsPage(QucsMainWindow *parent);
+    virtual ~SettingsPage();
 
-	public:
-        SettingsPage(QucsMainWindow *parent);
-        virtual ~SettingsPage();
+    /// Applies the configuration input by the user in the configuration page
+    virtual void applyConf() = 0;
+    virtual QString title() const = 0;
+    virtual QIcon icon() const = 0;
 
-        /// Applies the configuration input by the user in the configuration page
-	virtual void applyConf() = 0;
-	virtual QString title() const = 0;
-	virtual QIcon icon() const = 0;
-
-        void setBackgroundColor(QPushButton *, QColor);
-        QColor getBackgroundColor(QPushButton *);
-        void setForegroundColor(QPushButton *, QColor);
-        QColor getForegroundColor(QPushButton *);
+    void setBackgroundColor(QPushButton *, QColor);
+    QColor getBackgroundColor(QPushButton *);
+    void setForegroundColor(QPushButton *, QColor);
+    QColor getForegroundColor(QPushButton *);
 };
 
-/**
-        This class represents the general configuration page.
-*/
-class GeneralConfigurationPage : public SettingsPage {
-	Q_OBJECT
+//! This class represents the general configuration page.
+class GeneralConfigurationPage : public SettingsPage
+{
+    Q_OBJECT;
 
-        public:
-        GeneralConfigurationPage(QucsMainWindow *parent = 0);
-	virtual ~GeneralConfigurationPage();
+public:
+    GeneralConfigurationPage(QucsMainWindow *parent = 0);
+    virtual ~GeneralConfigurationPage();
 
-        private slots:
-            void slotEditSuffix(QTableWidgetItem*);
-            void slotAdd();
-            void slotRemove();
-            void slotFontDialog();
-            void slotBGColorDialog();
-            void slotDefaultValues();
-	
-	public:
-	void applyConf();
-	QString title() const;
-	QIcon icon() const;
-	
-	public:
-        QucsMainWindow *App;
+private Q_SLOTS:
+    void slotEditSuffix(QTableWidgetItem*);
+    void slotAdd();
+    void slotRemove();
+    void slotFontDialog();
+    void slotBGColorDialog();
+    void slotDefaultValues();
 
-	QLabel *title_label_;
-	QFrame *horiz_line_;
+public:
+    void applyConf();
+    QString title() const;
+    QIcon icon() const;
 
-        QTableWidget *listSuffix;
-        QLineEdit *editEditor, *inputSuffix, *inputProgram;
-        QFont font;
-        QPushButton *buttonFont, *buttonBackground;
-        QComboBox *comboLanguage;
-        QSpinBox *spinUndoNum, *spinIcons;
+public:
+    QucsMainWindow *App;
+
+    QLabel *title_label_;
+    QFrame *horiz_line_;
+
+    QTableWidget *listSuffix;
+    QLineEdit *editEditor, *inputSuffix, *inputProgram;
+    QFont font;
+    QPushButton *buttonFont, *buttonBackground;
+    QComboBox *comboLanguage;
+    QSpinBox *spinUndoNum, *spinIcons;
 };
 
-/**
-        This class represents the simulation configuration page.
-*/
-class SimulationConfigurationPage : public SettingsPage {
-        Q_OBJECT
+//! This class represents the simulation configuration page.
+class SimulationConfigurationPage : public SettingsPage
+{
+    Q_OBJECT;
 
-        public:
-        SimulationConfigurationPage(QucsMainWindow *parent = 0);
-        virtual ~SimulationConfigurationPage();
+public:
+    SimulationConfigurationPage(QucsMainWindow *parent = 0);
+    virtual ~SimulationConfigurationPage();
 
-        public:
-        void applyConf();
-        QString title() const;
-        QIcon icon() const;
+public:
+    void applyConf();
+    QString title() const;
+    QIcon icon() const;
 
-        public:
-        QLabel *title_label_;
-        QFrame *horiz_line_;
+public:
+    QLabel *title_label_;
+    QFrame *horiz_line_;
 };
 
-/**
-        This class represents the document configuration page.
-*/
-class DocumentConfigurationPage : public SettingsPage {
-        Q_OBJECT
+//! This class represents the document configuration page.
+class DocumentConfigurationPage : public SettingsPage
+{
+    Q_OBJECT;
 
-        public:
-        DocumentConfigurationPage(SchematicScene *scene, QucsMainWindow *parent = 0);
-        virtual ~DocumentConfigurationPage();
+public:
+    DocumentConfigurationPage(SchematicScene *scene, QucsMainWindow *parent = 0);
+    virtual ~DocumentConfigurationPage();
 
-        public:
-        void applyConf();
-        QString title() const;
-        QIcon icon() const;
+public:
+    void applyConf();
+    QString title() const;
+    QIcon icon() const;
 
-        public:
-        SchematicScene *Scn;
+public:
+    SchematicScene *Scn;
 
-        QLabel *title_label_;
-        QFrame *horiz_line_;
+    QLabel *title_label_;
+    QFrame *horiz_line_;
 
-        QCheckBox *checkShowGrid, *checkShowFrame;
-        QSpinBox *spinGridX, *spinGridY, *spinSchemaX, *spinSchemaY;
-        QLineEdit *editName, *editTitle, *editRevision;
-        QDateEdit *editDate;
+    QCheckBox *checkShowGrid, *checkShowFrame;
+    QSpinBox *spinGridX, *spinGridY, *spinSchemaX, *spinSchemaY;
+    QLineEdit *editName, *editTitle, *editRevision;
+    QDateEdit *editDate;
 };
 
 
-/**
-        This class represents the vhdl configuration page.
-*/
-class VhdlConfigurationPage : public SettingsPage {
-        Q_OBJECT
+//! This class represents the vhdl configuration page
+class VhdlConfigurationPage : public SettingsPage
+{
+    Q_OBJECT;
 
-        public:
-        VhdlConfigurationPage(QucsMainWindow *parent = 0);
-        virtual ~VhdlConfigurationPage();
+public:
+    VhdlConfigurationPage(QucsMainWindow *parent = 0);
+    virtual ~VhdlConfigurationPage();
 
-        private slots:
-            void slotColorComment();
-            void slotColorString();
-            void slotColorInteger();
-            void slotColorReal();
-            void slotColorCharacter();
-            void slotColorDataType();
-            void slotColorAttributes();
-            void slotDefaultValues();
+private Q_SLOTS:
+    void slotColorComment();
+    void slotColorString();
+    void slotColorInteger();
+    void slotColorReal();
+    void slotColorCharacter();
+    void slotColorDataType();
+    void slotColorAttributes();
+    void slotDefaultValues();
 
-        public:
-        void applyConf();
-        QString title() const;
-        QIcon icon() const;
+public:
+    void applyConf();
+    QString title() const;
+    QIcon icon() const;
 
-        public:
-        QucsMainWindow *App;
+public:
+    QucsMainWindow *App;
 
-        QLabel *title_label_;
-        QFrame *horiz_line_;
+    QLabel *title_label_;
+    QFrame *horiz_line_;
 
-        QPushButton *commentButton, *stringButton, *integerButton,
-                    *realButton, *characterButton, *dataButton, *attributeButton;
+    QPushButton *commentButton, *stringButton, *integerButton,
+                *realButton, *characterButton, *dataButton, *attributeButton;
 };
 
 #endif

@@ -18,12 +18,14 @@
  ***************************************************************************/
 
 #include "rectangle.h"
-#include "xmlutilities/xmlutilities.h"
+
 #include "styledialog.h"
 
-#include <QtGui/QStyleOptionGraphicsItem>
-#include <QtGui/QPainter>
-#include <QtCore/QDebug>
+#include "xmlutilities/xmlutilities.h"
+
+#include <QDebug>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 /*!
  * \brief Constructs a rectangle painting item.
@@ -58,9 +60,7 @@ QRectF Rectangle::boundForRect(const QRectF &rect) const
    return rect.adjusted(-adj, -adj, adj, adj);
 }
 
-/*!
- * \brief Draw the rectangle.
- */
+//! \brief Draw the rectangle.
 void Rectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
 {
    if(option->state & QStyle::State_Selected) {
@@ -122,8 +122,9 @@ void Rectangle::loadData(Qucs::XmlReader *reader)
    while(!reader->atEnd()) {
       reader->readNext();
 
-      if(reader->isEndElement())
+      if(reader->isEndElement()) {
          break;
+      }
 
       if(reader->isStartElement()) {
          if(reader->name() == "properties") {

@@ -17,16 +17,16 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __PROPERTYGROUP_H
-#define __PROPERTYGROUP_H
+#ifndef PROPERTYGROUP_H
+#define PROPERTYGROUP_H
 
-#include <QtCore/QObject>
-#include <QtGui/QGraphicsItemGroup>
+#include <QGraphicsItemGroup>
+#include <QObject>
 
 // Forward declarations.
+class Component;
 class PropertyItem;
 class SchematicScene;
-class Component;
 
 /*!
  * This class groups the properties of a item.
@@ -36,32 +36,32 @@ class Component;
  */
 class PropertiesGroup : public QObject, public QGraphicsItemGroup
 {
-   Q_OBJECT;
-   public:
-      enum { PropertiesGroupType = UserType + 73 };
-      enum { Type = PropertiesGroupType };
+    Q_OBJECT;
+public:
+    enum { PropertiesGroupType = UserType + 73 };
+    enum { Type = PropertiesGroupType };
 
-      PropertiesGroup(SchematicScene *scene = 0);
+    PropertiesGroup(SchematicScene *scene = 0);
 
-      //! Class identifier.
-      int type() { return PropertiesGroupType; }
+    //! Class identifier.
+    int type() { return PropertiesGroupType; }
 
-      void realignItems();
-      void forceUpdate();
+    void realignItems();
+    void forceUpdate();
 
-      SchematicScene* schematicScene() const;
-      Component* component() const;
+    SchematicScene* schematicScene() const;
+    Component* component() const;
 
-      void setFontSize(int pointSize);
+    void setFontSize(int pointSize);
 
-   protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-   private:
-      //! Internal storage of property items for book keeping.
-      QMap<QString, PropertyItem*> m_propertyItemsMap;
-      int m_pointSize;
+private:
+    //! Internal storage of property items for book keeping.
+    QMap<QString, PropertyItem*> m_propertyItemsMap;
+    int m_pointSize;
 };
 
-#endif //__PROPERTYGROUP_H
+#endif //PROPERTYGROUP_H

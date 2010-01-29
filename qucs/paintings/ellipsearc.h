@@ -17,52 +17,50 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __ELLIPSEARC_H
-#define __ELLIPSEARC_H
+#ifndef ELLIPSEARC_H
+#define ELLIPSEARC_H
 
 #include "painting.h"
 
-/*!
- * \brief Represents an elliptic arc painting item.
- */
+//! \brief Represents an elliptic arc painting item.
 class EllipseArc : public Painting
 {
-   public:
-      enum {
-         Type = Painting::EllipseArcType
-      };
+public:
+    enum {
+        Type = Painting::EllipseArcType
+    };
 
-      EllipseArc(QRectF rect = QRectF(), int startAngle = 20, int spanAngle = 180,
-                 SchematicScene *scene = 0);
-      ~EllipseArc();
+    EllipseArc(QRectF rect = QRectF(), int startAngle = 20, int spanAngle = 180,
+            SchematicScene *scene = 0);
+    ~EllipseArc();
 
-      QRectF boundForRect(const QRectF &rect) const;
-      QPainterPath shapeForRect(const QRectF &rect) const;
+    QRectF boundForRect(const QRectF &rect) const;
+    QPainterPath shapeForRect(const QRectF &rect) const;
 
-      //! \brief Returns arc's startAngle of this item.
-      int startAngle() const { return m_startAngle; }
-      void setStartAngle(int angle);
+    //! \brief Returns arc's startAngle of this item.
+    int startAngle() const { return m_startAngle; }
+    void setStartAngle(int angle);
 
-      //! \brief Returns arc's spanAngle of this item.
-      int spanAngle() const { return m_spanAngle; }
-      void setSpanAngle(int angle);
+    //! \brief Returns arc's spanAngle of this item.
+    int spanAngle() const { return m_spanAngle; }
+    void setSpanAngle(int angle);
 
-      void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+    void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
-      //! \brief Returns ellipse represented by this elliptic arc.
-      QRectF ellipse() const { return paintingRect(); }
-      void setEllipse(const QRectF& ellipse) { setPaintingRect(ellipse); }
+    //! \brief Returns ellipse represented by this elliptic arc.
+    QRectF ellipse() const { return paintingRect(); }
+    void setEllipse(const QRectF& ellipse) { setPaintingRect(ellipse); }
 
-      int type() const { return EllipseArc::Type; }
-      QucsItem* copy(SchematicScene *scene = 0) const;
+    int type() const { return EllipseArc::Type; }
+    QucsItem* copy(SchematicScene *scene = 0) const;
 
-      void saveData(Qucs::XmlWriter *writer) const;
-      void loadData(Qucs::XmlReader *reader);
+    void saveData(Qucs::XmlWriter *writer) const;
+    void loadData(Qucs::XmlReader *reader);
 
-      int launchPropertyDialog(Qucs::UndoOption opt);
+    int launchPropertyDialog(Qucs::UndoOption opt);
 
-   private:
-      int m_startAngle;
-      int m_spanAngle;
+private:
+    int m_startAngle;
+    int m_spanAngle;
 };
-#endif //__ELLIPSEARC_H
+#endif //ELLIPSEARC_H

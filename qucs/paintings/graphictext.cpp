@@ -18,27 +18,27 @@
  ***************************************************************************/
 
 #include "graphictext.h"
+
 #include "graphictextdialog.h"
 #include "mnemo.h"
+
 #include "xmlutilities/xmlutilities.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QStyleOptionGraphicsItem>
-#include <QtGui/QTextDocument>
-
-#include <QtCore/QDebug>
+#include <QDebug>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
+#include <QTextDocument>
 
 /*!
  * \brief Constructs a text item.
  * \param text Item's text.
  * \param scene SchematicScene to which this item should be added.
  */
-GraphicText::GraphicText(const QString &text, SchematicScene *scene)
-   : Painting(scene)
+GraphicText::GraphicText(const QString &text, SchematicScene *scene) : Painting(scene)
 {
-   m_textItem = new QGraphicsTextItem(this);
-   m_textItem->setAcceptedMouseButtons(0);
-   setText(text);
+    m_textItem = new QGraphicsTextItem(this);
+    m_textItem->setAcceptedMouseButtons(0);
+    setText(text);
 }
 
 //! \brief Destructor.
@@ -48,7 +48,7 @@ GraphicText::~GraphicText()
 
 QString GraphicText::plainText() const
 {
-   return m_textItem->toPlainText();
+    return m_textItem->toPlainText();
 }
 
 /*!
@@ -60,99 +60,100 @@ QString GraphicText::plainText() const
  */
 void GraphicText::setPlainText(const QString &text)
 {
-   prepareGeometryChange();
-   QString unicodeText = Qucs::latexToUnicode(text);
-   m_textItem->setPlainText(unicodeText);
-   setPaintingRect(m_textItem->boundingRect());
+    prepareGeometryChange();
+    QString unicodeText = Qucs::latexToUnicode(text);
+    m_textItem->setPlainText(unicodeText);
+    setPaintingRect(m_textItem->boundingRect());
 }
 
 QString GraphicText::richText() const
 {
-   return m_textItem->toHtml();
+    return m_textItem->toHtml();
 }
 
 void GraphicText::setRichText(const QString &text)
 {
-   prepareGeometryChange();
-   QString unicodeText = Qucs::latexToUnicode(text);
-   m_textItem->setHtml(unicodeText);
-   setPaintingRect(m_textItem->boundingRect());
+    prepareGeometryChange();
+    QString unicodeText = Qucs::latexToUnicode(text);
+    m_textItem->setHtml(unicodeText);
+    setPaintingRect(m_textItem->boundingRect());
 }
 
 void GraphicText::setText(const QString &text)
 {
-   if(Qt::mightBeRichText(text))
-      setRichText(text);
-   else
-      setPlainText(text);
+    if(Qt::mightBeRichText(text)) {
+        setRichText(text);
+    }
+    else {
+        setPlainText(text);
+    }
 }
 
-/*!
- * \brief Draw's hightlight rect if selected.
- */
+//! \brief Draw's hightlight rect if selected.
 void GraphicText::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
-   if(option->state & QStyle::State_Selected) {
-      Qucs::drawHighlightRect(painter, boundingRect(), 1, option);
-   }
+    if(option->state & QStyle::State_Selected) {
+        Qucs::drawHighlightRect(painter, boundingRect(), 1, option);
+    }
 }
 
 //! \brief Returns a copy of this item.
 QucsItem* GraphicText::copy(SchematicScene *scene) const
 {
-   GraphicText *text = new GraphicText(richText(), scene);
-   Painting::copyDataTo(text);
-   return text;
+    GraphicText *text = new GraphicText(richText(), scene);
+    Painting::copyDataTo(text);
+    return text;
 }
 
 //! \brief Save's data as xml.
 void GraphicText::saveData(Qucs::XmlWriter *writer) const
 {
-   writer->writeStartElement("painting");
-   writer->writeAttribute("name", "text");
+    writer->writeStartElement("painting");
+    writer->writeAttribute("name", "text");
 
-   writer->writeEmptyElement("properties");
-   writer->writeAttribute("text", richText());
-   writer->writePointAttribute(pos(), "pos");
+    writer->writeEmptyElement("properties");
+    writer->writeAttribute("text", richText());
+    writer->writePointAttribute(pos(), "pos");
 
-   writer->writeEndElement(); // </painting>
+    writer->writeEndElement(); // </painting>
 }
 
 //! \brief Loads text data from xml referred by \a reader.
 void GraphicText::loadData(Qucs::XmlReader *reader)
 {
-   Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-   Q_ASSERT(reader->attributes().value("name") == "text");
+    Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+    Q_ASSERT(reader->attributes().value("name") == "text");
 
-   while(!reader->atEnd()) {
-      reader->readNext();
+    while(!reader->atEnd()) {
+        reader->readNext();
 
-      if(reader->isEndElement())
-         break;
+        if(reader->isEndElement()) {
+            break;
+        }
 
-      if(reader->isStartElement()) {
-         if(reader->name() == "properties") {
+        if(reader->isStartElement()) {
+            if(reader->name() == "properties") {
 
-            setText(reader->attributes().value("text").toString());
-            setPos(reader->readPointAttribute("pos"));
+                setText(reader->attributes().value("text").toString());
+                setPos(reader->readPointAttribute("pos"));
 
-            reader->readUnknownElement(); //read till end tag
-         }
+                reader->readUnknownElement(); //read till end tag
+            }
 
-         else if(reader->name() == "transform") {
-            setTransform(reader->readTransform());
-         }
+            else if(reader->name() == "transform") {
+                setTransform(reader->readTransform());
+            }
 
-         else {
-            reader->readUnknownElement();
-         }
-      }
-   }
+            else {
+                reader->readUnknownElement();
+            }
+        }
+    }
 }
 
 //! \brief Launch rich text edit dialog.
 int GraphicText::launchPropertyDialog(Qucs::UndoOption opt)
 {
-   GraphicTextDialog dialog(this, opt);
-   return dialog.exec();
+    GraphicTextDialog dialog(this, opt);
+    return dialog.exec();
 }

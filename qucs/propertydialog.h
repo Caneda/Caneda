@@ -17,81 +17,79 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __PROPERTYDIALOG_H
-#define __PROPERTYDIALOG_H
+#ifndef PROPERTYDIALOG_H
+#define PROPERTYDIALOG_H
 
-#include "ui_property.h"
-#include "property.h"
 #include "component.h"
+#include "property.h"
+#include "ui_property.h"
 
-#include <QtGui/QItemDelegate>
-#include <QtGui/QTableView>
+#include <QAbstractTableModel>
+#include <QItemDelegate>
+#include <QTableView>
 
-#include <QtCore/QAbstractTableModel>
-
+class Component;
 class QStandardItemModel;
 
-typedef const QModelIndex& IndexConstRef;
 typedef QModelIndex& IndexRef;
+typedef const QModelIndex& IndexConstRef;
 
 class PropertyModel : public QAbstractTableModel
 {
-      Q_OBJECT;
-   public:
-      enum {
-         OptionsRole = Qt::UserRole + 1
-      };
+    Q_OBJECT;
+public:
+    enum {
+        OptionsRole = Qt::UserRole + 1
+    };
 
-      PropertyModel(PropertyMap map, QObject *parent = 0);
+    PropertyModel(PropertyMap map, QObject *parent = 0);
 
-      int rowCount(IndexConstRef) const { return propMap.size(); }
-      int columnCount(IndexConstRef) const { return 3; }
+    int rowCount(IndexConstRef) const { return propMap.size(); }
+    int columnCount(IndexConstRef) const { return 3; }
 
-      QVariant data(IndexConstRef, int role) const;
-      QVariant headerData(int section, Qt::Orientation o, int role) const;
+    QVariant data(IndexConstRef, int role) const;
+    QVariant headerData(int section, Qt::Orientation o, int role) const;
 
-      Qt::ItemFlags flags(const QModelIndex &index) const;
-      bool setData(const QModelIndex &index, const QVariant &value,
-                   int role = Qt::EditRole);
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+    bool setData(const QModelIndex &index, const QVariant &value,
+            int role = Qt::EditRole);
 
-   private:
-      friend class PropertyDialog;
+private:
+    friend class PropertyDialog;
 
-      PropertyMap propMap;
-      QList<QString> keys;
+    PropertyMap propMap;
+    QList<QString> keys;
 };
 
 class PropertyValueDelegate : public QItemDelegate
 {
-      Q_OBJECT;
+    Q_OBJECT;
+public:
+    PropertyValueDelegate(QObject *parent = 0);
 
-   public:
-      PropertyValueDelegate(QObject *parent = 0);
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+            const QModelIndex &index) const;
 
-      QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                            const QModelIndex &index) const;
-
-      void setEditorData(QWidget *editor, const QModelIndex &index) const;
-      void setModelData(QWidget *editor, QAbstractItemModel *model,
-                        const QModelIndex &index) const;
+    void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model,
+            const QModelIndex &index) const;
 };
 
-class Component;
 
 class PropertyDialog : public QDialog, public Ui::PropertyDialogBase
 {
-      Q_OBJECT;
-   public:
-      PropertyDialog(Component *comp, Qucs::UndoOption opt, QWidget *parent = 0);
+    Q_OBJECT;
+public:
+    PropertyDialog(Component *comp, Qucs::UndoOption opt, QWidget *parent = 0);
 
-   public slots:
-      void accept();
+public Q_SLOTS:
+    void accept();
 
-   private:
-      PropertyModel *m_model;
-      Component *m_component;
-      Qucs::UndoOption m_undoOption;
+private:
+    PropertyModel *m_model;
+    Component *m_component;
+    Qucs::UndoOption m_undoOption;
 };
 
 
-#endif //__PROPERTYDIALOG_H
+#endif //PROPERTYDIALOG_H

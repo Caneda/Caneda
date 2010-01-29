@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __QUCSPRIMARYFORMAT_H
-#define __QUCSPRIMARYFORMAT_H
+#ifndef QUCSPRIMARYFORMAT_H
+#define QUCSPRIMARYFORMAT_H
 
 #include "fileformathandler.h"
 
@@ -26,20 +26,20 @@ class QTextStream;
 
 class QucsPrimaryFormat : public FileFormatHandler
 {
-   public:
-      QucsPrimaryFormat(SchematicView *view = 0);
-      ~QucsPrimaryFormat() {}
+public:
+    QucsPrimaryFormat(SchematicView *view = 0);
+    ~QucsPrimaryFormat() {}
 
 
-      QString saveText();
-      bool loadFromText(const QString& text);
+    QString saveText();
+    bool loadFromText(const QString& text);
 
-      bool loadProperties(QTextStream &stream);
-      bool loadComponents(QTextStream &stream);
-      bool loadWires(QTextStream &stream);
-      bool loadDiagrams(QTextStream &stream);
-      bool loadPaintings(QTextStream &stream);
-      bool loadWireFromLine(QString s);
+    bool loadProperties(QTextStream &stream);
+    bool loadComponents(QTextStream &stream);
+    bool loadWires(QTextStream &stream);
+    bool loadDiagrams(QTextStream &stream);
+    bool loadPaintings(QTextStream &stream);
+    bool loadWireFromLine(QString s);
 };
 
-#endif //__QUCSPRIMARYFORMAT_H
+#endif //QUCSPRIMARYFORMAT_H

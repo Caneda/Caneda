@@ -17,20 +17,20 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __WIRE_H
-#define __WIRE_H
+#ifndef WIRE_H
+#define WIRE_H
 
 #include "item.h"
-#include "wireline.h"
 #include "port.h"
+#include "wireline.h"
 
-#include <QtCore/QList>
+#include <QList>
 
-//!\brief forward declaration.
-class SchematicScene;
+// Forward declarations
+class Port;
 class QGraphicsLineItem;
 class QRubberBand;
-class Port;
+class SchematicScene;
 
 typedef QList<WireLine> WireLines;
 
@@ -40,119 +40,119 @@ typedef QList<WireLine> WireLines;
 class Wire : public QucsItem
 {
 public:
-  enum { Type = QucsItem::WireType };
+    enum { Type = QucsItem::WireType };
 
-  //! A struct to store wire's details.
-  struct Data {
-    WireLines wLines;
-    QPointF pos;
-    QPointF port1Pos;
-    QPointF port2Pos;
-  };
-  
-  Wire(const QPointF &startPos, const QPointF &endPos, bool doConnect = true,
-       SchematicScene *scene = 0); 
-  Wire(Port *startPort, Port *endPort, SchematicScene *scene = 0); 
-  ~Wire();
+    //! A struct to store wire's details.
+    struct Data {
+        WireLines wLines;
+        QPointF pos;
+        QPointF port1Pos;
+        QPointF port2Pos;
+    };
 
-  //! Return's the wire's ports list.
-  QList<Port*> ports() const { return this->m_ports; }
-  //! Return's the list's first member.
-  Port* port1() const { return this->m_ports[0]; }
-  //! Returns the list's second member.
-  Port* port2() const { return this->m_ports[1]; }
+    Wire(const QPointF &startPos, const QPointF &endPos, bool doConnect = true,
+            SchematicScene *scene = 0);
+    Wire(Port *startPort, Port *endPort, SchematicScene *scene = 0);
+    ~Wire();
 
-  void movePort(QList<Port*> *connections, const QPointF& scenePos);
-  void movePort1(const QPointF& newLocalPos);
-  void movePort2(const QPointF& newLocalPos);
+    //! Return's the wire's ports list.
+    QList<Port*> ports() const { return this->m_ports; }
+    //! Return's the list's first member.
+    Port* port1() const { return this->m_ports[0]; }
+    //! Returns the list's second member.
+    Port* port2() const { return this->m_ports[1]; }
 
-  //! Wire identifier.
-  int type() const { return Wire::Type; }
+    void movePort(QList<Port*> *connections, const QPointF& scenePos);
+    void movePort1(const QPointF& newLocalPos);
+    void movePort2(const QPointF& newLocalPos);
 
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-	     QWidget *widget = 0);
+    //! Wire identifier.
+    int type() const { return Wire::Type; }
 
-  void beginGrabMode();
-  void grabMoveBy(qreal dx, qreal dy);
-  void endGrabMode();
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+            QWidget *widget = 0);
 
-  //! Returns the internal representation of wires as line's list.
-  WireLines wireLines() const { return this->m_wLines; }
+    void beginGrabMode();
+    void grabMoveBy(qreal dx, qreal dy);
+    void endGrabMode();
 
-  //! Returns a reference of internal representaion of wire lines.
-  WireLines& wireLinesRef() { return this->m_wLines; }
+    //! Returns the internal representation of wires as line's list.
+    WireLines wireLines() const { return this->m_wLines; }
 
-  void setWireLines(const WireLines& wirelines);
+    //! Returns a reference of internal representaion of wire lines.
+    WireLines& wireLinesRef() { return this->m_wLines; }
 
-  void removeNullLines();
+    void setWireLines(const WireLines& wirelines);
 
-  void saveData(Qucs::XmlWriter *writer) const;
-  void saveData(Qucs::XmlWriter *writer, int id) const;
+    void removeNullLines();
 
-  static Wire* loadWireData(Qucs::XmlReader *reader, SchematicScene *scene);
-  void loadData(Qucs::XmlReader *reader);
+    void saveData(Qucs::XmlWriter *writer) const;
+    void saveData(Qucs::XmlWriter *writer, int id) const;
 
-  //! No rotate defined for wires.
-  void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise) {
-    Q_UNUSED(dir);
-  }
+    static Wire* loadWireData(Qucs::XmlReader *reader, SchematicScene *scene);
+    void loadData(Qucs::XmlReader *reader);
 
-  //! No mirroring defined for wires.
-  void mirrorAlong(Qt::Axis) {}
+    //! No rotate defined for wires.
+    void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise) {
+        Q_UNUSED(dir);
+    }
 
-  void storeState();
-  Data storedState() const;
+    //! No mirroring defined for wires.
+    void mirrorAlong(Qt::Axis) {}
 
-  Data currentState() const;
-  void setState(Data state);
+    void storeState();
+    Data storedState() const;
 
-  int checkAndConnect(Qucs::UndoOption opt);
+    Data currentState() const;
+    void setState(Data state);
 
-  QucsItem* copy(SchematicScene *scene = 0) const;
-  void copyDataTo(Wire *wire) const;
+    int checkAndConnect(Qucs::UndoOption opt);
 
-  bool isComponent() const { return false; }
-  bool isWire() const { return true; }
+    QucsItem* copy(SchematicScene *scene = 0) const;
+    void copyDataTo(Wire *wire) const;
 
-  void updateGeometry();
-      
-  /*! check if port 1 and 2 overlap */
-  bool overlap() const {
-    return this->port1()->scenePos() == this->port2()->scenePos();
-  }
-  
-  void tryConnectPorts();
-  void tryConnectPort(Port * port);
+    bool isComponent() const { return false; }
+    bool isWire() const { return true; }
+
+    void updateGeometry();
+
+    //! check if port 1 and 2 overlap
+    bool overlap() const {
+        return this->port1()->scenePos() == this->port2()->scenePos();
+    }
+
+    void tryConnectPorts();
+    void tryConnectPort(Port * port);
 
 protected:
-  void mousePressEvent(QGraphicsSceneMouseEvent *event);
-  void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-  QRect proxyRect(const WireLine& wline) const;
+    QRect proxyRect(const WireLine& wline) const;
 
-  void initWireline();
- 
-  void updateProxyWires();
-  void deleteProxyWires();
+    void initWireline();
 
-  int indexForPos(const QPointF& pos) const;
+    void updateProxyWires();
+    void deleteProxyWires();
 
-  int m_grabbedIndex; //!< Represents the index of wireline being dragged.
+    int indexForPos(const QPointF& pos) const;
 
-  QList<Port*> m_ports;//!< The ports of wires (always contain only 2 elements).
-  WireLines m_wLines;//!< Internal line representation of wires.
-  QList<QRubberBand*> m_proxyWires;//!< Represent wires while being dragged
-  Wire::Data store; //!< Stores the wire data when needed(undo/redo).
-  
-  QColor m_wireColor;
-  qreal m_width;
+    int m_grabbedIndex; //!< Represents the index of wireline being dragged.
+
+    QList<Port*> m_ports;//!< The ports of wires (always contain only 2 elements).
+    WireLines m_wLines;//!< Internal line representation of wires.
+    QList<QRubberBand*> m_proxyWires;//!< Represent wires while being dragged
+    Wire::Data store; //!< Stores the wire data when needed(undo/redo).
+
+    QColor m_wireColor;
+    qreal m_width;
 };
 
 namespace Qucs
 {
-  Wire::Data readWireData(Qucs::XmlReader *reader);
+    Wire::Data readWireData(Qucs::XmlReader *reader);
 }
 
-#endif //__WIRE_H
+#endif //WIRE_H

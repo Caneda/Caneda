@@ -23,38 +23,42 @@
 #ifndef SETTINGS_DIALOG_H
 #define SETTINGS_DIALOG_H
 
-#include <QDialog>
 #include "settingspages.h"
 
-class QucsMainWindow;
+#include <QDialog>
+
+class QDialogButtonBox;
 class QListWidget;
 class QListWidgetItem;
 class QStackedWidget;
-class QDialogButtonBox;
+class QucsMainWindow;
 
-/**
-        This class represents the configuration dialog of Qucs.
-        This is a dialog showing "page setup".
-        Each configuration page should provide an icon and a title.
-*/
-class SettingsDialog : public QDialog {
-	Q_OBJECT
+/*!
+ * This class represents the configuration dialog of Qucs.
+ * This is a dialog showing "page setup".
+ * Each configuration page should provide an icon and a title.
+ */
+class SettingsDialog : public QDialog
+{
+    Q_OBJECT;
 
-	public:
-        SettingsDialog(QList<SettingsPage *> pages, const char *title, QucsMainWindow *parent = 0);
-        virtual ~SettingsDialog();
-	
-	public slots:
-        void changePage(QListWidgetItem *, QListWidgetItem *);
-	void applyConf();
-	
-        private:
-        void buildPagesList();
-	
-	private:
-	QListWidget *pages_list;
-	QStackedWidget *pages_widget;
-	QDialogButtonBox *buttons;
-        QList<SettingsPage *> pages;
+public:
+    SettingsDialog(QList<SettingsPage *> pages, const char *title,
+            QucsMainWindow *parent = 0);
+    virtual ~SettingsDialog();
+
+public Q_SLOTS:
+    void changePage(QListWidgetItem *, QListWidgetItem *);
+    void applyConf();
+
+private:
+    void buildPagesList();
+
+private:
+    QListWidget *pages_list;
+    QStackedWidget *pages_widget;
+    QDialogButtonBox *buttons;
+    QList<SettingsPage *> pages;
 };
+
 #endif

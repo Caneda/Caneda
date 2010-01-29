@@ -10,15 +10,15 @@
 #ifndef UI_PROPERTY_H
 #define UI_PROPERTY_H
 
-#include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QDialog>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QLabel>
-#include <QtGui/QTableView>
-#include <QtGui/QVBoxLayout>
+#include <QVariant>
+#include <QAction>
+#include <QApplication>
+#include <QButtonGroup>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QTableView>
+#include <QVBoxLayout>
 
 class Ui_PropertyDialogBase
 {
@@ -30,7 +30,7 @@ public:
 
     void setupUi(QDialog *PropertyDialogBase)
     {
-    if (PropertyDialogBase->objectName().isEmpty())
+    if(PropertyDialogBase->objectName().isEmpty())
         PropertyDialogBase->setObjectName(QString::fromUtf8("PropertyDialogBase"));
     QSize size(592, 311);
     size = size.expandedTo(PropertyDialogBase->minimumSizeHint());

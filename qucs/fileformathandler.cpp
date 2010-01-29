@@ -32,11 +32,14 @@ FileFormatHandler::FileFormatHandler(SchematicView *view) : m_view(view)
  * Returns NULL if there doesn't exist a handler for given extension.
  */
 FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
-                                                           SchematicView *view)
+        SchematicView *view)
 {
-   if(ext == "xsch")
-      return new XmlFormat(view);
-   else if(ext == "xsym")
-      return new XmlSymbolFormat(view);
-   return 0;
+    if(ext == "xsch") {
+        return new XmlFormat(view);
+    }
+    else if(ext == "xsym") {
+        return new XmlSymbolFormat(view);
+    }
+    return 0;
 }
+

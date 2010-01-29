@@ -18,15 +18,17 @@
  ***************************************************************************/
 
 #include "portsymbol.h"
+
 #include "port.h"
-#include "xmlutilities/xmlutilities.h"
+
 #include "qucs-tools/global.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QStyleOptionGraphicsItem>
-#include <QtGui/QFontMetrics>
+#include "xmlutilities/xmlutilities.h"
 
-#include <QtCore/QDebug>
+#include <QDebug>
+#include <QFontMetrics>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 int portSymbolOffset = 3;
 
@@ -37,166 +39,167 @@ int portSymbolOffset = 3;
  * \param scene SchematicScene on which this item should be added.
  */
 PortSymbol::PortSymbol(const QString& nameStr_, const QString& numberStr_,
-                       SchematicScene *scene) :
-   Painting(scene),
-   m_mirrored(false),
+        SchematicScene *scene) :
+    Painting(scene),
+    m_mirrored(false),
 
-   m_numberString(numberStr_),
-   m_nameString(nameStr_)
+    m_numberString(numberStr_),
+    m_nameString(nameStr_)
 {
-   updateGeometry();
+    updateGeometry();
 }
 
 //! \brief Draw port ellipse and id.
 void PortSymbol::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
 {
-   painter->setPen(unconnectedPen);  // like open node
-   painter->drawEllipse(portEllipse);
+    painter->setPen(unconnectedPen);  // like open node
+    painter->drawEllipse(portEllipse);
 
-   QPointF textPos = m_mirrored ? portEllipse.bottomLeft() : portEllipse.bottomRight();
-   if(m_mirrored) {
-      textPos.rx() -= portSymbolOffset;
-      textPos.rx() -= QFontMetrics(font()).width(text());
-   }
-   else {
-      textPos.rx() += portSymbolOffset;
-   }
+    QPointF textPos = m_mirrored ? portEllipse.bottomLeft() : portEllipse.bottomRight();
+    if(m_mirrored) {
+        textPos.rx() -= portSymbolOffset;
+        textPos.rx() -= QFontMetrics(font()).width(text());
+    }
+    else {
+        textPos.rx() += portSymbolOffset;
+    }
 
-   painter->setPen(pen());
-   painter->setFont(font());
+    painter->setPen(pen());
+    painter->setFont(font());
 
-   painter->drawText(textPos, text());
+    painter->drawText(textPos, text());
 
-   painter->setPen(Qt::lightGray);
-   painter->drawRect(paintingRect());
+    painter->setPen(Qt::lightGray);
+    painter->drawRect(paintingRect());
 
-   if(option->state & QStyle::State_Selected) {
-      painter->setPen(Qt::darkGray);
-      painter->drawRoundRect(boundingRect());
-   }
+    if(option->state & QStyle::State_Selected) {
+        painter->setPen(Qt::darkGray);
+        painter->drawRoundRect(boundingRect());
+    }
 }
 
 //! \brief Set number part of port id to \a str.
 void PortSymbol::setNumberString(QString str)
 {
-   prepareGeometryChange();
-   m_numberString = str;
-   updateGeometry();
+    prepareGeometryChange();
+    m_numberString = str;
+    updateGeometry();
 }
 
 //! \brief Set name part of port id to \a str.
 void PortSymbol::setNameString(QString str)
 {
-   prepareGeometryChange();
-   m_nameString = str;
-   updateGeometry();
+    prepareGeometryChange();
+    m_nameString = str;
+    updateGeometry();
 }
 
 //! \brief Updates the geometry once a font is set or it is mirrored.
 void PortSymbol::updateGeometry()
 {
-   QFontMetrics fm(font());
-   qreal height = qMax(portEllipse.bottom(), qreal(fm.height() + fm.descent()));
+    QFontMetrics fm(font());
+    qreal height = qMax(portEllipse.bottom(), qreal(fm.height() + fm.descent()));
 
-   QPointF topLeft(0, -height/2.);
-   QPointF bottomRight(0, height/2.);
+    QPointF topLeft(0, -height/2.);
+    QPointF bottomRight(0, height/2.);
 
-   if(m_mirrored) {
-      topLeft.rx() = portEllipse.left() - portSymbolOffset - fm.width(text());
-      bottomRight.rx() = portEllipse.right();
-   } else {
-      topLeft.rx() = portEllipse.left();
-      bottomRight.rx() = portEllipse.right() + portSymbolOffset + fm.width(text());
-   }
+    if(m_mirrored) {
+        topLeft.rx() = portEllipse.left() - portSymbolOffset - fm.width(text());
+        bottomRight.rx() = portEllipse.right();
+    } else {
+        topLeft.rx() = portEllipse.left();
+        bottomRight.rx() = portEllipse.right() + portSymbolOffset + fm.width(text());
+    }
 
-   QRectF rect(topLeft, bottomRight);
-   setPaintingRect(rect);
+    QRectF rect(topLeft, bottomRight);
+    setPaintingRect(rect);
 }
 
 //! \brief Sets the font used to draw port id to \a font.
 void PortSymbol::setFont(const QFont& font)
 {
-   m_font = font;
-   updateGeometry();
+    m_font = font;
+    updateGeometry();
 }
 
 //! \brief Reimplement mirror method to take care of mirror along Y axis.
 void PortSymbol::mirrorAlong(Qt::Axis axis)
 {
-   if(axis == Qt::YAxis) {
-      prepareGeometryChange();
-      m_mirrored = !m_mirrored;
-      updateGeometry();
-   }
-   //ignore other axis
+    if(axis == Qt::YAxis) {
+        prepareGeometryChange();
+        m_mirrored = !m_mirrored;
+        updateGeometry();
+    }
+    //ignore other axis
 }
 
 //! \brief Returns a copy of port symbol item parented to scene \a scene.
 QucsItem* PortSymbol::copy(SchematicScene *scene) const
 {
-   PortSymbol *port = new PortSymbol(m_numberString, m_nameString, scene);
-   port->m_mirrored = m_mirrored;
-   port->m_font = m_font;
-   port->updateGeometry();
+    PortSymbol *port = new PortSymbol(m_numberString, m_nameString, scene);
+    port->m_mirrored = m_mirrored;
+    port->m_font = m_font;
+    port->updateGeometry();
 
-   Painting::copyDataTo(port);
+    Painting::copyDataTo(port);
 
-   return port;
+    return port;
 }
 
 //! \brief Saves data as xml.
 void PortSymbol::saveData(Qucs::XmlWriter *writer) const
 {
-   writer->writeStartElement("painting");
-   writer->writeAttribute("name", "portSymbol");
+    writer->writeStartElement("painting");
+    writer->writeAttribute("name", "portSymbol");
 
-   writer->writeEmptyElement("properties");
-   writer->writeAttribute("nameString", m_nameString);
-   writer->writeAttribute("numberString", m_numberString);
-   writer->writeAttribute("mirrored", Qucs::boolToString(m_mirrored));
-   writer->writePointAttribute(pos(), "pos");
+    writer->writeEmptyElement("properties");
+    writer->writeAttribute("nameString", m_nameString);
+    writer->writeAttribute("numberString", m_numberString);
+    writer->writeAttribute("mirrored", Qucs::boolToString(m_mirrored));
+    writer->writePointAttribute(pos(), "pos");
 
-   writer->writeFont(font());
-   writer->writeTransform(transform());
+    writer->writeFont(font());
+    writer->writeTransform(transform());
 
-   writer->writeEndElement(); // < /painting>
+    writer->writeEndElement(); // < /painting>
 }
 
 //! \brief Loads portSymbol from xml referred by \a reader.
 void PortSymbol::loadData(Qucs::XmlReader *reader)
 {
-   Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-   Q_ASSERT(reader->attributes().value("name") == "portSymbol");
+    Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+    Q_ASSERT(reader->attributes().value("name") == "portSymbol");
 
-   while(!reader->atEnd()) {
-      reader->readNext();
+    while(!reader->atEnd()) {
+        reader->readNext();
 
-      if(reader->isEndElement())
-         break;
+        if(reader->isEndElement()) {
+            break;
+        }
 
-      if(reader->isStartElement()) {
-         if(reader->name() == "properties") {
+        if(reader->isStartElement()) {
+            if(reader->name() == "properties") {
 
-            setNumberString(reader->attributes().value("numberString").toString());
-            setNameString(reader->attributes().value("nameString").toString());
+                setNumberString(reader->attributes().value("numberString").toString());
+                setNameString(reader->attributes().value("nameString").toString());
 
-            setPos(reader->readPointAttribute("pos"));
-            m_mirrored = Qucs::stringToBool(reader->attributes().value("mirrored").toString());
-            updateGeometry();
-            reader->readUnknownElement(); //read till end tag
-         }
+                setPos(reader->readPointAttribute("pos"));
+                m_mirrored = Qucs::stringToBool(reader->attributes().value("mirrored").toString());
+                updateGeometry();
+                reader->readUnknownElement(); //read till end tag
+            }
 
-         else if(reader->name() == "font") {
-            setFont(reader->readFont());
-         }
+            else if(reader->name() == "font") {
+                setFont(reader->readFont());
+            }
 
-         else if(reader->name() == "transform") {
-            setTransform(reader->readTransform());
-         }
+            else if(reader->name() == "transform") {
+                setTransform(reader->readTransform());
+            }
 
-         else {
-            reader->readUnknownElement();
-         }
-      }
-   }
+            else {
+                reader->readUnknownElement();
+            }
+        }
+    }
 }

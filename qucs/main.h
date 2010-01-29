@@ -18,17 +18,13 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <qfont.h>
-#include <qcolor.h>
-#include <qptrlist.h>
-#include <qstringlist.h>
-
-#include "wire.h"
 #include "node.h"
+#include "wire.h"
+
 #include "diagrams/diagram.h"
 
-class QucsApp;
-class Component;
+#include <QFont>
+#include <QColor>
 
 // constants may be missing on windows systems
 #include <math.h>
@@ -36,27 +32,31 @@ class Component;
 #define M_PI     3.1415926535897932384626433832795029
 #endif
 
+// Forward declarations
+class Component;
+class QucsApp;
+
 struct tQucsSettings {
-  int x, y, dx, dy;    // position and size of main window
-  QFont font;
-  float largeFontSize;
-  QColor BGColor;      // background color of view area
-  QString Language;
+    int x, y, dx, dy;    // position and size of main window
+    QFont font;
+    float largeFontSize;
+    QColor BGColor;      // background color of view area
+    QString Language;
 
-  // VHDL syntax highlighting
-  QColor VHDL_Comment, VHDL_String, VHDL_Integer, VHDL_Real,
-         VHDL_Character, VHDL_Types, VHDL_Attributes;
+    // VHDL syntax highlighting
+    QColor VHDL_Comment, VHDL_String, VHDL_Integer, VHDL_Real,
+           VHDL_Character, VHDL_Types, VHDL_Attributes;
 
-  unsigned int maxUndo;    // size of undo stack
-  QString Editor;
-  QString BinDir;
-  QString BitmapDir;
-  QString LangDir;
-  QString LibDir;
-  QString AscoDir;
+    unsigned int maxUndo;    // size of undo stack
+    QString Editor;
+    QString BinDir;
+    QString BitmapDir;
+    QString LangDir;
+    QString LibDir;
+    QString AscoDir;
 
-  // registered filename extensions with program to open the file
-  QStringList FileTypes;
+    // registered filename extensions with program to open the file
+    QStringList FileTypes;
 };
 
 extern tQucsSettings QucsSettings;  // extern because nearly everywhere used

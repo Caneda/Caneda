@@ -17,37 +17,40 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __FILEFORMATHANDLER_H
-#define __FILEFORMATHANDLER_H
+#ifndef FILEFORMATHANDLER_H
+#define FILEFORMATHANDLER_H
 
-#include <QtCore/QString>
-
+class QString;
 class SchematicView;
 
-/** This class is used to save and load files.
- * Using this base class we can support any fileformat */
+/*!
+ * This class is used to save and load files.
+ * Using this base class we can support any fileformat
+ */
 class FileFormatHandler
 {
-   public:
-      FileFormatHandler(SchematicView *view=0);
-      virtual ~FileFormatHandler() {}
+public:
+    FileFormatHandler(SchematicView *view=0);
+    virtual ~FileFormatHandler() {}
 
-      virtual bool save() = 0;
+    virtual bool save() = 0;
 
-      /** Loads the document. If non-negative is returned
-        * the operation is successful. Negative return
-        * value indicated failure */
-      virtual bool load() = 0;
+    /*!
+     * Loads the document. If non-negative is returned
+     * the operation is successful. Negative return
+     * value indicated failure
+     */
+    virtual bool load() = 0;
 
-      SchematicView* view() const { return m_view; }
-      void setView(SchematicView *view) { m_view = view; }
+    SchematicView* view() const { return m_view; }
+    void setView(SchematicView *view) { m_view = view; }
 
-      static FileFormatHandler* handlerFromSuffix(const QString& extension,
-                                                     SchematicView *view = 0);
+    static FileFormatHandler* handlerFromSuffix(const QString& extension,
+            SchematicView *view = 0);
 
-   protected:
-      SchematicView *m_view;
-
+protected:
+    SchematicView *m_view;
 };
 
-#endif //__FILEFORMATHANDLER_H
+#endif //FILEFORMATHANDLER_H
+

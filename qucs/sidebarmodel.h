@@ -17,85 +17,86 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __SIDEBARMODEL_H
-#define __SIDEBARMODEL_H
+#ifndef SIDEBARMODEL_H
+#define SIDEBARMODEL_H
 
-#include <QtCore/QAbstractItemModel>
-#include <QtCore/QPair>
+#include <QAbstractItemModel>
+#include <QPair>
 #include <QPixmap>
 
 class LibraryLoader;
 
 class CategoryItem
 {
-   public:
-      CategoryItem(const QString& name, const QString& filename, const QPixmap &pixmap = QPixmap(), bool isLibrary = false,
-                   CategoryItem *parent = 0);
-      ~CategoryItem();
+public:
+    CategoryItem(const QString& name, const QString& filename,
+            const QPixmap &pixmap = QPixmap(), bool isLibrary = false,
+            CategoryItem *parent = 0);
+    ~CategoryItem();
 
-      CategoryItem *parent() const { return m_parentItem; }
+    CategoryItem *parent() const { return m_parentItem; }
 
-      CategoryItem *child(int row) const;
-      int childCount() const { return m_childItems.size(); }
+    CategoryItem *child(int row) const;
+    int childCount() const { return m_childItems.size(); }
 
-      int row() const;
-      QString name() const { return m_name; }
-      QString filename() const { return m_filename; }
+    int row() const;
+    QString name() const { return m_name; }
+    QString filename() const { return m_filename; }
 
-      QPixmap iconPixmap() const { return m_iconPixmap; }
-      bool isLeaf() const { return m_childItems.isEmpty(); }
-      bool isLibrary() const { return m_isLibrary; }
+    QPixmap iconPixmap() const { return m_iconPixmap; }
+    bool isLeaf() const { return m_childItems.isEmpty(); }
+    bool isLibrary() const { return m_isLibrary; }
 
-      void addChild(CategoryItem* c);
-      void removeChild(int c);
+    void addChild(CategoryItem* c);
+    void removeChild(int c);
 
-   private:
-
-      QString m_name;
-      QString m_filename;
-      bool m_isLibrary;
-      QPixmap m_iconPixmap;
-      QList<CategoryItem*> m_childItems;
-      CategoryItem *m_parentItem;
+private:
+    QString m_name;
+    QString m_filename;
+    bool m_isLibrary;
+    QPixmap m_iconPixmap;
+    QList<CategoryItem*> m_childItems;
+    CategoryItem *m_parentItem;
 };
 
 class SidebarModel : public QAbstractItemModel
 {
-      Q_OBJECT;
-   public:
-      enum {
-         DragPixmapRole = Qt::UserRole + 1,
-      };
+    Q_OBJECT;
+public:
+    enum {
+        DragPixmapRole = Qt::UserRole + 1,
+    };
 
-      SidebarModel(QObject *parent=0);
+    SidebarModel(QObject *parent=0);
 
-      int columnCount(const QModelIndex & parent = QModelIndex()) const {
-         Q_UNUSED(parent);
-         return 1;
-      }
-      int rowCount(const QModelIndex & parent) const;
+    int columnCount(const QModelIndex & parent = QModelIndex()) const {
+        Q_UNUSED(parent);
+        return 1;
+    }
 
-      QVariant data(const QModelIndex & index, int role) const;
-      QModelIndex index(int row, int column, const QModelIndex & parent) const;
+    int rowCount(const QModelIndex & parent) const;
 
-      QModelIndex parent(const QModelIndex & index) const;
+    QVariant data(const QModelIndex & index, int role) const;
+    QModelIndex index(int row, int column, const QModelIndex & parent) const;
 
-      Qt::ItemFlags flags(const QModelIndex& index) const;
+    QModelIndex parent(const QModelIndex & index) const;
 
-      bool isLeaf(const QModelIndex& index) const;
-      bool isLibrary(const QModelIndex& index) const;
+    Qt::ItemFlags flags(const QModelIndex& index) const;
 
-      QStringList mimeTypes() const;
-      QMimeData* mimeData(const QModelIndexList& indexes) const;
+    bool isLeaf(const QModelIndex& index) const;
+    bool isLibrary(const QModelIndex& index) const;
 
-      void plugLibrary(const QString& libraryName, const QString& category);
-      void unPlugLibrary(const QString& libraryName, const QString& category);
+    QStringList mimeTypes() const;
+    QMimeData* mimeData(const QModelIndexList& indexes) const;
 
-      void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
-      void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
+    void plugLibrary(const QString& libraryName, const QString& category);
+    void unPlugLibrary(const QString& libraryName, const QString& category);
 
-   private:
-      CategoryItem *rootItem;
+    void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
+    void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
+
+private:
+    CategoryItem *rootItem;
 };
 
-#endif //__SIDEBARMODEL_H
+#endif //SIDEBARMODEL_H

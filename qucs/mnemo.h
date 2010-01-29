@@ -18,12 +18,12 @@
 #ifndef MNEMO_H
 #define MNEMO_H
 
-#include <QtCore/QString>
+#include <QString>
 
 namespace Qucs
 {
-   QString latexToUnicode(const QString& input);
-   QString unicodeToLatex(QString unicode);
+    QString latexToUnicode(const QString& input);
+    QString unicodeToLatex(QString unicode);
 }
 
 #endif

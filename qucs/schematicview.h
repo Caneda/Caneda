@@ -17,76 +17,77 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __SCHEMATICVIEW_H
-#define __SCHEMATICVIEW_H
+#ifndef SCHEMATICVIEW_H
+#define SCHEMATICVIEW_H
 
 #include "qucsview.h"
-#include <QtGui/QGraphicsView>
 
-class SchematicScene;
-class QucsMainWindow;
+#include <QGraphicsView>
+
 class QucsItem;
+class QucsMainWindow;
+class SchematicScene;
 
 class SchematicView : public QGraphicsView, public QucsView
 {
     Q_OBJECT;
 
-   public:
-      static const qreal zoomFactor;
+public:
+    static const qreal zoomFactor;
 
-      SchematicView(SchematicScene *sc = 0,QucsMainWindow *parent = 0);
-      ~SchematicView();
-      void test();
+    SchematicView(SchematicScene *sc = 0,QucsMainWindow *parent = 0);
+    ~SchematicView();
+    void test();
 
-      SchematicScene* schematicScene() const;
+    SchematicScene* schematicScene() const;
 
-      //reimplemented virtuals from QucsView
-      void setFileName(const QString& name);
-      QString fileName() const;
+    //reimplemented virtuals from QucsView
+    void setFileName(const QString& name);
+    QString fileName() const;
 
-      bool load();
-      bool save();
+    bool load();
+    bool save();
 
-      void zoomIn();
-      void zoomOut();
+    void zoomIn();
+    void zoomOut();
 
-      void showAll();
-      void showNoZoom();
+    void showAll();
+    void showNoZoom();
 
-      bool isSchematicView() const { return true; }
+    bool isSchematicView() const { return true; }
 
-      QWidget* toWidget() const;
-      SchematicView* toSchematicView() const;
+    QWidget* toWidget() const;
+    SchematicView* toSchematicView() const;
 
-      bool isModified() const;
+    bool isModified() const;
 
-      void copy() const;
-      void cut();
-      void paste();
+    void copy() const;
+    void cut();
+    void paste();
 
-      void resetState();
+    void resetState();
 
-      void saveScrollState();
-      void restoreScrollState();
+    void saveScrollState();
+    void restoreScrollState();
 
-   public slots:
-      void setModified(bool m);
-      //update tab's text and modification status
-      void updateTabs();
+public Q_SLOTS:
+    void setModified(bool m);
+    //update tab's text and modification status
+    void updateTabs();
 
-   signals:
-      void modificationChanged(bool modified);
-      void fileNameChanged(const QString& file);
-      void titleToBeUpdated();
+signals:
+    void modificationChanged(bool modified);
+    void fileNameChanged(const QString& file);
+    void titleToBeUpdated();
 
-   private:
-      void repaintWires();
+private:
+    void repaintWires();
 
-      int m_horizontalScroll;
-      int m_verticalScroll;
+    int m_horizontalScroll;
+    int m_verticalScroll;
 
-   private slots:
-      void addTestComponents();
+private Q_SLOTS:
+        void addTestComponents();
 };
 
-#endif //__SCHEMATICVIEW_H
+#endif //SCHEMATICVIEW_H

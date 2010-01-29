@@ -17,40 +17,38 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __ELLIPSE_H
-#define __ELLIPSE_H
+#ifndef ELLIPSE_H
+#define ELLIPSE_H
 
 #include "painting.h"
 
-/*!
- * \brief Represents an ellipse on schematic.
- */
+//! * \brief Represents an ellipse on schematic.
 class Ellipse : public Painting
 {
-   public:
-      enum {
-         Type = Painting::EllipseType
-      };
+public:
+    enum {
+        Type = Painting::EllipseType
+    };
 
-      Ellipse(QRectF rect, SchematicScene *scene = 0);
-      ~Ellipse();
+    Ellipse(QRectF rect, SchematicScene *scene = 0);
+    ~Ellipse();
 
-      QRectF boundForRect(const QRectF &rect) const;
-      QPainterPath shapeForRect(const QRectF &rect) const;
+    QRectF boundForRect(const QRectF &rect) const;
+    QPainterPath shapeForRect(const QRectF &rect) const;
 
-      void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+    void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
-      //! \brief Returns ellipse rect represented by this item.
-      QRectF ellipse() const { return paintingRect(); }
-      void setEllipse(const QRectF& rect) { setPaintingRect(rect); }
+    //! \brief Returns ellipse rect represented by this item.
+    QRectF ellipse() const { return paintingRect(); }
+    void setEllipse(const QRectF& rect) { setPaintingRect(rect); }
 
-      int type() const { return Ellipse::Type; }
-      QucsItem* copy(SchematicScene *scene = 0) const;
+    int type() const { return Ellipse::Type; }
+    QucsItem* copy(SchematicScene *scene = 0) const;
 
-      void saveData(Qucs::XmlWriter *writer) const;
-      void loadData(Qucs::XmlReader *reader);
+    void saveData(Qucs::XmlWriter *writer) const;
+    void loadData(Qucs::XmlReader *reader);
 
-      int launchPropertyDialog(Qucs::UndoOption opt);
+    int launchPropertyDialog(Qucs::UndoOption opt);
 };
 
-#endif //__ELLIPSE_H
+#endif //ELLIPSE_H

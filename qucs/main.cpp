@@ -18,9 +18,12 @@
  ***************************************************************************/
 
 #include "qucsmainwindow.h"
+
 #include "qucs-tools/global.h"
-#include <QtGui>
-#include <QtGui/QSplashScreen>
+
+#include <QApplication>
+#include <QSplashScreen>
+#include <QTimer>
 
 int main(int argc,char *argv[])
 {
@@ -33,7 +36,7 @@ int main(int argc,char *argv[])
    app.processEvents();
 
    QucsMainWindow *mw = new QucsMainWindow();
-   QTimer::singleShot(100, mw,SLOT(show()));
+   QTimer::singleShot(100, mw, SLOT(show()));
 
    splash.finish(mw);
    return app.exec();

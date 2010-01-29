@@ -18,51 +18,54 @@
  ***************************************************************************/
 
 #include "mainwindowbase.h"
+
 #include "qucs-tools/global.h"
 
-#include "xmlutilities/validators.h"
 #include "xmlutilities/transformers.h"
+#include "xmlutilities/validators.h"
 
-#include <QtGui/QTabBar>
-#include <QtGui/QDockWidget>
-#include <QtGui/QToolButton>
-#include <QtGui/QWheelEvent>
+#include <QDockWidget>
+#include <QTabBar>
+#include <QToolButton>
+#include <QWheelEvent>
 
 class TabBarPrivate : public QTabBar
 {
-   public:
-      TabBarPrivate(QWidget *parent=0l) : QTabBar(parent)
-      {
-         setDrawBase(true);
-      }
-      ~TabBarPrivate() {}
+public:
+    TabBarPrivate(QWidget *parent=0l) : QTabBar(parent)
+    {
+        setDrawBase(true);
+    }
+    ~TabBarPrivate() {}
 
-   protected:
-      void wheelEvent( QWheelEvent *ev )
-      {
-         if ( count() > 1 ) {
+protected:
+    void wheelEvent( QWheelEvent *ev )
+    {
+        if(count() > 1) {
             int current = currentIndex();
-            if ( ev->delta() < 0 )
-               current = (current + 1) % count();
+            if(ev->delta() < 0) {
+                current = (current + 1) % count();
+            }
             else {
-               current--;
-               if ( current < 0 )
-                  current = count() - 1;
+                current--;
+                if(current < 0 ) {
+                    current = count() - 1;
+                }
             }
             setCurrentIndex( current );
-         }
-      }
+        }
+    }
 };
 
 TabWidgetPrivate:: TabWidgetPrivate(QWidget *parent) : QTabWidget(parent)
 {
-   setTabBar(new TabBarPrivate(this));
+    setTabBar(new TabBarPrivate(this));
 }
 
 MainWindowBase::MainWindowBase(QWidget *parent) : QMainWindow(parent)
 {
-   setupTabWidget();
-   setCentralWidget(m_tabWidget);
+    setupTabWidget();
+    setCentralWidget(m_tabWidget);
 }
 
 MainWindowBase::~MainWindowBase()
@@ -71,61 +74,63 @@ MainWindowBase::~MainWindowBase()
 
 void MainWindowBase::addChildWidget(QWidget *widget)
 {
-   m_tabWidget->addTab(widget, widget->windowIcon(), widget->windowTitle());
-   if(m_tabWidget->count() == 1) {
-      emit currentWidgetChanged(widget, 0);
-   }
+    m_tabWidget->addTab(widget, widget->windowIcon(), widget->windowTitle());
+    if(m_tabWidget->count() == 1) {
+        emit currentWidgetChanged(widget, 0);
+    }
 }
 
 void MainWindowBase::removeChildWidget(QWidget *widget, bool deleteWidget)
 {
-   int index = m_tabWidget->indexOf(widget);
-   if ( index >= 0 ) {
-      QWidget *w = m_tabWidget->widget(index);
+    int index = m_tabWidget->indexOf(widget);
+    if(index >= 0) {
+        QWidget *w = m_tabWidget->widget(index);
 
-      if(w->close()) {
-         emit closedWidget(w);
-         if(deleteWidget)
-            w->deleteLater();
-      }
-      else {
-         return;
-      }
+        if(w->close()) {
+            emit closedWidget(w);
+            if(deleteWidget) {
+                w->deleteLater();
+            }
+        }
+        else {
+            return;
+        }
 
-      m_tabWidget->removeTab(index);
-   }
+        m_tabWidget->removeTab(index);
+    }
 }
 
-void MainWindowBase::addAsDockWidget(QWidget *w, const QString& title, Qt::DockWidgetArea area)
+void MainWindowBase::addAsDockWidget(QWidget *w, const QString& title,
+        Qt::DockWidgetArea area)
 {
-   QDockWidget *dw = new QDockWidget(title);
-   dw->setWidget(w);
-   addDockWidget(area, dw);
+    QDockWidget *dw = new QDockWidget(title);
+    dw->setWidget(w);
+    addDockWidget(area, dw);
 }
 
 void MainWindowBase::closeTab(int index)
 {
-      removeChildWidget(m_tabWidget->widget(index), true);
+    removeChildWidget(m_tabWidget->widget(index), true);
 }
 
 void MainWindowBase::setupTabWidget()
 {
-   m_tabWidget = new TabWidgetPrivate(this);
-   m_tabWidget->setFocusPolicy(Qt::NoFocus);
-   m_tabWidget->setTabsClosable(true);
-   m_tabWidget->setMovable(true);
+    m_tabWidget = new TabWidgetPrivate(this);
+    m_tabWidget->setFocusPolicy(Qt::NoFocus);
+    m_tabWidget->setTabsClosable(true);
+    m_tabWidget->setMovable(true);
 
-   connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(emitWidgetChanged(int)));
+    connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(emitWidgetChanged(int)));
 
-   m_lastCurrentWidget = m_tabWidget->currentWidget();
+    m_lastCurrentWidget = m_tabWidget->currentWidget();
 }
 
 void MainWindowBase::emitWidgetChanged(int index)
 {
-   QWidget *current = m_tabWidget->widget(index);
-   int lastIndex = m_tabWidget->indexOf(m_lastCurrentWidget);
-   QWidget *prev = m_tabWidget->widget(lastIndex);
+    QWidget *current = m_tabWidget->widget(index);
+    int lastIndex = m_tabWidget->indexOf(m_lastCurrentWidget);
+    QWidget *prev = m_tabWidget->widget(lastIndex);
 
-   emit currentWidgetChanged(current, prev);
-   m_lastCurrentWidget = current;
+    emit currentWidgetChanged(current, prev);
+    m_lastCurrentWidget = current;
 }

@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __ARROW_H
-#define __ARROW_H
+#ifndef ARROW_H
+#define ARROW_H
 
 #include "painting.h"
 
@@ -29,65 +29,65 @@
  */
 class Arrow : public Painting
 {
-   public:
-      enum {
-         Type = Painting::ArrowType
-      };
+public:
+    enum {
+        Type = Painting::ArrowType
+    };
 
-      //! Represents the arrow head style.
-      enum HeadStyle {
-         //! This represents an ordinary head style for arrow.
-         TwoLineArrow,
-         //! This represents a filled triangle for arrow head.
-         FilledArrow
-      };
+    //! Represents the arrow head style.
+    enum HeadStyle {
+        //! This represents an ordinary head style for arrow.
+        TwoLineArrow,
+        //! This represents a filled triangle for arrow head.
+        FilledArrow
+    };
 
-      Arrow(const QLineF &line = QLineF(), HeadStyle style = TwoLineArrow,
+    Arrow(const QLineF &line = QLineF(), HeadStyle style = TwoLineArrow,
             qreal headWidth = 12., qreal headHeight = 20,
             SchematicScene *scene = 0);
-      ~Arrow();
+    ~Arrow();
 
-      QPainterPath shapeForRect(const QRectF &rect) const;
-      QRectF boundForRect(const QRectF &rect) const;
+    QPainterPath shapeForRect(const QRectF &rect) const;
+    QRectF boundForRect(const QRectF &rect) const;
 
-      void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+    void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
-      int type() const { return Arrow::Type; }
-      QucsItem* copy(SchematicScene *scene = 0) const;
+    int type() const { return Arrow::Type; }
+    QucsItem* copy(SchematicScene *scene = 0) const;
 
-      void saveData(Qucs::XmlWriter *writer) const;
-      void loadData(Qucs::XmlReader *reader);
+    void saveData(Qucs::XmlWriter *writer) const;
+    void loadData(Qucs::XmlReader *reader);
 
-      HeadStyle headStyle() const { return m_headStyle; }
-      void setHeadStyle(HeadStyle style);
+    HeadStyle headStyle() const { return m_headStyle; }
+    void setHeadStyle(HeadStyle style);
 
-      //! Returns the base triangle width of arrow head.
-      qreal headWidth() const { return m_headWidth; }
-      void setHeadWidth(qreal width);
+    //! Returns the base triangle width of arrow head.
+    qreal headWidth() const { return m_headWidth; }
+    void setHeadWidth(qreal width);
 
-      //! Returns the triangle height of arrow head.
-      qreal headHeight() const { return m_headHeight; }
-      void setHeadHeight(qreal width);
+    //! Returns the triangle height of arrow head.
+    qreal headHeight() const { return m_headHeight; }
+    void setHeadHeight(qreal width);
 
-      //! Returns the line of the arrow.
-      QLineF line() const { return lineFromRect(paintingRect()); }
-      void setLine(const QLineF &line);
+    //! Returns the line of the arrow.
+    QLineF line() const { return lineFromRect(paintingRect()); }
+    void setLine(const QLineF &line);
 
-      int launchPropertyDialog(Qucs::UndoOption opt);
+    int launchPropertyDialog(Qucs::UndoOption opt);
 
-   protected:
-      void geometryChange();
+protected:
+    void geometryChange();
 
-   private:
-      void calcHeadPoints();
-      QLineF lineFromRect(const QRectF &rect) const;
-      void drawHead(QPainter *painter);
+private:
+    void calcHeadPoints();
+    QLineF lineFromRect(const QRectF &rect) const;
+    void drawHead(QPainter *painter);
 
-      HeadStyle m_headStyle;
-      qreal m_headWidth;
-      qreal m_headHeight;
+    HeadStyle m_headStyle;
+    qreal m_headWidth;
+    qreal m_headHeight;
 
-      //the head's tip is always at index 1
-      QPolygonF m_head;
+    //the head's tip is always at index 1
+    QPolygonF m_head;
 };
-#endif //__ARROW_H
+#endif //ARROW_H

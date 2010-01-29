@@ -20,52 +20,54 @@
 
 #include "qucsdoc.h"
 
-#include <qtextedit.h>
-#include <qsyntaxhighlighter.h>
+#include <QSyntaxHighlighter>
+#include <QTextEdit>
 
 class SyntaxHighlighter;
 
-extern const char *smallsave_xpm[];// icon for unsaved files (diskette)
+extern const char *smallsave_xpm[]; // icon for unsaved files (diskette)
 extern const char *empty_xpm[];    // provides same height than "smallsave_xpm"
 
 
-class TextDoc : public QTextEdit, public QucsDoc {
-  Q_OBJECT
-public: 
-  TextDoc(QucsApp*, const QString&);
- ~TextDoc();
+class TextDoc : public QTextEdit, public QucsDoc
+{
+    Q_OBJECT;
+public:
+    TextDoc(QucsApp*, const QString&);
+    ~TextDoc();
 
-  void  setName(const QString&);
-  bool  load();
-  int   save();
-  void  print(QPrinter*, QPainter*, bool, bool);
-  float zoom(float);
-  void  showAll();
-  void  showNoZoom();
-  void  becomeCurrent(bool);
-  bool  loadSimulationTime(QString&);
-  void  outcommmentSelected();
+    void  setName(const QString&);
+    bool  load();
+    int   save();
+    void  print(QPrinter*, QPainter*, bool, bool);
+    float zoom(float);
+    void  showAll();
+    void  showNoZoom();
+    void  becomeCurrent(bool);
+    bool  loadSimulationTime(QString&);
+    void  outcommmentSelected();
 
-public slots:
-  void slotCursorPosChanged(int, int);
-  void slotSetChanged();
+public Q_SLOTS:
+    void slotCursorPosChanged(int, int);
+    void slotSetChanged();
 
 private:
-  SyntaxHighlighter *syntaxHighlight;
+        SyntaxHighlighter *syntaxHighlight;
 };
 
 
-class SyntaxHighlighter : public QSyntaxHighlighter {
+class SyntaxHighlighter : public QSyntaxHighlighter
+{
 public:
- SyntaxHighlighter(TextDoc*);
- virtual ~SyntaxHighlighter();
+    SyntaxHighlighter(TextDoc*);
+    virtual ~SyntaxHighlighter();
 
- int highlightParagraph(const QString&, int);
+    int highlightParagraph(const QString&, int);
 
 private:
-  TextDoc *Doc;
-  void markWord(const QString&, int, int);
-  void markAttribute(const QString&, int, int);
+    TextDoc *Doc;
+    void markWord(const QString&, int, int);
+    void markAttribute(const QString&, int, int);
 };
 
 #endif

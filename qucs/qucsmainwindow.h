@@ -17,214 +17,216 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __QUCSMAINWINDOW_H
-#define __QUCSMAINWINDOW_H
+#ifndef QUCSMAINWINDOW_H
+#define QUCSMAINWINDOW_H
 
 #include "mainwindowbase.h"
 #include "schematicscene.h"
 #include "undocommands.h"
 
-#include <QtCore/QMap>
-#include <QtGui/QToolBar>
-#include <QtGui/QMenu>
-#include <QtGui/QUndoView>
+#include <QMap>
+#include <QMenu>
+#include <QToolBar>
+#include <QUndoView>
 
 class ComponentsSidebar;
-class Library;
 class FolderBrowser;
+class Library;
 class QUndoGroup;
 
-class SchematicView;
 class SchematicScene;
-class QucsView;
+class SchematicView;
 class QucsItem;
+class QucsView;
 
 typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>&, const Qucs::UndoOption);
 
 class QucsMainWindow : public MainWindowBase
 {
-      Q_OBJECT;
-   public:
-      QucsMainWindow(QWidget *w=0);
-      ~QucsMainWindow();
+    Q_OBJECT;
+public:
+    QucsMainWindow(QWidget *w=0);
+    ~QucsMainWindow();
 
-      bool gotoPage(QString fileName, Qucs::Mode mode=Qucs::SchematicMode);
-      void addView(QucsView *view);
-      void saveSettings();
-      void test();
+    bool gotoPage(QString fileName, Qucs::Mode mode=Qucs::SchematicMode);
+    void addView(QucsView *view);
+    void saveSettings();
+    void test();
 
-   public slots:
-      void slotFileNew();
-      void slotTextNew();
-      void slotFileOpen(QString fileName = 0);
-      void slotFileSave(int index);
-      void slotFileSaveCurrent();
-      void slotFileSaveAs(int index);
-      void slotFileSaveAsCurrent();
-      void slotFileSaveAll();
-      void slotFileClose(int index);
-      void slotFileCloseCurrent();
-      void slotFilePrint();
-      void slotExportImage();
-      void slotFileSettings();
-      void slotApplSettings();
+public Q_SLOTS:
+    void slotFileNew();
+    void slotTextNew();
+    void slotFileOpen(QString fileName = 0);
+    void slotFileSave(int index);
+    void slotFileSaveCurrent();
+    void slotFileSaveAs(int index);
+    void slotFileSaveAsCurrent();
+    void slotFileSaveAll();
+    void slotFileClose(int index);
+    void slotFileCloseCurrent();
+    void slotFilePrint();
+    void slotExportImage();
+    void slotFileSettings();
+    void slotApplSettings();
 
-      void slotEditCut();
-      void slotEditCopy();
-      void slotEditPaste();
-      void slotEditDelete(bool);
-      void slotEditFind();
-      void slotReplace();
-      void slotSelect(bool);
-      void slotSelectAll();
-      void slotSelectMarker();
-      void slotEditRotate(bool);
-      void slotEditMirrorX(bool);
-      void slotEditMirrorY(bool);
-      void slotSymbolEdit();
-      void slotIntoHierarchy();
-      void slotPopHierarchy();
+    void slotEditCut();
+    void slotEditCopy();
+    void slotEditPaste();
+    void slotEditDelete(bool);
+    void slotEditFind();
+    void slotReplace();
+    void slotSelect(bool);
+    void slotSelectAll();
+    void slotSelectMarker();
+    void slotEditRotate(bool);
+    void slotEditMirrorX(bool);
+    void slotEditMirrorY(bool);
+    void slotSymbolEdit();
+    void slotIntoHierarchy();
+    void slotPopHierarchy();
 
-      void slotOnGrid(bool);
-      void slotAlignTop();
-      void slotAlignBottom();
-      void slotAlignLeft();
-      void slotAlignRight();
-      void slotDistribHoriz();
-      void slotDistribVert();
-      void slotCenterHorizontal();
-      void slotCenterVertical();
+    void slotOnGrid(bool);
+    void slotAlignTop();
+    void slotAlignBottom();
+    void slotAlignLeft();
+    void slotAlignRight();
+    void slotDistribHoriz();
+    void slotDistribVert();
+    void slotCenterHorizontal();
+    void slotCenterVertical();
 
-      void slotNewProject();
-      void slotOpenProject();
-      void slotAddToProject();
-      void slotRemoveFromProject();
-      void slotCloseProject();
-      void slotCreateLib();
-      void slotCreatePackage();
-      void slotExtractPackage();
+    void slotNewProject();
+    void slotOpenProject();
+    void slotAddToProject();
+    void slotRemoveFromProject();
+    void slotCloseProject();
+    void slotCreateLib();
+    void slotCreatePackage();
+    void slotExtractPackage();
 
-      void slotSetWire(bool);
-      void slotInsertLabel(bool);
-      void slotInsertEquation();
-      void slotInsertGround();
-      void slotInsertPort();
-      void slotInsertEntity();
-      void slotEditActivate(bool);
-      void slotCallFilter();
-      void slotCallLine();
-      void slotCallMatch();
-      void slotCallAtt();
-      void slotCallLibrary();
-      void slotImportData();
-      void slotShowConsole();
+    void slotSetWire(bool);
+    void slotInsertLabel(bool);
+    void slotInsertEquation();
+    void slotInsertGround();
+    void slotInsertPort();
+    void slotInsertEntity();
+    void slotEditActivate(bool);
+    void slotCallFilter();
+    void slotCallLine();
+    void slotCallMatch();
+    void slotCallAtt();
+    void slotCallLibrary();
+    void slotImportData();
+    void slotShowConsole();
 
-      void slotSimulate();
-      void slotToPage();
-      void slotDCbias();
-      void slotSetMarker(bool);
-      void slotExportGraphAsCsv();
-      void slotShowLastMsg();
-      void slotShowLastNetlist();
+    void slotSimulate();
+    void slotToPage();
+    void slotDCbias();
+    void slotSetMarker(bool);
+    void slotExportGraphAsCsv();
+    void slotShowLastMsg();
+    void slotShowLastNetlist();
 
-      void slotShowAll();
-      void slotShowOne();
-      void slotZoomIn(bool);
-      void slotZoomOut(bool);
-      void slotViewToolBar(bool);
-      void slotViewStatusBar(bool);
+    void slotShowAll();
+    void slotShowOne();
+    void slotZoomIn(bool);
+    void slotZoomOut(bool);
+    void slotViewToolBar(bool);
+    void slotViewStatusBar(bool);
 
-      void slotHelpIndex();
-      void slotHelpAbout();
-      void slotHelpAboutQt();
+    void slotHelpIndex();
+    void slotHelpAbout();
+    void slotHelpAboutQt();
 
-      void slotInsertItemAction(bool state);
-      void slotPaintingDrawAction(bool state);
-      void setDocumentTitle(const QString& title);
-      void updateTitleTabText();
-      void slotSidebarItemClicked(const QString& item, const QString& category);
+    void slotInsertItemAction(bool state);
+    void slotPaintingDrawAction(bool state);
+    void setDocumentTitle(const QString& title);
+    void updateTitleTabText();
+    void slotSidebarItemClicked(const QString& item, const QString& category);
 
-   signals:
-      void signalKillWidgets();
+signals:
+    void signalKillWidgets();
 
 
-   protected:
-      void closeEvent( QCloseEvent *closeEvent);
+protected:
+    void closeEvent( QCloseEvent *closeEvent);
 
-   private slots:
-      void loadSettings();
-      void setTabTitle(const QString& str);
+private Q_SLOTS:
+    void loadSettings();
+    void setTabTitle(const QString& str);
 
-      void slotCurrentChanged(QWidget *current, QWidget *prev);
-      void slotViewClosed(QWidget *widget);
+    void slotCurrentChanged(QWidget *current, QWidget *prev);
+    void slotViewClosed(QWidget *widget);
 
-   private:
-      void initActions();
-      void initMenus();
-      void initToolBars();
+private:
+    void initActions();
+    void initMenus();
+    void initToolBars();
 
-      void performToggleAction(const bool on, pActionFunc func, QAction *action);
-      void setNormalAction();
-      void alignElements(Qt::Alignment alignment);
-      void editFile(const QString& File);
-      void showHTML(const QString& Page);
+    void performToggleAction(const bool on, pActionFunc func, QAction *action);
+    void setNormalAction();
+    void alignElements(Qt::Alignment alignment);
+    void editFile(const QString& File);
+    void showHTML(const QString& Page);
 
-      void createUndoView();
-      void createFolderView();
-      void setupSidebar();
-      void setupProjectsSidebar();
+    void createUndoView();
+    void createFolderView();
+    void setupSidebar();
+    void setupProjectsSidebar();
 
-      QucsView* viewFromWidget(QWidget *widget);
+    QucsView* viewFromWidget(QWidget *widget);
 
-      void resetCurrentSceneState();
-      // The following aim at reducing clutter by substituting
-      // action pointers with a map container using object names
-      // to identify them.
-      inline void addActionToMap(QAction *act);
-      inline QAction* action(const QString& name) const;
-      QMap<QString ,QAction*> actionMap;
-      QList<QAction*> checkableActions;
+    void resetCurrentSceneState();
+    // The following aim at reducing clutter by substituting
+    // action pointers with a map container using object names
+    // to identify them.
+    inline void addActionToMap(QAction *act);
+    inline QAction* action(const QString& name) const;
+    QMap<QString ,QAction*> actionMap;
+    QList<QAction*> checkableActions;
 
-      // menus contain the items of their menubar
-      QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
-         *helpMenu, *alignMenu, *toolMenu;
+    // menus contain the items of their menubar
+    QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
+          *helpMenu, *alignMenu, *toolMenu;
 
-      QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
-      QDockWidget *sidebarDockWidget;
-      QUndoGroup *m_undoGroup;
-      QUndoView *undoView;
-      ComponentsSidebar *m_componentsSidebar;
-      ComponentsSidebar *m_projectsSidebar;
-      Library *projectLibrary;
-      FolderBrowser *m_folderBrowser;
-      QString titleText;
+    QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
+    QDockWidget *sidebarDockWidget;
+    QUndoGroup *m_undoGroup;
+    QUndoView *undoView;
+    ComponentsSidebar *m_componentsSidebar;
+    ComponentsSidebar *m_projectsSidebar;
+    Library *projectLibrary;
+    FolderBrowser *m_folderBrowser;
+    QString titleText;
 
-   public:
+public:
 
-      int x, y, dx, dy;     // position and size
-      float largeFontSize;
-      unsigned int maxUndo, iconsPixelSize; // size of undo stack
-      QString savingFont;
-      QString Editor;
-      QString Language;
-      QColor BGColor;
-      QColor VHDL_Comment, VHDL_String, VHDL_Integer, VHDL_Real,
-         VHDL_Character, VHDL_Types, VHDL_Attributes;
-      // registered filename extensions with program to open the file
-      QStringList FileTypes;
+    int x, y, dx, dy;     // position and size
+    float largeFontSize;
+    unsigned int maxUndo, iconsPixelSize; // size of undo stack
+    QString savingFont;
+    QString Editor;
+    QString Language;
+    QColor BGColor;
+    QColor VHDL_Comment, VHDL_String, VHDL_Integer, VHDL_Real,
+           VHDL_Character, VHDL_Types, VHDL_Attributes;
+    // registered filename extensions with program to open the file
+    QStringList FileTypes;
 };
 
 inline void QucsMainWindow::addActionToMap(QAction *action)
 {
-   actionMap[action->objectName()] = action;
+    actionMap[action->objectName()] = action;
 }
 
 inline QAction* QucsMainWindow::action(const QString& name) const
 {
-   if(actionMap.contains(name))
-      return actionMap[name];
-   qWarning("QucsMainWindow::action() - No action by name %s to return\nProbably bug",qPrintable(name));
-   return new QAction(0); // To avoid crash
+    if(actionMap.contains(name)) {
+        return actionMap[name];
+    }
+    qWarning("QucsMainWindow::action() - No action by name %s to return\nProbably bug",
+            qPrintable(name));
+    return new QAction(0); // To avoid crash
 }
 
-#endif //__QUCSMAINWINDOW_H
+#endif //QUCSMAINWINDOW_H

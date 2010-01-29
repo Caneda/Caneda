@@ -22,51 +22,59 @@
 
 #ifndef PRINT_DIALOG_H
 #define PRINT_DIALOG_H
-#include <QtGui>
+
 #include "schematicscene.h"
 
-/**
-        This class represents the configuration dialog to print a
-        schematic.
-        It also takes care of the print itself
-*/
-class PrintDialog : public QWidget {
-	Q_OBJECT
+class QCheckBox;
+class QLineEdit;
+class QRadioButton;
 
-        public:
-        PrintDialog(SchematicScene *, QWidget * = 0);
-        ~PrintDialog();
+/*!
+ * This class represents the configuration dialog to print a
+ * schematic.
+ * It also takes care of the print itself
+ */
+class PrintDialog : public QWidget
+{
+    Q_OBJECT;
 
-        public:
-	void setFileName(const QString &);
-	QString fileName() const;
-	void setDocName(const QString &);
-	QString docName() const;
-        int pagesCount(bool = false) const;
-        int horizontalPagesCount(bool = false) const;
-        int verticalPagesCount(bool = false) const;
-	
-	private:
-	void buildPrintTypeDialog();
-	
-	private slots:
-        void updatePrintTypeDialog();
-        void browseFilePrintTypeDialog();
-	void acceptPrintTypeDialog();
-        void print(bool);
-	
-	private:
-        SchematicScene *schema;
-        QPrinter *printer;
-        QString docname;
-        QString filename;
-	
-        QDialog *dialog;
-        QRadioButton *printerChoice;
-        QRadioButton *pdfChoice;
-        QRadioButton *psChoice;
-        QLineEdit *editFilepath;
-        QCheckBox *fitInPage;
-        QPushButton *browseButton;
+public:
+    PrintDialog(SchematicScene *, QWidget * = 0);
+    ~PrintDialog();
+
+    QString fileName() const;
+    void setFileName(const QString &);
+
+    QString docName() const;
+    void setDocName(const QString &);
+
+    int pagesCount(bool = false) const;
+
+    int horizontalPagesCount(bool = false) const;
+    int verticalPagesCount(bool = false) const;
+
+private:
+    void buildPrintTypeDialog();
+
+private Q_SLOTS:
+    void updatePrintTypeDialog();
+    void browseFilePrintTypeDialog();
+    void acceptPrintTypeDialog();
+    void print(bool);
+
+private:
+    SchematicScene *schema;
+    QPrinter *printer;
+    QString docname;
+    QString filename;
+
+    QDialog *dialog;
+    QRadioButton *printerChoice;
+    QRadioButton *pdfChoice;
+    QRadioButton *psChoice;
+    QLineEdit *editFilepath;
+    QCheckBox *fitInPage;
+    QPushButton *browseButton;
 };
+
 #endif

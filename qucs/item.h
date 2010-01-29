@@ -17,25 +17,26 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __ITEM_H
-#define __ITEM_H
+#ifndef ITEM_H
+#define ITEM_H
 
-#include <QtGui/QGraphicsItem>
-#include <QtGui/QPen>
-#include <QtGui/QBrush>
-#include <QtGui/QDialog>
+#include <QBrush>
+#include <QDialog>
+#include <QFlags>
+#include <QGraphicsItem>
+#include <QPen>
 
-#include <QtCore/QFlags>
 #include <limits>
 
 /*!
  * \brief This macro determines the pattern for derived class.
  *
  * The macro accepts two parameter base and shift and returns the
- * the pattern corresponding to derived class.*/
+ * the pattern corresponding to derived class.
+ */
 #define PATTERN(base,shift) (((base) >> (shift)) | (base))
 
-/* forward declaration */
+// forward declaration
 class QGraphicsScene;
 class QGraphicsView;
 class QMenu;
@@ -45,129 +46,131 @@ class SchematicView;
 class QucsMainWindow;
 
 namespace Qucs {
-   class XmlReader;
-   class XmlWriter;
+    class XmlReader;
+    class XmlWriter;
 
-   //! This enum determines the rotation direction.
-   enum AngleDirection {
-      Clockwise,
-      AntiClockwise
-   };
+    //! This enum determines the rotation direction.
+    enum AngleDirection {
+        Clockwise,
+        AntiClockwise
+    };
 
-   enum UndoOption {
-      DontPushUndoCmd,
-      PushUndoCmd
-   };
+    enum UndoOption {
+        DontPushUndoCmd,
+        PushUndoCmd
+    };
 
-   enum ResizeHandle {
-      NoHandle = 0,
-      TopLeftHandle = 1, //0001
-      TopRightHandle = 2, //0010
-      BottomRightHandle = 4, //0100
-      BottomLeftHandle = 8, //1000
-   };
+    enum ResizeHandle {
+        NoHandle = 0,
+        TopLeftHandle = 1, //0001
+        TopRightHandle = 2, //0010
+        BottomRightHandle = 4, //0100
+        BottomLeftHandle = 8, //1000
+    };
 
-   Q_DECLARE_FLAGS(ResizeHandles, ResizeHandle)
-   Q_DECLARE_OPERATORS_FOR_FLAGS(Qucs::ResizeHandles)
+    Q_DECLARE_FLAGS(ResizeHandles, ResizeHandle);
+    Q_DECLARE_OPERATORS_FOR_FLAGS(Qucs::ResizeHandles);
 
-   static const QPen handlePen(Qt::darkRed);
-   static const QBrush handleBrush(Qt::NoBrush);
-   static const QRectF handleRect(-5, -5, 10, 10);
+    static const QPen handlePen(Qt::darkRed);
+    static const QBrush handleBrush(Qt::NoBrush);
+    static const QRectF handleRect(-5, -5, 10, 10);
 
-   void drawHighlightRect(QPainter *p, QRectF rect, qreal pw = 1, const QStyleOptionGraphicsItem *o = 0);
+    void drawHighlightRect(QPainter *p, QRectF rect, qreal pw = 1,
+            const QStyleOptionGraphicsItem *o = 0);
 
-   void drawResizeHandle(const QPointF &centrePos, QPainter *painter);
-   void drawResizeHandles(ResizeHandles handles, const QRectF& rect, QPainter *painter);
+    void drawResizeHandle(const QPointF &centrePos, QPainter *painter);
+    void drawResizeHandles(ResizeHandles handles, const QRectF& rect, QPainter *painter);
 
-   ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles, const QRectF& rect);
+    ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles,
+            const QRectF& rect);
 
 }
 
 
-//!\brief Qucs item - The base class for components, wires, nodes..
+//! \brief Qucs item - The base class for components, wires, nodes..
 class QucsItem : public QGraphicsItem
 {
-   public:
-      /*!
-       * \brief This enum helps in polymorphic cast without using dynamic_cast.
-       *
-       * Actually a bitpattern is used to determine whether the cast
-       * is valid or not. The cast function is approximately defined like this
-       * cast(a,b) {
-       * return (a&b) == a;
-       * }
-       * \sa qucsitem_cast and PATTERN.
-      */
-      enum QucsItemTypes {
-         //!Recognizes all classes derived from QucsItem
-         QucsItemType = (1 << (std::numeric_limits<int>::digits-1)),
-         //!Recognizes classes derived from SvgItem
-         SvgItemType = PATTERN(QucsItemType, 1),
-         //!Recognizes classes derived from Component
-         ComponentType = PATTERN(SvgItemType, 1),
-         //!Recognizes classes derived from Wire
-         WireType = PATTERN(QucsItemType, 3),
-         //!Recognizes classes derived from Painting
-         PaintingType = PATTERN(QucsItemType, 4),
-         //!Recognizes classes derived from Display
-         DisplayType = PATTERN(QucsItemType, 5)
-      };
+public:
+    /*!
+     * \brief This enum helps in polymorphic cast without using dynamic_cast.
+     *
+     * Actually a bitpattern is used to determine whether the cast
+     * is valid or not. The cast function is approximately defined like this
+     * cast(a,b) {
+     * return (a&b) == a;
+     * }
+     * \sa qucsitem_cast and PATTERN.
+     */
+    enum QucsItemTypes {
+        //!Recognizes all classes derived from QucsItem
+        QucsItemType = (1 << (std::numeric_limits<int>::digits-1)),
+        //!Recognizes classes derived from SvgItem
+        SvgItemType = PATTERN(QucsItemType, 1),
+        //!Recognizes classes derived from Component
+        ComponentType = PATTERN(SvgItemType, 1),
+        //!Recognizes classes derived from Wire
+        WireType = PATTERN(QucsItemType, 3),
+        //!Recognizes classes derived from Painting
+        PaintingType = PATTERN(QucsItemType, 4),
+        //!Recognizes classes derived from Display
+        DisplayType = PATTERN(QucsItemType, 5)
+    };
 
-      //! Item identifier \sa QucsItemTypes
-      enum {
-         Type = QucsItemType
-      };
+    //! Item identifier \sa QucsItemTypes
+    enum {
+        Type = QucsItemType
+    };
 
-      QucsItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
-      virtual ~QucsItem();
+    QucsItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
+    virtual ~QucsItem();
 
-      //! Return type of item
-      int type() const { return QucsItemType; }
-      //! Return bounding box
-      QRectF boundingRect() const { return this->m_boundingRect; }
-      //! Return the shape of the item.
-      QPainterPath shape() const { return this->m_shape; }
+    //! Return type of item
+    int type() const { return QucsItemType; }
+    //! Return bounding box
+    QRectF boundingRect() const { return this->m_boundingRect; }
+    //! Return the shape of the item.
+    QPainterPath shape() const { return this->m_shape; }
 
-      SchematicScene* schematicScene() const;
-      SchematicView* activeView() const;
-      QucsMainWindow* mainWindow() const;
+    SchematicScene* schematicScene() const;
+    SchematicView* activeView() const;
+    QucsMainWindow* mainWindow() const;
 
-      //! Virtual method to write item's properties to writer.
-      virtual void saveData(Qucs::XmlWriter *) const {}
-      //! Virtual method to read item's properties from reader.
-      virtual void loadData(Qucs::XmlReader *) {}
+    //! Virtual method to write item's properties to writer.
+    virtual void saveData(Qucs::XmlWriter *) const {}
+    //! Virtual method to read item's properties from reader.
+    virtual void loadData(Qucs::XmlReader *) {}
 
-      QString saveDataText() const;
-      void loadDataFromText(const QString &str);
+    QString saveDataText() const;
+    void loadDataFromText(const QString &str);
 
-      virtual void mirrorAlong(Qt::Axis axis);
-      virtual void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise);
+    virtual void mirrorAlong(Qt::Axis axis);
+    virtual void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise);
 
-      virtual QucsItem* copy(SchematicScene *scene = 0) const;
-      virtual void copyDataTo(QucsItem *item) const;
+    virtual QucsItem* copy(SchematicScene *scene = 0) const;
+    virtual void copyDataTo(QucsItem *item) const;
 
-      //! This is convenience method used for rtti.
-      virtual bool isComponent() const { return false; }
-      //! This is convenience method used for rtti.
-      virtual bool isWire() const { return false; }
+    //! This is convenience method used for rtti.
+    virtual bool isComponent() const { return false; }
+    //! This is convenience method used for rtti.
+    virtual bool isWire() const { return false; }
 
-      //! Subclasses should implement this to launch its own dialog.
-      virtual int launchPropertyDialog(Qucs::UndoOption) { return QDialog::Accepted; }
+    //! Subclasses should implement this to launch its own dialog.
+    virtual int launchPropertyDialog(Qucs::UndoOption) { return QDialog::Accepted; }
 
-      QMenu* defaultContextMenu() const;
+    QMenu* defaultContextMenu() const;
 
-   protected:
-      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-      void setShapeAndBoundRect(const QPainterPath& path,
-                                const QRectF& rect,
-                                qreal penWidth = 1.0);
+    void setShapeAndBoundRect(const QPainterPath& path,
+            const QRectF& rect,
+            qreal penWidth = 1.0);
 
-      QRectF m_boundingRect; //!< Bounding box cache
-      QPainterPath m_shape; //!< Shape cache
+    QRectF m_boundingRect; //!< Bounding box cache
+    QPainterPath m_shape; //!< Shape cache
 };
 
-/*
+/*!
  * \brief rtti cast function with polymorphic support.
  *
  * This function actually works for items following the rules.
@@ -177,45 +180,48 @@ class QucsItem : public QGraphicsItem
  */
 template<typename T> T qucsitem_cast(QGraphicsItem *item)
 {
-   bool firstCond = int(static_cast<T>(0)->Type) == int(QGraphicsItem::Type);
-   bool secondCond = !firstCond && item &&
-         ((int(static_cast<T>(0)->Type) & item->type()) == (int(static_cast<T>(0)->Type)));
-   bool result = firstCond | secondCond;
-   return result ? static_cast<T>(item)  : 0;
+    bool firstCond = int(static_cast<T>(0)->Type) == int(QGraphicsItem::Type);
+    bool secondCond = !firstCond && item &&
+        ((int(static_cast<T>(0)->Type) & item->type()) == (int(static_cast<T>(0)->Type)));
+    bool result = firstCond | secondCond;
+    return result ? static_cast<T>(item)  : 0;
 }
 
 //! This enum is used in \a filterItems method to determine filtering.
 enum FilterOption {
-   DontRemoveItems,
-   RemoveItems
+    DontRemoveItems,
+    RemoveItems
 };
 
-/*
+/*!
  * \brief This function returns a list of qucsitems present in \a items.
  * \param items  The list from which items are to be filtered.
  * \param option Indication whether to remove non matching items from items passed
  *               or not.
  */
+
 template<typename T>
 QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRemoveItems)
 {
-   QList<T*> tItems;
-   QList<QGraphicsItem*>::iterator it = items.begin();
-   while(it != items.end()) {
-      QGraphicsItem *item = *it;
-      T *tItem = qucsitem_cast<T*>(item);
-      if(tItem) {
-         tItems << tItem;
-         if(option == RemoveItems)
-            it = items.erase(it);
-         else
+    QList<T*> tItems;
+    QList<QGraphicsItem*>::iterator it = items.begin();
+    while(it != items.end()) {
+        QGraphicsItem *item = *it;
+        T *tItem = qucsitem_cast<T*>(item);
+        if(tItem) {
+            tItems << tItem;
+            if(option == RemoveItems) {
+                it = items.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+        else {
             ++it;
-      }
-      else {
-         ++it;
-      }
-   }
-   return tItems;
+        }
+    }
+    return tItems;
 }
 
 /*
@@ -227,23 +233,25 @@ QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRe
 template<typename T>
 QList<T*> filterItems(QList<QucsItem*> &items, FilterOption option = DontRemoveItems)
 {
-   QList<T*> tItems;
-   QList<QucsItem*>::iterator it = items.begin();
-   while(it != items.end()) {
-      QucsItem *item = *it;
-      T *tItem = qucsitem_cast<T*>(item);
-      if(tItem) {
-         tItems << tItem;
-         if(option == RemoveItems)
-            it = items.erase(it);
-         else
+    QList<T*> tItems;
+    QList<QucsItem*>::iterator it = items.begin();
+    while(it != items.end()) {
+        QucsItem *item = *it;
+        T *tItem = qucsitem_cast<T*>(item);
+        if(tItem) {
+            tItems << tItem;
+            if(option == RemoveItems) {
+                it = items.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+        else {
             ++it;
-      }
-      else {
-         ++it;
-      }
-   }
-   return tItems;
+        }
+    }
+    return tItems;
 }
 
 //! Key used to store the current position of an item in it's data field.
@@ -252,4 +260,4 @@ static const int PointKey = 10;
 void storePos(QGraphicsItem *item, const QPointF& pos);
 QPointF storedPos(QGraphicsItem *item);
 
-#endif //__ITEM_H
+#endif //ITEM_H

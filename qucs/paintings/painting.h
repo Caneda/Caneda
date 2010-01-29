@@ -17,12 +17,13 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __PAINTING_H
-#define __PAINTING_H
+#ifndef PAINTING_H
+#define PAINTING_H
 
 #include "item.h"
-#include <QtGui/QPen>
-#include <QtGui/QBrush>
+
+#include <QBrush>
+#include <QPen>
 
 static const QPen defaultPaintingPen(Qt::black);
 static const QBrush defaultPaintingBrush(Qt::NoBrush);
@@ -39,99 +40,97 @@ static const QBrush defaultPaintingBrush(Qt::NoBrush);
  */
 class Painting : public QucsItem
 {
-   public:
-      enum {
-         NoPaintingType = 0,
-         Type = QucsItem::PaintingType
-      };
+public:
+    enum {
+        NoPaintingType = 0,
+        Type = QucsItem::PaintingType
+    };
 
-      enum PaintingType {
-         ArrowType = QucsItem::PaintingType + 1,
-         EllipseType,
-         EllipseArcType,
-         GraphicLineType,
-         GraphicTextType,
-         IdTextType,
-         PortSymbolType,
-         RectangleType
-      };
+    enum PaintingType {
+        ArrowType = QucsItem::PaintingType + 1,
+        EllipseType,
+        EllipseArcType,
+        GraphicLineType,
+        GraphicTextType,
+        IdTextType,
+        PortSymbolType,
+        RectangleType
+    };
 
-      Painting(SchematicScene *scene = 0);
-      ~Painting();
+    Painting(SchematicScene *scene = 0);
+    ~Painting();
 
-      //! \copydoc QucsItem::type()
-      int type() const { return Type; }
+    //! \copydoc QucsItem::type()
+    int type() const { return Type; }
 
-      /*!
-       * \brief Returns paintingRect of this painting item.
-       *
-       * \copydoc Painting::m_paintingRect
-       */
-      QRectF paintingRect() const { return m_paintingRect; }
-      void setPaintingRect(const QRectF& rect);
+    /*!
+     * \brief Returns paintingRect of this painting item.
+     *
+     * \copydoc Painting::m_paintingRect
+     */
+    QRectF paintingRect() const { return m_paintingRect; }
+    void setPaintingRect(const QRectF& rect);
 
-      virtual QPainterPath shapeForRect(const QRectF& rect) const;
+    virtual QPainterPath shapeForRect(const QRectF& rect) const;
 
-      /*!
-       * Returns the adjusted painting bound rect for paintingrect \a rect.
-       */
-      virtual QRectF boundForRect(const QRectF& rect) const {
-         return rect;
-      }
+    //! Returns the adjusted painting bound rect for paintingrect \a rect.
+    virtual QRectF boundForRect(const QRectF& rect) const {
+        return rect;
+    }
 
-      //! Returns the pen with which the item is drawn.
-      QPen pen() const { return m_pen; }
-      virtual void setPen(const QPen& _pen);
+    //! Returns the pen with which the item is drawn.
+    QPen pen() const { return m_pen; }
+    virtual void setPen(const QPen& _pen);
 
-      //! Returns the brush with which the item is drawn.
-      QBrush brush() const { return m_brush; }
-      virtual void setBrush(const QBrush& _brush);
+    //! Returns the brush with which the item is drawn.
+    QBrush brush() const { return m_brush; }
+    virtual void setBrush(const QBrush& _brush);
 
-      void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
+    void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-      //! Returns an OR representation of used resize handles.
-      Qucs::ResizeHandles resizeHandles() const { return m_resizeHandles; }
-      void setResizeHandles(Qucs::ResizeHandles handles);
+    //! Returns an OR representation of used resize handles.
+    Qucs::ResizeHandles resizeHandles() const { return m_resizeHandles; }
+    void setResizeHandles(Qucs::ResizeHandles handles);
 
-      //! Returns the active handle i.e the one with mouse focus.
-      Qucs::ResizeHandle activeHandle() const { return m_activeHandle; }
+    //! Returns the active handle i.e the one with mouse focus.
+    Qucs::ResizeHandle activeHandle() const { return m_activeHandle; }
 
-      virtual void copyDataTo(Painting *painting) const;
+    virtual void copyDataTo(Painting *painting) const;
 
-      static Painting* fromName(const QString& name);
-      static Painting* loadPainting(Qucs::XmlReader *reader, SchematicScene *scene = 0);
+    static Painting* fromName(const QString& name);
+    static Painting* loadPainting(Qucs::XmlReader *reader, SchematicScene *scene = 0);
 
-      QRectF storedPaintingRect() const { return m_store; }
-      void storePaintingRect() { m_store = paintingRect(); }
+    QRectF storedPaintingRect() const { return m_store; }
+    void storePaintingRect() { m_store = paintingRect(); }
 
-   protected:
-      /*!
-       * Subclasses should reimplement to do calculations this is notified
-       * usually in call \a setPaintingRect.
-       */
-      virtual void geometryChange() {}
+protected:
+    /*!
+     * Subclasses should reimplement to do calculations this is notified
+     * usually in call \a setPaintingRect.
+     */
+    virtual void geometryChange() {}
 
-      void adjustGeometry();
+    void adjustGeometry();
 
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
-   private:
-      /*!
-       * Represents the rectangle withing which painting should be drawn.
-       *
-       * For eg. GraphicLine can use topleft and bottom right of painting
-       * rectangles to represent itself.
-       * \note paintingRect is not same as bounding rect. The latter includes
-       * resizehandles also.
-       */
-      QRectF m_paintingRect;
-      QPen m_pen;
-      QBrush m_brush;
-      Qucs::ResizeHandles m_resizeHandles;
-      Qucs::ResizeHandle m_activeHandle;
-      QRectF m_store;
+private:
+    /*!
+     * Represents the rectangle withing which painting should be drawn.
+     *
+     * For eg. GraphicLine can use topleft and bottom right of painting
+     * rectangles to represent itself.
+     * \note paintingRect is not same as bounding rect. The latter includes
+     * resizehandles also.
+     */
+    QRectF m_paintingRect;
+    QPen m_pen;
+    QBrush m_brush;
+    Qucs::ResizeHandles m_resizeHandles;
+    Qucs::ResizeHandle m_activeHandle;
+    QRectF m_store;
 };
 
-#endif //__PAINTING_H
+#endif //PAINTING_H

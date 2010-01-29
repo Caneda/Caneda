@@ -17,11 +17,12 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __LIBRARY_H
-#define __LIBRARY_H
+#ifndef LIBRARY_H
+#define LIBRARY_H
 
 #include "component.h"
-#include <QtCore/QHash>
+
+#include <QHash>
 
 typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
 
@@ -30,50 +31,57 @@ typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
  */
 class Library
 {
-   public:
-      Library(QString libraryPath, SvgPainter *painter);
-      ~Library();
+public:
+    Library(QString libraryPath, SvgPainter *painter);
+    ~Library();
 
-      ComponentDataPtr componentDataPtr(const QString& name) const;
+    ComponentDataPtr componentDataPtr(const QString& name) const;
 
-      //! Returns svg painter in use.
-      SvgPainter* svgPainter() const { return m_svgPainter; }
-      //! Returns library name.
-      QString libraryName() const { return m_libraryName; }
-      //! Returns library filename.
-      QString libraryFileName() const { return m_libraryFileName; }
-      //! Returns symbol id corresponding to library.
-      QString defaultSymbolId() const { return m_defaultSymbolId; }
-      //! Returns brief text used to display.
-      QString displayText() const { return m_displayText; }
-      //! Returns the description of library.
-      QString description() const { return m_description; }
-      //! Returns validity of this instance.
-      bool isValid() const { return m_valid; }
-      //! Returns the component' s shared hash table.
-      const QHash<QString, ComponentDataPtr>& components() const {
-         return m_componentHash;
-      }
+    //! Returns svg painter in use.
+    SvgPainter* svgPainter() const { return m_svgPainter; }
 
-      void render(QPainter *painter, QString component, QString symbol = QString()) const;
-      QPixmap renderedPixmap(QString component, QString symbol = QString()) const;
+    //! Returns library name.
+    QString libraryName() const { return m_libraryName; }
 
-      bool loadLibrary(Qucs::XmlReader *reader);
-      bool saveLibrary();
-      bool parseExternalComponent(QString componentPath);
-      bool removeComponent(QString componentName);
+    //! Returns library filename.
+    QString libraryFileName() const { return m_libraryFileName; }
 
-   private:
-      bool registerComponentData(Qucs::XmlReader *reader, QString componentPath);
-      QString m_libraryName;
-      QString m_libraryFileName;
-      QString m_defaultSymbolId;
-      QString m_displayText;
-      QString m_description;
+    //! Returns symbol id corresponding to library.
+    QString defaultSymbolId() const { return m_defaultSymbolId; }
 
-      SvgPainter *m_svgPainter;
-      QHash<QString, ComponentDataPtr> m_componentHash;
-      bool m_valid;
+    //! Returns brief text used to display.
+    QString displayText() const { return m_displayText; }
+
+    //! Returns the description of library.
+    QString description() const { return m_description; }
+
+    //! Returns validity of this instance.
+    bool isValid() const { return m_valid; }
+
+    //! Returns the component' s shared hash table.
+    const QHash<QString, ComponentDataPtr>& components() const {
+        return m_componentHash;
+    }
+
+    void render(QPainter *painter, QString component, QString symbol = QString()) const;
+    QPixmap renderedPixmap(QString component, QString symbol = QString()) const;
+
+    bool loadLibrary(Qucs::XmlReader *reader);
+    bool saveLibrary();
+    bool parseExternalComponent(QString componentPath);
+    bool removeComponent(QString componentName);
+
+private:
+    bool registerComponentData(Qucs::XmlReader *reader, QString componentPath);
+    QString m_libraryName;
+    QString m_libraryFileName;
+    QString m_defaultSymbolId;
+    QString m_displayText;
+    QString m_description;
+
+    SvgPainter *m_svgPainter;
+    QHash<QString, ComponentDataPtr> m_componentHash;
+    bool m_valid;
 };
 
 typedef QHash<QString, Library*> LibraryHash;
@@ -86,27 +94,27 @@ typedef QHash<QString, Library*> LibraryHash;
  */
 class LibraryLoader
 {
-   public:
-      static LibraryLoader* defaultInstance();
-      ~LibraryLoader();
+public:
+    static LibraryLoader* defaultInstance();
+    ~LibraryLoader();
 
-      Component* newComponent(QString componentName,
-                              SchematicScene *scene,
-                              QString library = QString());
+    Component* newComponent(QString componentName,
+            SchematicScene *scene,
+            QString library = QString());
 
-      bool newLibrary(const QString& libPath, SvgPainter* svg = 0);
-      bool load(const QString& libPath, SvgPainter* svg = 0);
-      bool loadtree(const QString& libpathtree, SvgPainter *svgPainter_ = 0);
-      bool unload(const QString& libName);
+    bool newLibrary(const QString& libPath, SvgPainter* svg = 0);
+    bool load(const QString& libPath, SvgPainter* svg = 0);
+    bool loadtree(const QString& libpathtree, SvgPainter *svgPainter_ = 0);
+    bool unload(const QString& libName);
 
-      //! Returns library hash table
-      const LibraryHash& libraries() const { return m_libraryHash; }
+    //! Returns library hash table
+    const LibraryHash& libraries() const { return m_libraryHash; }
 
-      Library* library(const QString& libName) const;
+    Library* library(const QString& libName) const;
 
-   private:
-      LibraryLoader();
-      LibraryHash m_libraryHash;
+private:
+    LibraryLoader();
+    LibraryHash m_libraryHash;
 };
 
-#endif //__LIBRARY_H
+#endif //LIBRARY_H

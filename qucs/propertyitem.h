@@ -17,11 +17,12 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __PROPERTYITEM_H
-#define __PROPERTYITEM_H
+#ifndef PROPERTYITEM_H
+#define PROPERTYITEM_H
 
 #include "propertygroup.h"
-#include <QtGui/QGraphicsTextItem>
+
+#include <QGraphicsTextItem>
 
 //Forward declarations.
 class SchematicScene;
@@ -29,51 +30,51 @@ class SchematicScene;
 //! Class used to represent the text corresponding to property on schematic.
 class PropertyItem : public QGraphicsTextItem
 {
-   Q_OBJECT;
-   public:
-      PropertyItem(const QString& name, SchematicScene *scene);
+    Q_OBJECT;
+public:
+    PropertyItem(const QString& name, SchematicScene *scene);
 
-      QRectF boundingRect() const;
-      QPainterPath shape() const;
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
 
-      void setFont(const QFont& f);
+    void setFont(const QFont& f);
 
-      bool eventFilter(QObject* object, QEvent* event);
-      void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
-                 QWidget * widget = 0 );
+    bool eventFilter(QObject* object, QEvent* event);
+    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
+            QWidget * widget = 0 );
 
-      Component* component() const {
-         return static_cast<PropertiesGroup*>(group())->component();
-      }
+    Component* component() const {
+        return static_cast<PropertiesGroup*>(group())->component();
+    }
 
-   public slots:
-      void updateValue();
+public Q_SLOTS:
+    void updateValue();
 
-   protected:
-      bool sceneEvent(QEvent *event);
+protected:
+    bool sceneEvent(QEvent *event);
 
-      void mousePressEvent ( QGraphicsSceneMouseEvent * event );
-      void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-      void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-      void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
+    void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+    void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+    void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
 
-      void focusInEvent(QFocusEvent *event);
-      void focusOutEvent(QFocusEvent *event);
+    void focusInEvent(QFocusEvent *event);
+    void focusOutEvent(QFocusEvent *event);
 
-      void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
-   private slots:
-      void textChanged();
+private Q_SLOTS:
+    void textChanged();
 
-   private:
-      void calculatePos();
-      bool isSendable(QGraphicsSceneMouseEvent *event) const;
-      void updateGroupGeometry() const;
+private:
+    void calculatePos();
+    bool isSendable(QGraphicsSceneMouseEvent *event) const;
+    void updateGroupGeometry() const;
 
-      const QString m_propertyName;
-      QString m_staticText;
-      QPointF m_staticPos;
-      bool m_edited;
+    const QString m_propertyName;
+    QString m_staticText;
+    QPointF m_staticPos;
+    bool m_edited;
 };
 
-#endif //__PROPERTYITEM_H
+#endif //PROPERTYITEM_H

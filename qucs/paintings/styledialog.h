@@ -17,114 +17,114 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __STYLEDIALOG_H
-#define __STYLEDIALOG_H
+#ifndef STYLEDIALOG_H
+#define STYLEDIALOG_H
 
-#include "ui_filldialog.h"
 #include "item.h"
+#include "ui_filldialog.h"
 
-#include <QtGui/QPen>
-#include <QtGui/QBrush>
-#include <QtGui/QPolygon>
+#include <QBrush>
+#include <QPen>
+#include <QPolygon>
 
 class Painting;
 
 class PreviewWidget : public QWidget
 {
-      Q_OBJECT;
-   public:
-      PreviewWidget(int paintingType, QWidget *widget = 0);
+    Q_OBJECT;
+public:
+    PreviewWidget(int paintingType, QWidget *widget = 0);
 
-      QPen pen() const { return m_pen; }
-      void setPen(QPen pen);
+    QPen pen() const { return m_pen; }
+    void setPen(QPen pen);
 
-      QBrush brush() const { return m_brush; }
-      void setBrush(QBrush brush);
+    QBrush brush() const { return m_brush; }
+    void setBrush(QBrush brush);
 
-      int headStyle() const { return m_headStyle; }
-      void setHeadStyle(int style);
+    int headStyle() const { return m_headStyle; }
+    void setHeadStyle(int style);
 
-      int headWidth() const { return m_headWidth; }
-      void setHeadWidth(int width);
+    int headWidth() const { return m_headWidth; }
+    void setHeadWidth(int width);
 
-      int headHeight() const { return m_headHeight; }
-      void setHeadHeight(int height);
+    int headHeight() const { return m_headHeight; }
+    void setHeadHeight(int height);
 
-      QSize headSize() const { return QSize(m_headWidth, m_headHeight); }
-      void setHeadSize(QSize size);
+    QSize headSize() const { return QSize(m_headWidth, m_headHeight); }
+    void setHeadSize(QSize size);
 
-      int startAngle() const { return m_startAngle; }
-      void setStartAngle(int angle);
+    int startAngle() const { return m_startAngle; }
+    void setStartAngle(int angle);
 
-      int spanAngle() const { return m_spanAngle; }
-      void setSpanAngle(int angle);
+    int spanAngle() const { return m_spanAngle; }
+    void setSpanAngle(int angle);
 
-      void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event);
 
-      void calcHeadPoints();
+    void calcHeadPoints();
 
-      int heightForWidth(int w) const { return w; }
+    int heightForWidth(int w) const { return w; }
 
-   public slots:
-      void toggleBackground(bool state);
+    public slots:
+        void toggleBackground(bool state);
 
-   protected:
-      void resizeEvent(QResizeEvent *event);
+protected:
+    void resizeEvent(QResizeEvent *event);
 
-   private:
-      QRect adjustedRect() const;
-      void drawBackgroundBoxes(QPainter *painter);
+private:
+    QRect adjustedRect() const;
+    void drawBackgroundBoxes(QPainter *painter);
 
-      void drawArrow(QPainter *painter);
-      void drawEllipse(QPainter *painter);
-      void drawEllipseArc(QPainter *painter);
-      void drawLine(QPainter *painter);
-      void drawRectangle(QPainter *painter);
+    void drawArrow(QPainter *painter);
+    void drawEllipse(QPainter *painter);
+    void drawEllipseArc(QPainter *painter);
+    void drawLine(QPainter *painter);
+    void drawRectangle(QPainter *painter);
 
-      QPen m_pen;
-      QBrush m_brush;
-      QPixmap m_lightPixmap;
-      QPixmap m_darkPixmap;
+    QPen m_pen;
+    QBrush m_brush;
+    QPixmap m_lightPixmap;
+    QPixmap m_darkPixmap;
 
-      int m_headStyle;
-      QPolygon m_headPolygon;
-      int m_headWidth;
-      int m_headHeight;
+    int m_headStyle;
+    QPolygon m_headPolygon;
+    int m_headWidth;
+    int m_headHeight;
 
-      int m_startAngle;
-      int m_spanAngle;
+    int m_startAngle;
+    int m_spanAngle;
 
-      bool m_drawBackground;
+    bool m_drawBackground;
 
-      int m_paintingType;
+    int m_paintingType;
 };
 
 class StyleDialog : public QDialog, public Ui::StyleDialogBase
 {
-      Q_OBJECT;
+    Q_OBJECT;
 
-   public:
-      StyleDialog(Painting *painting, Qucs::UndoOption opt, QWidget *parent = 0);
+public:
+    StyleDialog(Painting *painting, Qucs::UndoOption opt, QWidget *parent = 0);
 
-   public slots:
-      void setupStyleWidgets();
-      void updatePreview();
+public Q_SLOTS:
+    void setupStyleWidgets();
+    void updatePreview();
 
-      void launchColorDialog();
-      void applySettings();
+    void launchColorDialog();
+    void applySettings();
 
-   private:
-      PreviewWidget *previewWidget;
-      QColor lineColor;
-      QColor fillColor;
+private:
+    PreviewWidget *previewWidget;
+    QColor lineColor;
+    QColor fillColor;
 
-      QPixmap lineColorPixmap;
-      QPixmap fillColorPixmap;
+    QPixmap lineColorPixmap;
+    QPixmap fillColorPixmap;
 
-      QPolygon headPolygon;
+    QPolygon headPolygon;
 
-      Painting *painting;
-      Qucs::UndoOption undoOption;
+    Painting *painting;
+    Qucs::UndoOption undoOption;
 };
 
-#endif //__DIALOG_H
+#endif //STYLEDIALOG_H

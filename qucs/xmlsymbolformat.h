@@ -17,26 +17,26 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __XMLSYMBOLFORMAT_H
-#define __XMLSYMBOLFORMAT_H
+#ifndef XMLSYMBOLFORMAT_H
+#define XMLSYMBOLFORMAT_H
 
 #include "fileformathandler.h"
 
 namespace Qucs {
-   class XmlReader;
+    class XmlReader;
 }
 
 class XmlSymbolFormat : public FileFormatHandler
 {
-   public:
-      XmlSymbolFormat(SchematicView *view = 0);
-      ~XmlSymbolFormat() {}
+public:
+    XmlSymbolFormat(SchematicView *view = 0);
+    ~XmlSymbolFormat() {}
 
-      bool save();
-      bool load();
+    bool save();
+    bool load();
 
-   private:
-      QString saveText();
+private:
+    QString saveText();
 };
 
-#endif //__XMLSYMBOLFORMAT_H
+#endif //XMLSYMBOLFORMAT_H

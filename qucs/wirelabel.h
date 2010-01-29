@@ -21,33 +21,31 @@
 #include "element.h"
 #include "viewpainter.h"
 
-#include <qpainter.h>
-#include <qstring.h>
-#include <qptrlist.h>
-
-class Wire;
+class QPainter;
 class Node;
+class Wire;
 
 
-class WireLabel : public Element {
+class WireLabel : public Element
+{
 public:
-  WireLabel(const QString& _Name=0, int _cx=0, int _cy=0,
+    WireLabel(const QString& _Name=0, int _cx=0, int _cy=0,
             int _x1=0, int _y1=0, int _Type=isNodeLabel);
-  ~WireLabel();
+    ~WireLabel();
 
-  void paintScheme(QPainter *p);
-  void setCenter(int x, int y, bool relative=false);
-  bool getSelected(int, int);
-  void setName(const QString& Name_);
+    void paintScheme(QPainter *p);
+    void setCenter(int x, int y, bool relative=false);
+    bool getSelected(int, int);
+    void setName(const QString& Name_);
 
-  Conductor *pOwner;  // Wire or Node where label belongs to
-  QString Name, initValue;
+    Conductor *pOwner;  // Wire or Node where label belongs to
+    QString Name, initValue;
 
-  void    paint(ViewPainter*);
-  void    rotate();
-  QString save();
-  bool    load(const QString& s);
-  bool    isHorizontal();
+    void paint(ViewPainter*);
+    void rotate();
+    QString save();
+    bool load(const QString& s);
+    bool isHorizontal();
 };
 
 #endif

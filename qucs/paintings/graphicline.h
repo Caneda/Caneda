@@ -17,42 +17,42 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __GRAPHICLINE_H
-#define __GRAPHICLINE_H
+#ifndef GRAPHICLINE_H
+#define GRAPHICLINE_H
 
 #include "painting.h"
 
 //! \brief Represents a line on schematic.
 class GraphicLine : public Painting
 {
-   public:
-      enum {
-         Type = Painting::GraphicLineType
-      };
+public:
+    enum {
+        Type = Painting::GraphicLineType
+    };
 
-      GraphicLine(const QLineF &line, SchematicScene *scene = 0);
-      ~GraphicLine();
+    GraphicLine(const QLineF &line, SchematicScene *scene = 0);
+    ~GraphicLine();
 
-      QPainterPath shapeForRect(const QRectF &rect) const;
+    QPainterPath shapeForRect(const QRectF &rect) const;
 
-      void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+    void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
-      //! \brief Returns line represented by this item.
-      QLineF line() const { return lineFromRect(paintingRect()); }
-      void setLine(const QLineF &line);
+    //! \brief Returns line represented by this item.
+    QLineF line() const { return lineFromRect(paintingRect()); }
+    void setLine(const QLineF &line);
 
-      int type() const { return GraphicLine::Type; }
-      QucsItem* copy(SchematicScene *scene = 0) const;
+    int type() const { return GraphicLine::Type; }
+    QucsItem* copy(SchematicScene *scene = 0) const;
 
-      void saveData(Qucs::XmlWriter *writer) const;
-      void loadData(Qucs::XmlReader *reader);
+    void saveData(Qucs::XmlWriter *writer) const;
+    void loadData(Qucs::XmlReader *reader);
 
-      int launchPropertyDialog(Qucs::UndoOption opt);
+    int launchPropertyDialog(Qucs::UndoOption opt);
 
-   private:
-      //! \brief Returns line from rect.
-      QLineF lineFromRect(const QRectF &rect) const {
-         return QLineF(rect.topLeft(), rect.bottomRight());
-      }
+private:
+    //! \brief Returns line from rect.
+    QLineF lineFromRect(const QRectF &rect) const {
+        return QLineF(rect.topLeft(), rect.bottomRight());
+    }
 };
-#endif //__GRAPHICLINE_H
+#endif //GRAPHICLINE_H
