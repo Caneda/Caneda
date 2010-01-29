@@ -24,6 +24,7 @@
 #include "schematicscene.h"
 #include "xmlformat.h"
 
+#include <QDebug>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
@@ -49,6 +50,7 @@ SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
     setAcceptDrops(true);
     setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     setViewportUpdateMode(SmartViewportUpdate);
+    viewport()->setMouseTracking(true);
     ensureVisible(0, 0, 5, 5);
 
     connect(sc, SIGNAL(modificationChanged(bool)), SIGNAL(modificationChanged(bool)));
