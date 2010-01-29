@@ -203,6 +203,12 @@ void SchematicScene::setFileName(const QString& name)
     emit titleToBeUpdated();
 }
 
+//! A helper method to return sign of given integer.
+inline int sign(int value)
+{
+    return value >= 0 ? +1 : -1;
+}
+
 /*!
  * Get nearest point on grid
  * \param pos: current position to be rounded
@@ -211,25 +217,17 @@ void SchematicScene::setFileName(const QString& name)
  */
 QPointF SchematicScene::nearingGridPoint(const QPointF &pos) const
 {
-    QPoint point = pos.toPoint();
-    int x = point.x();
-    int y = point.y();
+    const QPoint point = pos.toPoint();
 
-    if(x<0) {
-        x -= (this->m_gridWidth / 2) - 1;
-    }
-    else {
-        x += this->m_gridWidth / 2;
-    }
+    int x = qAbs(point.x());
+    x += (this->m_gridWidth >> 1);
     x -= x % this->m_gridWidth;
+    x *= sign(point.x());
 
-    if(y<0) {
-        y -= (this->m_gridHeight / 2) - 1;
-    }
-    else {
-        y += this->m_gridHeight / 2;
-    }
+    int y = qAbs(point.y());
+    y += (this->m_gridHeight >> 1);
     y -= y % this->m_gridHeight;
+    y *= sign(point.y());
 
     return QPointF(x, y);
 }
@@ -657,8 +655,6 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
     QPoint pos = active->viewport()->mapFromGlobal(QCursor::pos());
     bool cursorOnScene = active->viewport()->rect().contains(pos);
 
-    this->m_insertActionMousePos = this->smartNearingGridPoint(active->mapToScene(pos));
-
     /* add items */
     foreach(QucsItem *item, this->m_insertibles) {
         item->setSelected(true);
@@ -670,13 +666,6 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
                 comp->propertyGroup()->hide();
             }
         }
-    }
-
-    /* why two loop */
-    QPointF delta = this->smartNearingGridPoint(active->mapToScene(pos)
-            - centerOfItems(this->m_insertibles));
-    foreach(QucsItem *item, this->m_insertibles) {
-        item->moveBy(delta.x(), delta.y());
     }
 }
 
@@ -796,7 +785,7 @@ bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
 QSize SchematicScene::imageSize() const
 {
     qreal image_width, image_height;
-    if(!isFrameVisible()){
+    if(!isFrameVisible()) {
         QRectF items_rect = itemsBoundingRect();
         image_width  = items_rect.width();
         image_height = items_rect.height();
@@ -963,28 +952,12 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
  */
 bool SchematicScene::event(QEvent *event)
 {
+    static int ii = 0;
     if(this->m_currentMouseAction == InsertingItems) {
         if(event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
             bool visible = (event->type() == QEvent::Enter);
             foreach(QucsItem *item, m_insertibles) {
                 item->setVisible(visible);
-            }
-            if(visible) {
-                SchematicView *active = activeView();
-                if(!active) {
-                    return QGraphicsScene::event(event);
-                }
-
-                QPoint pos = active->viewport()->mapFromGlobal(QCursor::pos());
-                this->m_insertActionMousePos =
-                    this->smartNearingGridPoint(active->mapToScene(pos));
-
-                QPointF delta = this->smartNearingGridPoint(m_insertActionMousePos
-                        - centerOfItems(m_insertibles));
-
-                foreach(QucsItem *item, m_insertibles) {
-                    item->moveBy(delta.x(), delta.y());
-                }
             }
         }
     }
@@ -2495,12 +2468,11 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
         }
     }
     else if(event->type() == QEvent::GraphicsSceneMouseMove) {
-        QPointF delta = event->scenePos() - m_insertActionMousePos;
+        QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
 
         foreach(QucsItem *item, m_insertibles) {
             item->setPos(this->smartNearingGridPoint(item->pos() + delta));
         }
-        m_insertActionMousePos = this->smartNearingGridPoint(event->scenePos());
     }
 }
 

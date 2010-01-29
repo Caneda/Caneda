@@ -343,11 +343,6 @@ private:
     QList<Wire*> grabMovingWires;
     //! \brief A helper variable to hold last grid position of mouse cursor
     QPointF lastPos;
-    /*!
-     * \brief A helper variable to calc the grid based point on scene required
-     *        to move the m_insertibles items
-     */
-    QPointF m_insertActionMousePos;
 
     /*!
      * \brief A list of QucsItem which are to be placed/pasted.
