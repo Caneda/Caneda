@@ -26,6 +26,7 @@
 #include "qucsview.h"
 #include "schematicscene.h"
 #include "schematicview.h"
+#include "xmlsymbolformat.h"
 
 #include "dialogs/aboutqucs.h"
 #include "dialogs/exportdialog.h"
@@ -1289,7 +1290,6 @@ void QucsMainWindow::slotFileOpen(QString fileName)
 
     if(!fileName.isEmpty()) {
         if(QFileInfo(fileName).suffix() == "xpro") {
-            if(!fileName.isEmpty()) {
                 LibraryLoader *library = LibraryLoader::defaultInstance();
 
                 if(!library->library(fileName)) {
@@ -1305,7 +1305,6 @@ void QucsMainWindow::slotFileOpen(QString fileName)
                         return;
                     }
                 }
-            }
         }
         else {
             bool isLoaded = gotoPage(fileName);
@@ -1759,8 +1758,27 @@ void QucsMainWindow::slotAddToProject()
     setNormalAction();
     if(projectLibrary) {
         QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
-                "", tr("Component-xml (*.xml *.xsym)"));
+                "", tr("Component-xml (*.xsch *.xsym)"));
         if(!fileName.isEmpty()) {
+            //If we selected a schematic, we must generate the corresponding symbol
+            if(QString(QFileInfo(fileName).suffix()) == "xsch") {
+                QucsView *view = new SchematicView(0, this);
+                view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
+
+                if(!view->load(fileName)) {
+                    QMessageBox::critical(this, tr("Error"),
+                            tr("Could not open file!"));
+                    delete view;
+                    return;
+                }
+
+                fileName.replace(".xsch",".xsym");
+                view->setFileName(fileName);
+                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView());
+                symbol->save();
+
+                delete view;
+            }
             projectLibrary->parseExternalComponent(fileName);
             projectLibrary->saveLibrary();
             m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");

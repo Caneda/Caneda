@@ -331,13 +331,17 @@ LibraryLoader* LibraryLoader::defaultInstance()
     return library;
 }
 
-//! Returns library item corresponding to name.
+/*!
+ * \brief Returns library item corresponding to name.
+ *
+ * \param str The library's name.
+ * \return Library on success and null pointer on failure.
+ */
 Library* LibraryLoader::library(const QString& str) const
 {
-    if(!m_libraryHash.contains(str)) {
-        qWarning() << "LibraryLoader::library : LibraryLoader item " << str << " not found";
+    if(!m_libraryHash.contains(str))
         return 0;
-    }
+
     return m_libraryHash[str];
 }
 
