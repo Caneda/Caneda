@@ -76,6 +76,7 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
 
     qucsFilter =
         tr("Schematic-xml")+" (*.xsch);;"+
+        tr("Symbol-xml")+" (*.xsym);;"+
         tr("Qucs Project")+" (*.xpro);;"+
         tr("Schematic")+" (*.sch);;"+
         tr("Data Display")+" (*.dpl);;"+
@@ -124,6 +125,14 @@ QucsMainWindow::~QucsMainWindow()
 bool QucsMainWindow::gotoPage(QString fileName, Qucs::Mode mode)
 {
     fileName = QDir::toNativeSeparators(fileName);
+    QFileInfo info(fileName);
+
+    //If we are opening a symbol, we open the corresponding schematic in symbol mode instead
+    if(info.suffix() == "xsym") {
+        fileName.replace(".xsym", ".xsch");
+        info = QFileInfo(fileName);
+        mode = Qucs::SymbolMode;
+    }
 
     QucsView *view = 0;
     int i = 0;
@@ -142,11 +151,10 @@ bool QucsMainWindow::gotoPage(QString fileName, Qucs::Mode mode)
         return true;
     }
 
-    QFileInfo info(fileName);
     if(info.suffix() == "xsch") {
         view = new SchematicView(0, this);
         view->toSchematicView()->schematicScene()->setMode(mode);
-    }  //TODO: create other views (text, symbol, simulation) here
+    }  //TODO: create other views (text, simulation) here
     else {
         //Unrecognized file type
         return false;
