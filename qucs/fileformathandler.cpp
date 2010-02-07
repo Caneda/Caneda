@@ -21,7 +21,7 @@
 #include "xmlformat.h"
 #include "xmlsymbolformat.h"
 
-FileFormatHandler::FileFormatHandler(SchematicScene *scene) : m_schematicScene(scene)
+FileFormatHandler::FileFormatHandler(SchematicView *view) : m_view(view)
 {
 }
 
@@ -32,13 +32,13 @@ FileFormatHandler::FileFormatHandler(SchematicScene *scene) : m_schematicScene(s
  * Returns NULL if there doesn't exist a handler for given extension.
  */
 FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
-        SchematicScene *scene)
+        SchematicView *view)
 {
     if(ext == "xsch") {
-        return new XmlFormat(scene);
+        return new XmlFormat(view);
     }
     else if(ext == "xsym") {
-        return new XmlSymbolFormat(scene);
+        return new XmlSymbolFormat(view);
     }
     return 0;
 }

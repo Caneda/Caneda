@@ -91,7 +91,7 @@ bool SchematicView::load()
 {
     //Assumes file name is set
     FileFormatHandler *format =
-        FileFormatHandler::handlerFromSuffix(QFileInfo(fileName()).suffix(), schematicScene());
+        FileFormatHandler::handlerFromSuffix(QFileInfo(fileName()).suffix(), this);
 
     if(!format) {
         QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
@@ -115,7 +115,7 @@ bool SchematicView::save()
     }
 
     FileFormatHandler *format =
-        FileFormatHandler::handlerFromSuffix(info.suffix(), schematicScene());
+        FileFormatHandler::handlerFromSuffix(info.suffix(), this);
 
     if(!format) {
         QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));

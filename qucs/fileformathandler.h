@@ -21,7 +21,7 @@
 #define FILEFORMATHANDLER_H
 
 class QString;
-class SchematicScene;
+class SchematicView;
 
 /*!
  * This class is used to save and load files.
@@ -30,7 +30,7 @@ class SchematicScene;
 class FileFormatHandler
 {
 public:
-    FileFormatHandler(SchematicScene *scene=0);
+    FileFormatHandler(SchematicView *view=0);
     virtual ~FileFormatHandler() {}
 
     virtual bool save() = 0;
@@ -42,13 +42,14 @@ public:
      */
     virtual bool load() = 0;
 
-    SchematicScene* schematicScene() const { return m_schematicScene; }
+    SchematicView* view() const { return m_view; }
+    void setView(SchematicView *view) { m_view = view; }
 
     static FileFormatHandler* handlerFromSuffix(const QString& extension,
-            SchematicScene *scene = 0);
+            SchematicView *view = 0);
 
 protected:
-    SchematicScene *m_schematicScene;
+    SchematicView *m_view;
 };
 
 #endif //FILEFORMATHANDLER_H

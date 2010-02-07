@@ -80,13 +80,18 @@ void writeEquiWires(Qucs::XmlWriter *writer, int id, int wireStartId,
     writer->writeEndElement();
 }
 
-XmlFormat::XmlFormat(SchematicScene *scene) : FileFormatHandler(scene)
+XmlFormat::XmlFormat(SchematicView *view) : FileFormatHandler(view)
 {
+    if(m_view) {
+        scene = m_view->schematicScene();
+    }
+    else {
+        scene = 0;
+    }
 }
 
 bool XmlFormat::save()
 {
-    SchematicScene *scene = schematicScene();
     if(!scene) {
         return false;
     }
@@ -118,7 +123,6 @@ bool XmlFormat::save()
 
 bool XmlFormat::load()
 {
-    SchematicScene *scene = schematicScene();
     if(!scene) {
         return false;
     }
@@ -171,7 +175,6 @@ QString XmlFormat::saveText()
 
 QString XmlFormat::saveSymbolText()
 {
-    SchematicScene *scene = schematicScene();
     QString retVal;
     Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
     writer->setAutoFormatting(true);
@@ -239,12 +242,20 @@ void XmlFormat::saveSchematics(Qucs::XmlWriter *writer)
 
 void XmlFormat::saveView(Qucs::XmlWriter *writer)
 {
-    SchematicScene *scene = schematicScene();
     writer->writeStartElement("view");
 
     writer->writeStartElement("scenerect");
     writer->writeRect(scene->sceneRect());
     writer->writeEndElement(); //</scenerect>
+
+    writer->writeStartElement("viewtransform");
+    writer->writeTransform(m_view->transform());
+    writer->writeEndElement(); //</viewtransform>
+
+    writer->writeStartElement("scrollbarvalues");
+    writer->writeElement("horizontal", m_view->horizontalScrollBar()->value());
+    writer->writeElement("vertical", m_view->verticalScrollBar()->value());
+    writer->writeEndElement(); //</scrollbarvalues>
 
     writer->writeStartElement("grid");
     writer->writeAttribute("visible", Qucs::boolToString(scene->isGridVisible()));
@@ -271,7 +282,6 @@ void XmlFormat::saveView(Qucs::XmlWriter *writer)
 
 void XmlFormat::saveComponents(Qucs::XmlWriter *writer)
 {
-    SchematicScene *scene = schematicScene();
     QList<QGraphicsItem*> items = scene->items();
     QList<Component*> components = filterItems<Component>(items, RemoveItems);
     if(!components.isEmpty()) {
@@ -285,7 +295,6 @@ void XmlFormat::saveComponents(Qucs::XmlWriter *writer)
 
 void XmlFormat::saveWires(Qucs::XmlWriter *writer)
 {
-    SchematicScene *scene = schematicScene();
     QList<QGraphicsItem*> items = scene->items();
     QList<Wire*> wires = filterItems<Wire>(items, RemoveItems);
     if(!wires.isEmpty()) {
@@ -313,7 +322,6 @@ void XmlFormat::saveWires(Qucs::XmlWriter *writer)
 
 void XmlFormat::savePaintings(Qucs::XmlWriter *writer)
 {
-    SchematicScene *scene = schematicScene();
     QList<QGraphicsItem*> items = scene->items();
     QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
     if(!paintings.isEmpty()) {
@@ -328,7 +336,6 @@ void XmlFormat::savePaintings(Qucs::XmlWriter *writer)
 //Copies a previously defined element if created. Empty otherwise
 void XmlFormat::copyQucsElement(const QString& qualifiedName , Qucs::XmlWriter *writer)
 {
-    SchematicScene *scene = schematicScene();
     writer->writeStartElement(qualifiedName);
 
     QFile file(scene->fileName());
@@ -437,12 +444,14 @@ void XmlFormat::loadSchematics(Qucs::XmlReader* reader)
 
 void XmlFormat::loadView(Qucs::XmlReader *reader)
 {
-    SchematicScene *scene = schematicScene();
     if(!reader->isStartElement() || reader->name() != "view") {
         reader->raiseError(QObject::tr("Malformatted file"));
     }
 
     QRectF sceneRect;
+    QTransform viewTransform;
+    int horizontalScroll = 0;
+    int verticalScroll = 0;
     bool gridVisible = false;
     QSize gridSize;
     QString dataSet;
@@ -469,6 +478,20 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
                 }
                 reader->readFurther();
                 Q_ASSERT(reader->isEndElement() && reader->name() == "scenerect");
+            }
+            else if(reader->name() == "viewtransform") {
+                reader->readFurther();
+                viewTransform = reader->readTransform();
+                reader->readFurther();
+                Q_ASSERT(reader->isEndElement() && reader->name() == "viewtransform");
+            }
+            else if(reader->name() == "scrollbarvalues") {
+                reader->readFurther();
+                horizontalScroll = reader->readInt(/*horizontal*/);
+                reader->readFurther();
+                verticalScroll = reader->readInt(/*vertical*/);
+                reader->readFurther();
+                Q_ASSERT(reader->isEndElement() && reader->name() == "scrollbarvalues");
             }
             else if(reader->name() == "grid") {
                 QString att = reader->attributes().value("visible").toString();
@@ -529,7 +552,11 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
     }
 
     if(!reader->hasError()) {
-        scene->setSceneRect(sceneRect);
+        m_view->setUpdatesEnabled(false);
+        m_view->setSceneRect(sceneRect);
+        m_view->setTransform(viewTransform);
+        m_view->horizontalScrollBar()->setValue(horizontalScroll);
+        m_view->verticalScrollBar()->setValue(verticalScroll);
         scene->setGridVisible(gridVisible);
         scene->setGridSize(gridSize.width(), gridSize.height());
         scene->setSceneRect(sceneRect);
@@ -538,12 +565,12 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
         scene->setOpensDataDisplay(opensDataDisplay);
         scene->setFrameVisible(frameVisible);
         scene->setFrameTexts(frameTexts);
+        m_view->setUpdatesEnabled(true);
     }
 }
 
 void XmlFormat::loadComponents(Qucs::XmlReader *reader)
 {
-    SchematicScene *scene = schematicScene();
     if(!reader->isStartElement() || reader->name() != "components") {
         reader->raiseError(QObject::tr("Malformatted file"));
     }
@@ -571,7 +598,6 @@ void XmlFormat::loadComponents(Qucs::XmlReader *reader)
 
 void XmlFormat::loadWires(Qucs::XmlReader* reader)
 {
-    SchematicScene *scene = schematicScene();
     if(!reader->isStartElement() || reader->name() != "wires") {
         reader->raiseError(QObject::tr("Malformatted file"));
     }
@@ -612,7 +638,6 @@ void XmlFormat::loadWires(Qucs::XmlReader* reader)
 
 void XmlFormat::loadPaintings(Qucs::XmlReader *reader)
 {
-    SchematicScene *scene = schematicScene();
     if(!reader->isStartElement() || reader->name() != "paintings") {
         reader->raiseError(QObject::tr("Malformatted file"));
     }

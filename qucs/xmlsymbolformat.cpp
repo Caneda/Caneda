@@ -32,13 +32,16 @@
 #include <QMessageBox>
 #include <QSvgGenerator>
 
-XmlSymbolFormat::XmlSymbolFormat(SchematicScene *scene) : FileFormatHandler(scene)
+XmlSymbolFormat::XmlSymbolFormat(SchematicView *view) : FileFormatHandler(view)
 {
 }
 
 bool XmlSymbolFormat::save()
 {
-    SchematicScene *scene = schematicScene();
+    if(!m_view) {
+        return false;
+    }
+    SchematicScene *scene = m_view->schematicScene();
     if(!scene) {
         return false;
     }
@@ -80,7 +83,7 @@ bool XmlSymbolFormat::load()
 
 QString XmlSymbolFormat::saveText()
 {
-    SchematicScene *scene = schematicScene();
+    SchematicScene *scene = m_view->schematicScene();
 
     QString retVal;
     Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
