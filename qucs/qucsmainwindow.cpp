@@ -1774,7 +1774,7 @@ void QucsMainWindow::slotAddToProject()
 
                 fileName.replace(".xsch",".xsym");
                 view->setFileName(fileName);
-                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView());
+                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
                 symbol->save();
 
                 delete view;

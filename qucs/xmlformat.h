@@ -31,7 +31,7 @@ namespace Qucs {
 class XmlFormat : public FileFormatHandler
 {
 public:
-    XmlFormat(SchematicView *view = 0);
+    XmlFormat(SchematicScene *scene = 0);
     ~XmlFormat() {}
 
     bool save();
@@ -55,8 +55,6 @@ private:
     void loadComponents(Qucs::XmlReader *reader);
     void loadWires(Qucs::XmlReader *reader);
     void loadPaintings(Qucs::XmlReader *reader);
-
-    SchematicScene *scene;
 };
 
 #endif //XML_FORMAT_H
