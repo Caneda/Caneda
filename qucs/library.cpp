@@ -339,8 +339,9 @@ LibraryLoader* LibraryLoader::defaultInstance()
  */
 Library* LibraryLoader::library(const QString& str) const
 {
-    if(!m_libraryHash.contains(str))
+    if(!m_libraryHash.contains(str)) {
         return 0;
+    }
 
     return m_libraryHash[str];
 }

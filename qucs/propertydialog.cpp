@@ -161,6 +161,7 @@ void PropertyValueDelegate::setModelData(QWidget *editor, QAbstractItemModel *mo
     model->setData(index, comboBox->currentText());
 }
 
+//! Constructor
 PropertyDialog::PropertyDialog(Component *comp, Qucs::UndoOption opt, QWidget *parent) :
     QDialog(parent),
     m_component(comp),

@@ -114,6 +114,7 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
     }
 }
 
+//! Destructor
 QucsMainWindow::~QucsMainWindow()
 {
 }

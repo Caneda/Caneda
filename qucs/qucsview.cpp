@@ -68,6 +68,7 @@ const char *empty_xpm[] = {  // provides same height than "smallsave_xpm"
     " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "
 };
 
+//! Constructor
 QucsView::QucsView(QucsMainWindow *m) : mainWindow(m)
 {
 }

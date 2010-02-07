@@ -80,6 +80,7 @@ void writeEquiWires(Qucs::XmlWriter *writer, int id, int wireStartId,
     writer->writeEndElement();
 }
 
+//! Constructor
 XmlFormat::XmlFormat(SchematicScene *scene) : FileFormatHandler(scene)
 {
 }

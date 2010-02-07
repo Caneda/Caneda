@@ -21,6 +21,7 @@
 #include "xmlformat.h"
 #include "xmlsymbolformat.h"
 
+//! Constructor
 FileFormatHandler::FileFormatHandler(SchematicScene *scene) : m_schematicScene(scene)
 {
 }

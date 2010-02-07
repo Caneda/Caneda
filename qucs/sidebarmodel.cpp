@@ -75,6 +75,7 @@ int CategoryItem::row() const
     return 0;
 }
 
+//! Constructor
 SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
 {
     rootItem = new CategoryItem("Root", "");

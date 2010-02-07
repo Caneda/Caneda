@@ -35,6 +35,7 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
+//! Constructor
 TreeView::TreeView(QWidget *parent) :
     QTreeView(parent),
     invalidPressed(false)
@@ -100,6 +101,7 @@ public:
     }
 };
 
+//! Constructor
 ComponentsSidebar::ComponentsSidebar(QString windowTitle, QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);

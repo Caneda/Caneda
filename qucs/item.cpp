@@ -164,6 +164,7 @@ namespace Qucs
     }
 }
 
+//! Constructor
 //! Create a new item and add to scene.
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) :
     QGraphicsItem(parent),
@@ -179,6 +180,7 @@ QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) :
     }
 }
 
+//! Destructor
 QucsItem::~QucsItem()
 {
 }

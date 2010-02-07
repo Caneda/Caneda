@@ -34,6 +34,7 @@
 
 const qreal SchematicView::zoomFactor = 1.2f;
 
+//! Constructor
 SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
     QGraphicsView(sc,parent),
     QucsView(parent),
@@ -61,6 +62,7 @@ SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
     connect(this, SIGNAL(titleToBeUpdated()), SLOT(updateTabs()));
 }
 
+//! Destructor
 SchematicView::~SchematicView()
 {
 }

@@ -29,6 +29,7 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
+//! Constructor
 FolderBrowser::FolderBrowser(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);

@@ -32,6 +32,7 @@
 #include <QMessageBox>
 #include <QSvgGenerator>
 
+//! Constructor
 XmlSymbolFormat::XmlSymbolFormat(SchematicScene *scene) : FileFormatHandler(scene)
 {
 }

@@ -57,17 +57,19 @@ protected:
     }
 };
 
-TabWidgetPrivate:: TabWidgetPrivate(QWidget *parent) : QTabWidget(parent)
+TabWidgetPrivate::TabWidgetPrivate(QWidget *parent) : QTabWidget(parent)
 {
     setTabBar(new TabBarPrivate(this));
 }
 
+//! Constructor
 MainWindowBase::MainWindowBase(QWidget *parent) : QMainWindow(parent)
 {
     setupTabWidget();
     setCentralWidget(m_tabWidget);
 }
 
+//! Destructor
 MainWindowBase::~MainWindowBase()
 {
 }
