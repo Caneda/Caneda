@@ -132,7 +132,7 @@ bool SchematicView::save()
             info = QFileInfo(fileName().replace(".xsch",".xsym"));
             if(info.exists()) {
                 setFileName(fileName().replace(".xsch",".xsym"));
-                format = FileFormatHandler::handlerFromSuffix(info.suffix(), this);
+                format = FileFormatHandler::handlerFromSuffix(info.suffix(), schematicScene());
                 format->save();
                 setFileName(fileName().replace(".xsym",".xsch"));
             }
