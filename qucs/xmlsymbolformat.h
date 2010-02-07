@@ -29,7 +29,7 @@ namespace Qucs {
 class XmlSymbolFormat : public FileFormatHandler
 {
 public:
-    XmlSymbolFormat(SchematicView *view = 0);
+    XmlSymbolFormat(SchematicScene *scene = 0);
     ~XmlSymbolFormat() {}
 
     bool save();
