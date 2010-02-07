@@ -127,6 +127,16 @@ bool SchematicView::save()
     }
     else {
         schematicScene()->undoStack()->clear();
+        //If we are editing the symbol, and svg (and xsym) files were previously created, we must update them.
+        if(schematicScene()->currentMode() == Qucs::SymbolMode) {
+            info = QFileInfo(fileName().replace(".xsch",".xsym"));
+            if(info.exists()) {
+                setFileName(fileName().replace(".xsch",".xsym"));
+                format = FileFormatHandler::handlerFromSuffix(info.suffix(), this);
+                format->save();
+                setFileName(fileName().replace(".xsym",".xsch"));
+            }
+        }
     }
 
     return true;

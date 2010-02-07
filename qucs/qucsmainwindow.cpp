@@ -1721,7 +1721,7 @@ void QucsMainWindow::slotNewProject()
     setNormalAction();
     QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"),
             "", tr("Qucs Projects (*.xpro)"));
-    if(!fileName.isEmpty()){
+    if(!fileName.isEmpty()) {
         if(QString(QFileInfo(fileName).suffix()).isEmpty()) {
             fileName = fileName + ".xpro";
         }

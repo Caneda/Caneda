@@ -481,12 +481,11 @@ bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
  */
 bool LibraryLoader::unload(const QString& libName)
 {
-    Library *lib = m_libraryHash.contains(libName) ? m_libraryHash[libName] : 0;
-    if(!lib) {
-        return false;
+    if(m_libraryHash.contains(libName)) {
+        m_libraryHash.remove(libName);
+        return true;
     }
-    m_libraryHash.remove(libName);
-    delete lib;
-    return true;
+
+    return false;
 }
 
