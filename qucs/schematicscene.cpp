@@ -2677,7 +2677,6 @@ void SchematicScene::disconnectDisconnectibles()
 void SchematicScene::specialMove(qreal dx, qreal dy)
 {
     foreach(Wire *wire, movingWires) {
-        wire->hide();
         if(wire->port1()->connections()) {
             Port *other = 0;
             foreach(Port *o, *(wire->port1()->connections())) {
@@ -2705,7 +2704,6 @@ void SchematicScene::specialMove(qreal dx, qreal dy)
     }
 
     foreach(Wire *wire, grabMovingWires) {
-        wire->hide();
         wire->grabMoveBy(dx, dy);
     }
 }

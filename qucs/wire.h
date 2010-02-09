@@ -29,7 +29,6 @@
 // Forward declarations
 class Port;
 class QGraphicsLineItem;
-class QRubberBand;
 class SchematicScene;
 
 typedef QList<WireLine> WireLines;
@@ -130,12 +129,8 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    QRect proxyRect(const WireLine& wline) const;
 
     void initWireline();
-
-    void updateProxyWires();
-    void deleteProxyWires();
 
     int indexForPos(const QPointF& pos) const;
 
@@ -143,7 +138,6 @@ private:
 
     QList<Port*> m_ports;//!< The ports of wires (always contain only 2 elements).
     WireLines m_wLines;//!< Internal line representation of wires.
-    QList<QRubberBand*> m_proxyWires;//!< Represent wires while being dragged
     Wire::Data store; //!< Stores the wire data when needed(undo/redo).
 
     QColor m_wireColor;

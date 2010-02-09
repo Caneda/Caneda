@@ -33,6 +33,7 @@
 class Diagram;
 class Painting;
 class QucsItem;
+class QRubberBand;
 class QUndoCommand;
 class QUndoStack;
 class SvgPainter;

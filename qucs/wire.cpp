@@ -90,12 +90,7 @@ void Wire::initWireline()
     this->m_wLines << WireLine(inter, port2()->pos());
 
     /* update wire */
-    if(!this->isVisible()) {
-        updateProxyWires();
-    }
-    else {
-        updateGeometry();
-    }
+    updateGeometry();
 }
 
 
@@ -181,7 +176,6 @@ QucsItem(0, scene), m_grabbedIndex(-1)
 //! Destructor.
 Wire::~Wire()
 {
-    this->deleteProxyWires();
     qDeleteAll(m_ports);
 }
 
@@ -199,16 +193,9 @@ void Wire::movePort(QList<Port*> *connections, const QPointF& scenePos)
     }
 }
 
-
-
 //! Moves port1 to \a newLocalPos and adjust's the wire's lines.
 void Wire::movePort1(const QPointF& newLocalPos)
 {
-    /* delete proxy wires */
-    if(this->isVisible()) {
-        this->deleteProxyWires();
-    }
-
     this->port1()->setPos(newLocalPos);
 
     // This is true when wire is created
@@ -260,21 +247,12 @@ void Wire::movePort1(const QPointF& newLocalPos)
         second.setP1(referencePos);
     }
 
-    if(!isVisible()) {
-        updateProxyWires();
-    } else {
-        updateGeometry();
-    }
+    updateGeometry();
 }
 
 //! Moves port2 to \a newLocalPos and adjust's the wire's lines.
 void Wire::movePort2(const QPointF& newLocalPos)
 {
-    if(isVisible()) {
-        deleteProxyWires();
-        //prepareGeometryChange();
-    }
-
     port2()->setPos(newLocalPos);
 
     if(m_wLines.isEmpty()) {
@@ -326,11 +304,7 @@ void Wire::movePort2(const QPointF& newLocalPos)
         last_but_one.setP2(referencePos);
     }
 
-    if(!isVisible()) {
-        updateProxyWires();
-    } else {
-        updateGeometry();
-    }
+    updateGeometry();
 }
 
 //! Draw wire.
@@ -407,9 +381,6 @@ void Wire::beginGrabMode()
     if(num_of_wires_in_beginning > 0) {
         m_grabbedIndex += num_of_wires_in_beginning;
     }
-
-    // now just hide the wire and represent proxy wiring.
-    hide();
 }
 
 /*!
@@ -455,8 +426,8 @@ void Wire::grabMoveBy(qreal dx, qreal dy)
     m_wLines[m_grabbedIndex+1] = WireLine(grabbedLine.p2(), inter2);
     m_wLines[m_grabbedIndex+2] = WireLine(inter2, refPos2);
 
-    // Now update the proxy wires.
-    updateProxyWires();
+    // Now update the wires.
+    updateGeometry();
 }
 
 /*!
@@ -468,9 +439,6 @@ void Wire::endGrabMode()
     m_grabbedIndex = -1; //reset index
 
     removeNullLines();
-    deleteProxyWires();
-
-    show();
     updateGeometry();
 }
 
@@ -478,11 +446,7 @@ void Wire::endGrabMode()
 void Wire::setWireLines(const WireLines& wlines)
 {
     m_wLines = wlines;
-    if(!isVisible()) {
-        updateProxyWires();
-    } else {
-        updateGeometry();
-    }
+    updateGeometry();
 }
 
 /*!
@@ -531,9 +495,7 @@ void Wire::removeNullLines()
             ++it;
         }
     }
-    if(this->isVisible()) {
-        updateGeometry();
-    }
+    updateGeometry();
 }
 
 void Wire::saveData(Qucs::XmlWriter *writer) const
@@ -645,9 +607,7 @@ void Wire::setState(Wire::Data state)
     port1()->setPos(state.port1Pos);
     port2()->setPos(state.port2Pos);
     m_wLines = state.wLines;
-    if(isVisible()) {
-        updateGeometry();
-    }
+    updateGeometry();
 }
 
 /*!
@@ -729,83 +689,11 @@ void Wire::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QucsItem::mouseReleaseEvent(event);
 }
 
-//! Returns a rect mapped to viewport bounding wire line \a wline.
-QRect Wire::proxyRect(const WireLine& wline) const
-{
-    QRectF rect;
-    if(!wline.isNull()) {
-        SchematicView *view = activeView();
-        if(!view) {
-            return rect.toRect();
-        }
-
-        QPointF p1 = view->mapFromScene(mapToScene(wline.p1()));
-        QPointF p2 = view->mapFromScene(mapToScene(wline.p2()));
-
-        rect.setTopLeft(p1);
-        rect.setBottomRight(p2);
-        //normalize dimension of rect
-        rect = rect.normalized();
-        if(rect.height() < 1) {
-            rect.setHeight(1);
-        }
-        if(rect.width() < 1) {
-            rect.setWidth(1);
-        }
-    }
-    return rect.toRect();
-}
-
-
-//! Updates the geometry of proxy wires.
-void Wire::updateProxyWires()
-{
-    QGraphicsView *view = activeView();
-    Q_ASSERT(view);
-    QWidget *viewport = view->viewport();
-    if(m_proxyWires.size() > m_wLines.size()) {
-        int size = m_proxyWires.size() - m_wLines.size() ;
-        for(int i=0; i < size; i++) {
-            delete m_proxyWires.takeAt(0);
-        }
-    }
-
-    if(m_proxyWires.size() < m_wLines.size()) {
-        int size = m_wLines.size() - m_proxyWires.size() ;
-        for(int i=0; i < size; ++i) {
-            m_proxyWires.prepend(new QRubberBand(QRubberBand::Line, viewport));
-        }
-    }
-
-    Q_ASSERT(m_proxyWires.size() == m_wLines.size());
-
-    QList<QRubberBand*>::iterator proxyIt = m_proxyWires.begin(),
-        proxyEnd = m_proxyWires.end();
-    QList<WireLine>::const_iterator lineIt = m_wLines.constBegin();
-
-    for(; proxyIt != proxyEnd; ++proxyIt, ++lineIt) {
-        (*proxyIt)->setParent(viewport);
-        (*proxyIt)->setGeometry(proxyRect(*lineIt));
-        (*proxyIt)->show();
-    }
-}
-
-//! Deletes all proxy wires.
-void Wire::deleteProxyWires()
-{
-    qDeleteAll(m_proxyWires);
-    m_proxyWires.clear();
-}
-
 //! Updates the wire's geometry and caches it.
 void Wire::updateGeometry()
 {
     QRectF rect;
     QPainterPath path;
-
-    if(!isVisible()) {
-        return;
-    }
 
     QList<WireLine>::const_iterator it = m_wLines.constBegin();
     QList<WireLine>::const_iterator end = m_wLines.constEnd();
