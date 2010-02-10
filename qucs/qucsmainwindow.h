@@ -45,13 +45,15 @@ class QucsMainWindow : public MainWindowBase
 {
     Q_OBJECT;
 public:
-    QucsMainWindow(QWidget *w=0);
     ~QucsMainWindow();
+
+    static QucsMainWindow* instance();
 
     bool gotoPage(QString fileName, Qucs::Mode mode=Qucs::SchematicMode);
     void addView(QucsView *view);
     void saveSettings();
     void test();
+
 
 public Q_SLOTS:
     void slotFileNew();
@@ -159,6 +161,7 @@ private Q_SLOTS:
     void slotViewClosed(QWidget *widget);
 
 private:
+    QucsMainWindow(QWidget *w=0);
     void initActions();
     void initMenus();
     void initToolBars();

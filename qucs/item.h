@@ -37,13 +37,9 @@
 #define PATTERN(base,shift) (((base) >> (shift)) | (base))
 
 // forward declaration
-class QGraphicsScene;
-class QGraphicsView;
 class QMenu;
 
 class SchematicScene;
-class SchematicView;
-class QucsMainWindow;
 
 namespace Qucs {
     class XmlReader;
@@ -132,8 +128,6 @@ public:
     QPainterPath shape() const { return this->m_shape; }
 
     SchematicScene* schematicScene() const;
-    SchematicView* activeView() const;
-    QucsMainWindow* mainWindow() const;
 
     //! Virtual method to write item's properties to writer.
     virtual void saveData(Qucs::XmlWriter *) const {}

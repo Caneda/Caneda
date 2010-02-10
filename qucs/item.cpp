@@ -222,23 +222,6 @@ SchematicScene* QucsItem::schematicScene() const
     return qobject_cast<SchematicScene*>(this->scene());
 }
 
-
-/*!
- * \brief Returns a pointer to the view which is currently active(having foucs)
- * \sa SchematicScene::activeView()
- */
-SchematicView* QucsItem::activeView() const
-{
-    return this->schematicScene() ? this->schematicScene()->activeView() : 0;
-}
-
-//! \brief Returns a pointer to the applications main window.
-QucsMainWindow* QucsItem::mainWindow() const
-{
-    QGraphicsView *view = this->activeView();
-    return view ? qobject_cast<QucsMainWindow*>(view->parent()) : 0;
-}
-
 /*!
  * \brief Convenience method to get the saved text as string.
  *

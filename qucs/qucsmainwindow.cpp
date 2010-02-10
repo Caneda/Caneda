@@ -119,6 +119,15 @@ QucsMainWindow::~QucsMainWindow()
 {
 }
 
+QucsMainWindow* QucsMainWindow::instance()
+{
+    static QucsMainWindow* instance = 0;
+    if (!instance) {
+        instance = new QucsMainWindow();
+    }
+    return instance;
+}
+
 /*!
  * \brief Switches to \a fileName tab if it is opened else tries opening it
  * and then switches to that tab on success.
@@ -1231,17 +1240,25 @@ void QucsMainWindow::addView(QucsView *view)
  */
 void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
 {
+    if (prev) {
+        prev->disconnect(this);
+    }
     SchematicView *prevView = qobject_cast<SchematicView*>(prev);
     if(prevView) {
-        prevView->disconnect(this);
         prevView->resetState();
     }
 
-    SchematicView *currView = qobject_cast<SchematicView*>(current);
-    if(currView) {
-        connect(currView, SIGNAL(titleToBeUpdated()), this, SLOT(updateTitleTabText()));
-        m_undoGroup->setActiveStack(currView->schematicScene()->undoStack());
+    QucsView *view = viewFromWidget(current);
+    if (view) {
+        connect(view->toWidget(), SIGNAL(titleToBeUpdated()), SLOT(updateTitleTabText()));
         updateTitleTabText();
+        SchematicView *currView = view->toSchematicView();
+        if (currView) {
+            SchematicScene *scene = currView->schematicScene();
+            if (scene) {
+                m_undoGroup->setActiveStack(scene->undoStack());
+            }
+        }
     }
 }
 

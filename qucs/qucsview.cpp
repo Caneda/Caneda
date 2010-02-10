@@ -19,10 +19,7 @@
 
 #include "qucsview.h"
 
-#include "qucsmainwindow.h"
-
 #include <QFileInfo>
-#include <QTabWidget>
 
 // icon for unsaved files (diskette)
 const char *smallsave_xpm[] = {
@@ -69,7 +66,7 @@ const char *empty_xpm[] = {  // provides same height than "smallsave_xpm"
 };
 
 //! Constructor
-QucsView::QucsView(QucsMainWindow *m) : mainWindow(m)
+QucsView::QucsView()
 {
 }
 
@@ -92,11 +89,6 @@ QString QucsView::tabText() const
         return QObject::tr("Untitled");
     }
     return name;
-}
-
-int QucsView::tabIndex() const
-{
-    return mainWindow->tabWidget()->indexOf(toWidget());
 }
 
 QIcon QucsView::modifiedTabIcon()

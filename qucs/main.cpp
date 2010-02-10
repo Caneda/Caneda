@@ -35,7 +35,7 @@ int main(int argc,char *argv[])
    splash.show();
    app.processEvents();
 
-   QucsMainWindow *mw = new QucsMainWindow();
+   QucsMainWindow *mw = QucsMainWindow::instance();
    QTimer::singleShot(100, mw, SLOT(show()));
 
    splash.finish(mw);

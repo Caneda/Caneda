@@ -593,19 +593,6 @@ void SchematicScene::paste()
 }
 
 /*!
- * There can be more than one view associate with this scene.
- * For example think of split views.
- * \return Returns the active view associated with this scene.
- */
-SchematicView* SchematicScene::activeView() const
-{
-    if(views().isEmpty()) {
-        return 0;
-    }
-    return qobject_cast<SchematicView*>(views().first());
-}
-
-/*!
  * \brief Starts insertItem mode.
  *
  * This is the mode which is used while pasting components or inserting
@@ -641,24 +628,17 @@ SchematicView* SchematicScene::activeView() const
  */
 void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
 {
-    SchematicView *active = this->activeView();
-    if(!active)  {
-        return;
-    }
-
     /* why ??? */
     this->resetState();
 
     /* add to insert list */
     this->m_insertibles = items;
 
-    QPoint pos = active->viewport()->mapFromGlobal(QCursor::pos());
-    bool cursorOnScene = active->viewport()->rect().contains(pos);
-
     /* add items */
     foreach(QucsItem *item, this->m_insertibles) {
         item->setSelected(true);
-        item->setVisible(cursorOnScene);
+        // Hide all items here, they are made visible in ::insertingItemsEvent
+        item->hide();
         /* replace by item->insertonscene() */
         if(item->isComponent()) {
             Component *comp = qucsitem_cast<Component*>(item);
@@ -714,10 +694,6 @@ bool SchematicScene::eventFilter(QObject *watched, QEvent *event)
  */
 void SchematicScene::blockShortcuts(const bool block)
 {
-    if(!activeView()) {
-        return;
-    }
-
     if(block) {
         if(!this->m_shortcutsBlocked) {
             qApp->installEventFilter(this);
@@ -1035,7 +1011,12 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 {
     if(event->mimeData()->formats().contains("application/qucs.sidebarItem")) {
         event->accept();
-        SchematicView *view = activeView();
+        QWidget *parentWidget = event->widget() ? event->widget()->parentWidget() : 0;
+        SchematicView *view = qobject_cast<SchematicView*>(parentWidget);
+        if (!view) {
+            event->ignore();
+            return;
+        }
         view->saveScrollState();
 
         QByteArray encodedData = event->mimeData()->data("application/qucs.sidebarItem");
@@ -2471,6 +2452,7 @@ void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
         QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
 
         foreach(QucsItem *item, m_insertibles) {
+            item->show();
             item->setPos(this->smartNearingGridPoint(item->pos() + delta));
         }
     }

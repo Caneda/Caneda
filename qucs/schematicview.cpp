@@ -20,7 +20,6 @@
 #include "schematicview.h"
 
 #include "item.h"
-#include "qucsmainwindow.h"
 #include "schematicscene.h"
 #include "xmlformat.h"
 
@@ -35,10 +34,10 @@
 const qreal SchematicView::zoomFactor = 1.2f;
 
 //! Constructor
-SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
-    QGraphicsView(sc,parent),
-    QucsView(parent),
-    m_horizontalScroll(0), m_verticalScroll(0)
+SchematicView::SchematicView(SchematicScene *sc, QWidget *parent) :
+    QGraphicsView(sc, parent),
+    m_horizontalScroll(0),
+    m_verticalScroll(0)
 {
     if(sc == 0) {
         sc = new SchematicScene(0, 0, 1024, 768);
@@ -58,8 +57,6 @@ SchematicView::SchematicView(SchematicScene *sc, QucsMainWindow *parent) :
     connect(sc, SIGNAL(fileNameChanged(const QString&)),
             SIGNAL(fileNameChanged(const QString&)));
     connect(sc, SIGNAL(titleToBeUpdated()), SIGNAL(titleToBeUpdated()));
-
-    connect(this, SIGNAL(titleToBeUpdated()), SLOT(updateTabs()));
 }
 
 //! Destructor
@@ -230,16 +227,6 @@ void SchematicView::restoreScrollState()
 void SchematicView::setModified(bool m)
 {
     schematicScene()->setModified(m);
-}
-
-void SchematicView::updateTabs()
-{
-    QTabWidget *tw = mainWindow->tabWidget();
-    int index = tabIndex();
-    if(index != -1) {
-        tw->setTabText(index, tabText());
-        tw->setTabIcon(index, isModified() ? modifiedTabIcon() : unmodifiedTabIcon());
-    }
 }
 
 void SchematicView::repaintWires()

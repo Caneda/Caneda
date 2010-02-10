@@ -191,8 +191,6 @@ public:
     MouseAction currentMouseAction() const { return this->m_currentMouseAction; }
     void setCurrentMouseAction(const MouseAction ma);
 
-    SchematicView* activeView() const;
-
     void resetState();
     void beginInsertingItems(const QList<QucsItem*> &items);
 

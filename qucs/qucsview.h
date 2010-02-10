@@ -25,14 +25,13 @@
 #include <QString>
 
 class QPainter;
-class QucsMainWindow;
 class QWidget;
 class SchematicView;
 
 class QucsView
 {
 public:
-    QucsView(QucsMainWindow *m);
+    QucsView();
     virtual ~QucsView() {}
 
     // Emit signal while reimplementing
@@ -63,7 +62,6 @@ public:
 
     // Returns text to be displayed on tab
     QString tabText() const;
-    int tabIndex() const;
 
     // A helper function for setFileName and load
     bool load(const QString& name);
@@ -80,7 +78,6 @@ signals:
 protected:
     // To check for external modification
     QDateTime lastSaved;
-    QucsMainWindow *mainWindow;
 };
 
 #endif //QUCSVIEW_H

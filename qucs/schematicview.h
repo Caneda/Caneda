@@ -25,7 +25,6 @@
 #include <QGraphicsView>
 
 class QucsItem;
-class QucsMainWindow;
 class SchematicScene;
 
 class SchematicView : public QGraphicsView, public QucsView
@@ -35,7 +34,7 @@ class SchematicView : public QGraphicsView, public QucsView
 public:
     static const qreal zoomFactor;
 
-    SchematicView(SchematicScene *sc = 0,QucsMainWindow *parent = 0);
+    SchematicView(SchematicScene *sc = 0,QWidget *parent = 0);
     ~SchematicView();
     void test();
 
@@ -72,8 +71,6 @@ public:
 
 public Q_SLOTS:
     void setModified(bool m);
-    //update tab's text and modification status
-    void updateTabs();
 
 signals:
     void modificationChanged(bool modified);
