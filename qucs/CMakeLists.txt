@@ -6,9 +6,6 @@ ADD_SUBDIRECTORY( bitmaps )
 ADD_SUBDIRECTORY( diagrams )
 ADD_SUBDIRECTORY( paintings )
 
-# ADD_SUBDIRECTORY( components )
-
-
 SET(QUCS_SRCS wire.cpp componentssidebar.cpp item.cpp
   schematicscene.cpp  sidebarmodel.cpp
   main.cpp mainwindowbase.cpp qucsmainwindow.cpp qucsview.cpp
