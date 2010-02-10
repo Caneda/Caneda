@@ -31,7 +31,6 @@ class QDialogButtonBox;
 class QListWidget;
 class QListWidgetItem;
 class QStackedWidget;
-class QucsMainWindow;
 
 /*!
  * This class represents the configuration dialog of Qucs.
@@ -44,7 +43,7 @@ class SettingsDialog : public QDialog
 
 public:
     SettingsDialog(QList<SettingsPage *> pages, const char *title,
-            QucsMainWindow *parent = 0);
+            QWidget *parent = 0);
     virtual ~SettingsDialog();
 
 public Q_SLOTS:

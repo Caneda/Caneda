@@ -23,9 +23,10 @@
 #ifndef EXPORTDIALOG_H
 #define EXPORTDIALOG_H
 
-#include "qucsmainwindow.h"
 #include "qucsview.h"
 #include "schematicscene.h"
+
+#include <QDialog>
 
 class QBoxLayout;
 class QCheckBox;
@@ -34,6 +35,7 @@ class QDialogButtonBox;
 class QFile;
 class QGroupBox;
 class QLabel;
+class QLineEdit;
 class QSignalMapper;
 class QSpinBox;
 class QSvgGenerator;
@@ -48,7 +50,7 @@ class ExportDialog : public QDialog
     Q_OBJECT;
 
 public:
-    ExportDialog(QList<SchematicScene *> schemasToExport, QucsMainWindow *parent = 0);
+    ExportDialog(QList<SchematicScene *> schemasToExport, QWidget *parent = 0);
     virtual ~ExportDialog();
 
 private:
@@ -72,7 +74,6 @@ private:
     };
 
 private:
-    QucsMainWindow *App;
     QList<SchematicScene *> schemas;
     QHash<int, ExportDialog::ExportDiagramLine *> diagramsList;
 

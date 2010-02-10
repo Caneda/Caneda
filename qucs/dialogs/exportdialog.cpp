@@ -38,6 +38,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QSet>
 #include <QSignalMapper>
 #include <QSpinBox>
 #include <QSvgGenerator>
@@ -48,13 +49,8 @@
  * @param QWidget *parent The parent of the dialog.
  */
 ExportDialog::ExportDialog(QList<SchematicScene *> schemasToExport,
-        QucsMainWindow *parent) : QDialog(parent)
+        QWidget *parent) : QDialog(parent)
 {
-    if(!parent) {
-        return;
-    }
-
-    App = parent;
     schemas = schemasToExport;
 
     // The minimum size of the dialogue is fixed

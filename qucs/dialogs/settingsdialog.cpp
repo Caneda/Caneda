@@ -20,7 +20,6 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "qucsmainwindow.h"
 #include "settingsdialog.h"
 
 #include <QDialogButtonBox>
@@ -33,7 +32,7 @@
  * @param QWidget *parent The parent of the dialog.
  */
 SettingsDialog::SettingsDialog(QList<SettingsPage *> wantedPages, const char *title,
-        QucsMainWindow *parent) : QDialog(parent)
+        QWidget *parent) : QDialog(parent)
 {
     setWindowTitle(tr(title, "window title"));
 
