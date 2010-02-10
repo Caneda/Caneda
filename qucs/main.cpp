@@ -28,7 +28,8 @@
 int main(int argc,char *argv[])
 {
    QApplication app(argc,argv);
-   //app.setFont(Qucs::font());
+   app.setOrganizationName("Qucs");
+   app.setApplicationName("Qucs");
 
    QPixmap pixmap(Qucs::bitmapDirectory() + "splash.jpg");
    QSplashScreen splash(pixmap);

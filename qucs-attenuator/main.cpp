@@ -31,6 +31,8 @@ int main( int argc, char ** argv )
 {
 
   QApplication a( argc, argv );
+  a.setOrganizationName("Qucs");
+  a.setApplicationName("QucsAttenuator");
   a.setFont(Qucs::font());
   QTranslator tor( 0 );
   QString lang = Qucs::language();

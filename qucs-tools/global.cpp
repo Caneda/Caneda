@@ -76,7 +76,7 @@ namespace Qucs
    QString language()
    {
       QString _default = QLocale().name();
-      Qucs::Settings settings(rcFile);
+      QSettings settings;
       settings.beginGroup("MainWindow");
       QString retVal = settings.value("language",_default).toString();
       settings.endGroup();
@@ -92,7 +92,7 @@ namespace Qucs
 
    QFont font()
    {
-      Qucs::Settings settings("qucsrc");
+      QSettings settings;
       settings.beginGroup("MainWindow");
       QString fontStr = settings.value("font").toString();
       QFont fnt;

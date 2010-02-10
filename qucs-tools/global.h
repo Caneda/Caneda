@@ -42,17 +42,8 @@ namespace Qucs
    const QString libDir(LIBRARYDIR);
    const QString version(PACKAGE_VERSION);
    const QString versionString(PACKAGE_STRING);
-   const QString rcFile("qucs-qt4rc");
 
    QString pathForQucsFile(const QString& fileName);
-
-   class Settings : public QSettings
-   {
-      public:
-         Settings(const QString& filename):
-            QSettings(Qucs::pathForQucsFile(filename), QSettings::IniFormat)
-         {}
-   };
 
    QString getenv();
 

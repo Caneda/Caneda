@@ -278,8 +278,8 @@ void QucsAttenuator::slotCalculate()
 
 void QucsAttenuator::readSettings()
 {
-   Qucs::Settings settings("qucsattenuatorrc");
-   
+   QSettings settings;
+
    settings.beginGroup("MainWindow");
    resize(settings.value("size", QSize(400, 400)).toSize());
    move(settings.value("pos", QPoint(200, 200)).toPoint());
@@ -296,8 +296,8 @@ void QucsAttenuator::readSettings()
 
 void QucsAttenuator::writeSettings()
 {
-   Qucs::Settings settings("qucsattenuatorrc");
-   
+   QSettings settings;
+
    settings.beginGroup("MainWindow");
    settings.setValue("size", size());
    settings.setValue("pos", pos());

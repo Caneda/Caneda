@@ -2116,7 +2116,7 @@ void QucsMainWindow::slotPaintingDrawAction(bool on)
 
 void QucsMainWindow::loadSettings()
 {
-    Qucs::Settings settings("qucs-qt4rc");
+    QSettings settings;
 
     settings.beginGroup("MainWindow");
     resize(settings.value("size", QSize(600, 400)).toSize());
@@ -2223,7 +2223,7 @@ void QucsMainWindow::loadSettings()
 
 void QucsMainWindow::saveSettings()
 {
-    Qucs::Settings settings("qucs-qt4rc");
+    QSettings settings;
 
     settings.beginGroup("MainWindow");
     settings.setValue("size", size());
