@@ -31,7 +31,6 @@ class QLineEdit;
 class QSpinBox;
 class QTableWidget;
 class QTableWidgetItem;
-class QucsMainWindow;
 
 /*!
  * This abstract class contains methods that all pages
@@ -41,7 +40,7 @@ class SettingsPage : public QWidget
 {
     Q_OBJECT;
 public:
-    SettingsPage(QucsMainWindow *parent);
+    SettingsPage(QWidget *parent);
     virtual ~SettingsPage();
 
     /// Applies the configuration input by the user in the configuration page
@@ -61,7 +60,7 @@ class GeneralConfigurationPage : public SettingsPage
     Q_OBJECT;
 
 public:
-    GeneralConfigurationPage(QucsMainWindow *parent = 0);
+    GeneralConfigurationPage(QWidget *parent = 0);
     virtual ~GeneralConfigurationPage();
 
 private Q_SLOTS:
@@ -76,9 +75,6 @@ public:
     void applyConf();
     QString title() const;
     QIcon icon() const;
-
-public:
-    QucsMainWindow *App;
 
     QLabel *title_label_;
     QFrame *horiz_line_;
@@ -97,7 +93,7 @@ class SimulationConfigurationPage : public SettingsPage
     Q_OBJECT;
 
 public:
-    SimulationConfigurationPage(QucsMainWindow *parent = 0);
+    SimulationConfigurationPage(QWidget *parent = 0);
     virtual ~SimulationConfigurationPage();
 
 public:
@@ -116,7 +112,7 @@ class DocumentConfigurationPage : public SettingsPage
     Q_OBJECT;
 
 public:
-    DocumentConfigurationPage(SchematicScene *scene, QucsMainWindow *parent = 0);
+    DocumentConfigurationPage(SchematicScene *scene, QWidget *parent = 0);
     virtual ~DocumentConfigurationPage();
 
 public:
@@ -143,7 +139,7 @@ class VhdlConfigurationPage : public SettingsPage
     Q_OBJECT;
 
 public:
-    VhdlConfigurationPage(QucsMainWindow *parent = 0);
+    VhdlConfigurationPage(QWidget *parent = 0);
     virtual ~VhdlConfigurationPage();
 
 private Q_SLOTS:
@@ -162,13 +158,11 @@ public:
     QIcon icon() const;
 
 public:
-    QucsMainWindow *App;
-
     QLabel *title_label_;
     QFrame *horiz_line_;
 
     QPushButton *commentButton, *stringButton, *integerButton,
-                *realButton, *characterButton, *dataButton, *attributeButton;
+                *realButton, *characterButton, *typesButton, *attributesButton;
 };
 
 #endif

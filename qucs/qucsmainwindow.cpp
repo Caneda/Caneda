@@ -26,6 +26,7 @@
 #include "qucsview.h"
 #include "schematicscene.h"
 #include "schematicview.h"
+#include "settings.h"
 #include "xmlsymbolformat.h"
 
 #include "dialogs/aboutqucs.h"
@@ -108,10 +109,6 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
     addView(view);
     m_undoGroup->setActiveStack(view->schematicScene()->undoStack());
     loadSettings();
-
-    if(iconsPixelSize > 0) {
-        setIconSize(QSize(iconsPixelSize, iconsPixelSize));
-    }
 }
 
 //! Destructor
@@ -2063,8 +2060,9 @@ void QucsMainWindow::editFile(const QString& File)
     if(!File.isEmpty()) {
         arguments << File;
     }
+    QString textEditor = Settings::instance()->currentValue("textEditor").toString();
     QProcess *QucsEditor = new QProcess(this);
-    QucsEditor->start(Editor,arguments);
+    QucsEditor->start(textEditor, arguments);
 
     //TODO Emit error in case there are problems
     // Kill editor before qucs ends
@@ -2116,52 +2114,19 @@ void QucsMainWindow::slotPaintingDrawAction(bool on)
 
 void QucsMainWindow::loadSettings()
 {
-    QSettings settings;
+    QSettings qSettings;
 
-    settings.beginGroup("MainWindow");
-    resize(settings.value("size", QSize(600, 400)).toSize());
-    move(settings.value("pos", QPoint(0, 0)).toPoint());
-    maxUndo = settings.value("undo", 20).toInt();
-    iconsPixelSize = settings.value("iconsPixelSize", 0).toInt();
-    largeFontSize = settings.value("largefontsize", 16.0).toDouble();
-    Editor = settings.value("editor", Qucs::binaryDir + "qucsedit").toString();
-    Language = settings.value("language", "").toString();
-    savingFont = settings.value("font", "Helvetica,12").toString();
-    settings.endGroup();
+    Settings *settings = Settings::instance();
+    settings->load(qSettings);
+    const QSize iconSize = settings->currentValue("gui/iconSize").toSize();
+    setIconSize(iconSize);
 
-    settings.beginGroup("Colors");
-    BGColor.setNamedColor(
-            settings.value("bgcolor", QColor(255,250,225).name()).toString());
-    settings.beginGroup("VHDL");
-    VHDL_Comment.setNamedColor(
-            settings.value("comment", QColor(Qt::gray).name()).toString());
-    VHDL_String.setNamedColor(
-            settings.value("string", QColor(Qt::red).name()).toString());
-    VHDL_Integer.setNamedColor(
-            settings.value("integer", QColor(Qt::blue).name()).toString());
-    VHDL_Real.setNamedColor(
-            settings.value("real", QColor(Qt::darkMagenta).name()).toString());
-    VHDL_Character.setNamedColor(
-            settings.value("character", QColor(Qt::magenta).name()).toString());
-    VHDL_Types.setNamedColor(
-            settings.value("types", QColor(Qt::darkRed).name()).toString());
-    VHDL_Attributes.setNamedColor(
-            settings.value("attributes", QColor(Qt::darkCyan).name()).toString());
-    settings.endGroup();
-    settings.endGroup();
-
-    settings.beginGroup("FileTypes");
-    FileTypes.clear();
-    QStringList f = settings.childKeys();
-    QStringList::Iterator it = f.begin();
-    while(it != f.end()) {
-        FileTypes.append((*it)+"/"+settings.value(*it, "").toString());
-        it++;
-    }
-    settings.endGroup();
+    const QRect geometry = settings->currentValue("gui/geometry").toRect();
+    move(geometry.topLeft());
+    resize(geometry.size());
 
     /* Load library database settings */
-    QString libpath = settings.value("SidebarLibrary", QString()).toString();
+    QString libpath = qSettings.value("SidebarLibrary", QString()).toString();
     if(libpath.isEmpty()) {
         libpath = QFileDialog::getExistingDirectory(0, tr("Component database tree"),
                 QDir::homePath(),
@@ -2206,61 +2171,26 @@ void QucsMainWindow::loadSettings()
 
 
     if(library->loadtree(libpath)) {
-        settings.setValue("SidebarLibrary", libpath);
+        qSettings.setValue("SidebarLibrary", libpath);
         qDebug() << "Succesfully loaded library!";
     }
     else {
         //invalidate entry.
         qWarning() << "QucsMainWindow::loadSettings() : Entry is invalid. Run once more to set"
                    << "the appropriate path.";
-        settings.setValue("SidebarLibrary", "");
+        qSettings.setValue("SidebarLibrary", "");
         return;
     }
 
     m_componentsSidebar->plugLibrary(libpath + "/components/basic/passive.xpro", "Components");
-    test();
 }
 
 void QucsMainWindow::saveSettings()
 {
-    QSettings settings;
+    QSettings qSettings;
 
-    settings.beginGroup("MainWindow");
-    settings.setValue("size", size());
-    settings.setValue("pos", pos());
-    settings.setValue("undo", maxUndo);
-    settings.setValue("iconsPixelSize", iconsPixelSize);
-    settings.setValue("editor", Editor);
-    settings.setValue("largefontsize", largeFontSize);
-    settings.setValue("font", savingFont);
-    if(Language.isEmpty()) {
-        settings.remove("language");
-    }
-    else {
-        settings.setValue("language", Language);
-    }
-    settings.endGroup();
-
-    settings.beginGroup("Colors");
-    settings.setValue("bgcolor", BGColor.name());
-    settings.beginGroup("VHDL");
-    settings.setValue("comment", VHDL_Comment.name());
-    settings.setValue("string", VHDL_String.name());
-    settings.setValue("integer", VHDL_Integer.name());
-    settings.setValue("real", VHDL_Real.name());
-    settings.setValue("character", VHDL_Character.name());
-    settings.setValue("types", VHDL_Types.name());
-    settings.setValue("attributes", VHDL_Attributes.name());
-    settings.endGroup();
-    settings.endGroup();
-
-    settings.beginGroup("FileTypes");
-    QStringList::Iterator it = FileTypes.begin();
-    while(it != FileTypes.end()) {
-        settings.setValue((*it).section('/',0,0), (*it).section('/',1));
-        it++;
-    }
-    settings.endGroup();
+    Settings *settings = Settings::instance();
+    settings->save(qSettings);
 }
 
 void QucsMainWindow::setTabTitle(const QString& title)

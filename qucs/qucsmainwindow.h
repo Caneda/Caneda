@@ -201,20 +201,6 @@ private:
     Library *projectLibrary;
     FolderBrowser *m_folderBrowser;
     QString titleText;
-
-public:
-
-    int x, y, dx, dy;     // position and size
-    float largeFontSize;
-    unsigned int maxUndo, iconsPixelSize; // size of undo stack
-    QString savingFont;
-    QString Editor;
-    QString Language;
-    QColor BGColor;
-    QColor VHDL_Comment, VHDL_String, VHDL_Integer, VHDL_Real,
-           VHDL_Character, VHDL_Types, VHDL_Attributes;
-    // registered filename extensions with program to open the file
-    QStringList FileTypes;
 };
 
 inline void QucsMainWindow::addActionToMap(QAction *action)

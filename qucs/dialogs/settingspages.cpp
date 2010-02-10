@@ -20,8 +20,11 @@
 #include "settingspages.h"
 
 #include "qucsmainwindow.h"
+#include "settings.h"
+
 #include "qucs-tools/global.h"
 
+#include <QApplication>
 #include <QColorDialog>
 #include <QComboBox>
 #include <QCheckBox>
@@ -48,7 +51,7 @@
  * Constructor
  * @param QWidget *parent The parent of the dialog.
  */
-SettingsPage::SettingsPage(QucsMainWindow *parent) : QWidget(parent)
+SettingsPage::SettingsPage(QWidget *parent) : QWidget(parent)
 {
 }
 
@@ -91,11 +94,10 @@ SettingsPage::~SettingsPage()
  * Constructor
  * @param QWidget *parent The parent of the dialog.
  */
-GeneralConfigurationPage::GeneralConfigurationPage(QucsMainWindow *parent) :
+GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
     SettingsPage(parent)
 {
-    App = parent;
-
+    Settings *settings = Settings::instance();
     //First we set the appereance settings group of options
     QGroupBox *appereance = new QGroupBox(tr("Appereance"), this);
     QGridLayout *appereanceLayout = new QGridLayout(appereance);
@@ -106,10 +108,14 @@ GeneralConfigurationPage::GeneralConfigurationPage(QucsMainWindow *parent) :
     buttonFont->setText(font.toString());
     QLabel *labelBackgroud = new QLabel(tr("Document Background Color:"));
     buttonBackground = new QPushButton(appereance);
-    setBackgroundColor(buttonBackground, parent->BGColor);
+
+    const QColor currentBackgroundColor =
+        settings->currentValue("gui/backgroundColor").value<QColor>();
+    setBackgroundColor(buttonBackground, currentBackgroundColor);
+
     QLabel *labelIcons = new QLabel(tr("Icons Size:"));
     spinIcons = new QSpinBox(appereance);
-    spinIcons->setValue(parent->iconSize().height());
+    spinIcons->setValue(settings->currentValue("gui/iconSize").toSize().height());
     spinIcons->setMinimum(10);
     spinIcons->setMaximum(48);
 
@@ -155,12 +161,12 @@ GeneralConfigurationPage::GeneralConfigurationPage(QucsMainWindow *parent) :
     }
     QLabel *labelUndoOps = new QLabel(tr("Maximum undo operations:"));
     spinUndoNum = new QSpinBox(misc);
-    spinUndoNum->setValue(parent->maxUndo);
+    spinUndoNum->setValue(settings->currentValue("gui/maxUndo").toInt());
     spinUndoNum->setMinimum(0);
     spinUndoNum->setMaximum(200);
     QLabel *labelTextEditor = new QLabel(tr("Text Editor:"));
     editEditor = new QLineEdit(misc);
-    editEditor->setText(parent->Editor);
+    editEditor->setText(settings->currentValue("gui/textEditor").toString());
 
     miscLayout->addWidget(labelLanguage, 3, 0, Qt::AlignLeft);
     miscLayout->addWidget(comboLanguage, 3, 1, Qt::AlignRight);
@@ -185,12 +191,13 @@ GeneralConfigurationPage::GeneralConfigurationPage(QucsMainWindow *parent) :
     listSuffix->horizontalHeader()->setClickable(false);
     listSuffix->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
     // fill tableview with already registered file extensions
-    QStringList::Iterator it = parent->FileTypes.begin();
+    QStringList fileTypes = settings->currentValue("gui/fileTypes").toStringList();
+    QStringList::Iterator it = fileTypes.begin();
     int r = 0;
-    while(it != parent->FileTypes.end()) {
+    while(it != fileTypes.end()) {
         QTableWidgetItem *Item0, *Item1;
-        Item0 = new QTableWidgetItem((*it).section('/',0,0));
-        Item1 = new QTableWidgetItem((*it).section('/',1));
+        Item0 = new QTableWidgetItem((*it).section(':',0,0));
+        Item1 = new QTableWidgetItem((*it).section(':',1));
         listSuffix->insertRow(r);
         listSuffix->setItem(r,0,Item0);
         listSuffix->setItem(r,1,Item1);
@@ -347,42 +354,73 @@ void GeneralConfigurationPage::applyConf()
 {
     bool changed = false;
 
-    if(App->BGColor != getBackgroundColor(buttonBackground)) {
-        App->BGColor = getBackgroundColor(buttonBackground);
+    Settings *settings = Settings::instance();
+
+    const QColor currentBackgroundColor =
+        settings->currentValue("gui/backgroundColor").value<QColor>();
+    const QColor newBackgroundColor = getBackgroundColor(buttonBackground);
+    if (currentBackgroundColor != newBackgroundColor) {
+        settings->setCurrentValue("gui/backgroundColor", newBackgroundColor);
         changed = true;
     }
 
-    if(App->savingFont != font.toString()) {
-        App->savingFont = font.toString();
+
+    const QFont currentFont = settings->currentValue("gui/font").value<QFont>();
+    const QFont newFont = font;
+    if(currentFont != newFont) {
+        settings->setCurrentValue("gui/font", newFont);
+        qApp->setFont(newFont);
         changed = true;
     }
 
-    if(App->iconSize().height() != spinIcons->value()) {
-        App->setIconSize(QSize(spinIcons->value(), spinIcons->value()));
-        App->iconsPixelSize = spinIcons->value();
+    const QSize currentIconSize = settings->currentValue("gui/iconSize").toSize();
+    const QSize newIconSize(spinIcons->value(), spinIcons->value());
+    if (currentIconSize != newIconSize) {
+        settings->setCurrentValue("gui/iconSize", newIconSize);
+#ifndef CREATORGUI
+        QucsMainWindow::instance()->setIconSize(newIconSize);
+#endif
     }
 
-    App->Language = comboLanguage->currentText().section('(',1,1).remove(')');
-
-    if(App->maxUndo != spinUndoNum->value()) {
-        App->maxUndo = spinUndoNum->value();
+    const QString currentLanguage = settings->currentValue("gui/language").toString();
+    const QString newLanguage = comboLanguage->currentText().section('(',1,1).remove(')');
+    if (currentLanguage != newLanguage) {
+        settings->setCurrentValue("gui/language", newLanguage);
     }
 
-    if(App->Editor != editEditor->text()) {
-        App->Editor = editEditor->text();
+    const int currentMaxUndo = settings->currentValue("gui/maxUndo").toInt();
+    const int newMaxUndo = spinUndoNum->value();
+    if (currentMaxUndo != newMaxUndo) {
+        settings->setCurrentValue("gui/maxUndo", newMaxUndo);
+        //TODO: Also update all undostacks
     }
 
+    const QString currentTextEditor = settings->currentValue("gui/textEditor").toString();
+    const QString newTextEditor = editEditor->text();
+    if (currentTextEditor != newTextEditor) {
+        settings->setCurrentValue("gui/textEditor", newTextEditor);
+    }
+
+
+    const QStringList currentFileTypes = settings->currentValue("gui/fileTypes").toStringList();
+    QStringList newFileTypes;
     QTableWidgetItem *Item0, *Item1;
-    App->FileTypes.clear();
     for(int r = 0; r < listSuffix->rowCount(); r++) {
-        Item0 = listSuffix->item(r,0);
-        Item1 = listSuffix->item(r,1);
-        App->FileTypes.append(Item0->text()+"/"+Item1->text());
+        QString suffix = listSuffix->item(r, 0)->text();
+        QString program = listSuffix->item(r, 1)->text();
+        newFileTypes.append(suffix + QChar(':') + program);
+    }
+    if (currentFileTypes != newFileTypes) {
+        settings->setCurrentValue("gui/fileTypes", newFileTypes);
     }
 
-    App->saveSettings();
+    QSettings qSettings;
+    settings->save(qSettings);
+
     if(changed) {
-        App->repaint();
+#ifndef CREATORGUI
+        QucsMainWindow::instance()->repaint();
+#endif
     }
 }
 
@@ -404,7 +442,7 @@ QString GeneralConfigurationPage::title() const {
  * Constructor
  * @param QWidget *parent The parent of the dialog.
  */
-SimulationConfigurationPage::SimulationConfigurationPage(QucsMainWindow *parent) :
+SimulationConfigurationPage::SimulationConfigurationPage(QWidget *parent) :
     SettingsPage(parent)
 {
     //First we set the simulator group of options
@@ -503,7 +541,7 @@ QString SimulationConfigurationPage::title() const
  * @param QWidget *parent The parent of the dialog.
  */
 DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene,
-        QucsMainWindow *parent) : SettingsPage(parent)
+        QWidget *parent) : SettingsPage(parent)
 {
 
     Scn = scene;
@@ -704,9 +742,7 @@ QString DocumentConfigurationPage::title() const
  * Constructor
  * @param QWidget *parent The parent of the dialog.
  */
-VhdlConfigurationPage::VhdlConfigurationPage(QucsMainWindow *parent) : SettingsPage(parent) {
-
-    App = parent;
+VhdlConfigurationPage::VhdlConfigurationPage(QWidget *parent) : SettingsPage(parent) {
 
     //First we set the color settings group of options
     QGroupBox *colorsHighlighting = new QGroupBox(tr("Colors for Syntax Highlighting"),
@@ -718,39 +754,65 @@ VhdlConfigurationPage::VhdlConfigurationPage(QucsMainWindow *parent) : SettingsP
     integerButton = new QPushButton(tr("Integer Number"), colorsHighlighting);
     realButton = new QPushButton(tr("Real Number"), colorsHighlighting);
     characterButton = new QPushButton(tr("Character"), colorsHighlighting);
-    dataButton = new QPushButton(tr("Data Type"), colorsHighlighting);
-    attributeButton = new QPushButton(tr("Attribute"), colorsHighlighting);
+    typesButton = new QPushButton(tr("Data Type"), colorsHighlighting);
+    attributesButton = new QPushButton(tr("Attribute"), colorsHighlighting);
 
-    setBackgroundColor(commentButton, parent->BGColor);
-    setForegroundColor(commentButton, parent->VHDL_Comment);
-    setBackgroundColor(stringButton, parent->BGColor);
-    setForegroundColor(stringButton, parent->VHDL_String);
-    setBackgroundColor(integerButton, parent->BGColor);
-    setForegroundColor(integerButton, parent->VHDL_Integer);
-    setBackgroundColor(realButton, parent->BGColor);
-    setForegroundColor(realButton, parent->VHDL_Real);
-    setBackgroundColor(characterButton, parent->BGColor);
-    setForegroundColor(characterButton, parent->VHDL_Character);
-    setBackgroundColor(dataButton, parent->BGColor);
-    setForegroundColor(dataButton, parent->VHDL_Types);
-    setBackgroundColor(attributeButton, parent->BGColor);
-    setForegroundColor(attributeButton, parent->VHDL_Attributes);
+    Settings *settings = Settings::instance();
+
+    const QColor currentcommentColor =
+        settings->currentValue("gui/vhdl/comment").value<QColor>();
+    const QColor currentstringColor =
+        settings->currentValue("gui/vhdl/string").value<QColor>();
+    const QColor currentintegerColor =
+        settings->currentValue("gui/vhdl/integer").value<QColor>();
+    const QColor currentrealColor =
+        settings->currentValue("gui/vhdl/real").value<QColor>();
+    const QColor currentcharacterColor =
+        settings->currentValue("gui/vhdl/character").value<QColor>();
+    const QColor currenttypesColor =
+        settings->currentValue("gui/vhdl/types").value<QColor>();
+    const QColor currentattributesColor =
+        settings->currentValue("gui/vhdl/attributes").value<QColor>();
+
+    const QColor currentBackgroundColor = 
+        settings->currentValue("gui/backgroundColor").value<QColor>();
+
+    setBackgroundColor(commentButton, currentBackgroundColor);
+    setForegroundColor(commentButton, currentcommentColor);
+
+    setBackgroundColor(stringButton, currentBackgroundColor);
+    setForegroundColor(stringButton, currentstringColor);
+
+    setBackgroundColor(integerButton, currentBackgroundColor);
+    setForegroundColor(integerButton, currentintegerColor);
+
+    setBackgroundColor(realButton, currentBackgroundColor);
+    setForegroundColor(realButton, currentrealColor);
+
+    setBackgroundColor(characterButton, currentBackgroundColor);
+    setForegroundColor(characterButton, currentcharacterColor);
+
+    setBackgroundColor(typesButton, currentBackgroundColor);
+    setForegroundColor(typesButton, currenttypesColor);
+
+    setBackgroundColor(attributesButton, currentBackgroundColor);
+    setForegroundColor(attributesButton, currentattributesColor);
 
     connect(commentButton, SIGNAL(clicked()), SLOT(slotColorComment()));
     connect(stringButton, SIGNAL(clicked()), SLOT(slotColorString()));
     connect(integerButton, SIGNAL(clicked()), SLOT(slotColorInteger()));
     connect(realButton, SIGNAL(clicked()), SLOT(slotColorReal()));
     connect(characterButton, SIGNAL(clicked()), SLOT(slotColorCharacter()));
-    connect(dataButton, SIGNAL(clicked()), SLOT(slotColorDataType()));
-    connect(attributeButton, SIGNAL(clicked()), SLOT(slotColorAttributes()));
+    connect(typesButton, SIGNAL(clicked()), SLOT(slotColorDataType()));
+    connect(attributesButton, SIGNAL(clicked()), SLOT(slotColorAttributes()));
 
     generalLayout->addWidget(commentButton, 0, 0);
     generalLayout->addWidget(stringButton, 0, 1);
     generalLayout->addWidget(integerButton, 1, 0);
     generalLayout->addWidget(realButton, 1, 1);
     generalLayout->addWidget(characterButton, 2, 0);
-    generalLayout->addWidget(dataButton, 2, 1);
-    generalLayout->addWidget(attributeButton, 3, 0);
+    generalLayout->addWidget(typesButton, 2, 1);
+    generalLayout->addWidget(attributesButton, 3, 0);
 
 
     //Finally we set the general layout of all groups
@@ -777,38 +839,69 @@ VhdlConfigurationPage::~VhdlConfigurationPage() {
 void VhdlConfigurationPage::applyConf() {
     bool changed = false;
 
-    if(App->VHDL_Comment != getForegroundColor(commentButton)) {
-        App->VHDL_Comment = getForegroundColor(commentButton);
-        changed = true;
-    }
-    if(App->VHDL_String != getForegroundColor(stringButton)) {
-        App->VHDL_String = getForegroundColor(stringButton);
-        changed = true;
-    }
-    if(App->VHDL_Integer != getForegroundColor(integerButton)) {
-        App->VHDL_Integer = getForegroundColor(integerButton);
-        changed = true;
-    }
-    if(App->VHDL_Real != getForegroundColor(realButton)) {
-        App->VHDL_Real = getForegroundColor(realButton);
-        changed = true;
-    }
-    if(App->VHDL_Character != getForegroundColor(characterButton)) {
-        App->VHDL_Character = getForegroundColor(characterButton);
-        changed = true;
-    }
-    if(App->VHDL_Types != getForegroundColor(dataButton)) {
-        App->VHDL_Types = getForegroundColor(dataButton);
-        changed = true;
-    }
-    if(App->VHDL_Attributes != getForegroundColor(attributeButton)) {
-        App->VHDL_Attributes = getForegroundColor(attributeButton);
+    Settings *settings = Settings::instance();
+    const QColor currentcommentColor =
+        settings->currentValue("gui/vhdl/comment").value<QColor>();
+    const QColor newcommentColor = getForegroundColor(commentButton);
+    if (newcommentColor != currentcommentColor) {
+        settings->setCurrentValue("gui/vhdl/comment", newcommentColor);
         changed = true;
     }
 
-    App->saveSettings();  // also sets the small and large font
+    const QColor currentstringColor =
+        settings->currentValue("gui/vhdl/string").value<QColor>();
+    const QColor newstringColor = getForegroundColor(stringButton);
+    if (newstringColor != currentstringColor) {
+        settings->setCurrentValue("gui/vhdl/string", newstringColor);
+        changed = true;
+    }
+
+    const QColor currentintegerColor =
+        settings->currentValue("gui/vhdl/integer").value<QColor>();
+    const QColor newintegerColor = getForegroundColor(integerButton);
+    if (newintegerColor != currentintegerColor) {
+        settings->setCurrentValue("gui/vhdl/integer", newintegerColor);
+        changed = true;
+    }
+
+    const QColor currentrealColor =
+        settings->currentValue("gui/vhdl/real").value<QColor>();
+    const QColor newrealColor = getForegroundColor(realButton);
+    if (newrealColor != currentrealColor) {
+        settings->setCurrentValue("gui/vhdl/real", newrealColor);
+        changed = true;
+    }
+
+    const QColor currentcharacterColor =
+        settings->currentValue("gui/vhdl/character").value<QColor>();
+    const QColor newcharacterColor = getForegroundColor(characterButton);
+    if (newcharacterColor != currentcharacterColor) {
+        settings->setCurrentValue("gui/vhdl/character", newcharacterColor);
+        changed = true;
+    }
+
+    const QColor currenttypesColor =
+        settings->currentValue("gui/vhdl/types").value<QColor>();
+    const QColor newtypesColor = getForegroundColor(typesButton);
+    if (newtypesColor != currenttypesColor) {
+        settings->setCurrentValue("gui/vhdl/types", newtypesColor);
+        changed = true;
+    }
+
+    const QColor currentattributesColor =
+        settings->currentValue("gui/vhdl/attributes").value<QColor>();
+    const QColor newattributesColor = getForegroundColor(attributesButton);
+    if (newattributesColor != currentattributesColor) {
+        settings->setCurrentValue("gui/vhdl/attributes", newattributesColor);
+        changed = true;
+    }
+
+    QSettings qSettings;
+    settings->save(qSettings);
     if(changed) {
-        App->repaint();
+#ifndef CREATORGUI
+        QucsMainWindow::instance()->repaint();
+#endif
     }
 }
 
@@ -872,35 +965,61 @@ void VhdlConfigurationPage::slotColorCharacter()
 void VhdlConfigurationPage::slotColorDataType()
 {
     QColor c = QColorDialog::getColor(
-            getForegroundColor(dataButton), this);
+            getForegroundColor(typesButton), this);
     if(c.isValid()) {
-        setForegroundColor(dataButton,c);
+        setForegroundColor(typesButton,c);
     }
 }
 
 void VhdlConfigurationPage::slotColorAttributes()
 {
     QColor c = QColorDialog::getColor(
-            getForegroundColor(attributeButton), this);
+            getForegroundColor(attributesButton), this);
     if(c.isValid()) {
-        setForegroundColor(attributeButton,c);
+        setForegroundColor(attributesButton,c);
     }
 }
 
 void VhdlConfigurationPage::slotDefaultValues()
 {
-    setForegroundColor(commentButton,Qt::gray);
-    setBackgroundColor(commentButton,QColor(255,250,225));
-    setForegroundColor(stringButton,Qt::red);
-    setBackgroundColor(stringButton,QColor(255,250,225));
-    setForegroundColor(integerButton,Qt::blue);
-    setBackgroundColor(integerButton,QColor(255,250,225));
-    setForegroundColor(realButton,Qt::darkMagenta);
-    setBackgroundColor(realButton,QColor(255,250,225));
-    setForegroundColor(characterButton,Qt::magenta);
-    setBackgroundColor(characterButton,QColor(255,250,225));
-    setForegroundColor(dataButton,Qt::darkRed);
-    setBackgroundColor(dataButton,QColor(255,250,225));
-    setForegroundColor(attributeButton,Qt::darkCyan);
-    setBackgroundColor(attributeButton,QColor(255,250,225));
+    Settings *settings = Settings::instance();
+
+    const QColor defaultcommentColor =
+        settings->defaultValue("gui/vhdl/comment").value<QColor>();
+    const QColor defaultstringColor =
+        settings->defaultValue("gui/vhdl/string").value<QColor>();
+    const QColor defaultintegerColor =
+        settings->defaultValue("gui/vhdl/integer").value<QColor>();
+    const QColor defaultrealColor =
+        settings->defaultValue("gui/vhdl/real").value<QColor>();
+    const QColor defaultcharacterColor =
+        settings->defaultValue("gui/vhdl/character").value<QColor>();
+    const QColor defaulttypesColor =
+        settings->defaultValue("gui/vhdl/types").value<QColor>();
+    const QColor defaultattributesColor =
+        settings->defaultValue("gui/vhdl/attributes").value<QColor>();
+
+    const QColor defaultBackgroundColor = 
+        settings->defaultValue("gui/backgroundColor").value<QColor>();
+
+    setForegroundColor(commentButton, defaultcommentColor);
+    setBackgroundColor(commentButton, defaultBackgroundColor);
+
+    setForegroundColor(stringButton, defaultstringColor);
+    setBackgroundColor(stringButton, defaultBackgroundColor);
+
+    setForegroundColor(integerButton, defaultintegerColor);
+    setBackgroundColor(integerButton, defaultBackgroundColor);
+
+    setForegroundColor(realButton, defaultrealColor);
+    setBackgroundColor(realButton, defaultBackgroundColor);
+
+    setForegroundColor(characterButton, defaultcharacterColor);
+    setBackgroundColor(characterButton, defaultBackgroundColor);
+
+    setForegroundColor(typesButton, defaulttypesColor);
+    setBackgroundColor(typesButton, defaultBackgroundColor);
+
+    setForegroundColor(attributesButton, defaultattributesColor);
+    setBackgroundColor(attributesButton, defaultBackgroundColor);
 }

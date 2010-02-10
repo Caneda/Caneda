@@ -13,7 +13,7 @@ SET(QUCS_SRCS wire.cpp componentssidebar.cpp item.cpp
   svgitem.cpp property.cpp propertyitem.cpp
   propertygroup.cpp component.cpp port.cpp library.cpp
   xmlformat.cpp mnemo.cpp propertydialog.cpp
-  wireline.cpp folderbrowser.cpp xmlsymbolformat.cpp
+  wireline.cpp folderbrowser.cpp xmlsymbolformat.cpp settings.cpp
 )
 
 SET(QUCS_MOC_HDRS schematicscene.h schematicview.h mainwindowbase.h
