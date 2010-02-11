@@ -26,6 +26,7 @@
 #include "propertygroup.h"
 #include "qucsmainwindow.h"
 #include "schematicview.h"
+#include "settings.h"
 #include "undocommands.h"
 #include "wire.h"
 
@@ -813,17 +814,20 @@ void SchematicScene::setModified(const bool m)
  */
 void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 {
-    int gridWidth = this->gridWidth();
-    int gridHeight = this->gridHeight();
-    QPen savedpen;
-
-    /* configure pen */
-    savedpen = painter->pen();
-    painter->setPen(QPen(this->GridColor(), 0));
-    painter->setBrush(Qt::NoBrush);
+    QPen savedpen = painter->pen();
 
     /* disable anti aliasing */
     painter->setRenderHint(QPainter::Antialiasing, false);
+
+    const QColor backgroundColor =
+        Settings::instance()->currentValue("gui/backgroundColor").value<QColor>();
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QBrush(backgroundColor));
+    painter->drawRect(rect);
+
+    /* configure pen */
+    painter->setPen(QPen(this->GridColor(), 0));
+    painter->setBrush(Qt::NoBrush);
 
     /* draw frame */
     if(this->isFrameVisible()) {
@@ -866,7 +870,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 
     /* no grid */
     if(!this->isGridVisible()) {
-        return QGraphicsScene::drawBackground(painter, rect);
+        return;
     }
 
     /* draw origin */
@@ -895,6 +899,10 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
     }
 #endif
 
+    // While drawing, choose spaing to be twice the actual grid size.
+    const int gridWidth = this->gridWidth() * 2;
+    const int gridHeight = this->gridHeight() * 2;
+
     /* extrema grid points */
     qreal left = int(rect.left()) + gridWidth - (int(rect.left()) % gridWidth);
     qreal top = int(rect.top()) + gridHeight - (int(rect.top()) % gridHeight);
@@ -903,6 +911,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
     qreal x, y;
 
     /* draw grid */
+    painter->setBrush(Qt::NoBrush);
     for(x = left; x <= right; x += gridWidth) {
         for(y = top; y <=bottom; y += gridHeight) {
             painter->drawPoint(QPointF(x, y));
