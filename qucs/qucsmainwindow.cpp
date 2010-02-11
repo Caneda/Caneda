@@ -190,6 +190,7 @@ void QucsMainWindow::setupSidebar()
 
     sidebarDockWidget = new QDockWidget(m_componentsSidebar->windowTitle(),this);
     sidebarDockWidget->setWidget(m_componentsSidebar);
+    sidebarDockWidget->setObjectName("componentsSidebar");
     addDockWidget(Qt::LeftDockWidgetArea, sidebarDockWidget);
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 
@@ -222,6 +223,8 @@ void QucsMainWindow::setupProjectsSidebar()
 
     sidebarDockWidget = new QDockWidget(m_projectsSidebar->windowTitle(),this);
     sidebarDockWidget->setWidget(m_projectsSidebar);
+    sidebarDockWidget->setObjectName("projectsSidebar");
+    sidebarDockWidget->setVisible(false);
     addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 
@@ -239,6 +242,8 @@ void QucsMainWindow::createUndoView()
 
     sidebarDockWidget = new QDockWidget(undoView->windowTitle(),this);
     sidebarDockWidget->setWidget(undoView);
+    sidebarDockWidget->setObjectName("undoSidebar");
+    sidebarDockWidget->setVisible(false);
     addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 }
@@ -252,7 +257,8 @@ void QucsMainWindow::createFolderView()
 
     sidebarDockWidget = new QDockWidget(m_folderBrowser->windowTitle(),this);
     sidebarDockWidget->setWidget(m_folderBrowser);
-    addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
+    sidebarDockWidget->setObjectName("folderBrowserSidebar");
+    addDockWidget(Qt::LeftDockWidgetArea, sidebarDockWidget);
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 }
 
@@ -1081,6 +1087,7 @@ void QucsMainWindow::initMenus()
 void QucsMainWindow::initToolBars()
 {
     fileToolbar  = addToolBar(tr("File"));
+    fileToolbar->setObjectName("fileToolBar");
 
     fileToolbar->addAction(action("fileNew"));
     fileToolbar->addAction(action("textNew"));
@@ -1090,6 +1097,7 @@ void QucsMainWindow::initToolBars()
     fileToolbar->addAction(action("filePrint"));
 
     editToolbar  = addToolBar(tr("Edit"));
+    editToolbar->setObjectName("editToolbar");
 
     editToolbar->addAction(action("editCut"));
     editToolbar->addAction(action("editCopy"));
@@ -1099,6 +1107,7 @@ void QucsMainWindow::initToolBars()
     editToolbar->addAction(action("redo"));
 
     viewToolbar  = addToolBar(tr("View"));
+    viewToolbar->setObjectName("viewToolbar");
 
     viewToolbar->addAction(action("magAll"));
     viewToolbar->addAction(action("magOne"));
@@ -1106,6 +1115,7 @@ void QucsMainWindow::initToolBars()
     viewToolbar->addAction(action("magMinus"));
 
     workToolbar  = addToolBar(tr("Work"));
+    workToolbar->setObjectName("workToolbar");
 
     workToolbar->addAction(action("select"));
     workToolbar->addAction(action("editActivate"));
@@ -2183,6 +2193,9 @@ void QucsMainWindow::loadSettings()
     }
 
     m_componentsSidebar->plugLibrary(libpath + "/components/basic/passive.xpro", "Components");
+
+    //Next we restore qucsmainwindow docks positions
+    this->restoreState(qSettings.value("DocksPositions").toByteArray());
 }
 
 void QucsMainWindow::saveSettings()
@@ -2191,6 +2204,9 @@ void QucsMainWindow::saveSettings()
 
     Settings *settings = Settings::instance();
     settings->save(qSettings);
+
+    //Now we save qucsmainwindow docks positions
+    qSettings.setValue("DocksPositions", this->saveState());
 }
 
 void QucsMainWindow::setTabTitle(const QString& title)
