@@ -93,24 +93,6 @@ SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 }
 
 /*!
- * Constructs a SchematicScene object, using the rectangle specified by (x, y),
- * and the given width and height for its scene rectangle. The parent parameter is
- * passed to QObject's constructor.
- *
- * \param x: first coordinate of rectangle
- * \param y: second coordinate of rectangle
- * \param width: schematic width
- * \param height: schematic height
- * \param parent: passed to  QObject's constructor.
- */
-SchematicScene::SchematicScene(qreal x, qreal y, qreal width, qreal height,
-        QObject * parent) : QGraphicsScene(x, y, width, height, parent)
-{
-    this->init();
-}
-
-
-/*!
  * \brief Default grid spacing
  * \todo Must be configurable
  */
@@ -162,11 +144,6 @@ void SchematicScene::init()
 SchematicScene::~SchematicScene()
 {
     delete this->m_undoStack;
-}
-
-//! \todo Check usefulness
-void SchematicScene::test()
-{
 }
 
 /*!

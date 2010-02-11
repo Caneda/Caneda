@@ -262,14 +262,6 @@ void QucsMainWindow::createFolderView()
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 }
 
-void QucsMainWindow::test()
-{
-    SchematicView *v = qobject_cast<SchematicView*>(currentWidget());
-    if(v) {
-        v->test();
-    }
-}
-
 /*!
  * \brief Creates and intializes all the actions used.
  */

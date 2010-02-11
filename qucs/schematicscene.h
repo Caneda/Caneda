@@ -94,10 +94,7 @@ public:
 
     /* constructor/destructor */
     SchematicScene(QObject *parent =0);
-    SchematicScene(qreal x, qreal y, qreal width, qreal height, QObject * parent = 0);
     ~SchematicScene();
-
-    void test();
 
     bool areItemsMoving() const { return m_areItemsMoving; }
 

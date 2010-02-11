@@ -52,8 +52,6 @@ public:
     bool gotoPage(QString fileName, Qucs::Mode mode=Qucs::SchematicMode);
     void addView(QucsView *view);
     void saveSettings();
-    void test();
-
 
 public Q_SLOTS:
     void slotFileNew();

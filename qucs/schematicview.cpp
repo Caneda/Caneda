@@ -40,7 +40,8 @@ SchematicView::SchematicView(SchematicScene *sc, QWidget *parent) :
     m_verticalScroll(0)
 {
     if(sc == 0) {
-        sc = new SchematicScene(0, 0, 1024, 768);
+        sc = new SchematicScene;
+        sc->setSceneRect(0, 0, 1024, 768);
         setScene(sc);
         DragMode dragMode = (sc->currentMouseAction() == SchematicScene::Normal) ?
             RubberBandDrag : NoDrag;
@@ -63,11 +64,6 @@ SchematicView::SchematicView(SchematicScene *sc, QWidget *parent) :
 //! Destructor
 SchematicView::~SchematicView()
 {
-}
-
-void SchematicView::test()
-{
-    schematicScene()->test();
 }
 
 SchematicScene* SchematicView::schematicScene() const

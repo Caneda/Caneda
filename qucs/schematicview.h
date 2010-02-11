@@ -36,7 +36,6 @@ public:
 
     SchematicView(SchematicScene *sc = 0,QWidget *parent = 0);
     ~SchematicView();
-    void test();
 
     SchematicScene* schematicScene() const;
 
