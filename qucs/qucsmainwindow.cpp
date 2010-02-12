@@ -488,10 +488,10 @@ void QucsMainWindow::initActions()
     addActionToMap(action);
     checkableActions << action;
 
-    action = new QAction(QIcon(bitmapPath + "symbol-edit.png"), tr("&Edit Circuit Symbol"), this);
+    action = new QAction(QIcon(bitmapPath + "symbol-edit.png"), tr("&Edit Circuit Symbol/Schematic"), this);
     action->setShortcut(Key_F7);
-    action->setStatusTip(tr("Edits the symbol for this schematic"));
-    action->setWhatsThis(tr("Edit Circuit Symbol\n\nEdits the symbol for this schematic"));
+    action->setStatusTip(tr("Switches between symbol and schematic edit"));
+    action->setWhatsThis(tr("Edit Circuit Symbol/Schematic\n\nSwitches between symbol and schematic edit"));
     action->setObjectName("symEdit");
     connect(action, SIGNAL(triggered()), SLOT(slotSymbolEdit()));
     addActionToMap(action);
@@ -1475,18 +1475,23 @@ void QucsMainWindow::slotSymbolEdit()
     if(!currentView->fileName().isEmpty()) {
         QString fileName = currentView->fileName();
 
-        //First, we try to open the corresponding symbol file
-        bool isLoaded = gotoPage(fileName, Qucs::SymbolMode);
+        if(currentView->toSchematicView()->schematicScene()->currentMode() == Qucs::SchematicMode) {
+            //First, we try to open the corresponding symbol file
+            bool isLoaded = gotoPage(fileName, Qucs::SymbolMode);
 
-        //If it's a new symbol, we create it
-        if(!isLoaded){
-            addView(new SchematicView(0, this));
+            //If it's a new symbol, we create it
+            if(!isLoaded){
+                addView(new SchematicView(0, this));
 
-            QucsView *v = viewFromWidget(tabWidget()->currentWidget());
-            SchematicScene *sc = v->toSchematicView()->schematicScene();
-            sc->setMode(Qucs::SymbolMode);
+                QucsView *v = viewFromWidget(tabWidget()->currentWidget());
+                SchematicScene *sc = v->toSchematicView()->schematicScene();
+                sc->setMode(Qucs::SymbolMode);
 
-            v->setFileName(fileName);
+                v->setFileName(fileName);
+            }
+        }
+        else if(currentView->toSchematicView()->schematicScene()->currentMode() == Qucs::SymbolMode) {
+            gotoPage(fileName, Qucs::SchematicMode);
         }
     }
 }
