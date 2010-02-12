@@ -44,7 +44,6 @@ static const double itemstrokewidth = 1.0;
 
 
 /*!
- * \internal
  * \brief This code draws the highlighted rect around the item
  * \note This code is stolen from source of qt ;-)
  */
@@ -88,6 +87,7 @@ static void highlightSelectedSvgItem(
 
 /*!
  * \brief Constructs an SvgItemData with raw svg content.
+ *
  * \param _content Raw svg content.
  */
 SvgItemData::SvgItemData(const QByteArray& _content) :
@@ -101,7 +101,7 @@ SvgItemData::SvgItemData(const QByteArray& _content) :
 
 
 /*!
- * Returns the bounding rect of the svg element.
+ * \brief Returns the bounding rect of the svg element.
  *
  * Use viewBox (ifexist) and as a fallback use boundsOnElement
  */
@@ -122,13 +122,15 @@ QRectF SvgItemData::boundingRect() const
 ##########################################################################
 */
 
-//! Constructs svg painter object.
+//! \brief Constructs svg painter object.
 SvgPainter::SvgPainter()
 {
     m_cachingEnabled = true;
 }
 
-//! Destructor. Deletes the data belonging to this.
+/*! Destructor.
+ *  \brief Deletes the data belonging to this.
+ */
 SvgPainter::~SvgPainter()
 {
     DataHash::iterator it = m_dataHash.begin(), end = m_dataHash.end();
@@ -155,13 +157,13 @@ void SvgPainter::registerSvg(const QString& svg_id, const QByteArray& svg)
     m_dataHash[svg_id] = new SvgItemData(svg);
 }
 
-//! Returns QSvgRenderer corresponding to id \a svg_id.
+//! \brief Returns QSvgRenderer corresponding to id \a svg_id.
 QSvgRenderer* SvgPainter::rendererFor(const QString& svg_id) const
 {
     return &(svgData(svg_id)->renderer);
 }
 
-//! Returns bound rect corresponding to id \a svg_id.
+//! \brief Returns bound rect corresponding to id \a svg_id.
 QRectF SvgPainter::boundingRect(const QString& svg_id) const
 {
     return svgData(svg_id)->boundingRect();
@@ -171,6 +173,7 @@ QRectF SvgPainter::boundingRect(const QString& svg_id) const
  * \brief This method paints( or renders) a registerd svg using \a painter.
  *
  * This also takes care of updating the cache ifcaching is enabled.
+ *
  * \param painter Painter with which svg should be rendered.
  * \param svg_id Svg id which should be rendered.
  */
@@ -220,20 +223,20 @@ void SvgPainter::paint(QPainter *painter, const QString& svg_id)
     painter->setTransform(xformSave);
 }
 
-//! Returns the SvgItemData* corresponding to svg id \a svg_id.
+//! \brief Returns the SvgItemData* corresponding to svg id \a svg_id.
 SvgItemData* SvgPainter::svgData(const QString& svg_id) const
 {
     Q_ASSERT(isSvgRegistered(svg_id));
     return m_dataHash[svg_id];
 }
 
-//! Returns svg content corresponding to svg id \a svg_id.
+//! \brief Returns svg content corresponding to svg id \a svg_id.
 QByteArray SvgPainter::svgContent(const QString& svg_id) const
 {
     return svgData(svg_id)->content;
 }
 
-//! Enables/Disables caching based on \a caching.
+//! \brief Enables/Disables caching based on \a caching.
 void SvgPainter::setCachingEnabled(bool caching)
 {
     if(m_cachingEnabled == caching) {
@@ -268,7 +271,7 @@ SvgPainter* SvgPainter::defaultInstance()
 */
 
 /*!
- *\brief Constructs an unregistered, initially unrenderable svg item.
+ * \brief Constructs an unregistered, initially unrenderable svg item.
  *
  * To render this item it should first be connected to SvgPainter and the
  * svg id should already be registered with SvgPainter.
@@ -340,7 +343,7 @@ void SvgItem::registerConnections(const QString& svg_id, SvgPainter *painter)
     updateBoundingRect();
 }
 
-//! Returns svg corresponding to this item.
+//! \brief Returns svg corresponding to this item.
 QByteArray SvgItem::svgContent() const
 {
     if(isRegistered()) {
@@ -350,7 +353,7 @@ QByteArray SvgItem::svgContent() const
 }
 
 /*!
- *\brief Updates the bounding rect of this item.
+ * \brief Updates the bounding rect of this item.
  *
  * This is public slot which is connected to QSvgRenderer::repaintNeeded()
  * signal.
@@ -375,9 +378,7 @@ void SvgItem::updateBoundingRect()
     setShapeAndBoundRect(QPainterPath(), adjustedRect, itemstrokewidth);
 }
 
-/*!
- * Returns whether item is registered to an svg or not.
- */
+//! \brief Returns whether item is registered to an svg or not.
 bool SvgItem::isRegistered() const
 {
     return svgPainter() && !m_svgId.isEmpty() && svgPainter()->isSvgRegistered(m_svgId);

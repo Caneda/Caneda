@@ -1137,7 +1137,9 @@ void QucsMainWindow::initToolBars()
 }
 
 /*!
- * \brief This method toggles the action and calls the function pointed by
+ * \brief Toogles the action perfomed.
+ *
+ * This method toggles the action and calls the function pointed by
  * \a func if on is true. This method takes care to preserve the mutual
  * exclusiveness off the checkable actions.
  */
@@ -1218,7 +1220,9 @@ void QucsMainWindow::setNormalAction()
 }
 
 /*!
- * \brief Adds the view to the tabwidget and also adds its undostack if it is
+ * \brief Adds the view to the tabwidget.
+ *
+ * Adds the view to the tabwidget and also adds its undostack if it is
  * scematicview..
  * Also the added view is set as current tab in tabwidget.
  */
@@ -1233,7 +1237,9 @@ void QucsMainWindow::addView(QucsView *view)
 }
 
 /*!
- * \brief This slot updates the current undostack of undogroup and also updates
+ * \brief Updates the current undostack and the tabs/window title text.
+ *
+ * This slot updates the current undostack of undogroup and also updates
  * the tab's as well as window's title text. Also necessary connections between
  * view and this main window are made.
  */
@@ -1290,10 +1296,7 @@ void QucsMainWindow::slotFileNew()
     addView(new SchematicView(0, this));
 }
 
-/*!
- * \brief Creates a new text(vhdl-verilog-simple) view.
- * \todo Implement this.
- */
+//! \brief Creates a new text(vhdl-verilog-simple) view.
 void QucsMainWindow::slotTextNew()
 {
     setNormalAction();
@@ -1656,9 +1659,7 @@ void QucsMainWindow::slotOnGrid(bool on)
     performToggleAction(on, &SchematicScene::setItemsOnGrid, action("onGrid"));
 }
 
-/*!
- * \brief Align selected elements appropriately based on \a alignment
- */
+//! \brief Align selected elements appropriately based on \a alignment
 void QucsMainWindow::alignElements(Qt::Alignment alignment)
 {
     SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
@@ -1672,25 +1673,19 @@ void QucsMainWindow::alignElements(Qt::Alignment alignment)
     }
 }
 
-/*!
- * \brief Align elements in a row correponding to top most elements coords.
- */
+//! \brief Align elements in a row correponding to top most elements coords.
 void QucsMainWindow::slotAlignTop()
 {
     alignElements(Qt::AlignTop);
 }
 
-/*!
- * \brief Align elements in a row correponding to bottom most elements coords.
- */
+//! \brief Align elements in a row correponding to bottom most elements coords.
 void QucsMainWindow::slotAlignBottom()
 {
     alignElements(Qt::AlignBottom);
 }
 
-/*!
- * \brief Align elements in a column correponding to left most elements coords.
- */
+//! \brief Align elements in a column correponding to left most elements coords.
 void QucsMainWindow::slotAlignLeft()
 {
     alignElements(Qt::AlignLeft);
@@ -2053,9 +2048,7 @@ void QucsMainWindow::slotViewStatusBar(bool toogle)
     statusBar()->setVisible(toogle);
 }
 
-/*!
- * \brief Opens the editor given a filename
- */
+//! \brief Opens the editor given a filename
 void QucsMainWindow::editFile(const QString& File)
 {
     QStringList arguments;

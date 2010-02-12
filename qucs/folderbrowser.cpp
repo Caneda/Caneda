@@ -29,7 +29,14 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
-//! Constructor
+/*! Constructor
+ * \brief This class implements a simple folder browser widget
+ *
+ * This also handles the mouse and keyboad events, and sends
+ * when appropiate, the file names to be opened by the parent.
+ *
+ * \param parent Parent of the widget.
+ */
 FolderBrowser::FolderBrowser(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);

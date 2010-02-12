@@ -97,4 +97,4 @@ private:
     QToolBar *toolbar;
 };
 
-#endif
+#endif //COMPONENTSSIDEBAR_H

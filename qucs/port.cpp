@@ -46,14 +46,14 @@ bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
  *************************************************************/
 
 
-//! Construct portowner with wire as owner.
+//! \brief Construct portowner with wire as owner.
 PortOwner::PortOwner(QucsItem * item) : m_item(item)
 {
     Q_ASSERT(this->isWire() || this->isComponent());
 }
 
 /*!
- * Return port owner as  QGraphicsItem
+ * \brief Return port owner as  QGraphicsItem
  * \todo check why is it needed
  */
 QGraphicsItem* PortOwner::item() const
@@ -64,7 +64,7 @@ QGraphicsItem* PortOwner::item() const
     return item;
 }
 
-//! Return the wire if stored, or null otherwise.
+//! \brief Return the wire if stored, or null otherwise.
 Wire* PortOwner::wire() const
 {
     if(this->m_item->type() == QucsItem::WireType) {
@@ -75,7 +75,7 @@ Wire* PortOwner::wire() const
     }
 }
 
-//! Return the wire if stored, or null otherwise.
+//! \brief Return the wire if stored, or null otherwise.
 Component* PortOwner::component() const
 {
     if(this->m_item->type() == QucsItem::ComponentType) {
@@ -92,7 +92,9 @@ Component* PortOwner::component() const
  *
  ***************************************************************************/
 
-//! Construct port with qucsitem as owner and shared data \data.
+/*! Constructor
+ *  \brief Construct port with qucsitem as owner and shared data \data.
+ */
 Port::Port(QucsItem *owner, const QSharedDataPointer<PortData> &data) :
     d(data),
     m_owner(new PortOwner(owner)),
@@ -101,7 +103,9 @@ Port::Port(QucsItem *owner, const QSharedDataPointer<PortData> &data) :
 {
 }
 
-//! Construct port with qucsitem as owner, position \pos and port's name \portName.
+/*! Constructor
+    \brief Construct port with qucsitem as owner, position \pos and port's name \portName.
+  */
 Port::Port(QucsItem *owner, QPointF _pos, QString portName) :
     d(new PortData(_pos, portName)),
     m_owner(new PortOwner(owner)),
@@ -111,7 +115,7 @@ Port::Port(QucsItem *owner, QPointF _pos, QString portName) :
 }
 
 /*!
- * Remove all connections from this node before destruction.
+ * \brief Remove all connections from this node before destruction.
  * \bug GPK: see comment
  */
 Port::~Port()
@@ -138,7 +142,8 @@ Port::~Port()
 }
 
 /*!
- * Returns position mapped to scene.
+ * \brief Returns position mapped to scene.
+ *
  * \param ok It is set to success state if non null.
  */
 QPointF Port::scenePos(bool *ok) const
@@ -150,7 +155,7 @@ QPointF Port::scenePos(bool *ok) const
 }
 
 /*!
- * This is private method needed only for wires as components do not
+ * \brief This is private method needed only for wires as components do not
  * change relative port position.
  */
 void Port::setPos(const QPointF& newPos)
@@ -169,7 +174,7 @@ SchematicScene* Port::schematicScene() const
 }
 
 
-//! Shorhand for Port::connect(this, other)
+//! \brief Shorhand for Port::connect(this, other)
 void Port::connectTo(Port *other)
 {
     Port::connect(this, other);
@@ -317,7 +322,8 @@ QList<Wire*> Port::wiresBetween(Port* port1, Port* port2)
 }
 
 /*!
- * Disconnect two ports
+ * \brief Disconnect two ports
+ *
  * \param port The port to be disconnected.
  * \param from The port from which \a port will be disconnected.
  * \note port == from , port == NULL, from == NULL are allowed
@@ -350,7 +356,7 @@ void Port::disconnect(Port *port, Port *from)
     }
 }
 
-//! Check whether two ports are connected or not.
+//! \brief Check whether two ports are connected or not.
 bool Port::isConnected(Port *port1, Port *port2)
 {
     bool retVal = port1->m_connections == port2->m_connections &&
@@ -364,7 +370,7 @@ bool Port::isConnected(Port *port1, Port *port2)
     return retVal;
 }
 
-//! Returns true if this port is connected to any other port
+//! \brief Returns true if this port is connected to any other port
 bool Port::hasConnection() const
 {
     bool retVal = (m_connections != 0);
@@ -374,7 +380,7 @@ bool Port::hasConnection() const
     return retVal;
 }
 
-//! Finds an intersecting port in a given list of ports.
+//! \brief Finds an intersecting port in a given list of ports.
 Port* Port::findIntersectingPort(const QList<Port*> &ports) const
 {
     foreach(Port *p, ports) {
@@ -386,7 +392,7 @@ Port* Port::findIntersectingPort(const QList<Port*> &ports) const
     return 0;
 }
 
-//! Finds an interecting port on schematic.
+//! \brief Finds an interecting port on schematic.
 Port* Port::findIntersectingPort() const
 {
     SchematicScene *scene =
@@ -416,7 +422,7 @@ Port* Port::findIntersectingPort() const
     return 0;
 }
 
-//! Finds a coinciding port in a given list of ports.
+//! \brief Finds a coinciding port in a given list of ports.
 Port* Port::findCoincidingPort(const QList<Port*> &ports) const
 {
     foreach(Port *p, ports) {
@@ -428,7 +434,7 @@ Port* Port::findCoincidingPort(const QList<Port*> &ports) const
     return 0;
 }
 
-//! Finds a coinciding port on schematic.
+//! \brief Finds a coinciding port on schematic.
 Port* Port::findCoincidingPort() const
 {
     SchematicScene *scene =
@@ -458,7 +464,7 @@ Port* Port::findCoincidingPort() const
     return 0;
 }
 
-//! Returns true only if all the connected components are selected.
+//! \brief Returns true only if all the connected components are selected.
 bool Port::areAllOwnersSelected() const
 {
     if(!m_connections) {
@@ -516,7 +522,8 @@ void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option)
 }
 
 /*!
- * A helper method used to draw multiple ports.
+ * \brief A helper method used to draw multiple ports.
+ *
  * \todo create a QList<Port *> ports class and avoid this call
  */
 void drawPorts(const QList<Port*> &ports, QPainter *painter,
@@ -527,7 +534,7 @@ void drawPorts(const QList<Port*> &ports, QPainter *painter,
     }
 }
 
-//! Returns a rect accomodating pRect as well as all ports.
+//! \brief Returns a rect accomodating pRect as well as all ports.
 QRectF portsRect(const QList<Port*> &ports, const QRectF& pRect)
 {
     QRectF debugTextRect;
@@ -547,7 +554,7 @@ QRectF portsRect(const QList<Port*> &ports, const QRectF& pRect)
     return rect;
 }
 
-//! Adds the port's as ellipses to painterpath \a path.
+//! \brief Adds the port's as ellipses to painterpath \a path.
 void addPortEllipses(const QList<Port*> &ports, QPainterPath &path)
 {
     foreach(Port *port, ports) {

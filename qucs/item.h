@@ -218,7 +218,7 @@ QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRe
     return tItems;
 }
 
-/*
+/*!
  * \brief This function returns a list of qucsitems present in \a items.
  * \param items  The list from which items are to be filtered.
  * \param option Indication whether to remove non matching items from items passed

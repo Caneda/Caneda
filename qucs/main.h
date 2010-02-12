@@ -79,4 +79,4 @@ QString properName (const QString&);
 bool    VHDL_Time(QString&, const QString&);
 bool    checkVersion(QString&);
 
-#endif
+#endif //MAIN_H

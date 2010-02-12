@@ -82,7 +82,8 @@ SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
 }
 
 /*!
- * Adding a library to the sidebar
+ * \brief Adding a library to the sidebar
+ *
  * @param QString &libraryName     Library name
  * @param QString &category        Category to place the library
  */

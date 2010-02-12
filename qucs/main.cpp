@@ -31,6 +31,7 @@ int main(int argc,char *argv[])
    app.setOrganizationName("Qucs");
    app.setApplicationName("Qucs");
 
+   // We create a splash screen
    QPixmap pixmap(Qucs::bitmapDirectory() + "splash.jpg");
    QSplashScreen splash(pixmap);
    splash.show();

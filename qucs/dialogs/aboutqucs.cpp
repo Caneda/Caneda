@@ -96,7 +96,7 @@ QWidget *AboutQUCS::aboutTab() const
             "<br>" +
             tr("An application for eletric schematics editing and simulation.") +
             "<br><br>" +
-            tr("\251 2008-2009 Qucs developer team") +
+            tr("\251 2008-2010 Qucs developer team") +
             "<br><br>"
             "<a href=\"http://qucs.sourceforge.net/\">"
             "http://qucs.sourceforge.net/</a>"
@@ -115,7 +115,7 @@ QWidget *AboutQUCS::authorsTab() const
     addAuthor(authors, "Bastien Roucaries", "roucaries.bastien@gmail.com",
             tr("Programming"));
     addAuthor(authors, "Gopala Krishna", "krishna.ggk@gmail.com", tr("Programming"));
-    addAuthor(authors, "Pablo Daniel Pareja Obregon", "pablopareja@ieee.org",
+    addAuthor(authors, "Pablo Daniel Pareja Obregon", "parejaobregon@gmail.com",
             tr("Programming"));
     authors->setAlignment(Qt::AlignCenter);
     authors->setOpenExternalLinks(true);
@@ -128,7 +128,7 @@ QWidget *AboutQUCS::translatorsTab() const
 {
     QLabel *translators = new QLabel();
 
-    addAuthor(translators, "Pablo Daniel Pareja Obregon", "pablopareja@ieee.org",
+    addAuthor(translators, "Pablo Daniel Pareja Obregon", "parejaobregon@gmail.com",
             tr("Spanish translation"));
 
     translators->setAlignment(Qt::AlignCenter);

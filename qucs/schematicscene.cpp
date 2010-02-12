@@ -156,6 +156,7 @@ static const char dataDisplaySuffix[] = ".dpl";
 
 /*!
  * \brief Set schematic and datafile name
+ *
  * \param name: name to set
  * \todo Why do we need this. A new theme will be each project is a subdirectory.
  * Schematic name is only a prefix
@@ -181,14 +182,15 @@ void SchematicScene::setFileName(const QString& name)
     emit titleToBeUpdated();
 }
 
-//! A helper method to return sign of given integer.
+//! \brief A helper method to return sign of given integer.
 inline int sign(int value)
 {
     return value >= 0 ? +1 : -1;
 }
 
 /*!
- * Get nearest point on grid
+ * \brief Get nearest point on grid
+ *
  * \param pos: current position to be rounded
  * \return rounded position
  * \todo Algorithm to be explained.
@@ -211,7 +213,8 @@ QPointF SchematicScene::nearingGridPoint(const QPointF &pos) const
 }
 
 /*!
- * Set grid size
+ * \brief Set grid size
+ *
  * \param width: grid width in pixel
  * \param height: grid height in pixel
  */
@@ -231,7 +234,8 @@ void SchematicScene::setGridSize(const uint width, const uint height)
 }
 
 /*!
- * Set grid visibility
+ * \brief Set grid visibility
+ *
  * \param visibility: Grid visibility
  */
 void SchematicScene::setGridVisible(const bool visibility)
@@ -246,7 +250,8 @@ void SchematicScene::setGridVisible(const bool visibility)
 }
 
 /*!
- * Set grid visibility
+ * \brief Set grid visibility
+ *
  * \param visibility: Grid visibility
  */
 void SchematicScene::setGridColor(const QColor &color)
@@ -302,7 +307,8 @@ bool SchematicScene::setProperty(const QString& propName, const QVariant& value)
 }
 
 /*!
- * Set origin visibility
+ * \brief Set origin visibility
+ *
  * \param visibility: origin visibility
  */
 void SchematicScene::setOriginDrawn(const bool visibility)
@@ -336,11 +342,11 @@ void SchematicScene::setOpensDataDisplay(const bool state)
 
 /*!
  * \brief Makes the outer frame visible.
- * \param visibility Set true of false to show or hide the frame.
  *
- * Frame is the outer rectangles with printed fields to enter name and other
+ * The frame is the outer rectangles with printed fields to enter name and other
  * properties of the schematic diagram.
  *
+ * \param visibility Set true of false to show or hide the frame.
  * \todo Yet to implement the actual drawing of frame.
  */
 void SchematicScene::setFrameVisible(const bool visibility)
@@ -376,12 +382,12 @@ void SchematicScene::setMode(const Qucs::Mode mode)
 
 /*!
  * \brief Set mouse action
- * \param MouseAction: mouse action to set
- *
  * This method takes care to disable the shortcuts while items are being added
  * to the schematic thus preventing sideeffects. It also sets the appropriate
  * drag mode for all the views associated with this scene.
  * Finally the state variables are reset.
+ *
+ * \param MouseAction: mouse action to set
  */
 void SchematicScene::setCurrentMouseAction(const MouseAction action)
 {
@@ -479,7 +485,7 @@ void SchematicScene::resetState()
     this->m_zoomBand = 0;
 }
 
-//!  Cut items
+//! \brief Cut items
 void SchematicScene::cutItems(QList<QucsItem*> &_items, const Qucs::UndoOption opt)
 {
     this->copyItems(_items);
@@ -667,6 +673,7 @@ bool SchematicScene::eventFilter(QObject *watched, QEvent *event)
 
 /*!
  * \brief Blocks/unblocks the shortcuts on the QApplication.
+ *
  * \param block True blocks while false unblocks the shortcuts.
  * \sa SchematicScene::eventFilter
  */
@@ -687,7 +694,8 @@ void SchematicScene::blockShortcuts(const bool block)
 }
 
 /*!
- * Exports the schematic to an image
+ * \brief Exports the schematic to an image
+ *
  * @return bool True on success, false otherwise
  */
 bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
@@ -733,7 +741,8 @@ bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
 }
 
 /*!
- * Used to know the dimensions of the image
+ * \brief Used to know the dimensions of the image
+ *
  * @return The size of the image
  */
 QSize SchematicScene::imageSize() const
@@ -753,7 +762,8 @@ QSize SchematicScene::imageSize() const
 }
 
 /*!
- * Used to know the dimensions of the image
+ * \brief Used to know the dimensions of the image
+ *
  * @return The bounding rect of the image
  */
 QRect SchematicScene::imageBoundingRect() const
@@ -768,9 +778,11 @@ QRect SchematicScene::imageBoundingRect() const
 
 /*!
  * \brief Set whether this schematic is modified or not
- * \param m True/false to set it to unmodified/modified.
+ *
  * This method emits the signal modificationChanged(bool) as well
  * as the signal titleToBeUpdated()
+ *
+ * \param m True/false to set it to unmodified/modified.
  */
 void SchematicScene::setModified(const bool m)
 {
@@ -782,7 +794,8 @@ void SchematicScene::setModified(const bool m)
 }
 
 /*!
- * Draw background of schematic including grid
+ * \brief Draw background of schematic including grid
+ *
  * \param painter: Where to draw
  * \param rect: Visible area
  * \todo Finish visual representation
@@ -990,6 +1003,7 @@ void SchematicScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event)
  * Receive drop events for SchematicScene
  * Items can only receive drop events if the last drag move event was accepted
  * Accept event only from sidebar
+ *
  * \param event event to be accepted
  * \todo factorize
  */
@@ -1143,7 +1157,8 @@ void SchematicScene::wheelEvent(QGraphicsSceneWheelEvent *e)
  *****************************************************************************/
 
 /*!
- * Action when a painting item is selected
+ * \brief Action when a painting item is selected
+ *
  * \param itemName: name of item
  */
 bool SchematicScene::sidebarItemClickedPaintingsItems(const QString& itemName)
@@ -1174,7 +1189,8 @@ bool SchematicScene::sidebarItemClickedNormalItems(const QString& itemName, cons
 
 
 /*!
- * This function is called when a side bar item is clicked
+ * \brief This function is called when a side bar item is clicked
+ *
  * \param itemName: name of item
  * \param category: categoy name
  * \todo Add tracing
@@ -1218,7 +1234,7 @@ void SchematicScene::wiringEventMouseClickFinalize()
 }
 
 /*!
- * Add a wire segment
+ * \brief Add a wire segment
  * \todo Why not a wire operation
  */
 void SchematicScene::wiringEventLeftMouseClickAddSegment()
@@ -1232,7 +1248,8 @@ void SchematicScene::wiringEventLeftMouseClickAddSegment()
 }
 
 /*!
- * Common wiring part
+ * \brief Common wiring part
+ *
  * \param cmd: undo command to run
  */
 void SchematicScene::wiringEventLeftMouseClickCommonComplexSingletonWire(QUndoCommand * cmd)
@@ -1255,6 +1272,7 @@ void SchematicScene::wiringEventLeftMouseClickCommonComplexSingletonWire(QUndoCo
 
 /*!
  * \brief Left mouse click wire event
+ *
  * \param Event: mouse event
  * \param rounded: coordinate of mouse action point (rounded if needed)
  */
@@ -1353,6 +1371,7 @@ void SchematicScene::wiringEventRightMouseClick()
 
 /*!
  * \brief Mouse click wire event
+ *
  * \param Event: mouse event
  * \param pos: coordinate of mouse action point (rounded if needed)
  */
@@ -1372,6 +1391,7 @@ void SchematicScene::wiringEventMouseClick(const MouseActionEvent *event, const 
 
 /*!
  * \brief Mouse move wire event
+ *
  * \param pos: coordinate of mouse action point (rounded if needed)
  */
 void SchematicScene::wiringEventMouseMove(const QPointF &pos)
@@ -1421,6 +1441,7 @@ void SchematicScene::markingEvent(MouseActionEvent *event)
 
 /*!
  * \brief Mirror an item list
+ *
  * \param items: item to mirror
  * \param opt: undo option
  * \param axis: mirror axis
@@ -1467,7 +1488,8 @@ void SchematicScene::mirrorItems(QList<QucsItem*> &items,
 
 
 /*!
- * Mirror event
+ * \brief Mirror event
+ *
  * \param event: event
  * \param axis: mirror axis
  */
@@ -1485,7 +1507,7 @@ void SchematicScene::mirroringEvent(const MouseActionEvent *event,
 }
 
 /*!
- * mirror X event
+ * \brief Mirror X event
  * \note right button mirror Y
  */
 void SchematicScene::mirroringXEvent(const MouseActionEvent *event)
@@ -1505,7 +1527,7 @@ void SchematicScene::mirroringXEvent(const MouseActionEvent *event)
 }
 
 /*!
- * mirror Y event
+ * \brief Mirror Y event
  * \note right button mirror X
  */
 void SchematicScene::mirroringYEvent(const MouseActionEvent *event)
@@ -1534,6 +1556,7 @@ void SchematicScene::mirroringYEvent(const MouseActionEvent *event)
 
 /*!
  * \brief Rotate an item list
+ *
  * \param items: item list
  * \param opt: undo option
  * \param diect: is rotation in trigonometric sense
@@ -1574,7 +1597,7 @@ void SchematicScene::rotateItems(QList<QucsItem*> &items,
 
 
 /*!
- * Rotate item
+ * \brief Rotate item
  * \note right anticlockwise
  */
 void SchematicScene::rotatingEvent(MouseActionEvent *event)
@@ -1613,7 +1636,7 @@ void SchematicScene::rotatingEvent(MouseActionEvent *event)
  *
  ***************************************************************************/
 
-//! Short function for qsort sort by abscissa
+//! \brief Short function for qsort sort by abscissa
 static inline bool pointCmpFunction_X(const QucsItem *lhs, const QucsItem  *rhs)
 {
     return lhs->pos().x() < rhs->pos().x();
@@ -1626,7 +1649,8 @@ static inline bool pointCmpFunction_Y(const QucsItem *lhs, const QucsItem  *rhs)
 }
 
 /*!
- * Distribute horizontally
+ * \brief Distribute horizontally
+ *
  * \param items: items to distribute
  * \todo Why not filter wire ??
  * +     * Ans: Because wires need special treatment. Wire's don't have single
@@ -1679,8 +1703,9 @@ void SchematicScene::distributeElementsHorizontally(QList<QucsItem*> items)
 
 }
 
-/*
- * Distribute vertically
+/*!
+ * \brief Distribute vertically
+ *
  * \param items: items to distribute
  * \todo Why not filter wire ??
  */
@@ -1731,6 +1756,7 @@ void SchematicScene::distributeElementsVertically(QList<QucsItem*> items)
  * \brief Distribute elements
  *
  * Distribute elements ie each element is equally spaced
+ *
  * \param orientation: distribute according to orientation
  * \todo filter wire ??? Do not distribute wire ??
  */
@@ -1761,7 +1787,7 @@ bool SchematicScene::distributeElements(const Qt::Orientation orientation)
  ***********************************************************************/
 
 
-//! Check if alignement flags are compatible used in assert
+//! \brief Check if alignement flags are compatible used in assert
 static bool checkAlignementFlag(const Qt::Alignment alignment)
 {
     switch(alignment) {
@@ -1806,7 +1832,8 @@ const QString SchematicScene::Alignment2QString(const Qt::Alignment alignment)
 }
 
 /*!
- * \brief align element
+ * \brief Align element
+ *
  * \param alignment: alignement used
  * \todo use smart alignment ie: port alignement
  * \todo implement snap on grid
@@ -1902,6 +1929,7 @@ bool SchematicScene::alignElements(const Qt::Alignment alignment)
 
 /*!
  * \brief Set item on grid
+ *
  * \param items: item list
  * \param opt: undo option
  * \todo Create a custom undo class for avoiding if
@@ -1954,7 +1982,7 @@ void SchematicScene::setItemsOnGrid(QList<QucsItem*> &items,
 }
 
 
-//!  Set on grid event
+//! \brief Set on grid event
 void SchematicScene::settingOnGridEvent(const MouseActionEvent *event)
 {
     //  only left click
@@ -1984,6 +2012,7 @@ void SchematicScene::settingOnGridEvent(const MouseActionEvent *event)
 
 /*!
  * \brief Toggle active status
+ *
  * \param items: item list
  * \param opt: undo option
  * \todo Create a custom undo class for avoiding if
@@ -2021,7 +2050,7 @@ void SchematicScene::toggleActiveStatus(QList<QucsItem*> &items,
 
 
 /*!
- * Activate deactivate
+ * \brief Activate deactivate
  * \todo implement left right behavior
  */
 void SchematicScene::changingActiveStatusEvent(const MouseActionEvent *event)
@@ -2050,7 +2079,8 @@ void SchematicScene::changingActiveStatusEvent(const MouseActionEvent *event)
 
 
 /*!
- * \brief delete an item list
+ * \brief Delete an item list
+ *
  * \param items: item list
  * \param opt: undo option
  * \todo Document
@@ -2079,6 +2109,7 @@ void SchematicScene::deleteItems(QList<QucsItem*> &items,
 
 /*!
  * \brief Left button deleting event: delete items
+ *
  * \param pos: pos clicked
  */
 void SchematicScene::deletingEventLeftMouseClick(const QPointF &pos)
@@ -2097,6 +2128,7 @@ void SchematicScene::deletingEventLeftMouseClick(const QPointF &pos)
 
 /*!
  * \brief Left button deleting event: delete items
+ *
  * \param pos: pos clicked
  */
 void SchematicScene::deletingEventRightMouseClick(const QPointF &pos)
@@ -2114,7 +2146,8 @@ void SchematicScene::deletingEventRightMouseClick(const QPointF &pos)
 
 
 /*!
- * \brief delete action
+ * \brief Delete action
+ *
  * Delete action: left click delete, right click disconnect item
  */
 void SchematicScene::deletingEvent(const MouseActionEvent *event)
@@ -2142,7 +2175,8 @@ void SchematicScene::deletingEvent(const MouseActionEvent *event)
  ********************************************************************/
 
 /*!
- * Automatically connect items if port or wire overlap
+ * \brief Automatically connect items if port or wire overlap
+ *
  * \param qItems: item to connect
  * \param opt: undo option
  * \todo remove the cast and create a class connectable item
@@ -2172,7 +2206,8 @@ void SchematicScene::connectItems(const QList<QucsItem*> &qItems,
 
 
 /*!
- * Disconnect an item from wire or other components
+ * \brief Disconnect an item from wire or other components
+ *
  * \param qItems: item to connect
  * \param opt: undo option
  * \todo remove the cast and create a class connectable item
@@ -2589,12 +2624,6 @@ void SchematicScene::processForSpecialMove(QList<QGraphicsItem*> _items)
             }
         }
     }
-
-    //    qDebug() << "\n############Process special move"
-    //             << "\n\tDisconnectibles.size() = " << disconnectibles.size()
-    //             << "\n\tMoving wires.size() = " << movingWires.size()
-    //             << "\n\tGrab moving wires.size() = " << grabMovingWires.size()
-    //             <<"\n#############\n";
 }
 
 /*!
@@ -2725,7 +2754,8 @@ void SchematicScene::endSpecialMove()
  **********************************************************************/
 
 /*!
- * Place an item on the scene
+ * \brief Place an item on the scene
+ *
  * \param item: item to place
  * \param: pos position where to place
  * \param opt: undo option

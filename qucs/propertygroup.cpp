@@ -58,7 +58,7 @@ void PropertiesGroup::setFontSize(int pointSize)
 
 /*!
  * \brief Realigns all the child items of this group (deletes hidden items).
- * \details This is quite expensive . It removes all property items
+ * This is quite expensive . It removes all property items
  * from the group and then freshly adds them to the group again if it is
  * visible. If the property is hidden, then the corresponding property items
  * are removed from group and deleted. This also updates the visible value of
@@ -66,7 +66,7 @@ void PropertiesGroup::setFontSize(int pointSize)
  */
 void PropertiesGroup::realignItems()
 {
-    // Nothing to do if scene doesn't exist.
+    //Nothing to do if scene doesn't exist.
     if(!scene()) {
         return;
     }
@@ -151,7 +151,7 @@ void PropertiesGroup::realignItems()
     forceUpdate();
 }
 
-//! Forces the updation of the geometry of the property group.
+//! \brief Forces the updation of the geometry of the property group.
 void PropertiesGroup::forceUpdate()
 {
     static const QLineF line(-5, -5, 5, 5);
@@ -162,7 +162,7 @@ void PropertiesGroup::forceUpdate()
     delete dummy;
 }
 
-//! Returns the schematic scene associated.
+//! \brief Returns the schematic scene associated.
 SchematicScene* PropertiesGroup::schematicScene() const
 {
     return qobject_cast<SchematicScene*>(scene());
@@ -170,7 +170,7 @@ SchematicScene* PropertiesGroup::schematicScene() const
 
 /*!
  * \brief Deselect other items on mouse click.
- * \details Deselects selected item and also clears focus of childeren items
+ * Deselects selected item and also clears focus of childeren items
  */
 void PropertiesGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {

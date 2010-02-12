@@ -29,8 +29,8 @@ class PropertyItem;
 class SchematicScene;
 
 /*!
- * This class groups the properties of a item.
- * \details This takes care of creation and destruction of property items as
+ * \brief This class groups the properties of a item.
+ * This takes care of creation and destruction of property items as
  * well. This stores a reference to the actual property map.
  * \sa Property, PropertyItem
  */

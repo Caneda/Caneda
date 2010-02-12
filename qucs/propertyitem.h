@@ -27,7 +27,7 @@
 //Forward declarations.
 class SchematicScene;
 
-//! Class used to represent the text corresponding to property on schematic.
+//! \brief Class used to represent the text corresponding to property on schematic.
 class PropertyItem : public QGraphicsTextItem
 {
     Q_OBJECT;

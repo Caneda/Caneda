@@ -26,4 +26,4 @@ namespace Qucs
     QString unicodeToLatex(QString unicode);
 }
 
-#endif
+#endif //MNEMO_H

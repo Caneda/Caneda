@@ -43,7 +43,7 @@ static const QColor unselectedWire(Qt::blue);
 static const qreal wirewidth = 1.0;
 
 /*!
- * Invert a color
+ * \brief Invert a color
  * \todo Put in a header
  */
 static QColor invertcolor(const QColor & color)
@@ -54,7 +54,8 @@ static QColor invertcolor(const QColor & color)
 }
 
 /*!
- * Try to connect a port
+ * \brief Try to connect a port
+ *
  * \param port: port to connect
  * \todo handle more than one coinciding port
  * \bug the todo is a bug...
@@ -67,7 +68,7 @@ void Wire::tryConnectPort(Port * port)
     }
 }
 
-//!  Try to connect ports
+//! \brief Try to connect ports
 void Wire::tryConnectPorts()
 {
     this->tryConnectPort(this->port1());
@@ -76,7 +77,7 @@ void Wire::tryConnectPorts()
 
 
 /*!
- * Initialize wire line used on wire creation
+ * \brief Initialize wire line used on wire creation
  * \note assert this->m_wLines.isEmpty()
  * \todo BR->GPK document inter
  */
@@ -179,7 +180,7 @@ Wire::~Wire()
     qDeleteAll(m_ports);
 }
 
-//! Moves port matching connection \a connections to scene pos \a scenePos.
+//! \brief Moves port matching connection \a connections to scene pos \a scenePos.
 void Wire::movePort(QList<Port*> *connections, const QPointF& scenePos)
 {
     if(port1()->connections() == connections) {
@@ -193,7 +194,7 @@ void Wire::movePort(QList<Port*> *connections, const QPointF& scenePos)
     }
 }
 
-//! Moves port1 to \a newLocalPos and adjust's the wire's lines.
+//! \brief Moves port1 to \a newLocalPos and adjust's the wire's lines.
 void Wire::movePort1(const QPointF& newLocalPos)
 {
     this->port1()->setPos(newLocalPos);
@@ -250,7 +251,7 @@ void Wire::movePort1(const QPointF& newLocalPos)
     updateGeometry();
 }
 
-//! Moves port2 to \a newLocalPos and adjust's the wire's lines.
+//! \brief Moves port2 to \a newLocalPos and adjust's the wire's lines.
 void Wire::movePort2(const QPointF& newLocalPos)
 {
     port2()->setPos(newLocalPos);
@@ -307,7 +308,7 @@ void Wire::movePort2(const QPointF& newLocalPos)
     updateGeometry();
 }
 
-//! Draw wire.
+//! \brief Draw wire.
 void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         QWidget *widget)
 {
@@ -442,7 +443,7 @@ void Wire::endGrabMode()
     updateGeometry();
 }
 
-//! Sets wire's internal representation to \a wlines
+//! \brief Sets wire's internal representation to \a wlines
 void Wire::setWireLines(const WireLines& wlines)
 {
     m_wLines = wlines;
@@ -574,7 +575,7 @@ void Wire::loadData(Qucs::XmlReader *reader)
     updateGeometry();
 }
 
-//! Stores wire's status. Required for undo/redo.
+//! \brief Stores wire's status. Required for undo/redo.
 void Wire::storeState()
 {
     store.wLines = m_wLines;
@@ -583,13 +584,13 @@ void Wire::storeState()
     store.port2Pos = port2()->pos();
 }
 
-//! Returns the wire's stored status. Required for undo/redo.
+//! \brief Returns the wire's stored status. Required for undo/redo.
 Wire::Data Wire::storedState() const
 {
     return store;
 }
 
-//! Returns current wire status. Required for undo/redo.
+//! \brief Returns current wire status. Required for undo/redo.
 Wire::Data Wire::currentState() const
 {
     Wire::Data retVal;
@@ -600,7 +601,7 @@ Wire::Data Wire::currentState() const
     return retVal;
 }
 
-//! Set's the wire status to \a state. Required for undo/redo.
+//! \brief Set's the wire status to \a state. Required for undo/redo.
 void Wire::setState(Wire::Data state)
 {
     setPos(state.pos);
@@ -612,6 +613,7 @@ void Wire::setState(Wire::Data state)
 
 /*!
  * \brief Check for connections and connect the coinciding ports.
+ *
  * \return Returns the number of connections made.
  */
 int Wire::checkAndConnect(Qucs::UndoOption opt)
@@ -664,7 +666,7 @@ void Wire::copyDataTo(Wire *wire) const
     wire->setState(_data);
 }
 
-//! Mouse press event. Prepare for grab mode.
+//! \brief Mouse press event. Prepare for grab mode.
 void Wire::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     m_grabbedIndex = -1;
@@ -675,7 +677,7 @@ void Wire::mousePressEvent(QGraphicsSceneMouseEvent *event)
     m_grabbedIndex = indexForPos(event->pos());
 }
 
-//! Hide's on first call and then loses focus. Then updated through scene.
+//! \brief Hide's on first call and then loses focus. Then updated through scene.
 void Wire::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_ASSERT(m_grabbedIndex != -1);
@@ -683,13 +685,13 @@ void Wire::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     beginGrabMode();
 }
 
-//! Not called at all!
+//! \todo Not called at all!
 void Wire::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QucsItem::mouseReleaseEvent(event);
 }
 
-//! Updates the wire's geometry and caches it.
+//! \brief Updates the wire's geometry and caches it.
 void Wire::updateGeometry()
 {
     QRectF rect;
@@ -707,7 +709,7 @@ void Wire::updateGeometry()
     QucsItem::setShapeAndBoundRect(path, path.boundingRect());
 }
 
-//! Returns index corresponding to position \a pos.
+//! \brief Returns index corresponding to position \a pos.
 int Wire::indexForPos(const QPointF& pos) const
 {
     int retVal = 0;

@@ -56,7 +56,7 @@ namespace Qucs
 
 
     /*!
-     * This function replaces the LaTeX tags for special characters
+     * \brief This function replaces the LaTeX tags for special characters
      * into its unicode value.
      */
     QString latexToUnicode(const QString& Input)
@@ -88,7 +88,7 @@ namespace Qucs
     }
 
     /*!
-     * This function replaces the unicode of special characters
+     * \brief This function replaces the unicode of special characters
      * by its LaTeX tags.
      */
     QString unicodeToLatex(QString Output)

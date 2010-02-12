@@ -57,4 +57,4 @@ private:
     QToolButton *buttonBack, *buttonForward;
 };
 
-#endif // FOLDERBROWSER_H
+#endif //FOLDERBROWSER_H

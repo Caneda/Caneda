@@ -57,4 +57,4 @@ private:
     void loadPaintings(Qucs::XmlReader *reader);
 };
 
-#endif //XML_FORMAT_H
+#endif //XMLFORMAT_H

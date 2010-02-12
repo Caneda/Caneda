@@ -304,4 +304,4 @@ private:
     PropertyMap m_newMap;
 };
 
-#endif
+#endif //UNDOCMDS_H

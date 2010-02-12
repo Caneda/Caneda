@@ -40,6 +40,7 @@
 
 /*!
  * \brief Constructor.
+ *
  * \param propName The name of property.
  * \param propMap The reference of property map. The property is fetched from here.
  * \param scene The schematic scene to which this item should belong.
@@ -61,10 +62,9 @@ PropertyItem::PropertyItem(const QString &propName , SchematicScene *scene) :
         scene->addItem(this);
     }
     m_edited = false;
-    //   QTimer::singleShot(10, this, SLOT(updateValue()));
 }
 
-//! Returns the bounds of the item.
+//! \brief Returns the bounds of the item.
 QRectF PropertyItem::boundingRect() const
 {
     QRectF bounds = QGraphicsTextItem::boundingRect();
@@ -72,7 +72,7 @@ QRectF PropertyItem::boundingRect() const
     return bounds;
 }
 
-//! Returns the shape of the item.
+//! \brief Returns the shape of the item.
 QPainterPath PropertyItem::shape() const
 {
     QPainterPath path;
@@ -123,8 +123,9 @@ bool PropertyItem::eventFilter(QObject* object, QEvent* event)
 
 /*!
  * \brief Draws the the text item to painter.
- * \details The static part of text is drawn explicitly and the remaining part
- *          is drawn by the base \a QGraphicsTextItem
+ *
+ * The static part of text is drawn explicitly and the remaining part
+ * is drawn by the base \a QGraphicsTextItem
  */
 void PropertyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
         QWidget *widget)
@@ -182,9 +183,10 @@ void PropertyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
 
 /*!
  * \brief Alter the default reaction to event.
- * \details This takes care of sending only required event to the
- *          parent group rather than the default implementation which sends all the
- *          events. This is a bit a hacky kind of implementation.
+ *
+ * This takes care of sending only required event to the
+ * parent group rather than the default implementation which sends all the
+ * events. This is a bit a hacky kind of implementation.
  */
 bool PropertyItem::sceneEvent(QEvent *event)
 {
@@ -208,81 +210,10 @@ bool PropertyItem::sceneEvent(QEvent *event)
         default: ;
     };
 
-    //   //Call event handlers of this and not send them to the parent - group
-    //   if(hasFocus()) {
-    //      switch (event->type()) {
-    //
-    //         case QEvent::KeyPress:
-    //            keyPressEvent(static_cast<QKeyEvent *>(event));
-    //            return true;
-    //
-    //         case QEvent::KeyRelease:
-    //            keyReleaseEvent(static_cast<QKeyEvent *>(event));
-    //            return true;
-    //
-    //         case QEvent::FocusIn:
-    //            focusInEvent(static_cast<QFocusEvent *>(event));
-    //            return true;
-    //
-    //         case QEvent::FocusOut:
-    //            focusOutEvent(static_cast<QFocusEvent *>(event));
-    //            return true;
-    //
-    //         case QEvent::GraphicsSceneMousePress:
-    //            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
-    //               mousePressEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-    //               return true;
-    //            }
-    //            //Remove focus of this
-    //            clearFocus();
-    //            //Ignoring the event facilitates selection of new grabber,
-    //            // which is most likely group
-    //            event->ignore();
-    //            //This prevents double sending of events when the scene is
-    //            // selecting mouse grabber
-    //            if(!group()->hasFocus())
-    //               return true;
-    //            break;
-    //
-    //         case QEvent::GraphicsSceneMouseMove:
-    //            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
-    //               mouseMoveEvent(static_cast<QGraphicsSceneMouseEvent *>(event));
-    //               return true;
-    //            }
-    //            break;
-    //
-    //         case QEvent::GraphicsSceneMouseRelease:
-    //            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
-    //               mouseReleaseEvent(static_cast<QGraphicsSceneMouseEvent *>
-    //                     (event));
-    //               return true;
-    //            }
-    //            break;
-    //
-    //         case QEvent::GraphicsSceneMouseDoubleClick:
-    //            if(!isSendable(static_cast<QGraphicsSceneMouseEvent *>(event))) {
-    //               mouseDoubleClickEvent(static_cast<QGraphicsSceneMouseEvent *>
-    //                     (event));
-    //               return true;
-    //            }
-    //            break;
-    //
-    //         case QEvent::GraphicsSceneContextMenu:
-    //            contextMenuEvent(static_cast<QGraphicsSceneContextMenuEvent *>
-    //                  (event));
-    //            break;
-    //
-    //            default: break;
-    //      }
-    //   }
-    //   else {
-    //      event->accept();
-    //      //TODO:  Review this code thoroughly
-    //   }
     return QGraphicsTextItem::sceneEvent(event);
 }
 
-//! Unselects the other selected items on mouse press.
+//! \brief Unselects the other selected items on mouse press.
 void PropertyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(scene()) {
@@ -311,7 +242,7 @@ void PropertyItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsTextItem::mouseDoubleClickEvent(event);
 }
 
-//! Installs an event filter after calling base method.
+//! \brief Installs an event filter after calling base method.
 void PropertyItem::focusInEvent(QFocusEvent *event)
 {
     qApp->installEventFilter(this);
@@ -323,7 +254,8 @@ void PropertyItem::focusInEvent(QFocusEvent *event)
 
 /*!
  * \brief Focus out event handler.
- * \details This updates the geometry of parameter group, validates
+ *
+ * This updates the geometry of parameter group, validates
  * the text and also clears the selection.
  */
 void PropertyItem::focusOutEvent(QFocusEvent *event)
@@ -344,7 +276,7 @@ void PropertyItem::focusOutEvent(QFocusEvent *event)
     QGraphicsTextItem::focusOutEvent(event);
 }
 
-//! Clears focus if escape key pressed. Otherwise calls base method.
+//! \brief Clears focus if escape key pressed. Otherwise calls base method.
 void PropertyItem::keyPressEvent(QKeyEvent *e)
 {
     if(e->key() == Qt::Key_Escape) {
@@ -372,7 +304,7 @@ void PropertyItem::keyPressEvent(QKeyEvent *e)
     QGraphicsTextItem::keyPressEvent(e);
 }
 
-//! Calculates the position of name part of property.
+//! \brief Calculates the position of name part of property.
 void PropertyItem::calculatePos()
 {
     static const int magicNumberAdjust = 2;
@@ -385,9 +317,9 @@ void PropertyItem::calculatePos()
 
 /*!
  * \brief Checks whether the given \a event can be sent to parent group or not
- * \details The method checks whether the current mouse position is in
- *          the static part of area and if so returns true in case of mouse press.
- *          Otherwise it checks for buttonDownPos for the same check.
+ * The method checks whether the current mouse position is in
+ * the static part of area and if so returns true in case of mouse press.
+ * Otherwise it checks for buttonDownPos for the same check.
  */
 bool PropertyItem::isSendable(QGraphicsSceneMouseEvent *event) const
 {
@@ -399,8 +331,8 @@ bool PropertyItem::isSendable(QGraphicsSceneMouseEvent *event) const
 
 /*!
  * \brief Updates the geometry the parent group.
- * \details It first queries for the PropertiesGroup type and then
- *          forcefully updates its geometry.
+ * It first queries for the PropertiesGroup type and then
+ * forcefully updates its geometry.
  */
 void PropertyItem::updateGroupGeometry() const
 {

@@ -54,7 +54,7 @@ typedef QGraphicsSceneMouseEvent MouseActionEvent;
 
 /*!
  * SchematicScene
- * class provides a surface for managing a large number of schematic element
+ * This class provides a surface for managing a large number of schematic element
  */
 class SchematicScene : public QGraphicsScene
 {

@@ -51,7 +51,7 @@ PropertyData::PropertyData(const PropertyData& p) : QSharedData(p)
 }
 
 /*!
- * Constructs a property object
+ * \brief Constructs a property object
  *
  * \param _name Name of property object.
  * \param _description Description of property.
@@ -85,7 +85,7 @@ Property::Property(const QString& _name, const QString& _description,
     d->options = _options.isEmpty() ? 0 : new QStringList(_options);
 }
 
-//! Construct property from shared data.
+//! \brief Construct property from shared data.
 Property::Property(QSharedDataPointer<PropertyData> data) : d(data)
 {
 }
@@ -108,7 +108,7 @@ bool Property::setValue(const QVariant& newValue)
     return false;
 }
 
-//! Helper function to write all properties in \a propMap in xml.
+//! \brief Helper function to write all properties in \a propMap in xml.
 void writeProperties(Qucs::XmlWriter *writer, const PropertyMap& propMap)
 {
     writer->writeStartElement("properties");
@@ -121,7 +121,7 @@ void writeProperties(Qucs::XmlWriter *writer, const PropertyMap& propMap)
     writer->writeEndElement(); // </properties>
 }
 
-//! Helper function to read the saved properties into \a propMap.
+//! \brief Helper function to read the saved properties into \a propMap.
 void readProperties(Qucs::XmlReader *reader, PropertyMap &propMap)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "properties");
@@ -156,7 +156,7 @@ void readProperties(Qucs::XmlReader *reader, PropertyMap &propMap)
     }
 }
 
-//! A function which returns corresponding variant type from given \a atring.
+//! \brief A function which returns corresponding variant type from given \a atring.
 QVariant::Type stringToType(const QString& _string)
 {
     char first = _string.at(0).toAscii();
@@ -195,7 +195,7 @@ QVariant::Type stringToType(const QString& _string)
     return retVal;
 }
 
-//! Returns string corresponding to \a type.
+//! \brief Returns string corresponding to \a type.
 QString typeToString(QVariant::Type type)
 {
     switch(type)
@@ -218,7 +218,7 @@ QString typeToString(QVariant::Type type)
     return QString();
 }
 
-//! This static object is used to represent common empty property.
+//! \brief This static object is used to represent common empty property.
 Property PropertyFactory::sharedNull;
 
 /*!

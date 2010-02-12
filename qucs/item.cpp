@@ -31,7 +31,8 @@
 namespace Qucs
 {
     /*!
-     * Draw an hightlight rectangle arround an item
+     * \brief Draw an hightlight rectangle arround an item
+     *
      * \param painter painter where the item is highlighted
      * \param rect    The rectangular area to be drawn
      * \param pw      Pen width of highlight rectangle drawn.
@@ -78,7 +79,8 @@ namespace Qucs
     }
 
     /*!
-     * Utility function to draw resize handle for painting and other items.
+     * \brief Utility function to draw resize handle for painting and other items.
+     *
      * \param centrePos The point which will be center for the handle rectangle
      *                  drawn.
      * \param painter   The painter used to draw handle rectangle.
@@ -99,7 +101,8 @@ namespace Qucs
     }
 
     /*!
-     * Utility method to draw four resize handles along four corners of rectangle passed.
+     * \brief Utility method to draw four resize handles along four corners of rectangle passed.
+     *
      * \param handles  The handle areas where handle rectangles neeed to be drawn.
      * \param rect     The rectangle around which resize handles are to be drawn.
      * \param painter  The painter used to draw resize handles.
@@ -124,7 +127,8 @@ namespace Qucs
     }
 
     /*!
-     * Utility method that returns the resize handle area around rect for the point passed.
+     * \brief Utility method that returns the resize handle area around rect for the point passed.
+     *
      * \param point   The point to be tested for collision with handle rectangle around rect.
      * \param handles The bitmask indicating the handle areas to be tested.
      * \param rect    The rectangle around which resize handles are to be tested.
@@ -165,7 +169,7 @@ namespace Qucs
 }
 
 //! Constructor
-//! Create a new item and add to scene.
+//! \brief Create a new item and add to scene.
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) :
     QGraphicsItem(parent),
     m_boundingRect(-2., -2., 4., 4.) /* Non empty default bound rect.*/

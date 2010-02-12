@@ -40,7 +40,9 @@
 //*************************Library*****************************
 //*************************************************************
 
-//! Constructs library item from reader with file path \a path and svgpainter \a painter.
+/*! Constructor
+ *  \brief Constructs library item from reader with file path \a path and svgpainter \a painter.
+ */
 Library::Library(QString libraryPath, SvgPainter *painter) :
     m_svgPainter(painter)
 {
@@ -63,7 +65,7 @@ Library::Library(QString libraryPath, SvgPainter *painter) :
 }
 
 /*!
- * \brief Destructor
+ * Destructor
  * \warning No need to touch svgPainter because there can be objects on schematic using
  * that svg's which will miserably crash on deleting svgPainter object!
  */
@@ -75,14 +77,14 @@ Library::~Library()
     }
 }
 
-//! Returns the shared data of component from given name.
+//! \brief Returns the shared data of component from given name.
 ComponentDataPtr Library::componentDataPtr(const QString& name) const
 {
     return m_componentHash.contains(name) ?
         m_componentHash[name] : ComponentDataPtr();
 }
 
-//! Renders an svg to given painter given \a component and \a symbol.
+//! \brief Renders an svg to given painter given \a component and \a symbol.
 void Library::render(QPainter *painter, QString component, QString symbol) const
 {
     const ComponentDataPtr dataPtr = componentDataPtr(component);
@@ -99,7 +101,7 @@ void Library::render(QPainter *painter, QString component, QString symbol) const
 }
 
 /*!
- * Returns the component rendered to pixmap.
+ * \brief Returns the component rendered to pixmap.
  *
  * \param component Component to be rendered.
  * \param symbol Symbol to be rendered. Empty string if default is to rendered.
@@ -130,7 +132,8 @@ QPixmap Library::renderedPixmap(QString component,
 }
 
 /*!
- * Parses the library xml file.
+ * \brief Parses the library xml file.
+ *
  * \param reader XmlReader corresponding to file.
  */
 bool Library::loadLibrary(Qucs::XmlReader *reader)
@@ -185,9 +188,7 @@ bool Library::loadLibrary(Qucs::XmlReader *reader)
     return m_valid;
 }
 
-/*!
- * Saves the library to a file.
- */
+//! \brief Saves the library to a file.
 bool Library::saveLibrary()
 {
     QString saveText;
@@ -235,9 +236,7 @@ bool Library::saveLibrary()
     return true;
 }
 
-/*!
- * Parses the component data from file \a path.
- */
+//! \brief Parses the component data from file \a path.
 bool Library::parseExternalComponent(QString componentPath)
 {
     bool readok = true;
@@ -268,9 +267,7 @@ bool Library::parseExternalComponent(QString componentPath)
     return !reader.hasError() && readok;
 }
 
-/*!
- * Removes the component from library.
- */
+//! \brief Removes the component from library.
 bool Library::removeComponent(QString componentName)
 {
     if(!m_componentHash.contains(componentName)) {
@@ -283,7 +280,7 @@ bool Library::removeComponent(QString componentName)
     return true;
 }
 
-//! Registers svg as well as the component's shared data.
+//! \brief Registers svg as well as the component's shared data.
 bool Library::registerComponentData(Qucs::XmlReader *reader, QString componentPath)
 {
     Q_ASSERT(m_svgPainter);
@@ -322,9 +319,7 @@ LibraryLoader::~LibraryLoader()
 {
 }
 
-/*!
- * Returns default instance of library.
- */
+//! \brief Returns default instance of library.
 LibraryLoader* LibraryLoader::defaultInstance()
 {
     static LibraryLoader *library = new LibraryLoader();
@@ -396,7 +391,7 @@ bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_
     return this->load( libpathtree+"/components/basic/passive.xpro",svgPainter_);
 }
 
-//! Create library indicated by path \a libPath.
+//! \brief Create library indicated by path \a libPath.
 bool LibraryLoader::newLibrary(const QString& libPath, SvgPainter *svgPainter_)
 {
     if(svgPainter_ == 0) {
@@ -418,7 +413,7 @@ bool LibraryLoader::newLibrary(const QString& libPath, SvgPainter *svgPainter_)
     return info->isValid();
 }
 
-//! Load library indicated by path \a libPath.
+//! \brief Load library indicated by path \a libPath.
 bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
 {
     if(svgPainter_ == 0) {

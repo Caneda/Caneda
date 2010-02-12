@@ -68,7 +68,7 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
     QTreeView::mouseReleaseEvent(event);
 }
 
-//! Custom drag The drag pixmap is drawn from svg.
+//! \brief Custom drag The drag pixmap is drawn from svg.
 void TreeView::startDrag(Qt::DropActions supportedActions)
 {
     QModelIndex index = selectedIndexes().first();
@@ -82,7 +82,7 @@ void TreeView::startDrag(Qt::DropActions supportedActions)
     drag->exec(supportedActions);
 }
 
-//! This helps in filtering sidebar display corresponding to lineedit.
+//! \brief This helps in filtering sidebar display corresponding to lineedit.
 class FilterProxyModel : public QSortFilterProxyModel
 {
 public:

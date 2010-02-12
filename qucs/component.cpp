@@ -34,7 +34,7 @@
 #include <QDebug>
 #include <QPainter>
 
-//! Constructs and initializes default empty component object.
+//! \brief Constructs and initializes default empty component object.
 Component::Component(SchematicScene *scene) :
     SvgItem(0, scene),
     d(new ComponentData()), m_propertyGroup(0)
@@ -42,7 +42,7 @@ Component::Component(SchematicScene *scene) :
     init();
 }
 
-//! Constructs a component from \a other data.
+//! \brief Constructs a component from \a other data.
 Component::Component(const QSharedDataPointer<ComponentData>& other,
         SvgPainter *svgPainter_,
         SchematicScene *scene) :
@@ -59,7 +59,7 @@ Component::~Component()
     qDeleteAll(m_ports);
 }
 
-//! Intialize the component.
+//! \brief Intialize the component.
 void Component::init()
 {
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
@@ -106,7 +106,7 @@ void Component::updatePropertyGroup()
     }
 }
 
-//! Creates property group for the first time.
+//! \brief Creates property group for the first time.
 void Component::createPropertyGroup()
 {
     //delete the old group if it exists.
@@ -149,7 +149,7 @@ bool Component::setProperty(const QString& propName, const QVariant& value)
     return state;
 }
 
-//! Takes care of visibility of property text on schematic.
+//! \brief Takes care of visibility of property text on schematic.
 void Component::setPropertyVisible(const QString& propName, bool visiblity)
 {
     if(!propertyMap().contains(propName)) {
@@ -161,7 +161,7 @@ void Component::setPropertyVisible(const QString& propName, bool visiblity)
     updatePropertyGroup();
 }
 
-/*
+/*!
  * \brief Sets the symbol of component to newSymbol if it exists.
  *
  * This method sets the symbol property's value and then takes care
@@ -225,14 +225,14 @@ bool Component::setLabel(const QString& newLabel)
     return state;
 }
 
-//! Returns the label's suffix part.
+//! \brief Returns the label's suffix part.
 QString Component::labelSuffix() const
 {
     QString _label = label();
     return _label.mid(labelPrefix().length());
 }
 
-//! Sets the propertyMap of this component to \a propMap
+//! \brief Sets the propertyMap of this component to \a propMap
 void Component::setPropertyMap(const PropertyMap& propMap)
 {
     bool symChanged = (propMap["symbol"].value().toString() !=
@@ -246,7 +246,7 @@ void Component::setPropertyMap(const PropertyMap& propMap)
     }
 }
 
-//! Sets the component's activeStatus to \a status.
+//! \brief Sets the component's activeStatus to \a status.
 void Component::setActiveStatus(Qucs::ActiveStatus status)
 {
     if(status == Qucs::Short && m_ports.size() <= 1) {
@@ -384,7 +384,7 @@ void Component::saveData(Qucs::XmlWriter *writer) const
     writer->writeEndElement();
 }
 
-//! Draw the compnent using svg painter. Also handle active status.
+//! \brief Draw the compnent using svg painter. Also handle active status.
 void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
         QWidget *w)
 {
@@ -411,6 +411,7 @@ void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
 
 /*!
  * \brief Check for connections and connect the coinciding ports.
+ *
  * \return Returns the number of connections made.
  */
 int Component::checkAndConnect(Qucs::UndoOption opt)
@@ -445,7 +446,7 @@ int Component::checkAndConnect(Qucs::UndoOption opt)
     return num_of_connections;
 }
 
-//! Returns a copy of this component.
+//! \brief Returns a copy of this component.
 QucsItem* Component::copy(SchematicScene *scene) const
 {
     Component *retVal = new Component(d, svgPainter(), scene);
@@ -456,7 +457,7 @@ QucsItem* Component::copy(SchematicScene *scene) const
     return retVal;
 }
 
-//! Copies the data to \a component.
+//! \brief Copies the data to \a component.
 void Component::copyDataTo(Component *component) const
 {
     QucsItem::copyDataTo(static_cast<QucsItem*>(component));
@@ -472,13 +473,13 @@ int Component::launchPropertyDialog(Qucs::UndoOption)
     return dia.exec();
 }
 
-//! Returns the rect adjusted to accomodate ports too.
+//! \brief Returns the rect adjusted to accomodate ports too.
 QRectF Component::adjustedBoundRect(const QRectF& rect)
 {
     return portsRect(m_ports, rect);
 }
 
-//! React to change of item position.
+//! \brief React to change of item position.
 QVariant Component::itemChange(GraphicsItemChange change,
         const QVariant &value)
 {
@@ -493,6 +494,7 @@ QVariant Component::itemChange(GraphicsItemChange change,
 
 /*!
  * \brief Read an svg schematic
+ *
  * \param svgContent svg content as utf8
  * \param svgPainter The SvgPainter object to which the symbols should be exported to.
  * \param schName Schematic name
@@ -520,7 +522,8 @@ static bool readSchematicSvg(const QByteArray &svgContent,
 
 
 /*!
- * Reads the schematic port tag of component description xml file.
+ * \brief Reads the schematic port tag of component description xml file.
+ *
  * \param reader XmlReader responsible for reading xml data.
  * \param schName Schematic name
  * \param d (Output variable) The data ptr where data should be uploaded.
@@ -547,7 +550,8 @@ static void readSchematicPort(Qucs::XmlReader *reader, const QString & schName,
 }
 
 /*!
- * Reads the schematic tag of component description xml file.
+ * \brief Reads the schematic tag of component description xml file.
+ *
  * \param reader XmlReader responsible for reading xml data.
  * \param path The path of the xml file being processed.
  * \param svgPainter The SvgPainter object to which the symbols should be exported to.
@@ -609,9 +613,9 @@ static bool readSchematic(Qucs::XmlReader *reader, const QString& svgPath, SvgPa
     return true;
 }
 
-
 /*!
- * Read schematics section of component description xml file
+ * \brief Read schematics section of component description xml file
+ *
  * \param reader XmlReader responsible for reading xml data.
  * \param path The path of the xml file being processed.
  * \param svgPainter The SvgPainter object to which the symbols should be exported to.
@@ -754,7 +758,8 @@ namespace Qucs
                 /* Read schematic */
                 else if(reader->name() == "schematics") {
                     if(readSchematics(reader, path, svgPainter, d)==false) {
-                        goto out_error;
+                        d = static_cast<ComponentData*>(0);
+                        return false;
                     }
                 }
                 /* Read properties */
@@ -773,13 +778,10 @@ namespace Qucs
         }
 
         if(reader->hasError()) {
-            goto out_error;
+            d = static_cast<ComponentData*>(0);
+            return false;
         }
         return true;
-
-out_error:
-        d = static_cast<ComponentData*>(0);
-        return false;
     }
 } // namespace qucs
 
