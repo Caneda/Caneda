@@ -22,7 +22,7 @@
 
 #include "component.h"
 #include "property.h"
-#include "ui_property.h"
+#include "dialogs/ui_property.h"
 
 #include <QAbstractTableModel>
 #include <QItemDelegate>
