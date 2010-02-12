@@ -100,7 +100,7 @@ FolderBrowser::FolderBrowser(QWidget *parent) : QWidget(parent)
     m_listView->setModel(m_fileModel);
     m_listView->setRootIndex(m_fileModel->index(QDir::homePath()));
 
-    connect(m_listView, SIGNAL(doubleClicked(QModelIndex)),
+    connect(m_listView, SIGNAL(activated(QModelIndex)),
             SLOT(slotOnDoubleClicked(QModelIndex)));
 
     layout->addWidget(toolbar);
