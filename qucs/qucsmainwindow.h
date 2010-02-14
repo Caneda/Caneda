@@ -143,6 +143,7 @@ public Q_SLOTS:
     void setDocumentTitle(const QString& title);
     void updateTitleTabText();
     void slotSidebarItemClicked(const QString& item, const QString& category);
+    void slotUpdateAllViews();
 
 signals:
     void signalKillWidgets();

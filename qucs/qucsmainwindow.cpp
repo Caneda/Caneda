@@ -2257,6 +2257,19 @@ void QucsMainWindow::slotSidebarItemClicked(const QString& item, const QString& 
     }
 }
 
+void QucsMainWindow::slotUpdateAllViews()
+{
+    for (int i = 0; i < tabWidget()->count(); ++i) {
+        SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->widget(i));
+        if (view) {
+            if (view->scene()) {
+                view->scene()->update();
+            }
+            view->update();
+        }
+    }
+}
+
 void QucsMainWindow::resetCurrentSceneState()
 {
     SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());

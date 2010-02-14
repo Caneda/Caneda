@@ -420,6 +420,7 @@ void GeneralConfigurationPage::applyConf()
     if(changed) {
 #ifndef CREATORGUI
         QucsMainWindow::instance()->repaint();
+        QucsMainWindow::instance()->slotUpdateAllViews();
 #endif
     }
 }
@@ -901,6 +902,7 @@ void VhdlConfigurationPage::applyConf() {
     if(changed) {
 #ifndef CREATORGUI
         QucsMainWindow::instance()->repaint();
+        QucsMainWindow::instance()->slotUpdateAllViews();
 #endif
     }
 }
