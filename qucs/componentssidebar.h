@@ -56,35 +56,24 @@ class ComponentsSidebar : public QWidget
     Q_OBJECT;
 public:
     ComponentsSidebar(QString windowTitle, QWidget *parent = 0);
-    ~ComponentsSidebar() {}
+    ~ComponentsSidebar();
 
-    void plugLibrary(QString str, QString category) {
-        m_model->plugLibrary(str, category);
-    }
+    void plugLibrary(QString str, QString category);
+    void unPlugLibrary(QString str, QString category);
 
-    void unPlugLibrary(QString str, QString category) {
-        m_model->unPlugLibrary(str, category);
-    }
+    void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
 
-    void plugItem(QString itemName, const QPixmap& itemPixmap, QString category) {
-        m_model->plugItem(itemName, itemPixmap, category);
-    }
+    void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
 
-    void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category) {
-        m_model->plugItems(items, category);
-    }
-
-    void addToolbarButton(QAction *action) {
-        toolbar->addAction(action);
-    }
+    void addToolbarButton(QAction *action);
 
     QString currentComponent();
 
 signals:
     void itemClicked(const QString& item, const QString& category);
 
-    private slots:
-        void filterTextChanged();
+private Q_SLOTS:
+    void filterTextChanged();
     void slotOnClicked(const QModelIndex& index);
 
 private:

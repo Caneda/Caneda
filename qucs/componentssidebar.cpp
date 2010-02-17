@@ -106,6 +106,7 @@ ComponentsSidebar::ComponentsSidebar(QString windowTitle, QWidget *parent) : QWi
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     toolbar = new QToolBar;
+    toolbar->hide();
     layout->addWidget(toolbar);
     QHBoxLayout *hl = new QHBoxLayout();
     layout->addLayout(hl);
@@ -124,8 +125,8 @@ ComponentsSidebar::ComponentsSidebar(QString windowTitle, QWidget *parent) : QWi
     m_treeView = new TreeView();
     layout->addWidget(m_treeView);
 
-    m_model = new SidebarModel();
-    m_proxyModel = new FilterProxyModel();
+    m_model = new SidebarModel(this);
+    m_proxyModel = new FilterProxyModel(this);
     m_proxyModel->setDynamicSortFilter(true);
     m_proxyModel->setSourceModel(m_model);
     m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -144,6 +145,39 @@ ComponentsSidebar::ComponentsSidebar(QString windowTitle, QWidget *parent) : QWi
 
     setWindowTitle(windowTitle);
     m_currentComponent = "";
+}
+
+ComponentsSidebar::~ComponentsSidebar()
+{
+    m_treeView->setModel(0);
+}
+
+void ComponentsSidebar::plugLibrary(QString str, QString category)
+{
+    m_model->plugLibrary(str, category);
+}
+
+void ComponentsSidebar::unPlugLibrary(QString str, QString category)
+{
+    m_model->unPlugLibrary(str, category);
+}
+
+void ComponentsSidebar::plugItem(QString itemName, const QPixmap& itemPixmap,
+        QString category)
+{
+    m_model->plugItem(itemName, itemPixmap, category);
+}
+
+void ComponentsSidebar::plugItems(const QList<QPair<QString, QPixmap> > &items,
+        QString category)
+{
+    m_model->plugItems(items, category);
+}
+
+void ComponentsSidebar::addToolbarButton(QAction *action)
+{
+    toolbar->addAction(action);
+    toolbar->show();
 }
 
 QString ComponentsSidebar::currentComponent()
