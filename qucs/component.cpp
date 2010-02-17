@@ -235,15 +235,8 @@ QString Component::labelSuffix() const
 //! \brief Sets the propertyMap of this component to \a propMap
 void Component::setPropertyMap(const PropertyMap& propMap)
 {
-    bool symChanged = (propMap["symbol"].value().toString() !=
-            d->propertyMap["symbol"].value().toString());
     d->propertyMap = propMap;
-    if(symChanged) {
-        setSymbol(propMap["symbol"].value().toString());
-    }
-    else {
-        updatePropertyGroup();
-    }
+    setSymbol(propMap["symbol"].value().toString());
 }
 
 //! \brief Sets the component's activeStatus to \a status.
@@ -345,9 +338,8 @@ void Component::loadData(Qucs::XmlReader *reader)
             else if(reader->name() == "properties") {
                 //note the usage as it expects reference of property map.
                 readProperties(reader, d->propertyMap);
-                if (m_propertyGroup) {
-                    m_propertyGroup->realignItems();
-                }
+                // This updates the visual representation appropriately.
+                setPropertyMap(d->propertyMap);
             }
             else {
                 qWarning() << "Warning: Found unknown element" << reader->name().toString();
