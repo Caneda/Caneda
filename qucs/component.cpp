@@ -345,6 +345,9 @@ void Component::loadData(Qucs::XmlReader *reader)
             else if(reader->name() == "properties") {
                 //note the usage as it expects reference of property map.
                 readProperties(reader, d->propertyMap);
+                if (m_propertyGroup) {
+                    m_propertyGroup->realignItems();
+                }
             }
             else {
                 qWarning() << "Warning: Found unknown element" << reader->name().toString();
