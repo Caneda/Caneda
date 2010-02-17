@@ -51,6 +51,8 @@ SchematicView::SchematicView(SchematicScene *sc, QWidget *parent) :
     setAcceptDrops(true);
     setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     setViewportUpdateMode(SmartViewportUpdate);
+    setCacheMode(CacheBackground);
+
     viewport()->setMouseTracking(true);
     viewport()->setAttribute(Qt::WA_NoSystemBackground);
 
