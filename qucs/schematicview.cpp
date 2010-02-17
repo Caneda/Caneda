@@ -53,7 +53,6 @@ SchematicView::SchematicView(SchematicScene *sc, QWidget *parent) :
     setViewportUpdateMode(SmartViewportUpdate);
     viewport()->setMouseTracking(true);
     viewport()->setAttribute(Qt::WA_NoSystemBackground);
-    ensureVisible(0, 0, 5, 5);
 
     connect(sc, SIGNAL(modificationChanged(bool)), SIGNAL(modificationChanged(bool)));
     connect(sc, SIGNAL(fileNameChanged(const QString&)),

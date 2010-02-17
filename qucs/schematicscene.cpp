@@ -864,12 +864,14 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
     }
 
     /* draw origin */
-    if(this->isOriginDrawn() == true &&
-            rect.contains(QPointF(this->width()/2, this->height()/2))) {
+    const QPointF origin(0, 0);
+    if(this->isOriginDrawn() && rect.contains(origin)) {
         qreal width = this->width();
         qreal height = this->height();
-        painter->drawLine(QLineF(width/2-3.0, height/2+0.0, width/2+3.0, height/2+0.0));
-        painter->drawLine(QLineF(width/2+0.0, height/2-3.0, width/2+0.0, height/2+3.0));
+        painter->drawLine(QLineF(origin.x() - 3.0, origin.y(),
+                    origin.x() + 3.0, origin.y()));
+        painter->drawLine(QLineF(origin.x(), origin.y() - 3.0,
+                    origin.x(), origin.y() - 3.0));
     }
 
     // Adjust  visual representation of grid to be multiple, if
