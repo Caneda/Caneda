@@ -32,12 +32,12 @@
 class ComponentsSidebar;
 class FolderBrowser;
 class Library;
-class QUndoGroup;
-
-class SchematicScene;
-class SchematicView;
 class QucsItem;
 class QucsView;
+class QLabel;
+class QUndoGroup;
+class SchematicScene;
+class SchematicView;
 
 typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>&, const Qucs::UndoOption);
 
@@ -144,6 +144,7 @@ public Q_SLOTS:
     void updateTitleTabText();
     void slotSidebarItemClicked(const QString& item, const QString& category);
     void slotUpdateAllViews();
+    void slotUpdateCursorPositionStatus(const QString& newPos);
 
 signals:
     void signalKillWidgets();
@@ -164,6 +165,7 @@ private:
     void initActions();
     void initMenus();
     void initToolBars();
+    void initStatusBar();
 
     void performToggleAction(const bool on, pActionFunc func, QAction *action);
     void setNormalAction();
@@ -191,6 +193,7 @@ private:
     QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
           *helpMenu, *alignMenu, *toolMenu;
 
+    QLabel *m_cursorLabel;
     QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
     QDockWidget *sidebarDockWidget;
     QUndoGroup *m_undoGroup;

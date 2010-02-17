@@ -50,6 +50,7 @@
 #include <QFileDialog>
 #include <QGraphicsItem>
 #include <QIcon>
+#include <QLabel>
 #include <QListWidget>
 #include <QMenu>
 #include <QMenuBar>
@@ -87,10 +88,11 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
 
     m_undoGroup = new QUndoGroup();
 
-    statusBar()->show();
+    // Be vary of the order as all the pointers are uninitialized at this moment.
     initActions();
     initMenus();
     initToolBars();
+    initStatusBar();
 
     setupSidebar();
     setupProjectsSidebar();
@@ -1136,6 +1138,15 @@ void QucsMainWindow::initToolBars()
     workToolbar->addAction(action("whatsThis"));
 }
 
+void QucsMainWindow::initStatusBar()
+{
+    QStatusBar *statusBar = this->statusBar();
+    // Initially its empty space.
+    m_cursorLabel = new QLabel(QString("     "), statusBar);
+    statusBar->addPermanentWidget(m_cursorLabel);
+    statusBar->setVisible(action("viewStatusBar")->isChecked());
+}
+
 /*!
  * \brief Toogles the action perfomed.
  *
@@ -1229,7 +1240,8 @@ void QucsMainWindow::setNormalAction()
 void QucsMainWindow::addView(QucsView *view)
 {
     if(view->isSchematicView()) {
-        SchematicScene *schema = view->toSchematicView()->schematicScene();
+        SchematicView *schematicView = view->toSchematicView();
+        SchematicScene *schema = schematicView->schematicScene();
         m_undoGroup->addStack(schema->undoStack());
     }
     addChildWidget(view->toWidget());
@@ -1259,6 +1271,8 @@ void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
         updateTitleTabText();
         SchematicView *currView = view->toSchematicView();
         if (currView) {
+            connect(currView, SIGNAL(cursorPositionChanged(const QString&)),
+                    SLOT(slotUpdateCursorPositionStatus(const QString&)));
             SchematicScene *scene = currView->schematicScene();
             if (scene) {
                 m_undoGroup->setActiveStack(scene->undoStack());
@@ -2268,6 +2282,11 @@ void QucsMainWindow::slotUpdateAllViews()
             view->update();
         }
     }
+}
+
+void QucsMainWindow::slotUpdateCursorPositionStatus(const QString& newPos)
+{
+    m_cursorLabel->setText(newPos);
 }
 
 void QucsMainWindow::resetCurrentSceneState()

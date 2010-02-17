@@ -75,6 +75,10 @@ signals:
     void modificationChanged(bool modified);
     void fileNameChanged(const QString& file);
     void titleToBeUpdated();
+    void cursorPositionChanged(const QString& newPos);
+
+protected:
+    void mouseMoveEvent(QMouseEvent *event);
 
 private:
     int m_horizontalScroll;

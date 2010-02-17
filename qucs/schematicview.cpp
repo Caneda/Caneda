@@ -221,3 +221,13 @@ void SchematicView::setModified(bool m)
 {
     schematicScene()->setModified(m);
 }
+
+void SchematicView::mouseMoveEvent(QMouseEvent *event)
+{
+    QPoint newCursorPos = mapToScene(event->pos()).toPoint();
+    QString str = QString("%1 : %2")
+        .arg(newCursorPos.x(), 5)
+        .arg(newCursorPos.y(), 5);
+    emit cursorPositionChanged(str);
+    QGraphicsView::mouseMoveEvent(event);
+}
