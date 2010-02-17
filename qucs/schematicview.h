@@ -77,13 +77,8 @@ signals:
     void titleToBeUpdated();
 
 private:
-    void repaintWires();
-
     int m_horizontalScroll;
     int m_verticalScroll;
-
-private Q_SLOTS:
-        void addTestComponents();
 };
 
 #endif //SCHEMATICVIEW_H

@@ -141,26 +141,22 @@ bool SchematicView::save()
 void SchematicView::zoomIn()
 {
     scale(zoomFactor, zoomFactor);
-    repaintWires();
 }
 
 void SchematicView::zoomOut()
 {
     qreal zf = 1.0/zoomFactor;
     scale(zf, zf);
-    repaintWires();
 }
 
 void SchematicView::showAll()
 {
     fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
-    repaintWires();
 }
 
 void SchematicView::showNoZoom()
 {
     resetMatrix();
-    repaintWires();
 }
 
 QWidget* SchematicView::toWidget() const
@@ -224,13 +220,4 @@ void SchematicView::restoreScrollState()
 void SchematicView::setModified(bool m)
 {
     schematicScene()->setModified(m);
-}
-
-void SchematicView::repaintWires()
-{
-    bool fixSchematicViewrepaintWires;
-}
-
-void SchematicView::addTestComponents()
-{
 }
