@@ -1222,6 +1222,40 @@ void QucsMainWindow::performToggleAction(const bool on, pActionFunc func, QActio
         }
     }
     scene->setCurrentMouseAction(ma);
+
+    //Change the cursor to reflect current action mode
+    QString bitmapPath = Qucs::bitmapDirectory();
+
+    if(ma == SchematicScene::Wiring) {
+        view->setCursor(Qt::CrossCursor);
+    }
+    else if(ma == SchematicScene::Deleting) {
+        view->setCursor(QCursor::QCursor(QPixmap(bitmapPath + "cursordelete.png")));
+    }
+    else if(ma == SchematicScene::Rotating) {
+        view->setCursor(QCursor::QCursor(QPixmap(bitmapPath + "rotate_ccw.png")));
+    }
+    else if(ma == SchematicScene::MirroringX) {
+        view->setCursor(Qt::SizeVerCursor);
+    }
+    else if(ma == SchematicScene::MirroringY) {
+        view->setCursor(Qt::SizeHorCursor);
+    }
+    else if(ma == SchematicScene::ZoomingAtPoint) {
+        view->setCursor(QCursor::QCursor(QPixmap(bitmapPath + "viewmag+.png")));
+    }
+    else if(ma == SchematicScene::ZoomingOutAtPoint) {
+        view->setCursor(QCursor::QCursor(QPixmap(bitmapPath + "viewmag-.png")));
+    }
+    else if(ma == SchematicScene::PaintingDrawEvent) {
+        view->setCursor(Qt::CrossCursor);
+    }
+    else if(ma == SchematicScene::InsertingItems) {
+        view->setCursor(Qt::ClosedHandCursor);
+    }
+    else {
+        view->setCursor(Qt::ArrowCursor);
+    }
 }
 
 //! \brief Toggles the normal select action on.
