@@ -2281,26 +2281,45 @@ void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
     }
     QPoint viewPoint = sv->mapFromScene(event->scenePos());
 
+    // Delete the zoom band and return if this event was triggered for non left
+    // mouse button.
+    if (!(event->buttons().testFlag(Qt::LeftButton)) &&
+            event->type() != QEvent::GraphicsSceneMouseRelease) {
+        delete m_zoomBand;
+        m_zoomBand = 0;
+        return;
+    }
+
+
     if(event->type() == QEvent::GraphicsSceneMousePress) {
-        if(!m_zoomBand) {
-            m_zoomBand = new QRubberBand(QRubberBand::Rectangle);
+        // Another left click when zoom band is active means that a
+        // zoom operation was started in another view for this same scene.
+        // So delete the old zoom band.
+        if (m_zoomBand) {
+            delete m_zoomBand;
+            m_zoomBand = 0;
         }
-        m_zoomBand->setParent(sv->viewport());
-        m_zoomBand->show();
-        m_zoomRect.setRect(event->scenePos().x(), event->scenePos().y(), 0, 0);
+    }
+    else if(event->type() == QEvent::GraphicsSceneMouseMove) {
+        if (!m_zoomBand) {
+            m_zoomBand = new QRubberBand(QRubberBand::Rectangle);
+            m_zoomBand->setParent(sv->viewport());
+            m_zoomBand->show();
+            m_zoomRect.setRect(event->scenePos().x(), event->scenePos().y(), 0, 0);
+        } else {
+            m_zoomRect.setBottomRight(event->scenePos());
+        }
         QRect rrect = sv->mapFromScene(m_zoomRect).boundingRect().normalized();
         m_zoomBand->setGeometry(rrect);
     }
-    else if(event->type() == QEvent::GraphicsSceneMouseMove) {
-        if(m_zoomBand && m_zoomBand->isVisible() && m_zoomBand->parent() == sv->viewport()) {
-            m_zoomRect.setBottomRight(event->scenePos());
-            QRect rrect = sv->mapFromScene(m_zoomRect).boundingRect().normalized();
-            m_zoomBand->setGeometry(rrect);
-        }
-    }
     else {
-        if(m_zoomBand->geometry().isNull()) {
+        if (m_zoomBand) {
+            sv->fitInView(m_zoomRect, Qt::KeepAspectRatio);
 
+            delete m_zoomBand;
+            m_zoomBand = 0;
+        }
+        else {
             sv->zoomIn();
             QPointF afterScalePoint(sv->mapFromScene(event->scenePos()));
             int dx = (afterScalePoint - viewPoint).toPoint().x();
@@ -2312,10 +2331,6 @@ void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
             hb->setValue(hb->value() + dx);
             vb->setValue(vb->value() + dy);
         }
-        else {
-            sv->fitInView(m_zoomRect, Qt::KeepAspectRatio);
-        }
-        m_zoomBand->hide();
     }
 }
 
