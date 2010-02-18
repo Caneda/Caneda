@@ -871,7 +871,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
         painter->drawLine(QLineF(origin.x() - 3.0, origin.y(),
                     origin.x() + 3.0, origin.y()));
         painter->drawLine(QLineF(origin.x(), origin.y() - 3.0,
-                    origin.x(), origin.y() - 3.0));
+                    origin.x(), origin.y() + 3.0));
     }
 
     // Adjust  visual representation of grid to be multiple, if
