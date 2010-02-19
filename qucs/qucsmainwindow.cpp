@@ -32,6 +32,7 @@
 #include "dialogs/aboutqucs.h"
 #include "dialogs/exportdialog.h"
 #include "dialogs/printdialog.h"
+#include "dialogs/addtoprojectdialog.h"
 #include "dialogs/settingsdialog.h"
 
 #include "qucs-qterm/qtermwidget.h"
@@ -1830,6 +1831,8 @@ void QucsMainWindow::slotAddToProject()
 {
     setNormalAction();
     if(projectLibrary) {
+        AddToProjectDialog *p = new AddToProjectDialog(this);
+
         QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
                 "", tr("Component-xml (*.xsch *.xsym)"));
         if(!fileName.isEmpty()) {
