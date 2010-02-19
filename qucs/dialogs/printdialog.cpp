@@ -60,13 +60,13 @@ PrintDialog::PrintDialog(SchematicScene *schemaToPrint, QWidget *parent) :
         printer->setDocName(docname);
     }
 
-    // first we display a dialog asking the user the kind of impression he wants to make
+    //First we display a dialog asking the user the kind of impression he wants to make
     buildPrintTypeDialog();
     if(dialog->exec() == QDialog::Rejected) {
         return;
     }
 
-    // printer settings according to the type of printing chosen
+    //Printer settings according to the type of printing chosen
     if(printerChoice->isChecked()) {
         QPrintDialog printDialog(printer, parentWidget());
         printDialog.setWindowTitle(tr("Print options", "window title"));
@@ -151,7 +151,7 @@ int PrintDialog::horizontalPagesCount(bool fullpage) const
  */
 int PrintDialog::verticalPagesCount(bool fullpage) const
 {
-    // pageRect and paperRect reflect the orientation of the paper
+    //pageRect and paperRect reflect the orientation of the paper
     QRect printable_area = fullpage ? printer->paperRect() : printer->pageRect();
     QSize schema_size = schema->imageSize();
 
@@ -213,7 +213,7 @@ void PrintDialog::buildPrintTypeDialog()
     connect(buttons, SIGNAL(accepted()), SLOT(acceptPrintTypeDialog()));
     connect(buttons, SIGNAL(rejected()), dialog, SLOT(reject()));
 
-    // organisation graphique
+    //Organize layout
     QGridLayout *glayout = new QGridLayout();
     QHBoxLayout *hlayout = new QHBoxLayout();
     QVBoxLayout *vlayout = new QVBoxLayout();
@@ -276,11 +276,11 @@ void PrintDialog::browseFilePrintTypeDialog()
     }
     else if(pdfChoice->isChecked()) {
         extension = ".pdf";
-        filter    = tr("Fichiers PDF (*.pdf)", "file filter");
+        filter    = tr("PDF Files (*.pdf)", "file filter");
     }
     else if(psChoice->isChecked()) {
         extension = ".ps";
-        filter    = tr("Fichiers PostScript (*.ps)", "file filter");
+        filter    = tr("PostScript Files (*.ps)", "file filter");
     }
 
     QString filepath = QFileDialog::getSaveFileName(parentWidget(),
@@ -313,8 +313,6 @@ void PrintDialog::acceptPrintTypeDialog()
         }
     }
     else {
-        //  a printer must be selected
-        /// @todo
         dialog->accept();
     }
 }
@@ -342,7 +340,7 @@ void PrintDialog::print(bool fit_page)
                     schema->imageSize()), Qt::KeepAspectRatio);
     }
     else {
-        // printing on one or more pages
+        //Printing on one or more pages
         QRect diagram_rect = QRect(QPoint(0,0), schema->imageSize());
         diagram_rect = diagram_rect.adjusted(0.0, 0.0, 1.0, 1.0);
 
@@ -355,12 +353,12 @@ void PrintDialog::print(bool fit_page)
 
         QVector< QVector< QRect > > pages_grid;
 
-        // the schematic is printed on a grid of sheets
+        //The schematic is printed on a grid of sheets
         int y_offset = 0;
         for(int i = 0; i < v_pages_count; ++i) {
             pages_grid << QVector< QRect >();
 
-            // runs through the sheets of the line
+            //Runs through the sheets of the line
             int x_offset = 0;
             for(int j = 0; j < h_pages_count; ++j) {
                 pages_grid.last() << QRect(QPoint(x_offset, y_offset),
@@ -371,7 +369,7 @@ void PrintDialog::print(bool fit_page)
             y_offset += used_height;
         }
 
-        // retains only the pages for printing
+        //Retains only the pages for printing
         QVector<QRect> pages_to_print;
         for(int i = 0; i < v_pages_count; ++i) {
             for(int j = 0; j < h_pages_count; ++j) {
@@ -379,7 +377,7 @@ void PrintDialog::print(bool fit_page)
             }
         }
 
-        // scan the pages for printing
+        //Scan the pages for printing
         for(int i = 0; i < pages_to_print.count(); ++i) {
             QRect current_rect(pages_to_print.at(i));
             schema->render(&qp, QRect(QPoint(0,0), current_rect.size()),

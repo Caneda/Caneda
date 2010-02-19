@@ -77,4 +77,4 @@ private:
     QPushButton *browseButton;
 };
 
-#endif
+#endif //PRINT_DIALOG_H

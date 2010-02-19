@@ -1,6 +1,5 @@
 /***************************************************************************
- * Copyright 2006-2009 Xavier Guerrin                                      *
- * Copyright 2009 Pablo Daniel Pareja Obregon                              *
+ * Copyright 2010 Pablo Daniel Pareja Obregon                              *
  * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
  * Obregon to be included in Qucs.                                         *
  *                                                                         *
@@ -32,7 +31,6 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
-#include <QPushButton>
 #include <QRadioButton>
 
 /*!
