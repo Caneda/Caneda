@@ -1832,6 +1832,7 @@ void QucsMainWindow::slotAddToProject()
     setNormalAction();
     if(projectLibrary) {
         AddToProjectDialog *p = new AddToProjectDialog(this);
+        //TODO Check whether the dialog was accepted or not...
 
         if(p->userChoice() == Qucs::ExistingComponent) {
 
@@ -1865,8 +1866,7 @@ void QucsMainWindow::slotAddToProject()
         }
         else if(p->userChoice() == Qucs::NewComponent) {
             //TODO Open the new created component somewhere here
-            //TODO We must add the project path here...
-            QString fileName = p->fileName()+".xsch";
+            QString fileName = QFileInfo(projectLibrary->libraryFileName()).absolutePath() + "/" + p->fileName()+".xsch";
 
             QucsView *view = new SchematicView(0, this);
             view->setFileName(fileName);
