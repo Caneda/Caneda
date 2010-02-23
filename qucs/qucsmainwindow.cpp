@@ -1833,32 +1833,35 @@ void QucsMainWindow::slotAddToProject()
     if(projectLibrary) {
         AddToProjectDialog *p = new AddToProjectDialog(this);
 
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
-                "", tr("Component-xml (*.xsch *.xsym)"));
-        if(!fileName.isEmpty()) {
-            //If we selected a schematic, we must generate the corresponding symbol
-            if(QString(QFileInfo(fileName).suffix()) == "xsch") {
-                QucsView *view = new SchematicView(0, this);
-                view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
+        if(p->userChoice() == Qucs::ExistingComponent) {
 
-                if(!view->load(fileName)) {
-                    QMessageBox::critical(this, tr("Error"),
-                            tr("Could not open file!"));
+            QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
+                                                            "", tr("Component-xml (*.xsch *.xsym)"));
+            if(!fileName.isEmpty()) {
+                //If we selected a schematic, we must generate the corresponding symbol
+                if(QString(QFileInfo(fileName).suffix()) == "xsch") {
+                    QucsView *view = new SchematicView(0, this);
+                    view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
+
+                    if(!view->load(fileName)) {
+                        QMessageBox::critical(this, tr("Error"),
+                                              tr("Could not open file!"));
+                        delete view;
+                        return;
+                    }
+
+                    fileName.replace(".xsch",".xsym");
+                    view->setFileName(fileName);
+                    XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
+                    symbol->save();
+
                     delete view;
-                    return;
                 }
-
-                fileName.replace(".xsch",".xsym");
-                view->setFileName(fileName);
-                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-                symbol->save();
-
-                delete view;
+                projectLibrary->parseExternalComponent(fileName);
+                projectLibrary->saveLibrary();
+                m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
+                m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
             }
-            projectLibrary->parseExternalComponent(fileName);
-            projectLibrary->saveLibrary();
-            m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-            m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
         }
     }
     else {

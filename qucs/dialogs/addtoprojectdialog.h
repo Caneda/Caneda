@@ -28,6 +28,15 @@ class QCheckBox;
 class QLineEdit;
 class QRadioButton;
 
+namespace Qucs
+{
+    enum AddToProjectChoice {
+        NewComponent,
+        ExistingComponent,
+        FromExistingProject
+    };
+}
+
 /*!
  * This class represents the configuration dialog to add a component to
  * a project.
@@ -43,8 +52,12 @@ public:
     QString fileName() const;
     void setFileName(const QString &);
 
+    Qucs::AddToProjectChoice userChoice() const;
+    void setUserChoice(const Qucs::AddToProjectChoice);
+
 private:
     void buildComponentTypeDialog();
+
 
 private Q_SLOTS:
     void updateComponentTypeDialog();
@@ -52,6 +65,7 @@ private Q_SLOTS:
 
 private:
     QString filename;
+    Qucs::AddToProjectChoice userchoice;
 
     QDialog *dialog;
     QRadioButton *newComponent;

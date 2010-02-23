@@ -41,18 +41,13 @@ AddToProjectDialog::AddToProjectDialog(QWidget *parent) :
     QWidget(parent),
     dialog(0)
 {
-    // first we display a dialog asking the user the kind of component to add
+    userchoice = Qucs::NewComponent;
+
+    //We display a dialog asking the user the kind of component to add
     buildComponentTypeDialog();
+
     if(dialog->exec() == QDialog::Rejected) {
         return;
-    }
-
-    // output according to the type of component chosen
-    if(newComponent->isChecked()) {
-    }
-    else if(existingComponent->isChecked()) {
-    }
-    else {
     }
 }
 
@@ -72,6 +67,18 @@ void AddToProjectDialog::setFileName(const QString &name)
 QString AddToProjectDialog::fileName() const
 {
     return(filename);
+}
+
+//! Defines the user choice
+void AddToProjectDialog::setUserChoice(Qucs::AddToProjectChoice choice)
+{
+    userchoice = choice;
+}
+
+//! @return User choice
+Qucs::AddToProjectChoice AddToProjectDialog::userChoice() const
+{
+    return(userchoice);
 }
 
 /*!
@@ -150,15 +157,24 @@ void AddToProjectDialog::updateComponentTypeDialog()
 //! Checks the status of the print type dialogue.
 void AddToProjectDialog::acceptComponentDialog()
 {
-    bool newfile = newComponent->isChecked();
+    if(newComponent->isChecked()) {
+        setUserChoice(Qucs::NewComponent);
+    }
+    else if(existingComponent->isChecked()) {
+        setUserChoice(Qucs::ExistingComponent);
+    }
+    else {
+        setUserChoice(Qucs::FromExistingProject);
+    }
 
-    if(newfile) {
+    if(newComponent->isChecked()) {
         if(editFilepath->text().isEmpty()) {
             QMessageBox::information(parentWidget(),
                     tr("Component name missing"),
                     tr("You must enter the name of the new component."));
         }
         else {
+            setFileName(editFilepath->text());
             dialog->accept();
         }
     }
