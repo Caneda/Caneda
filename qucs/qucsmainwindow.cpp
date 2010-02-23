@@ -1863,6 +1863,39 @@ void QucsMainWindow::slotAddToProject()
                 m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
             }
         }
+        else if(p->userChoice() == Qucs::NewComponent) {
+            //TODO Open the new created component somewhere here
+            //TODO We must add the project path here...
+            QString fileName = p->fileName()+".xsch";
+
+            QucsView *view = new SchematicView(0, this);
+            view->setFileName(fileName);
+
+            if(!view->save()) {
+                QMessageBox::critical(this, tr("Error"),
+                                      tr("Could not save file!"));
+                delete view;
+                return;
+            }
+
+            view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
+
+            fileName.replace(".xsch",".xsym");
+            view->setFileName(fileName);
+            XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
+            symbol->save();
+
+            delete view;
+
+            projectLibrary->parseExternalComponent(fileName);
+            projectLibrary->saveLibrary();
+            m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
+            m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
+        }
+        else {
+            //TODO in case of adding a component from another project, we
+            //should copy the component as well as all its dependencies.
+        }
     }
     else {
         QMessageBox::critical(this, tr("Error"),
