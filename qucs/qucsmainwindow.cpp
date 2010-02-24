@@ -1832,74 +1832,75 @@ void QucsMainWindow::slotAddToProject()
     setNormalAction();
     if(projectLibrary) {
         AddToProjectDialog *p = new AddToProjectDialog(this);
-        //TODO Check whether the dialog was accepted or not...
+        if(p->accepted()) {
 
-        if(p->userChoice() == Qucs::ExistingComponent) {
+            if(p->userChoice() == Qucs::ExistingComponent) {
 
-            QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
-                                                            "", tr("Component-xml (*.xsch *.xsym)"));
-            if(!fileName.isEmpty()) {
-                //If we selected a schematic, we must generate the corresponding symbol
-                if(QString(QFileInfo(fileName).suffix()) == "xsch") {
-                    QucsView *view = new SchematicView(0, this);
-                    view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
+                QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
+                                                                "", tr("Component-xml (*.xsch *.xsym)"));
+                if(!fileName.isEmpty()) {
+                    //If we selected a schematic, we must generate the corresponding symbol
+                    if(QString(QFileInfo(fileName).suffix()) == "xsch") {
+                        QucsView *view = new SchematicView(0, this);
+                        view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
 
-                    if(!view->load(fileName)) {
-                        QMessageBox::critical(this, tr("Error"),
-                                              tr("Could not open file!"));
+                        if(!view->load(fileName)) {
+                            QMessageBox::critical(this, tr("Error"),
+                                                  tr("Could not open file!"));
+                            delete view;
+                            return;
+                        }
+
+                        fileName.replace(".xsch",".xsym");
+                        view->setFileName(fileName);
+                        XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
+                        symbol->save();
+
                         delete view;
-                        return;
                     }
-
-                    fileName.replace(".xsch",".xsym");
-                    view->setFileName(fileName);
-                    XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-                    symbol->save();
-
-                    delete view;
+                    projectLibrary->parseExternalComponent(fileName);
+                    projectLibrary->saveLibrary();
+                    m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
+                    m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
                 }
+            }
+            else if(p->userChoice() == Qucs::NewComponent) {
+                //TODO Open the new created component somewhere here
+                QString fileName = QFileInfo(projectLibrary->libraryFileName()).absolutePath() + "/" + p->fileName()+".xsch";
+
+                QucsView *view = new SchematicView(0, this);
+                view->setFileName(fileName);
+
+                if(!view->save()) {
+                    QMessageBox::critical(this, tr("Error"),
+                                          tr("Could not save file!"));
+                    delete view;
+                    return;
+                }
+
+                view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
+
+                fileName.replace(".xsch",".xsym");
+                view->setFileName(fileName);
+                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
+                symbol->save();
+
+                delete view;
+
                 projectLibrary->parseExternalComponent(fileName);
                 projectLibrary->saveLibrary();
                 m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
                 m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
             }
-        }
-        else if(p->userChoice() == Qucs::NewComponent) {
-            //TODO Open the new created component somewhere here
-            QString fileName = QFileInfo(projectLibrary->libraryFileName()).absolutePath() + "/" + p->fileName()+".xsch";
-
-            QucsView *view = new SchematicView(0, this);
-            view->setFileName(fileName);
-
-            if(!view->save()) {
-                QMessageBox::critical(this, tr("Error"),
-                                      tr("Could not save file!"));
-                delete view;
-                return;
+            else {
+                //TODO in case of adding a component from another project, we
+                //should copy the component as well as all its dependencies.
             }
-
-            view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
-
-            fileName.replace(".xsch",".xsym");
-            view->setFileName(fileName);
-            XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-            symbol->save();
-
-            delete view;
-
-            projectLibrary->parseExternalComponent(fileName);
-            projectLibrary->saveLibrary();
-            m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-            m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
-        }
-        else {
-            //TODO in case of adding a component from another project, we
-            //should copy the component as well as all its dependencies.
         }
     }
     else {
         QMessageBox::critical(this, tr("Error"),
-                tr("Invalid project!"));
+                              tr("Invalid project!"));
         return;
     }
 }

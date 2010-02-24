@@ -55,6 +55,8 @@ public:
     Qucs::AddToProjectChoice userChoice() const;
     void setUserChoice(const Qucs::AddToProjectChoice);
 
+    bool accepted();
+
 private:
     void buildComponentTypeDialog();
 
@@ -72,6 +74,8 @@ private:
     QRadioButton *existingComponent;
     QRadioButton *fromExistingProject;
     QLineEdit *editFilepath;
+
+    bool stateAccepted;
 };
 
 #endif //ADD_TO_PROJECT_DIALOG_H

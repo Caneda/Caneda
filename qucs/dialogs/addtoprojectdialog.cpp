@@ -42,13 +42,11 @@ AddToProjectDialog::AddToProjectDialog(QWidget *parent) :
     dialog(0)
 {
     userchoice = Qucs::NewComponent;
+    stateAccepted = false;
 
     //We display a dialog asking the user the kind of component to add
     buildComponentTypeDialog();
-
-    if(dialog->exec() == QDialog::Rejected) {
-        return;
-    }
+    dialog->exec();
 }
 
 //! Destructor
@@ -79,6 +77,14 @@ void AddToProjectDialog::setUserChoice(Qucs::AddToProjectChoice choice)
 Qucs::AddToProjectChoice AddToProjectDialog::userChoice() const
 {
     return(userchoice);
+}
+
+/*!
+ * Returns whether the dialog was accepted or not.
+ */
+bool AddToProjectDialog::accepted()
+{
+    return(stateAccepted);
 }
 
 /*!
@@ -120,10 +126,10 @@ void AddToProjectDialog::buildComponentTypeDialog()
         editFilepath->setText(filename);
     }
 
-    connect(newComponent, SIGNAL(toggled(bool)), SLOT(updateComponentTypeDialog()));
-    connect(existingComponent, SIGNAL(toggled(bool)), SLOT(updateComponentTypeDialog()));
-    connect(fromExistingProject, SIGNAL(toggled(bool)), SLOT(updateComponentTypeDialog()));
-    connect(buttons, SIGNAL(accepted()), SLOT(acceptComponentDialog()));
+    connect(newComponent, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
+    connect(existingComponent, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
+    connect(fromExistingProject, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
+    connect(buttons, SIGNAL(accepted()), this, SLOT(acceptComponentDialog()));
     connect(buttons, SIGNAL(rejected()), dialog, SLOT(reject()));
 
     //Organize layout
@@ -175,10 +181,12 @@ void AddToProjectDialog::acceptComponentDialog()
         }
         else {
             setFileName(editFilepath->text());
+            stateAccepted = true;
             dialog->accept();
         }
     }
     else {
+        stateAccepted = true;
         dialog->accept();
     }
 }

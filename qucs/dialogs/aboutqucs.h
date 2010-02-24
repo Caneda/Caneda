@@ -22,6 +22,7 @@
 
 #ifndef ABOUTQUCS_H
 #define ABOUTQUCS_H
+
 #include <QDialog>
 
 class QLabel;
@@ -46,4 +47,4 @@ private:
         void addAuthor(QLabel *, const QString &, const QString &, const QString &) const;
 };
 
-#endif
+#endif //ABOUTQUCS_H
