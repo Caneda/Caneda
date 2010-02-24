@@ -1865,11 +1865,17 @@ void QucsMainWindow::slotAddToProject()
                 }
             }
             else if(p->userChoice() == Qucs::NewComponent) {
-                //TODO Open the new created component somewhere here
                 QString fileName = QFileInfo(projectLibrary->libraryFileName()).absolutePath() + "/" + p->fileName()+".xsch";
 
                 QucsView *view = new SchematicView(0, this);
                 view->setFileName(fileName);
+
+                //When the component is already created, we return.
+                if(QFileInfo(fileName).exists()) {
+                    QMessageBox::critical(this, tr("Error"),
+                                          tr("Component already created!"));
+                    return;
+                }
 
                 if(!view->save()) {
                     QMessageBox::critical(this, tr("Error"),
@@ -1877,6 +1883,8 @@ void QucsMainWindow::slotAddToProject()
                     delete view;
                     return;
                 }
+
+                slotFileOpen(fileName);
 
                 view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
 
