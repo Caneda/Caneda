@@ -454,12 +454,6 @@ void QucsMainWindow::initActions()
     connect(action, SIGNAL(triggered()), SLOT(slotEditFind()));
     addActionToMap(action);
 
-    action = new QAction( tr("Replace..."), this);
-    action->setWhatsThis(tr("Replace\n\nChange component properties\nor\ntext in VHDL code"));
-    action->setObjectName("changeProps");
-    connect(action, SIGNAL(triggered()), SLOT(slotReplace()));
-    addActionToMap(action);
-
     action = new QAction(QIcon(bitmapPath + "rotate_ccw.png"), tr("Rotate"), this);
     action->setShortcut(CTRL+Key_R);
     action->setStatusTip(tr("Rotates the selected component by 90°"));
@@ -618,30 +612,6 @@ void QucsMainWindow::initActions()
     action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
     action->setObjectName("projClose");
     connect(action, SIGNAL(triggered()), SLOT(slotCloseProject()));
-    addActionToMap(action);
-
-    action = new QAction( tr("Create &Library..."), this);
-    action->setShortcut(CTRL+SHIFT+Key_L);
-    action->setStatusTip(tr("Create Library from Subcircuits"));
-    action->setWhatsThis(tr("Create Library\n\nCreate Library from Subcircuits"));
-    action->setObjectName("createLib");
-    connect(action, SIGNAL(triggered()), SLOT(slotCreateLib()));
-    addActionToMap(action);
-
-    action = new QAction( tr("Create &Package..."), this);
-    action->setShortcut(CTRL+SHIFT+Key_K);
-    action->setStatusTip(tr("Create compressed Package from Projects"));
-    action->setWhatsThis(tr("Create Package\n\nCreate compressed Package from complete Projects"));
-    action->setObjectName("createPkg");
-    connect(action, SIGNAL(triggered()), SLOT(slotCreatePackage()));
-    addActionToMap(action);
-
-    action = new QAction( tr("E&xtract Package..."), this);
-    action->setShortcut(CTRL+SHIFT+Key_X);
-    action->setStatusTip(tr("Install Content of a Package"));
-    action->setWhatsThis(tr("Extract Package\n\nInstall Content of a Package"));
-    action->setObjectName("extractPkg");
-    connect(action, SIGNAL(triggered()), SLOT(slotExtractPackage()));
     addActionToMap(action);
 
     action = new QAction(QIcon(bitmapPath + "wire.png"), tr("Wire"), this);
@@ -962,7 +932,6 @@ void QucsMainWindow::initMenus()
     editMenu->addAction(action("selectAll"));
     editMenu->addAction(action("selectMarker"));
     editMenu->addAction(action("editFind"));
-    editMenu->addAction(action("changeProps"));
     editMenu->addAction(action("editRotate"));
     editMenu->addAction(action("editMirror"));
     editMenu->addAction(action("editMirrorY"));
@@ -1001,12 +970,6 @@ void QucsMainWindow::initMenus()
     projMenu->addAction(action("addToProj"));
     projMenu->addAction(action("projDel"));
     projMenu->addAction(action("projClose"));
-
-    projMenu->addSeparator();
-
-    projMenu->addAction(action("createLib"));
-    projMenu->addAction(action("createPkg"));
-    projMenu->addAction(action("extractPkg"));
 
     toolMenu = menuBar()->addMenu(tr("&Tools"));
 
@@ -1675,12 +1638,6 @@ void QucsMainWindow::slotEditFind()
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotReplace()
-{
-    setNormalAction();
-    //TODO: implement this or rather port directly
-}
-
 void QucsMainWindow::slotEditRotate(bool on)
 {
     performToggleAction(on, &SchematicScene::rotateItems, action("editRotate"));
@@ -1940,24 +1897,6 @@ void QucsMainWindow::slotCloseProject()
         library->unload(projectLibrary->libraryFileName());
         projectLibrary = 0;
     }
-}
-
-void QucsMainWindow::slotCreateLib()
-{
-    setNormalAction();
-    //TODO: implement this or rather port directly
-}
-
-void QucsMainWindow::slotCreatePackage()
-{
-    setNormalAction();
-    //TODO: implement this or rather port directly
-}
-
-void QucsMainWindow::slotExtractPackage()
-{
-    setNormalAction();
-    //TODO: implement this or rather port directly
 }
 
 void QucsMainWindow::slotSetWire(bool on)

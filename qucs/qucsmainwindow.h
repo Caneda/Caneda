@@ -74,7 +74,6 @@ public Q_SLOTS:
     void slotEditPaste();
     void slotEditDelete(bool);
     void slotEditFind();
-    void slotReplace();
     void slotSelect(bool);
     void slotSelectAll();
     void slotSelectMarker();
@@ -100,9 +99,6 @@ public Q_SLOTS:
     void slotAddToProject();
     void slotRemoveFromProject();
     void slotCloseProject();
-    void slotCreateLib();
-    void slotCreatePackage();
-    void slotExtractPackage();
 
     void slotSetWire(bool);
     void slotInsertLabel(bool);
