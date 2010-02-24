@@ -2104,6 +2104,7 @@ void QucsMainWindow::editFile(const QString& File)
     connect(this, SIGNAL(signalKillWidgets()), QucsEditor, SLOT(kill()));
 }
 
+//! \brief Opens the help browser
 void QucsMainWindow::showHTML(const QString& Page)
 {
     QStringList arguments;
@@ -2111,10 +2112,10 @@ void QucsMainWindow::showHTML(const QString& Page)
         arguments << Page;
     }
     QProcess *QucsHelp = new QProcess(this);
-    QucsHelp->start(QString(Qucs::binaryDir + "qucshelp"),arguments);
+    QucsHelp->start(QString(Qucs::binaryDir + "qucshelp"), arguments);
 
     //TODO Emit error in case there are problems
-    // Kill editor before qucs ends
+    // Kill before qucs ends
     connect(this, SIGNAL(signalKillWidgets()), QucsHelp, SLOT(kill()));
 }
 

@@ -29,6 +29,7 @@
 #include <QToolBar>
 #include <QUndoView>
 
+// Forward declarations
 class ComponentsSidebar;
 class FolderBrowser;
 class Library;
