@@ -142,12 +142,30 @@ Action* ActionManager::createAction(const QString& id,
 }
 
 Action* ActionManager::createMouseAction(const QString& id,
-        SchematicScene::MouseAction mouseAction,
-        const QIcon& icon, const QString& text)
+        SchematicScene::MouseAction mouseAction, const QIcon& icon,
+        const QString& text)
 {
     Action *action = createAction(id, icon, text);
+    action->setCheckable(true);
     m_mouseActionHash.insert(action, mouseAction);
     return action;
+}
+
+Action* ActionManager::createAction(const QString& id,
+        const QString& text)
+{
+    return createAction(id, QIcon(), text);
+}
+
+Action* ActionManager::createMouseAction(const QString& id,
+        SchematicScene::MouseAction mouseAction, const QString& text)
+{
+    return createMouseAction(id, mouseAction, QIcon(), text);
+}
+
+Action* ActionManager::actionForName(const QString& name) const
+{
+    return m_actionHash.value(name, static_cast<Action*>(0));
 }
 
 Action* ActionManager::actionForMouseAction(SchematicScene::MouseAction ma) const
@@ -158,4 +176,9 @@ Action* ActionManager::actionForMouseAction(SchematicScene::MouseAction ma) cons
 SchematicScene::MouseAction ActionManager::mouseActionForAction(Action *action) const
 {
     return m_mouseActionHash.value(action);
+}
+
+QList<Action*> ActionManager::mouseActions() const
+{
+    return m_mouseActionHash.keys();
 }

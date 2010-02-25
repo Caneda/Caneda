@@ -86,18 +86,25 @@ public:
     ~ActionManager();
 
     Action* createAction(const QString& id, const QIcon& icon, const QString& text);
+    Action* createAction(const QString& id, const QString& text);
+
     Action* createMouseAction(const QString& id, SchematicScene::MouseAction action,
             const QIcon& icon, const QString& text);
+    Action* createMouseAction(const QString& id, SchematicScene::MouseAction action,
+            const QString& text);
 
+    Action* actionForName(const QString& name) const;
     Action* actionForMouseAction(SchematicScene::MouseAction ma) const;
     SchematicScene::MouseAction mouseActionForAction(Action *action) const;
+
+    QList<Action*> mouseActions() const;
 
 
 private:
     friend class SingletonManager;
     ActionManager(QObject *parent = 0);
 
-    QHash<QString, QAction*> m_actionHash;
+    QHash<QString, Action*> m_actionHash;
     QHash<Action*, SchematicScene::MouseAction> m_mouseActionHash;
 };
 
