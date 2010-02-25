@@ -33,7 +33,6 @@
 #include "dialogs/aboutqucs.h"
 #include "dialogs/exportdialog.h"
 #include "dialogs/printdialog.h"
-#include "dialogs/addtoprojectdialog.h"
 #include "dialogs/settingsdialog.h"
 
 #include "qucs-qterm/qtermwidget.h"
