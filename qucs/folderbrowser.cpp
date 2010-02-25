@@ -85,12 +85,12 @@ FolderBrowser::FolderBrowser(QWidget *parent) : QWidget(parent)
     buttonDeleteFile->setToolTip(tr("Delete file/folder"));
     buttonDeleteFile->setWhatsThis(tr("Delete file/folder"));
 
-    connect(buttonUp, SIGNAL(clicked()), SLOT(slotUpFolder()));
-    connect(buttonBack, SIGNAL(clicked()), SLOT(slotBackFolder()));
-    connect(buttonForward, SIGNAL(clicked()), SLOT(slotForwardFolder()));
-    connect(buttonHome, SIGNAL(clicked()), SLOT(slotHomeFolder()));
-    connect(buttonNewFolder, SIGNAL(clicked()), SLOT(slotNewFolder()));
-    connect(buttonDeleteFile, SIGNAL(clicked()), SLOT(slotDeleteFile()));
+    connect(buttonUp, SIGNAL(clicked()), this, SLOT(slotUpFolder()));
+    connect(buttonBack, SIGNAL(clicked()), this, SLOT(slotBackFolder()));
+    connect(buttonForward, SIGNAL(clicked()), this, SLOT(slotForwardFolder()));
+    connect(buttonHome, SIGNAL(clicked()), this, SLOT(slotHomeFolder()));
+    connect(buttonNewFolder, SIGNAL(clicked()), this, SLOT(slotNewFolder()));
+    connect(buttonDeleteFile, SIGNAL(clicked()), this, SLOT(slotDeleteFile()));
 
     toolbar->addWidget(buttonUp);
     toolbar->addWidget(buttonBack);
@@ -107,7 +107,7 @@ FolderBrowser::FolderBrowser(QWidget *parent) : QWidget(parent)
     m_listView->setRootIndex(m_fileModel->index(QDir::homePath()));
 
     connect(m_listView, SIGNAL(activated(QModelIndex)),
-            SLOT(slotOnDoubleClicked(QModelIndex)));
+            this, SLOT(slotOnDoubleClicked(QModelIndex)));
 
     layout->addWidget(toolbar);
     layout->addWidget(m_listView);
