@@ -46,12 +46,14 @@ FolderBrowser::FolderBrowser(QWidget *parent) : QWidget(parent)
     QToolButton *buttonUp = new QToolButton();
     buttonUp->setIcon(QIcon(Qucs::bitmapDirectory() + "previous.png"));
     buttonUp->setShortcut(Qt::Key_Backspace);
+    buttonUp->setStatusTip(tr("Go up one folder"));
     buttonUp->setToolTip(tr("Go up one folder"));
     buttonUp->setWhatsThis(tr("Go up one folder"));
 
     buttonBack = new QToolButton();
     buttonBack->setIcon(QIcon(Qucs::bitmapDirectory() + "back.png"));
     buttonBack->setShortcut(Qt::ALT + Qt::Key_Left);
+    buttonBack->setStatusTip(tr("Go previous folder"));
     buttonBack->setToolTip(tr("Go previous folder"));
     buttonBack->setWhatsThis(tr("Go previous folder"));
     buttonBack->setEnabled(false);
@@ -59,6 +61,7 @@ FolderBrowser::FolderBrowser(QWidget *parent) : QWidget(parent)
     buttonForward = new QToolButton();
     buttonForward->setIcon(QIcon(Qucs::bitmapDirectory() + "forward.png"));
     buttonForward->setShortcut(Qt::ALT + Qt::Key_Right);
+    buttonForward->setStatusTip(tr("Go next folder"));
     buttonForward->setToolTip(tr("Go next folder"));
     buttonForward->setWhatsThis(tr("Go next folder"));
     buttonForward->setEnabled(false);
@@ -66,16 +69,19 @@ FolderBrowser::FolderBrowser(QWidget *parent) : QWidget(parent)
     QToolButton *buttonHome = new QToolButton();
     buttonHome->setIcon(QIcon(Qucs::bitmapDirectory() + "home.png"));
     buttonHome->setShortcut(Qt::CTRL + Qt::Key_Home);
+    buttonHome->setStatusTip(tr("Go to the home folder"));
     buttonHome->setToolTip(tr("Go to the home folder"));
     buttonHome->setWhatsThis(tr("Go to the home folder"));
 
     QToolButton *buttonNewFolder = new QToolButton();
     buttonNewFolder->setIcon(QIcon(Qucs::bitmapDirectory() + "foldernew.png"));
+    buttonNewFolder->setStatusTip(tr("Create new folder"));
     buttonNewFolder->setToolTip(tr("Create new folder"));
     buttonNewFolder->setWhatsThis(tr("Create new folder"));
 
     QToolButton *buttonDeleteFile = new QToolButton();
     buttonDeleteFile->setIcon(QIcon(Qucs::bitmapDirectory() + "filedelete.png"));
+    buttonDeleteFile->setStatusTip(tr("Delete file/folder"));
     buttonDeleteFile->setToolTip(tr("Delete file/folder"));
     buttonDeleteFile->setWhatsThis(tr("Delete file/folder"));
 
