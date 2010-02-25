@@ -41,8 +41,6 @@ class QUndoGroup;
 class SchematicScene;
 class SchematicView;
 
-typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>&, const Qucs::UndoOption);
-
 class QucsMainWindow : public MainWindowBase
 {
     Q_OBJECT;

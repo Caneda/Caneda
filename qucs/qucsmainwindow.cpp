@@ -966,6 +966,7 @@ void QucsMainWindow::initStatusBar()
  */
 void QucsMainWindow::slotPerformToggleAction(const QString& sender, bool on)
 {
+    typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>&, const Qucs::UndoOption);
     SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
     if(!view) {
         //nothing to do since it is not schematic view
