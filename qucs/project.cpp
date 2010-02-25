@@ -25,6 +25,9 @@
 #include "library.h"
 
 #include <QMessageBox>
+#include <QToolBar>
+#include <QToolButton>
+#include <QVBoxLayout>
 
 /*! Constructor
  * \brief This class implements the project management
@@ -36,6 +39,62 @@
  */
 Project::Project(QWidget *parent) : QWidget(parent)
 {
+    projectLibrary = 0;
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+
+    QToolBar *toolbar = new QToolBar;
+
+    QToolButton *projNew = new QToolButton();
+    projNew->setIcon(QIcon(Qucs::bitmapDirectory() + "project-new.png"));
+    projNew->setStatusTip(tr("Creates a new project"));
+    projNew->setToolTip(tr("Creates a new project"));
+    projNew->setWhatsThis(tr("New Project\n\nCreates a new project"));
+
+    QToolButton *projOpen = new QToolButton();
+    projOpen->setIcon(QIcon(Qucs::bitmapDirectory() + "fileopen.png"));
+    projOpen->setStatusTip(tr("Opens an existing project"));
+    projOpen->setToolTip(tr("Opens an existing project"));
+    projOpen->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
+
+    QToolButton *addToProj = new QToolButton();
+    addToProj->setIcon(QIcon(Qucs::bitmapDirectory() + "filenew.png"));
+    addToProj->setStatusTip(tr("Adds a file to current project"));
+    addToProj->setToolTip(tr("Adds a file to current project"));
+    addToProj->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
+
+    QToolButton *projDel = new QToolButton();
+    projDel->setIcon(QIcon(Qucs::bitmapDirectory() + "fileclose.png"));
+    projDel->setStatusTip(tr("Removes a file from current project"));
+    projDel->setToolTip(tr("Removes a file from current project"));
+    projDel->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
+
+    QToolButton *projClose = new QToolButton();
+    projClose->setIcon(QIcon(Qucs::bitmapDirectory() + "project-close.png"));
+    projClose->setStatusTip(tr("Closes the current project"));
+    projClose->setToolTip(tr("Closes the current project"));
+    projClose->setWhatsThis(tr("Close Project\n\nCloses the current project"));
+
+    connect(projNew, SIGNAL(clicked()), this, SLOT(slotNewProject()));
+    connect(projOpen, SIGNAL(clicked()), this, SLOT(slotOpenProject()));
+    connect(addToProj, SIGNAL(clicked()), this, SLOT(slotAddToProject()));
+    connect(projDel, SIGNAL(clicked()), this, SLOT(slotRemoveFromProject()));
+    connect(projClose, SIGNAL(clicked()), this, SLOT(slotCloseProject()));
+
+    toolbar->addWidget(projNew);
+    toolbar->addWidget(projOpen);
+    toolbar->addWidget(addToProj);
+    toolbar->addWidget(projDel);
+    toolbar->addWidget(projClose);
+
+    m_projectsSidebar = new ComponentsSidebar(tr("Project View Sidebar"), this);
+    connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
+            SLOT(slotOnClicked(const QString&, const QString&)));
+
+    layout->addWidget(toolbar);
+    layout->addWidget(m_projectsSidebar);
+
+    setWindowTitle(tr("Project View"));
 }
 
 void Project::slotNewProject()
@@ -64,12 +123,28 @@ void Project::slotNewProject()
 //    }
 }
 
-void Project::slotOpenProject()
+void Project::slotOpenProject(QString fileName)
 {
+//    if(fileName == 0) {
 //    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Project"),
 //            "", tr("Qucs Projects (*.xpro)"));
+//    }
 //    if(!fileName.isEmpty()) {
-//        slotFileOpen(fileName);
+//                    LibraryLoader *library = LibraryLoader::defaultInstance();
+//
+//                if(!library->library(fileName)) {
+//                    if(library->load(fileName)) {
+//                        slotCloseProject();
+//                        projectLibrary = library->library(fileName);
+//                        qDebug() << "Succesfully loaded library!";
+//                        m_projectsSidebar->plugLibrary(fileName, "root");
+//                    }
+//                    else {
+//                        QMessageBox::critical(this, tr("Error"),
+//                                tr("Invalid project file!"));
+//                        return;
+//                    }
+//                }
 //    }
 }
 
@@ -183,6 +258,11 @@ void Project::slotCloseProject()
 //        library->unload(projectLibrary->libraryFileName());
 //        projectLibrary = 0;
 //    }
+}
+
+void Project::slotOnClicked(const QString& item, const QString& category)
+{
+    emit itemClicked(item, category);
 }
 
 void Project::slotOnDoubleClicked()

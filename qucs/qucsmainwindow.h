@@ -32,7 +32,7 @@
 // Forward declarations
 class ComponentsSidebar;
 class FolderBrowser;
-class Library;
+class Project;
 class QucsItem;
 class QucsView;
 class QLabel;
@@ -196,8 +196,7 @@ private:
     QUndoGroup *m_undoGroup;
     QUndoView *undoView;
     ComponentsSidebar *m_componentsSidebar;
-    ComponentsSidebar *m_projectsSidebar;
-    Library *projectLibrary;
+    Project *m_project;
     FolderBrowser *m_folderBrowser;
     QString titleText;
 };

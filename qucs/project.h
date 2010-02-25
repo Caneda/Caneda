@@ -37,15 +37,17 @@ public:
 
 public Q_SLOTS:
     void slotNewProject();
-    void slotOpenProject();
+    void slotOpenProject(QString fileName = 0);
     void slotAddToProject();
     void slotRemoveFromProject();
     void slotCloseProject();
 
 signals:
+    void itemClicked(const QString&, const QString&);
     void itemDoubleClicked(const QString& filename);
 
 private Q_SLOTS:
+    void slotOnClicked(const QString&, const QString&);
     void slotOnDoubleClicked();
 
 private:

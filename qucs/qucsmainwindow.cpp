@@ -24,6 +24,7 @@
 #include "item.h"
 #include "library.h"
 #include "qucsview.h"
+#include "project.h"
 #include "schematicscene.h"
 #include "schematicview.h"
 #include "settings.h"
@@ -99,8 +100,6 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
     setupProjectsSidebar();
     createFolderView();
     createUndoView();
-
-    projectLibrary = 0;
 
     connect(tabWidget(), SIGNAL(tabCloseRequested(int)), this, SLOT(slotFileClose(int)));
     connect(this, SIGNAL(currentWidgetChanged(QWidget*, QWidget*)), this,
@@ -220,22 +219,16 @@ void QucsMainWindow::setupSidebar()
  */
 void QucsMainWindow::setupProjectsSidebar()
 {
-    m_projectsSidebar = new ComponentsSidebar(tr("Project View"), this);
-    connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
+    m_project = new Project(this);
+    connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), this,
             SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
-    sidebarDockWidget = new QDockWidget(m_projectsSidebar->windowTitle(),this);
-    sidebarDockWidget->setWidget(m_projectsSidebar);
+    sidebarDockWidget = new QDockWidget(m_project->windowTitle(),this);
+    sidebarDockWidget->setWidget(m_project);
     sidebarDockWidget->setObjectName("projectsSidebar");
     sidebarDockWidget->setVisible(false);
     addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
-
-    m_projectsSidebar->addToolbarButton(action("projNew"));
-    m_projectsSidebar->addToolbarButton(action("projOpen"));
-    m_projectsSidebar->addToolbarButton(action("addToProj"));
-    m_projectsSidebar->addToolbarButton(action("projDel"));
-    m_projectsSidebar->addToolbarButton(action("projClose"));
 }
 
 void QucsMainWindow::createUndoView()
@@ -1330,21 +1323,7 @@ void QucsMainWindow::slotFileOpen(QString fileName)
 
     if(!fileName.isEmpty()) {
         if(QFileInfo(fileName).suffix() == "xpro") {
-                LibraryLoader *library = LibraryLoader::defaultInstance();
-
-                if(!library->library(fileName)) {
-                    if(library->load(fileName)) {
-                        slotCloseProject();
-                        projectLibrary = library->library(fileName);
-                        qDebug() << "Succesfully loaded library!";
-                        m_projectsSidebar->plugLibrary(fileName, "root");
-                    }
-                    else {
-                        QMessageBox::critical(this, tr("Error"),
-                                tr("Invalid project file!"));
-                        return;
-                    }
-                }
+            m_project->slotOpenProject(fileName);
         }
         else {
             bool isLoaded = gotoPage(fileName);
@@ -1750,153 +1729,31 @@ void QucsMainWindow::slotCenterVertical()
 void QucsMainWindow::slotNewProject()
 {
     setNormalAction();
-    QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"),
-            "", tr("Qucs Projects (*.xpro)"));
-    if(!fileName.isEmpty()) {
-        if(QString(QFileInfo(fileName).suffix()).isEmpty()) {
-            fileName = fileName + ".xpro";
-        }
-
-        LibraryLoader *library = LibraryLoader::defaultInstance();
-
-        if(library->newLibrary(fileName)) {
-            slotCloseProject();
-            projectLibrary = library->library(fileName);
-            projectLibrary->saveLibrary();
-            qDebug() << "Succesfully created library!";
-            m_projectsSidebar->plugLibrary(fileName, "root");
-        }
-        else {
-            QMessageBox::critical(this, tr("Error"),
-                    tr("Invalid project file!"));
-            return;
-        }
-    }
+    m_project->slotNewProject();
 }
 
 void QucsMainWindow::slotOpenProject()
 {
     setNormalAction();
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Project"),
-            "", tr("Qucs Projects (*.xpro)"));
-    if(!fileName.isEmpty()) {
-        slotFileOpen(fileName);
-    }
+    m_project->slotOpenProject();
 }
 
 void QucsMainWindow::slotAddToProject()
 {
     setNormalAction();
-    if(projectLibrary) {
-        AddToProjectDialog *p = new AddToProjectDialog(this);
-        if(p->accepted()) {
-
-            if(p->userChoice() == Qucs::ExistingComponent) {
-
-                QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
-                                                                "", tr("Component-xml (*.xsch *.xsym)"));
-                if(!fileName.isEmpty()) {
-                    //If we selected a schematic, we must generate the corresponding symbol
-                    if(QString(QFileInfo(fileName).suffix()) == "xsch") {
-                        QucsView *view = new SchematicView(0, this);
-                        view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
-
-                        if(!view->load(fileName)) {
-                            QMessageBox::critical(this, tr("Error"),
-                                                  tr("Could not open file!"));
-                            delete view;
-                            return;
-                        }
-
-                        fileName.replace(".xsch",".xsym");
-                        view->setFileName(fileName);
-                        XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-                        symbol->save();
-
-                        delete view;
-                    }
-                    projectLibrary->parseExternalComponent(fileName);
-                    projectLibrary->saveLibrary();
-                    m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-                    m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
-                }
-            }
-            else if(p->userChoice() == Qucs::NewComponent) {
-                QString fileName = QFileInfo(projectLibrary->libraryFileName()).absolutePath() + "/" + p->fileName()+".xsch";
-
-                QucsView *view = new SchematicView(0, this);
-                view->setFileName(fileName);
-
-                //When the component is already created, we return.
-                if(QFileInfo(fileName).exists()) {
-                    QMessageBox::critical(this, tr("Error"),
-                                          tr("Component already created!"));
-                    return;
-                }
-
-                if(!view->save()) {
-                    QMessageBox::critical(this, tr("Error"),
-                                          tr("Could not save file!"));
-                    delete view;
-                    return;
-                }
-
-                slotFileOpen(fileName);
-
-                view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
-
-                fileName.replace(".xsch",".xsym");
-                view->setFileName(fileName);
-                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-                symbol->save();
-
-                delete view;
-
-                projectLibrary->parseExternalComponent(fileName);
-                projectLibrary->saveLibrary();
-                m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-                m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
-            }
-            else {
-                //TODO in case of adding a component from another project, we
-                //should copy the component as well as all its dependencies.
-            }
-        }
-    }
-    else {
-        QMessageBox::critical(this, tr("Error"),
-                              tr("Invalid project!"));
-        return;
-    }
+    m_project->slotAddToProject();
 }
 
 void QucsMainWindow::slotRemoveFromProject()
 {
     setNormalAction();
-    if(projectLibrary) {
-        if(!m_projectsSidebar->currentComponent().isEmpty()) {
-            projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
-            projectLibrary->saveLibrary();
-            m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-            m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
-        }
-    }
-    else {
-        QMessageBox::critical(this, tr("Error"),
-                tr("Invalid project!"));
-        return;
-    }
+    m_project->slotRemoveFromProject();
 }
 
 void QucsMainWindow::slotCloseProject()
 {
     setNormalAction();
-    if(projectLibrary) {
-        m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-        LibraryLoader *library = LibraryLoader::defaultInstance();
-        library->unload(projectLibrary->libraryFileName());
-        projectLibrary = 0;
-    }
+    m_project->slotCloseProject();
 }
 
 void QucsMainWindow::slotSetWire(bool on)
