@@ -68,10 +68,12 @@ public:
 
 signals:
     void itemClicked(const QString& item, const QString& category);
+    void itemDoubleClicked(const QString& item, const QString& category);
 
 private Q_SLOTS:
     void filterTextChanged();
     void slotOnClicked(const QModelIndex& index);
+    void slotOnDoubleClicked(const QModelIndex& index);
 
 private:
     SidebarModel *m_model;

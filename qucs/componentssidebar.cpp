@@ -139,6 +139,8 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
             SLOT(slotOnClicked(const QModelIndex&)));
     connect(m_treeView, SIGNAL(invalidAreaClicked(const QModelIndex&)), this,
             SLOT(slotOnClicked(const QModelIndex&)));
+    connect(m_treeView, SIGNAL(activated(const QModelIndex&)), this,
+            SLOT(slotOnDoubleClicked(const QModelIndex&)));
 
     setWindowTitle(tr("Schematic Items"));
     m_currentComponent = "";
@@ -197,8 +199,19 @@ void ComponentsSidebar::slotOnClicked(const QModelIndex& index)
             m_currentComponent = item;
         }
     }
-    else {
-        QString empty;
-        emit itemClicked(empty, empty);
+}
+
+void ComponentsSidebar::slotOnDoubleClicked(const QModelIndex& index)
+{
+    if(index.isValid()) {
+        QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
+        if(mime) {
+            QByteArray encodedData = mime->data("application/qucs.sidebarItem");
+            QDataStream stream(&encodedData, QIODevice::ReadOnly);
+            QString item, category;
+            stream >> item >> category;
+            emit itemDoubleClicked(item, category);
+            m_currentComponent = item;
+        }
     }
 }

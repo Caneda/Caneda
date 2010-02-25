@@ -221,6 +221,8 @@ void QucsMainWindow::setupProjectsSidebar()
     m_project = new Project(this);
     connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), this,
             SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+    connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
+            SLOT(slotFileOpen(QString)));
 
     sidebarDockWidget = new QDockWidget(m_project->windowTitle(),this);
     sidebarDockWidget->setWidget(m_project);
@@ -1315,6 +1317,8 @@ void QucsMainWindow::slotTextNew()
  */
 void QucsMainWindow::slotFileOpen(QString fileName)
 {
+    setNormalAction();
+
     if(fileName == 0) {
         fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                 "", qucsFilter);

@@ -48,7 +48,7 @@ signals:
 
 private Q_SLOTS:
     void slotOnClicked(const QString&, const QString&);
-    void slotOnDoubleClicked();
+    void slotOnDoubleClicked(const QString&, const QString&);
 
 private:
     ComponentsSidebar *m_projectsSidebar;

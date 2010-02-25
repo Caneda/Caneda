@@ -98,6 +98,9 @@ Project::Project(QWidget *parent) : QWidget(parent)
     m_projectsSidebar = new ComponentsSidebar(this);
     connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
             SLOT(slotOnClicked(const QString&, const QString&)));
+    connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
+            SLOT(slotOnDoubleClicked(const QString&, const QString&)));
+
 
     layout->addWidget(toolbar);
     layout->addWidget(m_projectsSidebar);
@@ -275,6 +278,7 @@ void Project::slotOnClicked(const QString& item, const QString& category)
     emit itemClicked(item, category);
 }
 
-void Project::slotOnDoubleClicked()
+void Project::slotOnDoubleClicked(const QString& item, const QString& category)
 {
+    emit itemDoubleClicked(QFileInfo(projectLibrary->libraryFileName()).absolutePath() + "/" + item + ".xsch");
 }
