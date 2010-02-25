@@ -194,6 +194,9 @@ void Project::slotAddToProject()
                     projectLibrary->saveLibrary();
                     m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
                     m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
+
+                    fileName.replace(".xsym",".xsch");
+                    emit itemDoubleClicked(fileName);
                 }
             }
             else if(p->userChoice() == Qucs::NewComponent) {
@@ -216,8 +219,7 @@ void Project::slotAddToProject()
                     return;
                 }
 
-// **************TODO Open schematic here calling to slotOnDoubleClick when implemented
-//                slotFileOpen(fileName);
+                emit itemDoubleClicked(fileName);
 
                 view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
 
