@@ -13,13 +13,15 @@ SET(QUCS_SRCS wire.cpp componentssidebar.cpp item.cpp
   svgitem.cpp property.cpp propertyitem.cpp
   propertygroup.cpp component.cpp port.cpp library.cpp
   xmlformat.cpp mnemo.cpp propertydialog.cpp
-  wireline.cpp folderbrowser.cpp xmlsymbolformat.cpp settings.cpp project.cpp
+  wireline.cpp folderbrowser.cpp xmlsymbolformat.cpp settings.cpp
+  actionmanager.cpp singletonmanager.cpp project.cpp
 )
 
 SET(QUCS_MOC_HDRS schematicscene.h schematicview.h mainwindowbase.h
   qucsmainwindow.h componentssidebar.h svgitem.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
   propertydialog.h folderbrowser.h project.h
+  actionmanager.h singletonmanager.h
 )
 
 QT4_WRAP_CPP( QUCS_MOC_SRCS ${QUCS_MOC_HDRS} )

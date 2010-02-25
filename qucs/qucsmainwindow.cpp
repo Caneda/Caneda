@@ -19,6 +19,7 @@
 
 #include "qucsmainwindow.h"
 
+#include "actionmanager.h"
 #include "componentssidebar.h"
 #include "folderbrowser.h"
 #include "item.h"
@@ -259,626 +260,477 @@ void QucsMainWindow::createFolderView()
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 }
 
+static QIcon icon(const QString& filename)
+{
+    static QString bitmapPath = Qucs::bitmapDirectory();
+    return QIcon(bitmapPath + filename);
+}
+
+Action* QucsMainWindow::action(const QString& name)
+{
+    ActionManager* am = ActionManager::instance();
+    return am->actionForName(name);
+}
+
 /*!
  * \brief Creates and intializes all the actions used.
  */
 void QucsMainWindow::initActions()
 {
-    QAction *action = 0;
     using namespace Qt;
+    Action *action = 0;
+    ActionManager *am = ActionManager::instance();
 
-    QString bitmapPath = Qucs::bitmapDirectory();
-    action = new QAction(QIcon(bitmapPath + "filenew.png"), tr("&New"), this);
+    action = am->createAction("fileNew", icon("filenew.png"), tr("&New"));
     action->setShortcut(CTRL+Key_N);
     action->setStatusTip(tr("Creates a new document"));
     action->setWhatsThis(tr("New\n\nCreates a new schematic or data display document"));
-    action->setObjectName("fileNew");
     connect(action, SIGNAL(triggered()), SLOT(slotFileNew()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "textnew.png"), tr("New &Text"), this);
+    action = am->createAction("textNew", icon("textnew.png"), tr("New &Text"));
     action->setShortcut(CTRL+SHIFT+Key_V);
     action->setStatusTip(tr("Creates a new text document"));
     action->setWhatsThis(tr("New Text\n\nCreates a new text document"));
-    action->setObjectName("textNew");
     connect(action, SIGNAL(triggered()), SLOT(slotTextNew()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "fileopen.png"), tr("&Open..."), this);
+    action = am->createAction("fileOpen", icon("fileopen.png"), tr("&Open..."));
     action->setShortcut(CTRL+Key_O);
     action->setStatusTip(tr("Opens an existing document"));
     action->setWhatsThis(tr("Open File\n\nOpens an existing document"));
-    action->setObjectName("fileOpen");
     connect(action, SIGNAL(triggered()), SLOT(slotFileOpen()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "filesave.png"), tr("&Save"), this);
+    action = am->createAction("fileSave", icon("filesave.png"), tr("&Save"));
     action->setShortcut(CTRL+Key_S);
     action->setStatusTip(tr("Saves the current document"));
     action->setWhatsThis(tr("Save File\n\nSaves the current document"));
-    action->setObjectName("fileSave");
     connect(action, SIGNAL(triggered()), SLOT(slotFileSaveCurrent()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "filesaveas.png"), tr("Save as..."), this);
+    action = am->createAction("fileSaveAs", icon("filesaveas.png"), tr("Save as..."));
     action->setShortcut(CTRL+SHIFT+Key_S);
     action->setStatusTip(tr("Saves the current document under a new filename"));
     action->setWhatsThis(tr("Save As\n\nSaves the current document under a new filename"));
-    action->setObjectName("fileSaveAs");
     connect(action, SIGNAL(triggered()), SLOT(slotFileSaveAsCurrent()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "filesaveall.png"), tr("Save &All"), this);
+    action = am->createAction("fileSaveAll", icon("filesaveall.png"), tr("Save &All"));
     action->setShortcut(CTRL+Key_Plus);
     action->setStatusTip(tr("Saves all open documents"));
     action->setWhatsThis(tr("Save All Files\n\nSaves all open documents"));
-    action->setObjectName("fileSaveAll");
     connect(action, SIGNAL(triggered()), SLOT(slotFileSaveAll()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "fileclose.png"), tr("&Close"), this);
+    action = am->createAction("fileClose", icon("fileclose.png"), tr("&Close"));
     action->setShortcut(CTRL+Key_W);
     action->setStatusTip(tr("Closes the current document"));
     action->setWhatsThis(tr("Close File\n\nCloses the current document"));
-    action->setObjectName("fileClose");
     connect(action, SIGNAL(triggered()), SLOT(slotFileCloseCurrent()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "fileprint.png"), tr("&Print..."), this);
+    action = am->createAction("filePrint", icon("fileprint.png"), tr("&Print..."));
     action->setShortcut(CTRL+Key_P);
     action->setStatusTip(tr("Prints the current document"));
     action->setWhatsThis(tr("Print File\n\nPrints the current document"));
-    action->setObjectName("filePrint");
     connect(action, SIGNAL(triggered()), SLOT(slotFilePrint()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "export-image.png"), tr("&Export Image..."), this);
+    action = am->createAction("exportImage", icon("export-image.png"), tr("&Export Image..."));
     action->setShortcut(CTRL+Key_E);
     action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
-    action->setObjectName("exportImage");
     connect(action, SIGNAL(triggered()), SLOT(slotExportImage()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "document-edit.png"), tr("&Document Settings..."), this);
+    action = am->createAction("fileSettings", icon("document-edit.png"), tr("&Document Settings..."));
     action->setShortcut(CTRL+Key_Period);
     action->setWhatsThis(tr("Settings\n\nSets properties of the file"));
-    action->setObjectName("fileSettings");
     connect(action, SIGNAL(triggered()), SLOT(slotFileSettings()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "configure.png"), tr("Application Settings..."), this);
+    action = am->createAction("applSettings", icon("configure.png"), tr("Application Settings..."));
     action->setShortcut(CTRL+Key_Comma);
     action->setWhatsThis(tr("Qucs Settings\n\nSets properties of the application"));
-    action->setObjectName("applSettings");
     connect(action, SIGNAL(triggered()), SLOT(slotApplSettings()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "application-exit.png"), tr("E&xit"), this);
+    action = am->createAction("fileQuit", icon("application-exit.png"), tr("E&xit"));
     action->setShortcut(CTRL+Key_Q);
     action->setStatusTip(tr("Quits the application"));
     action->setWhatsThis(tr("Exit\n\nQuits the application"));
-    action->setObjectName("fileQuit");
     connect(action, SIGNAL(triggered()), SLOT(close()));
-    addActionToMap(action);
 
-    action = m_undoGroup->createUndoAction(this);
-    action->setIcon(QIcon(bitmapPath + "undo.png"));
+    action = am->createAction("undo", icon("undo.png"), tr("&Undo"));
     action->setShortcut(CTRL+Key_Z);
     action->setStatusTip(tr("Undoes the last command"));
     action->setWhatsThis(tr("Undo\n\nMakes the last action undone"));
-    action->setObjectName("undo");
-    addActionToMap(action);
+    connect(action, SIGNAL(triggered()), m_undoGroup, SLOT(undo()));
 
-    action = m_undoGroup->createRedoAction(this);
-    action->setIcon(QIcon(bitmapPath + "redo.png"));
+    action = am->createAction("redo", icon("redo.png"), tr("&Redo"));
     action->setShortcut(CTRL+SHIFT+Key_Z);
     action->setStatusTip(tr("Redoes the last command"));
     action->setWhatsThis(tr("Redo\n\nRepeats the last action once more"));
-    action->setObjectName("redo");
-    addActionToMap(action);
+    connect(action, SIGNAL(triggered()), m_undoGroup, SLOT(redo()));
 
-    action = new QAction(QIcon(bitmapPath + "editcut.png"), tr("Cu&t"), this);
+    action = am->createAction("editCut", icon("editcut.png"), tr("Cu&t"));
     action->setShortcut(CTRL+Key_X);
     action->setStatusTip(tr("Cuts out the selection and puts it into the clipboard"));
     action->setWhatsThis(tr("Cut\n\nCuts out the selection and puts it into the clipboard"));
-    action->setObjectName("editCut");
     connect(action, SIGNAL(triggered()), SLOT(slotEditCut()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "editcopy.png"), tr("&Copy"), this);
+    action = am->createAction("editCopy", icon("editcopy.png"), tr("&Copy"));
     action->setShortcut(CTRL+Key_C);
     action->setStatusTip(tr("Copies the selection into the clipboard"));
     action->setWhatsThis(tr("Copy\n\nCopies the selection into the clipboard"));
-    action->setObjectName("editCopy");
     connect(action, SIGNAL(triggered()), SLOT(slotEditCopy()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "editpaste.png"), tr("&Paste"), this);
+    action = am->createAction("editPaste", icon("editpaste.png"), tr("&Paste"));
     action->setShortcut(CTRL+Key_V);
     action->setStatusTip(tr("Pastes the clipboard contents to the cursor position"));
     action->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to the cursor position"));
-    action->setObjectName("editPaste");
     connect(action, SIGNAL(triggered()), SLOT(slotEditPaste()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "editdelete.png"), tr("&Delete"), this);
+    action = am->createMouseAction("editDelete", SchematicScene::Deleting,
+            icon("editdelete.png"), tr("&Delete"));
     action->setShortcut(Key_Delete);
     action->setStatusTip(tr("Deletes the selected components"));
     action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
-    action->setObjectName("editDelete");
-    action->setData(QVariant(SchematicScene::Deleting));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotEditDelete(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "pointer.png"), tr("Select"), this);
+    action = am->createMouseAction("select", SchematicScene::Normal,
+            icon("pointer.png"), tr("Select"));
     action->setShortcut(Key_Escape);
     action->setStatusTip(tr("Activate select mode"));
     action->setWhatsThis(tr("Select\n\nActivates select mode"));
-    action->setObjectName("select");
-    action->setData(QVariant(SchematicScene::Normal));
-    action->setCheckable(true);
     action->setChecked(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotSelect(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "select-all.png"), tr("Select All"), this);
+    action = am->createAction("selectAll", icon("select-all.png"), tr("Select All"));
     action->setShortcut(CTRL+Key_A);
     action->setStatusTip(tr("Selects all elements"));
     action->setWhatsThis(tr("Select All\n\nSelects all elements of the document"));
-    action->setObjectName("selectAll");
     connect(action, SIGNAL(triggered()), SLOT(slotSelectAll()));
-    addActionToMap(action);
 
-    action = new QAction( tr("Select Markers"), this);
+    action = am->createAction("selectMarker",  tr("Select Markers"));
     action->setShortcut(CTRL+SHIFT+Key_M);
     action->setStatusTip(tr("Selects all markers"));
     action->setWhatsThis(tr("Select Markers\n\nSelects all diagram markers of the document"));
-    action->setObjectName("selectMarker");
     connect(action, SIGNAL(triggered()), SLOT(slotSelectMarker()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "editfind.png"), tr("Find..."), this);
+    action = am->createAction("editFind", icon("editfind.png"), tr("Find..."));
     action->setShortcut(CTRL+Key_F);
     action->setStatusTip(tr("Find a piece of text"));
     action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
-    action->setObjectName("editFind");
     connect(action, SIGNAL(triggered()), SLOT(slotEditFind()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "rotate_ccw.png"), tr("Rotate"), this);
+    action = am->createMouseAction("editRotate", SchematicScene::Rotating,
+            icon("rotate_ccw.png"), tr("Rotate"));
     action->setShortcut(CTRL+Key_R);
     action->setStatusTip(tr("Rotates the selected component by 90°"));
     action->setWhatsThis(tr("Rotate\n\nRotates the selected component by 90° counter-clockwise"));
-    action->setObjectName("editRotate");
-    action->setData(QVariant(SchematicScene::Rotating));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotEditRotate(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "mirror.png"), tr("Mirror about X Axis"), this);
+    action = am->createMouseAction("editMirror", SchematicScene::MirroringX,
+            icon("mirror.png"), tr("Mirror about X Axis"));
     action->setShortcut(Key_V);
     action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
-    action->setObjectName("editMirror");
-    action->setData(QVariant(SchematicScene::MirroringX));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotEditMirrorX(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "mirrory.png"), tr("Mirror about Y Axis"), this);
+    action = am->createMouseAction("editMirrorY", SchematicScene::MirroringY,
+            icon("mirrory.png"), tr("Mirror about Y Axis"));
     action->setShortcut(Key_H);
     action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
-    action->setObjectName("editMirrorY");
-    action->setData(QVariant(SchematicScene::MirroringY));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotEditMirrorY(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "symbol-edit.png"), tr("&Edit Circuit Symbol/Schematic"), this);
+    action = am->createAction("symEdit", icon("symbol-edit.png"), tr("&Edit Circuit Symbol/Schematic"));
     action->setShortcut(Key_F7);
     action->setStatusTip(tr("Switches between symbol and schematic edit"));
     action->setWhatsThis(tr("Edit Circuit Symbol/Schematic\n\nSwitches between symbol and schematic edit"));
-    action->setObjectName("symEdit");
     connect(action, SIGNAL(triggered()), SLOT(slotSymbolEdit()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "bottom.png"), tr("Go into Subcircuit"), this);
+    action = am->createAction("intoH", icon("bottom.png"), tr("Go into Subcircuit"));
     action->setShortcut(CTRL+Key_I);
     action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
-    action->setObjectName("intoH");
     connect(action, SIGNAL(triggered()), SLOT(slotIntoHierarchy()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "top.png"), tr("Pop out"), this);
+    action = am->createAction("popH", icon("top.png"), tr("Pop out"));
     action->setShortcut(CTRL+SHIFT+Key_I);
     action->setStatusTip(tr("Pop outside subcircuit"));
     action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
-    action->setObjectName("popH");
     connect(action, SIGNAL(triggered()), SLOT(slotPopHierarchy()));
-    addActionToMap(action);
 
-    action = new QAction( tr("Set on Grid"), this);
+    action = am->createMouseAction("onGrid", SchematicScene::SettingOnGrid,
+            tr("Set on Grid"));
     action->setShortcut(CTRL+Key_U);
     action->setWhatsThis(tr("Set on Grid\n\nSets selected elements on grid"));
-    action->setObjectName("onGrid");
-    action->setCheckable(true);
-    action->setData(QVariant(SchematicScene::SettingOnGrid));
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotOnGrid(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "align-vertical-top.png"), tr("Align top"), this);
+    action = am->createAction("alignTop", icon("align-vertical-top.png"), tr("Align top"));
     action->setStatusTip(tr("Align top selected elements"));
     action->setWhatsThis(tr("Align top\n\nAlign selected elements to their upper edge"));
-    action->setObjectName("alignTop");
     connect(action, SIGNAL(triggered()), SLOT(slotAlignTop()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "align-vertical-bottom.png"), tr("Align bottom"), this);
+    action = am->createAction("alignBottom", icon("align-vertical-bottom.png"), tr("Align bottom"));
     action->setStatusTip(tr("Align bottom selected elements"));
     action->setWhatsThis(tr("Align bottom\n\nAlign selected elements to their lower edge"));
-    action->setObjectName("alignBottom");
     connect(action, SIGNAL(triggered()), SLOT(slotAlignBottom()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "align-horizontal-left.png"), tr("Align left"), this);
+    action = am->createAction("alignLeft", icon("align-horizontal-left.png"), tr("Align left"));
     action->setStatusTip(tr("Align left selected elements"));
     action->setWhatsThis(tr("Align left\n\nAlign selected elements to their left edge"));
-    action->setObjectName("alignLeft");
     connect(action, SIGNAL(triggered()), SLOT(slotAlignLeft()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "align-horizontal-right.png"), tr("Align right"), this);
+    action = am->createAction("alignRight", icon("align-horizontal-right.png"), tr("Align right"));
     action->setStatusTip(tr("Align right selected elements"));
     action->setWhatsThis(tr("Align right\n\nAlign selected elements to their right edge"));
-    action->setObjectName("alignRight");
     connect(action, SIGNAL(triggered()), SLOT(slotAlignRight()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "align-horizontal-center.png"), tr("Center horizontally"), this);
+    action = am->createAction("centerHor", icon("align-horizontal-center.png"), tr("Center horizontally"));
     action->setStatusTip(tr("Center horizontally selected elements"));
     action->setWhatsThis(tr("Center horizontally\n\nCenter horizontally selected elements"));
-    action->setObjectName("centerHor");
     connect(action, SIGNAL(triggered()), SLOT(slotCenterHorizontal()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "align-vertical-center.png"), tr("Center vertically"), this);
+    action = am->createAction("centerVert", icon("align-vertical-center.png"), tr("Center vertically"));
     action->setStatusTip(tr("Center vertically selected elements"));
     action->setWhatsThis(tr("Center vertically\n\nCenter vertically selected elements"));
-    action->setObjectName("centerVert");
     connect(action, SIGNAL(triggered()), SLOT(slotCenterVertical()));
-    addActionToMap(action);
 
-    action = new QAction( tr("Distribute horizontally"), this);
+    action = am->createAction("distrHor",  tr("Distribute horizontally"));
     action->setStatusTip(tr("Distribute equally horizontally"));
     action->setWhatsThis(tr("Distribute horizontally\n\n""Distribute horizontally selected elements"));
-    action->setObjectName("distrHor");
     connect(action, SIGNAL(triggered()), SLOT(slotDistribHoriz()));
-    addActionToMap(action);
 
-    action = new QAction( tr("Distribute vertically"), this);
+    action = am->createAction("distrVert",  tr("Distribute vertically"));
     action->setStatusTip(tr("Distribute equally vertically"));
     action->setWhatsThis(tr("Distribute vertically\n\n""Distribute vertically selected elements"));
-    action->setObjectName("distrVert");
     connect(action, SIGNAL(triggered()), SLOT(slotDistribVert()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "project-new.png"), tr("&New Project..."), this);
+    action = am->createAction("projNew", icon("project-new.png"), tr("&New Project..."));
     action->setShortcut(CTRL+SHIFT+Key_N);
     action->setStatusTip(tr("Creates a new project"));
     action->setWhatsThis(tr("New Project\n\nCreates a new project"));
-    action->setObjectName("projNew");
     connect(action, SIGNAL(triggered()), SLOT(slotNewProject()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "fileopen.png"), tr("&Open Project..."), this);
+    action = am->createAction("projOpen", icon("fileopen.png"), tr("&Open Project..."));
     action->setShortcut(CTRL+SHIFT+Key_O);
     action->setStatusTip(tr("Opens an existing project"));
     action->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
-    action->setObjectName("projOpen");
     connect(action, SIGNAL(triggered()), SLOT(slotOpenProject()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "filenew.png"), tr("&Add File to Project..."), this);
+    action = am->createAction("addToProj", icon("filenew.png"), tr("&Add File to Project..."));
     action->setShortcut(CTRL+SHIFT+Key_A);
     action->setStatusTip(tr("Adds a file to current project"));
     action->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
-    action->setObjectName("addToProj");
     connect(action, SIGNAL(triggered()), SLOT(slotAddToProject()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "fileclose.png"), tr("&Remove from Project"), this);
+    action = am->createAction("projDel", icon("fileclose.png"), tr("&Remove from Project"));
     action->setShortcut(CTRL+SHIFT+Key_R);
     action->setStatusTip(tr("Removes a file from current project"));
     action->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
-    action->setObjectName("projDel");
     connect(action, SIGNAL(triggered()), SLOT(slotRemoveFromProject()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "project-close.png"), tr("&Close Project"), this);
+    action = am->createAction("projClose", icon("project-close.png"), tr("&Close Project"));
     action->setShortcut(CTRL+SHIFT+Key_W);
     action->setStatusTip(tr("Closes the current project"));
     action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
-    action->setObjectName("projClose");
     connect(action, SIGNAL(triggered()), SLOT(slotCloseProject()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "wire.png"), tr("Wire"), this);
+    action = am->createMouseAction("insWire", SchematicScene::Wiring,
+            icon("wire.png"), tr("Wire"));
     action->setShortcut(Key_W);
     action->setWhatsThis(tr("Wire\n\nInserts a wire"));
-    action->setObjectName("insWire");
-    action->setData(QVariant(SchematicScene::Wiring));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotSetWire(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "nodename.png"), tr("Wire Label"), this);
+    action = am->createMouseAction("insLabel", SchematicScene::InsertingWireLabel,
+            icon("nodename.png"), tr("Wire Label"));
     action->setShortcut(Key_L);
     action->setStatusTip(tr("Inserts a wire or pin label"));
     action->setWhatsThis(tr("Wire Label\n\nInserts a wire or pin label"));
-    action->setObjectName("insLabel");
-    action->setData(QVariant(SchematicScene::InsertingWireLabel));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotInsertLabel(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "equation.png"), tr("Insert Equation"), this);
+    action = am->createAction("insEquation", icon("equation.png"), tr("Insert Equation"));
     action->setShortcut(Key_E);
     action->setWhatsThis(tr("Insert Equation\n\nInserts a user defined equation"));
-    action->setObjectName("insEquation");
     connect(action, SIGNAL(triggered()), SLOT(slotInsertEquation()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "ground.png"), tr("Insert Ground"), this);
+    action = am->createAction("insGround", icon("ground.png"), tr("Insert Ground"));
     action->setShortcut(Key_G);
     action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
-    action->setObjectName("insGround");
     connect(action, SIGNAL(triggered()), SLOT(slotInsertGround()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "port.png"), tr("Insert Port"), this);
+    action = am->createAction("insPort", icon("port.png"), tr("Insert Port"));
     action->setShortcut(Key_P);
     action->setWhatsThis(tr("Insert Port\n\nInserts a port symbol"));
-    action->setObjectName("insPort");
     connect(action, SIGNAL(triggered()), SLOT(slotInsertPort()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "vhdl-code.png"), tr("VHDL entity"), this);
+    action = am->createAction("insEntity", icon("vhdl-code.png"), tr("VHDL entity"));
     action->setShortcut(SHIFT+Key_V);
     action->setStatusTip(tr("Inserts skeleton of VHDL entity"));
     action->setWhatsThis(tr("VHDL entity\n\nInserts the skeleton of a VHDL entity"));
-    action->setObjectName("insEntity");
     connect(action, SIGNAL(triggered()), SLOT(slotInsertEntity()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "deactiv.png"), tr("Deactivate/Activate"), this);
+    action = am->createMouseAction("editActivate", SchematicScene::ChangingActiveStatus,
+            icon("deactiv.png"), tr("Deactivate/Activate"));
     action->setShortcut(Key_D);
     action->setStatusTip(tr("Deactivate/Activate selected components"));
     action->setWhatsThis(tr("Deactivate/Activate\n\nDeactivate/Activate the selected components"));
-    action->setObjectName("editActivate");
-    action->setData(QVariant(SchematicScene::ChangingActiveStatus));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotEditActivate(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Filter synthesis"), this);
+    action = am->createAction("callFilter", icon("tools-wizard.png"), tr("Filter synthesis"));
     action->setShortcut(CTRL+Key_1);
     action->setStatusTip(tr("Starts QucsFilter"));
     action->setWhatsThis(tr("Filter synthesis\n\nStarts QucsFilter"));
-    action->setObjectName("callFilter");
     connect(action, SIGNAL(triggered()), SLOT(slotCallFilter()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Line calculation"), this);
+    action = am->createAction("callLine", icon("tools-wizard.png"), tr("Line calculation"));
     action->setShortcut(CTRL+Key_2);
     action->setStatusTip(tr("Starts QucsTrans"));
     action->setWhatsThis(tr("Line calculation\n\nStarts transmission line calculator"));
-    action->setObjectName("callLine");
     connect(action, SIGNAL(triggered()), SLOT(slotCallLine()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Matching Circuit"), this);
+    action = am->createAction("callMatch", icon("tools-wizard.png"), tr("Matching Circuit"));
     action->setShortcut(CTRL+Key_3);
     action->setStatusTip(tr("Creates Matching Circuit"));
     action->setWhatsThis(tr("Matching Circuit\n\nDialog for Creating Matching Circuit"));
-    action->setObjectName("callMatch");
     connect(action, SIGNAL(triggered()), SLOT(slotCallMatch()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "tools-wizard.png"), tr("Attenuator synthesis"), this);
+    action = am->createAction("callAtt", icon("tools-wizard.png"), tr("Attenuator synthesis"));
     action->setShortcut(CTRL+Key_4);
     action->setStatusTip(tr("Starts QucsAttenuator"));
     action->setWhatsThis(tr("Attenuator synthesis\n\nStarts attenuator calculation program"));
-    action->setObjectName("callAtt");
     connect(action, SIGNAL(triggered()), SLOT(slotCallAtt()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "library.png"), tr("Component Library"), this);
+    action = am->createAction("callLib", icon("library.png"), tr("Component Library"));
     action->setShortcut(CTRL+Key_5);
     action->setStatusTip(tr("Starts QucsLib"));
     action->setWhatsThis(tr("Component Library\n\nStarts component library program"));
-    action->setObjectName("callLib");
     connect(action, SIGNAL(triggered()), SLOT(slotCallLibrary()));
-    addActionToMap(action);
 
-    action = new QAction( tr("&Import Data..."), this);
+    action = am->createAction("importData",  tr("&Import Data..."));
     action->setShortcut(CTRL+Key_6);
     action->setStatusTip(tr("Convert file to Qucs data file"));
     action->setWhatsThis(tr("Import Data\n\nConvert data file to Qucs data file"));
-    action->setObjectName("importData");
     connect(action, SIGNAL(triggered()), SLOT(slotImportData()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "console.png"), tr("&Show Console..."), this);
+    action = am->createAction("showConsole", icon("console.png"), tr("&Show Console..."));
     action->setShortcut(Key_F8);
     action->setStatusTip(tr("Show Console"));
     action->setWhatsThis(tr("Show Console\n\nOpen console terminal"));
-    action->setObjectName("showConsole");
     connect(action, SIGNAL(triggered()), SLOT(slotShowConsole()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "start.png"), tr("Simulate"), this);
+    action = am->createAction("simulate", icon("start.png"), tr("Simulate"));
     action->setShortcut(Key_F5);
     action->setStatusTip(tr("Simulates the current schematic"));
     action->setWhatsThis(tr("Simulate\n\nSimulates the current schematic"));
-    action->setObjectName("simulate");
     connect(action, SIGNAL(triggered()), SLOT(slotSimulate()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "switch-view.png"), tr("View Data Display/Schematic"), this);
+    action = am->createAction("dpl_sch", icon("switch-view.png"), tr("View Data Display/Schematic"));
     action->setShortcut(Key_F4);
     action->setStatusTip(tr("Changes to data display or schematic page"));
     action->setWhatsThis(tr("View Data Display/Schematic\n\n")+tr("Changes to data display or schematic page"));
-    action->setObjectName("dpl_sch");
     connect(action, SIGNAL(triggered()), SLOT(slotToPage()));
-    addActionToMap(action);
 
-    action = new QAction( tr("Calculate DC bias"), this);
+    action = am->createAction("dcbias",  tr("Calculate DC bias"));
     action->setShortcut(Key_F3);
     action->setStatusTip(tr("Calculates DC bias and shows it"));
     action->setWhatsThis(tr("Calculate DC bias\n\nCalculates DC bias and shows it"));
-    action->setObjectName("dcbias");
     connect(action, SIGNAL(triggered()), SLOT(slotDCbias()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "marker.png"), tr("Set Marker on Graph"), this);
+    action = am->createMouseAction("setMarker", SchematicScene::Marking,
+            icon("marker.png"), tr("Set Marker on Graph"));
     action->setShortcut(Key_F2);
     action->setStatusTip(tr("Sets a marker on a diagram's graph"));
     action->setWhatsThis(tr("Set Marker\n\nSets a marker on a diagram's graph"));
-    action->setObjectName("setMarker");
-    action->setData(QVariant(SchematicScene::Marking));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotSetMarker(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction( tr("Export to &CSV..."), this);
+    action = am->createAction("graph2csv",  tr("Export to &CSV..."));
     action->setShortcut(Key_F6);
     action->setStatusTip(tr("Convert graph data to CSV file"));
     action->setWhatsThis(tr("Export to CSV\n\nConvert graph data to CSV file"));
-    action->setObjectName("graph2csv");
     connect(action, SIGNAL(triggered()), SLOT(slotExportGraphAsCsv()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "document-preview.png"), tr("Show Last Messages"), this);
+    action = am->createAction("showMsg", icon("document-preview.png"), tr("Show Last Messages"));
     action->setShortcut(Key_F9);
     action->setStatusTip(tr("Shows last simulation messages"));
     action->setWhatsThis(tr("Show Last Messages\n\nShows the messages of the last simulation"));
-    action->setObjectName("showMsg");
     connect(action, SIGNAL(triggered()), SLOT(slotShowLastMsg()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "document-preview.png"), tr("Show Last Netlist"), this);
+    action = am->createAction("showNet", icon("document-preview.png"), tr("Show Last Netlist"));
     action->setShortcut(Key_F10);
     action->setStatusTip(tr("Shows last simulation netlist"));
     action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
-    action->setObjectName("showNet");
     connect(action, SIGNAL(triggered()), SLOT(slotShowLastNetlist()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "viewmagfit.png"), tr("View All"), this);
+    action = am->createAction("magAll", icon("viewmagfit.png"), tr("View All"));
     action->setShortcut(Key_0);
     action->setStatusTip(tr("Show the whole page"));
     action->setWhatsThis(tr("View All\n\nShows the whole page content"));
-    action->setObjectName("magAll");
     connect(action, SIGNAL(triggered()), SLOT(slotShowAll()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "viewmag1.png"), tr("View 1:1"), this);
+    action = am->createAction("magOne", icon("viewmag1.png"), tr("View 1:1"));
     action->setShortcut(Key_1);
     action->setStatusTip(tr("Views without magnification"));
     action->setWhatsThis(tr("View 1:1\n\nShows the page content without magnification"));
-    action->setObjectName("magOne");
     connect(action, SIGNAL(triggered()), SLOT(slotShowOne()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "viewmag+.png"), tr("Zoom in"), this);
+    action = am->createMouseAction("magPlus", SchematicScene::ZoomingAtPoint,
+            icon("viewmag+.png"), tr("Zoom in"));
     action->setShortcut(Key_Plus);
     action->setStatusTip(tr("Zooms into the current view"));
     action->setWhatsThis(tr("Zoom in\n\nZooms the current view"));
-    action->setObjectName("magPlus");
-    action->setData(QVariant(SchematicScene::ZoomingAtPoint));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotZoomIn(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(QIcon(bitmapPath + "viewmag-.png"), tr("Zoom out"), this);
+    action = am->createMouseAction("magMinus", SchematicScene::ZoomingOutAtPoint,
+            icon("viewmag-.png"), tr("Zoom out"));
     action->setShortcut(Key_Minus);
     action->setStatusTip(tr("Zooms out the current view"));
     action->setWhatsThis(tr("Zoom out\n\nZooms out the current view"));
-    action->setObjectName("magMinus");
-    action->setData(QVariant(SchematicScene::ZoomingOutAtPoint));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), SLOT(slotZoomOut(bool)));
-    addActionToMap(action);
-    checkableActions << action;
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction( tr("Tool&bar"), this);
+    action = am->createAction("viewToolBar",  tr("Tool&bar"));
     action->setStatusTip(tr("Enables/disables the toolbar"));
     action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
-    action->setObjectName("viewToolBar");
     action->setCheckable(true);
     action->setChecked(true);
     connect(action, SIGNAL(toggled(bool)), SLOT(slotViewToolBar(bool)));
-    addActionToMap(action);
 
-    action = new QAction( tr("&Statusbar"), this);
+    action = am->createAction("viewStatusBar",  tr("&Statusbar"));
     action->setStatusTip(tr("Enables/disables the statusbar"));
     action->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
-    action->setObjectName("viewStatusBar");
     action->setCheckable(true);
     action->setChecked(true);
     connect(action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "help.png"), tr("Help Index..."), this);
+    action = am->createAction("helpIndex", icon("help.png"), tr("Help Index..."));
     action->setShortcut(Key_F1);
     action->setStatusTip(tr("Index of Qucs Help"));
     action->setWhatsThis(tr("Help Index\n\nIndex of intern Qucs help"));
-    action->setObjectName("helpIndex");
     connect(action, SIGNAL(triggered()), SLOT(slotHelpIndex()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "qucs.png"), tr("&About Qucs..."), this);
+    action = am->createAction("helpAboutApp", icon("qucs.png"), tr("&About Qucs..."));
     action->setWhatsThis(tr("About\n\nAbout the application"));
-    action->setObjectName("helpAboutApp");
     connect(action, SIGNAL(triggered()), SLOT(slotHelpAbout()));
-    addActionToMap(action);
 
-    action = new QAction(QIcon(bitmapPath + "qt.png"), tr("About Qt..."), this);
+    action = am->createAction("helpAboutQt", icon("qt.png"), tr("About Qt..."));
     action->setWhatsThis(tr("About Qt\n\nAbout Qt by Trolltech"));
-    action->setObjectName("helpAboutQt");
     connect(action, SIGNAL(triggered()), SLOT(slotHelpAboutQt()));
-    addActionToMap(action);
 
-    action = QWhatsThis::createAction(this);
-    action->setObjectName("whatsThis");
-    addActionToMap(action);
+    {
+        QAction *action = QWhatsThis::createAction(this);
+        action->setObjectName("whatsThis");
+    }
 
-    action = new QAction(tr("Insert item action"), this);
-    action->setObjectName("insertItem");
-    action->setData(QVariant(SchematicScene::InsertingItems));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), this, SLOT(slotInsertItemAction(bool)));
-    checkableActions << action;
-    addActionToMap(action);
+    action = am->createMouseAction("insertItem", SchematicScene::InsertingItems,
+            tr("Insert item action"));
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
-    action = new QAction(tr("Painting draw action"), this);
-    action->setObjectName("paintingDraw");
-    action->setData(QVariant(SchematicScene::PaintingDrawEvent));
-    action->setCheckable(true);
-    connect(action, SIGNAL(toggled(bool)), this, SLOT(slotPaintingDrawAction(bool)));
-    checkableActions << action;
-    addActionToMap(action);
+    action = am->createMouseAction("paintingDraw", SchematicScene::PaintingDrawEvent,
+            tr("Painting draw action"));
+    connect(action, SIGNAL(toggled(const QString&, bool)),
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 }
 
 //! \brief Create and initialize menus.
@@ -1112,7 +964,7 @@ void QucsMainWindow::initStatusBar()
  * \a func if on is true. This method takes care to preserve the mutual
  * exclusiveness off the checkable actions.
  */
-void QucsMainWindow::performToggleAction(const bool on, pActionFunc func, QAction *action)
+void QucsMainWindow::slotPerformToggleAction(const QString& sender, bool on)
 {
     SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
     if(!view) {
@@ -1120,14 +972,35 @@ void QucsMainWindow::performToggleAction(const bool on, pActionFunc func, QActio
         return;
     }
 
+    ActionManager *am = ActionManager::instance();
     SchematicScene *scene = view->schematicScene();
-    SchematicScene::MouseAction ma = SchematicScene::MouseAction(action->data().toInt());
+
+    Action *action = am->actionForName(sender);
+    SchematicScene::MouseAction ma = am->mouseActionForAction(action);
+    pActionFunc func = 0;
+
+    if (sender == "editDelete") {
+        func = &SchematicScene::deleteItems;
+    } else if (sender == "editRotate") {
+        func = &SchematicScene::rotateItems;
+    } else if (sender == "editMirror") {
+        func = &SchematicScene::mirrorXItems;
+    } else if (sender == "editMirrorY") {
+        func = &SchematicScene::mirrorYItems;
+    } else if (sender == "onGrid") {
+        func = &SchematicScene::setItemsOnGrid;
+    } else if (sender == "editActivate") {
+        func = &SchematicScene::toggleActiveStatus;
+    }
+
     QAction *norm = this->action("select");
+
+    QList<Action*> mouseActions = ActionManager::instance()->mouseActions();
 
     //toggling off any action switches normal select action "on"
     if(!on) {
         if(ma != SchematicScene::Normal) {
-            foreach(QAction *act, checkableActions) {
+            foreach(QAction *act, mouseActions) {
                 if(act != norm) {
                     act->blockSignals(true);
                     act->setChecked(false);
@@ -1155,7 +1028,7 @@ void QucsMainWindow::performToggleAction(const bool on, pActionFunc func, QActio
 
             (scene->*func)(funcable, Qucs::PushUndoCmd);
 
-            foreach(QAction *act, checkableActions) {
+            foreach(QAction *act, mouseActions) {
                 if(act != norm) {
                     act->blockSignals(true);
                     act->setChecked(false);
@@ -1172,7 +1045,7 @@ void QucsMainWindow::performToggleAction(const bool on, pActionFunc func, QActio
         }
     } while(false); //For break
 
-    foreach(QAction *act, checkableActions) {
+    foreach(QAction *act, mouseActions) {
         if(act != action) {
             act->blockSignals(true);
             act->setChecked(false);
@@ -1219,7 +1092,7 @@ void QucsMainWindow::performToggleAction(const bool on, pActionFunc func, QActio
 //! \brief Toggles the normal select action on.
 void QucsMainWindow::setNormalAction()
 {
-    performToggleAction(true, 0, action("select"));
+    slotPerformToggleAction("select", true);
 }
 
 /*!
@@ -1585,18 +1458,8 @@ void QucsMainWindow::slotEditPaste()
     if(!v) {
         return;
     }
-    slotInsertItemAction(true);
+    slotPerformToggleAction("insertItem", true);
     v->paste();
-}
-
-void QucsMainWindow::slotEditDelete(bool on)
-{
-    performToggleAction(on, &SchematicScene::deleteItems, action("editDelete"));
-}
-
-void QucsMainWindow::slotSelect(bool on)
-{
-    performToggleAction(on, 0, action("select"));
 }
 
 void QucsMainWindow::slotSelectAll()
@@ -1620,21 +1483,6 @@ void QucsMainWindow::slotEditFind()
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotEditRotate(bool on)
-{
-    performToggleAction(on, &SchematicScene::rotateItems, action("editRotate"));
-}
-
-void QucsMainWindow::slotEditMirrorX(bool on)
-{
-    performToggleAction(on, &SchematicScene::mirrorXItems, action("editMirror"));
-}
-
-void QucsMainWindow::slotEditMirrorY(bool on)
-{
-    performToggleAction(on, &SchematicScene::mirrorYItems, action("editMirrorY"));
-}
-
 void QucsMainWindow::slotIntoHierarchy()
 {
     setNormalAction();
@@ -1645,11 +1493,6 @@ void QucsMainWindow::slotPopHierarchy()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
-}
-
-void QucsMainWindow::slotOnGrid(bool on)
-{
-    performToggleAction(on, &SchematicScene::setItemsOnGrid, action("onGrid"));
 }
 
 //! \brief Align selected elements appropriately based on \a alignment
@@ -1759,16 +1602,6 @@ void QucsMainWindow::slotCloseProject()
     m_project->slotCloseProject();
 }
 
-void QucsMainWindow::slotSetWire(bool on)
-{
-    performToggleAction(on, 0, action("insWire"));
-}
-
-void QucsMainWindow::slotInsertLabel(bool on)
-{
-    performToggleAction(on, 0, action("insLabel"));
-}
-
 void QucsMainWindow::slotInsertEquation()
 {
 }
@@ -1785,11 +1618,6 @@ void QucsMainWindow::slotInsertPort()
 void QucsMainWindow::slotInsertEntity()
 {
     setNormalAction();
-}
-
-void QucsMainWindow::slotEditActivate(bool on)
-{
-    performToggleAction(on, &SchematicScene::toggleActiveStatus, action("editActivate"));
 }
 
 void QucsMainWindow::slotCallFilter()
@@ -1882,11 +1710,6 @@ void QucsMainWindow::slotDCbias()
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotSetMarker(bool on)
-{
-    performToggleAction(on, 0, action("selectMarker"));
-}
-
 void QucsMainWindow::slotExportGraphAsCsv()
 {
     setNormalAction();
@@ -1921,16 +1744,6 @@ void QucsMainWindow::slotShowOne()
     if(view) {
         view->showNoZoom();
     }
-}
-
-void QucsMainWindow::slotZoomIn(bool on)
-{
-    performToggleAction(on, 0, action("magPlus"));
-}
-
-void QucsMainWindow::slotZoomOut(bool on)
-{
-    performToggleAction(on, 0, action("magMinus"));
 }
 
 void QucsMainWindow::slotViewToolBar(bool toogle)
@@ -1996,16 +1809,6 @@ void QucsMainWindow::slotHelpAboutQt()
 {
     setNormalAction();
     QApplication::aboutQt();
-}
-
-void QucsMainWindow::slotInsertItemAction(bool on)
-{
-    performToggleAction(on, 0, action("insertItem"));
-}
-
-void QucsMainWindow::slotPaintingDrawAction(bool on)
-{
-    performToggleAction(on, 0, action("paintingDraw"));
 }
 
 void QucsMainWindow::loadSettings()
@@ -2144,10 +1947,10 @@ void QucsMainWindow::slotSidebarItemClicked(const QString& item, const QString& 
         SchematicScene *scene = view->schematicScene();
         if(view && scene->sidebarItemClicked(item, category)) {
             if(scene->currentMouseAction() == SchematicScene::InsertingItems) {
-                slotInsertItemAction(true);
+                slotPerformToggleAction("insertItem", true);
             }
             else if(scene->currentMouseAction() == SchematicScene::PaintingDrawEvent) {
-                slotPaintingDrawAction(true);
+                slotPerformToggleAction("paintingDraw", true);
             }
         }
     }

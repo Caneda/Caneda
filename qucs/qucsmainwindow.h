@@ -30,6 +30,7 @@
 #include <QUndoView>
 
 // Forward declarations
+class Action;
 class ComponentsSidebar;
 class FolderBrowser;
 class Project;
@@ -73,19 +74,13 @@ public Q_SLOTS:
     void slotEditCut();
     void slotEditCopy();
     void slotEditPaste();
-    void slotEditDelete(bool);
     void slotEditFind();
-    void slotSelect(bool);
     void slotSelectAll();
     void slotSelectMarker();
-    void slotEditRotate(bool);
-    void slotEditMirrorX(bool);
-    void slotEditMirrorY(bool);
     void slotSymbolEdit();
     void slotIntoHierarchy();
     void slotPopHierarchy();
 
-    void slotOnGrid(bool);
     void slotAlignTop();
     void slotAlignBottom();
     void slotAlignLeft();
@@ -101,13 +96,10 @@ public Q_SLOTS:
     void slotRemoveFromProject();
     void slotCloseProject();
 
-    void slotSetWire(bool);
-    void slotInsertLabel(bool);
     void slotInsertEquation();
     void slotInsertGround();
     void slotInsertPort();
     void slotInsertEntity();
-    void slotEditActivate(bool);
     void slotCallFilter();
     void slotCallLine();
     void slotCallMatch();
@@ -119,15 +111,12 @@ public Q_SLOTS:
     void slotSimulate();
     void slotToPage();
     void slotDCbias();
-    void slotSetMarker(bool);
     void slotExportGraphAsCsv();
     void slotShowLastMsg();
     void slotShowLastNetlist();
 
     void slotShowAll();
     void slotShowOne();
-    void slotZoomIn(bool);
-    void slotZoomOut(bool);
     void slotViewToolBar(bool);
     void slotViewStatusBar(bool);
 
@@ -135,13 +124,12 @@ public Q_SLOTS:
     void slotHelpAbout();
     void slotHelpAboutQt();
 
-    void slotInsertItemAction(bool state);
-    void slotPaintingDrawAction(bool state);
     void setDocumentTitle(const QString& title);
     void updateTitleTabText();
     void slotSidebarItemClicked(const QString& item, const QString& category);
     void slotUpdateAllViews();
     void slotUpdateCursorPositionStatus(const QString& newPos);
+    void slotPerformToggleAction(const QString& sender, bool checked);
 
 signals:
     void signalKillWidgets();
@@ -158,13 +146,13 @@ private Q_SLOTS:
     void slotViewClosed(QWidget *widget);
 
 private:
+    Action* action(const QString& name);
     QucsMainWindow(QWidget *w=0);
     void initActions();
     void initMenus();
     void initToolBars();
     void initStatusBar();
 
-    void performToggleAction(const bool on, pActionFunc func, QAction *action);
     void setNormalAction();
     void alignElements(Qt::Alignment alignment);
     void editFile(const QString& File);
@@ -178,14 +166,6 @@ private:
     QucsView* viewFromWidget(QWidget *widget);
 
     void resetCurrentSceneState();
-    // The following aim at reducing clutter by substituting
-    // action pointers with a map container using object names
-    // to identify them.
-    inline void addActionToMap(QAction *act);
-    inline QAction* action(const QString& name) const;
-    QMap<QString ,QAction*> actionMap;
-    QList<QAction*> checkableActions;
-
     // menus contain the items of their menubar
     QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
           *helpMenu, *alignMenu, *toolMenu;
@@ -200,20 +180,5 @@ private:
     FolderBrowser *m_folderBrowser;
     QString titleText;
 };
-
-inline void QucsMainWindow::addActionToMap(QAction *action)
-{
-    actionMap[action->objectName()] = action;
-}
-
-inline QAction* QucsMainWindow::action(const QString& name) const
-{
-    if(actionMap.contains(name)) {
-        return actionMap[name];
-    }
-    qWarning("QucsMainWindow::action() - No action by name %s to return\nProbably bug",
-            qPrintable(name));
-    return new QAction(0); // To avoid crash
-}
 
 #endif //QUCSMAINWINDOW_H
