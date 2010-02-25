@@ -102,12 +102,9 @@ public:
 };
 
 //! Constructor
-ComponentsSidebar::ComponentsSidebar(QString windowTitle, QWidget *parent) : QWidget(parent)
+ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
-    toolbar = new QToolBar;
-    toolbar->hide();
-    layout->addWidget(toolbar);
     QHBoxLayout *hl = new QHBoxLayout();
     layout->addLayout(hl);
     m_filterEdit = new QLineEdit();
@@ -143,7 +140,7 @@ ComponentsSidebar::ComponentsSidebar(QString windowTitle, QWidget *parent) : QWi
     connect(m_treeView, SIGNAL(invalidAreaClicked(const QModelIndex&)), this,
             SLOT(slotOnClicked(const QModelIndex&)));
 
-    setWindowTitle(windowTitle);
+    setWindowTitle(tr("Schematic Items"));
     m_currentComponent = "";
 }
 
@@ -172,12 +169,6 @@ void ComponentsSidebar::plugItems(const QList<QPair<QString, QPixmap> > &items,
         QString category)
 {
     m_model->plugItems(items, category);
-}
-
-void ComponentsSidebar::addToolbarButton(QAction *action)
-{
-    toolbar->addAction(action);
-    toolbar->show();
 }
 
 QString ComponentsSidebar::currentComponent()

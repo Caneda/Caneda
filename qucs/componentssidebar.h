@@ -22,7 +22,6 @@
 
 #include "sidebarmodel.h"
 
-#include <QToolBar>
 #include <QTreeView>
 
 // Forward declarations
@@ -55,7 +54,7 @@ class ComponentsSidebar : public QWidget
 {
     Q_OBJECT;
 public:
-    ComponentsSidebar(QString windowTitle, QWidget *parent = 0);
+    ComponentsSidebar(QWidget *parent = 0);
     ~ComponentsSidebar();
 
     void plugLibrary(QString str, QString category);
@@ -64,8 +63,6 @@ public:
     void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
 
     void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
-
-    void addToolbarButton(QAction *action);
 
     QString currentComponent();
 
@@ -83,7 +80,6 @@ private:
     TreeView *m_treeView;
     QToolButton *m_clearButton;
     QString m_currentComponent;
-    QToolBar *toolbar;
 };
 
 #endif //COMPONENTSSIDEBAR_H

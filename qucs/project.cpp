@@ -87,7 +87,7 @@ Project::Project(QWidget *parent) : QWidget(parent)
     toolbar->addWidget(projDel);
     toolbar->addWidget(projClose);
 
-    m_projectsSidebar = new ComponentsSidebar(tr("Project View Sidebar"), this);
+    m_projectsSidebar = new ComponentsSidebar(this);
     connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
             SLOT(slotOnClicked(const QString&, const QString&)));
 

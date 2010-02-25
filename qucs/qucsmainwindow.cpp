@@ -186,7 +186,7 @@ bool QucsMainWindow::gotoPage(QString fileName, Qucs::Mode mode)
  */
 void QucsMainWindow::setupSidebar()
 {
-    m_componentsSidebar = new ComponentsSidebar(tr("Schematic Items"), this);
+    m_componentsSidebar = new ComponentsSidebar(this);
     connect(m_componentsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
             SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
