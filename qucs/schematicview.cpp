@@ -232,3 +232,11 @@ void SchematicView::mouseMoveEvent(QMouseEvent *event)
     emit cursorPositionChanged(str);
     QGraphicsView::mouseMoveEvent(event);
 }
+
+void SchematicView::focusInEvent(QFocusEvent *event)
+{
+    QGraphicsView::focusInEvent(event);
+    if (hasFocus()) {
+        emit focussed(this);
+    }
+}

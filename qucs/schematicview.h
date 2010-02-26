@@ -76,9 +76,11 @@ signals:
     void fileNameChanged(const QString& file);
     void titleToBeUpdated();
     void cursorPositionChanged(const QString& newPos);
+    void focussed(SchematicView *view);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
+    void focusInEvent(QFocusEvent *event);
 
 private:
     int m_horizontalScroll;
