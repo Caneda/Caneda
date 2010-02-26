@@ -105,6 +105,25 @@ void SchematicStateHandler::registerView(SchematicView *view)
     }
 }
 
+void SchematicStateHandler::unregisterView(SchematicView *view)
+{
+    if (!view) {
+        return;
+    }
+    if (d->views.contains(view)) {
+        d->views.remove(view);
+        disconnect(view, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
+        disconnect(view, SIGNAL(focussed(SchematicView*)), this,
+                SLOT(slotUpdateFocussedView(SchematicView*)));
+        disconnect(view, SIGNAL(pasteInvoked()), this, SLOT(slotHandlePaste()));
+    }
+
+    SchematicScene *scene = view->schematicScene();
+    if (scene && d->scenes.contains(scene)) {
+        d->scenes.remove(scene);
+        disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
+    }
+}
 
 void SchematicStateHandler::slotSidebarItemClicked(const QString& item,
         const QString& category)

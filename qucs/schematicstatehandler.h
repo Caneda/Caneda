@@ -35,6 +35,7 @@ public:
     ~SchematicStateHandler();
 
     void registerView(SchematicView *view);
+    void unregisterView(SchematicView *view);
 
 public Q_SLOTS:
     void slotSidebarItemClicked(const QString& item, const QString& category);
