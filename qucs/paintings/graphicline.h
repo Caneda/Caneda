@@ -42,7 +42,7 @@ public:
     void setLine(const QLineF &line);
 
     int type() const { return GraphicLine::Type; }
-    QucsItem* copy(SchematicScene *scene = 0) const;
+    GraphicLine* copy(SchematicScene *scene = 0) const;
 
     void saveData(Qucs::XmlWriter *writer) const;
     void loadData(Qucs::XmlReader *reader);

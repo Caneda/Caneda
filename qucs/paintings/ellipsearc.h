@@ -52,7 +52,7 @@ public:
     void setEllipse(const QRectF& ellipse) { setPaintingRect(ellipse); }
 
     int type() const { return EllipseArc::Type; }
-    QucsItem* copy(SchematicScene *scene = 0) const;
+    EllipseArc* copy(SchematicScene *scene = 0) const;
 
     void saveData(Qucs::XmlWriter *writer) const;
     void loadData(Qucs::XmlReader *reader);

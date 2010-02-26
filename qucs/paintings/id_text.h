@@ -89,7 +89,7 @@ public:
     void updateGeometry();
 
     int type() const { return IdText::Type; }
-    QucsItem* copy(SchematicScene *scene) const;
+    IdText* copy(SchematicScene *scene) const;
 
     void saveData(Qucs::XmlWriter *writer) const;
     void loadData(Qucs::XmlReader *reader);

@@ -442,7 +442,7 @@ int Component::checkAndConnect(Qucs::UndoOption opt)
 }
 
 //! \brief Returns a copy of this component.
-QucsItem* Component::copy(SchematicScene *scene) const
+Component* Component::copy(SchematicScene *scene) const
 {
     Component *retVal = new Component(d, svgPainter(), scene);
     //no need for Component::copyDataTo() because the data is already copied from d pointer.

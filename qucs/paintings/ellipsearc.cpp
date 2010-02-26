@@ -109,7 +109,7 @@ void EllipseArc::paint(QPainter *painter,
 }
 
 //! \brief Returns a copy of EllipseArc painting item.
-QucsItem* EllipseArc::copy(SchematicScene *scene) const
+EllipseArc* EllipseArc::copy(SchematicScene *scene) const
 {
     EllipseArc *arc = new EllipseArc(ellipse(), m_startAngle, m_spanAngle, scene);
     Painting::copyDataTo(arc);

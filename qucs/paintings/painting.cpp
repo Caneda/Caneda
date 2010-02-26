@@ -189,6 +189,12 @@ Painting* Painting::fromName(const QString& name)
     return 0;
 }
 
+//! Reimplemented for convenience though it doesn't do actual work.
+Painting* Painting::copy(SchematicScene *) const
+{
+    return 0;
+}
+
 //! \copydoc QucsItem::copyDataTo()
 void Painting::copyDataTo(Painting *painting) const
 {

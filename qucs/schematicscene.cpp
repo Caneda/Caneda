@@ -72,7 +72,7 @@
  *
  * \return Returns the geometrical center of the items sent through parameter.
  */
-    template <typename T>
+template <typename T>
 QPointF centerOfItems(const QList<T*> &items)
 {
     QRectF rect = items.isEmpty() ? QRectF() :
@@ -576,6 +576,14 @@ void SchematicScene::paste()
     this->beginInsertingItems(_items);
 }
 
+void SchematicScene::beginPaintingDraw(Painting *item)
+{
+    Q_ASSERT(m_currentMouseAction == SchematicScene::PaintingDrawEvent);
+    m_paintingDrawClicks = 0;
+    delete m_paintingDrawItem;
+    m_paintingDrawItem = item->copy();
+}
+
 /*!
  * \brief Starts insertItem mode.
  *
@@ -612,9 +620,7 @@ void SchematicScene::paste()
  */
 void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
 {
-    /* why ??? */
-    this->resetState();
-
+    Q_ASSERT(m_currentMouseAction == SchematicScene::InsertingItems);
     /* add to insert list */
     this->m_insertibles = items;
 
@@ -632,8 +638,6 @@ void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
         }
     }
 }
-
-
 
 /*!
  * \brief Event filter filter's out some events on the watched object.

@@ -189,6 +189,7 @@ public:
     void setCurrentMouseAction(const MouseAction ma);
 
     void resetState();
+    void beginPaintingDraw(Painting *item);
     void beginInsertingItems(const QList<QucsItem*> &items);
 
     bool alignElements(const Qt::Alignment alignment);

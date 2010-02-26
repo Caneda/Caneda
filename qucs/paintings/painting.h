@@ -95,6 +95,8 @@ public:
     //! Returns the active handle i.e the one with mouse focus.
     Qucs::ResizeHandle activeHandle() const { return m_activeHandle; }
 
+    Painting* copy(SchematicScene *scene = 0) const;
+
     virtual void copyDataTo(Painting *painting) const;
 
     static Painting* fromName(const QString& name);

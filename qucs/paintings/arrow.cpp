@@ -116,7 +116,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 }
 
 //! \brief Returns a copy of this arrow.
-QucsItem* Arrow::copy(SchematicScene *scene) const
+Arrow* Arrow::copy(SchematicScene *scene) const
 {
     Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), scene);
     Painting::copyDataTo(arrow);

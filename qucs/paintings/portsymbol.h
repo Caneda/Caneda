@@ -64,7 +64,7 @@ public:
     void mirrorAlong(Qt::Axis axis);
 
     int type() const { return PortSymbol::Type; }
-    QucsItem* copy(SchematicScene *scene = 0) const;
+    PortSymbol* copy(SchematicScene *scene = 0) const;
 
     void saveData(Qucs::XmlWriter *writer) const;
     void loadData(Qucs::XmlReader *reader);

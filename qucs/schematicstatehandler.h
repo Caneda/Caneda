@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,42 +17,42 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef GRAPHICTEXT_H
-#define GRAPHICTEXT_H
+#ifndef SCHEMATICSTATEHANDLER_H
+#define SCHEMATICSTATEHANDLER_H
 
-#include "painting.h"
+#include <QObject>
 
-//! \brief Represent's text item on schematic.
-class GraphicText : public Painting
+class SchematicStateHandlerPrivate;
+class SchematicScene;
+class SchematicView;
+class SingletonManager;
+
+class SchematicStateHandler : public QObject
 {
+    Q_OBJECT
 public:
-    enum {
-        Type = Painting::GraphicTextType
-    };
+    static SchematicStateHandler* instance();
+    ~SchematicStateHandler();
 
-    GraphicText(const QString &text = QString(), SchematicScene *scene = 0);
-    ~GraphicText();
+    void registerView(SchematicView *view);
 
-    QString plainText() const;
-    void setPlainText(const QString &text);
-
-    QString richText() const;
-    void setRichText(const QString &text);
-
-    void setText(const QString &text);
-
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
-
-    int type() const { return GraphicText::Type; }
-    GraphicText* copy(SchematicScene *scene = 0) const;
-
-    void saveData(Qucs::XmlWriter *writer) const;
-    void loadData(Qucs::XmlReader *reader);
-
-    int launchPropertyDialog(Qucs::UndoOption opt);
+public Q_SLOTS:
+    void slotSidebarItemClicked(const QString& item, const QString& category);
+    void slotOnObjectDestroyed(QObject *sender);
+    void slotUpdateFocussedView(SchematicView *view);
+    void slotPerformToggleAction(const QString& sender, bool on);
+    void slotSetNormalAction();
 
 private:
-    QGraphicsTextItem *m_textItem;
+    friend class SingletonManager;
+    SchematicStateHandler(QObject *parent = 0);
+
+    void applyCursor(SchematicView *view);
+    void applyState(SchematicView *view);
+    void applyStateToAllViews();
+
+    SchematicStateHandlerPrivate *d;
 };
 
-#endif //GRAPHICTEXT_H
+
+#endif // SCHEMATICSTATEHANDLER_H

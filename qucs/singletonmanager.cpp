@@ -20,10 +20,12 @@
 #include "singletonmanager.h"
 
 #include "actionmanager.h"
+#include "schematicstatehandler.h"
 
 SingletonManager::SingletonManager(QObject *parent)
     : QObject(parent),
-    m_actionManager(0)
+    m_actionManager(0),
+    m_schematicStateHandler(0)
 {
 }
 
@@ -37,6 +39,14 @@ ActionManager* SingletonManager::actionManager()
         m_actionManager = new ActionManager(this);
     }
     return m_actionManager;
+}
+
+SchematicStateHandler* SingletonManager::schematicStateHandler()
+{
+    if (!m_schematicStateHandler) {
+        m_schematicStateHandler = new SchematicStateHandler(this);
+    }
+    return m_schematicStateHandler;
 }
 
 SingletonManager* SingletonManager::instance()

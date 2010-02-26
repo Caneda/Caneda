@@ -160,7 +160,7 @@ void IdText::updateGeometry()
 }
 
 //! \brief Returns a copy of this item parented to scene \a scene.
-QucsItem* IdText::copy(SchematicScene *scene) const
+IdText* IdText::copy(SchematicScene *scene) const
 {
     IdText *id = new IdText(scene);
 

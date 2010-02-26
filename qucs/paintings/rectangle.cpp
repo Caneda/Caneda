@@ -89,7 +89,7 @@ void Rectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 }
 
 //! \copydoc Painting::copy()
-QucsItem* Rectangle::copy(SchematicScene *scene) const
+Rectangle* Rectangle::copy(SchematicScene *scene) const
 {
    Rectangle *rect = new Rectangle(this->rect(), scene);
    Painting::copyDataTo(rect);

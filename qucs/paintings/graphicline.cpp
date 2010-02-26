@@ -83,7 +83,7 @@ void GraphicLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 }
 
 //! \brief Returns copy of this line item.
-QucsItem* GraphicLine::copy(SchematicScene *scene) const
+GraphicLine* GraphicLine::copy(SchematicScene *scene) const
 {
    GraphicLine *line = new GraphicLine(this->line(), scene);
    Painting::copyDataTo(line);

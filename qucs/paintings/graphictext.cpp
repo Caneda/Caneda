@@ -98,7 +98,7 @@ void GraphicText::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 }
 
 //! \brief Returns a copy of this item.
-QucsItem* GraphicText::copy(SchematicScene *scene) const
+GraphicText* GraphicText::copy(SchematicScene *scene) const
 {
     GraphicText *text = new GraphicText(richText(), scene);
     Painting::copyDataTo(text);

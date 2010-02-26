@@ -124,10 +124,8 @@ public Q_SLOTS:
 
     void setDocumentTitle(const QString& title);
     void updateTitleTabText();
-    void slotSidebarItemClicked(const QString& item, const QString& category);
     void slotUpdateAllViews();
     void slotUpdateCursorPositionStatus(const QString& newPos);
-    void slotPerformToggleAction(const QString& sender, bool checked);
 
 signals:
     void signalKillWidgets();
@@ -147,6 +145,7 @@ private:
     Action* action(const QString& name);
     QucsMainWindow(QWidget *w=0);
     void initActions();
+    void initMouseActions();
     void initMenus();
     void initToolBars();
     void initStatusBar();
@@ -163,7 +162,6 @@ private:
 
     QucsView* viewFromWidget(QWidget *widget);
 
-    void resetCurrentSceneState();
     // menus contain the items of their menubar
     QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
           *helpMenu, *alignMenu, *toolMenu;

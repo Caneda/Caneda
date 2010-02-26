@@ -86,7 +86,7 @@ void Ellipse::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 }
 
 //! \brief Returns a copy of this Ellipse item.
-QucsItem* Ellipse::copy(SchematicScene *scene) const
+Ellipse* Ellipse::copy(SchematicScene *scene) const
 {
     Ellipse *ell = new Ellipse(ellipse(), scene);
     Painting::copyDataTo(ell);

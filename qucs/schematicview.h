@@ -63,8 +63,6 @@ public:
     void cut();
     void paste();
 
-    void resetState();
-
     void saveScrollState();
     void restoreScrollState();
 

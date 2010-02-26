@@ -134,7 +134,7 @@ void PortSymbol::mirrorAlong(Qt::Axis axis)
 }
 
 //! \brief Returns a copy of port symbol item parented to scene \a scene.
-QucsItem* PortSymbol::copy(SchematicScene *scene) const
+PortSymbol* PortSymbol::copy(SchematicScene *scene) const
 {
     PortSymbol *port = new PortSymbol(m_numberString, m_nameString, scene);
     port->m_mirrored = m_mirrored;

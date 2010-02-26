@@ -201,11 +201,6 @@ void SchematicView::paste()
     schematicScene()->paste();
 }
 
-void SchematicView::resetState()
-{
-    schematicScene()->resetState();
-}
-
 void SchematicView::saveScrollState()
 {
     m_horizontalScroll = horizontalScrollBar()->value();

@@ -48,7 +48,7 @@ public:
     void setRect(const QRectF& rect) { setPaintingRect(rect); }
 
     int type() const { return Rectangle::Type; }
-    QucsItem* copy(SchematicScene *scene = 0) const;
+    Rectangle* copy(SchematicScene *scene = 0) const;
 
     void saveData(Qucs::XmlWriter *writer) const;
     void loadData(Qucs::XmlReader *reader);

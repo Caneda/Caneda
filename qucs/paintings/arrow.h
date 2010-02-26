@@ -53,7 +53,7 @@ public:
     void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
     int type() const { return Arrow::Type; }
-    QucsItem* copy(SchematicScene *scene = 0) const;
+    Arrow* copy(SchematicScene *scene = 0) const;
 
     void saveData(Qucs::XmlWriter *writer) const;
     void loadData(Qucs::XmlReader *reader);

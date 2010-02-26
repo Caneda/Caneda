@@ -23,6 +23,7 @@
 #include <QObject>
 
 class ActionManager;
+class SchematicStateHandler;
 
 class SingletonManager : public QObject
 {
@@ -30,12 +31,14 @@ public:
     ~SingletonManager();
 
     ActionManager* actionManager();
+    SchematicStateHandler* schematicStateHandler();
 
     static SingletonManager* instance();
 
 private:
     SingletonManager(QObject *parent = 0);
     ActionManager *m_actionManager;
+    SchematicStateHandler *m_schematicStateHandler;
 };
 
 #endif // SINGLETONMANAGER_H

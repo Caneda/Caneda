@@ -167,7 +167,7 @@ public:
 
     int checkAndConnect(Qucs::UndoOption opt);
 
-    QucsItem *copy(SchematicScene *scene = 0) const;
+    Component *copy(SchematicScene *scene = 0) const;
     void copyDataTo(Component *comp) const;
 
     //! \reimp Reimplemented to return rtti info.

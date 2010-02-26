@@ -27,6 +27,7 @@
 #include "qucsview.h"
 #include "project.h"
 #include "schematicscene.h"
+#include "schematicstatehandler.h"
 #include "schematicview.h"
 #include "settings.h"
 #include "xmlsymbolformat.h"
@@ -186,8 +187,9 @@ bool QucsMainWindow::gotoPage(QString fileName, Qucs::Mode mode)
  */
 void QucsMainWindow::setupSidebar()
 {
+    SchematicStateHandler *handler = SchematicStateHandler::instance();
     m_componentsSidebar = new ComponentsSidebar(this);
-    connect(m_componentsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
+    connect(m_componentsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), handler,
             SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
     sidebarDockWidget = new QDockWidget(m_componentsSidebar->windowTitle(),this);
@@ -219,8 +221,9 @@ void QucsMainWindow::setupSidebar()
  */
 void QucsMainWindow::setupProjectsSidebar()
 {
+    SchematicStateHandler *handler = SchematicStateHandler::instance();
     m_project = new Project(this);
-    connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), this,
+    connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), handler,
             SLOT(slotSidebarItemClicked(const QString&, const QString&)));
     connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
             SLOT(slotFileOpen(QString)));
@@ -269,7 +272,11 @@ static QIcon icon(const QString& filename)
 Action* QucsMainWindow::action(const QString& name)
 {
     ActionManager* am = ActionManager::instance();
-    return am->actionForName(name);
+    Action* act = am->actionForName(name);
+    if (!act) {
+        qWarning() << Q_FUNC_INFO << "Encountered null action for name = " << name;
+    }
+    return act;
 }
 
 /*!
@@ -380,23 +387,6 @@ void QucsMainWindow::initActions()
     action->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to the cursor position"));
     connect(action, SIGNAL(triggered()), SLOT(slotEditPaste()));
 
-    action = am->createMouseAction("editDelete", SchematicScene::Deleting,
-            icon("editdelete.png"), tr("&Delete"));
-    action->setShortcut(Key_Delete);
-    action->setStatusTip(tr("Deletes the selected components"));
-    action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
-
-    action = am->createMouseAction("select", SchematicScene::Normal,
-            icon("pointer.png"), tr("Select"));
-    action->setShortcut(Key_Escape);
-    action->setStatusTip(tr("Activate select mode"));
-    action->setWhatsThis(tr("Select\n\nActivates select mode"));
-    action->setChecked(true);
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
-
     action = am->createAction("selectAll", icon("select-all.png"), tr("Select All"));
     action->setShortcut(CTRL+Key_A);
     action->setStatusTip(tr("Selects all elements"));
@@ -415,27 +405,6 @@ void QucsMainWindow::initActions()
     action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
     connect(action, SIGNAL(triggered()), SLOT(slotEditFind()));
 
-    action = am->createMouseAction("editRotate", SchematicScene::Rotating,
-            icon("rotate_ccw.png"), tr("Rotate"));
-    action->setShortcut(CTRL+Key_R);
-    action->setStatusTip(tr("Rotates the selected component by 90°"));
-    action->setWhatsThis(tr("Rotate\n\nRotates the selected component by 90° counter-clockwise"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
-
-    action = am->createMouseAction("editMirror", SchematicScene::MirroringX,
-            icon("mirror.png"), tr("Mirror about X Axis"));
-    action->setShortcut(Key_V);
-    action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
-
-    action = am->createMouseAction("editMirrorY", SchematicScene::MirroringY,
-            icon("mirrory.png"), tr("Mirror about Y Axis"));
-    action->setShortcut(Key_H);
-    action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
 
     action = am->createAction("symEdit", icon("symbol-edit.png"), tr("&Edit Circuit Symbol/Schematic"));
     action->setShortcut(Key_F7);
@@ -453,13 +422,6 @@ void QucsMainWindow::initActions()
     action->setStatusTip(tr("Pop outside subcircuit"));
     action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
     connect(action, SIGNAL(triggered()), SLOT(slotPopHierarchy()));
-
-    action = am->createMouseAction("onGrid", SchematicScene::SettingOnGrid,
-            tr("Set on Grid"));
-    action->setShortcut(CTRL+Key_U);
-    action->setWhatsThis(tr("Set on Grid\n\nSets selected elements on grid"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
 
     action = am->createAction("alignTop", icon("align-vertical-top.png"), tr("Align top"));
     action->setStatusTip(tr("Align top selected elements"));
@@ -531,20 +493,6 @@ void QucsMainWindow::initActions()
     action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
     connect(action, SIGNAL(triggered()), SLOT(slotCloseProject()));
 
-    action = am->createMouseAction("insWire", SchematicScene::Wiring,
-            icon("wire.png"), tr("Wire"));
-    action->setShortcut(Key_W);
-    action->setWhatsThis(tr("Wire\n\nInserts a wire"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
-
-    action = am->createMouseAction("insLabel", SchematicScene::InsertingWireLabel,
-            icon("nodename.png"), tr("Wire Label"));
-    action->setShortcut(Key_L);
-    action->setStatusTip(tr("Inserts a wire or pin label"));
-    action->setWhatsThis(tr("Wire Label\n\nInserts a wire or pin label"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
 
     action = am->createAction("insEquation", icon("equation.png"), tr("Insert Equation"));
     action->setShortcut(Key_E);
@@ -566,14 +514,6 @@ void QucsMainWindow::initActions()
     action->setStatusTip(tr("Inserts skeleton of VHDL entity"));
     action->setWhatsThis(tr("VHDL entity\n\nInserts the skeleton of a VHDL entity"));
     connect(action, SIGNAL(triggered()), SLOT(slotInsertEntity()));
-
-    action = am->createMouseAction("editActivate", SchematicScene::ChangingActiveStatus,
-            icon("deactiv.png"), tr("Deactivate/Activate"));
-    action->setShortcut(Key_D);
-    action->setStatusTip(tr("Deactivate/Activate selected components"));
-    action->setWhatsThis(tr("Deactivate/Activate\n\nDeactivate/Activate the selected components"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
 
     action = am->createAction("callFilter", icon("tools-wizard.png"), tr("Filter synthesis"));
     action->setShortcut(CTRL+Key_1);
@@ -635,14 +575,6 @@ void QucsMainWindow::initActions()
     action->setWhatsThis(tr("Calculate DC bias\n\nCalculates DC bias and shows it"));
     connect(action, SIGNAL(triggered()), SLOT(slotDCbias()));
 
-    action = am->createMouseAction("setMarker", SchematicScene::Marking,
-            icon("marker.png"), tr("Set Marker on Graph"));
-    action->setShortcut(Key_F2);
-    action->setStatusTip(tr("Sets a marker on a diagram's graph"));
-    action->setWhatsThis(tr("Set Marker\n\nSets a marker on a diagram's graph"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
-
     action = am->createAction("graph2csv",  tr("Export to &CSV..."));
     action->setShortcut(Key_F6);
     action->setStatusTip(tr("Convert graph data to CSV file"));
@@ -673,22 +605,6 @@ void QucsMainWindow::initActions()
     action->setWhatsThis(tr("View 1:1\n\nShows the page content without magnification"));
     connect(action, SIGNAL(triggered()), SLOT(slotShowOne()));
 
-    action = am->createMouseAction("magPlus", SchematicScene::ZoomingAtPoint,
-            icon("viewmag+.png"), tr("Zoom in"));
-    action->setShortcut(Key_Plus);
-    action->setStatusTip(tr("Zooms into the current view"));
-    action->setWhatsThis(tr("Zoom in\n\nZooms the current view"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
-
-    action = am->createMouseAction("magMinus", SchematicScene::ZoomingOutAtPoint,
-            icon("viewmag-.png"), tr("Zoom out"));
-    action->setShortcut(Key_Minus);
-    action->setStatusTip(tr("Zooms out the current view"));
-    action->setWhatsThis(tr("Zoom out\n\nZooms out the current view"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
-            SLOT(slotPerformToggleAction(const QString&, bool)));
-
     action = am->createAction("viewToolBar",  tr("Tool&bar"));
     action->setStatusTip(tr("Enables/disables the toolbar"));
     action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
@@ -717,19 +633,122 @@ void QucsMainWindow::initActions()
     action->setWhatsThis(tr("About Qt\n\nAbout Qt by Trolltech"));
     connect(action, SIGNAL(triggered()), SLOT(slotHelpAboutQt()));
 
-    {
-        QAction *action = QWhatsThis::createAction(this);
-        action->setObjectName("whatsThis");
-    }
+    QAction *qAction = QWhatsThis::createAction(this);
+    action = am->createAction("whatsThis", qAction->icon(), qAction->text());
+    connect(action, SIGNAL(triggered()), qAction, SLOT(trigger()));
+    connect(action, SIGNAL(hovered()), qAction, SLOT(hover()));
+
+    initMouseActions();
+}
+
+void QucsMainWindow::initMouseActions()
+{
+    using namespace Qt;
+    Action *action = 0;
+    SchematicStateHandler *handler = SchematicStateHandler::instance();
+
+    ActionManager *am = ActionManager::instance();
+    action = am->createMouseAction("editDelete", SchematicScene::Deleting,
+            icon("editdelete.png"), tr("&Delete"));
+    action->setShortcut(Key_Delete);
+    action->setStatusTip(tr("Deletes the selected components"));
+    action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("select", SchematicScene::Normal,
+            icon("pointer.png"), tr("Select"));
+    action->setShortcut(Key_Escape);
+    action->setStatusTip(tr("Activate select mode"));
+    action->setWhatsThis(tr("Select\n\nActivates select mode"));
+    action->setChecked(true);
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("editRotate", SchematicScene::Rotating,
+            icon("rotate_ccw.png"), tr("Rotate"));
+    action->setShortcut(CTRL+Key_R);
+    action->setStatusTip(tr("Rotates the selected component by 90°"));
+    action->setWhatsThis(tr("Rotate\n\nRotates the selected component by 90° counter-clockwise"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("editMirror", SchematicScene::MirroringX,
+            icon("mirror.png"), tr("Mirror about X Axis"));
+    action->setShortcut(Key_V);
+    action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("editMirrorY", SchematicScene::MirroringY,
+            icon("mirrory.png"), tr("Mirror about Y Axis"));
+    action->setShortcut(Key_H);
+    action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("onGrid", SchematicScene::SettingOnGrid,
+            tr("Set on Grid"));
+    action->setShortcut(CTRL+Key_U);
+    action->setWhatsThis(tr("Set on Grid\n\nSets selected elements on grid"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("insWire", SchematicScene::Wiring,
+            icon("wire.png"), tr("Wire"));
+    action->setShortcut(Key_W);
+    action->setWhatsThis(tr("Wire\n\nInserts a wire"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("insLabel", SchematicScene::InsertingWireLabel,
+            icon("nodename.png"), tr("Wire Label"));
+    action->setShortcut(Key_L);
+    action->setStatusTip(tr("Inserts a wire or pin label"));
+    action->setWhatsThis(tr("Wire Label\n\nInserts a wire or pin label"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("editActivate", SchematicScene::ChangingActiveStatus,
+            icon("deactiv.png"), tr("Deactivate/Activate"));
+    action->setShortcut(Key_D);
+    action->setStatusTip(tr("Deactivate/Activate selected components"));
+    action->setWhatsThis(tr("Deactivate/Activate\n\nDeactivate/Activate the selected components"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("setMarker", SchematicScene::Marking,
+            icon("marker.png"), tr("Set Marker on Graph"));
+    action->setShortcut(Key_F2);
+    action->setStatusTip(tr("Sets a marker on a diagram's graph"));
+    action->setWhatsThis(tr("Set Marker\n\nSets a marker on a diagram's graph"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("magPlus", SchematicScene::ZoomingAtPoint,
+            icon("viewmag+.png"), tr("Zoom in"));
+    action->setShortcut(Key_Plus);
+    action->setStatusTip(tr("Zooms into the current view"));
+    action->setWhatsThis(tr("Zoom in\n\nZooms the current view"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
+
+    action = am->createMouseAction("magMinus", SchematicScene::ZoomingOutAtPoint,
+            icon("viewmag-.png"), tr("Zoom out"));
+    action->setShortcut(Key_Minus);
+    action->setStatusTip(tr("Zooms out the current view"));
+    action->setWhatsThis(tr("Zoom out\n\nZooms out the current view"));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotPerformToggleAction(const QString&, bool)));
 
     action = am->createMouseAction("insertItem", SchematicScene::InsertingItems,
             tr("Insert item action"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
             SLOT(slotPerformToggleAction(const QString&, bool)));
 
     action = am->createMouseAction("paintingDraw", SchematicScene::PaintingDrawEvent,
             tr("Painting draw action"));
-    connect(action, SIGNAL(toggled(const QString&, bool)),
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
             SLOT(slotPerformToggleAction(const QString&, bool)));
 }
 
@@ -957,143 +976,11 @@ void QucsMainWindow::initStatusBar()
     statusBar->setVisible(action("viewStatusBar")->isChecked());
 }
 
-/*!
- * \brief Toogles the action perfomed.
- *
- * This method toggles the action and calls the function pointed by
- * \a func if on is true. This method takes care to preserve the mutual
- * exclusiveness off the checkable actions.
- */
-void QucsMainWindow::slotPerformToggleAction(const QString& sender, bool on)
-{
-    typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>&, const Qucs::UndoOption);
-    SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
-    if(!view) {
-        //nothing to do since it is not schematic view
-        return;
-    }
-
-    ActionManager *am = ActionManager::instance();
-    SchematicScene *scene = view->schematicScene();
-
-    Action *action = am->actionForName(sender);
-    SchematicScene::MouseAction ma = am->mouseActionForAction(action);
-    pActionFunc func = 0;
-
-    if (sender == "editDelete") {
-        func = &SchematicScene::deleteItems;
-    } else if (sender == "editRotate") {
-        func = &SchematicScene::rotateItems;
-    } else if (sender == "editMirror") {
-        func = &SchematicScene::mirrorXItems;
-    } else if (sender == "editMirrorY") {
-        func = &SchematicScene::mirrorYItems;
-    } else if (sender == "onGrid") {
-        func = &SchematicScene::setItemsOnGrid;
-    } else if (sender == "editActivate") {
-        func = &SchematicScene::toggleActiveStatus;
-    }
-
-    QAction *norm = this->action("select");
-
-    QList<Action*> mouseActions = ActionManager::instance()->mouseActions();
-
-    //toggling off any action switches normal select action "on"
-    if(!on) {
-        if(ma != SchematicScene::Normal) {
-            foreach(QAction *act, mouseActions) {
-                if(act != norm) {
-                    act->blockSignals(true);
-                    act->setChecked(false);
-                    act->blockSignals(false);
-                }
-            }
-        }
-        norm->blockSignals(true);
-        norm->setChecked(true);
-        norm->blockSignals(false);
-        scene->setCurrentMouseAction(SchematicScene::Normal);
-        return;
-    }
-
-    //else part
-    QList<QGraphicsItem*> selectedItems = scene->selectedItems();
-
-    do {
-        if(!(selectedItems.isEmpty() || func == 0)) {
-            QList<QucsItem*> funcable = filterItems<QucsItem>(selectedItems);
-
-            if(funcable.isEmpty()) {
-                break;
-            }
-
-            (scene->*func)(funcable, Qucs::PushUndoCmd);
-
-            foreach(QAction *act, mouseActions) {
-                if(act != norm) {
-                    act->blockSignals(true);
-                    act->setChecked(false);
-                    act->blockSignals(false);
-                }
-            }
-            norm->blockSignals(true);
-            norm->setChecked(true);
-            norm->blockSignals(false);
-            //Safe to call repeatedly since this function performs change if
-            //only the mouseAction is different from previous.
-            scene->setCurrentMouseAction(SchematicScene::Normal);
-            return;
-        }
-    } while(false); //For break
-
-    foreach(QAction *act, mouseActions) {
-        if(act != action) {
-            act->blockSignals(true);
-            act->setChecked(false);
-            act->blockSignals(false);
-        }
-    }
-    scene->setCurrentMouseAction(ma);
-
-    //Change the cursor to reflect current action mode
-    QString bitmapPath = Qucs::bitmapDirectory();
-
-    if(ma == SchematicScene::Wiring) {
-        view->setCursor(Qt::CrossCursor);
-    }
-    else if(ma == SchematicScene::Deleting) {
-        view->setCursor(QCursor::QCursor(QPixmap(bitmapPath + "cursordelete.png")));
-    }
-    else if(ma == SchematicScene::Rotating) {
-        view->setCursor(QCursor::QCursor(QPixmap(bitmapPath + "rotate_ccw.png")));
-    }
-    else if(ma == SchematicScene::MirroringX) {
-        view->setCursor(Qt::SizeVerCursor);
-    }
-    else if(ma == SchematicScene::MirroringY) {
-        view->setCursor(Qt::SizeHorCursor);
-    }
-    else if(ma == SchematicScene::ZoomingAtPoint) {
-        view->setCursor(QCursor::QCursor(QPixmap(bitmapPath + "viewmag+.png")));
-    }
-    else if(ma == SchematicScene::ZoomingOutAtPoint) {
-        view->setCursor(QCursor::QCursor(QPixmap(bitmapPath + "viewmag-.png")));
-    }
-    else if(ma == SchematicScene::PaintingDrawEvent) {
-        view->setCursor(Qt::CrossCursor);
-    }
-    else if(ma == SchematicScene::InsertingItems) {
-        view->setCursor(Qt::ClosedHandCursor);
-    }
-    else {
-        view->setCursor(Qt::ArrowCursor);
-    }
-}
-
 //! \brief Toggles the normal select action on.
 void QucsMainWindow::setNormalAction()
 {
-    slotPerformToggleAction("select", true);
+    SchematicStateHandler *handler = SchematicStateHandler::instance();
+    handler->slotSetNormalAction();
 }
 
 /*!
@@ -1109,6 +996,10 @@ void QucsMainWindow::addView(QucsView *view)
         SchematicView *schematicView = view->toSchematicView();
         SchematicScene *schema = schematicView->schematicScene();
         m_undoGroup->addStack(schema->undoStack());
+        // Register here and not in SchematicView constructor because here we
+        // can assume that SchematicView and its scene are completely constructed.
+        SchematicStateHandler *handler = SchematicStateHandler::instance();
+        handler->registerView(schematicView);
     }
     addChildWidget(view->toWidget());
     tabWidget()->setCurrentWidget(view->toWidget());
@@ -1125,10 +1016,6 @@ void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
 {
     if (prev) {
         prev->disconnect(this);
-    }
-    SchematicView *prevView = qobject_cast<SchematicView*>(prev);
-    if(prevView) {
-        prevView->resetState();
     }
 
     QucsView *view = viewFromWidget(current);
@@ -1459,7 +1346,8 @@ void QucsMainWindow::slotEditPaste()
     if(!v) {
         return;
     }
-    slotPerformToggleAction("insertItem", true);
+#warning FixNextLine
+    //slotPerformToggleAction("insertItem", true);
     v->paste();
 }
 
@@ -1609,7 +1497,8 @@ void QucsMainWindow::slotInsertEquation()
 
 void QucsMainWindow::slotInsertGround()
 {
-    slotSidebarItemClicked("Ground", "Passive");
+    SchematicStateHandler *handler = SchematicStateHandler::instance();
+    handler->slotSidebarItemClicked("Ground", "Passive");
 }
 
 void QucsMainWindow::slotInsertPort()
@@ -1941,22 +1830,6 @@ void QucsMainWindow::updateTitleTabText()
     }
 }
 
-void QucsMainWindow::slotSidebarItemClicked(const QString& item, const QString& category)
-{
-    if(tabWidget()->count() > 0){
-        SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
-        SchematicScene *scene = view->schematicScene();
-        if(view && scene->sidebarItemClicked(item, category)) {
-            if(scene->currentMouseAction() == SchematicScene::InsertingItems) {
-                slotPerformToggleAction("insertItem", true);
-            }
-            else if(scene->currentMouseAction() == SchematicScene::PaintingDrawEvent) {
-                slotPerformToggleAction("paintingDraw", true);
-            }
-        }
-    }
-}
-
 void QucsMainWindow::slotUpdateAllViews()
 {
     for (int i = 0; i < tabWidget()->count(); ++i) {
@@ -1973,12 +1846,4 @@ void QucsMainWindow::slotUpdateAllViews()
 void QucsMainWindow::slotUpdateCursorPositionStatus(const QString& newPos)
 {
     m_cursorLabel->setText(newPos);
-}
-
-void QucsMainWindow::resetCurrentSceneState()
-{
-    SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
-    if(view) {
-        view->resetState();
-    }
 }
