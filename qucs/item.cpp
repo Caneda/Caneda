@@ -310,6 +310,7 @@ void QucsItem::copyDataTo(QucsItem *item) const
     item->prepareGeometryChange();
     item->m_boundingRect = this->m_boundingRect;
     item->m_shape = this->m_shape;
+    item->setPos(pos());
 }
 
 /*!

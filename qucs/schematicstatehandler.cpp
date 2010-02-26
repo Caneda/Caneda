@@ -29,6 +29,10 @@
 
 #include "qucs-tools/global.h"
 
+#include "xmlutilities/xmlutilities.h"
+
+#include <QApplication>
+#include <QClipboard>
 #include <QDebug>
 #include <QPointer>
 #include <QSet>
@@ -38,6 +42,21 @@ struct SchematicStateHandlerPrivate
     SchematicStateHandlerPrivate() {
         mouseAction = SchematicScene::Normal;
         paintingDrawItem = 0;
+    }
+
+    ~SchematicStateHandlerPrivate() {
+        delete paintingDrawItem;
+        clearInsertibles();
+    }
+
+    void clearInsertibles() {
+        foreach (QucsItem* item, insertibles) {
+            if (item->scene()) {
+                item->scene()->removeItem(item);
+            }
+            delete item;
+        }
+        insertibles.clear();
     }
 
     SchematicScene::MouseAction mouseAction;
@@ -77,6 +96,7 @@ void SchematicStateHandler::registerView(SchematicView *view)
         connect(view, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
         connect(view, SIGNAL(focussed(SchematicView*)),
                 SLOT(slotUpdateFocussedView(SchematicView*)));
+        connect(view, SIGNAL(pasteInvoked()), SLOT(slotHandlePaste()));
     }
 
     if (!d->scenes.contains(scene)) {
@@ -90,8 +110,13 @@ void SchematicStateHandler::slotSidebarItemClicked(const QString& item,
         const QString& category)
 {
     if (category == "Paint Tools") {
-        // Clear old item first.
-        delete d->paintingDrawItem;
+        if (d->paintingDrawItem) {
+            // Clear old item first.
+            if (d->paintingDrawItem->scene()) {
+                d->paintingDrawItem->scene()->removeItem(d->paintingDrawItem);
+            }
+            delete d->paintingDrawItem;
+        }
 
         d->paintingDrawItem = Painting::fromName(item);
         if (!d->paintingDrawItem) {
@@ -101,7 +126,7 @@ void SchematicStateHandler::slotSidebarItemClicked(const QString& item,
             slotPerformToggleAction("paintingDraw", true);
         }
     } else {
-        d->insertibles.clear();
+        d->clearInsertibles();
         LibraryLoader *libLoader = LibraryLoader::defaultInstance();
         QucsItem *qItem = libLoader->newComponent(item, 0, category);
         if (!qItem) {
@@ -110,6 +135,61 @@ void SchematicStateHandler::slotSidebarItemClicked(const QString& item,
             d->insertibles << qItem;
             slotPerformToggleAction("insertItem", true);
         }
+    }
+}
+
+void SchematicStateHandler::slotHandlePaste()
+{
+    const QString text = qApp->clipboard()->text();
+
+    Qucs::XmlReader reader(text.toUtf8());
+
+    while(!reader.atEnd()) {
+        reader.readNext();
+
+        if(reader.isStartElement() && reader.name() == "qucs") {
+            break;
+        }
+    }
+
+    if(reader.hasError() || !(reader.isStartElement() && reader.name() == "qucs")) {
+        return;
+    }
+
+    if(!Qucs::checkVersion(reader.attributes().value("version").toString())) {
+        return;
+    }
+
+    QList<QucsItem*> _items;
+    while(!reader.atEnd()) {
+        reader.readNext();
+
+        if(reader.isEndElement()) {
+            break;
+        }
+
+        if(reader.isStartElement()) {
+            QucsItem *readItem = 0;
+            if(reader.name() == "component") {
+                readItem = Component::loadComponentData(&reader, 0);
+            }
+            else if(reader.name() == "wire") {
+                readItem = Wire::loadWireData(&reader, 0);
+            }
+            else if(reader.name() == "painting")  {
+                readItem = Painting::loadPainting(&reader, 0);
+            }
+
+            if(readItem) {
+                _items << readItem;
+            }
+        }
+    }
+
+    if (_items.isEmpty() == false) {
+        d->clearInsertibles();
+        d->insertibles = _items;
+        slotPerformToggleAction("insertItem", true);
     }
 }
 

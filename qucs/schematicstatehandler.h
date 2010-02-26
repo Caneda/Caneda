@@ -38,6 +38,7 @@ public:
 
 public Q_SLOTS:
     void slotSidebarItemClicked(const QString& item, const QString& category);
+    void slotHandlePaste();
     void slotOnObjectDestroyed(QObject *sender);
     void slotUpdateFocussedView(SchematicView *view);
     void slotPerformToggleAction(const QString& sender, bool on);

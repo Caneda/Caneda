@@ -125,7 +125,6 @@ public:
     // these aren't toggle actions.
     void cutItems(QList<QucsItem*> &items, const Qucs::UndoOption = Qucs::PushUndoCmd);
     void copyItems(QList<QucsItem*> &items) const;
-    void paste();
 
     QString fileName() const { return this->m_fileName; }
     void setFileName(const QString& fn);

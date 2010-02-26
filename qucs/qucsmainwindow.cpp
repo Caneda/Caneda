@@ -1346,8 +1346,6 @@ void QucsMainWindow::slotEditPaste()
     if(!v) {
         return;
     }
-#warning FixNextLine
-    //slotPerformToggleAction("insertItem", true);
     v->paste();
 }
 

@@ -107,7 +107,7 @@ public:
 
     int checkAndConnect(Qucs::UndoOption opt);
 
-    QucsItem* copy(SchematicScene *scene = 0) const;
+    Wire* copy(SchematicScene *scene = 0) const;
     void copyDataTo(Wire *wire) const;
 
     bool isComponent() const { return false; }

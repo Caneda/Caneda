@@ -75,6 +75,7 @@ signals:
     void titleToBeUpdated();
     void cursorPositionChanged(const QString& newPos);
     void focussed(SchematicView *view);
+    void pasteInvoked();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);

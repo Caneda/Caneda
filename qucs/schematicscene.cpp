@@ -521,61 +521,6 @@ void SchematicScene::copyItems(QList<QucsItem*> &_items) const
     clipboard->setText(clipText);
 }
 
-/*!
- * \brief Paste item
- * \todo Use own mime type
- */
-void SchematicScene::paste()
-{
-    const QString text = qApp->clipboard()->text();
-
-    Qucs::XmlReader reader(text.toUtf8());
-
-    while(!reader.atEnd()) {
-        reader.readNext();
-
-        if(reader.isStartElement() && reader.name() == "qucs") {
-            break;
-        }
-    }
-
-    if(reader.hasError() || !(reader.isStartElement() && reader.name() == "qucs")) {
-        return;
-    }
-
-    if(!Qucs::checkVersion(reader.attributes().value("version").toString())) {
-        return;
-    }
-
-    QList<QucsItem*> _items;
-    while(!reader.atEnd()) {
-        reader.readNext();
-
-        if(reader.isEndElement()) {
-            break;
-        }
-
-        if(reader.isStartElement()) {
-            QucsItem *readItem = 0;
-            if(reader.name() == "component") {
-                readItem = Component::loadComponentData(&reader, this);
-            }
-            else if(reader.name() == "wire") {
-                readItem = Wire::loadWireData(&reader, this);
-            }
-            else if(reader.name() == "painting")  {
-                readItem = Painting::loadPainting(&reader, this);
-            }
-
-            if(readItem) {
-                _items << readItem;
-            }
-        }
-    }
-
-    this->beginInsertingItems(_items);
-}
-
 void SchematicScene::beginPaintingDraw(Painting *item)
 {
     Q_ASSERT(m_currentMouseAction == SchematicScene::PaintingDrawEvent);

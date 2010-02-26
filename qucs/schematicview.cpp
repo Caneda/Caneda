@@ -198,7 +198,7 @@ void SchematicView::cut()
 
 void SchematicView::paste()
 {
-    schematicScene()->paste();
+    emit pasteInvoked();
 }
 
 void SchematicView::saveScrollState()

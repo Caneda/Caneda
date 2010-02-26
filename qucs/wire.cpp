@@ -646,7 +646,7 @@ int Wire::checkAndConnect(Qucs::UndoOption opt)
     return num_of_connections;
 }
 
-QucsItem* Wire::copy(SchematicScene *scene) const
+Wire* Wire::copy(SchematicScene *scene) const
 {
     Wire *wire = new Wire(QPointF(1,1), QPointF(5,5), false, scene);
     Wire::copyDataTo(wire);
