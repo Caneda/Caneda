@@ -89,7 +89,7 @@ SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
  */
 void SidebarModel::plugLibrary(const QString& libraryName, const QString& category)
 {
-    const Library *libItem = LibraryLoader::defaultInstance()->library(libraryName);
+    const Library *libItem = LibraryLoader::instance()->library(libraryName);
     if(!libItem) {
         return;
     }
@@ -119,7 +119,7 @@ void SidebarModel::plugLibrary(const QString& libraryName, const QString& catego
 
 void SidebarModel::unPlugLibrary(const QString& libraryName, const QString& category)
 {
-    const Library *libItem = LibraryLoader::defaultInstance()->library(libraryName);
+    const Library *libItem = LibraryLoader::instance()->library(libraryName);
     if(!libItem) {
         return;
     }

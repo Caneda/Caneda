@@ -20,12 +20,16 @@
 #include "singletonmanager.h"
 
 #include "actionmanager.h"
+#include "library.h"
 #include "schematicstatehandler.h"
+#include "svgitem.h"
 
 SingletonManager::SingletonManager(QObject *parent)
     : QObject(parent),
     m_actionManager(0),
-    m_schematicStateHandler(0)
+    m_libraryLoader(0),
+    m_schematicStateHandler(0),
+    m_svgPainter(0)
 {
 }
 
@@ -41,12 +45,28 @@ ActionManager* SingletonManager::actionManager()
     return m_actionManager;
 }
 
+LibraryLoader* SingletonManager::libraryLoader()
+{
+    if (!m_libraryLoader) {
+        m_libraryLoader = new LibraryLoader(this);
+    }
+    return m_libraryLoader;
+}
+
 SchematicStateHandler* SingletonManager::schematicStateHandler()
 {
     if (!m_schematicStateHandler) {
         m_schematicStateHandler = new SchematicStateHandler(this);
     }
     return m_schematicStateHandler;
+}
+
+SvgPainter* SingletonManager::svgPainter()
+{
+    if (!m_svgPainter) {
+        m_svgPainter = new SvgPainter(this);
+    }
+    return m_svgPainter;
 }
 
 SingletonManager* SingletonManager::instance()

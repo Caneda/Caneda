@@ -1754,7 +1754,7 @@ void QucsMainWindow::loadSettings()
                    << "Expect strange schematic symbols";
     }
 
-    LibraryLoader *library = LibraryLoader::defaultInstance();
+    LibraryLoader *library = LibraryLoader::instance();
 
 
     if(library->loadtree(libpath)) {

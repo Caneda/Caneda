@@ -26,6 +26,7 @@
 #include <QSvgRenderer>
 
 // Forward declarations
+class SingletonManager;
 class SvgPainter;
 
 /*!
@@ -62,7 +63,6 @@ struct SvgPainter : public QObject
 {
     Q_OBJECT;
 public:
-    SvgPainter();
     ~SvgPainter();
 
     void registerSvg(const QString& svg_id, const QByteArray& content);
@@ -87,9 +87,11 @@ public:
     bool isCachingEnabled() const { return m_cachingEnabled; }
     void setCachingEnabled(bool caching);
 
-    static SvgPainter* defaultInstance();
+    static SvgPainter* instance();
 
 private:
+    friend class SingletonManager;
+    SvgPainter(QObject *parent = 0);
     QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
     bool m_cachingEnabled; //!< State to hold whether caching is enabled or not.
 };

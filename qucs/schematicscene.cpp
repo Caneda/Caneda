@@ -2783,7 +2783,7 @@ QucsItem* SchematicScene::itemForName(const QString& name, const QString& catego
         return Painting::fromName(name);
     }
 
-    return LibraryLoader::defaultInstance()->newComponent(name, 0, category);
+    return LibraryLoader::instance()->newComponent(name, 0, category);
 }
 
 /*!

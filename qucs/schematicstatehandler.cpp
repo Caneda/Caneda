@@ -146,7 +146,7 @@ void SchematicStateHandler::slotSidebarItemClicked(const QString& item,
         }
     } else {
         d->clearInsertibles();
-        LibraryLoader *libLoader = LibraryLoader::defaultInstance();
+        LibraryLoader *libLoader = LibraryLoader::instance();
         QucsItem *qItem = libLoader->newComponent(item, 0, category);
         if (!qItem) {
             slotSetNormalAction();

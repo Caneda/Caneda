@@ -23,7 +23,9 @@
 #include <QObject>
 
 class ActionManager;
+class LibraryLoader;
 class SchematicStateHandler;
+class SvgPainter;
 
 class SingletonManager : public QObject
 {
@@ -31,14 +33,18 @@ public:
     ~SingletonManager();
 
     ActionManager* actionManager();
+    LibraryLoader* libraryLoader();
     SchematicStateHandler* schematicStateHandler();
+    SvgPainter* svgPainter();
 
     static SingletonManager* instance();
 
 private:
     SingletonManager(QObject *parent = 0);
     ActionManager *m_actionManager;
+    LibraryLoader *m_libraryLoader;
     SchematicStateHandler *m_schematicStateHandler;
+    SvgPainter *m_svgPainter;
 };
 
 #endif // SINGLETONMANAGER_H

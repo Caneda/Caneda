@@ -18,7 +18,9 @@
  ***************************************************************************/
 
 #include "library.h"
+
 #include "schematicscene.h"
+#include "singletonmanager.h"
 
 #include "qucs-tools/global.h"
 
@@ -72,7 +74,7 @@ Library::Library(QString libraryPath, SvgPainter *painter) :
 Library::~Library()
 {
     //frees the component data ptrs automatically
-    if(m_svgPainter != SvgPainter::defaultInstance()) {
+    if(m_svgPainter != SvgPainter::instance()) {
         qWarning() << "Library::~Library() leaving behind an instance undeleted";
     }
 }
@@ -310,7 +312,7 @@ bool Library::registerComponentData(Qucs::XmlReader *reader, QString componentPa
 //*************************************************************
 
 //! Constructor
-LibraryLoader::LibraryLoader()
+LibraryLoader::LibraryLoader(QObject *parent) : QObject(parent)
 {
 }
 
@@ -320,10 +322,9 @@ LibraryLoader::~LibraryLoader()
 }
 
 //! \brief Returns default instance of library.
-LibraryLoader* LibraryLoader::defaultInstance()
+LibraryLoader* LibraryLoader::instance()
 {
-    static LibraryLoader *library = new LibraryLoader();
-    return library;
+    return SingletonManager::instance()->libraryLoader();
 }
 
 /*!
@@ -395,7 +396,7 @@ bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_
 bool LibraryLoader::newLibrary(const QString& libPath, SvgPainter *svgPainter_)
 {
     if(svgPainter_ == 0) {
-        svgPainter_ = SvgPainter::defaultInstance();
+        svgPainter_ = SvgPainter::instance();
     }
 
     /* goto base dir */
@@ -417,7 +418,7 @@ bool LibraryLoader::newLibrary(const QString& libPath, SvgPainter *svgPainter_)
 bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
 {
     if(svgPainter_ == 0) {
-        svgPainter_ = SvgPainter::defaultInstance();
+        svgPainter_ = SvgPainter::instance();
     }
 
     /* open file */

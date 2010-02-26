@@ -23,6 +23,9 @@
 #include "component.h"
 
 #include <QHash>
+#include <QObject>
+
+class SingletonManager;
 
 typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
 
@@ -90,12 +93,12 @@ typedef QHash<QString, Library*> LibraryHash;
  * \brief This class acts as container for \a Library s
  *
  * This class is singleton class and its only static instance returned by
- * \a defaultInstance is to be used.
+ * \a instance is to be used.
  */
-class LibraryLoader
+class LibraryLoader : public QObject
 {
 public:
-    static LibraryLoader* defaultInstance();
+    static LibraryLoader* instance();
     ~LibraryLoader();
 
     Component* newComponent(QString componentName,
@@ -113,7 +116,8 @@ public:
     Library* library(const QString& libName) const;
 
 private:
-    LibraryLoader();
+    friend class SingletonManager;
+    LibraryLoader(QObject *parent = 0);
     LibraryHash m_libraryHash;
 };
 

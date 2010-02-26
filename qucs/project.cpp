@@ -117,7 +117,7 @@ void Project::slotNewProject()
             fileName = fileName + ".xpro";
         }
 
-        LibraryLoader *library = LibraryLoader::defaultInstance();
+        LibraryLoader *library = LibraryLoader::instance();
 
         if(library->newLibrary(fileName)) {
             slotCloseProject();
@@ -142,7 +142,7 @@ void Project::slotOpenProject(QString fileName)
     }
 
     if(!fileName.isEmpty()) {
-        LibraryLoader *library = LibraryLoader::defaultInstance();
+        LibraryLoader *library = LibraryLoader::instance();
 
         if(!library->library(fileName)) {
             if(library->load(fileName)) {
@@ -269,7 +269,7 @@ void Project::slotCloseProject()
 {
     if(projectLibrary) {
         m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-        LibraryLoader *library = LibraryLoader::defaultInstance();
+        LibraryLoader *library = LibraryLoader::instance();
         library->unload(projectLibrary->libraryFileName());
         projectLibrary = 0;
     }

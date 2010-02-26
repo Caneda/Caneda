@@ -282,7 +282,7 @@ Component* Component::loadComponentData(Qucs::XmlReader *reader, SchematicScene 
 
     Q_ASSERT(!compName.isEmpty());
 
-    retVal = LibraryLoader::defaultInstance()->newComponent(compName, scene, libName);
+    retVal = LibraryLoader::instance()->newComponent(compName, scene, libName);
     if(retVal) {
         retVal->loadData(reader);
     }

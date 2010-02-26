@@ -20,6 +20,7 @@
 #include "svgitem.h"
 
 #include "schematicscene.h"
+#include "singletonmanager.h"
 
 #include <QDebug>
 #include <QFile>
@@ -123,7 +124,7 @@ QRectF SvgItemData::boundingRect() const
 */
 
 //! \brief Constructs svg painter object.
-SvgPainter::SvgPainter()
+SvgPainter::SvgPainter(QObject *parent) : QObject(parent)
 {
     m_cachingEnabled = true;
 }
@@ -255,12 +256,10 @@ void SvgPainter::setCachingEnabled(bool caching)
 
 /*!
  * \brief Returns the default svg painter object, shared by default schematics
- * and owned by an auto_ptr.
  */
-SvgPainter* SvgPainter::defaultInstance()
+SvgPainter* SvgPainter::instance()
 {
-    static std::auto_ptr<SvgPainter> singleton(new SvgPainter());
-    return singleton.get();
+    return SingletonManager::instance()->svgPainter();
 }
 
 
