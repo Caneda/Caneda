@@ -412,7 +412,7 @@ void StyleDialog::applySettings()
         Arrow *arrow = qucsitem_cast<Arrow*>(painting);
         arrow->setHeadStyle(static_cast<Arrow::HeadStyle>(previewWidget->headStyle()));
         arrow->setHeadHeight(previewWidget->headHeight());
-        arrow->setHeadWidth(previewWidget->headHeight());
+        arrow->setHeadWidth(previewWidget->headWidth());
     }
     else if(painting->type() == Painting::EllipseArcType) {
         EllipseArc *arc = static_cast<EllipseArc*>(painting);

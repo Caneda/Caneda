@@ -46,6 +46,7 @@ Arrow::Arrow(const QLineF &line, HeadStyle style, qreal headWidth, qreal headHei
     m_headHeight(headHeight)
 {
     setLine(line);
+    setBrush(Qt::black);
     setResizeHandles(Qucs::TopLeftHandle | Qucs::BottomRightHandle);
 }
 

@@ -42,8 +42,8 @@ public:
         FilledArrow
     };
 
-    Arrow(const QLineF &line = QLineF(), HeadStyle style = TwoLineArrow,
-            qreal headWidth = 12., qreal headHeight = 20,
+    Arrow(const QLineF &line = QLineF(), HeadStyle style = FilledArrow,
+            qreal headWidth = 12, qreal headHeight = 20,
             SchematicScene *scene = 0);
     ~Arrow();
 
