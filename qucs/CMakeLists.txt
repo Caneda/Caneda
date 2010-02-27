@@ -19,7 +19,7 @@ SET(QUCS_SRCS wire.cpp componentssidebar.cpp item.cpp
 )
 
 SET(QUCS_MOC_HDRS schematicscene.h schematicview.h mainwindowbase.h
-  qucsmainwindow.h componentssidebar.h svgitem.h
+  qucsmainwindow.h componentssidebar.h svgitem.h library.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
   propertydialog.h folderbrowser.h project.h
   actionmanager.h singletonmanager.h schematicstatehandler.h

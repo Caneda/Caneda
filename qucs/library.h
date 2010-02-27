@@ -97,6 +97,7 @@ typedef QHash<QString, Library*> LibraryHash;
  */
 class LibraryLoader : public QObject
 {
+    Q_OBJECT
 public:
     static LibraryLoader* instance();
     ~LibraryLoader();
@@ -114,6 +115,9 @@ public:
     const LibraryHash& libraries() const { return m_libraryHash; }
 
     Library* library(const QString& libName) const;
+
+Q_SIGNALS:
+    void passiveLibraryLoaded();
 
 private:
     friend class SingletonManager;
