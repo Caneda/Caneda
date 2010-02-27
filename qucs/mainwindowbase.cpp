@@ -136,5 +136,7 @@ void MainWindowBase::emitWidgetChanged(int index)
     emit currentWidgetChanged(current, prev);
     m_lastCurrentWidget = current;
 
-    current->setFocus();
+    if (current) {
+        current->setFocus();
+    }
 }
