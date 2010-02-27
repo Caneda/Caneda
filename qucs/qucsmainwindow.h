@@ -34,6 +34,7 @@ class Action;
 class ComponentsSidebar;
 class FolderBrowser;
 class Project;
+class QTermWidget;
 class QucsItem;
 class QucsView;
 class QLabel;
@@ -171,6 +172,8 @@ private:
     ComponentsSidebar *m_componentsSidebar;
     Project *m_project;
     FolderBrowser *m_folderBrowser;
+    QTermWidget *console;
+    QDockWidget *consoleDockWidget;
     QString titleText;
 };
 

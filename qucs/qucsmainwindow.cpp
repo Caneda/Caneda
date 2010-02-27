@@ -89,6 +89,7 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
         tr("VHDL Sources")+" (*.vhdl *.vhd);;"+
         tr("Any File")+" (*)";
 
+    console = 0;
     m_undoGroup = new QUndoGroup();
 
     // Be vary of the order as all the pointers are uninitialized at this moment.
@@ -1563,14 +1564,24 @@ void QucsMainWindow::slotImportData()
 
 void QucsMainWindow::slotShowConsole()
 {
-    QTermWidget *console = new QTermWidget();
-    console->setScrollBarPosition(QTermWidget::ScrollBarRight);
+    if(!console) {
+        console = new QTermWidget();
+        console->setScrollBarPosition(QTermWidget::ScrollBarRight);
+        console->setMinimumHeight(40);
 
-    sidebarDockWidget = new QDockWidget("Console",this);
-    sidebarDockWidget->setWidget(console);
-    addDockWidget(Qt::BottomDockWidgetArea, sidebarDockWidget);
+        consoleDockWidget = new QDockWidget("Console",this);
+        consoleDockWidget->setWidget(console);
+        consoleDockWidget->setObjectName("consoleWidget");
+        addDockWidget(Qt::BottomDockWidgetArea, consoleDockWidget);
 
-    connect(console, SIGNAL(finished()), sidebarDockWidget, SLOT(close()));
+        connect(console, SIGNAL(finished()), consoleDockWidget, SLOT(close()));
+    }
+    else if(consoleDockWidget->isHidden()) {
+        consoleDockWidget->setVisible(true);
+    }
+    else if(consoleDockWidget->isVisible()) {
+        consoleDockWidget->setVisible(false);
+    }
 }
 
 void QucsMainWindow::slotSimulate()
