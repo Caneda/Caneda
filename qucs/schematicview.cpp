@@ -222,8 +222,8 @@ void SchematicView::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint newCursorPos = mapToScene(event->pos()).toPoint();
     QString str = QString("%1 : %2")
-        .arg(newCursorPos.x(), 5)
-        .arg(newCursorPos.y(), 5);
+        .arg(newCursorPos.x())
+        .arg(newCursorPos.y());
     emit cursorPositionChanged(str);
     QGraphicsView::mouseMoveEvent(event);
 }

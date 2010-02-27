@@ -971,7 +971,7 @@ void QucsMainWindow::initStatusBar()
 {
     QStatusBar *statusBar = this->statusBar();
     // Initially its empty space.
-    m_cursorLabel = new QLabel(QString("     "), statusBar);
+    m_cursorLabel = new QLabel(QString(""), statusBar);
     statusBar->addPermanentWidget(m_cursorLabel);
     statusBar->setVisible(action("viewStatusBar")->isChecked());
 }
