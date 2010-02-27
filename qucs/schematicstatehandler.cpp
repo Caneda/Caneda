@@ -261,7 +261,7 @@ void SchematicStateHandler::slotInsertToolbarComponent(const QString& sender,
     }
 
     d->clearInsertibles();
-    d->insertibles << item;
+    d->insertibles << item->copy();
     slotPerformToggleAction("insertItem", true);
 }
 
