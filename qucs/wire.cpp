@@ -71,24 +71,24 @@ void Wire::tryConnectPort(Port * port)
 //! \brief Try to connect ports
 void Wire::tryConnectPorts()
 {
-    this->tryConnectPort(this->port1());
-    this->tryConnectPort(this->port2());
+    tryConnectPort(port1());
+    tryConnectPort(port2());
 }
 
 
 /*!
  * \brief Initialize wire line used on wire creation
- * \note assert this->m_wLines.isEmpty()
+ * \note assert m_wLines.isEmpty()
  * \todo BR->GPK document inter
  */
 void Wire::initWireline()
 {
-    Q_ASSERT(this->m_wLines.isEmpty());
+    Q_ASSERT(m_wLines.isEmpty());
 
-    QPointF inter = QPointF(this->port1()->pos().x(), this->port2()->pos().y());
+    QPointF inter = QPointF(port1()->pos().x(), port2()->pos().y());
     /* create two wire line */
-    this->m_wLines << WireLine(port1()->pos(), inter);
-    this->m_wLines << WireLine(inter, port2()->pos());
+    m_wLines << WireLine(port1()->pos(), inter);
+    m_wLines << WireLine(inter, port2()->pos());
 
     /* update wire */
     updateGeometry();
@@ -105,31 +105,31 @@ Wire::Wire(const QPointF& startPos, const QPointF& endPos, bool doConnect,
         SchematicScene *scene) : QucsItem(0, scene), m_grabbedIndex(-1)
 {
     /* set position */
-    this->setPos((startPos + endPos)/2);
+    setPos((startPos + endPos)/2);
 
     /* set flags */
-    this->setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
 #if QT_VERSION >= 0x040600
     setFlag(ItemSendsGeometryChanges, true);
     setFlag(ItemSendsScenePositionChanges, true);
 #endif
 
     /* create port */
-    QPointF localStartPos = this->mapFromScene(startPos);
-    QPointF localEndPos = this->mapFromScene(endPos);
+    QPointF localStartPos = mapFromScene(startPos);
+    QPointF localEndPos = mapFromScene(endPos);
 
-    this->m_ports << new Port(this, localStartPos);
-    this->m_ports << new Port(this, localEndPos);
+    m_ports << new Port(this, localStartPos);
+    m_ports << new Port(this, localEndPos);
 
-    this->initWireline();
+    initWireline();
 
     /* show in scene */
     if(scene) {
-        this->removeNullLines();
+        removeNullLines();
     }
 
     if(doConnect) {
-        this->tryConnectPorts();
+        tryConnectPorts();
     }
 }
 
@@ -146,10 +146,10 @@ QucsItem(0, scene), m_grabbedIndex(-1)
     QPointF endPos = endPort->scenePos();
 
     /* set position */
-    this->setPos((startPos + endPos)/2);
+    setPos((startPos + endPos)/2);
 
     /* set flags */
-    this->setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
 #if QT_VERSION >= 0x040600
     setFlag(ItemSendsGeometryChanges, true);
     setFlag(ItemSendsScenePositionChanges, true);
@@ -158,20 +158,20 @@ QucsItem(0, scene), m_grabbedIndex(-1)
     /* create port
        BR->GPK: Why not add startport and endport
        */
-    QPointF localStartPos = this->mapFromScene(startPos);
-    QPointF localEndPos = this->mapFromScene(endPos);
+    QPointF localStartPos = mapFromScene(startPos);
+    QPointF localEndPos = mapFromScene(endPos);
 
-    this->m_ports << new Port(this, localStartPos);
-    this->m_ports << new Port(this, localEndPos);
+    m_ports << new Port(this, localStartPos);
+    m_ports << new Port(this, localEndPos);
 
-    this->initWireline();
+    initWireline();
 
     if(scene) {
-        this->removeNullLines();
+        removeNullLines();
     }
 
-    this->port1()->connectTo(startPort);
-    this->port2()->connectTo(endPort);
+    port1()->connectTo(startPort);
+    port2()->connectTo(endPort);
 }
 
 //! Destructor.
@@ -197,11 +197,11 @@ void Wire::movePort(QList<Port*> *connections, const QPointF& scenePos)
 //! \brief Moves port1 to \a newLocalPos and adjust's the wire's lines.
 void Wire::movePort1(const QPointF& newLocalPos)
 {
-    this->port1()->setPos(newLocalPos);
+    port1()->setPos(newLocalPos);
 
     // This is true when wire is created
     if(m_wLines.isEmpty()) {
-        return this->initWireline();
+        return initWireline();
     }
 
     QPointF referencePos = port1()->pos();
@@ -257,7 +257,7 @@ void Wire::movePort2(const QPointF& newLocalPos)
     port2()->setPos(newLocalPos);
 
     if(m_wLines.isEmpty()) {
-        return this->initWireline();
+        return initWireline();
     }
 
     QPointF referencePos = port2()->pos();
@@ -460,9 +460,9 @@ void Wire::removeNullLines()
     QList<WireLine>::iterator it = m_wLines.begin(), it1;
 
     /* erase null line */
-    while(it != this->m_wLines.end()) {
+    while(it != m_wLines.end()) {
         if(it->isNull()) {
-            it = this->m_wLines.erase(it);
+            it = m_wLines.erase(it);
         }
         else {
             ++it;
@@ -470,26 +470,26 @@ void Wire::removeNullLines()
     }
 
     /* do not do further optimization ifonly one segment */
-    if(this->m_wLines.size() <= 1) {
+    if(m_wLines.size() <= 1) {
         return;
     }
 
     /* optimize multiple straight line */
-    it = this->m_wLines.begin() + 1;
-    while(it != this->m_wLines.end()) {
+    it = m_wLines.begin() + 1;
+    while(it != m_wLines.end()) {
         it1 = it - 1;
 
         /* horizontal straight line */
         if(it->isHorizontal() && it1->isHorizontal()) {
             Q_ASSERT(it1->p2() == it->p1());
             it1->setP2(it->p2());
-            it = this->m_wLines.erase(it);
+            it = m_wLines.erase(it);
         }
         /* horizontal case */
         else if(it->isVertical() && it1->isVertical()) {
             Q_ASSERT(it1->p2() == it->p1());
             it1->setP2(it->p2());
-            it = this->m_wLines.erase(it);
+            it = m_wLines.erase(it);
         }
         /* other */
         else {

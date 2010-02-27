@@ -55,11 +55,11 @@ public:
     ~Wire();
 
     //! Return's the wire's ports list.
-    QList<Port*> ports() const { return this->m_ports; }
+    QList<Port*> ports() const { return m_ports; }
     //! Return's the list's first member.
-    Port* port1() const { return this->m_ports[0]; }
+    Port* port1() const { return m_ports[0]; }
     //! Returns the list's second member.
-    Port* port2() const { return this->m_ports[1]; }
+    Port* port2() const { return m_ports[1]; }
 
     void movePort(QList<Port*> *connections, const QPointF& scenePos);
     void movePort1(const QPointF& newLocalPos);
@@ -76,10 +76,10 @@ public:
     void endGrabMode();
 
     //! Returns the internal representation of wires as line's list.
-    WireLines wireLines() const { return this->m_wLines; }
+    WireLines wireLines() const { return m_wLines; }
 
     //! Returns a reference of internal representaion of wire lines.
-    WireLines& wireLinesRef() { return this->m_wLines; }
+    WireLines& wireLinesRef() { return m_wLines; }
 
     void setWireLines(const WireLines& wirelines);
 
@@ -117,7 +117,7 @@ public:
 
     //! check if port 1 and 2 overlap
     bool overlap() const {
-        return this->port1()->scenePos() == this->port2()->scenePos();
+        return port1()->scenePos() == port2()->scenePos();
     }
 
     void tryConnectPorts();

@@ -174,7 +174,7 @@ QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) :
     QGraphicsItem(parent),
     m_boundingRect(-2., -2., 4., 4.) /* Non empty default bound rect.*/
 {
-    this->m_shape.addRect(m_boundingRect);
+    m_shape.addRect(m_boundingRect);
 #if QT_VERSION >= 0x040600
     setFlag(ItemSendsGeometryChanges, true);
     setFlag(ItemSendsScenePositionChanges, true);
@@ -209,21 +209,21 @@ void QucsItem::setShapeAndBoundRect(const QPainterPath& path,
         const QRectF& rect, qreal pw)
 {
     // Inform scene about change in geometry.
-    this->prepareGeometryChange();
-    this->m_boundingRect = rect;
+    prepareGeometryChange();
+    m_boundingRect = rect;
     // Adjust the bounding rect by half pen width as required by graphicsview.
-    this->m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
-    this->m_shape = path;
-    if(this->m_shape.isEmpty()) {
+    m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
+    m_shape = path;
+    if(m_shape.isEmpty()) {
         //if path is empry just add the bounding rect itself to the path.
-        this->m_shape.addRect(this->m_boundingRect);
+        m_shape.addRect(m_boundingRect);
     }
 }
 
 //! \brief returns a pointer to the schematic scene to which the item belongs.
 SchematicScene* QucsItem::schematicScene() const
 {
-    return qobject_cast<SchematicScene*>(this->scene());
+    return qobject_cast<SchematicScene*>(scene());
 }
 
 /*!
@@ -237,7 +237,7 @@ QString QucsItem::saveDataText() const
 {
     QString retVal;
     Qucs::XmlWriter writer(&retVal);
-    this->saveData(&writer);
+    saveData(&writer);
     return retVal;
 }
 
@@ -260,7 +260,7 @@ void QucsItem::loadDataFromText(const QString &text)
         }
 
         if(reader.isStartElement()) {
-            this->loadData(&reader);
+            loadData(&reader);
         }
     }
 }
@@ -271,21 +271,21 @@ void QucsItem::loadDataFromText(const QString &text)
  */
 void QucsItem::mirrorAlong(Qt::Axis axis)
 {
-    this->update();
+    update();
 
     Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
     if(axis == Qt::XAxis) {
-        this->scale(1.0, -1.0);
+        scale(1.0, -1.0);
     }
     else /*axis = Qt::YAxis*/ {
-        this->scale(-1.0, 1.0);
+        scale(-1.0, 1.0);
     }
 }
 
 //! \brief Rotate item by -90 degrees
 void QucsItem::rotate90(Qucs::AngleDirection dir)
 {
-    this->rotate(dir == Qucs::AntiClockwise ? -90.0 : 90.0);
+    rotate(dir == Qucs::AntiClockwise ? -90.0 : 90.0);
 }
 
 /*!
@@ -306,10 +306,10 @@ QucsItem* QucsItem::copy(SchematicScene *) const
  */
 void QucsItem::copyDataTo(QucsItem *item) const
 {
-    item->setTransform(this->transform());
+    item->setTransform(transform());
     item->prepareGeometryChange();
-    item->m_boundingRect = this->m_boundingRect;
-    item->m_shape = this->m_shape;
+    item->m_boundingRect = m_boundingRect;
+    item->m_shape = m_shape;
     item->setPos(pos());
 }
 

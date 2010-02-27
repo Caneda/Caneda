@@ -91,9 +91,9 @@ void Rectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 //! \copydoc Painting::copy()
 Rectangle* Rectangle::copy(SchematicScene *scene) const
 {
-   Rectangle *rect = new Rectangle(this->rect(), scene);
-   Painting::copyDataTo(rect);
-   return rect;
+   Rectangle *rectItem = new Rectangle(rect(), scene);
+   Painting::copyDataTo(rectItem);
+   return rectItem;
 }
 
 //! \brief Saves rectangle data to xml using \a writer.

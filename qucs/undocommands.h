@@ -211,7 +211,7 @@ public:
 
 protected:
     QList<QucsItem*> m_items;
-    Qucs::AngleDirection dir;
+    Qucs::AngleDirection m_angleDirection;
 };
 
 class MirrorItemsCmd : public QUndoCommand

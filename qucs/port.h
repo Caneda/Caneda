@@ -71,9 +71,9 @@ public:
     QGraphicsItem* item() const;
 
     //! return weather item is a wire
-    bool isWire() const { return this->m_item->isWire(); }
+    bool isWire() const { return m_item->isWire(); }
     //! return weather item is a component
-    bool isComponent() const { return this->m_item->isComponent(); }
+    bool isComponent() const { return m_item->isComponent(); }
 
 private:
     //! owner of the port

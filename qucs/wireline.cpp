@@ -26,9 +26,9 @@ qreal WireLine::m_adjust = 3.0;
 QRectF WireLine::boundingRect() const
 {
    QRectF rect;
-   rect.setTopLeft(this->p1());
-   rect.setBottomRight(this->p2());
+   rect.setTopLeft(p1());
+   rect.setBottomRight(p2());
    rect = rect.normalized();
-   rect.adjust(-this->m_adjust, -this->m_adjust, +this->m_adjust, +this->m_adjust);
+   rect.adjust(-m_adjust, -m_adjust, +m_adjust, +m_adjust);
    return rect;
 }

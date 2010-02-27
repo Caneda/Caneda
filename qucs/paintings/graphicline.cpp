@@ -85,9 +85,9 @@ void GraphicLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 //! \brief Returns copy of this line item.
 GraphicLine* GraphicLine::copy(SchematicScene *scene) const
 {
-   GraphicLine *line = new GraphicLine(this->line(), scene);
-   Painting::copyDataTo(line);
-   return line;
+   GraphicLine *lineItem = new GraphicLine(line(), scene);
+   Painting::copyDataTo(lineItem);
+   return lineItem;
 }
 
 //! \brief Saves data as xml.

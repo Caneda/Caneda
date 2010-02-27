@@ -211,8 +211,8 @@ bool Library::saveLibrary()
     writer->writeEndElement(); //</description>
 
     //Save all components in library
-    QList<ComponentDataPtr> components = this->components().values();
-    foreach(const ComponentDataPtr data, components) {
+    QList<ComponentDataPtr> componentsList = components().values();
+    foreach(const ComponentDataPtr data, componentsList) {
         writer->writeEmptyElement("component");
         writer->writeAttribute("href", data->filename);
     }
@@ -389,7 +389,7 @@ Component* LibraryLoader::newComponent(QString componentName, SchematicScene *sc
  */
 bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_)
 {
-    bool status = this->load( libpathtree+"/components/basic/passive.xpro",svgPainter_);
+    bool status = load( libpathtree+"/components/basic/passive.xpro",svgPainter_);
     if (status) {
         emit passiveLibraryLoaded();
     }

@@ -49,7 +49,7 @@ bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
 //! \brief Construct portowner with wire as owner.
 PortOwner::PortOwner(QucsItem * item) : m_item(item)
 {
-    Q_ASSERT(this->isWire() || this->isComponent());
+    Q_ASSERT(isWire() || isComponent());
 }
 
 /*!
@@ -67,8 +67,8 @@ QGraphicsItem* PortOwner::item() const
 //! \brief Return the wire if stored, or null otherwise.
 Wire* PortOwner::wire() const
 {
-    if(this->m_item->type() == QucsItem::WireType) {
-        return static_cast<Wire*>(this->m_item);
+    if(m_item->type() == QucsItem::WireType) {
+        return static_cast<Wire*>(m_item);
     }
     else {
         return 0;
@@ -78,8 +78,8 @@ Wire* PortOwner::wire() const
 //! \brief Return the wire if stored, or null otherwise.
 Component* PortOwner::component() const
 {
-    if(this->m_item->type() == QucsItem::ComponentType) {
-        return static_cast<Component*>(this->m_item);
+    if(m_item->type() == QucsItem::ComponentType) {
+        return static_cast<Component*>(m_item);
     }
     else {
         return NULL;
@@ -493,14 +493,14 @@ void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option)
     /* save pen */
     QPen savedPen = painter->pen();
 
-    if(this->m_connections == NULL) {
+    if(m_connections == NULL) {
         painter->setPen(unconnectedPen);
         painter->setBrush(unconnectedBrush);
-        painter->drawEllipse(portEllipse.translated(this->pos()));
-    } else if(this->m_connections->size() > 2) {
+        painter->drawEllipse(portEllipse.translated(pos()));
+    } else if(m_connections->size() > 2) {
         painter->setPen(connectedPen);
         painter->setBrush(connectedBrush);
-        painter->drawEllipse(portEllipseConnected.translated(this->pos()));
+        painter->drawEllipse(portEllipseConnected.translated(pos()));
     }
 
 
@@ -510,9 +510,9 @@ void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option)
         painter->setPen(QPen(Qt::red, 0));
         QFont savedFont = painter->font();
         painter->setFont(QFont ("Helvetica", 6));
-        painter->drawText(this->pos() + QPointF(5,5),
-                this->m_connections != NULL ?
-                QString::number(this->m_connections->size()):
+        painter->drawText(pos() + QPointF(5,5),
+                m_connections != NULL ?
+                QString::number(m_connections->size()):
                 QString("0"));
         painter->setFont(savedFont);
     }

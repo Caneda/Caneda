@@ -111,7 +111,7 @@ void PropertiesGroup::realignItems()
             if(!_children.isEmpty()) {
 
                 //Place the new item at bottom, properly aligned with group.
-                QPointF itemPos = this->mapToScene(boundingRect().bottomLeft());
+                QPointF itemPos = mapToScene(boundingRect().bottomLeft());
                 itemPos.rx() -= item->boundingRect().left();
                 item->setPos(itemPos);
             }

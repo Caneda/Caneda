@@ -977,11 +977,11 @@ void QucsMainWindow::initToolBars()
 
 void QucsMainWindow::initStatusBar()
 {
-    QStatusBar *statusBar = this->statusBar();
+    QStatusBar *statusBarWidget = statusBar();
     // Initially its empty space.
-    m_cursorLabel = new QLabel(QString(""), statusBar);
-    statusBar->addPermanentWidget(m_cursorLabel);
-    statusBar->setVisible(action("viewStatusBar")->isChecked());
+    m_cursorLabel = new QLabel(QString(""), statusBarWidget);
+    statusBarWidget->addPermanentWidget(m_cursorLabel);
+    statusBarWidget->setVisible(action("viewStatusBar")->isChecked());
 }
 
 //! \brief Toggles the normal select action on.
@@ -1776,7 +1776,7 @@ void QucsMainWindow::loadSettings()
     m_componentsSidebar->plugLibrary(libpath + "/components/basic/passive.xpro", "Components");
 
     //Next we restore qucsmainwindow docks positions
-    this->restoreState(qSettings.value("DocksPositions").toByteArray());
+    restoreState(qSettings.value("DocksPositions").toByteArray());
 }
 
 void QucsMainWindow::saveSettings()
@@ -1787,7 +1787,7 @@ void QucsMainWindow::saveSettings()
     settings->save(qSettings);
 
     //Now we save qucsmainwindow docks positions
-    qSettings.setValue("DocksPositions", this->saveState());
+    qSettings.setValue("DocksPositions", saveState());
 }
 
 void QucsMainWindow::setTabTitle(const QString& title)

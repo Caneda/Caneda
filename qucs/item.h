@@ -123,9 +123,9 @@ public:
     //! Return type of item
     int type() const { return QucsItemType; }
     //! Return bounding box
-    QRectF boundingRect() const { return this->m_boundingRect; }
+    QRectF boundingRect() const { return m_boundingRect; }
     //! Return the shape of the item.
-    QPainterPath shape() const { return this->m_shape; }
+    QPainterPath shape() const { return m_shape; }
 
     SchematicScene* schematicScene() const;
 

@@ -475,20 +475,20 @@ RotateItemsCmd::RotateItemsCmd(QList<QucsItem*> items, const Qucs::AngleDirectio
     QUndoCommand(parent),
     m_items(items)
 {
-    this->dir = dir;
+    m_angleDirection = dir;
 }
 
 RotateItemsCmd::RotateItemsCmd(QucsItem *item, const Qucs::AngleDirection dir, QUndoCommand *parent) :
     QUndoCommand(parent)
 {
     m_items << item;
-    this->dir = dir;
+    m_angleDirection = dir;
 }
 
 void RotateItemsCmd::undo()
 {
     foreach(QucsItem *item, m_items) {
-        item->rotate90(dir == Qucs::Clockwise ? Qucs::AntiClockwise : Qucs::Clockwise);
+        item->rotate90(m_angleDirection == Qucs::Clockwise ? Qucs::AntiClockwise : Qucs::Clockwise);
     }
 }
 
