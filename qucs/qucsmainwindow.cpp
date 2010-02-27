@@ -58,7 +58,6 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QProcess>
 #include <QStatusBar>
 #include <QTimer>
 #include <QToolBar>
@@ -1509,8 +1508,9 @@ void QucsMainWindow::slotCallFilter()
     QProcess *QucsFilter = new QProcess(this);
     QucsFilter->start(QString(Qucs::binaryDir + "qucsfilter"));
 
-    //TODO Emit error in case there are problems
-    // Kill editor before qucs ends
+    connect(QucsFilter, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+
+    // Kill before qucs ends
     connect(this, SIGNAL(signalKillWidgets()), QucsFilter, SLOT(kill()));
 }
 
@@ -1521,8 +1521,9 @@ void QucsMainWindow::slotCallLine()
     QProcess *QucsLine = new QProcess(this);
     QucsLine->start(QString(Qucs::binaryDir + "qucstrans"));
 
-    //TODO Emit error in case there are problems
-    // Kill editor before qucs ends
+    connect(QucsLine, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+
+    // Kill before qucs ends
     connect(this, SIGNAL(signalKillWidgets()), QucsLine, SLOT(kill()));
 }
 
@@ -1539,8 +1540,9 @@ void QucsMainWindow::slotCallAtt()
     QProcess *QucsAtt = new QProcess(this);
     QucsAtt->start(QString(Qucs::binaryDir + "qucsattenuator"));
 
-    //TODO Emit error in case there are problems
-    // Kill editor before qucs ends
+    connect(QucsAtt, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+
+    // Kill before qucs ends
     connect(this, SIGNAL(signalKillWidgets()), QucsAtt, SLOT(kill()));
 }
 
@@ -1551,8 +1553,9 @@ void QucsMainWindow::slotCallLibrary()
     QProcess *QucsLib = new QProcess(this);
     QucsLib->start(QString(Qucs::binaryDir + "qucslib"));
 
-    //TODO Emit error in case there are problems
-    // Kill editor before qucs ends
+    connect(QucsLib, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+
+    // Kill before qucs ends
     connect(this, SIGNAL(signalKillWidgets()), QucsLib, SLOT(kill()));
 }
 
@@ -1664,7 +1667,8 @@ void QucsMainWindow::editFile(const QString& File)
     QProcess *QucsEditor = new QProcess(this);
     QucsEditor->start(textEditor, arguments);
 
-    //TODO Emit error in case there are problems
+    connect(QucsEditor, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+
     // Kill editor before qucs ends
     connect(this, SIGNAL(signalKillWidgets()), QucsEditor, SLOT(kill()));
 }
@@ -1679,7 +1683,8 @@ void QucsMainWindow::showHTML(const QString& Page)
     QProcess *QucsHelp = new QProcess(this);
     QucsHelp->start(QString(Qucs::binaryDir + "qucshelp"), arguments);
 
-    //TODO Emit error in case there are problems
+    connect(QucsHelp, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+
     // Kill before qucs ends
     connect(this, SIGNAL(signalKillWidgets()), QucsHelp, SLOT(kill()));
 }
@@ -1688,6 +1693,36 @@ void QucsMainWindow::slotHelpIndex()
 {
     setNormalAction();
     showHTML("index.html");
+}
+
+void QucsMainWindow::slotProccessError(QProcess::ProcessError error)
+{
+    switch(error) {
+        case QProcess::FailedToStart :
+            {
+                QMessageBox::critical(0, tr("Process error"),
+                                      tr("The process failed to start. Either the invoked program is missing, or you may have insufficient permissions to invoke the program."));
+                return;
+            }
+        case QProcess::Crashed :
+            {
+                QMessageBox::critical(0, tr("Process error"),
+                                      tr("The process crashed while running."));
+                return;
+            }
+        case QProcess::UnknownError :
+            {
+                QMessageBox::critical(0, tr("Process error"),
+                                      tr("An unknown error occurred."));
+                return;
+            }
+        default:
+            {
+                QMessageBox::critical(0, tr("Process error"),
+                                      tr("An unknown error occurred."));
+                return;
+            }
+    }
 }
 
 void QucsMainWindow::slotHelpAbout()

@@ -26,6 +26,7 @@
 
 #include <QMap>
 #include <QMenu>
+#include <QProcess>
 #include <QToolBar>
 #include <QUndoView>
 
@@ -138,6 +139,7 @@ private Q_SLOTS:
 
     void slotCurrentChanged(QWidget *current, QWidget *prev);
     void slotViewClosed(QWidget *widget);
+    void slotProccessError(QProcess::ProcessError error);
 
 private:
     Action* action(const QString& name);
