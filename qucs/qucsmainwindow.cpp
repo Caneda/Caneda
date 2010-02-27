@@ -287,6 +287,7 @@ void QucsMainWindow::initActions()
     using namespace Qt;
     Action *action = 0;
     ActionManager *am = ActionManager::instance();
+    SchematicStateHandler *handler = SchematicStateHandler::instance();
 
     action = am->createAction("fileNew", icon("filenew.png"), tr("&New"));
     action->setShortcut(CTRL+Key_N);
@@ -495,19 +496,25 @@ void QucsMainWindow::initActions()
 
 
     action = am->createAction("insEquation", icon("equation.png"), tr("Insert Equation"));
+    action->setCheckable(true);
     action->setShortcut(Key_E);
     action->setWhatsThis(tr("Insert Equation\n\nInserts a user defined equation"));
-    connect(action, SIGNAL(triggered()), SLOT(slotInsertEquation()));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotInsertToolbarComponent(const QString&, bool)));
 
     action = am->createAction("insGround", icon("ground.png"), tr("Insert Ground"));
+    action->setCheckable(true);
     action->setShortcut(Key_G);
     action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
-    connect(action, SIGNAL(triggered()), SLOT(slotInsertGround()));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotInsertToolbarComponent(const QString&, bool)));
 
     action = am->createAction("insPort", icon("port.png"), tr("Insert Port"));
+    action->setCheckable(true);
     action->setShortcut(Key_P);
     action->setWhatsThis(tr("Insert Port\n\nInserts a port symbol"));
-    connect(action, SIGNAL(triggered()), SLOT(slotInsertPort()));
+    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+            SLOT(slotInsertToolbarComponent(const QString&, bool)));
 
     action = am->createAction("insEntity", icon("vhdl-code.png"), tr("VHDL entity"));
     action->setShortcut(SHIFT+Key_V);
@@ -1487,20 +1494,6 @@ void QucsMainWindow::slotCloseProject()
 {
     setNormalAction();
     m_project->slotCloseProject();
-}
-
-void QucsMainWindow::slotInsertEquation()
-{
-}
-
-void QucsMainWindow::slotInsertGround()
-{
-    SchematicStateHandler *handler = SchematicStateHandler::instance();
-    handler->slotSidebarItemClicked("Ground", "Passive");
-}
-
-void QucsMainWindow::slotInsertPort()
-{
 }
 
 void QucsMainWindow::slotInsertEntity()

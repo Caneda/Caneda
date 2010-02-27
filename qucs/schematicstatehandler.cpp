@@ -42,11 +42,23 @@ struct SchematicStateHandlerPrivate
     SchematicStateHandlerPrivate() {
         mouseAction = SchematicScene::Normal;
         paintingDrawItem = 0;
+
     }
 
     ~SchematicStateHandlerPrivate() {
         delete paintingDrawItem;
         clearInsertibles();
+    }
+
+    void updateToolbarInsertibles() {
+        QSettings qSettings;
+        const QString libpath = qSettings.value("SidebarLibrary", QString()).toString();
+        const QString passiveLibPath = libpath + "/components/basic/passive.xpro";
+        LibraryLoader *loader = LibraryLoader::instance();
+        toolbarInsertibles.insert("insGround",
+                loader->newComponent("Ground", 0, passiveLibPath));
+        toolbarInsertibles.insert("insPort",
+                loader->newComponent("Port", 0, passiveLibPath));
     }
 
     void clearInsertibles() {
@@ -67,11 +79,38 @@ struct SchematicStateHandlerPrivate
     QSet<SchematicView*> views;
 
     QPointer<SchematicView> focussedView;
+    QHash<QString, QucsItem*> toolbarInsertibles;
 };
+
+static bool areItemsEquivalent(QucsItem *a, QucsItem *b)
+{
+    if (!a || !b) {
+        return false;
+    }
+    if (a->type() != b->type()) {
+        return false;
+    }
+
+    if (a->isComponent()) {
+        Component *ac = qucsitem_cast<Component*>(a);
+        Component *bc = qucsitem_cast<Component*>(b);
+
+        return ac->library() == bc->library() &&
+            ac->name() == bc->name();
+    }
+
+    // Implement for other kinds of comparison required to compare
+    // insertibles and toolbarInsertibles of
+    // SchematicStateHandlerPrivate class.
+    return false;
+}
 
 SchematicStateHandler::SchematicStateHandler(QObject *parent) : QObject(parent)
 {
     d = new SchematicStateHandlerPrivate;
+
+    LibraryLoader *loader = LibraryLoader::instance();
+    connect(loader, SIGNAL(passiveLibraryLoaded()), this, SLOT(slotUpdateToolbarInsertibles()));
 }
 
 SchematicStateHandler* SchematicStateHandler::instance()
@@ -212,6 +251,20 @@ void SchematicStateHandler::slotHandlePaste()
     }
 }
 
+void SchematicStateHandler::slotInsertToolbarComponent(const QString& sender,
+        bool on)
+{
+    QucsItem *item = d->toolbarInsertibles[sender];
+    if (!on || !item) {
+        slotSetNormalAction();
+        return;
+    }
+
+    d->clearInsertibles();
+    d->insertibles << item;
+    slotPerformToggleAction("insertItem", true);
+}
+
 void SchematicStateHandler::slotOnObjectDestroyed(QObject *object)
 {
     SchematicScene *scene = qobject_cast<SchematicScene*>(object);
@@ -270,17 +323,7 @@ void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool 
     if(!on) {
         // Normal action can't be turned off through UI by clicking
         // the selct action again.
-        if(ma != SchematicScene::Normal) {
-            foreach(Action *act, mouseActions) {
-                if(act != norm) {
-                    act->blockSignals(true);
-                    act->setChecked(false);
-                    act->blockSignals(false);
-                }
-            }
-        }
-
-        slotPerformToggleAction("select", true);
+        slotSetNormalAction();
         return;
     }
 
@@ -310,7 +353,7 @@ void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool 
         }
     } while(false); //For break
 
-    // Just ensure all action's are off.
+    // Just ensure all other action's are off.
     foreach(Action *act, mouseActions) {
         if(act != action) {
             act->blockSignals(true);
@@ -318,6 +361,29 @@ void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool 
             act->blockSignals(false);
         }
     }
+
+    QHash<QString, QucsItem*>::const_iterator it =
+        d->toolbarInsertibles.begin();
+    while (it != d->toolbarInsertibles.end()) {
+        Action *act = am->actionForName(it.key());
+        act->blockSignals(true);
+        act->setChecked(false);
+        act->blockSignals(false);
+        ++it;
+    }
+
+    if (sender == "insertItem" && d->insertibles.size() == 1) {
+        for (it = d->toolbarInsertibles.begin();
+                it != d->toolbarInsertibles.end(); ++it) {
+            if (areItemsEquivalent(it.value(), d->insertibles.first())) {
+                Action *act = am->actionForName(it.key());
+                act->blockSignals(true);
+                act->setChecked(true);
+                act->blockSignals(false);
+            }
+        }
+    }
+
     // Ensure current action is on visibly
     action->blockSignals(true);
     action->setChecked(true);
@@ -330,6 +396,11 @@ void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool 
 void SchematicStateHandler::slotSetNormalAction()
 {
     slotPerformToggleAction("select", true);
+}
+
+void SchematicStateHandler::slotUpdateToolbarInsertibles()
+{
+    d->updateToolbarInsertibles();
 }
 
 void SchematicStateHandler::applyCursor(SchematicView *view)

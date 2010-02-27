@@ -94,9 +94,6 @@ public Q_SLOTS:
     void slotRemoveFromProject();
     void slotCloseProject();
 
-    void slotInsertEquation();
-    void slotInsertGround();
-    void slotInsertPort();
     void slotInsertEntity();
     void slotCallFilter();
     void slotCallLine();

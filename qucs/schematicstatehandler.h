@@ -44,6 +44,8 @@ public Q_SLOTS:
     void slotUpdateFocussedView(SchematicView *view);
     void slotPerformToggleAction(const QString& sender, bool on);
     void slotSetNormalAction();
+    void slotInsertToolbarComponent(const QString& action, bool on);
+    void slotUpdateToolbarInsertibles();
 
 private:
     friend class SingletonManager;
