@@ -1744,31 +1744,28 @@ void QucsMainWindow::loadSettings()
 
     Settings *settings = Settings::instance();
     settings->load(qSettings);
+
+    // First load geometry and dock pos as later setting values might
+    // depend on these values
+    const QByteArray geometryData = settings->currentValue("gui/geometry").toByteArray();
+    if (geometryData.isEmpty() == false) {
+        restoreGeometry(geometryData);
+    }
+
+    const QByteArray dockData = settings->currentValue("gui/dockPositions").toByteArray();
+    if (dockData.isEmpty() == false) {
+        restoreState(dockData);
+    }
+
     const QSize iconSize = settings->currentValue("gui/iconSize").toSize();
     setIconSize(iconSize);
 
-    const QRect geometry = settings->currentValue("gui/geometry").toRect();
-    move(geometry.topLeft());
-    resize(geometry.size());
-
     /* Load library database settings */
-    QString libpath = qSettings.value("SidebarLibrary", QString()).toString();
-    if(libpath.isEmpty()) {
-        libpath = QFileDialog::getExistingDirectory(0, tr("Component database tree"),
-                QDir::homePath(),
-                QFileDialog::ShowDirsOnly);
-        if(libpath.isEmpty()) {
-            QMessageBox::warning(0, "No sidebar library", "Sidebar won't have any library"
-                    "as you haven't selected any!");
-            return;
-        }
-
-        // Ensure libpath always ends with separator as other subpaths are
-        // built by appending to libpath.
-        libpath = QDir::toNativeSeparators(libpath);
-        if(!libpath.endsWith(QDir::separator())) {
-            libpath.append(QDir::separator());
-        }
+    QString libpath = settings->currentValue("sidebarLibrary").toString();
+    if(QFileInfo(libpath).exists() == false) {
+        QMessageBox::warning(0, tr("Cannot load Components library in the sidebar"),
+                tr("Please set the appropriate path to components library through Application settings and restart the application to load components in the sidebar"));
+        return;
     }
 
     /* Load validators */
@@ -1795,23 +1792,19 @@ void QucsMainWindow::loadSettings()
 
     LibraryLoader *library = LibraryLoader::instance();
 
-
     if(library->loadtree(libpath)) {
-        qSettings.setValue("SidebarLibrary", libpath);
         qDebug() << "Succesfully loaded library!";
     }
     else {
         //invalidate entry.
         qWarning() << "QucsMainWindow::loadSettings() : Entry is invalid. Run once more to set"
                    << "the appropriate path.";
-        qSettings.setValue("SidebarLibrary", "");
+        settings->setCurrentValue("sidebarLibrary",
+                settings->defaultValue("sidebarLibrary").toString());
         return;
     }
 
     m_componentsSidebar->plugLibrary(libpath + "/components/basic/passive.xpro", "Components");
-
-    //Next we restore qucsmainwindow docks positions
-    restoreState(qSettings.value("DocksPositions").toByteArray());
 }
 
 void QucsMainWindow::saveSettings()
@@ -1819,10 +1812,12 @@ void QucsMainWindow::saveSettings()
     QSettings qSettings;
 
     Settings *settings = Settings::instance();
-    settings->save(qSettings);
 
-    //Now we save qucsmainwindow docks positions
-    qSettings.setValue("DocksPositions", saveState());
+    // Update current geometry and dockPosition values before saving.
+    settings->setCurrentValue("gui/geometry", saveGeometry());
+    settings->setCurrentValue("gui/dockPositions", saveState());
+
+    settings->save(qSettings);
 }
 
 void QucsMainWindow::setTabTitle(const QString& title)

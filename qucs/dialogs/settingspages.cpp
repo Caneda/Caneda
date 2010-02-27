@@ -168,12 +168,18 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
     editEditor = new QLineEdit(misc);
     editEditor->setText(settings->currentValue("gui/textEditor").toString());
 
+    QLabel *labelLibrary = new QLabel(tr("Components Library:"));
+    editLibrary = new QLineEdit(misc);
+    editLibrary->setText(settings->currentValue("sidebarLibrary").toString());
+
     miscLayout->addWidget(labelLanguage, 3, 0, Qt::AlignLeft);
     miscLayout->addWidget(comboLanguage, 3, 1, Qt::AlignRight);
     miscLayout->addWidget(labelUndoOps, 4, 0, Qt::AlignLeft);
     miscLayout->addWidget(spinUndoNum, 4, 1, Qt::AlignRight);
     miscLayout->addWidget(labelTextEditor, 5, 0, Qt::AlignLeft);
     miscLayout->addWidget(editEditor, 5, 1, Qt::AlignRight);
+    miscLayout->addWidget(labelLibrary, 6, 0, Qt::AlignLeft);
+    miscLayout->addWidget(editLibrary, 6, 1, Qt::AlignRight);
 
 
     //Now we set the file extensions group of options
@@ -347,6 +353,7 @@ void GeneralConfigurationPage::slotDefaultValues()
     setBackgroundColor(buttonBackground,QColor(255,250,225));
     spinUndoNum->setValue(20);
     editEditor->setText(Qucs::binaryDir + "qucsedit");
+    editLibrary->setText(BASEDIR"/qucscomponents");
 }
 
 //! Applies the configuration of this page
@@ -399,6 +406,15 @@ void GeneralConfigurationPage::applyConf()
     const QString newTextEditor = editEditor->text();
     if (currentTextEditor != newTextEditor) {
         settings->setCurrentValue("gui/textEditor", newTextEditor);
+    }
+
+    const QString currentLibrary = settings->currentValue("sidebarLibrary").toString();
+    QString newLibrary = editLibrary->text();
+    if (currentLibrary != newLibrary) {
+        if (newLibrary.endsWith(QDir::separator()) == false) {
+            newLibrary.append(QDir::separator());
+        }
+        settings->setCurrentValue("sidebarLibrary", newLibrary);
     }
 
 

@@ -23,6 +23,7 @@
 #include "library.h"
 #include "schematicscene.h"
 #include "schematicview.h"
+#include "settings.h"
 #include "singletonmanager.h"
 
 #include "paintings/painting.h"
@@ -51,8 +52,8 @@ struct SchematicStateHandlerPrivate
     }
 
     void updateToolbarInsertibles() {
-        QSettings qSettings;
-        const QString libpath = qSettings.value("SidebarLibrary", QString()).toString();
+        Settings *settings = Settings::instance();
+        const QString libpath = settings->currentValue("sidebarLibrary").toString();
         const QString passiveLibPath = libpath + "/components/basic/passive.xpro";
         LibraryLoader *loader = LibraryLoader::instance();
         toolbarInsertibles.insert("insGround",

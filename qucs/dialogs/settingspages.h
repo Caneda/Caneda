@@ -80,7 +80,7 @@ public:
     QFrame *horiz_line_;
 
     QTableWidget *listSuffix;
-    QLineEdit *editEditor, *inputSuffix, *inputProgram;
+    QLineEdit *editEditor, *editLibrary, *inputSuffix, *inputProgram;
     QFont font;
     QPushButton *buttonFont, *buttonBackground;
     QComboBox *comboLanguage;

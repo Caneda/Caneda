@@ -35,7 +35,12 @@ VariantPair::VariantPair(const QVariant& def, const QVariant &cur)
 
 Settings::Settings()
 {
-    data["gui/geometry"] = VariantPair(QRect(0, 0, 1024, 768));
+    // The assumed default installation path of qucscomponents is
+    // <INSTALL>/share/qucs/qucscomponents
+    data["sidebarLibrary"] = VariantPair(QString(BASEDIR"/qucscomponents/"));
+
+    data["gui/geometry"] = VariantPair(QByteArray());
+    data["gui/dockPositions"] = VariantPair(QByteArray());
     data["gui/backgroundColor"] = VariantPair(QColor(Qt::white));
     data["gui/font"] = VariantPair(QFont());
     data["gui/largeFontSize"] = VariantPair(qreal(16.0));
