@@ -268,16 +268,18 @@ void SchematicStateHandler::slotInsertToolbarComponent(const QString& sender,
 
 void SchematicStateHandler::slotOnObjectDestroyed(QObject *object)
 {
-    SchematicScene *scene = qobject_cast<SchematicScene*>(object);
-    SchematicView *view = qobject_cast<SchematicView*>(object);
+    //HACK: Using static cast to convert QObject pointers to scene and view
+    //      respectively. This might result in invalid pointers, but the main
+    //      purpose why we need them is just to remove the same from the lists.
+    //
+    //      Using of these pointers to access any method or variable will result
+    //      in ugly crash!!
+    SchematicScene *scene = static_cast<SchematicScene*>(object);
+    SchematicView *view = static_cast<SchematicView*>(object);
 
-    if (scene) {
-        d->scenes.remove(scene);
-    }
 
-    if (view) {
-        d->views.remove(view);
-    }
+    d->scenes.remove(scene);
+    d->views.remove(view);
 }
 
 void SchematicStateHandler::slotUpdateFocussedView(SchematicView *view)

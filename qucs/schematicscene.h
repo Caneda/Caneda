@@ -58,7 +58,7 @@ typedef QGraphicsSceneMouseEvent MouseActionEvent;
  */
 class SchematicScene : public QGraphicsScene
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     //! \brief The different mouse action possible
     enum MouseAction {

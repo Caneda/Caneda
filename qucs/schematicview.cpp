@@ -65,6 +65,15 @@ SchematicView::SchematicView(SchematicScene *sc, QWidget *parent) :
 //! Destructor
 SchematicView::~SchematicView()
 {
+    //HACK: For now delete the scene if this view is its only viewer.
+    QList<QGraphicsView*> views;
+    if (scene()) {
+        views = scene()->views();
+    }
+
+    if (views.size() == 1 && views.first() == this) {
+        delete scene();
+    }
 }
 
 SchematicScene* SchematicView::schematicScene() const
