@@ -57,6 +57,17 @@ Settings::Settings()
     data["gui/vhdl/character"]= VariantPair(QVariant(QColor(Qt::magenta)));
     data["gui/vhdl/types"]= VariantPair(QVariant(QColor(Qt::darkRed)));
     data["gui/vhdl/attributes"]= VariantPair(QVariant(QColor(Qt::darkCyan)));
+
+    QString qucsFilter =
+        QObject::tr("Schematic-xml")+" (*.xsch);;"+
+        QObject::tr("Symbol-xml")+" (*.xsym);;"+
+        QObject::tr("Qucs Project")+" (*.xpro);;"+
+        QObject::tr("Schematic")+" (*.sch);;"+
+        QObject::tr("Data Display")+" (*.dpl);;"+
+        QObject::tr("Qucs Documents")+" (*.sch *.dpl);;"+
+        QObject::tr("VHDL Sources")+" (*.vhdl *.vhd);;"+
+        QObject::tr("Any File")+" (*)";
+    data["nosave/qucsFilter"] = VariantPair(qucsFilter);
 }
 
 Settings::~Settings()
@@ -107,7 +118,10 @@ bool Settings::save(QSettings &settings)
     QStringList childKeys = data.keys();
     childKeys.removeAll("gui/fileTypes"); // Requires special treatment
     foreach (const QString& childKey, childKeys) {
-        settings.setValue(childKey, currentValue(childKey));
+        // Save only keys which aren't having "nosave/" prefix.
+        if (!childKey.startsWith("nosave/")) {
+            settings.setValue(childKey, currentValue(childKey));
+        }
     }
 
     QStringList fileTypes = currentValue("gui/fileTypes").toStringList();

@@ -55,6 +55,8 @@ public:
     void addView(QucsView *view);
     void saveSettings();
 
+    QucsView* viewFromWidget(QWidget *widget);
+
 public Q_SLOTS:
     void slotFileNew();
     void slotTextNew();
@@ -160,7 +162,6 @@ private:
     void setupSidebar();
     void setupProjectsSidebar();
 
-    QucsView* viewFromWidget(QWidget *widget);
 
     // menus contain the items of their menubar
     QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,

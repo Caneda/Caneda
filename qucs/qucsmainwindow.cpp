@@ -35,6 +35,7 @@
 #include "dialogs/aboutqucs.h"
 #include "dialogs/exportdialog.h"
 #include "dialogs/printdialog.h"
+#include "dialogs/savedocumentsdialog.h"
 #include "dialogs/settingsdialog.h"
 
 #include "qucs-qterm/qtermwidget.h"
@@ -66,8 +67,6 @@
 #include <QVBoxLayout>
 #include <QWhatsThis>
 
-static QString qucsFilter;
-
 /*!
  * \brief Construct and setup the mainwindow for qucs.
  */
@@ -77,16 +76,6 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
 
     setObjectName("QucsMainWindow"); //for debugging purpose
     setDocumentTitle("Untitled");
-
-    qucsFilter =
-        tr("Schematic-xml")+" (*.xsch);;"+
-        tr("Symbol-xml")+" (*.xsym);;"+
-        tr("Qucs Project")+" (*.xpro);;"+
-        tr("Schematic")+" (*.sch);;"+
-        tr("Data Display")+" (*.dpl);;"+
-        tr("Qucs Documents")+" (*.sch *.dpl);;"+
-        tr("VHDL Sources")+" (*.vhdl *.vhd);;"+
-        tr("Any File")+" (*)";
 
     console = 0;
     m_undoGroup = new QUndoGroup();
@@ -1057,6 +1046,67 @@ void QucsMainWindow::slotViewClosed(QWidget *widget)
  */
 void QucsMainWindow::closeEvent( QCloseEvent *e )
 {
+    QSet<SchematicScene*> processedScenes;
+    QSet<QPair<QucsView*, int> > modifiedViews;
+
+    for (int i = 0; i < tabWidget()->count(); ++i) {
+        QucsView *view = viewFromWidget(tabWidget()->widget(i));
+        if (!view || view->isModified() == false) {
+            continue;
+        }
+
+        SchematicScene *scene = view->isSchematicView() ?
+            view->toSchematicView()->schematicScene() : 0;
+
+        if (scene) {
+            if (!processedScenes.contains(scene)) {
+                processedScenes << scene;
+                modifiedViews << qMakePair(view, i);
+            }
+        } else {
+            modifiedViews << qMakePair(view, i);
+        }
+    }
+
+    if (!modifiedViews.isEmpty()) {
+        QPointer<SaveDocumentsDialog> dialog(new SaveDocumentsDialog(modifiedViews, this));
+        dialog->exec();
+
+        int result = dialog->result();
+
+        if (result == SaveDocumentsDialog::DoNotSave) {
+            e->accept();
+        } else if (result == SaveDocumentsDialog::AbortClosing) {
+            e->ignore();
+            return;
+        } else {
+            QSet<QPair<QucsView*, QString> > newFilePaths = dialog->newFilePaths();
+            QSet<QPair<QucsView*, QString> >::iterator it;
+
+            bool failedInBetween = false;
+            for (it = newFilePaths.begin(); it != newFilePaths.end(); ++it) {
+                QucsView *view = it->first;
+                const QString newFileName = it->second;
+                QString oldFileName = view->fileName();
+
+                view->setFileName(newFileName);
+                if (!view->save()) {
+                    failedInBetween = true;
+                    view->setFileName(oldFileName);
+                }
+            }
+
+            if (failedInBetween) {
+                QMessageBox::critical(0, tr("File save error"),
+                        tr("Could not save some files"));
+                e->ignore();
+                return;
+            } else {
+                e->accept();
+            }
+        }
+    }
+
     saveSettings();
     emit(signalKillWidgets());
     MainWindowBase::closeEvent(e);
@@ -1088,8 +1138,8 @@ void QucsMainWindow::slotFileOpen(QString fileName)
     setNormalAction();
 
     if(fileName == 0) {
-        fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-                "", qucsFilter);
+        fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
+                Settings::instance()->currentValue("nosave/qucsFilter").toString());
     }
 
     if(!fileName.isEmpty()) {
@@ -1144,8 +1194,8 @@ void QucsMainWindow::slotFileSaveAs(int index)
     if(!v) {
         return;
     }
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-            "", qucsFilter);
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "",
+            Settings::instance()->currentValue("nosave/qucsFilter").toString());
     if(fileName.isEmpty()) {
         return;
     }
@@ -1199,6 +1249,7 @@ void QucsMainWindow::slotFileClose(int index)
 {
     if(tabWidget()->count() > 0){
         QucsView *view = viewFromWidget(tabWidget()->widget(index));
+        bool saveAttempted = false;
         if(view->isModified()) {
             QMessageBox::StandardButton res =
                 QMessageBox::warning(0, tr("Closing qucs document"),
@@ -1206,13 +1257,16 @@ void QucsMainWindow::slotFileClose(int index)
                             "Do you want to save the changes ?"),
                         QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
             if(res == QMessageBox::Save) {
+                saveAttempted = true;
                 slotFileSave(index);
             }
             else if(res == QMessageBox::Cancel) {
                 return;
             }
         }
-        closeTab(index);
+        if (!saveAttempted || view->isModified() == false) {
+            closeTab(index);
+        }
     }
 }
 
