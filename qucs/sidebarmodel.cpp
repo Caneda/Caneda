@@ -300,7 +300,7 @@ QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
         if(index.isValid()) {
             CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
             if(item->isLeaf() && !item->isLibrary()) {
-                QString category = item->parent()->filename();
+                QString category = item->parent()->name();
                 stream << item->name() << category;
             }
         }

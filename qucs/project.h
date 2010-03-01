@@ -35,6 +35,11 @@ public:
     Project(QWidget *parent = 0);
     ~Project() {}
 
+    //! Returns project library name.
+    QString libraryName() const { return m_libraryName; }
+    //! Returns project library filename.
+    QString libraryFileName() const { return m_libraryFileName; }
+
 public Q_SLOTS:
     void slotNewProject();
     void slotOpenProject(QString fileName = 0);
@@ -51,8 +56,12 @@ private Q_SLOTS:
     void slotOnDoubleClicked(const QString&, const QString&);
 
 private:
+    void setCurrentLibrary(const QString& libFileName);
+
     ComponentsSidebar *m_projectsSidebar;
     Library *projectLibrary;
+    QString m_libraryName;
+    QString m_libraryFileName;
 
     QToolButton *buttonBack, *buttonForward;
 };

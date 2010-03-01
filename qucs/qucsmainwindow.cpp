@@ -1858,7 +1858,7 @@ void QucsMainWindow::loadSettings()
         return;
     }
 
-    m_componentsSidebar->plugLibrary(libpath + "/components/basic/passive.xpro", "Components");
+    m_componentsSidebar->plugLibrary("Passive", "Components");
 }
 
 void QucsMainWindow::saveSettings()

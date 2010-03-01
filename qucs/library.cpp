@@ -290,7 +290,7 @@ bool Library::registerComponentData(Qucs::XmlReader *reader, QString componentPa
 
     //Automatically registers svgs on success
     ComponentDataPtr dataPtr(new ComponentData);
-    dataPtr->library = libraryFileName();
+    dataPtr->library = libraryName();
     dataPtr->filename = componentPath;
 
     QString parentPath = QFileInfo(componentPath).absolutePath();
@@ -389,7 +389,7 @@ Component* LibraryLoader::newComponent(QString componentName, SchematicScene *sc
  */
 bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_)
 {
-    bool status = load( libpathtree+"/components/basic/passive.xpro",svgPainter_);
+    bool status = load(libpathtree + "/components/basic/passive.xpro", svgPainter_);
     if (status) {
         emit passiveLibraryLoaded();
     }
@@ -413,7 +413,7 @@ bool LibraryLoader::newLibrary(const QString& libPath, SvgPainter *svgPainter_)
 
     Library *info = new Library(libPath, svgPainter_);
 
-    m_libraryHash.insert(info->libraryFileName(), info);
+    m_libraryHash.insert(info->libraryName(), info);
 
     return info->isValid();
 }
@@ -465,13 +465,28 @@ bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
                     return false;
                 }
 
-                m_libraryHash.insert(info->libraryFileName(), info);
+                if(!library(info->libraryName())) {
+                    m_libraryHash.insert(info->libraryName(), info);
+                }
+                else {
+                    QMessageBox::critical(0, QObject::tr("Error"),
+                            QObject::tr("Library %1 currently opened. Please close library %1 first.").arg(info->libraryName()));
+                    delete info;
+                    return false;
+                }
+
             }
             else {
                 reader.readUnknownElement();
             }
         }
     }
+
+    if(reader.hasError()) {
+        QMessageBox::critical(0, QObject::tr("Error"),
+                QObject::tr("Invalid library file!"));
+    }
+
     (void) QDir::setCurrent(current);
     return !reader.hasError();
 }

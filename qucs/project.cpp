@@ -48,6 +48,8 @@
 Project::Project(QWidget *parent) : QWidget(parent)
 {
     projectLibrary = 0;
+    m_libraryFileName = "";
+    m_libraryName = "";
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -121,15 +123,11 @@ void Project::slotNewProject()
 
         if(library->newLibrary(fileName)) {
             slotCloseProject();
-            projectLibrary = library->library(fileName);
+            setCurrentLibrary(fileName);
+            projectLibrary = library->library(m_libraryName);
             projectLibrary->saveLibrary();
             qDebug() << "Succesfully created library!";
-            m_projectsSidebar->plugLibrary(fileName, "root");
-        }
-        else {
-            QMessageBox::critical(this, tr("Error"),
-                                  tr("Invalid project file!"));
-            return;
+            m_projectsSidebar->plugLibrary(m_libraryName, "root");
         }
     }
 }
@@ -142,20 +140,15 @@ void Project::slotOpenProject(QString fileName)
     }
 
     if(!fileName.isEmpty()) {
+
         LibraryLoader *library = LibraryLoader::instance();
 
-        if(!library->library(fileName)) {
-            if(library->load(fileName)) {
-                slotCloseProject();
-                projectLibrary = library->library(fileName);
-                qDebug() << "Succesfully loaded library!";
-                m_projectsSidebar->plugLibrary(fileName, "root");
-            }
-            else {
-                QMessageBox::critical(this, tr("Error"),
-                                      tr("Invalid project file!"));
-                return;
-            }
+        if(library->load(fileName)) {
+            slotCloseProject();
+            setCurrentLibrary(fileName);
+            projectLibrary = library->library(m_libraryName);
+            qDebug() << "Succesfully loaded library!";
+            m_projectsSidebar->plugLibrary(m_libraryName, "root");
         }
     }
 }
@@ -192,15 +185,15 @@ void Project::slotAddToProject()
                     }
                     projectLibrary->parseExternalComponent(fileName);
                     projectLibrary->saveLibrary();
-                    m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-                    m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
+                    m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+                    m_projectsSidebar->plugLibrary(m_libraryName, "root");
 
                     fileName.replace(".xsym",".xsch");
                     emit itemDoubleClicked(fileName);
                 }
             }
             else if(p->userChoice() == Qucs::NewComponent) {
-                QString fileName = QFileInfo(projectLibrary->libraryFileName()).absolutePath() + "/" + p->fileName()+".xsch";
+                QString fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + p->fileName()+".xsch";
 
                 QucsView *view = new SchematicView(0, this);
                 view->setFileName(fileName);
@@ -232,8 +225,8 @@ void Project::slotAddToProject()
 
                 projectLibrary->parseExternalComponent(fileName);
                 projectLibrary->saveLibrary();
-                m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-                m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
+                m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+                m_projectsSidebar->plugLibrary(m_libraryName, "root");
             }
             else {
                 //TODO in case of adding a component from another project, we
@@ -254,8 +247,8 @@ void Project::slotRemoveFromProject()
         if(!m_projectsSidebar->currentComponent().isEmpty()) {
             projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
             projectLibrary->saveLibrary();
-            m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
-            m_projectsSidebar->plugLibrary(projectLibrary->libraryFileName(), "root");
+            m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+            m_projectsSidebar->plugLibrary(m_libraryName, "root");
         }
     }
     else {
@@ -268,10 +261,13 @@ void Project::slotRemoveFromProject()
 void Project::slotCloseProject()
 {
     if(projectLibrary) {
-        m_projectsSidebar->unPlugLibrary(projectLibrary->libraryFileName(), "root");
+        m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
         LibraryLoader *library = LibraryLoader::instance();
-        library->unload(projectLibrary->libraryFileName());
+        library->unload(m_libraryName);
+
         projectLibrary = 0;
+        m_libraryFileName = "";
+        m_libraryName = "";
     }
 }
 
@@ -282,5 +278,14 @@ void Project::slotOnClicked(const QString& item, const QString& category)
 
 void Project::slotOnDoubleClicked(const QString& item, const QString& category)
 {
-    emit itemDoubleClicked(QFileInfo(projectLibrary->libraryFileName()).absolutePath() + "/" + item + ".xsch");
+    emit itemDoubleClicked(QFileInfo(m_libraryFileName).absolutePath() + "/" + item + ".xsch");
+}
+
+void Project::setCurrentLibrary(const QString& libFileName)
+{
+    m_libraryFileName = libFileName;
+
+    //The library name is created from the basename with the first letter in uppercase
+    m_libraryName = QFileInfo(libFileName).baseName();
+    m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
 }
