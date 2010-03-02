@@ -31,6 +31,7 @@
 #include "dialogs/addtoprojectdialog.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QToolBar>
@@ -119,6 +120,16 @@ void Project::slotNewProject()
             fileName = fileName + ".xpro";
         }
 
+        //First we create the folder structure where files are to be placed
+        QFileInfo fileInfo = QFileInfo(fileName);
+        QDir filePath = QDir(fileInfo.absolutePath() + "/" + fileInfo.baseName());
+        if(!filePath.exists()) {
+            filePath.setPath(fileInfo.absolutePath());
+            filePath.mkdir(fileInfo.baseName());
+        }
+        fileName = fileInfo.absolutePath() + "/" + fileInfo.baseName() + "/" + fileInfo.fileName();
+
+        //Then we create the library/project
         LibraryLoader *library = LibraryLoader::instance();
 
         if(library->newLibrary(fileName)) {
@@ -162,32 +173,43 @@ void Project::slotAddToProject()
             if(p->userChoice() == Qucs::ExistingComponent) {
 
                 QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
-                                                                "", tr("Component-xml (*.xsch *.xsym)"));
+                                                                "", tr("Component-xml (*.xsch)"));
                 if(!fileName.isEmpty()) {
-                    //If we selected a schematic, we must generate the corresponding symbol
-                    if(QString(QFileInfo(fileName).suffix()) == "xsch") {
-                        QucsView *view = new SchematicView(0, this);
-                        view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
 
-                        if(!view->load(fileName)) {
-                            QMessageBox::critical(this, tr("Error"),
-                                                  tr("Could not open file!"));
-                            delete view;
-                            return;
-                        }
-
-                        fileName.replace(".xsch",".xsym");
-                        view->setFileName(fileName);
-                        XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-                        symbol->save();
-
-                        delete view;
+                    //First we copy the selected file to current project folder
+                    if(QFile::copy(fileName, QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).fileName())) {
+                        fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).fileName();
                     }
+                    else {
+                        QMessageBox::critical(this, tr("Error"),
+                                tr("Component %1 already exists in project!").arg(QFileInfo(fileName).baseName()));
+                        return;
+                    }
+
+                    //We generate the corresponding symbol
+                    QucsView *view = new SchematicView(0, this);
+                    view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
+
+                    if(!view->load(fileName)) {
+                        QMessageBox::critical(this, tr("Error"),
+                                              tr("Could not open file!"));
+
+                        QFile::remove(fileName);
+                        return;
+                    }
+
+                    fileName.replace(".xsch",".xsym");
+                    view->setFileName(fileName);
+                    XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
+                    symbol->save();
+
+                    //Now we load the new component in the library
                     projectLibrary->parseExternalComponent(fileName);
                     projectLibrary->saveLibrary();
                     m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
                     m_projectsSidebar->plugLibrary(m_libraryName, "root");
 
+                    //Finally we open the component
                     fileName.replace(".xsym",".xsch");
                     emit itemDoubleClicked(fileName);
                 }
@@ -201,13 +223,13 @@ void Project::slotAddToProject()
                 //When the component is already created, we return.
                 if(QFileInfo(fileName).exists()) {
                     QMessageBox::critical(this, tr("Error"),
-                                          tr("Component already created!"));
+                            tr("Component already created!"));
                     return;
                 }
 
                 if(!view->save()) {
                     QMessageBox::critical(this, tr("Error"),
-                                          tr("Could not save file!"));
+                            tr("Could not save file!"));
                     delete view;
                     return;
                 }
@@ -236,7 +258,7 @@ void Project::slotAddToProject()
     }
     else {
         QMessageBox::critical(this, tr("Error"),
-                              tr("Invalid project!"));
+                tr("Invalid project!"));
         return;
     }
 }
@@ -245,15 +267,39 @@ void Project::slotRemoveFromProject()
 {
     if(projectLibrary) {
         if(!m_projectsSidebar->currentComponent().isEmpty()) {
-            projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
-            projectLibrary->saveLibrary();
-            m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-            m_projectsSidebar->plugLibrary(m_libraryName, "root");
+
+            int ret = QMessageBox::warning(this, tr("Delete component"),
+                              tr("You're about to delete one component. This action can't be undone.\n"
+                                 "Do you want to continue?"),
+                              QMessageBox::Ok | QMessageBox::Cancel);
+
+            switch (ret) {
+                case QMessageBox::Ok: {
+
+                    QString fileName = QString(projectLibrary->componentDataPtr(m_projectsSidebar->currentComponent())->filename);
+                    fileName = QFileInfo(fileName).absolutePath() + "/" + QFileInfo(fileName).baseName();
+
+                    QFile::remove(fileName + ".xsch");
+                    QFile::remove(fileName + ".xsym");
+                    QFile::remove(fileName + ".svg");
+                    
+                    projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
+                    projectLibrary->saveLibrary();
+                    m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+                    m_projectsSidebar->plugLibrary(m_libraryName, "root");
+                    break;
+                }
+                case QMessageBox::Cancel:
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
     else {
         QMessageBox::critical(this, tr("Error"),
-                              tr("Invalid project!"));
+                tr("Invalid project!"));
         return;
     }
 }

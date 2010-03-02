@@ -214,7 +214,7 @@ bool Library::saveLibrary()
     QList<ComponentDataPtr> componentsList = components().values();
     foreach(const ComponentDataPtr data, componentsList) {
         writer->writeEmptyElement("component");
-        writer->writeAttribute("href", data->filename);
+        writer->writeAttribute("href", QFileInfo(data->filename).fileName());
     }
 
     writer->writeEndDocument(); //</library>
