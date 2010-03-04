@@ -667,10 +667,6 @@ bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
         return(false);
     }
 
-    p.setRenderHint(QPainter::Antialiasing, true);
-    p.setRenderHint(QPainter::TextAntialiasing, true);
-    p.setRenderHint(QPainter::SmoothPixmapTransform, true);
-
     // deselect the elements
     QList<QGraphicsItem *> selected_elmts = selectedItems();
     foreach(QGraphicsItem *qgi, selected_elmts) {
