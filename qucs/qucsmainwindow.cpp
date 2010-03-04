@@ -1922,9 +1922,9 @@ void QucsMainWindow::slotUpdateAllViews()
         SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->widget(i));
         if (view) {
             if (view->scene()) {
-                view->scene()->update();
+                view->scene()->invalidate();
             }
-            view->update();
+            view->resetCachedContent();
         }
     }
 }
