@@ -340,7 +340,7 @@ void GeneralConfigurationPage::slotDefaultValues()
     setBackgroundColor(buttonBackground,QColor(255,250,225));
     spinUndoNum->setValue(20);
     editEditor->setText(Qucs::binaryDir + "qucsedit");
-    editLibrary->setText(BASEDIR"/qucscomponents");
+    editLibrary->setText(BASEDIR + "/qucscomponents");
 }
 
 //! Applies the configuration of this page
@@ -371,9 +371,7 @@ void GeneralConfigurationPage::applyConf()
     const QSize newIconSize(spinIcons->value(), spinIcons->value());
     if (currentIconSize != newIconSize) {
         settings->setCurrentValue("gui/iconSize", newIconSize);
-#ifndef CREATORGUI
         QucsMainWindow::instance()->setIconSize(newIconSize);
-#endif
     }
 
     const QString currentLanguage = settings->currentValue("gui/language").toString();
@@ -421,10 +419,8 @@ void GeneralConfigurationPage::applyConf()
     settings->save(qSettings);
 
     if(changed) {
-#ifndef CREATORGUI
         QucsMainWindow::instance()->repaint();
         QucsMainWindow::instance()->slotUpdateAllViews();
-#endif
     }
 }
 
@@ -875,10 +871,8 @@ void VhdlConfigurationPage::applyConf() {
     QSettings qSettings;
     settings->save(qSettings);
     if(changed) {
-#ifndef CREATORGUI
         QucsMainWindow::instance()->repaint();
         QucsMainWindow::instance()->slotUpdateAllViews();
-#endif
     }
 }
 
