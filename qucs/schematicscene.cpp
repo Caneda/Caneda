@@ -118,6 +118,7 @@ void SchematicScene::init()
     m_OriginDrawn = true;
 
     m_currentMode = Qucs::SchematicMode;
+    m_backgroundVisible = true;
     m_frameVisible = false;
     m_modified = false;
 
@@ -341,13 +342,28 @@ void SchematicScene::setOpensDataDisplay(const bool state)
 }
 
 /*!
+ * \brief Makes the background color visible.
+ *
+ * \param visibility Set true of false to show or hide the background color.
+ */
+void SchematicScene::setBackgroundVisible(const bool visibility)
+{
+    /* avoid updating */
+    if(m_backgroundVisible == visibility) {
+        return;
+    }
+
+    m_backgroundVisible = visibility;
+    update();
+}
+
+/*!
  * \brief Makes the outer frame visible.
  *
  * The frame is the outer rectangles with printed fields to enter name and other
  * properties of the schematic diagram.
  *
  * \param visibility Set true of false to show or hide the frame.
- * \todo Yet to implement the actual drawing of frame.
  */
 void SchematicScene::setFrameVisible(const bool visibility)
 {
@@ -369,7 +385,7 @@ void SchematicScene::setFrameTexts(const QStringList& texts)
     }
 }
 
-//!  \brief Set the current mode (one of symbol mode and schematic mode
+//!  \brief Set the current mode (one of symbol mode and schematic mode)
 void SchematicScene::setMode(const Qucs::Mode mode)
 {
     if(m_currentMode == mode) {
@@ -377,7 +393,6 @@ void SchematicScene::setMode(const Qucs::Mode mode)
     }
     m_currentMode = mode;
     update();
-    //TODO:
 }
 
 /*!
@@ -674,7 +689,9 @@ bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
     }
 
     // performs rendering itself
+    setBackgroundVisible(false);
     render(&p, dest_area, source_area, aspectRatioMode);
+    setBackgroundVisible(true);
     p.end();
 
     // restores the selected items
@@ -744,7 +761,6 @@ void SchematicScene::setModified(const bool m)
  * \param painter: Where to draw
  * \param rect: Visible area
  * \todo Finish visual representation
- * \note draw origin
  * \todo draw origin should be configurable
  */
 void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
@@ -754,11 +770,13 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
     /* disable anti aliasing */
     painter->setRenderHint(QPainter::Antialiasing, false);
 
-    const QColor backgroundColor =
-        Settings::instance()->currentValue("gui/backgroundColor").value<QColor>();
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(QBrush(backgroundColor));
-    painter->drawRect(rect);
+    if(isBackgroundVisible()) {
+        const QColor backgroundColor =
+            Settings::instance()->currentValue("gui/backgroundColor").value<QColor>();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(QBrush(backgroundColor));
+        painter->drawRect(rect);
+    }
 
     /* configure pen */
     painter->setPen(QPen(GridColor(), 0));

@@ -175,6 +175,9 @@ public:
     bool opensDataDisplay() const { return m_opensDataDisplay; }
     void setOpensDataDisplay(bool b);
 
+    bool isBackgroundVisible() const { return m_backgroundVisible; }
+    void setBackgroundVisible(bool vis);
+
     bool isFrameVisible() const { return m_frameVisible; }
     void setFrameVisible(bool vis);
 
@@ -425,6 +428,11 @@ private:
      * This is user configurable and only for convienience of the user.
      */
     bool m_opensDataDisplay;
+    /*!
+     * \brief Flag to hold whether the background color should be drawn or not
+     * \sa setBackgroundVisible
+     */
+    bool m_backgroundVisible;
     /*!
      * \brief Flag to hold whether a frame should be drawn or not
      * \sa setFrameVisible
