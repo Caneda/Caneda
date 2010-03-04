@@ -48,6 +48,7 @@ namespace Qucs
    QString getenv();
 
    QString baseDirectory();
+   QString binaryDirectory();
    QString bitmapDirectory();
    QString langDirectory();
 

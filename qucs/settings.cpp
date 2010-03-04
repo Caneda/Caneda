@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include "qucs-tools/global.h"
+
 #include <QColor>
 #include <QFont>
 #include <QRect>
@@ -37,7 +39,7 @@ Settings::Settings()
 {
     // The assumed default installation path of qucscomponents is
     // <INSTALL>/share/qucs/qucscomponents
-    data["sidebarLibrary"] = VariantPair(QString(BASEDIR"/qucscomponents/"));
+    data["sidebarLibrary"] = VariantPair(QString(Qucs::baseDirectory() + "qucscomponents/"));
 
     data["gui/geometry"] = VariantPair(QByteArray());
     data["gui/dockPositions"] = VariantPair(QByteArray());
@@ -46,7 +48,7 @@ Settings::Settings()
     data["gui/largeFontSize"] = VariantPair(qreal(16.0));
     data["gui/iconSize"] = VariantPair(QSize(24, 24));
     data["gui/maxUndo"] = VariantPair(int(20));
-    data["gui/textEditor"] = VariantPair(QString(BINARYDIR"/qucsedit"));
+    data["gui/textEditor"] = VariantPair(QString(Qucs::binaryDirectory() + "qucsedit"));
     data["gui/language"] = VariantPair(QString());
 
     data["gui/vhdl/comment"] = VariantPair(QColor(Qt::gray));

@@ -50,6 +50,17 @@ namespace Qucs
       return Qucs::baseDir;
    }
 
+   QString binaryDirectory()
+   {
+      QString var = Qucs::getenv();
+      if(!var.isEmpty())
+      {
+         QDir QucsDir = QDir (var);
+         return QDir::convertSeparators (QucsDir.canonicalPath () + "/bin/");
+      }
+      return Qucs::binaryDir;
+   }
+
    QString bitmapDirectory()
    {
       QString var = Qucs::getenv();

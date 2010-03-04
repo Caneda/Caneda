@@ -34,7 +34,6 @@
 #include <QFrame>
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
@@ -215,8 +214,8 @@ void GeneralConfigurationPage::slotDefaultValues()
     comboLanguage->setCurrentIndex(0);
     setBackgroundColor(buttonBackground,QColor(255,250,225));
     spinUndoNum->setValue(20);
-    editEditor->setText(Qucs::binaryDir + "qucsedit");
-    editLibrary->setText(BASEDIR"/qucscomponents");
+    editEditor->setText(Qucs::binaryDirectory() + "qucsedit");
+    editLibrary->setText(Qucs::baseDirectory() + "qucscomponents/");
 }
 
 //! Applies the configuration of this page
