@@ -41,8 +41,6 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSpinBox>
-#include <QTableWidget>
-#include <QTableWidgetItem>
 
 //*!**************************************************
 // General configuration pages
@@ -169,62 +167,6 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
     miscLayout->addRow(tr("Components Library:"), editLibrary);
 
 
-    //Now we set the file extensions group of options *************************
-    QGroupBox *fileExtensions = new QGroupBox(tr("File Types"), this);
-    QGridLayout *fileExtensionsLayout = new QGridLayout(fileExtensions);
-
-    QLabel *fileExtensionsWarning = new QLabel(tr("Register filename extensions here in order to\n"
-                "open files with an appropriate program."));
-
-    listSuffix = new QTableWidget(fileExtensions);
-    listSuffix->setColumnCount(2);
-    listSuffix->setHorizontalHeaderLabels(QStringList() << tr("Suffix") << tr("Program"));
-    listSuffix->verticalHeader()->hide();
-    listSuffix->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    listSuffix->horizontalHeader()->setClickable(false);
-    listSuffix->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    // fill tableview with already registered file extensions
-    QStringList fileTypes = settings->currentValue("gui/fileTypes").toStringList();
-    QStringList::Iterator it = fileTypes.begin();
-    int r = 0;
-    while(it != fileTypes.end()) {
-        QTableWidgetItem *Item0, *Item1;
-        Item0 = new QTableWidgetItem((*it).section(':',0,0));
-        Item1 = new QTableWidgetItem((*it).section(':',1));
-        listSuffix->insertRow(r);
-        listSuffix->setItem(r,0,Item0);
-        listSuffix->setItem(r,1,Item1);
-        it++;
-        r++;
-    }
-    listSuffix->resizeColumnsToContents();
-    listSuffix->resizeRowsToContents();
-
-    QLabel *labelSuffix = new QLabel(tr("Suffix:"));
-    inputSuffix = new QLineEdit(fileExtensions);
-    QRegExpValidator *validator  = new QRegExpValidator(QRegExp("[\\w_]+"), this);
-    inputSuffix->setValidator(validator);
-
-    QLabel *labelProgram = new QLabel(tr("Program:"));
-    inputProgram = new QLineEdit(fileExtensions);
-
-    QPushButton *buttonSet = new QPushButton(tr("Set"), fileExtensions);
-
-    QPushButton *buttonRemove = new QPushButton(tr("Remove"), fileExtensions);
-    connect(listSuffix, SIGNAL(itemPressed(QTableWidgetItem*)), SLOT(slotEditSuffix(QTableWidgetItem*)));
-    connect(buttonSet, SIGNAL(clicked()), SLOT(slotAdd()));
-    connect(buttonRemove, SIGNAL(clicked()), SLOT(slotRemove()));
-
-    fileExtensionsLayout->addWidget(fileExtensionsWarning, 0, 0, 1, 2, Qt::AlignLeft);
-    fileExtensionsLayout->addWidget(listSuffix, 1, 0, 6, 1);
-    fileExtensionsLayout->addWidget(labelSuffix, 1, 1, Qt::AlignLeft);
-    fileExtensionsLayout->addWidget(inputSuffix, 2, 1);
-    fileExtensionsLayout->addWidget(labelProgram , 3, 1, Qt::AlignLeft);
-    fileExtensionsLayout->addWidget(inputProgram, 4, 1);
-    fileExtensionsLayout->addWidget(buttonSet, 5, 1);
-    fileExtensionsLayout->addWidget(buttonRemove, 6, 1);
-
-
     //Finally we set the general layout of all groups *************************
     QVBoxLayout *vlayout1 = new QVBoxLayout();
     QLabel *title_label_ = new QLabel(title());
@@ -236,7 +178,6 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
 
     vlayout1->addWidget(appereance);
     vlayout1->addWidget(misc);
-    vlayout1->addWidget(fileExtensions);
 
     vlayout1->addStretch();
 
@@ -246,71 +187,6 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
 //! Destructor
 GeneralConfigurationPage::~GeneralConfigurationPage()
 {
-}
-
-void GeneralConfigurationPage::slotEditSuffix(QTableWidgetItem *Item)
-{
-    int row = listSuffix->currentRow();
-    QTableWidgetItem *Item0 = listSuffix->item(row,0);
-    QTableWidgetItem *Item1 = listSuffix->item(row,1);
-    if(Item) {
-        inputSuffix->setText(Item0->text());
-        inputProgram->setText(Item1->text());
-    }
-    else {
-        inputSuffix->setFocus();
-        inputSuffix->setText("");
-        inputProgram->setText("");
-    }
-}
-
-void GeneralConfigurationPage::slotAdd()
-{
-    int row = listSuffix->currentRow();
-    QTableWidgetItem *Item0 = listSuffix->item(row,0);
-    QTableWidgetItem *Item1 = listSuffix->item(row,1);
-    if(Item0) {
-        Item0->setText(inputSuffix->text());
-        Item1->setText(inputProgram->text());
-        listSuffix->resizeColumnsToContents();
-        listSuffix->resizeRowsToContents();
-        return;
-    }
-
-    for(int r = 0; r < listSuffix->rowCount(); r++) {
-        Item0 = listSuffix->item(r,0);
-        if(Item0->text() == inputSuffix->text()) {
-            QMessageBox::critical(this, tr("Error"),
-                    tr("This suffix is already registered!"));
-            return;
-        }
-    }
-
-    Item0 = new QTableWidgetItem(inputSuffix->text());
-    Item1 = new QTableWidgetItem(inputProgram->text());
-    row = listSuffix->rowCount();
-    listSuffix->insertRow(row);
-    listSuffix->setItem(row,0,Item0);
-    listSuffix->setItem(row,1,Item1);
-    listSuffix->resizeColumnsToContents();
-    listSuffix->resizeRowsToContents();
-    inputSuffix->setFocus();
-    inputSuffix->setText("");
-    inputProgram->setText("");
-}
-
-void GeneralConfigurationPage::slotRemove()
-{
-    int row = listSuffix->currentRow();
-    QTableWidgetItem *Item0 = listSuffix->item(row,0);
-    if(Item0 == 0) {
-        return;
-    }
-
-    listSuffix->removeRow(row);   // remove from TableWidget
-
-    inputSuffix->setText("");
-    inputProgram->setText("");
 }
 
 void GeneralConfigurationPage::slotFontDialog()
@@ -340,7 +216,7 @@ void GeneralConfigurationPage::slotDefaultValues()
     setBackgroundColor(buttonBackground,QColor(255,250,225));
     spinUndoNum->setValue(20);
     editEditor->setText(Qucs::binaryDir + "qucsedit");
-    editLibrary->setText(BASEDIR + "/qucscomponents");
+    editLibrary->setText(BASEDIR"/qucscomponents");
 }
 
 //! Applies the configuration of this page
@@ -357,7 +233,6 @@ void GeneralConfigurationPage::applyConf()
         settings->setCurrentValue("gui/backgroundColor", newBackgroundColor);
         changed = true;
     }
-
 
     const QFont currentFont = settings->currentValue("gui/font").value<QFont>();
     const QFont newFont = font;
@@ -400,19 +275,6 @@ void GeneralConfigurationPage::applyConf()
             newLibrary.append(QDir::separator());
         }
         settings->setCurrentValue("sidebarLibrary", newLibrary);
-    }
-
-
-    const QStringList currentFileTypes = settings->currentValue("gui/fileTypes").toStringList();
-    QStringList newFileTypes;
-    QTableWidgetItem *Item0, *Item1;
-    for(int r = 0; r < listSuffix->rowCount(); r++) {
-        QString suffix = listSuffix->item(r, 0)->text();
-        QString program = listSuffix->item(r, 1)->text();
-        newFileTypes.append(suffix + QChar(':') + program);
-    }
-    if (currentFileTypes != newFileTypes) {
-        settings->setCurrentValue("gui/fileTypes", newFileTypes);
     }
 
     QSettings qSettings;

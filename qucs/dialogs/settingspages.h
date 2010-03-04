@@ -29,8 +29,6 @@ class QFrame;
 class QLabel;
 class QLineEdit;
 class QSpinBox;
-class QTableWidget;
-class QTableWidgetItem;
 
 /*!
  * This abstract class contains methods that all pages
@@ -64,9 +62,6 @@ public:
     virtual ~GeneralConfigurationPage();
 
 private Q_SLOTS:
-    void slotEditSuffix(QTableWidgetItem*);
-    void slotAdd();
-    void slotRemove();
     void slotFontDialog();
     void slotBGColorDialog();
     void slotDefaultValues();
@@ -79,8 +74,7 @@ public:
     QLabel *title_label_;
     QFrame *horiz_line_;
 
-    QTableWidget *listSuffix;
-    QLineEdit *editEditor, *editLibrary, *inputSuffix, *inputProgram;
+    QLineEdit *editEditor, *editLibrary;
     QFont font;
     QPushButton *buttonFont, *buttonBackground;
     QComboBox *comboLanguage;

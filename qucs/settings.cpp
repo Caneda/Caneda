@@ -48,7 +48,6 @@ Settings::Settings()
     data["gui/maxUndo"] = VariantPair(int(20));
     data["gui/textEditor"] = VariantPair(QString(BINARYDIR"/qucsedit"));
     data["gui/language"] = VariantPair(QString());
-    data["gui/fileTypes"] = VariantPair(QStringList());
 
     data["gui/vhdl/comment"] = VariantPair(QColor(Qt::gray));
     data["gui/vhdl/string"]= VariantPair(QVariant(QColor(Qt::red)));
@@ -95,43 +94,22 @@ void Settings::setCurrentValue(const QString& key, const QVariant& value)
 bool Settings::load(QSettings &settings)
 {
     QStringList childKeys = data.keys();
-    childKeys.removeAll("gui/fileTypes"); // Requires special treatment
     foreach (const QString& childKey, childKeys) {
         setCurrentValue(childKey, settings.value(childKey));
     }
 
-    QStringList fileTypes;
-    int size = settings.beginReadArray("gui/fileTypes");
-    for (int i = 0; i < size; ++i) {
-        settings.setArrayIndex(i);
-        QString suffix = settings.value("suffix").toString();
-        QString program = settings.value("program").toString();
-        fileTypes.append(suffix + QChar(':') + program);
-    }
-    settings.endArray();
-    setCurrentValue("gui/fileTypes", fileTypes);
     return true;
 }
 
 bool Settings::save(QSettings &settings)
 {
     QStringList childKeys = data.keys();
-    childKeys.removeAll("gui/fileTypes"); // Requires special treatment
     foreach (const QString& childKey, childKeys) {
         // Save only keys which aren't having "nosave/" prefix.
         if (!childKey.startsWith("nosave/")) {
             settings.setValue(childKey, currentValue(childKey));
         }
     }
-
-    QStringList fileTypes = currentValue("gui/fileTypes").toStringList();
-    settings.beginWriteArray("gui/fileTypes");
-    for (int i = 0; i < fileTypes.size(); ++i) {
-        settings.setArrayIndex(i);
-        settings.setValue("suffix", fileTypes.at(i).section(':', 0, 0));
-        settings.setValue("program", fileTypes.at(i).section(':', 1, 1));
-    }
-    settings.endArray();
 }
 
 Settings* Settings::instance()
