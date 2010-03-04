@@ -64,7 +64,6 @@ public:
 private Q_SLOTS:
     void slotFontDialog();
     void slotBGColorDialog();
-    void slotDefaultValues();
 
 public:
     void applyConf();
@@ -144,7 +143,6 @@ private Q_SLOTS:
     void slotColorCharacter();
     void slotColorDataType();
     void slotColorAttributes();
-    void slotDefaultValues();
 
 public:
     void applyConf();

@@ -207,17 +207,6 @@ void GeneralConfigurationPage::slotBGColorDialog()
     }
 }
 
-void GeneralConfigurationPage::slotDefaultValues()
-{
-    font = QFont("Helvetica", 12);
-    buttonFont->setText(font.toString());
-    comboLanguage->setCurrentIndex(0);
-    setBackgroundColor(buttonBackground,QColor(255,250,225));
-    spinUndoNum->setValue(20);
-    editEditor->setText(Qucs::binaryDirectory() + "qucsedit");
-    editLibrary->setText(Qucs::baseDirectory() + "qucscomponents/");
-}
-
 //! Applies the configuration of this page
 void GeneralConfigurationPage::applyConf()
 {
@@ -810,48 +799,4 @@ void VhdlConfigurationPage::slotColorAttributes()
     if(c.isValid()) {
         setForegroundColor(attributesButton,c);
     }
-}
-
-void VhdlConfigurationPage::slotDefaultValues()
-{
-    Settings *settings = Settings::instance();
-
-    const QColor defaultcommentColor =
-        settings->defaultValue("gui/vhdl/comment").value<QColor>();
-    const QColor defaultstringColor =
-        settings->defaultValue("gui/vhdl/string").value<QColor>();
-    const QColor defaultintegerColor =
-        settings->defaultValue("gui/vhdl/integer").value<QColor>();
-    const QColor defaultrealColor =
-        settings->defaultValue("gui/vhdl/real").value<QColor>();
-    const QColor defaultcharacterColor =
-        settings->defaultValue("gui/vhdl/character").value<QColor>();
-    const QColor defaulttypesColor =
-        settings->defaultValue("gui/vhdl/types").value<QColor>();
-    const QColor defaultattributesColor =
-        settings->defaultValue("gui/vhdl/attributes").value<QColor>();
-
-    const QColor defaultBackgroundColor = 
-        settings->defaultValue("gui/backgroundColor").value<QColor>();
-
-    setForegroundColor(commentButton, defaultcommentColor);
-    setBackgroundColor(commentButton, defaultBackgroundColor);
-
-    setForegroundColor(stringButton, defaultstringColor);
-    setBackgroundColor(stringButton, defaultBackgroundColor);
-
-    setForegroundColor(integerButton, defaultintegerColor);
-    setBackgroundColor(integerButton, defaultBackgroundColor);
-
-    setForegroundColor(realButton, defaultrealColor);
-    setBackgroundColor(realButton, defaultBackgroundColor);
-
-    setForegroundColor(characterButton, defaultcharacterColor);
-    setBackgroundColor(characterButton, defaultBackgroundColor);
-
-    setForegroundColor(typesButton, defaulttypesColor);
-    setBackgroundColor(typesButton, defaultBackgroundColor);
-
-    setForegroundColor(attributesButton, defaultattributesColor);
-    setBackgroundColor(attributesButton, defaultBackgroundColor);
 }
