@@ -217,12 +217,12 @@ void QucsMainWindow::setupProjectsSidebar()
     connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
             SLOT(slotFileOpen(QString)));
 
-    sidebarDockWidget = new QDockWidget(m_project->windowTitle(),this);
-    sidebarDockWidget->setWidget(m_project);
-    sidebarDockWidget->setObjectName("projectsSidebar");
-    sidebarDockWidget->setVisible(false);
-    addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
-    viewMenu->addAction(sidebarDockWidget->toggleViewAction());
+    projectDockWidget = new QDockWidget(m_project->windowTitle(),this);
+    projectDockWidget->setWidget(m_project);
+    projectDockWidget->setObjectName("projectsSidebar");
+    projectDockWidget->setVisible(false);
+    addDockWidget(Qt::RightDockWidgetArea, projectDockWidget);
+    viewMenu->addAction(projectDockWidget->toggleViewAction());
 }
 
 void QucsMainWindow::createUndoView()
@@ -395,7 +395,6 @@ void QucsMainWindow::initActions()
     action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
     connect(action, SIGNAL(triggered()), SLOT(slotEditFind()));
 
-
     action = am->createAction("symEdit", icon("symbol-edit.png"), tr("&Edit Circuit Symbol/Schematic"));
     action->setShortcut(Key_F7);
     action->setStatusTip(tr("Switches between symbol and schematic edit"));
@@ -482,7 +481,6 @@ void QucsMainWindow::initActions()
     action->setStatusTip(tr("Closes the current project"));
     action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
     connect(action, SIGNAL(triggered()), SLOT(slotCloseProject()));
-
 
     action = am->createAction("insEquation", icon("equation.png"), tr("Insert Equation"));
     action->setCheckable(true);
@@ -888,8 +886,6 @@ void QucsMainWindow::initMenus()
 
     viewMenu->addSeparator();
 
-    menuBar()->addSeparator();
-
     helpMenu = menuBar()->addMenu(tr("&Help"));
 
     helpMenu->addAction(action("helpIndex"));
@@ -1144,7 +1140,7 @@ void QucsMainWindow::slotFileOpen(QString fileName)
 
     if(!fileName.isEmpty()) {
         if(QFileInfo(fileName).suffix() == "xpro") {
-            m_project->slotOpenProject(fileName);
+            slotOpenProject(fileName);
         }
         else {
             bool isLoaded = gotoPage(fileName);
@@ -1523,24 +1519,28 @@ void QucsMainWindow::slotCenterVertical()
 void QucsMainWindow::slotNewProject()
 {
     setNormalAction();
+    projectDockWidget->setVisible(true);
     m_project->slotNewProject();
 }
 
-void QucsMainWindow::slotOpenProject()
+void QucsMainWindow::slotOpenProject(QString fileName)
 {
     setNormalAction();
-    m_project->slotOpenProject();
+    projectDockWidget->setVisible(true);
+    m_project->slotOpenProject(fileName);
 }
 
 void QucsMainWindow::slotAddToProject()
 {
     setNormalAction();
+    projectDockWidget->setVisible(true);
     m_project->slotAddToProject();
 }
 
 void QucsMainWindow::slotRemoveFromProject()
 {
     setNormalAction();
+    projectDockWidget->setVisible(true);
     m_project->slotRemoveFromProject();
 }
 

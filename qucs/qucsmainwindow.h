@@ -93,7 +93,7 @@ public Q_SLOTS:
     void slotCenterVertical();
 
     void slotNewProject();
-    void slotOpenProject();
+    void slotOpenProject(QString fileName = 0);
     void slotAddToProject();
     void slotRemoveFromProject();
     void slotCloseProject();
@@ -174,6 +174,7 @@ private:
     QUndoView *undoView;
     ComponentsSidebar *m_componentsSidebar;
     Project *m_project;
+    QDockWidget *projectDockWidget;
     FolderBrowser *m_folderBrowser;
     QTermWidget *console;
     QDockWidget *consoleDockWidget;

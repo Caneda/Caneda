@@ -62,8 +62,6 @@ private:
     Library *projectLibrary;
     QString m_libraryName;
     QString m_libraryFileName;
-
-    QToolButton *buttonBack, *buttonForward;
 };
 
 #endif //PROJECT_H
