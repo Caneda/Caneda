@@ -46,7 +46,6 @@ TreeView::TreeView(QWidget *parent) :
     setDragEnabled(true);
     setAlternatingRowColors(true);
     setIconSize(QSize(32, 32));
-    expandAll();
 }
 
 void TreeView::mousePressEvent(QMouseEvent *event)
@@ -128,7 +127,6 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
     m_proxyModel->setSourceModel(m_model);
     m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
     m_treeView->setModel(m_proxyModel);
-    m_treeView->expandAll();
 
     connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
             this, SLOT(filterTextChanged()));
