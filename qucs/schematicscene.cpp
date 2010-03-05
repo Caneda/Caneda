@@ -124,6 +124,8 @@ void SchematicScene::init()
 
     m_opensDataDisplay = true;
     m_frameTexts = QStringList() << tr("Title: ") << tr("Drawn By: ") << tr("Date: ")+QDate::currentDate().toString() << tr("Revision: ");
+    m_frameRows = 11;
+    m_frameColumns = 16;
     m_macroProgress = false;
     m_areItemsMoving = false;
     m_shortcutsBlocked = false;
@@ -295,6 +297,14 @@ bool SchematicScene::setProperty(const QString& propName, const QVariant& value)
         setFrameTexts(value.toStringList());
         return true;
     }
+    else if(propName == "frame rows"){
+        setFrameSize(value.toInt(), frameColumns());
+        return true;
+    }
+    else if(propName == "frame columns"){
+        setFrameSize(frameRows(), value.toInt());
+        return true;
+    }
     else if(propName == "schematic width"){
         setSceneRect(0, 0, value.toDouble(), height());
         return true;
@@ -376,10 +386,29 @@ void SchematicScene::setFrameVisible(const bool visibility)
     update();
 }
 
-//! \brief Todo document
+/*!
+ * \brief Sets current schematic's frame texts.
+ *
+ * \param texts The texts to be set
+ */
 void SchematicScene::setFrameTexts(const QStringList& texts)
 {
     m_frameTexts = texts;
+    if(isFrameVisible()) {
+        update();
+    }
+}
+
+/*!
+ * \brief Sets current schematic's frame size.
+ *
+ * \param rows Number of rows to be set
+ * \param columns Number of columns to be set
+ */
+void SchematicScene::setFrameSize(int rows, int columns)
+{
+    m_frameRows = rows;
+    m_frameColumns = columns;
     if(isFrameVisible()) {
         update();
     }
@@ -784,6 +813,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 
     /* draw frame */
     if(isFrameVisible()) {
+        // First we draw the users content
         foreach(QString frame_text, m_frameTexts){
             if(frame_text.contains("Title: ")) {
                 painter->drawText(width()/3, height()-30, frame_text);
@@ -798,6 +828,8 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
                 painter->drawText(width()*4/5, height()-30, frame_text);
             }
         }
+
+        // Next we draw the footer lines
         painter->drawRect(sceneRect()); //Bounding rect
         painter->drawLine(QLineF(0, height()-50, width(),
                     height()-50)); //Upper footer line
@@ -807,17 +839,17 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
                     width()*4/5-20, height())); //Title division
         painter->drawLine(QLineF(20, 0, 20, height()-50)); //Left line
         painter->drawLine(QLineF(0, 20, width(), 20));  //Upper line
-        int step=60, i=1;
-        while(i*step+20 < height()-50){ //Row numbering
+
+        // Finally we draw the rows and columns
+        int step = (height()-20-50) / frameRows();
+        for(int i=1; i<frameRows()+1; i++) { //Row numbering
             painter->drawLine(QLineF(0, i*step+20, 20, i*step+20));
-            painter->drawText(6, i*step-5, QString(QChar('A'+i-1)));
-            i++;
+            painter->drawText(6, (i*step)-(step/2)+20, QString(QChar('A'+i-1)));
         }
-        i = 1;
-        while(i*step+20 < width()){ //Column numbering
+        step = (width()-20) / frameColumns();
+        for(int i=1; i<frameColumns()+1; i++) { //Column numbering
             painter->drawLine(QLineF(i*step+20, 0, i*step+20, 20));
-            painter->drawText(i*step-15, 16, QString::number(i));
-            i++;
+            painter->drawText((i*step)-(step/2)+20, 16, QString::number(i));
         }
     }
 

@@ -184,6 +184,10 @@ public:
     QStringList frameTexts() const { return m_frameTexts; }
     void setFrameTexts(const QStringList& texts);
 
+    int frameRows() const { return m_frameRows; }
+    int frameColumns() const { return m_frameColumns; }
+    void setFrameSize(int rows, int columns);
+
     Qucs::Mode currentMode() const { return m_currentMode; }
     void setMode(const Qucs::Mode mode);
 
@@ -409,7 +413,10 @@ private:
     QString m_dataDisplay;
     //! File name
     QString m_fileName;
+    //! Frame texts
     QStringList m_frameTexts;
+    //! Frame size
+    int m_frameRows, m_frameColumns;
 
     /*!
      * \brief A flag to hold whether a schematic is modified or not

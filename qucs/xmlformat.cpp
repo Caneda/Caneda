@@ -260,7 +260,7 @@ void XmlFormat::saveView(Qucs::XmlWriter *writer)
 
     writer->writeStartElement("frame");
     writer->writeAttribute("visible", Qucs::boolToString(scene->isFrameVisible()));
-
+    writer->writeSize(QSize(scene->frameColumns(), scene->frameRows()));
     writer->writeStartElement("frametexts");
     foreach(QString text, scene->frameTexts()) {
         writer->writeElement("text",text);
@@ -450,6 +450,7 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
     QString dataDisplay;
     bool opensDataDisplay = false;
     bool frameVisible = false;
+    QSize frameSize;
     QStringList frameTexts;
 
     while(!reader->atEnd()) {
@@ -504,6 +505,9 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
                 frameVisible = (att == "true");
 
                 reader->readFurther();
+                frameSize = reader->readSize();
+
+                reader->readFurther();
                 if(reader->isStartElement() && reader->name() == "frametexts") {
                     while(!reader->atEnd()) {
                         reader->readNext();
@@ -538,6 +542,7 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
         scene->setDataDisplay(dataDisplay);
         scene->setOpensDataDisplay(opensDataDisplay);
         scene->setFrameVisible(frameVisible);
+        scene->setFrameSize(frameSize.height(), frameSize.width());
         scene->setFrameTexts(frameTexts);
     }
 }
