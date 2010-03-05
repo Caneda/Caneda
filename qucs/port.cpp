@@ -29,7 +29,7 @@
 
 
 //! Define to 1 to print number of port connection in schematic
-#define DEBUG_PORT_CONNECTION 1
+#define DEBUG_PORT_CONNECTION 0
 
 //! Returns whether two circle's of same radii intersect's or not.
 bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
