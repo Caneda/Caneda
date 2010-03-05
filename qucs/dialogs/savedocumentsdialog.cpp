@@ -138,7 +138,8 @@ QSet<QPair<QucsView*, QString> > SaveDocumentsDialog::newFilePaths() const
 
 void SaveDocumentsDialog::slotButtonClicked(QAbstractButton *button)
 {
-    if (ui.buttonBox->buttonRole(button) == SaveSelected) {
+    int buttonRole = ui.buttonBox->buttonRole(button);
+    if (buttonRole == SaveSelected) {
         int selectedCount = 0;
         for (int i = 0; i < ui.treeWidget->topLevelItemCount(); ++i) {
             QTreeWidgetItem *item = ui.treeWidget->topLevelItem(i);
@@ -173,9 +174,10 @@ void SaveDocumentsDialog::slotHandleClick(const QModelIndex& index)
     mw->tabWidget()->setCurrentIndex(d->treeIndexToTabIndex[index.row()]);
 }
 
-void SaveDocumentsDialog::slotHandleDoubleClick(const QModelIndex& index)
+void SaveDocumentsDialog::reject()
 {
-
+    QAbstractButton *cancel = ui.buttonBox->button(QDialogButtonBox::Cancel);
+    slotButtonClicked(cancel);
 }
 
 void SaveDocumentsDialog::populateItems()

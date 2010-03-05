@@ -65,7 +65,7 @@ public:
 public Q_SLOTS:
     void slotButtonClicked(QAbstractButton *button);
     void slotHandleClick(const QModelIndex& index);
-    void slotHandleDoubleClick(const QModelIndex& index);
+    void reject();
 
 private:
     void populateItems();
