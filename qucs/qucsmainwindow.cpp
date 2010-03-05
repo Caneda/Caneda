@@ -217,11 +217,11 @@ void QucsMainWindow::setupProjectsSidebar()
     connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
             SLOT(slotFileOpen(QString)));
 
-    projectDockWidget = new QDockWidget(m_project->windowTitle(),this);
+    projectDockWidget = new QDockWidget(m_project->windowTitle(), this);
     projectDockWidget->setWidget(m_project);
     projectDockWidget->setObjectName("projectsSidebar");
     projectDockWidget->setVisible(false);
-    addDockWidget(Qt::RightDockWidgetArea, projectDockWidget);
+    addDockWidget(Qt::LeftDockWidgetArea, projectDockWidget);
     viewMenu->addAction(projectDockWidget->toggleViewAction());
 }
 
@@ -230,7 +230,7 @@ void QucsMainWindow::createUndoView()
     undoView = new QUndoView(m_undoGroup);
     undoView->setWindowTitle(tr("Command List"));
 
-    sidebarDockWidget = new QDockWidget(undoView->windowTitle(),this);
+    sidebarDockWidget = new QDockWidget(undoView->windowTitle(), this);
     sidebarDockWidget->setWidget(undoView);
     sidebarDockWidget->setObjectName("undoSidebar");
     sidebarDockWidget->setVisible(false);
@@ -245,10 +245,11 @@ void QucsMainWindow::createFolderView()
     connect(m_folderBrowser, SIGNAL(itemDoubleClicked(QString)), this,
             SLOT(slotFileOpen(QString)));
 
-    sidebarDockWidget = new QDockWidget(m_folderBrowser->windowTitle(),this);
+    sidebarDockWidget = new QDockWidget(m_folderBrowser->windowTitle(), this);
     sidebarDockWidget->setWidget(m_folderBrowser);
     sidebarDockWidget->setObjectName("folderBrowserSidebar");
     addDockWidget(Qt::LeftDockWidgetArea, sidebarDockWidget);
+    tabifyDockWidget(sidebarDockWidget, projectDockWidget);
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 }
 
