@@ -426,11 +426,23 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene,
     spinSchemaY->setMaximum(10000);
     spinSchemaY->setValue(Scn->height());
 
+    spinFrameY = new QSpinBox;
+    spinFrameY->setMinimum(1);
+    spinFrameY->setMaximum(50);
+    spinFrameY->setValue(Scn->frameRows());
+
+    spinFrameX = new QSpinBox;
+    spinFrameX->setMinimum(1);
+    spinFrameX->setMaximum(50);
+    spinFrameX->setValue(Scn->frameColumns());
+
     QGroupBox *frame = new QGroupBox(tr("Frame"), this);
     QFormLayout *frameLayout = new QFormLayout(frame);
     frameLayout->addRow(tr("Show frame:"), checkShowFrame);
     frameLayout->addRow(tr("Schematic Width:"), spinSchemaX);
     frameLayout->addRow(tr("Schematic Height:"), spinSchemaY);
+    frameLayout->addRow(tr("Number of Rows:"), spinFrameY);
+    frameLayout->addRow(tr("Number of Columns:"), spinFrameX);
 
 
     //Next we set the document group of options *******************************
@@ -489,49 +501,74 @@ DocumentConfigurationPage::~DocumentConfigurationPage()
   */
 void DocumentConfigurationPage::applyConf()
 {
+    bool changed = false;
+
     if(Scn->isGridVisible() != checkShowGrid->isChecked()) {
         Scn->undoStack()->push(new ScenePropertyChangeCmd("grid visibility",
                     checkShowGrid->isChecked(), Scn->isGridVisible(), Scn));
         Scn->setGridVisible(checkShowGrid->isChecked());
+        changed = true;
     }
     if(Scn->isFrameVisible() != checkShowFrame->isChecked()) {
         Scn->undoStack()->push(new ScenePropertyChangeCmd("frame visibility",
                     checkShowFrame->isChecked(), Scn->isFrameVisible(), Scn));
         Scn->setFrameVisible(checkShowFrame->isChecked());
+        changed = true;
     }
     if(Scn->gridWidth() != spinGridX->value()) {
         Scn->undoStack()->push(new ScenePropertyChangeCmd("grid width",
                     spinGridX->value(), Scn->gridWidth(), Scn));
         Scn->setGridWidth(spinGridX->value());
+        changed = true;
     }
     if(Scn->gridHeight() != spinGridY->value()) {
         Scn->undoStack()->push(new ScenePropertyChangeCmd("grid height",
                     spinGridY->value(), Scn->gridHeight(), Scn));
         Scn->setGridHeight(spinGridY->value());
+        changed = true;
     }
     if(Scn->width() != spinSchemaX->value()) {
         Scn->undoStack()->push(new ScenePropertyChangeCmd("schematic width",
                     spinSchemaX->value(), Scn->width(), Scn));
         Scn->setSceneRect(0, 0, spinSchemaX->value(), Scn->height());
+        changed = true;
     }
     if(Scn->height() != spinSchemaY->value()) {
         Scn->undoStack()->push(new ScenePropertyChangeCmd("schematic height",
                     spinSchemaY->value(), Scn->height(), Scn));
         Scn->setSceneRect(0, 0, Scn->width(), spinSchemaY->value());
+        changed = true;
     }
+    if(Scn->frameRows() != spinFrameY->value()) {
+        Scn->undoStack()->push(new ScenePropertyChangeCmd("frame rows",
+                    spinFrameY->value(), Scn->frameRows(), Scn));
+        Scn->setFrameSize(spinFrameY->value(), Scn->frameColumns());
+        changed = true;
+    }
+    if(Scn->frameColumns() != spinFrameX->value()) {
+        Scn->undoStack()->push(new ScenePropertyChangeCmd("frame columns",
+                    spinFrameX->value(), Scn->frameColumns(), Scn));
+        Scn->setFrameSize(Scn->frameRows(), spinFrameX->value());
+        changed = true;
+    }
+
 
     bool modified = false;
     if(!Scn->frameTexts().contains(tr("Title: ")+editTitle->text())) {
         modified = true;
+        changed = true;
     }
     else if(!Scn->frameTexts().contains(tr("Drawn By: ")+editName->text())) {
         modified = true;
+        changed = true;
     }
     else if(!Scn->frameTexts().contains(tr("Date: ")+editDate->date().toString())) {
         modified = true;
+        changed = true;
     }
     else if(!Scn->frameTexts().contains(tr("Revision: ")+editRevision->text())) {
         modified = true;
+        changed = true;
     }
 
     if(modified) {
@@ -542,6 +579,11 @@ void DocumentConfigurationPage::applyConf()
         Scn->undoStack()->push(new ScenePropertyChangeCmd("document properties",
                     documentProperties, Scn->frameTexts(), Scn));
         Scn->setFrameTexts(documentProperties);
+    }
+
+    if(changed) {
+        QucsMainWindow::instance()->repaint();
+        QucsMainWindow::instance()->slotUpdateAllViews();
     }
 }
 
@@ -596,7 +638,7 @@ VhdlConfigurationPage::VhdlConfigurationPage(QWidget *parent) : SettingsPage(par
     const QColor currentattributesColor =
         settings->currentValue("gui/vhdl/attributes").value<QColor>();
 
-    const QColor currentBackgroundColor = 
+    const QColor currentBackgroundColor =
         settings->currentValue("gui/backgroundColor").value<QColor>();
 
     setBackgroundColor(commentButton, currentBackgroundColor);
