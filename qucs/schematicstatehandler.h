@@ -37,9 +37,12 @@ public:
     void registerView(SchematicView *view);
     void unregisterView(SchematicView *view);
 
+
 public Q_SLOTS:
     void slotSidebarItemClicked(const QString& item, const QString& category);
     void slotHandlePaste();
+    void slotRotateInsertibles();
+    void slotMirrorInsertibles();
     void slotOnObjectDestroyed(QObject *sender);
     void slotUpdateFocussedView(SchematicView *view);
     void slotPerformToggleAction(const QString& sender, bool on);

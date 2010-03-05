@@ -25,6 +25,7 @@
 #include "schematicview.h"
 #include "settings.h"
 #include "singletonmanager.h"
+#include "undocommands.h"
 
 #include "paintings/painting.h"
 
@@ -142,6 +143,10 @@ void SchematicStateHandler::registerView(SchematicView *view)
     if (!d->scenes.contains(scene)) {
         d->scenes << scene;
         connect(scene, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
+        connect(scene, SIGNAL(rotateInvokedWhileInserting()),
+                SLOT(slotRotateInsertibles()));
+        connect(scene, SIGNAL(mirrorInvokedWhileInserting()),
+                SLOT(slotMirrorInsertibles()));
     }
 }
 
@@ -162,6 +167,10 @@ void SchematicStateHandler::unregisterView(SchematicView *view)
     if (scene && d->scenes.contains(scene)) {
         d->scenes.remove(scene);
         disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
+        disconnect(scene, SIGNAL(rotateInvokedWhileInserting()), this,
+                SLOT(slotRotateInsertibles()));
+        disconnect(scene, SIGNAL(mirrorInvokedWhileInserting()), this,
+                SLOT(slotMirrorInsertibles()));
     }
 }
 
@@ -250,6 +259,36 @@ void SchematicStateHandler::slotHandlePaste()
         d->insertibles = _items;
         slotPerformToggleAction("insertItem", true);
     }
+}
+
+void SchematicStateHandler::slotRotateInsertibles()
+{
+    if (d->mouseAction != SchematicScene::InsertingItems) {
+        qDebug() << Q_FUNC_INFO << "Wrong mouse action mode!";
+        return;
+    }
+
+    // Utilize code available in undo command :-P
+    RotateItemsCmd cmd(d->insertibles, Qucs::Clockwise);
+    cmd.redo();
+
+    // Now start a fresh insertion
+    slotPerformToggleAction("insertItem", true);
+}
+
+void SchematicStateHandler::slotMirrorInsertibles()
+{
+    if (d->mouseAction != SchematicScene::InsertingItems) {
+        qDebug() << Q_FUNC_INFO << "Wrong mouse action mode!";
+        return;
+    }
+
+    // Utilize code available in undo command :-P
+    MirrorItemsCmd cmd(d->insertibles, Qt::XAxis);
+    cmd.redo();
+
+    // Now start a fresh insertion
+    slotPerformToggleAction("insertItem", true);
 }
 
 void SchematicStateHandler::slotInsertToolbarComponent(const QString& sender,

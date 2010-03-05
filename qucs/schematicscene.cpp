@@ -610,6 +610,9 @@ void SchematicScene::beginPaintingDraw(Painting *item)
 void SchematicScene::beginInsertingItems(const QList<QucsItem*> &items)
 {
     Q_ASSERT(m_currentMouseAction == SchematicScene::InsertingItems);
+
+    // Delete all previous insertibles
+    qDeleteAll(m_insertibles);
     /* add to insert list */
     m_insertibles = items;
 
@@ -1055,11 +1058,6 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
  */
 void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
-    //Cache the mouse press position
-    if((e->buttons() & Qt::MidButton) == Qt::MidButton) {
-        qDebug() << "pressed" << e->scenePos();
-    }
-
     /* grid snap mode */
     if(m_snapToGrid) {
         lastPos = nearingGridPoint(e->scenePos());
@@ -2465,21 +2463,44 @@ void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
 void SchematicScene::insertingItemsEvent(MouseActionEvent *event)
 {
     if(event->type() == QEvent::GraphicsSceneMousePress) {
-        clearSelection();
-        foreach(QucsItem *item, m_insertibles) {
-            removeItem(item);
+        if (event->button() == Qt::LeftButton) {
+            clearSelection();
+            foreach(QucsItem *item, m_insertibles) {
+                removeItem(item);
+            }
+            m_undoStack->beginMacro(QString("Insert items"));
+            foreach(QucsItem *item, m_insertibles) {
+                QucsItem *copied = item->copy(0);
+                /* round */
+                placeItem(copied, smartNearingGridPoint(item->pos()), Qucs::PushUndoCmd);
+            }
+            m_undoStack->endMacro();
+            foreach(QucsItem *item, m_insertibles) {
+                addItem(item);
+                item->setSelected(true);
+            }
+        } else if (event->button() == Qt::RightButton) {
+            emit rotateInvokedWhileInserting();
+            // HACK: Assuming the above signal is connected to SchematicStateHandler
+            // through Qt::DirectConnection, all m_insertibles would have been
+            // updated with rotated items.  However, beginInsertingItems would have
+            // hidden all items, so show them back.
+            // I see no point why we would be not using Qt::DirectConenction though!
+            QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
+            foreach(QucsItem *item, m_insertibles) {
+                item->show();
+                item->setPos(smartNearingGridPoint(item->pos() + delta));
+            }
+        } else if (event->button() == Qt::MidButton) {
+            emit mirrorInvokedWhileInserting();
+            // HACK: Same as above!
+            QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
+            foreach(QucsItem *item, m_insertibles) {
+                item->show();
+                item->setPos(smartNearingGridPoint(item->pos() + delta));
+            }
         }
-        m_undoStack->beginMacro(QString("Insert items"));
-        foreach(QucsItem *item, m_insertibles) {
-            QucsItem *copied = item->copy(0);
-            /* round */
-            placeItem(copied, smartNearingGridPoint(item->pos()), Qucs::PushUndoCmd);
-        }
-        m_undoStack->endMacro();
-        foreach(QucsItem *item, m_insertibles) {
-            addItem(item);
-            item->setSelected(true);
-        }
+
     }
     else if(event->type() == QEvent::GraphicsSceneMouseMove) {
         QPointF delta = event->scenePos() - centerOfItems(m_insertibles);

@@ -215,10 +215,12 @@ public Q_SLOTS:
     void setModified(const bool m = true);
     bool sidebarItemClicked(const QString &item, const QString& category);
 
-signals:
+Q_SIGNALS:
     void modificationChanged(bool changed);
     void fileNameChanged(const QString& file);
     void titleToBeUpdated();
+    void rotateInvokedWhileInserting();
+    void mirrorInvokedWhileInserting();
 
 protected:
     void drawBackground(QPainter *p, const QRectF& r);
