@@ -172,7 +172,7 @@ namespace Qucs
 //! \brief Create a new item and add to scene.
 QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) :
     QGraphicsItem(parent),
-    m_boundingRect(-2., -2., 4., 4.) /* Non empty default bound rect.*/
+    m_boundingRect(0, 0, 0, 0)
 {
     m_shape.addRect(m_boundingRect);
 #if QT_VERSION >= 0x040600

@@ -1164,7 +1164,7 @@ bool SchematicScene::sidebarItemClickedPaintingsItems(const QString& itemName)
         setCurrentMouseAction(Normal);
         return false;
     }
-    m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
+    m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
     return true;
 }
 
@@ -2356,7 +2356,7 @@ void SchematicScene::placeAndDuplicatePainting()
     placeItem(m_paintingDrawItem, dest, Qucs::PushUndoCmd);
 
     m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
-    m_paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
+    m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
     if(m_paintingDrawItem->type() == GraphicText::Type) {
         static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
     }
@@ -2372,6 +2372,7 @@ void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
     GraphicText *text = 0;
     QPointF dest = event->scenePos();
     dest += m_paintingDrawItem->paintingRect().topLeft();
+    dest = smartNearingGridPoint(dest);
 
     if(m_paintingDrawItem->type() == EllipseArc::Type) {
         arc = static_cast<EllipseArc*>(m_paintingDrawItem);
@@ -2446,7 +2447,8 @@ void SchematicScene::paintingDrawEvent(MouseActionEvent *event)
 
         else if(m_paintingDrawClicks == 1) {
             QRectF rect = m_paintingDrawItem->paintingRect();
-            rect.setBottomRight(m_paintingDrawItem->mapFromScene(event->scenePos()));
+            const QPointF gridifiedPos = smartNearingGridPoint(event->scenePos());
+            rect.setBottomRight(m_paintingDrawItem->mapFromScene(gridifiedPos));
             m_paintingDrawItem->setPaintingRect(rect);
         }
     }
@@ -2824,7 +2826,7 @@ void SchematicScene::placeItem(QucsItem *item, const QPointF &pos, const Qucs::U
     }
 
     else {
-        m_undoStack->beginMacro(QString("Use Paint Tool"));
+        m_undoStack->beginMacro(QString("Place item"));
 
         m_undoStack->push(new InsertItemCmd(item, this, pos));
         if(item->isComponent()) {

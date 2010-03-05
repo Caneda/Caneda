@@ -190,7 +190,7 @@ void SchematicStateHandler::slotSidebarItemClicked(const QString& item,
         if (!d->paintingDrawItem) {
             slotSetNormalAction();
         } else {
-            d->paintingDrawItem->setPaintingRect(QRectF(-2, -2, 4, 4));
+            d->paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
             slotPerformToggleAction("paintingDraw", true);
         }
     } else {
