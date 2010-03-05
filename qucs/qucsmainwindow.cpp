@@ -1520,6 +1520,7 @@ void QucsMainWindow::slotNewProject()
 {
     setNormalAction();
     projectDockWidget->setVisible(true);
+    projectDockWidget->raise();
     m_project->slotNewProject();
 }
 
@@ -1527,6 +1528,7 @@ void QucsMainWindow::slotOpenProject(QString fileName)
 {
     setNormalAction();
     projectDockWidget->setVisible(true);
+    projectDockWidget->raise();
     m_project->slotOpenProject(fileName);
 }
 
@@ -1534,6 +1536,7 @@ void QucsMainWindow::slotAddToProject()
 {
     setNormalAction();
     projectDockWidget->setVisible(true);
+    projectDockWidget->raise();
     m_project->slotAddToProject();
 }
 
@@ -1541,6 +1544,7 @@ void QucsMainWindow::slotRemoveFromProject()
 {
     setNormalAction();
     projectDockWidget->setVisible(true);
+    projectDockWidget->raise();
     m_project->slotRemoveFromProject();
 }
 
