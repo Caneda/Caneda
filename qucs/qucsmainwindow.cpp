@@ -1717,7 +1717,7 @@ void QucsMainWindow::editFile(const QString& File)
     if(!File.isEmpty()) {
         arguments << File;
     }
-    QString textEditor = Settings::instance()->currentValue("textEditor").toString();
+    QString textEditor = Settings::instance()->currentValue("gui/textEditor").toString();
     QProcess *QucsEditor = new QProcess(this);
     QucsEditor->start(textEditor, arguments);
 
