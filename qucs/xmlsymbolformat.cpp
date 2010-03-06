@@ -65,7 +65,6 @@ bool XmlSymbolFormat::save()
     scene->setGridVisible(false);
 
     QSvgGenerator svg_engine;
-    svg_engine.setSize(scene->imageSize());
     QFileInfo info(scene->fileName());
     svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
     scene->toPaintDevice(svg_engine, scene->imageSize().width(), scene->imageSize().height());
@@ -122,8 +121,15 @@ QString XmlSymbolFormat::saveText()
             if(c->name() == "Port") {
                 writer->writeEmptyElement("port");
                 writer->writeAttribute("name", c->label());
-                writer->writeAttribute("x", QString::number(c->pos().x() - scene->imageBoundingRect().x()));
-                writer->writeAttribute("y", QString::number(c->pos().y() - scene->imageBoundingRect().y()));
+
+                // We adjust the port to fit in grid
+                QRect source_area = scene->imageBoundingRect();
+                QPointF newOrigin = scene->smartNearingGridPoint(source_area.topLeft());
+                source_area.setLeft(newOrigin.x());
+                source_area.setTop(newOrigin.y());
+
+                writer->writeAttribute("x", QString::number(c->pos().x() - source_area.x()));
+                writer->writeAttribute("y", QString::number(c->pos().y() - source_area.y()));
             }
         }
     }

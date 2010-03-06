@@ -699,13 +699,23 @@ bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
 {
     QRect source_area = imageBoundingRect();
 
+    // we move the origin to fit in grid
+    QPointF newOrigin = smartNearingGridPoint(source_area.topLeft());
+
+    QPointF delta = source_area.topLeft();
+    delta.setX(source_area.left() - newOrigin.x());
+    delta.setY(source_area.top() - newOrigin.y());
+
+    source_area.setLeft(newOrigin.x());
+    source_area.setTop(newOrigin.y());
+
     // if the dimensions are not specified, the image is exported at 1:1 scale
     QRect dest_area;
     if(width == -1 && height == -1) {
         dest_area = source_area;
     }
     else {
-        dest_area = QRect(0, 0, width, height);
+        dest_area = QRect(0, 0, width+delta.x(), height+delta.y()); // we add the delta added to fit in grid
     }
 
     // prepare the device

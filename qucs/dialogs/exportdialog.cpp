@@ -504,7 +504,6 @@ void ExportDialog::generateSvg(SchematicScene *sch, int width, int height,
 
     // QPicture generated from the schematic
     QSvgGenerator svg_engine;
-    svg_engine.setSize(QSize(width, height));
     svg_engine.setOutputDevice(&file);
 
     sch->toPaintDevice(svg_engine, width, height,
