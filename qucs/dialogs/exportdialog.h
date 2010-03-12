@@ -82,7 +82,7 @@ private:
     QGroupBox *setupOptionsGroupBox();
 
     qreal diagramRatio(SchematicScene *);
-    QSize diagramSize(SchematicScene *);
+    QSizeF diagramSize(SchematicScene *);
     int diagramsToExportCount() const;
     void exportDiagram(ExportDiagramLine *);
     QImage generateImage(SchematicScene *, int, int, bool);

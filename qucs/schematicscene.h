@@ -206,10 +206,9 @@ public:
     bool shortcutsBlocked() const { return m_shortcutsBlocked; }
     void blockShortcuts(bool block);
 
-    bool toPaintDevice(QPaintDevice &, int = -1, int = -1,
+    bool toPaintDevice(QPaintDevice &, qreal = -1, qreal = -1,
             Qt::AspectRatioMode = Qt::KeepAspectRatio);
-    QSize imageSize() const;
-    QRect imageBoundingRect() const;
+    QRectF imageBoundingRect() const;
 
 public Q_SLOTS:
     void setModified(const bool m = true);

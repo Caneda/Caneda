@@ -24,6 +24,8 @@
 
 #include "qucs-tools/global.h"
 
+#include <math.h>
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QCompleter>
@@ -240,8 +242,8 @@ int ExportDialog::diagramsToExportCount() const
  */
 qreal ExportDialog::diagramRatio(SchematicScene *schematic)
 {
-    QSize diagram_size = diagramSize(schematic);
-    qreal diagram_ratio = (qreal)diagram_size.width() / (qreal)diagram_size.height();
+    QSizeF diagram_size = diagramSize(schematic);
+    qreal diagram_ratio = diagram_size.width() / diagram_size.height();
     return(diagram_ratio);
 }
 
@@ -250,12 +252,14 @@ qreal ExportDialog::diagramRatio(SchematicScene *schematic)
  * @return dimensions of the schematic, taking into account the type of export: frame
  * or elements
  */
-QSize ExportDialog::diagramSize(SchematicScene *schematic)
+QSizeF ExportDialog::diagramSize(SchematicScene *schematic)
 {
     bool state_useFrame = schematic->isFrameVisible();
 
     schematic->setFrameVisible(draw_frame->isChecked());
-    QSize diagram_size = schematic->imageSize();
+
+    QRectF diagram_rect = schematic->imageBoundingRect();
+    QSizeF diagram_size = QSizeF(diagram_rect.width(), diagram_rect.height());
 
     schematic->setFrameVisible(state_useFrame);
 
@@ -263,7 +267,7 @@ QSize ExportDialog::diagramSize(SchematicScene *schematic)
 }
 
 /*!
- * This method adjusts the width of the schematic ifand only if
+ * This method adjusts the width of the schematic if and only if
  * "Constrain Proportions" is selected.
  * @param diagram_id number of schema
  */
@@ -281,7 +285,7 @@ void ExportDialog::slot_correctWidth(int diagram_id)
 
     current_diagram->width->blockSignals(true);
     current_diagram->width->setValue(
-            qRound(current_diagram->height->value() * diagram_ratio));
+            current_diagram->height->value() * diagram_ratio);
     current_diagram->width->blockSignals(false);
 }
 
@@ -304,7 +308,7 @@ void ExportDialog::slot_correctHeight(int diagram_id)
 
     current_diagram->height->blockSignals(true);
     current_diagram->height->setValue(
-            qRound(current_diagram->width->value() / diagram_ratio));
+            current_diagram->width->value() / diagram_ratio);
     current_diagram->height->blockSignals(false);
 }
 
@@ -348,7 +352,7 @@ void ExportDialog::slot_resetSize(int diagram_id)
         return;
     }
 
-    QSize diagram_size = diagramSize(current_diagram->schema);
+    QSizeF diagram_size = diagramSize(current_diagram->schema);
 
     current_diagram->width->blockSignals(true);
     current_diagram->height->blockSignals(true);

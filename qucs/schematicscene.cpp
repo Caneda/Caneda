@@ -694,10 +694,10 @@ void SchematicScene::blockShortcuts(const bool block)
  *
  * @return bool True on success, false otherwise
  */
-bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
+bool SchematicScene::toPaintDevice(QPaintDevice &pix, qreal width, qreal height,
         Qt::AspectRatioMode aspectRatioMode)
 {
-    QRect source_area = imageBoundingRect();
+    QRectF source_area = imageBoundingRect();
 
     // we move the origin to fit in grid
     QPointF newOrigin = smartNearingGridPoint(source_area.topLeft());
@@ -710,12 +710,12 @@ bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
     source_area.setTop(newOrigin.y());
 
     // if the dimensions are not specified, the image is exported at 1:1 scale
-    QRect dest_area;
+    QRectF dest_area;
     if(width == -1 && height == -1) {
         dest_area = source_area;
     }
     else {
-        dest_area = QRect(0, 0, width+delta.x(), height+delta.y()); // we add the delta added to fit in grid
+        dest_area = QRectF(0, 0, width+delta.x(), height+delta.y()); // we add the delta added to fit in grid
     }
 
     // hack: we make the source_area a little bit bigger that dest_area to avoid expanding the image
@@ -751,36 +751,15 @@ bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
 /*!
  * \brief Used to know the dimensions of the image
  *
- * @return The size of the image
- */
-QSize SchematicScene::imageSize() const
-{
-    qreal image_width, image_height;
-    if(!isFrameVisible()) {
-        QRectF items_rect = itemsBoundingRect();
-        image_width  = items_rect.width();
-        image_height = items_rect.height();
-    }
-    else{
-        image_width  = width();
-        image_height = height();
-    }
-
-    return(QSizeF(image_width, image_height).toSize());
-}
-
-/*!
- * \brief Used to know the dimensions of the image
- *
  * @return The bounding rect of the image
  */
-QRect SchematicScene::imageBoundingRect() const
+QRectF SchematicScene::imageBoundingRect() const
 {
     if(!isFrameVisible()) {
-        return itemsBoundingRect().toRect();
+        return itemsBoundingRect();
     }
     else {
-        return QRect(0, 0, width(), height());
+        return QRectF(0, 0, width(), height());
     }
 }
 

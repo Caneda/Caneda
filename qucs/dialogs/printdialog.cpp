@@ -136,11 +136,12 @@ int PrintDialog::pagesCount(bool fullpage) const
 int PrintDialog::horizontalPagesCount(bool fullpage) const
 {
     // pageRect and paperRect reflect the orientation of the paper
-    QRect printable_area = fullpage ? printer->paperRect() : printer->pageRect();
-    QSize schema_size = schema->imageSize();
+    QRectF printable_area = fullpage ? printer->paperRect() : printer->pageRect();
+    QRectF schema_rect = schema->imageBoundingRect();
+    QSizeF schema_size = QSizeF(schema_rect.width(), schema_rect.height());
 
     int h_pages_count =
-        int(ceil(qreal(schema_size.width()) / qreal(printable_area.width())));
+        int(ceil(schema_size.width() / printable_area.width()));
     return(h_pages_count);
 }
 
@@ -152,11 +153,12 @@ int PrintDialog::horizontalPagesCount(bool fullpage) const
 int PrintDialog::verticalPagesCount(bool fullpage) const
 {
     //pageRect and paperRect reflect the orientation of the paper
-    QRect printable_area = fullpage ? printer->paperRect() : printer->pageRect();
-    QSize schema_size = schema->imageSize();
+    QRectF printable_area = fullpage ? printer->paperRect() : printer->pageRect();
+    QRectF schema_rect = schema->imageBoundingRect();
+    QSizeF schema_size = QSizeF(schema_rect.width(), schema_rect.height());
 
     int v_pages_count =
-        int(ceil(qreal(schema_size.height()) / qreal(printable_area.height())));
+        int(ceil(schema_size.height() / printable_area.height()));
     return(v_pages_count);
 }
 
@@ -336,33 +338,30 @@ void PrintDialog::print(bool fit_page)
     schema->setGridVisible(false);
 
     if(fit_page) {
-        schema->render(&qp, QRectF(), QRectF(QPoint(0,0),
-                    schema->imageSize()), Qt::KeepAspectRatio);
+        schema->render(&qp, QRectF(), schema->imageBoundingRect(), Qt::KeepAspectRatio);
     }
     else {
         //Printing on one or more pages
-        QRect diagram_rect = QRect(QPoint(0,0), schema->imageSize());
-        diagram_rect = diagram_rect.adjusted(0.0, 0.0, 1.0, 1.0);
+        QRectF diagram_rect = schema->imageBoundingRect();
+        QRectF printed_area = full_page ? printer->paperRect() : printer->pageRect();
 
-        QRect printed_area = full_page ? printer->paperRect() : printer->pageRect();
-
-        int used_width  = printed_area.width();
-        int used_height = printed_area.height();
+        qreal used_width  = printed_area.width();
+        qreal used_height = printed_area.height();
         int h_pages_count = horizontalPagesCount(full_page);
         int v_pages_count = verticalPagesCount(full_page);
 
-        QVector< QVector< QRect > > pages_grid;
+        QVector< QVector< QRectF > > pages_grid;
 
         //The schematic is printed on a grid of sheets
-        int y_offset = 0;
+        qreal y_offset = 0;
         for(int i = 0; i < v_pages_count; ++i) {
-            pages_grid << QVector< QRect >();
+            pages_grid << QVector< QRectF >();
 
             //Runs through the sheets of the line
-            int x_offset = 0;
+            qreal x_offset = 0;
             for(int j = 0; j < h_pages_count; ++j) {
-                pages_grid.last() << QRect(QPoint(x_offset, y_offset),
-                        QSize(qMin(used_width, diagram_rect.width()  - x_offset),
+                pages_grid.last() << QRectF(QPointF(x_offset, y_offset),
+                        QSizeF(qMin(used_width, diagram_rect.width()  - x_offset),
                             qMin(used_height, diagram_rect.height() - y_offset)));
                 x_offset += used_width;
             }
@@ -370,7 +369,7 @@ void PrintDialog::print(bool fit_page)
         }
 
         //Retains only the pages for printing
-        QVector<QRect> pages_to_print;
+        QVector<QRectF> pages_to_print;
         for(int i = 0; i < v_pages_count; ++i) {
             for(int j = 0; j < h_pages_count; ++j) {
                 pages_to_print << pages_grid.at(i).at(j);
@@ -379,8 +378,8 @@ void PrintDialog::print(bool fit_page)
 
         //Scan the pages for printing
         for(int i = 0; i < pages_to_print.count(); ++i) {
-            QRect current_rect(pages_to_print.at(i));
-            schema->render(&qp, QRect(QPoint(0,0), current_rect.size()),
+            QRectF current_rect(pages_to_print.at(i));
+            schema->render(&qp, QRectF(QPointF(0,0), current_rect.size()),
                     current_rect.translated(diagram_rect.topLeft()), Qt::KeepAspectRatio);
             if(i != pages_to_print.count()-1) {
                 printer->newPage();
