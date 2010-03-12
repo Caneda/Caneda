@@ -718,6 +718,10 @@ bool SchematicScene::toPaintDevice(QPaintDevice &pix, int width, int height,
         dest_area = QRect(0, 0, width+delta.x(), height+delta.y()); // we add the delta added to fit in grid
     }
 
+    // hack: we make the source_area a little bit bigger that dest_area to avoid expanding the image
+    source_area.setBottom(source_area.bottom()+1);
+    source_area.setRight(source_area.right()+1);
+
     // prepare the device
     QPainter p;
     if(!p.begin(&pix)) {
