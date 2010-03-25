@@ -134,7 +134,7 @@ bool SchematicView::save()
     else {
         schematicScene()->undoStack()->clear();
         //If we are editing the symbol, and svg (and xsym) files were previously created, we must update them.
-        if(schematicScene()->currentMode() == Qucs::SymbolMode) {
+        if(schematicScene()->currentMode() == Caneda::SymbolMode) {
             info = QFileInfo(fileName().replace(".xsch",".xsym"));
             if(info.exists()) {
                 setFileName(fileName().replace(".xsch",".xsym"));
@@ -191,14 +191,14 @@ bool SchematicView::isModified() const
 void SchematicView::copy() const
 {
     QList<QGraphicsItem*> items = scene()->selectedItems();
-    QList<QucsItem*> qItems = filterItems<QucsItem>(items);
+    QList<CanedaItem*> qItems = filterItems<CanedaItem>(items);
     schematicScene()->copyItems(qItems);
 }
 
 void SchematicView::cut()
 {
     QList<QGraphicsItem*> items = scene()->selectedItems();
-    QList<QucsItem*> qItems = filterItems<QucsItem>(items);
+    QList<CanedaItem*> qItems = filterItems<CanedaItem>(items);
 
     if(!qItems.isEmpty()) {
         schematicScene()->cutItems(qItems);

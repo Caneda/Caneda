@@ -1,5 +1,5 @@
 SET(DIAGRAMS_SRCS diagram.cpp)
-# SET(DIAGRAMS_MOC_HDRS qucssettingsdialog.h)
+# SET(DIAGRAMS_MOC_HDRS diagram.h)
 
 # QT4_WRAP_CPP( DIAGRAMS_MOC_SRCS ${DIAGRAMS_MOC_HDRS} )
 

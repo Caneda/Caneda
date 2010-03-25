@@ -20,7 +20,7 @@
 #endif
 
 #include "optionsdialog.h"
-#include "qucstrans.h"
+#include "canedatrans.h"
 
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QHBoxLayout>
@@ -29,12 +29,12 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QLabel>
 #include <QtGui/QComboBox>
-#include "qucs-tools/propertygrid.h"
+#include "caneda-tools/propertygrid.h"
 
 OptionsDialog::OptionsDialog(QWidget *parent)
                      : QDialog(parent)
 {
-  setWindowTitle("QucsTranscalc "+tr("Options"));
+  setWindowTitle("CanedaTranscalc "+tr("Options"));
 
   // --------  create dialog widgets  ------------
   QVBoxLayout *vLayout = new QVBoxLayout(this);
@@ -68,10 +68,10 @@ OptionsDialog::OptionsDialog(QWidget *parent)
   units[2]->addItems(Units::resList);
   units[3]->addItems(Units::angleList);
   
-  /*units[0]->setCurrentIndex (QucsSettings.freq_unit);
-  units[1]->setCurrentIndex (QucsSettings.length_unit);
-  units[2]->setCurrentIndex (QucsSettings.res_unit);
-  units[3]->setCurrentIndex (QucsSettings.ang_unit);*/
+  /*units[0]->setCurrentIndex (CanedaSettings.freq_unit);
+  units[1]->setCurrentIndex (CanedaSettings.length_unit);
+  units[2]->setCurrentIndex (CanedaSettings.res_unit);
+  units[3]->setCurrentIndex (CanedaSettings.ang_unit);*/
   
   QHBoxLayout * h2 = new QHBoxLayout();
   vLayout->addLayout(h2);
@@ -98,9 +98,9 @@ void OptionsDialog::slotClose()
 
 void OptionsDialog::slotSave()
 {
-  QucsSettings.freq_unit = units[0]->currentIndex();
-  QucsSettings.length_unit = units[1]->currentIndex();
-  QucsSettings.res_unit = units[2]->currentIndex();
-  QucsSettings.ang_unit = units[3]->currentIndex();
+  CanedaSettings.freq_unit = units[0]->currentIndex();
+  CanedaSettings.length_unit = units[1]->currentIndex();
+  CanedaSettings.res_unit = units[2]->currentIndex();
+  CanedaSettings.ang_unit = units[3]->currentIndex();
   accept();
 }

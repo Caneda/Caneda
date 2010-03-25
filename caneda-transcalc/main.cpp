@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-#include "qucstrans.h"
+#include "canedatrans.h"
 
 #include <QtGui/QApplication>
 #include <QtCore/QString>
@@ -33,18 +33,18 @@
 #include <QtCore/QDir>
 #include <QtCore/QLocale>
 #include <QtGui/QFont>
-#include "qucs-tools/propertygrid.h"
+#include "caneda-tools/propertygrid.h"
 
 
-tQucsSettings QucsSettings;
-extern QDir QucsWorkDir;
+tCanedaSettings CanedaSettings;
+extern QDir CanedaWorkDir;
 
 // Loads the settings file and stores the settings.
 bool loadSettings()
 {
   bool result = true;
 
-  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/transrc"));
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.caneda/transrc"));
   if(!file.open(QFile::ReadOnly))
     result = false; // settings file doesn't exist
   else {
@@ -55,38 +55,38 @@ bool loadSettings()
       Setting = Line.section('=',0,0);
       Line = Line.section('=',1,1);
       if(Setting == "Mode") {
-	QucsSettings.Mode = Line.simplified();
+        CanedaSettings.Mode = Line.simplified();
       }
       else if(Setting == "Frequency") {
 	Line = Line.simplified();
-	QucsSettings.freq_unit = Units::toInt(Line);
+        CanedaSettings.freq_unit = Units::toInt(Line);
       }
       else if(Setting == "Length") {
 	Line = Line.simplified();
-	QucsSettings.length_unit = Units::toInt(Line);
+        CanedaSettings.length_unit = Units::toInt(Line);
       }
       else if(Setting == "Resistance") {
 	Line = Line.simplified();
-	QucsSettings.res_unit = Units::toInt(Line);
+        CanedaSettings.res_unit = Units::toInt(Line);
       }
       else if(Setting == "Angle") {
 	Line = Line.simplified();
-	QucsSettings.ang_unit = Units::toInt(Line);
+        CanedaSettings.ang_unit = Units::toInt(Line);
       }
       else if(Setting == "TransWindow") {
-	QucsSettings.x  = Line.section(",",0,0).toInt();
-	QucsSettings.y  = Line.section(",",1,1).toInt();
-	QucsSettings.dx = Line.section(",",2,2).toInt();
-	QucsSettings.dy = Line.section(",",3,3).toInt();
+        CanedaSettings.x  = Line.section(",",0,0).toInt();
+        CanedaSettings.y  = Line.section(",",1,1).toInt();
+        CanedaSettings.dx = Line.section(",",2,2).toInt();
+        CanedaSettings.dy = Line.section(",",3,3).toInt();
 	break;
       }
     }
     file.close();
   }
 
-  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.qucs/qucsrc"));
+  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.caneda/canedarc"));
   if(!file.open(QFile::ReadOnly))
-    result = true; // qucs settings not necessary
+    result = true; // caneda settings not necessary
   else {
     QTextStream stream(&file);
     QString Line, Setting;
@@ -95,9 +95,9 @@ bool loadSettings()
       Setting = Line.section('=',0,0);
       Line = Line.section('=',1,1).trimmed();
       if(Setting == "Font")
-	QucsSettings.font.fromString(Line);
+        CanedaSettings.font.fromString(Line);
       else if(Setting == "Language")
-	QucsSettings.Language = Line;
+        CanedaSettings.Language = Line;
     }
     file.close();
   }
@@ -105,9 +105,9 @@ bool loadSettings()
 }
 
 // Saves the settings in the settings file.
-bool saveApplSettings(QucsTranscalc *qucs)
+bool saveApplSettings(CanedaTranscalc *caneda)
 {
-  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/transrc"));
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.caneda/transrc"));
   if(!file.open(QFile::WriteOnly)) {
     QMessageBox::warning(0, QObject::tr("Warning"),
 			QObject::tr("Cannot save settings !"));
@@ -117,15 +117,15 @@ bool saveApplSettings(QucsTranscalc *qucs)
   QString Line;
   QTextStream stream(&file);
 
-  stream << "Settings file, QucsTranscalc " PACKAGE_VERSION "\n"
-	 << "Mode=" << qucs->currentModeString() << "\n"
-	 << "Frequency=" << Units::toString(QucsSettings.freq_unit,Units::Frequency) << "\n"
-	 << "Length=" << Units::toString(QucsSettings.length_unit,Units::Length) << "\n"
-	 << "Resistance=" << Units::toString(QucsSettings.res_unit,Units::Resistance) << "\n"
-	 << "Angle=" << Units::toString(QucsSettings.ang_unit,Units::Angle) << "\n"
-	 << "TransWindow=" << qucs->x() << ',' << qucs->y() << ','
-	 << qucs->width() << ',' << qucs->height() << '\n';
-  qucs->saveToStream(stream);
+  stream << "Settings file, CanedaTranscalc " PACKAGE_VERSION "\n"
+         << "Mode=" << caneda->currentModeString() << "\n"
+         << "Frequency=" << Units::toString(CanedaSettings.freq_unit,Units::Frequency) << "\n"
+         << "Length=" << Units::toString(CanedaSettings.length_unit,Units::Length) << "\n"
+         << "Resistance=" << Units::toString(CanedaSettings.res_unit,Units::Resistance) << "\n"
+         << "Angle=" << Units::toString(CanedaSettings.ang_unit,Units::Angle) << "\n"
+         << "TransWindow=" << caneda->x() << ',' << caneda->y() << ','
+         << caneda->width() << ',' << caneda->height() << '\n';
+  caneda->saveToStream(stream);
 
   file.close();
   return true;
@@ -140,58 +140,58 @@ bool saveApplSettings(QucsTranscalc *qucs)
 int main(int argc, char *argv[])
 {
   // apply default settings
-  QucsSettings.x = 100;
-  QucsSettings.y = 50;
-  QucsSettings.dx = 540;
-  QucsSettings.dy = 400;
-  QucsSettings.font = QFont("Helvetica", 12);
-  QucsSettings.length_unit = 0;
-  QucsSettings.res_unit = 0;
-  QucsSettings.ang_unit = 0;
-  QucsSettings.freq_unit = 0;
+  CanedaSettings.x = 100;
+  CanedaSettings.y = 50;
+  CanedaSettings.dx = 540;
+  CanedaSettings.dy = 400;
+  CanedaSettings.font = QFont("Helvetica", 12);
+  CanedaSettings.length_unit = 0;
+  CanedaSettings.res_unit = 0;
+  CanedaSettings.ang_unit = 0;
+  CanedaSettings.freq_unit = 0;
 
   // is application relocated?
-  char * var = getenv ("QUCSDIR");
+  char * var = getenv ("CANEDADIR");
   if (var != NULL) {
-    QDir QucsDir = QDir (var);
-    QString QucsDirStr = QucsDir.canonicalPath ();
-    QucsSettings.BitmapDir =
-      QDir::convertSeparators (QucsDirStr + "/share/qucs/bitmaps/");
-    QucsSettings.LangDir =
-      QDir::convertSeparators (QucsDirStr + "/share/qucs/lang/");
+    QDir CanedaDir = QDir (var);
+    QString CanedaDirStr = CanedaDir.canonicalPath ();
+    CanedaSettings.BitmapDir =
+      QDir::convertSeparators (CanedaDirStr + "/share/caneda/bitmaps/");
+    CanedaSettings.LangDir =
+      QDir::convertSeparators (CanedaDirStr + "/share/caneda/lang/");
   } else {
-    QucsSettings.BitmapDir = BITMAPDIR;
-    QucsSettings.LangDir = LANGUAGEDIR;
+    CanedaSettings.BitmapDir = BITMAPDIR;
+    CanedaSettings.LangDir = LANGUAGEDIR;
   }
-  QucsWorkDir.setPath (QDir::homePath()+QDir::convertSeparators ("/.qucs"));
+  CanedaWorkDir.setPath (QDir::homePath()+QDir::convertSeparators ("/.caneda"));
   loadSettings();
 
   QApplication a(argc, argv);
-  a.setFont(QucsSettings.font);
+  a.setFont(CanedaSettings.font);
 
   QTranslator tor( 0 );
-  QString lang = QucsSettings.Language;
+  QString lang = CanedaSettings.Language;
   if(lang.isEmpty())
     lang = QLocale().name();
-  tor.load( QString("qucs_") + lang, QucsSettings.LangDir);
+  tor.load( QString("caneda_") + lang, CanedaSettings.LangDir);
   a.installTranslator( &tor );
 
-  QucsTranscalc *qucs = new QucsTranscalc();
-  qucs->resize(QucsSettings.dx, QucsSettings.dy); // size and position ...
-  qucs->move(QucsSettings.x, QucsSettings.y);     // ... before "show" !!!
-  qucs->show();
+  CanedaTranscalc *caneda = new CanedaTranscalc();
+  caneda->resize(CanedaSettings.dx, CanedaSettings.dy); // size and position ...
+  caneda->move(CanedaSettings.x, CanedaSettings.y);     // ... before "show" !!!
+  caneda->show();
 
-  qucs->loadFile(QDir::homePath()+"/.qucs/transrc");
-  qucs->setCurrentMode(QucsSettings.Mode);
+  caneda->loadFile(QDir::homePath()+"/.caneda/transrc");
+  caneda->setCurrentMode(CanedaSettings.Mode);
 
   // optional file argument
   if (argc > 1) {
     QString File = argv[1];
-    qucs->loadFile(File);
+    caneda->loadFile(File);
   }
 
   int result = a.exec();
-  saveApplSettings(qucs);
-  delete qucs;
+  saveApplSettings(caneda);
+  delete caneda;
   return result;
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          qucstrans.cpp  -  description
+                          canedatrans.cpp  -  description
                              -------------------
     begin                : Sun Feb 27 2005
     copyright            : (C) 2005, 2006 by Stefan Jahn
@@ -19,11 +19,11 @@
 # include <config.h>
 #endif
 
-#include "qucstrans.h"
+#include "canedatrans.h"
 
 #include "helpdialog.h"
 #include "optionsdialog.h"
-#include "qucs-tools/units.h"
+#include "caneda-tools/units.h"
 #include "microstrip.h"
 #include "coax.h"
 #include "rectwaveguide.h"
@@ -53,8 +53,8 @@
 #include <QtCore/QDate>
 #include <QtCore/QTime>
 
-#include "qucs-tools/propertygrid.h"
-QDir QucsWorkDir;
+#include "caneda-tools/propertygrid.h"
+QDir CanedaWorkDir;
 
 TransWidgets::TransWidgets()
 {
@@ -82,11 +82,11 @@ PropertyBox* TransWidgets::boxWithProperty(const QString& name)
 }
 
 /* Constructor setups the GUI. */
-QucsTranscalc::QucsTranscalc() : QWidget()
+CanedaTranscalc::CanedaTranscalc() : QWidget()
 {
   // set application icon
-  setWindowIcon(QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
-  setWindowTitle("Qucs Transcalc " PACKAGE_VERSION);
+  setWindowIcon(QPixmap(CanedaSettings.BitmapDir + "big.caneda.xpm"));
+  setWindowTitle("Caneda Transcalc " PACKAGE_VERSION);
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
   mainLayout->setMargin(0);
   setupMenu();
@@ -110,7 +110,7 @@ QucsTranscalc::QucsTranscalc() : QWidget()
   tranPix = new QLabel ();
   tranPix->setMinimumSize(220,220);
   lineLayout->addWidget(tranPix);
-  tranPix->setPixmap(QPixmap(QucsSettings.BitmapDir + "microstrip.png"));
+  tranPix->setPixmap(QPixmap(CanedaSettings.BitmapDir + "microstrip.png"));
   midLayout->addWidget(lineGroup);
   connect(tranType, SIGNAL(activated(int)), this, SLOT(slotSelectType(int)));
   
@@ -142,11 +142,11 @@ QucsTranscalc::QucsTranscalc() : QWidget()
 }
 
 /* Destructor destroys the application. */
-QucsTranscalc::~QucsTranscalc()
+CanedaTranscalc::~CanedaTranscalc()
 {
 }
 
-void QucsTranscalc::setupMenu()
+void CanedaTranscalc::setupMenu()
 {
   using namespace Qt;
   QMenuBar * menuBar = new QMenuBar ();
@@ -174,7 +174,7 @@ void QucsTranscalc::setupMenu()
   menuBar->setFixedHeight(menuBar->sizeHint().height());
 }
 
-void QucsTranscalc::setupFrames()
+void CanedaTranscalc::setupFrames()
 {
   for(int i=0; i<4; i++) 
   {
@@ -213,7 +213,7 @@ void QucsTranscalc::setupFrames()
   setupCoupledMicrostrip();
 }
 
-void QucsTranscalc::setupMicrostrip()
+void CanedaTranscalc::setupMicrostrip()
 {
   transWidgets[0]->subParams->addDoubleProperty("Er",tr("Relative Permittivity"),2.94);
   transWidgets[0]->subParams->addDoubleProperty("Mur",tr("Relative Permeability"),1.0);
@@ -242,7 +242,7 @@ void QucsTranscalc::setupMicrostrip()
   transWidgets[0]->line->setTransWidgets(transWidgets[0]);
 }
 
-void QucsTranscalc::setupRectWaveGuide()
+void CanedaTranscalc::setupRectWaveGuide()
 {
   transWidgets[1]->subParams->addDoubleProperty("Er",tr("Relative Permittivity"),1);
   transWidgets[1]->subParams->addDoubleProperty("Mur",tr("Relative Permeability"),1);
@@ -271,7 +271,7 @@ void QucsTranscalc::setupRectWaveGuide()
   transWidgets[1]->line->setTransWidgets(transWidgets[1]);
 }
 
-void QucsTranscalc::setupCoaxialLine()
+void CanedaTranscalc::setupCoaxialLine()
 {
   transWidgets[2]->subParams->addDoubleProperty("Er",tr("Relative Permittivity"),2.1);
   transWidgets[2]->subParams->addDoubleProperty("Mur",tr("Relative Permeability"),1);
@@ -298,7 +298,7 @@ void QucsTranscalc::setupCoaxialLine()
   transWidgets[2]->line->setTransWidgets(transWidgets[2]);
 }
 
-void QucsTranscalc::setupCoupledMicrostrip()
+void CanedaTranscalc::setupCoupledMicrostrip()
 {
   transWidgets[3]->subParams->addDoubleProperty("Er",tr("Relative Permittivity"),4.3);
   transWidgets[3]->subParams->addDoubleProperty("Mur",tr("Relative Permeability"),1);
@@ -333,11 +333,11 @@ void QucsTranscalc::setupCoupledMicrostrip()
 } 
 
 
-void QucsTranscalc::slotAbout()
+void CanedaTranscalc::slotAbout()
 {
   QMessageBox::about(this, tr("About..."),
-                     "QucsTranscalc Version " PACKAGE_VERSION "\n"+
-                         tr("Transmission Line Calculator for Qucs\n")+
+                     "CanedaTranscalc Version " PACKAGE_VERSION "\n"+
+                         tr("Transmission Line Calculator for Caneda\n")+
                          tr("Copyright (C) 2001 by Gopal Narayanan\n")+
                          tr("Copyright (C) 2002 by Claudio Girardi\n")+
                          tr("Copyright (C) 2005 by Stefan Jahn\n")+
@@ -346,20 +346,20 @@ void QucsTranscalc::slotAbout()
                          "\nFITNESS FOR A PARTICULAR PURPOSE.");
 }
 
-void QucsTranscalc::slotSelectType (int Type)
+void CanedaTranscalc::slotSelectType (int Type)
 {
   switch (Type) {
     case 0:
-      tranPix->setPixmap (QPixmap (QucsSettings.BitmapDir + "microstrip.png"));
+      tranPix->setPixmap (QPixmap (CanedaSettings.BitmapDir + "microstrip.png"));
       break;
     case 1:
-      tranPix->setPixmap (QPixmap (QucsSettings.BitmapDir + "rectwaveguide.png"));
+      tranPix->setPixmap (QPixmap (CanedaSettings.BitmapDir + "rectwaveguide.png"));
       break;
     case 2:
-      tranPix->setPixmap (QPixmap (QucsSettings.BitmapDir +  "coax.png"));
+      tranPix->setPixmap (QPixmap (CanedaSettings.BitmapDir +  "coax.png"));
       break;
     case 3:
-      tranPix->setPixmap (QPixmap (QucsSettings.BitmapDir +  "c_microstrip.png"));
+      tranPix->setPixmap (QPixmap (CanedaSettings.BitmapDir +  "c_microstrip.png"));
       break;
     default:
       return;
@@ -367,25 +367,25 @@ void QucsTranscalc::slotSelectType (int Type)
   statBar->showMessage(tr("Ready."));
 }
 
-int QucsTranscalc::currentModeIndex() const
+int CanedaTranscalc::currentModeIndex() const
 {
   return tranType->currentIndex();
 }
 
-void QucsTranscalc::slotAnalyze()
+void CanedaTranscalc::slotAnalyze()
 {
   transWidgets[currentModeIndex()]->line->analyze();
   statBar->showMessage(tr("Values are consistent."));
 }
 
-void QucsTranscalc::slotSynthesize()
+void CanedaTranscalc::slotSynthesize()
 {
   transWidgets[currentModeIndex()]->line->synthesize();
   statBar->showMessage(tr("Values are consistent."));
 }
 
 // Load transmission line values from the given file.
-bool QucsTranscalc::loadFile(QString fname)
+bool CanedaTranscalc::loadFile(QString fname)
 {
   QFile file(QDir::convertSeparators (fname));
   if(!file.open(QIODevice::ReadOnly)) return false; // file doesn't exist
@@ -428,16 +428,16 @@ bool QucsTranscalc::loadFile(QString fname)
 }
 
 // Saves current transmission line values into the given file.
-bool QucsTranscalc::saveFile(QString fname) {
+bool CanedaTranscalc::saveFile(QString fname) {
   QFile file (QDir::convertSeparators (fname));
   if(!file.open (QIODevice::WriteOnly)) return false; // file not writable
   QTextStream stream (&file);
 
   // some lines of documentation
-  stream << "# QucsTranscalc " << PACKAGE_VERSION << "  " << fname << "\n";
+  stream << "# CanedaTranscalc " << PACKAGE_VERSION << "  " << fname << "\n";
   stream << "#   Generated on " << QDate::currentDate().toString()
       << " at " << QTime::currentTime().toString() << ".\n";
-  stream << "#   It is not suggested to edit the file, use QucsTranscalc "
+  stream << "#   It is not suggested to edit the file, use CanedaTranscalc "
       << "instead.\n\n";
 
   int mode = tranType->currentIndex();
@@ -448,7 +448,7 @@ bool QucsTranscalc::saveFile(QString fname) {
   return true;
 }
 
-void QucsTranscalc::saveToStream(QTextStream &stream)
+void CanedaTranscalc::saveToStream(QTextStream &stream)
 {
   int mode = tranType->currentIndex();
   stream << *(transWidgets[mode]->subParams);
@@ -457,13 +457,13 @@ void QucsTranscalc::saveToStream(QTextStream &stream)
   stream << *(transWidgets[mode]->eleParams);
 }
 
-void QucsTranscalc::slotFileLoad()
+void CanedaTranscalc::slotFileLoad()
 {
   statBar->showMessage(tr("Loading file..."));
-  QString s = QFileDialog::getOpenFileName(this,tr("Enter a Filename"),QucsWorkDir.path(),
+  QString s = QFileDialog::getOpenFileName(this,tr("Enter a Filename"),CanedaWorkDir.path(),
                                            tr("Transcalc File")+" (*.trc)");
   if (!s.isEmpty())  {
-    QucsWorkDir.setPath(QDir::cleanPath(s));
+    CanedaWorkDir.setPath(QDir::cleanPath(s));
     if (!loadFile (s)) {
       QMessageBox::critical (this, tr("Error"),
                              tr("Cannot load file:")+" '"+s+"'!");
@@ -474,14 +474,14 @@ void QucsTranscalc::slotFileLoad()
   statBar->showMessage(tr("Ready."));
 }
 
-void QucsTranscalc::slotFileSave()
+void CanedaTranscalc::slotFileSave()
 {
   statBar->showMessage(tr("Saving file..."));
 
-  QString s = QFileDialog::getSaveFileName(this,tr("Enter a Filename"), QucsWorkDir.path(),
+  QString s = QFileDialog::getSaveFileName(this,tr("Enter a Filename"), CanedaWorkDir.path(),
                                            tr("Transcalc File")+" (*.trc)");
   if (!s.isEmpty())  {
-    QucsWorkDir.setPath(QDir::cleanPath(s));
+    CanedaWorkDir.setPath(QDir::cleanPath(s));
     if (!saveFile (s)) {
       QMessageBox::critical (this, tr("Error"),
                              tr("Cannot save file:")+" '"+s+"'!");
@@ -492,22 +492,22 @@ void QucsTranscalc::slotFileSave()
   statBar->showMessage(tr("Ready."));
 }
 
-void QucsTranscalc::slotHelpIntro()
+void CanedaTranscalc::slotHelpIntro()
 {
   HelpDialog *d = new HelpDialog(this);
   d->show();
 }
 
-void QucsTranscalc::slotOptions()
+void CanedaTranscalc::slotOptions()
 {
   OptionsDialog *d = new OptionsDialog(this);
   d->exec();
 }
 
-void QucsTranscalc::slotCopyToClipboard()
+void CanedaTranscalc::slotCopyToClipboard()
 {
   int created = 0;
-  QString s = "<Qucs Schematic " PACKAGE_VERSION ">\n";
+  QString s = "<Caneda Schematic " PACKAGE_VERSION ">\n";
 
   // create microstrip schematic
   if (tranType->currentIndex() == 0) {
@@ -636,12 +636,12 @@ void QucsTranscalc::slotCopyToClipboard()
     statBar->showMessage(tr("Transmission line type not available."), 2000);
 }
 
-QString QucsTranscalc::currentModeString()
+QString CanedaTranscalc::currentModeString()
 {
   return transWidgets[currentModeIndex()]->line->description;
 }
 
-void QucsTranscalc::setCurrentMode(const QString& mode)
+void CanedaTranscalc::setCurrentMode(const QString& mode)
 {
   for(int i=0;i<4;i++) {
     if(transWidgets[i]->line->description == mode) {

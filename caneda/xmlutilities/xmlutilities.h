@@ -35,7 +35,7 @@ class QRectF;
 class QSize;
 class QTransform;
 
-namespace Qucs
+namespace Caneda
 {
     /*!
      * \brief This class adds a few more helper methods to qt's QXmlStreamReader class.

@@ -15,7 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 //**************************************************************************
-//
 
 /*!
  * \file QXmlStreamReaderExt.cpp
@@ -38,7 +37,7 @@ extern "C" {
 #include <iostream>
 
 
-namespace Qucs {
+namespace Caneda {
     /*!
      * \brief Construct a XML reader from a filename
      * \param name[in]: Name of the file
@@ -208,4 +207,4 @@ writeerror:
         xmlFree(xmlout);
     }
 
-} // namespace Qucs
+} // namespace Caneda

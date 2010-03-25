@@ -1,4 +1,4 @@
-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/qucs-qterm} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
+INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/caneda-qterm} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
 SET(QTermWidget_MOC_HEADERS  ScreenWindow.h Emulation.h Vt102Emulation.h TerminalDisplay.h Filter.h Pty.h k3process.h k3processcontroller.h Session.h qtermwidget.h)
 

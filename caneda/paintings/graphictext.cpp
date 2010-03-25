@@ -61,7 +61,7 @@ QString GraphicText::plainText() const
 void GraphicText::setPlainText(const QString &text)
 {
     prepareGeometryChange();
-    QString unicodeText = Qucs::latexToUnicode(text);
+    QString unicodeText = Caneda::latexToUnicode(text);
     m_textItem->setPlainText(unicodeText);
     setPaintingRect(m_textItem->boundingRect());
 }
@@ -74,7 +74,7 @@ QString GraphicText::richText() const
 void GraphicText::setRichText(const QString &text)
 {
     prepareGeometryChange();
-    QString unicodeText = Qucs::latexToUnicode(text);
+    QString unicodeText = Caneda::latexToUnicode(text);
     m_textItem->setHtml(unicodeText);
     setPaintingRect(m_textItem->boundingRect());
 }
@@ -93,7 +93,7 @@ void GraphicText::setText(const QString &text)
 void GraphicText::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     if(option->state & QStyle::State_Selected) {
-        Qucs::drawHighlightRect(painter, boundingRect(), 1, option);
+        Caneda::drawHighlightRect(painter, boundingRect(), 1, option);
     }
 }
 
@@ -106,7 +106,7 @@ GraphicText* GraphicText::copy(SchematicScene *scene) const
 }
 
 //! \brief Save's data as xml.
-void GraphicText::saveData(Qucs::XmlWriter *writer) const
+void GraphicText::saveData(Caneda::XmlWriter *writer) const
 {
     writer->writeStartElement("painting");
     writer->writeAttribute("name", "text");
@@ -119,7 +119,7 @@ void GraphicText::saveData(Qucs::XmlWriter *writer) const
 }
 
 //! \brief Loads text data from xml referred by \a reader.
-void GraphicText::loadData(Qucs::XmlReader *reader)
+void GraphicText::loadData(Caneda::XmlReader *reader)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
     Q_ASSERT(reader->attributes().value("name") == "text");
@@ -152,7 +152,7 @@ void GraphicText::loadData(Qucs::XmlReader *reader)
 }
 
 //! \brief Launch rich text edit dialog.
-int GraphicText::launchPropertyDialog(Qucs::UndoOption opt)
+int GraphicText::launchPropertyDialog(Caneda::UndoOption opt)
 {
     GraphicTextDialog dialog(this, opt);
     return dialog.exec();

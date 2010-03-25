@@ -1,24 +1,29 @@
-/****************************************************************************
-**     Qucs Attenuator Synthesis
-**     attenuatorfunc.cpp
-**
-**     since 2006/6/14
-**
-**
-**
-**
-**
-*****************************************************************************/
+/***************************************************************************
+                       Caneda Attenuator Synthesis
+                            attenuatorfunc.cpp
+                               ------------
+    begin                : Jun 14 2006
 
-#include "qucs-tools/global.h"
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include "caneda-tools/global.h"
 #include "attenuatorfunc.h"
 
 #include <QtCore/QString>
 
-QUCS_Att::QUCS_Att(){}
-QUCS_Att::~QUCS_Att(){}
+CANEDA_Att::CANEDA_Att(){}
+CANEDA_Att::~CANEDA_Att(){}
 
-int QUCS_Att::Calc(tagATT *ATT)
+int CANEDA_Att::Calc(tagATT *ATT)
 {
   double Lmin, L, A;
   L = pow(10, ATT->Attenuation / 10);
@@ -72,11 +77,11 @@ int QUCS_Att::Calc(tagATT *ATT)
 }
 
 
-QString* QUCS_Att::createSchematic(tagATT *ATT)
+QString* CANEDA_Att::createSchematic(tagATT *ATT)
 {
-  // create the Qucs schematic
-  QString *s = new QString("<Qucs Schematic ");
-  *s += Qucs::version;
+  // create the Caneda schematic
+  QString *s = new QString("<Caneda Schematic ");
+  *s += Caneda::version;
   *s += ">\n";
   *s += "<Components>\n";
   

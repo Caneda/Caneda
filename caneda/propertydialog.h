@@ -80,7 +80,7 @@ class PropertyDialog : public QDialog, public Ui::PropertyDialogBase
 {
     Q_OBJECT;
 public:
-    PropertyDialog(Component *comp, Qucs::UndoOption opt, QWidget *parent = 0);
+    PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent = 0);
 
 public Q_SLOTS:
     void accept();
@@ -88,7 +88,7 @@ public Q_SLOTS:
 private:
     PropertyModel *m_model;
     Component *m_component;
-    Qucs::UndoOption m_undoOption;
+    Caneda::UndoOption m_undoOption;
 };
 
 

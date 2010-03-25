@@ -21,7 +21,7 @@
 
 #include "component.h"
 #include "propertygroup.h"
-#include "qucsmainwindow.h"
+#include "canedamainwindow.h"
 #include "schematicscene.h"
 #include "schematicview.h"
 #include "undocommands.h"

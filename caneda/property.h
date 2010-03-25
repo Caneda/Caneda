@@ -25,7 +25,7 @@
 #include <QVariant>
 
 //Forward declarations
-namespace Qucs {
+namespace Caneda {
     class XmlWriter;
     class XmlReader;
 }
@@ -110,8 +110,8 @@ class Property
         friend class PropertyFactory;
 };
 
-void writeProperties(Qucs::XmlWriter *writer, const PropertyMap& prMap);
-void readProperties(Qucs::XmlReader *reader, PropertyMap &propMap);
+void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& prMap);
+void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap);
 
 QVariant::Type stringToType(const QString& string);
 QString typeToString(QVariant::Type type);
@@ -119,7 +119,7 @@ QString typeToString(QVariant::Type type);
 //! This is factory class used to construct properties.
 struct PropertyFactory
 {
-    static Property createProperty(Qucs::XmlReader *reader);
+    static Property createProperty(Caneda::XmlReader *reader);
     static Property sharedNull;
 };
 

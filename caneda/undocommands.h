@@ -31,7 +31,7 @@
 class Component;
 class Painting;
 class Port;
-class QucsItem;
+class CanedaItem;
 
 static const QPointF InvalidPoint(-30000, -30000);
 
@@ -184,9 +184,9 @@ protected:
 class RemoveItemsCmd : public QUndoCommand
 {
 public:
-    typedef QPair<QucsItem*, QPointF> ItemPointPair;
+    typedef QPair<CanedaItem*, QPointF> ItemPointPair;
 
-    RemoveItemsCmd(const QList<QucsItem*> &items, SchematicScene *scene,
+    RemoveItemsCmd(const QList<CanedaItem*> &items, SchematicScene *scene,
             QUndoCommand *parent = 0);
     ~RemoveItemsCmd();
 
@@ -201,30 +201,30 @@ protected:
 class RotateItemsCmd : public QUndoCommand
 {
 public:
-    RotateItemsCmd(QList<QucsItem*> items, const  Qucs::AngleDirection=Qucs::Clockwise,
+    RotateItemsCmd(QList<CanedaItem*> items, const  Caneda::AngleDirection=Caneda::Clockwise,
             QUndoCommand *parent = 0);
-    RotateItemsCmd(QucsItem *item, const  Qucs::AngleDirection=Qucs::Clockwise,
+    RotateItemsCmd(CanedaItem *item, const  Caneda::AngleDirection=Caneda::Clockwise,
             QUndoCommand *parent = 0);
 
     void undo();
     void redo();
 
 protected:
-    QList<QucsItem*> m_items;
-    Qucs::AngleDirection m_angleDirection;
+    QList<CanedaItem*> m_items;
+    Caneda::AngleDirection m_angleDirection;
 };
 
 class MirrorItemsCmd : public QUndoCommand
 {
 public:
-    MirrorItemsCmd(QList<QucsItem*> items, const Qt::Axis axis, QUndoCommand *parent = 0);
-    MirrorItemsCmd(QucsItem *item, const Qt::Axis axis, QUndoCommand *parent = 0);
+    MirrorItemsCmd(QList<CanedaItem*> items, const Qt::Axis axis, QUndoCommand *parent = 0);
+    MirrorItemsCmd(CanedaItem *item, const Qt::Axis axis, QUndoCommand *parent = 0);
 
     void undo();
     void redo();
 
 protected:
-    QList<QucsItem*> m_items;
+    QList<CanedaItem*> m_items;
     Qt::Axis m_axis;
 };
 
@@ -237,7 +237,7 @@ public:
     void redo();
 
 protected:
-    typedef QPair<Component*, Qucs::ActiveStatus> ComponentStatusPair;
+    typedef QPair<Component*, Caneda::ActiveStatus> ComponentStatusPair;
     QList<ComponentStatusPair> m_componentStatusPairs;
 };
 

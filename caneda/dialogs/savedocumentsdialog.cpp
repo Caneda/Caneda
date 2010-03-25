@@ -19,8 +19,8 @@
 
 #include "savedocumentsdialog.h"
 
-#include "qucsmainwindow.h"
-#include "qucsview.h"
+#include "canedamainwindow.h"
+#include "canedaview.h"
 #include "settings.h"
 
 #include <QDebug>
@@ -79,7 +79,7 @@ void FileBrowserLineEdit::browseButtonClicked()
 {
     QString fileName =
         QFileDialog::getSaveFileName(0, tr("Save File"), d->fileInfo.absoluteFilePath(),
-                Settings::instance()->currentValue("nosave/qucsFilter").toString());
+                Settings::instance()->currentValue("nosave/canedaFilter").toString());
     QFileInfo fi(fileName);
     if (fi.fileName().isEmpty() == false &&
             QFileInfo(fi.absolutePath()).exists()) {
@@ -101,12 +101,12 @@ void FileBrowserLineEdit::updateTexts()
 
 struct SaveDocumentsDialogPrivate
 {
-    QSet<QPair<QucsView*, int> > modifiedViews;
+    QSet<QPair<CanedaView*, int> > modifiedViews;
     QMap<int, int> treeIndexToTabIndex;
-    QSet<QPair<QucsView*, QString> > newFilePaths;
+    QSet<QPair<CanedaView*, QString> > newFilePaths;
 };
 
-SaveDocumentsDialog::SaveDocumentsDialog(const QSet<QPair<QucsView*, int> > &modifiedViews,
+SaveDocumentsDialog::SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &modifiedViews,
         QWidget *parent) : QDialog(parent)
 {
     d = new SaveDocumentsDialogPrivate;
@@ -131,7 +131,7 @@ SaveDocumentsDialog::~SaveDocumentsDialog()
     delete d;
 }
 
-QSet<QPair<QucsView*, QString> > SaveDocumentsDialog::newFilePaths() const
+QSet<QPair<CanedaView*, QString> > SaveDocumentsDialog::newFilePaths() const
 {
     return d->newFilePaths;
 }
@@ -154,9 +154,9 @@ void SaveDocumentsDialog::slotButtonClicked(QAbstractButton *button)
                     return;
                 }
 
-                QucsMainWindow *mw = QucsMainWindow::instance();
+                CanedaMainWindow *mw = CanedaMainWindow::instance();
                 QTabWidget *tw = mw->tabWidget();
-                QucsView *view = mw->viewFromWidget(tw->widget(d->treeIndexToTabIndex[i]));
+                CanedaView *view = mw->viewFromWidget(tw->widget(d->treeIndexToTabIndex[i]));
                 if (view) {
                     d->newFilePaths.insert(qMakePair(view,
                                 widget->fileInfo().absoluteFilePath()));
@@ -170,7 +170,7 @@ void SaveDocumentsDialog::slotButtonClicked(QAbstractButton *button)
 
 void SaveDocumentsDialog::slotHandleClick(const QModelIndex& index)
 {
-    QucsMainWindow *mw = QucsMainWindow::instance();
+    CanedaMainWindow *mw = CanedaMainWindow::instance();
     mw->tabWidget()->setCurrentIndex(d->treeIndexToTabIndex[index.row()]);
 }
 
@@ -182,9 +182,9 @@ void SaveDocumentsDialog::reject()
 
 void SaveDocumentsDialog::populateItems()
 {
-    QSet<QPair<QucsView*, int> >::iterator it = d->modifiedViews.begin();
+    QSet<QPair<CanedaView*, int> >::iterator it = d->modifiedViews.begin();
     for (int i = 0 ; it != d->modifiedViews.end(); ++it, ++i) {
-        QucsView *view = it->first;
+        CanedaView *view = it->first;
         QTreeWidgetItem *item = new QTreeWidgetItem(ui.treeWidget);
         item->setCheckState(0, Qt::Checked);
         d->treeIndexToTabIndex[i] = it->second;

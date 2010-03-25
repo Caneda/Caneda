@@ -27,16 +27,16 @@
 HelpDialog::HelpDialog(QWidget *parent)
                      : QDialog(parent)
 {
-  setWindowTitle(tr("Qucs Filter Help"));
+  setWindowTitle(tr("Caneda Filter Help"));
 
 
   // --------  set help text into dialog  ------------
-  QString s(tr("QucsFilter is a filter synthesis program. "
+  QString s(tr("CanedaFilter is a filter synthesis program. "
 	       "To create a filter, simply enter all "
 	       "parameters and press the big button at the "
 	       "bottom of the main window. Immediatly, the "
 	       "schematic of the filter is calculated and "
-	       "put into the clipboard. Now go to Qucs, "
+               "put into the clipboard. Now go to Caneda, "
 	       "open an empty schematic and press "
 	       "CTRL-V (paste from clipboard). The filter "
 	       "schematic can now be inserted and "

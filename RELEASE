@@ -35,25 +35,25 @@ Distribution process:
      + Qt installation >= version 4.5 (by Trolltech)
   - Run `make all'.
   - Run `make distcheck'.
-  - Check this status into CVS and tag it.
+  - Check this status into git and tag it.
 
 * Bump up version.
   - Add a ChangeLog entry in toplevel directory.
   - Add new section in NEWS.
   - Bump up version number.
-  - Check into CVS.
+  - Check into git.
 
 * Distribute the package. 
-  - Upload the package to the SourceForge server and add a News item.
+  - Upload the package to the Tuxfamily server and add a News item.
   - Announce the release at Freshmeat.
-  - Send an announcement to <qucs-help@lists.sourceforge.net>.
+  - Send an announcement to <caneda-help@lists.tuxfamily.org>.
 
 
 Full distribution process:
 --------------------------
 
-Qucs is currently split into two packages, i.e. qucs (the GUI) and
-qucs-core (the backend command line simulator).  In order to
+Caneda is currently split into two packages, i.e. caneda (the GUI) and
+caneda-core (the backend command line simulator).  In order to
 distribute a complete package you need to run the distribution process
 as described in both the RELEASE files up to the point where you have
 the tarballs created using `make distcheck'.

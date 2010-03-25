@@ -1,18 +1,23 @@
-/****************************************************************************
-**     Qucs Attenuator Synthesis
-**     qucsattenuator.cpp
-**
-**
-**
-**
-**
-**
-**
-*****************************************************************************/
+/***************************************************************************
+                       Caneda Attenuator Synthesis
+                           canedaattenuator.cpp
+                               ------------
+    begin                : Jun 14 2006
 
-#include "qucs-tools/global.h"
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include "caneda-tools/global.h"
 #include "attenuatorfunc.h"
-#include "qucsattenuator.h"
+#include "canedaattenuator.h"
 #include "helpdialog.h"
 #include <QtCore/QString>
 
@@ -35,10 +40,10 @@
 #include <QtGui/QFrame>
 #include <QtCore/QTimer>
 
-QucsAttenuator::QucsAttenuator()
+CanedaAttenuator::CanedaAttenuator()
 {
-   setWindowIcon(QPixmap(Qucs::bitmapDirectory() + "big.qucs.xpm"));
-   setWindowTitle(tr("Qucs Attenuator") + " " + Qucs::version);
+   setWindowIcon(QPixmap(Caneda::bitmapDirectory() + "big.caneda.xpm"));
+   setWindowTitle(tr("Caneda Attenuator") + " " + Caneda::version);
 
   QMenuBar *bar = new QMenuBar(this);
   QMenu *fileMenu = bar->addMenu(tr("&File"));
@@ -50,7 +55,7 @@ QucsAttenuator::QucsAttenuator()
   
   helpMenu->addAction(tr("Help..."), this, SLOT(slotHelpIntro()), Qt::Key_F1);
   helpMenu->addSeparator();
-  helpMenu->addAction(tr("&About QucsAttenuator..."), this, SLOT(slotHelpAbout()), 0);
+  helpMenu->addAction(tr("&About CanedaAttenuator..."), this, SLOT(slotHelpAbout()), 0);
   helpMenu->addAction(tr("About Qt..."), this, SLOT(slotHelpAboutQt()), 0);
   
   statusBar = new QStatusBar(this);
@@ -95,7 +100,7 @@ QucsAttenuator::QucsAttenuator()
   ComboTopology->addItems(QStringList() << tr("Pi") << tr("Tee") << tr("Bridged Tee"));
   connect(ComboTopology, SIGNAL(activated(int)),this,SLOT(slotTopologyChanged()));
     
-  pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_pi.png"));
+  pixTopology->setPixmap(QPixmap(Caneda::bitmapDirectory() + "att_pi.png"));
 
   IntVal = new QIntValidator(this);
   DoubleVal = new QDoubleValidator(this);
@@ -160,27 +165,27 @@ QucsAttenuator::QucsAttenuator()
   readSettings();
 }
 
-QucsAttenuator::~QucsAttenuator()
+CanedaAttenuator::~CanedaAttenuator()
 {
   delete IntVal;
   delete DoubleVal;
 }
 
-void QucsAttenuator::slotHelpIntro()
+void CanedaAttenuator::slotHelpIntro()
 {
   HelpDialog *d = new HelpDialog(this);
   d->show();
 }
 
-void QucsAttenuator::slotHelpAboutQt()
+void CanedaAttenuator::slotHelpAboutQt()
 {
       QMessageBox::aboutQt(this, tr("About Qt"));
 }
 
-void QucsAttenuator::slotHelpAbout()
+void CanedaAttenuator::slotHelpAbout()
 {
     QMessageBox::about(this, tr("About..."),
-		       QString("QucsAttenuator Version " PACKAGE_VERSION)+
+                       QString("CanedaAttenuator Version " PACKAGE_VERSION)+
 		       tr("\nAttenuator synthesis program\n")+
 		       tr("Copyright (C) 2006 by")+" Toyoyuki Ishikawa"
 		       "\n"+
@@ -191,7 +196,7 @@ void QucsAttenuator::slotHelpAbout()
 		       "\nFITNESS FOR A PARTICULAR PURPOSE.\n\n");
 }
 
-void QucsAttenuator::slotSetText_Zin( const QString &text )
+void CanedaAttenuator::slotSetText_Zin( const QString &text )
 {
   if(ComboTopology->currentIndex() == BRIDGE_TYPE) {
     lineEdit_Zout->blockSignals( TRUE );
@@ -200,7 +205,7 @@ void QucsAttenuator::slotSetText_Zin( const QString &text )
   }
 }
 
-void QucsAttenuator::slotSetText_Zout( const QString &text )
+void CanedaAttenuator::slotSetText_Zout( const QString &text )
 {
   if(ComboTopology->currentIndex() == BRIDGE_TYPE) {
     lineEdit_Zin->blockSignals( TRUE );
@@ -209,26 +214,26 @@ void QucsAttenuator::slotSetText_Zout( const QString &text )
   }
 }
 
-void QucsAttenuator::slotTopologyChanged()
+void CanedaAttenuator::slotTopologyChanged()
 {
   switch(ComboTopology->currentIndex())
     {
     case PI_TYPE:
-      pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_pi.png"));
+      pixTopology->setPixmap(QPixmap(Caneda::bitmapDirectory() + "att_pi.png"));
       LabelR2->setText(tr("R2:"));
       LabelR3->show();
       lineEdit_R3->show();
       LabelR3_Ohm->show();
       break;
     case TEE_TYPE:
-      pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_tee.png"));
+      pixTopology->setPixmap(QPixmap(Caneda::bitmapDirectory() + "att_tee.png"));
       LabelR2->setText(tr("R2:"));
       LabelR3->show();
       lineEdit_R3->show();
       LabelR3_Ohm->show();
       break;
     case BRIDGE_TYPE:
-      pixTopology->setPixmap(QPixmap(Qucs::bitmapDirectory() + "att_bridge.png"));
+      pixTopology->setPixmap(QPixmap(Caneda::bitmapDirectory() + "att_bridge.png"));
       LabelR2->setText(tr("R4:"));
       LabelR3->hide();
       lineEdit_R3->hide();
@@ -238,9 +243,9 @@ void QucsAttenuator::slotTopologyChanged()
     }
 }
 
-void QucsAttenuator::slotCalculate()
+void CanedaAttenuator::slotCalculate()
 {
-    QUCS_Att qatt;
+    CANEDA_Att qatt;
     int result;
     QString * s = NULL;
     struct tagATT Values;
@@ -276,7 +281,7 @@ void QucsAttenuator::slotCalculate()
 
 }
 
-void QucsAttenuator::readSettings()
+void CanedaAttenuator::readSettings()
 {
    QSettings settings;
 
@@ -294,7 +299,7 @@ void QucsAttenuator::readSettings()
    settings.endGroup();
 }
 
-void QucsAttenuator::writeSettings()
+void CanedaAttenuator::writeSettings()
 {
    QSettings settings;
 
@@ -311,7 +316,7 @@ void QucsAttenuator::writeSettings()
    settings.endGroup();
 }
 
-void QucsAttenuator::closeEvent(QCloseEvent *e)
+void CanedaAttenuator::closeEvent(QCloseEvent *e)
 {
    writeSettings();
    QWidget::closeEvent(e);

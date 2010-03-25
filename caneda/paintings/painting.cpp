@@ -30,11 +30,11 @@
 #include <QStyleOptionGraphicsItem>
 
 //! Constructs a painting item with default pen and default brush.
-Painting::Painting(SchematicScene *scene) : QucsItem(0, scene),
+Painting::Painting(SchematicScene *scene) : CanedaItem(0, scene),
     m_pen(defaultPaintingPen),
     m_brush(defaultPaintingBrush),
-    m_resizeHandles(Qucs::NoHandle),
-    m_activeHandle(Qucs::NoHandle)
+    m_resizeHandles(Caneda::NoHandle),
+    m_activeHandle(Caneda::NoHandle)
 {
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
 #if QT_VERSION >= 0x040600
@@ -117,12 +117,12 @@ void Painting::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         QWidget *)
 {
     if(option->state & QStyle::State_Selected) {
-        Qucs::drawResizeHandles(m_resizeHandles, m_paintingRect, painter);
+        Caneda::drawResizeHandles(m_resizeHandles, m_paintingRect, painter);
     }
 }
 
 //!\brief Indicate the resize handles to be shown.
-void Painting::setResizeHandles(Qucs::ResizeHandles handles)
+void Painting::setResizeHandles(Caneda::ResizeHandles handles)
 {
     if(m_resizeHandles == handles) {
         return;
@@ -195,19 +195,19 @@ Painting* Painting::copy(SchematicScene *) const
     return 0;
 }
 
-//! \copydoc QucsItem::copyDataTo()
+//! \copydoc CanedaItem::copyDataTo()
 void Painting::copyDataTo(Painting *painting) const
 {
     painting->setPen(pen());
     painting->setBrush(brush());
-    QucsItem::copyDataTo(static_cast<QucsItem*>(painting));
+    CanedaItem::copyDataTo(static_cast<CanedaItem*>(painting));
 }
 
 /*!
  * \brief Loads and returns a pointer to new painting object as read
  * from \a reader. On failure returns null.
  */
-Painting* Painting::loadPainting(Qucs::XmlReader *reader, SchematicScene *scene)
+Painting* Painting::loadPainting(Caneda::XmlReader *reader, SchematicScene *scene)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
 
@@ -229,27 +229,27 @@ void Painting::adjustGeometry()
 
     // Now determine how to adjust bounding rect based on resize handles being used.
 
-    if(m_resizeHandles.testFlag(Qucs::TopLeftHandle)) {
-        QRectF rect = Qucs::handleRect.translated(m_paintingRect.topLeft());
+    if(m_resizeHandles.testFlag(Caneda::TopLeftHandle)) {
+        QRectF rect = Caneda::handleRect.translated(m_paintingRect.topLeft());
         boundRect |= rect;
         _shape.addRect(rect);
     }
 
-    if(m_resizeHandles.testFlag(Qucs::TopRightHandle)) {
-        QRectF rect = Qucs::handleRect.translated(m_paintingRect.topRight());
+    if(m_resizeHandles.testFlag(Caneda::TopRightHandle)) {
+        QRectF rect = Caneda::handleRect.translated(m_paintingRect.topRight());
         boundRect |= rect;
         _shape.addRect(rect);
     }
 
-    if(m_resizeHandles.testFlag(Qucs::BottomLeftHandle)) {
-        QRectF rect = Qucs::handleRect.translated(m_paintingRect.bottomLeft());
+    if(m_resizeHandles.testFlag(Caneda::BottomLeftHandle)) {
+        QRectF rect = Caneda::handleRect.translated(m_paintingRect.bottomLeft());
         boundRect |= rect;
         _shape.addRect(rect);
 
     }
 
-    if(m_resizeHandles.testFlag(Qucs::BottomRightHandle)) {
-        QRectF rect = Qucs::handleRect.translated(m_paintingRect.bottomRight());
+    if(m_resizeHandles.testFlag(Caneda::BottomRightHandle)) {
+        QRectF rect = Caneda::handleRect.translated(m_paintingRect.bottomRight());
         boundRect |= rect;
         _shape.addRect(rect);
     }
@@ -261,15 +261,15 @@ void Painting::adjustGeometry()
 //! Takes care of handle resizing on mouse press event.
 void Painting::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    m_activeHandle = Qucs::NoHandle;
+    m_activeHandle = Caneda::NoHandle;
 
     if(event->buttons().testFlag(Qt::LeftButton)) {
         m_activeHandle = handleHitTest(event->pos(), m_resizeHandles, m_paintingRect);
     }
 
     //call base method to get move behaviour as no handle is pressed
-    if(m_activeHandle == Qucs::NoHandle) {
-        QucsItem::mousePressEvent(event);
+    if(m_activeHandle == Caneda::NoHandle) {
+        CanedaItem::mousePressEvent(event);
     }
     else {
         storePaintingRect();
@@ -279,8 +279,8 @@ void Painting::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //! Takes care of handle resizing on mouse move event.
 void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(m_activeHandle == Qucs::NoHandle) {
-        QucsItem::mouseMoveEvent(event);
+    if(m_activeHandle == Caneda::NoHandle) {
+        CanedaItem::mouseMoveEvent(event);
         Q_ASSERT(scene()->mouseGrabberItem() == this);
         return;
     }
@@ -290,23 +290,23 @@ void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         QPointF point = event->pos();
 
         switch(m_activeHandle) {
-            case Qucs::TopLeftHandle:
+            case Caneda::TopLeftHandle:
                 rect.setTopLeft(point);
                 break;
 
-            case Qucs::TopRightHandle:
+            case Caneda::TopRightHandle:
                 rect.setTopRight(point);
                 break;
 
-            case Qucs::BottomLeftHandle:
+            case Caneda::BottomLeftHandle:
                 rect.setBottomLeft(point);
                 break;
 
-            case Qucs::BottomRightHandle:
+            case Caneda::BottomRightHandle:
                 rect.setBottomRight(point);
                 break;
 
-            case Qucs::NoHandle:
+            case Caneda::NoHandle:
                 break;
         }
 
@@ -317,10 +317,10 @@ void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 //! Takes care of handle resizing on mouse release event.
 void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    QucsItem::mouseReleaseEvent(event);
-    if(m_activeHandle != Qucs::NoHandle && m_paintingRect != m_store) {
+    CanedaItem::mouseReleaseEvent(event);
+    if(m_activeHandle != Caneda::NoHandle && m_paintingRect != m_store) {
         schematicScene()->undoStack()->push(
                 new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect));
     }
-    m_activeHandle = Qucs::NoHandle;
+    m_activeHandle = Caneda::NoHandle;
 }

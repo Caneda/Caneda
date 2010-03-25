@@ -19,7 +19,7 @@
 
 #include "property.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -109,20 +109,20 @@ bool Property::setValue(const QVariant& newValue)
 }
 
 //! \brief Helper function to write all properties in \a propMap in xml.
-void writeProperties(Qucs::XmlWriter *writer, const PropertyMap& propMap)
+void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& propMap)
 {
     writer->writeStartElement("properties");
     foreach(const Property p, propMap) {
         writer->writeEmptyElement("property");
         writer->writeAttribute("name", p.name());
         writer->writeAttribute("value", p.value().toString());
-        writer->writeAttribute("visible", Qucs::boolToString(p.isVisible()));
+        writer->writeAttribute("visible", Caneda::boolToString(p.isVisible()));
     }
     writer->writeEndElement(); // </properties>
 }
 
 //! \brief Helper function to read the saved properties into \a propMap.
-void readProperties(Qucs::XmlReader *reader, PropertyMap &propMap)
+void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "properties");
 
@@ -225,7 +225,7 @@ Property PropertyFactory::sharedNull;
  * \brief This factory method is used to create property from xml.
  * \param reader XmlReader which is in use for parsing.
  */
-Property PropertyFactory::createProperty(Qucs::XmlReader *reader)
+Property PropertyFactory::createProperty(Caneda::XmlReader *reader)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "property");
     QSharedDataPointer<PropertyData> data(new PropertyData);
@@ -274,7 +274,7 @@ Property PropertyFactory::createProperty(Qucs::XmlReader *reader)
 
         if(reader->isStartElement()) {
             if(reader->name() == "description") {
-                data->description = reader->readLocaleText(Qucs::localePrefix());
+                data->description = reader->readLocaleText(Caneda::localePrefix());
             }
             else {
                 reader->readUnknownElement();

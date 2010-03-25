@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef QUCSMAINWINDOW_H
-#define QUCSMAINWINDOW_H
+#ifndef CANEDAMAINWINDOW_H
+#define CANEDAMAINWINDOW_H
 
 #include "mainwindowbase.h"
 #include "schematicscene.h"
@@ -36,26 +36,26 @@ class ComponentsSidebar;
 class FolderBrowser;
 class Project;
 class QTermWidget;
-class QucsItem;
-class QucsView;
+class CanedaItem;
+class CanedaView;
 class QLabel;
 class QUndoGroup;
 class SchematicScene;
 class SchematicView;
 
-class QucsMainWindow : public MainWindowBase
+class CanedaMainWindow : public MainWindowBase
 {
     Q_OBJECT;
 public:
-    ~QucsMainWindow();
+    ~CanedaMainWindow();
 
-    static QucsMainWindow* instance();
+    static CanedaMainWindow* instance();
 
-    bool gotoPage(QString fileName, Qucs::Mode mode=Qucs::SchematicMode);
-    void addView(QucsView *view);
+    bool gotoPage(QString fileName, Caneda::Mode mode=Caneda::SchematicMode);
+    void addView(CanedaView *view);
     void saveSettings();
 
-    QucsView* viewFromWidget(QWidget *widget);
+    CanedaView* viewFromWidget(QWidget *widget);
 
 public Q_SLOTS:
     void slotFileNew();
@@ -145,7 +145,7 @@ private Q_SLOTS:
 
 private:
     Action* action(const QString& name);
-    QucsMainWindow(QWidget *w=0);
+    CanedaMainWindow(QWidget *w=0);
     void initActions();
     void initMouseActions();
     void initMenus();
@@ -181,4 +181,4 @@ private:
     QString titleText;
 };
 
-#endif //QUCSMAINWINDOW_H
+#endif //CANEDAMAINWINDOW_H

@@ -23,17 +23,17 @@
 
 #include "item.h"
 
-class Diagram : public QucsItem
+class Diagram : public CanedaItem
 {
 public:
     enum {
-        Type = QucsItem::DisplayType
+        Type = CanedaItem::DisplayType
     };
 
     Diagram(SchematicScene* scene = 0);
     ~Diagram();
 
-    int type() const { return QucsItem::DisplayType; }
+    int type() const { return CanedaItem::DisplayType; }
 };
 
 #endif

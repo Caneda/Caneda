@@ -41,7 +41,7 @@ class QMenu;
 
 class SchematicScene;
 
-namespace Qucs {
+namespace Caneda {
     class XmlReader;
     class XmlWriter;
 
@@ -65,7 +65,7 @@ namespace Qucs {
     };
 
     Q_DECLARE_FLAGS(ResizeHandles, ResizeHandle);
-    Q_DECLARE_OPERATORS_FOR_FLAGS(Qucs::ResizeHandles);
+    Q_DECLARE_OPERATORS_FOR_FLAGS(Caneda::ResizeHandles);
 
     static const QPen handlePen(Qt::darkRed);
     static const QBrush handleBrush(Qt::NoBrush);
@@ -83,8 +83,8 @@ namespace Qucs {
 }
 
 
-//! \brief Qucs item - The base class for components, wires, nodes..
-class QucsItem : public QGraphicsItem
+//! \brief CanedaItem - The base class for components, wires, nodes..
+class CanedaItem : public QGraphicsItem
 {
 public:
     /*!
@@ -95,33 +95,33 @@ public:
      * cast(a,b) {
      * return (a&b) == a;
      * }
-     * \sa qucsitem_cast and PATTERN.
+     * \sa canedaitem_cast and PATTERN.
      */
-    enum QucsItemTypes {
-        //!Recognizes all classes derived from QucsItem
-        QucsItemType = (1 << (std::numeric_limits<int>::digits-1)),
+    enum CanedaItemTypes {
+        //!Recognizes all classes derived from CanedaItem
+        CanedaItemType = (1 << (std::numeric_limits<int>::digits-1)),
         //!Recognizes classes derived from SvgItem
-        SvgItemType = PATTERN(QucsItemType, 1),
+        SvgItemType = PATTERN(CanedaItemType, 1),
         //!Recognizes classes derived from Component
         ComponentType = PATTERN(SvgItemType, 1),
         //!Recognizes classes derived from Wire
-        WireType = PATTERN(QucsItemType, 3),
+        WireType = PATTERN(CanedaItemType, 3),
         //!Recognizes classes derived from Painting
-        PaintingType = PATTERN(QucsItemType, 4),
+        PaintingType = PATTERN(CanedaItemType, 4),
         //!Recognizes classes derived from Display
-        DisplayType = PATTERN(QucsItemType, 5)
+        DisplayType = PATTERN(CanedaItemType, 5)
     };
 
-    //! Item identifier \sa QucsItemTypes
+    //! Item identifier \sa CanedaItemTypes
     enum {
-        Type = QucsItemType
+        Type = CanedaItemType
     };
 
-    QucsItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
-    virtual ~QucsItem();
+    CanedaItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
+    virtual ~CanedaItem();
 
     //! Return type of item
-    int type() const { return QucsItemType; }
+    int type() const { return CanedaItemType; }
     //! Return bounding box
     QRectF boundingRect() const { return m_boundingRect; }
     //! Return the shape of the item.
@@ -130,18 +130,18 @@ public:
     SchematicScene* schematicScene() const;
 
     //! Virtual method to write item's properties to writer.
-    virtual void saveData(Qucs::XmlWriter *) const {}
+    virtual void saveData(Caneda::XmlWriter *) const {}
     //! Virtual method to read item's properties from reader.
-    virtual void loadData(Qucs::XmlReader *) {}
+    virtual void loadData(Caneda::XmlReader *) {}
 
     QString saveDataText() const;
     void loadDataFromText(const QString &str);
 
     virtual void mirrorAlong(Qt::Axis axis);
-    virtual void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise);
+    virtual void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise);
 
-    virtual QucsItem* copy(SchematicScene *scene = 0) const;
-    virtual void copyDataTo(QucsItem *item) const;
+    virtual CanedaItem* copy(SchematicScene *scene = 0) const;
+    virtual void copyDataTo(CanedaItem *item) const;
 
     //! This is convenience method used for rtti.
     virtual bool isComponent() const { return false; }
@@ -149,7 +149,7 @@ public:
     virtual bool isWire() const { return false; }
 
     //! Subclasses should implement this to launch its own dialog.
-    virtual int launchPropertyDialog(Qucs::UndoOption) { return QDialog::Accepted; }
+    virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
 
     QMenu* defaultContextMenu() const;
 
@@ -170,9 +170,9 @@ protected:
  * This function actually works for items following the rules.
  * Firstly, items should use appropriate Type constant.
  * Secondly, type() should return this Type.
- * \sa QucsItemTypes
+ * \sa CanedaItemTypes
  */
-template<typename T> T qucsitem_cast(QGraphicsItem *item)
+template<typename T> T canedaitem_cast(QGraphicsItem *item)
 {
     bool firstCond = int(static_cast<T>(0)->Type) == int(QGraphicsItem::Type);
     bool secondCond = !firstCond && item &&
@@ -188,7 +188,7 @@ enum FilterOption {
 };
 
 /*!
- * \brief This function returns a list of qucsitems present in \a items.
+ * \brief This function returns a list of canedaitems present in \a items.
  * \param items  The list from which items are to be filtered.
  * \param option Indication whether to remove non matching items from items passed
  *               or not.
@@ -201,7 +201,7 @@ QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRe
     QList<QGraphicsItem*>::iterator it = items.begin();
     while(it != items.end()) {
         QGraphicsItem *item = *it;
-        T *tItem = qucsitem_cast<T*>(item);
+        T *tItem = canedaitem_cast<T*>(item);
         if(tItem) {
             tItems << tItem;
             if(option == RemoveItems) {
@@ -219,19 +219,19 @@ QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRe
 }
 
 /*!
- * \brief This function returns a list of qucsitems present in \a items.
+ * \brief This function returns a list of canedaitems present in \a items.
  * \param items  The list from which items are to be filtered.
  * \param option Indication whether to remove non matching items from items passed
  *               or not.
  */
 template<typename T>
-QList<T*> filterItems(QList<QucsItem*> &items, FilterOption option = DontRemoveItems)
+QList<T*> filterItems(QList<CanedaItem*> &items, FilterOption option = DontRemoveItems)
 {
     QList<T*> tItems;
-    QList<QucsItem*>::iterator it = items.begin();
+    QList<CanedaItem*>::iterator it = items.begin();
     while(it != items.end()) {
-        QucsItem *item = *it;
-        T *tItem = qucsitem_cast<T*>(item);
+        CanedaItem *item = *it;
+        T *tItem = canedaitem_cast<T*>(item);
         if(tItem) {
             tItems << tItem;
             if(option == RemoveItems) {

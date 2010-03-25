@@ -29,7 +29,7 @@
 
 #include "paintings/painting.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -64,7 +64,7 @@ struct SchematicStateHandlerPrivate
     }
 
     void clearInsertibles() {
-        foreach (QucsItem* item, insertibles) {
+        foreach (CanedaItem* item, insertibles) {
             if (item->scene()) {
                 item->scene()->removeItem(item);
             }
@@ -74,17 +74,17 @@ struct SchematicStateHandlerPrivate
     }
 
     SchematicScene::MouseAction mouseAction;
-    QList<QucsItem*> insertibles;
+    QList<CanedaItem*> insertibles;
     Painting *paintingDrawItem;
 
     QSet<SchematicScene*> scenes;
     QSet<SchematicView*> views;
 
     QPointer<SchematicView> focussedView;
-    QHash<QString, QucsItem*> toolbarInsertibles;
+    QHash<QString, CanedaItem*> toolbarInsertibles;
 };
 
-static bool areItemsEquivalent(QucsItem *a, QucsItem *b)
+static bool areItemsEquivalent(CanedaItem *a, CanedaItem *b)
 {
     if (!a || !b) {
         return false;
@@ -94,8 +94,8 @@ static bool areItemsEquivalent(QucsItem *a, QucsItem *b)
     }
 
     if (a->isComponent()) {
-        Component *ac = qucsitem_cast<Component*>(a);
-        Component *bc = qucsitem_cast<Component*>(b);
+        Component *ac = canedaitem_cast<Component*>(a);
+        Component *bc = canedaitem_cast<Component*>(b);
 
         return ac->library() == bc->library() &&
             ac->name() == bc->name();
@@ -196,7 +196,7 @@ void SchematicStateHandler::slotSidebarItemClicked(const QString& item,
     } else {
         d->clearInsertibles();
         LibraryLoader *libLoader = LibraryLoader::instance();
-        QucsItem *qItem = libLoader->newComponent(item, 0, category);
+        CanedaItem *qItem = libLoader->newComponent(item, 0, category);
         if (!qItem) {
             slotSetNormalAction();
         } else {
@@ -210,25 +210,25 @@ void SchematicStateHandler::slotHandlePaste()
 {
     const QString text = qApp->clipboard()->text();
 
-    Qucs::XmlReader reader(text.toUtf8());
+    Caneda::XmlReader reader(text.toUtf8());
 
     while(!reader.atEnd()) {
         reader.readNext();
 
-        if(reader.isStartElement() && reader.name() == "qucs") {
+        if(reader.isStartElement() && reader.name() == "caneda") {
             break;
         }
     }
 
-    if(reader.hasError() || !(reader.isStartElement() && reader.name() == "qucs")) {
+    if(reader.hasError() || !(reader.isStartElement() && reader.name() == "caneda")) {
         return;
     }
 
-    if(!Qucs::checkVersion(reader.attributes().value("version").toString())) {
+    if(!Caneda::checkVersion(reader.attributes().value("version").toString())) {
         return;
     }
 
-    QList<QucsItem*> _items;
+    QList<CanedaItem*> _items;
     while(!reader.atEnd()) {
         reader.readNext();
 
@@ -237,7 +237,7 @@ void SchematicStateHandler::slotHandlePaste()
         }
 
         if(reader.isStartElement()) {
-            QucsItem *readItem = 0;
+            CanedaItem *readItem = 0;
             if(reader.name() == "component") {
                 readItem = Component::loadComponentData(&reader, 0);
             }
@@ -269,7 +269,7 @@ void SchematicStateHandler::slotRotateInsertibles()
     }
 
     // Utilize code available in undo command :-P
-    RotateItemsCmd cmd(d->insertibles, Qucs::Clockwise);
+    RotateItemsCmd cmd(d->insertibles, Caneda::Clockwise);
     cmd.redo();
 
     // Now start a fresh insertion
@@ -294,7 +294,7 @@ void SchematicStateHandler::slotMirrorInsertibles()
 void SchematicStateHandler::slotInsertToolbarComponent(const QString& sender,
         bool on)
 {
-    QucsItem *item = d->toolbarInsertibles[sender];
+    CanedaItem *item = d->toolbarInsertibles[sender];
     if (!on || !item) {
         slotSetNormalAction();
         return;
@@ -335,7 +335,7 @@ void SchematicStateHandler::slotUpdateFocussedView(SchematicView *view)
  */
 void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool on)
 {
-    typedef void (SchematicScene::*pActionFunc) (QList<QucsItem*>&, const Qucs::UndoOption);
+    typedef void (SchematicScene::*pActionFunc) (QList<CanedaItem*>&, const Caneda::UndoOption);
 
     ActionManager *am = ActionManager::instance();
 
@@ -381,13 +381,13 @@ void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool 
 
     do {
         if(!selectedItems.isEmpty() && func != 0) {
-            QList<QucsItem*> funcable = filterItems<QucsItem>(selectedItems);
+            QList<CanedaItem*> funcable = filterItems<CanedaItem>(selectedItems);
 
             if(funcable.isEmpty()) {
                 break;
             }
 
-            (scene->*func)(funcable, Qucs::PushUndoCmd);
+            (scene->*func)(funcable, Caneda::PushUndoCmd);
 
             // Turn off this action
             slotPerformToggleAction(action->objectName(), false);
@@ -404,7 +404,7 @@ void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool 
         }
     }
 
-    QHash<QString, QucsItem*>::const_iterator it =
+    QHash<QString, CanedaItem*>::const_iterator it =
         d->toolbarInsertibles.begin();
     while (it != d->toolbarInsertibles.end()) {
         Action *act = am->actionForName(it.key());
@@ -447,7 +447,7 @@ void SchematicStateHandler::slotUpdateToolbarInsertibles()
 
 void SchematicStateHandler::applyCursor(SchematicView *view)
 {
-    static QString bitmapPath = Qucs::bitmapDirectory();
+    static QString bitmapPath = Caneda::bitmapDirectory();
     QCursor cursor;
 
     switch (d->mouseAction) {
@@ -505,8 +505,8 @@ void SchematicStateHandler::applyState(SchematicView *view)
     scene->setCurrentMouseAction(d->mouseAction);
     if (d->mouseAction == SchematicScene::InsertingItems) {
         if (!d->insertibles.isEmpty()) {
-            QList<QucsItem*> copy;
-            foreach (QucsItem *it, d->insertibles) {
+            QList<CanedaItem*> copy;
+            foreach (CanedaItem *it, d->insertibles) {
                 copy << it->copy(scene);
             }
             scene->beginInsertingItems(copy);

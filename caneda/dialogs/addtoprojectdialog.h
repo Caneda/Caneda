@@ -1,7 +1,5 @@
 /***************************************************************************
  * Copyright 2010 Pablo Daniel Pareja Obregon                              *
- * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Qucs.                                         *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -28,7 +26,7 @@ class QCheckBox;
 class QLineEdit;
 class QRadioButton;
 
-namespace Qucs
+namespace Caneda
 {
     enum AddToProjectChoice {
         NewComponent,
@@ -52,8 +50,8 @@ public:
     QString fileName() const;
     void setFileName(const QString &);
 
-    Qucs::AddToProjectChoice userChoice() const;
-    void setUserChoice(const Qucs::AddToProjectChoice);
+    Caneda::AddToProjectChoice userChoice() const;
+    void setUserChoice(const Caneda::AddToProjectChoice);
 
     bool accepted();
 
@@ -67,7 +65,7 @@ private Q_SLOTS:
 
 private:
     QString filename;
-    Qucs::AddToProjectChoice userchoice;
+    Caneda::AddToProjectChoice userchoice;
 
     QDialog *dialog;
     QRadioButton *newComponent;

@@ -38,16 +38,16 @@ static const QBrush defaultPaintingBrush(Qt::NoBrush);
  * The mouse functionalities corresponding to resize handles are also handled
  * by this class.
  */
-class Painting : public QucsItem
+class Painting : public CanedaItem
 {
 public:
     enum {
         NoPaintingType = 0,
-        Type = QucsItem::PaintingType
+        Type = CanedaItem::PaintingType
     };
 
     enum PaintingType {
-        ArrowType = QucsItem::PaintingType + 1,
+        ArrowType = CanedaItem::PaintingType + 1,
         EllipseType,
         EllipseArcType,
         GraphicLineType,
@@ -60,7 +60,7 @@ public:
     Painting(SchematicScene *scene = 0);
     ~Painting();
 
-    //! \copydoc QucsItem::type()
+    //! \copydoc CanedaItem::type()
     int type() const { return Type; }
 
     /*!
@@ -89,18 +89,18 @@ public:
     void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
     //! Returns an OR representation of used resize handles.
-    Qucs::ResizeHandles resizeHandles() const { return m_resizeHandles; }
-    void setResizeHandles(Qucs::ResizeHandles handles);
+    Caneda::ResizeHandles resizeHandles() const { return m_resizeHandles; }
+    void setResizeHandles(Caneda::ResizeHandles handles);
 
     //! Returns the active handle i.e the one with mouse focus.
-    Qucs::ResizeHandle activeHandle() const { return m_activeHandle; }
+    Caneda::ResizeHandle activeHandle() const { return m_activeHandle; }
 
     Painting* copy(SchematicScene *scene = 0) const;
 
     virtual void copyDataTo(Painting *painting) const;
 
     static Painting* fromName(const QString& name);
-    static Painting* loadPainting(Qucs::XmlReader *reader, SchematicScene *scene = 0);
+    static Painting* loadPainting(Caneda::XmlReader *reader, SchematicScene *scene = 0);
 
     QRectF storedPaintingRect() const { return m_store; }
     void storePaintingRect() { m_store = paintingRect(); }
@@ -130,8 +130,8 @@ private:
     QRectF m_paintingRect;
     QPen m_pen;
     QBrush m_brush;
-    Qucs::ResizeHandles m_resizeHandles;
-    Qucs::ResizeHandle m_activeHandle;
+    Caneda::ResizeHandles m_resizeHandles;
+    Caneda::ResizeHandle m_activeHandle;
     QRectF m_store;
 };
 

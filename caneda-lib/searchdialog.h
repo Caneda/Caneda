@@ -22,13 +22,13 @@
 
 class QVBoxLayout;
 class QLineEdit;
-class QucsLib;
+class CanedaLib;
 
 
 class SearchDialog : public QDialog  {
    Q_OBJECT
 public:
-  SearchDialog(QucsLib *parent);
+  SearchDialog(CanedaLib *parent);
  ~SearchDialog();
 
 private slots:
@@ -38,7 +38,7 @@ private slots:
 private:
   QVBoxLayout *all;
   QLineEdit *SearchEdit;
-  QucsLib   *ParentDialog;
+  CanedaLib   *ParentDialog;
 };
 
 #endif

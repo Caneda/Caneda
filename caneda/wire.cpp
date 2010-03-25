@@ -24,7 +24,7 @@
 #include "schematicview.h"
 #include "undocommands.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -102,7 +102,7 @@ void Wire::initWireline()
  * \todo try to remove doconnect and do another operation for do connect
  */
 Wire::Wire(const QPointF& startPos, const QPointF& endPos, bool doConnect,
-        SchematicScene *scene) : QucsItem(0, scene), m_grabbedIndex(-1)
+        SchematicScene *scene) : CanedaItem(0, scene), m_grabbedIndex(-1)
 {
     /* set position */
     setPos((startPos + endPos)/2);
@@ -140,7 +140,7 @@ Wire::Wire(const QPointF& startPos, const QPointF& endPos, bool doConnect,
  * \bug br->gpk: does the new port is a purpose??
  */
 Wire::Wire(Port *startPort, Port *endPort, SchematicScene *scene) :
-QucsItem(0, scene), m_grabbedIndex(-1)
+CanedaItem(0, scene), m_grabbedIndex(-1)
 {
     QPointF startPos = startPort->scenePos();
     QPointF endPos = endPort->scenePos();
@@ -499,7 +499,7 @@ void Wire::removeNullLines()
     updateGeometry();
 }
 
-void Wire::saveData(Qucs::XmlWriter *writer) const
+void Wire::saveData(Caneda::XmlWriter *writer) const
 {
     writer->writeStartElement("wire");
 
@@ -527,7 +527,7 @@ void Wire::saveData(Qucs::XmlWriter *writer) const
     writer->writeEndElement();
 }
 
-void Wire::saveData(Qucs::XmlWriter *writer, int id) const
+void Wire::saveData(Caneda::XmlWriter *writer, int id) const
 {
     writer->writeStartElement("wire");
 
@@ -557,7 +557,7 @@ void Wire::saveData(Qucs::XmlWriter *writer, int id) const
     writer->writeEndElement();
 }
 
-Wire* Wire::loadWireData(Qucs::XmlReader *reader, SchematicScene *scene)
+Wire* Wire::loadWireData(Caneda::XmlReader *reader, SchematicScene *scene)
 {
     Wire *retVal = new Wire(QPointF(10, 10), QPointF(50,50), false, scene);
     retVal->loadData(reader);
@@ -565,7 +565,7 @@ Wire* Wire::loadWireData(Qucs::XmlReader *reader, SchematicScene *scene)
     return retVal;
 }
 
-void Wire::loadData(Qucs::XmlReader *reader)
+void Wire::loadData(Caneda::XmlReader *reader)
 {
     Wire::Data data = readWireData(reader);
     setPos(data.pos);
@@ -616,18 +616,18 @@ void Wire::setState(Wire::Data state)
  *
  * \return Returns the number of connections made.
  */
-int Wire::checkAndConnect(Qucs::UndoOption opt)
+int Wire::checkAndConnect(Caneda::UndoOption opt)
 {
     int num_of_connections = 0;
 
-    if(opt == Qucs::PushUndoCmd) {
+    if(opt == Caneda::PushUndoCmd) {
         schematicScene()->undoStack()->beginMacro(QString());
     }
 
     foreach(Port *port, m_ports) {
         Port *other = port->findCoincidingPort();
         if(other) {
-            if(opt == Qucs::PushUndoCmd) {
+            if(opt == Caneda::PushUndoCmd) {
                 QList<Wire*> wires = Port::wiresBetween(port, other);
                 ConnectCmd *cmd = new ConnectCmd(port, other, wires, schematicScene());
                 schematicScene()->undoStack()->push(cmd);
@@ -639,7 +639,7 @@ int Wire::checkAndConnect(Qucs::UndoOption opt)
         }
     }
 
-    if(opt == Qucs::PushUndoCmd) {
+    if(opt == Caneda::PushUndoCmd) {
         schematicScene()->undoStack()->endMacro();
     }
 
@@ -655,7 +655,7 @@ Wire* Wire::copy(SchematicScene *scene) const
 
 void Wire::copyDataTo(Wire *wire) const
 {
-    QucsItem::copyDataTo(static_cast<QucsItem*>(wire));
+    CanedaItem::copyDataTo(static_cast<CanedaItem*>(wire));
     Wire::Data _data;
 
     _data.wLines = m_wLines;
@@ -672,7 +672,7 @@ void Wire::mousePressEvent(QGraphicsSceneMouseEvent *event)
     m_grabbedIndex = -1;
     scene()->clearSelection();
     scene()->clearFocus();
-    QucsItem::mousePressEvent(event);
+    CanedaItem::mousePressEvent(event);
     Q_ASSERT(mapFromScene(event->scenePos()) == event->pos());
     m_grabbedIndex = indexForPos(event->pos());
 }
@@ -688,7 +688,7 @@ void Wire::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 //! \todo Not called at all!
 void Wire::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    QucsItem::mouseReleaseEvent(event);
+    CanedaItem::mouseReleaseEvent(event);
 }
 
 //! \brief Updates the wire's geometry and caches it.
@@ -706,7 +706,7 @@ void Wire::updateGeometry()
 
     addPortEllipses(m_ports, path);
     rect = portsRect(m_ports, rect);
-    QucsItem::setShapeAndBoundRect(path, path.boundingRect());
+    CanedaItem::setShapeAndBoundRect(path, path.boundingRect());
 }
 
 //! \brief Returns index corresponding to position \a pos.
@@ -725,9 +725,9 @@ int Wire::indexForPos(const QPointF& pos) const
     return -1;
 }
 
-namespace Qucs
+namespace Caneda
 {
-    Wire::Data readWireData(Qucs::XmlReader *reader)
+    Wire::Data readWireData(Caneda::XmlReader *reader)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "wire");
 

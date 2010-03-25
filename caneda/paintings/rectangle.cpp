@@ -36,8 +36,8 @@ Rectangle::Rectangle(const QRectF& rect, SchematicScene *scene) :
    Painting(scene)
 {
    setRect(rect);
-   setResizeHandles(Qucs::TopLeftHandle | Qucs::BottomRightHandle |
-                    Qucs::TopRightHandle| Qucs::BottomLeftHandle);
+   setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
+                    Caneda::TopRightHandle| Caneda::BottomLeftHandle);
 }
 
 //! \brief Destructor.
@@ -97,7 +97,7 @@ Rectangle* Rectangle::copy(SchematicScene *scene) const
 }
 
 //! \brief Saves rectangle data to xml using \a writer.
-void Rectangle::saveData(Qucs::XmlWriter *writer) const
+void Rectangle::saveData(Caneda::XmlWriter *writer) const
 {
    writer->writeStartElement("painting");
    writer->writeAttribute("name", "rectangle");
@@ -114,7 +114,7 @@ void Rectangle::saveData(Qucs::XmlWriter *writer) const
 }
 
 //! \brief Loads data from xml referred by \a reader.
-void Rectangle::loadData(Qucs::XmlReader *reader)
+void Rectangle::loadData(Caneda::XmlReader *reader)
 {
    Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
    Q_ASSERT(reader->attributes().value("name") == "rectangle");
@@ -156,7 +156,7 @@ void Rectangle::loadData(Qucs::XmlReader *reader)
    }
 }
 
-int Rectangle::launchPropertyDialog(Qucs::UndoOption opt)
+int Rectangle::launchPropertyDialog(Caneda::UndoOption opt)
 {
    StyleDialog dia(this, opt);
    return dia.exec();

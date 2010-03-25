@@ -44,10 +44,10 @@ public:
     int type() const { return GraphicLine::Type; }
     GraphicLine* copy(SchematicScene *scene = 0) const;
 
-    void saveData(Qucs::XmlWriter *writer) const;
-    void loadData(Qucs::XmlReader *reader);
+    void saveData(Caneda::XmlWriter *writer) const;
+    void loadData(Caneda::XmlReader *reader);
 
-    int launchPropertyDialog(Qucs::UndoOption opt);
+    int launchPropertyDialog(Caneda::UndoOption opt);
 
 private:
     //! \brief Returns line from rect.

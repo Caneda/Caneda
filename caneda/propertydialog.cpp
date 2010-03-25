@@ -162,7 +162,7 @@ void PropertyValueDelegate::setModelData(QWidget *editor, QAbstractItemModel *mo
 }
 
 //! Constructor
-PropertyDialog::PropertyDialog(Component *comp, Qucs::UndoOption opt, QWidget *parent) :
+PropertyDialog::PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent) :
     QDialog(parent),
     m_component(comp),
     m_undoOption(opt)
@@ -180,7 +180,7 @@ void PropertyDialog::accept()
 {
     PropertyMapCmd *cmd = new PropertyMapCmd(m_component, m_component->propertyMap(),
             m_model->propMap);
-    if(m_undoOption == Qucs::PushUndoCmd && m_component->schematicScene()) {
+    if(m_undoOption == Caneda::PushUndoCmd && m_component->schematicScene()) {
         m_component->schematicScene()->undoStack()->push(cmd);
     }
     else {

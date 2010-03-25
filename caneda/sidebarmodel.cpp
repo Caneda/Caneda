@@ -20,7 +20,7 @@
 #include "library.h"
 #include "sidebarmodel.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QDebug>
 #include <QIcon>
@@ -286,7 +286,7 @@ Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const
 
 QStringList SidebarModel::mimeTypes() const
 {
-    return QStringList() << "application/qucs.sidebarItem";
+    return QStringList() << "application/caneda.sidebarItem";
 }
 
 QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
@@ -306,6 +306,6 @@ QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
         }
     }
 
-    mimeData->setData("application/qucs.sidebarItem", encodedData);
+    mimeData->setData("application/caneda.sidebarItem", encodedData);
     return mimeData;
 }

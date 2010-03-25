@@ -1,5 +1,5 @@
 /***************************************************************************
-                                qucshelp.h
+                                canedahelp.h
                                ------------
     begin                : Sun Jan 11 2004
     copyright            : (C) 2004 by Michael Margraf
@@ -15,15 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef QUCSHELP_H
-#define QUCSHELP_H
+#ifndef CANEDAHELP_H
+#define CANEDAHELP_H
 
 #include <QtGui/QMainWindow>
 #include <QtGui/QFont>
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
 
-struct tQucsSettings {
+struct tCanedaSettings {
   int x, y, dx, dy;    // position and size of main window
   QFont font;
   QString BitmapDir;
@@ -32,8 +32,8 @@ struct tQucsSettings {
   QString Language;
 };
 
-extern tQucsSettings QucsSettings;
-extern QDir QucsHelpDir;
+extern tCanedaSettings CanedaSettings;
+extern QDir CanedaHelpDir;
 class QAction;
 class QListView;
 class HtmlDataFetcher;
@@ -44,12 +44,12 @@ class QModelIndex;
 class QItemSelection;
 class QUrl;
 
-class QucsHelp : public QMainWindow  {
+class CanedaHelp : public QMainWindow  {
   Q_OBJECT
 
   public:
-  QucsHelp(const QString& page,QWidget *parent=0l);
-    ~QucsHelp();
+  CanedaHelp(const QString& page,QWidget *parent=0l);
+    ~CanedaHelp();
 
   private slots:
     void slotSourceChanged(const QUrl& str);

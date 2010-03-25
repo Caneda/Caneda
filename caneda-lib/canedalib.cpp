@@ -1,5 +1,5 @@
 /***************************************************************************
-                               qucslib.cpp
+                               canedalib.cpp
                               -------------
     begin                : Sat May 28 2005
     copyright            : (C) 2005 by Michael Margraf
@@ -36,18 +36,18 @@
 #include <QtGui/QCloseEvent>
 #include <QtCore/QTextStream>
 
-#include "qucslib.h"
+#include "canedalib.h"
 #include "librarydialog.h"
 #include "displaydialog.h"
 #include "symbolwidget.h"
 #include "searchdialog.h"
 
 /* Constructor setups the GUI. */
-QucsLib::QucsLib()
+CanedaLib::CanedaLib()
 {
   // set application icon
-  setWindowIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
-  setWindowTitle("Qucs Library Tool " PACKAGE_VERSION);
+  setWindowIcon (QPixmap(CanedaSettings.BitmapDir + "big.caneda.xpm"));
+  setWindowTitle("Caneda Library Tool " PACKAGE_VERSION);
 
   QMenuBar * menuBar = new QMenuBar (this);
 
@@ -146,13 +146,13 @@ QucsLib::QucsLib()
 }
 
 /* Destructor destroys the application. */
-QucsLib::~QucsLib()
+CanedaLib::~CanedaLib()
 {
 }
 
 // ----------------------------------------------------
 // Put all available libraries into ComboBox.
-void QucsLib::putLibrariesIntoCombobox()
+void CanedaLib::putLibrariesIntoCombobox()
 {
   Library->clear();
 
@@ -167,7 +167,7 @@ void QucsLib::putLibrariesIntoCombobox()
       Library->addItem((*it).left((*it).length()-4));
   }
 
-  QDir LibDir(QucsSettings.LibDir);
+  QDir LibDir(CanedaSettings.LibDir);
   LibFiles = LibDir.entryList(QStringList("*.lib"), QDir::Files, QDir::Name);
 
   for(it = LibFiles.begin(); it != LibFiles.end(); it++)
@@ -177,11 +177,11 @@ void QucsLib::putLibrariesIntoCombobox()
 }
 
 // ----------------------------------------------------
-void QucsLib::slotAbout()
+void CanedaLib::slotAbout()
 {
   QMessageBox::about(this, tr("About..."),
-    "QucsLib Version " PACKAGE_VERSION "\n"+
-    tr("Library Manager for Qucs\n")+
+    "CanedaLib Version " PACKAGE_VERSION "\n"+
+    tr("Library Manager for Caneda\n")+
     tr("Copyright (C) 2005 by Michael Margraf\n")+
     "\nThis is free software; see the source for copying conditions."
     "\nThere is NO warranty; not even for MERCHANTABILITY or "
@@ -189,7 +189,7 @@ void QucsLib::slotAbout()
 }
 
 // ----------------------------------------------------
-void QucsLib::slotQuit()
+void CanedaLib::slotQuit()
 {
   int tmp;
   tmp = x();		// call size and position function in order to ...
@@ -201,7 +201,7 @@ void QucsLib::slotQuit()
 }
 
 // ----------------------------------------------------
-void QucsLib::closeEvent(QCloseEvent *Event)
+void CanedaLib::closeEvent(QCloseEvent *Event)
 {
   int tmp;
   tmp = x();		// call size and position function in order to ...
@@ -213,25 +213,25 @@ void QucsLib::closeEvent(QCloseEvent *Event)
 }
 
 // ----------------------------------------------------
-void QucsLib::slotManageLib()
+void CanedaLib::slotManageLib()
 {
   (new LibraryDialog(this))->exec();
   putLibrariesIntoCombobox();
 }
 
 // ----------------------------------------------------
-void QucsLib::slotHelp()
+void CanedaLib::slotHelp()
 {
   DisplayDialog *d = new DisplayDialog(this);
-  d->setWindowTitle("QucsLib Help");
+  d->setWindowTitle("CanedaLib Help");
   d->resize(250, 325);
   d->Text->setText(
-     tr("QucsLib is a program to manage Qucs component libraries. "
+     tr("CanedaLib is a program to manage Caneda component libraries. "
 	"On the left side of the application window the available "
 	"libraries can be browsed to search the wanted component. "
 	"By clicking on the component name its description can be "
 	"seen on the right side. The selected component is "
-	"transported to the Qucs application by clicking on the "
+        "transported to the Caneda application by clicking on the "
 	"button \"Copy to Clipboard\". Being back in the schematic "
 	"window the component can be inserted by pressing CTRL-V "
 	" (paste from clipboard).") + "\n" +
@@ -241,9 +241,9 @@ void QucsLib::slotHelp()
 }
 
 // ----------------------------------------------------
-void QucsLib::slotCopyToClipBoard()
+void CanedaLib::slotCopyToClipBoard()
 {
-  QString s = "<Qucs Schematic " PACKAGE_VERSION ">\n";
+  QString s = "<Caneda Schematic " PACKAGE_VERSION ">\n";
   s += "<Components>\n  " +
        Symbol->theModel() +
        "\n</Components>\n";
@@ -254,7 +254,7 @@ void QucsLib::slotCopyToClipBoard()
 }
 
 // ----------------------------------------------------
-void QucsLib::slotShowModel()
+void CanedaLib::slotShowModel()
 {
   DisplayDialog *d = new DisplayDialog(this);
   d->setWindowTitle("Model");
@@ -265,7 +265,7 @@ void QucsLib::slotShowModel()
 }
 
 // ----------------------------------------------------
-void QucsLib::slotSelectLibrary(int Index)
+void CanedaLib::slotSelectLibrary(int Index)
 {
   int Start, End, NameStart, NameEnd;
   End = Library->count()-1;
@@ -283,13 +283,13 @@ void QucsLib::slotSelectLibrary(int Index)
   if(Index < UserLibCount)  // Is it user library ?
     file.setFileName(UserLibDir.absolutePath() + QDir::separator() + Library->itemText(Index) + ".lib");
   else
-    file.setFileName(QucsSettings.LibDir + Library->itemText(Index) + ".lib");
+    file.setFileName(CanedaSettings.LibDir + Library->itemText(Index) + ".lib");
 
   if(!file.open(QIODevice::ReadOnly))
   {
     QMessageBox::critical(this, tr("Error"),
         tr("Cannot open \"%1\".").arg(
-           QucsSettings.LibDir + Library->itemText(Index) + ".lib"));
+           CanedaSettings.LibDir + Library->itemText(Index) + ".lib"));
     return;
   }
 
@@ -297,7 +297,7 @@ void QucsLib::slotSelectLibrary(int Index)
   QString LibraryString = ReadWhole.readAll();
   file.close();
 
-  Start = LibraryString.indexOf("<Qucs Library ");
+  Start = LibraryString.indexOf("<Caneda Library ");
   if(Start < 0) {
     QMessageBox::critical(this, tr("Error"), tr("Library is corrupt."));
     return;
@@ -342,7 +342,7 @@ void QucsLib::slotSelectLibrary(int Index)
 }
 
 // ----------------------------------------------------
-void QucsLib::slotSearchComponent()
+void CanedaLib::slotSearchComponent()
 {
   SearchDialog *d = new SearchDialog(this);
   if(d->exec() == QDialog::Accepted)
@@ -351,7 +351,7 @@ void QucsLib::slotSearchComponent()
 }
 
 // ----------------------------------------------------
-void QucsLib::slotShowComponent(QListWidgetItem *Item, QListWidgetItem*)
+void CanedaLib::slotShowComponent(QListWidgetItem *Item, QListWidgetItem*)
 {
   if(!Item) return;
 

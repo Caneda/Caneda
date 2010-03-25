@@ -29,6 +29,7 @@ class SvgPainter;
 
 class SingletonManager : public QObject
 {
+    Q_OBJECT;
 public:
     ~SingletonManager();
 

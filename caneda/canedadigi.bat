@@ -1,7 +1,7 @@
 @echo off
 
 REM
-REM qucsdigi.bat - wrapper script for digital simulation
+REM canedadigi.bat - wrapper script for digital simulation
 REM
 REM Copyright (C) 2005, 2006 Stefan Jahn <stefan@lkcc.org>
 REM
@@ -41,7 +41,7 @@ set NAME=digi
 
 REM set MINGWDIR=H:/Daten/Misc/mingw
 REM set FREEHDL=H:/Daten/Misc/freehdl
-REM set QUCSDIR=H:/Daten/Misc/Qucs
+REM set CANEDADIR=H:/Daten/Misc/Caneda
 
 set CXX=g++
 set CXXFLAGS=-O2 -I"%FREEHDL%/include"
@@ -49,7 +49,7 @@ REM set NAMEOUT=digi.dat
 set LDFLAGS=-L"%FREEHDL%/lib" -L"%FREEHDL%/lib/freehdl" -Wl,--enable-auto-import -s
 set LIBS=-lfreehdl-kernel -lfreehdl-std -lieee -lregex
 
-set PATH=%PATH%;%FREEHDL%/bin;%MINGWDIR%/bin;%QUCSDIR%/bin
+set PATH=%PATH%;%FREEHDL%/bin;%MINGWDIR%/bin;%CANEDADIR%/bin
 
 echo running C++ conversion...
 freehdl-v2cc -m %NAME%._main_.cc -L"%FREEHDL%/share/freehdl/lib" -o %NAME%.cc %NAME%.vhdl
@@ -67,7 +67,7 @@ echo simulating...
 %NAME%.exe -q -cmd "dc -f %NAME%.vcd -t 1 ps -q;d;run %TIME%;q;" < NUL
 
 echo running VCD conversion...
-qucsconv %OPTION% -if vcd -of qucsdata -i %NAME%.vcd -o %NAMEOUT%
+canedaconv %OPTION% -if vcd -of canedadata -i %NAME%.vcd -o %NAMEOUT%
 
 goto end
 

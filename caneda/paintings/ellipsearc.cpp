@@ -40,8 +40,8 @@ EllipseArc::EllipseArc(QRectF rect, int startAngle, int spanAngle,
     m_spanAngle(spanAngle)
 {
     setEllipse(rect);
-    setResizeHandles(Qucs::TopLeftHandle | Qucs::BottomRightHandle |
-            Qucs::TopRightHandle| Qucs::BottomLeftHandle);
+    setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
+            Caneda::TopRightHandle| Caneda::BottomLeftHandle);
 }
 
 //! \brief Destructor.
@@ -117,7 +117,7 @@ EllipseArc* EllipseArc::copy(SchematicScene *scene) const
 }
 
 //! \brief Save's data to xml referred by \a writer.
-void EllipseArc::saveData(Qucs::XmlWriter *writer) const
+void EllipseArc::saveData(Caneda::XmlWriter *writer) const
 {
     writer->writeStartElement("painting");
     writer->writeAttribute("name", "ellipseArc");
@@ -135,7 +135,7 @@ void EllipseArc::saveData(Qucs::XmlWriter *writer) const
 }
 
 //! \brief Loads data from xml represented by \a reader.
-void EllipseArc::loadData(Qucs::XmlReader *reader)
+void EllipseArc::loadData(Caneda::XmlReader *reader)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
     Q_ASSERT(reader->attributes().value("name") == "ellipseArc");
@@ -183,7 +183,7 @@ void EllipseArc::loadData(Qucs::XmlReader *reader)
     }
 }
 
-int EllipseArc::launchPropertyDialog(Qucs::UndoOption opt)
+int EllipseArc::launchPropertyDialog(Caneda::UndoOption opt)
 {
     StyleDialog dialog(this, opt);
     return dialog.exec();

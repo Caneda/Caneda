@@ -270,7 +270,7 @@ void PreviewWidget::toggleBackground(bool state)
     update();
 }
 
-StyleDialog::StyleDialog(Painting *_painting, Qucs::UndoOption option, QWidget *parent) :
+StyleDialog::StyleDialog(Painting *_painting, Caneda::UndoOption option, QWidget *parent) :
     QDialog(parent),
     lineColor(defaultPaintingPen.color()),
     fillColor(Qt::white),
@@ -302,7 +302,7 @@ void StyleDialog::setupStyleWidgets()
     fillStyleComboBox->setCurrentIndex(brush.style());
 
     if(painting->type() == Painting::ArrowType) {
-        Arrow *arrow = qucsitem_cast<Arrow*>(painting);
+        Arrow *arrow = canedaitem_cast<Arrow*>(painting);
         arrowStyleComboBox->setCurrentIndex(arrow->headStyle());
         arrowWidthSpinBox->setValue(static_cast<int>(arrow->headWidth()));
         arrowHeightSpinBox->setValue(static_cast<int>(arrow->headHeight()));
@@ -312,7 +312,7 @@ void StyleDialog::setupStyleWidgets()
     }
 
     if(painting->type() == Painting::EllipseArcType) {
-        EllipseArc *arc = qucsitem_cast<EllipseArc*>(painting);
+        EllipseArc *arc = canedaitem_cast<EllipseArc*>(painting);
         startAngleSpinBox->setValue(arc->startAngle());
         spanAngleSpinBox->setValue(arc->spanAngle());
         fillGroupBox->hide();
@@ -409,7 +409,7 @@ void StyleDialog::applySettings()
     }
 
     if(painting->type() == Painting::ArrowType) {
-        Arrow *arrow = qucsitem_cast<Arrow*>(painting);
+        Arrow *arrow = canedaitem_cast<Arrow*>(painting);
         arrow->setHeadStyle(static_cast<Arrow::HeadStyle>(previewWidget->headStyle()));
         arrow->setHeadHeight(previewWidget->headHeight());
         arrow->setHeadWidth(previewWidget->headWidth());

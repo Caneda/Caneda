@@ -105,9 +105,9 @@ public:
 
   virtual void synth (qft) = 0;	// Synthesize filter
 
-  std::string to_qucs (void);	// Outputs Qucs
+  std::string to_caneda (void);	// Outputs Caneda
   std::string to_spice (void);	// Outputs SPICE
-  void dump_qucs (void);        // Outputs Qucs to std::cout
+  void dump_caneda (void);        // Outputs Caneda to std::cout
   void dump_spice (void);	// Outputs SPICE to std::cout
   void dump_cout (void);	// Outputs to std::cout
 

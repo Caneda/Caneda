@@ -1,12 +1,12 @@
-.TH QucsDigi "1" "December 2005" "Debian/GNU Linux" "User Commands"
+.TH CanedaDigi "1" "December 2005" "Debian/GNU Linux" "User Commands"
 .SH NAME
-QucsDigi \- A wrapper script for digital simulations.
+CanedaDigi \- A wrapper script for digital simulations.
 .SH SYNOPSIS
-.B qucsdigi
+.B canedadigi
 [\fIOPTION\fR] \fIinfile\fR \fIoutfile\fR \fItime\fR \fIdir\fR \fIbindir\fR
 .SH DESCRIPTION
 
-\fBQucs\fR is an integrated circuit simulator which means you are able
+\fBCaneda\fR is an integrated circuit simulator which means you are able
 to setup a circuit with a graphical user interface (GUI) and simulate
 the large-signal, small-signal and noise behaviour of the circuit.
 After that simulation has finished you can view the simulation results
@@ -16,11 +16,11 @@ The software aims to support all kinds of circuit simulation types,
 e.g. DC, AC, S-parameter, harmonic balance analysis, noise analysis,
 etc.
 
-\fBQucsDigi\fR is a wrapper script for digital simulations performed
-by Qucs.  The program utilizes the \fBFreeHDL\fR compiler in order to
-convert the VHDL output of Qucs into a C++ program.  Thereafter this
+\fBCanedaDigi\fR is a wrapper script for digital simulations performed
+by Caneda.  The program utilizes the \fBFreeHDL\fR compiler in order to
+convert the VHDL output of Caneda into a C++ program.  Thereafter this
 C++ source is compiled and linked to a binary.  This binary is then
-executed and its VCD output file is converted to a Qucs dataset.
+executed and its VCD output file is converted to a Caneda dataset.
 .SH OPTIONS
 .TP
 \fR INFILE
@@ -28,7 +28,7 @@ the filename of the VHDL file to be simulated located in the
 directory specified in \fIDIR\fR
 .TP
 \fR OUTFILE
-the filename of the Qucs dataset file to be produced
+the filename of the Caneda dataset file to be produced
 .TP
 \fR TIME
 duration of the digital simulation
@@ -37,13 +37,13 @@ duration of the digital simulation
 the name of the directory where the simulation is going to be performed
 .TP
 \fR BINDIR
-the location where the \fIqucsconv\fR program is installed
+the location where the \fIcanedaconv\fR program is installed
 .SH AVAILABILITY
-The latest version of Qucs can always be obtained from
-\fBwww.sourceforge.net\fR or \fBwww.freshmeat.net\fR
+The latest version of Caneda can always be obtained from
+\fBwww.caneda.tuxfamily.org\fR
 .SH "REPORTING BUGS"
 Known bugs are documented within the BUGS file.  Report bugs to
-<qucs-bugs@lists.sourceforge.net>.
+<caneda-bugs@lists.tuxfamily.org>.
 .SH COPYRIGHT
 Copyright \(co 2005 Michael Margraf <michael.margraf@alumni.tu-berlin.de>
 .PP

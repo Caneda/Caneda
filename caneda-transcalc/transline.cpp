@@ -21,8 +21,8 @@
  */
 
 #include "transline.h"
-#include "qucstrans.h"
-#include "qucs-tools/propertygrid.h"
+#include "canedatrans.h"
+#include "caneda-tools/propertygrid.h"
 /* Constructor creates a transmission line instance. */
 transline::transline () {
   transWidgets = 0;

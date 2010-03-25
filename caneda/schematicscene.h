@@ -32,13 +32,13 @@
 
 class Diagram;
 class Painting;
-class QucsItem;
+class CanedaItem;
 class QRubberBand;
 class QUndoCommand;
 class QUndoStack;
 class SvgPainter;
 
-namespace Qucs
+namespace Caneda
 {
     enum Mode {
         SchematicMode,
@@ -101,30 +101,30 @@ public:
     /* geometry change */
 
     /* mirror */
-    void mirrorItems(QList<QucsItem*> &itemsenum,
-            const Qucs::UndoOption opt,
+    void mirrorItems(QList<CanedaItem*> &itemsenum,
+            const Caneda::UndoOption opt,
             const Qt::Axis axis);
-    void mirrorXItems(QList<QucsItem*> &items, const Qucs::UndoOption opt) {
+    void mirrorXItems(QList<CanedaItem*> &items, const Caneda::UndoOption opt) {
         mirrorItems(items, opt, Qt::XAxis);
     }
 
-    void mirrorYItems(QList<QucsItem*> &items, const Qucs::UndoOption opt) {
+    void mirrorYItems(QList<CanedaItem*> &items, const Caneda::UndoOption opt) {
         mirrorItems(items, opt, Qt::YAxis);
     }
 
-    void rotateItems(QList<QucsItem*> &items, const Qucs::AngleDirection dir,
-            const Qucs::UndoOption);
-    void rotateItems(QList<QucsItem*> &items, const Qucs::UndoOption undo) {
-        rotateItems(items, Qucs::Clockwise, undo);
+    void rotateItems(QList<CanedaItem*> &items, const Caneda::AngleDirection dir,
+            const Caneda::UndoOption);
+    void rotateItems(QList<CanedaItem*> &items, const Caneda::UndoOption undo) {
+        rotateItems(items, Caneda::Clockwise, undo);
     }
-    void setItemsOnGrid(QList<QucsItem*> &items, const Qucs::UndoOption);
+    void setItemsOnGrid(QList<CanedaItem*> &items, const Caneda::UndoOption);
 
-    void deleteItems(QList<QucsItem*> &items, const Qucs::UndoOption);
-    void toggleActiveStatus(QList<QucsItem*> &components, const Qucs::UndoOption);
+    void deleteItems(QList<CanedaItem*> &items, const Caneda::UndoOption);
+    void toggleActiveStatus(QList<CanedaItem*> &components, const Caneda::UndoOption);
 
     // these aren't toggle actions.
-    void cutItems(QList<QucsItem*> &items, const Qucs::UndoOption = Qucs::PushUndoCmd);
-    void copyItems(QList<QucsItem*> &items) const;
+    void cutItems(QList<CanedaItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
+    void copyItems(QList<CanedaItem*> &items) const;
 
     QString fileName() const { return m_fileName; }
     void setFileName(const QString& fn);
@@ -188,15 +188,15 @@ public:
     int frameColumns() const { return m_frameColumns; }
     void setFrameSize(int rows, int columns);
 
-    Qucs::Mode currentMode() const { return m_currentMode; }
-    void setMode(const Qucs::Mode mode);
+    Caneda::Mode currentMode() const { return m_currentMode; }
+    void setMode(const Caneda::Mode mode);
 
     MouseAction currentMouseAction() const { return m_currentMouseAction; }
     void setCurrentMouseAction(const MouseAction ma);
 
     void resetState();
     void beginPaintingDraw(Painting *item);
-    void beginInsertingItems(const QList<QucsItem*> &items);
+    void beginInsertingItems(const QList<CanedaItem*> &items);
 
     bool alignElements(const Qt::Alignment alignment);
     bool distributeElements(const Qt::Orientation orientation);
@@ -284,8 +284,8 @@ private:
     void deletingEventLeftMouseClick(const QPointF &pos);
 
     /* private distribute */
-    void distributeElementsHorizontally(QList<QucsItem*> items);
-    void distributeElementsVertically(QList<QucsItem*> items);
+    void distributeElementsHorizontally(QList<CanedaItem*> items);
+    void distributeElementsVertically(QList<CanedaItem*> items);
 
     /* alignment */
     static const QString Alignment2QString(const Qt::Alignment alignment);
@@ -294,17 +294,17 @@ private:
     bool sidebarItemClickedPaintingsItems(const QString& itemName);
     bool sidebarItemClickedNormalItems(const QString& itemName, const QString& category);
 
-    QucsItem* itemForName(const QString& name, const QString& category);
-    void placeItem(QucsItem *item, const QPointF &pos, const Qucs::UndoOption opt);
+    CanedaItem* itemForName(const QString& name, const QString& category);
+    void placeItem(CanedaItem *item, const QPointF &pos, const Caneda::UndoOption opt);
     int componentLabelSuffix(const QString& labelPrefix) const;
 
     int unusedPortNumber();
     bool isPortNumberUsed(int num) const;
     void setNumberUnused(int num);
 
-    void disconnectItems(const QList<QucsItem*> &qItems,
-            const Qucs::UndoOption opt = Qucs::PushUndoCmd);
-    void connectItems(const QList<QucsItem*> &qItems, const Qucs::UndoOption opt);
+    void disconnectItems(const QList<CanedaItem*> &qItems,
+            const Caneda::UndoOption opt = Caneda::PushUndoCmd);
+    void connectItems(const QList<CanedaItem*> &qItems, const Caneda::UndoOption opt);
 
     void placeAndDuplicatePainting();
 
@@ -349,10 +349,10 @@ private:
     QPointF lastPos;
 
     /*!
-     * \brief A list of QucsItem which are to be placed/pasted.
+     * \brief A list of CanedaItem which are to be placed/pasted.
      * \sa beginInsertingItems
      */
-    QList<QucsItem*> m_insertibles;
+    QList<CanedaItem*> m_insertibles;
 
     //! Wiring state machine state  enum
     enum wiringStateEnum {
@@ -397,7 +397,7 @@ private:
     QUndoStack *m_undoStack;
     //! Current mouse action
     MouseAction m_currentMouseAction;
-    Qucs::Mode m_currentMode;
+    Caneda::Mode m_currentMode;
 
     //! Grid width in pixel
     uint m_gridWidth;

@@ -15,7 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 //**************************************************************************
-//
 
 /*!
  * \file QXsltTransformer.h
@@ -29,7 +28,7 @@
 #include <QHash>
 #include <QString>
 
-namespace Qucs {
+namespace Caneda {
 
     // forward declaration
     class QXmlStreamReaderExt;
@@ -103,6 +102,6 @@ namespace Qucs {
         void * transform(const void * doc) const;
     };
 
-} // namespace Qucs
+} // namespace Caneda
 #endif
 

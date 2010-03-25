@@ -26,7 +26,7 @@
 #include "undocommands.h"
 #include "wire.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/transformers.h"
 #include "xmlutilities/xmlutilities.h"
@@ -240,9 +240,9 @@ void Component::setPropertyMap(const PropertyMap& propMap)
 }
 
 //! \brief Sets the component's activeStatus to \a status.
-void Component::setActiveStatus(Qucs::ActiveStatus status)
+void Component::setActiveStatus(Caneda::ActiveStatus status)
 {
-    if(status == Qucs::Short && m_ports.size() <= 1) {
+    if(status == Caneda::Short && m_ports.size() <= 1) {
         qWarning() << "Cannot short components with <= 1 ports";
         return;
     }
@@ -258,9 +258,9 @@ void Component::setActiveStatus(Qucs::ActiveStatus status)
  */
 void Component::toggleActiveStatus()
 {
-    Qucs::ActiveStatus status = (Qucs::ActiveStatus)((d->activeStatus + 1) % 3);
-    if(status == Qucs::Short && m_ports.size() <= 1) {
-        status = (Qucs::ActiveStatus)((status + 1) % 3);
+    Caneda::ActiveStatus status = (Caneda::ActiveStatus)((d->activeStatus + 1) % 3);
+    if(status == Caneda::Short && m_ports.size() <= 1) {
+        status = (Caneda::ActiveStatus)((status + 1) % 3);
     }
     setActiveStatus(status);
 }
@@ -272,7 +272,7 @@ void Component::toggleActiveStatus()
  * \param scene SchematicScene to which component should be parented to.
  * \return Returns new component pointer on success and null on failure.
  */
-Component* Component::loadComponentData(Qucs::XmlReader *reader, SchematicScene *scene)
+Component* Component::loadComponentData(Caneda::XmlReader *reader, SchematicScene *scene)
 {
     Component *retVal = 0;
     Q_ASSERT(reader->isStartElement() && reader->name() == "component");
@@ -287,7 +287,7 @@ Component* Component::loadComponentData(Qucs::XmlReader *reader, SchematicScene 
         retVal->loadData(reader);
     }
     else {
-        //read upto end if component is not found in any of qucs identified libraries.
+        //read upto end if component is not found in any of Caneda identified libraries.
         qWarning() << "Warning: Found unknown element" << compName << ", skipping";
         reader->readUnknownElement();
     }
@@ -295,7 +295,7 @@ Component* Component::loadComponentData(Qucs::XmlReader *reader, SchematicScene 
 }
 
 //! \reimp
-void Component::loadData(Qucs::XmlReader *reader)
+void Component::loadData(Caneda::XmlReader *reader)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "component");
 
@@ -308,11 +308,11 @@ void Component::loadData(Qucs::XmlReader *reader)
     }
 
     if(activeStr == "active") {
-        setActiveStatus(Qucs::Active);
+        setActiveStatus(Caneda::Active);
     } else if(activeStr == "open") {
-        setActiveStatus(Qucs::Open);
+        setActiveStatus(Caneda::Open);
     } else {
-        setActiveStatus(Qucs::Short);
+        setActiveStatus(Caneda::Short);
     }
 
     while(!reader->atEnd()) {
@@ -350,16 +350,16 @@ void Component::loadData(Qucs::XmlReader *reader)
 }
 
 //! \reimp
-void Component::saveData(Qucs::XmlWriter *writer) const
+void Component::saveData(Caneda::XmlWriter *writer) const
 {
     writer->writeStartElement("component");
     writer->writeAttribute("name", name());
     writer->writeAttribute("library", library());
 
     QString activeStr;
-    if(d->activeStatus == Qucs::Active) {
+    if(d->activeStatus == Caneda::Active) {
         activeStr = QString("active");
-    } else if(d->activeStatus == Qucs::Open) {
+    } else if(d->activeStatus == Caneda::Open) {
         activeStr = QString("open");
     } else {
         activeStr = QString("short");
@@ -386,8 +386,8 @@ void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
     SvgItem::paint(painter, o, w);
     drawPorts(m_ports, painter, o);
 
-    if(activeStatus() != Qucs::Active) {
-        painter->setPen(activeStatus() == Qucs::Short ?
+    if(activeStatus() != Caneda::Active) {
+        painter->setPen(activeStatus() == Caneda::Short ?
                 Qt::darkGreen :
                 Qt::darkRed);
         painter->setBrush(Qt::NoBrush);
@@ -409,11 +409,11 @@ void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
  *
  * \return Returns the number of connections made.
  */
-int Component::checkAndConnect(Qucs::UndoOption opt)
+int Component::checkAndConnect(Caneda::UndoOption opt)
 {
     int num_of_connections = 0;
 
-    if(opt == Qucs::PushUndoCmd) {
+    if(opt == Caneda::PushUndoCmd) {
         schematicScene()->undoStack()->beginMacro(QString());
     }
     foreach(Port *port, m_ports) {
@@ -421,7 +421,7 @@ int Component::checkAndConnect(Qucs::UndoOption opt)
         if(other) {
             QList<Wire*> wires = Port::wiresBetween(port, other);
 
-            if(opt == Qucs::PushUndoCmd) {
+            if(opt == Caneda::PushUndoCmd) {
                 ConnectCmd *cmd = new ConnectCmd(port, other, wires, schematicScene());
                 schematicScene()->undoStack()->push(cmd);
             }
@@ -434,7 +434,7 @@ int Component::checkAndConnect(Qucs::UndoOption opt)
         }
     }
 
-    if(opt == Qucs::PushUndoCmd) {
+    if(opt == Caneda::PushUndoCmd) {
         schematicScene()->undoStack()->endMacro();
     }
 
@@ -446,7 +446,7 @@ Component* Component::copy(SchematicScene *scene) const
 {
     Component *retVal = new Component(d, svgPainter(), scene);
     //no need for Component::copyDataTo() because the data is already copied from d pointer.
-    QucsItem::copyDataTo(static_cast<QucsItem*>(retVal));
+    CanedaItem::copyDataTo(static_cast<CanedaItem*>(retVal));
     retVal->setSymbol(symbol()); //to register svg connections
     retVal->updatePropertyGroup();
     return retVal;
@@ -455,16 +455,16 @@ Component* Component::copy(SchematicScene *scene) const
 //! \brief Copies the data to \a component.
 void Component::copyDataTo(Component *component) const
 {
-    QucsItem::copyDataTo(static_cast<QucsItem*>(component));
+    CanedaItem::copyDataTo(static_cast<CanedaItem*>(component));
     component->d = d;
     component->updatePropertyGroup();
     component->update();
 }
 
-//! \copydoc QucsItem::launchPropertyDialog()
-int Component::launchPropertyDialog(Qucs::UndoOption)
+//! \copydoc CanedaItem::launchPropertyDialog()
+int Component::launchPropertyDialog(Caneda::UndoOption)
 {
-    PropertyDialog dia(this, Qucs::PushUndoCmd);
+    PropertyDialog dia(this, Caneda::PushUndoCmd);
     return dia.exec();
 }
 
@@ -502,8 +502,8 @@ static bool readSchematicSvg(const QByteArray &svgContent,
         QSharedDataPointer<ComponentData> &d)
 {
     /* process using xslt */
-    Qucs::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
-            Qucs::transformers::defaultInstance()->componentsvg());
+    Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
+            Caneda::transformers::defaultInstance()->componentsvg());
 
     QString svgId = d.constData()->name + "/" + schName;
     svgPainter->registerSvg(svgId, QXmlSvg.constData());
@@ -523,7 +523,7 @@ static bool readSchematicSvg(const QByteArray &svgContent,
  * \param schName Schematic name
  * \param d (Output variable) The data ptr where data should be uploaded.
  */
-static void readSchematicPort(Qucs::XmlReader *reader, const QString & schName,
+static void readSchematicPort(Caneda::XmlReader *reader, const QString & schName,
         QSharedDataPointer<ComponentData> &d)
 {
     Q_ASSERT(reader->isStartElement());
@@ -552,7 +552,7 @@ static void readSchematicPort(Qucs::XmlReader *reader, const QString & schName,
  * \param svgPainter The SvgPainter object to which the symbols should be exported to.
  * \param d (Output variable) The data ptr where data should be uploaded.
  */
-static bool readSchematic(Qucs::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
+static bool readSchematic(Caneda::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
         QSharedDataPointer<ComponentData> &d)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "schematic");
@@ -616,7 +616,7 @@ static bool readSchematic(Qucs::XmlReader *reader, const QString& svgPath, SvgPa
  * \param svgPainter The SvgPainter object to which the symbols should be exported to.
  * \param d (Output variable) The data ptr where data should be uploaded.
  */
-static bool readSchematics(Qucs::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
+static bool readSchematics(Caneda::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
         QSharedDataPointer<ComponentData> &d)
 {
     /* list of symbols */
@@ -676,7 +676,7 @@ static bool readSchematics(Qucs::XmlReader *reader, const QString& svgPath, SvgP
  * \param reader XmlReader responsible for reading xml data.
  * \param d (Output variable) The data ptr where data should be uploaded.
  */
-static void readComponentProperties(Qucs::XmlReader *reader,
+static void readComponentProperties(Caneda::XmlReader *reader,
         QSharedDataPointer<ComponentData> &d)
 {
     while(!reader->atEnd()) {
@@ -699,7 +699,7 @@ static void readComponentProperties(Qucs::XmlReader *reader,
     }
 }
 
-namespace Qucs
+namespace Caneda
 {
 
     /*!
@@ -711,7 +711,7 @@ namespace Qucs
      * \param d (Output variable) The data ptr where data should be uploaded.
      * \note Policy is to assert well formed xml.
      */
-    bool readComponentData(Qucs::XmlReader *reader, const QString& path,
+    bool readComponentData(Caneda::XmlReader *reader, const QString& path,
             SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d)
     {
         QXmlStreamAttributes attributes = reader->attributes();
@@ -719,7 +719,7 @@ namespace Qucs
         Q_ASSERT(reader->isStartElement() && reader->name() == "component");
 
         //check version compatibility first.
-        Q_ASSERT(Qucs::checkVersion(attributes.value("version").toString()));
+        Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
 
         /* get name */
         d->name = attributes.value("name").toString();
@@ -740,13 +740,13 @@ namespace Qucs
             if(reader->isStartElement()) {
                 /* read display text */
                 if(reader->name() == "displaytext") {
-                    d->displayText = reader->readLocaleText(Qucs::localePrefix());
+                    d->displayText = reader->readLocaleText(Caneda::localePrefix());
                     Q_ASSERT(reader->isEndElement());
                 }
 
                 /* Read description */
                 else if(reader->name() == "description") {
-                    d->description = reader->readLocaleText(Qucs::localePrefix());
+                    d->description = reader->readLocaleText(Caneda::localePrefix());
                     Q_ASSERT(reader->isEndElement());
                 }
 
@@ -778,5 +778,5 @@ namespace Qucs
         }
         return true;
     }
-} // namespace qucs
+} // namespace Caneda
 

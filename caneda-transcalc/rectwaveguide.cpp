@@ -25,10 +25,10 @@
 #include <string.h>
 #include <math.h>
 
-#include "qucstrans.h"
+#include "canedatrans.h"
 #include "transline.h"
 #include "rectwaveguide.h"
-#include "qucs-tools/propertygrid.h"
+#include "caneda-tools/propertygrid.h"
 
 rectwaveguide::rectwaveguide() : transline()
 {

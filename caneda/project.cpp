@@ -19,11 +19,11 @@
 
 #include "project.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "componentssidebar.h"
 #include "library.h"
-#include "qucsview.h"
+#include "canedaview.h"
 #include "schematicscene.h"
 #include "schematicview.h"
 #include "xmlsymbolformat.h"
@@ -57,31 +57,31 @@ Project::Project(QWidget *parent) : QWidget(parent)
     QToolBar *toolbar = new QToolBar;
 
     QToolButton *projNew = new QToolButton();
-    projNew->setIcon(QIcon(Qucs::bitmapDirectory() + "project-new.png"));
+    projNew->setIcon(QIcon(Caneda::bitmapDirectory() + "project-new.png"));
     projNew->setStatusTip(tr("Creates a new project"));
     projNew->setToolTip(tr("Creates a new project"));
     projNew->setWhatsThis(tr("New Project\n\nCreates a new project"));
 
     QToolButton *projOpen = new QToolButton();
-    projOpen->setIcon(QIcon(Qucs::bitmapDirectory() + "fileopen.png"));
+    projOpen->setIcon(QIcon(Caneda::bitmapDirectory() + "fileopen.png"));
     projOpen->setStatusTip(tr("Opens an existing project"));
     projOpen->setToolTip(tr("Opens an existing project"));
     projOpen->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
 
     QToolButton *addToProj = new QToolButton();
-    addToProj->setIcon(QIcon(Qucs::bitmapDirectory() + "filenew.png"));
+    addToProj->setIcon(QIcon(Caneda::bitmapDirectory() + "filenew.png"));
     addToProj->setStatusTip(tr("Adds a file to current project"));
     addToProj->setToolTip(tr("Adds a file to current project"));
     addToProj->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
 
     QToolButton *projDel = new QToolButton();
-    projDel->setIcon(QIcon(Qucs::bitmapDirectory() + "fileclose.png"));
+    projDel->setIcon(QIcon(Caneda::bitmapDirectory() + "fileclose.png"));
     projDel->setStatusTip(tr("Removes a file from current project"));
     projDel->setToolTip(tr("Removes a file from current project"));
     projDel->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
 
     QToolButton *projClose = new QToolButton();
-    projClose->setIcon(QIcon(Qucs::bitmapDirectory() + "project-close.png"));
+    projClose->setIcon(QIcon(Caneda::bitmapDirectory() + "project-close.png"));
     projClose->setStatusTip(tr("Closes the current project"));
     projClose->setToolTip(tr("Closes the current project"));
     projClose->setWhatsThis(tr("Close Project\n\nCloses the current project"));
@@ -114,7 +114,7 @@ Project::Project(QWidget *parent) : QWidget(parent)
 void Project::slotNewProject()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"),
-                                                    "", tr("Qucs Projects (*.xpro)"));
+                                                    "", tr("Caneda Projects (*.xpro)"));
     if(!fileName.isEmpty()) {
         if(QString(QFileInfo(fileName).suffix()).isEmpty()) {
             fileName = fileName + ".xpro";
@@ -147,7 +147,7 @@ void Project::slotOpenProject(QString fileName)
 {
     if(fileName == 0) {
         fileName = QFileDialog::getOpenFileName(this, tr("Open Project"),
-                                                "", tr("Qucs Projects (*.xpro)"));
+                                                "", tr("Caneda Projects (*.xpro)"));
     }
 
     if(!fileName.isEmpty()) {
@@ -170,7 +170,7 @@ void Project::slotAddToProject()
         AddToProjectDialog *p = new AddToProjectDialog(this);
 
         if(p->accepted()) {
-            if(p->userChoice() == Qucs::ExistingComponent) {
+            if(p->userChoice() == Caneda::ExistingComponent) {
 
                 QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
                                                                 "", tr("Component-xml (*.xsch)"));
@@ -187,8 +187,8 @@ void Project::slotAddToProject()
                     }
 
                     //We generate the corresponding symbol
-                    QucsView *view = new SchematicView(0, this);
-                    view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
+                    CanedaView *view = new SchematicView(0, this);
+                    view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
 
                     if(!view->load(fileName)) {
                         QMessageBox::critical(this, tr("Error"),
@@ -214,10 +214,10 @@ void Project::slotAddToProject()
                     emit itemDoubleClicked(fileName);
                 }
             }
-            else if(p->userChoice() == Qucs::NewComponent) {
+            else if(p->userChoice() == Caneda::NewComponent) {
                 QString fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + p->fileName()+".xsch";
 
-                QucsView *view = new SchematicView(0, this);
+                CanedaView *view = new SchematicView(0, this);
                 view->setFileName(fileName);
 
                 //When the component is already created, we return.
@@ -236,7 +236,7 @@ void Project::slotAddToProject()
 
                 emit itemDoubleClicked(fileName);
 
-                view->toSchematicView()->schematicScene()->setMode(Qucs::SymbolMode);
+                view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
 
                 fileName.replace(".xsch",".xsym");
                 view->setFileName(fileName);

@@ -25,7 +25,7 @@
 #include "schematicscene.h"
 #include "undocommands.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QAction>
 #include <QApplication>
@@ -43,7 +43,7 @@
 #include <QTextList>
 #include <QToolBar>
 
-GraphicTextDialog::GraphicTextDialog(GraphicText *text, Qucs::UndoOption opt, QWidget *parent)
+GraphicTextDialog::GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt, QWidget *parent)
 : QDialog(parent), textItem(text), undoOption(opt)
 {
     mainLayout = new QVBoxLayout(this);
@@ -63,7 +63,7 @@ GraphicTextDialog::GraphicTextDialog(GraphicText *text, Qucs::UndoOption opt, QW
 
     textEdit = new QTextEdit;
     if(textItem) {
-        QString latex = Qucs::unicodeToLatex(textItem->richText());
+        QString latex = Caneda::unicodeToLatex(textItem->richText());
         textEdit->setHtml(latex);
     }
 
@@ -141,7 +141,7 @@ void GraphicTextDialog::accept()
             QString oldText = textItem->richText();
             QString newText = richText();
             if(oldText != newText) {
-                if(undoOption == Qucs::PushUndoCmd) {
+                if(undoOption == Caneda::PushUndoCmd) {
                     QUndoCommand *cmd = new GraphicTextChangeCmd(textItem, oldText, newText);
                     scene->undoStack()->push(cmd);
                 }
@@ -160,7 +160,7 @@ void GraphicTextDialog::setupEditActions()
 
     QAction *a;
 
-    QString rsrcPath = Qucs::bitmapDirectory();
+    QString rsrcPath = Caneda::bitmapDirectory();
     a = actionUndo = new QAction(QIcon(rsrcPath + "undo.png"), tr("&Undo"), this);
     a->setShortcut(QKeySequence::Undo);
     tb->addAction(a);
@@ -190,7 +190,7 @@ void GraphicTextDialog::setupTextActions()
 {
     QToolBar *tb = toolBar;
 
-    QString rsrcPath = Qucs::bitmapDirectory();
+    QString rsrcPath = Caneda::bitmapDirectory();
     actionTextBold = new QAction(QIcon(rsrcPath + "textbold.png"), tr("&Bold"), this);
     actionTextBold->setShortcut(Qt::CTRL + Qt::Key_B);
     QFont bold;

@@ -20,7 +20,7 @@
 #endif
 
 #include "searchdialog.h"
-#include "qucslib.h"
+#include "canedalib.h"
 
 #include <Qt/qlayout.h>
 #include <QtGui/QHBoxLayout>
@@ -34,7 +34,7 @@
 #include <QtCore/QTextStream>
 #include <QtGui/QListWidget>
 
-SearchDialog::SearchDialog(QucsLib *parent)
+SearchDialog::SearchDialog(CanedaLib *parent)
                      : QDialog(parent)
 {
   ParentDialog = parent;
@@ -95,7 +95,7 @@ void SearchDialog::slotSearch()
   }
 
   bool findComponent = false;
-  QDir LibDir(QucsSettings.LibDir);
+  QDir LibDir(CanedaSettings.LibDir);
   QStringList LibFiles = LibDir.entryList(QStringList("*.lib"), QDir::Files, QDir::Name);
 
   QFile File;
@@ -104,14 +104,14 @@ void SearchDialog::slotSearch()
   QStringList::iterator it;
   int Start, End, NameStart, NameEnd;
   for(it = LibFiles.begin(); it != LibFiles.end(); it++) { // all library files
-    File.setFileName(QucsSettings.LibDir + (*it));
+    File.setFileName(CanedaSettings.LibDir + (*it));
     if(!File.open(QIODevice::ReadOnly))  continue;
 
     ReadWhole.setDevice(&File);
     LibraryString = ReadWhole.readAll();
     File.close();
 
-    Start = LibraryString.indexOf("<Qucs Library ");
+    Start = LibraryString.indexOf("<Caneda Library ");
     if(Start < 0)  continue;
     End = LibraryString.indexOf('>', Start);
     if(End < 0)  continue;

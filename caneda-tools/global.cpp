@@ -23,65 +23,65 @@
 
 using namespace std;
 
-namespace Qucs
+namespace Caneda
 {
-   QString pathForQucsFile(const QString& fileName)
+   QString pathForCanedaFile(const QString& fileName)
    {
       QString retVal = QDir::homePath();
-      retVal += QDir::convertSeparators(QString("/.qucs/")+fileName);
+      retVal += QDir::convertSeparators(QString("/.caneda/")+fileName);
       return retVal;
    }
 
    QString getenv()
    {
       // is application relocated?
-      static QString var(::getenv("QUCSDIR"));
+      static QString var(::getenv("CANEDADIR"));
       return var;
    }
 
    QString baseDirectory()
    {
-      QString var = Qucs::getenv();
+      QString var = Caneda::getenv();
       if(!var.isEmpty())
       {
-         QDir QucsDir = QDir (var);
-         return QDir::convertSeparators (QucsDir.canonicalPath () + "/share/qucs/");
+         QDir CanedaDir = QDir (var);
+         return QDir::convertSeparators (CanedaDir.canonicalPath () + "/share/caneda/");
       }
-      return Qucs::baseDir;
+      return Caneda::baseDir;
    }
 
    QString binaryDirectory()
    {
-      QString var = Qucs::getenv();
+      QString var = Caneda::getenv();
       if(!var.isEmpty())
       {
-         QDir QucsDir = QDir (var);
-         return QDir::convertSeparators (QucsDir.canonicalPath () + "/bin/");
+         QDir CanedaDir = QDir (var);
+         return QDir::convertSeparators (CanedaDir.canonicalPath () + "/bin/");
       }
-      return Qucs::binaryDir;
+      return Caneda::binaryDir;
    }
 
    QString bitmapDirectory()
    {
-      QString var = Qucs::getenv();
+      QString var = Caneda::getenv();
       if(!var.isEmpty())
       {
-         QDir QucsDir = QDir (var);
-         return QDir::convertSeparators (QucsDir.canonicalPath () + "/share/qucs/bitmaps/");
+         QDir CanedaDir = QDir (var);
+         return QDir::convertSeparators (CanedaDir.canonicalPath () + "/share/caneda/bitmaps/");
       }
-      return Qucs::bitmapDir;
+      return Caneda::bitmapDir;
    }
 
    QString langDirectory()
    {
 
-      QString var = Qucs::getenv();
+      QString var = Caneda::getenv();
       if(!var.isEmpty())
       {
-         QDir QucsDir = QDir (var);
-         return QDir::convertSeparators (QucsDir.canonicalPath () + "/share/qucs/lang/");
+         QDir CanedaDir = QDir (var);
+         return QDir::convertSeparators (CanedaDir.canonicalPath () + "/share/caneda/lang/");
       }
-      return Qucs::langDir;
+      return Caneda::langDir;
    }
 
    QString language()
@@ -115,7 +115,7 @@ namespace Qucs
 
    bool checkVersion(const QString& Line)
    {
-      QStringList sl = Qucs::version.split('.', QString::SkipEmptyParts);
+      QStringList sl = Caneda::version.split('.', QString::SkipEmptyParts);
       QStringList ll = Line.split('.',QString::SkipEmptyParts);
       if (ll.count() != 3 || sl.count() != 3)
          return false;

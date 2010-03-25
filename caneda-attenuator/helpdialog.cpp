@@ -32,16 +32,16 @@ HelpDialog::HelpDialog(QWidget *parent)
 {
   setModal(false);
   setAttribute(Qt::WA_DeleteOnClose);
-  setWindowTitle(tr("Qucs Attenuator Help"));
+  setWindowTitle(tr("Caneda Attenuator Help"));
 
 
   // --------  set help text into dialog  ------------
-  QString s(tr("QucsAttenuator is an attenuator synthesis program. "
+  QString s(tr("CanedaAttenuator is an attenuator synthesis program. "
 	       "To create a attenuator, simply enter all "
 	       "the input parameters and press the calculation button. "
 	       "Immediatly, the "
 	       "schematic of the attenuator is calculated and "
-	       "put into the clipboard. Now go to Qucs, "
+               "put into the clipboard. Now go to Caneda, "
 	       "open an schematic and press "
 	       "CTRL-V (paste from clipboard). The attenuator "
 	       "schematic can now be inserted. "

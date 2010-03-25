@@ -2,7 +2,7 @@
  * Copyright 2008 by e_k <e_k@users.sourceforge.net>                       *
  * Copyright 2009 Pablo Daniel Pareja Obregon                              *
  * This file was modified by Pablo Daniel Pareja Obregon to be included    *
- * in Qucs.                                                                *
+ * in Caneda.                                                                *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *

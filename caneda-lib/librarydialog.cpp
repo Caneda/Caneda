@@ -20,7 +20,7 @@
 #endif
 
 #include "librarydialog.h"
-#include "qucslib.h"
+#include "canedalib.h"
 
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QVBoxLayout>
@@ -107,7 +107,7 @@ void LibraryDialog::slotRename()
     QMessageBox::critical(this, tr("Error"), tr("Please choose a library!"));
     return;
   }
-  QFile NewLibFile(QucsSettings.LibDir + NameEdit->text() + ".lib");
+  QFile NewLibFile(CanedaSettings.LibDir + NameEdit->text() + ".lib");
   if(NewLibFile.exists()) {
     QMessageBox::critical(this, tr("Error"), tr("A system library with this name already exists!"));
     return;
@@ -132,7 +132,7 @@ void LibraryDialog::slotRename()
   char *p, *Name;
   char *Config = FileContent.data();
   for(;;) {
-    p = strstr(Config, "<Qucs Library ");
+    p = strstr(Config, "<Caneda Library ");
     if(p == 0) break;
     Name = strstr(p, " \"");
     if(Name == 0) break;

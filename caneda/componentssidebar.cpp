@@ -21,7 +21,7 @@
 #include "componentssidebar.h"
 #include "sidebarmodel.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QAction>
 #include <QDebug>
@@ -110,7 +110,7 @@ ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
     hl->addWidget(m_filterEdit);
 
     m_clearButton = new QToolButton();
-    m_clearButton->setIcon(QIcon(Qucs::bitmapDirectory() + "clearFilterText.png"));
+    m_clearButton->setIcon(QIcon(Caneda::bitmapDirectory() + "clearFilterText.png"));
     m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
     m_clearButton->setWhatsThis(
             tr("Clear Filter Text\n\nClears the filter text thus reshowing all components"));
@@ -189,7 +189,7 @@ void ComponentsSidebar::slotOnClicked(const QModelIndex& index)
     if(index.isValid()) {
         QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
         if(mime) {
-            QByteArray encodedData = mime->data("application/qucs.sidebarItem");
+            QByteArray encodedData = mime->data("application/caneda.sidebarItem");
             QDataStream stream(&encodedData, QIODevice::ReadOnly);
             QString item, category;
             stream >> item >> category;
@@ -204,7 +204,7 @@ void ComponentsSidebar::slotOnDoubleClicked(const QModelIndex& index)
     if(index.isValid()) {
         QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
         if(mime) {
-            QByteArray encodedData = mime->data("application/qucs.sidebarItem");
+            QByteArray encodedData = mime->data("application/caneda.sidebarItem");
             QDataStream stream(&encodedData, QIODevice::ReadOnly);
             QString item, category;
             stream >> item >> category;

@@ -55,8 +55,8 @@ public:
     int type() const { return Arrow::Type; }
     Arrow* copy(SchematicScene *scene = 0) const;
 
-    void saveData(Qucs::XmlWriter *writer) const;
-    void loadData(Qucs::XmlReader *reader);
+    void saveData(Caneda::XmlWriter *writer) const;
+    void loadData(Caneda::XmlReader *reader);
 
     HeadStyle headStyle() const { return m_headStyle; }
     void setHeadStyle(HeadStyle style);
@@ -73,7 +73,7 @@ public:
     QLineF line() const { return lineFromRect(paintingRect()); }
     void setLine(const QLineF &line);
 
-    int launchPropertyDialog(Qucs::UndoOption opt);
+    int launchPropertyDialog(Caneda::UndoOption opt);
 
 protected:
     void geometryChange();

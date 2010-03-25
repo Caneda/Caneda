@@ -34,10 +34,10 @@
 #include <string.h>
 #include <math.h>
 
-#include "qucstrans.h"
+#include "canedatrans.h"
 #include "transline.h"
 #include "coax.h"
-#include "qucs-tools/propertygrid.h"
+#include "caneda-tools/propertygrid.h"
 coax::coax() : transline()
 {
   description = "Coaxial";

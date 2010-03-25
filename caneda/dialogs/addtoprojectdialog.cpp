@@ -1,7 +1,5 @@
 /***************************************************************************
  * Copyright 2010 Pablo Daniel Pareja Obregon                              *
- * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Qucs.                                         *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,7 +19,7 @@
 
 #include "addtoprojectdialog.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QButtonGroup>
 #include <QCheckBox>
@@ -41,7 +39,7 @@ AddToProjectDialog::AddToProjectDialog(QWidget *parent) :
     QWidget(parent),
     dialog(0)
 {
-    userchoice = Qucs::NewComponent;
+    userchoice = Caneda::NewComponent;
     stateAccepted = false;
 
     //We display a dialog asking the user the kind of component to add
@@ -68,13 +66,13 @@ QString AddToProjectDialog::fileName() const
 }
 
 //! Defines the user choice
-void AddToProjectDialog::setUserChoice(Qucs::AddToProjectChoice choice)
+void AddToProjectDialog::setUserChoice(Caneda::AddToProjectChoice choice)
 {
     userchoice = choice;
 }
 
 //! @return User choice
-Qucs::AddToProjectChoice AddToProjectDialog::userChoice() const
+Caneda::AddToProjectChoice AddToProjectDialog::userChoice() const
 {
     return(userchoice);
 }
@@ -103,9 +101,9 @@ void AddToProjectDialog::buildComponentTypeDialog()
     QLabel *iconExistingComponent = new QLabel();
     QLabel *iconImportComponentFromProject = new QLabel();
 
-    iconNewComponent->setPixmap(QPixmap(Qucs::bitmapDirectory() + "filenew.png"));
-    iconExistingComponent->setPixmap(QPixmap(Qucs::bitmapDirectory() + "fileopen.png"));
-    iconImportComponentFromProject->setPixmap(QPixmap(Qucs::bitmapDirectory() + "project-new.png"));
+    iconNewComponent->setPixmap(QPixmap(Caneda::bitmapDirectory() + "filenew.png"));
+    iconExistingComponent->setPixmap(QPixmap(Caneda::bitmapDirectory() + "fileopen.png"));
+    iconImportComponentFromProject->setPixmap(QPixmap(Caneda::bitmapDirectory() + "project-new.png"));
 
     QButtonGroup *componentTypeChoice = new QButtonGroup();
     newComponent = new QRadioButton(tr("Create new component"));
@@ -164,13 +162,13 @@ void AddToProjectDialog::updateComponentTypeDialog()
 void AddToProjectDialog::acceptComponentDialog()
 {
     if(newComponent->isChecked()) {
-        setUserChoice(Qucs::NewComponent);
+        setUserChoice(Caneda::NewComponent);
     }
     else if(existingComponent->isChecked()) {
-        setUserChoice(Qucs::ExistingComponent);
+        setUserChoice(Caneda::ExistingComponent);
     }
     else {
-        setUserChoice(Qucs::FromExistingProject);
+        setUserChoice(Caneda::FromExistingProject);
     }
 
     if(newComponent->isChecked()) {

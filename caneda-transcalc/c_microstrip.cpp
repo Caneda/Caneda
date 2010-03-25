@@ -31,11 +31,11 @@
 #include <string.h>
 #include <math.h>
 
-#include "qucstrans.h"
+#include "canedatrans.h"
 #include "transline.h"
 #include "microstrip.h"
 #include "c_microstrip.h"
-#include "qucs-tools/propertygrid.h"
+#include "caneda-tools/propertygrid.h"
 c_microstrip::c_microstrip() : transline()
 {
   aux_ms = NULL;

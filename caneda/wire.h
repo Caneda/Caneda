@@ -36,10 +36,10 @@ typedef QList<WireLine> WireLines;
 /*!
  * \brief This class represents a wire on schematic.
  */
-class Wire : public QucsItem
+class Wire : public CanedaItem
 {
 public:
-    enum { Type = QucsItem::WireType };
+    enum { Type = CanedaItem::WireType };
 
     //! A struct to store wire's details.
     struct Data {
@@ -85,14 +85,14 @@ public:
 
     void removeNullLines();
 
-    void saveData(Qucs::XmlWriter *writer) const;
-    void saveData(Qucs::XmlWriter *writer, int id) const;
+    void saveData(Caneda::XmlWriter *writer) const;
+    void saveData(Caneda::XmlWriter *writer, int id) const;
 
-    static Wire* loadWireData(Qucs::XmlReader *reader, SchematicScene *scene);
-    void loadData(Qucs::XmlReader *reader);
+    static Wire* loadWireData(Caneda::XmlReader *reader, SchematicScene *scene);
+    void loadData(Caneda::XmlReader *reader);
 
     //! No rotate defined for wires.
-    void rotate90(Qucs::AngleDirection dir = Qucs::AntiClockwise) {
+    void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise) {
         Q_UNUSED(dir);
     }
 
@@ -105,7 +105,7 @@ public:
     Data currentState() const;
     void setState(Data state);
 
-    int checkAndConnect(Qucs::UndoOption opt);
+    int checkAndConnect(Caneda::UndoOption opt);
 
     Wire* copy(SchematicScene *scene = 0) const;
     void copyDataTo(Wire *wire) const;
@@ -144,9 +144,9 @@ private:
     qreal m_width;
 };
 
-namespace Qucs
+namespace Caneda
 {
-    Wire::Data readWireData(Qucs::XmlReader *reader);
+    Wire::Data readWireData(Caneda::XmlReader *reader);
 }
 
 #endif //WIRE_H

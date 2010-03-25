@@ -15,7 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 //**************************************************************************
-//
 
 /*!
  * \file QXsltTransformer.cpp
@@ -45,7 +44,7 @@ extern "C" {
 // NULL is 0L which isn't appropriate in C++. So use 0.
 #define NULL_PTR (0)
 
-namespace Qucs {
+namespace Caneda {
 
     static const char * nulllist[] = { NULL_PTR , NULL_PTR };
 
@@ -266,4 +265,4 @@ outofmemorycharparam:
         this->clean();
     }
 
-} //namespace Qucs
+} //namespace Caneda

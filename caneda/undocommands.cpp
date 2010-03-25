@@ -418,7 +418,7 @@ void InsertItemCmd::redo()
         m_scene->addItem(m_item);
     }
     m_item->setPos(m_pos);
-    Component *comp = qucsitem_cast<Component*>(m_item);
+    Component *comp = canedaitem_cast<Component*>(m_item);
     if(comp) {
         comp->updatePropertyGroup();
     }
@@ -430,12 +430,12 @@ void InsertItemCmd::redo()
 ##########################################################################
 */
 
-RemoveItemsCmd::RemoveItemsCmd(const QList<QucsItem*> &items, SchematicScene *scene,
+RemoveItemsCmd::RemoveItemsCmd(const QList<CanedaItem*> &items, SchematicScene *scene,
         QUndoCommand *parent) :
     QUndoCommand(parent),
     m_scene(scene)
 {
-    foreach(QucsItem *item, items) {
+    foreach(CanedaItem *item, items) {
         m_itemPointPairs << ItemPointPair(item, item->pos());
     }
 }
@@ -471,14 +471,14 @@ void RemoveItemsCmd::redo()
 ##########################################################################
 */
 
-RotateItemsCmd::RotateItemsCmd(QList<QucsItem*> items, const Qucs::AngleDirection dir, QUndoCommand *parent) :
+RotateItemsCmd::RotateItemsCmd(QList<CanedaItem*> items, const Caneda::AngleDirection dir, QUndoCommand *parent) :
     QUndoCommand(parent),
     m_items(items)
 {
     m_angleDirection = dir;
 }
 
-RotateItemsCmd::RotateItemsCmd(QucsItem *item, const Qucs::AngleDirection dir, QUndoCommand *parent) :
+RotateItemsCmd::RotateItemsCmd(CanedaItem *item, const Caneda::AngleDirection dir, QUndoCommand *parent) :
     QUndoCommand(parent)
 {
     m_items << item;
@@ -487,15 +487,15 @@ RotateItemsCmd::RotateItemsCmd(QucsItem *item, const Qucs::AngleDirection dir, Q
 
 void RotateItemsCmd::undo()
 {
-    foreach(QucsItem *item, m_items) {
-        item->rotate90(m_angleDirection == Qucs::Clockwise ? Qucs::AntiClockwise : Qucs::Clockwise);
+    foreach(CanedaItem *item, m_items) {
+        item->rotate90(m_angleDirection == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise);
     }
 }
 
 void RotateItemsCmd::redo()
 {
-    foreach(QucsItem *item, m_items) {
-        item->rotate90(Qucs::AntiClockwise);
+    foreach(CanedaItem *item, m_items) {
+        item->rotate90(Caneda::AntiClockwise);
     }
 }
 
@@ -505,14 +505,14 @@ void RotateItemsCmd::redo()
 ##########################################################################
 */
 
-MirrorItemsCmd::MirrorItemsCmd(QList<QucsItem*> items, const Qt::Axis axis, QUndoCommand *parent) :
+MirrorItemsCmd::MirrorItemsCmd(QList<CanedaItem*> items, const Qt::Axis axis, QUndoCommand *parent) :
     QUndoCommand(parent),
     m_items(items),
     m_axis(axis)
 {
 }
 
-MirrorItemsCmd::MirrorItemsCmd(QucsItem *item, const Qt::Axis axis, QUndoCommand *parent) :
+MirrorItemsCmd::MirrorItemsCmd(CanedaItem *item, const Qt::Axis axis, QUndoCommand *parent) :
     QUndoCommand(parent),
     m_axis(axis)
 {
@@ -521,14 +521,14 @@ MirrorItemsCmd::MirrorItemsCmd(QucsItem *item, const Qt::Axis axis, QUndoCommand
 
 void MirrorItemsCmd::undo()
 {
-    foreach(QucsItem *item, m_items) {
+    foreach(CanedaItem *item, m_items) {
         item->mirrorAlong(m_axis);
     }
 }
 
 void MirrorItemsCmd::redo()
 {
-    foreach(QucsItem *item, m_items) {
+    foreach(CanedaItem *item, m_items) {
         item->mirrorAlong(m_axis);
     }
 }

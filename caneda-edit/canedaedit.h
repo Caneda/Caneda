@@ -1,5 +1,5 @@
 /***************************************************************************
-                                qucsedit.h
+                                canedaedit.h
                                ------------
     begin                : Mon Nov 17 2003
     copyright            : (C) 2003 by Michael Margraf
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef QUCSEDIT_H
-#define QUCSEDIT_H
+#ifndef CANEDAEDIT_H
+#define CANEDAEDIT_H
 
 #include <QtGui/QDialog>
 
@@ -25,7 +25,7 @@ class QTextEdit;
 class QTextCharFormat;
 
 
-struct tQucsSettings {
+struct tCanedaSettings {
   int x, y, dx, dy;    // position and size of main window
   QFont font;
   QString BitmapDir;
@@ -33,14 +33,14 @@ struct tQucsSettings {
   QString Language;
 };
 
-extern tQucsSettings QucsSettings;
+extern tCanedaSettings CanedaSettings;
 
 
-class QucsEdit : public QDialog  {
+class CanedaEdit : public QDialog  {
    Q_OBJECT
 public:
-  QucsEdit(const QString&, bool readOnly=false);
- ~QucsEdit();
+  CanedaEdit(const QString&, bool readOnly=false);
+ ~CanedaEdit();
 
 private slots:
   void slotAbout();

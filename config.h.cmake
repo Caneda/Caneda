@@ -6,4 +6,4 @@
 #cmakedefine LIBRARYDIR "${CMAKE_INSTALL_PREFIX}/${LIBRARYDIR}"
 
 #define PACKAGE_VERSION "0.1.0"
-#define PACKAGE_STRING "qucs 0.1.0"
+#define PACKAGE_STRING "caneda 0.1.0"

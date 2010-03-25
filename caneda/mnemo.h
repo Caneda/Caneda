@@ -20,7 +20,7 @@
 
 #include <QString>
 
-namespace Qucs
+namespace Caneda
 {
     QString latexToUnicode(const QString& input);
     QString unicodeToLatex(QString unicode);

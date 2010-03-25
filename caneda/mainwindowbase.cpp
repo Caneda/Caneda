@@ -19,7 +19,7 @@
 
 #include "mainwindowbase.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/transformers.h"
 #include "xmlutilities/validators.h"

@@ -17,7 +17,7 @@
 
 #include "diagram.h"
 
-Diagram::Diagram(SchematicScene *scene) : QucsItem(0, scene)
+Diagram::Diagram(SchematicScene *scene) : CanedaItem(0, scene)
 {
 }
 

@@ -2,7 +2,7 @@
  * Copyright 2006-2009 Xavier Guerrin                                      *
  * Copyright 2009 Pablo Daniel Pareja Obregon                              *
  * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Qucs.                                         *
+ * Obregon to be included in Caneda.                                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,9 +20,9 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "aboutqucs.h"
+#include "aboutdialog.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -35,10 +35,10 @@
  * Constructor
  * @param QWidget *parent The parent of the dialog.
  */
-AboutQUCS::AboutQUCS(QWidget *parent) : QDialog(parent)
+AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent)
 {
     // Title, size, behavior...
-    setWindowTitle(tr("About Qucs", "window title"));
+    setWindowTitle(tr("About Caneda", "window title"));
     setMinimumWidth(680);
     setMinimumHeight(350);
     setModal(true);
@@ -63,20 +63,20 @@ AboutQUCS::AboutQUCS(QWidget *parent) : QDialog(parent)
 }
 
 //! Destructor
-AboutQUCS::~AboutQUCS()
+AboutDialog::~AboutDialog()
 {
 }
 
-//!  @return The title Qucs with its icon
-QWidget *AboutQUCS::title() const
+//!  @return The title Caneda with its icon
+QWidget *AboutDialog::title() const
 {
     QWidget *icon_and_title = new QWidget();
     // icon
     QLabel *icon = new QLabel();
-    icon->setPixmap(QPixmap(Qucs::bitmapDirectory() + "qucs.png"));
-    // label "Qucs"
-    QLabel *title = new QLabel("<span style=\"font-weight:0;font-size:16pt;\">Qucs v"
-            + Qucs::version + "</span>");
+    icon->setPixmap(QPixmap(Caneda::bitmapDirectory() + "caneda.png"));
+    // label "Caneda"
+    QLabel *title = new QLabel("<span style=\"font-weight:0;font-size:16pt;\">Caneda v"
+            + Caneda::version + "</span>");
     title->setTextFormat(Qt::RichText);
     // All in a grid
     QGridLayout *grid_layout = new QGridLayout();
@@ -89,17 +89,17 @@ QWidget *AboutQUCS::title() const
 }
 
 //! @return The widget contained by the tab "About"
-QWidget *AboutQUCS::aboutTab() const
+QWidget *AboutDialog::aboutTab() const
 {
     QLabel *about = new QLabel(
-            tr("Qucs - Quite Universal Circuit Simulator") +
+            tr("Caneda - Circuits and Networks EDA") +
             "<br>" +
             tr("An application for eletric schematics editing and simulation.") +
             "<br><br>" +
-            tr("\251 2008-2010 Qucs developer team") +
+            tr("\251 2008-2010 Caneda developer team") +
             "<br><br>"
-            "<a href=\"http://qucs.sourceforge.net/\">"
-            "http://qucs.sourceforge.net/</a>"
+            "<a href=\"http://caneda.tuxfamily.org/\">"
+            "http://caneda.tuxfamily.org/</a>"
             );
     about->setAlignment(Qt::AlignCenter);
     about->setOpenExternalLinks(true);
@@ -108,10 +108,9 @@ QWidget *AboutQUCS::aboutTab() const
 }
 
 //! @return The widget contained by the tab "Authors"
-QWidget *AboutQUCS::authorsTab() const
+QWidget *AboutDialog::authorsTab() const
 {
     QLabel *authors = new QLabel();
-    addAuthor(authors, "Stefan Jahn", "stefan@lkcc.org", tr("Original idea"));
     addAuthor(authors, "Bastien Roucaries", "roucaries.bastien@gmail.com",
             tr("Programming"));
     addAuthor(authors, "Gopala Krishna", "krishna.ggk@gmail.com", tr("Programming"));
@@ -124,7 +123,7 @@ QWidget *AboutQUCS::authorsTab() const
 }
 
 //! @return The widget contained by the tab "Translators"
-QWidget *AboutQUCS::translatorsTab() const
+QWidget *AboutDialog::translatorsTab() const
 {
     QLabel *translators = new QLabel();
 
@@ -138,7 +137,7 @@ QWidget *AboutQUCS::translatorsTab() const
 }
 
 //! @return The widget contained by the tab "Contributions"
-QWidget *AboutQUCS::contributorsTab() const
+QWidget *AboutDialog::contributorsTab() const
 {
     QLabel *contributors = new QLabel();
 
@@ -151,7 +150,7 @@ QWidget *AboutQUCS::contributorsTab() const
 }
 
 //! @return The widget contained by the tab "Licence Agreement"
-QWidget *AboutQUCS::licenseTab() const
+QWidget *AboutDialog::licenseTab() const
 {
     QWidget *license = new QWidget();
     // label
@@ -161,7 +160,7 @@ QWidget *AboutQUCS::licenseTab() const
     // Text of the GNU/GPL v2 in a scrollable non-editable text box
 
 
-    QFile *file = new QFile(Qucs::baseDir + "COPYING");
+    QFile *file = new QFile(Caneda::baseDir + "COPYING");
     QString text;
     // Verification that the file exists
     if(!file->exists()) {
@@ -197,7 +196,7 @@ QWidget *AboutQUCS::licenseTab() const
  * @param QString &email Email address of the person
  * @param QString &work  Function/work done by the person
  */
-void AboutQUCS::addAuthor(QLabel *label, const QString &name, const QString &email,
+void AboutDialog::addAuthor(QLabel *label, const QString &name, const QString &email,
         const QString &work) const
 {
     QString new_text = label->text();

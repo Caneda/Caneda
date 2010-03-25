@@ -17,9 +17,9 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "qucsmainwindow.h"
+#include "canedamainwindow.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QApplication>
 #include <QSplashScreen>
@@ -28,16 +28,16 @@
 int main(int argc,char *argv[])
 {
    QApplication app(argc,argv);
-   app.setOrganizationName("Qucs");
-   app.setApplicationName("Qucs");
+   app.setOrganizationName("Caneda");
+   app.setApplicationName("Caneda");
 
    // We create a splash screen
-   QPixmap pixmap(Qucs::bitmapDirectory() + "splash.jpg");
+   QPixmap pixmap(Caneda::bitmapDirectory() + "splash.jpg");
    QSplashScreen splash(pixmap);
    splash.show();
    app.processEvents();
 
-   QucsMainWindow *mw = QucsMainWindow::instance();
+   CanedaMainWindow *mw = CanedaMainWindow::instance();
    QTimer::singleShot(100, mw, SLOT(show()));
 
    splash.finish(mw);

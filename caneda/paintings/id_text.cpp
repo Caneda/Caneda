@@ -19,7 +19,7 @@
 
 #include "id_text.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -175,7 +175,7 @@ IdText* IdText::copy(SchematicScene *scene) const
 }
 
 //! \brief Saves data as xml referred by \a writer.
-void IdText::saveData(Qucs::XmlWriter *writer) const
+void IdText::saveData(Caneda::XmlWriter *writer) const
 {
     writer->writeStartElement("painting");
     writer->writeAttribute("name", "idText");
@@ -192,7 +192,7 @@ void IdText::saveData(Qucs::XmlWriter *writer) const
         writer->writeAttribute("name", sub->name);
         writer->writeAttribute("description", sub->description);
         writer->writeAttribute("default", sub->defaultValue);
-        writer->writeAttribute("display", Qucs::boolToString(sub->display));
+        writer->writeAttribute("display", Caneda::boolToString(sub->display));
     }
     writer->writeEndElement();
 
@@ -200,7 +200,7 @@ void IdText::saveData(Qucs::XmlWriter *writer) const
 }
 
 //! \brief Loads IdText data from xml referred by \a reader.
-void IdText::loadData(Qucs::XmlReader *reader)
+void IdText::loadData(Caneda::XmlReader *reader)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
     Q_ASSERT(reader->attributes().value("name") == "idText");
@@ -238,7 +238,7 @@ void IdText::loadData(Qucs::XmlReader *reader)
                             QString name = attribs.value("name").toString();
                             QString des = attribs.value("description").toString();
                             QString def = attribs.value("default").toString();
-                            bool dis = Qucs::stringToBool(attribs.value("display").toString());
+                            bool dis = Caneda::stringToBool(attribs.value("display").toString());
 
                             m_parameters << new SubParameter(dis, name, des, def);
 

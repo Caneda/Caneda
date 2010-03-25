@@ -1,5 +1,5 @@
 /***************************************************************************
-                               qucsedit.cpp
+                               canedaedit.cpp
                               --------------
     begin                : Mon Nov 17 2003
     copyright            : (C) 2003 by Michael Margraf
@@ -21,7 +21,7 @@
 # include <config.h>
 #endif
 
-#include "qucsedit.h"
+#include "canedaedit.h"
 
 #include <QtGui/QTextEdit>
 #include <QtGui/QLabel>
@@ -37,11 +37,11 @@
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QTextCharFormat>
 
-QucsEdit::QucsEdit(const QString& FileName_, bool readOnly)
+CanedaEdit::CanedaEdit(const QString& FileName_, bool readOnly)
 {
   // set application icon
-  setWindowIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
-  setWindowTitle("Qucs Editor " PACKAGE_VERSION " - " + tr("File: "));
+  setWindowIcon (QPixmap(CanedaSettings.BitmapDir + "big.caneda.xpm"));
+  setWindowTitle("Caneda Editor " PACKAGE_VERSION " - " + tr("File: "));
 
   QVBoxLayout *v = new QVBoxLayout(this);
 
@@ -50,13 +50,13 @@ QucsEdit::QucsEdit(const QString& FileName_, bool readOnly)
 
   QToolButton *ButtLoad = new QToolButton(this);
 	h->addWidget(ButtLoad);
-	QString s1 = QucsSettings.BitmapDir + "fileopen.png";
+        QString s1 = CanedaSettings.BitmapDir + "fileopen.png";
   ButtLoad->setIcon(QIcon(s1));
   connect(ButtLoad, SIGNAL(clicked()), SLOT(slotLoad()));
 
   QToolButton *ButtSave = new QToolButton(this);
 	h->addWidget(ButtSave);
-  ButtSave->setIcon(QIcon(QucsSettings.BitmapDir + "filesave.png"));
+  ButtSave->setIcon(QIcon(CanedaSettings.BitmapDir + "filesave.png"));
   connect(ButtSave, SIGNAL(clicked()), SLOT(slotSave()));
   ButtSave->setDisabled(readOnly);
 
@@ -93,12 +93,12 @@ QucsEdit::QucsEdit(const QString& FileName_, bool readOnly)
   loadFile(FileName_);
 }
 
-QucsEdit::~QucsEdit()
+CanedaEdit::~CanedaEdit()
 {
 }
 
 // ************************************************************
-void QucsEdit::slotPrintCursorPosition()
+void CanedaEdit::slotPrintCursorPosition()
 {
 	/// Commented out until we find how to implement it.
 // 	QTextCursor textCursor = text->textCursor();
@@ -107,11 +107,11 @@ void QucsEdit::slotPrintCursorPosition()
 }
 
 // ************************************************************
-void QucsEdit::slotAbout()
+void CanedaEdit::slotAbout()
 {
   QMessageBox::about(this, tr("About..."),
-    "QucsEdit Version " PACKAGE_VERSION+
-    tr("\nVery simple text editor for Qucs\n")+
+    "CanedaEdit Version " PACKAGE_VERSION+
+    tr("\nVery simple text editor for Caneda\n")+
     tr("Copyright (C) 2004, 2005 by Michael Margraf\n")+
     "\nThis is free software; see the source for copying conditions."
     "\nThere is NO warranty; not even for MERCHANTABILITY or "
@@ -119,7 +119,7 @@ void QucsEdit::slotAbout()
 }
 
 // ************************************************************
-void QucsEdit::slotLoad()
+void CanedaEdit::slotLoad()
 {
   static QString lastDir;  // to remember last directory and file
 /*
@@ -137,7 +137,7 @@ void QucsEdit::slotLoad()
 }
 
 // ************************************************************
-void QucsEdit::slotSave()
+void CanedaEdit::slotSave()
 {
 /*
 	if(FileName.isEmpty()) {
@@ -165,7 +165,7 @@ void QucsEdit::slotSave()
 }
 
 // ************************************************************
-void QucsEdit::slotQuit()
+void CanedaEdit::slotQuit()
 {
   if(!closeFile()) return;
 
@@ -180,13 +180,13 @@ void QucsEdit::slotQuit()
 
 // ************************************************************
 // To get all close events.
-void QucsEdit::closeEvent(QCloseEvent*)
+void CanedaEdit::closeEvent(QCloseEvent*)
 {
   slotQuit();
 }
 
 // ************************************************************
-bool QucsEdit::loadFile(const QString& Name)
+bool CanedaEdit::loadFile(const QString& Name)
 {
   if(Name.isEmpty()) return false;
   QFile file(Name);
@@ -203,13 +203,13 @@ bool QucsEdit::loadFile(const QString& Name)
   FileName = Name;
 //  QFileInfo info(Name);
 //  FileName = info.fileName();
-  setWindowTitle("Qucs Editor " PACKAGE_VERSION " - " + tr("File: ")+FileName);
+  setWindowTitle("Caneda Editor " PACKAGE_VERSION " - " + tr("File: ")+FileName);
   return true;
 }
 
 
 // ************************************************************
-bool QucsEdit::closeFile()
+bool CanedaEdit::closeFile()
 {
   if(text->document()->isModified()) {
     switch(QMessageBox::warning(this,tr("Closing document"),

@@ -15,7 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 //**************************************************************************
-//
 
 #include "QRelaxNGvalidator.h"
 
@@ -30,7 +29,7 @@ extern "C" {
 
 #include <iostream>
 
-namespace Qucs {
+namespace Caneda {
 
     /*!
      * \brief Build a validator from a schematic file
@@ -175,4 +174,4 @@ contexterror:
         xmlRelaxNGFree((xmlRelaxNGPtr)this->rng);
     }
 
-} // namespace qucs
+} // namespace Caneda

@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include "item.h"
-#include "qucsmainwindow.h"
+#include "canedamainwindow.h"
 #include "schematicscene.h"
 #include "schematicview.h"
 
@@ -28,7 +28,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QXmlStreamWriter>
 
-namespace Qucs
+namespace Caneda
 {
     /*!
      * \brief Draw an hightlight rectangle arround an item
@@ -90,11 +90,11 @@ namespace Qucs
         QPen savedPen = painter->pen();
         QBrush savedBrush = painter->brush();
 
-        painter->setPen(Qucs::handlePen);
-        painter->setBrush(Qucs::handleBrush);
+        painter->setPen(Caneda::handlePen);
+        painter->setBrush(Caneda::handleBrush);
 
         // handleRect is defined as QRectF(-w/2, -h/2, w, h)
-        painter->drawRect(Qucs::handleRect.translated(centrePos));
+        painter->drawRect(Caneda::handleRect.translated(centrePos));
 
         painter->setPen(savedPen);
         painter->setBrush(savedBrush);
@@ -109,19 +109,19 @@ namespace Qucs
      */
     void drawResizeHandles(ResizeHandles handles, const QRectF& rect, QPainter *painter)
     {
-        if(handles.testFlag(Qucs::TopLeftHandle)) {
+        if(handles.testFlag(Caneda::TopLeftHandle)) {
             drawResizeHandle(rect.topLeft(), painter);
         }
 
-        if(handles.testFlag(Qucs::TopRightHandle)) {
+        if(handles.testFlag(Caneda::TopRightHandle)) {
             drawResizeHandle(rect.topRight(), painter);
         }
 
-        if(handles.testFlag(Qucs::BottomLeftHandle)) {
+        if(handles.testFlag(Caneda::BottomLeftHandle)) {
             drawResizeHandle(rect.bottomLeft(), painter);
         }
 
-        if(handles.testFlag(Qucs::BottomRightHandle)) {
+        if(handles.testFlag(Caneda::BottomRightHandle)) {
             drawResizeHandle(rect.bottomRight(), painter);
         }
     }
@@ -136,41 +136,41 @@ namespace Qucs
     ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles,
             const QRectF& rect)
     {
-        if(handles == Qucs::NoHandle) {
-            return Qucs::NoHandle;
+        if(handles == Caneda::NoHandle) {
+            return Caneda::NoHandle;
         }
 
-        if(handles.testFlag(Qucs::TopLeftHandle)) {
-            if(Qucs::handleRect.translated(rect.topLeft()).contains(point)) {
-                return Qucs::TopLeftHandle;
+        if(handles.testFlag(Caneda::TopLeftHandle)) {
+            if(Caneda::handleRect.translated(rect.topLeft()).contains(point)) {
+                return Caneda::TopLeftHandle;
             }
         }
 
-        if(handles.testFlag(Qucs::TopRightHandle)) {
-            if(Qucs::handleRect.translated(rect.topRight()).contains(point)) {
-                return Qucs::TopRightHandle;
+        if(handles.testFlag(Caneda::TopRightHandle)) {
+            if(Caneda::handleRect.translated(rect.topRight()).contains(point)) {
+                return Caneda::TopRightHandle;
             }
         }
 
-        if(handles.testFlag(Qucs::BottomLeftHandle)){
-            if(Qucs::handleRect.translated(rect.bottomLeft()).contains(point)) {
-                return Qucs::BottomLeftHandle;
+        if(handles.testFlag(Caneda::BottomLeftHandle)){
+            if(Caneda::handleRect.translated(rect.bottomLeft()).contains(point)) {
+                return Caneda::BottomLeftHandle;
             }
         }
 
-        if(handles.testFlag(Qucs::BottomRightHandle)){
-            if(Qucs::handleRect.translated(rect.bottomRight()).contains(point)) {
-                return Qucs::BottomRightHandle;
+        if(handles.testFlag(Caneda::BottomRightHandle)){
+            if(Caneda::handleRect.translated(rect.bottomRight()).contains(point)) {
+                return Caneda::BottomRightHandle;
             }
         }
 
-        return Qucs::NoHandle;
+        return Caneda::NoHandle;
     }
 }
 
 //! Constructor
 //! \brief Create a new item and add to scene.
-QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) :
+CanedaItem::CanedaItem(QGraphicsItem* parent, SchematicScene* scene) :
     QGraphicsItem(parent),
     m_boundingRect(0, 0, 0, 0)
 {
@@ -185,14 +185,14 @@ QucsItem::QucsItem(QGraphicsItem* parent, SchematicScene* scene) :
 }
 
 //! Destructor
-QucsItem::~QucsItem()
+CanedaItem::~CanedaItem()
 {
 }
 
-void QucsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void CanedaItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->buttons().testFlag(Qt::LeftButton)) {
-        launchPropertyDialog(Qucs::PushUndoCmd);
+        launchPropertyDialog(Caneda::PushUndoCmd);
     }
 }
 
@@ -205,7 +205,7 @@ void QucsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
  * \param rect The bound rect to be cached.
  * \param pw Pen width of pen used to paint outer stroke of item.
  */
-void QucsItem::setShapeAndBoundRect(const QPainterPath& path,
+void CanedaItem::setShapeAndBoundRect(const QPainterPath& path,
         const QRectF& rect, qreal pw)
 {
     // Inform scene about change in geometry.
@@ -221,7 +221,7 @@ void QucsItem::setShapeAndBoundRect(const QPainterPath& path,
 }
 
 //! \brief returns a pointer to the schematic scene to which the item belongs.
-SchematicScene* QucsItem::schematicScene() const
+SchematicScene* CanedaItem::schematicScene() const
 {
     return qobject_cast<SchematicScene*>(scene());
 }
@@ -233,10 +233,10 @@ SchematicScene* QucsItem::schematicScene() const
  * there will be unnecessary creation of xml writer and reader instances which
  * will render the program inefficient.
  */
-QString QucsItem::saveDataText() const
+QString CanedaItem::saveDataText() const
 {
     QString retVal;
-    Qucs::XmlWriter writer(&retVal);
+    Caneda::XmlWriter writer(&retVal);
     saveData(&writer);
     return retVal;
 }
@@ -248,9 +248,9 @@ QString QucsItem::saveDataText() const
  * there will be unnecessary creation of xml writer and reader instances which
  * will render the program inefficient.
  */
-void QucsItem::loadDataFromText(const QString &text)
+void CanedaItem::loadDataFromText(const QString &text)
 {
-    Qucs::XmlReader reader(text.toUtf8());
+    Caneda::XmlReader reader(text.toUtf8());
     while(!reader.atEnd()) {
         // skip until end element is found.
         reader.readNext();
@@ -269,7 +269,7 @@ void QucsItem::loadDataFromText(const QString &text)
  * \brief Graphically mirror item according to x axis
  * \note Items can be mirrored only along x and y axis.
  */
-void QucsItem::mirrorAlong(Qt::Axis axis)
+void CanedaItem::mirrorAlong(Qt::Axis axis)
 {
     update();
 
@@ -283,9 +283,9 @@ void QucsItem::mirrorAlong(Qt::Axis axis)
 }
 
 //! \brief Rotate item by -90 degrees
-void QucsItem::rotate90(Qucs::AngleDirection dir)
+void CanedaItem::rotate90(Caneda::AngleDirection dir)
 {
-    rotate(dir == Qucs::AntiClockwise ? -90.0 : 90.0);
+    rotate(dir == Caneda::AntiClockwise ? -90.0 : 90.0);
 }
 
 /*!
@@ -294,7 +294,7 @@ void QucsItem::rotate90(Qucs::AngleDirection dir)
  * Now it returns null but subclasses should reimplement this to return the
  * appropriate copy of that reimplemented item.
  */
-QucsItem* QucsItem::copy(SchematicScene *) const
+CanedaItem* CanedaItem::copy(SchematicScene *) const
 {
     return 0;
 }
@@ -304,7 +304,7 @@ QucsItem* QucsItem::copy(SchematicScene *) const
  *
  * Sublasses should reimplement it to copy their data.
  */
-void QucsItem::copyDataTo(QucsItem *item) const
+void CanedaItem::copyDataTo(CanedaItem *item) const
 {
     item->setTransform(transform());
     item->prepareGeometryChange();
@@ -317,7 +317,7 @@ void QucsItem::copyDataTo(QucsItem *item) const
  * \brief Constructs and returns a menu with default actions inderted.
  * \todo Implement this function.
  */
-QMenu* QucsItem::defaultContextMenu() const
+QMenu* CanedaItem::defaultContextMenu() const
 {
     return 0;
 }

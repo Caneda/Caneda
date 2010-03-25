@@ -59,7 +59,7 @@ static const QRectF portEllipseConnected(-portConnectedRadius, -portConnectedRad
 class PortOwner
 {
 public:
-    PortOwner(QucsItem * item);
+    PortOwner(CanedaItem * item);
 
     //! return type of owner
     int type() const { return m_item->type(); }
@@ -77,7 +77,7 @@ public:
 
 private:
     //! owner of the port
-    QucsItem *const m_item;
+    CanedaItem *const m_item;
     //! Disable copy
     PortOwner(const PortOwner& other);
 };
@@ -94,8 +94,8 @@ struct PortData : public QSharedData
 class Port
 {
 public:
-    Port(QucsItem  *owner, const QSharedDataPointer<PortData> &data);
-    Port(QucsItem  *owner, QPointF _pos, QString portName = QString());
+    Port(CanedaItem  *owner, const QSharedDataPointer<PortData> &data);
+    Port(CanedaItem  *owner, QPointF _pos, QString portName = QString());
 
     ~Port();
 

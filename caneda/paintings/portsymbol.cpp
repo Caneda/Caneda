@@ -21,7 +21,7 @@
 
 #include "port.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -147,7 +147,7 @@ PortSymbol* PortSymbol::copy(SchematicScene *scene) const
 }
 
 //! \brief Saves data as xml.
-void PortSymbol::saveData(Qucs::XmlWriter *writer) const
+void PortSymbol::saveData(Caneda::XmlWriter *writer) const
 {
     writer->writeStartElement("painting");
     writer->writeAttribute("name", "portSymbol");
@@ -155,7 +155,7 @@ void PortSymbol::saveData(Qucs::XmlWriter *writer) const
     writer->writeEmptyElement("properties");
     writer->writeAttribute("nameString", m_nameString);
     writer->writeAttribute("numberString", m_numberString);
-    writer->writeAttribute("mirrored", Qucs::boolToString(m_mirrored));
+    writer->writeAttribute("mirrored", Caneda::boolToString(m_mirrored));
     writer->writePointAttribute(pos(), "pos");
 
     writer->writeFont(font());
@@ -165,7 +165,7 @@ void PortSymbol::saveData(Qucs::XmlWriter *writer) const
 }
 
 //! \brief Loads portSymbol from xml referred by \a reader.
-void PortSymbol::loadData(Qucs::XmlReader *reader)
+void PortSymbol::loadData(Caneda::XmlReader *reader)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
     Q_ASSERT(reader->attributes().value("name") == "portSymbol");
@@ -184,7 +184,7 @@ void PortSymbol::loadData(Qucs::XmlReader *reader)
                 setNameString(reader->attributes().value("nameString").toString());
 
                 setPos(reader->readPointAttribute("pos"));
-                m_mirrored = Qucs::stringToBool(reader->attributes().value("mirrored").toString());
+                m_mirrored = Caneda::stringToBool(reader->attributes().value("mirrored").toString());
                 updateGeometry();
                 reader->readUnknownElement(); //read till end tag
             }

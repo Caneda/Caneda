@@ -1,5 +1,5 @@
 /***************************************************************************
-                          qucshelp.cpp  -  description
+                          canedahelp.cpp  -  description
                              -------------------
     begin                : Sun Jan 11 2004
     copyright            : (C) 2004 by Michael Margraf
@@ -19,7 +19,7 @@
 # include <config.h>
 #endif
 
-#include "qucshelp.h"
+#include "canedahelp.h"
 #include "htmldatafetcher.h"
 
 #include <QtGui/QPushButton>
@@ -78,14 +78,14 @@ QVariant StringListModel::headerData(int section, Qt::Orientation orientation,
     return QString("Row %1").arg(section);
 }
 
-QucsHelp::QucsHelp(const QString& page,QWidget *parent) : QMainWindow(parent)
+CanedaHelp::CanedaHelp(const QString& page,QWidget *parent) : QMainWindow(parent)
 {
   currentIndex = 0;
   dataFetcher = new HtmlDataFetcher();
-  links = dataFetcher->fetchLinksToFiles(QucsHelpDir.filePath("index.html"));
+  links = dataFetcher->fetchLinksToFiles(CanedaHelpDir.filePath("index.html"));
   // set application icon
-  setWindowIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
-  setWindowTitle(tr("Qucs Help System"));
+  setWindowIcon (QPixmap(CanedaSettings.BitmapDir + "big.caneda.xpm"));
+  setWindowTitle(tr("Caneda Help System"));
 
   textBrowser = new QTextBrowser(this);
   textBrowser->setMinimumSize(400,200);
@@ -94,16 +94,16 @@ QucsHelp::QucsHelp(const QString& page,QWidget *parent) : QMainWindow(parent)
   setupActions(); // "     "   "      "    "    "  "
   
 
-  textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[0])));
+  textBrowser->setSource(QUrl(CanedaHelpDir.filePath(links[0])));
 
   if(!page.isEmpty())
-    textBrowser->setSource(QUrl(QucsHelpDir.filePath(page)));
+    textBrowser->setSource(QUrl(CanedaHelpDir.filePath(page)));
 }
 
-QucsHelp::~QucsHelp()
+CanedaHelp::~CanedaHelp()
 {}
 
-void QucsHelp::setupActions()
+void CanedaHelp::setupActions()
 {
   QToolBar *toolbar = addToolBar(tr("Main toolbar"));
   QMenuBar *bar = menuBar();
@@ -114,17 +114,17 @@ void QucsHelp::setupActions()
   bar->addSeparator();
   QMenu *helpMenu = bar->addMenu(tr("&Help"));
   
-  QAction *quitAction = fileMenu->addAction(QIcon(QucsSettings.BitmapDir + "quit.png"),tr("&Quit"),qApp,SLOT(quit()),Qt::CTRL+Qt::Key_Q);
+  QAction *quitAction = fileMenu->addAction(QIcon(CanedaSettings.BitmapDir + "quit.png"),tr("&Quit"),qApp,SLOT(quit()),Qt::CTRL+Qt::Key_Q);
 
-  QAction *backAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "back.png"), tr("&Back"),textBrowser,SLOT(backward()),
+  QAction *backAction = viewMenu->addAction(QIcon(CanedaSettings.BitmapDir + "back.png"), tr("&Back"),textBrowser,SLOT(backward()),
 					    Qt::ALT+Qt::Key_Left);
-  QAction *forwardAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "forward.png"),tr("&Forward"),textBrowser,
+  QAction *forwardAction = viewMenu->addAction(QIcon(CanedaSettings.BitmapDir + "forward.png"),tr("&Forward"),textBrowser,
 					       SLOT(forward()),Qt::ALT+Qt::Key_Right);
-  QAction *homeAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "home.png"),tr("&Home"),textBrowser,
+  QAction *homeAction = viewMenu->addAction(QIcon(CanedaSettings.BitmapDir + "home.png"),tr("&Home"),textBrowser,
 					    SLOT(home()),Qt::CTRL+Qt::Key_H);
 
-  previousAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "previous.png"),tr("&Previous"),this,SLOT(previousLink()));
-  nextAction = viewMenu->addAction(QIcon(QucsSettings.BitmapDir + "next.png"),tr("&Next"),this,SLOT(nextLink()));
+  previousAction = viewMenu->addAction(QIcon(CanedaSettings.BitmapDir + "previous.png"),tr("&Previous"),this,SLOT(previousLink()));
+  nextAction = viewMenu->addAction(QIcon(CanedaSettings.BitmapDir + "next.png"),tr("&Next"),this,SLOT(nextLink()));
   viewMenu->addSeparator();
 
   QAction *viewBrowseDock = dock->toggleViewAction();
@@ -149,14 +149,14 @@ void QucsHelp::setupActions()
 }
 
 
-void QucsHelp::createSidebar()
+void CanedaHelp::createSidebar()
 {
   dock = new QDockWidget(tr("Table of Contents"),this);
   dock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable); 
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
   addDockWidget(Qt::LeftDockWidgetArea, dock);
 
-  QStringList l = dataFetcher->fetchChapterTexts(QucsHelpDir.filePath("index.html"));
+  QStringList l = dataFetcher->fetchChapterTexts(CanedaHelpDir.filePath("index.html"));
   model = new StringListModel(l);
 
   chaptersView = new QListView(dock);
@@ -170,15 +170,15 @@ void QucsHelp::createSidebar()
   chaptersView->setFocus();
 }
 
-void QucsHelp::displaySelectedChapter(const QItemSelection & is)
+void CanedaHelp::displaySelectedChapter(const QItemSelection & is)
 {
   const QModelIndex index = is.indexes()[0];
   if(index.isValid())
-    textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[index.row()])));
+    textBrowser->setSource(QUrl(CanedaHelpDir.filePath(links[index.row()])));
 }
 
 //This slot updates next and previous actions i.e enabling/disabling
-void QucsHelp::slotSourceChanged(const QUrl& ustr)
+void CanedaHelp::slotSourceChanged(const QUrl& ustr)
 {
   QString str = ustr.path();
   bool found = false;
@@ -197,23 +197,23 @@ void QucsHelp::slotSourceChanged(const QUrl& ustr)
   }
   if(found == false) // some error
   {
-    qDebug("QucsHelp::slotSourceChanged():  Link mismatch");
+    qDebug("CanedaHelp::slotSourceChanged():  Link mismatch");
     return;
   }
 }
 
 
-void QucsHelp::previousLink()
+void CanedaHelp::previousLink()
 {
   if(currentIndex > 0)
     --currentIndex;
-  textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[currentIndex])));
+  textBrowser->setSource(QUrl(CanedaHelpDir.filePath(links[currentIndex])));
 }
 
-void QucsHelp::nextLink()
+void CanedaHelp::nextLink()
 {
   ++currentIndex;
   if(currentIndex >= links.count())
     currentIndex = links.count()-1;
-  textBrowser->setSource(QUrl(QucsHelpDir.filePath(links[currentIndex])));
+  textBrowser->setSource(QUrl(CanedaHelpDir.filePath(links[currentIndex])));
 }

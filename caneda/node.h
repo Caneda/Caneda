@@ -31,7 +31,7 @@ class Wire;
  * \brief Node class
  * A graphical node is little circle allowing to plug wires or components
  */
-class Node : public QucsItem
+class Node : public CanedaItem
 {
 public:
     /*!
@@ -39,10 +39,10 @@ public:
      *
      * Represents item type used by graphics view framework's cast
      * mechanism.
-     * \sa qucsitem_cast
+     * \sa canedaitem_cast
      */
     enum {
-        Type = QucsItem::NodeType
+        Type = CanedaItem::NodeType
     };
 
     //! \brief Represents radius of the node's visual circular representation.
@@ -154,16 +154,16 @@ public:
      * \brief return GraphicsView framwork id.
      * \sa Type
      */
-    int type() const { return QucsItem::NodeType; }
+    int type() const { return CanedaItem::NodeType; }
 
     //!\brief Empty because circle at any rotation is the same.
     virtual void rotate() {}
     //!\brief Empty because circle when mirrored is the same.
     void mirrorAlong(Qt::Axis) {}
-    void writeXml(Qucs::XmlWriter *) {
+    void writeXml(Caneda::XmlWriter *) {
         qWarning("Node::writeXml(): Nothing to write.");
     }
-    void readXml(Qucs::XmlReader *) {
+    void readXml(Caneda::XmlReader *) {
         qWarning("Node::readXml(): Nothing to read.");
     }
     void invokePropertiesDialog() { }

@@ -252,13 +252,13 @@ void qf_filter::dump_spice (void) {
   std::cout << to_spice().c_str();
 }
 
-std::string qf_filter::to_qucs (void) {
+std::string qf_filter::to_caneda (void) {
   std::ostringstream res;
   std::ostringstream wir;
   qf_double_t Value, Value2;
 
-  // create the Qucs schematic
-  res << "<Qucs Schematic " << PACKAGE_VERSION << ">\n";
+  // create the Caneda schematic
+  res << "<Caneda Schematic " << PACKAGE_VERSION << ">\n";
 
   int x2, x = 20 + 40;
   res << "<Components>\n";
@@ -440,6 +440,6 @@ std::string qf_filter::to_qucs (void) {
   return res.str();
 }
 
-void qf_filter::dump_qucs (void) {
-  std::cout << to_qucs().c_str();
+void qf_filter::dump_caneda (void) {
+  std::cout << to_caneda().c_str();
 }

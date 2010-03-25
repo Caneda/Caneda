@@ -1,17 +1,22 @@
-//-*- C++ -*-
-/****************************************************************************
-**     Qucs Attenuator Synthesis
-**     attenuatorfunc.h
-**
-**     since 2006/6/14
-**
-**
-**
-**
-**
-*****************************************************************************/
-#ifndef QUCS_ATT_H
-#define QUCS_ATT_H
+/***************************************************************************
+                       Caneda Attenuator Synthesis
+                             attenuatorfunc.h
+                               ------------
+    begin                : Jun 14 2006
+
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef CANEDA_ATT_H
+#define CANEDA_ATT_H
 
 #define PI_TYPE 0
 #define TEE_TYPE 1
@@ -33,11 +38,11 @@ struct tagATT
 
 class QString;
 
-class QUCS_Att
+class CANEDA_Att
 {
  public:
-  QUCS_Att();
-  ~QUCS_Att();
+  CANEDA_Att();
+  ~CANEDA_Att();
 
   int Calc(tagATT*);
   static QString* createSchematic(tagATT*);

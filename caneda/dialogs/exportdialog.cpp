@@ -2,7 +2,7 @@
  * Copyright 2006-2009 Xavier Guerrin                                      *
  * Copyright 2009 Pablo Daniel Pareja Obregon                              *
  * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Qucs.                                         *
+ * Obregon to be included in Caneda.                                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,7 +22,7 @@
 
 #include "exportdialog.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <math.h>
 
@@ -325,11 +325,11 @@ void ExportDialog::slot_keepRatioChanged(int diagram_id)
     // manages the icon of the button "Keep proportions"
     if(current_diagram->keep_ratio->isChecked()) {
         current_diagram->keep_ratio->setIcon(
-                QPixmap(Qucs::bitmapDirectory() + "object-locked.png"));
+                QPixmap(Caneda::bitmapDirectory() + "object-locked.png"));
     }
     else {
         current_diagram->keep_ratio->setIcon(
-                QPixmap(Qucs::bitmapDirectory() + "object-unlocked.png"));
+                QPixmap(Caneda::bitmapDirectory() + "object-unlocked.png"));
     }
 
     // does nothing if"Constrain Proportions" is not checked
@@ -679,15 +679,15 @@ ExportDialog::ExportDiagramLine::ExportDiagramLine(SchematicScene *sch)
     keep_ratio = new QPushButton();
     keep_ratio->setCheckable(true);
     keep_ratio->setChecked(true);
-    keep_ratio->setIcon(QPixmap(Qucs::bitmapDirectory() + "object-locked.png"));
+    keep_ratio->setIcon(QPixmap(Caneda::bitmapDirectory() + "object-locked.png"));
     keep_ratio->setToolTip(QObject::tr("Keep proportions"));
 
     reset_size = new QPushButton();
-    reset_size->setIcon(QPixmap(Qucs::bitmapDirectory() + "clearFilterText.png"));
+    reset_size->setIcon(QPixmap(Caneda::bitmapDirectory() + "clearFilterText.png"));
     reset_size->setToolTip(QObject::tr("Restore dimensions"));
 
     preview = new QPushButton();
-    preview->setIcon(QPixmap(Qucs::bitmapDirectory() + "viewmag1.png"));
+    preview->setIcon(QPixmap(Caneda::bitmapDirectory() + "viewmag1.png"));
     preview->setToolTip(QObject::tr("Preview"));
 }
 

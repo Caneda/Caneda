@@ -22,7 +22,7 @@
 
 #include "fileformathandler.h"
 
-namespace Qucs {
+namespace Caneda {
     class XmlReader;
 }
 

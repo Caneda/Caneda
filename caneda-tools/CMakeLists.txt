@@ -1,9 +1,9 @@
-SET( qucstools_sources global.cpp units.cpp propertygrid.cpp helpdialog.cpp)
+SET( canedatools_sources global.cpp units.cpp propertygrid.cpp helpdialog.cpp)
 
 ADD_DEFINITIONS( -DHAVE_CONFIG_H )
 
-SET( qucstools_moc_headers propertygrid.h )
+SET( canedatools_moc_headers propertygrid.h )
 
-QT4_WRAP_CPP( qucstools_moc_sources ${qucstools_moc_headers} )
+QT4_WRAP_CPP( canedatools_moc_sources ${canedatools_moc_headers} )
 
-ADD_LIBRARY( qucstools ${qucstools_sources} ${qucstools_moc_sources} )
+ADD_LIBRARY( canedatools ${canedatools_sources} ${canedatools_moc_sources} )

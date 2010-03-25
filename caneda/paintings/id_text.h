@@ -80,7 +80,7 @@ public:
     SubParameter* parameter(const QString &name) const;
 
     //! \brief Disable rotate.
-    void rotate90(Qucs::AngleDirection) {};
+    void rotate90(Caneda::AngleDirection) {};
     //! \brief Disable mirroring.
     void mirrorAlong(Qt::Axis) {};
 
@@ -91,8 +91,8 @@ public:
     int type() const { return IdText::Type; }
     IdText* copy(SchematicScene *scene) const;
 
-    void saveData(Qucs::XmlWriter *writer) const;
-    void loadData(Qucs::XmlReader *reader);
+    void saveData(Caneda::XmlWriter *writer) const;
+    void loadData(Caneda::XmlReader *reader);
 
 private:
     QString m_prefix;

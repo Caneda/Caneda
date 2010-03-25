@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef QUCSVIEW_H
-#define QUCSVIEW_H
+#ifndef CANEDAVIEW_H
+#define CANEDAVIEW_H
 
 #include <QDateTime>
 #include <QIcon>
@@ -28,11 +28,11 @@ class QPainter;
 class QWidget;
 class SchematicView;
 
-class QucsView
+class CanedaView
 {
 public:
-    QucsView();
-    virtual ~QucsView() {}
+    CanedaView();
+    virtual ~CanedaView() {}
 
     // Emit signal while reimplementing
     virtual void setFileName(const QString& _fileName) = 0;
@@ -80,4 +80,4 @@ protected:
     QDateTime lastSaved;
 };
 
-#endif //QUCSVIEW_H
+#endif //CANEDAVIEW_H

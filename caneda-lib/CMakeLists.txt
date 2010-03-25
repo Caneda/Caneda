@@ -1,17 +1,17 @@
-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/qucs-lib} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
+INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/caneda-lib} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
 ADD_SUBDIRECTORY( library )
 
-SET(QUCSLIB_SRCS searchdialog.cpp main.cpp qucslib.cpp displaydialog.cpp librarydialog.cpp symbolwidget.cpp)
+SET(CANEDALIB_SRCS searchdialog.cpp main.cpp canedalib.cpp displaydialog.cpp librarydialog.cpp symbolwidget.cpp)
 
-SET(QUCSLIB_MOC_HDRS displaydialog.h librarydialog.h symbolwidget.h searchdialog.h qucslib.h)
+SET(CANEDALIB_MOC_HDRS displaydialog.h librarydialog.h symbolwidget.h searchdialog.h canedalib.h)
 
-QT4_WRAP_CPP( QUCSLIB_MOC_SRCS ${QUCSLIB_MOC_HDRS} )
+QT4_WRAP_CPP( CANEDALIB_MOC_SRCS ${CANEDALIB_MOC_HDRS} )
 
-LINK_DIRECTORIES( ${Qucs_BINARY_DIR}/qucs-tools )
+LINK_DIRECTORIES( ${Caneda_BINARY_DIR}/caneda-tools )
 
-ADD_EXECUTABLE( qucslib ${QUCSLIB_SRCS} ${QUCSLIB_MOC_SRCS} )
+ADD_EXECUTABLE( canedalib ${CANEDALIB_SRCS} ${CANEDALIB_MOC_SRCS} )
 
-TARGET_LINK_LIBRARIES( qucslib ${QT_LIBRARIES} qucstools )
+TARGET_LINK_LIBRARIES( canedalib ${QT_LIBRARIES} canedatools )
 
-INSTALL(TARGETS qucslib DESTINATION ${BINARYDIR})
+INSTALL(TARGETS canedalib DESTINATION ${BINARYDIR})

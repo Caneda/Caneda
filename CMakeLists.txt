@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 2.6)
-PROJECT( Qucs )
+PROJECT( Caneda )
 
-SET(BASEDIR	"share/qucs/")
-SET(BITMAPDIR	"share/qucs/bitmaps/")
+SET(BASEDIR	"share/caneda/")
+SET(BITMAPDIR	"share/caneda/bitmaps/")
 SET(BINARYDIR	"bin/")
-SET(DOCDIR	"share/qucs/docs/")
-SET(LANGUAGEDIR "share/qucs/lang/")
-SET(LIBRARYDIR	"share/qucs/library/")
+SET(DOCDIR	"share/caneda/docs/")
+SET(LANGUAGEDIR "share/caneda/lang/")
+SET(LIBRARYDIR	"share/caneda/library/")
 
 SET(CMAKE_BUILD_TYPE Debug)
 
 ADD_DEFINITIONS( -DHAVE_CONFIG_H )
 
-CONFIGURE_FILE(${Qucs_SOURCE_DIR}/config.h.cmake ${Qucs_BINARY_DIR}/config.h)
+CONFIGURE_FILE(${Caneda_SOURCE_DIR}/config.h.cmake ${Caneda_BINARY_DIR}/config.h)
 
 SET( QT_USE_QTXML TRUE )
 SET( QT_USE_QTSVG TRUE )
@@ -32,20 +32,20 @@ ADD_DEFINITIONS(${LIBXSLT_DEFINITIONS})
 
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}
     ${CMAKE_BINARY_DIR}
-    ${CMAKE_SOURCE_DIR}/qucs
+    ${CMAKE_SOURCE_DIR}/caneda
     ${LIBXSLT_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR}
 )
 
-ADD_SUBDIRECTORY( qucs-tools )
-ADD_SUBDIRECTORY( qucs )
+ADD_SUBDIRECTORY( caneda-tools )
+ADD_SUBDIRECTORY( caneda )
 
-ADD_SUBDIRECTORY( qucs-attenuator )
-ADD_SUBDIRECTORY( qucs-edit )
-ADD_SUBDIRECTORY( qucs-filter )
-ADD_SUBDIRECTORY( qucs-help )
-ADD_SUBDIRECTORY( qucs-lib )
-ADD_SUBDIRECTORY( qucs-transcalc )
-ADD_SUBDIRECTORY( qucs-qterm )
+ADD_SUBDIRECTORY( caneda-attenuator )
+ADD_SUBDIRECTORY( caneda-edit )
+ADD_SUBDIRECTORY( caneda-filter )
+ADD_SUBDIRECTORY( caneda-help )
+ADD_SUBDIRECTORY( caneda-lib )
+ADD_SUBDIRECTORY( caneda-transcalc )
+ADD_SUBDIRECTORY( caneda-qterm )
 
 # Licence and other files
 SET(MISC ChangeLog INSTALL PLATFORMS THANKS AUTHORS README TODO COPYING NEWS RELEASE)

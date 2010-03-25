@@ -2,7 +2,7 @@
  * Copyright 2006-2009 Xavier Guerrin                                      *
  * Copyright 2009 Pablo Daniel Pareja Obregon                              *
  * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Qucs.                                         *
+ * Obregon to be included in Caneda.                                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,7 +22,7 @@
 
 #include "printdialog.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QButtonGroup>
 #include <QCheckBox>
@@ -177,9 +177,9 @@ void PrintDialog::buildPrintTypeDialog()
     QLabel *iconPdf = new QLabel();
     QLabel *iconPs = new QLabel();
 
-    iconPrinter->setPixmap(QPixmap(Qucs::bitmapDirectory() + "printer.png"));
-    iconPdf->setPixmap(QPixmap(Qucs::bitmapDirectory() + "pdf.png"));
-    iconPs->setPixmap(QPixmap(Qucs::bitmapDirectory() + "eps.png"));
+    iconPrinter->setPixmap(QPixmap(Caneda::bitmapDirectory() + "printer.png"));
+    iconPdf->setPixmap(QPixmap(Caneda::bitmapDirectory() + "pdf.png"));
+    iconPs->setPixmap(QPixmap(Caneda::bitmapDirectory() + "eps.png"));
 
     QButtonGroup *printtypeChoice = new QButtonGroup();
     printerChoice = new QRadioButton(tr("Print to a physical printer",
@@ -197,7 +197,7 @@ void PrintDialog::buildPrintTypeDialog()
     browseButton = new QPushButton("...");
 
     QLabel *iconFitInPage = new QLabel();
-    iconFitInPage->setPixmap(QPixmap(Qucs::bitmapDirectory() + "viewmagfit.png"));
+    iconFitInPage->setPixmap(QPixmap(Caneda::bitmapDirectory() + "viewmagfit.png"));
     fitInPage = new QCheckBox("Fit result into page");
     fitInPage->setChecked(true);
 

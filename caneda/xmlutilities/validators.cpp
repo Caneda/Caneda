@@ -19,10 +19,10 @@
 
 #include "QRelaxNGvalidator.h"
 
-namespace Qucs {
+namespace Caneda {
 
-    static const char componentspath[] = "schema/qucscomponents.rng";
-    static const char librarypath[] = "schema/qucslibrary.rng";
+    static const char componentspath[] = "schema/canedacomponents.rng";
+    static const char librarypath[] = "schema/canedalibrary.rng";
 
     /*!
      * \brief load all validators from a schema path

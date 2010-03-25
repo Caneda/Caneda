@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "qucsview.h"
+#include "canedaview.h"
 
 #include <QFileInfo>
 
@@ -66,22 +66,22 @@ const char *empty_xpm[] = {  // provides same height than "smallsave_xpm"
 };
 
 //! Constructor
-QucsView::QucsView()
+CanedaView::CanedaView()
 {
 }
 
-bool QucsView::load(const QString& fileName)
+bool CanedaView::load(const QString& fileName)
 {
     setFileName(fileName);
     return load();
 }
 
-SchematicView* QucsView::toSchematicView() const
+SchematicView* CanedaView::toSchematicView() const
 {
     return 0;
 }
 
-QString QucsView::tabText() const
+QString CanedaView::tabText() const
 {
     QFileInfo info(fileName());
     QString name = info.fileName();
@@ -91,13 +91,13 @@ QString QucsView::tabText() const
     return name;
 }
 
-QIcon QucsView::modifiedTabIcon()
+QIcon CanedaView::modifiedTabIcon()
 {
     static QIcon modifiedIcon = QIcon(smallsave_xpm);
     return modifiedIcon;
 }
 
-QIcon QucsView::unmodifiedTabIcon()
+QIcon CanedaView::unmodifiedTabIcon()
 {
     static QIcon unmodifiedIcon = QIcon(empty_xpm);
     return unmodifiedIcon;

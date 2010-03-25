@@ -2,7 +2,7 @@
  * Copyright 2006-2009 Xavier Guerrin                                      *
  * Copyright 2009 Pablo Daniel Pareja Obregon                              *
  * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Qucs.                                         *
+ * Obregon to be included in Caneda.                                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,21 +20,21 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef ABOUTQUCS_H
-#define ABOUTQUCS_H
+#ifndef ABOUTDIALOG_H
+#define ABOUTDIALOG_H
 
 #include <QDialog>
 
 class QLabel;
 
-//! This class represents the dialog "About Qucs".
-class AboutQUCS : public QDialog {
+//! This class represents the dialog "About Caneda".
+class AboutDialog : public QDialog {
     Q_OBJECT
 
 public:
         // constructor, destructor
-        AboutQUCS(QWidget * = 0);
-        virtual ~AboutQUCS();
+        AboutDialog(QWidget * = 0);
+        virtual ~AboutDialog();
 
         // methods
 private:
@@ -47,4 +47,4 @@ private:
         void addAuthor(QLabel *, const QString &, const QString &, const QString &) const;
 };
 
-#endif //ABOUTQUCS_H
+#endif //ABOUTDIALOG_H

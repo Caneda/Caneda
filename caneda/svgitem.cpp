@@ -276,7 +276,7 @@ SvgPainter* SvgPainter::instance()
  * svg id should already be registered with SvgPainter.
  * \sa SvgItem::registerConnections, SvgPainter::registerSvg()
  */
-SvgItem::SvgItem(SvgPainter *svgP, SchematicScene *_scene) : QucsItem(0, _scene),
+SvgItem::SvgItem(SvgPainter *svgP, SchematicScene *_scene) : CanedaItem(0, _scene),
     m_svgPainter(svgP)
 {
 }

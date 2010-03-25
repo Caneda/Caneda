@@ -17,14 +17,14 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "qucsmainwindow.h"
+#include "canedamainwindow.h"
 
 #include "actionmanager.h"
 #include "componentssidebar.h"
 #include "folderbrowser.h"
 #include "item.h"
 #include "library.h"
-#include "qucsview.h"
+#include "canedaview.h"
 #include "project.h"
 #include "schematicscene.h"
 #include "schematicstatehandler.h"
@@ -32,15 +32,15 @@
 #include "settings.h"
 #include "xmlsymbolformat.h"
 
-#include "dialogs/aboutqucs.h"
+#include "dialogs/aboutdialog.h"
 #include "dialogs/exportdialog.h"
 #include "dialogs/printdialog.h"
 #include "dialogs/savedocumentsdialog.h"
 #include "dialogs/settingsdialog.h"
 
-#include "qucs-qterm/qtermwidget.h"
+#include "caneda-qterm/qtermwidget.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/transformers.h"
 #include "xmlutilities/validators.h"
@@ -68,13 +68,13 @@
 #include <QWhatsThis>
 
 /*!
- * \brief Construct and setup the mainwindow for qucs.
+ * \brief Construct and setup the mainwindow for caneda.
  */
-QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
+CanedaMainWindow::CanedaMainWindow(QWidget *w) : MainWindowBase(w)
 {
-    titleText = QString("Qucs ") + (Qucs::version) + QString(" : %1[*]");
+    titleText = QString("Caneda ") + (Caneda::version) + QString(" : %1[*]");
 
-    setObjectName("QucsMainWindow"); //for debugging purpose
+    setObjectName("CanedaMainWindow"); //for debugging purpose
     setDocumentTitle("Untitled");
 
     console = 0;
@@ -104,15 +104,15 @@ QucsMainWindow::QucsMainWindow(QWidget *w) : MainWindowBase(w)
 }
 
 //! Destructor
-QucsMainWindow::~QucsMainWindow()
+CanedaMainWindow::~CanedaMainWindow()
 {
 }
 
-QucsMainWindow* QucsMainWindow::instance()
+CanedaMainWindow* CanedaMainWindow::instance()
 {
-    static QucsMainWindow* instance = 0;
+    static CanedaMainWindow* instance = 0;
     if (!instance) {
-        instance = new QucsMainWindow();
+        instance = new CanedaMainWindow();
     }
     return instance;
 }
@@ -121,7 +121,7 @@ QucsMainWindow* QucsMainWindow::instance()
  * \brief Switches to \a fileName tab if it is opened else tries opening it
  * and then switches to that tab on success.
  */
-bool QucsMainWindow::gotoPage(QString fileName, Qucs::Mode mode)
+bool CanedaMainWindow::gotoPage(QString fileName, Caneda::Mode mode)
 {
     fileName = QDir::toNativeSeparators(fileName);
     QFileInfo info(fileName);
@@ -130,10 +130,10 @@ bool QucsMainWindow::gotoPage(QString fileName, Qucs::Mode mode)
     if(info.suffix() == "xsym") {
         fileName.replace(".xsym", ".xsch");
         info = QFileInfo(fileName);
-        mode = Qucs::SymbolMode;
+        mode = Caneda::SymbolMode;
     }
 
-    QucsView *view = 0;
+    CanedaView *view = 0;
     int i = 0;
     while(i < tabWidget()->count()) {
         view = viewFromWidget(tabWidget()->widget(i));
@@ -174,7 +174,7 @@ bool QucsMainWindow::gotoPage(QString fileName, Qucs::Mode mode)
  * \todo This method only fill the sidebar with painting items. The components
  * are loaded in loadSettings() as of now. This should be corrected.
  */
-void QucsMainWindow::setupSidebar()
+void CanedaMainWindow::setupSidebar()
 {
     SchematicStateHandler *handler = SchematicStateHandler::instance();
     m_componentsSidebar = new ComponentsSidebar(this);
@@ -189,17 +189,17 @@ void QucsMainWindow::setupSidebar()
 
     QList<QPair<QString, QPixmap> > paintingItems;
     paintingItems << qMakePair(QObject::tr("Arrow"),
-            QPixmap(Qucs::bitmapDirectory() + "arrow.svg"));
+            QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
     paintingItems << qMakePair(QObject::tr("Ellipse"),
-            QPixmap(Qucs::bitmapDirectory() + "ellipse.svg"));
+            QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
     paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
-            QPixmap(Qucs::bitmapDirectory() + "ellipsearc.svg"));
+            QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
     paintingItems << qMakePair(QObject::tr("Line"),
-            QPixmap(Qucs::bitmapDirectory() + "line.svg"));
+            QPixmap(Caneda::bitmapDirectory() + "line.svg"));
     paintingItems << qMakePair(QObject::tr("Rectangle"),
-            QPixmap(Qucs::bitmapDirectory() + "rectangle.svg"));
+            QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
     paintingItems << qMakePair(QObject::tr("Text"),
-            QPixmap(Qucs::bitmapDirectory() + "text.svg"));
+            QPixmap(Caneda::bitmapDirectory() + "text.svg"));
 
     m_componentsSidebar->plugItem("Components", QPixmap(), "root");
     m_componentsSidebar->plugItems(paintingItems, QObject::tr("Paint Tools"));
@@ -208,7 +208,7 @@ void QucsMainWindow::setupSidebar()
 /*!
  * \brief This initializes the projects sidebar.
  */
-void QucsMainWindow::setupProjectsSidebar()
+void CanedaMainWindow::setupProjectsSidebar()
 {
     SchematicStateHandler *handler = SchematicStateHandler::instance();
     m_project = new Project(this);
@@ -225,7 +225,7 @@ void QucsMainWindow::setupProjectsSidebar()
     viewMenu->addAction(projectDockWidget->toggleViewAction());
 }
 
-void QucsMainWindow::createUndoView()
+void CanedaMainWindow::createUndoView()
 {
     undoView = new QUndoView(m_undoGroup);
     undoView->setWindowTitle(tr("Command List"));
@@ -238,7 +238,7 @@ void QucsMainWindow::createUndoView()
     viewMenu->addAction(sidebarDockWidget->toggleViewAction());
 }
 
-void QucsMainWindow::createFolderView()
+void CanedaMainWindow::createFolderView()
 {
     m_folderBrowser = new FolderBrowser(this);
 
@@ -255,11 +255,11 @@ void QucsMainWindow::createFolderView()
 
 static QIcon icon(const QString& filename)
 {
-    static QString bitmapPath = Qucs::bitmapDirectory();
+    static QString bitmapPath = Caneda::bitmapDirectory();
     return QIcon(bitmapPath + filename);
 }
 
-Action* QucsMainWindow::action(const QString& name)
+Action* CanedaMainWindow::action(const QString& name)
 {
     ActionManager* am = ActionManager::instance();
     Action* act = am->actionForName(name);
@@ -272,7 +272,7 @@ Action* QucsMainWindow::action(const QString& name)
 /*!
  * \brief Creates and intializes all the actions used.
  */
-void QucsMainWindow::initActions()
+void CanedaMainWindow::initActions()
 {
     using namespace Qt;
     Action *action = 0;
@@ -339,7 +339,7 @@ void QucsMainWindow::initActions()
 
     action = am->createAction("applSettings", icon("configure.png"), tr("Application Settings..."));
     action->setShortcut(CTRL+Key_Comma);
-    action->setWhatsThis(tr("Qucs Settings\n\nSets properties of the application"));
+    action->setWhatsThis(tr("Caneda Settings\n\nSets properties of the application"));
     connect(action, SIGNAL(triggered()), SLOT(slotApplSettings()));
 
     action = am->createAction("fileQuit", icon("application-exit.png"), tr("E&xit"));
@@ -512,13 +512,13 @@ void QucsMainWindow::initActions()
 
     action = am->createAction("callFilter", icon("tools-wizard.png"), tr("Filter synthesis"));
     action->setShortcut(CTRL+Key_1);
-    action->setStatusTip(tr("Starts QucsFilter"));
-    action->setWhatsThis(tr("Filter synthesis\n\nStarts QucsFilter"));
+    action->setStatusTip(tr("Starts CanedaFilter"));
+    action->setWhatsThis(tr("Filter synthesis\n\nStarts CanedaFilter"));
     connect(action, SIGNAL(triggered()), SLOT(slotCallFilter()));
 
     action = am->createAction("callLine", icon("tools-wizard.png"), tr("Line calculation"));
     action->setShortcut(CTRL+Key_2);
-    action->setStatusTip(tr("Starts QucsTrans"));
+    action->setStatusTip(tr("Starts CanedaTrans"));
     action->setWhatsThis(tr("Line calculation\n\nStarts transmission line calculator"));
     connect(action, SIGNAL(triggered()), SLOT(slotCallLine()));
 
@@ -530,20 +530,20 @@ void QucsMainWindow::initActions()
 
     action = am->createAction("callAtt", icon("tools-wizard.png"), tr("Attenuator synthesis"));
     action->setShortcut(CTRL+Key_4);
-    action->setStatusTip(tr("Starts QucsAttenuator"));
+    action->setStatusTip(tr("Starts CanedaAttenuator"));
     action->setWhatsThis(tr("Attenuator synthesis\n\nStarts attenuator calculation program"));
     connect(action, SIGNAL(triggered()), SLOT(slotCallAtt()));
 
     action = am->createAction("callLib", icon("library.png"), tr("Component Library"));
     action->setShortcut(CTRL+Key_5);
-    action->setStatusTip(tr("Starts QucsLib"));
+    action->setStatusTip(tr("Starts CanedaLib"));
     action->setWhatsThis(tr("Component Library\n\nStarts component library program"));
     connect(action, SIGNAL(triggered()), SLOT(slotCallLibrary()));
 
     action = am->createAction("importData",  tr("&Import Data..."));
     action->setShortcut(CTRL+Key_6);
-    action->setStatusTip(tr("Convert file to Qucs data file"));
-    action->setWhatsThis(tr("Import Data\n\nConvert data file to Qucs data file"));
+    action->setStatusTip(tr("Convert file to Caneda data file"));
+    action->setWhatsThis(tr("Import Data\n\nConvert data file to Caneda data file"));
     connect(action, SIGNAL(triggered()), SLOT(slotImportData()));
 
     action = am->createAction("showConsole", icon("console.png"), tr("&Show Console..."));
@@ -616,11 +616,11 @@ void QucsMainWindow::initActions()
 
     action = am->createAction("helpIndex", icon("help.png"), tr("Help Index..."));
     action->setShortcut(Key_F1);
-    action->setStatusTip(tr("Index of Qucs Help"));
-    action->setWhatsThis(tr("Help Index\n\nIndex of intern Qucs help"));
+    action->setStatusTip(tr("Index of Caneda Help"));
+    action->setWhatsThis(tr("Help Index\n\nIndex of intern Caneda help"));
     connect(action, SIGNAL(triggered()), SLOT(slotHelpIndex()));
 
-    action = am->createAction("helpAboutApp", icon("qucs.png"), tr("&About Qucs..."));
+    action = am->createAction("helpAboutApp", icon("caneda.png"), tr("&About Caneda..."));
     action->setWhatsThis(tr("About\n\nAbout the application"));
     connect(action, SIGNAL(triggered()), SLOT(slotHelpAbout()));
 
@@ -636,7 +636,7 @@ void QucsMainWindow::initActions()
     initMouseActions();
 }
 
-void QucsMainWindow::initMouseActions()
+void CanedaMainWindow::initMouseActions()
 {
     using namespace Qt;
     Action *action = 0;
@@ -748,7 +748,7 @@ void QucsMainWindow::initMouseActions()
 }
 
 //! \brief Create and initialize menus.
-void QucsMainWindow::initMenus()
+void CanedaMainWindow::initMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
 
@@ -900,7 +900,7 @@ void QucsMainWindow::initMenus()
 }
 
 //! \brief Create and intialize the toolbars
-void QucsMainWindow::initToolBars()
+void CanedaMainWindow::initToolBars()
 {
     fileToolbar  = addToolBar(tr("File"));
     fileToolbar->setObjectName("fileToolBar");
@@ -960,7 +960,7 @@ void QucsMainWindow::initToolBars()
     workToolbar->addAction(action("whatsThis"));
 }
 
-void QucsMainWindow::initStatusBar()
+void CanedaMainWindow::initStatusBar()
 {
     QStatusBar *statusBarWidget = statusBar();
     // Initially its empty space.
@@ -970,7 +970,7 @@ void QucsMainWindow::initStatusBar()
 }
 
 //! \brief Toggles the normal select action on.
-void QucsMainWindow::setNormalAction()
+void CanedaMainWindow::setNormalAction()
 {
     SchematicStateHandler *handler = SchematicStateHandler::instance();
     handler->slotSetNormalAction();
@@ -983,7 +983,7 @@ void QucsMainWindow::setNormalAction()
  * scematicview..
  * Also the added view is set as current tab in tabwidget.
  */
-void QucsMainWindow::addView(QucsView *view)
+void CanedaMainWindow::addView(CanedaView *view)
 {
     if(view->isSchematicView()) {
         SchematicView *schematicView = view->toSchematicView();
@@ -1005,13 +1005,13 @@ void QucsMainWindow::addView(QucsView *view)
  * the tab's as well as window's title text. Also necessary connections between
  * view and this main window are made.
  */
-void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
+void CanedaMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
 {
     if (prev) {
         prev->disconnect(this);
     }
 
-    QucsView *view = viewFromWidget(current);
+    CanedaView *view = viewFromWidget(current);
     if (view) {
         connect(view->toWidget(), SIGNAL(titleToBeUpdated()), SLOT(updateTitleTabText()));
         updateTitleTabText();
@@ -1030,7 +1030,7 @@ void QucsMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
 /*!
  * \brief Remove the undostack of widget from undogroup on view close.
  */
-void QucsMainWindow::slotViewClosed(QWidget *widget)
+void CanedaMainWindow::slotViewClosed(QWidget *widget)
 {
     SchematicView *view = qobject_cast<SchematicView*>(widget);
     if(view) {
@@ -1041,13 +1041,13 @@ void QucsMainWindow::slotViewClosed(QWidget *widget)
 /*!
  * \brief Sync the settings to configuration file and close window.
  */
-void QucsMainWindow::closeEvent( QCloseEvent *e )
+void CanedaMainWindow::closeEvent( QCloseEvent *e )
 {
     QSet<SchematicScene*> processedScenes;
-    QSet<QPair<QucsView*, int> > modifiedViews;
+    QSet<QPair<CanedaView*, int> > modifiedViews;
 
     for (int i = 0; i < tabWidget()->count(); ++i) {
-        QucsView *view = viewFromWidget(tabWidget()->widget(i));
+        CanedaView *view = viewFromWidget(tabWidget()->widget(i));
         if (!view || view->isModified() == false) {
             continue;
         }
@@ -1077,12 +1077,12 @@ void QucsMainWindow::closeEvent( QCloseEvent *e )
             e->ignore();
             return;
         } else {
-            QSet<QPair<QucsView*, QString> > newFilePaths = dialog->newFilePaths();
-            QSet<QPair<QucsView*, QString> >::iterator it;
+            QSet<QPair<CanedaView*, QString> > newFilePaths = dialog->newFilePaths();
+            QSet<QPair<CanedaView*, QString> >::iterator it;
 
             bool failedInBetween = false;
             for (it = newFilePaths.begin(); it != newFilePaths.end(); ++it) {
-                QucsView *view = it->first;
+                CanedaView *view = it->first;
                 const QString newFileName = it->second;
                 QString oldFileName = view->fileName();
 
@@ -1112,13 +1112,13 @@ void QucsMainWindow::closeEvent( QCloseEvent *e )
 /*!
  * \brief Creates a new schematic view and adds it the tabwidget.
  */
-void QucsMainWindow::slotFileNew()
+void CanedaMainWindow::slotFileNew()
 {
     addView(new SchematicView(0, this));
 }
 
 //! \brief Creates a new text(vhdl-verilog-simple) view.
-void QucsMainWindow::slotTextNew()
+void CanedaMainWindow::slotTextNew()
 {
     setNormalAction();
     editFile(QString(""));
@@ -1130,13 +1130,13 @@ void QucsMainWindow::slotTextNew()
  * If the file is already opened, that tab is set as current. Otherwise the file
  * opened is set as current tab.
  */
-void QucsMainWindow::slotFileOpen(QString fileName)
+void CanedaMainWindow::slotFileOpen(QString fileName)
 {
     setNormalAction();
 
     if(fileName == 0) {
         fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
-                Settings::instance()->currentValue("nosave/qucsFilter").toString());
+                Settings::instance()->currentValue("nosave/canedaFilter").toString());
     }
 
     if(!fileName.isEmpty()) {
@@ -1156,9 +1156,9 @@ void QucsMainWindow::slotFileOpen(QString fileName)
 /*!
  * \brief Saves the file corresponding to index tab.
  */
-void QucsMainWindow::slotFileSave(int index)
+void CanedaMainWindow::slotFileSave(int index)
 {
-    QucsView* v = viewFromWidget(tabWidget()->widget(index));
+    CanedaView* v = viewFromWidget(tabWidget()->widget(index));
     if(!v) {
         return;
     }
@@ -1176,7 +1176,7 @@ void QucsMainWindow::slotFileSave(int index)
 /*!
  * \brief Saves the file corresponding to current tab.
  */
-void QucsMainWindow::slotFileSaveCurrent()
+void CanedaMainWindow::slotFileSaveCurrent()
 {
     slotFileSave(tabWidget()->currentIndex());
 }
@@ -1185,14 +1185,14 @@ void QucsMainWindow::slotFileSaveCurrent()
  * \brief Pops up dialog to select new filename and saves the file corresponding
  * to index tab.
  */
-void QucsMainWindow::slotFileSaveAs(int index)
+void CanedaMainWindow::slotFileSaveAs(int index)
 {
-    QucsView* v = viewFromWidget(tabWidget()->widget(index));
+    CanedaView* v = viewFromWidget(tabWidget()->widget(index));
     if(!v) {
         return;
     }
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "",
-            Settings::instance()->currentValue("nosave/qucsFilter").toString());
+            Settings::instance()->currentValue("nosave/canedaFilter").toString());
     if(fileName.isEmpty()) {
         return;
     }
@@ -1221,7 +1221,7 @@ void QucsMainWindow::slotFileSaveAs(int index)
  * \brief Pops up dialog to select new filename and saves the file corresponding
  * to current tab.
  */
-void QucsMainWindow::slotFileSaveAsCurrent()
+void CanedaMainWindow::slotFileSaveAsCurrent()
 {
     slotFileSaveAs(tabWidget()->currentIndex());
 }
@@ -1229,7 +1229,7 @@ void QucsMainWindow::slotFileSaveAsCurrent()
 /*!
  * \brief Switches to each opened tab and issues save to that.
  */
-void QucsMainWindow::slotFileSaveAll()
+void CanedaMainWindow::slotFileSaveAll()
 {
     for(int i=0; i < tabWidget()->count(); ++i) {
         slotFileSave(i);
@@ -1242,14 +1242,14 @@ void QucsMainWindow::slotFileSaveAll()
  * Before closing it prompts user whether to save or not if the document is
  * modified and takes necessary actions.
  */
-void QucsMainWindow::slotFileClose(int index)
+void CanedaMainWindow::slotFileClose(int index)
 {
     if(tabWidget()->count() > 0){
-        QucsView *view = viewFromWidget(tabWidget()->widget(index));
+        CanedaView *view = viewFromWidget(tabWidget()->widget(index));
         bool saveAttempted = false;
         if(view->isModified()) {
             QMessageBox::StandardButton res =
-                QMessageBox::warning(0, tr("Closing qucs document"),
+                QMessageBox::warning(0, tr("Closing caneda document"),
                         tr("The document contains unsaved changes!\n"
                             "Do you want to save the changes ?"),
                         QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -1270,7 +1270,7 @@ void QucsMainWindow::slotFileClose(int index)
 /*!
  * \brief Closes the current tab.
  */
-void QucsMainWindow::slotFileCloseCurrent()
+void CanedaMainWindow::slotFileCloseCurrent()
 {
     slotFileClose(tabWidget()->currentIndex());
 }
@@ -1278,9 +1278,9 @@ void QucsMainWindow::slotFileCloseCurrent()
 /*!
  * \brief Opens the current schematics' symbol for editing
  */
-void QucsMainWindow::slotSymbolEdit()
+void CanedaMainWindow::slotSymbolEdit()
 {
-    QucsView *currentView = viewFromWidget(tabWidget()->currentWidget());
+    CanedaView *currentView = viewFromWidget(tabWidget()->currentWidget());
     if(!currentView) {
         return;
     }
@@ -1288,47 +1288,47 @@ void QucsMainWindow::slotSymbolEdit()
     if(!currentView->fileName().isEmpty()) {
         QString fileName = currentView->fileName();
 
-        if(currentView->toSchematicView()->schematicScene()->currentMode() == Qucs::SchematicMode) {
+        if(currentView->toSchematicView()->schematicScene()->currentMode() == Caneda::SchematicMode) {
             //First, we try to open the corresponding symbol file
-            bool isLoaded = gotoPage(fileName, Qucs::SymbolMode);
+            bool isLoaded = gotoPage(fileName, Caneda::SymbolMode);
 
             //If it's a new symbol, we create it
             if(!isLoaded){
                 addView(new SchematicView(0, this));
 
-                QucsView *v = viewFromWidget(tabWidget()->currentWidget());
+                CanedaView *v = viewFromWidget(tabWidget()->currentWidget());
                 SchematicScene *sc = v->toSchematicView()->schematicScene();
-                sc->setMode(Qucs::SymbolMode);
+                sc->setMode(Caneda::SymbolMode);
 
                 v->setFileName(fileName);
             }
         }
-        else if(currentView->toSchematicView()->schematicScene()->currentMode() == Qucs::SymbolMode) {
-            gotoPage(fileName, Qucs::SchematicMode);
+        else if(currentView->toSchematicView()->schematicScene()->currentMode() == Caneda::SymbolMode) {
+            gotoPage(fileName, Caneda::SchematicMode);
         }
     }
 }
 
-void QucsMainWindow::slotFilePrint()
+void CanedaMainWindow::slotFilePrint()
 {
     setNormalAction();
 
     if(tabWidget()->count() > 0){
-        QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+        CanedaView *view = viewFromWidget(tabWidget()->currentWidget());
         SchematicScene *scene = view->toSchematicView()->schematicScene();
 
         PrintDialog *p = new PrintDialog(scene, this);
     }
 }
 
-void QucsMainWindow::slotExportImage()
+void CanedaMainWindow::slotExportImage()
 {
     setNormalAction();
 
     QList<SchematicScene *> schemasToExport;
 
     int i = 0;
-    QucsView *view = 0;
+    CanedaView *view = 0;
     while(i < tabWidget()->count()) {
         view = viewFromWidget(tabWidget()->widget(i));
         SchematicScene *scene = view->toSchematicView()->schematicScene();
@@ -1342,7 +1342,7 @@ void QucsMainWindow::slotExportImage()
     expDial->exec();
 }
 
-void QucsMainWindow::slotApplSettings()
+void CanedaMainWindow::slotApplSettings()
 {
     setNormalAction();
 
@@ -1354,16 +1354,16 @@ void QucsMainWindow::slotApplSettings()
     page = new SimulationConfigurationPage(this);
     wantedPages << page;
 
-    SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Qucs", this);
+    SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Caneda", this);
     d->exec();
 }
 
-void QucsMainWindow::slotFileSettings()
+void CanedaMainWindow::slotFileSettings()
 {
     setNormalAction();
 
     if(tabWidget()->count() > 0){
-        QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+        CanedaView *view = viewFromWidget(tabWidget()->currentWidget());
         SchematicScene *scene = view->toSchematicView()->schematicScene();
 
         QList<SettingsPage *> wantedPages;
@@ -1377,71 +1377,71 @@ void QucsMainWindow::slotFileSettings()
     }
 }
 
-void QucsMainWindow::slotEditCut()
+void CanedaMainWindow::slotEditCut()
 {
     setNormalAction();
-    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+    CanedaView* v = viewFromWidget(tabWidget()->currentWidget());
     if(!v) {
         return;
     }
     v->cut();
 }
 
-void QucsMainWindow::slotEditCopy()
+void CanedaMainWindow::slotEditCopy()
 {
     setNormalAction();
-    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+    CanedaView* v = viewFromWidget(tabWidget()->currentWidget());
     if(!v) {
         return;
     }
     v->copy();
 }
 
-void QucsMainWindow::slotEditPaste()
+void CanedaMainWindow::slotEditPaste()
 {
     setNormalAction();
-    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+    CanedaView* v = viewFromWidget(tabWidget()->currentWidget());
     if(!v) {
         return;
     }
     v->paste();
 }
 
-void QucsMainWindow::slotSelectAll()
+void CanedaMainWindow::slotSelectAll()
 {
     setNormalAction();
-    QucsView* v = viewFromWidget(tabWidget()->currentWidget());
+    CanedaView* v = viewFromWidget(tabWidget()->currentWidget());
     foreach(QGraphicsItem* item, v->toSchematicView()->schematicScene()->items()) {
         item->setSelected(true);
     }
 }
 
-void QucsMainWindow::slotSelectMarker()
+void CanedaMainWindow::slotSelectMarker()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotEditFind()
+void CanedaMainWindow::slotEditFind()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotIntoHierarchy()
+void CanedaMainWindow::slotIntoHierarchy()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotPopHierarchy()
+void CanedaMainWindow::slotPopHierarchy()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
 }
 
 //! \brief Align selected elements appropriately based on \a alignment
-void QucsMainWindow::alignElements(Qt::Alignment alignment)
+void CanedaMainWindow::alignElements(Qt::Alignment alignment)
 {
     SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
     if(!view) {
@@ -1455,19 +1455,19 @@ void QucsMainWindow::alignElements(Qt::Alignment alignment)
 }
 
 //! \brief Align elements in a row correponding to top most elements coords.
-void QucsMainWindow::slotAlignTop()
+void CanedaMainWindow::slotAlignTop()
 {
     alignElements(Qt::AlignTop);
 }
 
 //! \brief Align elements in a row correponding to bottom most elements coords.
-void QucsMainWindow::slotAlignBottom()
+void CanedaMainWindow::slotAlignBottom()
 {
     alignElements(Qt::AlignBottom);
 }
 
 //! \brief Align elements in a column correponding to left most elements coords.
-void QucsMainWindow::slotAlignLeft()
+void CanedaMainWindow::slotAlignLeft()
 {
     alignElements(Qt::AlignLeft);
 }
@@ -1476,12 +1476,12 @@ void QucsMainWindow::slotAlignLeft()
  * \brief Align elements in a column correponding to right most elements
  * coords.
  */
-void QucsMainWindow::slotAlignRight()
+void CanedaMainWindow::slotAlignRight()
 {
     alignElements(Qt::AlignRight);
 }
 
-void QucsMainWindow::slotDistribHoriz()
+void CanedaMainWindow::slotDistribHoriz()
 {
     SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
     if(!view) {
@@ -1494,7 +1494,7 @@ void QucsMainWindow::slotDistribHoriz()
     }
 }
 
-void QucsMainWindow::slotDistribVert()
+void CanedaMainWindow::slotDistribVert()
 {
     SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
     if(!view) {
@@ -1507,17 +1507,17 @@ void QucsMainWindow::slotDistribVert()
     }
 }
 
-void QucsMainWindow::slotCenterHorizontal()
+void CanedaMainWindow::slotCenterHorizontal()
 {
     alignElements(Qt::AlignHCenter);
 }
 
-void QucsMainWindow::slotCenterVertical()
+void CanedaMainWindow::slotCenterVertical()
 {
     alignElements(Qt::AlignVCenter);
 }
 
-void QucsMainWindow::slotNewProject()
+void CanedaMainWindow::slotNewProject()
 {
     setNormalAction();
     projectDockWidget->setVisible(true);
@@ -1525,7 +1525,7 @@ void QucsMainWindow::slotNewProject()
     m_project->slotNewProject();
 }
 
-void QucsMainWindow::slotOpenProject(QString fileName)
+void CanedaMainWindow::slotOpenProject(QString fileName)
 {
     setNormalAction();
     projectDockWidget->setVisible(true);
@@ -1533,7 +1533,7 @@ void QucsMainWindow::slotOpenProject(QString fileName)
     m_project->slotOpenProject(fileName);
 }
 
-void QucsMainWindow::slotAddToProject()
+void CanedaMainWindow::slotAddToProject()
 {
     setNormalAction();
     projectDockWidget->setVisible(true);
@@ -1541,7 +1541,7 @@ void QucsMainWindow::slotAddToProject()
     m_project->slotAddToProject();
 }
 
-void QucsMainWindow::slotRemoveFromProject()
+void CanedaMainWindow::slotRemoveFromProject()
 {
     setNormalAction();
     projectDockWidget->setVisible(true);
@@ -1549,82 +1549,82 @@ void QucsMainWindow::slotRemoveFromProject()
     m_project->slotRemoveFromProject();
 }
 
-void QucsMainWindow::slotCloseProject()
+void CanedaMainWindow::slotCloseProject()
 {
     setNormalAction();
     m_project->slotCloseProject();
 }
 
-void QucsMainWindow::slotInsertEntity()
+void CanedaMainWindow::slotInsertEntity()
 {
     setNormalAction();
 }
 
-void QucsMainWindow::slotCallFilter()
+void CanedaMainWindow::slotCallFilter()
 {
     setNormalAction();
 
-    QProcess *QucsFilter = new QProcess(this);
-    QucsFilter->start(QString(Qucs::binaryDir + "qucsfilter"));
+    QProcess *CanedaFilter = new QProcess(this);
+    CanedaFilter->start(QString(Caneda::binaryDir + "canedafilter"));
 
-    connect(QucsFilter, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+    connect(CanedaFilter, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
 
-    // Kill before qucs ends
-    connect(this, SIGNAL(signalKillWidgets()), QucsFilter, SLOT(kill()));
+    // Kill before Caneda ends
+    connect(this, SIGNAL(signalKillWidgets()), CanedaFilter, SLOT(kill()));
 }
 
-void QucsMainWindow::slotCallLine()
+void CanedaMainWindow::slotCallLine()
 {
     setNormalAction();
 
-    QProcess *QucsLine = new QProcess(this);
-    QucsLine->start(QString(Qucs::binaryDir + "qucstrans"));
+    QProcess *CanedaLine = new QProcess(this);
+    CanedaLine->start(QString(Caneda::binaryDir + "canedatrans"));
 
-    connect(QucsLine, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+    connect(CanedaLine, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
 
-    // Kill before qucs ends
-    connect(this, SIGNAL(signalKillWidgets()), QucsLine, SLOT(kill()));
+    // Kill before Caneda ends
+    connect(this, SIGNAL(signalKillWidgets()), CanedaLine, SLOT(kill()));
 }
 
-void QucsMainWindow::slotCallMatch()
-{
-    setNormalAction();
-    //TODO: implement this or rather port directly
-}
-
-void QucsMainWindow::slotCallAtt()
-{
-    setNormalAction();
-
-    QProcess *QucsAtt = new QProcess(this);
-    QucsAtt->start(QString(Qucs::binaryDir + "qucsattenuator"));
-
-    connect(QucsAtt, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
-
-    // Kill before qucs ends
-    connect(this, SIGNAL(signalKillWidgets()), QucsAtt, SLOT(kill()));
-}
-
-void QucsMainWindow::slotCallLibrary()
-{
-    setNormalAction();
-
-    QProcess *QucsLib = new QProcess(this);
-    QucsLib->start(QString(Qucs::binaryDir + "qucslib"));
-
-    connect(QucsLib, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
-
-    // Kill before qucs ends
-    connect(this, SIGNAL(signalKillWidgets()), QucsLib, SLOT(kill()));
-}
-
-void QucsMainWindow::slotImportData()
+void CanedaMainWindow::slotCallMatch()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotShowConsole()
+void CanedaMainWindow::slotCallAtt()
+{
+    setNormalAction();
+
+    QProcess *CanedaAtt = new QProcess(this);
+    CanedaAtt->start(QString(Caneda::binaryDir + "canedaattenuator"));
+
+    connect(CanedaAtt, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+
+    // Kill before Caneda ends
+    connect(this, SIGNAL(signalKillWidgets()), CanedaAtt, SLOT(kill()));
+}
+
+void CanedaMainWindow::slotCallLibrary()
+{
+    setNormalAction();
+
+    QProcess *CanedaLib = new QProcess(this);
+    CanedaLib->start(QString(Caneda::binaryDir + "canedalib"));
+
+    connect(CanedaLib, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+
+    // Kill before Caneda ends
+    connect(this, SIGNAL(signalKillWidgets()), CanedaLib, SLOT(kill()));
+}
+
+void CanedaMainWindow::slotImportData()
+{
+    setNormalAction();
+    //TODO: implement this or rather port directly
+}
+
+void CanedaMainWindow::slotShowConsole()
 {
     if(!console) {
         console = new QTermWidget();
@@ -1646,61 +1646,61 @@ void QucsMainWindow::slotShowConsole()
     }
 }
 
-void QucsMainWindow::slotSimulate()
+void CanedaMainWindow::slotSimulate()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotToPage()
+void CanedaMainWindow::slotToPage()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotDCbias()
+void CanedaMainWindow::slotDCbias()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotExportGraphAsCsv()
+void CanedaMainWindow::slotExportGraphAsCsv()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
 }
 
-void QucsMainWindow::slotShowLastMsg()
+void CanedaMainWindow::slotShowLastMsg()
 {
     setNormalAction();
-    editFile(Qucs::pathForQucsFile("log.txt"));
+    editFile(Caneda::pathForCanedaFile("log.txt"));
 }
 
-void QucsMainWindow::slotShowLastNetlist()
+void CanedaMainWindow::slotShowLastNetlist()
 {
     setNormalAction();
-    editFile(Qucs::pathForQucsFile("netlist.txt"));
+    editFile(Caneda::pathForCanedaFile("netlist.txt"));
 }
 
-void QucsMainWindow::slotShowAll()
+void CanedaMainWindow::slotShowAll()
 {
     setNormalAction();
-    QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+    CanedaView *view = viewFromWidget(tabWidget()->currentWidget());
     if(view) {
         view->showAll();
     }
 }
 
-void QucsMainWindow::slotShowOne()
+void CanedaMainWindow::slotShowOne()
 {
     setNormalAction();
-    QucsView *view = viewFromWidget(tabWidget()->currentWidget());
+    CanedaView *view = viewFromWidget(tabWidget()->currentWidget());
     if(view) {
         view->showNoZoom();
     }
 }
 
-void QucsMainWindow::slotViewToolBar(bool toogle)
+void CanedaMainWindow::slotViewToolBar(bool toogle)
 {
     setNormalAction();
     fileToolbar->setVisible(toogle);
@@ -1709,52 +1709,52 @@ void QucsMainWindow::slotViewToolBar(bool toogle)
     workToolbar->setVisible(toogle);
 }
 
-void QucsMainWindow::slotViewStatusBar(bool toogle)
+void CanedaMainWindow::slotViewStatusBar(bool toogle)
 {
     setNormalAction();
     statusBar()->setVisible(toogle);
 }
 
 //! \brief Opens the editor given a filename
-void QucsMainWindow::editFile(const QString& File)
+void CanedaMainWindow::editFile(const QString& File)
 {
     QStringList arguments;
     if(!File.isEmpty()) {
         arguments << File;
     }
     QString textEditor = Settings::instance()->currentValue("gui/textEditor").toString();
-    QProcess *QucsEditor = new QProcess(this);
-    QucsEditor->start(textEditor, arguments);
+    QProcess *CanedaEditor = new QProcess(this);
+    CanedaEditor->start(textEditor, arguments);
 
-    connect(QucsEditor, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+    connect(CanedaEditor, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
 
-    // Kill editor before qucs ends
-    connect(this, SIGNAL(signalKillWidgets()), QucsEditor, SLOT(kill()));
+    // Kill editor before Caneda ends
+    connect(this, SIGNAL(signalKillWidgets()), CanedaEditor, SLOT(kill()));
 }
 
 //! \brief Opens the help browser
-void QucsMainWindow::showHTML(const QString& Page)
+void CanedaMainWindow::showHTML(const QString& Page)
 {
     QStringList arguments;
     if(!Page.isEmpty()) {
         arguments << Page;
     }
-    QProcess *QucsHelp = new QProcess(this);
-    QucsHelp->start(QString(Qucs::binaryDir + "qucshelp"), arguments);
+    QProcess *CanedaHelp = new QProcess(this);
+    CanedaHelp->start(QString(Caneda::binaryDir + "canedahelp"), arguments);
 
-    connect(QucsHelp, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
+    connect(CanedaHelp, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
 
-    // Kill before qucs ends
-    connect(this, SIGNAL(signalKillWidgets()), QucsHelp, SLOT(kill()));
+    // Kill before Caneda ends
+    connect(this, SIGNAL(signalKillWidgets()), CanedaHelp, SLOT(kill()));
 }
 
-void QucsMainWindow::slotHelpIndex()
+void CanedaMainWindow::slotHelpIndex()
 {
     setNormalAction();
     showHTML("index.html");
 }
 
-void QucsMainWindow::slotProccessError(QProcess::ProcessError error)
+void CanedaMainWindow::slotProccessError(QProcess::ProcessError error)
 {
     switch(error) {
         case QProcess::FailedToStart :
@@ -1784,20 +1784,20 @@ void QucsMainWindow::slotProccessError(QProcess::ProcessError error)
     }
 }
 
-void QucsMainWindow::slotHelpAbout()
+void CanedaMainWindow::slotHelpAbout()
 {
     setNormalAction();
-    AboutQUCS *about = new AboutQUCS();
+    AboutDialog *about = new AboutDialog();
     about->exec();
 }
 
-void QucsMainWindow::slotHelpAboutQt()
+void CanedaMainWindow::slotHelpAboutQt()
 {
     setNormalAction();
     QApplication::aboutQt();
 }
 
-void QucsMainWindow::loadSettings()
+void CanedaMainWindow::loadSettings()
 {
     QSettings qSettings;
 
@@ -1828,24 +1828,24 @@ void QucsMainWindow::loadSettings()
     }
 
     /* Load validators */
-    Qucs::validators * validator = Qucs::validators::defaultInstance();
+    Caneda::validators * validator = Caneda::validators::defaultInstance();
     if(validator->load(libpath)) {
         qDebug() << "Succesfully loaded validators!";
     }
     else {
         //invalidate entry.
-        qWarning() << "QucsMainWindow::loadSettings() : Could not load validators. "
+        qWarning() << "CanedaMainWindow::loadSettings() : Could not load validators. "
                    << "Expect crashing in case of incorrect xml file";
     }
 
     /* Load transformers */
-    Qucs::transformers * transformer = Qucs::transformers::defaultInstance();
+    Caneda::transformers * transformer = Caneda::transformers::defaultInstance();
     if(transformer->load(libpath)) {
         qDebug() << "Succesfully loaded transformers!";
     }
     else {
         //invalidate entry.
-        qWarning() << "QucsMainWindow::loadSettings() : Could not load XSLT transformers. "
+        qWarning() << "CanedaMainWindow::loadSettings() : Could not load XSLT transformers. "
                    << "Expect strange schematic symbols";
     }
 
@@ -1856,7 +1856,7 @@ void QucsMainWindow::loadSettings()
     }
     else {
         //invalidate entry.
-        qWarning() << "QucsMainWindow::loadSettings() : Entry is invalid. Run once more to set"
+        qWarning() << "CanedaMainWindow::loadSettings() : Entry is invalid. Run once more to set"
                    << "the appropriate path.";
         settings->setCurrentValue("sidebarLibrary",
                 settings->defaultValue("sidebarLibrary").toString());
@@ -1866,7 +1866,7 @@ void QucsMainWindow::loadSettings()
     m_componentsSidebar->plugLibrary("Passive", "Components");
 }
 
-void QucsMainWindow::saveSettings()
+void CanedaMainWindow::saveSettings()
 {
     QSettings qSettings;
 
@@ -1879,7 +1879,7 @@ void QucsMainWindow::saveSettings()
     settings->save(qSettings);
 }
 
-void QucsMainWindow::setTabTitle(const QString& title)
+void CanedaMainWindow::setTabTitle(const QString& title)
 {
     SchematicView *view = qobject_cast<SchematicView*>(sender());
     if(!view || title.isEmpty()) {
@@ -1891,24 +1891,24 @@ void QucsMainWindow::setTabTitle(const QString& title)
     }
 }
 
-QucsView* QucsMainWindow::viewFromWidget(QWidget *widget)
+CanedaView* CanedaMainWindow::viewFromWidget(QWidget *widget)
 {
     SchematicView *v = qobject_cast<SchematicView*>(widget);
     if(v) {
-        return static_cast<QucsView*>(v);
+        return static_cast<CanedaView*>(v);
     }
-    qDebug("QucsMainWindow::viewFromWidget() : Couldn't identify view type.");
+    qDebug("CanedaMainWindow::viewFromWidget() : Couldn't identify view type.");
     return 0;
 }
 
-void QucsMainWindow::setDocumentTitle(const QString& filename)
+void CanedaMainWindow::setDocumentTitle(const QString& filename)
 {
     setWindowTitle(titleText.arg(filename));
 }
 
-void QucsMainWindow::updateTitleTabText()
+void CanedaMainWindow::updateTitleTabText()
 {
-    QucsView *view = viewFromWidget(currentWidget());
+    CanedaView *view = viewFromWidget(currentWidget());
     if(view) {
         int index = tabWidget()->indexOf(currentWidget());
         tabWidget()->setTabText(index, view->tabText());
@@ -1921,7 +1921,7 @@ void QucsMainWindow::updateTitleTabText()
     }
 }
 
-void QucsMainWindow::slotUpdateAllViews()
+void CanedaMainWindow::slotUpdateAllViews()
 {
     for (int i = 0; i < tabWidget()->count(); ++i) {
         SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->widget(i));
@@ -1934,7 +1934,7 @@ void QucsMainWindow::slotUpdateAllViews()
     }
 }
 
-void QucsMainWindow::slotUpdateCursorPositionStatus(const QString& newPos)
+void CanedaMainWindow::slotUpdateCursorPositionStatus(const QString& newPos)
 {
     m_cursorLabel->setText(newPos);
 }

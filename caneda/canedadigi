@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# qucsdigi - wrapper script for digital simulation
+# canedadigi - wrapper script for digital simulation
 #
 # Copyright (C) 2005 Michael Margraf <michael.margraf@alumni.tu-berlin.de>
 # Copyright (C) 2005, 2006 Stefan Jahn <stefan@lkcc.org>
@@ -87,5 +87,5 @@ echo "simulating..."
 wait $!
 
 echo -n "running VCD conversion..."
-$BINDIR/qucsconv $OPTION -if vcd -of qucsdata -i $NAME.vcd -o $NAMEOUT
+$BINDIR/canedaconv $OPTION -if vcd -of canedadata -i $NAME.vcd -o $NAMEOUT
 echo " done."

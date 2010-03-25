@@ -28,7 +28,7 @@ class Port;
 class PortData;
 
 
-namespace Qucs
+namespace Caneda
 {
     //! Represents status of component - short, open or just active.
     enum ActiveStatus {
@@ -46,7 +46,7 @@ namespace Qucs
  */
 struct ComponentData : public QSharedData
 {
-    ComponentData(Qucs::ActiveStatus a = Qucs::Active) : activeStatus(a) {}
+    ComponentData(Caneda::ActiveStatus a = Caneda::Active) : activeStatus(a) {}
 
     //! \brief Component name
     QString name;
@@ -69,7 +69,7 @@ struct ComponentData : public QSharedData
     //! \brief Properties
     PropertyMap propertyMap;
     //! \brief Status of component
-    Qucs::ActiveStatus activeStatus;
+    Caneda::ActiveStatus activeStatus;
     //! \brief Map of component port (common port data)
     QMap<QString, QList<PortData*> > schematicPortMap;
 };
@@ -84,7 +84,7 @@ class Component : public SvgItem
 {
     Q_OBJECT
 public:
-    enum { Type = QucsItem::ComponentType };
+    enum { Type = CanedaItem::ComponentType };
 
     Component(SchematicScene *scene = 0);
     Component(const QSharedDataPointer<ComponentData>& other,
@@ -155,17 +155,17 @@ public:
     bool setSymbol(const QString& newSymbol);
 
     //! Returns the active status of the component.
-    Qucs::ActiveStatus activeStatus() const { return d->activeStatus; }
-    void setActiveStatus(Qucs::ActiveStatus status);
+    Caneda::ActiveStatus activeStatus() const { return d->activeStatus; }
+    void setActiveStatus(Caneda::ActiveStatus status);
     void toggleActiveStatus();
 
-    static Component* loadComponentData(Qucs::XmlReader *reader, SchematicScene *scene);
-    void loadData(Qucs::XmlReader *reader);
-    void saveData(Qucs::XmlWriter *writer) const;
+    static Component* loadComponentData(Caneda::XmlReader *reader, SchematicScene *scene);
+    void loadData(Caneda::XmlReader *reader);
+    void saveData(Caneda::XmlWriter *writer) const;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
 
-    int checkAndConnect(Qucs::UndoOption opt);
+    int checkAndConnect(Caneda::UndoOption opt);
 
     Component *copy(SchematicScene *scene = 0) const;
     void copyDataTo(Component *comp) const;
@@ -175,7 +175,7 @@ public:
     //! \reimp Reimplemented to return rtti info.
     bool isWire() const { return false; }
 
-    int launchPropertyDialog(Qucs::UndoOption opt);
+    int launchPropertyDialog(Caneda::UndoOption opt);
 
 protected:
     QRectF adjustedBoundRect(const QRectF& rect);
@@ -192,9 +192,9 @@ private:
     QList<Port*> m_ports;
 };
 
-namespace Qucs
+namespace Caneda
 {
-    bool readComponentData(Qucs::XmlReader *reader, const QString& path,
+    bool readComponentData(Caneda::XmlReader *reader, const QString& path,
                            SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d);
 }
 

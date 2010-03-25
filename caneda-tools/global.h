@@ -32,7 +32,7 @@
 #include <QtGui/QFont>
 #include <QtGui/QPixmap>
 
-namespace Qucs
+namespace Caneda
 {
    const QString baseDir(BASEDIR);
    const QString binaryDir(BINARYDIR);
@@ -43,7 +43,7 @@ namespace Qucs
    const QString version(PACKAGE_VERSION);
    const QString versionString(PACKAGE_STRING);
 
-   QString pathForQucsFile(const QString& fileName);
+   QString pathForCanedaFile(const QString& fileName);
 
    QString getenv();
 

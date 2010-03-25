@@ -229,8 +229,8 @@ QString* LC_Filter::createSchematic(tFilter *Filter)
   Bandwidth = fabs(Filter->Frequency2 - Filter->Frequency) / Omega;
   Omega *= 2.0*M_PI;   // angular frequency
 
-  // create the Qucs schematic
-  QString *s = new QString("<Qucs Schematic ");
+  // create the Caneda schematic
+  QString *s = new QString("<Caneda Schematic ");
   *s += PACKAGE_VERSION;
   *s += ">\n";
 

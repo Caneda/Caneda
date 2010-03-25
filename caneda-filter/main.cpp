@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-#include "qucsfilter.h"
+#include "canedafilter.h"
 
 #include <QtGui/QApplication>
 #include <QtCore/QString>
@@ -34,7 +34,7 @@
 #include <QtGui/QFont>
 #include <QtCore/QLocale>
 
-struct tQucsSettings QucsSettings;
+struct tCanedaSettings CanedaSettings;
 
 // #########################################################################
 // Loads the settings file and stores the settings.
@@ -42,7 +42,7 @@ bool loadSettings()
 {
   bool result = true;
 
-  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/filterrc"));
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.caneda/filterrc"));
   if(!file.open(QIODevice::ReadOnly))
     result = false; // settings file doesn't exist
   else {
@@ -53,17 +53,17 @@ bool loadSettings()
       Setting = Line.section('=',0,0);
       Line = Line.section('=',1,1);
       if(Setting == "FilterWindow") {
-	QucsSettings.x = Line.section(",",0,0).toInt();
-	QucsSettings.y = Line.section(",",1,1).toInt();
+        CanedaSettings.x = Line.section(",",0,0).toInt();
+        CanedaSettings.y = Line.section(",",1,1).toInt();
 	break;
       }
     }
     file.close();
   }
 
-  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.qucs/qucsrc"));
+  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.caneda/canedarc"));
   if(!file.open(QIODevice::ReadOnly))
-    result = true; // qucs settings not necessary
+    result = true; // Caneda settings not necessary
   else {
     QTextStream stream(&file);
     QString Line, Setting;
@@ -72,9 +72,9 @@ bool loadSettings()
       Setting = Line.section('=',0,0);
       Line = Line.section('=',1,1).simplified();
       if(Setting == "Font")
-	QucsSettings.font.fromString(Line);
+        CanedaSettings.font.fromString(Line);
       else if(Setting == "Language")
-	QucsSettings.Language = Line;
+        CanedaSettings.Language = Line;
     }
     file.close();
   }
@@ -83,14 +83,14 @@ bool loadSettings()
 
 // #########################################################################
 // Saves the settings in the settings file.
-bool saveApplSettings(QucsFilter *qucs)
+bool saveApplSettings(CanedaFilter *caneda)
 {
-  if(qucs->x() == QucsSettings.x)
-    if(qucs->y() == QucsSettings.y)
+  if(caneda->x() == CanedaSettings.x)
+    if(caneda->y() == CanedaSettings.y)
       return true;   // nothing has changed
 
 
-  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/filterrc"));
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.caneda/filterrc"));
   if(!file.open(QIODevice::WriteOnly)) {
     QMessageBox::warning(0, QObject::tr("Warning"),
 			QObject::tr("Cannot save settings !"));
@@ -100,8 +100,8 @@ bool saveApplSettings(QucsFilter *qucs)
   QString Line;
   QTextStream stream(&file);
 
-  stream << "Settings file, Qucs Filter " PACKAGE_VERSION "\n"
-	 << "FilterWindow=" << qucs->x() << ',' << qucs->y() << '\n';
+  stream << "Settings file, Caneda Filter " PACKAGE_VERSION "\n"
+         << "FilterWindow=" << caneda->x() << ',' << caneda->y() << '\n';
 
   file.close();
   return true;
@@ -117,40 +117,40 @@ bool saveApplSettings(QucsFilter *qucs)
 int main(int argc, char *argv[])
 {
   // apply default settings
-  QucsSettings.x = 200;
-  QucsSettings.y = 100;
-  QucsSettings.font = QFont("Helvetica", 12);
+  CanedaSettings.x = 200;
+  CanedaSettings.y = 100;
+  CanedaSettings.font = QFont("Helvetica", 12);
 
   // is application relocated?
-  char * var = getenv ("QUCSDIR");
+  char * var = getenv ("CANEDADIR");
   if (var != NULL) {
-    QDir QucsDir = QDir (var);
-    QString QucsDirStr = QucsDir.canonicalPath ();
-    QucsSettings.BitmapDir =
-      QDir::convertSeparators (QucsDirStr + "/share/qucs/bitmaps/");
-    QucsSettings.LangDir =
-      QDir::convertSeparators (QucsDirStr + "/share/qucs/lang/");
+    QDir CanedaDir = QDir (var);
+    QString CanedaDirStr = CanedaDir.canonicalPath ();
+    CanedaSettings.BitmapDir =
+      QDir::convertSeparators (CanedaDirStr + "/share/caneda/bitmaps/");
+    CanedaSettings.LangDir =
+      QDir::convertSeparators (CanedaDirStr + "/share/caneda/lang/");
   } else {
-    QucsSettings.BitmapDir = BITMAPDIR;
-    QucsSettings.LangDir = LANGUAGEDIR;
+    CanedaSettings.BitmapDir = BITMAPDIR;
+    CanedaSettings.LangDir = LANGUAGEDIR;
   }
 
   loadSettings();
 
   QApplication a(argc, argv);
-  a.setFont(QucsSettings.font);
+  a.setFont(CanedaSettings.font);
 
   QTranslator tor( 0 );
-  QString lang = QucsSettings.Language;
+  QString lang = CanedaSettings.Language;
   if(lang.isEmpty())
     lang = QLocale().name();
-  tor.load( QString("qucs_") + lang, QucsSettings.LangDir);
+  tor.load( QString("caneda_") + lang, CanedaSettings.LangDir);
   a.installTranslator( &tor );
 
-  QucsFilter *qucs = new QucsFilter();
-  qucs->move(QucsSettings.x, QucsSettings.y);  // position before "show" !!!
-  qucs->show();
+  CanedaFilter *caneda = new CanedaFilter();
+  caneda->move(CanedaSettings.x, CanedaSettings.y);  // position before "show" !!!
+  caneda->show();
   int result = a.exec();
-  saveApplSettings(qucs);
+  saveApplSettings(caneda);
   return result;
 }

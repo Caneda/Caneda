@@ -104,7 +104,7 @@ class StyleDialog : public QDialog, public Ui::StyleDialogBase
     Q_OBJECT;
 
 public:
-    StyleDialog(Painting *painting, Qucs::UndoOption opt, QWidget *parent = 0);
+    StyleDialog(Painting *painting, Caneda::UndoOption opt, QWidget *parent = 0);
 
 public Q_SLOTS:
     void setupStyleWidgets();
@@ -124,7 +124,7 @@ private:
     QPolygon headPolygon;
 
     Painting *painting;
-    Qucs::UndoOption undoOption;
+    Caneda::UndoOption undoOption;
 };
 
 #endif //STYLEDIALOG_H

@@ -34,8 +34,8 @@
 Ellipse::Ellipse(QRectF rect, SchematicScene *scene) : Painting(scene)
 {
     setEllipse(rect);
-    setResizeHandles(Qucs::TopLeftHandle | Qucs::BottomRightHandle |
-            Qucs::TopRightHandle| Qucs::BottomLeftHandle);
+    setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
+            Caneda::TopRightHandle| Caneda::BottomLeftHandle);
 }
 
 //! \brief Destructor.
@@ -94,7 +94,7 @@ Ellipse* Ellipse::copy(SchematicScene *scene) const
 }
 
 //! \brief Saves ellipse data as xml.
-void Ellipse::saveData(Qucs::XmlWriter *writer) const
+void Ellipse::saveData(Caneda::XmlWriter *writer) const
 {
     writer->writeStartElement("painting");
     writer->writeAttribute("name", "ellipse");
@@ -111,7 +111,7 @@ void Ellipse::saveData(Qucs::XmlWriter *writer) const
 }
 
 //! \brief Loads ellipse data from xml refered by \a reader.
-void Ellipse::loadData(Qucs::XmlReader *reader)
+void Ellipse::loadData(Caneda::XmlReader *reader)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
     Q_ASSERT(reader->attributes().value("name") == "ellipse");
@@ -153,7 +153,7 @@ void Ellipse::loadData(Qucs::XmlReader *reader)
     }
 }
 
-int Ellipse::launchPropertyDialog(Qucs::UndoOption opt)
+int Ellipse::launchPropertyDialog(Caneda::UndoOption opt)
 {
     StyleDialog dia(this, opt);
     return dia.exec();

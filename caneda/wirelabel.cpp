@@ -200,7 +200,7 @@ void WireLabel::setName(const QString& Name_)
 {
     Name = Name_;
 
-    QFontMetrics  metrics(QucsSettings.font);    // get size of text
+    QFontMetrics  metrics(CanedaSettings.font);    // get size of text
     QSize r = metrics.size(0, Name);
     x2 = r.width();
     y2 = r.height()-2;    // remember size of text

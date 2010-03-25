@@ -193,5 +193,5 @@ void PropertiesGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void PropertiesGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
 {
-    component()->launchPropertyDialog(Qucs::PushUndoCmd);
+    component()->launchPropertyDialog(Caneda::PushUndoCmd);
 }

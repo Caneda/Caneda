@@ -23,7 +23,7 @@
 #include "fileformathandler.h"
 #include "schematicscene.h"
 
-namespace Qucs {
+namespace Caneda {
     class XmlReader;
     class XmlWriter;
 }
@@ -40,21 +40,21 @@ public:
 private:
     QString saveText();
     QString saveSymbolText();
-    void saveSchematics(Qucs::XmlWriter *writer);
-    void saveView(Qucs::XmlWriter *writer);
-    void saveComponents(Qucs::XmlWriter *writer);
-    void saveWires(Qucs::XmlWriter *writer);
-    void savePaintings(Qucs::XmlWriter *writer);
+    void saveSchematics(Caneda::XmlWriter *writer);
+    void saveView(Caneda::XmlWriter *writer);
+    void saveComponents(Caneda::XmlWriter *writer);
+    void saveWires(Caneda::XmlWriter *writer);
+    void savePaintings(Caneda::XmlWriter *writer);
 
-    void copyQucsElement(const QString& qualifiedName , Qucs::XmlWriter *writer);
+    void copyCanedaElement(const QString& qualifiedName , Caneda::XmlWriter *writer);
 
     bool loadFromText(const QString& text);
     bool loadSymbolFromText(const QString& text);
-    void loadSchematics(Qucs::XmlReader *reader);
-    void loadView(Qucs::XmlReader *reader);
-    void loadComponents(Qucs::XmlReader *reader);
-    void loadWires(Qucs::XmlReader *reader);
-    void loadPaintings(Qucs::XmlReader *reader);
+    void loadSchematics(Caneda::XmlReader *reader);
+    void loadView(Caneda::XmlReader *reader);
+    void loadComponents(Caneda::XmlReader *reader);
+    void loadWires(Caneda::XmlReader *reader);
+    void loadPaintings(Caneda::XmlReader *reader);
 };
 
 #endif //XMLFORMAT_H

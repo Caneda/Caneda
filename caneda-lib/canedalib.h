@@ -1,5 +1,5 @@
 /***************************************************************************
-                               qucslib.h
+                               canedalib.h
                               -----------
     begin                : Sat May 28 2005
     copyright            : (C) 2005 by Michael Margraf
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef QUCSLIB_H
-#define QUCSLIB_H
+#ifndef CANEDALIB_H
+#define CANEDALIB_H
 
 #include <QtGui/QDialog>
 #include <QtCore/QDir>
@@ -35,7 +35,7 @@ class QListViewItem;
 
 
 // Application settings.
-struct tQucsSettings {
+struct tCanedaSettings {
   int x, y, dx, dy;    // position and size of main window
   QFont font;          // font
   QString BitmapDir;   // pixmap directory
@@ -44,14 +44,14 @@ struct tQucsSettings {
   QString Language;
 };
 
-extern tQucsSettings QucsSettings;
+extern tCanedaSettings CanedaSettings;
 extern QDir UserLibDir;
 
-class QucsLib : public QDialog  {
+class CanedaLib : public QDialog  {
    Q_OBJECT
 public:
-  QucsLib();
- ~QucsLib();
+  CanedaLib();
+ ~CanedaLib();
 
   QListWidget     *CompList;
   QStringList   LibraryComps;
@@ -78,7 +78,7 @@ private:
   QVBoxLayout  *all;
   QString       DefaultSymbol;
 
-  QDir QucsHomeDir;  // Qucs user directory where all projects are located
+  QDir CanedaHomeDir;  // Caneda user directory where all projects are located
 };
 
-#endif /* QUCSLIB_H */
+#endif /* CANEDALIB_H */

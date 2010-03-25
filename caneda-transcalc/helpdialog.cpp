@@ -29,10 +29,10 @@
 HelpDialog::HelpDialog(QWidget *parent)
                      : QDialog(parent)
 {
-  setWindowTitle("QucsTranscalc "+tr("Help"));
+  setWindowTitle("CanedaTranscalc "+tr("Help"));
 
   // --------  set help text into dialog  ------------
-  QString s(tr("QucsTranscalc is an analysis and synthesis tool for "
+  QString s(tr("CanedaTranscalc is an analysis and synthesis tool for "
        "calculating the electrical and physical properties of "
        "different kinds of RF and microwave transmission lines.")+
        "\n\n"+

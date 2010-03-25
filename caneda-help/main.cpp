@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-#include "qucshelp.h"
+#include "canedahelp.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
@@ -37,8 +37,8 @@
 
 
 
-QDir QucsHelpDir; // directory to find helps files
-tQucsSettings QucsSettings; // application settings
+QDir CanedaHelpDir; // directory to find helps files
+tCanedaSettings CanedaSettings; // application settings
 
 // #########################################################################
 // Loads the settings file and stores the settings.
@@ -46,7 +46,7 @@ bool loadSettings()
 {
   bool result = true;
 
-  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/helprc"));
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.caneda/helprc"));
   if(!file.open(QIODevice::ReadOnly))
     result = false; // settings file doesn't exist
   else {
@@ -57,18 +57,18 @@ bool loadSettings()
       Setting = Line.section('=',0,0);
       Line = Line.section('=',1,1);
       if(Setting == "HelpWindow") {
-	QucsSettings.x  = Line.section(",",0,0).toInt();
-	QucsSettings.y  = Line.section(",",1,1).toInt();
-	QucsSettings.dx = Line.section(",",2,2).toInt();
-	QucsSettings.dy = Line.section(",",3,3).toInt();
+        CanedaSettings.x  = Line.section(",",0,0).toInt();
+        CanedaSettings.y  = Line.section(",",1,1).toInt();
+        CanedaSettings.dx = Line.section(",",2,2).toInt();
+        CanedaSettings.dy = Line.section(",",3,3).toInt();
 	break; }
     }
     file.close();
   }
 
-  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.qucs/qucsrc"));
+  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.caneda/canedarc"));
   if(!file.open(QIODevice::ReadOnly))
-    result = true; // qucs settings not necessary
+    result = true; // Caneda settings not necessary
   else {
     QTextStream stream(&file);
     QString Line, Setting;
@@ -77,9 +77,9 @@ bool loadSettings()
       Setting = Line.section('=',0,0);
       Line = Line.section('=',1,1).trimmed();
       if(Setting == "Font")
-	QucsSettings.font.fromString(Line);
+        CanedaSettings.font.fromString(Line);
       else if(Setting == "Language")
-	QucsSettings.Language = Line;
+        CanedaSettings.Language = Line;
     }
     file.close();
   }
@@ -88,14 +88,14 @@ bool loadSettings()
 
 // #########################################################################
 // Saves the settings in the settings file.
-bool saveApplSettings(QucsHelp *qucs)
+bool saveApplSettings(CanedaHelp *caneda)
 {
-  if(qucs->x() == QucsSettings.x && qucs->y() == QucsSettings.y && 
-     qucs->width() == QucsSettings.dx && qucs->height() == QucsSettings.dy)
+  if(caneda->x() == CanedaSettings.x && caneda->y() == CanedaSettings.y &&
+     caneda->width() == CanedaSettings.dx && caneda->height() == CanedaSettings.dy)
     return true;   // nothing has changed
 
 
-  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/helprc"));
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.caneda/helprc"));
   if(!file.open(QIODevice::WriteOnly)) {
     QMessageBox::warning(0, QObject::tr("Warning"),
 			QObject::tr("Cannot save settings !"));
@@ -105,9 +105,9 @@ bool saveApplSettings(QucsHelp *qucs)
   QString Line;
   QTextStream stream(&file);
 
-  stream << "Settings file, Qucs Help System " PACKAGE_VERSION "\n"
-	 << "HelpWindow=" << qucs->x() << ',' << qucs->y() << ','
-	 << qucs->width() << ',' << qucs->height() << '\n';
+  stream << "Settings file, Caneda Help System " PACKAGE_VERSION "\n"
+         << "HelpWindow=" << caneda->x() << ',' << caneda->y() << ','
+         << caneda->width() << ',' << caneda->height() << '\n';
 
   file.close();
   return true;
@@ -123,61 +123,61 @@ bool saveApplSettings(QucsHelp *qucs)
 int main(int argc, char *argv[])
 {
   // apply default settings
-  QucsSettings.x = 60;
-  QucsSettings.y = 30;
-  QucsSettings.dx = 640;
-  QucsSettings.dy = 400;
-  QucsSettings.font = QFont("Helvetica", 12);
+  CanedaSettings.x = 60;
+  CanedaSettings.y = 30;
+  CanedaSettings.dx = 640;
+  CanedaSettings.dy = 400;
+  CanedaSettings.font = QFont("Helvetica", 12);
 
   // is application relocated?
-  char * var = getenv ("QUCSDIR");
+  char * var = getenv ("CANEDADIR");
   if (var != NULL) {
-    QDir QucsDir = QDir (var);
-    QString QucsDirStr = QucsDir.canonicalPath ();
-    QucsSettings.DocDir =
-      QDir::convertSeparators (QucsDirStr + "/share/qucs/docs/");
-    QucsSettings.BitmapDir =
-      QDir::convertSeparators (QucsDirStr + "/share/qucs/bitmaps/");
-    QucsSettings.LangDir =
-      QDir::convertSeparators (QucsDirStr + "/share/qucs/lang/");
+    QDir CanedaDir = QDir (var);
+    QString CanedaDirStr = CanedaDir.canonicalPath ();
+    CanedaSettings.DocDir =
+      QDir::convertSeparators (CanedaDirStr + "/share/caneda/docs/");
+    CanedaSettings.BitmapDir =
+      QDir::convertSeparators (CanedaDirStr + "/share/caneda/bitmaps/");
+    CanedaSettings.LangDir =
+      QDir::convertSeparators (CanedaDirStr + "/share/caneda/lang/");
   } else {
-    QucsSettings.DocDir = DOCDIR;
-    QucsSettings.BitmapDir = BITMAPDIR;
-    QucsSettings.LangDir = LANGUAGEDIR;
+    CanedaSettings.DocDir = DOCDIR;
+    CanedaSettings.BitmapDir = BITMAPDIR;
+    CanedaSettings.LangDir = LANGUAGEDIR;
   }
 
   loadSettings();
 
   QApplication a(argc, argv);
-  a.setFont(QucsSettings.font);
+  a.setFont(CanedaSettings.font);
 
   QTranslator tor( 0 );
-  QString locale = QucsSettings.Language;
+  QString locale = CanedaSettings.Language;
   if(locale.isEmpty())
     locale = QLocale().name();
-  tor.load( QString("qucs_") + locale, QucsSettings.LangDir);
+  tor.load( QString("caneda_") + locale, CanedaSettings.LangDir);
   a.installTranslator( &tor );
 
-  QucsHelpDir = QucsSettings.DocDir + locale;
-  if (!QucsHelpDir.exists () || !QucsHelpDir.isReadable ()) {
+  CanedaHelpDir = CanedaSettings.DocDir + locale;
+  if (!CanedaHelpDir.exists () || !CanedaHelpDir.isReadable ()) {
     int p = locale.indexOf(QChar('_'));
     if (p != -1) {
-      QucsHelpDir = QucsSettings.DocDir + locale.left (p);
-      if (!QucsHelpDir.exists () || !QucsHelpDir.isReadable ()) {
-	QucsHelpDir = QucsSettings.DocDir + "en";
+      CanedaHelpDir = CanedaSettings.DocDir + locale.left (p);
+      if (!CanedaHelpDir.exists () || !CanedaHelpDir.isReadable ()) {
+        CanedaHelpDir = CanedaSettings.DocDir + "en";
       }
     }
-    else QucsHelpDir = QucsSettings.DocDir + "en";
+    else CanedaHelpDir = CanedaSettings.DocDir + "en";
   }
 
   QString Page;
   if(argc > 1) Page = argv[1];
 
-  QucsHelp *qucs = new QucsHelp(Page);
-  qucs->resize(QucsSettings.dx, QucsSettings.dy); // size and position ...
-  qucs->move(QucsSettings.x, QucsSettings.y);     // ... before "show" !!!
-  qucs->show();
+  CanedaHelp *caneda = new CanedaHelp(Page);
+  caneda->resize(CanedaSettings.dx, CanedaSettings.dy); // size and position ...
+  caneda->move(CanedaSettings.x, CanedaSettings.y);     // ... before "show" !!!
+  caneda->show();
   int result = a.exec();
-  saveApplSettings(qucs);
+  saveApplSettings(caneda);
   return result;
 }

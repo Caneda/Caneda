@@ -1,5 +1,5 @@
 /***************************************************************************
-                               qucsfilter.cpp
+                               canedafilter.cpp
                               ----------------
     begin                : Wed Mar 02 2005
     copyright            : (C) 2005 by Michael Margraf
@@ -43,15 +43,15 @@
 #include "qf_poly.h"
 #include "qf_filter.h"
 #include "qf_cauer.h"
-#include "qucsfilter.h"
+#include "canedafilter.h"
 #include "helpdialog.h"
 //There are some bugs with QFontMetrics::width() which causes some display errors
 // So I have used some magic numbers to set minimum width.
-QucsFilter::QucsFilter()
+CanedaFilter::CanedaFilter()
 {
   // set application icon
-  setWindowIcon (QPixmap(QucsSettings.BitmapDir + "big.qucs.xpm"));
-  setWindowTitle("Qucs Filter " PACKAGE_VERSION);
+  setWindowIcon (QPixmap(CanedaSettings.BitmapDir + "big.caneda.xpm"));
+  setWindowTitle("Caneda Filter " PACKAGE_VERSION);
 
 
   // --------  create menubar  -------------------
@@ -65,7 +65,7 @@ QucsFilter::QucsFilter()
 
   helpMenu->addAction(tr("Help..."), this, SLOT(slotHelpIntro()), Qt::Key_F1);
   helpMenu->addSeparator();
-  helpMenu->addAction(tr("&About QucsFilter..."), this, SLOT(slotHelpAbout()), 0);
+  helpMenu->addAction(tr("&About CanedaFilter..."), this, SLOT(slotHelpAbout()), 0);
   helpMenu->addAction(tr("About Qt..."), this, SLOT(slotHelpAboutQt()), 0);
 
 
@@ -189,15 +189,15 @@ QucsFilter::QucsFilter()
   slotClassChanged(0);
 }
 
-QucsFilter::~QucsFilter()
+CanedaFilter::~CanedaFilter()
 {
 }
 
 // ************************************************************
-void QucsFilter::slotHelpAbout()
+void CanedaFilter::slotHelpAbout()
 {
   QMessageBox::about(this, tr("About..."),
-    "QucsFilter Version " PACKAGE_VERSION+
+    "CanedaFilter Version " PACKAGE_VERSION+
     tr("\nFilter synthesis program\n")+
     tr("Copyright (C) 2005, 2006 by")+
     "\nVincent Habchi, Toyoyuki Ishikawa,\n"
@@ -208,20 +208,20 @@ void QucsFilter::slotHelpAbout()
 }
 
 // ************************************************************
-void QucsFilter::slotHelpAboutQt()
+void CanedaFilter::slotHelpAboutQt()
 {
   QMessageBox::aboutQt(this, tr("About Qt"));
 }
 
 // ************************************************************
-void QucsFilter::slotHelpIntro()
+void CanedaFilter::slotHelpIntro()
 {
   HelpDialog *d = new HelpDialog(this);
   d->show();
 }
 
 // ************************************************************
-void QucsFilter::setError(const QString& Message)
+void CanedaFilter::setError(const QString& Message)
 {
   LabelResult->setText(tr("Result:") + "<font color=\"#FF0000\"><b>  " +
                        tr("Error") + "</b></font>");
@@ -229,7 +229,7 @@ void QucsFilter::setError(const QString& Message)
 }
 
 // ************************************************************
-QString * QucsFilter::calculateFilter(struct tFilter * Filter)
+QString * CanedaFilter::calculateFilter(struct tFilter * Filter)
 {
   QString * s = NULL;
 
@@ -260,7 +260,7 @@ QString * QucsFilter::calculateFilter(struct tFilter * Filter)
     if (F) {
       //F->dump();
       EditOrder->setText(QString::number(F->order()));
-      s = new QString(F->to_qucs().c_str());
+      s = new QString(F->to_caneda().c_str());
       delete F;
     }
     else {
@@ -274,7 +274,7 @@ QString * QucsFilter::calculateFilter(struct tFilter * Filter)
 }
 
 // ************************************************************
-void QucsFilter::slotCalculate()
+void CanedaFilter::slotCalculate()
 {
   // get numerical values from input widgets
   double CornerFreq   = EditCorner->text().toDouble();
@@ -330,7 +330,7 @@ void QucsFilter::slotCalculate()
 }
 
 // ************************************************************
-void QucsFilter::slotShowResult()
+void CanedaFilter::slotShowResult()
 {
   if(ResultState > 5) {
     LabelResult->setText(tr("Result: --"));
@@ -351,7 +351,7 @@ void QucsFilter::slotShowResult()
 }
 
 // ************************************************************
-void QucsFilter::slotTypeChanged(int index)
+void CanedaFilter::slotTypeChanged(int index)
 {
   switch(index) {
     case TYPE_BESSEL:
@@ -390,7 +390,7 @@ void QucsFilter::slotTypeChanged(int index)
 }
 
 // ************************************************************
-void QucsFilter::slotClassChanged(int index)
+void CanedaFilter::slotClassChanged(int index)
 {
   switch(index) {
     case CLASS_LOWPASS:

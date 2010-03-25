@@ -66,8 +66,8 @@ public:
     int type() const { return PortSymbol::Type; }
     PortSymbol* copy(SchematicScene *scene = 0) const;
 
-    void saveData(Qucs::XmlWriter *writer) const;
-    void loadData(Qucs::XmlReader *reader);
+    void saveData(Caneda::XmlWriter *writer) const;
+    void loadData(Caneda::XmlReader *reader);
 
 private:
     bool m_mirrored;

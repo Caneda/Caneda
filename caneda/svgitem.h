@@ -105,13 +105,13 @@ private:
  *
  * \sa SvgPainter, SvgItem::registerConnections()
  */
-class SvgItem : public QObject, public QucsItem
+class SvgItem : public QObject, public CanedaItem
 {
     Q_OBJECT;
 public:
-    //! Item identifier. \sa QucsItemTypes
+    //! Item identifier. \sa CanedaItemTypes
     enum {
-        Type = QucsItem::SvgItemType
+        Type = CanedaItem::SvgItemType
     };
 
     explicit SvgItem(SvgPainter *_svgPainter = 0, SchematicScene *scene = 0);

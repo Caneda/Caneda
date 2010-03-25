@@ -47,7 +47,7 @@ bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
 
 
 //! \brief Construct portowner with wire as owner.
-PortOwner::PortOwner(QucsItem * item) : m_item(item)
+PortOwner::PortOwner(CanedaItem * item) : m_item(item)
 {
     Q_ASSERT(isWire() || isComponent());
 }
@@ -67,7 +67,7 @@ QGraphicsItem* PortOwner::item() const
 //! \brief Return the wire if stored, or null otherwise.
 Wire* PortOwner::wire() const
 {
-    if(m_item->type() == QucsItem::WireType) {
+    if(m_item->type() == CanedaItem::WireType) {
         return static_cast<Wire*>(m_item);
     }
     else {
@@ -78,7 +78,7 @@ Wire* PortOwner::wire() const
 //! \brief Return the wire if stored, or null otherwise.
 Component* PortOwner::component() const
 {
-    if(m_item->type() == QucsItem::ComponentType) {
+    if(m_item->type() == CanedaItem::ComponentType) {
         return static_cast<Component*>(m_item);
     }
     else {
@@ -93,9 +93,9 @@ Component* PortOwner::component() const
  ***************************************************************************/
 
 /*! Constructor
- *  \brief Construct port with qucsitem as owner and shared data \data.
+ *  \brief Construct port with canedaitem as owner and shared data \data.
  */
-Port::Port(QucsItem *owner, const QSharedDataPointer<PortData> &data) :
+Port::Port(CanedaItem *owner, const QSharedDataPointer<PortData> &data) :
     d(data),
     m_owner(new PortOwner(owner)),
     m_connections(0),
@@ -104,9 +104,9 @@ Port::Port(QucsItem *owner, const QSharedDataPointer<PortData> &data) :
 }
 
 /*! Constructor
-    \brief Construct port with qucsitem as owner, position \pos and port's name \portName.
+    \brief Construct port with canedaitem as owner, position \pos and port's name \portName.
   */
-Port::Port(QucsItem *owner, QPointF _pos, QString portName) :
+Port::Port(CanedaItem *owner, QPointF _pos, QString portName) :
     d(new PortData(_pos, portName)),
     m_owner(new PortOwner(owner)),
     m_connections(0),
@@ -404,11 +404,11 @@ Port* Port::findIntersectingPort() const
         ownerItem()->collidingItems(Qt::IntersectsItemBoundingRect);
     QList<Port*> ports;
     foreach(QGraphicsItem *item, collisions) {
-        if(qucsitem_cast<Component*>(item)) {
-            ports = qucsitem_cast<Component*>(item)->ports();
+        if(canedaitem_cast<Component*>(item)) {
+            ports = canedaitem_cast<Component*>(item)->ports();
         }
-        else if(qucsitem_cast<Wire*>(item)) {
-            ports = qucsitem_cast<Wire*>(item)->ports();
+        else if(canedaitem_cast<Wire*>(item)) {
+            ports = canedaitem_cast<Wire*>(item)->ports();
         }
         else {
             continue;
@@ -446,11 +446,11 @@ Port* Port::findCoincidingPort() const
         ownerItem()->collidingItems(Qt::IntersectsItemBoundingRect);
     QList<Port*> ports;
     foreach(QGraphicsItem *item, collisions) {
-        if(qucsitem_cast<Component*>(item)) {
-            ports = qucsitem_cast<Component*>(item)->ports();
+        if(canedaitem_cast<Component*>(item)) {
+            ports = canedaitem_cast<Component*>(item)->ports();
         }
-        else if(qucsitem_cast<Wire*>(item)) {
-            ports = qucsitem_cast<Wire*>(item)->ports();
+        else if(canedaitem_cast<Wire*>(item)) {
+            ports = canedaitem_cast<Wire*>(item)->ports();
         }
         else {
             continue;

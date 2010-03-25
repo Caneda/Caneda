@@ -19,10 +19,10 @@
 
 #include "settingspages.h"
 
-#include "qucsmainwindow.h"
+#include "canedamainwindow.h"
 #include "settings.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QApplication>
 #include <QColorDialog>
@@ -98,7 +98,7 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
     Settings *settings = Settings::instance();
     //First we set the appereance settings group of options *******************
     buttonFont = new QPushButton;
-    font = Qucs::font();
+    font = Caneda::font();
     buttonFont->setText(font.toString());
 
     buttonBackground = new QPushButton;
@@ -142,7 +142,7 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
     comboLanguage->addItem(tr("Czech")+" (cs)");
     comboLanguage->addItem(tr("Catalan")+" (ca)");
     for(int z=comboLanguage->count()-1; z>=0; z--) {
-        if(comboLanguage->itemText(z).section('(',1,1).remove(')') == Qucs::language()) {
+        if(comboLanguage->itemText(z).section('(',1,1).remove(')') == Caneda::language()) {
             comboLanguage->setCurrentIndex(z);
         }
     }
@@ -234,7 +234,7 @@ void GeneralConfigurationPage::applyConf()
     const QSize newIconSize(spinIcons->value(), spinIcons->value());
     if (currentIconSize != newIconSize) {
         settings->setCurrentValue("gui/iconSize", newIconSize);
-        QucsMainWindow::instance()->setIconSize(newIconSize);
+        CanedaMainWindow::instance()->setIconSize(newIconSize);
     }
 
     const QString currentLanguage = settings->currentValue("gui/language").toString();
@@ -269,14 +269,14 @@ void GeneralConfigurationPage::applyConf()
     settings->save(qSettings);
 
     if(changed) {
-        QucsMainWindow::instance()->repaint();
-        QucsMainWindow::instance()->slotUpdateAllViews();
+        CanedaMainWindow::instance()->repaint();
+        CanedaMainWindow::instance()->slotUpdateAllViews();
     }
 }
 
 //! @return Icon of this page
 QIcon GeneralConfigurationPage::icon() const {
-    return(QIcon(Qucs::bitmapDirectory() + "configure.png"));
+    return(QIcon(Caneda::bitmapDirectory() + "configure.png"));
 }
 
 //! @return Title of this page
@@ -367,7 +367,7 @@ void SimulationConfigurationPage::applyConf()
 //! @return Icon of this page
 QIcon SimulationConfigurationPage::icon() const
 {
-    return(QIcon(Qucs::bitmapDirectory() + "start.png"));
+    return(QIcon(Caneda::bitmapDirectory() + "start.png"));
 }
 
 //! @return Title of this page
@@ -582,15 +582,15 @@ void DocumentConfigurationPage::applyConf()
     }
 
     if(changed) {
-        QucsMainWindow::instance()->repaint();
-        QucsMainWindow::instance()->slotUpdateAllViews();
+        CanedaMainWindow::instance()->repaint();
+        CanedaMainWindow::instance()->slotUpdateAllViews();
     }
 }
 
 //! @return Icon of this page
 QIcon DocumentConfigurationPage::icon() const
 {
-    return(QIcon(Qucs::bitmapDirectory() + "document-edit.png"));
+    return(QIcon(Caneda::bitmapDirectory() + "document-edit.png"));
 }
 
 //! @return Title of this page
@@ -763,15 +763,15 @@ void VhdlConfigurationPage::applyConf() {
     QSettings qSettings;
     settings->save(qSettings);
     if(changed) {
-        QucsMainWindow::instance()->repaint();
-        QucsMainWindow::instance()->slotUpdateAllViews();
+        CanedaMainWindow::instance()->repaint();
+        CanedaMainWindow::instance()->slotUpdateAllViews();
     }
 }
 
 //! @return Icon of this page
 QIcon VhdlConfigurationPage::icon() const
 {
-    return(QIcon(Qucs::bitmapDirectory() + "vhdl-code.png"));
+    return(QIcon(Caneda::bitmapDirectory() + "vhdl-code.png"));
 }
 
 //! @return Title of this page

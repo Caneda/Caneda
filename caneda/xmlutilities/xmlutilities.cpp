@@ -19,7 +19,7 @@
 
 #include "xmlutilities.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QBrush>
 #include <QDebug>
@@ -31,7 +31,7 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
-namespace Qucs
+namespace Caneda
 {
     //! Just skips through unknown tag by reading and discarding tokens parsed.
     void XmlReader::readUnknownElement()
@@ -66,7 +66,7 @@ namespace Qucs
 
         QString retVal;
         int depth = 1;
-        Qucs::XmlWriter writer(&retVal);
+        Caneda::XmlWriter writer(&retVal);
 
         writer.setCodec("UTF-8");
 
@@ -428,12 +428,12 @@ namespace Qucs
 
     void XmlWriter::writeElement(const QString& tag, qreal value)
     {
-        writeTextElement(tag, Qucs::realToString(value));
+        writeTextElement(tag, Caneda::realToString(value));
     }
 
     void XmlWriter::writeElement(const QString& tag, bool value)
     {
-        writeTextElement(tag, Qucs::boolToString(value));
+        writeTextElement(tag, Caneda::boolToString(value));
     }
 
     void XmlWriter::writeRect(const QRectF& rect, QString tag)

@@ -29,7 +29,7 @@
 
 #include "paintings/painting.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -67,7 +67,7 @@ void getConnectedWires(Wire *wire, QList<Wire*> &out)
     }
 }
 
-void writeEquiWires(Qucs::XmlWriter *writer, int id, int wireStartId,
+void writeEquiWires(Caneda::XmlWriter *writer, int id, int wireStartId,
         const QList<Wire*> &wires)
 {
     writer->writeStartElement("equipotential");
@@ -93,10 +93,10 @@ bool XmlFormat::save()
     }
 
     QString text;
-    if(scene->currentMode() == Qucs::SchematicMode) {
+    if(scene->currentMode() == Caneda::SchematicMode) {
         text = saveText();
     }
-    else if(scene->currentMode() == Qucs::SymbolMode) {
+    else if(scene->currentMode() == Caneda::SymbolMode) {
         text = saveSymbolText();
     }
 
@@ -134,10 +134,10 @@ bool XmlFormat::load()
     QTextStream stream(&file);
 
     bool result = false;
-    if(scene->currentMode() == Qucs::SchematicMode) {
+    if(scene->currentMode() == Caneda::SchematicMode) {
         result = loadFromText(stream.readAll());
     }
-    else if(scene->currentMode() == Qucs::SymbolMode) {
+    else if(scene->currentMode() == Caneda::SymbolMode) {
         result = loadSymbolFromText(stream.readAll());
     }
 
@@ -148,23 +148,23 @@ bool XmlFormat::load()
 QString XmlFormat::saveText()
 {
     QString retVal;
-    Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
+    Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
     writer->setAutoFormatting(true);
 
     //Fist we start the document and write current version
     writer->writeStartDocument();
-    writer->writeDTD(QString("<!DOCTYPE qucs>"));
-    writer->writeStartElement("qucs");
-    writer->writeAttribute("version", Qucs::version);
+    writer->writeDTD(QString("<!DOCTYPE caneda>"));
+    writer->writeStartElement("caneda");
+    writer->writeAttribute("version", Caneda::version);
 
     //Now we copy all the elements and properties in the schematic
     saveSchematics(writer);
 
     //Now we copy the previously defined symbol if created
-    copyQucsElement("symbol", writer);
+    copyCanedaElement("symbol", writer);
 
     //Finally we finish the document
-    writer->writeEndDocument(); //</qucs>
+    writer->writeEndDocument(); //</caneda>
 
     delete writer;
     return retVal;
@@ -174,14 +174,14 @@ QString XmlFormat::saveSymbolText()
 {
     SchematicScene *scene = schematicScene();
     QString retVal;
-    Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
+    Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
     writer->setAutoFormatting(true);
 
     //Fist we start the document and write current version
     writer->writeStartDocument();
-    writer->writeDTD(QString("<!DOCTYPE qucs>"));
-    writer->writeStartElement("qucs");
-    writer->writeAttribute("version", Qucs::version);
+    writer->writeDTD(QString("<!DOCTYPE caneda>"));
+    writer->writeStartElement("caneda");
+    writer->writeAttribute("version", Caneda::version);
 
     //Now we copy all the elements and properties previously defined in the schematic
     QFile file(scene->fileName());
@@ -195,7 +195,7 @@ QString XmlFormat::saveSymbolText()
     QXmlStreamReader *reader = new QXmlStreamReader(text.toUtf8());
     while(!reader->atEnd()) {
         reader->readNext();
-        if(reader->isStartElement() && reader->name() != "qucs"
+        if(reader->isStartElement() && reader->name() != "caneda"
                 && reader->name() != "symbol") {
 
             QString qualifiedName = reader->name().toString();
@@ -223,14 +223,14 @@ QString XmlFormat::saveSymbolText()
     writer->writeEndElement(); //</symbol>
 
     //Finally we finish the document
-    writer->writeEndDocument(); //</qucs>
+    writer->writeEndDocument(); //</caneda>
 
     delete reader;
     delete writer;
     return retVal;
 }
 
-void XmlFormat::saveSchematics(Qucs::XmlWriter *writer)
+void XmlFormat::saveSchematics(Caneda::XmlWriter *writer)
 {
     saveView(writer);
     saveComponents(writer);
@@ -238,7 +238,7 @@ void XmlFormat::saveSchematics(Qucs::XmlWriter *writer)
     savePaintings(writer);
 }
 
-void XmlFormat::saveView(Qucs::XmlWriter *writer)
+void XmlFormat::saveView(Caneda::XmlWriter *writer)
 {
     SchematicScene *scene = schematicScene();
     writer->writeStartElement("view");
@@ -248,7 +248,7 @@ void XmlFormat::saveView(Qucs::XmlWriter *writer)
     writer->writeEndElement(); //</scenerect>
 
     writer->writeStartElement("grid");
-    writer->writeAttribute("visible", Qucs::boolToString(scene->isGridVisible()));
+    writer->writeAttribute("visible", Caneda::boolToString(scene->isGridVisible()));
     writer->writeSize(QSize(scene->gridWidth(), scene->gridHeight()));
     writer->writeEndElement(); //</grid>
 
@@ -259,7 +259,7 @@ void XmlFormat::saveView(Qucs::XmlWriter *writer)
     writer->writeEndElement(); //</data>
 
     writer->writeStartElement("frame");
-    writer->writeAttribute("visible", Qucs::boolToString(scene->isFrameVisible()));
+    writer->writeAttribute("visible", Caneda::boolToString(scene->isFrameVisible()));
     writer->writeSize(QSize(scene->frameColumns(), scene->frameRows()));
     writer->writeStartElement("frametexts");
     foreach(QString text, scene->frameTexts()) {
@@ -270,7 +270,7 @@ void XmlFormat::saveView(Qucs::XmlWriter *writer)
     writer->writeEndElement(); //</view>
 }
 
-void XmlFormat::saveComponents(Qucs::XmlWriter *writer)
+void XmlFormat::saveComponents(Caneda::XmlWriter *writer)
 {
     SchematicScene *scene = schematicScene();
     QList<QGraphicsItem*> items = scene->items();
@@ -284,7 +284,7 @@ void XmlFormat::saveComponents(Qucs::XmlWriter *writer)
     }
 }
 
-void XmlFormat::saveWires(Qucs::XmlWriter *writer)
+void XmlFormat::saveWires(Caneda::XmlWriter *writer)
 {
     SchematicScene *scene = schematicScene();
     QList<QGraphicsItem*> items = scene->items();
@@ -312,7 +312,7 @@ void XmlFormat::saveWires(Qucs::XmlWriter *writer)
     }
 }
 
-void XmlFormat::savePaintings(Qucs::XmlWriter *writer)
+void XmlFormat::savePaintings(Caneda::XmlWriter *writer)
 {
     SchematicScene *scene = schematicScene();
     QList<QGraphicsItem*> items = scene->items();
@@ -327,7 +327,7 @@ void XmlFormat::savePaintings(Qucs::XmlWriter *writer)
 }
 
 //Copies a previously defined element if created. Empty otherwise
-void XmlFormat::copyQucsElement(const QString& qualifiedName , Qucs::XmlWriter *writer)
+void XmlFormat::copyCanedaElement(const QString& qualifiedName , Caneda::XmlWriter *writer)
 {
     SchematicScene *scene = schematicScene();
     writer->writeStartElement(qualifiedName);
@@ -358,25 +358,25 @@ void XmlFormat::copyQucsElement(const QString& qualifiedName , Qucs::XmlWriter *
 
 bool XmlFormat::loadFromText(const QString& text)
 {
-    Qucs::XmlReader *reader = new Qucs::XmlReader(text.toUtf8());
+    Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
     while(!reader->atEnd()) {
         reader->readNext();
 
         if(reader->isStartElement()) {
-            if(reader->name() == "qucs" &&
-                    Qucs::checkVersion(reader->attributes().value("version").toString())) {
+            if(reader->name() == "caneda" &&
+                    Caneda::checkVersion(reader->attributes().value("version").toString())) {
 
                 while(!reader->atEnd()) {
                     reader->readNext();
                     if(reader->isEndElement()) {
-                        Q_ASSERT(reader->name() == "qucs");
+                        Q_ASSERT(reader->name() == "caneda");
                         break;
                     }
                     loadSchematics(reader);
                 }
             }
             else {
-                reader->raiseError(QObject::tr("Not a qucs file or probably malformatted file"));
+                reader->raiseError(QObject::tr("Not a caneda file or probably malformatted file"));
             }
         }
     }
@@ -393,7 +393,7 @@ bool XmlFormat::loadFromText(const QString& text)
 
 bool XmlFormat::loadSymbolFromText(const QString& text)
 {
-    Qucs::XmlReader *reader = new Qucs::XmlReader(text.toUtf8());
+    Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
     while(!reader->atEnd()) {
         reader->readNext();
         if(reader->isStartElement() && reader->name() == "symbol") {
@@ -415,7 +415,7 @@ bool XmlFormat::loadSymbolFromText(const QString& text)
     return true;
 }
 
-void XmlFormat::loadSchematics(Qucs::XmlReader* reader)
+void XmlFormat::loadSchematics(Caneda::XmlReader* reader)
 {
     if(reader->isStartElement()) {
         if(reader->name() == "view") {
@@ -436,7 +436,7 @@ void XmlFormat::loadSchematics(Qucs::XmlReader* reader)
     }
 }
 
-void XmlFormat::loadView(Qucs::XmlReader *reader)
+void XmlFormat::loadView(Caneda::XmlReader *reader)
 {
     SchematicScene *scene = schematicScene();
     if(!reader->isStartElement() || reader->name() != "view") {
@@ -547,7 +547,7 @@ void XmlFormat::loadView(Qucs::XmlReader *reader)
     }
 }
 
-void XmlFormat::loadComponents(Qucs::XmlReader *reader)
+void XmlFormat::loadComponents(Caneda::XmlReader *reader)
 {
     SchematicScene *scene = schematicScene();
     if(!reader->isStartElement() || reader->name() != "components") {
@@ -575,7 +575,7 @@ void XmlFormat::loadComponents(Qucs::XmlReader *reader)
     }
 }
 
-void XmlFormat::loadWires(Qucs::XmlReader* reader)
+void XmlFormat::loadWires(Caneda::XmlReader* reader)
 {
     SchematicScene *scene = schematicScene();
     if(!reader->isStartElement() || reader->name() != "wires") {
@@ -605,7 +605,7 @@ void XmlFormat::loadWires(Qucs::XmlReader* reader)
             if(reader->isStartElement()) {
                 if(reader->name() == "wire") {
                     Wire *w = Wire::loadWireData(reader,scene);
-                    w->checkAndConnect(Qucs::DontPushUndoCmd);
+                    w->checkAndConnect(Caneda::DontPushUndoCmd);
                 }
                 else {
                     reader->readUnknownElement();
@@ -616,7 +616,7 @@ void XmlFormat::loadWires(Qucs::XmlReader* reader)
     }
 }
 
-void XmlFormat::loadPaintings(Qucs::XmlReader *reader)
+void XmlFormat::loadPaintings(Caneda::XmlReader *reader)
 {
     SchematicScene *scene = schematicScene();
     if(!reader->isStartElement() || reader->name() != "paintings") {

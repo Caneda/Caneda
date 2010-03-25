@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include <QColor>
 #include <QFont>
@@ -37,9 +37,9 @@ VariantPair::VariantPair(const QVariant& def, const QVariant &cur)
 
 Settings::Settings()
 {
-    // The assumed default installation path of qucscomponents is
-    // <INSTALL>/share/qucs/qucscomponents
-    data["sidebarLibrary"] = VariantPair(QString(Qucs::baseDirectory() + "qucscomponents/"));
+    // The assumed default installation path of caneda components is
+    // <INSTALL>/share/caneda/components
+    data["sidebarLibrary"] = VariantPair(QString(Caneda::baseDirectory() + "components/"));
 
     data["gui/geometry"] = VariantPair(QByteArray());
     data["gui/dockPositions"] = VariantPair(QByteArray());
@@ -48,7 +48,7 @@ Settings::Settings()
     data["gui/largeFontSize"] = VariantPair(qreal(16.0));
     data["gui/iconSize"] = VariantPair(QSize(24, 24));
     data["gui/maxUndo"] = VariantPair(int(20));
-    data["gui/textEditor"] = VariantPair(QString(Qucs::binaryDirectory() + "qucsedit"));
+    data["gui/textEditor"] = VariantPair(QString(Caneda::binaryDirectory() + "canedaedit"));
     data["gui/language"] = VariantPair(QString());
 
     data["gui/vhdl/comment"] = VariantPair(QColor(Qt::gray));
@@ -59,16 +59,16 @@ Settings::Settings()
     data["gui/vhdl/types"]= VariantPair(QVariant(QColor(Qt::darkRed)));
     data["gui/vhdl/attributes"]= VariantPair(QVariant(QColor(Qt::darkCyan)));
 
-    QString qucsFilter =
+    QString canedaFilter =
         QObject::tr("Schematic-xml")+" (*.xsch);;"+
         QObject::tr("Symbol-xml")+" (*.xsym);;"+
-        QObject::tr("Qucs Project")+" (*.xpro);;"+
+        QObject::tr("Caneda Project")+" (*.xpro);;"+
         QObject::tr("Schematic")+" (*.sch);;"+
         QObject::tr("Data Display")+" (*.dpl);;"+
-        QObject::tr("Qucs Documents")+" (*.sch *.dpl);;"+
+        QObject::tr("Caneda Documents")+" (*.sch *.dpl);;"+
         QObject::tr("VHDL Sources")+" (*.vhdl *.vhd);;"+
         QObject::tr("Any File")+" (*)";
-    data["nosave/qucsFilter"] = VariantPair(qucsFilter);
+    data["nosave/canedaFilter"] = VariantPair(canedaFilter);
 }
 
 Settings::~Settings()

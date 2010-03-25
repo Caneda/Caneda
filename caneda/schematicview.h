@@ -20,14 +20,14 @@
 #ifndef SCHEMATICVIEW_H
 #define SCHEMATICVIEW_H
 
-#include "qucsview.h"
+#include "canedaview.h"
 
 #include <QGraphicsView>
 
-class QucsItem;
+class CanedaItem;
 class SchematicScene;
 
-class SchematicView : public QGraphicsView, public QucsView
+class SchematicView : public QGraphicsView, public CanedaView
 {
     Q_OBJECT
 public:
@@ -38,7 +38,7 @@ public:
 
     SchematicScene* schematicScene() const;
 
-    //reimplemented virtuals from QucsView
+    //reimplemented virtuals from CanedaView
     void setFileName(const QString& name);
     QString fileName() const;
 

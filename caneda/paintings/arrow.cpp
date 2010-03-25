@@ -47,7 +47,7 @@ Arrow::Arrow(const QLineF &line, HeadStyle style, qreal headWidth, qreal headHei
 {
     setLine(line);
     setBrush(Qt::black);
-    setResizeHandles(Qucs::TopLeftHandle | Qucs::BottomRightHandle);
+    setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle);
 }
 
 //! Destructor
@@ -125,7 +125,7 @@ Arrow* Arrow::copy(SchematicScene *scene) const
 }
 
 //! \brief Save arrow data to xml referred by writer.
-void Arrow::saveData(Qucs::XmlWriter *writer) const
+void Arrow::saveData(Caneda::XmlWriter *writer) const
 {
     writer->writeStartElement("painting");
     writer->writeAttribute("name", "arrow");
@@ -144,7 +144,7 @@ void Arrow::saveData(Qucs::XmlWriter *writer) const
 }
 
 //! \brief Loads arrow from xml reffered by reader.
-void Arrow::loadData(Qucs::XmlReader *reader)
+void Arrow::loadData(Caneda::XmlReader *reader)
 {
     Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
     Q_ASSERT(reader->attributes().value("name") == "arrow");
@@ -272,7 +272,7 @@ void Arrow::drawHead(QPainter *painter)
     }
 }
 
-int Arrow::launchPropertyDialog(Qucs::UndoOption opt)
+int Arrow::launchPropertyDialog(Caneda::UndoOption opt)
 {
     StyleDialog dia(this, opt);
     return dia.exec();

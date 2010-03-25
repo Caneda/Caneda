@@ -15,14 +15,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 //**************************************************************************
-//
 
 #ifndef QRELAXNGVALIDATOR_H
 #define QRELAXNGVALIDATOR_H
 
 #include <QString>
 
-namespace Qucs {
+namespace Caneda {
 
     //  forward declaration
     class QXmlStreamReaderExt;
@@ -72,6 +71,6 @@ namespace Qucs {
         bool validate(const void * doc) const;
     };
 
-} // namespace qucs
+} // namespace Caneda
 
 #endif

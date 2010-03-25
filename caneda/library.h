@@ -69,13 +69,13 @@ public:
     void render(QPainter *painter, QString component, QString symbol = QString()) const;
     QPixmap renderedPixmap(QString component, QString symbol = QString()) const;
 
-    bool loadLibrary(Qucs::XmlReader *reader);
+    bool loadLibrary(Caneda::XmlReader *reader);
     bool saveLibrary();
     bool parseExternalComponent(QString componentPath);
     bool removeComponent(QString componentName);
 
 private:
-    bool registerComponentData(Qucs::XmlReader *reader, QString componentPath);
+    bool registerComponentData(Caneda::XmlReader *reader, QString componentPath);
     QString m_libraryName;
     QString m_libraryFileName;
     QString m_defaultSymbolId;

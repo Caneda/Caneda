@@ -41,7 +41,7 @@ class GraphicTextDialog : public QDialog
     Q_OBJECT;
 
 public:
-    GraphicTextDialog(GraphicText *text, Qucs::UndoOption opt,
+    GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt,
             QWidget *parent = 0);
     ~GraphicTextDialog();
 
@@ -106,7 +106,7 @@ private:
     QVBoxLayout *mainLayout;
 
     GraphicText *textItem;
-    Qucs::UndoOption undoOption;
+    Caneda::UndoOption undoOption;
 };
 
 #endif

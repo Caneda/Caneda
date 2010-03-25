@@ -34,9 +34,9 @@
 
 // Forward declarations
 class Component;
-class QucsApp;
+class CanedaApp;
 
-struct tQucsSettings {
+struct tCanedaSettings {
     int x, y, dx, dy;    // position and size of main window
     QFont font;
     float largeFontSize;
@@ -59,13 +59,13 @@ struct tQucsSettings {
     QStringList FileTypes;
 };
 
-extern tQucsSettings QucsSettings;  // extern because nearly everywhere used
-extern QFont savingFont;       // to remember which font to save in "qucsrc"
+extern tCanedaSettings CanedaSettings;  // extern because nearly everywhere used
+extern QFont savingFont;       // to remember which font to save in "canedarc"
 
-extern QucsApp *QucsMain;  // the Qucs application itself
+extern CanedaApp *CanedaMain;  // the Caneda application itself
 extern QString lastDir;    // to remember last directory for several dialogs
 
-bool saveApplSettings(QucsApp*);
+bool saveApplSettings(CanedaApp*);
 
 QString complexRect(double, double, int Precision=3);
 QString complexDeg (double, double, int Precision=3);

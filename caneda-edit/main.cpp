@@ -34,9 +34,9 @@
 #include <QtGui/QFont>
 #include <QtCore/QLocale>
 
-#include "qucsedit.h"
+#include "canedaedit.h"
 
-tQucsSettings QucsSettings;
+tCanedaSettings CanedaSettings;
 
 // #########################################################################
 // Loads the settings file and stores the settings.
@@ -44,7 +44,7 @@ bool loadSettings()
 {
   bool result = true;
 
-  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/editrc"));
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.caneda/editrc"));
   if(!file.open(QIODevice::ReadOnly))
     result = false; // settings file doesn't exist
   else {
@@ -55,18 +55,18 @@ bool loadSettings()
       Setting = Line.section('=',0,0);
       Line = Line.section('=',1,1);
       if(Setting == "EditWindow") {
-	QucsSettings.x  = Line.section(",",0,0).toInt();
-	QucsSettings.y  = Line.section(",",1,1).toInt();
-	QucsSettings.dx = Line.section(",",2,2).toInt();
-	QucsSettings.dy = Line.section(",",3,3).toInt();
+        CanedaSettings.x  = Line.section(",",0,0).toInt();
+        CanedaSettings.y  = Line.section(",",1,1).toInt();
+        CanedaSettings.dx = Line.section(",",2,2).toInt();
+        CanedaSettings.dy = Line.section(",",3,3).toInt();
 	break; }
     }
     file.close();
   }
 
-  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.qucs/qucsrc"));
+  file.setFileName(QDir::homePath()+QDir::convertSeparators ("/.caneda/canedarc"));
   if(!file.open(QIODevice::ReadOnly))
-    result = true; // qucs settings not necessary
+    result = true; // Caneda settings not necessary
   else {
     QTextStream stream(&file);
     QString Line, Setting;
@@ -75,9 +75,9 @@ bool loadSettings()
       Setting = Line.section('=',0,0);
       Line = Line.section('=',1,1).simplified();
       if(Setting == "Font")
-	QucsSettings.font.fromString(Line);
+        CanedaSettings.font.fromString(Line);
       else if(Setting == "Language")
-	QucsSettings.Language = Line;
+        CanedaSettings.Language = Line;
     }
     file.close();
   }
@@ -86,16 +86,16 @@ bool loadSettings()
 
 // #########################################################################
 // Saves the settings in the settings file.
-bool saveApplSettings(QucsEdit *qucs)
+bool saveApplSettings(CanedaEdit *caneda)
 {
-  if(qucs->x() == QucsSettings.x)
-    if(qucs->y() == QucsSettings.y)
-      if(qucs->width() == QucsSettings.dx)
-	if(qucs->height() == QucsSettings.dy)
+  if(caneda->x() == CanedaSettings.x)
+    if(caneda->y() == CanedaSettings.y)
+      if(caneda->width() == CanedaSettings.dx)
+        if(caneda->height() == CanedaSettings.dy)
 	  return true;   // nothing has changed
 
 
-  QFile file(QDir::homePath()+QDir::convertSeparators ("/.qucs/editrc"));
+  QFile file(QDir::homePath()+QDir::convertSeparators ("/.caneda/editrc"));
   if(!file.open(QIODevice::WriteOnly)) {
     QMessageBox::warning(0, QObject::tr("Warning"),
 			QObject::tr("Cannot save settings !"));
@@ -105,9 +105,9 @@ bool saveApplSettings(QucsEdit *qucs)
   QString Line;
   QTextStream stream(&file);
 
-  stream << "Settings file, Qucs Editor " PACKAGE_VERSION "\n"
-	 << "EditWindow=" << qucs->x() << ',' << qucs->y() << ','
-	 << qucs->width() << ',' << qucs->height() << '\n';
+  stream << "Settings file, Caneda Editor " PACKAGE_VERSION "\n"
+         << "EditWindow=" << caneda->x() << ',' << caneda->y() << ','
+         << caneda->width() << ',' << caneda->height() << '\n';
 
   file.close();
   return true;
@@ -116,10 +116,10 @@ bool saveApplSettings(QucsEdit *qucs)
 // #########################################################################
 void showOptions()
 {
-  fprintf(stdout, QString( QObject::tr("Qucs Editor Version ")+PACKAGE_VERSION+
-    QObject::tr("\nVery simple text editor for Qucs\n")+
+  fprintf(stdout, QString( QObject::tr("Caneda Editor Version ")+PACKAGE_VERSION+
+    QObject::tr("\nVery simple text editor for Caneda\n")+
     QObject::tr("Copyright (C) 2004, 2005 by Michael Margraf\n")+
-    QObject::tr("\nUsage:  qucsedit [-r] file\n")+
+    QObject::tr("\nUsage:  canedaedit [-r] file\n")+
     QObject::tr("    -h  display this help and exit\n")+
     QObject::tr("    -r  open file read-only\n") ).toAscii());
 }
@@ -134,37 +134,37 @@ void showOptions()
 int main(int argc, char *argv[])
 {
   // apply default settings
-  QucsSettings.x = 200;
-  QucsSettings.y = 100;
-  QucsSettings.dx = 400;
-  QucsSettings.dy = 400;
-  QucsSettings.font = QFont("Helvetica", 12);
+  CanedaSettings.x = 200;
+  CanedaSettings.y = 100;
+  CanedaSettings.dx = 400;
+  CanedaSettings.dy = 400;
+  CanedaSettings.font = QFont("Helvetica", 12);
 
   // is application relocated?
-  char * var = getenv ("QUCSDIR");
+  char * var = getenv ("CANEDADIR");
   if (var != NULL) {
-    QDir QucsDir = QDir (var);
-    QString QucsDirStr = QucsDir.canonicalPath ();
-    QucsSettings.BitmapDir =
-      QDir::convertSeparators (QucsDirStr + "/share/qucs/bitmaps/");
-    QucsSettings.LangDir =
-      QDir::convertSeparators (QucsDirStr + "/share/qucs/lang/");
+    QDir CanedaDir = QDir (var);
+    QString CanedaDirStr = CanedaDir.canonicalPath ();
+    CanedaSettings.BitmapDir =
+      QDir::convertSeparators (CanedaDirStr + "/share/caneda/bitmaps/");
+    CanedaSettings.LangDir =
+      QDir::convertSeparators (CanedaDirStr + "/share/caneda/lang/");
   } else {
-    QucsSettings.BitmapDir = BITMAPDIR;
-    QucsSettings.LangDir = LANGUAGEDIR;
+    CanedaSettings.BitmapDir = BITMAPDIR;
+    CanedaSettings.LangDir = LANGUAGEDIR;
   }
 
   loadSettings();
 
   QApplication a(argc, argv);
-  a.setFont(QucsSettings.font);
+  a.setFont(CanedaSettings.font);
 
   QTranslator tor( 0 );
-  QString lang = QucsSettings.Language;
+  QString lang = CanedaSettings.Language;
   if(lang.isEmpty())
     lang = QLocale::languageToString( QLocale::system().language() );
 		//lang = QTextCodec::locale();
-  tor.load( QString("qucs_") + lang, QucsSettings.LangDir);
+  tor.load( QString("caneda_") + lang, CanedaSettings.LangDir);
   a.installTranslator( &tor );
 
   bool readOnly = false;
@@ -196,12 +196,12 @@ int main(int argc, char *argv[])
 	  }
   }
 
-  QucsEdit *qucs = new QucsEdit(FileName, readOnly);
-  //a.setMainWidget(qucs);
-  qucs->resize(QucsSettings.dx, QucsSettings.dy); // size and position ...
-  qucs->move(QucsSettings.x, QucsSettings.y);     // ... before "show" !!!
-  qucs->show();
+  CanedaEdit *caneda = new CanedaEdit(FileName, readOnly);
+  //a.setMainWidget(caneda);
+  caneda->resize(CanedaSettings.dx, CanedaSettings.dy); // size and position ...
+  caneda->move(CanedaSettings.x, CanedaSettings.y);     // ... before "show" !!!
+  caneda->show();
   int result = a.exec();
-  saveApplSettings(qucs);
+  saveApplSettings(caneda);
   return result;
 }

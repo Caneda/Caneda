@@ -17,7 +17,7 @@
 
 #include "mnemo.h"
 
-namespace Qucs
+namespace Caneda
 {
     struct tSpecialChar {
         char Mnemonic[16];

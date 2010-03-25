@@ -24,7 +24,7 @@
 #include "schematicscene.h"
 #include "schematicview.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -83,7 +83,7 @@ QString XmlSymbolFormat::saveText()
     SchematicScene *scene = schematicScene();
 
     QString retVal;
-    Qucs::XmlWriter *writer = new Qucs::XmlWriter(&retVal);
+    Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
     writer->setAutoFormatting(true);
     writer->writeStartDocument();
 
@@ -92,7 +92,7 @@ QString XmlSymbolFormat::saveText()
 
     QFileInfo info(scene->fileName());
     writer->writeAttribute("name", info.baseName());
-    writer->writeAttribute("version", Qucs::version);
+    writer->writeAttribute("version", Caneda::version);
     writer->writeAttribute("label", "comp");
 
     writer->writeStartElement("displaytext");

@@ -31,7 +31,7 @@
 #include <QByteArray>
 #include <QXmlStreamReader>
 
-namespace Qucs {
+namespace Caneda {
 
     class QXmlStreamReaderExt : public QXmlStreamReader
     {
@@ -78,6 +78,6 @@ namespace Qucs {
                 bool usexinclude);
     };
 
-} // namespace qucs
+} // namespace Caneda
 
 #endif //QXMLSTREAMREADEREXT_H

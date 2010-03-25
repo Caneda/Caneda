@@ -33,9 +33,9 @@
 #include <math.h>
 
 #include "microstrip.h"
-#include "qucstrans.h"
-#include "qucs-tools/propertygrid.h"
-#include "qucs-tools/units.h"
+#include "canedatrans.h"
+#include "caneda-tools/propertygrid.h"
+#include "caneda-tools/units.h"
 microstrip::microstrip() : transline()
 {
   description = "Microstrip";

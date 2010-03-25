@@ -57,7 +57,7 @@ inline qreal distance(const QPointF& p1, const QPointF& p2)
  * and is always drawn before wires and components.
  * Node must be in the foreground of component and wires.
  */
-Node::Node(const QString& name,SchematicScene *scene) : QucsItem(0,scene)
+Node::Node(const QString& name,SchematicScene *scene) : CanedaItem(0,scene)
 {
     setName(name);
     // Ensure flags is zero so that no useless checks are made on node.
@@ -236,7 +236,7 @@ void Node::paint(QPainter* p,const QStyleOptionGraphicsItem *o, QWidget *w)
 bool Node::collidesWithItem(QGraphicsItem *other) const
 {
     //Check if the other item is also a node.
-    Node *port = qucsitem_cast<Node*>(other);
+    Node *port = canedaitem_cast<Node*>(other);
     //If other is not a node call base implementation.
     if(!port) {
         return QGraphicsItem::collidesWithItem(other);

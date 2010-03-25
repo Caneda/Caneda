@@ -26,7 +26,7 @@
 #include <QtCore/QTextStream>
 
 #include "symbolwidget.h"
-#include "qucslib.h"
+#include "canedalib.h"
 
 
 const char *empty_xpm[] = {  // for drag n'drop
@@ -45,7 +45,7 @@ SymbolWidget::SymbolWidget(QWidget *parent) : QWidget(parent)
 */
   Text_x = Text_y = 0;
   PaintText = tr("Symbol:");
-  QFontMetrics  metrics(QucsSettings.font);
+  QFontMetrics  metrics(CanedaSettings.font);
   TextWidth = metrics.width(PaintText) + 4;    // get size of text
 
   DragNDropText = tr("! Drag n'Drop me !");
@@ -77,7 +77,7 @@ void SymbolWidget::mouseMoveEvent(QMouseEvent*)
 {
   myDragObject = new QDrag(this);
   QMimeData *m = new QMimeData;
-  m->setText( "QucsComponent:"+theModel() );
+  m->setText( "CanedaComponent:"+theModel() );
   myDragObject->setMimeData( m );
   myDragObject->setPixmap( QPixmap(empty_xpm) );
   myDragObject->start();
@@ -518,7 +518,7 @@ int SymbolWidget::analyseLine(const QString& Row)
 
     Texts.append( Text(i1, i2, s, Color, float(i3)));
 
-    QFont Font(QucsSettings.font);
+    QFont Font(CanedaSettings.font);
     Font.setPointSizeF(float(i3));
     QFontMetrics  metrics(Font);
     QSize r = metrics.size(0, s);    // get size of text

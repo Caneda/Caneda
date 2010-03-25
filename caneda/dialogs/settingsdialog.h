@@ -2,7 +2,7 @@
  * Copyright 2006-2009 Xavier Guerrin                                      *
  * Copyright 2009 Pablo Daniel Pareja Obregon                              *
  * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Qucs.                                         *
+ * Obregon to be included in Caneda.                                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,7 +33,7 @@ class QListWidgetItem;
 class QStackedWidget;
 
 /*!
- * This class represents the configuration dialog of Qucs.
+ * This class represents the configuration dialog of Caneda.
  * This is a dialog showing "page setup".
  * Each configuration page should provide an icon and a title.
  */

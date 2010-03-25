@@ -1,18 +1,22 @@
-//-*- C++ -*-
-/****************************************************************************
-**     Qucs Attenuator Synthesis
-**     qucsattenuator.h
-**
-**
-**
-**
-**
-**
-**
-*****************************************************************************/
+/***************************************************************************
+                       Caneda Attenuator Synthesis
+                            canedaattenuator.h
+                               ------------
+    begin                : Jun 14 2006
 
-#ifndef QUCSATTENUATOR_H
-#define QUCSATTENUATOR_H
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef CANEDAATTENUATOR_H
+#define CANEDAATTENUATOR_H
 
 #include "attenuatorfunc.h"
 
@@ -26,12 +30,12 @@ class QLabel;
 class QPushButton;
 class QStatusBar;
 
-class QucsAttenuator : public QWidget
+class CanedaAttenuator : public QWidget
 {
  Q_OBJECT
  public:
-  QucsAttenuator();
-  ~QucsAttenuator();
+  CanedaAttenuator();
+  ~CanedaAttenuator();
 
  private slots:
   void slotHelpIntro();

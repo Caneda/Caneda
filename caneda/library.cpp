@@ -22,7 +22,7 @@
 #include "schematicscene.h"
 #include "singletonmanager.h"
 
-#include "qucs-tools/global.h"
+#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 #include "xmlutilities/validators.h"
@@ -138,7 +138,7 @@ QPixmap Library::renderedPixmap(QString component,
  *
  * \param reader XmlReader corresponding to file.
  */
-bool Library::loadLibrary(Qucs::XmlReader *reader)
+bool Library::loadLibrary(Caneda::XmlReader *reader)
 {
     bool readok = true;
     Q_ASSERT(reader->isStartElement() && reader->name() == "library");
@@ -159,11 +159,11 @@ bool Library::loadLibrary(Qucs::XmlReader *reader)
 
         if(reader->isStartElement()) {
             if(reader->name() == "displaytext") {
-                m_displayText = reader->readLocaleText(Qucs::localePrefix());
+                m_displayText = reader->readLocaleText(Caneda::localePrefix());
                 Q_ASSERT(reader->isEndElement() && reader->name() == "displaytext");
             }
             else if(reader->name() == "description") {
-                m_description = reader->readLocaleText(Qucs::localePrefix());
+                m_description = reader->readLocaleText(Caneda::localePrefix());
                 Q_ASSERT(reader->isEndElement() && reader->name() == "description");
             }
             else if(reader->name() == "component") {
@@ -194,13 +194,13 @@ bool Library::loadLibrary(Qucs::XmlReader *reader)
 bool Library::saveLibrary()
 {
     QString saveText;
-    Qucs::XmlWriter *writer = new Qucs::XmlWriter(&saveText);
+    Caneda::XmlWriter *writer = new Caneda::XmlWriter(&saveText);
     writer->setAutoFormatting(true);
 
     writer->writeStartDocument();
     writer->writeStartElement("library");
     writer->writeAttribute("name", libraryName());
-    writer->writeAttribute("version", Qucs::version);
+    writer->writeAttribute("version", Caneda::version);
 
     writer->writeStartElement("displaytext");
     writer->writeLocaleText("en", displayText());
@@ -253,8 +253,8 @@ bool Library::parseExternalComponent(QString componentPath)
     in.setCodec("UTF-8");
     QByteArray data = in.readAll().toUtf8();
 
-    Qucs::XmlReader reader(data,
-            Qucs::validators::defaultInstance()->components());
+    Caneda::XmlReader reader(data,
+            Caneda::validators::defaultInstance()->components());
 
     while(!reader.atEnd()) {
         reader.readNext();
@@ -283,7 +283,7 @@ bool Library::removeComponent(QString componentName)
 }
 
 //! \brief Registers svg as well as the component's shared data.
-bool Library::registerComponentData(Qucs::XmlReader *reader, QString componentPath)
+bool Library::registerComponentData(Caneda::XmlReader *reader, QString componentPath)
 {
     Q_ASSERT(m_svgPainter);
     bool readok;
@@ -294,7 +294,7 @@ bool Library::registerComponentData(Qucs::XmlReader *reader, QString componentPa
     dataPtr->filename = componentPath;
 
     QString parentPath = QFileInfo(componentPath).absolutePath();
-    readok = Qucs::readComponentData(reader, parentPath, m_svgPainter, dataPtr);
+    readok = Caneda::readComponentData(reader, parentPath, m_svgPainter, dataPtr);
 
     if(dataPtr.constData() == 0 || reader->hasError() || !readok) {
         qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();
@@ -445,7 +445,7 @@ bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
     in.setCodec("UTF-8");
     QByteArray data = in.readAll().toUtf8();
 
-    Qucs::XmlReader reader(data);
+    Caneda::XmlReader reader(data);
     while(!reader.atEnd()) {
         reader.readNext();
 

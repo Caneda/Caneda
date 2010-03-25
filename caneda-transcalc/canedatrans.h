@@ -1,5 +1,5 @@
  /***************************************************************************
-                          qucstrans.h  -  description
+                          canedatrans.h  -  description
                              -------------------
     begin                : Sun Feb 27 2005
     copyright            : (C) 2005 by Stefan Jahn
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef QUCSTRANS_H
-#define QUCSTRANS_H
+#ifndef CANEDATRANS_H
+#define CANEDATRANS_H
 
 #include <QtGui/QWidget>
 
@@ -31,7 +31,7 @@ class ResultBox;
 class QTextStream;
 
 // Application settings.
-struct tQucsSettings {
+struct tCanedaSettings {
   int x, y, dx, dy;    // position and size of main window
   QFont font;          // font
   QString BitmapDir;   // pixmap directory
@@ -44,7 +44,7 @@ struct tQucsSettings {
   QString Mode;        // current mode
 };
 
-extern tQucsSettings QucsSettings;
+extern tCanedaSettings CanedaSettings;
 
 struct TransWidgets
 {
@@ -58,13 +58,13 @@ struct TransWidgets
   PropertyBox* boxWithProperty(const QString& name);
 };
 
-class QucsTranscalc : public QWidget
+class CanedaTranscalc : public QWidget
 {
 Q_OBJECT
 
 public:
-  QucsTranscalc();
-  ~QucsTranscalc();
+  CanedaTranscalc();
+  ~CanedaTranscalc();
   int currentModeIndex() const;
   bool loadFile(QString fname);
   bool saveFile(QString fname);
@@ -99,4 +99,4 @@ private:
   QStackedWidget *widStack;
   QStatusBar *statBar;
 };
-#endif /* QUCSTRANS_H */
+#endif /* CANEDATRANS_H */

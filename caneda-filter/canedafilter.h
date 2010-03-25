@@ -1,5 +1,5 @@
 /***************************************************************************
-                                qucsfilter.h
+                                canedafilter.h
                              -------------------
     begin                : Wed Mar 02 2005
     copyright            : (C) 2005 by Michael Margraf
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef QUCSFILTER_H
-#define QUCSFILTER_H
+#ifndef CANEDAFILTER_H
+#define CANEDAFILTER_H
 
 #include <QtGui/QWidget>
 
@@ -28,7 +28,7 @@ class QIntValidator;
 class QDoubleValidator;
 
 
-struct tQucsSettings {
+struct tCanedaSettings {
   int x, y;      // position of main window
   QFont font;
   QString LangDir;
@@ -36,14 +36,14 @@ struct tQucsSettings {
   QString Language;
 };
 
-extern struct tQucsSettings QucsSettings;
+extern struct tCanedaSettings CanedaSettings;
 
-class QucsFilter : public QWidget
+class CanedaFilter : public QWidget
 {
   Q_OBJECT
 public:
-  QucsFilter();
- ~QucsFilter();
+  CanedaFilter();
+ ~CanedaFilter();
 
 private slots:
   void slotHelpIntro();
@@ -67,4 +67,4 @@ private:
   QLabel *LabelAtten, *LabelAtten_dB, *LabelBandStop, *LabelOrder;
 };
 
-#endif
+#endif // CANEDAFILTER_H

@@ -26,7 +26,7 @@
 
 class FileBrowserLineEditPrivate;
 class QFileInfo;
-class QucsView;
+class CanedaView;
 class SaveDocumentsDialogPrivate;
 
 class FileBrowserLineEdit : public QWidget
@@ -57,10 +57,10 @@ public:
         AbortClosing = QDialogButtonBox::RejectRole
     };
 
-    SaveDocumentsDialog(const QSet<QPair<QucsView*, int> > &modifiedViews, QWidget *parent = 0);
+    SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &modifiedViews, QWidget *parent = 0);
     ~SaveDocumentsDialog();
 
-    QSet<QPair<QucsView*, QString> > newFilePaths() const;
+    QSet<QPair<CanedaView*, QString> > newFilePaths() const;
 
 public Q_SLOTS:
     void slotButtonClicked(QAbstractButton *button);

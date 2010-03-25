@@ -35,7 +35,7 @@ GraphicLine::GraphicLine(const QLineF &line, SchematicScene *scene) :
       Painting(scene)
 {
    setLine(line);
-   setResizeHandles(Qucs::TopLeftHandle | Qucs::BottomRightHandle);
+   setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle);
 }
 
 //! \brief Destructor.
@@ -91,7 +91,7 @@ GraphicLine* GraphicLine::copy(SchematicScene *scene) const
 }
 
 //! \brief Saves data as xml.
-void GraphicLine::saveData(Qucs::XmlWriter *writer) const
+void GraphicLine::saveData(Caneda::XmlWriter *writer) const
 {
    writer->writeStartElement("painting");
    writer->writeAttribute("name", "line");
@@ -107,7 +107,7 @@ void GraphicLine::saveData(Qucs::XmlWriter *writer) const
 }
 
 //! \brief Loads xml data referred by \a reader.
-void GraphicLine::loadData(Qucs::XmlReader *reader)
+void GraphicLine::loadData(Caneda::XmlReader *reader)
 {
    Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
    Q_ASSERT(reader->attributes().value("name") == "line");
@@ -148,7 +148,7 @@ void GraphicLine::setLine(const QLineF& line)
    setPaintingRect(QRectF(line.p1(), line.p2()));
 }
 
-int GraphicLine::launchPropertyDialog(Qucs::UndoOption opt)
+int GraphicLine::launchPropertyDialog(Caneda::UndoOption opt)
 {
    StyleDialog dia(this, opt);
    return dia.exec();

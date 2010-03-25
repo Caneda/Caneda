@@ -21,7 +21,7 @@
 
 #include <QString>
 
-namespace Qucs {
+namespace Caneda {
 
     //! \brief This class preload all the xml validator used for parsing xml file
     class validators
