@@ -23,19 +23,18 @@
 Qt translations
 ===============
 
-Qucs uses the translation interface of Qt in order to internationalize
-the software.  The translation files are automatically generated and
-updated by Makefiles.  Each translation (the *.ts file) consists of
-two parts:  The actual translation of Qucs and the translation of Qt's
-standard dialogs.
+Caneda uses the translation interface of Qt in order to internationalize
+the software.  The translation files are automatically generated.
+Each translation (the *.ts file) consists of two parts:  The actual 
+translation of Caneda and the translation of Qt's standard dialogs.
 
-The actual Qucs translation is named 'qucs_xx.ts' whence 'xx'
+The actual Caneda translation is named 'caneda_xx.ts' whence 'xx'
 specifies the locale abbreviation (e.g. 'de' for German, or 'es' for
 Spanish).  This type translation files may change as the source code
-of Qucs changes as well.
+of Caneda changes as well.
 
 The translation of Qt's standard dialogs (e.g. file dialog) is named
-'qtgeneric_xx.ts' with the same convention for 'xx' as the actual Qucs
+'qtgeneric_xx.ts' with the same convention for 'xx' as the actual Caneda
 translation.  These file do not change during development.  If the
 appropriate 'qtgeneric_xx.ts' file exists it will be incorporated into
 the final translations, otherwise not.  There is a template file named

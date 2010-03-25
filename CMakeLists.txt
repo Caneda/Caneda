@@ -5,6 +5,7 @@ SET(BASEDIR	"share/caneda/")
 SET(BITMAPDIR	"share/caneda/bitmaps/")
 SET(BINARYDIR	"bin/")
 SET(DOCDIR	"share/caneda/docs/")
+SET(MANDIR	"share/man/man1/")
 SET(LANGUAGEDIR "share/caneda/lang/")
 SET(LIBRARYDIR	"share/caneda/library/")
 
