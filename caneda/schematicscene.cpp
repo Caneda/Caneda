@@ -96,13 +96,13 @@ SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
  * \brief Default grid spacing
  * \todo Must be configurable
  */
-static const uint DEFAULT_GRID_SPACE = 10;
+static const uint DEFAULT_GRID_SPACE = 20;
 
 /*!
  * \brief Default grid color
  * \todo Must be configurable
  */
-#define DEFAULT_GRID_COLOR Qt::darkGray;
+#define DEFAULT_GRID_COLOR Qt::black;
 
 //! \brief Initialize a schematic scene
 void SchematicScene::init()
@@ -202,13 +202,13 @@ QPointF SchematicScene::nearingGridPoint(const QPointF &pos) const
     const QPoint point = pos.toPoint();
 
     int x = qAbs(point.x());
-    x += m_gridWidth;
-    x -= x % (2*m_gridWidth);
+    x += (m_gridWidth >> 1);
+    x -= x % m_gridWidth;
     x *= sign(point.x());
 
     int y = qAbs(point.y());
-    y += m_gridHeight;
-    y -= y % (2*m_gridHeight);
+    y += (m_gridHeight >> 1);
+    y -= y % m_gridHeight;
     y *= sign(point.y());
 
     return QPointF(x, y);
@@ -882,8 +882,8 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 #endif
 
     // While drawing, choose spaing to be twice the actual grid size.
-    const int drawingGridWidth = gridWidth() * 2;
-    const int drawingGridHeight = gridHeight() * 2;
+    const int drawingGridWidth = gridWidth();
+    const int drawingGridHeight = gridHeight();
 
     /* extrema grid points */
     qreal left = int(rect.left()) + drawingGridWidth - (int(rect.left()) % drawingGridWidth);
