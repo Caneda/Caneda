@@ -35,9 +35,9 @@ public:
     Project(QWidget *parent = 0);
     ~Project() {}
 
-    //! Returns project library name.
+    //! Returns project name.
     QString libraryName() const { return m_libraryName; }
-    //! Returns project library filename.
+    //! Returns project filename.
     QString libraryFileName() const { return m_libraryFileName; }
 
 public Q_SLOTS:

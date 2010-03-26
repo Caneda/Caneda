@@ -116,7 +116,7 @@ void Project::slotNewProject()
     QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"),
                                                     "", tr("Caneda Projects (*.xpro)"));
     if(!fileName.isEmpty()) {
-        if(QString(QFileInfo(fileName).suffix()).isEmpty()) {
+        if(QFileInfo(fileName).suffix().isEmpty()) {
             fileName = fileName + ".xpro";
         }
 
@@ -124,10 +124,9 @@ void Project::slotNewProject()
         QFileInfo fileInfo = QFileInfo(fileName);
         QDir filePath = QDir(fileInfo.absolutePath() + "/" + fileInfo.baseName());
         if(!filePath.exists()) {
-            filePath.setPath(fileInfo.absolutePath());
-            filePath.mkdir(fileInfo.baseName());
+            filePath.mkpath(filePath.absolutePath());
         }
-        fileName = fileInfo.absolutePath() + "/" + fileInfo.baseName() + "/" + fileInfo.fileName();
+        fileName = filePath.absolutePath() + "/" + fileInfo.fileName();
 
         //Then we create the library/project
         LibraryLoader *library = LibraryLoader::instance();
@@ -145,6 +144,7 @@ void Project::slotNewProject()
 
 void Project::slotOpenProject(QString fileName)
 {
+    //If no name is provided, we open a dialog asking the user for a project to be opened
     if(fileName == 0) {
         fileName = QFileDialog::getOpenFileName(this, tr("Open Project"),
                                                 "", tr("Caneda Projects (*.xpro)"));
@@ -170,55 +170,32 @@ void Project::slotAddToProject()
         AddToProjectDialog *p = new AddToProjectDialog(this);
 
         if(p->accepted()) {
+            QString fileName;
             if(p->userChoice() == Caneda::ExistingComponent) {
 
-                QString fileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
+                QString sourceFileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
                                                                 "", tr("Component-xml (*.xsch)"));
-                if(!fileName.isEmpty()) {
 
-                    //First we copy the selected file to current project folder
-                    if(QFile::copy(fileName, QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).fileName())) {
-                        fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).fileName();
+                if(!sourceFileName.isEmpty()) {
+                    CanedaView *viewFile = new SchematicView(0, this);
+                    if(!viewFile->load(sourceFileName)) {
+                        QMessageBox::critical(this, tr("Error"),
+                                              tr("Could not open file!"));
+
+                        return;
                     }
-                    else {
+
+                    //We copy the selected file to current project folder
+                    fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(sourceFileName).fileName();
+                    if(!QFile::copy(sourceFileName, fileName)) {
                         QMessageBox::critical(this, tr("Error"),
                                 tr("Component %1 already exists in project!").arg(QFileInfo(fileName).baseName()));
                         return;
                     }
-
-                    //We generate the corresponding symbol
-                    CanedaView *view = new SchematicView(0, this);
-                    view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
-
-                    if(!view->load(fileName)) {
-                        QMessageBox::critical(this, tr("Error"),
-                                              tr("Could not open file!"));
-
-                        QFile::remove(fileName);
-                        return;
-                    }
-
-                    fileName.replace(".xsch",".xsym");
-                    view->setFileName(fileName);
-                    XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-                    symbol->save();
-
-                    //Now we load the new component in the library
-                    projectLibrary->parseExternalComponent(fileName);
-                    projectLibrary->saveLibrary();
-                    m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-                    m_projectsSidebar->plugLibrary(m_libraryName, "root");
-
-                    //Finally we open the component
-                    fileName.replace(".xsym",".xsch");
-                    emit itemDoubleClicked(fileName);
                 }
             }
             else if(p->userChoice() == Caneda::NewComponent) {
-                QString fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + p->fileName()+".xsch";
-
-                CanedaView *view = new SchematicView(0, this);
-                view->setFileName(fileName);
+                fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + p->fileName()+".xsch";
 
                 //When the component is already created, we return.
                 if(QFileInfo(fileName).exists()) {
@@ -227,33 +204,38 @@ void Project::slotAddToProject()
                     return;
                 }
 
-                if(!view->save()) {
+                CanedaView *viewFile = new SchematicView(0, this);
+                viewFile->setFileName(fileName);
+                if(!viewFile->save()) {
                     QMessageBox::critical(this, tr("Error"),
                             tr("Could not save file!"));
-                    delete view;
                     return;
                 }
-
-                emit itemDoubleClicked(fileName);
-
-                view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
-
-                fileName.replace(".xsch",".xsym");
-                view->setFileName(fileName);
-                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-                symbol->save();
-
-                delete view;
-
-                projectLibrary->parseExternalComponent(fileName);
-                projectLibrary->saveLibrary();
-                m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-                m_projectsSidebar->plugLibrary(m_libraryName, "root");
             }
             else {
                 //TODO in case of adding a component from another project, we
                 //should copy the component as well as all its dependencies.
             }
+
+            //We generate the corresponding symbol
+            CanedaView *view = new SchematicView(0, this);
+            view->setFileName(fileName);
+            view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
+
+            fileName.replace(".xsch",".xsym");
+            view->setFileName(fileName);
+            XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
+            symbol->save();
+
+            //Now we load the new component in the library
+            projectLibrary->parseExternalComponent(fileName);
+            projectLibrary->saveLibrary();
+            m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+            m_projectsSidebar->plugLibrary(m_libraryName, "root");
+
+            //Finally we open the component
+            fileName.replace(".xsym",".xsch");
+            emit itemDoubleClicked(fileName);
         }
     }
     else {
@@ -276,8 +258,8 @@ void Project::slotRemoveFromProject()
             switch (ret) {
                 case QMessageBox::Ok: {
 
-                    QString fileName = QString(projectLibrary->componentDataPtr(m_projectsSidebar->currentComponent())->filename);
-                    fileName = QFileInfo(fileName).absolutePath() + "/" + QFileInfo(fileName).baseName();
+                    QString fileName = projectLibrary->componentDataPtr(m_projectsSidebar->currentComponent())->filename;
+                    fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).baseName();
 
                     QFile::remove(fileName + ".xsch");
                     QFile::remove(fileName + ".xsym");
