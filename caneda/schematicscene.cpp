@@ -196,20 +196,19 @@ inline int sign(int value)
  *
  * \param pos: current position to be rounded
  * \return rounded position
- * \todo Algorithm to be explained.
  */
 QPointF SchematicScene::nearingGridPoint(const QPointF &pos) const
 {
     const QPoint point = pos.toPoint();
 
     int x = qAbs(point.x());
-    x += (m_gridWidth >> 1);
-    x -= x % m_gridWidth;
+    x += m_gridWidth;
+    x -= x % (2*m_gridWidth);
     x *= sign(point.x());
 
     int y = qAbs(point.y());
-    y += (m_gridHeight >> 1);
-    y -= y % m_gridHeight;
+    y += m_gridHeight;
+    y -= y % (2*m_gridHeight);
     y *= sign(point.y());
 
     return QPointF(x, y);
