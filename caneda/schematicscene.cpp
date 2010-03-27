@@ -96,7 +96,7 @@ SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
  * \brief Default grid spacing
  * \todo Must be configurable
  */
-static const uint DEFAULT_GRID_SPACE = 20;
+static const uint DEFAULT_GRID_SPACE = 10;
 
 /*!
  * \brief Default grid color
@@ -1052,6 +1052,7 @@ void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
     /* grid snap mode */
     if(m_snapToGrid) {
         lastPos = nearingGridPoint(e->scenePos());
+
         // This is not to lose grid snaping when moving objects
         e->setScenePos(lastPos);
         e->setPos(lastPos);

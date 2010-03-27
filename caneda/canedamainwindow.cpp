@@ -413,6 +413,13 @@ void CanedaMainWindow::initActions()
     action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
     connect(action, SIGNAL(triggered()), SLOT(slotPopHierarchy()));
 
+    action = am->createAction("onGrid", tr("Snap to Grid"));
+    action->setShortcut(CTRL+Key_U);
+    action->setStatusTip(tr("Set grid snap"));
+    action->setWhatsThis(tr("Snap to Grid\n\nSets snap to grid"));
+    action->setCheckable(true);
+    connect(action, SIGNAL(toggled(bool)), SLOT(slotSnapToGrid(bool)));
+
     action = am->createAction("alignTop", icon("align-vertical-top.png"), tr("Align top"));
     action->setStatusTip(tr("Align top selected elements"));
     action->setWhatsThis(tr("Align top\n\nAlign selected elements to their upper edge"));
@@ -679,13 +686,6 @@ void CanedaMainWindow::initMouseActions()
             icon("mirrory.png"), tr("Mirror about Y Axis"));
     action->setShortcut(Key_H);
     action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
-    connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-            SLOT(slotPerformToggleAction(const QString&, bool)));
-
-    action = am->createMouseAction("onGrid", SchematicScene::SettingOnGrid,
-            tr("Set on Grid"));
-    action->setShortcut(CTRL+Key_U);
-    action->setWhatsThis(tr("Set on Grid\n\nSets selected elements on grid"));
     connect(action, SIGNAL(toggled(const QString&, bool)), handler,
             SLOT(slotPerformToggleAction(const QString&, bool)));
 
@@ -993,9 +993,18 @@ void CanedaMainWindow::addView(CanedaView *view)
         // can assume that SchematicView and its scene are completely constructed.
         SchematicStateHandler *handler = SchematicStateHandler::instance();
         handler->registerView(schematicView);
+
+        addChildWidget(view->toWidget());
+        tabWidget()->setCurrentWidget(view->toWidget());
+
+        ActionManager *am = ActionManager::instance();
+        Action *action = am->actionForName("onGrid");
+        action->setChecked(schema->gridSnap());
     }
-    addChildWidget(view->toWidget());
-    tabWidget()->setCurrentWidget(view->toWidget());
+    else {
+        addChildWidget(view->toWidget());
+        tabWidget()->setCurrentWidget(view->toWidget());
+    }
 }
 
 /*!
@@ -1022,6 +1031,10 @@ void CanedaMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
             SchematicScene *scene = currView->schematicScene();
             if (scene) {
                 m_undoGroup->setActiveStack(scene->undoStack());
+
+                ActionManager *am = ActionManager::instance();
+                Action *action = am->actionForName("onGrid");
+                action->setChecked(scene->gridSnap());
             }
         }
     }
@@ -1438,6 +1451,15 @@ void CanedaMainWindow::slotPopHierarchy()
 {
     setNormalAction();
     //TODO: implement this or rather port directly
+}
+
+//! \brief Align elements to grid
+void CanedaMainWindow::slotSnapToGrid(bool snap)
+{
+    SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+    if(view) {
+        view->schematicScene()->setSnapToGrid(snap);
+    }
 }
 
 //! \brief Align selected elements appropriately based on \a alignment

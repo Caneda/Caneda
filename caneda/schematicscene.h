@@ -131,6 +131,11 @@ public:
 
     bool isModified() const { return m_modified; }
 
+    bool gridSnap() const { return m_snapToGrid; }
+    void setSnapToGrid(const bool snap) {
+        m_snapToGrid = snap;
+    }
+
     //! round to nearest grid point according to grid snapping setting
     QPointF smartNearingGridPoint(const QPointF &pos) const {
         return m_snapToGrid == true ? nearingGridPoint(pos) : pos;
