@@ -102,7 +102,7 @@ static const uint DEFAULT_GRID_SPACE = 20;
  * \brief Default grid color
  * \todo Must be configurable
  */
-#define DEFAULT_GRID_COLOR Qt::black;
+#define DEFAULT_GRID_COLOR Qt::darkGray;
 
 //! \brief Initialize a schematic scene
 void SchematicScene::init()
@@ -1045,7 +1045,6 @@ void SchematicScene::dropEvent(QGraphicsSceneDragDropEvent * event)
 
 /*!
  * \brief Event called when mouse is pressed
- * \todo Remove debug
  * \todo finish grid snap mode
  */
 void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
@@ -1053,6 +1052,9 @@ void SchematicScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
     /* grid snap mode */
     if(m_snapToGrid) {
         lastPos = nearingGridPoint(e->scenePos());
+        // This is not to lose grid snaping when moving objects
+        e->setScenePos(lastPos);
+        e->setPos(lastPos);
     }
     sendMouseActionEvent(e);
 }
