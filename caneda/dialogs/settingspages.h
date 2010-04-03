@@ -120,7 +120,7 @@ public:
     QFrame *horiz_line_;
 
     QCheckBox *checkShowGrid, *checkShowFrame;
-    QSpinBox *spinGridX, *spinGridY, *spinSchemaX, *spinSchemaY, *spinFrameX, *spinFrameY;
+    QSpinBox *spinSchemaX, *spinSchemaY, *spinFrameX, *spinFrameY;
     QLineEdit *editName, *editTitle, *editRevision;
     QDateEdit *editDate;
 };

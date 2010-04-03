@@ -392,24 +392,12 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene,
     Scn = scene;
 
     //First we set the grid group of options **********************************
-    checkShowGrid = new QCheckBox;
+    checkShowGrid = new QCheckBox(tr("Show grid"));
     checkShowGrid->setChecked(Scn->isGridVisible());
 
-    spinGridX = new QSpinBox;
-    spinGridX->setMinimum(2);
-    spinGridX->setMaximum(500);
-    spinGridX->setValue(Scn->gridWidth());
-
-    spinGridY = new QSpinBox;
-    spinGridY->setMinimum(2);
-    spinGridY->setMaximum(500);
-    spinGridY->setValue(Scn->gridHeight());
-
     QGroupBox *grid = new QGroupBox(tr("Grid"), this);
-    QFormLayout *gridLayout = new QFormLayout(grid);
-    gridLayout->addRow(tr("Show grid:"), checkShowGrid);
-    gridLayout->addRow(tr("Horizontal Grid:"), spinGridX);
-    gridLayout->addRow(tr("Vertical Grid:"), spinGridY);
+    QVBoxLayout *gridLayout = new QVBoxLayout(grid);
+    gridLayout->addWidget(checkShowGrid);
 
 
     //Next we set the frame group of options **********************************
@@ -513,18 +501,6 @@ void DocumentConfigurationPage::applyConf()
         Scn->undoStack()->push(new ScenePropertyChangeCmd("frame visibility",
                     checkShowFrame->isChecked(), Scn->isFrameVisible(), Scn));
         Scn->setFrameVisible(checkShowFrame->isChecked());
-        changed = true;
-    }
-    if(Scn->gridWidth() != spinGridX->value()) {
-        Scn->undoStack()->push(new ScenePropertyChangeCmd("grid width",
-                    spinGridX->value(), Scn->gridWidth(), Scn));
-        Scn->setGridWidth(spinGridX->value());
-        changed = true;
-    }
-    if(Scn->gridHeight() != spinGridY->value()) {
-        Scn->undoStack()->push(new ScenePropertyChangeCmd("grid height",
-                    spinGridY->value(), Scn->gridHeight(), Scn));
-        Scn->setGridHeight(spinGridY->value());
         changed = true;
     }
     if(Scn->width() != spinSchemaX->value()) {
