@@ -144,27 +144,11 @@ public:
     //! return current undo stack
     QUndoStack* undoStack() { return m_undoStack; }
 
-    //! return grid width
-    uint gridWidth() const { return m_gridWidth; }
-    //! set grid witdh
-    void setGridWidth(uint width) { setGridSize(width, gridHeight()); }
-
-    //!  return grid  height
-    uint gridHeight() const { return m_gridHeight; }
-    //! set grid height
-    void setGridHeight(uint height) { setGridSize(gridWidth(), height); }
-
-    void setGridSize(uint width, uint height);
-
     //! get origin drawing status
     bool isOriginDrawn() const { return m_OriginDrawn; }
     void setOriginDrawn(const bool visibility);
 
-    //! get grid color
-    QColor GridColor() const { return m_gridcolor; }
-    void setGridColor(const QColor & color);
-
-    //! set grid witdh
+    //! set variant property
     bool setProperty(const QString& propName, const QVariant& value);
 
     QString dataSet() const { return m_dataSet; }
@@ -399,13 +383,6 @@ private:
     //! Current mouse action
     MouseAction m_currentMouseAction;
     Caneda::Mode m_currentMode;
-
-    //! Grid width in pixel
-    uint m_gridWidth;
-    //! Grid height in pixel
-    uint m_gridHeight;
-    //! Grid color
-    QColor m_gridcolor;
 
     //! Data Set file name
     QString m_dataSet;

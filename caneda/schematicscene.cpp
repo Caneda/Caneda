@@ -94,15 +94,13 @@ SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 
 /*!
  * \brief Default grid spacing
- * \todo Must be configurable
  */
 static const uint DEFAULT_GRID_SPACE = 10;
 
 /*!
  * \brief Default grid color
- * \todo Must be configurable
  */
-#define DEFAULT_GRID_COLOR Qt::darkGray;
+static const QColor DEFAULT_GRID_COLOR = Qt::darkGray;
 
 //! \brief Initialize a schematic scene
 void SchematicScene::init()
@@ -111,8 +109,6 @@ void SchematicScene::init()
     m_undoStack = new QUndoStack(this);
 
     /* setup grid */
-    m_gridWidth = m_gridHeight = DEFAULT_GRID_SPACE;
-    m_gridcolor = DEFAULT_GRID_COLOR;
     m_snapToGrid = true;
     m_OriginDrawn = true;
 
@@ -201,49 +197,16 @@ QPointF SchematicScene::nearingGridPoint(const QPointF &pos) const
     const QPoint point = pos.toPoint();
 
     int x = qAbs(point.x());
-    x += (m_gridWidth >> 1);
-    x -= x % m_gridWidth;
+    x += (DEFAULT_GRID_SPACE >> 1);
+    x -= x % DEFAULT_GRID_SPACE;
     x *= sign(point.x());
 
     int y = qAbs(point.y());
-    y += (m_gridHeight >> 1);
-    y -= y % m_gridHeight;
+    y += (DEFAULT_GRID_SPACE >> 1);
+    y -= y % DEFAULT_GRID_SPACE;
     y *= sign(point.y());
 
     return QPointF(x, y);
-}
-
-/*!
- * \brief Set grid size
- *
- * \param width: grid width in pixel
- * \param height: grid height in pixel
- */
-void SchematicScene::setGridSize(const uint width, const uint height)
-{
-    /* avoid redrawing */
-    if(m_gridWidth == width && m_gridHeight == height) {
-        return;
-    }
-
-    m_gridWidth = width;
-    m_gridHeight = height;
-}
-
-/*!
- * \brief Set grid color
- *
- * \param color: Grid color
- */
-void SchematicScene::setGridColor(const QColor &color)
-{
-    /* avoid updating */
-    if(m_gridcolor == color) {
-        return;
-    }
-
-    m_gridcolor = color;
-    update();
 }
 
 /*!
@@ -255,15 +218,7 @@ void SchematicScene::setGridColor(const QColor &color)
  */
 bool SchematicScene::setProperty(const QString& propName, const QVariant& value)
 {
-    if(propName == "grid width"){
-        setGridWidth(value.toInt());
-        return true;
-    }
-    else if(propName == "grid height"){
-        setGridHeight(value.toInt());
-        return true;
-    }
-    else if(propName == "frame visibility"){
+    if(propName == "frame visibility"){
         setFrameVisible(value.toBool());
         return true;
     }
@@ -778,7 +733,7 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
     }
 
     /* configure pen */
-    painter->setPen(QPen(GridColor(), 0));
+    painter->setPen(QPen(DEFAULT_GRID_COLOR, 0));
     painter->setBrush(Qt::NoBrush);
 
     /* draw frame */
@@ -839,8 +794,8 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
     /* draw grid */
     if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {
         // While drawing, choose spaing to be twice the actual grid size.
-        const int drawingGridWidth = gridWidth();
-        const int drawingGridHeight = gridHeight();
+        const int drawingGridWidth = DEFAULT_GRID_SPACE;
+        const int drawingGridHeight = DEFAULT_GRID_SPACE;
 
         /* extrema grid points */
         qreal left = int(rect.left()) + drawingGridWidth - (int(rect.left()) % drawingGridWidth);
