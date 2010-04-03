@@ -73,6 +73,7 @@ public:
     QLabel *title_label_;
     QFrame *horiz_line_;
 
+    QCheckBox *checkShowGrid;
     QLineEdit *editEditor, *editLibrary;
     QFont font;
     QPushButton *buttonFont, *buttonBackground;
@@ -119,7 +120,7 @@ public:
     QLabel *title_label_;
     QFrame *horiz_line_;
 
-    QCheckBox *checkShowGrid, *checkShowFrame;
+    QCheckBox *checkShowFrame;
     QSpinBox *spinSchemaX, *spinSchemaY, *spinFrameX, *spinFrameY;
     QLineEdit *editName, *editTitle, *editRevision;
     QDateEdit *editDate;

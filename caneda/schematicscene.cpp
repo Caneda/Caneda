@@ -114,7 +114,7 @@ void SchematicScene::init()
     m_gridWidth = m_gridHeight = DEFAULT_GRID_SPACE;
     m_gridcolor = DEFAULT_GRID_COLOR;
     m_snapToGrid = true;
-    m_gridVisible = true;
+    m_gridVisible = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
     m_OriginDrawn = true;
 
     m_currentMode = Caneda::SchematicMode;
@@ -848,10 +848,6 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
         }
     }
 
-    /* no grid */
-    if(!isGridVisible()) {
-        return;
-    }
 
     /* draw origin */
     const QPointF origin(0, 0);
@@ -864,39 +860,26 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
                     origin.x(), origin.y() + 3.0));
     }
 
-    // Adjust  visual representation of grid to be multiple, if
-    // grid sizes are very small
-#if 0
-    while(gridWidth < 20) {
-        gridWidth *= 2;
-    }
-    while(gridHeight < 20) {
-        gridHeight *= 2;
-    }
-    while(gridWidth > 60) {
-        gridWidth /= 2;
-    }
-    while(gridHeight > 60) {
-        gridHeight /= 2;
-    }
-#endif
-
-    // While drawing, choose spaing to be twice the actual grid size.
-    const int drawingGridWidth = gridWidth();
-    const int drawingGridHeight = gridHeight();
-
-    /* extrema grid points */
-    qreal left = int(rect.left()) + drawingGridWidth - (int(rect.left()) % drawingGridWidth);
-    qreal top = int(rect.top()) + drawingGridHeight - (int(rect.top()) % drawingGridHeight);
-    qreal right = int(rect.right()) - (int(rect.right()) % drawingGridWidth);
-    qreal bottom = int(rect.bottom()) - (int(rect.bottom()) % drawingGridHeight);
-    qreal x, y;
 
     /* draw grid */
-    painter->setBrush(Qt::NoBrush);
-    for(x = left; x <= right; x += drawingGridWidth) {
-        for(y = top; y <=bottom; y += drawingGridHeight) {
-            painter->drawPoint(QPointF(x, y));
+    if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {
+        // While drawing, choose spaing to be twice the actual grid size.
+        const int drawingGridWidth = gridWidth();
+        const int drawingGridHeight = gridHeight();
+
+        /* extrema grid points */
+        qreal left = int(rect.left()) + drawingGridWidth - (int(rect.left()) % drawingGridWidth);
+        qreal top = int(rect.top()) + drawingGridHeight - (int(rect.top()) % drawingGridHeight);
+        qreal right = int(rect.right()) - (int(rect.right()) % drawingGridWidth);
+        qreal bottom = int(rect.bottom()) - (int(rect.bottom()) % drawingGridHeight);
+        qreal x, y;
+
+        /* draw grid */
+        painter->setBrush(Qt::NoBrush);
+        for(x = left; x <= right; x += drawingGridWidth) {
+            for(y = top; y <=bottom; y += drawingGridHeight) {
+                painter->drawPoint(QPointF(x, y));
+            }
         }
     }
 

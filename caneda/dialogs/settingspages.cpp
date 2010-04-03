@@ -96,7 +96,11 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
     SettingsPage(parent)
 {
     Settings *settings = Settings::instance();
+
     //First we set the appereance settings group of options *******************
+    checkShowGrid = new QCheckBox();
+    checkShowGrid->setChecked(settings->currentValue("gui/gridVisible").value<bool>());
+
     buttonFont = new QPushButton;
     font = Caneda::font();
     buttonFont->setText(font.toString());
@@ -116,6 +120,7 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
 
     QGroupBox *appereance = new QGroupBox(tr("Appereance"), this);
     QFormLayout *appereanceLayout = new QFormLayout(appereance);
+    appereanceLayout->addRow(tr("Show grid:"), checkShowGrid);
     appereanceLayout->addRow(tr("Fonts (set after reload):"), buttonFont);
     appereanceLayout->addRow(tr("Document Background Color:"), buttonBackground);
     appereanceLayout->addRow(tr("Icons Size:"), spinIcons);
@@ -213,6 +218,14 @@ void GeneralConfigurationPage::applyConf()
     bool changed = false;
 
     Settings *settings = Settings::instance();
+
+    const bool currentGridVisible =
+        settings->currentValue("gui/gridVisible").value<bool>();
+    const bool newGridVisible = checkShowGrid->isChecked();
+    if (currentGridVisible != newGridVisible) {
+        settings->setCurrentValue("gui/gridVisible", newGridVisible);
+        changed = true;
+    }
 
     const QColor currentBackgroundColor =
         settings->currentValue("gui/backgroundColor").value<QColor>();
@@ -391,16 +404,7 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene,
 
     Scn = scene;
 
-    //First we set the grid group of options **********************************
-    checkShowGrid = new QCheckBox(tr("Show grid"));
-    checkShowGrid->setChecked(Scn->isGridVisible());
-
-    QGroupBox *grid = new QGroupBox(tr("Grid"), this);
-    QVBoxLayout *gridLayout = new QVBoxLayout(grid);
-    gridLayout->addWidget(checkShowGrid);
-
-
-    //Next we set the frame group of options **********************************
+    //We set the frame group of options **********************************
     checkShowFrame = new QCheckBox;
     checkShowFrame->setChecked(Scn->isFrameVisible());
 
@@ -470,7 +474,6 @@ DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene,
     horiz_line_->setFrameShape(QFrame::HLine);
     vlayout1->addWidget(horiz_line_);
 
-    vlayout1->addWidget(grid);
     vlayout1->addWidget(frame);
     vlayout1->addWidget(document);
 
@@ -491,12 +494,6 @@ void DocumentConfigurationPage::applyConf()
 {
     bool changed = false;
 
-    if(Scn->isGridVisible() != checkShowGrid->isChecked()) {
-        Scn->undoStack()->push(new ScenePropertyChangeCmd("grid visibility",
-                    checkShowGrid->isChecked(), Scn->isGridVisible(), Scn));
-        Scn->setGridVisible(checkShowGrid->isChecked());
-        changed = true;
-    }
     if(Scn->isFrameVisible() != checkShowFrame->isChecked()) {
         Scn->undoStack()->push(new ScenePropertyChangeCmd("frame visibility",
                     checkShowFrame->isChecked(), Scn->isFrameVisible(), Scn));
