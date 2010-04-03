@@ -23,6 +23,7 @@
 #include "item.h"
 #include "schematicscene.h"
 #include "schematicview.h"
+#include "settings.h"
 
 #include "caneda-tools/global.h"
 
@@ -61,15 +62,15 @@ bool XmlSymbolFormat::save()
     file.close();
 
     //Generate and save svg ************************************
-    bool state_useGrid = scene->isGridVisible();
-    scene->setGridVisible(false);
+    bool viewGridStatus = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
+    Settings::instance()->setCurrentValue("gui/gridVisible", false);
 
     QSvgGenerator svg_engine;
     QFileInfo info(scene->fileName());
     svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
     scene->toPaintDevice(svg_engine, scene->imageBoundingRect().width(), scene->imageBoundingRect().height());
 
-    scene->setGridVisible(state_useGrid);
+    Settings::instance()->setCurrentValue("gui/gridVisible", viewGridStatus);
 
     return true;
 }

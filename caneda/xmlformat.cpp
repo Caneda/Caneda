@@ -247,11 +247,6 @@ void XmlFormat::saveView(Caneda::XmlWriter *writer)
     writer->writeRect(scene->sceneRect());
     writer->writeEndElement(); //</scenerect>
 
-    writer->writeStartElement("grid");
-    writer->writeAttribute("visible", Caneda::boolToString(scene->isGridVisible()));
-    writer->writeSize(QSize(scene->gridWidth(), scene->gridHeight()));
-    writer->writeEndElement(); //</grid>
-
     writer->writeStartElement("data");
     writer->writeElement("dataset", scene->dataSet());
     writer->writeElement("datadisplay", scene->dataDisplay());
@@ -444,8 +439,6 @@ void XmlFormat::loadView(Caneda::XmlReader *reader)
     }
 
     QRectF sceneRect;
-    bool gridVisible = false;
-    QSize gridSize;
     QString dataSet;
     QString dataDisplay;
     bool opensDataDisplay = false;
@@ -471,19 +464,6 @@ void XmlFormat::loadView(Caneda::XmlReader *reader)
                 }
                 reader->readFurther();
                 Q_ASSERT(reader->isEndElement() && reader->name() == "scenerect");
-            }
-            else if(reader->name() == "grid") {
-                QString att = reader->attributes().value("visible").toString();
-                att = att.toLower();
-                if(att != "true" && att != "false") {
-                    reader->raiseError(QObject::tr("Invalid bool attribute"));
-                    break;
-                }
-                gridVisible = (att == "true");
-                reader->readFurther();
-                gridSize = reader->readSize();
-                reader->readFurther();
-                Q_ASSERT(reader->isEndElement() && reader->name() == "grid");
             }
             else if(reader->name() == "data") {
                 reader->readFurther();
@@ -535,8 +515,6 @@ void XmlFormat::loadView(Caneda::XmlReader *reader)
 
     if(!reader->hasError()) {
         scene->setSceneRect(sceneRect);
-        scene->setGridVisible(gridVisible);
-        scene->setGridSize(gridSize.width(), gridSize.height());
         scene->setSceneRect(sceneRect);
         scene->setDataSet(dataSet);
         scene->setDataDisplay(dataDisplay);

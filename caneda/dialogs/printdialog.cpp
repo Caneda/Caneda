@@ -22,6 +22,8 @@
 
 #include "printdialog.h"
 
+#include "settings.h"
+
 #include "caneda-tools/global.h"
 
 #include <QButtonGroup>
@@ -334,8 +336,8 @@ void PrintDialog::print(bool fit_page)
 
     bool full_page = printer->fullPage();
 
-    bool viewGridStatus = schema->isGridVisible();
-    schema->setGridVisible(false);
+    bool viewGridStatus = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
+    Settings::instance()->setCurrentValue("gui/gridVisible", false);
 
     if(fit_page) {
         schema->render(&qp, QRectF(), schema->imageBoundingRect(), Qt::KeepAspectRatio);
@@ -387,5 +389,5 @@ void PrintDialog::print(bool fit_page)
         }
     }
 
-    schema->setGridVisible(viewGridStatus);
+    Settings::instance()->setCurrentValue("gui/gridVisible", viewGridStatus);
 }

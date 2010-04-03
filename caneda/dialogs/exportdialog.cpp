@@ -22,6 +22,8 @@
 
 #include "exportdialog.h"
 
+#include "settings.h"
+
 #include "caneda-tools/global.h"
 
 #include <math.h>
@@ -530,14 +532,14 @@ void ExportDialog::saveReloadDiagramParameters(SchematicScene *sch, bool save)
     if(save) {
         // memorize the parameters for the schematic
         state_drawFrame = sch->isFrameVisible();
-        state_drawGrid = sch->isGridVisible();
+        state_drawGrid = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
 
-        sch->setGridVisible(draw_grid->isChecked());
+        Settings::instance()->setCurrentValue("gui/gridVisible", draw_grid->isChecked());
         sch->setFrameVisible(draw_frame->isChecked());
     }
     else {
         // restore the parameters for the schematic
-        sch->setGridVisible(state_drawGrid);
+        Settings::instance()->setCurrentValue("gui/gridVisible", state_drawGrid);
         sch->setFrameVisible(state_drawFrame);
     }
 }

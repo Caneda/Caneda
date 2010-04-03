@@ -156,10 +156,6 @@ public:
 
     void setGridSize(uint width, uint height);
 
-    //! return grid visibility
-    bool isGridVisible() const { return m_gridVisible; }
-    void setGridVisible(const bool visibility);
-
     //! get origin drawing status
     bool isOriginDrawn() const { return m_OriginDrawn; }
     void setOriginDrawn(const bool visibility);
@@ -408,8 +404,6 @@ private:
     uint m_gridWidth;
     //! Grid height in pixel
     uint m_gridHeight;
-    //! Grid is visible
-    bool m_gridVisible;
     //! Grid color
     QColor m_gridcolor;
 

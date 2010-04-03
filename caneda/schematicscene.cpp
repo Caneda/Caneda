@@ -114,7 +114,6 @@ void SchematicScene::init()
     m_gridWidth = m_gridHeight = DEFAULT_GRID_SPACE;
     m_gridcolor = DEFAULT_GRID_COLOR;
     m_snapToGrid = true;
-    m_gridVisible = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
     m_OriginDrawn = true;
 
     m_currentMode = Caneda::SchematicMode;
@@ -229,32 +228,12 @@ void SchematicScene::setGridSize(const uint width, const uint height)
 
     m_gridWidth = width;
     m_gridHeight = height;
-
-    if(isGridVisible()) {
-        update();
-    }
 }
 
 /*!
- * \brief Set grid visibility
+ * \brief Set grid color
  *
- * \param visibility: Grid visibility
- */
-void SchematicScene::setGridVisible(const bool visibility)
-{
-    /* avoid updating */
-    if(m_gridVisible == visibility)  {
-        return;
-    }
-
-    m_gridVisible = visibility;
-    update();
-}
-
-/*!
- * \brief Set grid visibility
- *
- * \param visibility: Grid visibility
+ * \param color: Grid color
  */
 void SchematicScene::setGridColor(const QColor &color)
 {
@@ -276,11 +255,7 @@ void SchematicScene::setGridColor(const QColor &color)
  */
 bool SchematicScene::setProperty(const QString& propName, const QVariant& value)
 {
-    if(propName == "grid visibility"){
-        setGridVisible(value.toBool());
-        return true;
-    }
-    else if(propName == "grid width"){
+    if(propName == "grid width"){
         setGridWidth(value.toInt());
         return true;
     }
