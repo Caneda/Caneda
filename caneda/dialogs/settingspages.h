@@ -78,7 +78,6 @@ public:
     QLineEdit *editEditor, *editLibrary;
     QFont font;
     QPushButton *buttonFont, *buttonForeground, *buttonBackground;
-    QComboBox *comboLanguage;
     QSpinBox *spinUndoNum, *spinIcons;
 };
 

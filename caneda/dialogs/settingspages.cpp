@@ -134,31 +134,6 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
 
 
     //Now we set the misc group of options ************************************
-    comboLanguage = new QComboBox();
-    comboLanguage->addItem(tr("system language"));
-    comboLanguage->addItem(tr("English")+" (en)");
-    comboLanguage->addItem(tr("German")+" (de)");
-    comboLanguage->addItem(tr("French")+" (fr)");
-    comboLanguage->addItem(tr("Spanish")+" (es)");
-    comboLanguage->addItem(tr("Italian")+" (it)");
-    comboLanguage->addItem(tr("Polish")+" (pl)");
-    comboLanguage->addItem(tr("Romanian")+" (ro)");
-    comboLanguage->addItem(tr("Japanese")+" (jp)");
-    comboLanguage->addItem(tr("Swedish")+" (sv)");
-    comboLanguage->addItem(tr("Hungarian")+" (hu)");
-    comboLanguage->addItem(tr("Hebrew")+" (he)");
-    comboLanguage->addItem(tr("Portuguese")+" (pt)");
-    comboLanguage->addItem(tr("Turkish")+" (tr)");
-    comboLanguage->addItem(tr("Ukrainian")+" (uk)");
-    comboLanguage->addItem(tr("Russian")+" (ru)");
-    comboLanguage->addItem(tr("Czech")+" (cs)");
-    comboLanguage->addItem(tr("Catalan")+" (ca)");
-    for(int z=comboLanguage->count()-1; z>=0; z--) {
-        if(comboLanguage->itemText(z).section('(',1,1).remove(')') == Caneda::language()) {
-            comboLanguage->setCurrentIndex(z);
-        }
-    }
-
     spinUndoNum = new QSpinBox;
     spinUndoNum->setValue(settings->currentValue("gui/maxUndo").toInt());
     spinUndoNum->setMinimum(0);
@@ -172,7 +147,6 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
 
     QGroupBox *misc = new QGroupBox(tr("Misc"), this);
     QFormLayout *miscLayout = new QFormLayout(misc);
-    miscLayout->addRow(tr("Language (set after reload):"), comboLanguage);
     miscLayout->addRow(tr("Maximum undo operations:"), spinUndoNum);
     miscLayout->addRow(tr("Text editor:"), editEditor);
     miscLayout->addRow(tr("Components library:"), editLibrary);
@@ -272,12 +246,6 @@ void GeneralConfigurationPage::applyConf()
     if (currentIconSize != newIconSize) {
         settings->setCurrentValue("gui/iconSize", newIconSize);
         CanedaMainWindow::instance()->setIconSize(newIconSize);
-    }
-
-    const QString currentLanguage = settings->currentValue("gui/language").toString();
-    const QString newLanguage = comboLanguage->currentText().section('(',1,1).remove(')');
-    if (currentLanguage != newLanguage) {
-        settings->setCurrentValue("gui/language", newLanguage);
     }
 
     const int currentMaxUndo = settings->currentValue("gui/maxUndo").toInt();
