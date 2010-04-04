@@ -351,8 +351,6 @@ void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool 
         func = &SchematicScene::mirrorXItems;
     } else if (sender == "editMirrorY") {
         func = &SchematicScene::mirrorYItems;
-    } else if (sender == "onGrid") {
-        func = &SchematicScene::setItemsOnGrid;
     } else if (sender == "editActivate") {
         func = &SchematicScene::toggleActiveStatus;
     }

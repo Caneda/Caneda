@@ -76,8 +76,6 @@ public:
         MirroringY,
         //! Change status ie short, open
         ChangingActiveStatus,
-        //! Set on grid
-        SettingOnGrid,
         //! Zoom at point
         ZoomingAtPoint,
         //! Zoom out at point
@@ -117,7 +115,6 @@ public:
     void rotateItems(QList<CanedaItem*> &items, const Caneda::UndoOption undo) {
         rotateItems(items, Caneda::Clockwise, undo);
     }
-    void setItemsOnGrid(QList<CanedaItem*> &items, const Caneda::UndoOption);
 
     void deleteItems(QList<CanedaItem*> &items, const Caneda::UndoOption);
     void toggleActiveStatus(QList<CanedaItem*> &components, const Caneda::UndoOption);
@@ -229,7 +226,6 @@ protected:
     void markingEvent(MouseActionEvent *e);
     void rotatingEvent(MouseActionEvent *e);
     void changingActiveStatusEvent(const MouseActionEvent *e);
-    void settingOnGridEvent(const MouseActionEvent *e);
     void zoomingAtPointEvent(MouseActionEvent *e);
     void zoomingOutAtPointEvent(MouseActionEvent *e);
     void paintingDrawEvent(MouseActionEvent *e);

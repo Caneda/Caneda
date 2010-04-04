@@ -1734,7 +1734,6 @@ const QString SchematicScene::Alignment2QString(const Qt::Alignment alignment)
  *
  * \param alignment: alignement used
  * \todo use smart alignment ie: port alignement
- * \todo implement snap on grid
  * \todo string of undo
  * \todo filter wires ???
  */
@@ -1818,95 +1817,12 @@ bool SchematicScene::alignElements(const Qt::Alignment alignment)
 }
 
 
-/*************************************************************************
- *
- *         Set on grid
- *
- *************************************************************************/
-
-
-/*!
- * \brief Set item on grid
- *
- * \param items: item list
- * \param opt: undo option
- * \todo Create a custom undo class for avoiding if
- */
-void SchematicScene::setItemsOnGrid(QList<CanedaItem*> &items,
-        const Caneda::UndoOption opt)
-{
-    QList<CanedaItem*> itemsNotOnGrid;
-    /* create a list of item not on grid */
-    foreach(CanedaItem* item, items) {
-        QPointF pos = item->pos();
-        QPointF gpos = nearingGridPoint(pos);
-        if(pos != gpos) {
-            itemsNotOnGrid << item;
-        }
-    }
-
-    if(itemsNotOnGrid.isEmpty()) {
-        return;
-    }
-
-    /* setup undo */
-    if(opt == Caneda::PushUndoCmd) {
-        m_undoStack->beginMacro(QString("Set on grid"));
-    }
-
-    /* disconnect item */
-    disconnectItems(itemsNotOnGrid, opt);
-
-    /* put item on grid */
-    foreach(CanedaItem *item, itemsNotOnGrid) {
-        QPointF pos = item->pos();
-        QPointF gridPos = nearingGridPoint(pos);
-
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->push(new MoveCmd(item, pos, gridPos));
-        }
-        else {
-            item->setPos(gridPos);
-        }
-    }
-
-    /* try to create connection */
-    connectItems(itemsNotOnGrid, opt);
-
-    /* finalize undo */
-    if(opt == Caneda::PushUndoCmd) {
-        m_undoStack->endMacro();
-    }
-}
-
-
-//! \brief Set on grid event
-void SchematicScene::settingOnGridEvent(const MouseActionEvent *event)
-{
-    //  only left click
-    if(event->type() != QEvent::GraphicsSceneMousePress) {
-        return;
-    }
-    if((event->buttons() & Qt::LeftButton) != Qt::LeftButton) {
-        return;
-    }
-
-    //  do action
-    QList<QGraphicsItem*> _list = items(event->scenePos());
-    if(!_list.isEmpty()) {
-        QList<CanedaItem*> _items = filterItems<CanedaItem>(_list);
-
-        if(!_list.isEmpty()) {
-            setItemsOnGrid(QList<CanedaItem*>() << _items.first(), Caneda::PushUndoCmd);
-        }
-    }
-}
-
 /******************************************************************************
  *
  *     Active status
  *
  *****************************************************************************/
+
 
 /*!
  * \brief Toggle active status
@@ -2852,10 +2768,6 @@ void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
 
         case ChangingActiveStatus:
             changingActiveStatusEvent(e);
-            break;
-
-        case SettingOnGrid:
-            settingOnGridEvent(e);
             break;
 
         case ZoomingAtPoint:

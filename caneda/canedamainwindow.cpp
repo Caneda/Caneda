@@ -413,7 +413,7 @@ void CanedaMainWindow::initActions()
     action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
     connect(action, SIGNAL(triggered()), SLOT(slotPopHierarchy()));
 
-    action = am->createAction("onGrid", tr("Snap to Grid"));
+    action = am->createAction("snapToGrid", tr("Snap to Grid"));
     action->setShortcut(CTRL+Key_U);
     action->setStatusTip(tr("Set grid snap"));
     action->setWhatsThis(tr("Snap to Grid\n\nSets snap to grid"));
@@ -804,7 +804,7 @@ void CanedaMainWindow::initMenus()
 
     alignMenu = menuBar()->addMenu(tr("P&ositioning"));
 
-    alignMenu->addAction(action("onGrid"));
+    alignMenu->addAction(action("snapToGrid"));
 
     alignMenu->addSeparator();
 
@@ -998,7 +998,7 @@ void CanedaMainWindow::addView(CanedaView *view)
         tabWidget()->setCurrentWidget(view->toWidget());
 
         ActionManager *am = ActionManager::instance();
-        Action *action = am->actionForName("onGrid");
+        Action *action = am->actionForName("snapToGrid");
         action->setChecked(schema->gridSnap());
     }
     else {
@@ -1033,7 +1033,7 @@ void CanedaMainWindow::slotCurrentChanged(QWidget *current, QWidget *prev)
                 m_undoGroup->setActiveStack(scene->undoStack());
 
                 ActionManager *am = ActionManager::instance();
-                Action *action = am->actionForName("onGrid");
+                Action *action = am->actionForName("snapToGrid");
                 action->setChecked(scene->gridSnap());
             }
         }
