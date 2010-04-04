@@ -44,6 +44,7 @@ Settings::Settings()
     data["gui/geometry"] = VariantPair(QByteArray());
     data["gui/dockPositions"] = VariantPair(QByteArray());
     data["gui/gridVisible"] = VariantPair(bool(true));
+    data["gui/foregroundColor"] = VariantPair(QColor(Qt::darkGray));
     data["gui/backgroundColor"] = VariantPair(QColor(Qt::white));
     data["gui/font"] = VariantPair(QFont());
     data["gui/largeFontSize"] = VariantPair(qreal(16.0));

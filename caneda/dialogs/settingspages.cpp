@@ -110,6 +110,11 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
         settings->currentValue("gui/backgroundColor").value<QColor>();
     setBackgroundColor(buttonBackground, currentBackgroundColor);
 
+    buttonForeground = new QPushButton;
+    const QColor currentForegroundColor =
+        settings->currentValue("gui/foregroundColor").value<QColor>();
+    setBackgroundColor(buttonForeground, currentForegroundColor);
+
     spinIcons = new QSpinBox;
     spinIcons->setValue(settings->currentValue("gui/iconSize").toSize().height());
     spinIcons->setMinimum(10);
@@ -117,13 +122,15 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
 
     connect(buttonFont, SIGNAL(clicked()), SLOT(slotFontDialog()));
     connect(buttonBackground, SIGNAL(clicked()), SLOT(slotBGColorDialog()));
+    connect(buttonForeground, SIGNAL(clicked()), SLOT(slotFGColorDialog()));
 
     QGroupBox *appereance = new QGroupBox(tr("Appereance"), this);
     QFormLayout *appereanceLayout = new QFormLayout(appereance);
     appereanceLayout->addRow(tr("Show grid:"), checkShowGrid);
     appereanceLayout->addRow(tr("Fonts (set after reload):"), buttonFont);
-    appereanceLayout->addRow(tr("Document Background Color:"), buttonBackground);
-    appereanceLayout->addRow(tr("Icons Size:"), spinIcons);
+    appereanceLayout->addRow(tr("Document background color:"), buttonBackground);
+    appereanceLayout->addRow(tr("Document foreground color:"), buttonForeground);
+    appereanceLayout->addRow(tr("Icons size:"), spinIcons);
 
 
     //Now we set the misc group of options ************************************
@@ -167,8 +174,8 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
     QFormLayout *miscLayout = new QFormLayout(misc);
     miscLayout->addRow(tr("Language (set after reload):"), comboLanguage);
     miscLayout->addRow(tr("Maximum undo operations:"), spinUndoNum);
-    miscLayout->addRow(tr("Text Editor:"), editEditor);
-    miscLayout->addRow(tr("Components Library:"), editLibrary);
+    miscLayout->addRow(tr("Text editor:"), editEditor);
+    miscLayout->addRow(tr("Components library:"), editLibrary);
 
 
     //Finally we set the general layout of all groups *************************
@@ -212,6 +219,15 @@ void GeneralConfigurationPage::slotBGColorDialog()
     }
 }
 
+void GeneralConfigurationPage::slotFGColorDialog()
+{
+    QColor c = QColorDialog::getColor(
+            getBackgroundColor(buttonForeground), this);
+    if(c.isValid()) {
+        setBackgroundColor(buttonForeground,c);
+    }
+}
+
 //! Applies the configuration of this page
 void GeneralConfigurationPage::applyConf()
 {
@@ -232,6 +248,14 @@ void GeneralConfigurationPage::applyConf()
     const QColor newBackgroundColor = getBackgroundColor(buttonBackground);
     if (currentBackgroundColor != newBackgroundColor) {
         settings->setCurrentValue("gui/backgroundColor", newBackgroundColor);
+        changed = true;
+    }
+
+    const QColor currentForegroundColor =
+        settings->currentValue("gui/foregroundColor").value<QColor>();
+    const QColor newForegroundColor = getBackgroundColor(buttonForeground);
+    if (currentForegroundColor != newForegroundColor) {
+        settings->setCurrentValue("gui/foregroundColor", newForegroundColor);
         changed = true;
     }
 

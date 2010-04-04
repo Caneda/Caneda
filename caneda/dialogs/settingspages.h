@@ -64,6 +64,7 @@ public:
 private Q_SLOTS:
     void slotFontDialog();
     void slotBGColorDialog();
+    void slotFGColorDialog();
 
 public:
     void applyConf();
@@ -76,7 +77,7 @@ public:
     QCheckBox *checkShowGrid;
     QLineEdit *editEditor, *editLibrary;
     QFont font;
-    QPushButton *buttonFont, *buttonBackground;
+    QPushButton *buttonFont, *buttonForeground, *buttonBackground;
     QComboBox *comboLanguage;
     QSpinBox *spinUndoNum, *spinIcons;
 };

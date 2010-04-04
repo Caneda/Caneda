@@ -60,6 +60,9 @@
 #include <memory>
 
 
+//! \brief Default grid spacing
+static const uint DEFAULT_GRID_SPACE = 10;
+
 /*!
  * \brief This template method calculates the center of the items on the scene
  *
@@ -91,16 +94,6 @@ SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
 {
     init();
 }
-
-/*!
- * \brief Default grid spacing
- */
-static const uint DEFAULT_GRID_SPACE = 10;
-
-/*!
- * \brief Default grid color
- */
-static const QColor DEFAULT_GRID_COLOR = Qt::darkGray;
 
 //! \brief Initialize a schematic scene
 void SchematicScene::init()
@@ -733,7 +726,9 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
     }
 
     /* configure pen */
-    painter->setPen(QPen(DEFAULT_GRID_COLOR, 0));
+    const QColor foregroundColor =
+        Settings::instance()->currentValue("gui/foregroundColor").value<QColor>();
+    painter->setPen(QPen(foregroundColor, 0));
     painter->setBrush(Qt::NoBrush);
 
     /* draw frame */
