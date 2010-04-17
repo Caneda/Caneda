@@ -1035,7 +1035,19 @@ void SchematicScene::wheelEvent(QGraphicsSceneWheelEvent *e)
 
     if(e->modifiers() & Qt::ControlModifier){
         if(e->delta() > 0) {
+            QPoint viewPoint = sv->mapFromScene(e->scenePos());
+
             sv->zoomIn();
+
+            QPointF afterScalePoint(sv->mapFromScene(e->scenePos()));
+            int dx = (afterScalePoint - viewPoint).toPoint().x();
+            int dy = (afterScalePoint - viewPoint).toPoint().y();
+
+            QScrollBar *hb = sv->horizontalScrollBar();
+            QScrollBar *vb = sv->verticalScrollBar();
+
+            hb->setValue(hb->value() + dx);
+            vb->setValue(vb->value() + dy);
         }
         else {
             sv->zoomOut();
