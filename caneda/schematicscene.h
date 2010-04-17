@@ -30,9 +30,9 @@
 #include <QPointF>
 #include <QVarLengthArray>
 
+class CanedaItem;
 class Diagram;
 class Painting;
-class CanedaItem;
 class QRubberBand;
 class QUndoCommand;
 class QUndoStack;

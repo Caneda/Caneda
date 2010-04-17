@@ -20,11 +20,11 @@
 
 #include "schematicscene.h"
 
+#include "canedamainwindow.h"
 #include "component.h"
 #include "library.h"
 #include "port.h"
 #include "propertygroup.h"
-#include "canedamainwindow.h"
 #include "schematicview.h"
 #include "settings.h"
 #include "undocommands.h"
@@ -788,10 +788,24 @@ void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
 
     /* draw grid */
     if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {
-        // While drawing, choose spaing to be twice the actual grid size.
-        const int drawingGridWidth = DEFAULT_GRID_SPACE;
-        const int drawingGridHeight = DEFAULT_GRID_SPACE;
 
+        int drawingGridWidth = DEFAULT_GRID_SPACE;
+        int drawingGridHeight = DEFAULT_GRID_SPACE;
+
+        //Make grid size display dinamic, depending on zoom level
+        QRectF currentScale = rect;
+        if(currentScale.width() > 1000) {
+            // While drawing, choose spacing to be multiple times the actual grid size.
+            if(currentScale.width() < 4000) {
+                drawingGridWidth *= 4;
+                drawingGridHeight *= 4;
+            }
+            else {
+                drawingGridWidth *= 16;
+                drawingGridHeight *= 16;
+            }
+        }
+        
         /* extrema grid points */
         qreal left = int(rect.left()) + drawingGridWidth - (int(rect.left()) % drawingGridWidth);
         qreal top = int(rect.top()) + drawingGridHeight - (int(rect.top()) % drawingGridHeight);
@@ -2081,8 +2095,6 @@ void SchematicScene::disconnectItems(const QList<CanedaItem*> &qItems,
  * On the otherhand if mouse is pressed and dragged and then release,
  * corresponding feedback (zoom band) is shown which indiates area that will
  * be zoomed. On mouse release, the area (rect) selected is zoomed.
- *
- * \todo Should i doucment the code ?
  */
 void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
 {
