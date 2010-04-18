@@ -24,9 +24,9 @@
 
 #include <QSet>
 
+class CanedaView;
 class FileBrowserLineEditPrivate;
 class QFileInfo;
-class CanedaView;
 class SaveDocumentsDialogPrivate;
 
 class FileBrowserLineEdit : public QWidget
@@ -54,7 +54,7 @@ public:
     enum ResultType {
         SaveSelected = QDialogButtonBox::AcceptRole,
         DoNotSave = QDialogButtonBox::DestructiveRole,
-        AbortClosing = QDialogButtonBox::RejectRole
+        Abort = QDialogButtonBox::RejectRole
     };
 
     SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &modifiedViews, QWidget *parent = 0);

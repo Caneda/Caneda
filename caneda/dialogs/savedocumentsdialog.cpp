@@ -116,7 +116,7 @@ SaveDocumentsDialog::SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &m
 
     ui.buttonBox->button(QDialogButtonBox::Save)->setText(tr("Save Selected"));
     ui.buttonBox->button(QDialogButtonBox::Discard)->setText(tr("Do not Save"));
-    ui.buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Abort Closing"));
+    ui.buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Abort"));
 
     populateItems();
 

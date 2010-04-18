@@ -65,7 +65,7 @@ public Q_SLOTS:
     void slotFileSaveCurrent();
     void slotFileSaveAs(int index);
     void slotFileSaveAsCurrent();
-    void slotFileSaveAll();
+    bool slotFileSaveAll();
     void slotFileClose(int index);
     void slotFileCloseCurrent();
     void slotFilePrint();
@@ -134,7 +134,7 @@ signals:
 
 
 protected:
-    void closeEvent( QCloseEvent *closeEvent);
+    void closeEvent(QCloseEvent *closeEvent);
 
 private Q_SLOTS:
     void loadSettings();

@@ -1054,67 +1054,14 @@ void CanedaMainWindow::slotViewClosed(QWidget *widget)
 /*!
  * \brief Sync the settings to configuration file and close window.
  */
-void CanedaMainWindow::closeEvent( QCloseEvent *e )
+void CanedaMainWindow::closeEvent(QCloseEvent *e)
 {
-    QSet<SchematicScene*> processedScenes;
-    QSet<QPair<CanedaView*, int> > modifiedViews;
-
-    for (int i = 0; i < tabWidget()->count(); ++i) {
-        CanedaView *view = viewFromWidget(tabWidget()->widget(i));
-        if (!view || view->isModified() == false) {
-            continue;
-        }
-
-        SchematicScene *scene = view->isSchematicView() ?
-            view->toSchematicView()->schematicScene() : 0;
-
-        if (scene) {
-            if (!processedScenes.contains(scene)) {
-                processedScenes << scene;
-                modifiedViews << qMakePair(view, i);
-            }
-        } else {
-            modifiedViews << qMakePair(view, i);
-        }
+    if(slotFileSaveAll()) {
+        e->accept();
     }
-
-    if (!modifiedViews.isEmpty()) {
-        QPointer<SaveDocumentsDialog> dialog(new SaveDocumentsDialog(modifiedViews, this));
-        dialog->exec();
-
-        int result = dialog->result();
-
-        if (result == SaveDocumentsDialog::DoNotSave) {
-            e->accept();
-        } else if (result == SaveDocumentsDialog::AbortClosing) {
-            e->ignore();
-            return;
-        } else {
-            QSet<QPair<CanedaView*, QString> > newFilePaths = dialog->newFilePaths();
-            QSet<QPair<CanedaView*, QString> >::iterator it;
-
-            bool failedInBetween = false;
-            for (it = newFilePaths.begin(); it != newFilePaths.end(); ++it) {
-                CanedaView *view = it->first;
-                const QString newFileName = it->second;
-                QString oldFileName = view->fileName();
-
-                view->setFileName(newFileName);
-                if (!view->save()) {
-                    failedInBetween = true;
-                    view->setFileName(oldFileName);
-                }
-            }
-
-            if (failedInBetween) {
-                QMessageBox::critical(0, tr("File save error"),
-                        tr("Could not save some files"));
-                e->ignore();
-                return;
-            } else {
-                e->accept();
-            }
-        }
+    else {
+        e->ignore();
+        return;
     }
 
     saveSettings();
@@ -1240,13 +1187,76 @@ void CanedaMainWindow::slotFileSaveAsCurrent()
 }
 
 /*!
- * \brief Switches to each opened tab and issues save to that.
+ * \brief Opens a dialog giving the user options to save all modified files.
+ *
+ * @return True on success, false on cancel
  */
-void CanedaMainWindow::slotFileSaveAll()
+bool CanedaMainWindow::slotFileSaveAll()
 {
-    for(int i=0; i < tabWidget()->count(); ++i) {
-        slotFileSave(i);
+    QSet<SchematicScene*> processedScenes;
+    QSet<QPair<CanedaView*, int> > modifiedViews;
+
+    for (int i = 0; i < tabWidget()->count(); ++i) {
+        CanedaView *view = viewFromWidget(tabWidget()->widget(i));
+        if (!view || view->isModified() == false) {
+            continue;
+        }
+
+        SchematicScene *scene = view->isSchematicView() ?
+            view->toSchematicView()->schematicScene() : 0;
+
+        if (scene) {
+            if (!processedScenes.contains(scene)) {
+                processedScenes << scene;
+                modifiedViews << qMakePair(view, i);
+            }
+        }
+        else {
+            modifiedViews << qMakePair(view, i);
+        }
     }
+
+    if (!modifiedViews.isEmpty()) {
+        QPointer<SaveDocumentsDialog> dialog(new SaveDocumentsDialog(modifiedViews, this));
+        dialog->exec();
+
+        int result = dialog->result();
+
+        if (result == SaveDocumentsDialog::DoNotSave) {
+            return true;
+        }
+        else if (result == SaveDocumentsDialog::Abort) {
+            return false;
+        }
+        else {
+            QSet<QPair<CanedaView*, QString> > newFilePaths = dialog->newFilePaths();
+            QSet<QPair<CanedaView*, QString> >::iterator it;
+
+            bool failedInBetween = false;
+            for (it = newFilePaths.begin(); it != newFilePaths.end(); ++it) {
+                CanedaView *view = it->first;
+                const QString newFileName = it->second;
+                QString oldFileName = view->fileName();
+
+                view->setFileName(newFileName);
+                if (!view->save()) {
+                    failedInBetween = true;
+                    view->setFileName(oldFileName);
+                }
+            }
+
+            if (failedInBetween) {
+                QMessageBox::critical(0, tr("File save error"),
+                        tr("Could not save some files"));
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    }
+
+    return true;
 }
 
 /*!
