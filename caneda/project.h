@@ -40,6 +40,8 @@ public:
     //! Returns project filename.
     QString libraryFileName() const { return m_libraryFileName; }
 
+    bool isValid();
+
 public Q_SLOTS:
     void slotNewProject();
     void slotOpenProject(QString fileName = 0);
@@ -48,11 +50,15 @@ public Q_SLOTS:
     void slotCloseProject();
 
 signals:
+    void signalNewProject();
+    void signalOpenProject();
+    void signalAddToProject();
+    void signalRemoveFromProject();
+    void signalCloseProject();
     void itemClicked(const QString&, const QString&);
     void itemDoubleClicked(const QString& filename);
 
 private Q_SLOTS:
-    void slotOnClicked(const QString&, const QString&);
     void slotOnDoubleClicked(const QString&, const QString&);
 
 private:

@@ -115,6 +115,13 @@ void MainWindowBase::closeTab(int index)
     removeChildWidget(m_tabWidget->widget(index), true);
 }
 
+void MainWindowBase::closeAllTabs()
+{
+    while(tabWidget()->count() > 0) {
+        removeChildWidget(m_tabWidget->widget(m_tabWidget->currentIndex()), true);
+    }
+}
+
 void MainWindowBase::setupTabWidget()
 {
     m_tabWidget = new TabWidgetPrivate(this);

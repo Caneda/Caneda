@@ -212,6 +212,11 @@ void CanedaMainWindow::setupProjectsSidebar()
 {
     SchematicStateHandler *handler = SchematicStateHandler::instance();
     m_project = new Project(this);
+    connect(m_project, SIGNAL(signalNewProject()), this, SLOT(slotNewProject()));
+    connect(m_project, SIGNAL(signalOpenProject()), this, SLOT(slotOpenProject()));
+    connect(m_project, SIGNAL(signalAddToProject()), this, SLOT(slotAddToProject()));
+    connect(m_project, SIGNAL(signalRemoveFromProject()), this, SLOT(slotRemoveFromProject()));
+    connect(m_project, SIGNAL(signalCloseProject()), this, SLOT(slotCloseProject()));
     connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), handler,
             SLOT(slotSidebarItemClicked(const QString&, const QString&)));
     connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
@@ -1058,15 +1063,15 @@ void CanedaMainWindow::closeEvent(QCloseEvent *e)
 {
     if(slotFileSaveAll()) {
         e->accept();
+
+        saveSettings();
+        emit(signalKillWidgets());
+        MainWindowBase::closeEvent(e);
     }
     else {
         e->ignore();
         return;
     }
-
-    saveSettings();
-    emit(signalKillWidgets());
-    MainWindowBase::closeEvent(e);
 }
 
 /*!
@@ -1552,17 +1557,25 @@ void CanedaMainWindow::slotCenterVertical()
 void CanedaMainWindow::slotNewProject()
 {
     setNormalAction();
-    projectDockWidget->setVisible(true);
-    projectDockWidget->raise();
-    m_project->slotNewProject();
+
+    if(slotFileSaveAll()) {
+        closeAllTabs();
+        projectDockWidget->setVisible(true);
+        projectDockWidget->raise();
+        m_project->slotNewProject();
+    }
 }
 
 void CanedaMainWindow::slotOpenProject(QString fileName)
 {
     setNormalAction();
-    projectDockWidget->setVisible(true);
-    projectDockWidget->raise();
-    m_project->slotOpenProject(fileName);
+
+    if(slotFileSaveAll()) {
+        closeAllTabs();
+        projectDockWidget->setVisible(true);
+        projectDockWidget->raise();
+        m_project->slotOpenProject(fileName);
+    }
 }
 
 void CanedaMainWindow::slotAddToProject()
@@ -1584,7 +1597,11 @@ void CanedaMainWindow::slotRemoveFromProject()
 void CanedaMainWindow::slotCloseProject()
 {
     setNormalAction();
-    m_project->slotCloseProject();
+
+    if(slotFileSaveAll()) {
+        m_project->slotCloseProject();
+        closeAllTabs();
+    }
 }
 
 void CanedaMainWindow::slotInsertEntity()

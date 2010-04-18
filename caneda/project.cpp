@@ -86,11 +86,11 @@ Project::Project(QWidget *parent) : QWidget(parent)
     projClose->setToolTip(tr("Closes the current project"));
     projClose->setWhatsThis(tr("Close Project\n\nCloses the current project"));
 
-    connect(projNew, SIGNAL(clicked()), this, SLOT(slotNewProject()));
-    connect(projOpen, SIGNAL(clicked()), this, SLOT(slotOpenProject()));
-    connect(addToProj, SIGNAL(clicked()), this, SLOT(slotAddToProject()));
-    connect(projDel, SIGNAL(clicked()), this, SLOT(slotRemoveFromProject()));
-    connect(projClose, SIGNAL(clicked()), this, SLOT(slotCloseProject()));
+    connect(projNew, SIGNAL(clicked()), this, SIGNAL(signalNewProject()));
+    connect(projOpen, SIGNAL(clicked()), this, SIGNAL(signalOpenProject()));
+    connect(addToProj, SIGNAL(clicked()), this, SIGNAL(signalAddToProject()));
+    connect(projDel, SIGNAL(clicked()), this, SIGNAL(signalRemoveFromProject()));
+    connect(projClose, SIGNAL(clicked()), this, SIGNAL(signalCloseProject()));
 
     toolbar->addWidget(projNew);
     toolbar->addWidget(projOpen);
@@ -100,7 +100,7 @@ Project::Project(QWidget *parent) : QWidget(parent)
 
     m_projectsSidebar = new ComponentsSidebar(this);
     connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
-            SLOT(slotOnClicked(const QString&, const QString&)));
+            SIGNAL(itemClicked(const QString&, const QString&)));
     connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
             SLOT(slotOnDoubleClicked(const QString&, const QString&)));
 
@@ -109,6 +109,16 @@ Project::Project(QWidget *parent) : QWidget(parent)
     layout->addWidget(m_projectsSidebar);
 
     setWindowTitle(tr("Project View"));
+}
+
+bool Project::isValid()
+{
+    if(projectLibrary == 0) {
+        return false;
+    }
+    else {
+        return true;
+    }
 }
 
 void Project::slotNewProject()
@@ -297,11 +307,6 @@ void Project::slotCloseProject()
         m_libraryFileName = "";
         m_libraryName = "";
     }
-}
-
-void Project::slotOnClicked(const QString& item, const QString& category)
-{
-    emit itemClicked(item, category);
 }
 
 void Project::slotOnDoubleClicked(const QString& item, const QString& category)

@@ -53,6 +53,7 @@ signals:
 
 public Q_SLOTS:
     void closeTab(int index);
+    void closeAllTabs();
 
 private Q_SLOTS:
     void emitWidgetChanged(int index);
