@@ -12,7 +12,7 @@ ADD_SUBDIRECTORY( paintings )
 
 SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   schematicscene.cpp  sidebarmodel.cpp
-  main.cpp mainwindowbase.cpp canedamainwindow.cpp canedaview.cpp
+  main.cpp mainwindowbase.cpp mainwindow.cpp canedaview.cpp
   schematicview.cpp  undocommands.cpp fileformathandler.cpp
   svgitem.cpp property.cpp propertyitem.cpp
   propertygroup.cpp component.cpp port.cpp library.cpp
@@ -23,7 +23,7 @@ SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
 )
 
 SET(CANEDA_MOC_HDRS schematicscene.h schematicview.h mainwindowbase.h
-  canedamainwindow.h componentssidebar.h svgitem.h library.h
+  mainwindow.h componentssidebar.h svgitem.h library.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
   propertydialog.h folderbrowser.h project.h
   actionmanager.h singletonmanager.h schematicstatehandler.h

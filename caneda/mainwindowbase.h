@@ -25,44 +25,48 @@
 
 class QToolButton;
 
-class TabWidgetPrivate : public QTabWidget
+namespace Caneda
 {
-public:
-    TabWidgetPrivate(QWidget *parent = 0);
-};
+    class TabWidgetPrivate : public QTabWidget
+    {
+    public:
+        TabWidgetPrivate(QWidget *parent = 0);
+    };
 
-class MainWindowBase : public QMainWindow
-{
-    Q_OBJECT;
-public:
-    MainWindowBase(QWidget *parent = 0);
-    ~MainWindowBase();
+    class MainWindowBase : public QMainWindow
+    {
+    Q_OBJECT
+    public:
+        MainWindowBase(QWidget *parent = 0);
+        ~MainWindowBase();
 
-    void addChildWidget(QWidget *widget);
-    void removeChildWidget(QWidget *widget, bool deleteWidget = false);
+        void addChildWidget(QWidget *widget);
+        void removeChildWidget(QWidget *widget, bool deleteWidget = false);
 
-    void addAsDockWidget(QWidget *w, const QString& title = "",
-            Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
+        void addAsDockWidget(QWidget *w, const QString& title = "",
+                Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
 
-    QTabWidget* tabWidget() const { return m_tabWidget; }
-    QWidget* currentWidget() const { return m_tabWidget->currentWidget(); }
+        QTabWidget* tabWidget() const { return m_tabWidget; }
+        QWidget* currentWidget() const { return m_tabWidget->currentWidget(); }
 
-signals:
-    void currentWidgetChanged(QWidget *current, QWidget *prev);
-    void closedWidget(QWidget *widget);
+    signals:
+        void currentWidgetChanged(QWidget *current, QWidget *prev);
+        void closedWidget(QWidget *widget);
 
-public Q_SLOTS:
-    void closeTab(int index);
-    void closeAllTabs();
+    public Q_SLOTS:
+        void closeTab(int index);
+        void closeAllTabs();
 
-private Q_SLOTS:
-    void emitWidgetChanged(int index);
+    private Q_SLOTS:
+            void emitWidgetChanged(int index);
 
-private:
-    void setupTabWidget();
+    private:
+        void setupTabWidget();
 
-    TabWidgetPrivate *m_tabWidget;
-    QWidget *m_lastCurrentWidget;
-};
+        TabWidgetPrivate *m_tabWidget;
+        QWidget *m_lastCurrentWidget;
+    };
+
+} // namespace Caneda
 
 #endif //MAINWINDOWBASE_H

@@ -23,179 +23,177 @@
 #include "property.h"
 #include "svgitem.h"
 
-class PropertiesGroup;
-class Port;
-class PortData;
-
-
 namespace Caneda
 {
+    // Forward declarations
+    class PropertiesGroup;
+    class Port;
+    class PortData;
+
+
     //! Represents status of component - short, open or just active.
     enum ActiveStatus {
         Open=0,
         Active,
         Short
     };
-}
-
-/*!
- * \brief Represents the shareable data of component.
- *
- * This class inherits \a QSharedData which enables implicit sharing
- * of this class.
- */
-struct ComponentData : public QSharedData
-{
-    ComponentData(Caneda::ActiveStatus a = Caneda::Active) : activeStatus(a) {}
-
-    //! \brief Component name
-    QString name;
-    //! \brief Component filename
-    QString filename;
-    //! \brief Component prefix
-    QString labelPrefix;
-    /*!
-     * \brief Component display text
-     * \todo Create a localization class
-     */
-    QString displayText;
-    /*!
-     * \brief Component description
-     * \todo Create a localization class
-     */
-    QString description;
-    //! \brief library
-    QString library;
-    //! \brief Properties
-    PropertyMap propertyMap;
-    //! \brief Status of component
-    Caneda::ActiveStatus activeStatus;
-    //! \brief Map of component port (common port data)
-    QMap<QString, QList<PortData*> > schematicPortMap;
-};
-
-/*!
- * \brief Represents the component on schematic.
- *
- * This component can either be directly loaded from an xml doc or
- * manually set data if it requires.
- */
-class Component : public SvgItem
-{
-    Q_OBJECT
-public:
-    enum { Type = CanedaItem::ComponentType };
-
-    Component(SchematicScene *scene = 0);
-    Component(const QSharedDataPointer<ComponentData>& other,
-              SvgPainter *svgPainter,
-              SchematicScene *scene = 0);
-    ~Component();
-
-    //! Returns a list of ports of the component.
-    QList<Port*> ports() const { return m_ports; }
-
-    //! Used for component identification at runtime.
-    int type() const { return Component::Type; }
-
-    //! Returns name of the component.
-    QString name() const { return d->name; }
-
-    //! Returns label prefix of component.
-    QString labelPrefix() const { return d->labelPrefix; }
-    QString labelSuffix() const;
-
-    //! Represents model of component, which is infact a property.
-    QString model() const { return property("model").toString(); }
-
-    //! Returns string to be displayed in sidebar, toolbar or ..
-    QString displayText() const { return d->displayText; }
-
-    //! Returns a helpful text corresponding to component.
-    QString description() const { return d->description; }
-
-    //! Returns the library to which this component belongs.
-    QString library() const { return d->library; }
-
-    //! Returns the property map (actually copy of property map)
-    PropertyMap propertyMap() const { return d->propertyMap; }
-    void setPropertyMap(const PropertyMap& propMap);
-
-
-    //! Returns property group of the component.
-    PropertiesGroup* propertyGroup() const { return m_propertyGroup; }
-
-    void updatePropertyGroup();
-    void createPropertyGroup();
-
-    bool setProperty(const QString& propName, const QVariant& value);
 
     /*!
-     * \brief Method to obtain property's value.
-     * \param propName The name of property.
-     * \return Returns corresponding property if it exists otherwise
-     * returns empty QVariant().
+     * \brief Represents the shareable data of component.
+     *
+     * This class inherits \a QSharedData which enables implicit sharing
+     * of this class.
      */
-    QVariant property(const QString& propName) const {
-        return d->propertyMap.contains(propName) ? d->propertyMap[propName].value() :
-                QVariant();
-    }
+    struct ComponentData : public QSharedData
+    {
+        ComponentData(Caneda::ActiveStatus a = Caneda::Active) : activeStatus(a) {}
 
-    void setPropertyVisible(const QString& propName, bool visibility);
+        //! \brief Component name
+        QString name;
+        //! \brief Component filename
+        QString filename;
+        //! \brief Component prefix
+        QString labelPrefix;
+        /*!
+         * \brief Component display text
+         * \todo Create a localization class
+         */
+        QString displayText;
+        /*!
+         * \brief Component description
+         * \todo Create a localization class
+         */
+        QString description;
+        //! \brief library
+        QString library;
+        //! \brief Properties
+        PropertyMap propertyMap;
+        //! \brief Status of component
+        Caneda::ActiveStatus activeStatus;
+        //! \brief Map of component port (common port data)
+        QMap<QString, QList<PortData*> > schematicPortMap;
+    };
 
     /*!
-     * Returns the label of the component which is of form
-     * {label_prefix}{number_suffix}
+     * \brief Represents the component on schematic.
+     *
+     * This component can either be directly loaded from an xml doc or
+     * manually set data if it requires.
      */
-    QString label() const { return property("label").toString(); }
-    bool setLabel(const QString& _label);
+    class Component : public SvgItem
+    {
+        Q_OBJECT
+    public:
+        enum { Type = CanedaItem::ComponentType };
 
-    //! Returns current symbol of component.
-    QString symbol() const { return property("symbol").toString(); }
-    bool setSymbol(const QString& newSymbol);
+        Component(SchematicScene *scene = 0);
+        Component(const QSharedDataPointer<ComponentData>& other,
+                  SvgPainter *svgPainter,
+                  SchematicScene *scene = 0);
+        ~Component();
 
-    //! Returns the active status of the component.
-    Caneda::ActiveStatus activeStatus() const { return d->activeStatus; }
-    void setActiveStatus(Caneda::ActiveStatus status);
-    void toggleActiveStatus();
+        //! Returns a list of ports of the component.
+        QList<Port*> ports() const { return m_ports; }
 
-    static Component* loadComponentData(Caneda::XmlReader *reader, SchematicScene *scene);
-    void loadData(Caneda::XmlReader *reader);
-    void saveData(Caneda::XmlWriter *writer) const;
+        //! Used for component identification at runtime.
+        int type() const { return Component::Type; }
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
+        //! Returns name of the component.
+        QString name() const { return d->name; }
 
-    int checkAndConnect(Caneda::UndoOption opt);
+        //! Returns label prefix of component.
+        QString labelPrefix() const { return d->labelPrefix; }
+        QString labelSuffix() const;
 
-    Component *copy(SchematicScene *scene = 0) const;
-    void copyDataTo(Component *comp) const;
+        //! Represents model of component, which is infact a property.
+        QString model() const { return property("model").toString(); }
 
-    //! \reimp Reimplemented to return rtti info.
-    bool isComponent() const { return true; }
-    //! \reimp Reimplemented to return rtti info.
-    bool isWire() const { return false; }
+        //! Returns string to be displayed in sidebar, toolbar or ..
+        QString displayText() const { return d->displayText; }
 
-    int launchPropertyDialog(Caneda::UndoOption opt);
+        //! Returns a helpful text corresponding to component.
+        QString description() const { return d->description; }
 
-protected:
-    QRectF adjustedBoundRect(const QRectF& rect);
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+        //! Returns the library to which this component belongs.
+        QString library() const { return d->library; }
 
-private:
-    void init();
+        //! Returns the property map (actually copy of property map)
+        PropertyMap propertyMap() const { return d->propertyMap; }
+        void setPropertyMap(const PropertyMap& propMap);
 
-    //! \brief Component Shared datas
-    QSharedDataPointer<ComponentData> d;
-    //! \brief Property group (ie property of this component)
-    PropertiesGroup *m_propertyGroup;
-    //! \brief Ports list
-    QList<Port*> m_ports;
-};
 
-namespace Caneda
-{
+        //! Returns property group of the component.
+        PropertiesGroup* propertyGroup() const { return m_propertyGroup; }
+
+        void updatePropertyGroup();
+        void createPropertyGroup();
+
+        bool setProperty(const QString& propName, const QVariant& value);
+
+        /*!
+         * \brief Method to obtain property's value.
+         * \param propName The name of property.
+         * \return Returns corresponding property if it exists otherwise
+         * returns empty QVariant().
+         */
+        QVariant property(const QString& propName) const {
+            return d->propertyMap.contains(propName) ? d->propertyMap[propName].value() :
+                    QVariant();
+        }
+
+        void setPropertyVisible(const QString& propName, bool visibility);
+
+        /*!
+         * Returns the label of the component which is of form
+         * {label_prefix}{number_suffix}
+         */
+        QString label() const { return property("label").toString(); }
+        bool setLabel(const QString& _label);
+
+        //! Returns current symbol of component.
+        QString symbol() const { return property("symbol").toString(); }
+        bool setSymbol(const QString& newSymbol);
+
+        //! Returns the active status of the component.
+        Caneda::ActiveStatus activeStatus() const { return d->activeStatus; }
+        void setActiveStatus(Caneda::ActiveStatus status);
+        void toggleActiveStatus();
+
+        static Component* loadComponentData(Caneda::XmlReader *reader, SchematicScene *scene);
+        void loadData(Caneda::XmlReader *reader);
+        void saveData(Caneda::XmlWriter *writer) const;
+
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
+
+        int checkAndConnect(Caneda::UndoOption opt);
+
+        Component *copy(SchematicScene *scene = 0) const;
+        void copyDataTo(Component *comp) const;
+
+        //! \reimp Reimplemented to return rtti info.
+        bool isComponent() const { return true; }
+        //! \reimp Reimplemented to return rtti info.
+        bool isWire() const { return false; }
+
+        int launchPropertyDialog(Caneda::UndoOption opt);
+
+    protected:
+        QRectF adjustedBoundRect(const QRectF& rect);
+        QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+    private:
+        void init();
+
+        //! \brief Component Shared datas
+        QSharedDataPointer<ComponentData> d;
+        //! \brief Property group (ie property of this component)
+        PropertiesGroup *m_propertyGroup;
+        //! \brief Ports list
+        QList<Port*> m_ports;
+    };
+
     bool readComponentData(Caneda::XmlReader *reader, const QString& path,
                            SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d);
-}
+} // namespace Caneda
 
 #endif //COMPONENT_H

@@ -22,21 +22,22 @@
 
 #include "fileformathandler.h"
 
-namespace Caneda {
-    class XmlReader;
-}
-
-class XmlSymbolFormat : public FileFormatHandler
+namespace Caneda
 {
-public:
-    XmlSymbolFormat(SchematicScene *scene = 0);
-    ~XmlSymbolFormat() {}
+    class XmlReader;
 
-    bool save();
-    bool load();
+    class XmlSymbolFormat : public FileFormatHandler
+    {
+    public:
+        XmlSymbolFormat(SchematicScene *scene = 0);
+        ~XmlSymbolFormat() {}
 
-private:
-    QString saveText();
-};
+        bool save();
+        bool load();
+
+    private:
+        QString saveText();
+    };
+} // namespace Caneda
 
 #endif //XMLSYMBOLFORMAT_H

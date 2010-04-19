@@ -27,104 +27,109 @@
 #include <QPen>
 #include <QPolygon>
 
-class Painting;
-
-class PreviewWidget : public QWidget
+namespace Caneda
 {
-    Q_OBJECT;
-public:
-    PreviewWidget(int paintingType, QWidget *widget = 0);
+    // Forward declarations
+    class Painting;
 
-    QPen pen() const { return m_pen; }
-    void setPen(QPen pen);
+    class PreviewWidget : public QWidget
+    {
+        Q_OBJECT;
+    public:
+        PreviewWidget(int paintingType, QWidget *widget = 0);
 
-    QBrush brush() const { return m_brush; }
-    void setBrush(QBrush brush);
+        QPen pen() const { return m_pen; }
+        void setPen(QPen pen);
 
-    int headStyle() const { return m_headStyle; }
-    void setHeadStyle(int style);
+        QBrush brush() const { return m_brush; }
+        void setBrush(QBrush brush);
 
-    int headWidth() const { return m_headWidth; }
-    void setHeadWidth(int width);
+        int headStyle() const { return m_headStyle; }
+        void setHeadStyle(int style);
 
-    int headHeight() const { return m_headHeight; }
-    void setHeadHeight(int height);
+        int headWidth() const { return m_headWidth; }
+        void setHeadWidth(int width);
 
-    QSize headSize() const { return QSize(m_headWidth, m_headHeight); }
-    void setHeadSize(QSize size);
+        int headHeight() const { return m_headHeight; }
+        void setHeadHeight(int height);
 
-    int startAngle() const { return m_startAngle; }
-    void setStartAngle(int angle);
+        QSize headSize() const { return QSize(m_headWidth, m_headHeight); }
+        void setHeadSize(QSize size);
 
-    int spanAngle() const { return m_spanAngle; }
-    void setSpanAngle(int angle);
+        int startAngle() const { return m_startAngle; }
+        void setStartAngle(int angle);
 
-    void paintEvent(QPaintEvent *event);
+        int spanAngle() const { return m_spanAngle; }
+        void setSpanAngle(int angle);
 
-    void calcHeadPoints();
+        void paintEvent(QPaintEvent *event);
 
-    int heightForWidth(int w) const { return w; }
+        void calcHeadPoints();
 
-    public slots:
-        void toggleBackground(bool state);
+        int heightForWidth(int w) const { return w; }
 
-protected:
-    void resizeEvent(QResizeEvent *event);
+        public slots:
+            void toggleBackground(bool state);
 
-private:
-    QRect adjustedRect() const;
-    void drawBackgroundBoxes(QPainter *painter);
+    protected:
+        void resizeEvent(QResizeEvent *event);
 
-    void drawArrow(QPainter *painter);
-    void drawEllipse(QPainter *painter);
-    void drawEllipseArc(QPainter *painter);
-    void drawLine(QPainter *painter);
-    void drawRectangle(QPainter *painter);
+    private:
+        QRect adjustedRect() const;
+        void drawBackgroundBoxes(QPainter *painter);
 
-    QPen m_pen;
-    QBrush m_brush;
-    QPixmap m_lightPixmap;
-    QPixmap m_darkPixmap;
+        void drawArrow(QPainter *painter);
+        void drawEllipse(QPainter *painter);
+        void drawEllipseArc(QPainter *painter);
+        void drawLine(QPainter *painter);
+        void drawRectangle(QPainter *painter);
 
-    int m_headStyle;
-    QPolygon m_headPolygon;
-    int m_headWidth;
-    int m_headHeight;
+        QPen m_pen;
+        QBrush m_brush;
+        QPixmap m_lightPixmap;
+        QPixmap m_darkPixmap;
 
-    int m_startAngle;
-    int m_spanAngle;
+        int m_headStyle;
+        QPolygon m_headPolygon;
+        int m_headWidth;
+        int m_headHeight;
 
-    bool m_drawBackground;
+        int m_startAngle;
+        int m_spanAngle;
 
-    int m_paintingType;
-};
+        bool m_drawBackground;
 
-class StyleDialog : public QDialog, public Ui::StyleDialogBase
-{
-    Q_OBJECT;
+        int m_paintingType;
+    };
 
-public:
-    StyleDialog(Painting *painting, Caneda::UndoOption opt, QWidget *parent = 0);
+    class StyleDialog : public QDialog, public Ui::StyleDialogBase
+    {
+        Q_OBJECT;
 
-public Q_SLOTS:
-    void setupStyleWidgets();
-    void updatePreview();
+    public:
+        StyleDialog(Painting *painting, Caneda::UndoOption opt, QWidget *parent = 0);
 
-    void launchColorDialog();
-    void applySettings();
+    public Q_SLOTS:
+        void setupStyleWidgets();
+        void updatePreview();
 
-private:
-    PreviewWidget *previewWidget;
-    QColor lineColor;
-    QColor fillColor;
+        void launchColorDialog();
+        void applySettings();
 
-    QPixmap lineColorPixmap;
-    QPixmap fillColorPixmap;
+    private:
+        PreviewWidget *previewWidget;
+        QColor lineColor;
+        QColor fillColor;
 
-    QPolygon headPolygon;
+        QPixmap lineColorPixmap;
+        QPixmap fillColorPixmap;
 
-    Painting *painting;
-    Caneda::UndoOption undoOption;
-};
+        QPolygon headPolygon;
+
+        Painting *painting;
+        Caneda::UndoOption undoOption;
+    };
+
+} // namespace Caneda
 
 #endif //STYLEDIALOG_H

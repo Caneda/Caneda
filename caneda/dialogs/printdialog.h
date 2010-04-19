@@ -29,52 +29,56 @@ class QCheckBox;
 class QLineEdit;
 class QRadioButton;
 
-/*!
- * This class represents the configuration dialog to print a
- * schematic.
- * It also takes care of the print itself
- */
-class PrintDialog : public QWidget
+namespace Caneda
 {
-    Q_OBJECT;
+    /*!
+     * This class represents the configuration dialog to print a
+     * schematic.
+     * It also takes care of the print itself
+     */
+    class PrintDialog : public QWidget
+    {
+        Q_OBJECT;
 
-public:
-    PrintDialog(SchematicScene *, QWidget * = 0);
-    ~PrintDialog();
+    public:
+        PrintDialog(SchematicScene *, QWidget * = 0);
+        ~PrintDialog();
 
-    QString fileName() const;
-    void setFileName(const QString &);
+        QString fileName() const;
+        void setFileName(const QString &);
 
-    QString docName() const;
-    void setDocName(const QString &);
+        QString docName() const;
+        void setDocName(const QString &);
 
-    int pagesCount(bool = false) const;
+        int pagesCount(bool = false) const;
 
-    int horizontalPagesCount(bool = false) const;
-    int verticalPagesCount(bool = false) const;
+        int horizontalPagesCount(bool = false) const;
+        int verticalPagesCount(bool = false) const;
 
-private:
-    void buildPrintTypeDialog();
+    private:
+        void buildPrintTypeDialog();
 
-private Q_SLOTS:
-    void updatePrintTypeDialog();
-    void browseFilePrintTypeDialog();
-    void acceptPrintTypeDialog();
-    void print(bool);
+    private Q_SLOTS:
+        void updatePrintTypeDialog();
+        void browseFilePrintTypeDialog();
+        void acceptPrintTypeDialog();
+        void print(bool);
 
-private:
-    SchematicScene *schema;
-    QPrinter *printer;
-    QString docname;
-    QString filename;
+    private:
+        SchematicScene *schema;
+        QPrinter *printer;
+        QString docname;
+        QString filename;
 
-    QDialog *dialog;
-    QRadioButton *printerChoice;
-    QRadioButton *pdfChoice;
-    QRadioButton *psChoice;
-    QLineEdit *editFilepath;
-    QCheckBox *fitInPage;
-    QPushButton *browseButton;
-};
+        QDialog *dialog;
+        QRadioButton *printerChoice;
+        QRadioButton *pdfChoice;
+        QRadioButton *psChoice;
+        QLineEdit *editFilepath;
+        QCheckBox *fitInPage;
+        QPushButton *browseButton;
+    };
+
+} // namespace Caneda
 
 #endif //PRINT_DIALOG_H

@@ -21,26 +21,29 @@
 #include "xmlformat.h"
 #include "xmlsymbolformat.h"
 
-//! Constructor
-FileFormatHandler::FileFormatHandler(SchematicScene *scene) : m_schematicScene(scene)
+namespace Caneda
 {
-}
-
-/*!
- * \brief Factory method to return appropritate file handler based on file
- * format.
- *
- * Returns NULL if there doesn't exist a handler for given extension.
- */
-FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
-        SchematicScene *scene)
-{
-    if(ext == "xsch") {
-        return new XmlFormat(scene);
+    //! Constructor
+    FileFormatHandler::FileFormatHandler(SchematicScene *scene) : m_schematicScene(scene)
+    {
     }
-    else if(ext == "xsym") {
-        return new XmlSymbolFormat(scene);
-    }
-    return 0;
-}
 
+    /*!
+     * \brief Factory method to return appropritate file handler based on file
+     * format.
+     *
+     * Returns NULL if there doesn't exist a handler for given extension.
+     */
+    FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
+            SchematicScene *scene)
+    {
+        if(ext == "xsch") {
+            return new XmlFormat(scene);
+        }
+        else if(ext == "xsym") {
+            return new XmlSymbolFormat(scene);
+        }
+        return 0;
+    }
+
+} // namespace Caneda

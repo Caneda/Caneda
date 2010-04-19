@@ -23,45 +23,49 @@
 #include <QGraphicsItemGroup>
 #include <QObject>
 
-// Forward declarations.
-class Component;
-class PropertyItem;
-class SchematicScene;
-
-/*!
- * \brief This class groups the properties of a item.
- * This takes care of creation and destruction of property items as
- * well. This stores a reference to the actual property map.
- * \sa Property, PropertyItem
- */
-class PropertiesGroup : public QObject, public QGraphicsItemGroup
+namespace Caneda
 {
-    Q_OBJECT;
-public:
-    enum { PropertiesGroupType = UserType + 73 };
-    enum { Type = PropertiesGroupType };
+    // Forward declarations.
+    class Component;
+    class PropertyItem;
+    class SchematicScene;
 
-    PropertiesGroup(SchematicScene *scene = 0);
+    /*!
+     * \brief This class groups the properties of a item.
+     * This takes care of creation and destruction of property items as
+     * well. This stores a reference to the actual property map.
+     * \sa Property, PropertyItem
+     */
+    class PropertiesGroup : public QObject, public QGraphicsItemGroup
+    {
+        Q_OBJECT;
+    public:
+        enum { PropertiesGroupType = UserType + 73 };
+        enum { Type = PropertiesGroupType };
 
-    //! Class identifier.
-    int type() { return PropertiesGroupType; }
+        PropertiesGroup(SchematicScene *scene = 0);
 
-    void realignItems();
-    void forceUpdate();
+        //! Class identifier.
+        int type() { return PropertiesGroupType; }
 
-    SchematicScene* schematicScene() const;
-    Component* component() const;
+        void realignItems();
+        void forceUpdate();
 
-    void setFontSize(int pointSize);
+        SchematicScene* schematicScene() const;
+        Component* component() const;
 
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+        void setFontSize(int pointSize);
 
-private:
-    //! Internal storage of property items for book keeping.
-    QMap<QString, PropertyItem*> m_propertyItemsMap;
-    int m_pointSize;
-};
+    protected:
+        void mousePressEvent(QGraphicsSceneMouseEvent *event);
+        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+    private:
+        //! Internal storage of property items for book keeping.
+        QMap<QString, PropertyItem*> m_propertyItemsMap;
+        int m_pointSize;
+    };
+
+} // namespace Caneda
 
 #endif //PROPERTYGROUP_H

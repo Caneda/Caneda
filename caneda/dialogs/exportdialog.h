@@ -40,77 +40,82 @@ class QSignalMapper;
 class QSpinBox;
 class QSvgGenerator;
 
-/*!
- * This class represents the dialog for exporting a schema
- * as an image according to the selection of the user.
- * \todo In the long run base it on .ui file.
- */
-class ExportDialog : public QDialog
+namespace Caneda
 {
-    Q_OBJECT;
-
-public:
-    ExportDialog(QList<SchematicScene *> schemasToExport, QWidget *parent = 0);
-    virtual ~ExportDialog();
-
-private:
-    struct ExportDiagramLine
+    /*!
+     * This class represents the dialog for exporting a schema
+     * as an image according to the selection of the user.
+     * \todo In the long run base it on .ui file.
+     */
+    class ExportDialog : public QDialog
     {
-        ExportDiagramLine(SchematicScene *);
-        virtual ~ExportDiagramLine();
+        Q_OBJECT;
 
-        SchematicScene *schema;
-        QBoxLayout *sizeLayout();
+    public:
+        ExportDialog(QList<SchematicScene *> schemasToExport, QWidget *parent = 0);
+        virtual ~ExportDialog();
 
-        QCheckBox *must_export;
-        QLabel *title_label;
-        QLineEdit *file_name;
-        QSpinBox *width;
-        QLabel *x_label;
-        QSpinBox *height;
-        QPushButton *keep_ratio;
-        QPushButton *reset_size;
-        QPushButton *preview;
+    private:
+        struct ExportDiagramLine
+        {
+            ExportDiagramLine(SchematicScene *);
+            virtual ~ExportDiagramLine();
+
+            SchematicScene *schema;
+            QBoxLayout *sizeLayout();
+
+            QCheckBox *must_export;
+            QLabel *title_label;
+            QLineEdit *file_name;
+            QSpinBox *width;
+            QLabel *x_label;
+            QSpinBox *height;
+            QPushButton *keep_ratio;
+            QPushButton *reset_size;
+            QPushButton *preview;
+        };
+
+    private:
+        QList<SchematicScene *> schemas;
+        QHash<int, ExportDialog::ExportDiagramLine *> diagramsList;
+
+        QWidget *diagramsListPart();
+        QWidget *lastPart();
+        QGroupBox *setupOptionsGroupBox();
+
+        qreal diagramRatio(SchematicScene *);
+        QSizeF diagramSize(SchematicScene *);
+        int diagramsToExportCount() const;
+        void exportDiagram(ExportDiagramLine *);
+        QImage generateImage(SchematicScene *, int, int, bool);
+        void generateSvg(SchematicScene *, int, int, bool, QFile &);
+        void saveReloadDiagramParameters(SchematicScene *, bool = true);
+
+        QLineEdit *dirpath;
+        QComboBox *format;
+        QCheckBox *draw_grid;
+        QCheckBox *draw_frame;
+        QDialogButtonBox *buttons;
+
+        QSignalMapper *preview_mapper_;
+        QSignalMapper *width_mapper_;
+        QSignalMapper *height_mapper_;
+        QSignalMapper *ratio_mapper_;
+        QSignalMapper *reset_mapper_;
+
+    public Q_SLOTS:
+        void slot_correctWidth(int);
+        void slot_correctHeight(int);
+        void slot_keepRatioChanged(int);
+        void slot_resetSize(int);
+        void slot_chooseDirectory();
+        void slot_export();
+        void slot_changeUseFrame();
+        void slot_checkDiagramsCount();
+        void slot_changeFilesExtension(bool = false);
+        void slot_previewDiagram(int);
     };
 
-private:
-    QList<SchematicScene *> schemas;
-    QHash<int, ExportDialog::ExportDiagramLine *> diagramsList;
+} // namespace Caneda
 
-    QWidget *diagramsListPart();
-    QWidget *lastPart();
-    QGroupBox *setupOptionsGroupBox();
-
-    qreal diagramRatio(SchematicScene *);
-    QSizeF diagramSize(SchematicScene *);
-    int diagramsToExportCount() const;
-    void exportDiagram(ExportDiagramLine *);
-    QImage generateImage(SchematicScene *, int, int, bool);
-    void generateSvg(SchematicScene *, int, int, bool, QFile &);
-    void saveReloadDiagramParameters(SchematicScene *, bool = true);
-
-    QLineEdit *dirpath;
-    QComboBox *format;
-    QCheckBox *draw_grid;
-    QCheckBox *draw_frame;
-    QDialogButtonBox *buttons;
-
-    QSignalMapper *preview_mapper_;
-    QSignalMapper *width_mapper_;
-    QSignalMapper *height_mapper_;
-    QSignalMapper *ratio_mapper_;
-    QSignalMapper *reset_mapper_;
-
-public Q_SLOTS:
-    void slot_correctWidth(int);
-    void slot_correctHeight(int);
-    void slot_keepRatioChanged(int);
-    void slot_resetSize(int);
-    void slot_chooseDirectory();
-    void slot_export();
-    void slot_changeUseFrame();
-    void slot_checkDiagramsCount();
-    void slot_changeFilesExtension(bool = false);
-    void slot_previewDiagram(int);
-};
 #endif

@@ -24,80 +24,85 @@
 
 #include <QFont>
 
-/*!
- * \brief Represents parameter of sub ckt.
- *
- * This class simply abstracts the properties of sub ckt component.
- * This objects of this class is used mostly in symbol mode.
- */
-struct SubParameter
+namespace Caneda
 {
-    SubParameter(bool display_, const QString& Name_,
-            QString Descr_ = QString(), QString defVal = QString()):
-        display(display_),
-        name(Name_),
-        description(Descr_),
-        defaultValue(defVal)
-    {};
 
-    QString text() const;
+    /*!
+     * \brief Represents parameter of sub ckt.
+     *
+     * This class simply abstracts the properties of sub ckt component.
+     * This objects of this class is used mostly in symbol mode.
+     */
+    struct SubParameter
+    {
+        SubParameter(bool display_, const QString& Name_,
+                QString Descr_ = QString(), QString defVal = QString()):
+            display(display_),
+            name(Name_),
+            description(Descr_),
+            defaultValue(defVal)
+        {};
 
-    bool display;
-    QString name;
-    QString description;
-    QString defaultValue;
-};
+        QString text() const;
 
-/*!
- * \brief Represents subckt component's id and properties as text item.
- *
- * This class provides convinient approach set subckt properties. Parameters
- * can be defined by user as well which can be added to this using \a addParameter.
- * This also holds the subckt prefix which is later used in netlist.
- */
-class IdText : public Painting
-{
-public:
-    enum {
-        Type = Painting::IdTextType
+        bool display;
+        QString name;
+        QString description;
+        QString defaultValue;
     };
 
-    IdText(SchematicScene *scene = 0);
-    ~IdText();
+    /*!
+     * \brief Represents subckt component's id and properties as text item.
+     *
+     * This class provides convinient approach set subckt properties. Parameters
+     * can be defined by user as well which can be added to this using \a addParameter.
+     * This also holds the subckt prefix which is later used in netlist.
+     */
+    class IdText : public Painting
+    {
+    public:
+        enum {
+            Type = Painting::IdTextType
+        };
 
-    //! \brief Returns the prefix of subckt component.
-    QString prefix() const { return m_prefix; }
-    void setPrefix(const QString &prefix);
+        IdText(SchematicScene *scene = 0);
+        ~IdText();
 
-    //! \brief Returns the font used to draw subckt text.
-    QFont font() const { return m_font; }
-    void setFont(const QFont &font);
+        //! \brief Returns the prefix of subckt component.
+        QString prefix() const { return m_prefix; }
+        void setPrefix(const QString &prefix);
 
-    void addParameter(bool display, QString name, QString description = QString(),
-            QString defVal = QString());
-    void removeParameter(QString name);
+        //! \brief Returns the font used to draw subckt text.
+        QFont font() const { return m_font; }
+        void setFont(const QFont &font);
 
-    SubParameter* parameter(const QString &name) const;
+        void addParameter(bool display, QString name, QString description = QString(),
+                QString defVal = QString());
+        void removeParameter(QString name);
 
-    //! \brief Disable rotate.
-    void rotate90(Caneda::AngleDirection) {};
-    //! \brief Disable mirroring.
-    void mirrorAlong(Qt::Axis) {};
+        SubParameter* parameter(const QString &name) const;
 
-    void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
+        //! \brief Disable rotate.
+        void rotate90(Caneda::AngleDirection) {};
+        //! \brief Disable mirroring.
+        void mirrorAlong(Qt::Axis) {};
 
-    void updateGeometry();
+        void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-    int type() const { return IdText::Type; }
-    IdText* copy(SchematicScene *scene) const;
+        void updateGeometry();
 
-    void saveData(Caneda::XmlWriter *writer) const;
-    void loadData(Caneda::XmlReader *reader);
+        int type() const { return IdText::Type; }
+        IdText* copy(SchematicScene *scene) const;
 
-private:
-    QString m_prefix;
-    QFont m_font;
-    QList<SubParameter*> m_parameters;
-};
+        void saveData(Caneda::XmlWriter *writer) const;
+        void loadData(Caneda::XmlReader *reader);
+
+    private:
+        QString m_prefix;
+        QFont m_font;
+        QList<SubParameter*> m_parameters;
+    };
+
+} // namespace Caneda
 
 #endif //ID_TEXT_H

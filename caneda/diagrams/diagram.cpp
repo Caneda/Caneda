@@ -17,10 +17,15 @@
 
 #include "diagram.h"
 
-Diagram::Diagram(SchematicScene *scene) : CanedaItem(0, scene)
+namespace Caneda
 {
-}
 
-Diagram::~Diagram()
-{
-}
+    Diagram::Diagram(SchematicScene *scene) : CanedaItem(0, scene)
+    {
+    }
+
+    Diagram::~Diagram()
+    {
+    }
+
+} // namespace Caneda

@@ -28,68 +28,74 @@
 #include <QItemDelegate>
 #include <QTableView>
 
-class Component;
+// Forward declarations.
 class QStandardItemModel;
 
-typedef QModelIndex& IndexRef;
-typedef const QModelIndex& IndexConstRef;
-
-class PropertyModel : public QAbstractTableModel
+namespace Caneda
 {
-    Q_OBJECT;
-public:
-    enum {
-        OptionsRole = Qt::UserRole + 1
+    // Forward declarations.
+    class Component;
+
+    typedef QModelIndex& IndexRef;
+    typedef const QModelIndex& IndexConstRef;
+
+    class PropertyModel : public QAbstractTableModel
+    {
+        Q_OBJECT;
+    public:
+        enum {
+            OptionsRole = Qt::UserRole + 1
+        };
+
+        PropertyModel(PropertyMap map, QObject *parent = 0);
+
+        int rowCount(IndexConstRef) const { return propMap.size(); }
+        int columnCount(IndexConstRef) const { return 3; }
+
+        QVariant data(IndexConstRef, int role) const;
+        QVariant headerData(int section, Qt::Orientation o, int role) const;
+
+        Qt::ItemFlags flags(const QModelIndex &index) const;
+        bool setData(const QModelIndex &index, const QVariant &value,
+                int role = Qt::EditRole);
+
+    private:
+        friend class PropertyDialog;
+
+        PropertyMap propMap;
+        QList<QString> keys;
     };
 
-    PropertyModel(PropertyMap map, QObject *parent = 0);
+    class PropertyValueDelegate : public QItemDelegate
+    {
+        Q_OBJECT;
+    public:
+        PropertyValueDelegate(QObject *parent = 0);
 
-    int rowCount(IndexConstRef) const { return propMap.size(); }
-    int columnCount(IndexConstRef) const { return 3; }
+        QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                const QModelIndex &index) const;
 
-    QVariant data(IndexConstRef, int role) const;
-    QVariant headerData(int section, Qt::Orientation o, int role) const;
-
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex &index, const QVariant &value,
-            int role = Qt::EditRole);
-
-private:
-    friend class PropertyDialog;
-
-    PropertyMap propMap;
-    QList<QString> keys;
-};
-
-class PropertyValueDelegate : public QItemDelegate
-{
-    Q_OBJECT;
-public:
-    PropertyValueDelegate(QObject *parent = 0);
-
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-            const QModelIndex &index) const;
-
-    void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model,
-            const QModelIndex &index) const;
-};
+        void setEditorData(QWidget *editor, const QModelIndex &index) const;
+        void setModelData(QWidget *editor, QAbstractItemModel *model,
+                const QModelIndex &index) const;
+    };
 
 
-class PropertyDialog : public QDialog, public Ui::PropertyDialogBase
-{
-    Q_OBJECT;
-public:
-    PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent = 0);
+    class PropertyDialog : public QDialog, public Ui::PropertyDialogBase
+    {
+        Q_OBJECT;
+    public:
+        PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent = 0);
 
-public Q_SLOTS:
-    void accept();
+    public Q_SLOTS:
+        void accept();
 
-private:
-    PropertyModel *m_model;
-    Component *m_component;
-    Caneda::UndoOption m_undoOption;
-};
+    private:
+        PropertyModel *m_model;
+        Component *m_component;
+        Caneda::UndoOption m_undoOption;
+    };
 
+} // namespace Caneda
 
 #endif //PROPERTYDIALOG_H

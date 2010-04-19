@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "canedamainwindow.h"
+#include "mainwindow.h"
 
 #include "caneda-tools/global.h"
 
@@ -37,7 +37,7 @@ int main(int argc,char *argv[])
    splash.show();
    app.processEvents();
 
-   CanedaMainWindow *mw = CanedaMainWindow::instance();
+   Caneda::MainWindow *mw = Caneda::MainWindow::instance();
    QTimer::singleShot(100, mw, SLOT(show()));
 
    splash.finish(mw);

@@ -29,131 +29,135 @@
 #include <QStyleOptionGraphicsItem>
 #include <QTextDocument>
 
-/*!
- * \brief Constructs a text item.
- * \param text Item's text.
- * \param scene SchematicScene to which this item should be added.
- */
-GraphicText::GraphicText(const QString &text, SchematicScene *scene) : Painting(scene)
+namespace Caneda
 {
-    m_textItem = new QGraphicsTextItem(this);
-    m_textItem->setAcceptedMouseButtons(0);
-    setText(text);
-}
-
-//! \brief Destructor.
-GraphicText::~GraphicText()
-{
-}
-
-QString GraphicText::plainText() const
-{
-    return m_textItem->toPlainText();
-}
-
-/*!
- * \brief Sets the item's text to \a text.
- *
- * The text will be displayed as plain text. Newline characters ('\n') as well
- * as characters of type QChar::LineSeparator will cause item to break the
- * text into multiple lines.
- */
-void GraphicText::setPlainText(const QString &text)
-{
-    prepareGeometryChange();
-    QString unicodeText = Caneda::latexToUnicode(text);
-    m_textItem->setPlainText(unicodeText);
-    setPaintingRect(m_textItem->boundingRect());
-}
-
-QString GraphicText::richText() const
-{
-    return m_textItem->toHtml();
-}
-
-void GraphicText::setRichText(const QString &text)
-{
-    prepareGeometryChange();
-    QString unicodeText = Caneda::latexToUnicode(text);
-    m_textItem->setHtml(unicodeText);
-    setPaintingRect(m_textItem->boundingRect());
-}
-
-void GraphicText::setText(const QString &text)
-{
-    if(Qt::mightBeRichText(text)) {
-        setRichText(text);
+    /*!
+     * \brief Constructs a text item.
+     * \param text Item's text.
+     * \param scene SchematicScene to which this item should be added.
+     */
+    GraphicText::GraphicText(const QString &text, SchematicScene *scene) : Painting(scene)
+    {
+        m_textItem = new QGraphicsTextItem(this);
+        m_textItem->setAcceptedMouseButtons(0);
+        setText(text);
     }
-    else {
-        setPlainText(text);
+
+    //! \brief Destructor.
+    GraphicText::~GraphicText()
+    {
     }
-}
 
-//! \brief Draw's hightlight rect if selected.
-void GraphicText::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
-{
-    if(option->state & QStyle::State_Selected) {
-        Caneda::drawHighlightRect(painter, boundingRect(), 1, option);
+    QString GraphicText::plainText() const
+    {
+        return m_textItem->toPlainText();
     }
-}
 
-//! \brief Returns a copy of this item.
-GraphicText* GraphicText::copy(SchematicScene *scene) const
-{
-    GraphicText *text = new GraphicText(richText(), scene);
-    Painting::copyDataTo(text);
-    return text;
-}
+    /*!
+     * \brief Sets the item's text to \a text.
+     *
+     * The text will be displayed as plain text. Newline characters ('\n') as well
+     * as characters of type QChar::LineSeparator will cause item to break the
+     * text into multiple lines.
+     */
+    void GraphicText::setPlainText(const QString &text)
+    {
+        prepareGeometryChange();
+        QString unicodeText = Caneda::latexToUnicode(text);
+        m_textItem->setPlainText(unicodeText);
+        setPaintingRect(m_textItem->boundingRect());
+    }
 
-//! \brief Save's data as xml.
-void GraphicText::saveData(Caneda::XmlWriter *writer) const
-{
-    writer->writeStartElement("painting");
-    writer->writeAttribute("name", "text");
+    QString GraphicText::richText() const
+    {
+        return m_textItem->toHtml();
+    }
 
-    writer->writeEmptyElement("properties");
-    writer->writeAttribute("text", richText());
-    writer->writePointAttribute(pos(), "pos");
+    void GraphicText::setRichText(const QString &text)
+    {
+        prepareGeometryChange();
+        QString unicodeText = Caneda::latexToUnicode(text);
+        m_textItem->setHtml(unicodeText);
+        setPaintingRect(m_textItem->boundingRect());
+    }
 
-    writer->writeEndElement(); // </painting>
-}
-
-//! \brief Loads text data from xml referred by \a reader.
-void GraphicText::loadData(Caneda::XmlReader *reader)
-{
-    Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-    Q_ASSERT(reader->attributes().value("name") == "text");
-
-    while(!reader->atEnd()) {
-        reader->readNext();
-
-        if(reader->isEndElement()) {
-            break;
+    void GraphicText::setText(const QString &text)
+    {
+        if(Qt::mightBeRichText(text)) {
+            setRichText(text);
         }
-
-        if(reader->isStartElement()) {
-            if(reader->name() == "properties") {
-
-                setText(reader->attributes().value("text").toString());
-                setPos(reader->readPointAttribute("pos"));
-
-                reader->readUnknownElement(); //read till end tag
-            }
-
-            else if(reader->name() == "transform") {
-                setTransform(reader->readTransform());
-            }
-
-            else {
-                reader->readUnknownElement();
-            }
+        else {
+            setPlainText(text);
         }
     }
-}
 
-//! \brief Launch rich text edit dialog.
-int GraphicText::launchPropertyDialog(Caneda::UndoOption opt)
-{
-    GraphicTextDialog dialog(this, opt);
-    return dialog.exec();
-}
+    //! \brief Draw's hightlight rect if selected.
+    void GraphicText::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
+    {
+        if(option->state & QStyle::State_Selected) {
+            Caneda::drawHighlightRect(painter, boundingRect(), 1, option);
+        }
+    }
+
+    //! \brief Returns a copy of this item.
+    GraphicText* GraphicText::copy(SchematicScene *scene) const
+    {
+        GraphicText *text = new GraphicText(richText(), scene);
+        Painting::copyDataTo(text);
+        return text;
+    }
+
+    //! \brief Save's data as xml.
+    void GraphicText::saveData(Caneda::XmlWriter *writer) const
+    {
+        writer->writeStartElement("painting");
+        writer->writeAttribute("name", "text");
+
+        writer->writeEmptyElement("properties");
+        writer->writeAttribute("text", richText());
+        writer->writePointAttribute(pos(), "pos");
+
+        writer->writeEndElement(); // </painting>
+    }
+
+    //! \brief Loads text data from xml referred by \a reader.
+    void GraphicText::loadData(Caneda::XmlReader *reader)
+    {
+        Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+        Q_ASSERT(reader->attributes().value("name") == "text");
+
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isEndElement()) {
+                break;
+            }
+
+            if(reader->isStartElement()) {
+                if(reader->name() == "properties") {
+
+                    setText(reader->attributes().value("text").toString());
+                    setPos(reader->readPointAttribute("pos"));
+
+                    reader->readUnknownElement(); //read till end tag
+                }
+
+                else if(reader->name() == "transform") {
+                    setTransform(reader->readTransform());
+                }
+
+                else {
+                    reader->readUnknownElement();
+                }
+            }
+        }
+    }
+
+    //! \brief Launch rich text edit dialog.
+    int GraphicText::launchPropertyDialog(Caneda::UndoOption opt)
+    {
+        GraphicTextDialog dialog(this, opt);
+        return dialog.exec();
+    }
+
+} // namespace Caneda

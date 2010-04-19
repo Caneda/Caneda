@@ -21,164 +21,110 @@
 
 #include "singletonmanager.h"
 
-ActionSignalMapper::ActionSignalMapper(QObject *parent)
-    : QObject(parent)
+namespace Caneda
 {
-}
 
-ActionSignalMapper::~ActionSignalMapper()
-{
-}
-
-void ActionSignalMapper::setMapping(QAction *sender, const QString &text)
-{
-    m_stringHash.insert(sender, text);
-    connect(sender, SIGNAL(destroyed()), SLOT(slotActionDestroyed()));
-    connect(sender, SIGNAL(toggled(bool)), SLOT(slotMapToggled(bool)));
-    connect(sender, SIGNAL(triggered(bool)), SLOT(slotMapTriggered(bool)));
-}
-
-void ActionSignalMapper::removeMappings(QAction *sender)
-{
-    m_stringHash.remove(sender);
-}
-
-QAction *ActionSignalMapper::mapping(const QString& text) const
-{
-    return m_stringHash.key(text);
-}
-
-void ActionSignalMapper::slotMapToggled(bool status)
-{
-    QAction *s = qobject_cast<QAction*>(sender());
-    if (!s) {
-        return;
+    Action::Action(QObject *parent) : QAction(parent)
+    {
+        init();
     }
-    Hash::const_iterator it = m_stringHash.constFind(s);
-    if (it != m_stringHash.constEnd()) {
-        emit mappedToggled(it.value(), status);
+
+    Action::Action(const QString& text, QObject *parent)
+        : QAction(text, parent)
+    {
+        init();
     }
-}
 
-void ActionSignalMapper::slotMapTriggered(bool status)
-{
-    QAction *s = qobject_cast<QAction*>(sender());
-    if (!s) {
-        return;
+    Action::Action(const QIcon& icon, const QString& text, QObject *parent)
+        : QAction(icon, text, parent)
+    {
+        init();
     }
-    Hash::const_iterator it = m_stringHash.constFind(s);
-    if (it != m_stringHash.constEnd()) {
-        emit mappedTriggered(it.value(), status);
+
+    Action::~Action()
+    {
     }
-}
 
-void ActionSignalMapper::slotActionDestroyed(QObject *which)
-{
-    QAction *asAction = qobject_cast<QAction*>(which);
-    if (asAction) {
-        removeMappings(asAction);
+    void Action::init()
+    {
+        connect(this, SIGNAL(toggled(bool)), SLOT(slotToggled(bool)));
+        connect(this, SIGNAL(triggered(bool)), SLOT(slotTriggered(bool)));
     }
-}
 
-Action::Action(QObject *parent) : QAction(parent)
-{
-    init();
-}
+    void Action::slotToggled(bool checked)
+    {
+        emit toggled(objectName(), checked);
+    }
 
-Action::Action(const QString& text, QObject *parent)
-    : QAction(text, parent)
-{
-    init();
-}
+    void Action::slotTriggered(bool checked)
+    {
+        emit triggered(objectName(), checked);
+    }
 
-Action::Action(const QIcon& icon, const QString& text, QObject *parent)
-    : QAction(icon, text, parent)
-{
-    init();
-}
+    ActionManager* ActionManager::instance()
+    {
+        return SingletonManager::instance()->actionManager();
+    }
 
-Action::~Action()
-{
-}
+    ActionManager::ActionManager(QObject *parent) : QObject(parent)
+    {
 
-void Action::init()
-{
-    connect(this, SIGNAL(toggled(bool)), SLOT(slotToggled(bool)));
-    connect(this, SIGNAL(triggered(bool)), SLOT(slotTriggered(bool)));
-}
+    }
 
-void Action::slotToggled(bool checked)
-{
-    emit toggled(objectName(), checked);
-}
+    ActionManager::~ActionManager()
+    {
 
-void Action::slotTriggered(bool checked)
-{
-    emit triggered(objectName(), checked);
-}
+    }
 
-ActionManager* ActionManager::instance()
-{
-    return SingletonManager::instance()->actionManager();
-}
+    Action* ActionManager::createAction(const QString& id,
+            const QIcon& icon, const QString& text)
+    {
+        Action *action = new Action(icon, text, this);
+        action->setObjectName(id);
+        m_actionHash.insert(id, action);
+        return action;
+    }
 
-ActionManager::ActionManager(QObject *parent) : QObject(parent)
-{
+    Action* ActionManager::createMouseAction(const QString& id,
+            SchematicScene::MouseAction mouseAction, const QIcon& icon,
+            const QString& text)
+    {
+        Action *action = createAction(id, icon, text);
+        action->setCheckable(true);
+        m_mouseActionHash.insert(action, mouseAction);
+        return action;
+    }
 
-}
+    Action* ActionManager::createAction(const QString& id,
+            const QString& text)
+    {
+        return createAction(id, QIcon(), text);
+    }
 
-ActionManager::~ActionManager()
-{
+    Action* ActionManager::createMouseAction(const QString& id,
+            SchematicScene::MouseAction mouseAction, const QString& text)
+    {
+        return createMouseAction(id, mouseAction, QIcon(), text);
+    }
 
-}
+    Action* ActionManager::actionForName(const QString& name) const
+    {
+        return m_actionHash.value(name, static_cast<Action*>(0));
+    }
 
-Action* ActionManager::createAction(const QString& id,
-        const QIcon& icon, const QString& text)
-{
-    Action *action = new Action(icon, text, this);
-    action->setObjectName(id);
-    m_actionHash.insert(id, action);
-    return action;
-}
+    Action* ActionManager::actionForMouseAction(SchematicScene::MouseAction ma) const
+    {
+        return m_mouseActionHash.key(ma);
+    }
 
-Action* ActionManager::createMouseAction(const QString& id,
-        SchematicScene::MouseAction mouseAction, const QIcon& icon,
-        const QString& text)
-{
-    Action *action = createAction(id, icon, text);
-    action->setCheckable(true);
-    m_mouseActionHash.insert(action, mouseAction);
-    return action;
-}
+    SchematicScene::MouseAction ActionManager::mouseActionForAction(Action *action) const
+    {
+        return m_mouseActionHash.value(action);
+    }
 
-Action* ActionManager::createAction(const QString& id,
-        const QString& text)
-{
-    return createAction(id, QIcon(), text);
-}
+    QList<Action*> ActionManager::mouseActions() const
+    {
+        return m_mouseActionHash.keys();
+    }
 
-Action* ActionManager::createMouseAction(const QString& id,
-        SchematicScene::MouseAction mouseAction, const QString& text)
-{
-    return createMouseAction(id, mouseAction, QIcon(), text);
-}
-
-Action* ActionManager::actionForName(const QString& name) const
-{
-    return m_actionHash.value(name, static_cast<Action*>(0));
-}
-
-Action* ActionManager::actionForMouseAction(SchematicScene::MouseAction ma) const
-{
-    return m_mouseActionHash.key(ma);
-}
-
-SchematicScene::MouseAction ActionManager::mouseActionForAction(Action *action) const
-{
-    return m_mouseActionHash.value(action);
-}
-
-QList<Action*> ActionManager::mouseActions() const
-{
-    return m_mouseActionHash.keys();
-}
+} // namespace Caneda

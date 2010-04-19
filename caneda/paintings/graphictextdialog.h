@@ -36,77 +36,82 @@ class QToolBar;
 class QHBoxLayout;
 class QVBoxLayout;
 
-class GraphicTextDialog : public QDialog
+namespace Caneda
 {
-    Q_OBJECT;
 
-public:
-    GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt,
-            QWidget *parent = 0);
-    ~GraphicTextDialog();
+    class GraphicTextDialog : public QDialog
+    {
+        Q_OBJECT;
 
-    QString plainText() const;
-    QString richText() const;
+    public:
+        GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt,
+                QWidget *parent = 0);
+        ~GraphicTextDialog();
 
-public Q_SLOTS:
-    void accept();
+        QString plainText() const;
+        QString richText() const;
 
-private Q_SLOTS:
-    void textBold();
-    void textUnderline();
-    void textItalic();
-    void textFamily(const QString &f);
-    void textSize(const QString &p);
-    void textStyle(int styleIndex);
-    void textColor();
-    void textAlign(QAction *a);
+    public Q_SLOTS:
+        void accept();
 
-    void textAlignSubSuperScript(QAction *);
-    void currentCharFormatChanged(const QTextCharFormat &format);
-    void cursorPositionChanged();
+    private Q_SLOTS:
+        void textBold();
+        void textUnderline();
+        void textItalic();
+        void textFamily(const QString &f);
+        void textSize(const QString &p);
+        void textStyle(int styleIndex);
+        void textColor();
+        void textAlign(QAction *a);
 
-    void clipboardDataChanged();
+        void textAlignSubSuperScript(QAction *);
+        void currentCharFormatChanged(const QTextCharFormat &format);
+        void cursorPositionChanged();
 
-private:
-    void setupEditActions();
-    void setupTextActions();
+        void clipboardDataChanged();
 
-    void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
-    void fontChanged(const QFont &f);
-    void colorChanged(const QColor &c);
-    void alignmentChanged(Qt::Alignment a);
-    void subSuperAlignmentChanged(QTextCharFormat::VerticalAlignment a);
+    private:
+        void setupEditActions();
+        void setupTextActions();
 
-    QAction *actionTextBold;
-    QAction *actionTextUnderline;
-    QAction *actionTextItalic;
-    QAction *actionTextColor;
-    QAction *actionAlignLeft;
-    QAction *actionAlignCenter;
-    QAction *actionAlignRight;
-    QAction *actionAlignJustify;
-    QAction *actionAlignSubscript;
-    QAction *actionAlignSupersript;
-    QAction *actionAlignNormalscript;
-    QAction *actionUndo;
-    QAction *actionRedo;
-    QAction *actionCut;
-    QAction *actionCopy;
-    QAction *actionPaste;
+        void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
+        void fontChanged(const QFont &f);
+        void colorChanged(const QColor &c);
+        void alignmentChanged(Qt::Alignment a);
+        void subSuperAlignmentChanged(QTextCharFormat::VerticalAlignment a);
 
-    QComboBox *comboStyle;
-    QFontComboBox *comboFont;
-    QComboBox *comboSize;
+        QAction *actionTextBold;
+        QAction *actionTextUnderline;
+        QAction *actionTextItalic;
+        QAction *actionTextColor;
+        QAction *actionAlignLeft;
+        QAction *actionAlignCenter;
+        QAction *actionAlignRight;
+        QAction *actionAlignJustify;
+        QAction *actionAlignSubscript;
+        QAction *actionAlignSupersript;
+        QAction *actionAlignNormalscript;
+        QAction *actionUndo;
+        QAction *actionRedo;
+        QAction *actionCut;
+        QAction *actionCopy;
+        QAction *actionPaste;
 
-    QToolBar *toolBar;
-    QString fileName;
-    QTextEdit *textEdit;
+        QComboBox *comboStyle;
+        QFontComboBox *comboFont;
+        QComboBox *comboSize;
 
-    QHBoxLayout *toolBarLayout;
-    QVBoxLayout *mainLayout;
+        QToolBar *toolBar;
+        QString fileName;
+        QTextEdit *textEdit;
 
-    GraphicText *textItem;
-    Caneda::UndoOption undoOption;
-};
+        QHBoxLayout *toolBarLayout;
+        QVBoxLayout *mainLayout;
+
+        GraphicText *textItem;
+        Caneda::UndoOption undoOption;
+    };
+
+} // namespace Caneda
 
 #endif

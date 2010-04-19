@@ -33,132 +33,136 @@
 #include <QMessageBox>
 #include <QSvgGenerator>
 
-//! Constructor
-XmlSymbolFormat::XmlSymbolFormat(SchematicScene *scene) : FileFormatHandler(scene)
+namespace Caneda
 {
-}
-
-bool XmlSymbolFormat::save()
-{
-    SchematicScene *scene = schematicScene();
-    if(!scene) {
-        return false;
+    //! Constructor
+    XmlSymbolFormat::XmlSymbolFormat(SchematicScene *scene) : FileFormatHandler(scene)
+    {
     }
 
-    //Generate and save the xml description ********************
-    QString text = saveText();
-    if(text.isEmpty()) {
-        qDebug("Looks buggy! Null data to save! Was this expected?");
+    bool XmlSymbolFormat::save()
+    {
+        SchematicScene *scene = schematicScene();
+        if(!scene) {
+            return false;
+        }
+
+        //Generate and save the xml description ********************
+        QString text = saveText();
+        if(text.isEmpty()) {
+            qDebug("Looks buggy! Null data to save! Was this expected?");
+        }
+
+        QFile file(scene->fileName());
+        if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QMessageBox::critical(0, QObject::tr("Error"),
+                    QObject::tr("Cannot save document!"));
+            return false;
+        }
+        QTextStream stream(&file);
+        stream << text;
+        file.close();
+
+        //Generate and save svg ************************************
+        bool viewGridStatus = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
+        Settings::instance()->setCurrentValue("gui/gridVisible", false);
+
+        QSvgGenerator svg_engine;
+        QFileInfo info(scene->fileName());
+        svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
+        scene->toPaintDevice(svg_engine, scene->imageBoundingRect().width(), scene->imageBoundingRect().height());
+
+        Settings::instance()->setCurrentValue("gui/gridVisible", viewGridStatus);
+
+        return true;
     }
 
-    QFile file(scene->fileName());
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::critical(0, QObject::tr("Error"),
-                QObject::tr("Cannot save document!"));
-        return false;
+    bool XmlSymbolFormat::load()
+    {
     }
-    QTextStream stream(&file);
-    stream << text;
-    file.close();
 
-    //Generate and save svg ************************************
-    bool viewGridStatus = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
-    Settings::instance()->setCurrentValue("gui/gridVisible", false);
+    QString XmlSymbolFormat::saveText()
+    {
+        SchematicScene *scene = schematicScene();
 
-    QSvgGenerator svg_engine;
-    QFileInfo info(scene->fileName());
-    svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
-    scene->toPaintDevice(svg_engine, scene->imageBoundingRect().width(), scene->imageBoundingRect().height());
+        QString retVal;
+        Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
+        writer->setAutoFormatting(true);
+        writer->writeStartDocument();
 
-    Settings::instance()->setCurrentValue("gui/gridVisible", viewGridStatus);
+        //Write all view details
+        writer->writeStartElement("component");
 
-    return true;
-}
+        QFileInfo info(scene->fileName());
+        writer->writeAttribute("name", info.baseName());
+        writer->writeAttribute("version", Caneda::version);
+        writer->writeAttribute("label", "comp");
 
-bool XmlSymbolFormat::load()
-{
-}
+        writer->writeStartElement("displaytext");
+        writer->writeLocaleText("C", "User created component");
+        //   TODO: When available use this to save user defined displaytext
+        //   writer->writeLocaleText("C", scene->displayText());
+        writer->writeEndElement(); //</displaytext>
 
-QString XmlSymbolFormat::saveText()
-{
-    SchematicScene *scene = schematicScene();
+        writer->writeStartElement("description");
+        writer->writeLocaleText("C", "User created component based on user schematic");
+        //   TODO: When available use this to save user defined description
+        //   writer->writeLocaleText("C", scene->description());
+        writer->writeEndElement(); //</description>
 
-    QString retVal;
-    Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
-    writer->setAutoFormatting(true);
-    writer->writeStartDocument();
+        writer->writeStartElement("schematics");
+        writer->writeAttribute("default", "userdefined");
+        writer->writeStartElement("schematic");
+        writer->writeAttribute("name", "userdefined");
+        writer->writeAttribute("href", info.baseName()+".svg");
 
-    //Write all view details
-    writer->writeStartElement("component");
+        //Write the ports positions
+        QList<QGraphicsItem*> items = scene->items();
+        QList<Component*> components = filterItems<Component>(items, RemoveItems);
+        if(!components.isEmpty()) {
+            foreach(Component *c, components) {
+                if(c->name() == "Port") {
+                    writer->writeEmptyElement("port");
+                    writer->writeAttribute("name", c->label());
 
-    QFileInfo info(scene->fileName());
-    writer->writeAttribute("name", info.baseName());
-    writer->writeAttribute("version", Caneda::version);
-    writer->writeAttribute("label", "comp");
+                    // We adjust the port to fit in grid
+                    QRectF source_area = scene->imageBoundingRect();
+                    QPointF newOrigin = scene->smartNearingGridPoint(source_area.topLeft());
+                    source_area.setLeft(newOrigin.x());
+                    source_area.setTop(newOrigin.y());
 
-    writer->writeStartElement("displaytext");
-    writer->writeLocaleText("C", "User created component");
-    //   TODO: When available use this to save user defined displaytext
-    //   writer->writeLocaleText("C", scene->displayText());
-    writer->writeEndElement(); //</displaytext>
-
-    writer->writeStartElement("description");
-    writer->writeLocaleText("C", "User created component based on user schematic");
-    //   TODO: When available use this to save user defined description
-    //   writer->writeLocaleText("C", scene->description());
-    writer->writeEndElement(); //</description>
-
-    writer->writeStartElement("schematics");
-    writer->writeAttribute("default", "userdefined");
-    writer->writeStartElement("schematic");
-    writer->writeAttribute("name", "userdefined");
-    writer->writeAttribute("href", info.baseName()+".svg");
-
-    //Write the ports positions
-    QList<QGraphicsItem*> items = scene->items();
-    QList<Component*> components = filterItems<Component>(items, RemoveItems);
-    if(!components.isEmpty()) {
-        foreach(Component *c, components) {
-            if(c->name() == "Port") {
-                writer->writeEmptyElement("port");
-                writer->writeAttribute("name", c->label());
-
-                // We adjust the port to fit in grid
-                QRectF source_area = scene->imageBoundingRect();
-                QPointF newOrigin = scene->smartNearingGridPoint(source_area.topLeft());
-                source_area.setLeft(newOrigin.x());
-                source_area.setTop(newOrigin.y());
-
-                writer->writeAttribute("x", QString::number(c->pos().x() - source_area.x()));
-                writer->writeAttribute("y", QString::number(c->pos().y() - source_area.y()));
+                    writer->writeAttribute("x", QString::number(c->pos().x() - source_area.x()));
+                    writer->writeAttribute("y", QString::number(c->pos().y() - source_area.y()));
+                }
             }
         }
-    }
 
-    writer->writeEndElement(); //</schematic>
-    writer->writeEndElement(); //</schematics>
+        writer->writeEndElement(); //</schematic>
+        writer->writeEndElement(); //</schematics>
 
-    //Write ports properties
-    writer->writeStartElement("ports");
-    if(!components.isEmpty()) {
-        foreach(Component *c, components) {
-            if(c->name() == "Port") {
-                writer->writeEmptyElement("port");
-                writer->writeAttribute("name", c->label());
-                writer->writeAttribute("type", "analog");
-                // TODO: To be replaced by the following line once properties are handled
-                //       writer->writeAttribute("type", c->property("type").toString());
+        //Write ports properties
+        writer->writeStartElement("ports");
+        if(!components.isEmpty()) {
+            foreach(Component *c, components) {
+                if(c->name() == "Port") {
+                    writer->writeEmptyElement("port");
+                    writer->writeAttribute("name", c->label());
+                    writer->writeAttribute("type", "analog");
+                    // TODO: To be replaced by the following line once properties are handled
+                    //       writer->writeAttribute("type", c->property("type").toString());
+                }
             }
         }
+        writer->writeEndElement(); //</ports>
+
+        //TODO Write properties
+        writer->writeStartElement("properties");
+        writer->writeEndElement(); //</properties>
+
+        writer->writeEndDocument(); //</component>
+
+        delete writer;
+        return retVal;
     }
-    writer->writeEndElement(); //</ports>
 
-    //TODO Write properties
-    writer->writeStartElement("properties");
-    writer->writeEndElement(); //</properties>
-
-    writer->writeEndDocument(); //</component>
-
-    delete writer;
-    return retVal;
-}
+} // namespace Caneda

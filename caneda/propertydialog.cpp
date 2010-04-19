@@ -24,168 +24,172 @@
 #include <QComboBox>
 #include <QHeaderView>
 
-PropertyModel::PropertyModel(PropertyMap map, QObject *parent) :
-    QAbstractTableModel(parent),
-    propMap(map),
-    keys(map.keys())
+namespace Caneda
 {
-}
-
-QVariant PropertyModel::data(IndexConstRef index, int role) const
-{
-    if(!index.isValid() || index.row() >= propMap.size()) {
-        return QVariant();
+    PropertyModel::PropertyModel(PropertyMap map, QObject *parent) :
+        QAbstractTableModel(parent),
+        propMap(map),
+        keys(map.keys())
+    {
     }
 
-    QString key = keys.at(index.row());
-
-    if(role == Qt::DisplayRole || role == Qt::EditRole) {
-        switch(index.column()) {
-            case 0: return key;
-            case 1: return propMap[key].value();
-            case 2: return propMap[key].description();
-            default: ;
+    QVariant PropertyModel::data(IndexConstRef index, int role) const
+    {
+        if(!index.isValid() || index.row() >= propMap.size()) {
+            return QVariant();
         }
-    }
-    else if(role == Qt::CheckStateRole && index.column() == 0) {
-        return QVariant(propMap[key].isVisible());
-    }
-    else if(role == OptionsRole && index.column() == 1) {
-        return propMap[keys[index.row()]].options();
-    }
-    return QVariant();
-}
 
-QVariant PropertyModel::headerData(int section, Qt::Orientation o, int role) const
-{
-    if(role != Qt::DisplayRole) {
-        return QVariant();
-    }
+        QString key = keys.at(index.row());
 
-    if(o == Qt::Vertical) {
-        return QAbstractTableModel::headerData(section, o, role);
-    }
-    else {
-        switch(section) {
-            case 0: return tr("Name");
-            case 1: return tr("Value");
-            case 2: return tr("Description");
-        }
-    }
-    return QVariant();
-}
-
-Qt::ItemFlags PropertyModel::flags(const QModelIndex &index) const
-{
-    Qt::ItemFlags flags;
-    if(!index.isValid()) {
-        flags = Qt::ItemIsEnabled;
-    }
-    else {
-        flags = QAbstractTableModel::flags(index);
-        if(index.column() == 0) {
-            flags |= Qt::ItemIsUserCheckable;
-        }
-        else if(index.column() == 1) {
-            flags |= Qt::ItemIsEditable;
-        }
-    }
-    return flags;
-}
-
-bool PropertyModel::setData(const QModelIndex &index, const QVariant &value,
-        int role)
-{
-    if(index.isValid()){
-        if(role == Qt::EditRole && index.column() == 1) {
-            bool res = propMap[keys[index.row()]].setValue(value);
-            if(res) {
-                emit dataChanged(index, index);
+        if(role == Qt::DisplayRole || role == Qt::EditRole) {
+            switch(index.column()) {
+                case 0: return key;
+                case 1: return propMap[key].value();
+                case 2: return propMap[key].description();
+                default: ;
             }
-            return res;
         }
         else if(role == Qt::CheckStateRole && index.column() == 0) {
-            Property &prop = propMap[keys[index.row()]];
-            prop.setVisible(!prop.isVisible());
-            emit dataChanged(index, index);
-            return true;
+            return QVariant(propMap[key].isVisible());
         }
+        else if(role == OptionsRole && index.column() == 1) {
+            return propMap[keys[index.row()]].options();
+        }
+        return QVariant();
     }
 
-    return false;
-}
+    QVariant PropertyModel::headerData(int section, Qt::Orientation o, int role) const
+    {
+        if(role != Qt::DisplayRole) {
+            return QVariant();
+        }
 
-PropertyValueDelegate::PropertyValueDelegate(QObject *parent) : QItemDelegate(parent)
-{
-}
-
-QWidget *PropertyValueDelegate::createEditor(QWidget *parent,
-        const QStyleOptionViewItem &option, const QModelIndex & index) const
-{
-    QStringList valOptions;
-    valOptions = index.model()->data(index, PropertyModel::OptionsRole).toStringList();
-
-    if(index.column() != 1 || valOptions.isEmpty()) {
-        return QItemDelegate::createEditor(parent, option, index);
+        if(o == Qt::Vertical) {
+            return QAbstractTableModel::headerData(section, o, role);
+        }
+        else {
+            switch(section) {
+                case 0: return tr("Name");
+                case 1: return tr("Value");
+                case 2: return tr("Description");
+            }
+        }
+        return QVariant();
     }
 
-    QComboBox *editor = new QComboBox(parent);
-    editor->addItems(valOptions);
-    return editor;
-}
-
-void PropertyValueDelegate::setEditorData(QWidget *editor,
-        const QModelIndex &index) const
-{
-    QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
-    if(!comboBox) {
-        QItemDelegate::setEditorData(editor, index);
-        return;
+    Qt::ItemFlags PropertyModel::flags(const QModelIndex &index) const
+    {
+        Qt::ItemFlags flags;
+        if(!index.isValid()) {
+            flags = Qt::ItemIsEnabled;
+        }
+        else {
+            flags = QAbstractTableModel::flags(index);
+            if(index.column() == 0) {
+                flags |= Qt::ItemIsUserCheckable;
+            }
+            else if(index.column() == 1) {
+                flags |= Qt::ItemIsEditable;
+            }
+        }
+        return flags;
     }
 
-    QString value = index.model()->data(index, Qt::DisplayRole).toString();
-    QStringList options = index.model()->data(index, PropertyModel::OptionsRole).toStringList();
-    int comboIndex = options.indexOf(value);
+    bool PropertyModel::setData(const QModelIndex &index, const QVariant &value,
+            int role)
+    {
+        if(index.isValid()){
+            if(role == Qt::EditRole && index.column() == 1) {
+                bool res = propMap[keys[index.row()]].setValue(value);
+                if(res) {
+                    emit dataChanged(index, index);
+                }
+                return res;
+            }
+            else if(role == Qt::CheckStateRole && index.column() == 0) {
+                Property &prop = propMap[keys[index.row()]];
+                prop.setVisible(!prop.isVisible());
+                emit dataChanged(index, index);
+                return true;
+            }
+        }
 
-    comboBox->setCurrentIndex(comboIndex);
-}
-
-void PropertyValueDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
-        const QModelIndex &index) const
-{
-    QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
-    if(!comboBox) {
-        QItemDelegate::setModelData(editor, model, index);
-        return;
+        return false;
     }
-    model->setData(index, comboBox->currentText());
-}
 
-//! Constructor
-PropertyDialog::PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent) :
-    QDialog(parent),
-    m_component(comp),
-    m_undoOption(opt)
-{
-    setupUi(this);
-    m_model = new PropertyModel(m_component->propertyMap(), this);
-    tableView->setModel(m_model);
-
-    tableView->setItemDelegate(new PropertyValueDelegate(this));
-    tableView->horizontalHeader()->setStretchLastSection(true);
-    tableView->resizeColumnsToContents();
-}
-
-void PropertyDialog::accept()
-{
-    PropertyMapCmd *cmd = new PropertyMapCmd(m_component, m_component->propertyMap(),
-            m_model->propMap);
-    if(m_undoOption == Caneda::PushUndoCmd && m_component->schematicScene()) {
-        m_component->schematicScene()->undoStack()->push(cmd);
+    PropertyValueDelegate::PropertyValueDelegate(QObject *parent) : QItemDelegate(parent)
+    {
     }
-    else {
-        cmd->redo();
-        delete cmd;
+
+    QWidget *PropertyValueDelegate::createEditor(QWidget *parent,
+            const QStyleOptionViewItem &option, const QModelIndex & index) const
+    {
+        QStringList valOptions;
+        valOptions = index.model()->data(index, PropertyModel::OptionsRole).toStringList();
+
+        if(index.column() != 1 || valOptions.isEmpty()) {
+            return QItemDelegate::createEditor(parent, option, index);
+        }
+
+        QComboBox *editor = new QComboBox(parent);
+        editor->addItems(valOptions);
+        return editor;
     }
-    QDialog::accept();
-}
+
+    void PropertyValueDelegate::setEditorData(QWidget *editor,
+            const QModelIndex &index) const
+    {
+        QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
+        if(!comboBox) {
+            QItemDelegate::setEditorData(editor, index);
+            return;
+        }
+
+        QString value = index.model()->data(index, Qt::DisplayRole).toString();
+        QStringList options = index.model()->data(index, PropertyModel::OptionsRole).toStringList();
+        int comboIndex = options.indexOf(value);
+
+        comboBox->setCurrentIndex(comboIndex);
+    }
+
+    void PropertyValueDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+            const QModelIndex &index) const
+    {
+        QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
+        if(!comboBox) {
+            QItemDelegate::setModelData(editor, model, index);
+            return;
+        }
+        model->setData(index, comboBox->currentText());
+    }
+
+    //! Constructor
+    PropertyDialog::PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent) :
+        QDialog(parent),
+        m_component(comp),
+        m_undoOption(opt)
+    {
+        setupUi(this);
+        m_model = new PropertyModel(m_component->propertyMap(), this);
+        tableView->setModel(m_model);
+
+        tableView->setItemDelegate(new PropertyValueDelegate(this));
+        tableView->horizontalHeader()->setStretchLastSection(true);
+        tableView->resizeColumnsToContents();
+    }
+
+    void PropertyDialog::accept()
+    {
+        PropertyMapCmd *cmd = new PropertyMapCmd(m_component, m_component->propertyMap(),
+                m_model->propMap);
+        if(m_undoOption == Caneda::PushUndoCmd && m_component->schematicScene()) {
+            m_component->schematicScene()->undoStack()->push(cmd);
+        }
+        else {
+            cmd->redo();
+            delete cmd;
+        }
+        QDialog::accept();
+    }
+
+} // namespace Caneda

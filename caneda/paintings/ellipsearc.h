@@ -22,45 +22,51 @@
 
 #include "painting.h"
 
-//! \brief Represents an elliptic arc painting item.
-class EllipseArc : public Painting
+namespace Caneda
 {
-public:
-    enum {
-        Type = Painting::EllipseArcType
+
+    //! \brief Represents an elliptic arc painting item.
+    class EllipseArc : public Painting
+    {
+    public:
+        enum {
+            Type = Painting::EllipseArcType
+        };
+
+        EllipseArc(QRectF rect = QRectF(), int startAngle = 20, int spanAngle = 180,
+                SchematicScene *scene = 0);
+        ~EllipseArc();
+
+        QRectF boundForRect(const QRectF &rect) const;
+        QPainterPath shapeForRect(const QRectF &rect) const;
+
+        //! \brief Returns arc's startAngle of this item.
+        int startAngle() const { return m_startAngle; }
+        void setStartAngle(int angle);
+
+        //! \brief Returns arc's spanAngle of this item.
+        int spanAngle() const { return m_spanAngle; }
+        void setSpanAngle(int angle);
+
+        void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+
+        //! \brief Returns ellipse represented by this elliptic arc.
+        QRectF ellipse() const { return paintingRect(); }
+        void setEllipse(const QRectF& ellipse) { setPaintingRect(ellipse); }
+
+        int type() const { return EllipseArc::Type; }
+        EllipseArc* copy(SchematicScene *scene = 0) const;
+
+        void saveData(Caneda::XmlWriter *writer) const;
+        void loadData(Caneda::XmlReader *reader);
+
+        int launchPropertyDialog(Caneda::UndoOption opt);
+
+    private:
+        int m_startAngle;
+        int m_spanAngle;
     };
 
-    EllipseArc(QRectF rect = QRectF(), int startAngle = 20, int spanAngle = 180,
-            SchematicScene *scene = 0);
-    ~EllipseArc();
+} // namespace Caneda
 
-    QRectF boundForRect(const QRectF &rect) const;
-    QPainterPath shapeForRect(const QRectF &rect) const;
-
-    //! \brief Returns arc's startAngle of this item.
-    int startAngle() const { return m_startAngle; }
-    void setStartAngle(int angle);
-
-    //! \brief Returns arc's spanAngle of this item.
-    int spanAngle() const { return m_spanAngle; }
-    void setSpanAngle(int angle);
-
-    void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
-
-    //! \brief Returns ellipse represented by this elliptic arc.
-    QRectF ellipse() const { return paintingRect(); }
-    void setEllipse(const QRectF& ellipse) { setPaintingRect(ellipse); }
-
-    int type() const { return EllipseArc::Type; }
-    EllipseArc* copy(SchematicScene *scene = 0) const;
-
-    void saveData(Caneda::XmlWriter *writer) const;
-    void loadData(Caneda::XmlReader *reader);
-
-    int launchPropertyDialog(Caneda::UndoOption opt);
-
-private:
-    int m_startAngle;
-    int m_spanAngle;
-};
 #endif //ELLIPSEARC_H

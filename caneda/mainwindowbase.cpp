@@ -29,121 +29,127 @@
 #include <QToolButton>
 #include <QWheelEvent>
 
-class TabBarPrivate : public QTabBar
+namespace Caneda
 {
-public:
-    TabBarPrivate(QWidget *parent=0l) : QTabBar(parent)
-    {
-        setDrawBase(true);
-    }
-    ~TabBarPrivate() {}
 
-protected:
-    void wheelEvent( QWheelEvent *ev )
+    class TabBarPrivate : public QTabBar
     {
-        if(count() > 1) {
-            int current = currentIndex();
-            if(ev->delta() < 0) {
-                current = (current + 1) % count();
+    public:
+        TabBarPrivate(QWidget *parent=0l) : QTabBar(parent)
+        {
+            setDrawBase(true);
+        }
+
+        ~TabBarPrivate() {}
+
+    protected:
+        void wheelEvent( QWheelEvent *ev )
+        {
+            if(count() > 1) {
+                int current = currentIndex();
+                if(ev->delta() < 0) {
+                    current = (current + 1) % count();
+                }
+                else {
+                    current--;
+                    if(current < 0 ) {
+                        current = count() - 1;
+                    }
+                }
+                setCurrentIndex( current );
             }
-            else {
-                current--;
-                if(current < 0 ) {
-                    current = count() - 1;
+        }
+    };
+
+    TabWidgetPrivate::TabWidgetPrivate(QWidget *parent) : QTabWidget(parent)
+    {
+        setTabBar(new TabBarPrivate(this));
+    }
+
+    //! Constructor
+    MainWindowBase::MainWindowBase(QWidget *parent) : QMainWindow(parent)
+    {
+        setupTabWidget();
+        setCentralWidget(m_tabWidget);
+    }
+
+    //! Destructor
+    MainWindowBase::~MainWindowBase()
+    {
+    }
+
+    void MainWindowBase::addChildWidget(QWidget *widget)
+    {
+        m_tabWidget->addTab(widget, widget->windowIcon(), widget->windowTitle());
+        if(m_tabWidget->count() == 1) {
+            emit currentWidgetChanged(widget, 0);
+        }
+    }
+
+    void MainWindowBase::removeChildWidget(QWidget *widget, bool deleteWidget)
+    {
+        int index = m_tabWidget->indexOf(widget);
+        if(index >= 0) {
+            QWidget *w = m_tabWidget->widget(index);
+
+            if(w->close()) {
+                emit closedWidget(w);
+                if(deleteWidget) {
+                    w->deleteLater();
                 }
             }
-            setCurrentIndex( current );
-        }
-    }
-};
-
-TabWidgetPrivate::TabWidgetPrivate(QWidget *parent) : QTabWidget(parent)
-{
-    setTabBar(new TabBarPrivate(this));
-}
-
-//! Constructor
-MainWindowBase::MainWindowBase(QWidget *parent) : QMainWindow(parent)
-{
-    setupTabWidget();
-    setCentralWidget(m_tabWidget);
-}
-
-//! Destructor
-MainWindowBase::~MainWindowBase()
-{
-}
-
-void MainWindowBase::addChildWidget(QWidget *widget)
-{
-    m_tabWidget->addTab(widget, widget->windowIcon(), widget->windowTitle());
-    if(m_tabWidget->count() == 1) {
-        emit currentWidgetChanged(widget, 0);
-    }
-}
-
-void MainWindowBase::removeChildWidget(QWidget *widget, bool deleteWidget)
-{
-    int index = m_tabWidget->indexOf(widget);
-    if(index >= 0) {
-        QWidget *w = m_tabWidget->widget(index);
-
-        if(w->close()) {
-            emit closedWidget(w);
-            if(deleteWidget) {
-                w->deleteLater();
+            else {
+                return;
             }
+
+            m_tabWidget->removeTab(index);
         }
-        else {
-            return;
+    }
+
+    void MainWindowBase::addAsDockWidget(QWidget *w, const QString& title,
+            Qt::DockWidgetArea area)
+    {
+        QDockWidget *dw = new QDockWidget(title);
+        dw->setWidget(w);
+        addDockWidget(area, dw);
+    }
+
+    void MainWindowBase::closeTab(int index)
+    {
+        removeChildWidget(m_tabWidget->widget(index), true);
+    }
+
+    void MainWindowBase::closeAllTabs()
+    {
+        while(tabWidget()->count() > 0) {
+            removeChildWidget(m_tabWidget->widget(m_tabWidget->currentIndex()), true);
         }
-
-        m_tabWidget->removeTab(index);
     }
-}
 
-void MainWindowBase::addAsDockWidget(QWidget *w, const QString& title,
-        Qt::DockWidgetArea area)
-{
-    QDockWidget *dw = new QDockWidget(title);
-    dw->setWidget(w);
-    addDockWidget(area, dw);
-}
+    void MainWindowBase::setupTabWidget()
+    {
+        m_tabWidget = new TabWidgetPrivate(this);
+        m_tabWidget->setFocusPolicy(Qt::NoFocus);
+        m_tabWidget->setTabsClosable(true);
+        m_tabWidget->setMovable(true);
 
-void MainWindowBase::closeTab(int index)
-{
-    removeChildWidget(m_tabWidget->widget(index), true);
-}
+        connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(emitWidgetChanged(int)));
 
-void MainWindowBase::closeAllTabs()
-{
-    while(tabWidget()->count() > 0) {
-        removeChildWidget(m_tabWidget->widget(m_tabWidget->currentIndex()), true);
+        m_lastCurrentWidget = m_tabWidget->currentWidget();
     }
-}
 
-void MainWindowBase::setupTabWidget()
-{
-    m_tabWidget = new TabWidgetPrivate(this);
-    m_tabWidget->setFocusPolicy(Qt::NoFocus);
-    m_tabWidget->setTabsClosable(true);
-    m_tabWidget->setMovable(true);
+    void MainWindowBase::emitWidgetChanged(int index)
+    {
+        QWidget *current = m_tabWidget->widget(index);
+        int lastIndex = m_tabWidget->indexOf(m_lastCurrentWidget);
+        QWidget *prev = m_tabWidget->widget(lastIndex);
 
-    connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(emitWidgetChanged(int)));
+        emit currentWidgetChanged(current, prev);
+        m_lastCurrentWidget = current;
 
-    m_lastCurrentWidget = m_tabWidget->currentWidget();
-}
-
-void MainWindowBase::emitWidgetChanged(int index)
-{
-    QWidget *current = m_tabWidget->widget(index);
-    int lastIndex = m_tabWidget->indexOf(m_lastCurrentWidget);
-    QWidget *prev = m_tabWidget->widget(lastIndex);
-
-    emit currentWidgetChanged(current, prev);
-    m_lastCurrentWidget = current;
-
-    if (current) {
-        current->setFocus();
+        if (current) {
+            current->setFocus();
+        }
     }
-}
+
+} // namespace Caneda

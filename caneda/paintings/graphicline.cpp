@@ -26,130 +26,135 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-/*!
- * \brief Constructs a line item.
- * \param line Line in local coords.
- * \param scene SchematicScene to which this item should be added.
- */
-GraphicLine::GraphicLine(const QLineF &line, SchematicScene *scene) :
-      Painting(scene)
+namespace Caneda
 {
-   setLine(line);
-   setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle);
-}
 
-//! \brief Destructor.
-GraphicLine::~GraphicLine()
-{
-}
+    /*!
+     * \brief Constructs a line item.
+     * \param line Line in local coords.
+     * \param scene SchematicScene to which this item should be added.
+     */
+    GraphicLine::GraphicLine(const QLineF &line, SchematicScene *scene) :
+          Painting(scene)
+    {
+       setLine(line);
+       setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle);
+    }
 
-//! \copydoc Painting::shapeForRect()
-QPainterPath GraphicLine::shapeForRect(const QRectF &rect) const
-{
-   QPainterPath path;
-   path.moveTo(rect.topLeft());
-   path.lineTo(rect.bottomRight());
-   return path;
-}
+    //! \brief Destructor.
+    GraphicLine::~GraphicLine()
+    {
+    }
 
-//! \brief Draws line.
-void GraphicLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
-{
-   painter->setBrush(Qt::NoBrush);
+    //! \copydoc Painting::shapeForRect()
+    QPainterPath GraphicLine::shapeForRect(const QRectF &rect) const
+    {
+       QPainterPath path;
+       path.moveTo(rect.topLeft());
+       path.lineTo(rect.bottomRight());
+       return path;
+    }
 
-   QLineF line = lineFromRect(paintingRect());
+    //! \brief Draws line.
+    void GraphicLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
+    {
+       painter->setBrush(Qt::NoBrush);
 
-   if(option->state & QStyle::State_Selected) {
-      QPen _pen(pen());
-      _pen.setColor(Qt::darkGray);
-      _pen.setWidth(pen().width() + 5);
+       QLineF line = lineFromRect(paintingRect());
 
-      painter->setPen(_pen);
+       if(option->state & QStyle::State_Selected) {
+          QPen _pen(pen());
+          _pen.setColor(Qt::darkGray);
+          _pen.setWidth(pen().width() + 5);
 
-      painter->drawLine(line);
+          painter->setPen(_pen);
 
-      _pen.setWidth(pen().width());
-      _pen.setColor(Qt::white);
+          painter->drawLine(line);
 
-      painter->setPen(_pen);
-   }
-   else {
-      painter->setPen(pen());
-   }
+          _pen.setWidth(pen().width());
+          _pen.setColor(Qt::white);
 
-   painter->drawLine(line);
+          painter->setPen(_pen);
+       }
+       else {
+          painter->setPen(pen());
+       }
 
-   Painting::paint(painter, option, w);
-}
+       painter->drawLine(line);
 
-//! \brief Returns copy of this line item.
-GraphicLine* GraphicLine::copy(SchematicScene *scene) const
-{
-   GraphicLine *lineItem = new GraphicLine(line(), scene);
-   Painting::copyDataTo(lineItem);
-   return lineItem;
-}
+       Painting::paint(painter, option, w);
+    }
 
-//! \brief Saves data as xml.
-void GraphicLine::saveData(Caneda::XmlWriter *writer) const
-{
-   writer->writeStartElement("painting");
-   writer->writeAttribute("name", "line");
+    //! \brief Returns copy of this line item.
+    GraphicLine* GraphicLine::copy(SchematicScene *scene) const
+    {
+       GraphicLine *lineItem = new GraphicLine(line(), scene);
+       Painting::copyDataTo(lineItem);
+       return lineItem;
+    }
 
-   writer->writeEmptyElement("properties");
-   writer->writeLineAttribute(line());
-   writer->writePointAttribute(pos(), "pos");
+    //! \brief Saves data as xml.
+    void GraphicLine::saveData(Caneda::XmlWriter *writer) const
+    {
+       writer->writeStartElement("painting");
+       writer->writeAttribute("name", "line");
 
-   writer->writePen(pen());
-   writer->writeTransform(transform());
+       writer->writeEmptyElement("properties");
+       writer->writeLineAttribute(line());
+       writer->writePointAttribute(pos(), "pos");
 
-   writer->writeEndElement(); // </painting>
-}
+       writer->writePen(pen());
+       writer->writeTransform(transform());
 
-//! \brief Loads xml data referred by \a reader.
-void GraphicLine::loadData(Caneda::XmlReader *reader)
-{
-   Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-   Q_ASSERT(reader->attributes().value("name") == "line");
+       writer->writeEndElement(); // </painting>
+    }
 
-   while(!reader->atEnd()) {
-      reader->readNext();
+    //! \brief Loads xml data referred by \a reader.
+    void GraphicLine::loadData(Caneda::XmlReader *reader)
+    {
+       Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+       Q_ASSERT(reader->attributes().value("name") == "line");
 
-      if(reader->isEndElement()) {
-         break;
-      }
+       while(!reader->atEnd()) {
+          reader->readNext();
 
-      if(reader->isStartElement()) {
-         if(reader->name() == "properties") {
-            setLine(reader->readLineAttribute("line"));
-            setPos(reader->readPointAttribute("pos"));
+          if(reader->isEndElement()) {
+             break;
+          }
 
-            reader->readUnknownElement(); //read till end tag
-         }
+          if(reader->isStartElement()) {
+             if(reader->name() == "properties") {
+                setLine(reader->readLineAttribute("line"));
+                setPos(reader->readPointAttribute("pos"));
 
-         else if(reader->name() == "pen") {
-            setPen(reader->readPen());
-         }
+                reader->readUnknownElement(); //read till end tag
+             }
 
-         else if(reader->name() == "transform") {
-            setTransform(reader->readTransform());
-         }
+             else if(reader->name() == "pen") {
+                setPen(reader->readPen());
+             }
 
-         else {
-            reader->readUnknownElement();
-         }
-      }
-   }
-}
+             else if(reader->name() == "transform") {
+                setTransform(reader->readTransform());
+             }
 
-//! \brief Set's line to \a line (local coords).
-void GraphicLine::setLine(const QLineF& line)
-{
-   setPaintingRect(QRectF(line.p1(), line.p2()));
-}
+             else {
+                reader->readUnknownElement();
+             }
+          }
+       }
+    }
 
-int GraphicLine::launchPropertyDialog(Caneda::UndoOption opt)
-{
-   StyleDialog dia(this, opt);
-   return dia.exec();
-}
+    //! \brief Set's line to \a line (local coords).
+    void GraphicLine::setLine(const QLineF& line)
+    {
+       setPaintingRect(QRectF(line.p1(), line.p2()));
+    }
+
+    int GraphicLine::launchPropertyDialog(Caneda::UndoOption opt)
+    {
+       StyleDialog dia(this, opt);
+       return dia.exec();
+    }
+
+} // namespace Caneda

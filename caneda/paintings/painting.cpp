@@ -29,6 +29,9 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
+namespace Caneda
+{
+
 //! Constructs a painting item with default pen and default brush.
 Painting::Painting(SchematicScene *scene) : CanedaItem(0, scene),
     m_pen(defaultPaintingPen),
@@ -324,3 +327,5 @@ void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
     m_activeHandle = Caneda::NoHandle;
 }
+
+} // namespace Caneda

@@ -25,104 +25,109 @@
 #include <QHash>
 #include <QObject>
 
-class SingletonManager;
-
-typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
-
-/*!
- * \brief This represents individual library unit.
- */
-class Library
+namespace Caneda
 {
-public:
-    Library(QString libraryPath, SvgPainter *painter);
-    ~Library();
+    // Forward declarations
+    class SingletonManager;
 
-    ComponentDataPtr componentDataPtr(const QString& name) const;
+    typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
 
-    //! Returns svg painter in use.
-    SvgPainter* svgPainter() const { return m_svgPainter; }
+    /*!
+     * \brief This represents individual library unit.
+     */
+    class Library
+    {
+    public:
+        Library(QString libraryPath, SvgPainter *painter);
+        ~Library();
 
-    //! Returns library name.
-    QString libraryName() const { return m_libraryName; }
+        ComponentDataPtr componentDataPtr(const QString& name) const;
 
-    //! Returns library filename.
-    QString libraryFileName() const { return m_libraryFileName; }
+        //! Returns svg painter in use.
+        SvgPainter* svgPainter() const { return m_svgPainter; }
 
-    //! Returns symbol id corresponding to library.
-    QString defaultSymbolId() const { return m_defaultSymbolId; }
+        //! Returns library name.
+        QString libraryName() const { return m_libraryName; }
 
-    //! Returns brief text used to display.
-    QString displayText() const { return m_displayText; }
+        //! Returns library filename.
+        QString libraryFileName() const { return m_libraryFileName; }
 
-    //! Returns the description of library.
-    QString description() const { return m_description; }
+        //! Returns symbol id corresponding to library.
+        QString defaultSymbolId() const { return m_defaultSymbolId; }
 
-    //! Returns validity of this instance.
-    bool isValid() const { return m_valid; }
+        //! Returns brief text used to display.
+        QString displayText() const { return m_displayText; }
 
-    //! Returns the component' s shared hash table.
-    const QHash<QString, ComponentDataPtr>& components() const {
-        return m_componentHash;
-    }
+        //! Returns the description of library.
+        QString description() const { return m_description; }
 
-    void render(QPainter *painter, QString component, QString symbol = QString()) const;
-    QPixmap renderedPixmap(QString component, QString symbol = QString()) const;
+        //! Returns validity of this instance.
+        bool isValid() const { return m_valid; }
 
-    bool loadLibrary(Caneda::XmlReader *reader);
-    bool saveLibrary();
-    bool parseExternalComponent(QString componentPath);
-    bool removeComponent(QString componentName);
+        //! Returns the component' s shared hash table.
+        const QHash<QString, ComponentDataPtr>& components() const {
+            return m_componentHash;
+        }
 
-private:
-    bool registerComponentData(Caneda::XmlReader *reader, QString componentPath);
-    QString m_libraryName;
-    QString m_libraryFileName;
-    QString m_defaultSymbolId;
-    QString m_displayText;
-    QString m_description;
+        void render(QPainter *painter, QString component, QString symbol = QString()) const;
+        QPixmap renderedPixmap(QString component, QString symbol = QString()) const;
 
-    SvgPainter *m_svgPainter;
-    QHash<QString, ComponentDataPtr> m_componentHash;
-    bool m_valid;
-};
+        bool loadLibrary(Caneda::XmlReader *reader);
+        bool saveLibrary();
+        bool parseExternalComponent(QString componentPath);
+        bool removeComponent(QString componentName);
 
-typedef QHash<QString, Library*> LibraryHash;
+    private:
+        bool registerComponentData(Caneda::XmlReader *reader, QString componentPath);
+        QString m_libraryName;
+        QString m_libraryFileName;
+        QString m_defaultSymbolId;
+        QString m_displayText;
+        QString m_description;
 
-/*!
- * \brief This class acts as container for \a Library s
- *
- * This class is singleton class and its only static instance returned by
- * \a instance is to be used.
- */
-class LibraryLoader : public QObject
-{
-    Q_OBJECT
-public:
-    static LibraryLoader* instance();
-    ~LibraryLoader();
+        SvgPainter *m_svgPainter;
+        QHash<QString, ComponentDataPtr> m_componentHash;
+        bool m_valid;
+    };
 
-    Component* newComponent(QString componentName,
-            SchematicScene *scene,
-            QString library = QString());
+    typedef QHash<QString, Library*> LibraryHash;
 
-    bool newLibrary(const QString& libPath, SvgPainter* svg = 0);
-    bool load(const QString& libPath, SvgPainter* svg = 0);
-    bool loadtree(const QString& libpathtree, SvgPainter *svgPainter_ = 0);
-    bool unload(const QString& libName);
+    /*!
+     * \brief This class acts as container for \a Library s
+     *
+     * This class is singleton class and its only static instance returned by
+     * \a instance is to be used.
+     */
+    class LibraryLoader : public QObject
+    {
+        Q_OBJECT
+    public:
+        static LibraryLoader* instance();
+        ~LibraryLoader();
 
-    //! Returns library hash table
-    const LibraryHash& libraries() const { return m_libraryHash; }
+        Component* newComponent(QString componentName,
+                SchematicScene *scene,
+                QString library = QString());
 
-    Library* library(const QString& libName) const;
+        bool newLibrary(const QString& libPath, SvgPainter* svg = 0);
+        bool load(const QString& libPath, SvgPainter* svg = 0);
+        bool loadtree(const QString& libpathtree, SvgPainter *svgPainter_ = 0);
+        bool unload(const QString& libName);
 
-Q_SIGNALS:
-    void passiveLibraryLoaded();
+        //! Returns library hash table
+        const LibraryHash& libraries() const { return m_libraryHash; }
 
-private:
-    friend class SingletonManager;
-    LibraryLoader(QObject *parent = 0);
-    LibraryHash m_libraryHash;
-};
+        Library* library(const QString& libName) const;
+
+    Q_SIGNALS:
+        void passiveLibraryLoaded();
+
+    private:
+        friend class SingletonManager;
+        LibraryLoader(QObject *parent = 0);
+        LibraryHash m_libraryHash;
+    };
+
+} // namespace Caneda
 
 #endif //LIBRARY_H

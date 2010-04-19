@@ -20,36 +20,43 @@
 #ifndef FILEFORMATHANDLER_H
 #define FILEFORMATHANDLER_H
 
+// Forward declarations
 class QString;
-class SchematicScene;
 
-/*!
- * This class is used to save and load files.
- * Using this base class we can support any fileformat
- */
-class FileFormatHandler
+namespace Caneda
 {
-public:
-    FileFormatHandler(SchematicScene *scene=0);
-    virtual ~FileFormatHandler() {}
-
-    virtual bool save() = 0;
+    // Forward declarations
+    class SchematicScene;
 
     /*!
-     * Loads the document. If non-negative is returned
-     * the operation is successful. Negative return
-     * value indicated failure
+     * This class is used to save and load files.
+     * Using this base class we can support any fileformat
      */
-    virtual bool load() = 0;
+    class FileFormatHandler
+    {
+    public:
+        FileFormatHandler(SchematicScene *scene=0);
+        virtual ~FileFormatHandler() {}
 
-    SchematicScene* schematicScene() const { return m_schematicScene; }
+        virtual bool save() = 0;
 
-    static FileFormatHandler* handlerFromSuffix(const QString& extension,
-            SchematicScene *scene = 0);
+        /*!
+         * Loads the document. If non-negative is returned
+         * the operation is successful. Negative return
+         * value indicated failure
+         */
+        virtual bool load() = 0;
 
-protected:
-    SchematicScene *m_schematicScene;
-};
+        SchematicScene* schematicScene() const { return m_schematicScene; }
+
+        static FileFormatHandler* handlerFromSuffix(const QString& extension,
+                SchematicScene *scene = 0);
+
+    protected:
+        SchematicScene *m_schematicScene;
+    };
+
+} // namespace Caneda
 
 #endif //FILEFORMATHANDLER_H
 

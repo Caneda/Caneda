@@ -22,37 +22,42 @@
 
 #include "painting.h"
 
-//! \brief Represents a line on schematic.
-class GraphicLine : public Painting
+namespace Caneda
 {
-public:
-    enum {
-        Type = Painting::GraphicLineType
+    //! \brief Represents a line on schematic.
+    class GraphicLine : public Painting
+    {
+    public:
+        enum {
+            Type = Painting::GraphicLineType
+        };
+
+        GraphicLine(const QLineF &line, SchematicScene *scene = 0);
+        ~GraphicLine();
+
+        QPainterPath shapeForRect(const QRectF &rect) const;
+
+        void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+
+        //! \brief Returns line represented by this item.
+        QLineF line() const { return lineFromRect(paintingRect()); }
+        void setLine(const QLineF &line);
+
+        int type() const { return GraphicLine::Type; }
+        GraphicLine* copy(SchematicScene *scene = 0) const;
+
+        void saveData(Caneda::XmlWriter *writer) const;
+        void loadData(Caneda::XmlReader *reader);
+
+        int launchPropertyDialog(Caneda::UndoOption opt);
+
+    private:
+        //! \brief Returns line from rect.
+        QLineF lineFromRect(const QRectF &rect) const {
+            return QLineF(rect.topLeft(), rect.bottomRight());
+        }
     };
 
-    GraphicLine(const QLineF &line, SchematicScene *scene = 0);
-    ~GraphicLine();
+} // namespace Caneda
 
-    QPainterPath shapeForRect(const QRectF &rect) const;
-
-    void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
-
-    //! \brief Returns line represented by this item.
-    QLineF line() const { return lineFromRect(paintingRect()); }
-    void setLine(const QLineF &line);
-
-    int type() const { return GraphicLine::Type; }
-    GraphicLine* copy(SchematicScene *scene = 0) const;
-
-    void saveData(Caneda::XmlWriter *writer) const;
-    void loadData(Caneda::XmlReader *reader);
-
-    int launchPropertyDialog(Caneda::UndoOption opt);
-
-private:
-    //! \brief Returns line from rect.
-    QLineF lineFromRect(const QRectF &rect) const {
-        return QLineF(rect.topLeft(), rect.bottomRight());
-    }
-};
 #endif //GRAPHICLINE_H

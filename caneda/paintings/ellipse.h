@@ -22,33 +22,37 @@
 
 #include "painting.h"
 
-//! * \brief Represents an ellipse on schematic.
-class Ellipse : public Painting
+namespace Caneda
 {
-public:
-    enum {
-        Type = Painting::EllipseType
+    //! * \brief Represents an ellipse on schematic.
+    class Ellipse : public Painting
+    {
+    public:
+        enum {
+            Type = Painting::EllipseType
+        };
+
+        Ellipse(QRectF rect, SchematicScene *scene = 0);
+        ~Ellipse();
+
+        QRectF boundForRect(const QRectF &rect) const;
+        QPainterPath shapeForRect(const QRectF &rect) const;
+
+        void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+
+        //! \brief Returns ellipse rect represented by this item.
+        QRectF ellipse() const { return paintingRect(); }
+        void setEllipse(const QRectF& rect) { setPaintingRect(rect); }
+
+        int type() const { return Ellipse::Type; }
+        Ellipse* copy(SchematicScene *scene = 0) const;
+
+        void saveData(Caneda::XmlWriter *writer) const;
+        void loadData(Caneda::XmlReader *reader);
+
+        int launchPropertyDialog(Caneda::UndoOption opt);
     };
 
-    Ellipse(QRectF rect, SchematicScene *scene = 0);
-    ~Ellipse();
-
-    QRectF boundForRect(const QRectF &rect) const;
-    QPainterPath shapeForRect(const QRectF &rect) const;
-
-    void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
-
-    //! \brief Returns ellipse rect represented by this item.
-    QRectF ellipse() const { return paintingRect(); }
-    void setEllipse(const QRectF& rect) { setPaintingRect(rect); }
-
-    int type() const { return Ellipse::Type; }
-    Ellipse* copy(SchematicScene *scene = 0) const;
-
-    void saveData(Caneda::XmlWriter *writer) const;
-    void loadData(Caneda::XmlReader *reader);
-
-    int launchPropertyDialog(Caneda::UndoOption opt);
-};
+} // namespace Caneda
 
 #endif //ELLIPSE_H

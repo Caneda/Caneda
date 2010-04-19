@@ -26,135 +26,139 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-/*!
- * \brief Constructs an Ellipse item.
- * \param rect Ellipse rect
- * \param scene SchematicScene to which this item should be added.
- */
-Ellipse::Ellipse(QRectF rect, SchematicScene *scene) : Painting(scene)
+namespace Caneda
 {
-    setEllipse(rect);
-    setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
-            Caneda::TopRightHandle| Caneda::BottomLeftHandle);
-}
+    /*!
+     * \brief Constructs an Ellipse item.
+     * \param rect Ellipse rect
+     * \param scene SchematicScene to which this item should be added.
+     */
+    Ellipse::Ellipse(QRectF rect, SchematicScene *scene) : Painting(scene)
+    {
+        setEllipse(rect);
+        setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
+                Caneda::TopRightHandle| Caneda::BottomLeftHandle);
+    }
 
-//! \brief Destructor.
-Ellipse::~Ellipse()
-{
-}
+    //! \brief Destructor.
+    Ellipse::~Ellipse()
+    {
+    }
 
-//! \copydoc Painting::boundForRect()
-QRectF Ellipse::boundForRect(const QRectF &rect) const
-{
-    qreal adj = (pen().width() + 5) / 2;
-    return rect.adjusted(-adj, -adj, adj, adj);
-}
+    //! \copydoc Painting::boundForRect()
+    QRectF Ellipse::boundForRect(const QRectF &rect) const
+    {
+        qreal adj = (pen().width() + 5) / 2;
+        return rect.adjusted(-adj, -adj, adj, adj);
+    }
 
-//! \copydoc Painting::shapeForRect()
-QPainterPath Ellipse::shapeForRect(const QRectF &rect) const
-{
-    QPainterPath path;
-    path.addEllipse(boundForRect(rect));
-    return path;
-}
+    //! \copydoc Painting::shapeForRect()
+    QPainterPath Ellipse::shapeForRect(const QRectF &rect) const
+    {
+        QPainterPath path;
+        path.addEllipse(boundForRect(rect));
+        return path;
+    }
 
-//! \brief Draws ellipse.
-void Ellipse::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
-{
-    if(option->state & QStyle::State_Selected) {
-        painter->setBrush(Qt::NoBrush);
+    //! \brief Draws ellipse.
+    void Ellipse::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
+    {
+        if(option->state & QStyle::State_Selected) {
+            painter->setBrush(Qt::NoBrush);
 
-        QPen _pen(pen());
+            QPen _pen(pen());
 
-        _pen.setColor(Qt::darkGray);
-        _pen.setWidth(pen().width() + 5);
+            _pen.setColor(Qt::darkGray);
+            _pen.setWidth(pen().width() + 5);
 
-        painter->setPen(_pen);
+            painter->setPen(_pen);
+            painter->drawEllipse(ellipse());
+
+            _pen.setColor(Qt::white);
+            _pen.setWidth(pen().width());
+            painter->setPen(_pen);
+        }
+        else {
+            painter->setPen(pen());
+        }
+        painter->setBrush(brush());
         painter->drawEllipse(ellipse());
-
-        _pen.setColor(Qt::white);
-        _pen.setWidth(pen().width());
-        painter->setPen(_pen);
+        //call base method to draw resize handles.
+        Painting::paint(painter, option, w);
     }
-    else {
-        painter->setPen(pen());
+
+    //! \brief Returns a copy of this Ellipse item.
+    Ellipse* Ellipse::copy(SchematicScene *scene) const
+    {
+        Ellipse *ell = new Ellipse(ellipse(), scene);
+        Painting::copyDataTo(ell);
+        return ell;
     }
-    painter->setBrush(brush());
-    painter->drawEllipse(ellipse());
-    //call base method to draw resize handles.
-    Painting::paint(painter, option, w);
-}
 
-//! \brief Returns a copy of this Ellipse item.
-Ellipse* Ellipse::copy(SchematicScene *scene) const
-{
-    Ellipse *ell = new Ellipse(ellipse(), scene);
-    Painting::copyDataTo(ell);
-    return ell;
-}
+    //! \brief Saves ellipse data as xml.
+    void Ellipse::saveData(Caneda::XmlWriter *writer) const
+    {
+        writer->writeStartElement("painting");
+        writer->writeAttribute("name", "ellipse");
 
-//! \brief Saves ellipse data as xml.
-void Ellipse::saveData(Caneda::XmlWriter *writer) const
-{
-    writer->writeStartElement("painting");
-    writer->writeAttribute("name", "ellipse");
+        writer->writeEmptyElement("properties");
+        writer->writeRectAttribute(ellipse(), QLatin1String("ellipse"));
+        writer->writePointAttribute(pos(), "pos");
 
-    writer->writeEmptyElement("properties");
-    writer->writeRectAttribute(ellipse(), QLatin1String("ellipse"));
-    writer->writePointAttribute(pos(), "pos");
+        writer->writePen(pen());
+        writer->writeBrush(brush());
+        writer->writeTransform(transform());
 
-    writer->writePen(pen());
-    writer->writeBrush(brush());
-    writer->writeTransform(transform());
+        writer->writeEndElement(); // </painting>
+    }
 
-    writer->writeEndElement(); // </painting>
-}
+    //! \brief Loads ellipse data from xml refered by \a reader.
+    void Ellipse::loadData(Caneda::XmlReader *reader)
+    {
+        Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+        Q_ASSERT(reader->attributes().value("name") == "ellipse");
 
-//! \brief Loads ellipse data from xml refered by \a reader.
-void Ellipse::loadData(Caneda::XmlReader *reader)
-{
-    Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-    Q_ASSERT(reader->attributes().value("name") == "ellipse");
+        while(!reader->atEnd()) {
+            reader->readNext();
 
-    while(!reader->atEnd()) {
-        reader->readNext();
-
-        if(reader->isEndElement()) {
-            break;
-        }
-
-        if(reader->isStartElement()) {
-            if(reader->name() == "properties") {
-                QRectF ellipse = reader->readRectAttribute(QLatin1String("ellipse"));
-                setEllipse(ellipse);
-
-                QPointF pos = reader->readPointAttribute("pos");
-                setPos(pos);
-
-                reader->readUnknownElement(); //read till end tag
+            if(reader->isEndElement()) {
+                break;
             }
 
-            else if(reader->name() == "pen") {
-                setPen(reader->readPen());
-            }
+            if(reader->isStartElement()) {
+                if(reader->name() == "properties") {
+                    QRectF ellipse = reader->readRectAttribute(QLatin1String("ellipse"));
+                    setEllipse(ellipse);
 
-            else if(reader->name() == "brush") {
-                setBrush(reader->readBrush());
-            }
+                    QPointF pos = reader->readPointAttribute("pos");
+                    setPos(pos);
 
-            else if(reader->name() == "transform") {
-                setTransform(reader->readTransform());
-            }
+                    reader->readUnknownElement(); //read till end tag
+                }
 
-            else {
-                reader->readUnknownElement();
+                else if(reader->name() == "pen") {
+                    setPen(reader->readPen());
+                }
+
+                else if(reader->name() == "brush") {
+                    setBrush(reader->readBrush());
+                }
+
+                else if(reader->name() == "transform") {
+                    setTransform(reader->readTransform());
+                }
+
+                else {
+                    reader->readUnknownElement();
+                }
             }
         }
     }
-}
 
-int Ellipse::launchPropertyDialog(Caneda::UndoOption opt)
-{
-    StyleDialog dia(this, opt);
-    return dia.exec();
-}
+    int Ellipse::launchPropertyDialog(Caneda::UndoOption opt)
+    {
+        StyleDialog dia(this, opt);
+        return dia.exec();
+    }
+
+} // namespace Caneda

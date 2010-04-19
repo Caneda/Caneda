@@ -38,287 +38,292 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
-/*! Constructor
- * \brief This class implements the project management
- *
- * This also handles the mouse and keyboad events, and sends
- * when appropiate, the file names to be opened by the parent.
- *
- * \param parent Parent of the widget.
- */
-Project::Project(QWidget *parent) : QWidget(parent)
+namespace Caneda
 {
-    projectLibrary = 0;
-    m_libraryFileName = "";
-    m_libraryName = "";
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
-
-    QToolBar *toolbar = new QToolBar;
-
-    QToolButton *projNew = new QToolButton();
-    projNew->setIcon(QIcon(Caneda::bitmapDirectory() + "project-new.png"));
-    projNew->setStatusTip(tr("Creates a new project"));
-    projNew->setToolTip(tr("Creates a new project"));
-    projNew->setWhatsThis(tr("New Project\n\nCreates a new project"));
-
-    QToolButton *projOpen = new QToolButton();
-    projOpen->setIcon(QIcon(Caneda::bitmapDirectory() + "fileopen.png"));
-    projOpen->setStatusTip(tr("Opens an existing project"));
-    projOpen->setToolTip(tr("Opens an existing project"));
-    projOpen->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
-
-    QToolButton *addToProj = new QToolButton();
-    addToProj->setIcon(QIcon(Caneda::bitmapDirectory() + "filenew.png"));
-    addToProj->setStatusTip(tr("Adds a file to current project"));
-    addToProj->setToolTip(tr("Adds a file to current project"));
-    addToProj->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
-
-    QToolButton *projDel = new QToolButton();
-    projDel->setIcon(QIcon(Caneda::bitmapDirectory() + "fileclose.png"));
-    projDel->setStatusTip(tr("Removes a file from current project"));
-    projDel->setToolTip(tr("Removes a file from current project"));
-    projDel->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
-
-    QToolButton *projClose = new QToolButton();
-    projClose->setIcon(QIcon(Caneda::bitmapDirectory() + "project-close.png"));
-    projClose->setStatusTip(tr("Closes the current project"));
-    projClose->setToolTip(tr("Closes the current project"));
-    projClose->setWhatsThis(tr("Close Project\n\nCloses the current project"));
-
-    connect(projNew, SIGNAL(clicked()), this, SIGNAL(signalNewProject()));
-    connect(projOpen, SIGNAL(clicked()), this, SIGNAL(signalOpenProject()));
-    connect(addToProj, SIGNAL(clicked()), this, SIGNAL(signalAddToProject()));
-    connect(projDel, SIGNAL(clicked()), this, SIGNAL(signalRemoveFromProject()));
-    connect(projClose, SIGNAL(clicked()), this, SIGNAL(signalCloseProject()));
-
-    toolbar->addWidget(projNew);
-    toolbar->addWidget(projOpen);
-    toolbar->addWidget(addToProj);
-    toolbar->addWidget(projDel);
-    toolbar->addWidget(projClose);
-
-    m_projectsSidebar = new ComponentsSidebar(this);
-    connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
-            SIGNAL(itemClicked(const QString&, const QString&)));
-    connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
-            SLOT(slotOnDoubleClicked(const QString&, const QString&)));
-
-
-    layout->addWidget(toolbar);
-    layout->addWidget(m_projectsSidebar);
-
-    setWindowTitle(tr("Project View"));
-}
-
-bool Project::isValid()
-{
-    if(projectLibrary == 0) {
-        return false;
-    }
-    else {
-        return true;
-    }
-}
-
-void Project::slotNewProject()
-{
-    QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"),
-                                                    "", tr("Caneda Projects (*.xpro)"));
-    if(!fileName.isEmpty()) {
-        if(QFileInfo(fileName).suffix().isEmpty()) {
-            fileName = fileName + ".xpro";
-        }
-
-        //First we create the folder structure where files are to be placed
-        QFileInfo fileInfo = QFileInfo(fileName);
-        QDir filePath = QDir(fileInfo.absolutePath() + "/" + fileInfo.baseName());
-        if(!filePath.exists()) {
-            filePath.mkpath(filePath.absolutePath());
-        }
-        fileName = filePath.absolutePath() + "/" + fileInfo.fileName();
-
-        //Then we create the library/project
-        LibraryLoader *library = LibraryLoader::instance();
-
-        if(library->newLibrary(fileName)) {
-            slotCloseProject();
-            setCurrentLibrary(fileName);
-            projectLibrary = library->library(m_libraryName);
-            projectLibrary->saveLibrary();
-            qDebug() << "Succesfully created library!";
-            m_projectsSidebar->plugLibrary(m_libraryName, "root");
-        }
-    }
-}
-
-void Project::slotOpenProject(QString fileName)
-{
-    //If no name is provided, we open a dialog asking the user for a project to be opened
-    if(fileName == 0) {
-        fileName = QFileDialog::getOpenFileName(this, tr("Open Project"),
-                                                "", tr("Caneda Projects (*.xpro)"));
-    }
-
-    if(!fileName.isEmpty()) {
-
-        LibraryLoader *library = LibraryLoader::instance();
-
-        if(library->load(fileName)) {
-            slotCloseProject();
-            setCurrentLibrary(fileName);
-            projectLibrary = library->library(m_libraryName);
-            qDebug() << "Succesfully loaded library!";
-            m_projectsSidebar->plugLibrary(m_libraryName, "root");
-        }
-    }
-}
-
-void Project::slotAddToProject()
-{
-    if(projectLibrary) {
-        AddToProjectDialog *p = new AddToProjectDialog(this);
-
-        if(p->accepted()) {
-            QString fileName;
-            if(p->userChoice() == Caneda::ExistingComponent) {
-
-                QString sourceFileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
-                                                                "", tr("Component-xml (*.xsch)"));
-
-                if(!sourceFileName.isEmpty()) {
-                    CanedaView *viewFile = new SchematicView(0, this);
-                    if(!viewFile->load(sourceFileName)) {
-                        QMessageBox::critical(this, tr("Error"),
-                                              tr("Could not open file!"));
-
-                        return;
-                    }
-
-                    //We copy the selected file to current project folder
-                    fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(sourceFileName).fileName();
-                    if(!QFile::copy(sourceFileName, fileName)) {
-                        QMessageBox::critical(this, tr("Error"),
-                                tr("Component %1 already exists in project!").arg(QFileInfo(fileName).baseName()));
-                        return;
-                    }
-                }
-            }
-            else if(p->userChoice() == Caneda::NewComponent) {
-                fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + p->fileName()+".xsch";
-
-                //When the component is already created, we return.
-                if(QFileInfo(fileName).exists()) {
-                    QMessageBox::critical(this, tr("Error"),
-                            tr("Component already created!"));
-                    return;
-                }
-
-                CanedaView *viewFile = new SchematicView(0, this);
-                viewFile->setFileName(fileName);
-                if(!viewFile->save()) {
-                    QMessageBox::critical(this, tr("Error"),
-                            tr("Could not save file!"));
-                    return;
-                }
-            }
-            else {
-                //TODO in case of adding a component from another project, we
-                //should copy the component as well as all its dependencies.
-            }
-
-            //We generate the corresponding symbol
-            CanedaView *view = new SchematicView(0, this);
-            view->setFileName(fileName);
-            view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
-
-            fileName.replace(".xsch",".xsym");
-            view->setFileName(fileName);
-            XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-            symbol->save();
-
-            //Now we load the new component in the library
-            projectLibrary->parseExternalComponent(fileName);
-            projectLibrary->saveLibrary();
-            m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-            m_projectsSidebar->plugLibrary(m_libraryName, "root");
-
-            //Finally we open the component
-            fileName.replace(".xsym",".xsch");
-            emit itemDoubleClicked(fileName);
-        }
-    }
-    else {
-        QMessageBox::critical(this, tr("Error"),
-                tr("Invalid project!"));
-        return;
-    }
-}
-
-void Project::slotRemoveFromProject()
-{
-    if(projectLibrary) {
-        if(!m_projectsSidebar->currentComponent().isEmpty()) {
-
-            int ret = QMessageBox::warning(this, tr("Delete component"),
-                              tr("You're about to delete one component. This action can't be undone.\n"
-                                 "Do you want to continue?"),
-                              QMessageBox::Ok | QMessageBox::Cancel);
-
-            switch (ret) {
-                case QMessageBox::Ok: {
-
-                    QString fileName = projectLibrary->componentDataPtr(m_projectsSidebar->currentComponent())->filename;
-                    fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).baseName();
-
-                    QFile::remove(fileName + ".xsch");
-                    QFile::remove(fileName + ".xsym");
-                    QFile::remove(fileName + ".svg");
-                    
-                    projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
-                    projectLibrary->saveLibrary();
-                    m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-                    m_projectsSidebar->plugLibrary(m_libraryName, "root");
-                    break;
-                }
-                case QMessageBox::Cancel:
-                    break;
-
-                default:
-                    break;
-            }
-        }
-    }
-    else {
-        QMessageBox::critical(this, tr("Error"),
-                tr("Invalid project!"));
-        return;
-    }
-}
-
-void Project::slotCloseProject()
-{
-    if(projectLibrary) {
-        m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-        LibraryLoader *library = LibraryLoader::instance();
-        library->unload(m_libraryName);
-
+    /*! Constructor
+     * \brief This class implements the project management
+     *
+     * This also handles the mouse and keyboad events, and sends
+     * when appropiate, the file names to be opened by the parent.
+     *
+     * \param parent Parent of the widget.
+     */
+    Project::Project(QWidget *parent) : QWidget(parent)
+    {
         projectLibrary = 0;
         m_libraryFileName = "";
         m_libraryName = "";
+
+        QVBoxLayout *layout = new QVBoxLayout(this);
+
+        QToolBar *toolbar = new QToolBar;
+
+        QToolButton *projNew = new QToolButton();
+        projNew->setIcon(QIcon(Caneda::bitmapDirectory() + "project-new.png"));
+        projNew->setStatusTip(tr("Creates a new project"));
+        projNew->setToolTip(tr("Creates a new project"));
+        projNew->setWhatsThis(tr("New Project\n\nCreates a new project"));
+
+        QToolButton *projOpen = new QToolButton();
+        projOpen->setIcon(QIcon(Caneda::bitmapDirectory() + "fileopen.png"));
+        projOpen->setStatusTip(tr("Opens an existing project"));
+        projOpen->setToolTip(tr("Opens an existing project"));
+        projOpen->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
+
+        QToolButton *addToProj = new QToolButton();
+        addToProj->setIcon(QIcon(Caneda::bitmapDirectory() + "filenew.png"));
+        addToProj->setStatusTip(tr("Adds a file to current project"));
+        addToProj->setToolTip(tr("Adds a file to current project"));
+        addToProj->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
+
+        QToolButton *projDel = new QToolButton();
+        projDel->setIcon(QIcon(Caneda::bitmapDirectory() + "fileclose.png"));
+        projDel->setStatusTip(tr("Removes a file from current project"));
+        projDel->setToolTip(tr("Removes a file from current project"));
+        projDel->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
+
+        QToolButton *projClose = new QToolButton();
+        projClose->setIcon(QIcon(Caneda::bitmapDirectory() + "project-close.png"));
+        projClose->setStatusTip(tr("Closes the current project"));
+        projClose->setToolTip(tr("Closes the current project"));
+        projClose->setWhatsThis(tr("Close Project\n\nCloses the current project"));
+
+        connect(projNew, SIGNAL(clicked()), this, SIGNAL(signalNewProject()));
+        connect(projOpen, SIGNAL(clicked()), this, SIGNAL(signalOpenProject()));
+        connect(addToProj, SIGNAL(clicked()), this, SIGNAL(signalAddToProject()));
+        connect(projDel, SIGNAL(clicked()), this, SIGNAL(signalRemoveFromProject()));
+        connect(projClose, SIGNAL(clicked()), this, SIGNAL(signalCloseProject()));
+
+        toolbar->addWidget(projNew);
+        toolbar->addWidget(projOpen);
+        toolbar->addWidget(addToProj);
+        toolbar->addWidget(projDel);
+        toolbar->addWidget(projClose);
+
+        m_projectsSidebar = new ComponentsSidebar(this);
+        connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
+                SIGNAL(itemClicked(const QString&, const QString&)));
+        connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
+                SLOT(slotOnDoubleClicked(const QString&, const QString&)));
+
+
+        layout->addWidget(toolbar);
+        layout->addWidget(m_projectsSidebar);
+
+        setWindowTitle(tr("Project View"));
     }
-}
 
-void Project::slotOnDoubleClicked(const QString& item, const QString& category)
-{
-    emit itemDoubleClicked(QFileInfo(m_libraryFileName).absolutePath() + "/" + item + ".xsch");
-}
+    bool Project::isValid()
+    {
+        if(projectLibrary == 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
 
-void Project::setCurrentLibrary(const QString& libFileName)
-{
-    m_libraryFileName = libFileName;
+    void Project::slotNewProject()
+    {
+        QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"),
+                                                        "", tr("Caneda Projects (*.xpro)"));
+        if(!fileName.isEmpty()) {
+            if(QFileInfo(fileName).suffix().isEmpty()) {
+                fileName = fileName + ".xpro";
+            }
 
-    //The library name is created from the basename with the first letter in uppercase
-    m_libraryName = QFileInfo(libFileName).baseName();
-    m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
-}
+            //First we create the folder structure where files are to be placed
+            QFileInfo fileInfo = QFileInfo(fileName);
+            QDir filePath = QDir(fileInfo.absolutePath() + "/" + fileInfo.baseName());
+            if(!filePath.exists()) {
+                filePath.mkpath(filePath.absolutePath());
+            }
+            fileName = filePath.absolutePath() + "/" + fileInfo.fileName();
+
+            //Then we create the library/project
+            LibraryLoader *library = LibraryLoader::instance();
+
+            if(library->newLibrary(fileName)) {
+                slotCloseProject();
+                setCurrentLibrary(fileName);
+                projectLibrary = library->library(m_libraryName);
+                projectLibrary->saveLibrary();
+                qDebug() << "Succesfully created library!";
+                m_projectsSidebar->plugLibrary(m_libraryName, "root");
+            }
+        }
+    }
+
+    void Project::slotOpenProject(QString fileName)
+    {
+        //If no name is provided, we open a dialog asking the user for a project to be opened
+        if(fileName == 0) {
+            fileName = QFileDialog::getOpenFileName(this, tr("Open Project"),
+                                                    "", tr("Caneda Projects (*.xpro)"));
+        }
+
+        if(!fileName.isEmpty()) {
+
+            LibraryLoader *library = LibraryLoader::instance();
+
+            if(library->load(fileName)) {
+                slotCloseProject();
+                setCurrentLibrary(fileName);
+                projectLibrary = library->library(m_libraryName);
+                qDebug() << "Succesfully loaded library!";
+                m_projectsSidebar->plugLibrary(m_libraryName, "root");
+            }
+        }
+    }
+
+    void Project::slotAddToProject()
+    {
+        if(projectLibrary) {
+            AddToProjectDialog *p = new AddToProjectDialog(this);
+
+            if(p->accepted()) {
+                QString fileName;
+                if(p->userChoice() == Caneda::ExistingComponent) {
+
+                    QString sourceFileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
+                                                                    "", tr("Component-xml (*.xsch)"));
+
+                    if(!sourceFileName.isEmpty()) {
+                        CanedaView *viewFile = new SchematicView(0, this);
+                        if(!viewFile->load(sourceFileName)) {
+                            QMessageBox::critical(this, tr("Error"),
+                                                  tr("Could not open file!"));
+
+                            return;
+                        }
+
+                        //We copy the selected file to current project folder
+                        fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(sourceFileName).fileName();
+                        if(!QFile::copy(sourceFileName, fileName)) {
+                            QMessageBox::critical(this, tr("Error"),
+                                    tr("Component %1 already exists in project!").arg(QFileInfo(fileName).baseName()));
+                            return;
+                        }
+                    }
+                }
+                else if(p->userChoice() == Caneda::NewComponent) {
+                    fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + p->fileName()+".xsch";
+
+                    //When the component is already created, we return.
+                    if(QFileInfo(fileName).exists()) {
+                        QMessageBox::critical(this, tr("Error"),
+                                tr("Component already created!"));
+                        return;
+                    }
+
+                    CanedaView *viewFile = new SchematicView(0, this);
+                    viewFile->setFileName(fileName);
+                    if(!viewFile->save()) {
+                        QMessageBox::critical(this, tr("Error"),
+                                tr("Could not save file!"));
+                        return;
+                    }
+                }
+                else {
+                    //TODO in case of adding a component from another project, we
+                    //should copy the component as well as all its dependencies.
+                }
+
+                //We generate the corresponding symbol
+                CanedaView *view = new SchematicView(0, this);
+                view->setFileName(fileName);
+                view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
+
+                fileName.replace(".xsch",".xsym");
+                view->setFileName(fileName);
+                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
+                symbol->save();
+
+                //Now we load the new component in the library
+                projectLibrary->parseExternalComponent(fileName);
+                projectLibrary->saveLibrary();
+                m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+                m_projectsSidebar->plugLibrary(m_libraryName, "root");
+
+                //Finally we open the component
+                fileName.replace(".xsym",".xsch");
+                emit itemDoubleClicked(fileName);
+            }
+        }
+        else {
+            QMessageBox::critical(this, tr("Error"),
+                    tr("Invalid project!"));
+            return;
+        }
+    }
+
+    void Project::slotRemoveFromProject()
+    {
+        if(projectLibrary) {
+            if(!m_projectsSidebar->currentComponent().isEmpty()) {
+
+                int ret = QMessageBox::warning(this, tr("Delete component"),
+                                  tr("You're about to delete one component. This action can't be undone.\n"
+                                     "Do you want to continue?"),
+                                  QMessageBox::Ok | QMessageBox::Cancel);
+
+                switch (ret) {
+                    case QMessageBox::Ok: {
+
+                        QString fileName = projectLibrary->componentDataPtr(m_projectsSidebar->currentComponent())->filename;
+                        fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).baseName();
+
+                        QFile::remove(fileName + ".xsch");
+                        QFile::remove(fileName + ".xsym");
+                        QFile::remove(fileName + ".svg");
+                        
+                        projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
+                        projectLibrary->saveLibrary();
+                        m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+                        m_projectsSidebar->plugLibrary(m_libraryName, "root");
+                        break;
+                    }
+                    case QMessageBox::Cancel:
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+        else {
+            QMessageBox::critical(this, tr("Error"),
+                    tr("Invalid project!"));
+            return;
+        }
+    }
+
+    void Project::slotCloseProject()
+    {
+        if(projectLibrary) {
+            m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+            LibraryLoader *library = LibraryLoader::instance();
+            library->unload(m_libraryName);
+
+            projectLibrary = 0;
+            m_libraryFileName = "";
+            m_libraryName = "";
+        }
+    }
+
+    void Project::slotOnDoubleClicked(const QString& item, const QString& category)
+    {
+        emit itemDoubleClicked(QFileInfo(m_libraryFileName).absolutePath() + "/" + item + ".xsch");
+    }
+
+    void Project::setCurrentLibrary(const QString& libFileName)
+    {
+        m_libraryFileName = libFileName;
+
+        //The library name is created from the basename with the first letter in uppercase
+        m_libraryName = QFileInfo(libFileName).baseName();
+        m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
+    }
+
+} // namespace Caneda

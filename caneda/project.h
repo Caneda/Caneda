@@ -23,51 +23,58 @@
 #include <QWidget>
 
 // Forward declarations
-class ComponentsSidebar;
-class Library;
 class QToolButton;
 
-class Project : public QWidget
+namespace Caneda
 {
-    Q_OBJECT;
 
-public:
-    Project(QWidget *parent = 0);
-    ~Project() {}
+    // Forward declarations
+    class ComponentsSidebar;
+    class Library;
 
-    //! Returns project name.
-    QString libraryName() const { return m_libraryName; }
-    //! Returns project filename.
-    QString libraryFileName() const { return m_libraryFileName; }
+    class Project : public QWidget
+    {
+        Q_OBJECT;
 
-    bool isValid();
+    public:
+        Project(QWidget *parent = 0);
+        ~Project() {}
 
-public Q_SLOTS:
-    void slotNewProject();
-    void slotOpenProject(QString fileName = 0);
-    void slotAddToProject();
-    void slotRemoveFromProject();
-    void slotCloseProject();
+        //! Returns project name.
+        QString libraryName() const { return m_libraryName; }
+        //! Returns project filename.
+        QString libraryFileName() const { return m_libraryFileName; }
 
-signals:
-    void signalNewProject();
-    void signalOpenProject();
-    void signalAddToProject();
-    void signalRemoveFromProject();
-    void signalCloseProject();
-    void itemClicked(const QString&, const QString&);
-    void itemDoubleClicked(const QString& filename);
+        bool isValid();
 
-private Q_SLOTS:
-    void slotOnDoubleClicked(const QString&, const QString&);
+    public Q_SLOTS:
+        void slotNewProject();
+        void slotOpenProject(QString fileName = 0);
+        void slotAddToProject();
+        void slotRemoveFromProject();
+        void slotCloseProject();
 
-private:
-    void setCurrentLibrary(const QString& libFileName);
+    signals:
+        void signalNewProject();
+        void signalOpenProject();
+        void signalAddToProject();
+        void signalRemoveFromProject();
+        void signalCloseProject();
+        void itemClicked(const QString&, const QString&);
+        void itemDoubleClicked(const QString& filename);
 
-    ComponentsSidebar *m_projectsSidebar;
-    Library *projectLibrary;
-    QString m_libraryName;
-    QString m_libraryFileName;
-};
+    private Q_SLOTS:
+        void slotOnDoubleClicked(const QString&, const QString&);
+
+    private:
+        void setCurrentLibrary(const QString& libFileName);
+
+        ComponentsSidebar *m_projectsSidebar;
+        Library *projectLibrary;
+        QString m_libraryName;
+        QString m_libraryFileName;
+    };
+
+} // namespace Caneda
 
 #endif //PROJECT_H

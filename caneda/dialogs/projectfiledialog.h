@@ -22,32 +22,36 @@
 
 #include <QDialog>
 
-// Forward declarations
-class ComponentsSidebar;
-
-/*!
- * This class represents the dialog to open a component in
- * a project.
- */
-class ProjectFileDialog : public QDialog
+namespace Caneda
 {
-    Q_OBJECT;
+    // Forward declarations
+    class ComponentsSidebar;
 
-public:
-    ProjectFileDialog(QString = "", QWidget * = 0);
-    ~ProjectFileDialog();
+    /*!
+     * This class represents the dialog to open a component in
+     * a project.
+     */
+    class ProjectFileDialog : public QDialog
+    {
+        Q_OBJECT;
 
-    QString fileName() const { return m_fileName; }
+    public:
+        ProjectFileDialog(QString = "", QWidget * = 0);
+        ~ProjectFileDialog();
 
-private Q_SLOTS:
-    void slotAccept();
-    void slotOnDoubleClick(const QString&, const QString&);
+        QString fileName() const { return m_fileName; }
 
-private:
-    ComponentsSidebar *m_projectsSidebar;
-    QString m_fileName;
-    QString m_libraryName;
-    QString m_libraryFileName;
-};
+    private Q_SLOTS:
+        void slotAccept();
+        void slotOnDoubleClick(const QString&, const QString&);
+
+    private:
+        ComponentsSidebar *m_projectsSidebar;
+        QString m_fileName;
+        QString m_libraryName;
+        QString m_libraryFileName;
+    };
+
+} // namespace Caneda
 
 #endif //PROJECT_FILE_DIALOG_H

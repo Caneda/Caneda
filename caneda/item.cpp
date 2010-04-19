@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 #include "item.h"
-#include "canedamainwindow.h"
 #include "schematicscene.h"
 #include "schematicview.h"
 
@@ -166,179 +165,180 @@ namespace Caneda
 
         return Caneda::NoHandle;
     }
-}
 
-//! Constructor
-//! \brief Create a new item and add to scene.
-CanedaItem::CanedaItem(QGraphicsItem* parent, SchematicScene* scene) :
-    QGraphicsItem(parent),
-    m_boundingRect(0, 0, 0, 0)
-{
-    m_shape.addRect(m_boundingRect);
-#if QT_VERSION >= 0x040600
-    setFlag(ItemSendsGeometryChanges, true);
-    setFlag(ItemSendsScenePositionChanges, true);
-#endif
-    if(scene) {
-        scene->addItem(this);
-    }
-}
-
-//! Destructor
-CanedaItem::~CanedaItem()
-{
-}
-
-void CanedaItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->buttons().testFlag(Qt::LeftButton)) {
-        launchPropertyDialog(Caneda::PushUndoCmd);
-    }
-}
-
-/*!
- * \brief Sets the shape cache as well as boundbox cache
- *
- * This method abstracts the method of changing the geometry with support for
- * cache as well.
- * \param path The path to be cached. If empty, bound rect is added.
- * \param rect The bound rect to be cached.
- * \param pw Pen width of pen used to paint outer stroke of item.
- */
-void CanedaItem::setShapeAndBoundRect(const QPainterPath& path,
-        const QRectF& rect, qreal pw)
-{
-    // Inform scene about change in geometry.
-    prepareGeometryChange();
-    m_boundingRect = rect;
-    // Adjust the bounding rect by half pen width as required by graphicsview.
-    m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
-    m_shape = path;
-    if(m_shape.isEmpty()) {
-        //if path is empry just add the bounding rect itself to the path.
+    //! Constructor
+    //! \brief Create a new item and add to scene.
+    CanedaItem::CanedaItem(QGraphicsItem* parent, SchematicScene* scene) :
+        QGraphicsItem(parent),
+        m_boundingRect(0, 0, 0, 0)
+    {
         m_shape.addRect(m_boundingRect);
-    }
-}
-
-//! \brief returns a pointer to the schematic scene to which the item belongs.
-SchematicScene* CanedaItem::schematicScene() const
-{
-    return qobject_cast<SchematicScene*>(scene());
-}
-
-/*!
- * \brief Convenience method to get the saved text as string.
- *
- * Though this is simple, this method shouldn't be used in too many places as
- * there will be unnecessary creation of xml writer and reader instances which
- * will render the program inefficient.
- */
-QString CanedaItem::saveDataText() const
-{
-    QString retVal;
-    Caneda::XmlWriter writer(&retVal);
-    saveData(&writer);
-    return retVal;
-}
-
-/*!
- * \brief Convenience method to just load data from string.
- *
- * Though this is simple, this method shouldn't be used in too many places as
- * there will be unnecessary creation of xml writer and reader instances which
- * will render the program inefficient.
- */
-void CanedaItem::loadDataFromText(const QString &text)
-{
-    Caneda::XmlReader reader(text.toUtf8());
-    while(!reader.atEnd()) {
-        // skip until end element is found.
-        reader.readNext();
-
-        if(reader.isEndElement()) {
-            break;
-        }
-
-        if(reader.isStartElement()) {
-            loadData(&reader);
+#if QT_VERSION >= 0x040600
+        setFlag(ItemSendsGeometryChanges, true);
+        setFlag(ItemSendsScenePositionChanges, true);
+#endif
+        if(scene) {
+            scene->addItem(this);
         }
     }
-}
 
-/*!
- * \brief Graphically mirror item according to x axis
- * \note Items can be mirrored only along x and y axis.
- */
-void CanedaItem::mirrorAlong(Qt::Axis axis)
-{
-    update();
-
-    Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
-    if(axis == Qt::XAxis) {
-        scale(1.0, -1.0);
+    //! Destructor
+    CanedaItem::~CanedaItem()
+    {
     }
-    else /*axis = Qt::YAxis*/ {
-        scale(-1.0, 1.0);
+
+    void CanedaItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+    {
+        if(event->buttons().testFlag(Qt::LeftButton)) {
+            launchPropertyDialog(Caneda::PushUndoCmd);
+        }
     }
-}
 
-//! \brief Rotate item by -90 degrees
-void CanedaItem::rotate90(Caneda::AngleDirection dir)
-{
-    rotate(dir == Caneda::AntiClockwise ? -90.0 : 90.0);
-}
+    /*!
+     * \brief Sets the shape cache as well as boundbox cache
+     *
+     * This method abstracts the method of changing the geometry with support for
+     * cache as well.
+     * \param path The path to be cached. If empty, bound rect is added.
+     * \param rect The bound rect to be cached.
+     * \param pw Pen width of pen used to paint outer stroke of item.
+     */
+    void CanedaItem::setShapeAndBoundRect(const QPainterPath& path,
+            const QRectF& rect, qreal pw)
+    {
+        // Inform scene about change in geometry.
+        prepareGeometryChange();
+        m_boundingRect = rect;
+        // Adjust the bounding rect by half pen width as required by graphicsview.
+        m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
+        m_shape = path;
+        if(m_shape.isEmpty()) {
+            //if path is empry just add the bounding rect itself to the path.
+            m_shape.addRect(m_boundingRect);
+        }
+    }
 
-/*!
- * \brief This returns a copy of the current item parented to \a scene.
- *
- * Now it returns null but subclasses should reimplement this to return the
- * appropriate copy of that reimplemented item.
- */
-CanedaItem* CanedaItem::copy(SchematicScene *) const
-{
-    return 0;
-}
+    //! \brief returns a pointer to the schematic scene to which the item belongs.
+    SchematicScene* CanedaItem::schematicScene() const
+    {
+        return qobject_cast<SchematicScene*>(scene());
+    }
 
-/*!
- * \brief Copies data of current-item to \a item.
- *
- * Sublasses should reimplement it to copy their data.
- */
-void CanedaItem::copyDataTo(CanedaItem *item) const
-{
-    item->setTransform(transform());
-    item->prepareGeometryChange();
-    item->m_boundingRect = m_boundingRect;
-    item->m_shape = m_shape;
-    item->setPos(pos());
-}
+    /*!
+     * \brief Convenience method to get the saved text as string.
+     *
+     * Though this is simple, this method shouldn't be used in too many places as
+     * there will be unnecessary creation of xml writer and reader instances which
+     * will render the program inefficient.
+     */
+    QString CanedaItem::saveDataText() const
+    {
+        QString retVal;
+        Caneda::XmlWriter writer(&retVal);
+        saveData(&writer);
+        return retVal;
+    }
 
-/*!
- * \brief Constructs and returns a menu with default actions inderted.
- * \todo Implement this function.
- */
-QMenu* CanedaItem::defaultContextMenu() const
-{
-    return 0;
-}
+    /*!
+     * \brief Convenience method to just load data from string.
+     *
+     * Though this is simple, this method shouldn't be used in too many places as
+     * there will be unnecessary creation of xml writer and reader instances which
+     * will render the program inefficient.
+     */
+    void CanedaItem::loadDataFromText(const QString &text)
+    {
+        Caneda::XmlReader reader(text.toUtf8());
+        while(!reader.atEnd()) {
+            // skip until end element is found.
+            reader.readNext();
 
-/*!
- * \brief Stores the item's current position in data field of item.
- *
- * This method is required for handling undo/redo.
- */
-void storePos(QGraphicsItem *item, const QPointF &pos)
-{
-    item->setData(PointKey, QVariant(pos));
-}
+            if(reader.isEndElement()) {
+                break;
+            }
 
-/*!
- * \brief Returns the stored point by fetching from item's data field.
- *
- * This method is required for handling undo/redo.
- */
-QPointF storedPos(QGraphicsItem *item)
-{
-    return item->data(PointKey).toPointF();
-}
+            if(reader.isStartElement()) {
+                loadData(&reader);
+            }
+        }
+    }
+
+    /*!
+     * \brief Graphically mirror item according to x axis
+     * \note Items can be mirrored only along x and y axis.
+     */
+    void CanedaItem::mirrorAlong(Qt::Axis axis)
+    {
+        update();
+
+        Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
+        if(axis == Qt::XAxis) {
+            scale(1.0, -1.0);
+        }
+        else /*axis = Qt::YAxis*/ {
+            scale(-1.0, 1.0);
+        }
+    }
+
+    //! \brief Rotate item by -90 degrees
+    void CanedaItem::rotate90(Caneda::AngleDirection dir)
+    {
+        rotate(dir == Caneda::AntiClockwise ? -90.0 : 90.0);
+    }
+
+    /*!
+     * \brief This returns a copy of the current item parented to \a scene.
+     *
+     * Now it returns null but subclasses should reimplement this to return the
+     * appropriate copy of that reimplemented item.
+     */
+    CanedaItem* CanedaItem::copy(SchematicScene *) const
+    {
+        return 0;
+    }
+
+    /*!
+     * \brief Copies data of current-item to \a item.
+     *
+     * Sublasses should reimplement it to copy their data.
+     */
+    void CanedaItem::copyDataTo(CanedaItem *item) const
+    {
+        item->setTransform(transform());
+        item->prepareGeometryChange();
+        item->m_boundingRect = m_boundingRect;
+        item->m_shape = m_shape;
+        item->setPos(pos());
+    }
+
+    /*!
+     * \brief Constructs and returns a menu with default actions inderted.
+     * \todo Implement this function.
+     */
+    QMenu* CanedaItem::defaultContextMenu() const
+    {
+        return 0;
+    }
+
+    /*!
+     * \brief Stores the item's current position in data field of item.
+     *
+     * This method is required for handling undo/redo.
+     */
+    void storePos(QGraphicsItem *item, const QPointF &pos)
+    {
+        item->setData(PointKey, QVariant(pos));
+    }
+
+    /*!
+     * \brief Returns the stored point by fetching from item's data field.
+     *
+     * This method is required for handling undo/redo.
+     */
+    QPointF storedPos(QGraphicsItem *item)
+    {
+        return item->data(PointKey).toPointF();
+    }
+
+} // namespace Caneda
 

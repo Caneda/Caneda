@@ -24,65 +24,70 @@
 
 #include <QGraphicsView>
 
-class CanedaItem;
-class SchematicScene;
-
-class SchematicView : public QGraphicsView, public CanedaView
+namespace Caneda
 {
+    // Forward declarations
+    class CanedaItem;
+    class SchematicScene;
+
+    class SchematicView : public QGraphicsView, public CanedaView
+    {
     Q_OBJECT
-public:
-    static const qreal zoomFactor;
+    public:
+        static const qreal zoomFactor;
 
-    SchematicView(SchematicScene *sc = 0,QWidget *parent = 0);
-    ~SchematicView();
+        SchematicView(SchematicScene *sc = 0,QWidget *parent = 0);
+        ~SchematicView();
 
-    SchematicScene* schematicScene() const;
+        SchematicScene* schematicScene() const;
 
-    //reimplemented virtuals from CanedaView
-    void setFileName(const QString& name);
-    QString fileName() const;
+        //reimplemented virtuals from CanedaView
+        void setFileName(const QString& name);
+        QString fileName() const;
 
-    bool load();
-    bool save();
+        bool load();
+        bool save();
 
-    void zoomIn();
-    void zoomOut();
+        void zoomIn();
+        void zoomOut();
 
-    void showAll();
-    void showNoZoom();
+        void showAll();
+        void showNoZoom();
 
-    bool isSchematicView() const { return true; }
+        bool isSchematicView() const { return true; }
 
-    QWidget* toWidget() const;
-    SchematicView* toSchematicView() const;
+        QWidget* toWidget() const;
+        SchematicView* toSchematicView() const;
 
-    bool isModified() const;
+        bool isModified() const;
 
-    void copy() const;
-    void cut();
-    void paste();
+        void copy() const;
+        void cut();
+        void paste();
 
-    void saveScrollState();
-    void restoreScrollState();
+        void saveScrollState();
+        void restoreScrollState();
 
-public Q_SLOTS:
-    void setModified(bool m);
+    public Q_SLOTS:
+        void setModified(bool m);
 
-signals:
-    void modificationChanged(bool modified);
-    void fileNameChanged(const QString& file);
-    void titleToBeUpdated();
-    void cursorPositionChanged(const QString& newPos);
-    void focussed(SchematicView *view);
-    void pasteInvoked();
+    signals:
+        void modificationChanged(bool modified);
+        void fileNameChanged(const QString& file);
+        void titleToBeUpdated();
+        void cursorPositionChanged(const QString& newPos);
+        void focussed(SchematicView *view);
+        void pasteInvoked();
 
-protected:
-    void mouseMoveEvent(QMouseEvent *event);
-    void focusInEvent(QFocusEvent *event);
+    protected:
+        void mouseMoveEvent(QMouseEvent *event);
+        void focusInEvent(QFocusEvent *event);
 
-private:
-    int m_horizontalScroll;
-    int m_verticalScroll;
-};
+    private:
+        int m_horizontalScroll;
+        int m_verticalScroll;
+    };
+
+} // namespace Caneda
 
 #endif //SCHEMATICVIEW_H

@@ -19,7 +19,7 @@
 
 #include "savedocumentsdialog.h"
 
-#include "canedamainwindow.h"
+#include "mainwindow.h"
 #include "canedaview.h"
 #include "settings.h"
 
@@ -32,166 +32,170 @@
 #include <QTabWidget>
 #include <QToolButton>
 
-struct FileBrowserLineEditPrivate
+namespace Caneda
 {
-    QTreeWidgetItem *item;
-    QFileInfo fileInfo;
+    struct FileBrowserLineEditPrivate
+    {
+        QTreeWidgetItem *item;
+        QFileInfo fileInfo;
 
-    QLineEdit *lineEdit;
-    QToolButton *browseButton;
-};
+        QLineEdit *lineEdit;
+        QToolButton *browseButton;
+    };
 
-FileBrowserLineEdit::FileBrowserLineEdit(QTreeWidgetItem *item,
-        const QFileInfo& fileInfo,
-        QWidget *parent) :
-    QWidget(parent)
-{
-    d = new FileBrowserLineEditPrivate;
-    d->item = item;
-    d->fileInfo = fileInfo;
+    FileBrowserLineEdit::FileBrowserLineEdit(QTreeWidgetItem *item,
+            const QFileInfo& fileInfo,
+            QWidget *parent) :
+        QWidget(parent)
+    {
+        d = new FileBrowserLineEditPrivate;
+        d->item = item;
+        d->fileInfo = fileInfo;
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+        QHBoxLayout *layout = new QHBoxLayout(this);
 
-    d->lineEdit = new QLineEdit(this);
-    d->lineEdit->setReadOnly(true);
-    d->lineEdit->setText(d->fileInfo.absolutePath());
-    layout->addWidget(d->lineEdit);
+        d->lineEdit = new QLineEdit(this);
+        d->lineEdit->setReadOnly(true);
+        d->lineEdit->setText(d->fileInfo.absolutePath());
+        layout->addWidget(d->lineEdit);
 
-    d->browseButton = new QToolButton(this);
-    d->browseButton->setText("...");
-    layout->addWidget(d->browseButton);
+        d->browseButton = new QToolButton(this);
+        d->browseButton->setText("...");
+        layout->addWidget(d->browseButton);
 
-    connect(d->browseButton, SIGNAL(clicked()), this,
-            SLOT(browseButtonClicked()));
-}
-
-FileBrowserLineEdit::~FileBrowserLineEdit()
-{
-    delete d;
-}
-
-QFileInfo FileBrowserLineEdit::fileInfo() const
-{
-    return d->fileInfo;
-}
-
-void FileBrowserLineEdit::browseButtonClicked()
-{
-    QString fileName =
-        QFileDialog::getSaveFileName(0, tr("Save File"), d->fileInfo.absoluteFilePath(),
-                Settings::instance()->currentValue("nosave/canedaFilter").toString());
-    QFileInfo fi(fileName);
-    if (fi.fileName().isEmpty() == false &&
-            QFileInfo(fi.absolutePath()).exists()) {
-        d->fileInfo = fi;
-        updateTexts();
+        connect(d->browseButton, SIGNAL(clicked()), this,
+                SLOT(browseButtonClicked()));
     }
-}
 
-void FileBrowserLineEdit::updateTexts()
-{
-    QString doc = d->fileInfo.fileName();
-    QString path = d->fileInfo.absolutePath();
-    if (doc.isEmpty()) {
-        doc = tr("Untitled");
+    FileBrowserLineEdit::~FileBrowserLineEdit()
+    {
+        delete d;
     }
-    d->lineEdit->setText(path);
-    d->item->setText(0, doc);
-}
 
-struct SaveDocumentsDialogPrivate
-{
-    QSet<QPair<CanedaView*, int> > modifiedViews;
-    QMap<int, int> treeIndexToTabIndex;
-    QSet<QPair<CanedaView*, QString> > newFilePaths;
-};
+    QFileInfo FileBrowserLineEdit::fileInfo() const
+    {
+        return d->fileInfo;
+    }
 
-SaveDocumentsDialog::SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &modifiedViews,
-        QWidget *parent) : QDialog(parent)
-{
-    d = new SaveDocumentsDialogPrivate;
-    d->modifiedViews = modifiedViews;
+    void FileBrowserLineEdit::browseButtonClicked()
+    {
+        QString fileName =
+            QFileDialog::getSaveFileName(0, tr("Save File"), d->fileInfo.absoluteFilePath(),
+                    Settings::instance()->currentValue("nosave/canedaFilter").toString());
+        QFileInfo fi(fileName);
+        if (fi.fileName().isEmpty() == false &&
+                QFileInfo(fi.absolutePath()).exists()) {
+            d->fileInfo = fi;
+            updateTexts();
+        }
+    }
 
-    ui.setupUi(this);
+    void FileBrowserLineEdit::updateTexts()
+    {
+        QString doc = d->fileInfo.fileName();
+        QString path = d->fileInfo.absolutePath();
+        if (doc.isEmpty()) {
+            doc = tr("Untitled");
+        }
+        d->lineEdit->setText(path);
+        d->item->setText(0, doc);
+    }
 
-    ui.buttonBox->button(QDialogButtonBox::Save)->setText(tr("Save Selected"));
-    ui.buttonBox->button(QDialogButtonBox::Discard)->setText(tr("Do not Save"));
-    ui.buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Abort"));
+    struct SaveDocumentsDialogPrivate
+    {
+        QSet<QPair<CanedaView*, int> > modifiedViews;
+        QMap<int, int> treeIndexToTabIndex;
+        QSet<QPair<CanedaView*, QString> > newFilePaths;
+    };
 
-    populateItems();
+    SaveDocumentsDialog::SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &modifiedViews,
+            QWidget *parent) : QDialog(parent)
+    {
+        d = new SaveDocumentsDialogPrivate;
+        d->modifiedViews = modifiedViews;
 
-    connect(ui.buttonBox, SIGNAL(clicked(QAbstractButton*)),
-            this, SLOT(slotButtonClicked(QAbstractButton*)));
-    connect(ui.treeWidget, SIGNAL(clicked(const QModelIndex&)),
-            this, SLOT(slotHandleClick(const QModelIndex&)));
-}
+        ui.setupUi(this);
 
-SaveDocumentsDialog::~SaveDocumentsDialog()
-{
-    delete d;
-}
+        ui.buttonBox->button(QDialogButtonBox::Save)->setText(tr("Save Selected"));
+        ui.buttonBox->button(QDialogButtonBox::Discard)->setText(tr("Do not Save"));
+        ui.buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Abort"));
 
-QSet<QPair<CanedaView*, QString> > SaveDocumentsDialog::newFilePaths() const
-{
-    return d->newFilePaths;
-}
+        populateItems();
 
-void SaveDocumentsDialog::slotButtonClicked(QAbstractButton *button)
-{
-    int buttonRole = ui.buttonBox->buttonRole(button);
-    if (buttonRole == SaveSelected) {
-        int selectedCount = 0;
-        for (int i = 0; i < ui.treeWidget->topLevelItemCount(); ++i) {
-            QTreeWidgetItem *item = ui.treeWidget->topLevelItem(i);
-            if (item->checkState(0) == Qt::Checked) {
-                selectedCount++;
-                FileBrowserLineEdit *widget =
-                    qobject_cast<FileBrowserLineEdit*>(ui.treeWidget->itemWidget(item, 1));
-                if (widget->fileInfo().fileName().isEmpty()) {
-                    QMessageBox::warning(0, tr("Filename not set"),
-                            tr("Please set file names for untitled documents"));
-                    d->newFilePaths.clear();
-                    return;
-                }
+        connect(ui.buttonBox, SIGNAL(clicked(QAbstractButton*)),
+                this, SLOT(slotButtonClicked(QAbstractButton*)));
+        connect(ui.treeWidget, SIGNAL(clicked(const QModelIndex&)),
+                this, SLOT(slotHandleClick(const QModelIndex&)));
+    }
 
-                CanedaMainWindow *mw = CanedaMainWindow::instance();
-                QTabWidget *tw = mw->tabWidget();
-                CanedaView *view = mw->viewFromWidget(tw->widget(d->treeIndexToTabIndex[i]));
-                if (view) {
-                    d->newFilePaths.insert(qMakePair(view,
-                                widget->fileInfo().absoluteFilePath()));
+    SaveDocumentsDialog::~SaveDocumentsDialog()
+    {
+        delete d;
+    }
+
+    QSet<QPair<CanedaView*, QString> > SaveDocumentsDialog::newFilePaths() const
+    {
+        return d->newFilePaths;
+    }
+
+    void SaveDocumentsDialog::slotButtonClicked(QAbstractButton *button)
+    {
+        int buttonRole = ui.buttonBox->buttonRole(button);
+        if (buttonRole == SaveSelected) {
+            int selectedCount = 0;
+            for (int i = 0; i < ui.treeWidget->topLevelItemCount(); ++i) {
+                QTreeWidgetItem *item = ui.treeWidget->topLevelItem(i);
+                if (item->checkState(0) == Qt::Checked) {
+                    selectedCount++;
+                    FileBrowserLineEdit *widget =
+                        qobject_cast<FileBrowserLineEdit*>(ui.treeWidget->itemWidget(item, 1));
+                    if (widget->fileInfo().fileName().isEmpty()) {
+                        QMessageBox::warning(0, tr("Filename not set"),
+                                tr("Please set file names for untitled documents"));
+                        d->newFilePaths.clear();
+                        return;
+                    }
+
+                    MainWindow *mw = MainWindow::instance();
+                    QTabWidget *tw = mw->tabWidget();
+                    CanedaView *view = mw->viewFromWidget(tw->widget(d->treeIndexToTabIndex[i]));
+                    if (view) {
+                        d->newFilePaths.insert(qMakePair(view,
+                                    widget->fileInfo().absoluteFilePath()));
+                    }
                 }
             }
         }
+        setResult(ui.buttonBox->buttonRole(button));
+        hide();
     }
-    setResult(ui.buttonBox->buttonRole(button));
-    hide();
-}
 
-void SaveDocumentsDialog::slotHandleClick(const QModelIndex& index)
-{
-    CanedaMainWindow *mw = CanedaMainWindow::instance();
-    mw->tabWidget()->setCurrentIndex(d->treeIndexToTabIndex[index.row()]);
-}
-
-void SaveDocumentsDialog::reject()
-{
-    QAbstractButton *cancel = ui.buttonBox->button(QDialogButtonBox::Cancel);
-    slotButtonClicked(cancel);
-}
-
-void SaveDocumentsDialog::populateItems()
-{
-    QSet<QPair<CanedaView*, int> >::iterator it = d->modifiedViews.begin();
-    for (int i = 0 ; it != d->modifiedViews.end(); ++it, ++i) {
-        CanedaView *view = it->first;
-        QTreeWidgetItem *item = new QTreeWidgetItem(ui.treeWidget);
-        item->setCheckState(0, Qt::Checked);
-        d->treeIndexToTabIndex[i] = it->second;
-
-        QFileInfo fileInfo(view->fileName());
-        FileBrowserLineEdit *widget = new FileBrowserLineEdit(item, fileInfo);
-        ui.treeWidget->setItemWidget(item, 1, widget);
-        widget->updateTexts();
+    void SaveDocumentsDialog::slotHandleClick(const QModelIndex& index)
+    {
+        MainWindow *mw = MainWindow::instance();
+        mw->tabWidget()->setCurrentIndex(d->treeIndexToTabIndex[index.row()]);
     }
-}
+
+    void SaveDocumentsDialog::reject()
+    {
+        QAbstractButton *cancel = ui.buttonBox->button(QDialogButtonBox::Cancel);
+        slotButtonClicked(cancel);
+    }
+
+    void SaveDocumentsDialog::populateItems()
+    {
+        QSet<QPair<CanedaView*, int> >::iterator it = d->modifiedViews.begin();
+        for (int i = 0 ; it != d->modifiedViews.end(); ++it, ++i) {
+            CanedaView *view = it->first;
+            QTreeWidgetItem *item = new QTreeWidgetItem(ui.treeWidget);
+            item->setCheckState(0, Qt::Checked);
+            d->treeIndexToTabIndex[i] = it->second;
+
+            QFileInfo fileInfo(view->fileName());
+            FileBrowserLineEdit *widget = new FileBrowserLineEdit(item, fileInfo);
+            ui.treeWidget->setItemWidget(item, 1, widget);
+            widget->updateTexts();
+        }
+    }
+
+} // namespace Caneda

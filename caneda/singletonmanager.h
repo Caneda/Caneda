@@ -22,30 +22,33 @@
 
 #include <QObject>
 
-class ActionManager;
-class LibraryLoader;
-class SchematicStateHandler;
-class SvgPainter;
-
-class SingletonManager : public QObject
+namespace Caneda
 {
-    Q_OBJECT;
-public:
-    ~SingletonManager();
+    class ActionManager;
+    class LibraryLoader;
+    class SchematicStateHandler;
+    class SvgPainter;
 
-    ActionManager* actionManager();
-    LibraryLoader* libraryLoader();
-    SchematicStateHandler* schematicStateHandler();
-    SvgPainter* svgPainter();
+    class SingletonManager : public QObject
+    {
+        Q_OBJECT
+    public:
+        ~SingletonManager();
 
-    static SingletonManager* instance();
+        ActionManager* actionManager();
+        LibraryLoader* libraryLoader();
+        SchematicStateHandler* schematicStateHandler();
+        SvgPainter* svgPainter();
 
-private:
-    SingletonManager(QObject *parent = 0);
-    ActionManager *m_actionManager;
-    LibraryLoader *m_libraryLoader;
-    SchematicStateHandler *m_schematicStateHandler;
-    SvgPainter *m_svgPainter;
-};
+        static SingletonManager* instance();
+
+    private:
+        SingletonManager(QObject *parent = 0);
+        ActionManager *m_actionManager;
+        LibraryLoader *m_libraryLoader;
+        SchematicStateHandler *m_schematicStateHandler;
+        SvgPainter *m_svgPainter;
+    };
+} // namespace Caneda
 
 #endif // SINGLETONMANAGER_H

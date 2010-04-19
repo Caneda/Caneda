@@ -39,11 +39,11 @@
 // forward declaration
 class QMenu;
 
-class SchematicScene;
 
 namespace Caneda {
     class XmlReader;
     class XmlWriter;
+    class SchematicScene;
 
     //! This enum determines the rotation direction.
     enum AngleDirection {
@@ -80,178 +80,178 @@ namespace Caneda {
     ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles,
             const QRectF& rect);
 
-}
 
+    //! \brief CanedaItem - The base class for components, wires, nodes..
+    class CanedaItem : public QGraphicsItem
+    {
+    public:
+        /*!
+         * \brief This enum helps in polymorphic cast without using dynamic_cast.
+         *
+         * Actually a bitpattern is used to determine whether the cast
+         * is valid or not. The cast function is approximately defined like this
+         * cast(a,b) {
+         * return (a&b) == a;
+         * }
+         * \sa canedaitem_cast and PATTERN.
+         */
+        enum CanedaItemTypes {
+            //!Recognizes all classes derived from CanedaItem
+            CanedaItemType = (1 << (std::numeric_limits<int>::digits-1)),
+            //!Recognizes classes derived from SvgItem
+            SvgItemType = PATTERN(CanedaItemType, 1),
+            //!Recognizes classes derived from Component
+            ComponentType = PATTERN(SvgItemType, 1),
+            //!Recognizes classes derived from Wire
+            WireType = PATTERN(CanedaItemType, 3),
+            //!Recognizes classes derived from Painting
+            PaintingType = PATTERN(CanedaItemType, 4),
+            //!Recognizes classes derived from Display
+            DisplayType = PATTERN(CanedaItemType, 5)
+        };
 
-//! \brief CanedaItem - The base class for components, wires, nodes..
-class CanedaItem : public QGraphicsItem
-{
-public:
+        //! Item identifier \sa CanedaItemTypes
+        enum {
+            Type = CanedaItemType
+        };
+
+        CanedaItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
+        virtual ~CanedaItem();
+
+        //! Return type of item
+        int type() const { return CanedaItemType; }
+        //! Return bounding box
+        QRectF boundingRect() const { return m_boundingRect; }
+        //! Return the shape of the item.
+        QPainterPath shape() const { return m_shape; }
+
+        SchematicScene* schematicScene() const;
+
+        //! Virtual method to write item's properties to writer.
+        virtual void saveData(Caneda::XmlWriter *) const {}
+        //! Virtual method to read item's properties from reader.
+        virtual void loadData(Caneda::XmlReader *) {}
+
+        QString saveDataText() const;
+        void loadDataFromText(const QString &str);
+
+        virtual void mirrorAlong(Qt::Axis axis);
+        virtual void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise);
+
+        virtual CanedaItem* copy(SchematicScene *scene = 0) const;
+        virtual void copyDataTo(CanedaItem *item) const;
+
+        //! This is convenience method used for rtti.
+        virtual bool isComponent() const { return false; }
+        //! This is convenience method used for rtti.
+        virtual bool isWire() const { return false; }
+
+        //! Subclasses should implement this to launch its own dialog.
+        virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
+
+        QMenu* defaultContextMenu() const;
+
+    protected:
+        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+        void setShapeAndBoundRect(const QPainterPath& path,
+                const QRectF& rect,
+                qreal penWidth = 1.0);
+
+        QRectF m_boundingRect; //!< Bounding box cache
+        QPainterPath m_shape; //!< Shape cache
+    };
+
     /*!
-     * \brief This enum helps in polymorphic cast without using dynamic_cast.
+     * \brief rtti cast function with polymorphic support.
      *
-     * Actually a bitpattern is used to determine whether the cast
-     * is valid or not. The cast function is approximately defined like this
-     * cast(a,b) {
-     * return (a&b) == a;
-     * }
-     * \sa canedaitem_cast and PATTERN.
+     * This function actually works for items following the rules.
+     * Firstly, items should use appropriate Type constant.
+     * Secondly, type() should return this Type.
+     * \sa CanedaItemTypes
      */
-    enum CanedaItemTypes {
-        //!Recognizes all classes derived from CanedaItem
-        CanedaItemType = (1 << (std::numeric_limits<int>::digits-1)),
-        //!Recognizes classes derived from SvgItem
-        SvgItemType = PATTERN(CanedaItemType, 1),
-        //!Recognizes classes derived from Component
-        ComponentType = PATTERN(SvgItemType, 1),
-        //!Recognizes classes derived from Wire
-        WireType = PATTERN(CanedaItemType, 3),
-        //!Recognizes classes derived from Painting
-        PaintingType = PATTERN(CanedaItemType, 4),
-        //!Recognizes classes derived from Display
-        DisplayType = PATTERN(CanedaItemType, 5)
+    template<typename T> T canedaitem_cast(QGraphicsItem *item)
+    {
+        bool firstCond = int(static_cast<T>(0)->Type) == int(QGraphicsItem::Type);
+        bool secondCond = !firstCond && item &&
+            ((int(static_cast<T>(0)->Type) & item->type()) == (int(static_cast<T>(0)->Type)));
+        bool result = firstCond | secondCond;
+        return result ? static_cast<T>(item)  : 0;
+    }
+
+    //! This enum is used in \a filterItems method to determine filtering.
+    enum FilterOption {
+        DontRemoveItems,
+        RemoveItems
     };
 
-    //! Item identifier \sa CanedaItemTypes
-    enum {
-        Type = CanedaItemType
-    };
+    /*!
+     * \brief This function returns a list of canedaitems present in \a items.
+     * \param items  The list from which items are to be filtered.
+     * \param option Indication whether to remove non matching items from items passed
+     *               or not.
+     */
 
-    CanedaItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
-    virtual ~CanedaItem();
-
-    //! Return type of item
-    int type() const { return CanedaItemType; }
-    //! Return bounding box
-    QRectF boundingRect() const { return m_boundingRect; }
-    //! Return the shape of the item.
-    QPainterPath shape() const { return m_shape; }
-
-    SchematicScene* schematicScene() const;
-
-    //! Virtual method to write item's properties to writer.
-    virtual void saveData(Caneda::XmlWriter *) const {}
-    //! Virtual method to read item's properties from reader.
-    virtual void loadData(Caneda::XmlReader *) {}
-
-    QString saveDataText() const;
-    void loadDataFromText(const QString &str);
-
-    virtual void mirrorAlong(Qt::Axis axis);
-    virtual void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise);
-
-    virtual CanedaItem* copy(SchematicScene *scene = 0) const;
-    virtual void copyDataTo(CanedaItem *item) const;
-
-    //! This is convenience method used for rtti.
-    virtual bool isComponent() const { return false; }
-    //! This is convenience method used for rtti.
-    virtual bool isWire() const { return false; }
-
-    //! Subclasses should implement this to launch its own dialog.
-    virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
-
-    QMenu* defaultContextMenu() const;
-
-protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-    void setShapeAndBoundRect(const QPainterPath& path,
-            const QRectF& rect,
-            qreal penWidth = 1.0);
-
-    QRectF m_boundingRect; //!< Bounding box cache
-    QPainterPath m_shape; //!< Shape cache
-};
-
-/*!
- * \brief rtti cast function with polymorphic support.
- *
- * This function actually works for items following the rules.
- * Firstly, items should use appropriate Type constant.
- * Secondly, type() should return this Type.
- * \sa CanedaItemTypes
- */
-template<typename T> T canedaitem_cast(QGraphicsItem *item)
-{
-    bool firstCond = int(static_cast<T>(0)->Type) == int(QGraphicsItem::Type);
-    bool secondCond = !firstCond && item &&
-        ((int(static_cast<T>(0)->Type) & item->type()) == (int(static_cast<T>(0)->Type)));
-    bool result = firstCond | secondCond;
-    return result ? static_cast<T>(item)  : 0;
-}
-
-//! This enum is used in \a filterItems method to determine filtering.
-enum FilterOption {
-    DontRemoveItems,
-    RemoveItems
-};
-
-/*!
- * \brief This function returns a list of canedaitems present in \a items.
- * \param items  The list from which items are to be filtered.
- * \param option Indication whether to remove non matching items from items passed
- *               or not.
- */
-
-template<typename T>
-QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRemoveItems)
-{
-    QList<T*> tItems;
-    QList<QGraphicsItem*>::iterator it = items.begin();
-    while(it != items.end()) {
-        QGraphicsItem *item = *it;
-        T *tItem = canedaitem_cast<T*>(item);
-        if(tItem) {
-            tItems << tItem;
-            if(option == RemoveItems) {
-                it = items.erase(it);
+    template<typename T>
+    QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRemoveItems)
+    {
+        QList<T*> tItems;
+        QList<QGraphicsItem*>::iterator it = items.begin();
+        while(it != items.end()) {
+            QGraphicsItem *item = *it;
+            T *tItem = canedaitem_cast<T*>(item);
+            if(tItem) {
+                tItems << tItem;
+                if(option == RemoveItems) {
+                    it = items.erase(it);
+                }
+                else {
+                    ++it;
+                }
             }
             else {
                 ++it;
             }
         }
-        else {
-            ++it;
-        }
+        return tItems;
     }
-    return tItems;
-}
 
-/*!
- * \brief This function returns a list of canedaitems present in \a items.
- * \param items  The list from which items are to be filtered.
- * \param option Indication whether to remove non matching items from items passed
- *               or not.
- */
-template<typename T>
-QList<T*> filterItems(QList<CanedaItem*> &items, FilterOption option = DontRemoveItems)
-{
-    QList<T*> tItems;
-    QList<CanedaItem*>::iterator it = items.begin();
-    while(it != items.end()) {
-        CanedaItem *item = *it;
-        T *tItem = canedaitem_cast<T*>(item);
-        if(tItem) {
-            tItems << tItem;
-            if(option == RemoveItems) {
-                it = items.erase(it);
+    /*!
+     * \brief This function returns a list of canedaitems present in \a items.
+     * \param items  The list from which items are to be filtered.
+     * \param option Indication whether to remove non matching items from items passed
+     *               or not.
+     */
+    template<typename T>
+    QList<T*> filterItems(QList<CanedaItem*> &items, FilterOption option = DontRemoveItems)
+    {
+        QList<T*> tItems;
+        QList<CanedaItem*>::iterator it = items.begin();
+        while(it != items.end()) {
+            CanedaItem *item = *it;
+            T *tItem = canedaitem_cast<T*>(item);
+            if(tItem) {
+                tItems << tItem;
+                if(option == RemoveItems) {
+                    it = items.erase(it);
+                }
+                else {
+                    ++it;
+                }
             }
             else {
                 ++it;
             }
         }
-        else {
-            ++it;
-        }
+        return tItems;
     }
-    return tItems;
-}
 
-//! Key used to store the current position of an item in it's data field.
-static const int PointKey = 10;
+    //! Key used to store the current position of an item in it's data field.
+    static const int PointKey = 10;
 
-void storePos(QGraphicsItem *item, const QPointF& pos);
-QPointF storedPos(QGraphicsItem *item);
+    void storePos(QGraphicsItem *item, const QPointF& pos);
+    QPointF storedPos(QGraphicsItem *item);
+
+} // namespace Caneda
 
 #endif //ITEM_H

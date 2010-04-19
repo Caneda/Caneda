@@ -24,53 +24,58 @@
 #include "schematicstatehandler.h"
 #include "svgitem.h"
 
-SingletonManager::SingletonManager(QObject *parent)
-    : QObject(parent),
-    m_actionManager(0),
-    m_libraryLoader(0),
-    m_schematicStateHandler(0),
-    m_svgPainter(0)
+namespace Caneda
 {
-}
 
-SingletonManager::~SingletonManager()
-{
-}
-
-ActionManager* SingletonManager::actionManager()
-{
-    if (!m_actionManager) {
-        m_actionManager = new ActionManager(this);
+    SingletonManager::SingletonManager(QObject *parent)
+        : QObject(parent),
+        m_actionManager(0),
+        m_libraryLoader(0),
+        m_schematicStateHandler(0),
+        m_svgPainter(0)
+    {
     }
-    return m_actionManager;
-}
 
-LibraryLoader* SingletonManager::libraryLoader()
-{
-    if (!m_libraryLoader) {
-        m_libraryLoader = new LibraryLoader(this);
+    SingletonManager::~SingletonManager()
+    {
     }
-    return m_libraryLoader;
-}
 
-SchematicStateHandler* SingletonManager::schematicStateHandler()
-{
-    if (!m_schematicStateHandler) {
-        m_schematicStateHandler = new SchematicStateHandler(this);
+    ActionManager* SingletonManager::actionManager()
+    {
+        if (!m_actionManager) {
+            m_actionManager = new ActionManager(this);
+        }
+        return m_actionManager;
     }
-    return m_schematicStateHandler;
-}
 
-SvgPainter* SingletonManager::svgPainter()
-{
-    if (!m_svgPainter) {
-        m_svgPainter = new SvgPainter(this);
+    LibraryLoader* SingletonManager::libraryLoader()
+    {
+        if (!m_libraryLoader) {
+            m_libraryLoader = new LibraryLoader(this);
+        }
+        return m_libraryLoader;
     }
-    return m_svgPainter;
-}
 
-SingletonManager* SingletonManager::instance()
-{
-    static SingletonManager* sm = new SingletonManager();
-    return sm;
-}
+    SchematicStateHandler* SingletonManager::schematicStateHandler()
+    {
+        if (!m_schematicStateHandler) {
+            m_schematicStateHandler = new SchematicStateHandler(this);
+        }
+        return m_schematicStateHandler;
+    }
+
+    SvgPainter* SingletonManager::svgPainter()
+    {
+        if (!m_svgPainter) {
+            m_svgPainter = new SvgPainter(this);
+        }
+        return m_svgPainter;
+    }
+
+    SingletonManager* SingletonManager::instance()
+    {
+        static SingletonManager* sm = new SingletonManager();
+        return sm;
+    }
+
+} // namespace Caneda

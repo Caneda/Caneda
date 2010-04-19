@@ -23,17 +23,21 @@
 
 #include "item.h"
 
-class Diagram : public CanedaItem
+namespace Caneda
 {
-public:
-    enum {
-        Type = CanedaItem::DisplayType
+    class Diagram : public CanedaItem
+    {
+    public:
+        enum {
+            Type = CanedaItem::DisplayType
+        };
+
+        Diagram(SchematicScene* scene = 0);
+        ~Diagram();
+
+        int type() const { return CanedaItem::DisplayType; }
     };
 
-    Diagram(SchematicScene* scene = 0);
-    ~Diagram();
-
-    int type() const { return CanedaItem::DisplayType; }
-};
+} // namespace Caneda
 
 #endif

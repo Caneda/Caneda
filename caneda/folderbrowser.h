@@ -28,33 +28,37 @@ class QFileSystemModel;
 class QListView;
 class QToolButton;
 
-class FolderBrowser : public QWidget
+namespace Caneda
 {
-    Q_OBJECT;
+    class FolderBrowser : public QWidget
+    {
+        Q_OBJECT;
 
-public:
-    FolderBrowser(QWidget *parent = 0);
-    ~FolderBrowser() {}
+    public:
+        FolderBrowser(QWidget *parent = 0);
+        ~FolderBrowser() {}
 
-signals:
-    void itemDoubleClicked(const QString& filename);
+    signals:
+        void itemDoubleClicked(const QString& filename);
 
-private Q_SLOTS:
-    void slotOnDoubleClicked(const QModelIndex& index);
-    void slotUpFolder();
-    void slotBackFolder();
-    void slotForwardFolder();
-    void slotHomeFolder();
-    void slotNewFolder();
-    void slotDeleteFile();
+    private Q_SLOTS:
+        void slotOnDoubleClicked(const QModelIndex& index);
+        void slotUpFolder();
+        void slotBackFolder();
+        void slotForwardFolder();
+        void slotHomeFolder();
+        void slotNewFolder();
+        void slotDeleteFile();
 
-private:
-    QFileSystemModel *m_fileModel;
-    QListView *m_listView;
-    QList<QModelIndex> previousPages;
-    QList<QModelIndex> nextPages;
+    private:
+        QFileSystemModel *m_fileModel;
+        QListView *m_listView;
+        QList<QModelIndex> previousPages;
+        QList<QModelIndex> nextPages;
 
-    QToolButton *buttonBack, *buttonForward;
-};
+        QToolButton *buttonBack, *buttonForward;
+    };
+
+} // namespace Caneda
 
 #endif //FOLDERBROWSER_H

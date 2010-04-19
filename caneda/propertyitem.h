@@ -24,57 +24,61 @@
 
 #include <QGraphicsTextItem>
 
-//Forward declarations.
-class SchematicScene;
-
-//! \brief Class used to represent the text corresponding to property on schematic.
-class PropertyItem : public QGraphicsTextItem
+namespace Caneda
 {
-    Q_OBJECT;
-public:
-    PropertyItem(const QString& name, SchematicScene *scene);
+    //Forward declarations.
+    class SchematicScene;
 
-    QRectF boundingRect() const;
-    QPainterPath shape() const;
+    //! \brief Class used to represent the text corresponding to property on schematic.
+    class PropertyItem : public QGraphicsTextItem
+    {
+        Q_OBJECT;
+    public:
+        PropertyItem(const QString& name, SchematicScene *scene);
 
-    void setFont(const QFont& f);
+        QRectF boundingRect() const;
+        QPainterPath shape() const;
 
-    bool eventFilter(QObject* object, QEvent* event);
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
-            QWidget * widget = 0 );
+        void setFont(const QFont& f);
 
-    Component* component() const {
-        return static_cast<PropertiesGroup*>(group())->component();
-    }
+        bool eventFilter(QObject* object, QEvent* event);
+        void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
+                QWidget * widget = 0 );
 
-public Q_SLOTS:
-    void updateValue();
+        Component* component() const {
+            return static_cast<PropertiesGroup*>(group())->component();
+        }
 
-protected:
-    bool sceneEvent(QEvent *event);
+    public Q_SLOTS:
+        void updateValue();
 
-    void mousePressEvent ( QGraphicsSceneMouseEvent * event );
-    void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-    void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
+    protected:
+        bool sceneEvent(QEvent *event);
 
-    void focusInEvent(QFocusEvent *event);
-    void focusOutEvent(QFocusEvent *event);
+        void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+        void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+        void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+        void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
 
-    void keyPressEvent(QKeyEvent *event);
+        void focusInEvent(QFocusEvent *event);
+        void focusOutEvent(QFocusEvent *event);
 
-private Q_SLOTS:
-    void textChanged();
+        void keyPressEvent(QKeyEvent *event);
 
-private:
-    void calculatePos();
-    bool isSendable(QGraphicsSceneMouseEvent *event) const;
-    void updateGroupGeometry() const;
+    private Q_SLOTS:
+        void textChanged();
 
-    const QString m_propertyName;
-    QString m_staticText;
-    QPointF m_staticPos;
-    bool m_edited;
-};
+    private:
+        void calculatePos();
+        bool isSendable(QGraphicsSceneMouseEvent *event) const;
+        void updateGroupGeometry() const;
+
+        const QString m_propertyName;
+        QString m_staticText;
+        QPointF m_staticPos;
+        bool m_edited;
+    };
+
+} // namespace Caneda
 
 #endif //PROPERTYITEM_H

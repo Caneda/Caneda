@@ -27,65 +27,69 @@
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 
-/*!
- * Constructor
- * @param parent  parent Widget of the dialog
- */
-ProjectFileDialog::ProjectFileDialog(QString libraryFileName, QWidget *parent) :
-    QDialog(parent)
+namespace Caneda
 {
-    this->setWindowTitle(tr("Open component"));
-    this->setMinimumWidth(400);
+    /*!
+     * Constructor
+     * @param parent  parent Widget of the dialog
+     */
+    ProjectFileDialog::ProjectFileDialog(QString libraryFileName, QWidget *parent) :
+        QDialog(parent)
+    {
+        this->setWindowTitle(tr("Open component"));
+        this->setMinimumWidth(400);
 
-    m_fileName = "";
+        m_fileName = "";
 
-    //Add components browser
-    m_projectsSidebar = new ComponentsSidebar(this);
-    LibraryLoader *library = LibraryLoader::instance();
-    if(!libraryFileName.isEmpty()) {
-        m_libraryFileName = libraryFileName;
-        m_libraryName = QFileInfo(libraryFileName).baseName();
-        m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
+        //Add components browser
+        m_projectsSidebar = new ComponentsSidebar(this);
+        LibraryLoader *library = LibraryLoader::instance();
+        if(!libraryFileName.isEmpty()) {
+            m_libraryFileName = libraryFileName;
+            m_libraryName = QFileInfo(libraryFileName).baseName();
+            m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
 
-        m_projectsSidebar->plugLibrary(m_libraryName, "root");
+            m_projectsSidebar->plugLibrary(m_libraryName, "root");
+        }
+
+        connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
+                SLOT(slotOnDoubleClick(const QString&, const QString&)));
+
+        //Add Ok/Cancel buttons
+        QDialogButtonBox *buttons =
+            new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+        connect(buttons, SIGNAL(accepted()), this, SLOT(slotAccept()));
+        connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+        //Organize layout
+        QVBoxLayout *vlayout = new QVBoxLayout();
+
+        vlayout->addWidget(m_projectsSidebar);
+        vlayout->addWidget(buttons);
+
+        this->setLayout(vlayout);
+
+        this->exec();
     }
 
-    connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
-            SLOT(slotOnDoubleClick(const QString&, const QString&)));
+    //! Destructor
+    ProjectFileDialog::~ProjectFileDialog()
+    {
+    }
 
-    //Add Ok/Cancel buttons
-    QDialogButtonBox *buttons =
-        new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    void ProjectFileDialog::slotAccept()
+    {
+        if(!m_projectsSidebar->currentComponent().isEmpty()) {
+            m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + m_projectsSidebar->currentComponent() + ".xsch";
+            accept();
+        }
+    }
 
-    connect(buttons, SIGNAL(accepted()), this, SLOT(slotAccept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
-
-    //Organize layout
-    QVBoxLayout *vlayout = new QVBoxLayout();
-
-    vlayout->addWidget(m_projectsSidebar);
-    vlayout->addWidget(buttons);
-
-    this->setLayout(vlayout);
-
-    this->exec();
-}
-
-//! Destructor
-ProjectFileDialog::~ProjectFileDialog()
-{
-}
-
-void ProjectFileDialog::slotAccept()
-{
-    if(!m_projectsSidebar->currentComponent().isEmpty()) {
-        m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + m_projectsSidebar->currentComponent() + ".xsch";
+    void ProjectFileDialog::slotOnDoubleClick(const QString& item, const QString& category)
+    {
+        m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + item + ".xsch";
         accept();
     }
-}
 
-void ProjectFileDialog::slotOnDoubleClick(const QString& item, const QString& category)
-{
-    m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + item + ".xsch";
-    accept();
-}
+} // namespace Caneda

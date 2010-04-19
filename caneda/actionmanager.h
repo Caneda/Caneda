@@ -27,85 +27,60 @@
 
 class SingletonManager;
 
-class ActionSignalMapper : public QObject
+namespace Caneda
 {
+
+    class Action : public QAction
+    {
     Q_OBJECT
-public:
-    explicit ActionSignalMapper(QObject *parent = 0);
-    ~ActionSignalMapper();
+    public:
+        Action(QObject *parent = 0);
+        Action(const QString& text, QObject *parent = 0);
+        Action(const QIcon& icon, const QString& text, QObject *parent = 0);
+        ~Action();
 
-    void setMapping(QAction *sender, const QString &text);
-    void removeMappings(QAction *sender);
+    Q_SIGNALS:
+        void toggled(const QString& sender, bool checked);
+        void triggered(const QString& sender, bool checked = false);
 
-    QAction *mapping(const QString& text) const;
+    private Q_SLOTS:
+        void slotToggled(bool checked);
+        void slotTriggered(bool checked);
 
-Q_SIGNALS:
-    void mappedToggled(const QString& text, bool status);
-    void mappedTriggered(const QString& text, bool status);
+    private:
+        void init();
+    };
 
-public Q_SLOTS:
-    void slotMapToggled(bool status);
-    void slotMapTriggered(bool status);
-
-private Q_SLOTS:
-    void slotActionDestroyed(QObject *which);
-
-private:
-    typedef QHash<QAction *, QString> Hash;
-
-    Q_DISABLE_COPY(ActionSignalMapper)
-    Hash m_stringHash;
-};
-
-class Action : public QAction
-{
-Q_OBJECT
-public:
-    Action(QObject *parent = 0);
-    Action(const QString& text, QObject *parent = 0);
-    Action(const QIcon& icon, const QString& text, QObject *parent = 0);
-    ~Action();
-
-Q_SIGNALS:
-    void toggled(const QString& sender, bool checked);
-    void triggered(const QString& sender, bool checked = false);
-
-private Q_SLOTS:
-    void slotToggled(bool checked);
-    void slotTriggered(bool checked);
-
-private:
-    void init();
-};
-
-class ActionManager : public QObject
-{
+    class ActionManager : public QObject
+    {
     Q_OBJECT
-public:
-    static ActionManager* instance();
-    ~ActionManager();
+    public:
+        static ActionManager* instance();
+        ~ActionManager();
 
-    Action* createAction(const QString& id, const QIcon& icon, const QString& text);
-    Action* createAction(const QString& id, const QString& text);
+        Action* createAction(const QString& id, const QIcon& icon, const QString& text);
+        Action* createAction(const QString& id, const QString& text);
 
-    Action* createMouseAction(const QString& id, SchematicScene::MouseAction action,
-            const QIcon& icon, const QString& text);
-    Action* createMouseAction(const QString& id, SchematicScene::MouseAction action,
-            const QString& text);
+        Action* createMouseAction(const QString& id, SchematicScene::MouseAction action,
+                const QIcon& icon, const QString& text);
+        Action* createMouseAction(const QString& id, SchematicScene::MouseAction action,
+                const QString& text);
 
-    Action* actionForName(const QString& name) const;
-    Action* actionForMouseAction(SchematicScene::MouseAction ma) const;
-    SchematicScene::MouseAction mouseActionForAction(Action *action) const;
+        Action* actionForName(const QString& name) const;
+        Action* actionForMouseAction(SchematicScene::MouseAction ma) const;
+        SchematicScene::MouseAction mouseActionForAction(Action *action) const;
 
-    QList<Action*> mouseActions() const;
+        QList<Action*> mouseActions() const;
 
 
-private:
-    friend class SingletonManager;
-    ActionManager(QObject *parent = 0);
+    private:
+        friend class SingletonManager;
+        ActionManager(QObject *parent = 0);
 
-    QHash<QString, Action*> m_actionHash;
-    QHash<Action*, SchematicScene::MouseAction> m_mouseActionHash;
-};
+        QHash<QString, Action*> m_actionHash;
+        QHash<Action*, SchematicScene::MouseAction> m_mouseActionHash;
+    };
+
+} // namespace Caneda
 
 #endif // ACTIONMANAGER_H

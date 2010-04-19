@@ -30,132 +30,137 @@ class QLabel;
 class QLineEdit;
 class QSpinBox;
 
-/*!
- * This abstract class contains methods that all pages
- * configuration must implement.
- */
-class SettingsPage : public QWidget
+namespace Caneda
 {
-    Q_OBJECT;
-public:
-    SettingsPage(QWidget *parent);
-    virtual ~SettingsPage();
 
-    /// Applies the configuration input by the user in the configuration page
-    virtual void applyConf() = 0;
-    virtual QString title() const = 0;
-    virtual QIcon icon() const = 0;
+    /*!
+     * This abstract class contains methods that all pages
+     * configuration must implement.
+     */
+    class SettingsPage : public QWidget
+    {
+        Q_OBJECT;
+    public:
+        SettingsPage(QWidget *parent);
+        virtual ~SettingsPage();
 
-    void setBackgroundColor(QPushButton *, QColor);
-    QColor getBackgroundColor(QPushButton *);
-    void setForegroundColor(QPushButton *, QColor);
-    QColor getForegroundColor(QPushButton *);
-};
+        /// Applies the configuration input by the user in the configuration page
+        virtual void applyConf() = 0;
+        virtual QString title() const = 0;
+        virtual QIcon icon() const = 0;
 
-//! This class represents the general configuration page.
-class GeneralConfigurationPage : public SettingsPage
-{
-    Q_OBJECT;
+        void setBackgroundColor(QPushButton *, QColor);
+        QColor getBackgroundColor(QPushButton *);
+        void setForegroundColor(QPushButton *, QColor);
+        QColor getForegroundColor(QPushButton *);
+    };
 
-public:
-    GeneralConfigurationPage(QWidget *parent = 0);
-    virtual ~GeneralConfigurationPage();
+    //! This class represents the general configuration page.
+    class GeneralConfigurationPage : public SettingsPage
+    {
+        Q_OBJECT;
 
-private Q_SLOTS:
-    void slotFontDialog();
-    void slotBGColorDialog();
-    void slotFGColorDialog();
+    public:
+        GeneralConfigurationPage(QWidget *parent = 0);
+        virtual ~GeneralConfigurationPage();
 
-public:
-    void applyConf();
-    QString title() const;
-    QIcon icon() const;
+    private Q_SLOTS:
+        void slotFontDialog();
+        void slotBGColorDialog();
+        void slotFGColorDialog();
 
-    QLabel *title_label_;
-    QFrame *horiz_line_;
+    public:
+        void applyConf();
+        QString title() const;
+        QIcon icon() const;
 
-    QCheckBox *checkShowGrid;
-    QLineEdit *editEditor, *editLibrary;
-    QFont font;
-    QPushButton *buttonFont, *buttonForeground, *buttonBackground;
-    QSpinBox *spinUndoNum, *spinIcons;
-};
+        QLabel *title_label_;
+        QFrame *horiz_line_;
 
-//! This class represents the simulation configuration page.
-class SimulationConfigurationPage : public SettingsPage
-{
-    Q_OBJECT;
+        QCheckBox *checkShowGrid;
+        QLineEdit *editEditor, *editLibrary;
+        QFont font;
+        QPushButton *buttonFont, *buttonForeground, *buttonBackground;
+        QSpinBox *spinUndoNum, *spinIcons;
+    };
 
-public:
-    SimulationConfigurationPage(QWidget *parent = 0);
-    virtual ~SimulationConfigurationPage();
+    //! This class represents the simulation configuration page.
+    class SimulationConfigurationPage : public SettingsPage
+    {
+        Q_OBJECT;
 
-public:
-    void applyConf();
-    QString title() const;
-    QIcon icon() const;
+    public:
+        SimulationConfigurationPage(QWidget *parent = 0);
+        virtual ~SimulationConfigurationPage();
 
-public:
-    QLabel *title_label_;
-    QFrame *horiz_line_;
-};
+    public:
+        void applyConf();
+        QString title() const;
+        QIcon icon() const;
 
-//! This class represents the document configuration page.
-class DocumentConfigurationPage : public SettingsPage
-{
-    Q_OBJECT;
+    public:
+        QLabel *title_label_;
+        QFrame *horiz_line_;
+    };
 
-public:
-    DocumentConfigurationPage(SchematicScene *scene, QWidget *parent = 0);
-    virtual ~DocumentConfigurationPage();
+    //! This class represents the document configuration page.
+    class DocumentConfigurationPage : public SettingsPage
+    {
+        Q_OBJECT;
 
-public:
-    void applyConf();
-    QString title() const;
-    QIcon icon() const;
+    public:
+        DocumentConfigurationPage(SchematicScene *scene, QWidget *parent = 0);
+        virtual ~DocumentConfigurationPage();
 
-public:
-    SchematicScene *Scn;
+    public:
+        void applyConf();
+        QString title() const;
+        QIcon icon() const;
 
-    QLabel *title_label_;
-    QFrame *horiz_line_;
+    public:
+        SchematicScene *Scn;
 
-    QCheckBox *checkShowFrame;
-    QSpinBox *spinSchemaX, *spinSchemaY, *spinFrameX, *spinFrameY;
-    QLineEdit *editName, *editTitle, *editRevision;
-    QDateEdit *editDate;
-};
+        QLabel *title_label_;
+        QFrame *horiz_line_;
+
+        QCheckBox *checkShowFrame;
+        QSpinBox *spinSchemaX, *spinSchemaY, *spinFrameX, *spinFrameY;
+        QLineEdit *editName, *editTitle, *editRevision;
+        QDateEdit *editDate;
+    };
 
 
-//! This class represents the vhdl configuration page
-class VhdlConfigurationPage : public SettingsPage
-{
-    Q_OBJECT;
+    //! This class represents the vhdl configuration page
+    class VhdlConfigurationPage : public SettingsPage
+    {
+        Q_OBJECT;
 
-public:
-    VhdlConfigurationPage(QWidget *parent = 0);
-    virtual ~VhdlConfigurationPage();
+    public:
+        VhdlConfigurationPage(QWidget *parent = 0);
+        virtual ~VhdlConfigurationPage();
 
-private Q_SLOTS:
-    void slotColorComment();
-    void slotColorString();
-    void slotColorInteger();
-    void slotColorReal();
-    void slotColorCharacter();
-    void slotColorDataType();
-    void slotColorAttributes();
+    private Q_SLOTS:
+        void slotColorComment();
+        void slotColorString();
+        void slotColorInteger();
+        void slotColorReal();
+        void slotColorCharacter();
+        void slotColorDataType();
+        void slotColorAttributes();
 
-public:
-    void applyConf();
-    QString title() const;
-    QIcon icon() const;
+    public:
+        void applyConf();
+        QString title() const;
+        QIcon icon() const;
 
-public:
-    QLabel *title_label_;
-    QFrame *horiz_line_;
+    public:
+        QLabel *title_label_;
+        QFrame *horiz_line_;
 
-    QPushButton *commentButton, *stringButton, *integerButton,
-                *realButton, *characterButton, *typesButton, *attributesButton;
-};
+        QPushButton *commentButton, *stringButton, *integerButton,
+                    *realButton, *characterButton, *typesButton, *attributesButton;
+    };
+
+} // namespace Caneda
 
 #endif

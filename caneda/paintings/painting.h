@@ -25,114 +25,118 @@
 #include <QBrush>
 #include <QPen>
 
-static const QPen defaultPaintingPen(Qt::black);
-static const QBrush defaultPaintingBrush(Qt::NoBrush);
-
-/*!
- * \brief This class is base for painting items like lines, rectangles..
- *
- * This class also takes care of resize handles. All the derived classes will be
- * passed a rectangle and they should use this rectangle as a hint to draw.
- * For example, a line can use the topleft and bottom right of the rectangle to
- * represent itself. The rectangle is set using \a setPaintingRect.
- * The mouse functionalities corresponding to resize handles are also handled
- * by this class.
- */
-class Painting : public CanedaItem
+namespace Caneda
 {
-public:
-    enum {
-        NoPaintingType = 0,
-        Type = CanedaItem::PaintingType
+    static const QPen defaultPaintingPen(Qt::black);
+    static const QBrush defaultPaintingBrush(Qt::NoBrush);
+
+    /*!
+     * \brief This class is base for painting items like lines, rectangles..
+     *
+     * This class also takes care of resize handles. All the derived classes will be
+     * passed a rectangle and they should use this rectangle as a hint to draw.
+     * For example, a line can use the topleft and bottom right of the rectangle to
+     * represent itself. The rectangle is set using \a setPaintingRect.
+     * The mouse functionalities corresponding to resize handles are also handled
+     * by this class.
+     */
+    class Painting : public CanedaItem
+    {
+    public:
+        enum {
+            NoPaintingType = 0,
+            Type = CanedaItem::PaintingType
+        };
+
+        enum PaintingType {
+            ArrowType = CanedaItem::PaintingType + 1,
+            EllipseType,
+            EllipseArcType,
+            GraphicLineType,
+            GraphicTextType,
+            IdTextType,
+            PortSymbolType,
+            RectangleType
+        };
+
+        Painting(SchematicScene *scene = 0);
+        ~Painting();
+
+        //! \copydoc CanedaItem::type()
+        int type() const { return Type; }
+
+        /*!
+         * \brief Returns paintingRect of this painting item.
+         *
+         * \copydoc Painting::m_paintingRect
+         */
+        QRectF paintingRect() const { return m_paintingRect; }
+        void setPaintingRect(const QRectF& rect);
+
+        virtual QPainterPath shapeForRect(const QRectF& rect) const;
+
+        //! Returns the adjusted painting bound rect for paintingrect \a rect.
+        virtual QRectF boundForRect(const QRectF& rect) const {
+            return rect;
+        }
+
+        //! Returns the pen with which the item is drawn.
+        QPen pen() const { return m_pen; }
+        virtual void setPen(const QPen& _pen);
+
+        //! Returns the brush with which the item is drawn.
+        QBrush brush() const { return m_brush; }
+        virtual void setBrush(const QBrush& _brush);
+
+        void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
+
+        //! Returns an OR representation of used resize handles.
+        Caneda::ResizeHandles resizeHandles() const { return m_resizeHandles; }
+        void setResizeHandles(Caneda::ResizeHandles handles);
+
+        //! Returns the active handle i.e the one with mouse focus.
+        Caneda::ResizeHandle activeHandle() const { return m_activeHandle; }
+
+        Painting* copy(SchematicScene *scene = 0) const;
+
+        virtual void copyDataTo(Painting *painting) const;
+
+        static Painting* fromName(const QString& name);
+        static Painting* loadPainting(Caneda::XmlReader *reader, SchematicScene *scene = 0);
+
+        QRectF storedPaintingRect() const { return m_store; }
+        void storePaintingRect() { m_store = paintingRect(); }
+
+    protected:
+        /*!
+         * Subclasses should reimplement to do calculations this is notified
+         * usually in call \a setPaintingRect.
+         */
+        virtual void geometryChange() {}
+
+        void adjustGeometry();
+
+        void mousePressEvent(QGraphicsSceneMouseEvent *event);
+        void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+        void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+    private:
+        /*!
+         * Represents the rectangle withing which painting should be drawn.
+         *
+         * For eg. GraphicLine can use topleft and bottom right of painting
+         * rectangles to represent itself.
+         * \note paintingRect is not same as bounding rect. The latter includes
+         * resizehandles also.
+         */
+        QRectF m_paintingRect;
+        QPen m_pen;
+        QBrush m_brush;
+        Caneda::ResizeHandles m_resizeHandles;
+        Caneda::ResizeHandle m_activeHandle;
+        QRectF m_store;
     };
 
-    enum PaintingType {
-        ArrowType = CanedaItem::PaintingType + 1,
-        EllipseType,
-        EllipseArcType,
-        GraphicLineType,
-        GraphicTextType,
-        IdTextType,
-        PortSymbolType,
-        RectangleType
-    };
-
-    Painting(SchematicScene *scene = 0);
-    ~Painting();
-
-    //! \copydoc CanedaItem::type()
-    int type() const { return Type; }
-
-    /*!
-     * \brief Returns paintingRect of this painting item.
-     *
-     * \copydoc Painting::m_paintingRect
-     */
-    QRectF paintingRect() const { return m_paintingRect; }
-    void setPaintingRect(const QRectF& rect);
-
-    virtual QPainterPath shapeForRect(const QRectF& rect) const;
-
-    //! Returns the adjusted painting bound rect for paintingrect \a rect.
-    virtual QRectF boundForRect(const QRectF& rect) const {
-        return rect;
-    }
-
-    //! Returns the pen with which the item is drawn.
-    QPen pen() const { return m_pen; }
-    virtual void setPen(const QPen& _pen);
-
-    //! Returns the brush with which the item is drawn.
-    QBrush brush() const { return m_brush; }
-    virtual void setBrush(const QBrush& _brush);
-
-    void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
-
-    //! Returns an OR representation of used resize handles.
-    Caneda::ResizeHandles resizeHandles() const { return m_resizeHandles; }
-    void setResizeHandles(Caneda::ResizeHandles handles);
-
-    //! Returns the active handle i.e the one with mouse focus.
-    Caneda::ResizeHandle activeHandle() const { return m_activeHandle; }
-
-    Painting* copy(SchematicScene *scene = 0) const;
-
-    virtual void copyDataTo(Painting *painting) const;
-
-    static Painting* fromName(const QString& name);
-    static Painting* loadPainting(Caneda::XmlReader *reader, SchematicScene *scene = 0);
-
-    QRectF storedPaintingRect() const { return m_store; }
-    void storePaintingRect() { m_store = paintingRect(); }
-
-protected:
-    /*!
-     * Subclasses should reimplement to do calculations this is notified
-     * usually in call \a setPaintingRect.
-     */
-    virtual void geometryChange() {}
-
-    void adjustGeometry();
-
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-private:
-    /*!
-     * Represents the rectangle withing which painting should be drawn.
-     *
-     * For eg. GraphicLine can use topleft and bottom right of painting
-     * rectangles to represent itself.
-     * \note paintingRect is not same as bounding rect. The latter includes
-     * resizehandles also.
-     */
-    QRectF m_paintingRect;
-    QPen m_pen;
-    QBrush m_brush;
-    Caneda::ResizeHandles m_resizeHandles;
-    Caneda::ResizeHandle m_activeHandle;
-    QRectF m_store;
-};
+} // namespace Caneda
 
 #endif //PAINTING_H

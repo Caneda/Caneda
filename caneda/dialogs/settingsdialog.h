@@ -32,32 +32,36 @@ class QListWidget;
 class QListWidgetItem;
 class QStackedWidget;
 
-/*!
- * This class represents the configuration dialog of Caneda.
- * This is a dialog showing "page setup".
- * Each configuration page should provide an icon and a title.
- */
-class SettingsDialog : public QDialog
+namespace Caneda
 {
-    Q_OBJECT;
 
-public:
-    SettingsDialog(QList<SettingsPage *> pages, const char *title,
-            QWidget *parent = 0);
-    virtual ~SettingsDialog();
+    /*!
+     * This class represents the configuration dialog of Caneda.
+     * This is a dialog showing "page setup".
+     * Each configuration page should provide an icon and a title.
+     */
+    class SettingsDialog : public QDialog
+    {
+        Q_OBJECT;
 
-public Q_SLOTS:
-    void changePage(QListWidgetItem *, QListWidgetItem *);
-    void applyConf();
+    public:
+        SettingsDialog(QList<SettingsPage *> pages, const char *title,
+                QWidget *parent = 0);
+        virtual ~SettingsDialog();
 
-private:
-    void buildPagesList();
+    public Q_SLOTS:
+        void changePage(QListWidgetItem *, QListWidgetItem *);
+        void applyConf();
 
-private:
-    QListWidget *pages_list;
-    QStackedWidget *pages_widget;
-    QDialogButtonBox *buttons;
-    QList<SettingsPage *> pages;
-};
+    private:
+        void buildPagesList();
 
+    private:
+        QListWidget *pages_list;
+        QStackedWidget *pages_widget;
+        QDialogButtonBox *buttons;
+        QList<SettingsPage *> pages;
+    };
+
+} // namespace Caneda
 #endif

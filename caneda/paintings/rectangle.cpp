@@ -27,137 +27,142 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-/*!
- * \brief Constructs a rectangle painting item.
- * \param rect Rectangle in local coords.
- * \param scene Scene to which this item should be added.
- */
-Rectangle::Rectangle(const QRectF& rect, SchematicScene *scene) :
-   Painting(scene)
+namespace Caneda
 {
-   setRect(rect);
-   setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
-                    Caneda::TopRightHandle| Caneda::BottomLeftHandle);
-}
 
-//! \brief Destructor.
-Rectangle::~Rectangle()
-{
-}
+    /*!
+     * \brief Constructs a rectangle painting item.
+     * \param rect Rectangle in local coords.
+     * \param scene Scene to which this item should be added.
+     */
+    Rectangle::Rectangle(const QRectF& rect, SchematicScene *scene) :
+       Painting(scene)
+    {
+       setRect(rect);
+       setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
+                        Caneda::TopRightHandle| Caneda::BottomLeftHandle);
+    }
 
-//! \copydoc Painting::shapeForRect()
-QPainterPath Rectangle::shapeForRect(const QRectF& rect) const
-{
-   QPainterPath path;
-   path.addRect(boundForRect(rect));
-   return path;
-}
+    //! \brief Destructor.
+    Rectangle::~Rectangle()
+    {
+    }
 
-//! \copydoc Painting::boundForRect()
-QRectF Rectangle::boundForRect(const QRectF &rect) const
-{
-   qreal adj = (pen().width() + 5) / 2;
-   return rect.adjusted(-adj, -adj, adj, adj);
-}
+    //! \copydoc Painting::shapeForRect()
+    QPainterPath Rectangle::shapeForRect(const QRectF& rect) const
+    {
+       QPainterPath path;
+       path.addRect(boundForRect(rect));
+       return path;
+    }
 
-//! \brief Draw the rectangle.
-void Rectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
-{
-   if(option->state & QStyle::State_Selected) {
-      painter->setBrush(Qt::NoBrush);
+    //! \copydoc Painting::boundForRect()
+    QRectF Rectangle::boundForRect(const QRectF &rect) const
+    {
+       qreal adj = (pen().width() + 5) / 2;
+       return rect.adjusted(-adj, -adj, adj, adj);
+    }
 
-      QPen _pen(pen());
+    //! \brief Draw the rectangle.
+    void Rectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
+    {
+       if(option->state & QStyle::State_Selected) {
+          painter->setBrush(Qt::NoBrush);
 
-      _pen.setColor(Qt::darkGray);
-      _pen.setWidth(pen().width() + 5);
+          QPen _pen(pen());
 
-      painter->setPen(_pen);
-      painter->drawRect(rect());
+          _pen.setColor(Qt::darkGray);
+          _pen.setWidth(pen().width() + 5);
 
-      _pen.setColor(Qt::white);
-      _pen.setWidth(pen().width());
-      painter->setPen(_pen);
-   }
-   else {
-      painter->setPen(pen());
-   }
-   painter->setBrush(brush());
-   painter->drawRect(rect());
+          painter->setPen(_pen);
+          painter->drawRect(rect());
 
-   //call base method to draw resize handles.
-   Painting::paint(painter, option, w);
-}
+          _pen.setColor(Qt::white);
+          _pen.setWidth(pen().width());
+          painter->setPen(_pen);
+       }
+       else {
+          painter->setPen(pen());
+       }
+       painter->setBrush(brush());
+       painter->drawRect(rect());
 
-//! \copydoc Painting::copy()
-Rectangle* Rectangle::copy(SchematicScene *scene) const
-{
-   Rectangle *rectItem = new Rectangle(rect(), scene);
-   Painting::copyDataTo(rectItem);
-   return rectItem;
-}
+       //call base method to draw resize handles.
+       Painting::paint(painter, option, w);
+    }
 
-//! \brief Saves rectangle data to xml using \a writer.
-void Rectangle::saveData(Caneda::XmlWriter *writer) const
-{
-   writer->writeStartElement("painting");
-   writer->writeAttribute("name", "rectangle");
+    //! \copydoc Painting::copy()
+    Rectangle* Rectangle::copy(SchematicScene *scene) const
+    {
+       Rectangle *rectItem = new Rectangle(rect(), scene);
+       Painting::copyDataTo(rectItem);
+       return rectItem;
+    }
 
-   writer->writeEmptyElement("properties");
-   writer->writeRectAttribute(rect(), QLatin1String("rectangle"));
-   writer->writePointAttribute(pos(), "pos");
+    //! \brief Saves rectangle data to xml using \a writer.
+    void Rectangle::saveData(Caneda::XmlWriter *writer) const
+    {
+       writer->writeStartElement("painting");
+       writer->writeAttribute("name", "rectangle");
 
-   writer->writePen(pen());
-   writer->writeBrush(brush());
-   writer->writeTransform(transform());
+       writer->writeEmptyElement("properties");
+       writer->writeRectAttribute(rect(), QLatin1String("rectangle"));
+       writer->writePointAttribute(pos(), "pos");
 
-   writer->writeEndElement(); // </painting>
-}
+       writer->writePen(pen());
+       writer->writeBrush(brush());
+       writer->writeTransform(transform());
 
-//! \brief Loads data from xml referred by \a reader.
-void Rectangle::loadData(Caneda::XmlReader *reader)
-{
-   Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-   Q_ASSERT(reader->attributes().value("name") == "rectangle");
+       writer->writeEndElement(); // </painting>
+    }
 
-   while(!reader->atEnd()) {
-      reader->readNext();
+    //! \brief Loads data from xml referred by \a reader.
+    void Rectangle::loadData(Caneda::XmlReader *reader)
+    {
+       Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+       Q_ASSERT(reader->attributes().value("name") == "rectangle");
 
-      if(reader->isEndElement()) {
-         break;
-      }
+       while(!reader->atEnd()) {
+          reader->readNext();
 
-      if(reader->isStartElement()) {
-         if(reader->name() == "properties") {
-            QRectF rectangle = reader->readRectAttribute(QLatin1String("rectangle"));
-            setRect(rectangle);
+          if(reader->isEndElement()) {
+             break;
+          }
 
-            QPointF pos = reader->readPointAttribute("pos");
-            setPos(pos);
+          if(reader->isStartElement()) {
+             if(reader->name() == "properties") {
+                QRectF rectangle = reader->readRectAttribute(QLatin1String("rectangle"));
+                setRect(rectangle);
 
-            reader->readUnknownElement(); //read till end tag
-         }
+                QPointF pos = reader->readPointAttribute("pos");
+                setPos(pos);
 
-         else if(reader->name() == "pen") {
-            setPen(reader->readPen());
-         }
+                reader->readUnknownElement(); //read till end tag
+             }
 
-         else if(reader->name() == "brush") {
-            setBrush(reader->readBrush());
-         }
+             else if(reader->name() == "pen") {
+                setPen(reader->readPen());
+             }
 
-         else if(reader->name() == "transform") {
-            setTransform(reader->readTransform());
-         }
+             else if(reader->name() == "brush") {
+                setBrush(reader->readBrush());
+             }
 
-         else {
-            reader->readUnknownElement();
-         }
-      }
-   }
-}
+             else if(reader->name() == "transform") {
+                setTransform(reader->readTransform());
+             }
 
-int Rectangle::launchPropertyDialog(Caneda::UndoOption opt)
-{
-   StyleDialog dia(this, opt);
-   return dia.exec();
-}
+             else {
+                reader->readUnknownElement();
+             }
+          }
+       }
+    }
+
+    int Rectangle::launchPropertyDialog(Caneda::UndoOption opt)
+    {
+       StyleDialog dia(this, opt);
+       return dia.exec();
+    }
+
+} // namespace Caneda

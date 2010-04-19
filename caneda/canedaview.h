@@ -24,60 +24,67 @@
 #include <QIcon>
 #include <QString>
 
+// Forward declarations
 class QPainter;
 class QWidget;
-class SchematicView;
 
-class CanedaView
+namespace Caneda
 {
-public:
-    CanedaView();
-    virtual ~CanedaView() {}
+    // Forward declarations
+    class SchematicView;
 
-    // Emit signal while reimplementing
-    virtual void setFileName(const QString& _fileName) = 0;
-    virtual QString fileName() const = 0; // With path
+    class CanedaView
+    {
+    public:
+        CanedaView();
+        virtual ~CanedaView() {}
 
-    virtual bool load() = 0;
-    virtual bool save() = 0;
+        // Emit signal while reimplementing
+        virtual void setFileName(const QString& _fileName) = 0;
+        virtual QString fileName() const = 0; // With path
 
-    virtual void zoomIn() = 0;
-    virtual void zoomOut() = 0;
+        virtual bool load() = 0;
+        virtual bool save() = 0;
 
-    virtual void showAll() = 0;
-    virtual void showNoZoom() = 0;
+        virtual void zoomIn() = 0;
+        virtual void zoomOut() = 0;
 
-    virtual bool isSchematicView() const = 0;
+        virtual void showAll() = 0;
+        virtual void showNoZoom() = 0;
 
-    virtual QWidget* toWidget() const = 0;
-    virtual SchematicView* toSchematicView() const;
-    //TODO: Add other view convienience methods
+        virtual bool isSchematicView() const = 0;
 
-    virtual bool isModified() const = 0;
-    virtual void setModified(bool b) = 0;
+        virtual QWidget* toWidget() const = 0;
+        virtual SchematicView* toSchematicView() const;
+        //TODO: Add other view convienience methods
 
-    virtual void copy() const = 0;
-    virtual void cut() = 0;
-    virtual void paste() = 0;
+        virtual bool isModified() const = 0;
+        virtual void setModified(bool b) = 0;
 
-    // Returns text to be displayed on tab
-    QString tabText() const;
+        virtual void copy() const = 0;
+        virtual void cut() = 0;
+        virtual void paste() = 0;
 
-    // A helper function for setFileName and load
-    bool load(const QString& name);
+        // Returns text to be displayed on tab
+        QString tabText() const;
 
-    static QIcon modifiedTabIcon();
-    static QIcon unmodifiedTabIcon();
+        // A helper function for setFileName and load
+        bool load(const QString& name);
 
-signals:
-    virtual void modificationChanged(bool b) = 0;
-    virtual void fileNameChanged(const QString& filename) = 0;
-    // This signal is emitted with the above for convienience.
-    virtual void titleToBeUpdated() = 0;
+        static QIcon modifiedTabIcon();
+        static QIcon unmodifiedTabIcon();
 
-protected:
-    // To check for external modification
-    QDateTime lastSaved;
-};
+    signals:
+        virtual void modificationChanged(bool b) = 0;
+        virtual void fileNameChanged(const QString& filename) = 0;
+        // This signal is emitted with the above for convienience.
+        virtual void titleToBeUpdated() = 0;
+
+    protected:
+        // To check for external modification
+        QDateTime lastSaved;
+    };
+
+} // namespace Caneda
 
 #endif //CANEDAVIEW_H

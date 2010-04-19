@@ -25,63 +25,69 @@
 #include <QTreeView>
 
 // Forward declarations
-class FilterProxyModel;
 class QLineEdit;
 class QToolButton;
 
-class TreeView : public QTreeView
+namespace Caneda
 {
-    Q_OBJECT;
-public:
-    TreeView(QWidget *parent = 0);
-    ~TreeView() {}
+    // Forward declarations
+    class FilterProxyModel;
 
-    void startDrag(Qt::DropActions supportedActions);
+    class TreeView : public QTreeView
+    {
+        Q_OBJECT;
+    public:
+        TreeView(QWidget *parent = 0);
+        ~TreeView() {}
 
-signals:
-    void invalidAreaClicked(const QModelIndex &index);
+        void startDrag(Qt::DropActions supportedActions);
 
-    protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    signals:
+        void invalidAreaClicked(const QModelIndex &index);
 
-    bool invalidPressed;
-};
+        protected:
+        void mousePressEvent(QMouseEvent *event);
+        void mouseMoveEvent(QMouseEvent *event);
+        void mouseReleaseEvent(QMouseEvent *event);
 
-//! Represents sidebar which allows components to be selected.
-class ComponentsSidebar : public QWidget
-{
-    Q_OBJECT;
-public:
-    ComponentsSidebar(QWidget *parent = 0);
-    ~ComponentsSidebar();
+        bool invalidPressed;
+    };
 
-    void plugLibrary(QString str, QString category);
-    void unPlugLibrary(QString str, QString category);
+    //! Represents sidebar which allows components to be selected.
+    class ComponentsSidebar : public QWidget
+    {
+        Q_OBJECT;
+    public:
+        ComponentsSidebar(QWidget *parent = 0);
+        ~ComponentsSidebar();
 
-    void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
+        void plugLibrary(QString str, QString category);
+        void unPlugLibrary(QString str, QString category);
 
-    void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
+        void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
 
-    QString currentComponent();
+        void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
 
-signals:
-    void itemClicked(const QString& item, const QString& category);
-    void itemDoubleClicked(const QString& item, const QString& category);
+        QString currentComponent();
 
-private Q_SLOTS:
-    void filterTextChanged();
-    void slotOnClicked(const QModelIndex& index);
-    void slotOnDoubleClicked(const QModelIndex& index);
+    signals:
+        void itemClicked(const QString& item, const QString& category);
+        void itemDoubleClicked(const QString& item, const QString& category);
 
-private:
-    SidebarModel *m_model;
-    FilterProxyModel *m_proxyModel;
-    QLineEdit *m_filterEdit;
-    TreeView *m_treeView;
-    QToolButton *m_clearButton;
-    QString m_currentComponent;
-};
+    private Q_SLOTS:
+        void filterTextChanged();
+        void slotOnClicked(const QModelIndex& index);
+        void slotOnDoubleClicked(const QModelIndex& index);
+
+    private:
+        SidebarModel *m_model;
+        FilterProxyModel *m_proxyModel;
+        QLineEdit *m_filterEdit;
+        TreeView *m_treeView;
+        QToolButton *m_clearButton;
+        QString m_currentComponent;
+    };
+
+} // namespace Caneda
 
 #endif //COMPONENTSSIDEBAR_H

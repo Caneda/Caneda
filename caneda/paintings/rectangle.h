@@ -22,38 +22,42 @@
 
 #include "painting.h"
 
-/*!
- * \brief Represents rectangular painting item.
- *
- * This class allows user to draw rectangle on schematic. The rectangles can
- * be filled by setting \a Painting::setBrush() .
- */
-class Rectangle : public Painting
+namespace Caneda
 {
-public:
-    enum {
-        Type = Painting::RectangleType
+    /*!
+     * \brief Represents rectangular painting item.
+     *
+     * This class allows user to draw rectangle on schematic. The rectangles can
+     * be filled by setting \a Painting::setBrush() .
+     */
+    class Rectangle : public Painting
+    {
+    public:
+        enum {
+            Type = Painting::RectangleType
+        };
+
+        Rectangle(const QRectF &rect, SchematicScene *scene = 0);
+        ~Rectangle();
+
+        QPainterPath shapeForRect(const QRectF& rect) const;
+        QRectF boundForRect(const QRectF &rect) const;
+
+        void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
+
+        //! \brief Returns rectangle coords as QRectF.
+        QRectF rect() const { return paintingRect(); }
+        void setRect(const QRectF& rect) { setPaintingRect(rect); }
+
+        int type() const { return Rectangle::Type; }
+        Rectangle* copy(SchematicScene *scene = 0) const;
+
+        void saveData(Caneda::XmlWriter *writer) const;
+        void loadData(Caneda::XmlReader *reader);
+
+        int launchPropertyDialog(Caneda::UndoOption opt);
     };
 
-    Rectangle(const QRectF &rect, SchematicScene *scene = 0);
-    ~Rectangle();
-
-    QPainterPath shapeForRect(const QRectF& rect) const;
-    QRectF boundForRect(const QRectF &rect) const;
-
-    void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
-
-    //! \brief Returns rectangle coords as QRectF.
-    QRectF rect() const { return paintingRect(); }
-    void setRect(const QRectF& rect) { setPaintingRect(rect); }
-
-    int type() const { return Rectangle::Type; }
-    Rectangle* copy(SchematicScene *scene = 0) const;
-
-    void saveData(Caneda::XmlWriter *writer) const;
-    void loadData(Caneda::XmlReader *reader);
-
-    int launchPropertyDialog(Caneda::UndoOption opt);
-};
+} // namespace Caneda
 
 #endif //RECTANGLE_H

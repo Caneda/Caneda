@@ -24,54 +24,62 @@
 
 #include <QSet>
 
-class CanedaView;
-class FileBrowserLineEditPrivate;
+// Forward declarations.
 class QFileInfo;
-class SaveDocumentsDialogPrivate;
 
-class FileBrowserLineEdit : public QWidget
+namespace Caneda
 {
-    Q_OBJECT
-public:
-    FileBrowserLineEdit(QTreeWidgetItem *item, const QFileInfo& fileInfo,
-            QWidget *parent = 0);
-    ~FileBrowserLineEdit();
 
-    QFileInfo fileInfo() const;
-    void updateTexts();
+    // Forward declarations.
+    class CanedaView;
+    class FileBrowserLineEditPrivate;
+    class SaveDocumentsDialogPrivate;
 
-private Q_SLOTS:
-    void browseButtonClicked();
+    class FileBrowserLineEdit : public QWidget
+    {
+        Q_OBJECT
+    public:
+        FileBrowserLineEdit(QTreeWidgetItem *item, const QFileInfo& fileInfo,
+                QWidget *parent = 0);
+        ~FileBrowserLineEdit();
 
-private:
-    FileBrowserLineEditPrivate *d;
-};
+        QFileInfo fileInfo() const;
+        void updateTexts();
 
-class SaveDocumentsDialog : public QDialog
-{
-    Q_OBJECT
-public:
-    enum ResultType {
-        SaveSelected = QDialogButtonBox::AcceptRole,
-        DoNotSave = QDialogButtonBox::DestructiveRole,
-        Abort = QDialogButtonBox::RejectRole
+    private Q_SLOTS:
+        void browseButtonClicked();
+
+    private:
+        FileBrowserLineEditPrivate *d;
     };
 
-    SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &modifiedViews, QWidget *parent = 0);
-    ~SaveDocumentsDialog();
+    class SaveDocumentsDialog : public QDialog
+    {
+        Q_OBJECT
+    public:
+        enum ResultType {
+            SaveSelected = QDialogButtonBox::AcceptRole,
+            DoNotSave = QDialogButtonBox::DestructiveRole,
+            Abort = QDialogButtonBox::RejectRole
+        };
 
-    QSet<QPair<CanedaView*, QString> > newFilePaths() const;
+        SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &modifiedViews, QWidget *parent = 0);
+        ~SaveDocumentsDialog();
 
-public Q_SLOTS:
-    void slotButtonClicked(QAbstractButton *button);
-    void slotHandleClick(const QModelIndex& index);
-    void reject();
+        QSet<QPair<CanedaView*, QString> > newFilePaths() const;
 
-private:
-    void populateItems();
+    public Q_SLOTS:
+        void slotButtonClicked(QAbstractButton *button);
+        void slotHandleClick(const QModelIndex& index);
+        void reject();
 
-    Ui::SaveDocumentsDialog ui;
-    SaveDocumentsDialogPrivate *d;
-};
+    private:
+        void populateItems();
+
+        Ui::SaveDocumentsDialog ui;
+        SaveDocumentsDialogPrivate *d;
+    };
+
+} // namespace Caneda
 
 #endif

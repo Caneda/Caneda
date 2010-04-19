@@ -22,44 +22,48 @@
 
 #include <QObject>
 
-class SchematicStateHandlerPrivate;
-class SchematicScene;
-class SchematicView;
-class SingletonManager;
-
-class SchematicStateHandler : public QObject
+namespace Caneda
 {
-    Q_OBJECT
-public:
-    static SchematicStateHandler* instance();
-    ~SchematicStateHandler();
+    // Forward declarations.
+    class SchematicStateHandlerPrivate;
+    class SchematicScene;
+    class SchematicView;
+    class SingletonManager;
 
-    void registerView(SchematicView *view);
-    void unregisterView(SchematicView *view);
+    class SchematicStateHandler : public QObject
+    {
+        Q_OBJECT
+    public:
+        static SchematicStateHandler* instance();
+        ~SchematicStateHandler();
+
+        void registerView(SchematicView *view);
+        void unregisterView(SchematicView *view);
 
 
-public Q_SLOTS:
-    void slotSidebarItemClicked(const QString& item, const QString& category);
-    void slotHandlePaste();
-    void slotRotateInsertibles();
-    void slotMirrorInsertibles();
-    void slotOnObjectDestroyed(QObject *sender);
-    void slotUpdateFocussedView(SchematicView *view);
-    void slotPerformToggleAction(const QString& sender, bool on);
-    void slotSetNormalAction();
-    void slotInsertToolbarComponent(const QString& action, bool on);
-    void slotUpdateToolbarInsertibles();
+    public Q_SLOTS:
+        void slotSidebarItemClicked(const QString& item, const QString& category);
+        void slotHandlePaste();
+        void slotRotateInsertibles();
+        void slotMirrorInsertibles();
+        void slotOnObjectDestroyed(QObject *sender);
+        void slotUpdateFocussedView(SchematicView *view);
+        void slotPerformToggleAction(const QString& sender, bool on);
+        void slotSetNormalAction();
+        void slotInsertToolbarComponent(const QString& action, bool on);
+        void slotUpdateToolbarInsertibles();
 
-private:
-    friend class SingletonManager;
-    SchematicStateHandler(QObject *parent = 0);
+    private:
+        friend class SingletonManager;
+        SchematicStateHandler(QObject *parent = 0);
 
-    void applyCursor(SchematicView *view);
-    void applyState(SchematicView *view);
-    void applyStateToAllViews();
+        void applyCursor(SchematicView *view);
+        void applyState(SchematicView *view);
+        void applyStateToAllViews();
 
-    SchematicStateHandlerPrivate *d;
-};
+        SchematicStateHandlerPrivate *d;
+    };
 
+} // namespace Caneda
 
 #endif // SCHEMATICSTATEHANDLER_H

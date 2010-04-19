@@ -22,37 +22,40 @@
 
 #include "painting.h"
 
-//! \brief Represent's text item on schematic.
-class GraphicText : public Painting
+namespace Caneda
 {
-public:
-    enum {
-        Type = Painting::GraphicTextType
+    //! \brief Represent's text item on schematic.
+    class GraphicText : public Painting
+    {
+    public:
+        enum {
+            Type = Painting::GraphicTextType
+        };
+
+        GraphicText(const QString &text = QString(), SchematicScene *scene = 0);
+        ~GraphicText();
+
+        QString plainText() const;
+        void setPlainText(const QString &text);
+
+        QString richText() const;
+        void setRichText(const QString &text);
+
+        void setText(const QString &text);
+
+        void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
+
+        int type() const { return GraphicText::Type; }
+        GraphicText* copy(SchematicScene *scene = 0) const;
+
+        void saveData(Caneda::XmlWriter *writer) const;
+        void loadData(Caneda::XmlReader *reader);
+
+        int launchPropertyDialog(Caneda::UndoOption opt);
+
+    private:
+        QGraphicsTextItem *m_textItem;
     };
-
-    GraphicText(const QString &text = QString(), SchematicScene *scene = 0);
-    ~GraphicText();
-
-    QString plainText() const;
-    void setPlainText(const QString &text);
-
-    QString richText() const;
-    void setRichText(const QString &text);
-
-    void setText(const QString &text);
-
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
-
-    int type() const { return GraphicText::Type; }
-    GraphicText* copy(SchematicScene *scene = 0) const;
-
-    void saveData(Caneda::XmlWriter *writer) const;
-    void loadData(Caneda::XmlReader *reader);
-
-    int launchPropertyDialog(Caneda::UndoOption opt);
-
-private:
-    QGraphicsTextItem *m_textItem;
-};
+} // namespace Caneda
 
 #endif //GRAPHICTEXT_H
