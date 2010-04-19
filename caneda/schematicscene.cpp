@@ -452,7 +452,7 @@ namespace Caneda
     }
 
     //! \brief Cut items
-    void SchematicScene::cutItems(QList<CanedaItem*> &_items, const Caneda::UndoOption opt)
+    void SchematicScene::cutItems(QList<SchematicItem*> &_items, const Caneda::UndoOption opt)
     {
         copyItems(_items);
         deleteItems(_items, opt);
@@ -463,7 +463,7 @@ namespace Caneda
      * \todo Document format
      * \todo Use own mime type
      */
-    void SchematicScene::copyItems(QList<CanedaItem*> &_items) const
+    void SchematicScene::copyItems(QList<SchematicItem*> &_items) const
     {
         if(_items.isEmpty()) {
             return;
@@ -477,7 +477,7 @@ namespace Caneda
         writer->writeStartElement("caneda");
         writer->writeAttribute("version", Caneda::version);
 
-        foreach(CanedaItem *_item, _items) {
+        foreach(SchematicItem *_item, _items) {
             _item->saveData(writer);
         }
 
@@ -524,12 +524,12 @@ namespace Caneda
      *
      * \note Regarding ugly cast:
      * I think a virtual member function - prepareForInsertion() should be added
-     * to CanedaItem which does nothing. Then classes like component can specialize
+     * to SchematicItem which does nothing. Then classes like component can specialize
      * this method to do necessary operation like hiding properties.
      * Then in the loop, there is no need for cast. Just call that prepare method
      * on all items.
      */
-    void SchematicScene::beginInsertingItems(const QList<CanedaItem*> &items)
+    void SchematicScene::beginInsertingItems(const QList<SchematicItem*> &items)
     {
         Q_ASSERT(m_currentMouseAction == SchematicScene::InsertingItems);
 
@@ -539,7 +539,7 @@ namespace Caneda
         m_insertibles = items;
 
         /* add items */
-        foreach(CanedaItem *item, m_insertibles) {
+        foreach(SchematicItem *item, m_insertibles) {
             item->setSelected(true);
             // Hide all items here, they are made visible in ::insertingItemsEvent
             item->hide();
@@ -845,7 +845,7 @@ namespace Caneda
         if(m_currentMouseAction == InsertingItems) {
             if(event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
                 bool visible = (event->type() == QEvent::Enter);
-                foreach(CanedaItem *item, m_insertibles) {
+                foreach(SchematicItem *item, m_insertibles) {
                     item->setVisible(visible);
                 }
             }
@@ -937,7 +937,7 @@ namespace Caneda
             QDataStream stream(&encodedData, QIODevice::ReadOnly);
             QString item, category;
             stream >> item >> category;
-            CanedaItem *qItem = itemForName(item, category);
+            SchematicItem *qItem = itemForName(item, category);
             /* XXX: extract and factorize */
             if(qItem->type() == GraphicText::Type) {
                 GraphicTextDialog dialog(0, Caneda::DontPushUndoCmd);
@@ -1099,14 +1099,14 @@ namespace Caneda
 
     bool SchematicScene::sidebarItemClickedNormalItems(const QString& itemName, const QString& category)
     {
-        CanedaItem *item = itemForName(itemName, category);
+        SchematicItem *item = itemForName(itemName, category);
         if(!item) {
             return false;
         }
 
         addItem(item);
         setCurrentMouseAction(InsertingItems);
-        beginInsertingItems(QList<CanedaItem*>() << item);
+        beginInsertingItems(QList<SchematicItem*>() << item);
 
         return true;
     }
@@ -1372,7 +1372,7 @@ namespace Caneda
      * \todo Create a custom undo class for avoiding if
      * \note assert X or Y axis
      */
-    void SchematicScene::mirrorItems(QList<CanedaItem*> &items,
+    void SchematicScene::mirrorItems(QList<SchematicItem*> &items,
             const Caneda::UndoOption opt,
             const Qt::Axis axis)
     {
@@ -1423,10 +1423,10 @@ namespace Caneda
         /* select item */
         QList<QGraphicsItem*> _list = items(event->scenePos());
         /* filters item */
-        QList<CanedaItem*> qItems = filterItems<CanedaItem>(_list, DontRemoveItems);
+        QList<SchematicItem*> qItems = filterItems<SchematicItem>(_list, DontRemoveItems);
         if(!qItems.isEmpty()) {
             /* mirror */
-            mirrorItems(QList<CanedaItem*>() << qItems.first(), Caneda::PushUndoCmd, axis);
+            mirrorItems(QList<SchematicItem*>() << qItems.first(), Caneda::PushUndoCmd, axis);
         }
     }
 
@@ -1486,7 +1486,7 @@ namespace Caneda
      * \param diect: is rotation in trigonometric sense
      * \todo Create a custom undo class for avoiding if
      */
-    void SchematicScene::rotateItems(QList<CanedaItem*> &items,
+    void SchematicScene::rotateItems(QList<SchematicItem*> &items,
             const Caneda::AngleDirection dir,
             const Caneda::UndoOption opt)
     {
@@ -1548,9 +1548,9 @@ namespace Caneda
         /* get items */
         QList<QGraphicsItem*> _list = items(event->scenePos());
         /* filter item */
-        QList<CanedaItem*> qItems = filterItems<CanedaItem>(_list, DontRemoveItems);
+        QList<SchematicItem*> qItems = filterItems<SchematicItem>(_list, DontRemoveItems);
         if(!qItems.isEmpty()) {
-            rotateItems(QList<CanedaItem*>() << qItems.first(), angle, Caneda::PushUndoCmd);
+            rotateItems(QList<SchematicItem*>() << qItems.first(), angle, Caneda::PushUndoCmd);
         }
     }
 
@@ -1561,13 +1561,13 @@ namespace Caneda
      ***************************************************************************/
 
     //! \brief Short function for qsort sort by abscissa
-    static inline bool pointCmpFunction_X(const CanedaItem *lhs, const CanedaItem  *rhs)
+    static inline bool pointCmpFunction_X(const SchematicItem *lhs, const SchematicItem  *rhs)
     {
         return lhs->pos().x() < rhs->pos().x();
     }
 
     //!Short function for qsort sort by abscissa
-    static inline bool pointCmpFunction_Y(const CanedaItem *lhs, const CanedaItem  *rhs)
+    static inline bool pointCmpFunction_Y(const SchematicItem *lhs, const SchematicItem  *rhs)
     {
         return lhs->pos().y() < rhs->pos().y();
     }
@@ -1584,7 +1584,7 @@ namespace Caneda
      * +     * hard now. We should come out with some good solution for this.
      * +     * Bastein: Do you have any solution ?
      */
-    void SchematicScene::distributeElementsHorizontally(QList<CanedaItem*> items)
+    void SchematicScene::distributeElementsHorizontally(QList<SchematicItem*> items)
     {
         qreal x1, x2, x, dx;
         QPointF newPos;
@@ -1604,7 +1604,7 @@ namespace Caneda
         dx = (x2 - x1) / (items.size() - 1);
         x = x1;
 
-        foreach(CanedaItem *item, items) {
+        foreach(SchematicItem *item, items) {
             /* why not filter wire ??? */
             if(item->isWire()) {
                 continue;
@@ -1633,7 +1633,7 @@ namespace Caneda
      * \param items: items to distribute
      * \todo Why not filter wire ??
      */
-    void SchematicScene::distributeElementsVertically(QList<CanedaItem*> items)
+    void SchematicScene::distributeElementsVertically(QList<SchematicItem*> items)
     {
         qreal y1, y2, y, dy;
         QPointF newPos;
@@ -1653,7 +1653,7 @@ namespace Caneda
         dy = (y2 - y1) / (items.size() - 1);
         y = y1;
 
-        foreach(CanedaItem *item, items) {
+        foreach(SchematicItem *item, items) {
             /* why not filter wire ??? */
             if(item->isWire()) {
                 continue;
@@ -1687,7 +1687,7 @@ namespace Caneda
     bool SchematicScene::distributeElements(const Qt::Orientation orientation)
     {
         QList<QGraphicsItem*> gItems = selectedItems();
-        QList<CanedaItem*> items = filterItems<CanedaItem>(gItems);
+        QList<SchematicItem*> items = filterItems<SchematicItem>(gItems);
 
         /* could not distribute single items */
         if(items.size() < 2) {
@@ -1768,7 +1768,7 @@ namespace Caneda
         Q_ASSERT(checkAlignementFlag(alignment));
 
         QList<QGraphicsItem*> gItems = selectedItems();
-        QList<CanedaItem*> items = filterItems<CanedaItem>(gItems, DontRemoveItems);
+        QList<SchematicItem*> items = filterItems<SchematicItem>(gItems, DontRemoveItems);
 
 
         /* Could not align less than two elements */
@@ -1784,7 +1784,7 @@ namespace Caneda
 
         /* compute bounding rectangle */
         QRectF rect = items.first()->sceneBoundingRect();
-        QList<CanedaItem*>::iterator it = items.begin()+1;
+        QList<SchematicItem*>::iterator it = items.begin()+1;
         while(it != items.end()) {
             rect |= (*it)->sceneBoundingRect();
             ++it;
@@ -1858,7 +1858,7 @@ namespace Caneda
      * \todo Create a custom undo class for avoiding if
      * \todo Change direction of toogle
      */
-    void SchematicScene::toggleActiveStatus(QList<CanedaItem*> &items,
+    void SchematicScene::toggleActiveStatus(QList<SchematicItem*> &items,
             const Caneda::UndoOption opt)
     {
         /* Apply only to components */
@@ -1903,9 +1903,9 @@ namespace Caneda
         }
 
         QList<QGraphicsItem*> _list = items(event->scenePos());
-        QList<CanedaItem*> qItems = filterItems<CanedaItem>(_list, DontRemoveItems);
+        QList<SchematicItem*> qItems = filterItems<SchematicItem>(_list, DontRemoveItems);
         if(!qItems.isEmpty()) {
-            toggleActiveStatus(QList<CanedaItem*>() << qItems.first(), Caneda::PushUndoCmd);
+            toggleActiveStatus(QList<SchematicItem*>() << qItems.first(), Caneda::PushUndoCmd);
         }
     }
 
@@ -1927,11 +1927,11 @@ namespace Caneda
      * \todo Create a custom undo class for avoiding if
      * \todo removeitems delete item use asingle name scheme
      */
-    void SchematicScene::deleteItems(QList<CanedaItem*> &items,
+    void SchematicScene::deleteItems(QList<SchematicItem*> &items,
             const Caneda::UndoOption opt)
     {
         if(opt == Caneda::DontPushUndoCmd) {
-            foreach(CanedaItem* item, items) {
+            foreach(SchematicItem* item, items) {
                 delete item;
             }
         }
@@ -1957,10 +1957,10 @@ namespace Caneda
         /* create a list of items */
         QList<QGraphicsItem*> _list = items(pos);
         if(!_list.isEmpty()) {
-            QList<CanedaItem*> _items = filterItems<CanedaItem>(_list);
+            QList<SchematicItem*> _items = filterItems<SchematicItem>(_list);
 
             if(!_items.isEmpty()) {
-                deleteItems(QList<CanedaItem*>() << _items.first(), Caneda::PushUndoCmd);
+                deleteItems(QList<SchematicItem*>() << _items.first(), Caneda::PushUndoCmd);
             }
         }
     }
@@ -1976,10 +1976,10 @@ namespace Caneda
         /* create a list of items */
         QList<QGraphicsItem*> _list = items(pos);
         if(!_list.isEmpty()) {
-            QList<CanedaItem*> _items = filterItems<CanedaItem>(_list);
+            QList<SchematicItem*> _items = filterItems<SchematicItem>(_list);
 
             if(!_items.isEmpty()) {
-                disconnectItems(QList<CanedaItem*>() << _items.first(), Caneda::PushUndoCmd);
+                disconnectItems(QList<SchematicItem*>() << _items.first(), Caneda::PushUndoCmd);
             }
         }
     }
@@ -2022,7 +2022,7 @@ namespace Caneda
      * \todo remove the cast and create a class connectable item
      */
 
-    void SchematicScene::connectItems(const QList<CanedaItem*> &qItems,
+    void SchematicScene::connectItems(const QList<SchematicItem*> &qItems,
             const Caneda::UndoOption opt)
     {
         if(opt == Caneda::PushUndoCmd) {
@@ -2030,7 +2030,7 @@ namespace Caneda
         }
 
         /* remove this cast */
-        foreach(CanedaItem *qItem, qItems) {
+        foreach(SchematicItem *qItem, qItems) {
             if(qItem->isComponent()) {
                 canedaitem_cast<Component*>(qItem)->checkAndConnect(opt);
             }
@@ -2052,14 +2052,14 @@ namespace Caneda
      * \param opt: undo option
      * \todo remove the cast and create a class connectable item
      */
-    void SchematicScene::disconnectItems(const QList<CanedaItem*> &qItems,
+    void SchematicScene::disconnectItems(const QList<SchematicItem*> &qItems,
             const Caneda::UndoOption opt)
     {
         if(opt == Caneda::PushUndoCmd) {
             m_undoStack->beginMacro(QString("Disconnect items"));
         }
 
-        foreach(CanedaItem *item, qItems) {
+        foreach(SchematicItem *item, qItems) {
             QList<Port*> ports;
 
             /* remove this cast */
@@ -2310,17 +2310,17 @@ namespace Caneda
         if(event->type() == QEvent::GraphicsSceneMousePress) {
             if (event->button() == Qt::LeftButton) {
                 clearSelection();
-                foreach(CanedaItem *item, m_insertibles) {
+                foreach(SchematicItem *item, m_insertibles) {
                     removeItem(item);
                 }
                 m_undoStack->beginMacro(QString("Insert items"));
-                foreach(CanedaItem *item, m_insertibles) {
-                    CanedaItem *copied = item->copy(0);
+                foreach(SchematicItem *item, m_insertibles) {
+                    SchematicItem *copied = item->copy(0);
                     /* round */
                     placeItem(copied, smartNearingGridPoint(item->pos()), Caneda::PushUndoCmd);
                 }
                 m_undoStack->endMacro();
-                foreach(CanedaItem *item, m_insertibles) {
+                foreach(SchematicItem *item, m_insertibles) {
                     addItem(item);
                     item->setSelected(true);
                 }
@@ -2332,7 +2332,7 @@ namespace Caneda
                 // hidden all items, so show them back.
                 // I see no point why we would be not using Qt::DirectConenction though!
                 QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
-                foreach(CanedaItem *item, m_insertibles) {
+                foreach(SchematicItem *item, m_insertibles) {
                     item->show();
                     item->setPos(smartNearingGridPoint(item->pos() + delta));
                 }
@@ -2340,7 +2340,7 @@ namespace Caneda
                 emit mirrorInvokedWhileInserting();
                 // HACK: Same as above!
                 QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
-                foreach(CanedaItem *item, m_insertibles) {
+                foreach(SchematicItem *item, m_insertibles) {
                     item->show();
                     item->setPos(smartNearingGridPoint(item->pos() + delta));
                 }
@@ -2350,7 +2350,7 @@ namespace Caneda
         else if(event->type() == QEvent::GraphicsSceneMouseMove) {
             QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
 
-            foreach(CanedaItem *item, m_insertibles) {
+            foreach(SchematicItem *item, m_insertibles) {
                 item->show();
                 item->setPos(smartNearingGridPoint(item->pos() + delta));
             }
@@ -2639,7 +2639,7 @@ namespace Caneda
      * \param opt: undo option
      * \warning: pos is not rounded
      */
-    void SchematicScene::placeItem(CanedaItem *item, const QPointF &pos, const Caneda::UndoOption opt)
+    void SchematicScene::placeItem(SchematicItem *item, const QPointF &pos, const Caneda::UndoOption opt)
     {
         if(item->scene() == this) {
             removeItem(item);
@@ -2689,7 +2689,7 @@ namespace Caneda
      * The painting is processed in a special hard coded way(no library)
      * On the other hand components are loaded from the library.
      */
-    CanedaItem* SchematicScene::itemForName(const QString& name, const QString& category)
+    SchematicItem* SchematicScene::itemForName(const QString& name, const QString& category)
     {
         if(category == QObject::tr("Paint Tools")) {
             return Painting::fromName(name);

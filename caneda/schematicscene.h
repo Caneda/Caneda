@@ -30,7 +30,7 @@
 #include <QPointF>
 #include <QVarLengthArray>
 
-class CanedaItem;
+class SchematicItem;
 class Diagram;
 class Painting;
 class QRubberBand;
@@ -99,29 +99,29 @@ namespace Caneda
         /* geometry change */
 
         /* mirror */
-        void mirrorItems(QList<CanedaItem*> &itemsenum,
+        void mirrorItems(QList<SchematicItem*> &itemsenum,
                 const Caneda::UndoOption opt,
                 const Qt::Axis axis);
-        void mirrorXItems(QList<CanedaItem*> &items, const Caneda::UndoOption opt) {
+        void mirrorXItems(QList<SchematicItem*> &items, const Caneda::UndoOption opt) {
             mirrorItems(items, opt, Qt::XAxis);
         }
 
-        void mirrorYItems(QList<CanedaItem*> &items, const Caneda::UndoOption opt) {
+        void mirrorYItems(QList<SchematicItem*> &items, const Caneda::UndoOption opt) {
             mirrorItems(items, opt, Qt::YAxis);
         }
 
-        void rotateItems(QList<CanedaItem*> &items, const Caneda::AngleDirection dir,
+        void rotateItems(QList<SchematicItem*> &items, const Caneda::AngleDirection dir,
                 const Caneda::UndoOption);
-        void rotateItems(QList<CanedaItem*> &items, const Caneda::UndoOption undo) {
+        void rotateItems(QList<SchematicItem*> &items, const Caneda::UndoOption undo) {
             rotateItems(items, Caneda::Clockwise, undo);
         }
 
-        void deleteItems(QList<CanedaItem*> &items, const Caneda::UndoOption);
-        void toggleActiveStatus(QList<CanedaItem*> &components, const Caneda::UndoOption);
+        void deleteItems(QList<SchematicItem*> &items, const Caneda::UndoOption);
+        void toggleActiveStatus(QList<SchematicItem*> &components, const Caneda::UndoOption);
 
         // these aren't toggle actions.
-        void cutItems(QList<CanedaItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
-        void copyItems(QList<CanedaItem*> &items) const;
+        void cutItems(QList<SchematicItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
+        void copyItems(QList<SchematicItem*> &items) const;
 
         QString fileName() const { return m_fileName; }
         void setFileName(const QString& fn);
@@ -178,7 +178,7 @@ namespace Caneda
 
         void resetState();
         void beginPaintingDraw(Painting *item);
-        void beginInsertingItems(const QList<CanedaItem*> &items);
+        void beginInsertingItems(const QList<SchematicItem*> &items);
 
         bool alignElements(const Qt::Alignment alignment);
         bool distributeElements(const Qt::Orientation orientation);
@@ -265,8 +265,8 @@ namespace Caneda
         void deletingEventLeftMouseClick(const QPointF &pos);
 
         /* private distribute */
-        void distributeElementsHorizontally(QList<CanedaItem*> items);
-        void distributeElementsVertically(QList<CanedaItem*> items);
+        void distributeElementsHorizontally(QList<SchematicItem*> items);
+        void distributeElementsVertically(QList<SchematicItem*> items);
 
         /* alignment */
         static const QString Alignment2QString(const Qt::Alignment alignment);
@@ -275,17 +275,17 @@ namespace Caneda
         bool sidebarItemClickedPaintingsItems(const QString& itemName);
         bool sidebarItemClickedNormalItems(const QString& itemName, const QString& category);
 
-        CanedaItem* itemForName(const QString& name, const QString& category);
-        void placeItem(CanedaItem *item, const QPointF &pos, const Caneda::UndoOption opt);
+        SchematicItem* itemForName(const QString& name, const QString& category);
+        void placeItem(SchematicItem *item, const QPointF &pos, const Caneda::UndoOption opt);
         int componentLabelSuffix(const QString& labelPrefix) const;
 
         int unusedPortNumber();
         bool isPortNumberUsed(int num) const;
         void setNumberUnused(int num);
 
-        void disconnectItems(const QList<CanedaItem*> &qItems,
+        void disconnectItems(const QList<SchematicItem*> &qItems,
                 const Caneda::UndoOption opt = Caneda::PushUndoCmd);
-        void connectItems(const QList<CanedaItem*> &qItems, const Caneda::UndoOption opt);
+        void connectItems(const QList<SchematicItem*> &qItems, const Caneda::UndoOption opt);
 
         void placeAndDuplicatePainting();
 
@@ -330,10 +330,10 @@ namespace Caneda
         QPointF lastPos;
 
         /*!
-         * \brief A list of CanedaItem which are to be placed/pasted.
+         * \brief A list of SchematicItem which are to be placed/pasted.
          * \sa beginInsertingItems
          */
-        QList<CanedaItem*> m_insertibles;
+        QList<SchematicItem*> m_insertibles;
 
         //! Wiring state machine state  enum
         enum wiringStateEnum {

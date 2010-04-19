@@ -33,7 +33,7 @@ namespace Caneda
 {
 
 //! Constructs a painting item with default pen and default brush.
-Painting::Painting(SchematicScene *scene) : CanedaItem(0, scene),
+Painting::Painting(SchematicScene *scene) : SchematicItem(0, scene),
     m_pen(defaultPaintingPen),
     m_brush(defaultPaintingBrush),
     m_resizeHandles(Caneda::NoHandle),
@@ -198,12 +198,12 @@ Painting* Painting::copy(SchematicScene *) const
     return 0;
 }
 
-//! \copydoc CanedaItem::copyDataTo()
+//! \copydoc SchematicItem::copyDataTo()
 void Painting::copyDataTo(Painting *painting) const
 {
     painting->setPen(pen());
     painting->setBrush(brush());
-    CanedaItem::copyDataTo(static_cast<CanedaItem*>(painting));
+    SchematicItem::copyDataTo(static_cast<SchematicItem*>(painting));
 }
 
 /*!
@@ -272,7 +272,7 @@ void Painting::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     //call base method to get move behaviour as no handle is pressed
     if(m_activeHandle == Caneda::NoHandle) {
-        CanedaItem::mousePressEvent(event);
+        SchematicItem::mousePressEvent(event);
     }
     else {
         storePaintingRect();
@@ -283,7 +283,7 @@ void Painting::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if(m_activeHandle == Caneda::NoHandle) {
-        CanedaItem::mouseMoveEvent(event);
+        SchematicItem::mouseMoveEvent(event);
         Q_ASSERT(scene()->mouseGrabberItem() == this);
         return;
     }
@@ -320,7 +320,7 @@ void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 //! Takes care of handle resizing on mouse release event.
 void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    CanedaItem::mouseReleaseEvent(event);
+    SchematicItem::mouseReleaseEvent(event);
     if(m_activeHandle != Caneda::NoHandle && m_paintingRect != m_store) {
         schematicScene()->undoStack()->push(
                 new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect));

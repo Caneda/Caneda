@@ -25,17 +25,17 @@
 
 namespace Caneda
 {
-    class Diagram : public CanedaItem
+    class Diagram : public SchematicItem
     {
     public:
         enum {
-            Type = CanedaItem::DisplayType
+            Type = SchematicItem::DisplayType
         };
 
         Diagram(SchematicScene* scene = 0);
         ~Diagram();
 
-        int type() const { return CanedaItem::DisplayType; }
+        int type() const { return SchematicItem::DisplayType; }
     };
 
 } // namespace Caneda

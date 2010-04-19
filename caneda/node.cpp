@@ -57,7 +57,7 @@ inline qreal distance(const QPointF& p1, const QPointF& p2)
  * and is always drawn before wires and components.
  * Node must be in the foreground of component and wires.
  */
-Node::Node(const QString& name,SchematicScene *scene) : CanedaItem(0,scene)
+Node::Node(const QString& name,SchematicScene *scene) : SchematicItem(0,scene)
 {
     setName(name);
     // Ensure flags is zero so that no useless checks are made on node.

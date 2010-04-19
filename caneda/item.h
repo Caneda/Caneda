@@ -81,8 +81,8 @@ namespace Caneda {
             const QRectF& rect);
 
 
-    //! \brief CanedaItem - The base class for components, wires, nodes..
-    class CanedaItem : public QGraphicsItem
+    //! \brief SchematicItem - The base class for components, wires, nodes..
+    class SchematicItem : public QGraphicsItem
     {
     public:
         /*!
@@ -95,31 +95,31 @@ namespace Caneda {
          * }
          * \sa canedaitem_cast and PATTERN.
          */
-        enum CanedaItemTypes {
-            //!Recognizes all classes derived from CanedaItem
-            CanedaItemType = (1 << (std::numeric_limits<int>::digits-1)),
+        enum SchematicItemTypes {
+            //!Recognizes all classes derived from SchematicItem
+            SchematicItemType = (1 << (std::numeric_limits<int>::digits-1)),
             //!Recognizes classes derived from SvgItem
-            SvgItemType = PATTERN(CanedaItemType, 1),
+            SvgItemType = PATTERN(SchematicItemType, 1),
             //!Recognizes classes derived from Component
             ComponentType = PATTERN(SvgItemType, 1),
             //!Recognizes classes derived from Wire
-            WireType = PATTERN(CanedaItemType, 3),
+            WireType = PATTERN(SchematicItemType, 3),
             //!Recognizes classes derived from Painting
-            PaintingType = PATTERN(CanedaItemType, 4),
+            PaintingType = PATTERN(SchematicItemType, 4),
             //!Recognizes classes derived from Display
-            DisplayType = PATTERN(CanedaItemType, 5)
+            DisplayType = PATTERN(SchematicItemType, 5)
         };
 
-        //! Item identifier \sa CanedaItemTypes
+        //! Item identifier \sa SchematicItemTypes
         enum {
-            Type = CanedaItemType
+            Type = SchematicItemType
         };
 
-        CanedaItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
-        virtual ~CanedaItem();
+        SchematicItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
+        virtual ~SchematicItem();
 
         //! Return type of item
-        int type() const { return CanedaItemType; }
+        int type() const { return SchematicItemType; }
         //! Return bounding box
         QRectF boundingRect() const { return m_boundingRect; }
         //! Return the shape of the item.
@@ -138,8 +138,8 @@ namespace Caneda {
         virtual void mirrorAlong(Qt::Axis axis);
         virtual void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise);
 
-        virtual CanedaItem* copy(SchematicScene *scene = 0) const;
-        virtual void copyDataTo(CanedaItem *item) const;
+        virtual SchematicItem* copy(SchematicScene *scene = 0) const;
+        virtual void copyDataTo(SchematicItem *item) const;
 
         //! This is convenience method used for rtti.
         virtual bool isComponent() const { return false; }
@@ -168,7 +168,7 @@ namespace Caneda {
      * This function actually works for items following the rules.
      * Firstly, items should use appropriate Type constant.
      * Secondly, type() should return this Type.
-     * \sa CanedaItemTypes
+     * \sa SchematicItemTypes
      */
     template<typename T> T canedaitem_cast(QGraphicsItem *item)
     {
@@ -223,12 +223,12 @@ namespace Caneda {
      *               or not.
      */
     template<typename T>
-    QList<T*> filterItems(QList<CanedaItem*> &items, FilterOption option = DontRemoveItems)
+    QList<T*> filterItems(QList<SchematicItem*> &items, FilterOption option = DontRemoveItems)
     {
         QList<T*> tItems;
-        QList<CanedaItem*>::iterator it = items.begin();
+        QList<SchematicItem*>::iterator it = items.begin();
         while(it != items.end()) {
-            CanedaItem *item = *it;
+            SchematicItem *item = *it;
             T *tItem = canedaitem_cast<T*>(item);
             if(tItem) {
                 tItems << tItem;

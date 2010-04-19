@@ -66,7 +66,7 @@ namespace Caneda
         }
 
         void clearInsertibles() {
-            foreach (CanedaItem* item, insertibles) {
+            foreach (SchematicItem* item, insertibles) {
                 if (item->scene()) {
                     item->scene()->removeItem(item);
                 }
@@ -76,17 +76,17 @@ namespace Caneda
         }
 
         SchematicScene::MouseAction mouseAction;
-        QList<CanedaItem*> insertibles;
+        QList<SchematicItem*> insertibles;
         Painting *paintingDrawItem;
 
         QSet<SchematicScene*> scenes;
         QSet<SchematicView*> views;
 
         QPointer<SchematicView> focussedView;
-        QHash<QString, CanedaItem*> toolbarInsertibles;
+        QHash<QString, SchematicItem*> toolbarInsertibles;
     };
 
-    static bool areItemsEquivalent(CanedaItem *a, CanedaItem *b)
+    static bool areItemsEquivalent(SchematicItem *a, SchematicItem *b)
     {
         if (!a || !b) {
             return false;
@@ -198,7 +198,7 @@ namespace Caneda
         } else {
             d->clearInsertibles();
             LibraryLoader *libLoader = LibraryLoader::instance();
-            CanedaItem *qItem = libLoader->newComponent(item, 0, category);
+            SchematicItem *qItem = libLoader->newComponent(item, 0, category);
             if (!qItem) {
                 slotSetNormalAction();
             } else {
@@ -230,7 +230,7 @@ namespace Caneda
             return;
         }
 
-        QList<CanedaItem*> _items;
+        QList<SchematicItem*> _items;
         while(!reader.atEnd()) {
             reader.readNext();
 
@@ -239,7 +239,7 @@ namespace Caneda
             }
 
             if(reader.isStartElement()) {
-                CanedaItem *readItem = 0;
+                SchematicItem *readItem = 0;
                 if(reader.name() == "component") {
                     readItem = Component::loadComponentData(&reader, 0);
                 }
@@ -296,7 +296,7 @@ namespace Caneda
     void SchematicStateHandler::slotInsertToolbarComponent(const QString& sender,
             bool on)
     {
-        CanedaItem *item = d->toolbarInsertibles[sender];
+        SchematicItem *item = d->toolbarInsertibles[sender];
         if (!on || !item) {
             slotSetNormalAction();
             return;
@@ -337,7 +337,7 @@ namespace Caneda
      */
     void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool on)
     {
-        typedef void (SchematicScene::*pActionFunc) (QList<CanedaItem*>&, const Caneda::UndoOption);
+        typedef void (SchematicScene::*pActionFunc) (QList<SchematicItem*>&, const Caneda::UndoOption);
 
         ActionManager *am = ActionManager::instance();
 
@@ -381,7 +381,7 @@ namespace Caneda
 
         do {
             if(!selectedItems.isEmpty() && func != 0) {
-                QList<CanedaItem*> funcable = filterItems<CanedaItem>(selectedItems);
+                QList<SchematicItem*> funcable = filterItems<SchematicItem>(selectedItems);
 
                 if(funcable.isEmpty()) {
                     break;
@@ -404,7 +404,7 @@ namespace Caneda
             }
         }
 
-        QHash<QString, CanedaItem*>::const_iterator it =
+        QHash<QString, SchematicItem*>::const_iterator it =
             d->toolbarInsertibles.begin();
         while (it != d->toolbarInsertibles.end()) {
             Action *act = am->actionForName(it.key());
@@ -505,8 +505,8 @@ namespace Caneda
         scene->setCurrentMouseAction(d->mouseAction);
         if (d->mouseAction == SchematicScene::InsertingItems) {
             if (!d->insertibles.isEmpty()) {
-                QList<CanedaItem*> copy;
-                foreach (CanedaItem *it, d->insertibles) {
+                QList<SchematicItem*> copy;
+                foreach (SchematicItem *it, d->insertibles) {
                     copy << it->copy(scene);
                 }
                 scene->beginInsertingItems(copy);

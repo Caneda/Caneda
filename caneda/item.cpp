@@ -168,7 +168,7 @@ namespace Caneda
 
     //! Constructor
     //! \brief Create a new item and add to scene.
-    CanedaItem::CanedaItem(QGraphicsItem* parent, SchematicScene* scene) :
+    SchematicItem::SchematicItem(QGraphicsItem* parent, SchematicScene* scene) :
         QGraphicsItem(parent),
         m_boundingRect(0, 0, 0, 0)
     {
@@ -183,11 +183,11 @@ namespace Caneda
     }
 
     //! Destructor
-    CanedaItem::~CanedaItem()
+    SchematicItem::~SchematicItem()
     {
     }
 
-    void CanedaItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+    void SchematicItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     {
         if(event->buttons().testFlag(Qt::LeftButton)) {
             launchPropertyDialog(Caneda::PushUndoCmd);
@@ -203,7 +203,7 @@ namespace Caneda
      * \param rect The bound rect to be cached.
      * \param pw Pen width of pen used to paint outer stroke of item.
      */
-    void CanedaItem::setShapeAndBoundRect(const QPainterPath& path,
+    void SchematicItem::setShapeAndBoundRect(const QPainterPath& path,
             const QRectF& rect, qreal pw)
     {
         // Inform scene about change in geometry.
@@ -219,7 +219,7 @@ namespace Caneda
     }
 
     //! \brief returns a pointer to the schematic scene to which the item belongs.
-    SchematicScene* CanedaItem::schematicScene() const
+    SchematicScene* SchematicItem::schematicScene() const
     {
         return qobject_cast<SchematicScene*>(scene());
     }
@@ -231,7 +231,7 @@ namespace Caneda
      * there will be unnecessary creation of xml writer and reader instances which
      * will render the program inefficient.
      */
-    QString CanedaItem::saveDataText() const
+    QString SchematicItem::saveDataText() const
     {
         QString retVal;
         Caneda::XmlWriter writer(&retVal);
@@ -246,7 +246,7 @@ namespace Caneda
      * there will be unnecessary creation of xml writer and reader instances which
      * will render the program inefficient.
      */
-    void CanedaItem::loadDataFromText(const QString &text)
+    void SchematicItem::loadDataFromText(const QString &text)
     {
         Caneda::XmlReader reader(text.toUtf8());
         while(!reader.atEnd()) {
@@ -267,7 +267,7 @@ namespace Caneda
      * \brief Graphically mirror item according to x axis
      * \note Items can be mirrored only along x and y axis.
      */
-    void CanedaItem::mirrorAlong(Qt::Axis axis)
+    void SchematicItem::mirrorAlong(Qt::Axis axis)
     {
         update();
 
@@ -281,7 +281,7 @@ namespace Caneda
     }
 
     //! \brief Rotate item by -90 degrees
-    void CanedaItem::rotate90(Caneda::AngleDirection dir)
+    void SchematicItem::rotate90(Caneda::AngleDirection dir)
     {
         rotate(dir == Caneda::AntiClockwise ? -90.0 : 90.0);
     }
@@ -292,7 +292,7 @@ namespace Caneda
      * Now it returns null but subclasses should reimplement this to return the
      * appropriate copy of that reimplemented item.
      */
-    CanedaItem* CanedaItem::copy(SchematicScene *) const
+    SchematicItem* SchematicItem::copy(SchematicScene *) const
     {
         return 0;
     }
@@ -302,7 +302,7 @@ namespace Caneda
      *
      * Sublasses should reimplement it to copy their data.
      */
-    void CanedaItem::copyDataTo(CanedaItem *item) const
+    void SchematicItem::copyDataTo(SchematicItem *item) const
     {
         item->setTransform(transform());
         item->prepareGeometryChange();
@@ -315,7 +315,7 @@ namespace Caneda
      * \brief Constructs and returns a menu with default actions inderted.
      * \todo Implement this function.
      */
-    QMenu* CanedaItem::defaultContextMenu() const
+    QMenu* SchematicItem::defaultContextMenu() const
     {
         return 0;
     }

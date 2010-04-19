@@ -20,7 +20,7 @@
 namespace Caneda
 {
 
-    Diagram::Diagram(SchematicScene *scene) : CanedaItem(0, scene)
+    Diagram::Diagram(SchematicScene *scene) : SchematicItem(0, scene)
     {
     }
 

@@ -449,7 +449,7 @@ namespace Caneda
     {
         Component *retVal = new Component(d, svgPainter(), scene);
         //no need for Component::copyDataTo() because the data is already copied from d pointer.
-        CanedaItem::copyDataTo(static_cast<CanedaItem*>(retVal));
+        SchematicItem::copyDataTo(static_cast<SchematicItem*>(retVal));
         retVal->setSymbol(symbol()); //to register svg connections
         retVal->updatePropertyGroup();
         return retVal;
@@ -458,13 +458,13 @@ namespace Caneda
     //! \brief Copies the data to \a component.
     void Component::copyDataTo(Component *component) const
     {
-        CanedaItem::copyDataTo(static_cast<CanedaItem*>(component));
+        SchematicItem::copyDataTo(static_cast<SchematicItem*>(component));
         component->d = d;
         component->updatePropertyGroup();
         component->update();
     }
 
-    //! \copydoc CanedaItem::launchPropertyDialog()
+    //! \copydoc SchematicItem::launchPropertyDialog()
     int Component::launchPropertyDialog(Caneda::UndoOption)
     {
         PropertyDialog dia(this, Caneda::PushUndoCmd);

@@ -193,14 +193,14 @@ namespace Caneda
     void SchematicView::copy() const
     {
         QList<QGraphicsItem*> items = scene()->selectedItems();
-        QList<CanedaItem*> qItems = filterItems<CanedaItem>(items);
+        QList<SchematicItem*> qItems = filterItems<SchematicItem>(items);
         schematicScene()->copyItems(qItems);
     }
 
     void SchematicView::cut()
     {
         QList<QGraphicsItem*> items = scene()->selectedItems();
-        QList<CanedaItem*> qItems = filterItems<CanedaItem>(items);
+        QList<SchematicItem*> qItems = filterItems<SchematicItem>(items);
 
         if(!qItems.isEmpty()) {
             schematicScene()->cutItems(qItems);

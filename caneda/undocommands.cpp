@@ -393,12 +393,12 @@ namespace Caneda
     ##########################################################################
     */
 
-    RemoveItemsCmd::RemoveItemsCmd(const QList<CanedaItem*> &items, SchematicScene *scene,
+    RemoveItemsCmd::RemoveItemsCmd(const QList<SchematicItem*> &items, SchematicScene *scene,
             QUndoCommand *parent) :
         QUndoCommand(parent),
         m_scene(scene)
     {
-        foreach(CanedaItem *item, items) {
+        foreach(SchematicItem *item, items) {
             m_itemPointPairs << ItemPointPair(item, item->pos());
         }
     }
@@ -434,14 +434,14 @@ namespace Caneda
     ##########################################################################
     */
 
-    RotateItemsCmd::RotateItemsCmd(QList<CanedaItem*> items, const Caneda::AngleDirection dir, QUndoCommand *parent) :
+    RotateItemsCmd::RotateItemsCmd(QList<SchematicItem*> items, const Caneda::AngleDirection dir, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_items(items)
     {
         m_angleDirection = dir;
     }
 
-    RotateItemsCmd::RotateItemsCmd(CanedaItem *item, const Caneda::AngleDirection dir, QUndoCommand *parent) :
+    RotateItemsCmd::RotateItemsCmd(SchematicItem *item, const Caneda::AngleDirection dir, QUndoCommand *parent) :
         QUndoCommand(parent)
     {
         m_items << item;
@@ -450,14 +450,14 @@ namespace Caneda
 
     void RotateItemsCmd::undo()
     {
-        foreach(CanedaItem *item, m_items) {
+        foreach(SchematicItem *item, m_items) {
             item->rotate90(m_angleDirection == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise);
         }
     }
 
     void RotateItemsCmd::redo()
     {
-        foreach(CanedaItem *item, m_items) {
+        foreach(SchematicItem *item, m_items) {
             item->rotate90(Caneda::AntiClockwise);
         }
     }
@@ -468,14 +468,14 @@ namespace Caneda
     ##########################################################################
     */
 
-    MirrorItemsCmd::MirrorItemsCmd(QList<CanedaItem*> items, const Qt::Axis axis, QUndoCommand *parent) :
+    MirrorItemsCmd::MirrorItemsCmd(QList<SchematicItem*> items, const Qt::Axis axis, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_items(items),
         m_axis(axis)
     {
     }
 
-    MirrorItemsCmd::MirrorItemsCmd(CanedaItem *item, const Qt::Axis axis, QUndoCommand *parent) :
+    MirrorItemsCmd::MirrorItemsCmd(SchematicItem *item, const Qt::Axis axis, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_axis(axis)
     {
@@ -484,14 +484,14 @@ namespace Caneda
 
     void MirrorItemsCmd::undo()
     {
-        foreach(CanedaItem *item, m_items) {
+        foreach(SchematicItem *item, m_items) {
             item->mirrorAlong(m_axis);
         }
     }
 
     void MirrorItemsCmd::redo()
     {
-        foreach(CanedaItem *item, m_items) {
+        foreach(SchematicItem *item, m_items) {
             item->mirrorAlong(m_axis);
         }
     }

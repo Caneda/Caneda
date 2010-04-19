@@ -84,7 +84,7 @@ namespace Caneda
     {
         Q_OBJECT
     public:
-        enum { Type = CanedaItem::ComponentType };
+        enum { Type = SchematicItem::ComponentType };
 
         Component(SchematicScene *scene = 0);
         Component(const QSharedDataPointer<ComponentData>& other,

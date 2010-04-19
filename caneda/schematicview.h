@@ -27,7 +27,7 @@
 namespace Caneda
 {
     // Forward declarations
-    class CanedaItem;
+    class SchematicItem;
     class SchematicScene;
 
     class SchematicView : public QGraphicsView, public CanedaView

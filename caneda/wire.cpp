@@ -104,7 +104,7 @@ namespace Caneda
      * \todo try to remove doconnect and do another operation for do connect
      */
     Wire::Wire(const QPointF& startPos, const QPointF& endPos, bool doConnect,
-            SchematicScene *scene) : CanedaItem(0, scene), m_grabbedIndex(-1)
+            SchematicScene *scene) : SchematicItem(0, scene), m_grabbedIndex(-1)
     {
         /* set position */
         setPos((startPos + endPos)/2);
@@ -142,7 +142,7 @@ namespace Caneda
      * \bug br->gpk: does the new port is a purpose??
      */
     Wire::Wire(Port *startPort, Port *endPort, SchematicScene *scene) :
-        CanedaItem(0, scene), m_grabbedIndex(-1)
+        SchematicItem(0, scene), m_grabbedIndex(-1)
         {
             QPointF startPos = startPort->scenePos();
             QPointF endPos = endPort->scenePos();
@@ -657,7 +657,7 @@ namespace Caneda
 
     void Wire::copyDataTo(Wire *wire) const
     {
-        CanedaItem::copyDataTo(static_cast<CanedaItem*>(wire));
+        SchematicItem::copyDataTo(static_cast<SchematicItem*>(wire));
         Wire::Data _data;
 
         _data.wLines = m_wLines;
@@ -674,7 +674,7 @@ namespace Caneda
         m_grabbedIndex = -1;
         scene()->clearSelection();
         scene()->clearFocus();
-        CanedaItem::mousePressEvent(event);
+        SchematicItem::mousePressEvent(event);
         Q_ASSERT(mapFromScene(event->scenePos()) == event->pos());
         m_grabbedIndex = indexForPos(event->pos());
     }
@@ -690,7 +690,7 @@ namespace Caneda
     //! \todo Not called at all!
     void Wire::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
-        CanedaItem::mouseReleaseEvent(event);
+        SchematicItem::mouseReleaseEvent(event);
     }
 
     //! \brief Updates the wire's geometry and caches it.
@@ -708,7 +708,7 @@ namespace Caneda
 
         addPortEllipses(m_ports, path);
         rect = portsRect(m_ports, rect);
-        CanedaItem::setShapeAndBoundRect(path, path.boundingRect());
+        SchematicItem::setShapeAndBoundRect(path, path.boundingRect());
     }
 
     //! \brief Returns index corresponding to position \a pos.

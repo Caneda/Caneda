@@ -42,10 +42,10 @@ namespace Caneda
     /*!
      * \brief This class represents a wire on schematic.
      */
-    class Wire : public CanedaItem
+    class Wire : public SchematicItem
     {
     public:
-        enum { Type = CanedaItem::WireType };
+        enum { Type = SchematicItem::WireType };
 
         //! A struct to store wire's details.
         struct Data {

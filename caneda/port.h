@@ -62,7 +62,7 @@ namespace Caneda
     class PortOwner
     {
     public:
-        PortOwner(CanedaItem * item);
+        PortOwner(SchematicItem * item);
 
         //! return type of owner
         int type() const { return m_item->type(); }
@@ -80,7 +80,7 @@ namespace Caneda
 
     private:
         //! owner of the port
-        CanedaItem *const m_item;
+        SchematicItem *const m_item;
         //! Disable copy
         PortOwner(const PortOwner& other);
     };
@@ -97,8 +97,8 @@ namespace Caneda
     class Port
     {
     public:
-        Port(CanedaItem  *owner, const QSharedDataPointer<PortData> &data);
-        Port(CanedaItem  *owner, QPointF _pos, QString portName = QString());
+        Port(SchematicItem  *owner, const QSharedDataPointer<PortData> &data);
+        Port(SchematicItem  *owner, QPointF _pos, QString portName = QString());
 
         ~Port();
 

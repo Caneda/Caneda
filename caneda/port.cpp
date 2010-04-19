@@ -48,7 +48,7 @@ namespace Caneda
 
 
     //! \brief Construct portowner with wire as owner.
-    PortOwner::PortOwner(CanedaItem * item) : m_item(item)
+    PortOwner::PortOwner(SchematicItem * item) : m_item(item)
     {
         Q_ASSERT(isWire() || isComponent());
     }
@@ -68,7 +68,7 @@ namespace Caneda
     //! \brief Return the wire if stored, or null otherwise.
     Wire* PortOwner::wire() const
     {
-        if(m_item->type() == CanedaItem::WireType) {
+        if(m_item->type() == SchematicItem::WireType) {
             return static_cast<Wire*>(m_item);
         }
         else {
@@ -79,7 +79,7 @@ namespace Caneda
     //! \brief Return the wire if stored, or null otherwise.
     Component* PortOwner::component() const
     {
-        if(m_item->type() == CanedaItem::ComponentType) {
+        if(m_item->type() == SchematicItem::ComponentType) {
             return static_cast<Component*>(m_item);
         }
         else {
@@ -96,7 +96,7 @@ namespace Caneda
     /*! Constructor
      *  \brief Construct port with canedaitem as owner and shared data \data.
      */
-    Port::Port(CanedaItem *owner, const QSharedDataPointer<PortData> &data) :
+    Port::Port(SchematicItem *owner, const QSharedDataPointer<PortData> &data) :
         d(data),
         m_owner(new PortOwner(owner)),
         m_connections(0),
@@ -107,7 +107,7 @@ namespace Caneda
     /*! Constructor
       \brief Construct port with canedaitem as owner, position \pos and port's name \portName.
       */
-    Port::Port(CanedaItem *owner, QPointF _pos, QString portName) :
+    Port::Port(SchematicItem *owner, QPointF _pos, QString portName) :
         d(new PortData(_pos, portName)),
         m_owner(new PortOwner(owner)),
         m_connections(0),

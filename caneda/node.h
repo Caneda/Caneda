@@ -31,7 +31,7 @@ class Wire;
  * \brief Node class
  * A graphical node is little circle allowing to plug wires or components
  */
-class Node : public CanedaItem
+class Node : public SchematicItem
 {
 public:
     /*!
@@ -42,7 +42,7 @@ public:
      * \sa canedaitem_cast
      */
     enum {
-        Type = CanedaItem::NodeType
+        Type = SchematicItem::NodeType
     };
 
     //! \brief Represents radius of the node's visual circular representation.
@@ -154,7 +154,7 @@ public:
      * \brief return GraphicsView framwork id.
      * \sa Type
      */
-    int type() const { return CanedaItem::NodeType; }
+    int type() const { return SchematicItem::NodeType; }
 
     //!\brief Empty because circle at any rotation is the same.
     virtual void rotate() {}

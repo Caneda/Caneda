@@ -35,7 +35,7 @@ namespace Caneda
     class Component;
     class Painting;
     class Port;
-    class CanedaItem;
+    class SchematicItem;
 
     static const QPointF InvalidPoint(-30000, -30000);
 
@@ -188,9 +188,9 @@ namespace Caneda
     class RemoveItemsCmd : public QUndoCommand
     {
     public:
-        typedef QPair<CanedaItem*, QPointF> ItemPointPair;
+        typedef QPair<SchematicItem*, QPointF> ItemPointPair;
 
-        RemoveItemsCmd(const QList<CanedaItem*> &items, SchematicScene *scene,
+        RemoveItemsCmd(const QList<SchematicItem*> &items, SchematicScene *scene,
                 QUndoCommand *parent = 0);
         ~RemoveItemsCmd();
 
@@ -205,30 +205,30 @@ namespace Caneda
     class RotateItemsCmd : public QUndoCommand
     {
     public:
-        RotateItemsCmd(QList<CanedaItem*> items, const  Caneda::AngleDirection=Caneda::Clockwise,
+        RotateItemsCmd(QList<SchematicItem*> items, const  Caneda::AngleDirection=Caneda::Clockwise,
                 QUndoCommand *parent = 0);
-        RotateItemsCmd(CanedaItem *item, const  Caneda::AngleDirection=Caneda::Clockwise,
+        RotateItemsCmd(SchematicItem *item, const  Caneda::AngleDirection=Caneda::Clockwise,
                 QUndoCommand *parent = 0);
 
         void undo();
         void redo();
 
     protected:
-        QList<CanedaItem*> m_items;
+        QList<SchematicItem*> m_items;
         Caneda::AngleDirection m_angleDirection;
     };
 
     class MirrorItemsCmd : public QUndoCommand
     {
     public:
-        MirrorItemsCmd(QList<CanedaItem*> items, const Qt::Axis axis, QUndoCommand *parent = 0);
-        MirrorItemsCmd(CanedaItem *item, const Qt::Axis axis, QUndoCommand *parent = 0);
+        MirrorItemsCmd(QList<SchematicItem*> items, const Qt::Axis axis, QUndoCommand *parent = 0);
+        MirrorItemsCmd(SchematicItem *item, const Qt::Axis axis, QUndoCommand *parent = 0);
 
         void undo();
         void redo();
 
     protected:
-        QList<CanedaItem*> m_items;
+        QList<SchematicItem*> m_items;
         Qt::Axis m_axis;
     };
 

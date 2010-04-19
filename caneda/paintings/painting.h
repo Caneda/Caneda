@@ -40,16 +40,16 @@ namespace Caneda
      * The mouse functionalities corresponding to resize handles are also handled
      * by this class.
      */
-    class Painting : public CanedaItem
+    class Painting : public SchematicItem
     {
     public:
         enum {
             NoPaintingType = 0,
-            Type = CanedaItem::PaintingType
+            Type = SchematicItem::PaintingType
         };
 
         enum PaintingType {
-            ArrowType = CanedaItem::PaintingType + 1,
+            ArrowType = SchematicItem::PaintingType + 1,
             EllipseType,
             EllipseArcType,
             GraphicLineType,
@@ -62,7 +62,7 @@ namespace Caneda
         Painting(SchematicScene *scene = 0);
         ~Painting();
 
-        //! \copydoc CanedaItem::type()
+        //! \copydoc SchematicItem::type()
         int type() const { return Type; }
 
         /*!

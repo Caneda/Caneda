@@ -42,7 +42,6 @@ namespace Caneda
     class ComponentsSidebar;
     class FolderBrowser;
     class Project;
-    class CanedaItem;
     class CanedaView;
     class SchematicScene;
     class SchematicView;

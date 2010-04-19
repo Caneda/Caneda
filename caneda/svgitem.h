@@ -107,13 +107,13 @@ namespace Caneda
      *
      * \sa SvgPainter, SvgItem::registerConnections()
      */
-    class SvgItem : public QObject, public CanedaItem
+    class SvgItem : public QObject, public SchematicItem
     {
         Q_OBJECT
     public:
-        //! Item identifier. \sa CanedaItemTypes
+        //! Item identifier. \sa SchematicItemTypes
         enum {
-            Type = CanedaItem::SvgItemType
+            Type = SchematicItem::SvgItemType
         };
 
         explicit SvgItem(SvgPainter *_svgPainter = 0, SchematicScene *scene = 0);
