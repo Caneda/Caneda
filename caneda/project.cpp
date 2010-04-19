@@ -59,6 +59,8 @@ namespace Caneda
         QVBoxLayout *layout = new QVBoxLayout(this);
 
         QToolBar *toolbar = new QToolBar;
+        toolbar->setIconSize(QSize(15, 15));
+
         ActionManager* am = ActionManager::instance();
         toolbar->addAction(am->actionForName("projNew"));
         toolbar->addAction(am->actionForName("projOpen"));
