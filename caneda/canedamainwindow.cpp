@@ -34,6 +34,7 @@
 
 #include "dialogs/aboutdialog.h"
 #include "dialogs/exportdialog.h"
+#include "dialogs/projectfiledialog.h"
 #include "dialogs/printdialog.h"
 #include "dialogs/savedocumentsdialog.h"
 #include "dialogs/settingsdialog.h"
@@ -1079,10 +1080,15 @@ void CanedaMainWindow::closeEvent(QCloseEvent *e)
  */
 void CanedaMainWindow::slotFileNew()
 {
-    addView(new SchematicView(0, this));
+    if(!m_project->isValid()) {
+        addView(new SchematicView(0, this));
+    }
+    else {
+        slotAddToProject();
+    }
 }
 
-//! \brief Creates a new text(vhdl-verilog-simple) view.
+//! \brief Creates a new text view.
 void CanedaMainWindow::slotTextNew()
 {
     setNormalAction();
@@ -1099,9 +1105,15 @@ void CanedaMainWindow::slotFileOpen(QString fileName)
 {
     setNormalAction();
 
-    if(fileName == 0) {
+    if(fileName == 0 && !m_project->isValid()) {
         fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
                 Settings::instance()->currentValue("nosave/canedaFilter").toString());
+    }
+    else if(fileName == 0 && m_project->isValid()) {
+        ProjectFileDialog *p = new ProjectFileDialog(m_project->libraryFileName(), this);
+        if(p->result() == QDialog::Accepted) {
+            fileName = p->fileName();
+        }
     }
 
     if(!fileName.isEmpty()) {
