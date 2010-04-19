@@ -36,7 +36,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QToolBar>
-#include <QToolButton>
 #include <QVBoxLayout>
 
 namespace Caneda
