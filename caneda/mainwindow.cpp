@@ -216,11 +216,6 @@ namespace Caneda
     {
         SchematicStateHandler *handler = SchematicStateHandler::instance();
         m_project = new Project(this);
-        connect(m_project, SIGNAL(signalNewProject()), this, SLOT(slotNewProject()));
-        connect(m_project, SIGNAL(signalOpenProject()), this, SLOT(slotOpenProject()));
-        connect(m_project, SIGNAL(signalAddToProject()), this, SLOT(slotAddToProject()));
-        connect(m_project, SIGNAL(signalRemoveFromProject()), this, SLOT(slotRemoveFromProject()));
-        connect(m_project, SIGNAL(signalCloseProject()), this, SLOT(slotCloseProject()));
         connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
         connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,

@@ -55,11 +55,6 @@ namespace Caneda
         void slotCloseProject();
 
     signals:
-        void signalNewProject();
-        void signalOpenProject();
-        void signalAddToProject();
-        void signalRemoveFromProject();
-        void signalCloseProject();
         void itemClicked(const QString&, const QString&);
         void itemDoubleClicked(const QString& filename);
 
