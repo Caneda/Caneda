@@ -118,7 +118,7 @@ namespace Caneda
 
         ui.buttonBox->button(QDialogButtonBox::Save)->setText(tr("Save Selected"));
         ui.buttonBox->button(QDialogButtonBox::Discard)->setText(tr("Do not Save"));
-        ui.buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Abort"));
+        ui.buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
         populateItems();
 
