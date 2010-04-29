@@ -20,6 +20,7 @@
 #include "singletonmanager.h"
 
 #include "actionmanager.h"
+#include "documentviewmanager.h"
 #include "library.h"
 #include "schematicstatehandler.h"
 #include "svgitem.h"
@@ -30,6 +31,7 @@ namespace Caneda
     SingletonManager::SingletonManager(QObject *parent)
         : QObject(parent),
         m_actionManager(0),
+        m_documentViewManager(0),
         m_libraryLoader(0),
         m_schematicStateHandler(0),
         m_svgPainter(0)
@@ -46,6 +48,14 @@ namespace Caneda
             m_actionManager = new ActionManager(this);
         }
         return m_actionManager;
+    }
+
+    DocumentViewManager* SingletonManager::documentViewManager()
+    {
+        if (!m_documentViewManager) {
+            m_documentViewManager = new DocumentViewManager(this);
+        }
+        return m_documentViewManager;
     }
 
     LibraryLoader* SingletonManager::libraryLoader()

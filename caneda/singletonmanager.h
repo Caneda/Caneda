@@ -25,6 +25,7 @@
 namespace Caneda
 {
     class ActionManager;
+    class DocumentViewManager;
     class LibraryLoader;
     class SchematicStateHandler;
     class SvgPainter;
@@ -36,6 +37,7 @@ namespace Caneda
         ~SingletonManager();
 
         ActionManager* actionManager();
+        DocumentViewManager* documentViewManager();
         LibraryLoader* libraryLoader();
         SchematicStateHandler* schematicStateHandler();
         SvgPainter* svgPainter();
@@ -45,6 +47,7 @@ namespace Caneda
     private:
         SingletonManager(QObject *parent = 0);
         ActionManager *m_actionManager;
+        DocumentViewManager *m_documentViewManager;
         LibraryLoader *m_libraryLoader;
         SchematicStateHandler *m_schematicStateHandler;
         SvgPainter *m_svgPainter;

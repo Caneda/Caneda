@@ -30,6 +30,7 @@
 #include "schematicstatehandler.h"
 #include "schematicview.h"
 #include "settings.h"
+#include "tabs.h"
 #include "xmlsymbolformat.h"
 
 #include "dialogs/aboutdialog.h"

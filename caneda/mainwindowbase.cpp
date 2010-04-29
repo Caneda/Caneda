@@ -20,51 +20,16 @@
 #include "mainwindowbase.h"
 
 #include "caneda-tools/global.h"
-
+#include "tabs.h"
 #include "xmlutilities/transformers.h"
 #include "xmlutilities/validators.h"
 
 #include <QDockWidget>
-#include <QTabBar>
 #include <QToolButton>
 #include <QWheelEvent>
 
 namespace Caneda
 {
-
-    class TabBarPrivate : public QTabBar
-    {
-    public:
-        TabBarPrivate(QWidget *parent=0l) : QTabBar(parent)
-        {
-            setDrawBase(true);
-        }
-
-        ~TabBarPrivate() {}
-
-    protected:
-        void wheelEvent( QWheelEvent *ev )
-        {
-            if(count() > 1) {
-                int current = currentIndex();
-                if(ev->delta() < 0) {
-                    current = (current + 1) % count();
-                }
-                else {
-                    current--;
-                    if(current < 0 ) {
-                        current = count() - 1;
-                    }
-                }
-                setCurrentIndex( current );
-            }
-        }
-    };
-
-    TabWidgetPrivate::TabWidgetPrivate(QWidget *parent) : QTabWidget(parent)
-    {
-        setTabBar(new TabBarPrivate(this));
-    }
 
     //! Constructor
     MainWindowBase::MainWindowBase(QWidget *parent) : QMainWindow(parent)
@@ -80,7 +45,8 @@ namespace Caneda
 
     void MainWindowBase::addChildWidget(QWidget *widget)
     {
-        m_tabWidget->addTab(widget, widget->windowIcon(), widget->windowTitle());
+        static_cast<QTabWidget*>(m_tabWidget)->addTab(widget,
+                widget->windowIcon(), widget->windowTitle());
         if(m_tabWidget->count() == 1) {
             emit currentWidgetChanged(widget, 0);
         }
@@ -114,6 +80,16 @@ namespace Caneda
         addDockWidget(area, dw);
     }
 
+    TabWidget* MainWindowBase::tabWidget() const
+    {
+        return m_tabWidget;
+    }
+
+    QWidget* MainWindowBase::currentWidget() const
+    {
+        return m_tabWidget->currentWidget();
+    }
+
     void MainWindowBase::closeTab(int index)
     {
         removeChildWidget(m_tabWidget->widget(index), true);
@@ -128,7 +104,7 @@ namespace Caneda
 
     void MainWindowBase::setupTabWidget()
     {
-        m_tabWidget = new TabWidgetPrivate(this);
+        m_tabWidget = new TabWidget(this);
         m_tabWidget->setFocusPolicy(Qt::NoFocus);
         m_tabWidget->setTabsClosable(true);
         m_tabWidget->setMovable(true);

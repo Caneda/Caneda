@@ -21,17 +21,12 @@
 #define MAINWINDOWBASE_H
 
 #include <QMainWindow>
-#include <QTabWidget>
 
 class QToolButton;
 
 namespace Caneda
 {
-    class TabWidgetPrivate : public QTabWidget
-    {
-    public:
-        TabWidgetPrivate(QWidget *parent = 0);
-    };
+    class TabWidget;
 
     class MainWindowBase : public QMainWindow
     {
@@ -46,8 +41,8 @@ namespace Caneda
         void addAsDockWidget(QWidget *w, const QString& title = "",
                 Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
 
-        QTabWidget* tabWidget() const { return m_tabWidget; }
-        QWidget* currentWidget() const { return m_tabWidget->currentWidget(); }
+        TabWidget* tabWidget() const;
+        QWidget* currentWidget() const;
 
     signals:
         void currentWidgetChanged(QWidget *current, QWidget *prev);
@@ -63,7 +58,7 @@ namespace Caneda
     private:
         void setupTabWidget();
 
-        TabWidgetPrivate *m_tabWidget;
+        TabWidget* m_tabWidget;
         QWidget *m_lastCurrentWidget;
     };
 

@@ -22,6 +22,7 @@
 #include "mainwindow.h"
 #include "canedaview.h"
 #include "settings.h"
+#include "tabs.h"
 
 #include <QDebug>
 #include <QFileDialog>
