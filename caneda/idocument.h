@@ -11,8 +11,9 @@ namespace Caneda
     class IContext;
     class IView;
 
-    class IDocument
+    class IDocument : public QObject
     {
+        Q_OBJECT
     public:
         IDocument();
         virtual ~IDocument();
@@ -46,10 +47,9 @@ namespace Caneda
 
         //TODO: Print specific interface methods
 
-    // SIGNALS:
-    protected:
-        virtual void documentChanged() = 0;
-        virtual void statusBarMessage(const QString& text) = 0;
+    Q_SIGNALS:
+        void documentChanged();
+        void statusBarMessage(const QString& text);
 
         // Avoid private declarations as subclasses might need direct access.
     protected:

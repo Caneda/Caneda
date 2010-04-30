@@ -28,7 +28,7 @@ SET(CANEDA_MOC_HDRS schematicscene.h schematicview.h mainwindowbase.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
   propertydialog.h folderbrowser.h project.h
   actionmanager.h singletonmanager.h schematicstatehandler.h
-  documentviewmanager.h icontext.h tabs.h
+  documentviewmanager.h icontext.h idocument.h iview.h tabs.h
 )
 
 QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )

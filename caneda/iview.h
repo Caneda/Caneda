@@ -1,7 +1,7 @@
 #ifndef CANEDA_IVIEW_H
 #define CANEDA_IVIEW_H
 
-#include <QtGlobal>
+#include <QObject>
 
 // Forward declaration
 class QWidget;
@@ -13,8 +13,9 @@ namespace Caneda
     class IDocument;
     class DocumentViewManager;
 
-    class IView
+    class IView : public QObject
     {
+        Q_OBJECT
     public:
         IView(IDocument *document);
         virtual ~IView();
@@ -28,10 +29,9 @@ namespace Caneda
 
         virtual IView* duplicate() const = 0;
 
-    // SIGNALS:
-    protected:
-        virtual void focussedIn(IView *who) = 0;
-        virtual void closed(IView *who) = 0;
+    Q_SIGNALS:
+        void focussedIn(IView *who);
+        void closed(IView *who);
 
     protected:
         IDocument * const m_document;
