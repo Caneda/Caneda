@@ -102,7 +102,7 @@ namespace Caneda
         connect(this, SIGNAL(closedWidget(QWidget*)), this,
                 SLOT(slotViewClosed(QWidget*)));
 
-        SchematicView *view = new SchematicView(0, this);
+        SchematicWidget *view = new SchematicWidget(0, this);
         addView(view);
         m_undoGroup->setActiveStack(view->schematicScene()->undoStack());
         loadSettings();
@@ -143,7 +143,7 @@ namespace Caneda
         while(i < tabWidget()->count()) {
             view = viewFromWidget(tabWidget()->widget(i));
             if(QDir::toNativeSeparators(view->fileName()) == fileName &&
-                    view->toSchematicView()->schematicScene()->currentMode() == mode) {
+                    view->toSchematicWidget()->schematicScene()->currentMode() == mode) {
                 break;
             }
             view = 0;
@@ -156,8 +156,8 @@ namespace Caneda
         }
 
         if(info.suffix() == "xsch") {
-            view = new SchematicView(0, this);
-            view->toSchematicView()->schematicScene()->setMode(mode);
+            view = new SchematicWidget(0, this);
+            view->toSchematicWidget()->schematicScene()->setMode(mode);
         }  //TODO: create other views (text, simulation) here
         else {
             //Unrecognized file type
@@ -996,12 +996,12 @@ namespace Caneda
      */
     void MainWindow::addView(CanedaView *view)
     {
-        if(view->isSchematicView()) {
-            SchematicView *schematicView = view->toSchematicView();
+        if(view->isSchematicWidget()) {
+            SchematicWidget *schematicView = view->toSchematicWidget();
             SchematicScene *schema = schematicView->schematicScene();
             m_undoGroup->addStack(schema->undoStack());
-            // Register here and not in SchematicView constructor because here we
-            // can assume that SchematicView and its scene are completely constructed.
+            // Register here and not in SchematicWidget constructor because here we
+            // can assume that SchematicWidget and its scene are completely constructed.
             SchematicStateHandler *handler = SchematicStateHandler::instance();
             handler->registerView(schematicView);
 
@@ -1035,7 +1035,7 @@ namespace Caneda
         if (view) {
             connect(view->toWidget(), SIGNAL(titleToBeUpdated()), SLOT(updateTitleTabText()));
             updateTitleTabText();
-            SchematicView *currView = view->toSchematicView();
+            SchematicWidget *currView = view->toSchematicWidget();
             if (currView) {
                 connect(currView, SIGNAL(cursorPositionChanged(const QString&)),
                         SLOT(slotUpdateCursorPositionStatus(const QString&)));
@@ -1056,7 +1056,7 @@ namespace Caneda
      */
     void MainWindow::slotViewClosed(QWidget *widget)
     {
-        SchematicView *view = qobject_cast<SchematicView*>(widget);
+        SchematicWidget *view = qobject_cast<SchematicWidget*>(widget);
         if(view) {
             m_undoGroup->removeStack(view->schematicScene()->undoStack());
         }
@@ -1086,7 +1086,7 @@ namespace Caneda
     void MainWindow::slotFileNew()
     {
         if(!m_project->isValid()) {
-            addView(new SchematicView(0, this));
+            addView(new SchematicWidget(0, this));
         }
         else {
             slotAddToProject();
@@ -1224,8 +1224,8 @@ namespace Caneda
                 continue;
             }
 
-            SchematicScene *scene = view->isSchematicView() ?
-                view->toSchematicView()->schematicScene() : 0;
+            SchematicScene *scene = view->isSchematicWidget() ?
+                view->toSchematicWidget()->schematicScene() : 0;
 
             if (scene) {
                 if (!processedScenes.contains(scene)) {
@@ -1333,22 +1333,22 @@ namespace Caneda
         if(!currentView->fileName().isEmpty()) {
             QString fileName = currentView->fileName();
 
-            if(currentView->toSchematicView()->schematicScene()->currentMode() == Caneda::SchematicMode) {
+            if(currentView->toSchematicWidget()->schematicScene()->currentMode() == Caneda::SchematicMode) {
                 //First, we try to open the corresponding symbol file
                 bool isLoaded = gotoPage(fileName, Caneda::SymbolMode);
 
                 //If it's a new symbol, we create it
                 if(!isLoaded){
-                    addView(new SchematicView(0, this));
+                    addView(new SchematicWidget(0, this));
 
                     CanedaView *v = viewFromWidget(tabWidget()->currentWidget());
-                    SchematicScene *sc = v->toSchematicView()->schematicScene();
+                    SchematicScene *sc = v->toSchematicWidget()->schematicScene();
                     sc->setMode(Caneda::SymbolMode);
 
                     v->setFileName(fileName);
                 }
             }
-            else if(currentView->toSchematicView()->schematicScene()->currentMode() == Caneda::SymbolMode) {
+            else if(currentView->toSchematicWidget()->schematicScene()->currentMode() == Caneda::SymbolMode) {
                 gotoPage(fileName, Caneda::SchematicMode);
             }
         }
@@ -1360,7 +1360,7 @@ namespace Caneda
 
         if(tabWidget()->count() > 0){
             CanedaView *view = viewFromWidget(tabWidget()->currentWidget());
-            SchematicScene *scene = view->toSchematicView()->schematicScene();
+            SchematicScene *scene = view->toSchematicWidget()->schematicScene();
 
             PrintDialog *p = new PrintDialog(scene, this);
         }
@@ -1376,7 +1376,7 @@ namespace Caneda
         CanedaView *view = 0;
         while(i < tabWidget()->count()) {
             view = viewFromWidget(tabWidget()->widget(i));
-            SchematicScene *scene = view->toSchematicView()->schematicScene();
+            SchematicScene *scene = view->toSchematicWidget()->schematicScene();
             schemasToExport << scene;
 
             view = 0;
@@ -1409,7 +1409,7 @@ namespace Caneda
 
         if(tabWidget()->count() > 0){
             CanedaView *view = viewFromWidget(tabWidget()->currentWidget());
-            SchematicScene *scene = view->toSchematicView()->schematicScene();
+            SchematicScene *scene = view->toSchematicWidget()->schematicScene();
 
             QList<SettingsPage *> wantedPages;
             SettingsPage *page = new DocumentConfigurationPage(scene, this);
@@ -1456,7 +1456,7 @@ namespace Caneda
     {
         setNormalAction();
         CanedaView* v = viewFromWidget(tabWidget()->currentWidget());
-        foreach(QGraphicsItem* item, v->toSchematicView()->schematicScene()->items()) {
+        foreach(QGraphicsItem* item, v->toSchematicWidget()->schematicScene()->items()) {
             item->setSelected(true);
         }
     }
@@ -1482,7 +1482,7 @@ namespace Caneda
     //! \brief Align elements to grid
     void MainWindow::slotSnapToGrid(bool snap)
     {
-        SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+        SchematicWidget *view = qobject_cast<SchematicWidget*>(tabWidget()->currentWidget());
         if(view) {
             view->schematicScene()->setSnapToGrid(snap);
         }
@@ -1491,7 +1491,7 @@ namespace Caneda
     //! \brief Align selected elements appropriately based on \a alignment
     void MainWindow::alignElements(Qt::Alignment alignment)
     {
-        SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+        SchematicWidget *view = qobject_cast<SchematicWidget*>(tabWidget()->currentWidget());
         if(!view) {
             return;
         }
@@ -1531,7 +1531,7 @@ namespace Caneda
 
     void MainWindow::slotDistribHoriz()
     {
-        SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+        SchematicWidget *view = qobject_cast<SchematicWidget*>(tabWidget()->currentWidget());
         if(!view) {
             return;
         }
@@ -1544,7 +1544,7 @@ namespace Caneda
 
     void MainWindow::slotDistribVert()
     {
-        SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->currentWidget());
+        SchematicWidget *view = qobject_cast<SchematicWidget*>(tabWidget()->currentWidget());
         if(!view) {
             return;
         }
@@ -1949,7 +1949,7 @@ namespace Caneda
 
     void MainWindow::setTabTitle(const QString& title)
     {
-        SchematicView *view = qobject_cast<SchematicView*>(sender());
+        SchematicWidget *view = qobject_cast<SchematicWidget*>(sender());
         if(!view || title.isEmpty()) {
             return;
         }
@@ -1961,7 +1961,7 @@ namespace Caneda
 
     CanedaView* MainWindow::viewFromWidget(QWidget *widget)
     {
-        SchematicView *v = qobject_cast<SchematicView*>(widget);
+        SchematicWidget *v = qobject_cast<SchematicWidget*>(widget);
         if(v) {
             return static_cast<CanedaView*>(v);
         }
@@ -1992,7 +1992,7 @@ namespace Caneda
     void MainWindow::slotUpdateAllViews()
     {
         for (int i = 0; i < tabWidget()->count(); ++i) {
-            SchematicView *view = qobject_cast<SchematicView*>(tabWidget()->widget(i));
+            SchematicWidget *view = qobject_cast<SchematicWidget*>(tabWidget()->widget(i));
             if (view) {
                 if (view->scene()) {
                     view->scene()->invalidate();

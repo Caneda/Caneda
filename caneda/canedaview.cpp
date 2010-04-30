@@ -78,7 +78,7 @@ namespace Caneda
         return load();
     }
 
-    SchematicView* CanedaView::toSchematicView() const
+    SchematicWidget* CanedaView::toSchematicWidget() const
     {
         return 0;
     }

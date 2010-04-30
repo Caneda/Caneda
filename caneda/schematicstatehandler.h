@@ -27,7 +27,7 @@ namespace Caneda
     // Forward declarations.
     class SchematicStateHandlerPrivate;
     class SchematicScene;
-    class SchematicView;
+    class SchematicWidget;
     class SingletonManager;
 
     class SchematicStateHandler : public QObject
@@ -37,8 +37,8 @@ namespace Caneda
         static SchematicStateHandler* instance();
         ~SchematicStateHandler();
 
-        void registerView(SchematicView *view);
-        void unregisterView(SchematicView *view);
+        void registerView(SchematicWidget *view);
+        void unregisterView(SchematicWidget *view);
 
 
     public Q_SLOTS:
@@ -47,7 +47,7 @@ namespace Caneda
         void slotRotateInsertibles();
         void slotMirrorInsertibles();
         void slotOnObjectDestroyed(QObject *sender);
-        void slotUpdateFocussedView(SchematicView *view);
+        void slotUpdateFocussedView(SchematicWidget *view);
         void slotPerformToggleAction(const QString& sender, bool on);
         void slotSetNormalAction();
         void slotInsertToolbarComponent(const QString& action, bool on);
@@ -57,8 +57,8 @@ namespace Caneda
         friend class SingletonManager;
         SchematicStateHandler(QObject *parent = 0);
 
-        void applyCursor(SchematicView *view);
-        void applyState(SchematicView *view);
+        void applyCursor(SchematicWidget *view);
+        void applyState(SchematicWidget *view);
         void applyStateToAllViews();
 
         SchematicStateHandlerPrivate *d;

@@ -30,14 +30,14 @@ namespace Caneda
     class SchematicItem;
     class SchematicScene;
 
-    class SchematicView : public QGraphicsView, public CanedaView
+    class SchematicWidget : public QGraphicsView, public CanedaView
     {
     Q_OBJECT
     public:
         static const qreal zoomFactor;
 
-        SchematicView(SchematicScene *sc = 0,QWidget *parent = 0);
-        ~SchematicView();
+        SchematicWidget(SchematicScene *sc = 0,QWidget *parent = 0);
+        ~SchematicWidget();
 
         SchematicScene* schematicScene() const;
 
@@ -54,10 +54,10 @@ namespace Caneda
         void showAll();
         void showNoZoom();
 
-        bool isSchematicView() const { return true; }
+        bool isSchematicWidget() const { return true; }
 
         QWidget* toWidget() const;
-        SchematicView* toSchematicView() const;
+        SchematicWidget* toSchematicWidget() const;
 
         bool isModified() const;
 
@@ -76,7 +76,7 @@ namespace Caneda
         void fileNameChanged(const QString& file);
         void titleToBeUpdated();
         void cursorPositionChanged(const QString& newPos);
-        void focussed(SchematicView *view);
+        void focussed(SchematicWidget *view);
         void pasteInvoked();
 
     protected:

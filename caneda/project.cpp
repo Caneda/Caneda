@@ -157,7 +157,7 @@ namespace Caneda
                                                                     "", tr("Component-xml (*.xsch)"));
 
                     if(!sourceFileName.isEmpty()) {
-                        CanedaView *viewFile = new SchematicView(0, this);
+                        CanedaView *viewFile = new SchematicWidget(0, this);
                         if(!viewFile->load(sourceFileName)) {
                             QMessageBox::critical(this, tr("Error"),
                                                   tr("Could not open file!"));
@@ -184,7 +184,7 @@ namespace Caneda
                         return;
                     }
 
-                    CanedaView *viewFile = new SchematicView(0, this);
+                    CanedaView *viewFile = new SchematicWidget(0, this);
                     viewFile->setFileName(fileName);
                     if(!viewFile->save()) {
                         QMessageBox::critical(this, tr("Error"),
@@ -198,13 +198,13 @@ namespace Caneda
                 }
 
                 //We generate the corresponding symbol
-                CanedaView *view = new SchematicView(0, this);
+                CanedaView *view = new SchematicWidget(0, this);
                 view->setFileName(fileName);
-                view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
+                view->toSchematicWidget()->schematicScene()->setMode(Caneda::SymbolMode);
 
                 fileName.replace(".xsch",".xsym");
                 view->setFileName(fileName);
-                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
+                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicWidget()->schematicScene());
                 symbol->save();
 
                 //Now we load the new component in the library
@@ -244,7 +244,7 @@ namespace Caneda
                         QFile::remove(fileName + ".xsch");
                         QFile::remove(fileName + ".xsym");
                         QFile::remove(fileName + ".svg");
-                        
+
                         projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
                         projectLibrary->saveLibrary();
                         m_projectsSidebar->unPlugLibrary(m_libraryName, "root");

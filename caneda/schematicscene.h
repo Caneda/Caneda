@@ -43,7 +43,7 @@ namespace Caneda
     // Forward declarations
     class Component;
     class Wire;
-    class SchematicView;
+    class SchematicWidget;
 
     enum Mode {
         SchematicMode,

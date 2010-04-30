@@ -31,7 +31,7 @@ class QWidget;
 namespace Caneda
 {
     // Forward declarations
-    class SchematicView;
+    class SchematicWidget;
 
     class CanedaView
     {
@@ -52,10 +52,10 @@ namespace Caneda
         virtual void showAll() = 0;
         virtual void showNoZoom() = 0;
 
-        virtual bool isSchematicView() const = 0;
+        virtual bool isSchematicWidget() const = 0;
 
         virtual QWidget* toWidget() const = 0;
-        virtual SchematicView* toSchematicView() const;
+        virtual SchematicWidget* toSchematicWidget() const;
         //TODO: Add other view convienience methods
 
         virtual bool isModified() const = 0;

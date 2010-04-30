@@ -44,7 +44,7 @@ namespace Caneda
     class Project;
     class CanedaView;
     class SchematicScene;
-    class SchematicView;
+    class SchematicWidget;
 
     class MainWindow : public MainWindowBase
     {

@@ -926,7 +926,7 @@ namespace Caneda
         if(event->mimeData()->formats().contains("application/caneda.sidebarItem")) {
             event->accept();
             QWidget *parentWidget = event->widget() ? event->widget()->parentWidget() : 0;
-            SchematicView *view = qobject_cast<SchematicView*>(parentWidget);
+            SchematicWidget *view = qobject_cast<SchematicWidget*>(parentWidget);
             if (!view) {
                 event->ignore();
                 return;
@@ -1028,7 +1028,7 @@ namespace Caneda
     void SchematicScene::wheelEvent(QGraphicsSceneWheelEvent *e)
     {
         QGraphicsView *v = static_cast<QGraphicsView *>(e->widget()->parent());
-        SchematicView *sv = qobject_cast<SchematicView*>(v);
+        SchematicWidget *sv = qobject_cast<SchematicWidget*>(v);
         if(!sv) {
             return;
         }
@@ -2111,7 +2111,7 @@ namespace Caneda
     void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
     {
         QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
-        SchematicView *sv = qobject_cast<SchematicView*>(v);
+        SchematicWidget *sv = qobject_cast<SchematicWidget*>(v);
         if(!sv) {
             return;
         }
@@ -2179,7 +2179,7 @@ namespace Caneda
     void SchematicScene::zoomingOutAtPointEvent(MouseActionEvent *event)
     {
         QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
-        SchematicView *sv = qobject_cast<SchematicView*>(v);
+        SchematicWidget *sv = qobject_cast<SchematicWidget*>(v);
         if(!sv) {
             return;
         }

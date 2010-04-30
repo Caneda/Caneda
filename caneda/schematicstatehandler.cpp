@@ -77,9 +77,9 @@ namespace Caneda
         Painting *paintingDrawItem;
 
         QSet<SchematicScene*> scenes;
-        QSet<SchematicView*> views;
+        QSet<SchematicWidget*> views;
 
-        QPointer<SchematicView> focussedView;
+        QPointer<SchematicWidget> focussedView;
         QHash<QString, SchematicItem*> toolbarInsertibles;
     };
 
@@ -124,7 +124,7 @@ namespace Caneda
         delete d;
     }
 
-    void SchematicStateHandler::registerView(SchematicView *view)
+    void SchematicStateHandler::registerView(SchematicWidget *view)
     {
         SchematicScene *scene = view->schematicScene();
         if (!scene) {
@@ -134,8 +134,8 @@ namespace Caneda
         if (!d->views.contains(view)) {
             d->views << view;
             connect(view, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
-            connect(view, SIGNAL(focussed(SchematicView*)),
-                    SLOT(slotUpdateFocussedView(SchematicView*)));
+            connect(view, SIGNAL(focussed(SchematicWidget*)),
+                    SLOT(slotUpdateFocussedView(SchematicWidget*)));
             connect(view, SIGNAL(pasteInvoked()), SLOT(slotHandlePaste()));
         }
 
@@ -149,7 +149,7 @@ namespace Caneda
         }
     }
 
-    void SchematicStateHandler::unregisterView(SchematicView *view)
+    void SchematicStateHandler::unregisterView(SchematicWidget *view)
     {
         if (!view) {
             return;
@@ -157,8 +157,8 @@ namespace Caneda
         if (d->views.contains(view)) {
             d->views.remove(view);
             disconnect(view, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
-            disconnect(view, SIGNAL(focussed(SchematicView*)), this,
-                    SLOT(slotUpdateFocussedView(SchematicView*)));
+            disconnect(view, SIGNAL(focussed(SchematicWidget*)), this,
+                    SLOT(slotUpdateFocussedView(SchematicWidget*)));
             disconnect(view, SIGNAL(pasteInvoked()), this, SLOT(slotHandlePaste()));
         }
 
@@ -313,14 +313,14 @@ namespace Caneda
         //      Using of these pointers to access any method or variable will result
         //      in ugly crash!!
         SchematicScene *scene = static_cast<SchematicScene*>(object);
-        SchematicView *view = static_cast<SchematicView*>(object);
+        SchematicWidget *view = static_cast<SchematicWidget*>(object);
 
 
         d->scenes.remove(scene);
         d->views.remove(view);
     }
 
-    void SchematicStateHandler::slotUpdateFocussedView(SchematicView *view)
+    void SchematicStateHandler::slotUpdateFocussedView(SchematicWidget *view)
     {
         d->focussedView = view;
     }
@@ -442,7 +442,7 @@ namespace Caneda
         d->updateToolbarInsertibles();
     }
 
-    void SchematicStateHandler::applyCursor(SchematicView *view)
+    void SchematicStateHandler::applyCursor(SchematicWidget *view)
     {
         static QString bitmapPath = Caneda::bitmapDirectory();
         QCursor cursor;
@@ -491,7 +491,7 @@ namespace Caneda
         view->setCursor(cursor);
     }
 
-    void SchematicStateHandler::applyState(SchematicView *view)
+    void SchematicStateHandler::applyState(SchematicWidget *view)
     {
         applyCursor(view);
         SchematicScene *scene = view->schematicScene();
@@ -518,7 +518,7 @@ namespace Caneda
 
     void SchematicStateHandler::applyStateToAllViews()
     {
-        foreach (SchematicView *view, d->views) {
+        foreach (SchematicWidget *view, d->views) {
             applyState(view);
         }
     }
