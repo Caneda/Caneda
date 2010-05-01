@@ -28,7 +28,6 @@
 namespace Caneda
 {
     // Forward declarations
-    class SingletonManager;
     class SvgPainter;
 
     /*!
@@ -92,7 +91,6 @@ namespace Caneda
         static SvgPainter* instance();
 
     private:
-        friend class SingletonManager;
         SvgPainter(QObject *parent = 0);
         QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
         bool m_cachingEnabled; //!< State to hold whether caching is enabled or not.

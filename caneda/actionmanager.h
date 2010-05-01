@@ -25,8 +25,6 @@
 
 #include "schematicscene.h"
 
-class SingletonManager;
-
 namespace Caneda
 {
 
@@ -74,7 +72,6 @@ namespace Caneda
 
 
     private:
-        friend class SingletonManager;
         ActionManager(QObject *parent = 0);
 
         QHash<QString, Action*> m_actionHash;

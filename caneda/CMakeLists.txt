@@ -18,7 +18,7 @@ SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   propertygroup.cpp component.cpp port.cpp library.cpp
   xmlformat.cpp mnemo.cpp propertydialog.cpp
   wireline.cpp folderbrowser.cpp xmlsymbolformat.cpp settings.cpp
-  actionmanager.cpp singletonmanager.cpp project.cpp
+  actionmanager.cpp singletonowner.cpp project.cpp
   schematicstatehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp
 )
@@ -27,7 +27,7 @@ SET(CANEDA_MOC_HDRS schematicscene.h schematicview.h mainwindowbase.h
   mainwindow.h componentssidebar.h svgitem.h library.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
   propertydialog.h folderbrowser.h project.h
-  actionmanager.h singletonmanager.h schematicstatehandler.h
+  actionmanager.h singletonowner.h schematicstatehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
 )
 

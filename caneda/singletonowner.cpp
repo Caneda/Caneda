@@ -17,41 +17,24 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SINGLETONMANAGER_H
-#define SINGLETONMANAGER_H
-
-#include <QObject>
+#include "singletonowner.h"
 
 namespace Caneda
 {
-    class ActionManager;
-    class DocumentViewManager;
-    class LibraryLoader;
-    class SchematicStateHandler;
-    class SvgPainter;
 
-    class SingletonManager : public QObject
+    SingletonOwner::SingletonOwner(QObject *parent)
+        : QObject(parent)
     {
-        Q_OBJECT
-    public:
-        ~SingletonManager();
+    }
 
-        ActionManager* actionManager();
-        DocumentViewManager* documentViewManager();
-        LibraryLoader* libraryLoader();
-        SchematicStateHandler* schematicStateHandler();
-        SvgPainter* svgPainter();
+    SingletonOwner::~SingletonOwner()
+    {
+    }
 
-        static SingletonManager* instance();
+    SingletonOwner* SingletonOwner::instance()
+    {
+        static SingletonOwner* sm = new SingletonOwner();
+        return sm;
+    }
 
-    private:
-        SingletonManager(QObject *parent = 0);
-        ActionManager *m_actionManager;
-        DocumentViewManager *m_documentViewManager;
-        LibraryLoader *m_libraryLoader;
-        SchematicStateHandler *m_schematicStateHandler;
-        SvgPainter *m_svgPainter;
-    };
 } // namespace Caneda
-
-#endif // SINGLETONMANAGER_H

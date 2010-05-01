@@ -20,7 +20,7 @@
 #include "svgitem.h"
 
 #include "schematicscene.h"
-#include "singletonmanager.h"
+#include "singletonowner.h"
 
 #include <QDebug>
 #include <QFile>
@@ -263,7 +263,11 @@ namespace Caneda
      */
     SvgPainter* SvgPainter::instance()
     {
-        return SingletonManager::instance()->svgPainter();
+        static SvgPainter *instance = 0;
+        if (!instance) {
+            instance = new SvgPainter(SingletonOwner::instance());
+        }
+        return instance;
     }
 
 

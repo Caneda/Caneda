@@ -17,51 +17,24 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SCHEMATICSTATEHANDLER_H
-#define SCHEMATICSTATEHANDLER_H
+#ifndef CANEDA_SINGLETONOWNER_H
+#define CANEDA_SINGLETONOWNER_H
 
 #include <QObject>
 
 namespace Caneda
 {
-    // Forward declarations.
-    class SchematicStateHandlerPrivate;
-    class SchematicScene;
-    class SchematicWidget;
-
-    class SchematicStateHandler : public QObject
+    class SingletonOwner : public QObject
     {
         Q_OBJECT
     public:
-        static SchematicStateHandler* instance();
-        ~SchematicStateHandler();
+        ~SingletonOwner();
 
-        void registerView(SchematicWidget *view);
-        void unregisterView(SchematicWidget *view);
-
-
-    public Q_SLOTS:
-        void slotSidebarItemClicked(const QString& item, const QString& category);
-        void slotHandlePaste();
-        void slotRotateInsertibles();
-        void slotMirrorInsertibles();
-        void slotOnObjectDestroyed(QObject *sender);
-        void slotUpdateFocussedView(SchematicWidget *view);
-        void slotPerformToggleAction(const QString& sender, bool on);
-        void slotSetNormalAction();
-        void slotInsertToolbarComponent(const QString& action, bool on);
-        void slotUpdateToolbarInsertibles();
+        static SingletonOwner* instance();
 
     private:
-        SchematicStateHandler(QObject *parent = 0);
-
-        void applyCursor(SchematicWidget *view);
-        void applyState(SchematicWidget *view);
-        void applyStateToAllViews();
-
-        SchematicStateHandlerPrivate *d;
+        SingletonOwner(QObject *parent = 0);
     };
-
 } // namespace Caneda
 
-#endif // SCHEMATICSTATEHANDLER_H
+#endif // CANEDA_SINGLETONOWNER_H

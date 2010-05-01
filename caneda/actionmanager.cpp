@@ -19,7 +19,7 @@
 
 #include "actionmanager.h"
 
-#include "singletonmanager.h"
+#include "singletonowner.h"
 
 namespace Caneda
 {
@@ -63,7 +63,11 @@ namespace Caneda
 
     ActionManager* ActionManager::instance()
     {
-        return SingletonManager::instance()->actionManager();
+        static ActionManager *instance = 0;
+        if (!instance) {
+            instance = new ActionManager(SingletonOwner::instance());
+        }
+        return instance;
     }
 
     ActionManager::ActionManager(QObject *parent) : QObject(parent)

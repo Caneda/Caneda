@@ -24,7 +24,7 @@
 #include "schematicscene.h"
 #include "schematicview.h"
 #include "settings.h"
-#include "singletonmanager.h"
+#include "singletonowner.h"
 #include "undocommands.h"
 
 #include "paintings/painting.h"
@@ -116,7 +116,11 @@ namespace Caneda
 
     SchematicStateHandler* SchematicStateHandler::instance()
     {
-        return SingletonManager::instance()->schematicStateHandler();
+        static SchematicStateHandler *instance = 0;
+        if (!instance) {
+            instance = new SchematicStateHandler(SingletonOwner::instance());
+        }
+        return instance;
     }
 
     SchematicStateHandler::~SchematicStateHandler()

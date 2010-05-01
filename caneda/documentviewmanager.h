@@ -9,7 +9,6 @@ namespace Caneda
     class IContext;
     class IDocument;
     class IView;
-    class SingletonManager;
     class TabWidget;
 
     class DocumentViewManager : public QObject
@@ -53,8 +52,6 @@ namespace Caneda
 
         QList<DocumentData*> m_documentDataList;
         QList<IContext*> m_contexts;
-
-        friend class SingletonManager;
     };
 } // namespace Caneda
 

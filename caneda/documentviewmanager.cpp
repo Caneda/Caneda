@@ -4,7 +4,7 @@
 #include "idocument.h"
 #include "iview.h"
 #include "mainwindow.h"
-#include "singletonmanager.h"
+#include "singletonowner.h"
 #include "tabs.h"
 
 #include <QDebug>
@@ -33,7 +33,11 @@ namespace Caneda
 
     DocumentViewManager* DocumentViewManager::instance()
     {
-        return SingletonManager::instance()->documentViewManager();
+        static DocumentViewManager* instance = 0;
+        if (!instance) {
+            instance = new DocumentViewManager(SingletonOwner::instance());
+        }
+        return instance;
     }
 
     void DocumentViewManager::highlightView(IView *view)
