@@ -22,7 +22,6 @@
 #include "component.h"
 #include "propertygroup.h"
 #include "schematicscene.h"
-#include "schematicview.h"
 #include "undocommands.h"
 
 #include <QApplication>

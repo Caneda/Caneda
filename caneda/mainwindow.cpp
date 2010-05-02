@@ -28,7 +28,7 @@
 #include "project.h"
 #include "schematicscene.h"
 #include "schematicstatehandler.h"
-#include "schematicview.h"
+#include "schematicwidget.h"
 #include "settings.h"
 #include "tabs.h"
 #include "xmlsymbolformat.h"

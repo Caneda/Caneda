@@ -21,7 +21,6 @@
 
 #include "port.h"
 #include "schematicscene.h"
-#include "schematicview.h"
 #include "undocommands.h"
 
 #include "caneda-tools/global.h"

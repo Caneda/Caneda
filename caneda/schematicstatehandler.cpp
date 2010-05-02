@@ -22,7 +22,7 @@
 #include "actionmanager.h"
 #include "library.h"
 #include "schematicscene.h"
-#include "schematicview.h"
+#include "schematicwidget.h"
 #include "settings.h"
 #include "singletonowner.h"
 #include "undocommands.h"

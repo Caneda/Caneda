@@ -26,7 +26,7 @@
 #include "library.h"
 #include "canedaview.h"
 #include "schematicscene.h"
-#include "schematicview.h"
+#include "schematicwidget.h"
 #include "xmlsymbolformat.h"
 
 #include "dialogs/addtoprojectdialog.h"

@@ -22,7 +22,7 @@
 #include "component.h"
 #include "item.h"
 #include "schematicscene.h"
-#include "schematicview.h"
+#include "schematicwidget.h"
 #include "settings.h"
 
 #include "caneda-tools/global.h"

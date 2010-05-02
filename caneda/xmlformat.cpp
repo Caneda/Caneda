@@ -23,7 +23,7 @@
 #include "item.h"
 #include "port.h"
 #include "schematicscene.h"
-#include "schematicview.h"
+#include "schematicwidget.h"
 #include "wire.h"
 #include "wireline.h"
 

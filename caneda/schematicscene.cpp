@@ -24,7 +24,7 @@
 #include "library.h"
 #include "port.h"
 #include "propertygroup.h"
-#include "schematicview.h"
+#include "schematicwidget.h"
 #include "settings.h"
 #include "undocommands.h"
 #include "wire.h"
