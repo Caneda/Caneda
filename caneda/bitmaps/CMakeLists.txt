@@ -1,5 +1,16 @@
 # toolbar pictures
-SET(PNGS  align-horizontal-center.png configure.png filenew.png mirror.png select-all.png textunder.png align-horizontal-left.png deactiv.png fileopen.png mirrory.png sub.png align-horizontal-right.png document-edit.png fileprint.png next.png super.png align-vertical-bottom.png document-preview.png filesaveall.png nodename.png switch-view.png tools-wizard.png align-vertical-center.png editcopy.png filesaveas.png pointer.png symbol-edit.png top.png align-vertical-top.png editcut.png filesave.png port.png textbold.png undo.png application-exit.png editdelete.png forward.png previous.png textcenter.png vhdl-code.png arrow.svg editfind.png ground.png       project-new.png viewmag1.png back.png editpaste.png help.png qt.png textitalic.png viewmagfit.png ellipsearc.svg home.png caneda.png textjustify.png viewmag-.png ellipse.svg library.png textleft.png viewmag+.png bottom.png equation.png line.svg rectangle.svg textnew.png wire.png clearFilterText.png export-image.png redo.png textright.png fileclose.png marker.png rotate_ccw.png text.svg pause.png start.png stop.png object-locked.png object-unlocked.png printer.png eps.png pdf.png foldernew.png filedelete.png project-close.png console.png cursordelete.png splash.jpg)
+SET(PNGS  align-horizontal-center.png dialog-close.png draw-eraser.png forward.png object-flip-horizontal.png qt.png text-plain.png
+align-horizontal-left.png distribute-horizontal-center.png draw-freehand.png go-bottom.png object-flip-vertical.png select-rectangular.png textright.png
+align-horizontal-right.png distribute-vertical-center.png edit-copy.png go-top.png object-locked.png stop.png textunder.png
+align-vertical-bottom.png document-close.png edit-delete.png ground.png object-rotate-left.png sub.png tools-wizard.png
+align-vertical-center.png document-new.png edit-find.png help-contents.png object-unlocked.png super.png wire.png
+align-vertical-top.png document-open.png edit-redo.png home.png pause.png system-switch-user.png zoom-fit-best.png
+application-exit.png document-preview.png edit-select.png image-x-generic.png pdf.png terminal.png zoom-in.png
+back.png document-print.png edit-undo.png edit-cut.png edit-paste.png library.png port.png textbold.png zoom-original.png
+caneda.png document-properties.png eps.png marker.png preferences-other.png textcenter.png zoom-out.png
+clearFilterText.png document-save-all.png filedelete.png media-playback-start.png previous.png textitalic.png
+code-context.png document-save-as.png foldernew.png next.png printer.png textjustify.png
+deactiv.png document-save.png formula.png nodename.png project-new.png textleft.png arrow.svg ellipsearc.svg ellipse.svg line.svg rectangle.svg text.svg splash.jpg)
 
 # application pictures
 SET(ICONS  big.button.caneda.xpm big.caneda.xpm tiny.button.caneda.xpm tiny.caneda.xpm )

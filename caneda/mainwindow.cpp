@@ -257,10 +257,10 @@ namespace Caneda
         viewMenu->addAction(sidebarDockWidget->toggleViewAction());
     }
 
-    static QIcon icon(const QString& filename)
+    static QIcon icon(const QString& iconName)
     {
         static QString bitmapPath = Caneda::bitmapDirectory();
-        return QIcon(bitmapPath + filename);
+        return QIcon(bitmapPath + iconName);
     }
 
     Action* MainWindow::action(const QString& name)
@@ -283,65 +283,65 @@ namespace Caneda
         ActionManager *am = ActionManager::instance();
         SchematicStateHandler *handler = SchematicStateHandler::instance();
 
-        action = am->createAction("fileNew", icon("filenew.png"), tr("&New"));
+        action = am->createAction("fileNew", icon("document-new.png"), tr("&New"));
         action->setShortcut(CTRL+Key_N);
         action->setStatusTip(tr("Creates a new document"));
         action->setWhatsThis(tr("New\n\nCreates a new schematic or data display document"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileNew()));
 
-        action = am->createAction("textNew", icon("textnew.png"), tr("New &Text"));
+        action = am->createAction("textNew", icon("text-plain.png"), tr("New &Text"));
         action->setShortcut(CTRL+SHIFT+Key_V);
         action->setStatusTip(tr("Creates a new text document"));
         action->setWhatsThis(tr("New Text\n\nCreates a new text document"));
         connect(action, SIGNAL(triggered()), SLOT(slotTextNew()));
 
-        action = am->createAction("fileOpen", icon("fileopen.png"), tr("&Open..."));
+        action = am->createAction("fileOpen", icon("document-open.png"), tr("&Open..."));
         action->setShortcut(CTRL+Key_O);
         action->setStatusTip(tr("Opens an existing document"));
         action->setWhatsThis(tr("Open File\n\nOpens an existing document"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileOpen()));
 
-        action = am->createAction("fileSave", icon("filesave.png"), tr("&Save"));
+        action = am->createAction("fileSave", icon("document-save.png"), tr("&Save"));
         action->setShortcut(CTRL+Key_S);
         action->setStatusTip(tr("Saves the current document"));
         action->setWhatsThis(tr("Save File\n\nSaves the current document"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileSaveCurrent()));
 
-        action = am->createAction("fileSaveAs", icon("filesaveas.png"), tr("Save as..."));
+        action = am->createAction("fileSaveAs", icon("document-save-as.png"), tr("Save as..."));
         action->setShortcut(CTRL+SHIFT+Key_S);
         action->setStatusTip(tr("Saves the current document under a new filename"));
         action->setWhatsThis(tr("Save As\n\nSaves the current document under a new filename"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileSaveAsCurrent()));
 
-        action = am->createAction("fileSaveAll", icon("filesaveall.png"), tr("Save &All"));
+        action = am->createAction("fileSaveAll", icon("document-save-all.png"), tr("Save &All"));
         action->setShortcut(CTRL+Key_Plus);
         action->setStatusTip(tr("Saves all open documents"));
         action->setWhatsThis(tr("Save All Files\n\nSaves all open documents"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileSaveAll()));
 
-        action = am->createAction("fileClose", icon("fileclose.png"), tr("&Close"));
+        action = am->createAction("fileClose", icon("document-close.png"), tr("&Close"));
         action->setShortcut(CTRL+Key_W);
         action->setStatusTip(tr("Closes the current document"));
         action->setWhatsThis(tr("Close File\n\nCloses the current document"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileCloseCurrent()));
 
-        action = am->createAction("filePrint", icon("fileprint.png"), tr("&Print..."));
+        action = am->createAction("filePrint", icon("document-print.png"), tr("&Print..."));
         action->setShortcut(CTRL+Key_P);
         action->setStatusTip(tr("Prints the current document"));
         action->setWhatsThis(tr("Print File\n\nPrints the current document"));
         connect(action, SIGNAL(triggered()), SLOT(slotFilePrint()));
 
-        action = am->createAction("exportImage", icon("export-image.png"), tr("&Export Image..."));
+        action = am->createAction("exportImage", icon("image-x-generic.png"), tr("&Export Image..."));
         action->setShortcut(CTRL+Key_E);
         action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
         connect(action, SIGNAL(triggered()), SLOT(slotExportImage()));
 
-        action = am->createAction("fileSettings", icon("document-edit.png"), tr("&Document Settings..."));
+        action = am->createAction("fileSettings", icon("document-properties.png"), tr("&Document Settings..."));
         action->setShortcut(CTRL+Key_Period);
         action->setWhatsThis(tr("Settings\n\nSets properties of the file"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileSettings()));
 
-        action = am->createAction("applSettings", icon("configure.png"), tr("Application Settings..."));
+        action = am->createAction("applSettings", icon("preferences-other.png"), tr("Application Settings..."));
         action->setShortcut(CTRL+Key_Comma);
         action->setWhatsThis(tr("Caneda Settings\n\nSets properties of the application"));
         connect(action, SIGNAL(triggered()), SLOT(slotApplSettings()));
@@ -352,66 +352,66 @@ namespace Caneda
         action->setWhatsThis(tr("Exit\n\nQuits the application"));
         connect(action, SIGNAL(triggered()), SLOT(close()));
 
-        action = am->createAction("undo", icon("undo.png"), tr("&Undo"));
+        action = am->createAction("undo", icon("edit-undo.png"), tr("&Undo"));
         action->setShortcut(CTRL+Key_Z);
         action->setStatusTip(tr("Undoes the last command"));
         action->setWhatsThis(tr("Undo\n\nMakes the last action undone"));
         connect(action, SIGNAL(triggered()), m_undoGroup, SLOT(undo()));
 
-        action = am->createAction("redo", icon("redo.png"), tr("&Redo"));
+        action = am->createAction("redo", icon("edit-redo.png"), tr("&Redo"));
         action->setShortcut(CTRL+SHIFT+Key_Z);
         action->setStatusTip(tr("Redoes the last command"));
         action->setWhatsThis(tr("Redo\n\nRepeats the last action once more"));
         connect(action, SIGNAL(triggered()), m_undoGroup, SLOT(redo()));
 
-        action = am->createAction("editCut", icon("editcut.png"), tr("Cu&t"));
+        action = am->createAction("editCut", icon("edit-cut.png"), tr("Cu&t"));
         action->setShortcut(CTRL+Key_X);
         action->setStatusTip(tr("Cuts out the selection and puts it into the clipboard"));
         action->setWhatsThis(tr("Cut\n\nCuts out the selection and puts it into the clipboard"));
         connect(action, SIGNAL(triggered()), SLOT(slotEditCut()));
 
-        action = am->createAction("editCopy", icon("editcopy.png"), tr("&Copy"));
+        action = am->createAction("editCopy", icon("edit-copy.png"), tr("&Copy"));
         action->setShortcut(CTRL+Key_C);
         action->setStatusTip(tr("Copies the selection into the clipboard"));
         action->setWhatsThis(tr("Copy\n\nCopies the selection into the clipboard"));
         connect(action, SIGNAL(triggered()), SLOT(slotEditCopy()));
 
-        action = am->createAction("editPaste", icon("editpaste.png"), tr("&Paste"));
+        action = am->createAction("editPaste", icon("edit-paste.png"), tr("&Paste"));
         action->setShortcut(CTRL+Key_V);
         action->setStatusTip(tr("Pastes the clipboard contents to the cursor position"));
         action->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to the cursor position"));
         connect(action, SIGNAL(triggered()), SLOT(slotEditPaste()));
 
-        action = am->createAction("selectAll", icon("select-all.png"), tr("Select All"));
+        action = am->createAction("selectAll", icon("select-rectangular.png"), tr("Select All"));
         action->setShortcut(CTRL+Key_A);
         action->setStatusTip(tr("Selects all elements"));
         action->setWhatsThis(tr("Select All\n\nSelects all elements of the document"));
         connect(action, SIGNAL(triggered()), SLOT(slotSelectAll()));
 
-        action = am->createAction("selectMarker",  tr("Select Markers"));
+        action = am->createAction("selectMarker", tr("Select Markers"));
         action->setShortcut(CTRL+SHIFT+Key_M);
         action->setStatusTip(tr("Selects all markers"));
         action->setWhatsThis(tr("Select Markers\n\nSelects all diagram markers of the document"));
         connect(action, SIGNAL(triggered()), SLOT(slotSelectMarker()));
 
-        action = am->createAction("editFind", icon("editfind.png"), tr("Find..."));
+        action = am->createAction("editFind", icon("edit-find.png"), tr("Find..."));
         action->setShortcut(CTRL+Key_F);
         action->setStatusTip(tr("Find a piece of text"));
         action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
         connect(action, SIGNAL(triggered()), SLOT(slotEditFind()));
 
-        action = am->createAction("symEdit", icon("symbol-edit.png"), tr("&Edit Circuit Symbol/Schematic"));
+        action = am->createAction("symEdit", icon("draw-freehand.png"), tr("&Edit Circuit Symbol/Schematic"));
         action->setShortcut(Key_F7);
         action->setStatusTip(tr("Switches between symbol and schematic edit"));
         action->setWhatsThis(tr("Edit Circuit Symbol/Schematic\n\nSwitches between symbol and schematic edit"));
         connect(action, SIGNAL(triggered()), SLOT(slotSymbolEdit()));
 
-        action = am->createAction("intoH", icon("bottom.png"), tr("Go into Subcircuit"));
+        action = am->createAction("intoH", icon("go-bottom.png"), tr("Go into Subcircuit"));
         action->setShortcut(CTRL+Key_I);
         action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
         connect(action, SIGNAL(triggered()), SLOT(slotIntoHierarchy()));
 
-        action = am->createAction("popH", icon("top.png"), tr("Pop out"));
+        action = am->createAction("popH", icon("go-top.png"), tr("Pop out"));
         action->setShortcut(CTRL+SHIFT+Key_I);
         action->setStatusTip(tr("Pop outside subcircuit"));
         action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
@@ -454,12 +454,12 @@ namespace Caneda
         action->setWhatsThis(tr("Center vertically\n\nCenter vertically selected elements"));
         connect(action, SIGNAL(triggered()), SLOT(slotCenterVertical()));
 
-        action = am->createAction("distrHor",  tr("Distribute horizontally"));
+        action = am->createAction("distrHor", icon("distribute-horizontal-center.png"), tr("Distribute horizontally"));
         action->setStatusTip(tr("Distribute equally horizontally"));
         action->setWhatsThis(tr("Distribute horizontally\n\n""Distribute horizontally selected elements"));
         connect(action, SIGNAL(triggered()), SLOT(slotDistribHoriz()));
 
-        action = am->createAction("distrVert",  tr("Distribute vertically"));
+        action = am->createAction("distrVert", icon("distribute-vertical-center.png"), tr("Distribute vertically"));
         action->setStatusTip(tr("Distribute equally vertically"));
         action->setWhatsThis(tr("Distribute vertically\n\n""Distribute vertically selected elements"));
         connect(action, SIGNAL(triggered()), SLOT(slotDistribVert()));
@@ -470,31 +470,31 @@ namespace Caneda
         action->setWhatsThis(tr("New Project\n\nCreates a new project"));
         connect(action, SIGNAL(triggered()), SLOT(slotNewProject()));
 
-        action = am->createAction("projOpen", icon("fileopen.png"), tr("&Open Project..."));
+        action = am->createAction("projOpen", icon("document-open.png"), tr("&Open Project..."));
         action->setShortcut(CTRL+SHIFT+Key_O);
         action->setStatusTip(tr("Opens an existing project"));
         action->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
         connect(action, SIGNAL(triggered()), SLOT(slotOpenProject()));
 
-        action = am->createAction("addToProj", icon("filenew.png"), tr("&Add File to Project..."));
+        action = am->createAction("addToProj", icon("document-new.png"), tr("&Add File to Project..."));
         action->setShortcut(CTRL+SHIFT+Key_A);
         action->setStatusTip(tr("Adds a file to current project"));
         action->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
         connect(action, SIGNAL(triggered()), SLOT(slotAddToProject()));
 
-        action = am->createAction("projDel", icon("fileclose.png"), tr("&Remove from Project"));
+        action = am->createAction("projDel", icon("document-close.png"), tr("&Remove from Project"));
         action->setShortcut(CTRL+SHIFT+Key_R);
         action->setStatusTip(tr("Removes a file from current project"));
         action->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
         connect(action, SIGNAL(triggered()), SLOT(slotRemoveFromProject()));
 
-        action = am->createAction("projClose", icon("project-close.png"), tr("&Close Project"));
+        action = am->createAction("projClose", icon("dialog-close.png"), tr("&Close Project"));
         action->setShortcut(CTRL+SHIFT+Key_W);
         action->setStatusTip(tr("Closes the current project"));
         action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
         connect(action, SIGNAL(triggered()), SLOT(slotCloseProject()));
 
-        action = am->createAction("insEquation", icon("equation.png"), tr("Insert Equation"));
+        action = am->createAction("insEquation", icon("formula.png"), tr("Insert Equation"));
         action->setCheckable(true);
         action->setShortcut(Key_E);
         action->setWhatsThis(tr("Insert Equation\n\nInserts a user defined equation"));
@@ -515,7 +515,7 @@ namespace Caneda
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotInsertToolbarComponent(const QString&, bool)));
 
-        action = am->createAction("insEntity", icon("vhdl-code.png"), tr("VHDL entity"));
+        action = am->createAction("insEntity", icon("code-context.png"), tr("VHDL entity"));
         action->setShortcut(SHIFT+Key_V);
         action->setStatusTip(tr("Inserts skeleton of VHDL entity"));
         action->setWhatsThis(tr("VHDL entity\n\nInserts the skeleton of a VHDL entity"));
@@ -557,19 +557,19 @@ namespace Caneda
         action->setWhatsThis(tr("Import Data\n\nConvert data file to Caneda data file"));
         connect(action, SIGNAL(triggered()), SLOT(slotImportData()));
 
-        action = am->createAction("showConsole", icon("console.png"), tr("&Show Console..."));
+        action = am->createAction("showConsole", icon("terminal.png"), tr("&Show Console..."));
         action->setShortcut(Key_F8);
         action->setStatusTip(tr("Show Console"));
         action->setWhatsThis(tr("Show Console\n\nOpen console terminal"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowConsole()));
 
-        action = am->createAction("simulate", icon("start.png"), tr("Simulate"));
+        action = am->createAction("simulate", icon("media-playback-start.png"), tr("Simulate"));
         action->setShortcut(Key_F5);
         action->setStatusTip(tr("Simulates the current schematic"));
         action->setWhatsThis(tr("Simulate\n\nSimulates the current schematic"));
         connect(action, SIGNAL(triggered()), SLOT(slotSimulate()));
 
-        action = am->createAction("dpl_sch", icon("switch-view.png"), tr("View Data Display/Schematic"));
+        action = am->createAction("dpl_sch", icon("system-switch-user.png"), tr("View Data Display/Schematic"));
         action->setShortcut(Key_F4);
         action->setStatusTip(tr("Changes to data display or schematic page"));
         action->setWhatsThis(tr("View Data Display/Schematic\n\n")+tr("Changes to data display or schematic page"));
@@ -599,13 +599,13 @@ namespace Caneda
         action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowLastNetlist()));
 
-        action = am->createAction("magAll", icon("viewmagfit.png"), tr("View All"));
+        action = am->createAction("magAll", icon("zoom-fit-best.png"), tr("View All"));
         action->setShortcut(Key_0);
         action->setStatusTip(tr("Show the whole page"));
         action->setWhatsThis(tr("View All\n\nShows the whole page content"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowAll()));
 
-        action = am->createAction("magOne", icon("viewmag1.png"), tr("View 1:1"));
+        action = am->createAction("magOne", icon("zoom-original.png"), tr("View 1:1"));
         action->setShortcut(Key_1);
         action->setStatusTip(tr("Views without magnification"));
         action->setWhatsThis(tr("View 1:1\n\nShows the page content without magnification"));
@@ -625,7 +625,7 @@ namespace Caneda
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
 
-        action = am->createAction("helpIndex", icon("help.png"), tr("Help Index..."));
+        action = am->createAction("helpIndex", icon("help-contents.png"), tr("Help Index..."));
         action->setShortcut(Key_F1);
         action->setStatusTip(tr("Index of Caneda Help"));
         action->setWhatsThis(tr("Help Index\n\nIndex of intern Caneda help"));
@@ -655,7 +655,7 @@ namespace Caneda
 
         ActionManager *am = ActionManager::instance();
         action = am->createMouseAction("editDelete", SchematicScene::Deleting,
-                icon("editdelete.png"), tr("&Delete"));
+                icon("edit-delete.png"), tr("&Delete"));
         action->setShortcut(Key_Delete);
         action->setStatusTip(tr("Deletes the selected components"));
         action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
@@ -663,7 +663,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
 
         action = am->createMouseAction("select", SchematicScene::Normal,
-                icon("pointer.png"), tr("Select"));
+                icon("edit-select.png"), tr("Select"));
         action->setShortcut(Key_Escape);
         action->setStatusTip(tr("Activate select mode"));
         action->setWhatsThis(tr("Select\n\nActivates select mode"));
@@ -672,7 +672,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
 
         action = am->createMouseAction("editRotate", SchematicScene::Rotating,
-                icon("rotate_ccw.png"), tr("Rotate"));
+                icon("object-rotate-left.png"), tr("Rotate"));
         action->setShortcut(CTRL+Key_R);
         action->setStatusTip(tr("Rotates the selected component by 90°"));
         action->setWhatsThis(tr("Rotate\n\nRotates the selected component by 90° counter-clockwise"));
@@ -680,14 +680,14 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
 
         action = am->createMouseAction("editMirror", SchematicScene::MirroringX,
-                icon("mirror.png"), tr("Mirror about X Axis"));
+                icon("object-flip-vertical.png"), tr("Mirror about X Axis"));
         action->setShortcut(Key_V);
         action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
 
         action = am->createMouseAction("editMirrorY", SchematicScene::MirroringY,
-                icon("mirrory.png"), tr("Mirror about Y Axis"));
+                icon("object-flip-horizontal.png"), tr("Mirror about Y Axis"));
         action->setShortcut(Key_H);
         action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
@@ -725,7 +725,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
 
         action = am->createMouseAction("magPlus", SchematicScene::ZoomingAtPoint,
-                icon("viewmag+.png"), tr("Zoom in"));
+                icon("zoom-in.png"), tr("Zoom in"));
         action->setShortcut(Key_Plus);
         action->setStatusTip(tr("Zooms into the current view"));
         action->setWhatsThis(tr("Zoom in\n\nZooms the current view"));
@@ -733,7 +733,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
 
         action = am->createMouseAction("magMinus", SchematicScene::ZoomingOutAtPoint,
-                icon("viewmag-.png"), tr("Zoom out"));
+                icon("zoom-out.png"), tr("Zoom out"));
         action->setShortcut(Key_Minus);
         action->setStatusTip(tr("Zooms out the current view"));
         action->setWhatsThis(tr("Zoom out\n\nZooms out the current view"));
