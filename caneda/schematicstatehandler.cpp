@@ -456,12 +456,12 @@ namespace Caneda
                 break;
 
             case SchematicScene::Deleting:
-                cursor = QCursor(QPixmap(bitmapPath + "cursordelete.png"));
+                cursor = QCursor(QIcon::fromTheme("draw-eraser", QIcon(bitmapPath + "draw-eraser.png")).pixmap(20));
                 break;
 
             case SchematicScene::Rotating:
-                cursor = QCursor(QPixmap(bitmapPath + "rotate_ccw.png"));
-                break;
+                cursor = QCursor(QIcon::fromTheme("object-rotate-left", QIcon(bitmapPath + "object-rotate-left.png")).pixmap(20));
+                break;                
 
             case SchematicScene::MirroringX:
                 cursor.setShape(Qt::SizeVerCursor);
@@ -472,11 +472,11 @@ namespace Caneda
                 break;
 
             case SchematicScene::ZoomingAtPoint:
-                cursor = QCursor(QPixmap(bitmapPath + "viewmag+.png"));
+                cursor = QCursor(QIcon::fromTheme("zoom-in", QIcon(bitmapPath +  "zoom-in.png")).pixmap(20));
                 break;
 
             case SchematicScene::ZoomingOutAtPoint:
-                cursor = QCursor(QPixmap(bitmapPath + "viewmag-.png"));
+                cursor = QCursor(QIcon::fromTheme("zoom-out", QIcon(bitmapPath +  "zoom-out.png")).pixmap(20));
                 break;
 
             case SchematicScene::PaintingDrawEvent:
