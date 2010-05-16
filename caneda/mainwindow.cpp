@@ -75,9 +75,15 @@ namespace Caneda
     /*!
      * \brief Construct and setup the mainwindow for caneda.
      */
-    MainWindow::MainWindow(QWidget *w) : MainWindowBase(w)
+    MainWindow::MainWindow(QWidget *w) : QMainWindow(w)
     {
         titleText = QString("Caneda ") + (Caneda::version) + QString(" : %1[*]");
+
+        m_tabWidget = new TabWidget(this);
+        m_tabWidget->setFocusPolicy(Qt::NoFocus);
+        m_tabWidget->setTabsClosable(true);
+        m_tabWidget->setMovable(true);
+        setCentralWidget(m_tabWidget);
 
         setObjectName("MainWindow"); //for debugging purpose
         setDocumentTitle("Untitled");
@@ -97,10 +103,12 @@ namespace Caneda
         createUndoView();
 
         connect(tabWidget(), SIGNAL(tabCloseRequested(int)), this, SLOT(slotFileClose(int)));
+#if 0
         connect(this, SIGNAL(currentWidgetChanged(QWidget*, QWidget*)), this,
                 SLOT(slotCurrentChanged(QWidget*, QWidget*)));
         connect(this, SIGNAL(closedWidget(QWidget*)), this,
                 SLOT(slotViewClosed(QWidget*)));
+#endif
 
         SchematicWidget *view = new SchematicWidget(0, this);
         addView(view);
@@ -120,6 +128,11 @@ namespace Caneda
             instance = new MainWindow();
         }
         return instance;
+    }
+
+    TabWidget* MainWindow::tabWidget() const
+    {
+        return m_tabWidget;
     }
 
     /*!
@@ -277,6 +290,14 @@ namespace Caneda
         return act;
     }
 
+    void MainWindow::addAsDockWidget(QWidget *widget, const QString &title,
+            Qt::DockWidgetArea area)
+    {
+        QDockWidget *dw = new QDockWidget(title);
+        dw->setWidget(widget);
+        addDockWidget(area, dw);
+    }
+
     /*!
      * \brief Creates and intializes all the actions used.
      */
@@ -356,13 +377,13 @@ namespace Caneda
         action->setWhatsThis(tr("Exit\n\nQuits the application"));
         connect(action, SIGNAL(triggered()), SLOT(close()));
 
-        action = am->createAction("undo", icon("edit-undo"), tr("&Undo"));
+        action = am->createAction("editUndo", icon("edit-undo"), tr("&Undo"));
         action->setShortcut(CTRL+Key_Z);
         action->setStatusTip(tr("Undoes the last command"));
         action->setWhatsThis(tr("Undo\n\nMakes the last action undone"));
         connect(action, SIGNAL(triggered()), m_undoGroup, SLOT(undo()));
 
-        action = am->createAction("redo", icon("edit-redo"), tr("&Redo"));
+        action = am->createAction("editRedo", icon("edit-redo"), tr("&Redo"));
         action->setShortcut(CTRL+SHIFT+Key_Z);
         action->setStatusTip(tr("Redoes the last command"));
         action->setWhatsThis(tr("Redo\n\nRepeats the last action once more"));
@@ -784,8 +805,8 @@ namespace Caneda
 
         editMenu = menuBar()->addMenu(tr("&Edit"));
 
-        editMenu->addAction(action("undo"));
-        editMenu->addAction(action("redo"));
+        editMenu->addAction(action("editUndo"));
+        editMenu->addAction(action("editRedo"));
 
         editMenu->addSeparator();
 
@@ -930,8 +951,8 @@ namespace Caneda
         editToolbar->addAction(action("editCopy"));
         editToolbar->addAction(action("editPaste"));
         editToolbar->addAction(action("editDelete"));
-        editToolbar->addAction(action("undo"));
-        editToolbar->addAction(action("redo"));
+        editToolbar->addAction(action("editUndo"));
+        editToolbar->addAction(action("editRedo"));
 
         viewToolbar  = addToolBar(tr("View"));
         viewToolbar->setObjectName("viewToolbar");
@@ -1005,17 +1026,15 @@ namespace Caneda
             SchematicStateHandler *handler = SchematicStateHandler::instance();
             handler->registerView(schematicView);
 
-            addChildWidget(view->toWidget());
-            tabWidget()->setCurrentWidget(view->toWidget());
-
             ActionManager *am = ActionManager::instance();
             Action *action = am->actionForName("snapToGrid");
             action->setChecked(schema->gridSnap());
         }
-        else {
-            addChildWidget(view->toWidget());
-            tabWidget()->setCurrentWidget(view->toWidget());
-        }
+
+        QWidget *widget = view->toWidget();
+        static_cast<QTabWidget*>(m_tabWidget)->addTab(widget,
+                widget->windowIcon(), widget->windowTitle());
+        m_tabWidget->setCurrentWidget(widget);
     }
 
     /*!
@@ -1072,7 +1091,6 @@ namespace Caneda
 
             saveSettings();
             emit(signalKillWidgets());
-            MainWindowBase::closeEvent(e);
         }
         else {
             e->ignore();
@@ -1307,7 +1325,7 @@ namespace Caneda
                 }
             }
             if (!saveAttempted || view->isModified() == false) {
-                closeTab(index);
+                removeChildWidget(m_tabWidget->widget(index));
             }
         }
     }
@@ -1976,9 +1994,9 @@ namespace Caneda
 
     void MainWindow::updateTitleTabText()
     {
-        CanedaView *view = viewFromWidget(currentWidget());
+        CanedaView *view = viewFromWidget(tabWidget()->currentWidget());
         if(view) {
-            int index = tabWidget()->indexOf(currentWidget());
+            int index = tabWidget()->currentIndex();
             tabWidget()->setTabText(index, view->tabText());
             QIcon icon = view->isModified() ? view->modifiedTabIcon() :
                 view->unmodifiedTabIcon();
@@ -2005,6 +2023,33 @@ namespace Caneda
     void MainWindow::slotUpdateCursorPositionStatus(const QString& newPos)
     {
         m_cursorLabel->setText(newPos);
+    }
+
+    void MainWindow::removeChildWidget(QWidget *widget, bool deleteWidget)
+    {
+        int index = m_tabWidget->indexOf(widget);
+        if(index >= 0) {
+            QWidget *w = m_tabWidget->widget(index);
+
+            if(w->close()) {
+                //FIXME:emit closedWidget(w);
+                if(deleteWidget) {
+                    w->deleteLater();
+                }
+            }
+            else {
+                return;
+            }
+
+            m_tabWidget->removeTab(index);
+        }
+    }
+
+    void MainWindow::closeAllTabs()
+    {
+        while(m_tabWidget->count() > 0) {
+            removeChildWidget(m_tabWidget->widget(m_tabWidget->currentIndex()), true);
+        }
     }
 
 } // namespace Caneda

@@ -20,10 +20,10 @@
 #ifndef CANEDA_MAINWINDOW_H
 #define CANEDA_MAINWINDOW_H
 
-#include "mainwindowbase.h"
 #include "schematicscene.h"
 #include "undocommands.h"
 
+#include <QMainWindow>
 #include <QMap>
 #include <QMenu>
 #include <QProcess>
@@ -45,14 +45,17 @@ namespace Caneda
     class CanedaView;
     class SchematicScene;
     class SchematicWidget;
+    class TabWidget;
 
-    class MainWindow : public MainWindowBase
+    class MainWindow : public QMainWindow
     {
     Q_OBJECT
     public:
         ~MainWindow();
 
         static MainWindow* instance();
+
+        TabWidget* tabWidget() const;
 
         bool gotoPage(QString fileName, Caneda::Mode mode=Caneda::SchematicMode);
         void addView(CanedaView *view);
@@ -150,6 +153,13 @@ namespace Caneda
     private:
         Action* action(const QString& name);
         MainWindow(QWidget *w=0);
+        void addAsDockWidget(QWidget *w, const QString &title = QString(),
+                Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
+
+        // REMOVE the below methods later.
+        void removeChildWidget(QWidget *widget, bool deleteWidget = true);
+        void closeAllTabs();
+
         void initActions();
         void initMouseActions();
         void initMenus();
@@ -180,6 +190,7 @@ namespace Caneda
         Project *m_project;
         QDockWidget *projectDockWidget;
         FolderBrowser *m_folderBrowser;
+        TabWidget *m_tabWidget;
         QTermWidget *console;
         QDockWidget *consoleDockWidget;
         QString titleText;
