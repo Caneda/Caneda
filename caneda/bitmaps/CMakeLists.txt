@@ -1,5 +1,5 @@
 # toolbar pictures
-SET(PNGS  align-horizontal-center.png dialog-close.png draw-eraser.png forward.png object-flip-horizontal.png qt.png text-plain.png
+SET(PNGS  align-horizontal-center.png chronometer.png dialog-close.png draw-eraser.png forward.png object-flip-horizontal.png qt.png text-plain.png
 align-horizontal-left.png distribute-horizontal-center.png draw-freehand.png go-bottom.png object-flip-vertical.png select-rectangular.png textright.png
 align-horizontal-right.png distribute-vertical-center.png edit-copy.png go-top.png object-locked.png stop.png textunder.png
 align-vertical-bottom.png document-close.png edit-delete.png ground.png object-rotate-left.png sub.png tools-wizard.png

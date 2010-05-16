@@ -101,6 +101,7 @@ namespace Caneda
         void slotAddToProject();
         void slotRemoveFromProject();
         void slotCloseProject();
+        void slotBackupAndHistory();
 
         void slotInsertEntity();
         void slotCallFilter();

@@ -30,6 +30,7 @@
 #include "xmlsymbolformat.h"
 
 #include "dialogs/addtoprojectdialog.h"
+#include "dialogs/gitmanager.h"
 
 #include <QDebug>
 #include <QDir>
@@ -275,6 +276,14 @@ namespace Caneda
             projectLibrary = 0;
             m_libraryFileName = "";
             m_libraryName = "";
+        }
+    }
+
+    void Project::slotBackupAndHistory()
+    {
+        if(projectLibrary) {
+            GitManager *gitDialog = new GitManager(QFileInfo(m_libraryFileName).absolutePath(), this);
+            gitDialog->exec();
         }
     }
 

@@ -497,6 +497,12 @@ namespace Caneda
         action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
         connect(action, SIGNAL(triggered()), SLOT(slotCloseProject()));
 
+        action = am->createAction("backupAndHistory", icon("chronometer"), tr("&Backup and History..."));
+        action->setShortcut(CTRL+SHIFT+Key_B);
+        action->setStatusTip(tr("Opens backup and history dialog"));
+        action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
+        connect(action, SIGNAL(triggered()), SLOT(slotBackupAndHistory()));
+
         action = am->createAction("insEquation", icon("formula"), tr("Insert Equation"));
         action->setCheckable(true);
         action->setShortcut(Key_E);
@@ -837,6 +843,10 @@ namespace Caneda
         projMenu->addAction(action("addToProj"));
         projMenu->addAction(action("projDel"));
         projMenu->addAction(action("projClose"));
+
+        projMenu->addSeparator();
+
+        projMenu->addAction(action("backupAndHistory"));
 
         toolMenu = menuBar()->addMenu(tr("&Tools"));
 
@@ -1615,6 +1625,12 @@ namespace Caneda
             m_project->slotCloseProject();
             closeAllTabs();
         }
+    }
+
+    void MainWindow::slotBackupAndHistory()
+    {
+        setNormalAction();
+        m_project->slotBackupAndHistory();
     }
 
     void MainWindow::slotInsertEntity()

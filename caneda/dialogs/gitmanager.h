@@ -20,17 +20,17 @@
 #ifndef GITMANAGER_H
 #define GITMANAGER_H
 
-#include <QObject>
+#include <QDialog>
 
 namespace Caneda
 {
-    class GitManager : public QObject
+    class GitManager : public QDialog
     {
         Q_OBJECT;
 
     public:
-        GitManager(const QString& dir);
-        ~GitManager() {}
+        GitManager(const QString& dir, QWidget *parent = 0);
+        ~GitManager();
 
     public:
         const QString& path() const { return m_path; }

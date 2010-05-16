@@ -26,17 +26,21 @@ namespace Caneda
 
     /*! Constructor
      * \brief This class implements a git object
-     *
      * This handles the repository initialization, commits, etc.
      *
      * \param parent Parent of the widget.
      */
-    GitManager::GitManager(const QString& dir)
+    GitManager::GitManager(const QString& dir,
+            QWidget *parent) : QDialog(parent)
     {
         // Check if directory exists
         m_path = ( dir.isEmpty() ? QString(".") : dir );
 
         m_output = "";
+    }
+
+    GitManager::~GitManager()
+    {
     }
 
     void GitManager::initCreate()

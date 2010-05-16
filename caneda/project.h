@@ -53,6 +53,7 @@ namespace Caneda
         void slotAddToProject();
         void slotRemoveFromProject();
         void slotCloseProject();
+        void slotBackupAndHistory();
 
     signals:
         void itemClicked(const QString&, const QString&);
