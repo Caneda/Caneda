@@ -19,6 +19,8 @@
 
 #include "gitmanager.h"
 
+#include <QProcess>
+
 namespace Caneda
 {
 
@@ -29,16 +31,23 @@ namespace Caneda
      *
      * \param parent Parent of the widget.
      */
-    GitManager::GitManager()
+    GitManager::GitManager(const QString& dir)
     {
+        // Check if directory exists
+        m_path = ( dir.isEmpty() ? QString(".") : dir );
+
+        m_output = "";
     }
 
-    void GitManager::init()
+    void GitManager::initCreate()
     {
-    }
+        // Run 'git init'
+        QProcess gitp;
+        gitp.setWorkingDirectory(m_path);
+        gitp.start(QString("git init"));
 
-    void GitManager::init()
-    {
+//        connect(gitp, SIGNAL(stateChanged()), this, SLOT(updateOutput(gitp.readAllStandardOutput)));
+        updateOutput(QByteArray("Data out test"));
     }
 
     void GitManager::status()
@@ -55,6 +64,12 @@ namespace Caneda
 
     void GitManager::revert()
     {
+    }
+
+    void GitManager::updateOutput(const QByteArray& data)
+    {
+        m_output.append(data);
+        emit outputDataReady(m_output);
     }
 
 } // namespace Caneda

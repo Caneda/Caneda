@@ -29,15 +29,28 @@ namespace Caneda
         Q_OBJECT;
 
     public:
-        GitManager();
+        GitManager(const QString& dir);
         ~GitManager() {}
 
+    public:
+        const QString& path() const { return m_path; }
+        const QString& result() const { return m_output; }
+
+    signals:
+        void outputDataReady(const QString& data);
+
     private Q_SLOTS:
-        void init();
+        void initCreate();
         void status();
         void commit();
         void history();
         void revert();
+
+        void updateOutput(const QByteArray& data);
+
+    private:
+        QString m_path; // Path to the repository
+        QString m_output; // Output of the process
     };
 
 } // namespace Caneda
