@@ -19,14 +19,19 @@
 
 #include "gitmanager.h"
 
-#include <QProcess>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 namespace Caneda
 {
 
     /*! Constructor
      * \brief This class implements a git object
-     * This handles the repository initialization, commits, etc.
+     * This handles the repository initialization, commits, etc. The idea is
+     * to provide the user a very simple backup tool, and not clutter the
+     * interface with too many options. Some basic git options should be
+     * transparent to the user (for example "git init"), as the user does not
+     * need to know about git.
      *
      * \param parent Parent of the widget.
      */
@@ -36,44 +41,76 @@ namespace Caneda
         // Check if directory exists
         m_path = ( dir.isEmpty() ? QString(".") : dir );
 
-        m_output = "";
+        gitProcess = new QProcess(this);
+        gitProcess->setWorkingDirectory(m_path);
+
+        // The minimum size of the dialogue is fixed
+        setMinimumSize(800, 390);
+        resize(minimumSize());
+        setWindowTitle(tr("Backup and History Browser", "window title"));
+
+        // The dialog has buttons to provide the different git options
+        QPushButton *btnGitInit = new QPushButton(tr("Git Init"), this);
+        QPushButton *btnGitStatus = new QPushButton(tr("Git Status"), this);
+        QPushButton *btnGitCommit = new QPushButton(tr("Git Commit"), this);
+
+        // The dialog has a QTextEdit to provide the git log
+        m_textEdit = new QTextEdit(tr("History manager output"), this);
+        m_textEdit->setReadOnly(true);
+        m_textEdit->setFocusPolicy(Qt::NoFocus);
+
+        // Layout of elements
+        QVBoxLayout *layout = new QVBoxLayout(this);
+        layout->addWidget(btnGitInit);
+        layout->addWidget(btnGitStatus);
+        layout->addWidget(btnGitCommit);
+        layout->addWidget(m_textEdit);
+
+        // Conections signal/slots
+        connect(btnGitInit, SIGNAL(clicked()), SLOT(slotInitCreate()));
+        connect(btnGitStatus, SIGNAL(clicked()), SLOT(slotStatus()));
+        connect(btnGitCommit, SIGNAL(clicked()), SLOT(slotCommit()));
+        connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateOutput()));
     }
 
     GitManager::~GitManager()
     {
     }
 
-    void GitManager::initCreate()
+    void GitManager::slotInitCreate()
     {
         // Run 'git init'
-        QProcess gitp;
-        gitp.setWorkingDirectory(m_path);
-        gitp.start(QString("git init"));
-
-//        connect(gitp, SIGNAL(stateChanged()), this, SLOT(updateOutput(gitp.readAllStandardOutput)));
-        updateOutput(QByteArray("Data out test"));
+        gitProcess->start(QString("git init"));
     }
 
-    void GitManager::status()
+    void GitManager::slotStatus()
+    {
+        // Run 'git status'
+        gitProcess->start(QString("git status"));
+    }
+
+    void GitManager::slotCommit()
+    {
+        // Run 'git status'
+        gitProcess->start(QString("git add *"));
+        gitProcess->waitForFinished();
+        gitProcess->start(QString("git commit -a"));
+    }
+
+    void GitManager::slotHistory()
     {
     }
 
-    void GitManager::commit()
+    void GitManager::slotRevert()
     {
     }
 
-    void GitManager::history()
+    void GitManager::slotUpdateOutput()
     {
-    }
-
-    void GitManager::revert()
-    {
-    }
-
-    void GitManager::updateOutput(const QByteArray& data)
-    {
-        m_output.append(data);
-        emit outputDataReady(m_output);
+        QString data = QString(gitProcess->readAllStandardOutput());
+        if(!data.isEmpty()) {
+            m_textEdit->append(data);
+        }
     }
 
 } // namespace Caneda

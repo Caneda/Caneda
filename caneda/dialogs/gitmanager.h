@@ -21,6 +21,8 @@
 #define GITMANAGER_H
 
 #include <QDialog>
+#include <QProcess>
+#include <QTextEdit>
 
 namespace Caneda
 {
@@ -34,23 +36,20 @@ namespace Caneda
 
     public:
         const QString& path() const { return m_path; }
-        const QString& result() const { return m_output; }
-
-    signals:
-        void outputDataReady(const QString& data);
 
     private Q_SLOTS:
-        void initCreate();
-        void status();
-        void commit();
-        void history();
-        void revert();
+        void slotInitCreate();
+        void slotStatus();
+        void slotCommit();
+        void slotHistory();
+        void slotRevert();
 
-        void updateOutput(const QByteArray& data);
+        void slotUpdateOutput();
 
     private:
         QString m_path; // Path to the repository
-        QString m_output; // Output of the process
+        QTextEdit *m_textEdit; // Output of the process
+        QProcess *gitProcess; // Git process
     };
 
 } // namespace Caneda
