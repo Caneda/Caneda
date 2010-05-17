@@ -21,6 +21,7 @@
 #define GITMANAGER_H
 
 #include <QDialog>
+#include <QLineEdit>
 #include <QProcess>
 #include <QTextEdit>
 
@@ -41,14 +42,15 @@ namespace Caneda
         void slotInitCreate();
         void slotStatus();
         void slotCommit();
-        void slotHistory();
+        void slotLog();
         void slotRevert();
 
         void slotUpdateOutput();
 
     private:
         QString m_path; // Path to the repository
-        QTextEdit *m_textEdit; // Output of the process
+        QTextEdit *editOutput; // Output of the process
+        QLineEdit *editRevert; // Name of the commit to revert to
         QProcess *gitProcess; // Git process
     };
 

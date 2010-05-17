@@ -53,23 +53,34 @@ namespace Caneda
         QPushButton *btnGitInit = new QPushButton(tr("Git Init"), this);
         QPushButton *btnGitStatus = new QPushButton(tr("Git Status"), this);
         QPushButton *btnGitCommit = new QPushButton(tr("Git Commit"), this);
+        QPushButton *btnGitHistory = new QPushButton(tr("Git History"), this);
+        QPushButton *btnGitRevert = new QPushButton(tr("Git Revert"), this);
+
+        // Input text to specify the backup to revert to
+        editRevert = new QLineEdit(this);
 
         // The dialog has a QTextEdit to provide the git log
-        m_textEdit = new QTextEdit(tr("History manager output"), this);
-        m_textEdit->setReadOnly(true);
-        m_textEdit->setFocusPolicy(Qt::NoFocus);
+        editOutput = new QTextEdit(tr("History manager output"), this);
+        editOutput->setReadOnly(true);
+        editOutput->setFocusPolicy(Qt::NoFocus);
 
         // Layout of elements
         QVBoxLayout *layout = new QVBoxLayout(this);
         layout->addWidget(btnGitInit);
         layout->addWidget(btnGitStatus);
         layout->addWidget(btnGitCommit);
-        layout->addWidget(m_textEdit);
+        layout->addWidget(btnGitHistory);
+        layout->addWidget(btnGitRevert);
+        layout->addWidget(editRevert);
+
+        layout->addWidget(editOutput);
 
         // Conections signal/slots
         connect(btnGitInit, SIGNAL(clicked()), SLOT(slotInitCreate()));
         connect(btnGitStatus, SIGNAL(clicked()), SLOT(slotStatus()));
         connect(btnGitCommit, SIGNAL(clicked()), SLOT(slotCommit()));
+        connect(btnGitHistory, SIGNAL(clicked()), SLOT(slotLog()));
+        connect(btnGitRevert, SIGNAL(clicked()), SLOT(slotRevert()));
         connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateOutput()));
     }
 
@@ -91,25 +102,31 @@ namespace Caneda
 
     void GitManager::slotCommit()
     {
-        // Run 'git status'
+        // Run 'git commit'
         gitProcess->start(QString("git add *"));
         gitProcess->waitForFinished();
-        gitProcess->start(QString("git commit -a"));
+        gitProcess->start(QString("git commit -a -m \"Backup saved by user\""));
     }
 
-    void GitManager::slotHistory()
+    void GitManager::slotLog()
     {
+        // Run 'git log'
+        gitProcess->start(QString("git log --reverse --relative-date"));
     }
 
     void GitManager::slotRevert()
     {
+        // Run 'git revert'
+        gitProcess->start(QString("git checkout"));
+        gitProcess->waitForFinished();
+        gitProcess->start(QString("git revert --no-edit ") + editRevert->text());
     }
 
     void GitManager::slotUpdateOutput()
     {
         QString data = QString(gitProcess->readAllStandardOutput());
         if(!data.isEmpty()) {
-            m_textEdit->append(data);
+            editOutput->append(data);
         }
     }
 
