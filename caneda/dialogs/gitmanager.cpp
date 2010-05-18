@@ -55,6 +55,7 @@ namespace Caneda
         QPushButton *btnGitCommit = new QPushButton(tr("Git Commit"), this);
         QPushButton *btnGitHistory = new QPushButton(tr("Git History"), this);
         QPushButton *btnGitRevert = new QPushButton(tr("Git Revert"), this);
+        QPushButton *btnRestore = new QPushButton(tr("Restore Backup"), this);
 
         // Input text to specify the backup to revert to
         editRevert = new QLineEdit(this);
@@ -71,6 +72,7 @@ namespace Caneda
         layout->addWidget(btnGitCommit);
         layout->addWidget(btnGitHistory);
         layout->addWidget(btnGitRevert);
+        layout->addWidget(btnRestore);
         layout->addWidget(editRevert);
 
         layout->addWidget(editOutput);
@@ -81,6 +83,7 @@ namespace Caneda
         connect(btnGitCommit, SIGNAL(clicked()), SLOT(slotCommit()));
         connect(btnGitHistory, SIGNAL(clicked()), SLOT(slotLog()));
         connect(btnGitRevert, SIGNAL(clicked()), SLOT(slotRevert()));
+        connect(btnRestore, SIGNAL(clicked()), SLOT(slotRestore()));
         connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateOutput()));
     }
 
@@ -120,6 +123,20 @@ namespace Caneda
         gitProcess->start(QString("git checkout"));
         gitProcess->waitForFinished();
         gitProcess->start(QString("git revert --no-edit ") + editRevert->text());
+    }
+
+    void GitManager::slotRestore()
+    {
+        // Restore previous backup
+        gitProcess->start(QString("git checkout -b temporal ") + editRevert->text());
+        gitProcess->waitForFinished();
+        gitProcess->start(QString("git merge master -s ours"));
+        gitProcess->waitForFinished();
+        gitProcess->start(QString("git checkout master"));
+        gitProcess->waitForFinished();
+        gitProcess->start(QString("git merge temporal"));
+        gitProcess->waitForFinished();
+        gitProcess->start(QString("git branch -D temporal"));
     }
 
     void GitManager::slotUpdateOutput()

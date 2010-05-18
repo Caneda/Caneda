@@ -44,6 +44,7 @@ namespace Caneda
         void slotCommit();
         void slotLog();
         void slotRevert();
+        void slotRestore();
 
         void slotUpdateOutput();
 
