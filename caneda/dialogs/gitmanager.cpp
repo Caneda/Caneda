@@ -19,9 +19,6 @@
 
 #include "gitmanager.h"
 
-#include <QPushButton>
-#include <QVBoxLayout>
-
 namespace Caneda
 {
 
@@ -38,52 +35,19 @@ namespace Caneda
     GitManager::GitManager(const QString& dir,
             QWidget *parent) : QDialog(parent)
     {
+        ui.setupUi(this);
+
         // Check if directory exists
         m_path = ( dir.isEmpty() ? QString(".") : dir );
 
         gitProcess = new QProcess(this);
         gitProcess->setWorkingDirectory(m_path);
 
-        // The minimum size of the dialogue is fixed
-        setMinimumSize(800, 390);
-        resize(minimumSize());
-        setWindowTitle(tr("Backup and History Browser", "window title"));
-
-        // The dialog has buttons to provide the different git options
-        QPushButton *btnGitInit = new QPushButton(tr("Git Init"), this);
-        QPushButton *btnGitStatus = new QPushButton(tr("Git Status"), this);
-        QPushButton *btnGitCommit = new QPushButton(tr("Git Commit"), this);
-        QPushButton *btnGitHistory = new QPushButton(tr("Git History"), this);
-        QPushButton *btnGitRevert = new QPushButton(tr("Git Revert"), this);
-        QPushButton *btnRestore = new QPushButton(tr("Restore Backup"), this);
-
-        // Input text to specify the backup to revert to
-        editRevert = new QLineEdit(this);
-
-        // The dialog has a QTextEdit to provide the git log
-        editOutput = new QTextEdit(tr("History manager output"), this);
-        editOutput->setReadOnly(true);
-        editOutput->setFocusPolicy(Qt::NoFocus);
-
-        // Layout of elements
-        QVBoxLayout *layout = new QVBoxLayout(this);
-        layout->addWidget(btnGitInit);
-        layout->addWidget(btnGitStatus);
-        layout->addWidget(btnGitCommit);
-        layout->addWidget(btnGitHistory);
-        layout->addWidget(btnGitRevert);
-        layout->addWidget(btnRestore);
-        layout->addWidget(editRevert);
-
-        layout->addWidget(editOutput);
-
         // Conections signal/slots
-        connect(btnGitInit, SIGNAL(clicked()), SLOT(slotInitCreate()));
-        connect(btnGitStatus, SIGNAL(clicked()), SLOT(slotStatus()));
-        connect(btnGitCommit, SIGNAL(clicked()), SLOT(slotCommit()));
-        connect(btnGitHistory, SIGNAL(clicked()), SLOT(slotLog()));
-        connect(btnGitRevert, SIGNAL(clicked()), SLOT(slotRevert()));
-        connect(btnRestore, SIGNAL(clicked()), SLOT(slotRestore()));
+        connect(ui.btnSaveBackup, SIGNAL(clicked()), SLOT(slotSaveBackup()));
+        connect(ui.btnRestoreBackup, SIGNAL(clicked()), SLOT(slotRestore()));
+        connect(ui.btnRevertStep, SIGNAL(clicked()), SLOT(slotRevert()));
+
         connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateOutput()));
     }
 
@@ -91,30 +55,16 @@ namespace Caneda
     {
     }
 
-    void GitManager::slotInitCreate()
+    void GitManager::slotSaveBackup()
     {
+        // Saves new backup
         // Run 'git init'
         gitProcess->start(QString("git init"));
-    }
-
-    void GitManager::slotStatus()
-    {
-        // Run 'git status'
-        gitProcess->start(QString("git status"));
-    }
-
-    void GitManager::slotCommit()
-    {
+        gitProcess->waitForFinished();
         // Run 'git commit'
         gitProcess->start(QString("git add *"));
         gitProcess->waitForFinished();
         gitProcess->start(QString("git commit -a -m \"Backup saved by user\""));
-    }
-
-    void GitManager::slotLog()
-    {
-        // Run 'git log'
-        gitProcess->start(QString("git log --reverse --relative-date"));
     }
 
     void GitManager::slotRevert()
@@ -122,13 +72,13 @@ namespace Caneda
         // Run 'git revert'
         gitProcess->start(QString("git checkout"));
         gitProcess->waitForFinished();
-        gitProcess->start(QString("git revert --no-edit ") + editRevert->text());
+        gitProcess->start(QString("git revert --no-edit ") + ui.editRevert->text());
     }
 
     void GitManager::slotRestore()
     {
         // Restore previous backup
-        gitProcess->start(QString("git checkout -b temporal ") + editRevert->text());
+        gitProcess->start(QString("git checkout -b temporal ") + ui.editRevert->text());
         gitProcess->waitForFinished();
         gitProcess->start(QString("git merge master -s ours"));
         gitProcess->waitForFinished();
@@ -139,11 +89,17 @@ namespace Caneda
         gitProcess->start(QString("git branch -D temporal"));
     }
 
+    void GitManager::slotLog()
+    {
+        // Run 'git log'
+        gitProcess->start(QString("git log --reverse --relative-date"));
+    }
+
     void GitManager::slotUpdateOutput()
     {
         QString data = QString(gitProcess->readAllStandardOutput());
         if(!data.isEmpty()) {
-            editOutput->append(data);
+            ui.editOutput->appendPlainText(data);
         }
     }
 

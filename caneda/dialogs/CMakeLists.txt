@@ -10,7 +10,7 @@ SET(DIALOGS_MOC_HDRS aboutdialog.h settingsdialog.h settingspages.h exportdialog
     gitmanager.h
 )
 
-SET(DIALOGS_UIS savedocumentsdialog.ui)
+SET(DIALOGS_UIS savedocumentsdialog.ui gitmanager.ui)
 QT4_WRAP_UI( DIALOGS_UI_HDRS ${DIALOGS_UIS})
 
 QT4_WRAP_CPP( DIALOGS_MOC_SRCS ${DIALOGS_MOC_HDRS} )

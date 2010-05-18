@@ -20,10 +20,10 @@
 #ifndef GITMANAGER_H
 #define GITMANAGER_H
 
+#include "ui_gitmanager.h"
+
 #include <QDialog>
-#include <QLineEdit>
 #include <QProcess>
-#include <QTextEdit>
 
 namespace Caneda
 {
@@ -39,20 +39,18 @@ namespace Caneda
         const QString& path() const { return m_path; }
 
     private Q_SLOTS:
-        void slotInitCreate();
-        void slotStatus();
-        void slotCommit();
-        void slotLog();
+        void slotSaveBackup();
         void slotRevert();
         void slotRestore();
 
+        void slotLog();
         void slotUpdateOutput();
 
     private:
         QString m_path; // Path to the repository
-        QTextEdit *editOutput; // Output of the process
-        QLineEdit *editRevert; // Name of the commit to revert to
         QProcess *gitProcess; // Git process
+
+        Ui::GitManager ui;
     };
 
 } // namespace Caneda
