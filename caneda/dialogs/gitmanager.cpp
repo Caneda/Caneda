@@ -73,7 +73,9 @@ namespace Caneda
         // Run 'git commit'
         gitProcess->start(QString("git add *"));
         gitProcess->waitForFinished();
-        gitProcess->start(QString("git commit -a -m \"Backup saved by user\""));
+        QString description = (ui.editDescription->text().isEmpty() ? QString("Backup saved by user") : ui.editDescription->text());
+        ui.editDescription->clear();
+        gitProcess->start(QString("git commit -a -m \"") + description + QString("\""));
         gitProcess->waitForFinished();
         slotHistory();
     }
@@ -83,7 +85,8 @@ namespace Caneda
         // Run 'git revert'
         gitProcess->start(QString("git checkout"));
         gitProcess->waitForFinished();
-        gitProcess->start(QString("git revert --no-edit ") + ui.listHistory->currentItem()->data(Qt::AccessibleDescriptionRole).toString());
+        QString hash = ui.listHistory->currentItem()->data(Qt::AccessibleDescriptionRole).toString();
+        gitProcess->start(QString("git revert --no-edit ") + hash);
         gitProcess->waitForFinished();
         slotHistory();
     }
@@ -91,7 +94,8 @@ namespace Caneda
     void GitManager::slotRestore()
     {
         // Restore previous backup
-        gitProcess->start(QString("git checkout -b temporal ") + ui.listHistory->currentItem()->data(Qt::AccessibleDescriptionRole).toString());
+        QString hash = ui.listHistory->currentItem()->data(Qt::AccessibleDescriptionRole).toString();
+        gitProcess->start(QString("git checkout -b temporal ") + hash);
         gitProcess->waitForFinished();
         gitProcess->start(QString("git merge master -s ours"));
         gitProcess->waitForFinished();
