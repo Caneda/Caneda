@@ -44,7 +44,6 @@ namespace Caneda
         gitProcess = new QProcess(this);
         gitProcess->setWorkingDirectory(m_path);
         connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateOutput()));
-        connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotHistory()));
 
         gitProcessHistory = new QProcess(this);
         gitProcessHistory->setWorkingDirectory(m_path);
@@ -73,6 +72,8 @@ namespace Caneda
         gitProcess->start(QString("git add *"));
         gitProcess->waitForFinished();
         gitProcess->start(QString("git commit -a -m \"Backup saved by user\""));
+        gitProcess->waitForFinished();
+        slotHistory();
     }
 
     void GitManager::slotRevert()
@@ -81,6 +82,8 @@ namespace Caneda
         gitProcess->start(QString("git checkout"));
         gitProcess->waitForFinished();
         gitProcess->start(QString("git revert --no-edit ") + ui.editRevert->text());
+        gitProcess->waitForFinished();
+        slotHistory();
     }
 
     void GitManager::slotRestore()
@@ -95,6 +98,8 @@ namespace Caneda
         gitProcess->start(QString("git merge temporal"));
         gitProcess->waitForFinished();
         gitProcess->start(QString("git branch -D temporal"));
+        gitProcess->waitForFinished();
+        slotHistory();
     }
 
     void GitManager::slotHistory()
