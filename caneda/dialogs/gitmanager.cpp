@@ -105,7 +105,7 @@ namespace Caneda
     void GitManager::slotHistory()
     {
         // Run 'git log'
-        gitProcessHistory->start(QString("git log --reverse --relative-date"));
+        gitProcessHistory->start(QString("git log --reverse --relative-date --format=format:\"<commit hash=%H>%ar - %s</commit>\""));
     }
 
     void GitManager::slotUpdateOutput()
