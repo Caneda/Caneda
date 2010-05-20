@@ -106,9 +106,8 @@ namespace Caneda
 
     void GitManager::slotHistory()
     {
-        // Run 'git log'
-//        gitProcessHistory->start(QString("git log --reverse --relative-date --format=format:\"<commit hash=%H>%ar - %s</commit>\""));
-        gitProcessHistory->start(QString("git log --reverse --relative-date --format=format:\"<commit>%ar - %s</commit>\""));
+        // Run 'git log' with custom xml format to parse it with streamReader
+        gitProcessHistory->start(QString("git log --reverse --relative-date --format=format:\"<commit>%n<hash>%H</hash>%n<msg>%ar - %s</msg>%n</commit>\""));
     }
 
     void GitManager::slotUpdateOutput()
@@ -121,17 +120,27 @@ namespace Caneda
 
     void GitManager::slotUpdateHistory()
     {
-        QString data = QString(gitProcessHistory->readAllStandardOutput());
-        data.prepend("<gitHistory>");
-        data.append("</gitHistory>");
+        QString data = "<gitHistory>\n";
+        data.append(gitProcessHistory->readAllStandardOutput());
+        data.append("\n</gitHistory>");
 
         ui.listHistory->clear();
         QXmlStreamReader *reader = new QXmlStreamReader(data.toUtf8());
 
         while(!reader->atEnd()) {
             reader->readNext();
+
             if(reader->isStartElement() && reader->name() == "commit") {
-                ui.listHistory->addItem(reader->readElementText());
+                while(!reader->isEndElement() || reader->name() != "commit") {
+
+                    reader->readNext();
+                    if(reader->isStartElement() && reader->name() == "msg") {
+                        ui.listHistory->addItem(reader->readElementText());
+                    }
+                    else if(reader->isStartElement() && reader->name() == "hash") {
+                        ui.editOutput->appendPlainText(reader->readElementText());
+                    }
+                }
             }
         }
 
