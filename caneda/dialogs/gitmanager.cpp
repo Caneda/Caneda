@@ -19,6 +19,8 @@
 
 #include "gitmanager.h"
 
+#include <QXmlStreamReader>
+
 namespace Caneda
 {
 
@@ -43,11 +45,11 @@ namespace Caneda
         // Set up git processes
         gitProcess = new QProcess(this);
         gitProcess->setWorkingDirectory(m_path);
-        connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateOutput()));
+        connect(gitProcess, SIGNAL(finished(int)), SLOT(slotUpdateOutput()));
 
         gitProcessHistory = new QProcess(this);
         gitProcessHistory->setWorkingDirectory(m_path);
-        connect(gitProcessHistory, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateHistory()));
+        connect(gitProcessHistory, SIGNAL(finished(int)), SLOT(slotUpdateHistory()));
 
         // Conections signal/slots
         connect(ui.btnSaveBackup, SIGNAL(clicked()), SLOT(slotSaveBackup()));
@@ -105,7 +107,8 @@ namespace Caneda
     void GitManager::slotHistory()
     {
         // Run 'git log'
-        gitProcessHistory->start(QString("git log --reverse --relative-date --format=format:\"<commit hash=%H>%ar - %s</commit>\""));
+//        gitProcessHistory->start(QString("git log --reverse --relative-date --format=format:\"<commit hash=%H>%ar - %s</commit>\""));
+        gitProcessHistory->start(QString("git log --reverse --relative-date --format=format:\"<commit>%ar - %s</commit>\""));
     }
 
     void GitManager::slotUpdateOutput()
@@ -119,10 +122,19 @@ namespace Caneda
     void GitManager::slotUpdateHistory()
     {
         QString data = QString(gitProcessHistory->readAllStandardOutput());
-        if(!data.isEmpty()) {
-            ui.listHistory->clear();
-            ui.listHistory->addItem(data);
+        data.prepend("<gitHistory>");
+        data.append("</gitHistory>");
+
+        ui.listHistory->clear();
+        QXmlStreamReader *reader = new QXmlStreamReader(data.toUtf8());
+
+        while(!reader->atEnd()) {
+            reader->readNext();
+            if(reader->isStartElement() && reader->name() == "commit") {
+                ui.listHistory->addItem(reader->readElementText());
+            }
         }
+
     }
 
 } // namespace Caneda
