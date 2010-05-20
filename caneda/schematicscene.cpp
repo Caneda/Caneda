@@ -25,6 +25,7 @@
 #include "port.h"
 #include "propertygroup.h"
 #include "schematicwidget.h"
+#include "schematicview.h"
 #include "settings.h"
 #include "undocommands.h"
 #include "wire.h"
@@ -41,6 +42,7 @@
 #include <QClipboard>
 #include <QColor>
 #include <QCursor>
+#include <QDate>
 #include <QFileInfo>
 #include <QGraphicsSceneEvent>
 #include <QGraphicsView>
@@ -62,6 +64,8 @@ namespace Caneda
 {
     //! \brief Default grid spacing
     static const uint DEFAULT_GRID_SPACE = 10;
+
+    const QRectF SchematicScene::DefaultSceneRect = QRectF(0, 0, 1024, 678);
 
     /*!
      * \brief This template method calculates the center of the items on the scene
@@ -90,7 +94,8 @@ namespace Caneda
     }
 
     //! \brief Default Constructor
-    SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
+    SchematicScene::SchematicScene(QObject *parent) :
+        QGraphicsScene(SchematicScene::DefaultSceneRect, parent)
     {
         init();
     }
@@ -111,7 +116,8 @@ namespace Caneda
         m_modified = false;
 
         m_opensDataDisplay = true;
-        m_frameTexts = QStringList() << tr("Title: ") << tr("Drawn By: ") << tr("Date: ")+QDate::currentDate().toString() << tr("Revision: ");
+        m_frameTexts = QStringList() << tr("Title: ") << tr("Drawn By: ")
+            << tr("Date: ") + QDate::currentDate().toString() << tr("Revision: ");
         m_frameRows = 11;
         m_frameColumns = 16;
         m_macroProgress = false;
@@ -144,34 +150,6 @@ namespace Caneda
     static const char dataSetSuffix[] = ".dat";
     //! \brief Data display file suffix
     static const char dataDisplaySuffix[] = ".dpl";
-
-    /*!
-     * \brief Set schematic and datafile name
-     *
-     * \param name: name to set
-     * \todo Why do we need this. A new theme will be each project is a subdirectory.
-     * Schematic name is only a prefix
-     */
-    void SchematicScene::setFileName(const QString& name)
-    {
-        if(name == m_fileName) {
-            return;
-        }
-        else if(name.isEmpty()) {
-            m_fileName.clear();
-            m_dataSet.clear();
-            m_dataDisplay.clear();
-        }
-        else {
-            m_fileName = name;
-            QFileInfo info(m_fileName);
-            m_dataSet = info.baseName() + dataSetSuffix;
-            m_dataDisplay = info.baseName() + dataDisplaySuffix;
-        }
-
-        emit fileNameChanged(m_fileName);
-        emit titleToBeUpdated();
-    }
 
     //! \brief A helper method to return sign of given integer.
     inline int sign(int value)
@@ -697,8 +675,7 @@ namespace Caneda
     {
         if(m_modified != !m) {
             m_modified = !m;
-            emit modificationChanged(m_modified);
-            emit titleToBeUpdated();
+            emit changed();
         }
     }
 
@@ -1032,12 +1009,16 @@ namespace Caneda
         if(!sv) {
             return;
         }
+        SchematicView *view = sv->schematicView();
+        if (!view) {
+            return;
+        }
 
         if(e->modifiers() & Qt::ControlModifier){
             if(e->delta() > 0) {
                 QPoint viewPoint = sv->mapFromScene(e->scenePos());
 
-                sv->zoomIn();
+                view->zoomIn();
 
                 QPointF afterScalePoint(sv->mapFromScene(e->scenePos()));
                 int dx = (afterScalePoint - viewPoint).toPoint().x();
@@ -1050,7 +1031,7 @@ namespace Caneda
                 vb->setValue(vb->value() + dy);
             }
             else {
-                sv->zoomOut();
+                view->zoomOut();
             }
         }
         else if(e->modifiers() & Qt::ShiftModifier){
@@ -2108,14 +2089,16 @@ namespace Caneda
      * corresponding feedback (zoom band) is shown which indiates area that will
      * be zoomed. On mouse release, the area (rect) selected is zoomed.
      */
-    void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
+    void SchematicScene::zoomingAreaEvent(MouseActionEvent *event)
     {
         QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
-        SchematicWidget *sv = qobject_cast<SchematicWidget*>(v);
-        if(!sv) {
+        SchematicWidget *sw = qobject_cast<SchematicWidget*>(v);
+        if(!sw) {
             return;
         }
-        QPoint viewPoint = sv->mapFromScene(event->scenePos());
+        SchematicView *sv = sw->schematicView();
+
+        QPoint viewPoint = sw->mapFromScene(event->scenePos());
 
         // Delete the zoom band and return if this event was triggered for non left
         // mouse button.
@@ -2139,53 +2122,22 @@ namespace Caneda
         else if(event->type() == QEvent::GraphicsSceneMouseMove) {
             if (!m_zoomBand) {
                 m_zoomBand = new QRubberBand(QRubberBand::Rectangle);
-                m_zoomBand->setParent(sv->viewport());
+                m_zoomBand->setParent(sw->viewport());
                 m_zoomBand->show();
                 m_zoomRect.setRect(event->scenePos().x(), event->scenePos().y(), 0, 0);
             } else {
                 m_zoomRect.setBottomRight(event->scenePos());
             }
-            QRect rrect = sv->mapFromScene(m_zoomRect).boundingRect().normalized();
+            QRect rrect = sw->mapFromScene(m_zoomRect).boundingRect().normalized();
             m_zoomBand->setGeometry(rrect);
         }
         else {
             if (m_zoomBand) {
-                sv->fitInView(m_zoomRect, Qt::KeepAspectRatio);
+                sw->fit(m_zoomRect);
 
                 delete m_zoomBand;
                 m_zoomBand = 0;
             }
-            else {
-                sv->zoomIn();
-                QPointF afterScalePoint(sv->mapFromScene(event->scenePos()));
-                int dx = (afterScalePoint - viewPoint).toPoint().x();
-                int dy = (afterScalePoint - viewPoint).toPoint().y();
-
-                QScrollBar *hb = sv->horizontalScrollBar();
-                QScrollBar *vb = sv->verticalScrollBar();
-
-                hb->setValue(hb->value() + dx);
-                vb->setValue(vb->value() + dy);
-            }
-        }
-    }
-
-    /*!
-     * \brief Zoom out event handles zooming of the view based on mouse signals.
-     *
-     * If just a point is clicked(mouse press + release) then, an ordinary zoomOut
-     * is done (similar to selecting from menu)
-     */
-    void SchematicScene::zoomingOutAtPointEvent(MouseActionEvent *event)
-    {
-        QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
-        SchematicWidget *sv = qobject_cast<SchematicWidget*>(v);
-        if(!sv) {
-            return;
-        }
-
-        if(event->type() == QEvent::GraphicsSceneMousePress) {
-            sv->zoomOut();
         }
     }
 
@@ -2794,12 +2746,8 @@ namespace Caneda
                 changingActiveStatusEvent(e);
                 break;
 
-            case ZoomingAtPoint:
-                zoomingAtPointEvent(e);
-                break;
-
-            case ZoomingOutAtPoint:
-                zoomingOutAtPointEvent(e);
+            case ZoomingAreaEvent:
+                zoomingAreaEvent(e);
                 break;
 
             case PaintingDrawEvent:

@@ -168,7 +168,7 @@ namespace Caneda
     void IDocument::setFileName(const QString &fileName)
     {
         m_fileName = fileName;
-        emit documentChanged();
+        emit documentChanged(this);
     }
 
     /*!
@@ -177,5 +177,10 @@ namespace Caneda
     QList<IView*> IDocument::views() const
     {
         return DocumentViewManager::instance()->viewsForDocument(this);
+    }
+
+    void IDocument::emitDocumentChanged()
+    {
+        emit documentChanged(this);
     }
 }

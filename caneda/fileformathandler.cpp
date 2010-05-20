@@ -18,13 +18,16 @@
  ***************************************************************************/
 
 #include "fileformathandler.h"
+
+#include "schematicdocument.h"
 #include "xmlformat.h"
 #include "xmlsymbolformat.h"
 
 namespace Caneda
 {
     //! Constructor
-    FileFormatHandler::FileFormatHandler(SchematicScene *scene) : m_schematicScene(scene)
+    FileFormatHandler::FileFormatHandler(SchematicDocument *document) :
+        m_schematicDocument(document)
     {
     }
 
@@ -35,15 +38,30 @@ namespace Caneda
      * Returns NULL if there doesn't exist a handler for given extension.
      */
     FileFormatHandler* FileFormatHandler::handlerFromSuffix(const QString& ext,
-            SchematicScene *scene)
+            SchematicDocument *document)
     {
         if(ext == "xsch") {
-            return new XmlFormat(scene);
+            return new XmlFormat(document);
         }
         else if(ext == "xsym") {
-            return new XmlSymbolFormat(scene);
+            return new XmlSymbolFormat(document);
         }
         return 0;
+    }
+
+    SchematicDocument* FileFormatHandler::schematicDocument() const
+    {
+        return m_schematicDocument;
+    }
+
+    SchematicScene* FileFormatHandler::schematicScene() const
+    {
+        return m_schematicDocument ? m_schematicDocument->schematicScene() : 0;
+    }
+
+    QString FileFormatHandler::fileName() const
+    {
+        return m_schematicDocument ? m_schematicDocument->fileName() : QString();
     }
 
 } // namespace Caneda

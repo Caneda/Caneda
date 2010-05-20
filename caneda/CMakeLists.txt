@@ -11,8 +11,8 @@ ADD_SUBDIRECTORY( diagrams )
 ADD_SUBDIRECTORY( paintings )
 
 SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
-  schematicscene.cpp  sidebarmodel.cpp
-  main.cpp mainwindow.cpp canedaview.cpp
+  schematicscene.cpp sidebarmodel.cpp
+  main.cpp mainwindow.cpp
   schematicwidget.cpp  undocommands.cpp fileformathandler.cpp
   svgitem.cpp property.cpp propertyitem.cpp
   propertygroup.cpp component.cpp port.cpp library.cpp
@@ -21,6 +21,8 @@ SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   actionmanager.cpp singletonowner.cpp project.cpp
   schematicstatehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp
+  schematicdocument.cpp schematiccontext.cpp schematicview.cpp
+  textdocument.cpp textcontext.cpp textview.cpp textedit.cpp
 )
 
 SET(CANEDA_MOC_HDRS schematicscene.h schematicwidget.h
@@ -29,6 +31,8 @@ SET(CANEDA_MOC_HDRS schematicscene.h schematicwidget.h
   propertydialog.h folderbrowser.h project.h
   actionmanager.h singletonowner.h schematicstatehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
+  schematicdocument.h schematiccontext.h schematicview.h
+  textdocument.h textcontext.h textview.h textedit.h
 )
 
 QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )

@@ -23,7 +23,6 @@
 #ifndef EXPORTDIALOG_H
 #define EXPORTDIALOG_H
 
-#include "canedaview.h"
 #include "schematicscene.h"
 
 #include <QDialog>

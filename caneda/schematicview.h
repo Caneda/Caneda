@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,49 +17,52 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILEFORMATHANDLER_H
-#define FILEFORMATHANDLER_H
+#ifndef CANEDA_SCHEMATICVIEW_H
+#define CANEDA_SCHEMATICVIEW_H
 
-// Forward declarations
-class QString;
+#include "iview.h"
 
 namespace Caneda
 {
-    // Forward declarations
+    // Forward declrations
     class SchematicDocument;
-    class SchematicScene;
+    class SchematicWidget;
 
-    /*!
-     * This class is used to save and load files.
-     * Using this base class we can support any fileformat
-     */
-    class FileFormatHandler
+    class SchematicView : public IView
     {
+        Q_OBJECT
     public:
-        FileFormatHandler(SchematicDocument *doc = 0);
-        virtual ~FileFormatHandler() {}
-
-        virtual bool save() = 0;
-
-        /*!
-         * Loads the document. If non-negative is returned
-         * the operation is successful. Negative return
-         * value indicated failure
-         */
-        virtual bool load() = 0;
+        SchematicView(SchematicDocument *document);
+        virtual ~SchematicView();
 
         SchematicDocument* schematicDocument() const;
-        SchematicScene* schematicScene() const;
-        QString fileName() const;
 
-        static FileFormatHandler* handlerFromSuffix(const QString& extension,
-                SchematicDocument *document = 0);
+        // IView interface methods
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
 
-    protected:
-        SchematicDocument *m_schematicDocument;
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        virtual IView* duplicate();
+
+        virtual void updateSettingsChanges();
+        // End of IView interface methods
+
+        qreal currentZoom() const;
+
+        void setZoomLevel(qreal value);
+
+    private Q_SLOTS:
+        void onWidgetFocussed();
+
+    private:
+        SchematicWidget *m_schematicWidget;
+        ZoomRange m_zoomRange;
+        qreal m_currentZoom;
     };
-
 } // namespace Caneda
 
-#endif //FILEFORMATHANDLER_H
-
+#endif // CANEDA_SCHEMATICVIEW_H

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,49 +17,61 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILEFORMATHANDLER_H
-#define FILEFORMATHANDLER_H
+#ifndef CANEDA_SCHEMATIC_DOCUMENT_H
+#define CANEDA_SCHEMATIC_DOCUMENT_H
 
-// Forward declarations
-class QString;
+#include "idocument.h"
 
 namespace Caneda
 {
-    // Forward declarations
-    class SchematicDocument;
+    // Forward declations
     class SchematicScene;
 
-    /*!
-     * This class is used to save and load files.
-     * Using this base class we can support any fileformat
-     */
-    class FileFormatHandler
+    class SchematicDocument : public IDocument
     {
+        Q_OBJECT
     public:
-        FileFormatHandler(SchematicDocument *doc = 0);
-        virtual ~FileFormatHandler() {}
+        SchematicDocument();
+        ~SchematicDocument();
 
-        virtual bool save() = 0;
+        // Interface implementation
+        virtual IContext* context();
 
-        /*!
-         * Loads the document. If non-negative is returned
-         * the operation is successful. Negative return
-         * value indicated failure
-         */
-        virtual bool load() = 0;
+        virtual bool isModified() const;
 
-        SchematicDocument* schematicDocument() const;
+        virtual bool canUndo() const;
+        virtual bool canRedo() const;
+
+        virtual void undo();
+        virtual void redo();
+
+        virtual bool canCut() const;
+        virtual bool canCopy() const;
+        virtual bool canPaste() const;
+
+        virtual void cut();
+        virtual void copy();
+        virtual void paste();
+
+        virtual void selectAll();
+
+        virtual void print();
+        virtual void exportToPaintDevice(QPaintDevice *device,
+                const QVariantMap &configuration);
+
+        virtual bool load(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0);
+
+        virtual IView* createView();
+
+        virtual void updateSettingsChanges();
+
+        // End of Interface implemention.
         SchematicScene* schematicScene() const;
-        QString fileName() const;
 
-        static FileFormatHandler* handlerFromSuffix(const QString& extension,
-                SchematicDocument *document = 0);
-
-    protected:
-        SchematicDocument *m_schematicDocument;
+    private:
+        SchematicScene *m_schematicScene;
     };
-
 } // namespace Caneda
 
-#endif //FILEFORMATHANDLER_H
-
+#endif // CANEDA_SCHEMATIC_DOCUMENT_H

@@ -51,9 +51,8 @@ namespace Caneda
         virtual bool canOpen(const QFileInfo& info) const = 0;
         virtual QStringList fileNameFilters() const = 0;
 
+        virtual IDocument* newDocument() = 0;
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0) = 0;
-        virtual IView* createView(IDocument *document) = 0;
-
     };
 } // namespace Caneda
 

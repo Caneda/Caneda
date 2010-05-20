@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,49 +17,33 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILEFORMATHANDLER_H
-#define FILEFORMATHANDLER_H
+#ifndef CANEDA_TEXTCONTEXT_H
+#define CANEDA_TEXTCONTEXT_H
 
-// Forward declarations
-class QString;
+#include "icontext.h"
 
 namespace Caneda
 {
-    // Forward declarations
-    class SchematicDocument;
-    class SchematicScene;
-
-    /*!
-     * This class is used to save and load files.
-     * Using this base class we can support any fileformat
-     */
-    class FileFormatHandler
+    class TextContext : public IContext
     {
+        Q_OBJECT
     public:
-        FileFormatHandler(SchematicDocument *doc = 0);
-        virtual ~FileFormatHandler() {}
+        static TextContext* instance();
+        virtual ~TextContext();
 
-        virtual bool save() = 0;
+        // Interface implementation
+        virtual void init();
 
-        /*!
-         * Loads the document. If non-negative is returned
-         * the operation is successful. Negative return
-         * value indicated failure
-         */
-        virtual bool load() = 0;
+        virtual bool canOpen(const QFileInfo& info) const;
+        virtual QStringList fileNameFilters() const;
 
-        SchematicDocument* schematicDocument() const;
-        SchematicScene* schematicScene() const;
-        QString fileName() const;
+        virtual IDocument* newDocument();
+        virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
+        // End of interface implementation.
 
-        static FileFormatHandler* handlerFromSuffix(const QString& extension,
-                SchematicDocument *document = 0);
-
-    protected:
-        SchematicDocument *m_schematicDocument;
+    private:
+        TextContext(QObject *parent = 0);
     };
-
 } // namespace Caneda
 
-#endif //FILEFORMATHANDLER_H
-
+#endif //CANEDA_TEXTCONTEXT_H

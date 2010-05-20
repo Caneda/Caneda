@@ -22,6 +22,10 @@
 
 #include <QObject>
 #include <QString>
+#include <QVariant>
+
+// Forward declarations
+class QPaintDevice;
 
 namespace Caneda
 {
@@ -59,15 +63,28 @@ namespace Caneda
         virtual void copy() = 0;
         virtual void paste() = 0;
 
+        virtual void selectAll() = 0;
+
+        virtual void print() = 0;
+        virtual void exportToPaintDevice(QPaintDevice *device,
+                const QVariantMap &configuration) = 0;
+
         virtual bool load(QString *errorMessage = 0) = 0;
         virtual bool save(QString *errorMessage = 0) = 0;
+
+        virtual IView* createView() = 0;
+
+        virtual void updateSettingsChanges() = 0;
 
         QList<IView*> views() const;
 
         //TODO: Print specific interface methods
 
+    public Q_SLOTS:
+        void emitDocumentChanged();
+
     Q_SIGNALS:
-        void documentChanged();
+        void documentChanged(IDocument *who);
         void statusBarMessage(const QString& text);
 
         // Avoid private declarations as subclasses might need direct access.

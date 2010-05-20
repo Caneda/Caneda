@@ -20,6 +20,7 @@
 #ifndef CANEDA_IVIEW_H
 #define CANEDA_IVIEW_H
 
+#include <QDebug>
 #include <QObject>
 
 // Forward declaration
@@ -31,6 +32,24 @@ namespace Caneda
     class IContext;
     class IDocument;
     class DocumentViewManager;
+
+    struct ZoomRange
+    {
+        const qreal min;
+        const qreal max;
+
+        ZoomRange(qreal _min = 0., qreal _max = 1.0) :
+            min(_min), max(_max)
+        {
+            if (max < min) {
+                qWarning() << Q_FUNC_INFO << "Invalid range" << min << max;
+            }
+        }
+
+        bool contains(qreal value) const {
+            return value >= min && value <= max;
+        }
+    };
 
     class IView : public QObject
     {
@@ -44,13 +63,20 @@ namespace Caneda
         virtual QWidget* toWidget() const = 0;
         virtual IContext* context() const = 0;
 
-        virtual void setZoom(qreal percentage) = 0;
+        virtual void zoomIn() = 0;
+        virtual void zoomOut() = 0;
+        virtual void zoomFitInBest() = 0;
+        virtual void zoomOriginal() = 0;
 
-        virtual IView* duplicate() const = 0;
+        virtual IView* duplicate() = 0;
+
+        virtual void updateSettingsChanges() = 0;
+
 
     Q_SIGNALS:
         void focussedIn(IView *who);
         void closed(IView *who);
+        void statusBarMessage(const QString &text);
 
     protected:
         IDocument * const m_document;

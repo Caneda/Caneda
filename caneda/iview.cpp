@@ -71,5 +71,4 @@ namespace Caneda
     {
         return m_document;
     }
-
 } // namespace Caneda

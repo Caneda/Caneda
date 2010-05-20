@@ -20,8 +20,6 @@
 #ifndef CANEDA_SCHEMATICWIDGET_H
 #define CANEDA_SCHEMATICWIDGET_H
 
-#include "canedaview.h"
-
 #include <QGraphicsView>
 
 namespace Caneda
@@ -29,61 +27,35 @@ namespace Caneda
     // Forward declarations
     class SchematicItem;
     class SchematicScene;
+    class SchematicView;
 
-    class SchematicWidget : public QGraphicsView, public CanedaView
+    class SchematicWidget : public QGraphicsView
     {
     Q_OBJECT
     public:
         static const qreal zoomFactor;
 
-        SchematicWidget(SchematicScene *sc = 0,QWidget *parent = 0);
+        SchematicWidget(SchematicView *view = 0);
         ~SchematicWidget();
 
+        SchematicView* schematicView() const;
         SchematicScene* schematicScene() const;
-
-        //reimplemented virtuals from CanedaView
-        void setFileName(const QString& name);
-        QString fileName() const;
-
-        bool load();
-        bool save();
-
-        void zoomIn();
-        void zoomOut();
-
-        void showAll();
-        void showNoZoom();
-
-        bool isSchematicWidget() const { return true; }
-
-        QWidget* toWidget() const;
-        SchematicWidget* toSchematicWidget() const;
-
-        bool isModified() const;
-
-        void copy() const;
-        void cut();
-        void paste();
 
         void saveScrollState();
         void restoreScrollState();
 
-    public Q_SLOTS:
-        void setModified(bool m);
+        qreal fit(const QRectF &rect);
 
     signals:
-        void modificationChanged(bool modified);
-        void fileNameChanged(const QString& file);
-        void titleToBeUpdated();
         void cursorPositionChanged(const QString& newPos);
         void focussed(SchematicWidget *view);
-        void pasteInvoked();
 
     protected:
         void mouseMoveEvent(QMouseEvent *event);
         void focusInEvent(QFocusEvent *event);
 
     private:
+        SchematicView *m_schematicView;
         int m_horizontalScroll;
         int m_verticalScroll;
     };

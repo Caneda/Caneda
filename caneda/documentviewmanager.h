@@ -40,22 +40,27 @@ namespace Caneda
         void highlightView(IView *view);
         void highlightViewForDocument(IDocument *document);
 
+        void newDocument(IContext *context);
+
         bool openFile(const QString &fileName);
         bool closeFile(const QString &fileName);
 
         bool saveDocuments(const QList<IDocument*> &documents);
-        bool closeDocuments(const QList<IDocument*> &documents);
+        bool closeDocuments(const QList<IDocument*> &documents, bool askForSave = true);
 
         bool splitView(IView *view, Qt::Orientation orientation);
 
         bool saveView(IView *view);
-        bool closeView(IView *view);
+        bool closeView(IView *view, bool askForSave = true);
 
         IDocument* currentDocument() const;
         IView* currentView() const;
 
         IDocument* documentForFileName(const QString &fileName) const;
         QList<IView*> viewsForDocument(const IDocument *document) const;
+        QList<IDocument*> documents() const;
+
+        void updateSettingsChanges();
 
     private Q_SLOTS:
         void onViewFocussedIn(IView *who);

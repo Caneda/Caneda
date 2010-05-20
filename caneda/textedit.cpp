@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,49 +17,30 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILEFORMATHANDLER_H
-#define FILEFORMATHANDLER_H
-
-// Forward declarations
-class QString;
+#include "textedit.h"
 
 namespace Caneda
 {
-    // Forward declarations
-    class SchematicDocument;
-    class SchematicScene;
-
-    /*!
-     * This class is used to save and load files.
-     * Using this base class we can support any fileformat
-     */
-    class FileFormatHandler
+    TextEdit::TextEdit(QTextDocument *document)
     {
-    public:
-        FileFormatHandler(SchematicDocument *doc = 0);
-        virtual ~FileFormatHandler() {}
+        setDocument(document);
+    }
 
-        virtual bool save() = 0;
+    TextEdit::~TextEdit()
+    {
 
-        /*!
-         * Loads the document. If non-negative is returned
-         * the operation is successful. Negative return
-         * value indicated failure
-         */
-        virtual bool load() = 0;
+    }
 
-        SchematicDocument* schematicDocument() const;
-        SchematicScene* schematicScene() const;
-        QString fileName() const;
+    void TextEdit::setPointSize(qreal size)
+    {
+        QFont fnt = font();
+        fnt.setPointSize(static_cast<int>(qRound(size)));
+        setFont(fnt);
+    }
 
-        static FileFormatHandler* handlerFromSuffix(const QString& extension,
-                SchematicDocument *document = 0);
-
-    protected:
-        SchematicDocument *m_schematicDocument;
-    };
-
+    void TextEdit::focusInEvent(QFocusEvent *event)
+    {
+        emit focussed();
+        QTextEdit::focusInEvent(event);
+    }
 } // namespace Caneda
-
-#endif //FILEFORMATHANDLER_H
-

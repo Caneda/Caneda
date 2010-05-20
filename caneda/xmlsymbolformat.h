@@ -29,7 +29,7 @@ namespace Caneda
     class XmlSymbolFormat : public FileFormatHandler
     {
     public:
-        XmlSymbolFormat(SchematicScene *scene = 0);
+        XmlSymbolFormat(SchematicDocument *doc = 0);
         ~XmlSymbolFormat() {}
 
         bool save();

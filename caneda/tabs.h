@@ -25,6 +25,7 @@
 namespace Caneda
 {
     // Forward declarations.
+    class IDocument;
     class IView;
     class Manager;
 
@@ -46,12 +47,22 @@ namespace Caneda
 
     public Q_SLOTS:
         void onViewFocussedIn(IView *view);
+        void onDocumentChanged(IDocument *document);
+        void onStatusBarMessage(const QString &message);
+
+    Q_SIGNALS:
+        void tabInfoChanged(Tab *tab);
+        void statusBarMessage(Tab *tab, const QString &message);
 
     protected:
         void closeEvent(QCloseEvent *event);
 
     private:
         void addView(IView *view);
+        QIcon modifiedIcon() const;
+        QIcon unmodifiedIcon() const;
+        void updateTitle();
+
         QList<IView*> m_views;
 
         friend class Manager;
@@ -59,7 +70,7 @@ namespace Caneda
 
     class TabWidget : public QTabWidget
     {
-    Q_OBJECT
+        Q_OBJECT
     public:
         TabWidget(QWidget *parent = 0);
         QList<Tab*> tabs() const;
@@ -74,6 +85,14 @@ namespace Caneda
 
         void highlightView(IView *view);
         void closeView(IView *view);
+
+    Q_SIGNALS:
+        void statusBarMessage(const QString &message);
+
+    private Q_SLOTS:
+        void updateTabInfo(Tab *tab);
+        void onStatusBarMessage(Tab *tab, const QString &message);
+        void onTabCloseRequested(int index);
     };
 
 } // namespace Caneda

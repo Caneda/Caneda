@@ -22,6 +22,7 @@
 #include "component.h"
 #include "item.h"
 #include "port.h"
+#include "schematicdocument.h"
 #include "schematicscene.h"
 #include "schematicwidget.h"
 #include "wire.h"
@@ -83,7 +84,7 @@ namespace Caneda
     }
 
     //! Constructor
-    XmlFormat::XmlFormat(SchematicScene *scene) : FileFormatHandler(scene)
+    XmlFormat::XmlFormat(SchematicDocument *doc) : FileFormatHandler(doc)
     {
     }
 
@@ -106,7 +107,7 @@ namespace Caneda
             qDebug("Looks buggy! Null data to save! Was this expected?");
         }
 
-        QFile file(scene->fileName());
+        QFile file(fileName());
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
                     QObject::tr("Cannot save document!"));
@@ -126,10 +127,10 @@ namespace Caneda
             return false;
         }
 
-        QFile file(scene->fileName());
+        QFile file(fileName());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
-                    QObject::tr("Cannot load document ")+scene->fileName());
+                    QObject::tr("Cannot load document ")+fileName());
             return false;
         }
 
@@ -186,7 +187,7 @@ namespace Caneda
         writer->writeAttribute("version", Caneda::version);
 
         //Now we copy all the elements and properties previously defined in the schematic
-        QFile file(scene->fileName());
+        QFile file(fileName());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             return "";
         }
@@ -329,7 +330,7 @@ namespace Caneda
         SchematicScene *scene = schematicScene();
         writer->writeStartElement(qualifiedName);
 
-        QFile file(scene->fileName());
+        QFile file(fileName());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             return;
         }

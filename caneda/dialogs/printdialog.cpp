@@ -57,8 +57,11 @@ namespace Caneda
         printer = new QPrinter();
         printer->setOrientation(QPrinter::Landscape);
 
+        //PORT:
+#if 0
         setDocName(schema->fileName());
         setFileName(schema->fileName());
+#endif
 
         if(!docname.isEmpty()) {
             printer->setDocName(docname);

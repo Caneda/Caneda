@@ -31,7 +31,7 @@ namespace Caneda
     class XmlFormat : public FileFormatHandler
     {
     public:
-        XmlFormat(SchematicScene *scene = 0);
+        XmlFormat(SchematicDocument *doc = 0);
         ~XmlFormat() {}
 
         bool save();

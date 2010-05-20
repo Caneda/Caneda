@@ -24,7 +24,8 @@
 #include "actionmanager.h"
 #include "componentssidebar.h"
 #include "library.h"
-#include "canedaview.h"
+#include "schematiccontext.h"
+#include "schematicdocument.h"
 #include "schematicscene.h"
 #include "schematicwidget.h"
 #include "xmlsymbolformat.h"
@@ -146,6 +147,7 @@ namespace Caneda
 
     void Project::slotAddToProject()
     {
+        SchematicContext *context = SchematicContext::instance();
         if(projectLibrary) {
             AddToProjectDialog *p = new AddToProjectDialog(this);
 
@@ -157,11 +159,10 @@ namespace Caneda
                                                                     "", tr("Component-xml (*.xsch)"));
 
                     if(!sourceFileName.isEmpty()) {
-                        CanedaView *viewFile = new SchematicWidget(0, this);
-                        if(!viewFile->load(sourceFileName)) {
-                            QMessageBox::critical(this, tr("Error"),
-                                                  tr("Could not open file!"));
-
+                        QString errorMessage;
+                        QScopedPointer<IDocument> document(context->open(sourceFileName, &errorMessage));
+                        if (!document) {
+                            QMessageBox::critical(this, tr("Error opening file"), errorMessage);
                             return;
                         }
 
@@ -184,11 +185,15 @@ namespace Caneda
                         return;
                     }
 
-                    CanedaView *viewFile = new SchematicWidget(0, this);
-                    viewFile->setFileName(fileName);
-                    if(!viewFile->save()) {
-                        QMessageBox::critical(this, tr("Error"),
-                                tr("Could not save file!"));
+                    QScopedPointer<IDocument> document(context->newDocument());
+                    if (!document) {
+                        qWarning() << Q_FUNC_INFO << "newDocument() failed";
+                        return;
+                    }
+                    document->setFileName(fileName);
+                    QString errorMessage;
+                    if(!document->save(&errorMessage)) {
+                        QMessageBox::critical(this, tr("Error saving file"), errorMessage);
                         return;
                     }
                 }
@@ -198,13 +203,13 @@ namespace Caneda
                 }
 
                 //We generate the corresponding symbol
-                CanedaView *view = new SchematicWidget(0, this);
-                view->setFileName(fileName);
-                view->toSchematicWidget()->schematicScene()->setMode(Caneda::SymbolMode);
+                QScopedPointer<SchematicDocument> document(qobject_cast<SchematicDocument*>(context->newDocument()));
+                document->setFileName(fileName);
+                document->schematicScene()->setMode(Caneda::SymbolMode);
 
                 fileName.replace(".xsch",".xsym");
-                view->setFileName(fileName);
-                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicWidget()->schematicScene());
+                document->setFileName(fileName);
+                XmlSymbolFormat *symbol = new XmlSymbolFormat(document.data());
                 symbol->save();
 
                 //Now we load the new component in the library

@@ -30,7 +30,7 @@ namespace Caneda
 
     class Action : public QAction
     {
-    Q_OBJECT
+        Q_OBJECT
     public:
         Action(QObject *parent = 0);
         Action(const QString& text, QObject *parent = 0);
@@ -69,7 +69,6 @@ namespace Caneda
         SchematicScene::MouseAction mouseActionForAction(Action *action) const;
 
         QList<Action*> mouseActions() const;
-
 
     private:
         ActionManager(QObject *parent = 0);
