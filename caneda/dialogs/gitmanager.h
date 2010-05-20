@@ -42,13 +42,15 @@ namespace Caneda
         void slotSaveBackup();
         void slotRevert();
         void slotRestore();
+        void slotHistory();
 
-        void slotLog();
         void slotUpdateOutput();
+        void slotUpdateHistory();
 
     private:
         QString m_path; // Path to the repository
         QProcess *gitProcess; // Git process
+        QProcess *gitProcessHistory; // Git process
 
         Ui::GitManager ui;
     };

@@ -40,15 +40,23 @@ namespace Caneda
         // Check if directory exists
         m_path = ( dir.isEmpty() ? QString(".") : dir );
 
+        // Set up git processes
         gitProcess = new QProcess(this);
         gitProcess->setWorkingDirectory(m_path);
+        connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateOutput()));
+        connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotHistory()));
+
+        gitProcessHistory = new QProcess(this);
+        gitProcessHistory->setWorkingDirectory(m_path);
+        connect(gitProcessHistory, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateHistory()));
 
         // Conections signal/slots
         connect(ui.btnSaveBackup, SIGNAL(clicked()), SLOT(slotSaveBackup()));
         connect(ui.btnRestoreBackup, SIGNAL(clicked()), SLOT(slotRestore()));
         connect(ui.btnRevertStep, SIGNAL(clicked()), SLOT(slotRevert()));
 
-        connect(gitProcess, SIGNAL(stateChanged(QProcess::ProcessState)), SLOT(slotUpdateOutput()));
+        // Show actual history
+        slotHistory();
     }
 
     GitManager::~GitManager()
@@ -89,10 +97,10 @@ namespace Caneda
         gitProcess->start(QString("git branch -D temporal"));
     }
 
-    void GitManager::slotLog()
+    void GitManager::slotHistory()
     {
         // Run 'git log'
-        gitProcess->start(QString("git log --reverse --relative-date"));
+        gitProcessHistory->start(QString("git log --reverse --relative-date"));
     }
 
     void GitManager::slotUpdateOutput()
@@ -100,6 +108,15 @@ namespace Caneda
         QString data = QString(gitProcess->readAllStandardOutput());
         if(!data.isEmpty()) {
             ui.editOutput->appendPlainText(data);
+        }
+    }
+
+    void GitManager::slotUpdateHistory()
+    {
+        QString data = QString(gitProcessHistory->readAllStandardOutput());
+        if(!data.isEmpty()) {
+            ui.listHistory->clear();
+            ui.listHistory->addItem(data);
         }
     }
 
