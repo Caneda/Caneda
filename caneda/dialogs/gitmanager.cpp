@@ -83,7 +83,7 @@ namespace Caneda
         // Run 'git revert'
         gitProcess->start(QString("git checkout"));
         gitProcess->waitForFinished();
-        gitProcess->start(QString("git revert --no-edit ") + ui.editRevert->text());
+        gitProcess->start(QString("git revert --no-edit ") + ui.listHistory->currentItem()->data(Qt::AccessibleDescriptionRole).toString());
         gitProcess->waitForFinished();
         slotHistory();
     }
@@ -91,7 +91,7 @@ namespace Caneda
     void GitManager::slotRestore()
     {
         // Restore previous backup
-        gitProcess->start(QString("git checkout -b temporal ") + ui.editRevert->text());
+        gitProcess->start(QString("git checkout -b temporal ") + ui.listHistory->currentItem()->data(Qt::AccessibleDescriptionRole).toString());
         gitProcess->waitForFinished();
         gitProcess->start(QString("git merge master -s ours"));
         gitProcess->waitForFinished();
@@ -131,14 +131,15 @@ namespace Caneda
             reader->readNext();
 
             if(reader->isStartElement() && reader->name() == "commit") {
+                QListWidgetItem *item = new QListWidgetItem(ui.listHistory);
                 while(!reader->isEndElement() || reader->name() != "commit") {
 
                     reader->readNext();
                     if(reader->isStartElement() && reader->name() == "msg") {
-                        ui.listHistory->addItem(reader->readElementText());
+                        item->setText(reader->readElementText());
                     }
                     else if(reader->isStartElement() && reader->name() == "hash") {
-                        ui.editOutput->appendPlainText(reader->readElementText());
+                        item->setData(Qt::AccessibleDescriptionRole, reader->readElementText());
                     }
                 }
             }
