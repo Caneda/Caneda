@@ -40,7 +40,6 @@ namespace Caneda
 
     private Q_SLOTS:
         void slotSaveBackup();
-        void slotRevert();
         void slotRestore();
         void slotHistory();
 

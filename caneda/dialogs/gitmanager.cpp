@@ -54,7 +54,6 @@ namespace Caneda
         // Conections signal/slots
         connect(ui.btnSaveBackup, SIGNAL(clicked()), SLOT(slotSaveBackup()));
         connect(ui.btnRestoreBackup, SIGNAL(clicked()), SLOT(slotRestore()));
-        connect(ui.btnRevertStep, SIGNAL(clicked()), SLOT(slotRevert()));
 
         // Show actual history
         slotHistory();
@@ -80,20 +79,11 @@ namespace Caneda
         slotHistory();
     }
 
-    void GitManager::slotRevert()
-    {
-        // Run 'git revert'
-        gitProcess->start(QString("git checkout"));
-        gitProcess->waitForFinished();
-        QString hash = ui.listHistory->currentItem()->data(Qt::AccessibleDescriptionRole).toString();
-        gitProcess->start(QString("git revert --no-edit ") + hash);
-        gitProcess->waitForFinished();
-        slotHistory();
-    }
-
     void GitManager::slotRestore()
     {
         // Restore previous backup
+        gitProcess->start(QString("git checkout ."));
+        gitProcess->waitForFinished();
         QString hash = ui.listHistory->currentItem()->data(Qt::AccessibleDescriptionRole).toString();
         gitProcess->start(QString("git checkout -b temporal ") + hash);
         gitProcess->waitForFinished();
