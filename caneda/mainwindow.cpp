@@ -391,12 +391,6 @@ namespace Caneda
         action->setWhatsThis(tr("Select All\n\nSelects all elements of the document"));
         connect(action, SIGNAL(triggered()), SLOT(slotSelectAll()));
 
-        action = am->createAction("selectMarker", tr("Select Markers"));
-        action->setShortcut(CTRL+SHIFT+Key_M);
-        action->setStatusTip(tr("Selects all markers"));
-        action->setWhatsThis(tr("Select Markers\n\nSelects all diagram markers of the document"));
-        connect(action, SIGNAL(triggered()), SLOT(slotSelectMarker()));
-
         action = am->createAction("editFind", icon("edit-find"), tr("Find..."));
         action->setShortcut(CTRL+Key_F);
         action->setStatusTip(tr("Find a piece of text"));
@@ -803,7 +797,6 @@ namespace Caneda
 
         editMenu->addAction(action("select"));
         editMenu->addAction(action("selectAll"));
-        editMenu->addAction(action("selectMarker"));
         editMenu->addAction(action("editFind"));
         editMenu->addAction(action("editRotate"));
         editMenu->addAction(action("editMirror"));
@@ -1465,12 +1458,6 @@ namespace Caneda
         foreach(QGraphicsItem* item, v->toSchematicView()->schematicScene()->items()) {
             item->setSelected(true);
         }
-    }
-
-    void MainWindow::slotSelectMarker()
-    {
-        setNormalAction();
-        //TODO: implement this or rather port directly
     }
 
     void MainWindow::slotEditFind()

@@ -81,7 +81,6 @@ namespace Caneda
         void slotEditPaste();
         void slotEditFind();
         void slotSelectAll();
-        void slotSelectMarker();
         void slotSymbolEdit();
         void slotIntoHierarchy();
         void slotPopHierarchy();
