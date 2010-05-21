@@ -63,25 +63,42 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \brief Saves new backup.
+     *
+     * First we initialize git repository in case it was not created.
+     * Then we add all files modified, and finally we commit the
+     * result, with an optional message from the user.
+     */
     void GitManager::slotSaveBackup()
     {
-        // Saves new backup
         // Run 'git init'
         gitProcess->start(QString("git init"));
         gitProcess->waitForFinished();
         // Run 'git commit'
         gitProcess->start(QString("git add *"));
         gitProcess->waitForFinished();
-        QString description = (ui.editDescription->text().isEmpty() ? QString("Backup saved by user") : ui.editDescription->text());
+        QString description = (ui.editDescription->text().isEmpty() ? QString(tr("Backup saved by user")) : ui.editDescription->text());
         ui.editDescription->clear();
         gitProcess->start(QString("git commit -a -m \"") + description + QString("\""));
         gitProcess->waitForFinished();
         slotHistory();
     }
 
+    /*!
+     * \brief Restores previous backup.
+     *
+     * First we discard all current changes. After that we create
+     * a new temporal branch and reset it to the user selected point.
+     * Then we merge the temporal with master, discarding all differences
+     * from master. Finally we merge the result with master and delete
+     * temporal branch.
+     * In this way, we can go back to a previous backup, without losing
+     * intermediate history (as would happen with a direct git-reset
+     * directly over master).
+     */
     void GitManager::slotRestore()
     {
-        // Restore previous backup
         gitProcess->start(QString("git checkout ."));
         gitProcess->waitForFinished();
         QString hash = ui.listHistory->currentItem()->data(Qt::AccessibleDescriptionRole).toString();
@@ -98,12 +115,23 @@ namespace Caneda
         slotHistory();
     }
 
+    /*!
+     * \brief Runs git-log to get the history
+     *
+     * We run git-log with a custom format. In the format
+     * we use a temporal xml string, allowing for an
+     * easy parse once the result is written to standard
+     * output.
+     */
     void GitManager::slotHistory()
     {
         // Run 'git log' with custom xml format to parse it with streamReader
         gitProcessHistory->start(QString("git log --reverse --relative-date --format=format:\"<commit>%n<hash>%H</hash>%n<msg>%ar - %s</msg>%n</commit>\""));
     }
 
+    /*!
+     * \brief Shows the standard output from git in a widget
+     */
     void GitManager::slotUpdateOutput()
     {
         QString data = QString(gitProcess->readAllStandardOutput());
@@ -112,6 +140,15 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Parse and show the output from git-log
+     *
+     * We parse the output from previous git-log, and
+     * then show the result in a QListWidget. The hash from
+     * git log is not shown, but is used later to allow the
+     * user to select an item, an recover that point in
+     * history.
+     */
     void GitManager::slotUpdateHistory()
     {
         QString data = "<gitHistory>\n";
