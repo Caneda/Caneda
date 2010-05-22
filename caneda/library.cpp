@@ -393,9 +393,9 @@ namespace Caneda
     {
         bool status = true;
 
-        status &= load(libpathtree + "/components/basic/passive.xpro", svgPainter_);
-        status &= load(libpathtree + "/components/basic/active.xpro", svgPainter_);
-        status &= load(libpathtree + "/components/basic/semiconductor.xpro", svgPainter_);
+        status = status && load(libpathtree + "/components/basic/passive.xpro", svgPainter_);
+        status = status && load(libpathtree + "/components/basic/active.xpro", svgPainter_);
+        status = status && load(libpathtree + "/components/basic/semiconductor.xpro", svgPainter_);
 
         if(status) {
             emit basicLibrariesLoaded();
