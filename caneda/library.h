@@ -120,7 +120,7 @@ namespace Caneda
         Library* library(const QString& libName) const;
 
     Q_SIGNALS:
-        void passiveLibraryLoaded();
+        void basicLibrariesLoaded();
 
     private:
         friend class SingletonManager;

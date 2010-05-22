@@ -391,10 +391,16 @@ namespace Caneda
      */
     bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_)
     {
-        bool status = load(libpathtree + "/components/basic/passive.xpro", svgPainter_);
-        if (status) {
-            emit passiveLibraryLoaded();
+        bool status = true;
+
+        status &= load(libpathtree + "/components/basic/passive.xpro", svgPainter_);
+        status &= load(libpathtree + "/components/basic/active.xpro", svgPainter_);
+        status &= load(libpathtree + "/components/basic/semiconductor.xpro", svgPainter_);
+
+        if(status) {
+            emit basicLibrariesLoaded();
         }
+
         return status;
     }
 

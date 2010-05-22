@@ -1929,6 +1929,8 @@ namespace Caneda
         }
 
         m_componentsSidebar->plugLibrary("Passive", "Components");
+        m_componentsSidebar->plugLibrary("Active", "Components");
+        m_componentsSidebar->plugLibrary("Semiconductor", "Components");
     }
 
     void MainWindow::saveSettings()
