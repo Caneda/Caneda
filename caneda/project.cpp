@@ -304,20 +304,25 @@ namespace Caneda
         //should copy the component as well as all its dependencies.
     }
 
+    /*!
+     * \brief Generates the symbol corresponding to a schematic file.
+     */
     void Project::generateSymbol(const QString& fileName)
     {
-        //We generate the symbol corresponding to a schematic file
-        CanedaView *view = new SchematicView(0, this);
-        view->setFileName(fileName);
-        view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
-
         QString symbolFileName = fileName;
+
+        // First, we open the symbol from corresponding schematic
+        CanedaView *view = new SchematicView(0, this);
+        view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
+        view->load(symbolFileName);
+
+        // Then we save the symbol in a xsym file
         symbolFileName.replace(".xsch",".xsym");
         view->setFileName(symbolFileName);
         XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
         symbol->save();
 
-        //Now we load the new component in the library
+        // Finally we load the new component in the library
         projectLibrary->parseExternalComponent(symbolFileName);
         projectLibrary->saveLibrary();
         m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
