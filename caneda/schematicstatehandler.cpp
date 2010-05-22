@@ -55,14 +55,11 @@ namespace Caneda
         }
 
         void updateToolbarInsertibles() {
-            Settings *settings = Settings::instance();
-            const QString libpath = settings->currentValue("sidebarLibrary").toString();
-            const QString passiveLibPath = libpath + "/components/basic/passive.xpro";
             LibraryLoader *loader = LibraryLoader::instance();
             toolbarInsertibles.insert("insGround",
                     loader->newComponent("Ground", 0, "Passive"));
             toolbarInsertibles.insert("insPort",
-                    loader->newComponent("Port", 0, passiveLibPath));
+                    loader->newComponent("Port", 0, "Passive"));
         }
 
         void clearInsertibles() {
