@@ -57,13 +57,18 @@ namespace Caneda
 
     signals:
         void itemClicked(const QString&, const QString&);
-        void itemDoubleClicked(const QString& filename);
+        void itemDoubleClicked(const QString&);
 
     private Q_SLOTS:
         void slotOnDoubleClicked(const QString&, const QString&);
 
     private:
-        void setCurrentLibrary(const QString& libFileName);
+        void setCurrentLibrary(const QString&);
+
+        void addExistingComponent();
+        void addNewComponent(const QString&);
+        void importFromProject();
+        void generateSymbol(const QString&);
 
         ComponentsSidebar *m_projectsSidebar;
         Library *projectLibrary;

@@ -31,7 +31,7 @@ namespace Caneda
     enum AddToProjectChoice {
         NewComponent,
         ExistingComponent,
-        FromExistingProject
+        ImportFromProject
     };
 }
 
@@ -70,7 +70,7 @@ private:
     QDialog *dialog;
     QRadioButton *newComponent;
     QRadioButton *existingComponent;
-    QRadioButton *fromExistingProject;
+    QRadioButton *importFromProject;
     QLineEdit *editFilepath;
 
     bool stateAccepted;

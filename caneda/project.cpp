@@ -83,64 +83,60 @@ namespace Caneda
 
     bool Project::isValid()
     {
-        if(projectLibrary == 0) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return (projectLibrary == 0 ? false : true);
     }
 
     void Project::slotNewProject()
     {
         QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"),
                                                         "", tr("Caneda Projects (*.xpro)"));
-        if(!fileName.isEmpty()) {
-            if(QFileInfo(fileName).suffix().isEmpty()) {
-                fileName = fileName + ".xpro";
-            }
+        if(fileName.isEmpty()) {
+            return;
+        }
 
-            //First we create the folder structure where files are to be placed
-            QFileInfo fileInfo = QFileInfo(fileName);
-            QDir filePath = QDir(fileInfo.absolutePath() + "/" + fileInfo.baseName());
-            if(!filePath.exists()) {
-                filePath.mkpath(filePath.absolutePath());
-            }
-            fileName = filePath.absolutePath() + "/" + fileInfo.fileName();
+        if(QFileInfo(fileName).suffix().isEmpty()) {
+            fileName = fileName + ".xpro";
+        }
 
-            //Then we create the library/project
-            LibraryLoader *library = LibraryLoader::instance();
+        //First we create the folder structure where files are to be placed
+        QFileInfo fileInfo = QFileInfo(fileName);
+        QDir filePath = QDir(fileInfo.absolutePath() + "/" + fileInfo.baseName());
+        if(!filePath.exists()) {
+            filePath.mkpath(filePath.absolutePath());
+        }
+        fileName = filePath.absolutePath() + "/" + fileInfo.fileName();
 
-            if(library->newLibrary(fileName)) {
-                slotCloseProject();
-                setCurrentLibrary(fileName);
-                projectLibrary = library->library(m_libraryName);
-                projectLibrary->saveLibrary();
-                qDebug() << "Succesfully created library!";
-                m_projectsSidebar->plugLibrary(m_libraryName, "root");
-            }
+        //Then we create the library/project
+        LibraryLoader *library = LibraryLoader::instance();
+        if(library->newLibrary(fileName)) {
+            slotCloseProject();
+            setCurrentLibrary(fileName);
+            projectLibrary = library->library(m_libraryName);
+            projectLibrary->saveLibrary();
+            qDebug() << "Succesfully created library!";
+            m_projectsSidebar->plugLibrary(m_libraryName, "root");
         }
     }
 
     void Project::slotOpenProject(QString fileName)
     {
         //If no name is provided, we open a dialog asking the user for a project to be opened
-        if(fileName == 0) {
+        if(fileName.isEmpty()) {
             fileName = QFileDialog::getOpenFileName(this, tr("Open Project"),
                                                     "", tr("Caneda Projects (*.xpro)"));
         }
 
-        if(!fileName.isEmpty()) {
+        if(fileName.isEmpty()) {
+            return;
+        }
 
-            LibraryLoader *library = LibraryLoader::instance();
-
-            if(library->load(fileName)) {
-                slotCloseProject();
-                setCurrentLibrary(fileName);
-                projectLibrary = library->library(m_libraryName);
-                qDebug() << "Succesfully loaded library!";
-                m_projectsSidebar->plugLibrary(m_libraryName, "root");
-            }
+        LibraryLoader *library = LibraryLoader::instance();
+        if(library->load(fileName)) {
+            slotCloseProject();
+            setCurrentLibrary(fileName);
+            projectLibrary = library->library(m_libraryName);
+            qDebug() << "Succesfully loaded library!";
+            m_projectsSidebar->plugLibrary(m_libraryName, "root");
         }
     }
 
@@ -150,72 +146,15 @@ namespace Caneda
             AddToProjectDialog *p = new AddToProjectDialog(this);
 
             if(p->accepted()) {
-                QString fileName;
                 if(p->userChoice() == Caneda::ExistingComponent) {
-
-                    QString sourceFileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
-                                                                    "", tr("Component-xml (*.xsch)"));
-
-                    if(!sourceFileName.isEmpty()) {
-                        CanedaView *viewFile = new SchematicView(0, this);
-                        if(!viewFile->load(sourceFileName)) {
-                            QMessageBox::critical(this, tr("Error"),
-                                                  tr("Could not open file!"));
-
-                            return;
-                        }
-
-                        //We copy the selected file to current project folder
-                        fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(sourceFileName).fileName();
-                        if(!QFile::copy(sourceFileName, fileName)) {
-                            QMessageBox::critical(this, tr("Error"),
-                                    tr("Component %1 already exists in project!").arg(QFileInfo(fileName).baseName()));
-                            return;
-                        }
-                    }
+                    addExistingComponent();
                 }
                 else if(p->userChoice() == Caneda::NewComponent) {
-                    fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + p->fileName()+".xsch";
-
-                    //When the component is already created, we return.
-                    if(QFileInfo(fileName).exists()) {
-                        QMessageBox::critical(this, tr("Error"),
-                                tr("Component already created!"));
-                        return;
-                    }
-
-                    CanedaView *viewFile = new SchematicView(0, this);
-                    viewFile->setFileName(fileName);
-                    if(!viewFile->save()) {
-                        QMessageBox::critical(this, tr("Error"),
-                                tr("Could not save file!"));
-                        return;
-                    }
+                    addNewComponent(p->fileName());
                 }
                 else {
-                    //TODO in case of adding a component from another project, we
-                    //should copy the component as well as all its dependencies.
+                    importFromProject();
                 }
-
-                //We generate the corresponding symbol
-                CanedaView *view = new SchematicView(0, this);
-                view->setFileName(fileName);
-                view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
-
-                fileName.replace(".xsch",".xsym");
-                view->setFileName(fileName);
-                XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
-                symbol->save();
-
-                //Now we load the new component in the library
-                projectLibrary->parseExternalComponent(fileName);
-                projectLibrary->saveLibrary();
-                m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-                m_projectsSidebar->plugLibrary(m_libraryName, "root");
-
-                //Finally we open the component
-                fileName.replace(".xsym",".xsch");
-                emit itemDoubleClicked(fileName);
             }
         }
         else {
@@ -299,6 +238,90 @@ namespace Caneda
         //The library name is created from the basename with the first letter in uppercase
         m_libraryName = QFileInfo(libFileName).baseName();
         m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
+    }
+
+    void Project::addExistingComponent()
+    {
+        QString sourceFileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
+                                                              "", tr("Component-xml (*.xsch)"));
+
+        if(sourceFileName.isEmpty()) {
+            return;
+        }
+
+        CanedaView *viewFile = new SchematicView(0, this);
+        if(!viewFile->load(sourceFileName)) {
+            QMessageBox::critical(this, tr("Error"),
+                                  tr("Could not open file!"));
+
+            return;
+        }
+
+        //We copy the selected file to current project folder
+        QString fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(sourceFileName).fileName();
+        if(!QFile::copy(sourceFileName, fileName)) {
+            QMessageBox::critical(this, tr("Error"),
+                                  tr("Component %1 already exists in project!").arg(QFileInfo(fileName).baseName()));
+            return;
+        }
+
+        //We generate the corresponding symbol
+        generateSymbol(fileName);
+
+        //Finally we open the component
+        emit itemDoubleClicked(fileName);
+    }
+
+    void Project::addNewComponent(const QString& componentName)
+    {
+        QString fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + componentName +".xsch";
+
+        //When the component is already created, we return.
+        if(QFileInfo(fileName).exists()) {
+            QMessageBox::critical(this, tr("Error"),
+                                  tr("Component already created!"));
+            return;
+        }
+
+        CanedaView *viewFile = new SchematicView(0, this);
+        viewFile->setFileName(fileName);
+        if(!viewFile->save()) {
+            QMessageBox::critical(this, tr("Error"),
+                                  tr("Could not save file!"));
+            return;
+        }
+
+        //We generate the corresponding symbol
+        generateSymbol(fileName);
+
+        //Finally we open the component
+        emit itemDoubleClicked(fileName);
+    }
+
+    void Project::importFromProject()
+    {
+        //TODO in case of adding a component from another project, we
+        //should copy the component as well as all its dependencies.
+    }
+
+    void Project::generateSymbol(const QString& fileName)
+    {
+        //We generate the symbol corresponding to a schematic file
+        CanedaView *view = new SchematicView(0, this);
+        view->setFileName(fileName);
+        view->toSchematicView()->schematicScene()->setMode(Caneda::SymbolMode);
+
+        QString symbolFileName = fileName;
+        symbolFileName.replace(".xsch",".xsym");
+        view->setFileName(symbolFileName);
+        XmlSymbolFormat *symbol = new XmlSymbolFormat(view->toSchematicView()->schematicScene());
+        symbol->save();
+
+        //Now we load the new component in the library
+        projectLibrary->parseExternalComponent(symbolFileName);
+        projectLibrary->saveLibrary();
+        m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+        m_projectsSidebar->plugLibrary(m_libraryName, "root");
     }
 
 } // namespace Caneda

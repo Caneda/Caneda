@@ -108,11 +108,11 @@ void AddToProjectDialog::buildComponentTypeDialog()
     QButtonGroup *componentTypeChoice = new QButtonGroup();
     newComponent = new QRadioButton(tr("Create new component"));
     existingComponent = new QRadioButton(tr("Add existing component"));
-    fromExistingProject = new QRadioButton(tr("Import component from existing project"));
+    importFromProject = new QRadioButton(tr("Import component from existing project"));
 
     componentTypeChoice->addButton(newComponent);
     componentTypeChoice->addButton(existingComponent);
-    componentTypeChoice->addButton(fromExistingProject);
+    componentTypeChoice->addButton(importFromProject);
     newComponent->setChecked(true);
 
     editFilepath = new QLineEdit();
@@ -126,7 +126,7 @@ void AddToProjectDialog::buildComponentTypeDialog()
 
     connect(newComponent, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
     connect(existingComponent, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
-    connect(fromExistingProject, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
+    connect(importFromProject, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
     connect(buttons, SIGNAL(accepted()), this, SLOT(acceptComponentDialog()));
     connect(buttons, SIGNAL(rejected()), dialog, SLOT(reject()));
 
@@ -140,7 +140,7 @@ void AddToProjectDialog::buildComponentTypeDialog()
     glayout->addWidget(iconExistingComponent, 2, 0);
     glayout->addWidget(existingComponent, 2, 1);
     glayout->addWidget(iconImportComponentFromProject, 3, 0);
-    glayout->addWidget(fromExistingProject, 3, 1);
+    glayout->addWidget(importFromProject, 3, 1);
 
     vlayout->addWidget(labelComponentType);
     vlayout->addLayout(glayout);
@@ -168,7 +168,7 @@ void AddToProjectDialog::acceptComponentDialog()
         setUserChoice(Caneda::ExistingComponent);
     }
     else {
-        setUserChoice(Caneda::FromExistingProject);
+        setUserChoice(Caneda::ImportFromProject);
     }
 
     if(newComponent->isChecked()) {

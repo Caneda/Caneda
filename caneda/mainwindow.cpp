@@ -1084,11 +1084,11 @@ namespace Caneda
      */
     void MainWindow::slotFileNew()
     {
-        if(!m_project->isValid()) {
-            addView(new SchematicView(0, this));
+        if(m_project->isValid()) {
+            slotAddToProject();
         }
         else {
-            slotAddToProject();
+            addView(new SchematicView(0, this));
         }
     }
 
