@@ -33,24 +33,6 @@ namespace Caneda
     class IDocument;
     class DocumentViewManager;
 
-    struct ZoomRange
-    {
-        const qreal min;
-        const qreal max;
-
-        ZoomRange(qreal _min = 0., qreal _max = 1.0) :
-            min(_min), max(_max)
-        {
-            if (max < min) {
-                qWarning() << Q_FUNC_INFO << "Invalid range" << min << max;
-            }
-        }
-
-        bool contains(qreal value) const {
-            return value >= min && value <= max;
-        }
-    };
-
     class IView : public QObject
     {
         Q_OBJECT

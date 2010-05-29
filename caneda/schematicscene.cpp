@@ -130,7 +130,15 @@ namespace Caneda
 
         m_paintingDrawItem = 0;
         m_paintingDrawClicks = 0;
-        m_zoomBand = 0;
+
+        m_zoomBand = new QGraphicsRectItem();
+        //FIXME: Uses hard coded pen color : won't be visible in dark background
+        const QColor zoomBandColor(Qt::black);
+        m_zoomBand->setPen(QPen(zoomBandColor, 0, Qt::DashLine));
+        m_zoomBand->hide();
+        addItem(m_zoomBand);
+
+        m_zoomBandClicks = 0;
 
         setCurrentMouseAction(Normal);
 
@@ -422,11 +430,12 @@ namespace Caneda
 
         /* reset drawing item */
         delete m_paintingDrawItem;
-        m_paintingDrawItem = NULL;
+        m_paintingDrawItem = 0;
         m_paintingDrawClicks = 0;
 
-        delete m_zoomBand;
-        m_zoomBand = 0;
+        m_zoomRect = QRectF();
+        m_zoomBand->hide();
+        m_zoomBandClicks = 0;
     }
 
     //! \brief Cut items
@@ -2091,52 +2100,35 @@ namespace Caneda
      */
     void SchematicScene::zoomingAreaEvent(MouseActionEvent *event)
     {
-        QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
-        SchematicWidget *sw = qobject_cast<SchematicWidget*>(v);
-        if(!sw) {
+        QGraphicsView *view = static_cast<QGraphicsView *>(event->widget()->parent());
+        SchematicWidget *schematicWidget = qobject_cast<SchematicWidget*>(view);
+        if(!schematicWidget) {
             return;
         }
-        SchematicView *sv = sw->schematicView();
-
-        QPoint viewPoint = sw->mapFromScene(event->scenePos());
-
-        // Delete the zoom band and return if this event was triggered for non left
-        // mouse button.
-        if (!(event->buttons().testFlag(Qt::LeftButton)) &&
-                event->type() != QEvent::GraphicsSceneMouseRelease) {
-            delete m_zoomBand;
-            m_zoomBand = 0;
-            return;
-        }
-
+        QPointF dest = smartNearingGridPoint(event->scenePos());
 
         if(event->type() == QEvent::GraphicsSceneMousePress) {
-            // Another left click when zoom band is active means that a
-            // zoom operation was started in another view for this same scene.
-            // So delete the old zoom band.
-            if (m_zoomBand) {
-                delete m_zoomBand;
-                m_zoomBand = 0;
-            }
-        }
-        else if(event->type() == QEvent::GraphicsSceneMouseMove) {
-            if (!m_zoomBand) {
-                m_zoomBand = new QRubberBand(QRubberBand::Rectangle);
-                m_zoomBand->setParent(sw->viewport());
-                m_zoomBand->show();
-                m_zoomRect.setRect(event->scenePos().x(), event->scenePos().y(), 0, 0);
-            } else {
-                m_zoomRect.setBottomRight(event->scenePos());
-            }
-            QRect rrect = sw->mapFromScene(m_zoomRect).boundingRect().normalized();
-            m_zoomBand->setGeometry(rrect);
-        }
-        else {
-            if (m_zoomBand) {
-                sw->fit(m_zoomRect);
+            clearSelection();
+            ++m_zoomBandClicks;
 
-                delete m_zoomBand;
-                m_zoomBand = 0;
+            // This is generic case
+            if(m_zoomBandClicks == 1) {
+                m_zoomRect.setRect(dest.x(), dest.y(), 0, 0);
+                m_zoomBand->setRect(m_zoomRect.normalized());
+                m_zoomBand->show();
+            }
+            else {
+                m_zoomBandClicks = 0;
+                m_zoomBand->hide();
+                schematicWidget->zoomFitRect(m_zoomRect.normalized());
+                m_zoomRect.setRect(0, 0, 0, 0);
+            }
+        }
+
+        else if(event->type() == QEvent::GraphicsSceneMouseMove) {
+            if(m_zoomBandClicks == 1) {
+                m_zoomRect.setBottomRight(dest);
+                m_zoomBand->setRect(m_zoomRect.normalized());
             }
         }
     }

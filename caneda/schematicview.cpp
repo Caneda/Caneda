@@ -28,9 +28,7 @@
 namespace Caneda
 {
     SchematicView::SchematicView(SchematicDocument *document) :
-        IView(document),
-        m_zoomRange(0.10, 8.0),
-        m_currentZoom(1.0)
+        IView(document)
     {
         m_schematicWidget = new SchematicWidget(this);
         SchematicStateHandler::instance()->registerWidget(m_schematicWidget);
@@ -60,49 +58,24 @@ namespace Caneda
         return SchematicContext::instance();
     }
 
-    qreal SchematicView::currentZoom() const
-    {
-        return m_currentZoom;
-    }
-
-    void SchematicView::setZoomLevel(qreal zoomLevel)
-    {
-        if (!m_zoomRange.contains(zoomLevel)) {
-            return;
-        }
-        m_currentZoom = zoomLevel;
-        QTransform transform;
-        transform.scale(m_currentZoom, m_currentZoom);
-        m_schematicWidget->setTransform(transform);
-    }
-
     void SchematicView::zoomIn()
     {
-        qreal newZoom = m_currentZoom * 1.2;
-        setZoomLevel(qMin(newZoom, m_zoomRange.max));
+        m_schematicWidget->zoomIn();
     }
 
     void SchematicView::zoomOut()
     {
-        qreal newZoom = m_currentZoom * 0.8;
-        setZoomLevel(qMax(newZoom, m_zoomRange.min));
+        m_schematicWidget->zoomOut();
     }
 
     void SchematicView::zoomFitInBest()
     {
-        SchematicScene *scene = m_schematicWidget->schematicScene();
-        if (!scene) {
-            return;
-        }
-
-        QRectF rect = scene->itemsBoundingRect();
-        setZoomLevel(m_schematicWidget->fit(rect));
-        m_schematicWidget->centerOn(rect.center());
+        m_schematicWidget->zoomFitInBest();
     }
 
     void SchematicView::zoomOriginal()
     {
-        setZoomLevel(1.0);
+        m_schematicWidget->zoomOriginal();
     }
 
     IView* SchematicView::duplicate()

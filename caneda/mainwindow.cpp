@@ -754,6 +754,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
+        //FIXME: Choose a proper icon.
         action = am->createMouseAction("zoomArea", SchematicScene::ZoomingAreaEvent,
                 icon("zoom-in"), tr("Zoom area"));
         action->setStatusTip(tr("Zooms a selected are in the current view"));
@@ -978,13 +979,7 @@ namespace Caneda
         workToolbar->addAction(action("editMirror"));
         workToolbar->addAction(action("editMirrorY"));
         workToolbar->addAction(action("editRotate"));
-
-        workToolbar->addSeparator();
-
         workToolbar->addAction(action("zoomArea"));
-
-        workToolbar->addSeparator();
-
         workToolbar->addAction(action("insWire"));
         workToolbar->addAction(action("insLabel"));
         workToolbar->addAction(action("insEquation"));

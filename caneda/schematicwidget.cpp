@@ -35,19 +35,23 @@
 
 namespace Caneda
 {
-    const qreal SchematicWidget::zoomFactor = 1.2f;
+    const qreal SchematicWidget::zoomFactor = 0.1;
 
     //! Constructor
     SchematicWidget::SchematicWidget(SchematicView *sv) :
         QGraphicsView(sv ? sv->schematicDocument()->schematicScene() : 0),
         m_schematicView(sv),
         m_horizontalScroll(0),
-        m_verticalScroll(0)
+        m_verticalScroll(0),
+        m_zoomRange(0.50, 4.0),
+        m_currentZoom(1.0)
     {
         setAcceptDrops(true);
         setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
         setViewportUpdateMode(SmartViewportUpdate);
         setCacheMode(CacheBackground);
+        setAlignment(static_cast<Qt::AlignmentFlag>(Qt::AlignLeft | Qt::AlignTop));
+        setTransformationAnchor(QGraphicsView::NoAnchor);
 
         viewport()->setMouseTracking(true);
         viewport()->setAttribute(Qt::WA_NoSystemBackground);
@@ -82,6 +86,72 @@ namespace Caneda
         verticalScrollBar()->setValue(m_verticalScroll);
     }
 
+    void SchematicWidget::zoomIn()
+    {
+        qreal newZoom = m_currentZoom + zoomFactor;
+        setZoomLevel(qMin(newZoom, m_zoomRange.max));
+    }
+
+    void SchematicWidget::zoomOut()
+    {
+        qreal newZoom = m_currentZoom - zoomFactor;
+        setZoomLevel(qMax(newZoom, m_zoomRange.min));
+    }
+
+    void SchematicWidget::zoomFitInBest()
+    {
+        if (scene()) {
+            zoomFitRect(scene()->itemsBoundingRect());
+        }
+    }
+
+    void SchematicWidget::zoomOriginal()
+    {
+        setZoomLevel(1.0);
+    }
+
+    void SchematicWidget::zoomFitRect(const QRectF &rect)
+    {
+        if (rect.isEmpty()) {
+            return;
+        }
+
+        // Find the ideal x / y scaling ratio to fit \a rect in the view.
+        int margin = 0;
+
+        // This is needed to handle situation where in the actual viewport size
+        // is reduced due to appearance of scrollbar after transformation!
+        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+        QRectF viewRect = viewport()->rect().adjusted(margin, margin, -margin, -margin);
+        viewRect = transform().mapRect(viewRect);
+        if (viewRect.isEmpty()) {
+            return;
+        }
+
+        QRectF sceneRect = transform().mapRect(rect);
+        if (sceneRect.isEmpty()) {
+            return;
+        }
+
+        const qreal xratio = viewRect.width() / sceneRect.width();
+        const qreal yratio = viewRect.height() / sceneRect.height();
+
+        // Qt::KeepAspecRatio
+        const qreal minRatio = qMin(xratio, yratio);
+
+        // Also compute where the the view should be centered
+        QPointF center = rect.center();
+
+        // Now set that zoom level.
+        setZoomLevel(minRatio, &center);
+
+        // Reset the scrollpolicies.
+        setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    }
+
     void SchematicWidget::mouseMoveEvent(QMouseEvent *event)
     {
         QPoint newCursorPos = mapToScene(event->pos()).toPoint();
@@ -100,40 +170,25 @@ namespace Caneda
         }
     }
 
-    qreal SchematicWidget::fit(const QRectF &rect)
+    void SchematicWidget::setZoomLevel(qreal zoomLevel, QPointF *toCenter)
     {
-        if (!scene() || !m_schematicView || rect.isNull()) {
-            return 1.0;
+        if (!m_zoomRange.contains(zoomLevel)) {
+            return;
+        }
+        QPointF currentCenter;
+        if (toCenter) {
+            currentCenter = *toCenter;
+        } else {
+            currentCenter = mapToScene(viewport()->rect().center());
         }
 
-        qreal savedZoom = m_schematicView->currentZoom();
+        m_currentZoom = zoomLevel;
 
-        // Reset the view scale to 1:1.
-        QRectF unity = transform().mapRect(QRectF(0, 0, 1, 1));
-        if (unity.isEmpty())
-            return 1.0;
-        scale(1 / unity.width(), 1 / unity.height());
+        QTransform transform;
+        transform.scale(m_currentZoom, m_currentZoom);
+        setTransform(transform);
 
-        // Find the ideal x / y scaling ratio to fit \a rect in the view.
-        int margin = 2;
-        QRectF viewRect = viewport()->rect().adjusted(margin, margin, -margin, -margin);
-        if (viewRect.isEmpty()) {
-            m_schematicView->setZoomLevel(savedZoom);
-            return 1.0;
-        }
-        QRectF sceneRect = transform().mapRect(rect);
-        if (sceneRect.isEmpty()) {
-            m_schematicView->setZoomLevel(savedZoom);
-            return 1.0;
-        }
-        qreal xratio = viewRect.width() / sceneRect.width();
-        qreal yratio = viewRect.height() / sceneRect.height();
-
-        // Qt::KeepAspecRatio
-        xratio = yratio = qMin(xratio, yratio);
-        m_schematicView->setZoomLevel(savedZoom);
-
-        return xratio;
+        centerOn(currentCenter);
     }
 
 } // namespace Caneda

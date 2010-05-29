@@ -20,6 +20,8 @@
 #ifndef CANEDA_SCHEMATICWIDGET_H
 #define CANEDA_SCHEMATICWIDGET_H
 
+#include "globals.h"
+
 #include <QGraphicsView>
 
 namespace Caneda
@@ -44,7 +46,12 @@ namespace Caneda
         void saveScrollState();
         void restoreScrollState();
 
-        qreal fit(const QRectF &rect);
+        void zoomIn();
+        void zoomOut();
+        void zoomFitInBest();
+        void zoomOriginal();
+
+        void zoomFitRect(const QRectF &rect);
 
     signals:
         void cursorPositionChanged(const QString& newPos);
@@ -55,9 +62,15 @@ namespace Caneda
         void focusInEvent(QFocusEvent *event);
 
     private:
+        void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);
+
         SchematicView *m_schematicView;
+
         int m_horizontalScroll;
         int m_verticalScroll;
+
+        ZoomRange m_zoomRange;
+        qreal m_currentZoom;
     };
 
 } // namespace Caneda

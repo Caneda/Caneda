@@ -358,9 +358,10 @@ namespace Caneda
          * \brief A rectangular dotted line widget to show feedback of
          * an area being selected for zooming
          */
-        QRubberBand * m_zoomBand;
-        //! \brief An area to be zoomed
+        QGraphicsRectItem * m_zoomBand;
+
         QRectF m_zoomRect;
+        int m_zoomBandClicks;
 
         //! \todo document
         QList<int> m_usedPortNumbers;

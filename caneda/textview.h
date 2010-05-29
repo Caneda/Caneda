@@ -20,6 +20,7 @@
 #ifndef CANEDA_TEXTVIEW_H
 #define CANEDA_TEXTVIEW_H
 
+#include "globals.h"
 #include "iview.h"
 
 namespace Caneda
@@ -40,8 +41,6 @@ namespace Caneda
         // IView interface methods
         virtual QWidget* toWidget() const;
         virtual IContext* context() const;
-
-        virtual ZoomRange zoomRange() const;
 
         virtual void zoomIn();
         virtual void zoomOut();

@@ -60,11 +60,6 @@ namespace Caneda
         return TextContext::instance();
     }
 
-    ZoomRange TextView::zoomRange() const
-    {
-        return m_zoomRange;
-    }
-
     void TextView::setZoomLevel(qreal zoomLevel)
     {
         if (!m_zoomRange.contains(zoomLevel)) {

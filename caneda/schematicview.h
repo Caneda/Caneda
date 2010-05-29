@@ -51,17 +51,11 @@ namespace Caneda
         virtual void updateSettingsChanges();
         // End of IView interface methods
 
-        qreal currentZoom() const;
-
-        void setZoomLevel(qreal value);
-
     private Q_SLOTS:
         void onWidgetFocussed();
 
     private:
         SchematicWidget *m_schematicWidget;
-        ZoomRange m_zoomRange;
-        qreal m_currentZoom;
     };
 } // namespace Caneda
 

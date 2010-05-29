@@ -20,11 +20,31 @@
 #ifndef CANEDA_GLOBALS_H
 #define CANEDA_GLOBALS_H
 
+#include <QDebug>
+
 namespace Caneda
 {
     enum SideBarRole {
         ItemSelection,
         PropertyBrowser
+    };
+
+    struct ZoomRange
+    {
+        const qreal min;
+        const qreal max;
+
+        ZoomRange(qreal _min = 0., qreal _max = 1.0) :
+            min(_min), max(_max)
+        {
+            if (max < min) {
+                qWarning() << Q_FUNC_INFO << "Invalid range" << min << max;
+            }
+        }
+
+        bool contains(qreal value) const {
+            return value >= min && value <= max;
+        }
     };
 
 } // namespace Caneda
