@@ -20,7 +20,11 @@
 #ifndef CANEDA_TABCONTENT_H
 #define CANEDA_TABCONTENT_H
 
+#include <QPointer>
 #include <QTabWidget>
+
+// Forward declartions.
+class QToolBar;
 
 namespace Caneda
 {
@@ -29,9 +33,32 @@ namespace Caneda
     class IView;
     class Manager;
 
+    class ViewContainer : public QWidget
+    {
+        Q_OBJECT
+    public:
+        ViewContainer(IView *view, QWidget *parent = 0);
+        ~ViewContainer();
+
+        IView* view() const;
+        void setView(IView *view);
+
+    public Q_SLOTS:
+        void onViewFocusChange(IView *view);
+
+    protected:
+        void paintEvent(QPaintEvent *event);
+
+    private:
+        void setToolBar(QToolBar *toolBar);
+
+        IView *m_view;
+        QToolBar *m_toolBar;
+    };
+
     class Tab: public QWidget
     {
-    Q_OBJECT
+        Q_OBJECT
     public:
         Tab(IView *view, QWidget *parent = 0);
         ~Tab();
@@ -44,6 +71,8 @@ namespace Caneda
         void closeView(IView *view);
         void splitView(IView *view, IView *newView,
                 Qt::Orientation splitOrientation);
+
+        void replaceView(IView *oldView, IView *newView);
 
     public Q_SLOTS:
         void onViewFocussedIn(IView *view);
@@ -85,6 +114,8 @@ namespace Caneda
 
         void highlightView(IView *view);
         void closeView(IView *view);
+
+        void replaceView(IView *oldView, IView *newView);
 
     Q_SIGNALS:
         void statusBarMessage(const QString &message);

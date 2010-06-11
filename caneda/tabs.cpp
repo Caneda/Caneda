@@ -24,6 +24,7 @@
 #include "idocument.h"
 #include "iview.h"
 #include "mainwindow.h"
+#include "caneda-tools/global.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -36,49 +37,93 @@
 
 namespace Caneda
 {
-    // icon for unsaved files (diskette)
-    static const char *smallsave_xpm[] = {
-        "16 17 66 1", " 	c None",
-        ".	c #595963","+	c #E6E6F1","@	c #465460","#	c #FEFEFF",
-        "$	c #DEDEEE","%	c #43535F","&	c #D1D1E6","*	c #5E5E66",
-        "=	c #FFFFFF","-	c #C5C5DF",";	c #FCF8F9",">	c #BDBDDA",
-        ",	c #BFBFDC","'	c #C4C4DF",")	c #FBF7F7","!	c #D6D6E9",
-        "~	c #CBCBE3","{	c #B5B5D6","]	c #BCBCDA","^	c #C6C6E0",
-        "/	c #CFCFE5","(	c #CEC9DC","_	c #D8D8EA",":	c #DADAEB",
-        "<	c #313134","[	c #807FB3","}	c #AEAED1","|	c #B7B7D7",
-        "1	c #E2E2EF","2	c #9393C0","3	c #E3E3F0","4	c #DDD5E1",
-        "5	c #E8E8F3","6	c #2F2F31","7	c #7B7BAF","8	c #8383B5",
-        "9	c #151518","0	c #000000","a	c #C0C0DC","b	c #8E8FBD",
-        "c	c #8989BA","d	c #E7EEF6","e	c #282829","f	c #6867A1",
-        "g	c #7373A9","h	c #A7A7CD","i	c #8080B3","j	c #7B7CB0",
-        "k	c #7070A8","l	c #6D6DA5","m	c #6E6EA6","n	c #6969A2",
-        "o	c #7A79AF","p	c #DCDCEC","q	c #60609A","r	c #7777AC",
-        "s	c #5D5D98","t	c #7676AB","u	c #484785","v	c #575793",
-        "w	c #50506A","x	c #8787B8","y	c #53536E","z	c #07070E",
-        "A	c #666688",
-        "        .       ",
-        "       .+.      ",
-        "      .+@#.     ",
-        "     .$%###.    ",
-        "    .&*####=.   ",
-        "   .-.#;#####.  ",
-        "  .>,'.#)!!!!~. ",
-        " .{].'^./(!_:<[.",
-        ".}|.1./2.3456789",
-        "0a.$11.bc.defg9 ",
-        " 011h11.ij9kl9  ",
-        "  0_1h1h.mno9   ",
-        "   0p12h9qr9    ",
-        "    0hh9st9     ",
-        "     09uv9w     ",
-        "      0x9y      ",
-        "       zA       "
-    };
+    ViewContainer::ViewContainer(IView *view, QWidget *parent) :
+        QWidget(parent),
+        m_view(0),
+        m_toolBar(0)
+    {
+        QVBoxLayout *layout = new QVBoxLayout;
+        setLayout(layout);
+        setContentsMargins(0, 0, 0, 0);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setSpacing(0);
+        setView(view);
+    }
 
-    static const char *empty_xpm[] = {  // provides same height than "smallsave_xpm"
-        "1 17 1 1", "  c None", " ", " ", " ", " ", " ",
-        " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "
-    };
+
+    ViewContainer::~ViewContainer()
+    {
+        // Don't let QWidget destructor destroy toolbar as the view might still exist.
+        if (m_toolBar) {
+            layout()->removeWidget(m_toolBar);
+            m_toolBar->setParent(0);
+        }
+    }
+
+    IView* ViewContainer::view() const
+    {
+        return m_view;
+    }
+
+    void ViewContainer::setView(IView *view)
+    {
+        QLayout *layout = this->layout();
+
+        if (m_view) {
+            QWidget *widget = m_view->toWidget();
+            layout->removeWidget(widget);
+            widget->setParent(0);
+
+            disconnect(m_view, SIGNAL(focussedIn(IView*)), this,
+                    SLOT(onViewFocusChange(IView*)));
+            setToolBar(0);
+        }
+
+        m_view = view;
+
+        if (m_view) {
+            QWidget *widget = m_view->toWidget();
+            widget->setParent(this);
+            layout->addWidget(widget);
+
+            connect(m_view, SIGNAL(focussedIn(IView*)), this,
+                    SLOT(onViewFocusChange(IView*)));
+
+            setToolBar(m_view->toolBar());
+        }
+    }
+
+    void ViewContainer::setToolBar(QToolBar *toolbar)
+    {
+        QVBoxLayout *lay = qobject_cast<QVBoxLayout*>(layout());
+        if (m_toolBar) {
+            m_toolBar->setParent(0);
+            lay->removeWidget(m_toolBar);
+        }
+
+        m_toolBar = toolbar;
+
+        if (m_toolBar) {
+            m_toolBar->setIconSize(QSize(16, 16));
+            m_toolBar->setParent(this);
+            lay->insertWidget(0, m_toolBar);
+        }
+    }
+
+    void ViewContainer::onViewFocusChange(IView *view)
+    {
+        Q_UNUSED(view);
+        //TODO: Uncomment this line after fixing ViewContainer::paintEvent
+        //update();
+    }
+
+    void ViewContainer::paintEvent(QPaintEvent *event)
+    {
+        QWidget::paintEvent(event);
+        bool hasFocus = m_view && m_view->toWidget()->hasFocus();
+        Q_UNUSED(hasFocus);
+        //TODO: Draw some focus helper.
+    }
 
     Tab::Tab(IView *view, QWidget *parent) : QWidget(parent)
     {
@@ -88,10 +133,11 @@ namespace Caneda
 
         QSplitter *splitter = new QSplitter();
         splitter->setContentsMargins(0, 0, 0, 0);
-        splitter->addWidget(view->toWidget());
+        splitter->addWidget(new ViewContainer(view));
 
         layout->addWidget(splitter);
         setContentsMargins(0, 0, 0, 0);
+        layout->setContentsMargins(0, 0, 0, 0);
     }
 
     Tab::~Tab()
@@ -108,11 +154,13 @@ namespace Caneda
         IView *view = activeView();
         QString title;
         if (view) {
-            title = QFileInfo(view->document()->fileName()).fileName();
+            title = view->document()->fileName();
         }
 
         if (title.isEmpty()) {
             title = tr("Untitled");
+        } else {
+            title = QFileInfo(title).fileName();
         }
 
         return title;
@@ -132,10 +180,8 @@ namespace Caneda
             Qt::Orientation splitOrientation)
     {
         QWidget *asWidget = view->toWidget();
-        QSplitter *parentSplitter = qobject_cast<QSplitter*>(asWidget->parentWidget());
-
-        Q_ASSERT_X(parentSplitter != 0, Q_FUNC_INFO,
-                "Fix me: Parent widget of view not splitter");
+        ViewContainer *parentContainer = qobject_cast<ViewContainer*>(asWidget->parentWidget());
+        QSplitter *parentSplitter = qobject_cast<QSplitter*>(parentContainer->parentWidget());
 
         if (parentSplitter->orientation() != splitOrientation &&
                 parentSplitter->count() == 1) {
@@ -143,19 +189,20 @@ namespace Caneda
         }
 
         if (parentSplitter->orientation() == splitOrientation) {
-            parentSplitter->addWidget(newView->toWidget());
+            parentSplitter->addWidget(new ViewContainer(newView));
         } else {
-            int index = parentSplitter->indexOf(asWidget);
-            asWidget->setParent(0);
+            int index = parentSplitter->indexOf(parentContainer);
+            parentContainer->setParent(0);
 
             QSplitter *newSplitter = new QSplitter(splitOrientation);
             newSplitter->setContentsMargins(0, 0, 0, 0);
-            newSplitter->addWidget(asWidget);
-            newSplitter->addWidget(newView->toWidget());
+            newSplitter->addWidget(parentContainer);
+            newSplitter->addWidget(new ViewContainer(newView));
             parentSplitter->insertWidget(index, newSplitter);
         }
 
         addView(newView);
+        newView->toWidget()->setFocus();
     }
 
     void Tab::closeView(IView *view)
@@ -167,12 +214,12 @@ namespace Caneda
         }
 
         QWidget *asWidget = view->toWidget();
-        QSplitter *parentSplitter = qobject_cast<QSplitter*>(asWidget->parentWidget());
+        ViewContainer *parentContainer = qobject_cast<ViewContainer*>(asWidget->parentWidget());
+        QSplitter *parentSplitter = qobject_cast<QSplitter*>(parentContainer->parentWidget());
 
-        Q_ASSERT_X(parentSplitter != 0, Q_FUNC_INFO,
-                "Fix me: Parent widget of view not splitter");
-
-        asWidget->setParent(0);
+        parentContainer->setParent(0);
+        parentContainer->setView(0);
+        parentContainer->deleteLater();
         m_views.removeAll(view);
         // Remember, we do not delete the view itself here. Its handled in
         // DocumentViewManager.
@@ -194,22 +241,33 @@ namespace Caneda
             parentSplitter->deleteLater();
 
             parentSplitter = qobject_cast<QSplitter*>(ancestor);
-
-            Q_ASSERT_X(parentSplitter != 0, Q_FUNC_INFO,
-                    "Fix me: Parent widget of splitter is neither Tab nor QSplitter");
         }
 
         if (removeThisTab) {
             QStackedWidget *stackedWidget = qobject_cast<QStackedWidget*>(parentWidget());
-            Q_ASSERT_X(stackedWidget != 0, Q_FUNC_INFO,
-                    "Tab's parent is not StackedWidget");
 
             TabWidget *tabWidget = qobject_cast<TabWidget*>(stackedWidget->parentWidget());
-            Q_ASSERT_X(tabWidget != 0, Q_FUNC_INFO,
-                    "StackedWidget's parent is not TabWidget");
             tabWidget->removeTab(tabWidget->indexOf(this));
             deleteLater();
         }
+    }
+
+    void Tab::replaceView(IView *oldView, IView *newView)
+    {
+        if (!m_views.contains(oldView)) {
+            qDebug() << Q_FUNC_INFO << "View " << (void*)oldView << "doesn't exist"
+                << "in this tab";
+            return;
+        }
+
+        QWidget *asWidget = oldView->toWidget();
+        ViewContainer *parentContainer = qobject_cast<ViewContainer*>(asWidget->parentWidget());
+        m_views.removeAll(oldView);
+
+        parentContainer->setView(newView);
+
+        addView(newView);
+        newView->toWidget()->setFocus();
     }
 
     void Tab::onViewFocussedIn(IView *view)
@@ -284,7 +342,7 @@ namespace Caneda
             return;
         }
 
-        m_views.append(view);
+        m_views.insert(0, view);
 
         connect(view, SIGNAL(focussedIn(IView*)), this,
                 SLOT(onViewFocussedIn(IView*)));
@@ -298,13 +356,19 @@ namespace Caneda
 
     QIcon Tab::modifiedIcon() const
     {
-        static QIcon modifiedIcon = QIcon(smallsave_xpm);
+        static QIcon modifiedIcon;
+        if (modifiedIcon.isNull()) {
+            modifiedIcon = QIcon(Caneda::bitmapDirectory() + "modified.png");
+        }
         return modifiedIcon;
     }
 
     QIcon Tab::unmodifiedIcon() const
     {
-        static QIcon unmodifiedIcon = QIcon(empty_xpm);
+        static QIcon unmodifiedIcon;
+        if (unmodifiedIcon.isNull()) {
+            unmodifiedIcon = QIcon(Caneda::bitmapDirectory() + "unmodified.png");
+        }
         return unmodifiedIcon;
     }
 
@@ -420,6 +484,12 @@ namespace Caneda
         parentTab->closeView(view);
     }
 
+    void TabWidget::replaceView(IView *oldView, IView *newView)
+    {
+        Tab *tab = tabForView(oldView);
+        tab->replaceView(oldView, newView);
+    }
+
     Tab* TabWidget::tabForView(IView *view) const
     {
         QWidget *widget = view->toWidget();
@@ -467,6 +537,7 @@ namespace Caneda
 
             mw->action("editCut")->setEnabled(document->canCut());
             mw->action("editCopy")->setEnabled(document->canCopy());
+            mw->action("editPaste")->setEnabled(document->canPaste());
             mw->action("editUndo")->setEnabled(document->canUndo());
             mw->action("editRedo")->setEnabled(document->canRedo());
         }

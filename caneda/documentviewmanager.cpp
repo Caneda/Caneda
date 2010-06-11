@@ -65,6 +65,25 @@ namespace Caneda
         return instance;
     }
 
+    IView* DocumentViewManager::createView(IDocument *document)
+    {
+        IView *newView = document->createView();
+        if (!newView) {
+            qWarning() << Q_FUNC_INFO << "View creation failed";
+            return 0;
+        }
+
+        DocumentData *data = documentDataForDocument(document);
+        data->views.insert(0, newView);
+
+        connect(newView, SIGNAL(focussedIn(IView*)), this,
+                SLOT(onViewFocussedIn(IView*)));
+
+        emit changed();
+
+        return newView;
+    }
+
     void DocumentViewManager::highlightView(IView *view)
     {
         tabWidget()->highlightView(view);
@@ -74,22 +93,16 @@ namespace Caneda
     {
         DocumentData *data = documentDataForDocument(document);
 
+        IView *view = 0;
+
         if (data->views.isEmpty()) {
-            IContext *context = document->context();
-            IView *newView = document->createView();
-            if (!newView) {
-                qWarning() << Q_FUNC_INFO << "View creation failed";
-                return;
-            }
-            data->views << newView;
-
-            connect(newView, SIGNAL(focussedIn(IView*)), this,
-                    SLOT(onViewFocussedIn(IView*)));
-
-            tabWidget()->addTab(new Tab(newView));
+            view = createView(document);
+            tabWidget()->addTab(new Tab(view));
         }
 
-        highlightView(data->views.first());
+        if (view) {
+            highlightView(view);
+        }
     }
 
     void DocumentViewManager::newDocument(IContext *context)
@@ -101,17 +114,22 @@ namespace Caneda
 
         DocumentData *data = new DocumentData;
         data->document = document;
+
         m_documentDataList << data;
+        emit changed();
 
         highlightViewForDocument(data->document);
     }
 
     bool DocumentViewManager::openFile(const QString &fileName)
     {
-        if (fileName.isEmpty()) return false;
+        if (fileName.isEmpty()) {
+            return false;
+        }
 
         DocumentData *data = documentDataForFileName(fileName);
 
+        // Try opening file which will create corresponding DocumetnData
         if (!data) {
             QFileInfo fileInfo(fileName);
             foreach (IContext *context, m_contexts) {
@@ -123,7 +141,9 @@ namespace Caneda
 
                     data = new DocumentData;
                     data->document = document;
+
                     m_documentDataList << data;
+                    emit changed();
 
                     break;
                 }
@@ -137,63 +157,53 @@ namespace Caneda
         return data != 0;
     }
 
-    bool DocumentViewManager::closeFile(const QString &fileName)
-    {
-        DocumentData *data = documentDataForFileName(fileName);
-
-        if (data) {
-            QList<IDocument*> documents;
-            documents << data->document;
-            return closeDocuments(documents);
-        }
-
-        return false;
-    }
-
     bool DocumentViewManager::saveDocuments(const QList<IDocument*> &documents)
     {
+        // First collect only the modified documents and prompt for save.
         QList<IDocument*> modifiedDocuments;
-
         foreach (IDocument *document, documents) {
             if (document->isModified()) {
                 modifiedDocuments << document;
             }
         }
 
-        if (!modifiedDocuments.isEmpty()) {
-            QPointer<SaveDocumentsDialog> dialog(new SaveDocumentsDialog(modifiedDocuments, 0));
-            dialog->exec();
+        if (modifiedDocuments.isEmpty()) {
+            return true;
+        }
 
-            int result = dialog->result();
+        QPointer<SaveDocumentsDialog> dialog(new SaveDocumentsDialog(modifiedDocuments));
+        dialog->exec();
 
-            if (result == SaveDocumentsDialog::DoNotSave) {
-                return true;
+        int result = dialog->result();
+
+        if (result == SaveDocumentsDialog::DoNotSave) {
+            return true;
+        }
+        else if (result == SaveDocumentsDialog::Abort) {
+            return false;
+        }
+        else {
+            QList<QPair<IDocument*, QString> > newFilePaths = dialog->newFilePaths();
+            QList<QPair<IDocument*, QString> >::iterator it;
+
+            bool failedInBetween = false;
+
+            for (it = newFilePaths.begin(); it != newFilePaths.end(); ++it) {
+                IDocument *document = it->first;
+                const QString newFileName = it->second;
+                QString oldFileName = document->fileName();
+
+                document->setFileName(newFileName);
+                if (!document->save()) {
+                    failedInBetween = true;
+                    document->setFileName(oldFileName);
+                }
             }
-            else if (result == SaveDocumentsDialog::Abort) {
+
+            if (failedInBetween) {
+                QMessageBox::critical(0, tr("File save error"),
+                        tr("Could not save some files"));
                 return false;
-            }
-            else {
-                QList<QPair<IDocument*, QString> > newFilePaths = dialog->newFilePaths();
-                QList<QPair<IDocument*, QString> >::iterator it;
-
-                bool failedInBetween = false;
-                for (it = newFilePaths.begin(); it != newFilePaths.end(); ++it) {
-                    IDocument *document = it->first;
-                    const QString newFileName = it->second;
-                    QString oldFileName = document->fileName();
-
-                    document->setFileName(newFileName);
-                    if (!document->save()) {
-                        failedInBetween = true;
-                        document->setFileName(oldFileName);
-                    }
-                }
-
-                if (failedInBetween) {
-                    QMessageBox::critical(0, tr("File save error"),
-                            tr("Could not save some files"));
-                    return false;
-                }
             }
         }
 
@@ -207,17 +217,27 @@ namespace Caneda
             return false;
         }
 
+        int closedDocumentsCount = 0;
+        bool closedAllDocuments = true;
+
         foreach (IDocument *document, documents) {
             DocumentData *data = documentDataForDocument(document);
 
             Q_ASSERT(data != 0);
 
+            bool closedAllViews = true;
             foreach (IView *view, data->views) {
                 const bool askForSave = false;
                 const bool closeDocIfLastView = false;
                 if (!closeViewHelper(view, askForSave, closeDocIfLastView)) {
-                    return false;
+                    closedAllViews = false;
+                    break;
                 }
+            }
+
+            if (!closedAllViews) {
+                closedAllDocuments = false;
+                break;
             }
 
             m_documentDataList.removeAll(data);
@@ -226,37 +246,27 @@ namespace Caneda
             data->document = 0;
 
             delete data;
+            ++closedDocumentsCount;
         }
 
-        return true;
+        if (closedDocumentsCount > 0) {
+            emit changed();
+        }
+
+        return closedAllDocuments;
     }
 
     bool DocumentViewManager::splitView(IView *view, Qt::Orientation orientation)
     {
-        IView *newView = view->duplicate();
+        IView *newView = createView(view->document());
         if (!newView) {
             return false;
         }
 
-        DocumentData *data = documentDataForDocument(view->document());
-        data->views.insert(0, newView);
-
         Tab *tab = tabWidget()->tabForView(view);
-        if (!tab) {
-            qDebug() << Q_FUNC_INFO << "View does not have Tab as its ancestor";
-            delete newView;
-            return false;
-        }
-
         tab->splitView(view, newView, orientation);
-        return true;
-    }
 
-    bool DocumentViewManager::saveView(IView *view)
-    {
-        QList<IDocument*> list;
-        list << view->document();
-        return saveDocuments(list);
+        return true;
     }
 
     bool DocumentViewManager::closeView(IView *view, bool askForSave)
@@ -269,7 +279,6 @@ namespace Caneda
     {
         DocumentData *data = documentDataForDocument(view->document());
 
-        Q_ASSERT(data != 0);
         if (data->document->isModified()) {
             if (askSaveIfModified) {
                 QList<IDocument*> list;
@@ -277,23 +286,16 @@ namespace Caneda
                 if (saveDocuments(list) == false) {
                     return false;
                 }
-            } else {
-                if (false && data->views.size() == 1) {
-                    // Don't close if modified, only one view exists and
-                    // if asking for save isn't enabled.
-                    return false;
-                }
             }
         }
 
-        // At this point its ensured that before closing, either there is
-        // another view for same document or the document is saved.
-
-        data->views.removeAll(view);
-
         tabWidget()->closeView(view);
 
+        data->views.removeAll(view);
         delete view;
+
+        emit changed();
+
 
         // Now if closeDocumentIfLastView is true and there are no more views
         // for the document, then just close the document too.
@@ -306,8 +308,28 @@ namespace Caneda
             closeDocuments(list, askForSaveAgain);
         }
 
-
         return true;
+    }
+
+    void DocumentViewManager::replaceView(IView *oldView, IDocument *document)
+    {
+        DocumentData *data = documentDataForDocument(document);
+
+        IView *newView = createView(document);
+        if (!newView) {
+            return;
+        }
+
+        tabWidget()->replaceView(oldView, newView);
+
+        DocumentData *oldData = documentDataForDocument(oldView->document());
+        oldData->views.removeAll(oldView);
+
+        // Delete later is used since this method is indirectly invoked through
+        // oldView's slot and a QObject can't be deleted when its own slot call
+        oldView->deleteLater();
+
+        emit changed();
     }
 
     IDocument* DocumentViewManager::currentDocument() const
@@ -441,5 +463,4 @@ namespace Caneda
     {
         return MainWindow::instance()->tabWidget();
     }
-
 }

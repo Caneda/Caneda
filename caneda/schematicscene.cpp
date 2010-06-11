@@ -140,7 +140,7 @@ namespace Caneda
 
         m_zoomBandClicks = 0;
 
-        setCurrentMouseAction(Normal);
+        setMouseAction(Normal);
 
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
     }
@@ -341,14 +341,14 @@ namespace Caneda
      *
      * \param MouseAction: mouse action to set
      */
-    void SchematicScene::setCurrentMouseAction(const MouseAction action)
+    void SchematicScene::setMouseAction(const MouseAction action)
     {
-        if(m_currentMouseAction == action) {
+        if(m_mouseAction == action) {
             return;
         }
 
         // Remove the shortcut blocking if the current action uptil now was InsertItems
-        if(m_currentMouseAction == InsertingItems) {
+        if(m_mouseAction == InsertingItems) {
             blockShortcuts(false);
         }
 
@@ -358,14 +358,9 @@ namespace Caneda
         }
 
         m_areItemsMoving = false;
-        m_currentMouseAction = action;
+        m_mouseAction = action;
 
-        // Set the appropriate drag mode for all views associated with this scene.
-        QGraphicsView::DragMode dragMode = (action == Normal) ?
-            QGraphicsView::RubberBandDrag : QGraphicsView::NoDrag;
-        foreach(QGraphicsView *view, views()) {
-            view->setDragMode(dragMode);
-        }
+        emit mouseActionChanged();
 
         resetState();
         //TODO: Implemement this appropriately for all mouse actions
@@ -476,7 +471,7 @@ namespace Caneda
 
     void SchematicScene::beginPaintingDraw(Painting *item)
     {
-        Q_ASSERT(m_currentMouseAction == SchematicScene::PaintingDrawEvent);
+        Q_ASSERT(m_mouseAction == SchematicScene::PaintingDrawEvent);
         m_paintingDrawClicks = 0;
         delete m_paintingDrawItem;
         m_paintingDrawItem = item->copy();
@@ -518,7 +513,7 @@ namespace Caneda
      */
     void SchematicScene::beginInsertingItems(const QList<SchematicItem*> &items)
     {
-        Q_ASSERT(m_currentMouseAction == SchematicScene::InsertingItems);
+        Q_ASSERT(m_mouseAction == SchematicScene::InsertingItems);
 
         // Delete all previous insertibles
         qDeleteAll(m_insertibles);
@@ -545,10 +540,10 @@ namespace Caneda
      *
      * This filter is used to install on QApplication object to filter our
      * shortcut events.
-     * This filter is installed by \a setCurrentMouseAction method if the new action
+     * This filter is installed by \a setMouseAction method if the new action
      * is InsertingItems and removed if the new action is different, thus blocking
      * shortcuts on InsertItems and unblocking for other mouse actions
-     * \sa SchematicScene::setCurrentMouseAction, SchematicScene::blockShortcuts
+     * \sa SchematicScene::setMouseAction, SchematicScene::blockShortcuts
      * \sa QObject::eventFilter
      *
      * \todo Take care if multiple scenes install event filters.
@@ -828,7 +823,7 @@ namespace Caneda
     bool SchematicScene::event(QEvent *event)
     {
         static int ii = 0;
-        if(m_currentMouseAction == InsertingItems) {
+        if(m_mouseAction == InsertingItems) {
             if(event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
                 bool visible = (event->type() == QEvent::Enter);
                 foreach(SchematicItem *item, m_insertibles) {
@@ -1077,10 +1072,10 @@ namespace Caneda
      */
     bool SchematicScene::sidebarItemClickedPaintingsItems(const QString& itemName)
     {
-        setCurrentMouseAction(PaintingDrawEvent);
+        setMouseAction(PaintingDrawEvent);
         m_paintingDrawItem = Painting::fromName(itemName);
         if(!m_paintingDrawItem) {
-            setCurrentMouseAction(Normal);
+            setMouseAction(Normal);
             return false;
         }
         m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
@@ -1095,7 +1090,7 @@ namespace Caneda
         }
 
         addItem(item);
-        setCurrentMouseAction(InsertingItems);
+        setMouseAction(InsertingItems);
         beginInsertingItems(QList<SchematicItem*>() << item);
 
         return true;
@@ -2709,7 +2704,7 @@ namespace Caneda
      */
     void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
     {
-        switch(m_currentMouseAction) {
+        switch(m_mouseAction) {
             case Wiring:
                 wiringEvent(e);
                 break;

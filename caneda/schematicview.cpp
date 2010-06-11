@@ -25,6 +25,8 @@
 #include "schematicstatehandler.h"
 #include "schematicwidget.h"
 
+#include <QToolBar>
+
 namespace Caneda
 {
     SchematicView::SchematicView(SchematicDocument *document) :
@@ -32,8 +34,10 @@ namespace Caneda
     {
         m_schematicWidget = new SchematicWidget(this);
         SchematicStateHandler::instance()->registerWidget(m_schematicWidget);
-        connect(m_schematicWidget, SIGNAL(focussed(SchematicWidget*)), this,
-                SLOT(onWidgetFocussed()));
+        connect(m_schematicWidget, SIGNAL(focussedIn(SchematicWidget*)), this,
+                SLOT(onWidgetFocussedIn()));
+        connect(m_schematicWidget, SIGNAL(focussedOut(SchematicWidget*)), this,
+                SLOT(onWidgetFocussedOut()));
         connect(m_schematicWidget, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
@@ -89,12 +93,17 @@ namespace Caneda
         m_schematicWidget->resetCachedContent();
     }
 
-    void SchematicView::onWidgetFocussed()
+    void SchematicView::onWidgetFocussedIn()
     {
         emit focussedIn(static_cast<IView*>(this));
         ActionManager *am = ActionManager::instance();
         Action *action = am->actionForName("snapToGrid");
         action->setChecked(m_schematicWidget->schematicScene()->gridSnap());
+    }
+
+    void SchematicView::onWidgetFocussedOut()
+    {
+        emit focussedOut(static_cast<IView*>(this));
     }
 
 } // namespace Caneda

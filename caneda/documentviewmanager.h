@@ -37,21 +37,23 @@ namespace Caneda
         static DocumentViewManager* instance();
         ~DocumentViewManager();
 
+        IView* createView(IDocument *document);
+
         void highlightView(IView *view);
         void highlightViewForDocument(IDocument *document);
 
         void newDocument(IContext *context);
 
         bool openFile(const QString &fileName);
-        bool closeFile(const QString &fileName);
 
         bool saveDocuments(const QList<IDocument*> &documents);
         bool closeDocuments(const QList<IDocument*> &documents, bool askForSave = true);
 
         bool splitView(IView *view, Qt::Orientation orientation);
 
-        bool saveView(IView *view);
         bool closeView(IView *view, bool askForSave = true);
+
+        void replaceView(IView *view, IDocument *withViewOf);
 
         IDocument* currentDocument() const;
         IView* currentView() const;
@@ -60,7 +62,11 @@ namespace Caneda
         QList<IView*> viewsForDocument(const IDocument *document) const;
         QList<IDocument*> documents() const;
 
+
         void updateSettingsChanges();
+
+    Q_SIGNALS:
+        void changed();
 
     private Q_SLOTS:
         void onViewFocussedIn(IView *who);
@@ -77,6 +83,5 @@ namespace Caneda
         QList<DocumentData*> m_documentDataList;
         QList<IContext*> m_contexts;
     };
-} // namespace Caneda
-
+}
 #endif //CANEDA_DOCUMENTVIEWMANAGER_H

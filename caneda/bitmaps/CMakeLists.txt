@@ -10,7 +10,10 @@ back.png document-print.png edit-undo.png edit-cut.png edit-paste.png library.pn
 caneda.png document-properties.png eps.png marker.png preferences-other.png textcenter.png zoom-out.png
 clearFilterText.png document-save-all.png filedelete.png media-playback-start.png previous.png textitalic.png
 code-context.png document-save-as.png foldernew.png next.png printer.png textjustify.png
-deactiv.png document-save.png formula.png nodename.png project-new.png textleft.png arrow.svg ellipsearc.svg ellipse.svg line.svg rectangle.svg text.svg splash.jpg)
+deactiv.png document-save.png formula.png nodename.png project-new.png textleft.png
+modified.png unmodified.png)
+
+SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg rectangle.svg text.svg splash.jpg)
 
 # application pictures
 SET(ICONS  big.button.caneda.xpm big.caneda.xpm tiny.button.caneda.xpm tiny.caneda.xpm )

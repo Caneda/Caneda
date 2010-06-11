@@ -138,7 +138,7 @@ namespace Caneda
         if (!d->widgets.contains(widget)) {
             d->widgets << widget;
             connect(widget, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
-            connect(widget, SIGNAL(focussed(SchematicWidget*)),
+            connect(widget, SIGNAL(focussedIn(SchematicWidget*)),
                     SLOT(slotUpdateFocussedWidget(SchematicWidget*)));
         }
 
@@ -160,7 +160,7 @@ namespace Caneda
         if (d->widgets.contains(widget)) {
             d->widgets.remove(widget);
             disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
-            disconnect(widget, SIGNAL(focussed(SchematicWidget*)), this,
+            disconnect(widget, SIGNAL(focussedIn(SchematicWidget*)), this,
                     SLOT(slotUpdateFocussedWidget(SchematicWidget*)));
         }
 
@@ -497,7 +497,7 @@ namespace Caneda
             return;
         }
 
-        scene->setCurrentMouseAction(d->mouseAction);
+        scene->setMouseAction(d->mouseAction);
         if (d->mouseAction == SchematicScene::InsertingItems) {
             if (!d->insertibles.isEmpty()) {
                 QList<SchematicItem*> copy;

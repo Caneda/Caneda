@@ -813,7 +813,6 @@ namespace Caneda
         editMenu->addAction(action("editCut"));
         editMenu->addAction(action("editCopy"));
         editMenu->addAction(action("editPaste"));
-        editMenu->addAction(action("editDelete"));
 
         editMenu->addSeparator();
 
@@ -872,6 +871,7 @@ namespace Caneda
         toolMenu->addAction(action("insPort"));
         toolMenu->addAction(action("insEntity"));
         toolMenu->addAction(action("editActivate"));
+        toolMenu->addAction(action("editDelete"));
 
         toolMenu->addSeparator();
 
@@ -959,7 +959,6 @@ namespace Caneda
         editToolbar->addAction(action("editCut"));
         editToolbar->addAction(action("editCopy"));
         editToolbar->addAction(action("editPaste"));
-        editToolbar->addAction(action("editDelete"));
         editToolbar->addAction(action("editUndo"));
         editToolbar->addAction(action("editRedo"));
 
@@ -976,6 +975,7 @@ namespace Caneda
 
         workToolbar->addAction(action("select"));
         workToolbar->addAction(action("editActivate"));
+        workToolbar->addAction(action("editDelete"));
         workToolbar->addAction(action("editMirror"));
         workToolbar->addAction(action("editMirrorY"));
         workToolbar->addAction(action("editRotate"));
@@ -1167,10 +1167,9 @@ namespace Caneda
      */
     void MainWindow::slotFileClose()
     {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IView *view = manager->currentView();
-        if (view) {
-            manager->closeView(view);
+        Tab *current = tabWidget()->currentTab();
+        if (current) {
+            current->close();
         }
     }
 

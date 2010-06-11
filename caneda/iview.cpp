@@ -18,7 +18,14 @@
  ***************************************************************************/
 
 #include "iview.h"
+
 #include "documentviewmanager.h"
+#include "idocument.h"
+
+#include <QAction>
+#include <QComboBox>
+#include <QFileInfo>
+#include <QToolBar>
 
 namespace Caneda
 {
@@ -60,15 +67,69 @@ namespace Caneda
     IView::IView(IDocument *document) : m_document(document)
     {
         Q_ASSERT(document != 0);
+        m_toolBar = new QToolBar;
+
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        connect(manager, SIGNAL(changed()), this, SLOT(onDocumentViewManagerChanged()));
+
+        m_documentSelector = new QComboBox(m_toolBar);
+        connect(m_documentSelector, SIGNAL(currentIndexChanged(int)), this,
+                SLOT(onDocumentSelectorIndexChanged(int)));
+
+        m_toolBar->addWidget(m_documentSelector);
+        onDocumentViewManagerChanged();
     }
 
     IView::~IView()
     {
-
+        delete m_toolBar;
     }
 
     IDocument* IView::document() const
     {
         return m_document;
     }
+
+    QToolBar* IView::toolBar() const
+    {
+        return m_toolBar;
+    }
+
+    void IView::onDocumentViewManagerChanged()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        QList<IDocument*> documents = manager->documents();
+
+        int index = documents.indexOf(m_document);
+
+        if (index < 0) {
+            return;
+        }
+
+        m_documentSelector->blockSignals(true);
+        m_documentSelector->clear();
+        foreach (IDocument *document, documents) {
+            QString text = document->fileName();
+            if (text.isEmpty()) {
+                text = tr("Untitled");
+            } else {
+                text = QFileInfo(text).fileName();
+            }
+            m_documentSelector->addItem(text);
+        }
+        m_documentSelector->setCurrentIndex(index);
+        m_documentSelector->blockSignals(false);
+    }
+
+    void IView::onDocumentSelectorIndexChanged(int index)
+    {
+        if (index < 0) {
+            return;
+        }
+
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        // This call will result in this view being destructed!
+        manager->replaceView(this, manager->documents()[index]);
+    }
+
 } // namespace Caneda

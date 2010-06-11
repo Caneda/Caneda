@@ -55,6 +55,12 @@ namespace Caneda
 
         viewport()->setMouseTracking(true);
         viewport()->setAttribute(Qt::WA_NoSystemBackground);
+
+        connect(schematicScene(), SIGNAL(mouseActionChanged()), this,
+                SLOT(onMouseActionChanged()));
+
+        // Update current drag mode
+        onMouseActionChanged();
     }
 
     //! Destructor
@@ -166,7 +172,24 @@ namespace Caneda
     {
         QGraphicsView::focusInEvent(event);
         if (hasFocus()) {
-            emit focussed(this);
+            emit focussedIn(this);
+        }
+    }
+
+    void SchematicWidget::focusOutEvent(QFocusEvent *event)
+    {
+        QGraphicsView::focusOutEvent(event);
+        if (!hasFocus()) {
+            emit focussedOut(this);
+        }
+    }
+
+    void SchematicWidget::onMouseActionChanged()
+    {
+        if (schematicScene()->mouseAction() == SchematicScene::Normal) {
+            setDragMode(QGraphicsView::RubberBandDrag);
+        } else {
+            setDragMode(QGraphicsView::NoDrag);
         }
     }
 

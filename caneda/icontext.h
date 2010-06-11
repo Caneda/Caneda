@@ -37,7 +37,7 @@ namespace Caneda
 
     class IContext : public QObject
     {
-    Q_OBJECT
+        Q_OBJECT
     public:
         IContext(QObject *parent = 0);
         virtual ~IContext();

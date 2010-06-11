@@ -63,7 +63,8 @@ namespace Caneda
             Abort = QDialogButtonBox::RejectRole
         };
 
-        SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments, QWidget *parent = 0);
+        SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
+                QWidget *parent = 0);
         ~SaveDocumentsDialog();
 
         QList<QPair<IDocument*, QString> > newFilePaths() const;

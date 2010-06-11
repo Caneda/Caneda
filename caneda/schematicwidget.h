@@ -33,7 +33,7 @@ namespace Caneda
 
     class SchematicWidget : public QGraphicsView
     {
-    Q_OBJECT
+        Q_OBJECT
     public:
         static const qreal zoomFactor;
 
@@ -53,13 +53,18 @@ namespace Caneda
 
         void zoomFitRect(const QRectF &rect);
 
-    signals:
+    Q_SIGNALS:
         void cursorPositionChanged(const QString& newPos);
-        void focussed(SchematicWidget *view);
+        void focussedIn(SchematicWidget *view);
+        void focussedOut(SchematicWidget *view);
 
     protected:
         void mouseMoveEvent(QMouseEvent *event);
         void focusInEvent(QFocusEvent *event);
+        void focusOutEvent(QFocusEvent *event);
+
+    private Q_SLOTS:
+        void onMouseActionChanged();
 
     private:
         void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);

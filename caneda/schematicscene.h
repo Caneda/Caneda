@@ -170,8 +170,8 @@ namespace Caneda
         Caneda::Mode currentMode() const { return m_currentMode; }
         void setMode(const Caneda::Mode mode);
 
-        MouseAction currentMouseAction() const { return m_currentMouseAction; }
-        void setCurrentMouseAction(const MouseAction ma);
+        MouseAction mouseAction() const { return m_mouseAction; }
+        void setMouseAction(const MouseAction ma);
 
         void resetState();
         void beginPaintingDraw(Painting *item);
@@ -195,6 +195,7 @@ namespace Caneda
 
     Q_SIGNALS:
         void changed();
+        void mouseActionChanged();
         void rotateInvokedWhileInserting();
         void mirrorInvokedWhileInserting();
 
@@ -372,7 +373,7 @@ namespace Caneda
         //! Undo stack state
         QUndoStack *m_undoStack;
         //! Current mouse action
-        MouseAction m_currentMouseAction;
+        MouseAction m_mouseAction;
         Caneda::Mode m_currentMode;
 
         //! Data Set file name

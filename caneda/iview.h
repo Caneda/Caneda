@@ -24,6 +24,8 @@
 #include <QObject>
 
 // Forward declaration
+class QComboBox;
+class QToolBar;
 class QWidget;
 
 namespace Caneda
@@ -54,14 +56,22 @@ namespace Caneda
 
         virtual void updateSettingsChanges() = 0;
 
+        QToolBar* toolBar() const;
 
     Q_SIGNALS:
         void focussedIn(IView *who);
+        void focussedOut(IView *who);
         void closed(IView *who);
         void statusBarMessage(const QString &text);
 
+    private Q_SLOTS:
+        void onDocumentViewManagerChanged();
+        void onDocumentSelectorIndexChanged(int index);
+
     protected:
         IDocument * const m_document;
+        QToolBar *m_toolBar;
+        QComboBox *m_documentSelector;
 
         friend class DocumentViewManager;
     };
