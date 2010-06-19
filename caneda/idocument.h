@@ -26,6 +26,7 @@
 
 // Forward declarations
 class QPaintDevice;
+class QPrinter;
 
 namespace Caneda
 {
@@ -65,7 +66,8 @@ namespace Caneda
 
         virtual void selectAll() = 0;
 
-        virtual void print() = 0;
+        virtual bool printSupportsFitInPage() const = 0;
+        virtual void print(QPrinter *printer, bool fitInPage) = 0;
         virtual void exportToPaintDevice(QPaintDevice *device,
                 const QVariantMap &configuration) = 0;
 

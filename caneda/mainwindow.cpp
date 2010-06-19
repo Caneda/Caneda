@@ -1175,17 +1175,15 @@ namespace Caneda
 
     void MainWindow::slotFilePrint()
     {
-        setNormalAction();
-
-        //PORT:
-#if 0
-        if(tabWidget()->count() > 0){
-            CanedaView *view = viewFromWidget(tabWidget()->currentWidget());
-            SchematicScene *scene = view->toSchematicWidget()->schematicScene();
-
-            PrintDialog *p = new PrintDialog(scene, this);
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (!document) {
+            return;
         }
-#endif
+
+        QPointer<PrintDialog> p = new PrintDialog(document, this);
+        p->exec();
+        delete p;
     }
 
     void MainWindow::slotExportImage()

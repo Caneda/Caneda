@@ -207,6 +207,8 @@ namespace Caneda
             }
         }
 
+        delete dialog.data();
+
         return true;
     }
 

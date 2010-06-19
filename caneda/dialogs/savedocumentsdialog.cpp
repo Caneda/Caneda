@@ -122,6 +122,8 @@ namespace Caneda
         ui.buttonBox->button(QDialogButtonBox::Discard)->setText(tr("Do not Save"));
         ui.buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
+        ui.buttonBox->button(QDialogButtonBox::Save)->setFocus();
+
         // Populate items in tree.
         DocumentViewManager *manager = DocumentViewManager::instance();
         for (int i = 0; i < modifiedDocuments.count(); ++i) {

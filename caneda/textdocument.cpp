@@ -133,13 +133,16 @@ namespace Caneda
         te->selectAll();
     }
 
-    void TextDocument::print()
+    bool TextDocument::printSupportsFitInPage() const
     {
-        TextEdit *te = activeTextEdit();
-        if (!te) {
-            return;
-        }
-        //PORT:te->print();
+        return false;
+    }
+
+    void TextDocument::print(QPrinter *printer, bool fitInView)
+    {
+        Q_UNUSED(fitInView);
+
+        m_textDocument->print(printer);
     }
 
     void TextDocument::exportToPaintDevice(QPaintDevice *device,
