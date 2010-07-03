@@ -277,8 +277,8 @@ namespace Caneda
         settings->save(qSettings);
 
         if(changed) {
+            MainWindow::instance()->slotUpdateSettingsChanges();
             MainWindow::instance()->repaint();
-            MainWindow::instance()->slotUpdateAllViews();
         }
     }
 
@@ -550,8 +550,8 @@ namespace Caneda
         }
 
         if(changed) {
+            MainWindow::instance()->slotUpdateSettingsChanges();
             MainWindow::instance()->repaint();
-            MainWindow::instance()->slotUpdateAllViews();
         }
     }
 
@@ -731,8 +731,8 @@ namespace Caneda
         QSettings qSettings;
         settings->save(qSettings);
         if(changed) {
+            MainWindow::instance()->slotUpdateSettingsChanges();
             MainWindow::instance()->repaint();
-            MainWindow::instance()->slotUpdateAllViews();
         }
     }
 

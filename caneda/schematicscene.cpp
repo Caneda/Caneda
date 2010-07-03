@@ -24,6 +24,7 @@
 #include "library.h"
 #include "port.h"
 #include "propertygroup.h"
+#include "schematicwidget.h"
 #include "schematicview.h"
 #include "settings.h"
 #include "undocommands.h"
@@ -41,6 +42,7 @@
 #include <QClipboard>
 #include <QColor>
 #include <QCursor>
+#include <QDate>
 #include <QFileInfo>
 #include <QGraphicsSceneEvent>
 #include <QGraphicsView>
@@ -62,6 +64,8 @@ namespace Caneda
 {
     //! \brief Default grid spacing
     static const uint DEFAULT_GRID_SPACE = 10;
+
+    const QRectF SchematicScene::DefaultSceneRect = QRectF(0, 0, 1024, 678);
 
     /*!
      * \brief This template method calculates the center of the items on the scene
@@ -90,7 +94,8 @@ namespace Caneda
     }
 
     //! \brief Default Constructor
-    SchematicScene::SchematicScene(QObject *parent) : QGraphicsScene(parent)
+    SchematicScene::SchematicScene(QObject *parent) :
+        QGraphicsScene(SchematicScene::DefaultSceneRect, parent)
     {
         init();
     }
@@ -111,7 +116,8 @@ namespace Caneda
         m_modified = false;
 
         m_opensDataDisplay = true;
-        m_frameTexts = QStringList() << tr("Title: ") << tr("Drawn By: ") << tr("Date: ")+QDate::currentDate().toString() << tr("Revision: ");
+        m_frameTexts = QStringList() << tr("Title: ") << tr("Drawn By: ")
+            << tr("Date: ") + QDate::currentDate().toString() << tr("Revision: ");
         m_frameRows = 11;
         m_frameColumns = 16;
         m_macroProgress = false;
@@ -124,9 +130,17 @@ namespace Caneda
 
         m_paintingDrawItem = 0;
         m_paintingDrawClicks = 0;
-        m_zoomBand = 0;
 
-        setCurrentMouseAction(Normal);
+        m_zoomBand = new QGraphicsRectItem();
+        //FIXME: Uses hard coded pen color : won't be visible in dark background
+        const QColor zoomBandColor(Qt::black);
+        m_zoomBand->setPen(QPen(zoomBandColor, 0, Qt::DashLine));
+        m_zoomBand->hide();
+        addItem(m_zoomBand);
+
+        m_zoomBandClicks = 0;
+
+        setMouseAction(Normal);
 
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
     }
@@ -144,34 +158,6 @@ namespace Caneda
     static const char dataSetSuffix[] = ".dat";
     //! \brief Data display file suffix
     static const char dataDisplaySuffix[] = ".dpl";
-
-    /*!
-     * \brief Set schematic and datafile name
-     *
-     * \param name: name to set
-     * \todo Why do we need this. A new theme will be each project is a subdirectory.
-     * Schematic name is only a prefix
-     */
-    void SchematicScene::setFileName(const QString& name)
-    {
-        if(name == m_fileName) {
-            return;
-        }
-        else if(name.isEmpty()) {
-            m_fileName.clear();
-            m_dataSet.clear();
-            m_dataDisplay.clear();
-        }
-        else {
-            m_fileName = name;
-            QFileInfo info(m_fileName);
-            m_dataSet = info.baseName() + dataSetSuffix;
-            m_dataDisplay = info.baseName() + dataDisplaySuffix;
-        }
-
-        emit fileNameChanged(m_fileName);
-        emit titleToBeUpdated();
-    }
 
     //! \brief A helper method to return sign of given integer.
     inline int sign(int value)
@@ -355,14 +341,14 @@ namespace Caneda
      *
      * \param MouseAction: mouse action to set
      */
-    void SchematicScene::setCurrentMouseAction(const MouseAction action)
+    void SchematicScene::setMouseAction(const MouseAction action)
     {
-        if(m_currentMouseAction == action) {
+        if(m_mouseAction == action) {
             return;
         }
 
         // Remove the shortcut blocking if the current action uptil now was InsertItems
-        if(m_currentMouseAction == InsertingItems) {
+        if(m_mouseAction == InsertingItems) {
             blockShortcuts(false);
         }
 
@@ -372,14 +358,9 @@ namespace Caneda
         }
 
         m_areItemsMoving = false;
-        m_currentMouseAction = action;
+        m_mouseAction = action;
 
-        // Set the appropriate drag mode for all views associated with this scene.
-        QGraphicsView::DragMode dragMode = (action == Normal) ?
-            QGraphicsView::RubberBandDrag : QGraphicsView::NoDrag;
-        foreach(QGraphicsView *view, views()) {
-            view->setDragMode(dragMode);
-        }
+        emit mouseActionChanged();
 
         resetState();
         //TODO: Implemement this appropriately for all mouse actions
@@ -444,11 +425,12 @@ namespace Caneda
 
         /* reset drawing item */
         delete m_paintingDrawItem;
-        m_paintingDrawItem = NULL;
+        m_paintingDrawItem = 0;
         m_paintingDrawClicks = 0;
 
-        delete m_zoomBand;
-        m_zoomBand = 0;
+        m_zoomRect = QRectF();
+        m_zoomBand->hide();
+        m_zoomBandClicks = 0;
     }
 
     //! \brief Cut items
@@ -489,7 +471,7 @@ namespace Caneda
 
     void SchematicScene::beginPaintingDraw(Painting *item)
     {
-        Q_ASSERT(m_currentMouseAction == SchematicScene::PaintingDrawEvent);
+        Q_ASSERT(m_mouseAction == SchematicScene::PaintingDrawEvent);
         m_paintingDrawClicks = 0;
         delete m_paintingDrawItem;
         m_paintingDrawItem = item->copy();
@@ -531,7 +513,7 @@ namespace Caneda
      */
     void SchematicScene::beginInsertingItems(const QList<SchematicItem*> &items)
     {
-        Q_ASSERT(m_currentMouseAction == SchematicScene::InsertingItems);
+        Q_ASSERT(m_mouseAction == SchematicScene::InsertingItems);
 
         // Delete all previous insertibles
         qDeleteAll(m_insertibles);
@@ -558,10 +540,10 @@ namespace Caneda
      *
      * This filter is used to install on QApplication object to filter our
      * shortcut events.
-     * This filter is installed by \a setCurrentMouseAction method if the new action
+     * This filter is installed by \a setMouseAction method if the new action
      * is InsertingItems and removed if the new action is different, thus blocking
      * shortcuts on InsertItems and unblocking for other mouse actions
-     * \sa SchematicScene::setCurrentMouseAction, SchematicScene::blockShortcuts
+     * \sa SchematicScene::setMouseAction, SchematicScene::blockShortcuts
      * \sa QObject::eventFilter
      *
      * \todo Take care if multiple scenes install event filters.
@@ -697,8 +679,7 @@ namespace Caneda
     {
         if(m_modified != !m) {
             m_modified = !m;
-            emit modificationChanged(m_modified);
-            emit titleToBeUpdated();
+            emit changed();
         }
     }
 
@@ -842,7 +823,7 @@ namespace Caneda
     bool SchematicScene::event(QEvent *event)
     {
         static int ii = 0;
-        if(m_currentMouseAction == InsertingItems) {
+        if(m_mouseAction == InsertingItems) {
             if(event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
                 bool visible = (event->type() == QEvent::Enter);
                 foreach(SchematicItem *item, m_insertibles) {
@@ -926,7 +907,7 @@ namespace Caneda
         if(event->mimeData()->formats().contains("application/caneda.sidebarItem")) {
             event->accept();
             QWidget *parentWidget = event->widget() ? event->widget()->parentWidget() : 0;
-            SchematicView *view = qobject_cast<SchematicView*>(parentWidget);
+            SchematicWidget *view = qobject_cast<SchematicWidget*>(parentWidget);
             if (!view) {
                 event->ignore();
                 return;
@@ -1028,8 +1009,12 @@ namespace Caneda
     void SchematicScene::wheelEvent(QGraphicsSceneWheelEvent *e)
     {
         QGraphicsView *v = static_cast<QGraphicsView *>(e->widget()->parent());
-        SchematicView *sv = qobject_cast<SchematicView*>(v);
+        SchematicWidget *sv = qobject_cast<SchematicWidget*>(v);
         if(!sv) {
+            return;
+        }
+        SchematicView *view = sv->schematicView();
+        if (!view) {
             return;
         }
 
@@ -1037,7 +1022,7 @@ namespace Caneda
             if(e->delta() > 0) {
                 QPoint viewPoint = sv->mapFromScene(e->scenePos());
 
-                sv->zoomIn();
+                view->zoomIn();
 
                 QPointF afterScalePoint(sv->mapFromScene(e->scenePos()));
                 int dx = (afterScalePoint - viewPoint).toPoint().x();
@@ -1050,7 +1035,7 @@ namespace Caneda
                 vb->setValue(vb->value() + dy);
             }
             else {
-                sv->zoomOut();
+                view->zoomOut();
             }
         }
         else if(e->modifiers() & Qt::ShiftModifier){
@@ -1087,10 +1072,10 @@ namespace Caneda
      */
     bool SchematicScene::sidebarItemClickedPaintingsItems(const QString& itemName)
     {
-        setCurrentMouseAction(PaintingDrawEvent);
+        setMouseAction(PaintingDrawEvent);
         m_paintingDrawItem = Painting::fromName(itemName);
         if(!m_paintingDrawItem) {
-            setCurrentMouseAction(Normal);
+            setMouseAction(Normal);
             return false;
         }
         m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
@@ -1105,7 +1090,7 @@ namespace Caneda
         }
 
         addItem(item);
-        setCurrentMouseAction(InsertingItems);
+        setMouseAction(InsertingItems);
         beginInsertingItems(QList<SchematicItem*>() << item);
 
         return true;
@@ -2108,84 +2093,38 @@ namespace Caneda
      * corresponding feedback (zoom band) is shown which indiates area that will
      * be zoomed. On mouse release, the area (rect) selected is zoomed.
      */
-    void SchematicScene::zoomingAtPointEvent(MouseActionEvent *event)
+    void SchematicScene::zoomingAreaEvent(MouseActionEvent *event)
     {
-        QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
-        SchematicView *sv = qobject_cast<SchematicView*>(v);
-        if(!sv) {
+        QGraphicsView *view = static_cast<QGraphicsView *>(event->widget()->parent());
+        SchematicWidget *schematicWidget = qobject_cast<SchematicWidget*>(view);
+        if(!schematicWidget) {
             return;
         }
-        QPoint viewPoint = sv->mapFromScene(event->scenePos());
-
-        // Delete the zoom band and return if this event was triggered for non left
-        // mouse button.
-        if (!(event->buttons().testFlag(Qt::LeftButton)) &&
-                event->type() != QEvent::GraphicsSceneMouseRelease) {
-            delete m_zoomBand;
-            m_zoomBand = 0;
-            return;
-        }
-
+        QPointF dest = smartNearingGridPoint(event->scenePos());
 
         if(event->type() == QEvent::GraphicsSceneMousePress) {
-            // Another left click when zoom band is active means that a
-            // zoom operation was started in another view for this same scene.
-            // So delete the old zoom band.
-            if (m_zoomBand) {
-                delete m_zoomBand;
-                m_zoomBand = 0;
-            }
-        }
-        else if(event->type() == QEvent::GraphicsSceneMouseMove) {
-            if (!m_zoomBand) {
-                m_zoomBand = new QRubberBand(QRubberBand::Rectangle);
-                m_zoomBand->setParent(sv->viewport());
-                m_zoomBand->show();
-                m_zoomRect.setRect(event->scenePos().x(), event->scenePos().y(), 0, 0);
-            } else {
-                m_zoomRect.setBottomRight(event->scenePos());
-            }
-            QRect rrect = sv->mapFromScene(m_zoomRect).boundingRect().normalized();
-            m_zoomBand->setGeometry(rrect);
-        }
-        else {
-            if (m_zoomBand) {
-                sv->fitInView(m_zoomRect, Qt::KeepAspectRatio);
+            clearSelection();
+            ++m_zoomBandClicks;
 
-                delete m_zoomBand;
-                m_zoomBand = 0;
+            // This is generic case
+            if(m_zoomBandClicks == 1) {
+                m_zoomRect.setRect(dest.x(), dest.y(), 0, 0);
+                m_zoomBand->setRect(m_zoomRect.normalized());
+                m_zoomBand->show();
             }
             else {
-                sv->zoomIn();
-                QPointF afterScalePoint(sv->mapFromScene(event->scenePos()));
-                int dx = (afterScalePoint - viewPoint).toPoint().x();
-                int dy = (afterScalePoint - viewPoint).toPoint().y();
-
-                QScrollBar *hb = sv->horizontalScrollBar();
-                QScrollBar *vb = sv->verticalScrollBar();
-
-                hb->setValue(hb->value() + dx);
-                vb->setValue(vb->value() + dy);
+                m_zoomBandClicks = 0;
+                m_zoomBand->hide();
+                schematicWidget->zoomFitRect(m_zoomRect.normalized());
+                m_zoomRect.setRect(0, 0, 0, 0);
             }
         }
-    }
 
-    /*!
-     * \brief Zoom out event handles zooming of the view based on mouse signals.
-     *
-     * If just a point is clicked(mouse press + release) then, an ordinary zoomOut
-     * is done (similar to selecting from menu)
-     */
-    void SchematicScene::zoomingOutAtPointEvent(MouseActionEvent *event)
-    {
-        QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
-        SchematicView *sv = qobject_cast<SchematicView*>(v);
-        if(!sv) {
-            return;
-        }
-
-        if(event->type() == QEvent::GraphicsSceneMousePress) {
-            sv->zoomOut();
+        else if(event->type() == QEvent::GraphicsSceneMouseMove) {
+            if(m_zoomBandClicks == 1) {
+                m_zoomRect.setBottomRight(dest);
+                m_zoomBand->setRect(m_zoomRect.normalized());
+            }
         }
     }
 
@@ -2765,7 +2704,7 @@ namespace Caneda
      */
     void SchematicScene::sendMouseActionEvent(MouseActionEvent *e)
     {
-        switch(m_currentMouseAction) {
+        switch(m_mouseAction) {
             case Wiring:
                 wiringEvent(e);
                 break;
@@ -2794,12 +2733,8 @@ namespace Caneda
                 changingActiveStatusEvent(e);
                 break;
 
-            case ZoomingAtPoint:
-                zoomingAtPointEvent(e);
-                break;
-
-            case ZoomingOutAtPoint:
-                zoomingOutAtPointEvent(e);
+            case ZoomingAreaEvent:
+                zoomingAreaEvent(e);
                 break;
 
             case PaintingDrawEvent:

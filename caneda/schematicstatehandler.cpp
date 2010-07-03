@@ -22,9 +22,9 @@
 #include "actionmanager.h"
 #include "library.h"
 #include "schematicscene.h"
-#include "schematicview.h"
+#include "schematicwidget.h"
 #include "settings.h"
-#include "singletonmanager.h"
+#include "singletonowner.h"
 #include "undocommands.h"
 
 #include "paintings/painting.h"
@@ -77,9 +77,9 @@ namespace Caneda
         Painting *paintingDrawItem;
 
         QSet<SchematicScene*> scenes;
-        QSet<SchematicView*> views;
+        QSet<SchematicWidget*> widgets;
 
-        QPointer<SchematicView> focussedView;
+        QPointer<SchematicWidget> focussedWidget;
         QHash<QString, SchematicItem*> toolbarInsertibles;
     };
 
@@ -116,7 +116,11 @@ namespace Caneda
 
     SchematicStateHandler* SchematicStateHandler::instance()
     {
-        return SingletonManager::instance()->schematicStateHandler();
+        static SchematicStateHandler *instance = 0;
+        if (!instance) {
+            instance = new SchematicStateHandler(SingletonOwner::instance());
+        }
+        return instance;
     }
 
     SchematicStateHandler::~SchematicStateHandler()
@@ -124,19 +128,18 @@ namespace Caneda
         delete d;
     }
 
-    void SchematicStateHandler::registerView(SchematicView *view)
+    void SchematicStateHandler::registerWidget(SchematicWidget *widget)
     {
-        SchematicScene *scene = view->schematicScene();
+        SchematicScene *scene = widget->schematicScene();
         if (!scene) {
-            qWarning() << Q_FUNC_INFO << "View doesn't have an associated scene";
+            qWarning() << Q_FUNC_INFO << "Widget doesn't have an associated scene";
             return;
         }
-        if (!d->views.contains(view)) {
-            d->views << view;
-            connect(view, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
-            connect(view, SIGNAL(focussed(SchematicView*)),
-                    SLOT(slotUpdateFocussedView(SchematicView*)));
-            connect(view, SIGNAL(pasteInvoked()), SLOT(slotHandlePaste()));
+        if (!d->widgets.contains(widget)) {
+            d->widgets << widget;
+            connect(widget, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
+            connect(widget, SIGNAL(focussedIn(SchematicWidget*)),
+                    SLOT(slotUpdateFocussedWidget(SchematicWidget*)));
         }
 
         if (!d->scenes.contains(scene)) {
@@ -149,20 +152,19 @@ namespace Caneda
         }
     }
 
-    void SchematicStateHandler::unregisterView(SchematicView *view)
+    void SchematicStateHandler::unregisterWidget(SchematicWidget *widget)
     {
-        if (!view) {
+        if (!widget) {
             return;
         }
-        if (d->views.contains(view)) {
-            d->views.remove(view);
-            disconnect(view, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
-            disconnect(view, SIGNAL(focussed(SchematicView*)), this,
-                    SLOT(slotUpdateFocussedView(SchematicView*)));
-            disconnect(view, SIGNAL(pasteInvoked()), this, SLOT(slotHandlePaste()));
+        if (d->widgets.contains(widget)) {
+            d->widgets.remove(widget);
+            disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
+            disconnect(widget, SIGNAL(focussedIn(SchematicWidget*)), this,
+                    SLOT(slotUpdateFocussedWidget(SchematicWidget*)));
         }
 
-        SchematicScene *scene = view->schematicScene();
+        SchematicScene *scene = widget->schematicScene();
         if (scene && d->scenes.contains(scene)) {
             d->scenes.remove(scene);
             disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
@@ -306,23 +308,23 @@ namespace Caneda
 
     void SchematicStateHandler::slotOnObjectDestroyed(QObject *object)
     {
-        //HACK: Using static cast to convert QObject pointers to scene and view
+        //HACK: Using static cast to convert QObject pointers to scene and widget
         //      respectively. This might result in invalid pointers, but the main
         //      purpose why we need them is just to remove the same from the lists.
         //
         //      Using of these pointers to access any method or variable will result
         //      in ugly crash!!
         SchematicScene *scene = static_cast<SchematicScene*>(object);
-        SchematicView *view = static_cast<SchematicView*>(object);
+        SchematicWidget *widget = static_cast<SchematicWidget*>(object);
 
 
         d->scenes.remove(scene);
-        d->views.remove(view);
+        d->widgets.remove(widget);
     }
 
-    void SchematicStateHandler::slotUpdateFocussedView(SchematicView *view)
+    void SchematicStateHandler::slotUpdateFocussedWidget(SchematicWidget *widget)
     {
-        d->focussedView = view;
+        d->focussedWidget = widget;
     }
 
     /*!
@@ -368,8 +370,8 @@ namespace Caneda
 
         //else part
         SchematicScene *scene = 0;
-        if (d->focussedView.isNull() == false) {
-            scene = d->focussedView->schematicScene();
+        if (d->focussedWidget.isNull() == false) {
+            scene = d->focussedWidget->schematicScene();
         }
         QList<QGraphicsItem*> selectedItems;
         if (scene) {
@@ -429,7 +431,7 @@ namespace Caneda
         action->blockSignals(false);
 
         d->mouseAction = ma;
-        applyStateToAllViews();
+        applyStateToAllWidgets();
     }
 
     void SchematicStateHandler::slotSetNormalAction()
@@ -442,7 +444,7 @@ namespace Caneda
         d->updateToolbarInsertibles();
     }
 
-    void SchematicStateHandler::applyCursor(SchematicView *view)
+    void SchematicStateHandler::applyCursor(SchematicWidget *widget)
     {
         static QString bitmapPath = Caneda::bitmapDirectory();
         QCursor cursor;
@@ -458,7 +460,7 @@ namespace Caneda
 
             case SchematicScene::Rotating:
                 cursor = QCursor(QIcon::fromTheme("object-rotate-left", QIcon(bitmapPath + "object-rotate-left.png")).pixmap(20));
-                break;                
+                break;
 
             case SchematicScene::MirroringX:
                 cursor.setShape(Qt::SizeVerCursor);
@@ -468,12 +470,8 @@ namespace Caneda
                 cursor.setShape(Qt::SizeHorCursor);
                 break;
 
-            case SchematicScene::ZoomingAtPoint:
+            case SchematicScene::ZoomingAreaEvent:
                 cursor = QCursor(QIcon::fromTheme("zoom-in", QIcon(bitmapPath +  "zoom-in.png")).pixmap(20));
-                break;
-
-            case SchematicScene::ZoomingOutAtPoint:
-                cursor = QCursor(QIcon::fromTheme("zoom-out", QIcon(bitmapPath +  "zoom-out.png")).pixmap(20));
                 break;
 
             case SchematicScene::PaintingDrawEvent:
@@ -488,18 +486,18 @@ namespace Caneda
                 cursor.setShape(Qt::ArrowCursor);
         }
 
-        view->setCursor(cursor);
+        widget->setCursor(cursor);
     }
 
-    void SchematicStateHandler::applyState(SchematicView *view)
+    void SchematicStateHandler::applyState(SchematicWidget *widget)
     {
-        applyCursor(view);
-        SchematicScene *scene = view->schematicScene();
+        applyCursor(widget);
+        SchematicScene *scene = widget->schematicScene();
         if (!scene) {
             return;
         }
 
-        scene->setCurrentMouseAction(d->mouseAction);
+        scene->setMouseAction(d->mouseAction);
         if (d->mouseAction == SchematicScene::InsertingItems) {
             if (!d->insertibles.isEmpty()) {
                 QList<SchematicItem*> copy;
@@ -516,10 +514,10 @@ namespace Caneda
         }
     }
 
-    void SchematicStateHandler::applyStateToAllViews()
+    void SchematicStateHandler::applyStateToAllWidgets()
     {
-        foreach (SchematicView *view, d->views) {
-            applyState(view);
+        foreach (SchematicWidget *widget, d->widgets) {
+            applyState(widget);
         }
     }
 

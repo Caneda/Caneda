@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,232 +19,91 @@
 
 #include "schematicview.h"
 
-#include "item.h"
-#include "schematicscene.h"
-#include "xmlformat.h"
+#include "actionmanager.h"
+#include "schematiccontext.h"
+#include "schematicdocument.h"
+#include "schematicstatehandler.h"
+#include "schematicwidget.h"
 
-#include <QDebug>
-#include <QFileDialog>
-#include <QFileInfo>
-#include <QMessageBox>
-#include <QScrollBar>
-#include <QTimer>
-#include <QWheelEvent>
+#include <QToolBar>
 
 namespace Caneda
 {
-    const qreal SchematicView::zoomFactor = 1.2f;
-
-    //! Constructor
-    SchematicView::SchematicView(SchematicScene *sc, QWidget *parent) :
-        QGraphicsView(sc, parent),
-        m_horizontalScroll(0),
-        m_verticalScroll(0)
+    SchematicView::SchematicView(SchematicDocument *document) :
+        IView(document)
     {
-        if(sc == 0) {
-            sc = new SchematicScene;
-            sc->setSceneRect(0, 0, 1024, 768);
-            setScene(sc);
-            DragMode dragMode = (sc->currentMouseAction() == SchematicScene::Normal) ?
-                RubberBandDrag : NoDrag;
-            setDragMode(dragMode);
-        }
-
-        setAcceptDrops(true);
-        setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-        setViewportUpdateMode(SmartViewportUpdate);
-        setCacheMode(CacheBackground);
-
-        viewport()->setMouseTracking(true);
-        viewport()->setAttribute(Qt::WA_NoSystemBackground);
-
-        connect(sc, SIGNAL(modificationChanged(bool)), SIGNAL(modificationChanged(bool)));
-        connect(sc, SIGNAL(fileNameChanged(const QString&)),
-                SIGNAL(fileNameChanged(const QString&)));
-        connect(sc, SIGNAL(titleToBeUpdated()), SIGNAL(titleToBeUpdated()));
+        m_schematicWidget = new SchematicWidget(this);
+        SchematicStateHandler::instance()->registerWidget(m_schematicWidget);
+        connect(m_schematicWidget, SIGNAL(focussedIn(SchematicWidget*)), this,
+                SLOT(onWidgetFocussedIn()));
+        connect(m_schematicWidget, SIGNAL(focussedOut(SchematicWidget*)), this,
+                SLOT(onWidgetFocussedOut()));
+        connect(m_schematicWidget, SIGNAL(cursorPositionChanged(const QString &)),
+                this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    //! Destructor
     SchematicView::~SchematicView()
     {
-        //HACK: For now delete the scene if this view is its only viewer.
-        QList<QGraphicsView*> views;
-        if (scene()) {
-            views = scene()->views();
-        }
-
-        if (views.size() == 1 && views.first() == this) {
-            delete scene();
-        }
+        delete m_schematicWidget;
     }
 
-    SchematicScene* SchematicView::schematicScene() const
+    SchematicDocument* SchematicView::schematicDocument() const
     {
-        SchematicScene* s = qobject_cast<SchematicScene*>(scene());
-        Q_ASSERT(s);// This should never fail!
-        return s;
-    }
-
-    void SchematicView::setFileName(const QString& name)
-    {
-        schematicScene()->setFileName(name);
-    }
-
-    QString SchematicView::fileName() const
-    {
-        return schematicScene()->fileName();
-    }
-
-    bool SchematicView::load()
-    {
-        //Assumes file name is set
-        FileFormatHandler *format =
-            FileFormatHandler::handlerFromSuffix(QFileInfo(fileName()).suffix(), schematicScene());
-
-        if(!format) {
-            QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
-            return false;
-        }
-
-        if(!format->load()) {
-            return false;
-        }
-        return true;
-    }
-
-    bool SchematicView::save()
-    {
-        //Assumes filename is set before the call
-        QFileInfo info(fileName());
-
-        if(QString(info.suffix()).isEmpty()) {
-            setFileName(fileName()+".xsch");
-            info = QFileInfo(fileName());
-        }
-
-        FileFormatHandler *format =
-            FileFormatHandler::handlerFromSuffix(info.suffix(), schematicScene());
-
-        if(!format) {
-            QMessageBox::critical(0, tr("Error"), tr("Unknown file format!"));
-            return false;
-        }
-
-        if(!format->save()) {
-            return false;
-        }
-        else {
-            schematicScene()->undoStack()->clear();
-            //If we are editing the symbol, and svg (and xsym) files were previously created, we must update them.
-            if(schematicScene()->currentMode() == Caneda::SymbolMode) {
-                info = QFileInfo(fileName().replace(".xsch",".xsym"));
-                if(info.exists()) {
-                    setFileName(fileName().replace(".xsch",".xsym"));
-                    format = FileFormatHandler::handlerFromSuffix(info.suffix(), schematicScene());
-                    format->save();
-                    setFileName(fileName().replace(".xsym",".xsch"));
-                }
-            }
-        }
-
-        return true;
-    }
-
-    void SchematicView::zoomIn()
-    {
-        scale(zoomFactor, zoomFactor);
-    }
-
-    void SchematicView::zoomOut()
-    {
-        qreal zf = 1.0/zoomFactor;
-        scale(zf, zf);
-    }
-
-    void SchematicView::showAll()
-    {
-        fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
-    }
-
-    void SchematicView::showNoZoom()
-    {
-        resetMatrix();
+        return qobject_cast<SchematicDocument*>(document());
     }
 
     QWidget* SchematicView::toWidget() const
     {
-        SchematicView* self = const_cast<SchematicView*>(this);
-        QGraphicsView* view = qobject_cast<QGraphicsView*>(self);
-        return static_cast<QWidget*>(view);
+        return m_schematicWidget;
     }
 
-    SchematicView* SchematicView::toSchematicView() const
+    IContext* SchematicView::context() const
     {
-        SchematicView* self = const_cast<SchematicView*>(this);
-        QGraphicsView* view = qobject_cast<QGraphicsView*>(self);
-        return qobject_cast<SchematicView*>(view);
+        return SchematicContext::instance();
     }
 
-    bool SchematicView::isModified() const
+    void SchematicView::zoomIn()
     {
-        return schematicScene()->isModified();
+        m_schematicWidget->zoomIn();
     }
 
-    void SchematicView::copy() const
+    void SchematicView::zoomOut()
     {
-        QList<QGraphicsItem*> items = scene()->selectedItems();
-        QList<SchematicItem*> qItems = filterItems<SchematicItem>(items);
-        schematicScene()->copyItems(qItems);
+        m_schematicWidget->zoomOut();
     }
 
-    void SchematicView::cut()
+    void SchematicView::zoomFitInBest()
     {
-        QList<QGraphicsItem*> items = scene()->selectedItems();
-        QList<SchematicItem*> qItems = filterItems<SchematicItem>(items);
-
-        if(!qItems.isEmpty()) {
-            schematicScene()->cutItems(qItems);
-        }
+        m_schematicWidget->zoomFitInBest();
     }
 
-    void SchematicView::paste()
+    void SchematicView::zoomOriginal()
     {
-        emit pasteInvoked();
+        m_schematicWidget->zoomOriginal();
     }
 
-    void SchematicView::saveScrollState()
+    IView* SchematicView::duplicate()
     {
-        m_horizontalScroll = horizontalScrollBar()->value();
-        m_verticalScroll  = verticalScrollBar()->value();
+        return document()->createView();
     }
 
-    void SchematicView::restoreScrollState()
+    void SchematicView::updateSettingsChanges()
     {
-        horizontalScrollBar()->setValue(m_horizontalScroll);
-        verticalScrollBar()->setValue(m_verticalScroll);
+        m_schematicWidget->invalidateScene();
+        m_schematicWidget->resetCachedContent();
     }
 
-    void SchematicView::setModified(bool m)
+    void SchematicView::onWidgetFocussedIn()
     {
-        schematicScene()->setModified(m);
+        emit focussedIn(static_cast<IView*>(this));
+        ActionManager *am = ActionManager::instance();
+        Action *action = am->actionForName("snapToGrid");
+        action->setChecked(m_schematicWidget->schematicScene()->gridSnap());
     }
 
-    void SchematicView::mouseMoveEvent(QMouseEvent *event)
+    void SchematicView::onWidgetFocussedOut()
     {
-        QPoint newCursorPos = mapToScene(event->pos()).toPoint();
-        QString str = QString("%1 : %2")
-            .arg(newCursorPos.x())
-            .arg(newCursorPos.y());
-        emit cursorPositionChanged(str);
-        QGraphicsView::mouseMoveEvent(event);
-    }
-
-    void SchematicView::focusInEvent(QFocusEvent *event)
-    {
-        QGraphicsView::focusInEvent(event);
-        if (hasFocus()) {
-            emit focussed(this);
-        }
+        emit focussedOut(static_cast<IView*>(this));
     }
 
 } // namespace Caneda

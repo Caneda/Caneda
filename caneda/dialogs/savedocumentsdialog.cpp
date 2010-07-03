@@ -19,9 +19,12 @@
 
 #include "savedocumentsdialog.h"
 
+#include "documentviewmanager.h"
+#include "idocument.h"
+#include "iview.h"
 #include "mainwindow.h"
-#include "canedaview.h"
 #include "settings.h"
+#include "tabs.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -103,16 +106,15 @@ namespace Caneda
 
     struct SaveDocumentsDialogPrivate
     {
-        QSet<QPair<CanedaView*, int> > modifiedViews;
-        QMap<int, int> treeIndexToTabIndex;
-        QSet<QPair<CanedaView*, QString> > newFilePaths;
+        QList<IDocument*> modifiedDocuments;
+        QList<QPair<IDocument*, QString> > newFilePaths;
     };
 
-    SaveDocumentsDialog::SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &modifiedViews,
+    SaveDocumentsDialog::SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
             QWidget *parent) : QDialog(parent)
     {
         d = new SaveDocumentsDialogPrivate;
-        d->modifiedViews = modifiedViews;
+        d->modifiedDocuments = modifiedDocuments;
 
         ui.setupUi(this);
 
@@ -120,7 +122,20 @@ namespace Caneda
         ui.buttonBox->button(QDialogButtonBox::Discard)->setText(tr("Do not Save"));
         ui.buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
-        populateItems();
+        ui.buttonBox->button(QDialogButtonBox::Save)->setFocus();
+
+        // Populate items in tree.
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        for (int i = 0; i < modifiedDocuments.count(); ++i) {
+            IDocument *document = modifiedDocuments[i];
+            QTreeWidgetItem *item = new QTreeWidgetItem(ui.treeWidget);
+            item->setCheckState(0, Qt::Checked);
+
+            QFileInfo fileInfo(document->fileName());
+            FileBrowserLineEdit *widget = new FileBrowserLineEdit(item, fileInfo);
+            ui.treeWidget->setItemWidget(item, 1, widget);
+            widget->updateTexts();
+        }
 
         connect(ui.buttonBox, SIGNAL(clicked(QAbstractButton*)),
                 this, SLOT(slotButtonClicked(QAbstractButton*)));
@@ -133,7 +148,7 @@ namespace Caneda
         delete d;
     }
 
-    QSet<QPair<CanedaView*, QString> > SaveDocumentsDialog::newFilePaths() const
+    QList<QPair<IDocument*, QString> > SaveDocumentsDialog::newFilePaths() const
     {
         return d->newFilePaths;
     }
@@ -156,13 +171,8 @@ namespace Caneda
                         return;
                     }
 
-                    MainWindow *mw = MainWindow::instance();
-                    QTabWidget *tw = mw->tabWidget();
-                    CanedaView *view = mw->viewFromWidget(tw->widget(d->treeIndexToTabIndex[i]));
-                    if (view) {
-                        d->newFilePaths.insert(qMakePair(view,
-                                    widget->fileInfo().absoluteFilePath()));
-                    }
+                    d->newFilePaths << qMakePair(d->modifiedDocuments[i],
+                            widget->fileInfo().absoluteFilePath());
                 }
             }
         }
@@ -172,30 +182,22 @@ namespace Caneda
 
     void SaveDocumentsDialog::slotHandleClick(const QModelIndex& index)
     {
-        MainWindow *mw = MainWindow::instance();
-        mw->tabWidget()->setCurrentIndex(d->treeIndexToTabIndex[index.row()]);
+        if (index.row() < 0 || index.row() >= d->modifiedDocuments.count()) {
+            return;
+        }
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        QList<IView*> views = manager->viewsForDocument(d->modifiedDocuments[index.row()]);
+        if (!views.isEmpty()) {
+            TabWidget *tabWidget = MainWindow::instance()->tabWidget();
+            Tab *tab = tabWidget->tabForView(views.first());
+            tab->setFocus();
+        }
     }
 
     void SaveDocumentsDialog::reject()
     {
         QAbstractButton *cancel = ui.buttonBox->button(QDialogButtonBox::Cancel);
         slotButtonClicked(cancel);
-    }
-
-    void SaveDocumentsDialog::populateItems()
-    {
-        QSet<QPair<CanedaView*, int> >::iterator it = d->modifiedViews.begin();
-        for (int i = 0 ; it != d->modifiedViews.end(); ++it, ++i) {
-            CanedaView *view = it->first;
-            QTreeWidgetItem *item = new QTreeWidgetItem(ui.treeWidget);
-            item->setCheckState(0, Qt::Checked);
-            d->treeIndexToTabIndex[i] = it->second;
-
-            QFileInfo fileInfo(view->fileName());
-            FileBrowserLineEdit *widget = new FileBrowserLineEdit(item, fileInfo);
-            ui.treeWidget->setItemWidget(item, 1, widget);
-            widget->updateTexts();
-        }
     }
 
 } // namespace Caneda

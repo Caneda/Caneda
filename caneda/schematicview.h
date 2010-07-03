@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,77 +17,49 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SCHEMATICVIEW_H
-#define SCHEMATICVIEW_H
+#ifndef CANEDA_SCHEMATICVIEW_H
+#define CANEDA_SCHEMATICVIEW_H
 
-#include "canedaview.h"
-
-#include <QGraphicsView>
+#include "iview.h"
 
 namespace Caneda
 {
-    // Forward declarations
-    class SchematicItem;
-    class SchematicScene;
+    // Forward declrations
+    class SchematicDocument;
+    class SchematicWidget;
 
-    class SchematicView : public QGraphicsView, public CanedaView
+    class SchematicView : public IView
     {
-    Q_OBJECT
+        Q_OBJECT
     public:
-        static const qreal zoomFactor;
+        SchematicView(SchematicDocument *document);
+        virtual ~SchematicView();
 
-        SchematicView(SchematicScene *sc = 0,QWidget *parent = 0);
-        ~SchematicView();
+        SchematicDocument* schematicDocument() const;
 
-        SchematicScene* schematicScene() const;
+        // IView interface methods
 
-        //reimplemented virtuals from CanedaView
-        void setFileName(const QString& name);
-        QString fileName() const;
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
 
-        bool load();
-        bool save();
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
 
-        void zoomIn();
-        void zoomOut();
+        virtual IView* duplicate();
 
-        void showAll();
-        void showNoZoom();
+        virtual void updateSettingsChanges();
 
-        bool isSchematicView() const { return true; }
+        // End of IView interface methods
 
-        QWidget* toWidget() const;
-        SchematicView* toSchematicView() const;
-
-        bool isModified() const;
-
-        void copy() const;
-        void cut();
-        void paste();
-
-        void saveScrollState();
-        void restoreScrollState();
-
-    public Q_SLOTS:
-        void setModified(bool m);
-
-    signals:
-        void modificationChanged(bool modified);
-        void fileNameChanged(const QString& file);
-        void titleToBeUpdated();
-        void cursorPositionChanged(const QString& newPos);
-        void focussed(SchematicView *view);
-        void pasteInvoked();
-
-    protected:
-        void mouseMoveEvent(QMouseEvent *event);
-        void focusInEvent(QFocusEvent *event);
+    private Q_SLOTS:
+        void onWidgetFocussedIn();
+        void onWidgetFocussedOut();
 
     private:
-        int m_horizontalScroll;
-        int m_verticalScroll;
+        SchematicWidget *m_schematicWidget;
     };
-
 } // namespace Caneda
 
-#endif //SCHEMATICVIEW_H
+#endif // CANEDA_SCHEMATICVIEW_H

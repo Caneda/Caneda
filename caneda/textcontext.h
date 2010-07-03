@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,56 +17,33 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef MAINWINDOWBASE_H
-#define MAINWINDOWBASE_H
+#ifndef CANEDA_TEXTCONTEXT_H
+#define CANEDA_TEXTCONTEXT_H
 
-#include <QMainWindow>
-#include <QTabWidget>
-
-class QToolButton;
+#include "icontext.h"
 
 namespace Caneda
 {
-    class TabWidgetPrivate : public QTabWidget
+    class TextContext : public IContext
     {
+        Q_OBJECT
     public:
-        TabWidgetPrivate(QWidget *parent = 0);
-    };
+        static TextContext* instance();
+        virtual ~TextContext();
 
-    class MainWindowBase : public QMainWindow
-    {
-    Q_OBJECT
-    public:
-        MainWindowBase(QWidget *parent = 0);
-        ~MainWindowBase();
+        // Interface implementation
+        virtual void init();
 
-        void addChildWidget(QWidget *widget);
-        void removeChildWidget(QWidget *widget, bool deleteWidget = false);
+        virtual bool canOpen(const QFileInfo& info) const;
+        virtual QStringList fileNameFilters() const;
 
-        void addAsDockWidget(QWidget *w, const QString& title = "",
-                Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
-
-        QTabWidget* tabWidget() const { return m_tabWidget; }
-        QWidget* currentWidget() const { return m_tabWidget->currentWidget(); }
-
-    signals:
-        void currentWidgetChanged(QWidget *current, QWidget *prev);
-        void closedWidget(QWidget *widget);
-
-    public Q_SLOTS:
-        void closeTab(int index);
-        void closeAllTabs();
-
-    private Q_SLOTS:
-            void emitWidgetChanged(int index);
+        virtual IDocument* newDocument();
+        virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
+        // End of interface implementation.
 
     private:
-        void setupTabWidget();
-
-        TabWidgetPrivate *m_tabWidget;
-        QWidget *m_lastCurrentWidget;
+        TextContext(QObject *parent = 0);
     };
-
 } // namespace Caneda
 
-#endif //MAINWINDOWBASE_H
+#endif //CANEDA_TEXTCONTEXT_H

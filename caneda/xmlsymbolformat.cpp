@@ -21,8 +21,9 @@
 
 #include "component.h"
 #include "item.h"
+#include "schematicdocument.h"
 #include "schematicscene.h"
-#include "schematicview.h"
+#include "schematicwidget.h"
 #include "settings.h"
 
 #include "caneda-tools/global.h"
@@ -36,7 +37,7 @@
 namespace Caneda
 {
     //! Constructor
-    XmlSymbolFormat::XmlSymbolFormat(SchematicScene *scene) : FileFormatHandler(scene)
+    XmlSymbolFormat::XmlSymbolFormat(SchematicDocument *doc) : FileFormatHandler(doc)
     {
     }
 
@@ -53,7 +54,7 @@ namespace Caneda
             qDebug("Looks buggy! Null data to save! Was this expected?");
         }
 
-        QFile file(scene->fileName());
+        QFile file(fileName());
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
                     QObject::tr("Cannot save document!"));
@@ -68,7 +69,7 @@ namespace Caneda
         Settings::instance()->setCurrentValue("gui/gridVisible", false);
 
         QSvgGenerator svg_engine;
-        QFileInfo info(scene->fileName());
+        QFileInfo info(schematicDocument()->fileName());
         svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
         scene->toPaintDevice(svg_engine, scene->imageBoundingRect().width(), scene->imageBoundingRect().height());
 
@@ -93,7 +94,7 @@ namespace Caneda
         //Write all view details
         writer->writeStartElement("component");
 
-        QFileInfo info(scene->fileName());
+        QFileInfo info(fileName());
         writer->writeAttribute("name", info.baseName());
         writer->writeAttribute("version", Caneda::version);
         writer->writeAttribute("label", "comp");

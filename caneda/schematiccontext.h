@@ -1,0 +1,87 @@
+/***************************************************************************
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
+ ***************************************************************************/
+
+#ifndef CANEDA_SCHEMATICCONTEXT_H
+#define CANEDA_SCHEMATICCONTEXT_H
+
+#include "icontext.h"
+
+namespace Caneda
+{
+    //Forward declarations
+    class Action;
+
+    class SchematicContext : public IContext
+    {
+        Q_OBJECT
+    public:
+        static SchematicContext* instance();
+        ~SchematicContext();
+
+        // IContext interface methods.
+        virtual void init();
+
+        virtual bool canOpen(const QFileInfo &info) const;
+        virtual QStringList fileNameFilters() const;
+
+        virtual IDocument* newDocument();
+        virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+
+        void addNormalAction(Action *action);
+        void addMouseAction(Action *action);
+
+    private Q_SLOTS:
+        void slotSymbolEdit();
+        void slotIntoHierarchy();
+        void slotPopHierarchy();
+
+        void slotSnapToGrid(bool);
+        void slotAlignTop();
+        void slotAlignBottom();
+        void slotAlignLeft();
+        void slotAlignRight();
+        void slotDistributeHorizontal();
+        void slotDistributeVertical();
+        void slotCenterHorizontal();
+        void slotCenterVertical();
+
+        void slotInsertEntity();
+
+        void slotSimulate();
+        void slotToPage();
+        void slotDCbias();
+        void slotExportGraphAsCsv();
+        void slotShowLastMsg();
+        void slotShowLastNetlist();
+
+    private:
+        SchematicContext(QObject *parent = 0);
+        void alignElements(Qt::Alignment alignment);
+        void editFile(const QString &file);
+        void setNormalAction();
+
+        //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
+        // was focussed in which case schematic actions become irrelevant.
+        QList<Action*> m_normalActions;
+        QList<Action*> m_mouseActions;
+    };
+
+} // namespace Caneda
+
+#endif // CANEDA_SCHEMATICCONTEXT_H

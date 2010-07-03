@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,49 +17,24 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILEFORMATHANDLER_H
-#define FILEFORMATHANDLER_H
+#ifndef CANEDA_SINGLETONOWNER_H
+#define CANEDA_SINGLETONOWNER_H
 
-// Forward declarations
-class QString;
+#include <QObject>
 
 namespace Caneda
 {
-    // Forward declarations
-    class SchematicDocument;
-    class SchematicScene;
-
-    /*!
-     * This class is used to save and load files.
-     * Using this base class we can support any fileformat
-     */
-    class FileFormatHandler
+    class SingletonOwner : public QObject
     {
+        Q_OBJECT
     public:
-        FileFormatHandler(SchematicDocument *doc = 0);
-        virtual ~FileFormatHandler() {}
+        ~SingletonOwner();
 
-        virtual bool save() = 0;
+        static SingletonOwner* instance();
 
-        /*!
-         * Loads the document. If non-negative is returned
-         * the operation is successful. Negative return
-         * value indicated failure
-         */
-        virtual bool load() = 0;
-
-        SchematicDocument* schematicDocument() const;
-        SchematicScene* schematicScene() const;
-        QString fileName() const;
-
-        static FileFormatHandler* handlerFromSuffix(const QString& extension,
-                SchematicDocument *document = 0);
-
-    protected:
-        SchematicDocument *m_schematicDocument;
+    private:
+        SingletonOwner(QObject *parent = 0);
     };
-
 } // namespace Caneda
 
-#endif //FILEFORMATHANDLER_H
-
+#endif // CANEDA_SINGLETONOWNER_H

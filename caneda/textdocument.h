@@ -17,51 +17,69 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SCHEMATICSTATEHANDLER_H
-#define SCHEMATICSTATEHANDLER_H
+#ifndef CANEDA_TEXTDOCUMENT_H
+#define CANEDA_TEXTDOCUMENT_H
 
-#include <QObject>
+#include "idocument.h"
+
+// Forward declarations.
+class QTextDocument;
 
 namespace Caneda
 {
     // Forward declarations.
-    class SchematicStateHandlerPrivate;
-    class SchematicScene;
-    class SchematicWidget;
+    class TextEdit;
 
-    class SchematicStateHandler : public QObject
+    class TextDocument : public IDocument
     {
         Q_OBJECT
     public:
-        static SchematicStateHandler* instance();
-        ~SchematicStateHandler();
+        TextDocument();
+        virtual ~TextDocument();
 
-        void registerWidget(SchematicWidget *widget);
-        void unregisterWidget(SchematicWidget *widget);
+        // Interface implementation
+        virtual IContext* context();
 
+        virtual bool isModified() const;
 
-    public Q_SLOTS:
-        void slotSidebarItemClicked(const QString& item, const QString& category);
-        void slotHandlePaste();
-        void slotRotateInsertibles();
-        void slotMirrorInsertibles();
-        void slotOnObjectDestroyed(QObject *sender);
-        void slotUpdateFocussedWidget(SchematicWidget *widget);
-        void slotPerformToggleAction(const QString& sender, bool on);
-        void slotSetNormalAction();
-        void slotInsertToolbarComponent(const QString& action, bool on);
-        void slotUpdateToolbarInsertibles();
+        virtual bool canUndo() const;
+        virtual bool canRedo() const;
+
+        virtual void undo();
+        virtual void redo();
+
+        virtual bool canCut() const;
+        virtual bool canCopy() const;
+        virtual bool canPaste() const;
+
+        virtual void cut();
+        virtual void copy();
+        virtual void paste();
+
+        virtual void selectAll();
+
+        virtual bool printSupportsFitInPage() const;
+        virtual void print(QPrinter *printer, bool fitInView);
+        virtual void exportToPaintDevice(QPaintDevice *device,
+                const QVariantMap &configuration);
+
+        virtual bool load(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0);
+
+        virtual IView* createView();
+
+        virtual void updateSettingsChanges();
+        // End of Interface implemention.
+
+        QTextDocument* textDocument() const;
+
+    private Q_SLOTS:
+        void onContentsChanged();
 
     private:
-        SchematicStateHandler(QObject *parent = 0);
-
-        void applyCursor(SchematicWidget *widget);
-        void applyState(SchematicWidget *widget);
-        void applyStateToAllWidgets();
-
-        SchematicStateHandlerPrivate *d;
+        TextEdit* activeTextEdit();
+        QTextDocument *m_textDocument;
     };
-
 } // namespace Caneda
 
-#endif // SCHEMATICSTATEHANDLER_H
+#endif // CANEDA_TEXTDOCUMENT_H

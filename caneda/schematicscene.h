@@ -43,7 +43,7 @@ namespace Caneda
     // Forward declarations
     class Component;
     class Wire;
-    class SchematicView;
+    class SchematicWidget;
 
     enum Mode {
         SchematicMode,
@@ -76,10 +76,8 @@ namespace Caneda
             MirroringY,
             //! Change status ie short, open
             ChangingActiveStatus,
-            //! Zoom at point
-            ZoomingAtPoint,
-            //! Zoom out at point
-            ZoomingOutAtPoint,
+            //! Zoom an area
+            ZoomingAreaEvent,
             //! Painting item's drawing (like Ellipse, Rectangle)
             PaintingDrawEvent,
             //! insert an item
@@ -89,6 +87,8 @@ namespace Caneda
             //! Normal (ie select)
             Normal
         };
+
+        static const QRectF DefaultSceneRect;
 
         /* constructor/destructor */
         SchematicScene(QObject *parent =0);
@@ -122,9 +122,6 @@ namespace Caneda
         // these aren't toggle actions.
         void cutItems(QList<SchematicItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
         void copyItems(QList<SchematicItem*> &items) const;
-
-        QString fileName() const { return m_fileName; }
-        void setFileName(const QString& fn);
 
         bool isModified() const { return m_modified; }
 
@@ -173,8 +170,8 @@ namespace Caneda
         Caneda::Mode currentMode() const { return m_currentMode; }
         void setMode(const Caneda::Mode mode);
 
-        MouseAction currentMouseAction() const { return m_currentMouseAction; }
-        void setCurrentMouseAction(const MouseAction ma);
+        MouseAction mouseAction() const { return m_mouseAction; }
+        void setMouseAction(const MouseAction ma);
 
         void resetState();
         void beginPaintingDraw(Painting *item);
@@ -197,11 +194,10 @@ namespace Caneda
         bool sidebarItemClicked(const QString &item, const QString& category);
 
     Q_SIGNALS:
-            void modificationChanged(bool changed);
-            void fileNameChanged(const QString& file);
-            void titleToBeUpdated();
-            void rotateInvokedWhileInserting();
-            void mirrorInvokedWhileInserting();
+        void changed();
+        void mouseActionChanged();
+        void rotateInvokedWhileInserting();
+        void mirrorInvokedWhileInserting();
 
     protected:
         void drawBackground(QPainter *p, const QRectF& r);
@@ -226,8 +222,7 @@ namespace Caneda
         void markingEvent(MouseActionEvent *e);
         void rotatingEvent(MouseActionEvent *e);
         void changingActiveStatusEvent(const MouseActionEvent *e);
-        void zoomingAtPointEvent(MouseActionEvent *e);
-        void zoomingOutAtPointEvent(MouseActionEvent *e);
+        void zoomingAreaEvent(MouseActionEvent *e);
         void paintingDrawEvent(MouseActionEvent *e);
         void insertingItemsEvent(MouseActionEvent *e);
         void insertingWireLabelEvent(MouseActionEvent *event);
@@ -364,9 +359,10 @@ namespace Caneda
          * \brief A rectangular dotted line widget to show feedback of
          * an area being selected for zooming
          */
-        QRubberBand * m_zoomBand;
-        //! \brief An area to be zoomed
+        QGraphicsRectItem * m_zoomBand;
+
         QRectF m_zoomRect;
+        int m_zoomBandClicks;
 
         //! \todo document
         QList<int> m_usedPortNumbers;
@@ -377,7 +373,7 @@ namespace Caneda
         //! Undo stack state
         QUndoStack *m_undoStack;
         //! Current mouse action
-        MouseAction m_currentMouseAction;
+        MouseAction m_mouseAction;
         Caneda::Mode m_currentMode;
 
         //! Data Set file name

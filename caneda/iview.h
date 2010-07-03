@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,49 +17,64 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILEFORMATHANDLER_H
-#define FILEFORMATHANDLER_H
+#ifndef CANEDA_IVIEW_H
+#define CANEDA_IVIEW_H
 
-// Forward declarations
-class QString;
+#include <QDebug>
+#include <QObject>
+
+// Forward declaration
+class QComboBox;
+class QToolBar;
+class QWidget;
 
 namespace Caneda
 {
-    // Forward declarations
-    class SchematicDocument;
-    class SchematicScene;
+    // Forward declarations.
+    class IContext;
+    class IDocument;
+    class DocumentViewManager;
 
-    /*!
-     * This class is used to save and load files.
-     * Using this base class we can support any fileformat
-     */
-    class FileFormatHandler
+    class IView : public QObject
     {
+        Q_OBJECT
     public:
-        FileFormatHandler(SchematicDocument *doc = 0);
-        virtual ~FileFormatHandler() {}
+        IView(IDocument *document);
+        virtual ~IView();
 
-        virtual bool save() = 0;
+        IDocument* document() const;
 
-        /*!
-         * Loads the document. If non-negative is returned
-         * the operation is successful. Negative return
-         * value indicated failure
-         */
-        virtual bool load() = 0;
+        virtual QWidget* toWidget() const = 0;
+        virtual IContext* context() const = 0;
 
-        SchematicDocument* schematicDocument() const;
-        SchematicScene* schematicScene() const;
-        QString fileName() const;
+        virtual void zoomIn() = 0;
+        virtual void zoomOut() = 0;
+        virtual void zoomFitInBest() = 0;
+        virtual void zoomOriginal() = 0;
 
-        static FileFormatHandler* handlerFromSuffix(const QString& extension,
-                SchematicDocument *document = 0);
+        virtual IView* duplicate() = 0;
+
+        virtual void updateSettingsChanges() = 0;
+
+        QToolBar* toolBar() const;
+
+    Q_SIGNALS:
+        void focussedIn(IView *who);
+        void focussedOut(IView *who);
+        void closed(IView *who);
+        void statusBarMessage(const QString &text);
+
+    private Q_SLOTS:
+        void onDocumentViewManagerChanged();
+        void onDocumentSelectorIndexChanged(int index);
 
     protected:
-        SchematicDocument *m_schematicDocument;
-    };
+        IDocument * const m_document;
+        QToolBar *m_toolBar;
+        QComboBox *m_documentSelector;
 
+        friend class DocumentViewManager;
+    };
 } // namespace Caneda
 
-#endif //FILEFORMATHANDLER_H
-
+#endif //CANEDA_IVIEW_H

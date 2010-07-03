@@ -23,60 +23,32 @@
 #ifndef PRINT_DIALOG_H
 #define PRINT_DIALOG_H
 
-#include "schematicscene.h"
-
-class QCheckBox;
-class QLineEdit;
-class QRadioButton;
+#include "ui_printdialog.h"
 
 namespace Caneda
 {
-    /*!
-     * This class represents the configuration dialog to print a
-     * schematic.
-     * It also takes care of the print itself
-     */
-    class PrintDialog : public QWidget
-    {
-        Q_OBJECT;
+    class IDocument;
+    class SchematicScene;
 
+    class PrintDialog : public QDialog
+    {
+        Q_OBJECT
     public:
+        PrintDialog(IDocument *document, QWidget *parent = 0);
         PrintDialog(SchematicScene *, QWidget * = 0);
         ~PrintDialog();
 
-        QString fileName() const;
-        void setFileName(const QString &);
-
-        QString docName() const;
-        void setDocName(const QString &);
-
-        int pagesCount(bool = false) const;
-
-        int horizontalPagesCount(bool = false) const;
-        int verticalPagesCount(bool = false) const;
-
-    private:
-        void buildPrintTypeDialog();
+    public Q_SLOTS:
+        virtual void done(int r);
 
     private Q_SLOTS:
-        void updatePrintTypeDialog();
-        void browseFilePrintTypeDialog();
-        void acceptPrintTypeDialog();
-        void print(bool);
+        void onChoiceToggled();
+        void onBrowseButtonClicked();
 
     private:
-        SchematicScene *schema;
-        QPrinter *printer;
-        QString docname;
-        QString filename;
-
-        QDialog *dialog;
-        QRadioButton *printerChoice;
-        QRadioButton *pdfChoice;
-        QRadioButton *psChoice;
-        QLineEdit *editFilepath;
-        QCheckBox *fitInPage;
-        QPushButton *browseButton;
+        QPrinter *m_printer;
+        IDocument *m_document;
+        Ui::PrintDialog ui;
     };
 
 } // namespace Caneda

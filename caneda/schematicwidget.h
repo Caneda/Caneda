@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,49 +17,67 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILEFORMATHANDLER_H
-#define FILEFORMATHANDLER_H
+#ifndef CANEDA_SCHEMATICWIDGET_H
+#define CANEDA_SCHEMATICWIDGET_H
 
-// Forward declarations
-class QString;
+#include "globals.h"
+
+#include <QGraphicsView>
 
 namespace Caneda
 {
     // Forward declarations
-    class SchematicDocument;
+    class SchematicItem;
     class SchematicScene;
+    class SchematicView;
 
-    /*!
-     * This class is used to save and load files.
-     * Using this base class we can support any fileformat
-     */
-    class FileFormatHandler
+    class SchematicWidget : public QGraphicsView
     {
+        Q_OBJECT
     public:
-        FileFormatHandler(SchematicDocument *doc = 0);
-        virtual ~FileFormatHandler() {}
+        static const qreal zoomFactor;
 
-        virtual bool save() = 0;
+        SchematicWidget(SchematicView *view = 0);
+        ~SchematicWidget();
 
-        /*!
-         * Loads the document. If non-negative is returned
-         * the operation is successful. Negative return
-         * value indicated failure
-         */
-        virtual bool load() = 0;
-
-        SchematicDocument* schematicDocument() const;
+        SchematicView* schematicView() const;
         SchematicScene* schematicScene() const;
-        QString fileName() const;
 
-        static FileFormatHandler* handlerFromSuffix(const QString& extension,
-                SchematicDocument *document = 0);
+        void saveScrollState();
+        void restoreScrollState();
+
+        void zoomIn();
+        void zoomOut();
+        void zoomFitInBest();
+        void zoomOriginal();
+
+        void zoomFitRect(const QRectF &rect);
+
+    Q_SIGNALS:
+        void cursorPositionChanged(const QString& newPos);
+        void focussedIn(SchematicWidget *view);
+        void focussedOut(SchematicWidget *view);
 
     protected:
-        SchematicDocument *m_schematicDocument;
+        void mouseMoveEvent(QMouseEvent *event);
+        void focusInEvent(QFocusEvent *event);
+        void focusOutEvent(QFocusEvent *event);
+
+    private Q_SLOTS:
+        void onMouseActionChanged();
+
+    private:
+        void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);
+
+        SchematicView *m_schematicView;
+
+        int m_horizontalScroll;
+        int m_verticalScroll;
+
+        ZoomRange m_zoomRange;
+        qreal m_currentZoom;
     };
 
 } // namespace Caneda
 
-#endif //FILEFORMATHANDLER_H
-
+#endif //CANEDA_SCHEMATICWIDGET_H

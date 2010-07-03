@@ -17,38 +17,52 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SINGLETONMANAGER_H
-#define SINGLETONMANAGER_H
+#ifndef CANEDA_TEXTVIEW_H
+#define CANEDA_TEXTVIEW_H
 
-#include <QObject>
+#include "globals.h"
+#include "iview.h"
 
 namespace Caneda
 {
-    class ActionManager;
-    class LibraryLoader;
-    class SchematicStateHandler;
-    class SvgPainter;
+    // Forward declrations
+    class TextDocument;
+    class TextEdit;
 
-    class SingletonManager : public QObject
+    class TextView : public IView
     {
         Q_OBJECT
     public:
-        ~SingletonManager();
+        TextView(TextDocument *document);
+        virtual ~TextView();
 
-        ActionManager* actionManager();
-        LibraryLoader* libraryLoader();
-        SchematicStateHandler* schematicStateHandler();
-        SvgPainter* svgPainter();
+        TextEdit* textEdit() const;
 
-        static SingletonManager* instance();
+        // IView interface methods
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
+
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        virtual IView* duplicate();
+
+        virtual void updateSettingsChanges();
+        // End of IView interface methods
+
+        void setZoomLevel(qreal level);
+
+    private Q_SLOTS:
+        void onFocussed();
 
     private:
-        SingletonManager(QObject *parent = 0);
-        ActionManager *m_actionManager;
-        LibraryLoader *m_libraryLoader;
-        SchematicStateHandler *m_schematicStateHandler;
-        SvgPainter *m_svgPainter;
+        TextEdit *m_textEdit;
+        ZoomRange m_zoomRange;
+        qreal m_currentZoom;
+        const qreal m_originalZoom;
     };
 } // namespace Caneda
 
-#endif // SINGLETONMANAGER_H
+#endif // CANEDA_TEXTVIEW_H

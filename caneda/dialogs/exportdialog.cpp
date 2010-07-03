@@ -658,9 +658,9 @@ namespace Caneda
         must_export->setChecked(true);
 
         // title and file name of the schema
-        QString diagram_title = schema->fileName();
+        QString diagram_title; //PORT:= schema->fileName();
         if(diagram_title.isEmpty()) diagram_title = QObject::tr("Untitled");
-        QString diagram_filename = schema->fileName();
+        QString diagram_filename;//PORT: = schema->fileName();
         if(diagram_filename.isEmpty()) diagram_filename = QObject::tr("schematic");
 
         title_label = new QLabel(diagram_title);

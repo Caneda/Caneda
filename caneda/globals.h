@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,49 +17,36 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILEFORMATHANDLER_H
-#define FILEFORMATHANDLER_H
+#ifndef CANEDA_GLOBALS_H
+#define CANEDA_GLOBALS_H
 
-// Forward declarations
-class QString;
+#include <QDebug>
 
 namespace Caneda
 {
-    // Forward declarations
-    class SchematicDocument;
-    class SchematicScene;
+    enum SideBarRole {
+        ItemSelection,
+        PropertyBrowser
+    };
 
-    /*!
-     * This class is used to save and load files.
-     * Using this base class we can support any fileformat
-     */
-    class FileFormatHandler
+    struct ZoomRange
     {
-    public:
-        FileFormatHandler(SchematicDocument *doc = 0);
-        virtual ~FileFormatHandler() {}
+        const qreal min;
+        const qreal max;
 
-        virtual bool save() = 0;
+        ZoomRange(qreal _min = 0., qreal _max = 1.0) :
+            min(_min), max(_max)
+        {
+            if (max < min) {
+                qWarning() << Q_FUNC_INFO << "Invalid range" << min << max;
+            }
+        }
 
-        /*!
-         * Loads the document. If non-negative is returned
-         * the operation is successful. Negative return
-         * value indicated failure
-         */
-        virtual bool load() = 0;
-
-        SchematicDocument* schematicDocument() const;
-        SchematicScene* schematicScene() const;
-        QString fileName() const;
-
-        static FileFormatHandler* handlerFromSuffix(const QString& extension,
-                SchematicDocument *document = 0);
-
-    protected:
-        SchematicDocument *m_schematicDocument;
+        bool contains(qreal value) const {
+            return value >= min && value <= max;
+        }
     };
 
 } // namespace Caneda
 
-#endif //FILEFORMATHANDLER_H
-
+#endif //CANEDA_GLOBALS_H

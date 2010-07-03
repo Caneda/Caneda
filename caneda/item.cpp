@@ -19,7 +19,7 @@
 
 #include "item.h"
 #include "schematicscene.h"
-#include "schematicview.h"
+#include "schematicwidget.h"
 
 #include "xmlutilities/xmlutilities.h"
 

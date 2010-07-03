@@ -27,9 +27,6 @@
 
 namespace Caneda
 {
-    // Forward declarations
-    class SingletonManager;
-
     typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
 
     /*!
@@ -123,7 +120,6 @@ namespace Caneda
         void basicLibrariesLoaded();
 
     private:
-        friend class SingletonManager;
         LibraryLoader(QObject *parent = 0);
         LibraryHash m_libraryHash;
     };

@@ -20,7 +20,7 @@
 #include "library.h"
 
 #include "schematicscene.h"
-#include "singletonmanager.h"
+#include "singletonowner.h"
 
 #include "caneda-tools/global.h"
 
@@ -326,7 +326,11 @@ namespace Caneda
     //! \brief Returns default instance of library.
     LibraryLoader* LibraryLoader::instance()
     {
-        return SingletonManager::instance()->libraryLoader();
+        static LibraryLoader *instance = 0;
+        if (!instance) {
+            instance = new LibraryLoader(SingletonOwner::instance());
+        }
+        return instance;
     }
 
     /*!

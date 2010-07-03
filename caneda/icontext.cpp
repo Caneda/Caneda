@@ -17,65 +17,52 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "singletonmanager.h"
-
-#include "actionmanager.h"
-#include "library.h"
-#include "schematicstatehandler.h"
-#include "svgitem.h"
+#include "icontext.h"
 
 namespace Caneda
 {
+    /*!
+     * \class IContext
+     *
+     * This class provides an interface for a context which is used by IDocument
+     * and IView. This class also provides objects like toolbar, statusbar etc which
+     * is specific to particular context.
+     *
+     * The context class can also be used to host functionalites shared by all
+     * views and documents of same type.
+     *
+     * \see IDocument, IView
+     */
 
-    SingletonManager::SingletonManager(QObject *parent)
-        : QObject(parent),
-        m_actionManager(0),
-        m_libraryLoader(0),
-        m_schematicStateHandler(0),
-        m_svgPainter(0)
+    IContext::IContext(QObject *parent) : QObject(parent)
     {
+
     }
 
-    SingletonManager::~SingletonManager()
+    IContext::~IContext()
     {
+
     }
 
-    ActionManager* SingletonManager::actionManager()
+    void IContext::init()
     {
-        if (!m_actionManager) {
-            m_actionManager = new ActionManager(this);
-        }
-        return m_actionManager;
+
     }
 
-    LibraryLoader* SingletonManager::libraryLoader()
+    QToolBar* IContext::toolBar()
     {
-        if (!m_libraryLoader) {
-            m_libraryLoader = new LibraryLoader(this);
-        }
-        return m_libraryLoader;
+        return 0;
     }
 
-    SchematicStateHandler* SingletonManager::schematicStateHandler()
+    QWidget* IContext::statusBarWidget()
     {
-        if (!m_schematicStateHandler) {
-            m_schematicStateHandler = new SchematicStateHandler(this);
-        }
-        return m_schematicStateHandler;
+        return 0;
     }
 
-    SvgPainter* SingletonManager::svgPainter()
+    QWidget* IContext::sideBarWidget(Caneda::SideBarRole role)
     {
-        if (!m_svgPainter) {
-            m_svgPainter = new SvgPainter(this);
-        }
-        return m_svgPainter;
+        return 0;
     }
 
-    SingletonManager* SingletonManager::instance()
-    {
-        static SingletonManager* sm = new SingletonManager();
-        return sm;
-    }
 
 } // namespace Caneda

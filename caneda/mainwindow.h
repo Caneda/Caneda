@@ -20,10 +20,10 @@
 #ifndef CANEDA_MAINWINDOW_H
 #define CANEDA_MAINWINDOW_H
 
-#include "mainwindowbase.h"
 #include "schematicscene.h"
 #include "undocommands.h"
 
+#include <QMainWindow>
 #include <QMap>
 #include <QMenu>
 #include <QProcess>
@@ -42,11 +42,11 @@ namespace Caneda
     class ComponentsSidebar;
     class FolderBrowser;
     class Project;
-    class CanedaView;
     class SchematicScene;
-    class SchematicView;
+    class SchematicWidget;
+    class TabWidget;
 
-    class MainWindow : public MainWindowBase
+    class MainWindow : public QMainWindow
     {
     Q_OBJECT
     public:
@@ -54,46 +54,34 @@ namespace Caneda
 
         static MainWindow* instance();
 
-        bool gotoPage(QString fileName, Caneda::Mode mode=Caneda::SchematicMode);
-        void addView(CanedaView *view);
-        void saveSettings();
+        TabWidget* tabWidget() const;
 
-        CanedaView* viewFromWidget(QWidget *widget);
+        void saveSettings();
+        void setNormalAction();
+        void editFile(const QString &file);
+        Action* action(const QString &name);
+        QMenu* menubarMenu(const QString &name, bool createOnAbsence = true);
 
     public Q_SLOTS:
         void slotFileNew();
         void slotTextNew();
-        void slotFileOpen(QString fileName = 0);
-        void slotFileSave(int index);
-        void slotFileSaveCurrent();
-        void slotFileSaveAs(int index);
-        void slotFileSaveAsCurrent();
+        void slotFileOpen(QString fileName = QString());
+        void slotFileSave();
+        void slotFileSaveAs();
         bool slotFileSaveAll();
-        void slotFileClose(int index);
-        void slotFileCloseCurrent();
+        void slotFileClose();
         void slotFilePrint();
         void slotExportImage();
         void slotFileSettings();
         void slotApplSettings();
 
+        void slotEditUndo();
+        void slotEditRedo();
         void slotEditCut();
         void slotEditCopy();
         void slotEditPaste();
         void slotEditFind();
         void slotSelectAll();
-        void slotSymbolEdit();
-        void slotIntoHierarchy();
-        void slotPopHierarchy();
-
-        void slotSnapToGrid(bool);
-        void slotAlignTop();
-        void slotAlignBottom();
-        void slotAlignLeft();
-        void slotAlignRight();
-        void slotDistribHoriz();
-        void slotDistribVert();
-        void slotCenterHorizontal();
-        void slotCenterVertical();
 
         void slotNewProject();
         void slotOpenProject(QString fileName = 0);
@@ -102,7 +90,6 @@ namespace Caneda
         void slotCloseProject();
         void slotBackupAndHistory();
 
-        void slotInsertEntity();
         void slotCallFilter();
         void slotCallLine();
         void slotCallMatch();
@@ -111,54 +98,51 @@ namespace Caneda
         void slotImportData();
         void slotShowConsole();
 
-        void slotSimulate();
-        void slotToPage();
-        void slotDCbias();
-        void slotExportGraphAsCsv();
-        void slotShowLastMsg();
-        void slotShowLastNetlist();
-
-        void slotShowAll();
-        void slotShowOne();
+        void slotZoomIn();
+        void slotZoomOut();
+        void slotZoomBestFit();
+        void slotZoomOriginal();
         void slotViewToolBar(bool);
         void slotViewStatusBar(bool);
+
+        void slotSplitHorizontal();
+        void slotSplitVertical();
+        void slotCloseSplit();
 
         void slotHelpIndex();
         void slotHelpAbout();
         void slotHelpAboutQt();
 
         void setDocumentTitle(const QString& title);
-        void updateTitleTabText();
-        void slotUpdateAllViews();
-        void slotUpdateCursorPositionStatus(const QString& newPos);
+        void updateTitle();
+        void slotUpdateSettingsChanges();
+        void slotStatusBarMessage(const QString& newPos);
 
     signals:
         void signalKillWidgets();
-
 
     protected:
         void closeEvent(QCloseEvent *closeEvent);
 
     private Q_SLOTS:
         void loadSettings();
-        void setTabTitle(const QString& str);
-
-        void slotCurrentChanged(QWidget *current, QWidget *prev);
-        void slotViewClosed(QWidget *widget);
         void slotProccessError(QProcess::ProcessError error);
 
     private:
-        Action* action(const QString& name);
         MainWindow(QWidget *w=0);
+        void addAsDockWidget(QWidget *w, const QString &title = QString(),
+                Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
+
+        // REMOVE the below methods later.
+        void removeChildWidget(QWidget *widget, bool deleteWidget = true);
+        void closeAllTabs();
+
         void initActions();
         void initMouseActions();
         void initMenus();
         void initToolBars();
         void initStatusBar();
 
-        void setNormalAction();
-        void alignElements(Qt::Alignment alignment);
-        void editFile(const QString& File);
         void showHTML(const QString& Page);
 
         void createUndoView();
@@ -169,9 +153,9 @@ namespace Caneda
 
         // menus contain the items of their menubar
         QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
-              *helpMenu, *alignMenu, *toolMenu;
+              *windowMenu, *helpMenu, *alignMenu, *toolMenu;
 
-        QLabel *m_cursorLabel;
+        QLabel *m_statusLabel;
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
         QDockWidget *sidebarDockWidget;
         QUndoGroup *m_undoGroup;
@@ -180,6 +164,7 @@ namespace Caneda
         Project *m_project;
         QDockWidget *projectDockWidget;
         FolderBrowser *m_folderBrowser;
+        TabWidget *m_tabWidget;
         QTermWidget *console;
         QDockWidget *consoleDockWidget;
         QString titleText;

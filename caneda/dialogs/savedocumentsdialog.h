@@ -31,7 +31,7 @@ namespace Caneda
 {
 
     // Forward declarations.
-    class CanedaView;
+    class IDocument;
     class FileBrowserLineEditPrivate;
     class SaveDocumentsDialogPrivate;
 
@@ -63,10 +63,11 @@ namespace Caneda
             Abort = QDialogButtonBox::RejectRole
         };
 
-        SaveDocumentsDialog(const QSet<QPair<CanedaView*, int> > &modifiedViews, QWidget *parent = 0);
+        SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
+                QWidget *parent = 0);
         ~SaveDocumentsDialog();
 
-        QSet<QPair<CanedaView*, QString> > newFilePaths() const;
+        QList<QPair<IDocument*, QString> > newFilePaths() const;
 
     public Q_SLOTS:
         void slotButtonClicked(QAbstractButton *button);
@@ -74,8 +75,6 @@ namespace Caneda
         void reject();
 
     private:
-        void populateItems();
-
         Ui::SaveDocumentsDialog ui;
         SaveDocumentsDialogPrivate *d;
     };
