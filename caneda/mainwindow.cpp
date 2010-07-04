@@ -150,7 +150,7 @@ namespace Caneda
         sidebarDockWidget->setWidget(m_componentsSidebar);
         sidebarDockWidget->setObjectName("componentsSidebar");
         addDockWidget(Qt::LeftDockWidgetArea, sidebarDockWidget);
-        viewMenu->addAction(sidebarDockWidget->toggleViewAction());
+        docksMenu->addAction(sidebarDockWidget->toggleViewAction());
 
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
@@ -187,7 +187,7 @@ namespace Caneda
         projectDockWidget->setObjectName("projectsSidebar");
         projectDockWidget->setVisible(false);
         addDockWidget(Qt::LeftDockWidgetArea, projectDockWidget);
-        viewMenu->addAction(projectDockWidget->toggleViewAction());
+        docksMenu->addAction(projectDockWidget->toggleViewAction());
     }
 
     void MainWindow::createUndoView()
@@ -200,7 +200,7 @@ namespace Caneda
         sidebarDockWidget->setObjectName("undoSidebar");
         sidebarDockWidget->setVisible(false);
         addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
-        viewMenu->addAction(sidebarDockWidget->toggleViewAction());
+        docksMenu->addAction(sidebarDockWidget->toggleViewAction());
     }
 
     void MainWindow::createFolderView()
@@ -215,7 +215,7 @@ namespace Caneda
         sidebarDockWidget->setObjectName("folderBrowserSidebar");
         addDockWidget(Qt::LeftDockWidgetArea, sidebarDockWidget);
         tabifyDockWidget(sidebarDockWidget, projectDockWidget);
-        viewMenu->addAction(sidebarDockWidget->toggleViewAction());
+        docksMenu->addAction(sidebarDockWidget->toggleViewAction());
     }
 
     /*!
@@ -387,7 +387,63 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), sc, SLOT(slotPopHierarchy()));
         sc->addNormalAction(action);
 
-        action = am->createAction("snapToGrid", tr("Snap to Grid"));
+        action = am->createAction("zoomIn", icon("zoom-in"), tr("Zoom In"));
+        action->setShortcut(Key_Plus);
+        action->setStatusTip(tr("Zooms the content"));
+        action->setWhatsThis(tr("Zoom In \n\nZooms in the content"));
+        connect(action, SIGNAL(triggered()), SLOT(slotZoomIn()));
+
+        action = am->createAction("zoomOut", icon("zoom-out"), tr("Zoom Out"));
+        action->setShortcut(Key_Minus);
+        action->setStatusTip(tr("Zooms the content"));
+        action->setWhatsThis(tr("Zoom Out \n\nZooms out the content"));
+        connect(action, SIGNAL(triggered()), SLOT(slotZoomOut()));
+
+        action = am->createAction("zoomFitInBest", icon("zoom-fit-best"), tr("Fit in Best"));
+        action->setShortcut(Key_0);
+        action->setStatusTip(tr("Show the whole page"));
+        action->setWhatsThis(tr("Fit in Best\n\nShows the whole page content"));
+        connect(action, SIGNAL(triggered()), SLOT(slotZoomBestFit()));
+
+        action = am->createAction("zoomOriginal", icon("zoom-original"), tr("Zoom 1:1"));
+        action->setShortcut(Key_1);
+        action->setStatusTip(tr("Views without magnification"));
+        action->setWhatsThis(tr("Zoom 1:1\n\nShows the page content without magnification"));
+        connect(action, SIGNAL(triggered()), SLOT(slotZoomOriginal()));
+
+        action = am->createAction("viewToolBar",  tr("Tool&bar"));
+        action->setStatusTip(tr("Enables/disables the toolbar"));
+        action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(slotViewToolBar(bool)));
+
+        action = am->createAction("viewStatusBar",  tr("&Statusbar"));
+        action->setStatusTip(tr("Enables/disables the statusbar"));
+        action->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
+
+        action = am->createAction("splitHorizontal", icon("view-split-left-right"), tr("Split &Horizontal"));
+        action->setShortcut(ALT+Key_1);
+        action->setStatusTip(tr("Splits the current view in horizontal orientation"));
+        action->setWhatsThis(tr("Split Horizontal\n\nSplits the current view in horizontal orientation"));
+        connect(action, SIGNAL(triggered()), SLOT(slotSplitHorizontal()));
+
+        action = am->createAction("splitVertical", icon("view-split-top-bottom"), tr("Split &Vertical"));
+        action->setShortcut(ALT+Key_2);
+        action->setStatusTip(tr("Splits the current view in vertical orientation"));
+        action->setWhatsThis(tr("Split Vertical\n\nSplits the current view in vertical orientation"));
+        connect(action, SIGNAL(triggered()), SLOT(slotSplitVertical()));
+
+        action = am->createAction("splitClose", icon("view-left-close"), tr("&Close Split"));
+        action->setShortcut(ALT+Key_3);
+        action->setStatusTip(tr("Closes the current split"));
+        action->setWhatsThis(tr("Close Split\n\nCloses the current split"));
+        connect(action, SIGNAL(triggered()), SLOT(slotCloseSplit()));
+
+        action = am->createAction("snapToGrid", icon("view-grid"), tr("Snap to Grid"));
         action->setShortcut(CTRL+Key_U);
         action->setStatusTip(tr("Set grid snap"));
         action->setWhatsThis(tr("Snap to Grid\n\nSets snap to grid"));
@@ -591,60 +647,6 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), sc, SLOT(slotShowLastNetlist()));
         sc->addNormalAction(action);
 
-        action = am->createAction("zoomIn", icon("zoom-in"), tr("Zoom In"));
-        action->setShortcut(Key_Plus);
-        action->setStatusTip(tr("Zooms the content"));
-        action->setWhatsThis(tr("Zoom In \n\nZooms in the content"));
-        connect(action, SIGNAL(triggered()), SLOT(slotZoomIn()));
-
-        action = am->createAction("zoomOut", icon("zoom-out"), tr("Zoom Out"));
-        action->setShortcut(Key_Minus);
-        action->setStatusTip(tr("Zooms the content"));
-        action->setWhatsThis(tr("Zoom Out \n\nZooms out the content"));
-        connect(action, SIGNAL(triggered()), SLOT(slotZoomOut()));
-
-        action = am->createAction("zoomFitInBest", icon("zoom-fit-best"), tr("Fit in Best"));
-        action->setShortcut(Key_0);
-        action->setStatusTip(tr("Show the whole page"));
-        action->setWhatsThis(tr("Fit in Best\n\nShows the whole page content"));
-        connect(action, SIGNAL(triggered()), SLOT(slotZoomBestFit()));
-
-        action = am->createAction("zoomOriginal", icon("zoom-original"), tr("Zoom 1:1"));
-        action->setShortcut(Key_1);
-        action->setStatusTip(tr("Views without magnification"));
-        action->setWhatsThis(tr("Zoom 1:1\n\nShows the page content without magnification"));
-        connect(action, SIGNAL(triggered()), SLOT(slotZoomOriginal()));
-
-        action = am->createAction("viewToolBar",  tr("Tool&bar"));
-        action->setStatusTip(tr("Enables/disables the toolbar"));
-        action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
-        action->setCheckable(true);
-        action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(slotViewToolBar(bool)));
-
-        action = am->createAction("viewStatusBar",  tr("&Statusbar"));
-        action->setStatusTip(tr("Enables/disables the statusbar"));
-        action->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
-        action->setCheckable(true);
-        action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
-
-
-        action = am->createAction("splitHorizontal", tr("Split &Horizontal"));
-        action->setStatusTip(tr("Splits the current view in horizontal orientation"));
-        action->setWhatsThis(tr("Split Horizontal\n\nSplits the current view in horizontal orientation"));
-        connect(action, SIGNAL(triggered()), SLOT(slotSplitHorizontal()));
-
-        action = am->createAction("splitVertical", tr("Split &Vertical"));
-        action->setStatusTip(tr("Splits the current view in vertical orientation"));
-        action->setWhatsThis(tr("Split Vertical\n\nSplits the current view in vertical orientation"));
-        connect(action, SIGNAL(triggered()), SLOT(slotSplitVertical()));
-
-        action = am->createAction("splitClose", tr("&Close Split"));
-        action->setStatusTip(tr("Closes the current split"));
-        action->setWhatsThis(tr("Close Split\n\nCloses the current split"));
-        connect(action, SIGNAL(triggered()), SLOT(slotCloseSplit()));
-
         action = am->createAction("helpIndex", icon("help-contents"), tr("Help Index..."));
         action->setShortcut(Key_F1);
         action->setStatusTip(tr("Index of Caneda Help"));
@@ -829,6 +831,31 @@ namespace Caneda
         editMenu->addAction(action("intoH"));
         editMenu->addAction(action("popH"));
 
+        viewMenu = menuBar()->addMenu(tr("&View"));
+
+        viewMenu->addAction(action("zoomIn"));
+        viewMenu->addAction(action("zoomOut"));
+        viewMenu->addAction(action("zoomFitInBest"));
+        viewMenu->addAction(action("zoomOriginal"));
+        viewMenu->addAction(action("zoomArea"));
+
+        viewMenu->addSeparator();
+
+        viewMenu->addAction(action("splitHorizontal"));
+        viewMenu->addAction(action("splitVertical"));
+        viewMenu->addAction(action("splitClose"));
+
+        viewMenu->addSeparator();
+
+        docksMenu = viewMenu->addMenu(tr("&Docks and Toolbars"));
+
+        docksMenu->addAction(action("viewToolBar"));
+        docksMenu->addAction(action("viewStatusBar"));
+
+        docksMenu->addSeparator();
+
+        viewMenu->addSeparator();
+
         alignMenu = menuBar()->addMenu(tr("P&ositioning"));
 
         alignMenu->addAction(action("snapToGrid"));
@@ -904,29 +931,6 @@ namespace Caneda
 
         simMenu->addAction(action("showMsg"));
         simMenu->addAction(action("showNet"));
-
-        viewMenu = menuBar()->addMenu(tr("&View"));
-
-        viewMenu->addAction(action("zoomIn"));
-        viewMenu->addAction(action("zoomOut"));
-        viewMenu->addAction(action("zoomFitInBest"));
-        viewMenu->addAction(action("zoomOriginal"));
-        viewMenu->addAction(action("zoomArea"));
-
-        viewMenu->addSeparator();
-
-        viewMenu->addAction(action("viewToolBar"));
-        viewMenu->addAction(action("viewStatusBar"));
-
-        viewMenu->addSeparator();
-
-        windowMenu = menuBar()->addMenu(tr("&Window"));
-
-        windowMenu->addAction(action("splitHorizontal"));
-        windowMenu->addAction(action("splitVertical"));
-        windowMenu->addAction(action("splitClose"));
-
-        windowMenu->addSeparator();
 
         helpMenu = menuBar()->addMenu(tr("&Help"));
 

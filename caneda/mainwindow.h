@@ -153,7 +153,7 @@ namespace Caneda
 
         // menus contain the items of their menubar
         QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
-              *windowMenu, *helpMenu, *alignMenu, *toolMenu;
+              *docksMenu, *helpMenu, *alignMenu, *toolMenu;
 
         QLabel *m_statusLabel;
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;

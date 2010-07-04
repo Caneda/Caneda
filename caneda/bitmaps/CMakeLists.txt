@@ -11,7 +11,7 @@ caneda.png document-properties.png eps.png marker.png preferences-other.png text
 clearFilterText.png document-save-all.png filedelete.png media-playback-start.png previous.png textitalic.png
 code-context.png document-save-as.png foldernew.png next.png printer.png textjustify.png
 deactiv.png document-save.png formula.png nodename.png project-new.png textleft.png
-modified.png unmodified.png)
+modified.png unmodified.png view-grid.png view-left-close.png view-split-left-right.png view-split-top-bottom.png)
 
 SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg rectangle.svg text.svg splash.jpg)
 
