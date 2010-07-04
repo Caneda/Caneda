@@ -62,7 +62,6 @@ ADD_SUBDIRECTORY( caneda-tools )
 ADD_SUBDIRECTORY( caneda )
 
 ADD_SUBDIRECTORY( caneda-attenuator )
-ADD_SUBDIRECTORY( caneda-edit )
 ADD_SUBDIRECTORY( caneda-filter )
 ADD_SUBDIRECTORY( caneda-help )
 ADD_SUBDIRECTORY( caneda-lib )
