@@ -387,29 +387,29 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), sc, SLOT(slotPopHierarchy()));
         sc->addNormalAction(action);
 
-        action = am->createAction("zoomIn", icon("zoom-in"), tr("Zoom In"));
+        action = am->createAction("zoomFitInBest", icon("zoom-fit-best"), tr("View all"));
+        action->setShortcut(Key_0);
+        action->setStatusTip(tr("Show the whole contents"));
+        action->setWhatsThis(tr("View all\n\nShows the whole page content"));
+        connect(action, SIGNAL(triggered()), SLOT(slotZoomBestFit()));
+
+        action = am->createAction("zoomOriginal", icon("zoom-original"), tr("View 1:1"));
+        action->setShortcut(Key_1);
+        action->setStatusTip(tr("View without magnification"));
+        action->setWhatsThis(tr("Zoom 1:1\n\nShows the page content without magnification"));
+        connect(action, SIGNAL(triggered()), SLOT(slotZoomOriginal()));
+
+        action = am->createAction("zoomIn", icon("zoom-in"), tr("Zoom in"));
         action->setShortcut(Key_Plus);
-        action->setStatusTip(tr("Zooms the content"));
+        action->setStatusTip(tr("Zooms in the content"));
         action->setWhatsThis(tr("Zoom In \n\nZooms in the content"));
         connect(action, SIGNAL(triggered()), SLOT(slotZoomIn()));
 
-        action = am->createAction("zoomOut", icon("zoom-out"), tr("Zoom Out"));
+        action = am->createAction("zoomOut", icon("zoom-out"), tr("Zoom out"));
         action->setShortcut(Key_Minus);
-        action->setStatusTip(tr("Zooms the content"));
+        action->setStatusTip(tr("Zooms out the content"));
         action->setWhatsThis(tr("Zoom Out \n\nZooms out the content"));
         connect(action, SIGNAL(triggered()), SLOT(slotZoomOut()));
-
-        action = am->createAction("zoomFitInBest", icon("zoom-fit-best"), tr("Fit in Best"));
-        action->setShortcut(Key_0);
-        action->setStatusTip(tr("Show the whole page"));
-        action->setWhatsThis(tr("Fit in Best\n\nShows the whole page content"));
-        connect(action, SIGNAL(triggered()), SLOT(slotZoomBestFit()));
-
-        action = am->createAction("zoomOriginal", icon("zoom-original"), tr("Zoom 1:1"));
-        action->setShortcut(Key_1);
-        action->setStatusTip(tr("Views without magnification"));
-        action->setWhatsThis(tr("Zoom 1:1\n\nShows the page content without magnification"));
-        connect(action, SIGNAL(triggered()), SLOT(slotZoomOriginal()));
 
         action = am->createAction("viewToolBar",  tr("Tool&bar"));
         action->setStatusTip(tr("Enables/disables the toolbar"));
@@ -756,9 +756,8 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        //FIXME: Choose a proper icon.
         action = am->createMouseAction("zoomArea", SchematicScene::ZoomingAreaEvent,
-                icon("zoom-in"), tr("Zoom area"));
+                icon("transform-scale"), tr("Zoom area"));
         action->setStatusTip(tr("Zooms a selected are in the current view"));
         action->setWhatsThis(tr("Zooms a selected are in the current view"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
@@ -833,10 +832,10 @@ namespace Caneda
 
         viewMenu = menuBar()->addMenu(tr("&View"));
 
-        viewMenu->addAction(action("zoomIn"));
-        viewMenu->addAction(action("zoomOut"));
         viewMenu->addAction(action("zoomFitInBest"));
         viewMenu->addAction(action("zoomOriginal"));
+        viewMenu->addAction(action("zoomIn"));
+        viewMenu->addAction(action("zoomOut"));
         viewMenu->addAction(action("zoomArea"));
 
         viewMenu->addSeparator();
@@ -969,26 +968,29 @@ namespace Caneda
         viewToolbar  = addToolBar(tr("View"));
         viewToolbar->setObjectName("viewToolbar");
 
-        viewToolbar->addAction(action("zoomIn"));
-        viewToolbar->addAction(action("zoomOut"));
         viewToolbar->addAction(action("zoomFitInBest"));
         viewToolbar->addAction(action("zoomOriginal"));
+        viewToolbar->addAction(action("zoomIn"));
+        viewToolbar->addAction(action("zoomOut"));
+        viewToolbar->addAction(action("zoomArea"));
 
         workToolbar  = addToolBar(tr("Work"));
         workToolbar->setObjectName("workToolbar");
 
         workToolbar->addAction(action("select"));
-        workToolbar->addAction(action("editActivate"));
         workToolbar->addAction(action("editDelete"));
         workToolbar->addAction(action("editMirror"));
         workToolbar->addAction(action("editMirrorY"));
         workToolbar->addAction(action("editRotate"));
-        workToolbar->addAction(action("zoomArea"));
+
+        workToolbar->addSeparator();
+
         workToolbar->addAction(action("insWire"));
         workToolbar->addAction(action("insLabel"));
         workToolbar->addAction(action("insEquation"));
         workToolbar->addAction(action("insGround"));
         workToolbar->addAction(action("insPort"));
+        workToolbar->addAction(action("editActivate"));
         workToolbar->addAction(action("intoH"));
         workToolbar->addAction(action("popH"));
 
