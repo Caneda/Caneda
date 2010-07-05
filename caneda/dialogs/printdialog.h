@@ -35,7 +35,6 @@ namespace Caneda
         Q_OBJECT
     public:
         PrintDialog(IDocument *document, QWidget *parent = 0);
-        PrintDialog(SchematicScene *, QWidget * = 0);
         ~PrintDialog();
 
     public Q_SLOTS:

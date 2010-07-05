@@ -29,6 +29,12 @@
    </item>
    <item>
     <widget class="QTreeWidget" name="treeWidget">
+     <attribute name="headerDefaultSectionSize">
+      <number>150</number>
+     </attribute>
+     <attribute name="headerDefaultSectionSize">
+      <number>150</number>
+     </attribute>
      <column>
       <property name="text">
        <string>Document</string>
