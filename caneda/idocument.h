@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QUndoStack>
 #include <QVariant>
 
 // Forward declarations
@@ -55,6 +56,8 @@ namespace Caneda
 
         virtual void undo() = 0;
         virtual void redo() = 0;
+
+        virtual QUndoStack* undoStack() = 0;
 
         virtual bool canCut() const = 0;
         virtual bool canCopy() const = 0;

@@ -48,6 +48,8 @@ namespace Caneda
         virtual void undo();
         virtual void redo();
 
+        virtual QUndoStack* undoStack();
+
         virtual bool canCut() const;
         virtual bool canCopy() const;
         virtual bool canPaste() const;

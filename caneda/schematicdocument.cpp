@@ -81,6 +81,11 @@ namespace Caneda
         m_schematicScene->undoStack()->redo();
     }
 
+    QUndoStack* SchematicDocument::undoStack()
+    {
+        return m_schematicScene->undoStack();
+    }
+
     bool SchematicDocument::canCut() const
     {
         QList<QGraphicsItem*> qItems = m_schematicScene->selectedItems();

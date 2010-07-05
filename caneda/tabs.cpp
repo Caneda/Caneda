@@ -33,6 +33,7 @@
 #include <QStackedWidget>
 #include <QTabBar>
 #include <QWheelEvent>
+#include <QUndoGroup>
 
 
 namespace Caneda
@@ -342,6 +343,14 @@ namespace Caneda
             return;
         }
 
+
+        IDocument *document = view->document();
+        if (document) {
+            MainWindow *mw = MainWindow::instance();
+            mw->m_undoGroup->addStack(document->undoStack());
+        }
+
+
         m_views.insert(0, view);
 
         connect(view, SIGNAL(focussedIn(IView*)), this,
@@ -405,6 +414,8 @@ namespace Caneda
         setTabBar(new TabBarPrivate(this));
         connect(this, SIGNAL(tabCloseRequested(int)), this,
                 SLOT(onTabCloseRequested(int)));
+        connect(this, SIGNAL(currentChanged(int)), this,
+                SLOT(updateDocksAndToolbars()));
     }
 
     QList<Tab*> TabWidget::tabs() const
@@ -541,6 +552,23 @@ namespace Caneda
             mw->action("editUndo")->setEnabled(document->canUndo());
             mw->action("editRedo")->setEnabled(document->canRedo());
         }
+    }
+
+    void TabWidget::updateDocksAndToolbars()
+    {
+        MainWindow *mw = MainWindow::instance();
+
+        IView *view = currentTab()->activeView();
+        if (!view) {
+            return;
+        }
+
+        IDocument *document = view->document();
+        if (!document) {
+            return;
+        }
+
+        mw->m_undoGroup->setActiveStack(document->undoStack());
     }
 
     void TabWidget::onStatusBarMessage(Tab *tab, const QString &message)

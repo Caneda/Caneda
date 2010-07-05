@@ -82,6 +82,12 @@ namespace Caneda
         m_textDocument->redo();
     }
 
+    QUndoStack* TextDocument::undoStack()
+    {
+        QUndoStack *stack = new QUndoStack(this);
+        return stack;
+    }
+
     bool TextDocument::canCut() const
     {
         return true;
