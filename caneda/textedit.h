@@ -38,6 +38,9 @@ namespace Caneda
 
     protected:
         void focusInEvent(QFocusEvent *event);
+
+    private slots:
+        void highlightCurrentLine();
     };
 
 } // namespace Caneda

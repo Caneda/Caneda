@@ -24,6 +24,9 @@ namespace Caneda
     TextEdit::TextEdit(QTextDocument *document)
     {
         setDocument(document);
+
+        connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+        highlightCurrentLine();
     }
 
     TextEdit::~TextEdit()
@@ -43,4 +46,24 @@ namespace Caneda
         emit focussed();
         QTextEdit::focusInEvent(event);
     }
+
+    void TextEdit::highlightCurrentLine()
+    {
+        QList<QTextEdit::ExtraSelection> extraSelections;
+
+        if (!isReadOnly()) {
+            QTextEdit::ExtraSelection selection;
+
+            QColor lineColor = QColor(Qt::lightGray).lighter(126);
+
+            selection.format.setBackground(lineColor);
+            selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+            selection.cursor = textCursor();
+            selection.cursor.clearSelection();
+            extraSelections.append(selection);
+        }
+
+        setExtraSelections(extraSelections);
+    }
+
 } // namespace Caneda
