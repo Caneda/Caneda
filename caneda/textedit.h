@@ -20,11 +20,11 @@
 #ifndef CANEDA_TEXTEDIT_H
 #define CANEDA_TEXTEDIT_H
 
-#include <QTextEdit>
+#include <QPlainTextEdit>
 
 namespace Caneda
 {
-    class TextEdit : public QTextEdit
+    class TextEdit : public QPlainTextEdit
     {
         Q_OBJECT
     public:

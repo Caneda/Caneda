@@ -23,6 +23,9 @@ namespace Caneda
 {
     TextEdit::TextEdit(QTextDocument *document)
     {
+        QPlainTextDocumentLayout *layout = new QPlainTextDocumentLayout(document);
+        document->setDocumentLayout(layout);
+
         setDocument(document);
 
         connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
@@ -44,7 +47,7 @@ namespace Caneda
     void TextEdit::focusInEvent(QFocusEvent *event)
     {
         emit focussed();
-        QTextEdit::focusInEvent(event);
+        QPlainTextEdit::focusInEvent(event);
     }
 
     void TextEdit::highlightCurrentLine()
