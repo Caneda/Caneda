@@ -22,6 +22,7 @@ SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   schematicstatehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp
   schematicdocument.cpp schematiccontext.cpp schematicview.cpp
+  syntaxhighlighters.cpp
   textdocument.cpp textcontext.cpp textview.cpp textedit.cpp
 )
 
@@ -32,6 +33,7 @@ SET(CANEDA_MOC_HDRS schematicscene.h schematicwidget.h
   actionmanager.h singletonowner.h schematicstatehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
   schematicdocument.h schematiccontext.h schematicview.h
+  syntaxhighlighters.h
   textdocument.h textcontext.h textview.h textedit.h
 )
 
