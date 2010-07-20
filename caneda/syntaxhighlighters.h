@@ -51,11 +51,13 @@ namespace Caneda
         QRegExp commentEndExpression;
 
         QTextCharFormat keywordFormat;
+        QTextCharFormat typeFormat;
+        QTextCharFormat signalFormat;
+        QTextCharFormat blockFormat;
         QTextCharFormat classFormat;
+        QTextCharFormat quotationFormat;
         QTextCharFormat singleLineCommentFormat;
         QTextCharFormat multiLineCommentFormat;
-        QTextCharFormat quotationFormat;
-        QTextCharFormat functionFormat;
     };
 
 
