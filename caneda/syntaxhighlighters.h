@@ -30,17 +30,16 @@ class QTextDocument;
 
 namespace Caneda
 {
-    class VhdlHighlighter : public QSyntaxHighlighter
+    class Highlighter : public QSyntaxHighlighter
     {
         Q_OBJECT
 
     public:
-        VhdlHighlighter(QTextDocument *parent = 0);
+        Highlighter(QTextDocument *parent = 0);
 
     protected:
         void highlightBlock(const QString &text);
 
-    private:
         struct HighlightingRule
         {
             QRegExp pattern;
@@ -57,6 +56,22 @@ namespace Caneda
         QTextCharFormat multiLineCommentFormat;
         QTextCharFormat quotationFormat;
         QTextCharFormat functionFormat;
+    };
+
+
+    class VhdlHighlighter : public Highlighter
+    {
+        Q_OBJECT
+    public:
+        VhdlHighlighter(QTextDocument *parent = 0);
+    };
+
+
+    class VerilogHighlighter : public Highlighter
+    {
+        Q_OBJECT
+    public:
+        VerilogHighlighter(QTextDocument *parent = 0);
     };
 
 } // namespace Caneda
