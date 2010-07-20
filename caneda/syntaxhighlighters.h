@@ -58,6 +58,7 @@ namespace Caneda
         QTextCharFormat quotationFormat;
         QTextCharFormat singleLineCommentFormat;
         QTextCharFormat multiLineCommentFormat;
+        QTextCharFormat systemFormat;
     };
 
 

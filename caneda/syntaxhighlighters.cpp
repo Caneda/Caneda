@@ -189,35 +189,97 @@ namespace Caneda
     {
         HighlightingRule rule;
 
-        keywordFormat.setForeground(Qt::darkBlue);
+        keywordFormat.setForeground(Qt::black);
         keywordFormat.setFontWeight(QFont::Bold);
         QStringList keywordPatterns;
-        keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
-                << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
-                << "\\bfriend\\b" << "\\binline\\b" << "\\bint\\b"
-                << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
-                << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
-                << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
-                << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
-                << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
-                << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
-                << "\\bvoid\\b" << "\\bvolatile\\b";
+        keywordPatterns << "\\bmacromodule\\b" << "\\btask\\b" << "\\bendtask\\b" <<
+                "\\bfunction\\b" << "\\bendfunction\\b" << "\\btable\\b" <<
+                "\\bendtable\\b" << "\\bspecify\\b" << "\\bspecparam\\b" <<
+                "\\bendspecify\\b" << "\\bcase\\b" << "\\bcasex\\b" <<
+                "\\bcasez\\b" << "\\bendcase\\b" << "\\bfork\\b" <<
+                "\\bjoin\\b" << "\\bdefparam\\b" << "\\bdefault\\b" <<
+                "\\bifnone\\b" <<
+                "\\bforever\\b" <<
+                "\\bwait\\b" << "\\bdisable\\b" <<
+                "\\bassign\\b" << "\\bdeassign\\b" << "\\bforce\\b" <<
+                "\\brelease\\b" << "\\binitial\\b" <<
+                "\\bedge\\b" << "\\bposedge\\b" << "\\bnegedge\\b" <<
+                "\\bbegin\\b" << "\\bend\\b";
         foreach (QString pattern, keywordPatterns) {
             rule.pattern = QRegExp(pattern);
             rule.format = keywordFormat;
             highlightingRules.append(rule);
         }
 
-        classFormat.setFontWeight(QFont::Bold);
+        typeFormat.setForeground(Qt::blue);
+        typeFormat.setFontItalic(true);
+        QStringList typePatterns;
+        typePatterns << "\\binput\\b" << "\\boutput\\b" << "\\binout\\b" <<
+                "\\bwire\\b" << "\\btri\\b" << "\\btri0\\b" <<
+                "\\btri1\\b" << "\\bwand\\b" << "\\bwor\\b" <<
+                "\\btriand\\b" << "\\btrior\\b" << "\\bsupply0\\b" <<
+                "\\bsupply1\\b" << "\\breg\\b" << "\\binteger\\b" <<
+                "\\breal\\b" << "\\brealtime\\b" << "\\btime\\b" <<
+                "\\bvectored\\b" << "\\bscalared\\b" << "\\btrireg\\b" <<
+                "\\bparameter\\b" << "\\bevent\\b";
+        foreach (QString pattern, typePatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = typeFormat;
+            highlightingRules.append(rule);
+        }
+
+        signalFormat.setForeground(Qt::darkCyan);
+        QStringList signalPatterns;
+        signalPatterns << "\\bpullup\\b" << "\\bpulldown\\b" << "\\bcmos\\b" <<
+                "\\brcmos\\b" << "\\bnmos\\b" << "\\bpmos\\b" <<
+                "\\brnmos\\b" << "\\brpmos\\b" << "\\band\\b" <<
+                "\\bnand\\b" << "\\bor\\b" << "\\bnor\\b" <<
+                "\\bxor\\b" << "\\bxnor\\b" << "\\bnot\\b" <<
+                "\\bbuf\\b" << "\\btran\\b" << "\\brtran\\b" <<
+                "\\btranif0\\b" << "\\btranif1\\b" << "\\brtranif0\\b" <<
+                "\\brtranif1\\b" << "\\bbufif0\\b" << "\\bbufif1\\b" <<
+                "\\bnotif0\\b" << "\\bnotif1\\b";
+        foreach (QString pattern, signalPatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = signalFormat;
+            highlightingRules.append(rule);
+        }
+
+        blockFormat.setForeground(Qt::darkBlue);
+        blockFormat.setFontWeight(QFont::Bold);
+        QStringList blockPatterns;
+        blockPatterns << "\\bif\\b" << "\\belse\\b" << "\\bwhile\\b" <<
+                "\\bfor\\b" << "\\brepeat\\b" << "\\balways\\b";
+        foreach (QString pattern, blockPatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = blockFormat;
+            highlightingRules.append(rule);
+        }
+
         classFormat.setForeground(Qt::darkMagenta);
-        rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
-        rule.format = classFormat;
-        highlightingRules.append(rule);
+        classFormat.setFontWeight(QFont::Bold);
+        QStringList classPatterns;
+        classPatterns << "\\bmodule+(?= [A-Za-z0-9_]*\\b)" <<
+                "\\bendmodule\\b";
+        foreach (QString pattern, classPatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = classFormat;
+            highlightingRules.append(rule);
+        }
 
         quotationFormat.setForeground(Qt::darkGreen);
-        rule.pattern = QRegExp("\".*\"");
-        rule.format = quotationFormat;
-        highlightingRules.append(rule);
+        QStringList quotationPatterns;
+        quotationPatterns << "\\bstrong0\\b" << "\\bstrong1\\b" << "\\bpull0\\b" <<
+                "\\bpull1\\b" << "\\bweak0\\b" << "\\bweak1\\b" <<
+                "\\bhighz0\\b" << "\\bhighz1\\b" << "\\bsmall\\b" <<
+                "\\bmedium\\b" << "\\blarge\\b" <<
+                "\"[A-Za-z0-9]*\"" << "[\\d_]*'d[\\d_]+" << "[\\d_]*'o[0-7xXzZ_]+" <<
+                "[\\d_]*'h[\\da-fA-FxXzZ_]+" << "[\\d_]*'b[01_zZxX]+" << "[\\d]*.[\\d]+";
+        foreach (QString pattern, quotationPatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = quotationFormat;
+            highlightingRules.append(rule);
+        }
 
         singleLineCommentFormat.setForeground(Qt::red);
         rule.pattern = QRegExp("//[^\n]*");
@@ -227,6 +289,20 @@ namespace Caneda
         multiLineCommentFormat.setForeground(Qt::red);
         commentStartExpression = QRegExp("/\\*");
         commentEndExpression = QRegExp("\\*/");
+
+        systemFormat.setForeground(Qt::darkYellow);
+        QStringList systemPatterns;
+        systemPatterns << "\\$display" << "\\$write" << "\\$swrite" <<
+                "\\$sscanf" << "\\$fopen" << "\\$fdisplay" <<
+                "\\$fwrite" << "\\$fscanf" << "\\$fclose" <<
+                "\\$readmemh" << "\\$readmemb" << "\\$monitor" <<
+                "\\$time" << "\\$dumpfile" << "\\$dumpvars" <<
+                "\\$dumpports" << "\\$random";
+        foreach (QString pattern, systemPatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = systemFormat;
+            highlightingRules.append(rule);
+        }
     }
 
 } // namespace Caneda

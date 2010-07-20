@@ -187,6 +187,9 @@ namespace Caneda
         if ( fileInfo.suffix() == "vhdl" || fileInfo.suffix() == "vhd" ) {
             VhdlHighlighter *highlighter = new VhdlHighlighter(m_textDocument);
         }
+        else if ( fileInfo.suffix() == "v" ) {
+            VerilogHighlighter *highlighter = new VerilogHighlighter(m_textDocument);
+        }
 
         m_textDocument->setModified(false);
         return true;
