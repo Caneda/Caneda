@@ -82,23 +82,21 @@ namespace Caneda
                 "\\buse\\b" << "\\baccess\\b" << "\\bafter\\b" <<
                 "\\balias\\b" << "\\ball\\b" << "\\bassert\\b" <<
                 "\\bbegin\\b" << "\\bblock\\b" << "\\bbody\\b" <<
-                "\\bbus\\b" << "\\bcomponent\\b" <<
-                "\\bdisconnect\\b" << "\\bdownto\\b" << "\\bend\\b" <<
-                "\\bexit\\b" << "\\bfunction\\b" << "\\bgenerate\\b" <<
-                "\\bgeneric\\b" << "\\bgroup\\b" << "\\bguarded\\b" <<
-                "\\bimpure\\b" << "\\binertial\\b" <<
-                "\\blabel\\b" << "\\blinkage\\b" << "\\bliteral\\b" <<
-                "\\bmap\\b" << "\\bnew\\b" << "\\bnext\\b" <<
-                "\\bnull\\b" << "\\bon\\b" << "\\bopen\\b" <<
-                "\\bothers\\b" << "\\bport\\b" << "\\bpostponed\\b" <<
-                "\\bprocedure\\b" << "\\bpure\\b" <<
+                "\\bbus\\b" << "\\bcomponent\\b" << "\\bdisconnect\\b" <<
+                "\\bdownto\\b" << "\\bend\\b" << "\\bexit\\b" <<
+                "\\bfunction\\b" << "\\bgenerate\\b" << "\\bgeneric\\b" <<
+                "\\bgroup\\b" << "\\bguarded\\b" << "\\bimpure\\b" <<
+                "\\binertial\\b" << "\\blabel\\b" << "\\blinkage\\b" <<
+                "\\bliteral\\b" << "\\bmap\\b" << "\\bnew\\b" <<
+                "\\bnext\\b" << "\\bnull\\b" << "\\bon\\b" <<
+                "\\bopen\\b" << "\\bothers\\b" << "\\bport\\b" <<
+                "\\bpostponed\\b" << "\\bprocedure\\b" << "\\bpure\\b" <<
                 "\\brange\\b" << "\\brecord\\b" << "\\bregister\\b" <<
                 "\\breject\\b" << "\\breport\\b" << "\\breturn\\b" <<
                 "\\bselect\\b" << "\\bseverity\\b" << "\\bshared\\b" <<
-                "\\bsubtype\\b" << "\\bthen\\b" <<
-                "\\bto\\b" << "\\btransport\\b" <<
-                "\\bunaffected\\b" << "\\bunits\\b" << "\\buntil\\b" <<
-                "\\bwait\\b" << "\\bwhen\\b" <<
+                "\\bsubtype\\b" << "\\bthen\\b" << "\\bto\\b" <<
+                "\\btransport\\b" << "\\bunaffected\\b" << "\\bunits\\b" <<
+                "\\buntil\\b" << "\\bwait\\b" << "\\bwhen\\b" <<
                 "\\bwith\\b" << "\\bnote\\b" << "\\bwarning\\b" <<
                 "\\berror\\b" << "\\bfailure\\b" << "\\bin\\b" <<
                 "\\binout\\b" << "\\bout\\b" << "\\bbuffer\\b" <<
@@ -198,11 +196,9 @@ namespace Caneda
                 "\\bendspecify\\b" << "\\bcase\\b" << "\\bcasex\\b" <<
                 "\\bcasez\\b" << "\\bendcase\\b" << "\\bfork\\b" <<
                 "\\bjoin\\b" << "\\bdefparam\\b" << "\\bdefault\\b" <<
-                "\\bifnone\\b" <<
-                "\\bforever\\b" <<
-                "\\bwait\\b" << "\\bdisable\\b" <<
-                "\\bassign\\b" << "\\bdeassign\\b" << "\\bforce\\b" <<
-                "\\brelease\\b" << "\\binitial\\b" <<
+                "\\bifnone\\b" << "\\bforever\\b" << "\\bwait\\b" <<
+                "\\bdisable\\b" << "\\bassign\\b" << "\\bdeassign\\b" <<
+                "\\bforce\\b" << "\\brelease\\b" << "\\binitial\\b" <<
                 "\\bedge\\b" << "\\bposedge\\b" << "\\bnegedge\\b" <<
                 "\\bbegin\\b" << "\\bend\\b";
         foreach (QString pattern, keywordPatterns) {
