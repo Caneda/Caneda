@@ -64,10 +64,8 @@ Settings::Settings()
         QObject::tr("Schematic-xml")+" (*.xsch);;"+
         QObject::tr("Symbol-xml")+" (*.xsym);;"+
         QObject::tr("Caneda Project")+" (*.xpro);;"+
-        QObject::tr("Schematic")+" (*.sch);;"+
         QObject::tr("Data Display")+" (*.dpl);;"+
-        QObject::tr("Caneda Documents")+" (*.sch *.dpl);;"+
-        QObject::tr("VHDL Sources")+" (*.vhdl *.vhd);;"+
+        QObject::tr("HDL Sources")+" (*.vhdl *.vhd *.v);;"+
         QObject::tr("Any File")+" (*)";
     data["nosave/canedaFilter"] = VariantPair(canedaFilter);
 }

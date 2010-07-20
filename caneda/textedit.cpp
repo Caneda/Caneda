@@ -19,17 +19,13 @@
 
 #include "textedit.h"
 
-#include "syntaxhighlighters.h"
-
 namespace Caneda
 {
     TextEdit::TextEdit(QTextDocument *document)
     {
         QPlainTextDocumentLayout *layout = new QPlainTextDocumentLayout(document);
         document->setDocumentLayout(layout);
-
         setDocument(document);
-        VhdlHighlighter *highlighter = new VhdlHighlighter(this->document());
 
         connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
         highlightCurrentLine();

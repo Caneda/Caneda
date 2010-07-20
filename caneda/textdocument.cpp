@@ -20,11 +20,13 @@
 #include "textdocument.h"
 
 #include "documentviewmanager.h"
+#include "syntaxhighlighters.h"
 #include "textcontext.h"
 #include "textedit.h"
 #include "textview.h"
 
 #include <QFile>
+#include <QFileInfo>
 #include <QTextCodec>
 #include <QTextDocument>
 #include <QTextEdit>
@@ -180,6 +182,12 @@ namespace Caneda
         m_textDocument->setPlainText(content);
 
         file.close();
+
+        QFileInfo fileInfo(fileName());
+        if ( fileInfo.suffix() == "vhdl" || fileInfo.suffix() == "vhd" ) {
+            VhdlHighlighter *highlighter = new VhdlHighlighter(m_textDocument);
+        }
+
         m_textDocument->setModified(false);
         return true;
     }
