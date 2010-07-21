@@ -1223,7 +1223,7 @@ namespace Caneda
         QList<SettingsPage *> wantedPages;
         SettingsPage *page = new GeneralConfigurationPage(this);
         wantedPages << page;
-        page = new VhdlConfigurationPage(this);
+        page = new HdlConfigurationPage(this);
         wantedPages << page;
         page = new SimulationConfigurationPage(this);
         wantedPages << page;

@@ -130,23 +130,24 @@ namespace Caneda
     };
 
 
-    //! This class represents the vhdl configuration page
-    class VhdlConfigurationPage : public SettingsPage
+    //! This class represents the hdl configuration page
+    class HdlConfigurationPage : public SettingsPage
     {
         Q_OBJECT;
 
     public:
-        VhdlConfigurationPage(QWidget *parent = 0);
-        virtual ~VhdlConfigurationPage();
+        HdlConfigurationPage(QWidget *parent = 0);
+        virtual ~HdlConfigurationPage();
 
     private Q_SLOTS:
+        void slotColorKeyword();
+        void slotColorType();
+        void slotColorAttribute();
+        void slotColorBlock();
+        void slotColorClass();
+        void slotColorData();
         void slotColorComment();
-        void slotColorString();
-        void slotColorInteger();
-        void slotColorReal();
-        void slotColorCharacter();
-        void slotColorDataType();
-        void slotColorAttributes();
+        void slotColorSystem();
 
     public:
         void applyConf();
@@ -157,8 +158,9 @@ namespace Caneda
         QLabel *title_label_;
         QFrame *horiz_line_;
 
-        QPushButton *commentButton, *stringButton, *integerButton,
-                    *realButton, *characterButton, *typesButton, *attributesButton;
+        QPushButton *keywordButton, *typeButton, *attributeButton,
+                    *blockButton, *classButton, *dataButton,
+                    *commentButton, *systemButton;
     };
 
 } // namespace Caneda

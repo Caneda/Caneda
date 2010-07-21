@@ -52,13 +52,14 @@ Settings::Settings()
     data["gui/maxUndo"] = VariantPair(int(20));
     data["gui/textEditor"] = VariantPair(QString(Caneda::binaryDirectory() + "canedaedit"));
 
-    data["gui/vhdl/comment"] = VariantPair(QColor(Qt::gray));
-    data["gui/vhdl/string"]= VariantPair(QVariant(QColor(Qt::red)));
-    data["gui/vhdl/integer"]= VariantPair(QVariant(QColor(Qt::blue)));
-    data["gui/vhdl/real"]= VariantPair(QVariant(QColor(Qt::darkMagenta)));
-    data["gui/vhdl/character"]= VariantPair(QVariant(QColor(Qt::magenta)));
-    data["gui/vhdl/types"]= VariantPair(QVariant(QColor(Qt::darkRed)));
-    data["gui/vhdl/attributes"]= VariantPair(QVariant(QColor(Qt::darkCyan)));
+    data["gui/hdl/keyword"]= VariantPair(QVariant(QColor(Qt::black)));
+    data["gui/hdl/type"]= VariantPair(QVariant(QColor(Qt::blue)));
+    data["gui/hdl/attribute"]= VariantPair(QVariant(QColor(Qt::darkCyan)));
+    data["gui/hdl/block"] = VariantPair(QColor(Qt::darkBlue));
+    data["gui/hdl/class"] = VariantPair(QColor(Qt::darkMagenta));
+    data["gui/hdl/data"]= VariantPair(QVariant(QColor(Qt::darkGreen)));
+    data["gui/hdl/comment"] = VariantPair(QColor(Qt::red));
+    data["gui/hdl/system"] = VariantPair(QColor(Qt::darkYellow));
 
     QString canedaFilter =
         QObject::tr("Schematic-xml")+" (*.xsch);;"+

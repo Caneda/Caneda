@@ -19,6 +19,8 @@
 
 #include "syntaxhighlighters.h"
 
+#include "settings.h"
+
 #include <QtGui>
 
 namespace Caneda
@@ -73,9 +75,12 @@ namespace Caneda
     VhdlHighlighter::VhdlHighlighter(QTextDocument *parent)
         : Highlighter(parent)
     {
+        Settings *settings = Settings::instance();
         HighlightingRule rule;
 
-        keywordFormat.setForeground(Qt::black);
+        const QColor currentKeywordColor =
+            settings->currentValue("gui/hdl/keyword").value<QColor>();
+        keywordFormat.setForeground(currentKeywordColor);
         keywordFormat.setFontWeight(QFont::Bold);
         QStringList keywordPatterns;
         keywordPatterns << "\\bfile\\b" << "\\bpackage\\b" << "\\blibrary\\b" <<
@@ -108,7 +113,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        typeFormat.setForeground(Qt::blue);
+        const QColor currentTypeColor =
+            settings->currentValue("gui/hdl/type").value<QColor>();
+        typeFormat.setForeground(currentTypeColor);
         typeFormat.setFontItalic(true);
         QStringList typePatterns;
         typePatterns << "\\bbit\\b" << "\\bbit_vector\\b" << "\\bcharacter\\b" <<
@@ -127,7 +134,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        attributeFormat.setForeground(Qt::darkCyan);
+        const QColor currentAttributeColor =
+            settings->currentValue("gui/hdl/attribute").value<QColor>();
+        attributeFormat.setForeground(currentAttributeColor);
         QStringList attributePatterns;
         attributePatterns << "\\bsignal\\b" << "\\bvariable\\b" << "\\bconstant\\b" <<
                 "\\btype\\b";
@@ -137,7 +146,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        blockFormat.setForeground(Qt::darkBlue);
+        const QColor currentBlockColor =
+            settings->currentValue("gui/hdl/block").value<QColor>();
+        blockFormat.setForeground(currentBlockColor);
         blockFormat.setFontWeight(QFont::Bold);
         QStringList blockPatterns;
         blockPatterns << "\\bprocess\\b" << "\\bif\\b" << "\\belse\\b" <<
@@ -148,7 +159,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        classFormat.setForeground(Qt::darkMagenta);
+        const QColor currentClassColor =
+            settings->currentValue("gui/hdl/class").value<QColor>();
+        classFormat.setForeground(currentClassColor);
         classFormat.setFontWeight(QFont::Bold);
         QStringList classPatterns;
         classPatterns << "\\barchitecture+(?= [A-Za-z0-9_]* of [A-Za-z0-9_]* is\\b)" <<
@@ -163,17 +176,22 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        dataFormat.setForeground(Qt::darkGreen);
+        const QColor currentDataColor =
+            settings->currentValue("gui/hdl/data").value<QColor>();
+        dataFormat.setForeground(currentDataColor);
         rule.pattern = QRegExp("\"[A-Za-z0-9]*\"|\'[A-Za-z0-9]*\'|\'event");
         rule.format = dataFormat;
         highlightingRules.append(rule);
 
-        singleLineCommentFormat.setForeground(Qt::red);
+        const QColor currentCommentColor =
+            settings->currentValue("gui/hdl/comment").value<QColor>();
+
+        singleLineCommentFormat.setForeground(currentCommentColor);
         rule.pattern = QRegExp("--[^\n]*");
         rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
-        multiLineCommentFormat.setForeground(Qt::red);
+        multiLineCommentFormat.setForeground(currentCommentColor);
         commentStartExpression = QRegExp("/\\*");
         commentEndExpression = QRegExp("\\*/");
     }
@@ -185,9 +203,12 @@ namespace Caneda
     VerilogHighlighter::VerilogHighlighter(QTextDocument *parent)
         : Highlighter(parent)
     {
+        Settings *settings = Settings::instance();
         HighlightingRule rule;
 
-        keywordFormat.setForeground(Qt::black);
+        const QColor currentKeywordColor =
+            settings->currentValue("gui/hdl/keyword").value<QColor>();
+        keywordFormat.setForeground(currentKeywordColor);
         keywordFormat.setFontWeight(QFont::Bold);
         QStringList keywordPatterns;
         keywordPatterns << "\\bmacromodule\\b" << "\\btask\\b" << "\\bendtask\\b" <<
@@ -207,7 +228,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        typeFormat.setForeground(Qt::blue);
+        const QColor currentTypeColor =
+            settings->currentValue("gui/hdl/type").value<QColor>();
+        typeFormat.setForeground(currentTypeColor);
         typeFormat.setFontItalic(true);
         QStringList typePatterns;
         typePatterns << "\\binput\\b" << "\\boutput\\b" << "\\binout\\b" <<
@@ -224,7 +247,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        attributeFormat.setForeground(Qt::darkCyan);
+        const QColor currentAttributeColor =
+            settings->currentValue("gui/hdl/attribute").value<QColor>();
+        attributeFormat.setForeground(currentAttributeColor);
         QStringList attributePatterns;
         attributePatterns << "\\bpullup\\b" << "\\bpulldown\\b" << "\\bcmos\\b" <<
                 "\\brcmos\\b" << "\\bnmos\\b" << "\\bpmos\\b" <<
@@ -241,7 +266,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        blockFormat.setForeground(Qt::darkBlue);
+        const QColor currentBlockColor =
+            settings->currentValue("gui/hdl/block").value<QColor>();
+        blockFormat.setForeground(currentBlockColor);
         blockFormat.setFontWeight(QFont::Bold);
         QStringList blockPatterns;
         blockPatterns << "\\bif\\b" << "\\belse\\b" << "\\bwhile\\b" <<
@@ -252,7 +279,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        classFormat.setForeground(Qt::darkMagenta);
+        const QColor currentClassColor =
+            settings->currentValue("gui/hdl/class").value<QColor>();
+        classFormat.setForeground(currentClassColor);
         classFormat.setFontWeight(QFont::Bold);
         QStringList classPatterns;
         classPatterns << "\\bmodule+(?= [A-Za-z0-9_]*\\b)" <<
@@ -263,7 +292,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        dataFormat.setForeground(Qt::darkGreen);
+        const QColor currentDataColor =
+            settings->currentValue("gui/hdl/data").value<QColor>();
+        dataFormat.setForeground(currentDataColor);
         QStringList dataPatterns;
         dataPatterns << "\\bstrong0\\b" << "\\bstrong1\\b" << "\\bpull0\\b" <<
                 "\\bpull1\\b" << "\\bweak0\\b" << "\\bweak1\\b" <<
@@ -277,16 +308,21 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        singleLineCommentFormat.setForeground(Qt::red);
+        const QColor currentCommentColor =
+            settings->currentValue("gui/hdl/comment").value<QColor>();
+
+        singleLineCommentFormat.setForeground(currentCommentColor);
         rule.pattern = QRegExp("//[^\n]*");
         rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
-        multiLineCommentFormat.setForeground(Qt::red);
+        multiLineCommentFormat.setForeground(currentCommentColor);
         commentStartExpression = QRegExp("/\\*");
         commentEndExpression = QRegExp("\\*/");
 
-        systemFormat.setForeground(Qt::darkYellow);
+        const QColor currentSystemColor =
+            settings->currentValue("gui/hdl/system").value<QColor>();
+        systemFormat.setForeground(currentSystemColor);
         QStringList systemPatterns;
         systemPatterns << "\\$display" << "\\$write" << "\\$swrite" <<
                 "\\$sscanf" << "\\$fopen" << "\\$fdisplay" <<

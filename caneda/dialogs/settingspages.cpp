@@ -568,83 +568,91 @@ namespace Caneda
     }
 
     //*!**************************************************
-    // VHDL configuration pages
+    // HDL configuration pages
     //*!**************************************************
     /*!
      * Constructor
      * @param QWidget *parent The parent of the dialog.
      */
-    VhdlConfigurationPage::VhdlConfigurationPage(QWidget *parent) : SettingsPage(parent) {
+    HdlConfigurationPage::HdlConfigurationPage(QWidget *parent) : SettingsPage(parent) {
 
         //First we set the color settings group of options **********************************
         QGroupBox *colorsHighlighting = new QGroupBox(tr("Colors for Syntax Highlighting"),
                 this);
         QGridLayout *generalLayout = new QGridLayout(colorsHighlighting);
 
+        keywordButton = new QPushButton(tr("Keyword"), colorsHighlighting);
+        typeButton = new QPushButton(tr("Type"), colorsHighlighting);
+        attributeButton = new QPushButton(tr("Attribute"), colorsHighlighting);
+        blockButton = new QPushButton(tr("Block"), colorsHighlighting);
+        classButton = new QPushButton(tr("Class"), colorsHighlighting);
+        dataButton = new QPushButton(tr("Data"), colorsHighlighting);
         commentButton = new QPushButton(tr("Comment"), colorsHighlighting);
-        stringButton = new QPushButton(tr("String"), colorsHighlighting);
-        integerButton = new QPushButton(tr("Integer Number"), colorsHighlighting);
-        realButton = new QPushButton(tr("Real Number"), colorsHighlighting);
-        characterButton = new QPushButton(tr("Character"), colorsHighlighting);
-        typesButton = new QPushButton(tr("Data Type"), colorsHighlighting);
-        attributesButton = new QPushButton(tr("Attribute"), colorsHighlighting);
+        systemButton = new QPushButton(tr("System"), colorsHighlighting);
 
         Settings *settings = Settings::instance();
 
-        const QColor currentcommentColor =
-            settings->currentValue("gui/vhdl/comment").value<QColor>();
-        const QColor currentstringColor =
-            settings->currentValue("gui/vhdl/string").value<QColor>();
-        const QColor currentintegerColor =
-            settings->currentValue("gui/vhdl/integer").value<QColor>();
-        const QColor currentrealColor =
-            settings->currentValue("gui/vhdl/real").value<QColor>();
-        const QColor currentcharacterColor =
-            settings->currentValue("gui/vhdl/character").value<QColor>();
-        const QColor currenttypesColor =
-            settings->currentValue("gui/vhdl/types").value<QColor>();
-        const QColor currentattributesColor =
-            settings->currentValue("gui/vhdl/attributes").value<QColor>();
+        const QColor currentKeywordColor =
+            settings->currentValue("gui/hdl/keyword").value<QColor>();
+        const QColor currentTypeColor =
+            settings->currentValue("gui/hdl/type").value<QColor>();
+        const QColor currentAttributeColor =
+            settings->currentValue("gui/hdl/attribute").value<QColor>();
+        const QColor currentBlockColor =
+            settings->currentValue("gui/hdl/block").value<QColor>();
+        const QColor currentClassColor =
+            settings->currentValue("gui/hdl/class").value<QColor>();
+        const QColor currentDataColor =
+            settings->currentValue("gui/hdl/data").value<QColor>();
+        const QColor currentCommentColor =
+            settings->currentValue("gui/hdl/comment").value<QColor>();
+        const QColor currentSystemColor =
+            settings->currentValue("gui/hdl/system").value<QColor>();
 
         const QColor currentBackgroundColor =
             settings->currentValue("gui/backgroundColor").value<QColor>();
 
+        setBackgroundColor(keywordButton, currentBackgroundColor);
+        setForegroundColor(keywordButton, currentKeywordColor);
+
+        setBackgroundColor(typeButton, currentBackgroundColor);
+        setForegroundColor(typeButton, currentTypeColor);
+
+        setBackgroundColor(attributeButton, currentBackgroundColor);
+        setForegroundColor(attributeButton, currentAttributeColor);
+
+        setBackgroundColor(blockButton, currentBackgroundColor);
+        setForegroundColor(blockButton, currentBlockColor);
+
+        setBackgroundColor(classButton, currentBackgroundColor);
+        setForegroundColor(classButton, currentClassColor);
+
+        setBackgroundColor(dataButton, currentBackgroundColor);
+        setForegroundColor(dataButton, currentDataColor);
+
         setBackgroundColor(commentButton, currentBackgroundColor);
-        setForegroundColor(commentButton, currentcommentColor);
+        setForegroundColor(commentButton, currentCommentColor);
 
-        setBackgroundColor(stringButton, currentBackgroundColor);
-        setForegroundColor(stringButton, currentstringColor);
+        setBackgroundColor(systemButton, currentBackgroundColor);
+        setForegroundColor(systemButton, currentSystemColor);
 
-        setBackgroundColor(integerButton, currentBackgroundColor);
-        setForegroundColor(integerButton, currentintegerColor);
-
-        setBackgroundColor(realButton, currentBackgroundColor);
-        setForegroundColor(realButton, currentrealColor);
-
-        setBackgroundColor(characterButton, currentBackgroundColor);
-        setForegroundColor(characterButton, currentcharacterColor);
-
-        setBackgroundColor(typesButton, currentBackgroundColor);
-        setForegroundColor(typesButton, currenttypesColor);
-
-        setBackgroundColor(attributesButton, currentBackgroundColor);
-        setForegroundColor(attributesButton, currentattributesColor);
-
+        connect(keywordButton, SIGNAL(clicked()), SLOT(slotColorKeyword()));
+        connect(typeButton, SIGNAL(clicked()), SLOT(slotColorType()));
+        connect(attributeButton, SIGNAL(clicked()), SLOT(slotColorAttribute()));
+        connect(blockButton, SIGNAL(clicked()), SLOT(slotColorBlock()));
+        connect(classButton, SIGNAL(clicked()), SLOT(slotColorClass()));
+        connect(dataButton, SIGNAL(clicked()), SLOT(slotColorData()));
         connect(commentButton, SIGNAL(clicked()), SLOT(slotColorComment()));
-        connect(stringButton, SIGNAL(clicked()), SLOT(slotColorString()));
-        connect(integerButton, SIGNAL(clicked()), SLOT(slotColorInteger()));
-        connect(realButton, SIGNAL(clicked()), SLOT(slotColorReal()));
-        connect(characterButton, SIGNAL(clicked()), SLOT(slotColorCharacter()));
-        connect(typesButton, SIGNAL(clicked()), SLOT(slotColorDataType()));
-        connect(attributesButton, SIGNAL(clicked()), SLOT(slotColorAttributes()));
+        connect(systemButton, SIGNAL(clicked()), SLOT(slotColorSystem()));
 
-        generalLayout->addWidget(commentButton, 0, 0);
-        generalLayout->addWidget(stringButton, 0, 1);
-        generalLayout->addWidget(integerButton, 1, 0);
-        generalLayout->addWidget(realButton, 1, 1);
-        generalLayout->addWidget(characterButton, 2, 0);
-        generalLayout->addWidget(typesButton, 2, 1);
-        generalLayout->addWidget(attributesButton, 3, 0);
+        generalLayout->addWidget(keywordButton, 0, 0);
+        generalLayout->addWidget(typeButton, 0, 1);
+        generalLayout->addWidget(attributeButton, 1, 0);
+        generalLayout->addWidget(blockButton, 1, 1);
+        generalLayout->addWidget(classButton, 2, 0);
+        generalLayout->addWidget(dataButton, 2, 1);
+        generalLayout->addWidget(commentButton, 3, 0);
+        generalLayout->addWidget(systemButton, 3, 1);
 
 
         //Finally we set the general layout of all groups ***********************************
@@ -664,67 +672,76 @@ namespace Caneda
     }
 
     //! Destructor
-    VhdlConfigurationPage::~VhdlConfigurationPage() {
+    HdlConfigurationPage::~HdlConfigurationPage() {
     }
 
     //! Applies the configuration of this page
-    void VhdlConfigurationPage::applyConf() {
+    void HdlConfigurationPage::applyConf() {
+
         bool changed = false;
-
         Settings *settings = Settings::instance();
-        const QColor currentcommentColor =
-            settings->currentValue("gui/vhdl/comment").value<QColor>();
-        const QColor newcommentColor = getForegroundColor(commentButton);
-        if (newcommentColor != currentcommentColor) {
-            settings->setCurrentValue("gui/vhdl/comment", newcommentColor);
+
+        const QColor currentKeywordColor =
+            settings->currentValue("gui/hdl/keyword").value<QColor>();
+        const QColor newKeywordColor = getForegroundColor(keywordButton);
+        if (newKeywordColor != currentKeywordColor) {
+            settings->setCurrentValue("gui/hdl/keyword", newKeywordColor);
             changed = true;
         }
 
-        const QColor currentstringColor =
-            settings->currentValue("gui/vhdl/string").value<QColor>();
-        const QColor newstringColor = getForegroundColor(stringButton);
-        if (newstringColor != currentstringColor) {
-            settings->setCurrentValue("gui/vhdl/string", newstringColor);
+        const QColor currentTypeColor =
+            settings->currentValue("gui/hdl/type").value<QColor>();
+        const QColor newTypeColor = getForegroundColor(typeButton);
+        if (newTypeColor != currentTypeColor) {
+            settings->setCurrentValue("gui/hdl/type", newTypeColor);
             changed = true;
         }
 
-        const QColor currentintegerColor =
-            settings->currentValue("gui/vhdl/integer").value<QColor>();
-        const QColor newintegerColor = getForegroundColor(integerButton);
-        if (newintegerColor != currentintegerColor) {
-            settings->setCurrentValue("gui/vhdl/integer", newintegerColor);
+        const QColor currentAttributeColor =
+            settings->currentValue("gui/hdl/attribute").value<QColor>();
+        const QColor newAttributeColor = getForegroundColor(attributeButton);
+        if (newAttributeColor != currentAttributeColor) {
+            settings->setCurrentValue("gui/hdl/attribute", newAttributeColor);
             changed = true;
         }
 
-        const QColor currentrealColor =
-            settings->currentValue("gui/vhdl/real").value<QColor>();
-        const QColor newrealColor = getForegroundColor(realButton);
-        if (newrealColor != currentrealColor) {
-            settings->setCurrentValue("gui/vhdl/real", newrealColor);
+        const QColor currentBlockColor =
+            settings->currentValue("gui/hdl/block").value<QColor>();
+        const QColor newBlockColor = getForegroundColor(blockButton);
+        if (newBlockColor != currentBlockColor) {
+            settings->setCurrentValue("gui/hdl/block", newBlockColor);
             changed = true;
         }
 
-        const QColor currentcharacterColor =
-            settings->currentValue("gui/vhdl/character").value<QColor>();
-        const QColor newcharacterColor = getForegroundColor(characterButton);
-        if (newcharacterColor != currentcharacterColor) {
-            settings->setCurrentValue("gui/vhdl/character", newcharacterColor);
+        const QColor currentClassColor =
+            settings->currentValue("gui/hdl/class").value<QColor>();
+        const QColor newClassColor = getForegroundColor(classButton);
+        if (newClassColor != currentClassColor) {
+            settings->setCurrentValue("gui/hdl/class", newClassColor);
             changed = true;
         }
 
-        const QColor currenttypesColor =
-            settings->currentValue("gui/vhdl/types").value<QColor>();
-        const QColor newtypesColor = getForegroundColor(typesButton);
-        if (newtypesColor != currenttypesColor) {
-            settings->setCurrentValue("gui/vhdl/types", newtypesColor);
+        const QColor currentDataColor =
+            settings->currentValue("gui/hdl/data").value<QColor>();
+        const QColor newDataColor = getForegroundColor(dataButton);
+        if (newDataColor != currentDataColor) {
+            settings->setCurrentValue("gui/hdl/data", newDataColor);
             changed = true;
         }
 
-        const QColor currentattributesColor =
-            settings->currentValue("gui/vhdl/attributes").value<QColor>();
-        const QColor newattributesColor = getForegroundColor(attributesButton);
-        if (newattributesColor != currentattributesColor) {
-            settings->setCurrentValue("gui/vhdl/attributes", newattributesColor);
+        const QColor currentCommentColor =
+            settings->currentValue("gui/hdl/comment").value<QColor>();
+        const QColor newCommentColor = getForegroundColor(commentButton);
+        if (newCommentColor != currentCommentColor) {
+            settings->setCurrentValue("gui/hdl/comment", newCommentColor);
+            changed = true;
+        }
+
+        const QColor currentSystemColor =
+            settings->currentValue("gui/hdl/system").value<QColor>();
+        const QColor newSystemColor = getForegroundColor(systemButton);
+        if (newSystemColor != currentSystemColor) {
+            settings->setCurrentValue("gui/hdl/system", newSystemColor);
             changed = true;
         }
 
@@ -737,77 +754,86 @@ namespace Caneda
     }
 
     //! @return Icon of this page
-    QIcon VhdlConfigurationPage::icon() const
+    QIcon HdlConfigurationPage::icon() const
     {
         return(QIcon(Caneda::bitmapDirectory() + "vhdl-code.png"));
     }
 
     //! @return Title of this page
-    QString VhdlConfigurationPage::title() const
+    QString HdlConfigurationPage::title() const
     {
-        return(tr("VHDL", "vhdl page title"));
+        return(tr("HDL", "hdl page title"));
     }
 
-    void VhdlConfigurationPage::slotColorComment()
+    void HdlConfigurationPage::slotColorKeyword()
+    {
+        QColor c = QColorDialog::getColor(
+                getForegroundColor(keywordButton), this);
+        if(c.isValid()) {
+            setForegroundColor(keywordButton, c);
+        }
+    }
+
+    void HdlConfigurationPage::slotColorType()
+    {
+        QColor c = QColorDialog::getColor(
+                getForegroundColor(typeButton), this);
+        if(c.isValid()) {
+            setForegroundColor(typeButton, c);
+        }
+    }
+
+    void HdlConfigurationPage::slotColorAttribute()
+    {
+        QColor c = QColorDialog::getColor(
+                getForegroundColor(attributeButton), this);
+        if(c.isValid()) {
+            setForegroundColor(attributeButton, c);
+        }
+    }
+
+    void HdlConfigurationPage::slotColorBlock()
+    {
+        QColor c = QColorDialog::getColor(
+                getForegroundColor(blockButton), this);
+        if(c.isValid()) {
+            setForegroundColor(blockButton, c);
+        }
+    }
+
+    void HdlConfigurationPage::slotColorClass()
+    {
+        QColor c = QColorDialog::getColor(
+                getForegroundColor(classButton), this);
+        if(c.isValid()) {
+            setForegroundColor(classButton, c);
+        }
+    }
+
+    void HdlConfigurationPage::slotColorData()
+    {
+        QColor c = QColorDialog::getColor(
+                getForegroundColor(dataButton), this);
+        if(c.isValid()) {
+            setForegroundColor(dataButton, c);
+        }
+    }
+
+    void HdlConfigurationPage::slotColorComment()
     {
         QColor c = QColorDialog::getColor(
                 getForegroundColor(commentButton), this);
         if(c.isValid()) {
-            setForegroundColor(commentButton,c);
+            setForegroundColor(commentButton, c);
         }
     }
 
-    void VhdlConfigurationPage::slotColorString()
+    void HdlConfigurationPage::slotColorSystem()
     {
         QColor c = QColorDialog::getColor(
-                getForegroundColor(stringButton), this);
+                getForegroundColor(systemButton), this);
         if(c.isValid()) {
-            setForegroundColor(stringButton,c);
-        }
-    }
-
-    void VhdlConfigurationPage::slotColorInteger()
-    {
-        QColor c = QColorDialog::getColor(
-                getForegroundColor(integerButton), this);
-        if(c.isValid()) {
-            setForegroundColor(integerButton,c);
-        }
-    }
-
-    void VhdlConfigurationPage::slotColorReal()
-    {
-        QColor c = QColorDialog::getColor(
-                getForegroundColor(realButton), this);
-        if(c.isValid()) {
-            setForegroundColor(realButton,c);
-        }
-    }
-
-    void VhdlConfigurationPage::slotColorCharacter()
-    {
-        QColor c = QColorDialog::getColor(
-                getForegroundColor(characterButton), this);
-        if(c.isValid()) {
-            setForegroundColor(characterButton,c);
-        }
-    }
-
-    void VhdlConfigurationPage::slotColorDataType()
-    {
-        QColor c = QColorDialog::getColor(
-                getForegroundColor(typesButton), this);
-        if(c.isValid()) {
-            setForegroundColor(typesButton,c);
-        }
-    }
-
-    void VhdlConfigurationPage::slotColorAttributes()
-    {
-        QColor c = QColorDialog::getColor(
-                getForegroundColor(attributesButton), this);
-        if(c.isValid()) {
-            setForegroundColor(attributesButton,c);
+            setForegroundColor(systemButton, c);
         }
     }
 
