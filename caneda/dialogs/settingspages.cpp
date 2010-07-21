@@ -142,16 +142,12 @@ namespace Caneda
         spinUndoNum->setMinimum(0);
         spinUndoNum->setMaximum(200);
 
-        editEditor = new QLineEdit;
-        editEditor->setText(settings->currentValue("gui/textEditor").toString());
-
         editLibrary = new QLineEdit;
         editLibrary->setText(settings->currentValue("sidebarLibrary").toString());
 
         QGroupBox *misc = new QGroupBox(tr("Misc"), this);
         QFormLayout *miscLayout = new QFormLayout(misc);
         miscLayout->addRow(tr("Maximum undo operations:"), spinUndoNum);
-        miscLayout->addRow(tr("Text editor:"), editEditor);
         miscLayout->addRow(tr("Components library:"), editLibrary);
 
 
@@ -256,12 +252,6 @@ namespace Caneda
         if (currentMaxUndo != newMaxUndo) {
             settings->setCurrentValue("gui/maxUndo", newMaxUndo);
             //TODO: Also update all undostacks
-        }
-
-        const QString currentTextEditor = settings->currentValue("gui/textEditor").toString();
-        const QString newTextEditor = editEditor->text();
-        if (currentTextEditor != newTextEditor) {
-            settings->setCurrentValue("gui/textEditor", newTextEditor);
         }
 
         const QString currentLibrary = settings->currentValue("sidebarLibrary").toString();

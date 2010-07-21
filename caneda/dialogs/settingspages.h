@@ -78,7 +78,7 @@ namespace Caneda
         QFrame *horiz_line_;
 
         QCheckBox *checkShowGrid;
-        QLineEdit *editEditor, *editLibrary;
+        QLineEdit *editLibrary;
         QFont font;
         QPushButton *buttonFont, *buttonForeground, *buttonBackground;
         QSpinBox *spinUndoNum, *spinIcons;

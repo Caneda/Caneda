@@ -50,7 +50,6 @@ Settings::Settings()
     data["gui/largeFontSize"] = VariantPair(qreal(16.0));
     data["gui/iconSize"] = VariantPair(QSize(24, 24));
     data["gui/maxUndo"] = VariantPair(int(20));
-    data["gui/textEditor"] = VariantPair(QString(Caneda::binaryDirectory() + "canedaedit"));
 
     data["gui/hdl/keyword"]= VariantPair(QVariant(QColor(Qt::black)));
     data["gui/hdl/type"]= VariantPair(QVariant(QColor(Qt::blue)));
