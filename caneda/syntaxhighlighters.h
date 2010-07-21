@@ -52,10 +52,10 @@ namespace Caneda
 
         QTextCharFormat keywordFormat;
         QTextCharFormat typeFormat;
-        QTextCharFormat signalFormat;
+        QTextCharFormat attributeFormat;
         QTextCharFormat blockFormat;
         QTextCharFormat classFormat;
-        QTextCharFormat quotationFormat;
+        QTextCharFormat dataFormat;
         QTextCharFormat singleLineCommentFormat;
         QTextCharFormat multiLineCommentFormat;
         QTextCharFormat systemFormat;

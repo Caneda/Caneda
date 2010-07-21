@@ -127,13 +127,13 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        signalFormat.setForeground(Qt::darkCyan);
-        QStringList signalPatterns;
-        signalPatterns << "\\bsignal\\b" << "\\bvariable\\b" << "\\bconstant\\b" <<
+        attributeFormat.setForeground(Qt::darkCyan);
+        QStringList attributePatterns;
+        attributePatterns << "\\bsignal\\b" << "\\bvariable\\b" << "\\bconstant\\b" <<
                 "\\btype\\b";
-        foreach (QString pattern, signalPatterns) {
+        foreach (QString pattern, attributePatterns) {
             rule.pattern = QRegExp(pattern);
-            rule.format = signalFormat;
+            rule.format = attributeFormat;
             highlightingRules.append(rule);
         }
 
@@ -163,9 +163,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        quotationFormat.setForeground(Qt::darkGreen);
+        dataFormat.setForeground(Qt::darkGreen);
         rule.pattern = QRegExp("\"[A-Za-z0-9]*\"|\'[A-Za-z0-9]*\'|\'event");
-        rule.format = quotationFormat;
+        rule.format = dataFormat;
         highlightingRules.append(rule);
 
         singleLineCommentFormat.setForeground(Qt::red);
@@ -224,9 +224,9 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        signalFormat.setForeground(Qt::darkCyan);
-        QStringList signalPatterns;
-        signalPatterns << "\\bpullup\\b" << "\\bpulldown\\b" << "\\bcmos\\b" <<
+        attributeFormat.setForeground(Qt::darkCyan);
+        QStringList attributePatterns;
+        attributePatterns << "\\bpullup\\b" << "\\bpulldown\\b" << "\\bcmos\\b" <<
                 "\\brcmos\\b" << "\\bnmos\\b" << "\\bpmos\\b" <<
                 "\\brnmos\\b" << "\\brpmos\\b" << "\\band\\b" <<
                 "\\bnand\\b" << "\\bor\\b" << "\\bnor\\b" <<
@@ -235,9 +235,9 @@ namespace Caneda
                 "\\btranif0\\b" << "\\btranif1\\b" << "\\brtranif0\\b" <<
                 "\\brtranif1\\b" << "\\bbufif0\\b" << "\\bbufif1\\b" <<
                 "\\bnotif0\\b" << "\\bnotif1\\b";
-        foreach (QString pattern, signalPatterns) {
+        foreach (QString pattern, attributePatterns) {
             rule.pattern = QRegExp(pattern);
-            rule.format = signalFormat;
+            rule.format = attributeFormat;
             highlightingRules.append(rule);
         }
 
@@ -263,17 +263,17 @@ namespace Caneda
             highlightingRules.append(rule);
         }
 
-        quotationFormat.setForeground(Qt::darkGreen);
-        QStringList quotationPatterns;
-        quotationPatterns << "\\bstrong0\\b" << "\\bstrong1\\b" << "\\bpull0\\b" <<
+        dataFormat.setForeground(Qt::darkGreen);
+        QStringList dataPatterns;
+        dataPatterns << "\\bstrong0\\b" << "\\bstrong1\\b" << "\\bpull0\\b" <<
                 "\\bpull1\\b" << "\\bweak0\\b" << "\\bweak1\\b" <<
                 "\\bhighz0\\b" << "\\bhighz1\\b" << "\\bsmall\\b" <<
                 "\\bmedium\\b" << "\\blarge\\b" <<
                 "\"[A-Za-z0-9]*\"" << "[\\d_]*'d[\\d_]+" << "[\\d_]*'o[0-7xXzZ_]+" <<
                 "[\\d_]*'h[\\da-fA-FxXzZ_]+" << "[\\d_]*'b[01_zZxX]+" << "[\\d]*.[\\d]+";
-        foreach (QString pattern, quotationPatterns) {
+        foreach (QString pattern, dataPatterns) {
             rule.pattern = QRegExp(pattern);
-            rule.format = quotationFormat;
+            rule.format = dataFormat;
             highlightingRules.append(rule);
         }
 
