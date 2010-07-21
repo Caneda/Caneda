@@ -281,22 +281,17 @@ namespace Caneda
             m_views.insert(0, view);
         }
 
-        updateTitle();
+        emit tabInfoChanged(this);
     }
 
     void Tab::onDocumentChanged(IDocument *document)
     {
-        updateTitle();
+        emit tabInfoChanged(this);
     }
 
     void Tab::onStatusBarMessage(const QString &message)
     {
         emit statusBarMessage(this, message);
-    }
-
-    void Tab::updateTitle()
-    {
-        emit tabInfoChanged(this);
     }
 
     void Tab::closeEvent(QCloseEvent *event)
@@ -343,14 +338,6 @@ namespace Caneda
             return;
         }
 
-
-        IDocument *document = view->document();
-        if (document) {
-            MainWindow *mw = MainWindow::instance();
-            mw->m_undoGroup->addStack(document->undoStack());
-        }
-
-
         m_views.insert(0, view);
 
         connect(view, SIGNAL(focussedIn(IView*)), this,
@@ -360,7 +347,7 @@ namespace Caneda
         connect(view, SIGNAL(statusBarMessage(const QString &)), this,
                 SLOT(onStatusBarMessage(const QString &)));
 
-        updateTitle();
+        emit tabInfoChanged(this);
     }
 
     QIcon Tab::modifiedIcon() const
@@ -412,10 +399,10 @@ namespace Caneda
     TabWidget::TabWidget(QWidget *parent) : QTabWidget(parent)
     {
         setTabBar(new TabBarPrivate(this));
+        connect(this, SIGNAL(currentChanged(int)), this,
+                SLOT(updateTabInfo()));
         connect(this, SIGNAL(tabCloseRequested(int)), this,
                 SLOT(onTabCloseRequested(int)));
-        connect(this, SIGNAL(currentChanged(int)), this,
-                SLOT(updateDocksAndToolbars()));
     }
 
     QList<Tab*> TabWidget::tabs() const
@@ -439,9 +426,23 @@ namespace Caneda
     void TabWidget::insertTab(int index, Tab *tab)
     {
         QTabWidget::insertTab(index, tab, tab->tabIcon(), tab->tabText());
-        connect(tab, SIGNAL(tabInfoChanged(Tab*)), this, SLOT(updateTabInfo(Tab*)));
+        connect(tab, SIGNAL(tabInfoChanged(Tab*)), this, SLOT(updateTabInfo()));
         connect(tab, SIGNAL(statusBarMessage(Tab*, const QString&)), this,
                 SLOT(onStatusBarMessage(Tab*, const QString&)));
+
+
+        IView *view = tab->activeView();
+        if (!view) {
+            return;
+        }
+
+        IDocument *document = view->document();
+        if (!document) {
+            return;
+        }
+
+        MainWindow *mw = MainWindow::instance();
+        mw->m_undoGroup->addStack(document->undoStack());
     }
 
     Tab* TabWidget::currentTab() const
@@ -522,43 +523,22 @@ namespace Caneda
         return tab;
     }
 
-    void TabWidget::updateTabInfo(Tab *tab)
+    void TabWidget::updateTabInfo()
     {
-        int index = indexOf(tab);
+        int index = currentIndex();
         if (index < 0 || index >= count()) {
             return;
         }
 
+        Tab *tab = currentTab();
+
         setTabIcon(index, tab->tabIcon());
         setTabText(index, tab->tabText());
 
-        if (index == currentIndex()) {
-            MainWindow *mw = MainWindow::instance();
-            mw->updateTitle();
-
-            IView *view = tab->activeView();
-            if (!view) {
-                return;
-            }
-
-            IDocument *document = view->document();
-            if (!document) {
-                return;
-            }
-
-            mw->action("editCut")->setEnabled(document->canCut());
-            mw->action("editCopy")->setEnabled(document->canCopy());
-            mw->action("editPaste")->setEnabled(document->canPaste());
-            mw->action("editUndo")->setEnabled(document->canUndo());
-            mw->action("editRedo")->setEnabled(document->canRedo());
-        }
-    }
-
-    void TabWidget::updateDocksAndToolbars()
-    {
         MainWindow *mw = MainWindow::instance();
+        mw->updateTitle();
 
-        IView *view = currentTab()->activeView();
+        IView *view = tab->activeView();
         if (!view) {
             return;
         }
@@ -567,6 +547,12 @@ namespace Caneda
         if (!document) {
             return;
         }
+
+        mw->action("editCut")->setEnabled(document->canCut());
+        mw->action("editCopy")->setEnabled(document->canCopy());
+        mw->action("editPaste")->setEnabled(document->canPaste());
+        mw->action("editUndo")->setEnabled(document->canUndo());
+        mw->action("editRedo")->setEnabled(document->canRedo());
 
         mw->m_undoGroup->setActiveStack(document->undoStack());
     }

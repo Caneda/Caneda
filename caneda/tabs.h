@@ -90,7 +90,6 @@ namespace Caneda
         void addView(IView *view);
         QIcon modifiedIcon() const;
         QIcon unmodifiedIcon() const;
-        void updateTitle();
 
         QList<IView*> m_views;
 
@@ -121,8 +120,7 @@ namespace Caneda
         void statusBarMessage(const QString &message);
 
     private Q_SLOTS:
-        void updateTabInfo(Tab *tab);
-        void updateDocksAndToolbars();
+        void updateTabInfo();
         void onStatusBarMessage(Tab *tab, const QString &message);
         void onTabCloseRequested(int index);
     };
