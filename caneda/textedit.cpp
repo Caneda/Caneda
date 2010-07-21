@@ -19,6 +19,8 @@
 
 #include "textedit.h"
 
+#include <QTextBlock>
+
 namespace Caneda
 {
     TextEdit::TextEdit(QTextDocument *document)
@@ -27,6 +29,8 @@ namespace Caneda
         document->setDocumentLayout(layout);
         setDocument(document);
 
+        connect(this, SIGNAL(focussed()), this, SLOT(updateCursorPosition()));
+        connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(updateCursorPosition()));
         connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
         highlightCurrentLine();
     }
@@ -47,6 +51,29 @@ namespace Caneda
     {
         emit focussed();
         QPlainTextEdit::focusInEvent(event);
+    }
+
+    void TextEdit::updateCursorPosition()
+    {
+        // TODO: Replace current line number calculation
+        // by textcursor.lineNumber() when implemented in Qt.
+
+        // Get the current line number
+        QTextCursor textcursor = textCursor();
+        QTextLayout* blocklayout = textcursor.block().layout();
+        // Get the relative position in the block
+        int position = textcursor.position() - textcursor.block().position();
+        int line = blocklayout->lineForTextPosition(position).lineNumber() +
+                   textcursor.block().firstLineNumber() + 1;
+
+        // Get the current column number
+        int column = textcursor.columnNumber() + 1;
+
+        QPoint newCursorPos = QPoint(line, column);
+        QString str = QString(tr("Line: %1 Col: %2"))
+            .arg(newCursorPos.x())
+            .arg(newCursorPos.y());
+        emit cursorPositionChanged(str);
     }
 
     void TextEdit::highlightCurrentLine()

@@ -38,6 +38,8 @@ namespace Caneda
         m_textEdit = new TextEdit(document->textDocument());
         connect(m_textEdit, SIGNAL(focussed()), this,
                 SLOT(onFocussed()));
+        connect(m_textEdit, SIGNAL(cursorPositionChanged(const QString &)),
+                this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     TextView::~TextView()

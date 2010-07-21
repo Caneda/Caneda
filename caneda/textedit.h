@@ -35,11 +35,13 @@ namespace Caneda
 
     Q_SIGNALS:
         void focussed();
+        void cursorPositionChanged(const QString& newPos);
 
     protected:
         void focusInEvent(QFocusEvent *event);
 
     private slots:
+        void updateCursorPosition();
         void highlightCurrentLine();
     };
 
