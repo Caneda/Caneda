@@ -131,9 +131,10 @@ namespace Caneda
         m_paintingDrawItem = 0;
         m_paintingDrawClicks = 0;
 
+        Settings *settings = Settings::instance();
+        const QColor zoomBandColor =
+            settings->currentValue("gui/foregroundColor").value<QColor>();
         m_zoomBand = new QGraphicsRectItem();
-        //FIXME: Uses hard coded pen color : won't be visible in dark background
-        const QColor zoomBandColor(Qt::black);
         m_zoomBand->setPen(QPen(zoomBandColor, 0, Qt::DashLine));
         m_zoomBand->hide();
         addItem(m_zoomBand);
