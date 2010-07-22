@@ -24,7 +24,6 @@
 
 namespace Caneda
 {
-
     //! \brief Represents an elliptic arc painting item.
     class EllipseArc : public Painting
     {

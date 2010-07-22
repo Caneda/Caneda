@@ -715,4 +715,5 @@ namespace Caneda
         layout->addWidget(preview);
         return(layout);
     }
+
 } // namespace Caneda

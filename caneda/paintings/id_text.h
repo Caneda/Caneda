@@ -26,7 +26,6 @@
 
 namespace Caneda
 {
-
     /*!
      * \brief Represents parameter of sub ckt.
      *

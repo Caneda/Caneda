@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef UNDOCMDS_H
-#define UNDOCMDS_H
+#ifndef UNDO_COMMANDS_H
+#define UNDO_COMMANDS_H
 
 #include "component.h"
 #include "wire.h"
@@ -30,7 +30,6 @@
 
 namespace Caneda
 {
-
     // Forward declarations.
     class Component;
     class Painting;
@@ -310,4 +309,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //UNDOCMDS_H
+#endif //UNDO_COMMANDS_H

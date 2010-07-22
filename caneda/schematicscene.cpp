@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 Gopala Krishna A <krishna.ggk@gmail.com>             *
- * Copyright (C) 2008 Bastien ROUCARIES <roucaries.bastien+qucs@gmail.com> *
+ * Copyright (C) 2008 Bastien Roucaries <roucaries.bastien+qucs@gmail.com> *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *

@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef CANEDA_TABCONTENT_H
-#define CANEDA_TABCONTENT_H
+#ifndef TABS_H
+#define TABS_H
 
 #include <QPointer>
 #include <QTabWidget>
@@ -127,4 +127,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif // CANEDA_TABCONTENT_H
+#endif //TABS_H

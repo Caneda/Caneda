@@ -35,7 +35,6 @@
 #include <QWheelEvent>
 #include <QUndoGroup>
 
-
 namespace Caneda
 {
     ViewContainer::ViewContainer(IView *view, QWidget *parent) :

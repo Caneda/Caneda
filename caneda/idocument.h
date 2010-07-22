@@ -97,6 +97,7 @@ namespace Caneda
         friend class DocumentViewManager;
         QString m_fileName;
     };
-}
 
-#endif // CANEDA_IDOCUMENT_H
+} // namespace Caneda
+
+#endif //CANEDA_IDOCUMENT_H

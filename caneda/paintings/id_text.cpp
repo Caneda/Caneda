@@ -29,7 +29,6 @@
 
 namespace Caneda
 {
-
     //! \brief Returns the parameter name and value as combined string.
     QString SubParameter::text() const
     {

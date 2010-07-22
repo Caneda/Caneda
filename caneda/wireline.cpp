@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2008 by Bastien ROUCARIES <bastien.roucaries@gmail.com>   *
+ * Copyright (C) 2008 by Bastien Roucaries <bastien.roucaries@gmail.com>   *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,16 +19,20 @@
 
 #include "wireline.h"
 
-/* made configurable */
-qreal WireLine::m_adjust = 3.0;
-
-//! \brief Return bounding rectangle arround a wireline
-QRectF WireLine::boundingRect() const
+namespace Caneda
 {
-   QRectF rect;
-   rect.setTopLeft(p1());
-   rect.setBottomRight(p2());
-   rect = rect.normalized();
-   rect.adjust(-m_adjust, -m_adjust, +m_adjust, +m_adjust);
-   return rect;
-}
+    /* made configurable */
+    qreal WireLine::m_adjust = 3.0;
+
+    //! \brief Return bounding rectangle arround a wireline
+    QRectF WireLine::boundingRect() const
+    {
+        QRectF rect;
+        rect.setTopLeft(p1());
+        rect.setBottomRight(p2());
+        rect = rect.normalized();
+        rect.adjust(-m_adjust, -m_adjust, +m_adjust, +m_adjust);
+        return rect;
+    }
+
+} // namespace Caneda

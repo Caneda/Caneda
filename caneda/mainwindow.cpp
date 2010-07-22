@@ -40,7 +40,7 @@
 
 #include "dialogs/aboutdialog.h"
 #include "dialogs/exportdialog.h"
-#include "dialogs/projectfiledialog.h"
+#include "dialogs/projectfileopendialog.h"
 #include "dialogs/printdialog.h"
 #include "dialogs/savedocumentsdialog.h"
 #include "dialogs/settingsdialog.h"
@@ -76,7 +76,6 @@
 
 namespace Caneda
 {
-
     /*!
      * \brief Construct and setup the mainwindow for caneda.
      */
@@ -1077,7 +1076,8 @@ namespace Caneda
                         Settings::instance()->currentValue("nosave/canedaFilter").toString());
             }
             else {
-                ProjectFileDialog *p = new ProjectFileDialog(m_project->libraryFileName(), this);
+                ProjectFileOpenDialog *p =
+                        new ProjectFileOpenDialog(m_project->libraryFileName(), this);
                 if(p->result() == QDialog::Accepted) {
                     fileName = p->fileName();
                 }

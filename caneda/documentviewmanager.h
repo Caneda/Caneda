@@ -83,5 +83,7 @@ namespace Caneda
         QList<DocumentData*> m_documentDataList;
         QList<IContext*> m_contexts;
     };
+
 }
+
 #endif //CANEDA_DOCUMENTVIEWMANAGER_H

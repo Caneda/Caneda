@@ -24,56 +24,56 @@
 #include <QStringList>
 #include <QVariant>
 
-//Forward declarations
-namespace Caneda {
+namespace Caneda
+{
+    //Forward declarations
     class XmlWriter;
     class XmlReader;
-}
 
-class Property;
+    class Property;
 
-//! \def PropertyMap This is typedef for map of string and property.
-typedef QMap<QString, Property> PropertyMap;
+    //! \def PropertyMap This is typedef for map of string and property.
+    typedef QMap<QString, Property> PropertyMap;
 
-/*!
- * \brief This struct hold data to be shared implicitly of a property.
- * \details This inherits QSharedData which takes care of refernce counting.
- * \sa Property
- */
-struct PropertyData : public QSharedData
-{
-    PropertyData();
-    PropertyData(const PropertyData& p);
+    /*!
+     * \brief This struct hold data to be shared implicitly of a property.
+     * \details This inherits QSharedData which takes care of refernce counting.
+     * \sa Property
+     */
+    struct PropertyData : public QSharedData
+    {
+        PropertyData();
+        PropertyData(const PropertyData& p);
 
-    ~PropertyData() { delete options; }
+        ~PropertyData() { delete options; }
 
-    QString name;
-    QVariant value;
-    QVariant::Type valueType;
-    QString description;
-    QStringList *options;
-    bool visible;
-    bool netlistProperty;
-};
+        QString name;
+        QVariant value;
+        QVariant::Type valueType;
+        QString description;
+        QStringList *options;
+        bool visible;
+        bool netlistProperty;
+    };
 
-/*!
- * \brief This class represents the property of a component.
- *
- * This is implemented as an implicitly shared class thereby
- * allowing to use the objects directly instead of pointer.
- * \sa PropertyData
- * \note Assumes that options list is always strings!
- */
-class Property
-{
+    /*!
+     * \brief This class represents the property of a component.
+     *
+     * This is implemented as an implicitly shared class thereby
+     * allowing to use the objects directly instead of pointer.
+     * \sa PropertyData
+     * \note Assumes that options list is always strings!
+     */
+    class Property
+    {
     public:
         Property(const QString& _name = QString(),
-                const QString& _description = QString(),
-                QVariant::Type _valueType = QVariant::String,
-                bool _visible=false,
-                bool _isNetlistProp=true,
-                const QVariant& _defaultValue = QVariant(QString()),
-                const QStringList& _options = QStringList());
+                 const QString& _description = QString(),
+                 QVariant::Type _valueType = QVariant::String,
+                 bool _visible=false,
+                 bool _isNetlistProp=true,
+                 const QVariant& _defaultValue = QVariant(QString()),
+                 const QStringList& _options = QStringList());
 
         //! Returns the description of property.
         QString description() const { return d->description; }
@@ -108,19 +108,21 @@ class Property
         QSharedDataPointer<PropertyData> d;
         Property(QSharedDataPointer<PropertyData> data);
         friend class PropertyFactory;
-};
+    };
 
-void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& prMap);
-void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap);
+    void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& prMap);
+    void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap);
 
-QVariant::Type stringToType(const QString& string);
-QString typeToString(QVariant::Type type);
+    QVariant::Type stringToType(const QString& string);
+    QString typeToString(QVariant::Type type);
 
-//! This is factory class used to construct properties.
-struct PropertyFactory
-{
-    static Property createProperty(Caneda::XmlReader *reader);
-    static Property sharedNull;
-};
+    //! This is factory class used to construct properties.
+    struct PropertyFactory
+    {
+        static Property createProperty(Caneda::XmlReader *reader);
+        static Property sharedNull;
+    };
+
+} // namespace Caneda
 
 #endif //PROPERTY_H

@@ -36,7 +36,6 @@
 #include <QtAlgorithms>
 #include <QVariant>
 
-
 namespace Caneda
 {
     //! \todo Make these constants settings.

@@ -56,6 +56,7 @@ namespace Caneda
     private:
         QGraphicsTextItem *m_textItem;
     };
+
 } // namespace Caneda
 
 #endif //GRAPHICTEXT_H

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2009 Pablo Daniel Pareja Obregon                              *
+ * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -38,6 +38,7 @@ namespace Caneda
     private:
         QString saveText();
     };
+
 } // namespace Caneda
 
 #endif //XMLSYMBOLFORMAT_H

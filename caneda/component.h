@@ -30,7 +30,6 @@ namespace Caneda
     class Port;
     class PortData;
 
-
     //! Represents status of component - short, open or just active.
     enum ActiveStatus {
         Open=0,
@@ -194,6 +193,7 @@ namespace Caneda
 
     bool readComponentData(Caneda::XmlReader *reader, const QString& path,
                            SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d);
+
 } // namespace Caneda
 
 #endif //COMPONENT_H

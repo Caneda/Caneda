@@ -43,4 +43,3 @@ int main(int argc,char *argv[])
    splash.finish(mw);
    return app.exec();
 }
-

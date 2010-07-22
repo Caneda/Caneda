@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SCHEMATICSCENE_H
-#define SCHEMATICSCENE_H
+#ifndef SCHEMATIC_SCENE_H
+#define SCHEMATIC_SCENE_H
 
 #include "undocommands.h"
 
@@ -429,4 +429,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //SCHEMATICSCENE_H
+#endif //SCHEMATIC_SCENE_H

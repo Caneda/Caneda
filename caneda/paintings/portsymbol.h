@@ -26,7 +26,6 @@
 
 namespace Caneda
 {
-
     /*!
      * \brief Represents the port ellipse and port id on schematic.
      *

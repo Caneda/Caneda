@@ -537,4 +537,5 @@ namespace Caneda
         writeCharacters(value);
         writeEndElement();
     }
-}
+
+} // namespace Caneda

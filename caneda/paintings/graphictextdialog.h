@@ -17,8 +17,6 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/* Note: Part of the code is taken from qt4.3/demos/textedit.h under GPL V2.0 */
-
 #ifndef GRAPHICTEXTDLG_H
 #define GRAPHICTEXTDLG_H
 
@@ -38,7 +36,6 @@ class QVBoxLayout;
 
 namespace Caneda
 {
-
     class GraphicTextDialog : public QDialog
     {
         Q_OBJECT;
@@ -114,4 +111,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif
+#endif //GRAPHICTEXTDLG_H

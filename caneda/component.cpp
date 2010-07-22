@@ -36,7 +36,6 @@
 
 namespace Caneda
 {
-
     //! \brief Constructs and initializes default empty component object.
     Component::Component(SchematicScene *scene) :
         SvgItem(0, scene),
@@ -780,4 +779,3 @@ namespace Caneda
     }
 
 } // namespace Caneda
-

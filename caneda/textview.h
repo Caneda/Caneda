@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef CANEDA_TEXTVIEW_H
-#define CANEDA_TEXTVIEW_H
+#ifndef TEXTVIEW_H
+#define TEXTVIEW_H
 
 #include "globals.h"
 #include "iview.h"
@@ -63,6 +63,7 @@ namespace Caneda
         qreal m_currentZoom;
         const qreal m_originalZoom;
     };
+
 } // namespace Caneda
 
-#endif // CANEDA_TEXTVIEW_H
+#endif //TEXTVIEW_H

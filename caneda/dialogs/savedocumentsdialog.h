@@ -81,4 +81,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif
+#endif //SAVEDOCUMENTSDIALOG_H

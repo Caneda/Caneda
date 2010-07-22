@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2010 Pablo Daniel Pareja Obregon                              *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -25,7 +25,6 @@
 
 namespace Caneda
 {
-
     //*************************************************************
     //***************** Abstract highlighter **********************
     //*************************************************************

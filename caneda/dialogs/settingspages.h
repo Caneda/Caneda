@@ -165,4 +165,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif
+#endif //SETTINGS_PAGES_H

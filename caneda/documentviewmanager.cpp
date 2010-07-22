@@ -465,4 +465,5 @@ namespace Caneda
     {
         return MainWindow::instance()->tabWidget();
     }
-}
+
+} // namespace Caneda

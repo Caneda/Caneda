@@ -64,5 +64,4 @@ namespace Caneda
         return 0;
     }
 
-
 } // namespace Caneda

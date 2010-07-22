@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SCHEMATICSTATEHANDLER_H
-#define SCHEMATICSTATEHANDLER_H
+#ifndef SCHEMATIC_STATE_HANDLER_H
+#define SCHEMATIC_STATE_HANDLER_H
 
 #include <QObject>
 
@@ -64,4 +64,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif // SCHEMATICSTATEHANDLER_H
+#endif //SCHEMATIC_STATE_HANDLER_H

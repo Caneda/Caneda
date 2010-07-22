@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef CANEDA_SCHEMATICVIEW_H
-#define CANEDA_SCHEMATICVIEW_H
+#ifndef SCHEMATIC_VIEW_H
+#define SCHEMATIC_VIEW_H
 
 #include "iview.h"
 
@@ -60,6 +60,7 @@ namespace Caneda
     private:
         SchematicWidget *m_schematicWidget;
     };
+
 } // namespace Caneda
 
-#endif // CANEDA_SCHEMATICVIEW_H
+#endif //SCHEMATIC_VIEW_H

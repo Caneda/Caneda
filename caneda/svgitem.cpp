@@ -33,8 +33,6 @@
 
 namespace Caneda
 {
-
-
     /*
     ##########################################################################
     #                            HELPER METHODS                              #
@@ -46,7 +44,6 @@ namespace Caneda
      * \todo should be cnfigurable
      */
     static const double itemstrokewidth = 1.0;
-
 
     /*!
      * \brief This code draws the highlighted rect around the item
@@ -270,7 +267,6 @@ namespace Caneda
         return instance;
     }
 
-
     /*
     ##########################################################################
     #                            SvgItem methods                             #
@@ -312,7 +308,6 @@ namespace Caneda
             highlightSelectedSvgItem(this, painter, option);
         }
     }
-
 
     /*!
      * \brief Registers connections of this item with SvgPainter \a painter.

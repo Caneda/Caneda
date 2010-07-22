@@ -35,6 +35,7 @@ namespace Caneda
     private:
         SingletonOwner(QObject *parent = 0);
     };
+
 } // namespace Caneda
 
 #endif // CANEDA_SINGLETONOWNER_H

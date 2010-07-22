@@ -165,4 +165,5 @@ namespace Caneda
             ui.filePathEdit->setText(filepath);
         }
     }
+
 } // namespace Caneda

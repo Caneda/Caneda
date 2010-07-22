@@ -26,13 +26,11 @@
 
 #include <QList>
 
-
 // Forward declarations
 class QGraphicsLineItem;
 
 namespace Caneda
 {
-
     // Forward declarations
     class Port;
     class SchematicScene;

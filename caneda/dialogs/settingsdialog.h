@@ -64,4 +64,5 @@ namespace Caneda
     };
 
 } // namespace Caneda
-#endif
+
+#endif //SETTINGS_DIALOG_H

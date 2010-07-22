@@ -25,33 +25,37 @@
 
 class QSettings;
 
-struct VariantPair
+namespace Caneda
 {
-    QVariant defaultValue;
-    QVariant currentValue;
+    struct VariantPair
+    {
+        QVariant defaultValue;
+        QVariant currentValue;
 
-    VariantPair(const QVariant& def = QVariant(),
-            const QVariant& cur = QVariant());
-};
+        VariantPair(const QVariant& def = QVariant(),
+                    const QVariant& cur = QVariant());
+    };
 
-typedef QMap<QString, VariantPair> SettingsData;
+    typedef QMap<QString, VariantPair> SettingsData;
 
-struct Settings
-{
-    ~Settings();
+    struct Settings
+    {
+        ~Settings();
 
-    QVariant currentValue(const QString& key) const;
-    QVariant defaultValue(const QString& key) const;
+        QVariant currentValue(const QString& key) const;
+        QVariant defaultValue(const QString& key) const;
 
-    void setCurrentValue(const QString& key, const QVariant& value);
+        void setCurrentValue(const QString& key, const QVariant& value);
 
-    bool load(QSettings &settings);
-    bool save(QSettings &settings);
+        bool load(QSettings &settings);
+        bool save(QSettings &settings);
 
-    static Settings* instance();
-private:
-    SettingsData data;
-    Settings();
-};
+        static Settings* instance();
+    private:
+        SettingsData data;
+        Settings();
+    };
+
+} // namespace Caneda
 
 #endif //SETTINGS_H

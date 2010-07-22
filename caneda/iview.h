@@ -75,6 +75,7 @@ namespace Caneda
 
         friend class DocumentViewManager;
     };
+
 } // namespace Caneda
 
 #endif //CANEDA_IVIEW_H

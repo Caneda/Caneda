@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef CANEDA_SCHEMATICCONTEXT_H
-#define CANEDA_SCHEMATICCONTEXT_H
+#ifndef SCHEMATIC_CONTEXT_H
+#define SCHEMATIC_CONTEXT_H
 
 #include "icontext.h"
 
@@ -84,4 +84,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif // CANEDA_SCHEMATICCONTEXT_H
+#endif //SCHEMATIC_CONTEXT_H

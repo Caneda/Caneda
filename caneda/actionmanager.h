@@ -79,4 +79,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif // ACTIONMANAGER_H
+#endif //ACTIONMANAGER_H

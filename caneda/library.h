@@ -66,7 +66,8 @@ namespace Caneda
             return m_componentHash;
         }
 
-        void render(QPainter *painter, QString component, QString symbol = QString()) const;
+        void render(QPainter *painter, QString component,
+                    QString symbol = QString()) const;
         QPixmap renderedPixmap(QString component, QString symbol = QString()) const;
 
         bool loadLibrary(Caneda::XmlReader *reader);

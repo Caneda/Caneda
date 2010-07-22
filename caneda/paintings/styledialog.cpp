@@ -426,4 +426,5 @@ namespace Caneda
             painting->schematicScene()->undoStack()->push(cmd);
         }
     }
+
 } // namespace Caneda

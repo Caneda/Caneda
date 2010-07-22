@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef CANEDA_TEXTDOCUMENT_H
-#define CANEDA_TEXTDOCUMENT_H
+#ifndef TEXTDOCUMENT_H
+#define TEXTDOCUMENT_H
 
 #include "idocument.h"
 
@@ -82,6 +82,7 @@ namespace Caneda
         TextEdit* activeTextEdit();
         QTextDocument *m_textDocument;
     };
+
 } // namespace Caneda
 
-#endif // CANEDA_TEXTDOCUMENT_H
+#endif //TEXTDOCUMENT_H

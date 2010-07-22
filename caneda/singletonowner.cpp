@@ -21,7 +21,6 @@
 
 namespace Caneda
 {
-
     SingletonOwner::SingletonOwner(QObject *parent)
         : QObject(parent)
     {

@@ -27,17 +27,19 @@
 
 class QLabel;
 
-//! This class represents the dialog "About Caneda".
-class AboutDialog : public QDialog {
-    Q_OBJECT
+namespace Caneda
+{
+    //! This class represents the dialog "About Caneda".
+    class AboutDialog : public QDialog {
+        Q_OBJECT
 
-public:
+    public:
         // constructor, destructor
         AboutDialog(QWidget * = 0);
         virtual ~AboutDialog();
 
         // methods
-private:
+    private:
         QWidget *title() const;
         QWidget *aboutTab() const;
         QWidget *authorsTab() const;
@@ -45,6 +47,8 @@ private:
         QWidget *contributorsTab() const;
         QWidget *licenseTab() const;
         void addAuthor(QLabel *, const QString &, const QString &, const QString &) const;
-};
+    };
+
+} // namespace Caneda
 
 #endif //ABOUTDIALOG_H

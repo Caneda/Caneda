@@ -24,7 +24,6 @@
 
 namespace Caneda
 {
-
     /*!
      * \brief This class is used to represent resizable arrow item on schematic.
      *

@@ -289,4 +289,5 @@ namespace Caneda
     {
         return m_schematicScene;
     }
+
 } // namespace Caneda

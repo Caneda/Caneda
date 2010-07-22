@@ -119,6 +119,7 @@ namespace Caneda
 
         void writeLocaleText(const QString &lang, const QString& value);
     };
-}
+
+} // namespace Caneda
 
 #endif //XMLUTILITIES_H

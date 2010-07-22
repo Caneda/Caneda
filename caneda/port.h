@@ -31,7 +31,6 @@
 
 namespace Caneda
 {
-
     //Forward declarations.
     class Wire;
     class Component;

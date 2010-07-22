@@ -28,7 +28,6 @@
 
 namespace Caneda
 {
-
     /*!
      * \brief Constructs a line item.
      * \param line Line in local coords.

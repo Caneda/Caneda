@@ -17,8 +17,6 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/* Note: Part of the code is taken from qt4.3/demos/textedit.cpp under GPL V2.0 */
-
 #include "graphictextdialog.h"
 
 #include "mnemo.h"
@@ -45,7 +43,6 @@
 
 namespace Caneda
 {
-
     GraphicTextDialog::GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt, QWidget *parent)
     : QDialog(parent), textItem(text), undoOption(opt)
     {

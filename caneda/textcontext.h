@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef CANEDA_TEXTCONTEXT_H
-#define CANEDA_TEXTCONTEXT_H
+#ifndef TEXTCONTEXT_H
+#define TEXTCONTEXT_H
 
 #include "icontext.h"
 
@@ -44,6 +44,7 @@ namespace Caneda
     private:
         TextContext(QObject *parent = 0);
     };
+
 } // namespace Caneda
 
-#endif //CANEDA_TEXTCONTEXT_H
+#endif //TEXTCONTEXT_H

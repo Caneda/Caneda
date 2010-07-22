@@ -22,7 +22,6 @@
 
 namespace Caneda
 {
-
     /*!
      * \class IDocument
      *
@@ -183,4 +182,5 @@ namespace Caneda
     {
         emit documentChanged(this);
     }
-}
+
+} // namespace Caneda

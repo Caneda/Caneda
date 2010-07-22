@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2010 Pablo Daniel Pareja Obregon                              *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -30,7 +30,7 @@
 #include "schematicwidget.h"
 #include "xmlsymbolformat.h"
 
-#include "dialogs/addtoprojectdialog.h"
+#include "dialogs/projectfilenewdialog.h"
 #include "dialogs/gitmanager.h"
 
 #include <QDebug>
@@ -42,7 +42,6 @@
 
 namespace Caneda
 {
-
     /*! Constructor
      * \brief This class implements the project management
      *
@@ -144,7 +143,7 @@ namespace Caneda
     void Project::slotAddToProject()
     {
         if(projectLibrary) {
-            AddToProjectDialog *p = new AddToProjectDialog(this);
+            ProjectFileNewDialog *p = new ProjectFileNewDialog(this);
 
             if(p->accepted()) {
                 if(p->userChoice() == Caneda::ExistingComponent) {

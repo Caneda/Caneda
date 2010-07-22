@@ -54,6 +54,7 @@ namespace Caneda
         virtual IDocument* newDocument() = 0;
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0) = 0;
     };
+
 } // namespace Caneda
 
 #endif //CANEDA_ICONTEXT_H

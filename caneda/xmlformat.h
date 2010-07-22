@@ -56,6 +56,7 @@ namespace Caneda
         void loadWires(Caneda::XmlReader *reader);
         void loadPaintings(Caneda::XmlReader *reader);
     };
+
 } // namespace Caneda
 
 #endif //XMLFORMAT_H
