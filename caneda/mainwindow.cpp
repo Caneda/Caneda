@@ -1078,9 +1078,13 @@ namespace Caneda
             else {
                 ProjectFileOpenDialog *p =
                         new ProjectFileOpenDialog(m_project->libraryFileName(), this);
-                if(p->result() == QDialog::Accepted) {
+                int status = p->exec();
+
+                if(status == QDialog::Accepted) {
                     fileName = p->fileName();
                 }
+
+                delete p;
             }
         }
 

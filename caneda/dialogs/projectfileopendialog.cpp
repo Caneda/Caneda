@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2010 Pablo Daniel Pareja Obregon                              *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,28 +22,17 @@
 #include "caneda-tools/global.h"
 
 #include "componentssidebar.h"
-#include "library.h"
-
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
 
 namespace Caneda
 {
-    /*!
-     * Constructor
-     * @param parent  parent Widget of the dialog
-     */
+    //! Constructor
     ProjectFileOpenDialog::ProjectFileOpenDialog(QString libraryFileName, QWidget *parent) :
         QDialog(parent)
     {
-        this->setWindowTitle(tr("Open component"));
-        this->setMinimumWidth(400);
-
-        m_fileName = "";
+        ui.setupUi(this);
 
         //Add components browser
         m_projectsSidebar = new ComponentsSidebar(this);
-        LibraryLoader *library = LibraryLoader::instance();
         if(!libraryFileName.isEmpty()) {
             m_libraryFileName = libraryFileName;
             m_libraryName = QFileInfo(libraryFileName).baseName();
@@ -51,26 +40,12 @@ namespace Caneda
 
             m_projectsSidebar->plugLibrary(m_libraryName, "root");
         }
+        ui.layout->addWidget(m_projectsSidebar);
 
         connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
-                SLOT(slotOnDoubleClick(const QString&, const QString&)));
+                SLOT(accept()));
 
-        //Add Ok/Cancel buttons
-        QDialogButtonBox *buttons =
-            new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-        connect(buttons, SIGNAL(accepted()), this, SLOT(slotAccept()));
-        connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
-
-        //Organize layout
-        QVBoxLayout *vlayout = new QVBoxLayout();
-
-        vlayout->addWidget(m_projectsSidebar);
-        vlayout->addWidget(buttons);
-
-        this->setLayout(vlayout);
-
-        this->exec();
+        m_fileName = "";
     }
 
     //! Destructor
@@ -78,18 +53,17 @@ namespace Caneda
     {
     }
 
-    void ProjectFileOpenDialog::slotAccept()
+    void ProjectFileOpenDialog::done(int r)
     {
-        if(!m_projectsSidebar->currentComponent().isEmpty()) {
-            m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + m_projectsSidebar->currentComponent() + ".xsch";
-            accept();
+        if (r == QDialog::Accepted) {
+            if(!m_projectsSidebar->currentComponent().isEmpty()) {
+                m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + m_projectsSidebar->currentComponent() + ".xsch";
+            }
+            else {
+                return;
+            }
         }
-    }
-
-    void ProjectFileOpenDialog::slotOnDoubleClick(const QString& item, const QString& category)
-    {
-        m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + item + ".xsch";
-        accept();
+        QDialog::done(r);
     }
 
 } // namespace Caneda

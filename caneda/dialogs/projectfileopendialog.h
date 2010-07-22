@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2010 Pablo Daniel Pareja Obregon                              *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,7 +20,7 @@
 #ifndef PROJECT_FILE_OPEN_DIALOG_H
 #define PROJECT_FILE_OPEN_DIALOG_H
 
-#include <QDialog>
+#include "ui_projectfileopendialog.h"
 
 namespace Caneda
 {
@@ -41,15 +41,16 @@ namespace Caneda
 
         QString fileName() const { return m_fileName; }
 
-    private Q_SLOTS:
-        void slotAccept();
-        void slotOnDoubleClick(const QString&, const QString&);
+    public Q_SLOTS:
+        virtual void done(int r);
 
     private:
         ComponentsSidebar *m_projectsSidebar;
         QString m_fileName;
         QString m_libraryName;
         QString m_libraryFileName;
+
+        Ui::ProjectFileOpenDialog ui;
     };
 
 } // namespace Caneda

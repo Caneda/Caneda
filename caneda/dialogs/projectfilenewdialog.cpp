@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2010 Pablo Daniel Pareja Obregon                              *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -25,10 +25,7 @@
 
 namespace Caneda
 {
-    /*!
-     * Constructor
-     * @param parent  parent Widget of the dialog
-     */
+    //! Constructor
     ProjectFileNewDialog::ProjectFileNewDialog(QWidget *parent) :
             QDialog(parent)
     {
@@ -39,7 +36,7 @@ namespace Caneda
 
         connect(ui.rbNewComponent, SIGNAL(toggled(bool)), ui.editName, SLOT(setEnabled(bool)));
 
-        userchoice = Caneda::NewComponent;
+        m_userchoice = Caneda::NewComponent;
     }
 
     //! Destructor
@@ -47,30 +44,18 @@ namespace Caneda
     {
     }
 
-    //! @return Component name
-    QString ProjectFileNewDialog::fileName() const
-    {
-        return(filename);
-    }
-
-    //! @return User choice
-    Caneda::ProjectFileNewChoice ProjectFileNewDialog::userChoice() const
-    {
-        return(userchoice);
-    }
-
     //! Checks the status of the print type dialog.
     void ProjectFileNewDialog::done(int r)
     {
         if (r == QDialog::Accepted) {
             if(ui.rbNewComponent->isChecked()) {
-                userchoice = Caneda::NewComponent;
+                m_userchoice = Caneda::NewComponent;
             }
             else if(ui.rbExistingComponent->isChecked()) {
-                userchoice = Caneda::ExistingComponent;
+                m_userchoice = Caneda::ExistingComponent;
             }
             else {
-                userchoice = Caneda::ImportFromProject;
+                m_userchoice = Caneda::ImportFromProject;
             }
 
             if(ui.rbNewComponent->isChecked()) {
@@ -81,7 +66,7 @@ namespace Caneda
                     return;
                 }
                 else {
-                    filename = ui.editName->text();
+                    m_filename = ui.editName->text();
                 }
             }
         }
