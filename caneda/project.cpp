@@ -144,8 +144,9 @@ namespace Caneda
     {
         if(projectLibrary) {
             ProjectFileNewDialog *p = new ProjectFileNewDialog(this);
+            int status = p->exec();
 
-            if(p->accepted()) {
+            if(status == QDialog::Accepted) {
                 if(p->userChoice() == Caneda::ExistingComponent) {
                     addExistingComponent();
                 }
@@ -156,6 +157,8 @@ namespace Caneda
                     importFromProject();
                 }
             }
+
+            delete p;
         }
         else {
             QMessageBox::critical(this, tr("Error"),

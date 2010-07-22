@@ -21,15 +21,7 @@
 
 #include "caneda-tools/global.h"
 
-#include <QButtonGroup>
-#include <QCheckBox>
-#include <QDialogButtonBox>
-#include <QFileDialog>
-#include <QGridLayout>
-#include <QLabel>
-#include <QLineEdit>
 #include <QMessageBox>
-#include <QRadioButton>
 
 namespace Caneda
 {
@@ -38,27 +30,22 @@ namespace Caneda
      * @param parent  parent Widget of the dialog
      */
     ProjectFileNewDialog::ProjectFileNewDialog(QWidget *parent) :
-            QWidget(parent),
-            dialog(0)
+            QDialog(parent)
     {
-        userchoice = Caneda::NewComponent;
-        stateAccepted = false;
+        ui.setupUi(this);
+        ui.rbNewComponent->setIcon(QIcon(Caneda::bitmapDirectory() + "filenew.png"));
+        ui.rbExistingComponent->setIcon(QIcon(Caneda::bitmapDirectory() + "fileopen.png"));
+        ui.rbImportFromProject->setIcon(QIcon(Caneda::bitmapDirectory() + "project-new.png"));
 
-        //We display a dialog asking the user the kind of component to add
-        buildComponentTypeDialog();
-        dialog->exec();
+        connect(ui.rbNewComponent, SIGNAL(toggled(bool)), ui.editName, SLOT(setEnabled(bool)));
+        connect(ui.buttons, SIGNAL(accepted()), this, SLOT(acceptDialog()));
+
+        userchoice = Caneda::NewComponent;
     }
 
     //! Destructor
     ProjectFileNewDialog::~ProjectFileNewDialog()
     {
-        delete dialog;
-    }
-
-    //! Defines the file name if the user selects new component
-    void ProjectFileNewDialog::setFileName(const QString &name)
-    {
-        filename = name;
     }
 
     //! @return Component name
@@ -67,128 +54,39 @@ namespace Caneda
         return(filename);
     }
 
-    //! Defines the user choice
-    void ProjectFileNewDialog::setUserChoice(Caneda::ProjectFileNewChoice choice)
-    {
-        userchoice = choice;
-    }
-
     //! @return User choice
     Caneda::ProjectFileNewChoice ProjectFileNewDialog::userChoice() const
     {
         return(userchoice);
     }
 
-    /*!
-     * Returns whether the dialog was accepted or not.
-     */
-    bool ProjectFileNewDialog::accepted()
+    //! Checks the status of the print type dialog.
+    void ProjectFileNewDialog::acceptDialog()
     {
-        return(stateAccepted);
-    }
-
-    /*!
-     * Construct a non-standard dialog asking the user what type of
-     * component to add: new component, existing component or
-     * import from a project.
-     */
-    void ProjectFileNewDialog::buildComponentTypeDialog()
-    {
-        dialog = new QDialog(parentWidget());
-        dialog->setWindowTitle(tr("Component type choice"));
-        dialog->setMinimumWidth(400);
-
-        QLabel *labelComponentType  = new QLabel(tr("What do you want to do?"));
-        QLabel *iconNewComponent = new QLabel();
-        QLabel *iconExistingComponent = new QLabel();
-        QLabel *iconImportComponentFromProject = new QLabel();
-
-        iconNewComponent->setPixmap(QPixmap(Caneda::bitmapDirectory() + "filenew.png"));
-        iconExistingComponent->setPixmap(QPixmap(Caneda::bitmapDirectory() + "fileopen.png"));
-        iconImportComponentFromProject->setPixmap(QPixmap(Caneda::bitmapDirectory() + "project-new.png"));
-
-        QButtonGroup *componentTypeChoice = new QButtonGroup();
-        newComponent = new QRadioButton(tr("Create new component"));
-        existingComponent = new QRadioButton(tr("Add existing component"));
-        importFromProject = new QRadioButton(tr("Import component from existing project"));
-
-        componentTypeChoice->addButton(newComponent);
-        componentTypeChoice->addButton(existingComponent);
-        componentTypeChoice->addButton(importFromProject);
-        newComponent->setChecked(true);
-
-        editFilepath = new QLineEdit();
-
-        QDialogButtonBox *buttons =
-                new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-        if(!filename.isEmpty()) {
-            editFilepath->setText(filename);
+        if(ui.rbNewComponent->isChecked()) {
+            userchoice = Caneda::NewComponent;
         }
-
-        connect(newComponent, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
-        connect(existingComponent, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
-        connect(importFromProject, SIGNAL(toggled(bool)), this, SLOT(updateComponentTypeDialog()));
-        connect(buttons, SIGNAL(accepted()), this, SLOT(acceptComponentDialog()));
-        connect(buttons, SIGNAL(rejected()), dialog, SLOT(reject()));
-
-        //Organize layout
-        QGridLayout *glayout = new QGridLayout();
-        QVBoxLayout *vlayout = new QVBoxLayout();
-
-        glayout->addWidget(editFilepath, 0, 1);
-        glayout->addWidget(iconNewComponent, 1, 0);
-        glayout->addWidget(newComponent, 1, 1);
-        glayout->addWidget(iconExistingComponent, 2, 0);
-        glayout->addWidget(existingComponent, 2, 1);
-        glayout->addWidget(iconImportComponentFromProject, 3, 0);
-        glayout->addWidget(importFromProject, 3, 1);
-
-        vlayout->addWidget(labelComponentType);
-        vlayout->addLayout(glayout);
-        vlayout->addWidget(buttons);
-
-        dialog->setLayout(vlayout);
-
-        updateComponentTypeDialog();
-    }
-
-    //! Ensures coherence of the type of component dialogue
-    void ProjectFileNewDialog::updateComponentTypeDialog()
-    {
-        bool newfile = newComponent->isChecked();
-        editFilepath->setEnabled(newfile);
-    }
-
-    //! Checks the status of the print type dialogue.
-    void ProjectFileNewDialog::acceptComponentDialog()
-    {
-        if(newComponent->isChecked()) {
-            setUserChoice(Caneda::NewComponent);
-        }
-        else if(existingComponent->isChecked()) {
-            setUserChoice(Caneda::ExistingComponent);
+        else if(ui.rbExistingComponent->isChecked()) {
+            userchoice = Caneda::ExistingComponent;
         }
         else {
-            setUserChoice(Caneda::ImportFromProject);
+            userchoice = Caneda::ImportFromProject;
         }
 
-        if(newComponent->isChecked()) {
-            if(editFilepath->text().isEmpty()) {
+        if(ui.rbNewComponent->isChecked()) {
+            if(ui.editName->text().isEmpty()) {
                 QMessageBox::information(parentWidget(),
                                          tr("Component name missing"),
                                          tr("You must enter the name of the new component."));
+                reject();
+                return;
             }
             else {
-                setFileName(editFilepath->text());
-                stateAccepted = true;
-                dialog->accept();
+                filename = ui.editName->text();
             }
         }
-        else {
-            stateAccepted = true;
-            dialog->accept();
-        }
+
+        accept();
     }
 
 } // namespace Caneda

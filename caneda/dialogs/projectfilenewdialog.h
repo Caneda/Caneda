@@ -20,11 +20,7 @@
 #ifndef PROJECT_FILE_NEW_DIALOG_H
 #define PROJECT_FILE_NEW_DIALOG_H
 
-#include <QWidget>
-
-class QCheckBox;
-class QLineEdit;
-class QRadioButton;
+#include "ui_projectfilenewdialog.h"
 
 namespace Caneda
 {
@@ -38,41 +34,25 @@ namespace Caneda
      * This class represents the configuration dialog to add a component to
      * a project.
      */
-    class ProjectFileNewDialog : public QWidget
+    class ProjectFileNewDialog : public QDialog
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
-        ProjectFileNewDialog(QWidget * = 0);
+        ProjectFileNewDialog(QWidget *parent = 0);
         ~ProjectFileNewDialog();
 
         QString fileName() const;
-        void setFileName(const QString &);
-
         Caneda::ProjectFileNewChoice userChoice() const;
-        void setUserChoice(const Caneda::ProjectFileNewChoice);
-
-        bool accepted();
-
-    private:
-        void buildComponentTypeDialog();
-
 
     private Q_SLOTS:
-        void updateComponentTypeDialog();
-        void acceptComponentDialog();
+        void acceptDialog();
 
     private:
         QString filename;
         Caneda::ProjectFileNewChoice userchoice;
 
-        QDialog *dialog;
-        QRadioButton *newComponent;
-        QRadioButton *existingComponent;
-        QRadioButton *importFromProject;
-        QLineEdit *editFilepath;
-
-        bool stateAccepted;
+        Ui::ProjectFileNewDialog ui;
     };
 
 } // namespace Caneda
