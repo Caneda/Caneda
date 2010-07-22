@@ -1539,23 +1539,6 @@ namespace Caneda
         }
     }
 
-    //! \brief Opens the editor given a filename
-    void MainWindow::editFile(const QString& File)
-    {
-        QStringList arguments;
-        if(!File.isEmpty()) {
-            arguments << File;
-        }
-        QString textEditor = Settings::instance()->currentValue("gui/textEditor").toString();
-        QProcess *CanedaEditor = new QProcess(this);
-        CanedaEditor->start(textEditor, arguments);
-
-        connect(CanedaEditor, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
-
-        // Kill editor before Caneda ends
-        connect(this, SIGNAL(signalKillWidgets()), CanedaEditor, SLOT(kill()));
-    }
-
     //! \brief Opens the help browser
     void MainWindow::showHTML(const QString& Page)
     {

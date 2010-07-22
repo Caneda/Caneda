@@ -58,7 +58,6 @@ namespace Caneda
 
         void saveSettings();
         void setNormalAction();
-        void editFile(const QString &file);
         Action* action(const QString &name);
         QMenu* menubarMenu(const QString &name, bool createOnAbsence = true);
         QUndoGroup *m_undoGroup;

@@ -73,7 +73,6 @@ namespace Caneda
     private:
         SchematicContext(QObject *parent = 0);
         void alignElements(Qt::Alignment alignment);
-        void editFile(const QString &file);
         void setNormalAction();
 
         //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view

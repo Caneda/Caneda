@@ -262,13 +262,13 @@ namespace Caneda
     void SchematicContext::slotShowLastMsg()
     {
         setNormalAction();
-        editFile(Caneda::pathForCanedaFile("log.txt"));
+        MainWindow::instance()->slotFileOpen(Caneda::pathForCanedaFile("log.txt"));
     }
 
     void SchematicContext::slotShowLastNetlist()
     {
         setNormalAction();
-        editFile(Caneda::pathForCanedaFile("netlist.txt"));
+        MainWindow::instance()->slotFileOpen(Caneda::pathForCanedaFile("netlist.txt"));
     }
 
     //! \brief Align selected elements appropriately based on \a alignment
@@ -283,11 +283,6 @@ namespace Caneda
                         tr("At least two elements must be selected !"));
             }
         }
-    }
-
-    void SchematicContext::editFile(const QString &file)
-    {
-        MainWindow::instance()->editFile(file);
     }
 
     void SchematicContext::setNormalAction()
