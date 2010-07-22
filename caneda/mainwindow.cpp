@@ -410,20 +410,6 @@ namespace Caneda
         action->setWhatsThis(tr("Zoom Out \n\nZooms out the content"));
         connect(action, SIGNAL(triggered()), SLOT(slotZoomOut()));
 
-        action = am->createAction("viewToolBar",  tr("Tool&bar"));
-        action->setStatusTip(tr("Enables/disables the toolbar"));
-        action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
-        action->setCheckable(true);
-        action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(slotViewToolBar(bool)));
-
-        action = am->createAction("viewStatusBar",  tr("&Statusbar"));
-        action->setStatusTip(tr("Enables/disables the statusbar"));
-        action->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
-        action->setCheckable(true);
-        action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
-
         action = am->createAction("splitHorizontal", icon("view-split-left-right"), tr("Split &Horizontal"));
         action->setShortcut(ALT+Key_1);
         action->setStatusTip(tr("Splits the current view in horizontal orientation"));
@@ -441,6 +427,20 @@ namespace Caneda
         action->setStatusTip(tr("Closes the current split"));
         action->setWhatsThis(tr("Close Split\n\nCloses the current split"));
         connect(action, SIGNAL(triggered()), SLOT(slotCloseSplit()));
+
+        action = am->createAction("viewToolBar",  tr("Tool&bar"));
+        action->setStatusTip(tr("Enables/disables the toolbar"));
+        action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(slotViewToolBar(bool)));
+
+        action = am->createAction("viewStatusBar",  tr("&Statusbar"));
+        action->setStatusTip(tr("Enables/disables the statusbar"));
+        action->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
 
         action = am->createAction("snapToGrid", icon("view-grid"), tr("Snap to Grid"));
         action->setShortcut(CTRL+Key_U);
@@ -1319,6 +1319,84 @@ namespace Caneda
         //TODO: implement this or rather port directly
     }
 
+    void MainWindow::slotZoomBestFit()
+    {
+        setNormalAction();
+        IView* view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->zoomFitInBest();
+        }
+    }
+
+    void MainWindow::slotZoomOriginal()
+    {
+        setNormalAction();
+        IView* view = DocumentViewManager::instance()->currentView();
+        if(view) {
+            view->zoomOriginal();
+        }
+    }
+
+    void MainWindow::slotZoomIn()
+    {
+        setNormalAction();
+        IView* view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->zoomIn();
+        }
+    }
+
+    void MainWindow::slotZoomOut()
+    {
+        setNormalAction();
+        IView* view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->zoomOut();
+        }
+    }
+
+    void MainWindow::slotSplitHorizontal()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView* view = manager->currentView();
+        if(view) {
+            manager->splitView(view, Qt::Horizontal);
+        }
+    }
+
+    void MainWindow::slotSplitVertical()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView* view = manager->currentView();
+        if(view) {
+            manager->splitView(view, Qt::Vertical);
+        }
+    }
+
+    void MainWindow::slotCloseSplit()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView* view = manager->currentView();
+        if(view) {
+            manager->closeView(view);
+        }
+    }
+
+    void MainWindow::slotViewToolBar(bool toogle)
+    {
+        setNormalAction();
+        fileToolbar->setVisible(toogle);
+        editToolbar->setVisible(toogle);
+        viewToolbar->setVisible(toogle);
+        workToolbar->setVisible(toogle);
+    }
+
+    void MainWindow::slotViewStatusBar(bool toogle)
+    {
+        setNormalAction();
+        statusBar()->setVisible(toogle);
+    }
+
     void MainWindow::slotNewProject()
     {
         setNormalAction();
@@ -1458,84 +1536,6 @@ namespace Caneda
         }
         else if(consoleDockWidget->isVisible()) {
             consoleDockWidget->setVisible(false);
-        }
-    }
-
-    void MainWindow::slotZoomIn()
-    {
-        setNormalAction();
-        IView* view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->zoomIn();
-        }
-    }
-
-    void MainWindow::slotZoomOut()
-    {
-        setNormalAction();
-        IView* view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->zoomOut();
-        }
-    }
-
-    void MainWindow::slotZoomBestFit()
-    {
-        setNormalAction();
-        IView* view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->zoomFitInBest();
-        }
-    }
-
-    void MainWindow::slotZoomOriginal()
-    {
-        setNormalAction();
-        IView* view = DocumentViewManager::instance()->currentView();
-        if(view) {
-            view->zoomOriginal();
-        }
-    }
-
-    void MainWindow::slotViewToolBar(bool toogle)
-    {
-        setNormalAction();
-        fileToolbar->setVisible(toogle);
-        editToolbar->setVisible(toogle);
-        viewToolbar->setVisible(toogle);
-        workToolbar->setVisible(toogle);
-    }
-
-    void MainWindow::slotViewStatusBar(bool toogle)
-    {
-        setNormalAction();
-        statusBar()->setVisible(toogle);
-    }
-
-    void MainWindow::slotSplitHorizontal()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IView* view = manager->currentView();
-        if(view) {
-            manager->splitView(view, Qt::Horizontal);
-        }
-    }
-
-    void MainWindow::slotSplitVertical()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IView* view = manager->currentView();
-        if(view) {
-            manager->splitView(view, Qt::Vertical);
-        }
-    }
-
-    void MainWindow::slotCloseSplit()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IView* view = manager->currentView();
-        if(view) {
-            manager->closeView(view);
         }
     }
 

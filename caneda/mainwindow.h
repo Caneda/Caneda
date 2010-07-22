@@ -83,6 +83,16 @@ namespace Caneda
         void slotEditFind();
         void slotSelectAll();
 
+        void slotZoomBestFit();
+        void slotZoomOriginal();
+        void slotZoomIn();
+        void slotZoomOut();
+        void slotSplitHorizontal();
+        void slotSplitVertical();
+        void slotCloseSplit();
+        void slotViewToolBar(bool);
+        void slotViewStatusBar(bool);
+
         void slotNewProject();
         void slotOpenProject(QString fileName = 0);
         void slotAddToProject();
@@ -97,17 +107,6 @@ namespace Caneda
         void slotCallLibrary();
         void slotImportData();
         void slotShowConsole();
-
-        void slotZoomIn();
-        void slotZoomOut();
-        void slotZoomBestFit();
-        void slotZoomOriginal();
-        void slotViewToolBar(bool);
-        void slotViewStatusBar(bool);
-
-        void slotSplitHorizontal();
-        void slotSplitVertical();
-        void slotCloseSplit();
 
         void slotHelpIndex();
         void slotHelpAbout();
