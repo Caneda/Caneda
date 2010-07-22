@@ -22,7 +22,6 @@
 #include "undocommands.h"
 
 #include <QComboBox>
-#include <QHeaderView>
 
 namespace Caneda
 {
@@ -169,13 +168,11 @@ namespace Caneda
         m_component(comp),
         m_undoOption(opt)
     {
-        setupUi(this);
+        ui.setupUi(this);
         m_model = new PropertyModel(m_component->propertyMap(), this);
-        tableView->setModel(m_model);
-
-        tableView->setItemDelegate(new PropertyValueDelegate(this));
-        tableView->horizontalHeader()->setStretchLastSection(true);
-        tableView->resizeColumnsToContents();
+        ui.tableView->setModel(m_model);
+        ui.tableView->setItemDelegate(new PropertyValueDelegate(this));
+        ui.tableView->resizeColumnsToContents();
     }
 
     void PropertyDialog::accept()

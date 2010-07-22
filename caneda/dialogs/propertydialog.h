@@ -20,13 +20,13 @@
 #ifndef PROPERTYDIALOG_H
 #define PROPERTYDIALOG_H
 
+#include "ui_propertydialog.h"
+
 #include "component.h"
 #include "property.h"
-#include "ui_property.h"
 
 #include <QAbstractTableModel>
 #include <QItemDelegate>
-#include <QTableView>
 
 // Forward declarations.
 class QStandardItemModel;
@@ -81,7 +81,7 @@ namespace Caneda
     };
 
 
-    class PropertyDialog : public QDialog, public Ui::PropertyDialogBase
+    class PropertyDialog : public QDialog
     {
         Q_OBJECT;
     public:
@@ -94,6 +94,8 @@ namespace Caneda
         PropertyModel *m_model;
         Component *m_component;
         Caneda::UndoOption m_undoOption;
+
+        Ui::PropertyDialog ui;
     };
 
 } // namespace Caneda

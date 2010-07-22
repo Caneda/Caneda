@@ -467,8 +467,11 @@ namespace Caneda
     //! \copydoc SchematicItem::launchPropertyDialog()
     int Component::launchPropertyDialog(Caneda::UndoOption)
     {
-        PropertyDialog dia(this, Caneda::PushUndoCmd);
-        return dia.exec();
+        PropertyDialog *dia = new PropertyDialog(this, Caneda::PushUndoCmd);
+        int status = dia->exec();
+        delete dia;
+
+        return status;
     }
 
     //! \brief Returns the rect adjusted to accomodate ports too.
