@@ -38,7 +38,6 @@ namespace Caneda
         ui.rbImportFromProject->setIcon(QIcon(Caneda::bitmapDirectory() + "project-new.png"));
 
         connect(ui.rbNewComponent, SIGNAL(toggled(bool)), ui.editName, SLOT(setEnabled(bool)));
-        connect(ui.buttons, SIGNAL(accepted()), this, SLOT(acceptDialog()));
 
         userchoice = Caneda::NewComponent;
     }
@@ -61,32 +60,33 @@ namespace Caneda
     }
 
     //! Checks the status of the print type dialog.
-    void ProjectFileNewDialog::acceptDialog()
+    void ProjectFileNewDialog::done(int r)
     {
-        if(ui.rbNewComponent->isChecked()) {
-            userchoice = Caneda::NewComponent;
-        }
-        else if(ui.rbExistingComponent->isChecked()) {
-            userchoice = Caneda::ExistingComponent;
-        }
-        else {
-            userchoice = Caneda::ImportFromProject;
-        }
-
-        if(ui.rbNewComponent->isChecked()) {
-            if(ui.editName->text().isEmpty()) {
-                QMessageBox::information(parentWidget(),
-                                         tr("Component name missing"),
-                                         tr("You must enter the name of the new component."));
-                reject();
-                return;
+        if (r == QDialog::Accepted) {
+            if(ui.rbNewComponent->isChecked()) {
+                userchoice = Caneda::NewComponent;
+            }
+            else if(ui.rbExistingComponent->isChecked()) {
+                userchoice = Caneda::ExistingComponent;
             }
             else {
-                filename = ui.editName->text();
+                userchoice = Caneda::ImportFromProject;
+            }
+
+            if(ui.rbNewComponent->isChecked()) {
+                if(ui.editName->text().isEmpty()) {
+                    QMessageBox::information(parentWidget(),
+                                             tr("Component name missing"),
+                                             tr("You must enter the name of the new component."));
+                    return;
+                }
+                else {
+                    filename = ui.editName->text();
+                }
             }
         }
 
-        accept();
+        QDialog::done(r);
     }
 
 } // namespace Caneda

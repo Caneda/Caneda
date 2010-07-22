@@ -1,8 +1,5 @@
 /***************************************************************************
- * Copyright 2006-2009 Xavier Guerrin                                      *
- * Copyright 2009 Pablo Daniel Pareja Obregon                              *
- * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Caneda.                                       *
+ * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,6 +30,7 @@ namespace Caneda
     class PrintDialog : public QDialog
     {
         Q_OBJECT
+
     public:
         PrintDialog(IDocument *document, QWidget *parent = 0);
         ~PrintDialog();
@@ -47,6 +45,7 @@ namespace Caneda
     private:
         QPrinter *m_printer;
         IDocument *m_document;
+
         Ui::PrintDialog ui;
     };
 

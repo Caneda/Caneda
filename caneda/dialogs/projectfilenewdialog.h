@@ -45,8 +45,8 @@ namespace Caneda
         QString fileName() const;
         Caneda::ProjectFileNewChoice userChoice() const;
 
-    private Q_SLOTS:
-        void acceptDialog();
+    public Q_SLOTS:
+        virtual void done(int r);
 
     private:
         QString filename;
