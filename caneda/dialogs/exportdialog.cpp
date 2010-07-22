@@ -1,6 +1,6 @@
 /***************************************************************************
- * Copyright 2006-2009 Xavier Guerrin                                      *
- * Copyright 2009 Pablo Daniel Pareja Obregon                              *
+ * Copyright (C) 2006-2009 Xavier Guerrin                                  *
+ * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
  * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
  * Obregon to be included in Caneda.                                       *
  *                                                                         *
