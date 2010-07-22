@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef ADD_TO_PROJECT_DIALOG_H
-#define ADD_TO_PROJECT_DIALOG_H
+#ifndef PROJECT_FILE_NEW_DIALOG_H
+#define PROJECT_FILE_NEW_DIALOG_H
 
 #include <QWidget>
 
@@ -28,52 +28,53 @@ class QRadioButton;
 
 namespace Caneda
 {
-    enum AddToProjectChoice {
+    enum ProjectFileNewChoice {
         NewComponent,
         ExistingComponent,
         ImportFromProject
     };
-}
 
-/*!
- * This class represents the configuration dialog to add a component to
- * a project.
- */
-class AddToProjectDialog : public QWidget
-{
-    Q_OBJECT;
+    /*!
+     * This class represents the configuration dialog to add a component to
+     * a project.
+     */
+    class ProjectFileNewDialog : public QWidget
+    {
+        Q_OBJECT;
 
-public:
-    AddToProjectDialog(QWidget * = 0);
-    ~AddToProjectDialog();
+    public:
+        ProjectFileNewDialog(QWidget * = 0);
+        ~ProjectFileNewDialog();
 
-    QString fileName() const;
-    void setFileName(const QString &);
+        QString fileName() const;
+        void setFileName(const QString &);
 
-    Caneda::AddToProjectChoice userChoice() const;
-    void setUserChoice(const Caneda::AddToProjectChoice);
+        Caneda::ProjectFileNewChoice userChoice() const;
+        void setUserChoice(const Caneda::ProjectFileNewChoice);
 
-    bool accepted();
+        bool accepted();
 
-private:
-    void buildComponentTypeDialog();
+    private:
+        void buildComponentTypeDialog();
 
 
-private Q_SLOTS:
-    void updateComponentTypeDialog();
-    void acceptComponentDialog();
+    private Q_SLOTS:
+        void updateComponentTypeDialog();
+        void acceptComponentDialog();
 
-private:
-    QString filename;
-    Caneda::AddToProjectChoice userchoice;
+    private:
+        QString filename;
+        Caneda::ProjectFileNewChoice userchoice;
 
-    QDialog *dialog;
-    QRadioButton *newComponent;
-    QRadioButton *existingComponent;
-    QRadioButton *importFromProject;
-    QLineEdit *editFilepath;
+        QDialog *dialog;
+        QRadioButton *newComponent;
+        QRadioButton *existingComponent;
+        QRadioButton *importFromProject;
+        QLineEdit *editFilepath;
 
-    bool stateAccepted;
-};
+        bool stateAccepted;
+    };
 
-#endif //ADD_TO_PROJECT_DIALOG_H
+} // namespace Caneda
+
+#endif //PROJECT_FILE_NEW_DIALOG_H

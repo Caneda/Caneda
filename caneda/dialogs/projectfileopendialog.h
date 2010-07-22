@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef PROJECT_FILE_DIALOG_H
-#define PROJECT_FILE_DIALOG_H
+#ifndef PROJECT_FILE_OPEN_DIALOG_H
+#define PROJECT_FILE_OPEN_DIALOG_H
 
 #include <QDialog>
 
@@ -31,13 +31,13 @@ namespace Caneda
      * This class represents the dialog to open a component in
      * a project.
      */
-    class ProjectFileDialog : public QDialog
+    class ProjectFileOpenDialog : public QDialog
     {
         Q_OBJECT;
 
     public:
-        ProjectFileDialog(QString = "", QWidget * = 0);
-        ~ProjectFileDialog();
+        ProjectFileOpenDialog(QString = "", QWidget * = 0);
+        ~ProjectFileOpenDialog();
 
         QString fileName() const { return m_fileName; }
 
@@ -54,4 +54,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //PROJECT_FILE_DIALOG_H
+#endif //PROJECT_FILE_OPEN_DIALOG_H

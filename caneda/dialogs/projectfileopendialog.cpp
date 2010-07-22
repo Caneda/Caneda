@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "projectfiledialog.h"
+#include "projectfileopendialog.h"
 
 #include "caneda-tools/global.h"
 
@@ -33,7 +33,7 @@ namespace Caneda
      * Constructor
      * @param parent  parent Widget of the dialog
      */
-    ProjectFileDialog::ProjectFileDialog(QString libraryFileName, QWidget *parent) :
+    ProjectFileOpenDialog::ProjectFileOpenDialog(QString libraryFileName, QWidget *parent) :
         QDialog(parent)
     {
         this->setWindowTitle(tr("Open component"));
@@ -74,11 +74,11 @@ namespace Caneda
     }
 
     //! Destructor
-    ProjectFileDialog::~ProjectFileDialog()
+    ProjectFileOpenDialog::~ProjectFileOpenDialog()
     {
     }
 
-    void ProjectFileDialog::slotAccept()
+    void ProjectFileOpenDialog::slotAccept()
     {
         if(!m_projectsSidebar->currentComponent().isEmpty()) {
             m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + m_projectsSidebar->currentComponent() + ".xsch";
@@ -86,7 +86,7 @@ namespace Caneda
         }
     }
 
-    void ProjectFileDialog::slotOnDoubleClick(const QString& item, const QString& category)
+    void ProjectFileOpenDialog::slotOnDoubleClick(const QString& item, const QString& category)
     {
         m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + item + ".xsch";
         accept();
