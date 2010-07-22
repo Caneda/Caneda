@@ -20,11 +20,12 @@
 #include "component.h"
 #include "library.h"
 #include "port.h"
-#include "propertydialog.h"
 #include "propertygroup.h"
 #include "schematicscene.h"
 #include "undocommands.h"
 #include "wire.h"
+
+#include "dialogs/propertydialog.h"
 
 #include "caneda-tools/global.h"
 
