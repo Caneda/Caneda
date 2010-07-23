@@ -70,6 +70,7 @@ ADD_SUBDIRECTORY( caneda-qterm )
 
 ADD_SUBDIRECTORY( bitmaps )
 ADD_SUBDIRECTORY( docs )
+ADD_SUBDIRECTORY( lang )
 
 # ==================================================================================
 # Licence and other files
