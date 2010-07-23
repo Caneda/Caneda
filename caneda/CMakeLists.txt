@@ -24,6 +24,7 @@ SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   schematicdocument.cpp schematiccontext.cpp schematicview.cpp
   syntaxhighlighters.cpp
   textdocument.cpp textcontext.cpp textview.cpp textedit.cpp
+  webdocument.cpp webcontext.cpp webview.cpp webpage.cpp
 )
 
 SET(CANEDA_MOC_HDRS schematicscene.h schematicwidget.h
@@ -35,6 +36,7 @@ SET(CANEDA_MOC_HDRS schematicscene.h schematicwidget.h
   schematicdocument.h schematiccontext.h schematicview.h
   syntaxhighlighters.h
   textdocument.h textcontext.h textview.h textedit.h
+  webdocument.h webcontext.h webview.h webpage.h
 )
 
 QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )

@@ -27,6 +27,7 @@
 #include "singletonowner.h"
 #include "tabs.h"
 #include "textcontext.h"
+#include "webcontext.h"
 
 #include "dialogs/savedocumentsdialog.h"
 
@@ -459,6 +460,7 @@ namespace Caneda
     {
         m_contexts << SchematicContext::instance();
         m_contexts << TextContext::instance();
+        m_contexts << WebContext::instance();
     }
 
     TabWidget* DocumentViewManager::tabWidget() const

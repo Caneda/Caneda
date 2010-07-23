@@ -8,6 +8,7 @@ SET( PACKAGE_STRING "caneda 0.1.0" )
 # ==================================================================================
 # Configure QT options
 
+SET( QT_USE_QTWEBKIT TRUE )
 SET( QT_USE_QTXML TRUE )
 SET( QT_USE_QTSVG TRUE )
 SET( QT_USE_QTCORE TRUE )

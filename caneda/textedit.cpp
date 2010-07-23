@@ -37,7 +37,6 @@ namespace Caneda
 
     TextEdit::~TextEdit()
     {
-
     }
 
     void TextEdit::setPointSize(qreal size)
