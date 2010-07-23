@@ -1539,26 +1539,10 @@ namespace Caneda
         }
     }
 
-    //! \brief Opens the help browser
-    void MainWindow::showHTML(const QString& Page)
-    {
-        QStringList arguments;
-        if(!Page.isEmpty()) {
-            arguments << Page;
-        }
-        QProcess *CanedaHelp = new QProcess(this);
-        CanedaHelp->start(QString(Caneda::binaryDir + "canedahelp"), arguments);
-
-        connect(CanedaHelp, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
-
-        // Kill before Caneda ends
-        connect(this, SIGNAL(signalKillWidgets()), CanedaHelp, SLOT(kill()));
-    }
-
     void MainWindow::slotHelpIndex()
     {
         setNormalAction();
-        showHTML("index.html");
+        slotFileOpen(QString(Caneda::docDir + "/en/index.html"));
     }
 
     void MainWindow::slotProccessError(QProcess::ProcessError error)

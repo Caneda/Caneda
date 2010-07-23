@@ -142,8 +142,6 @@ namespace Caneda
         void initToolBars();
         void initStatusBar();
 
-        void showHTML(const QString& Page);
-
         void createUndoView();
         void createFolderView();
         void setupSidebar();
