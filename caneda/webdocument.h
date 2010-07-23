@@ -23,7 +23,7 @@
 #include "idocument.h"
 
 // Forward declarations.
-class QWebView;
+class QUrl;
 
 namespace Caneda
 {
@@ -74,11 +74,11 @@ namespace Caneda
         virtual void updateSettingsChanges();
         // End of Interface implemention.
 
-        QWebView* webView() const;
+        QUrl* webUrl() const;
 
     private:
         WebPage* activeWebPage();
-        QWebView *m_webView;
+        QUrl *m_webUrl;
     };
 
 } // namespace Caneda

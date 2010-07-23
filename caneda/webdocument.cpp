@@ -24,18 +24,18 @@
 #include "webpage.h"
 #include "webview.h"
 
-#include <QtWebKit/QWebView>
+#include <QUrl>
 
 namespace Caneda
 {
     WebDocument::WebDocument()
     {
-        m_webView = new QWebView;
+        m_webUrl = new QUrl;
     }
 
     WebDocument::~WebDocument()
     {
-        delete m_webView;
+        delete m_webUrl;
     }
 
     IContext* WebDocument::context()
@@ -117,7 +117,12 @@ namespace Caneda
     {
         Q_UNUSED(fitInView);
 
-        m_webView->print(printer);
+        WebPage *page = activeWebPage();
+        if (!page) {
+            return;
+        }
+
+        page->print(printer);
     }
 
     void WebDocument::exportToPaintDevice(QPaintDevice *device,
@@ -134,8 +139,7 @@ namespace Caneda
             return false;
         }
 
-        m_webView->load(QUrl(fileName()));
-        m_webView->show();
+        m_webUrl->setUrl(fileName());
         return true;
     }
 
@@ -152,9 +156,9 @@ namespace Caneda
     {
     }
 
-    QWebView* WebDocument::webView() const
+    QUrl* WebDocument::webUrl() const
     {
-        return m_webView;
+        return m_webUrl;
     }
 
     WebPage* WebDocument::activeWebPage()

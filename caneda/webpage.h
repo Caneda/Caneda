@@ -28,7 +28,7 @@ namespace Caneda
     {
         Q_OBJECT
     public:
-        WebPage(QWebView *document);
+        WebPage(QUrl *url);
         ~WebPage();
 
         void setPointSize(qreal size);

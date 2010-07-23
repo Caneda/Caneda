@@ -21,9 +21,9 @@
 
 namespace Caneda
 {
-    WebPage::WebPage(QWebView *document)
+    WebPage::WebPage(QUrl *url)
     {
-        load(document->url());
+        load(*url);
         show();
     }
 

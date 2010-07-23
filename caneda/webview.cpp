@@ -35,7 +35,7 @@ namespace Caneda
         m_originalZoom(QFontInfo(qApp->font()).pointSizeF())
     {
         m_currentZoom = m_originalZoom;
-        m_webPage = new WebPage(document->webView());
+        m_webPage = new WebPage(document->webUrl());
         connect(m_webPage, SIGNAL(focussed()), this,
                 SLOT(onFocussed()));
         connect(m_webPage, SIGNAL(statusBarMessage(const QString &)),
