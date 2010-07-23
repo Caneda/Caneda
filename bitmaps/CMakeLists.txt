@@ -19,4 +19,5 @@ SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg rectangle.svg text.svg sp
 SET(ICONS  big.button.caneda.xpm big.caneda.xpm tiny.button.caneda.xpm tiny.caneda.xpm )
 
 INSTALL(FILES ${PNGS} DESTINATION ${BITMAPDIR})
+INSTALL(FILES ${SVGS} DESTINATION ${BITMAPDIR})
 INSTALL(FILES ${ICONS} DESTINATION ${BITMAPDIR})
