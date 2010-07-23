@@ -6,7 +6,6 @@ INCLUDE_DIRECTORIES(
 
 ADD_SUBDIRECTORY( xmlutilities )
 ADD_SUBDIRECTORY( dialogs )
-ADD_SUBDIRECTORY( bitmaps )
 ADD_SUBDIRECTORY( diagrams )
 ADD_SUBDIRECTORY( paintings )
 
