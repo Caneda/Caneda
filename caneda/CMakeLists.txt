@@ -1,5 +1,4 @@
 INCLUDE_DIRECTORIES(
-   ${CMAKE_SOURCE_DIR}/caneda}
    ${CMAKE_BINARY_DIR}/caneda/dialogs
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR} )
@@ -8,6 +7,7 @@ ADD_SUBDIRECTORY( xmlutilities )
 ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( diagrams )
 ADD_SUBDIRECTORY( paintings )
+ADD_SUBDIRECTORY( tools )
 
 SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   schematicscene.cpp sidebarmodel.cpp
@@ -40,7 +40,8 @@ SET(CANEDA_MOC_HDRS schematicscene.h schematicwidget.h
 
 QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )
 
-LINK_DIRECTORIES( ${Caneda_BINARY_DIR}/caneda-tools ${Caneda_BINARY_DIR}/caneda-qterm )
+LINK_DIRECTORIES( ${Caneda_BINARY_DIR}/caneda-tools
+                  ${Caneda_BINARY_DIR}/caneda/tools/qtermwidget )
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} ${CANEDA_MOC_SRCS} )
 

@@ -66,7 +66,6 @@ ADD_SUBDIRECTORY( caneda-attenuator )
 ADD_SUBDIRECTORY( caneda-filter )
 ADD_SUBDIRECTORY( caneda-lib )
 ADD_SUBDIRECTORY( caneda-transcalc )
-ADD_SUBDIRECTORY( caneda-qterm )
 
 ADD_SUBDIRECTORY( bitmaps )
 ADD_SUBDIRECTORY( docs )

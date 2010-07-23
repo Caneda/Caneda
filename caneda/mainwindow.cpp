@@ -45,7 +45,7 @@
 #include "dialogs/savedocumentsdialog.h"
 #include "dialogs/settingsdialog.h"
 
-#include "caneda-qterm/qtermwidget.h"
+#include "tools/qtermwidget/qtermwidget.h"
 
 #include "caneda-tools/global.h"
 
