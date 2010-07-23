@@ -52,14 +52,17 @@ namespace Caneda
 
     bool WebContext::canOpen(const QFileInfo& info) const
     {
-        if ( info.suffix() == "htm" ||
-             info.suffix() == "html" ) {
+        QStringList supportedSuffixes;
+        supportedSuffixes << "htm";
+        supportedSuffixes << "html";
 
-            return true;
+        foreach (const QString &suffix, supportedSuffixes) {
+            if (suffix == info.suffix()) {
+                return true;
+            }
         }
-        else {
-            return false;
-        }
+
+        return false;
     }
 
     QStringList WebContext::fileNameFilters() const

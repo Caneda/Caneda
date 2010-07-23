@@ -52,18 +52,21 @@ namespace Caneda
 
     bool TextContext::canOpen(const QFileInfo& info) const
     {
-        if ( info.suffix() == "" ||
-             info.suffix() == "txt" ||
-             info.suffix() == "log" ||
-             info.suffix() == "vhd" ||
-             info.suffix() == "vhdl" ||
-             info.suffix() == "v" ) {
+        QStringList supportedSuffixes;
+        supportedSuffixes << "";
+        supportedSuffixes << "txt";
+        supportedSuffixes << "log";
+        supportedSuffixes << "vhd";
+        supportedSuffixes << "vhdl";
+        supportedSuffixes << "v";
 
-            return true;
+        foreach (const QString &suffix, supportedSuffixes) {
+            if (suffix == info.suffix()) {
+                return true;
+            }
         }
-        else {
-            return false;
-        }
+
+        return false;
     }
 
     QStringList TextContext::fileNameFilters() const
