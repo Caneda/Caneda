@@ -20,7 +20,7 @@
 #ifndef TEXTVIEW_H
 #define TEXTVIEW_H
 
-#include "globals.h"
+#include "global.h"
 #include "iview.h"
 
 namespace Caneda

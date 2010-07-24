@@ -17,20 +17,20 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef __GLOBAL_H
-#define __GLOBAL_H
+#ifndef GLOBAL_H
+#define GLOBAL_H
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-#include <QString>
-#include <QSettings>
 #include <QDir>
-#include <QLocale>
-
+#include <QDebug>
 #include <QFont>
+#include <QLocale>
 #include <QPixmap>
+#include <QSettings>
+#include <QString>
 
 namespace Caneda
 {
@@ -73,6 +73,30 @@ namespace Caneda
    inline QString realToString(qreal val) {
       return QString::number(val,'f',2);
    }
-}
 
-#endif //__GLOBAL_H
+   enum SideBarRole {
+       ItemSelection,
+       PropertyBrowser
+   };
+
+   struct ZoomRange
+   {
+       const qreal min;
+       const qreal max;
+
+       ZoomRange(qreal _min = 0., qreal _max = 1.0) :
+           min(_min), max(_max)
+       {
+           if (max < min) {
+               qWarning() << Q_FUNC_INFO << "Invalid range" << min << max;
+           }
+       }
+
+       bool contains(qreal value) const {
+           return value >= min && value <= max;
+       }
+   };
+
+} // namespace Caneda
+
+#endif //GLOBAL_H

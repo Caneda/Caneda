@@ -20,7 +20,7 @@
 #ifndef WEBVIEW_H
 #define WEBVIEW_H
 
-#include "globals.h"
+#include "global.h"
 #include "iview.h"
 
 namespace Caneda

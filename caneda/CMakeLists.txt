@@ -13,7 +13,7 @@ ADD_SUBDIRECTORY( tools )
 
 SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   schematicscene.cpp sidebarmodel.cpp
-  global.cpp main.cpp mainwindow.cpp
+  global.cpp units.cpp main.cpp mainwindow.cpp
   schematicwidget.cpp  undocommands.cpp fileformathandler.cpp
   svgitem.cpp property.cpp propertyitem.cpp
   propertygroup.cpp component.cpp port.cpp library.cpp

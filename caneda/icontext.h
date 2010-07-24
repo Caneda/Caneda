@@ -20,7 +20,7 @@
 #ifndef CANEDA_ICONTEXT_H
 #define CANEDA_ICONTEXT_H
 
-#include "globals.h"
+#include "global.h"
 
 #include <QObject>
 

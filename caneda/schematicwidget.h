@@ -20,7 +20,7 @@
 #ifndef SCHEMATIC_WIDGET_H
 #define SCHEMATIC_WIDGET_H
 
-#include "globals.h"
+#include "global.h"
 
 #include <QGraphicsView>
 

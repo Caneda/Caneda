@@ -130,4 +130,4 @@ namespace Caneda
       return true;
    }
 
-}
+} // namespace Caneda

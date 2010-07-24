@@ -20,8 +20,10 @@
 #ifndef UNITS_H
 #define UNITS_H
 
-#include <QtCore/QStringList>
 #include <math.h>
+
+#include <QStringList>
+
 
 #ifdef __MINGW32__
 #define atanh(x) (0.5 * log((1.0 + (x)) / (1.0 - (x))))
@@ -42,7 +44,7 @@
 #define C0   299792458.0              /* speed of light in vacuum  */
 #define ZF0  376.73031346958504364963 /* wave resistance in vacuum */
 
-namespace Units
+namespace Caneda
 {
   enum UnitType {
     Frequency=0,
@@ -53,19 +55,19 @@ namespace Units
   };
 
   enum FrequencyUnits {
-    GHz=0,Hz,KHz,MHz
+    GHz=0, Hz, KHz, MHz
   };
 
   enum LengthUnits {
-    mil=0,cm,mm,m,um,in,ft
+    mil=0, cm, mm, m, um, in, ft
   };
 
   enum ResistanceUnits {
-    Ohm=0,kOhm
+    Ohm=0, kOhm
   };
 
   enum AngleUnits {
-    Deg=0,Rad
+    Deg=0, Rad
   };
   const QStringList freqList(QStringList() << "GHz" << "Hz" << "kHz" << "MHz");
   const QStringList resList(QStringList() << "Ohm" << "kOhm");
@@ -76,10 +78,10 @@ namespace Units
   QString toString(LengthUnits l);
   QString toString(ResistanceUnits r);
   QString toString(AngleUnits a);
-  QString toString(int un,UnitType t);
+  QString toString(int un, UnitType t);
   int toInt(const QString& unit);
-  double convert(double value, Units::UnitType ut, int fromUnit, int toUnit);
+  double convert(double value, Caneda::UnitType ut, int fromUnit, int toUnit);
 
-}  // namespace Units
+} // namespace Caneda
 
 #endif //UNITS_H

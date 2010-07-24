@@ -37,7 +37,7 @@ namespace Caneda
 
     /*!
      * \brief This struct hold data to be shared implicitly of a property.
-     * \details This inherits QSharedData which takes care of refernce counting.
+     * \details This inherits QSharedData which takes care of reference counting.
      * \sa Property
      */
     struct PropertyData : public QSharedData

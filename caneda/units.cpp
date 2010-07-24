@@ -19,7 +19,7 @@
 
 #include "units.h"
 
-namespace Units
+namespace Caneda
 {
    // Unit conversion array for length.
    double lengthConversionTable[7][7] = {
@@ -54,19 +54,19 @@ namespace Units
 
    QString toString(FrequencyUnits f)
    {
-      return Units::freqList[int(f)];
+      return Caneda::freqList[int(f)];
    }
    QString toString(LengthUnits l)
    {
-      return Units::lenList[int(l)];
+      return Caneda::lenList[int(l)];
    }
    QString toString(ResistanceUnits r)
    {
-      return Units::resList[int(r)];
+      return Caneda::resList[int(r)];
    }
    QString toString(AngleUnits a)
    {
-      return Units::angleList[int(a)];
+      return Caneda::angleList[int(a)];
    }
 
    QString toString(int u, UnitType t)
@@ -85,7 +85,7 @@ namespace Units
       };
    }
 
-   double convert(double value, Units::UnitType ut, int fromUnit, int toUnit)
+   double convert(double value, Caneda::UnitType ut, int fromUnit, int toUnit)
    {
       double cnv = value;
       switch(ut)
@@ -135,4 +135,4 @@ namespace Units
       return None;
    }
 
-} // namespace Units
+} // namespace Caneda
