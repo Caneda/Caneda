@@ -46,6 +46,7 @@
 #include "dialogs/settingsdialog.h"
 
 #include "tools/attenuator/attenuator.h"
+#include "tools/filter/filterdialog.h"
 #include "tools/qtermwidget/qtermwidget.h"
 
 #include "caneda-tools/global.h"
@@ -1458,13 +1459,9 @@ namespace Caneda
     {
         setNormalAction();
 
-        QProcess *CanedaFilter = new QProcess(this);
-        CanedaFilter->start(QString(Caneda::binaryDir + "canedafilter"));
-
-        connect(CanedaFilter, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
-
-        // Kill before Caneda ends
-        connect(this, SIGNAL(signalKillWidgets()), CanedaFilter, SLOT(kill()));
+        QPointer<FilterDialog> p = new FilterDialog(this);
+        p->exec();
+        delete p;
     }
 
     void MainWindow::slotCallLine()
