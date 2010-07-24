@@ -1,5 +1,6 @@
 INCLUDE_DIRECTORIES(
    ${CMAKE_BINARY_DIR}/caneda/dialogs
+   ${CMAKE_BINARY_DIR}/caneda/tools/attenuator
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR} )
 
@@ -45,8 +46,8 @@ LINK_DIRECTORIES( ${Caneda_BINARY_DIR}/caneda-tools
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} ${CANEDA_MOC_SRCS} )
 
-TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} canedatools paintings dialogs
-                       ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES}
-                       diagrams xmlutilities qtermwidget)
+TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES}
+                       canedatools paintings dialogs diagrams xmlutilities
+                       attenuator qtermwidget)
 
 INSTALL(TARGETS caneda DESTINATION ${BINARYDIR})

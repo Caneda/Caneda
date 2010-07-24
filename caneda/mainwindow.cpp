@@ -45,6 +45,7 @@
 #include "dialogs/savedocumentsdialog.h"
 #include "dialogs/settingsdialog.h"
 
+#include "tools/attenuator/attenuator.h"
 #include "tools/qtermwidget/qtermwidget.h"
 
 #include "caneda-tools/global.h"
@@ -1489,13 +1490,9 @@ namespace Caneda
     {
         setNormalAction();
 
-        QProcess *CanedaAtt = new QProcess(this);
-        CanedaAtt->start(QString(Caneda::binaryDir + "canedaattenuator"));
-
-        connect(CanedaAtt, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
-
-        // Kill before Caneda ends
-        connect(this, SIGNAL(signalKillWidgets()), CanedaAtt, SLOT(kill()));
+        QPointer<Attenuator> p = new Attenuator(this);
+        p->exec();
+        delete p;
     }
 
     void MainWindow::slotCallLibrary()

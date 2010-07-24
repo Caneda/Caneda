@@ -62,7 +62,6 @@ INCLUDE_DIRECTORIES(
 ADD_SUBDIRECTORY( caneda-tools )
 ADD_SUBDIRECTORY( caneda )
 
-ADD_SUBDIRECTORY( caneda-attenuator )
 ADD_SUBDIRECTORY( caneda-filter )
 ADD_SUBDIRECTORY( caneda-lib )
 ADD_SUBDIRECTORY( caneda-transcalc )
