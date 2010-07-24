@@ -40,6 +40,7 @@
 
 #include "dialogs/aboutdialog.h"
 #include "dialogs/exportdialog.h"
+#include "dialogs/librarymanager.h"
 #include "dialogs/projectfileopendialog.h"
 #include "dialogs/printdialog.h"
 #include "dialogs/savedocumentsdialog.h"
@@ -576,7 +577,7 @@ namespace Caneda
         action->setWhatsThis(tr("Line calculation\n\nStarts transmission line calculator"));
         connect(action, SIGNAL(triggered()), SLOT(slotCallLine()));
 
-        action = am->createAction("callMatch", icon("tools-wizard"), tr("Matching Circuit"));
+        action = am->createAction("callMatch", icon("tools-wizard"), tr("Matching circuit"));
         action->setShortcut(CTRL+Key_3);
         action->setStatusTip(tr("Creates Matching Circuit"));
         action->setWhatsThis(tr("Matching Circuit\n\nDialog for Creating Matching Circuit"));
@@ -588,10 +589,10 @@ namespace Caneda
         action->setWhatsThis(tr("Attenuator synthesis\n\nStarts attenuator calculation program"));
         connect(action, SIGNAL(triggered()), SLOT(slotCallAtt()));
 
-        action = am->createAction("callLib", icon("library"), tr("Component Library"));
+        action = am->createAction("callLib", icon("library"), tr("Library manager"));
         action->setShortcut(CTRL+Key_5);
-        action->setStatusTip(tr("Starts CanedaLib"));
-        action->setWhatsThis(tr("Component Library\n\nStarts component library program"));
+        action->setStatusTip(tr("Opens library manager"));
+        action->setWhatsThis(tr("Library Manager\n\nOpens library manager dialog"));
         connect(action, SIGNAL(triggered()), SLOT(slotCallLibrary()));
 
         action = am->createAction("importData",  tr("&Import Data..."));
@@ -1496,13 +1497,9 @@ namespace Caneda
     {
         setNormalAction();
 
-        QProcess *CanedaLib = new QProcess(this);
-        CanedaLib->start(QString(Caneda::binaryDir + "canedalib"));
-
-        connect(CanedaLib, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
-
-        // Kill before Caneda ends
-        connect(this, SIGNAL(signalKillWidgets()), CanedaLib, SLOT(kill()));
+        QPointer<LibraryManager> p = new LibraryManager(this);
+        p->exec();
+        delete p;
     }
 
     void MainWindow::slotImportData()
