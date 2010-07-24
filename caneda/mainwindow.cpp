@@ -23,6 +23,7 @@
 #include "componentssidebar.h"
 #include "documentviewmanager.h"
 #include "folderbrowser.h"
+#include "global.h"
 #include "idocument.h"
 #include "item.h"
 #include "iview.h"
@@ -49,8 +50,6 @@
 #include "tools/attenuator/attenuator.h"
 #include "tools/filter/filterdialog.h"
 #include "tools/qtermwidget/qtermwidget.h"
-
-#include "caneda-tools/global.h"
 
 #include "xmlutilities/transformers.h"
 #include "xmlutilities/validators.h"

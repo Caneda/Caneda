@@ -20,8 +20,7 @@
 #include "settings.h"
 
 #include "config.h"
-
-#include "caneda-tools/global.h"
+#include "global.h"
 
 #include <QColor>
 #include <QFont>

@@ -20,6 +20,7 @@
 #include "schematicstatehandler.h"
 
 #include "actionmanager.h"
+#include "global.h"
 #include "library.h"
 #include "schematicscene.h"
 #include "schematicwidget.h"
@@ -28,8 +29,6 @@
 #include "undocommands.h"
 
 #include "paintings/painting.h"
-
-#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 

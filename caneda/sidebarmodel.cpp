@@ -17,10 +17,10 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "library.h"
 #include "sidebarmodel.h"
 
-#include "caneda-tools/global.h"
+#include "global.h"
+#include "library.h"
 
 #include <QDebug>
 #include <QIcon>

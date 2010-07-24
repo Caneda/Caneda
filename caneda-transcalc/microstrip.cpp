@@ -34,8 +34,8 @@
 
 #include "microstrip.h"
 #include "canedatrans.h"
-#include "caneda-tools/propertygrid.h"
-#include "caneda-tools/units.h"
+#include "propertygrid.h"
+#include "units.h"
 microstrip::microstrip() : transline()
 {
   description = "Microstrip";

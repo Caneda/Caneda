@@ -24,9 +24,9 @@
 #include "qf_filter.h"
 #include "qf_cauer.h"
 
-#include <QClipboard>
-
 #include <math.h>
+
+#include <QClipboard>
 
 namespace Caneda
 {

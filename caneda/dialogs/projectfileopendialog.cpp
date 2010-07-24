@@ -19,7 +19,7 @@
 
 #include "projectfileopendialog.h"
 
-#include "caneda-tools/global.h"
+#include "global.h"
 
 #include "componentssidebar.h"
 

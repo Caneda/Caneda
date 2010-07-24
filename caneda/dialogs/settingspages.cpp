@@ -19,10 +19,9 @@
 
 #include "settingspages.h"
 
+#include "global.h"
 #include "mainwindow.h"
 #include "settings.h"
-
-#include "caneda-tools/global.h"
 
 #include <QApplication>
 #include <QColorDialog>

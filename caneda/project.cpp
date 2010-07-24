@@ -19,10 +19,9 @@
 
 #include "project.h"
 
-#include "caneda-tools/global.h"
-
 #include "actionmanager.h"
 #include "componentssidebar.h"
+#include "global.h"
 #include "library.h"
 #include "schematiccontext.h"
 #include "schematicdocument.h"

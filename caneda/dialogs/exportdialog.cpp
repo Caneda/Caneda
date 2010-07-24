@@ -22,9 +22,8 @@
 
 #include "exportdialog.h"
 
+#include "global.h"
 #include "settings.h"
-
-#include "caneda-tools/global.h"
 
 #include <math.h>
 

@@ -20,9 +20,8 @@
 #ifndef SYNTAXHIGHLIGHTERS_H
 #define SYNTAXHIGHLIGHTERS_H
 
-#include <QSyntaxHighlighter>
-
 #include <QHash>
+#include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 
 // Forward declarations

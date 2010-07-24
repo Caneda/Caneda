@@ -19,11 +19,10 @@
 
 #include "wire.h"
 
+#include "global.h"
 #include "port.h"
 #include "schematicscene.h"
 #include "undocommands.h"
-
-#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 

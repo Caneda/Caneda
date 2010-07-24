@@ -21,6 +21,7 @@
 #include "schematicscene.h"
 
 #include "component.h"
+#include "global.h"
 #include "library.h"
 #include "port.h"
 #include "propertygroup.h"
@@ -33,8 +34,6 @@
 #include "diagrams/diagram.h"
 
 #include "paintings/paintings.h"
-
-#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 

@@ -28,7 +28,7 @@
 #include "canedatrans.h"
 #include "transline.h"
 #include "rectwaveguide.h"
-#include "caneda-tools/propertygrid.h"
+#include "propertygrid.h"
 
 rectwaveguide::rectwaveguide() : transline()
 {

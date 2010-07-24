@@ -29,7 +29,7 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QLabel>
 #include <QtGui/QComboBox>
-#include "caneda-tools/propertygrid.h"
+#include "propertygrid.h"
 
 OptionsDialog::OptionsDialog(QWidget *parent)
                      : QDialog(parent)

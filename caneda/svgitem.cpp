@@ -22,14 +22,14 @@
 #include "schematicscene.h"
 #include "singletonowner.h"
 
+#include <memory>
+
 #include <QDebug>
 #include <QFile>
 #include <QPainter>
 #include <QPixmapCache>
 #include <QStyleOptionGraphicsItem>
 #include <QSvgRenderer>
-
-#include <memory>
 
 namespace Caneda
 {

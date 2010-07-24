@@ -21,7 +21,7 @@
 
 namespace Caneda
 {
-    /* made configurable */
+    /* make configurable */
     qreal WireLine::m_adjust = 3.0;
 
     //! \brief Return bounding rectangle arround a wireline

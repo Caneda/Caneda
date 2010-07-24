@@ -33,7 +33,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QLocale>
 #include <QtGui/QFont>
-#include "caneda-tools/propertygrid.h"
+#include "propertygrid.h"
 
 
 tCanedaSettings CanedaSettings;

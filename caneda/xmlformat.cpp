@@ -20,6 +20,7 @@
 #include "xmlformat.h"
 
 #include "component.h"
+#include "global.h"
 #include "item.h"
 #include "port.h"
 #include "schematicdocument.h"
@@ -29,8 +30,6 @@
 #include "wireline.h"
 
 #include "paintings/painting.h"
-
-#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 

@@ -21,10 +21,10 @@
 
 #include "actionmanager.h"
 #include "documentviewmanager.h"
+#include "global.h"
 #include "idocument.h"
 #include "iview.h"
 #include "mainwindow.h"
-#include "caneda-tools/global.h"
 
 #include <QDebug>
 #include <QFileInfo>

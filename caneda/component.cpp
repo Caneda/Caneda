@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "component.h"
+#include "global.h"
 #include "library.h"
 #include "port.h"
 #include "propertygroup.h"
@@ -26,8 +27,6 @@
 #include "wire.h"
 
 #include "dialogs/propertydialog.h"
-
-#include "caneda-tools/global.h"
 
 #include "xmlutilities/transformers.h"
 #include "xmlutilities/xmlutilities.h"

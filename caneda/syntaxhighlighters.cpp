@@ -21,8 +21,6 @@
 
 #include "settings.h"
 
-#include <QtGui>
-
 namespace Caneda
 {
     //*************************************************************

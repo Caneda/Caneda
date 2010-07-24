@@ -22,7 +22,7 @@
 
 #include "transline.h"
 #include "canedatrans.h"
-#include "caneda-tools/propertygrid.h"
+#include "propertygrid.h"
 /* Constructor creates a transmission line instance. */
 transline::transline () {
   transWidgets = 0;

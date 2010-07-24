@@ -35,7 +35,7 @@
 #include "transline.h"
 #include "microstrip.h"
 #include "c_microstrip.h"
-#include "caneda-tools/propertygrid.h"
+#include "propertygrid.h"
 c_microstrip::c_microstrip() : transline()
 {
   aux_ms = NULL;

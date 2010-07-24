@@ -17,29 +17,62 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "helpdialog.h"
-#include <QtGui/QTextEdit>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QPushButton>
+#ifndef __GLOBAL_H
+#define __GLOBAL_H
 
-HelpDialog::HelpDialog(const QString& cap,QWidget *p) : QDialog(p)
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include <QString>
+#include <QSettings>
+#include <QDir>
+#include <QLocale>
+
+#include <QFont>
+#include <QPixmap>
+
+namespace Caneda
 {
-  setWindowTitle(cap);
-  QVBoxLayout *l = new QVBoxLayout(this);
-  edit = new QTextEdit();
-  l->addWidget(edit);
-  QHBoxLayout *h = new QHBoxLayout();
-  l->addLayout(h);
-  h->addStretch(5);
-  QPushButton *pb = new QPushButton(tr("Dismiss"));
-  pb->setFocus();
-  h->addWidget(pb);
-  h->addStretch(5);
-  connect(pb,SIGNAL(clicked()),this,SLOT(accept()));
+   const QString baseDir(BASEDIR);
+   const QString binaryDir(BINARYDIR);
+   const QString bitmapDir(BITMAPDIR);
+   const QString docDir(DOCDIR);
+   const QString langDir(LANGUAGEDIR);
+   const QString libDir(LIBRARYDIR);
+   const QString version(PACKAGE_VERSION);
+   const QString versionString(PACKAGE_STRING);
+
+   QString pathForCanedaFile(const QString& fileName);
+
+   QString getenv();
+
+   QString baseDirectory();
+   QString binaryDirectory();
+   QString bitmapDirectory();
+   QString langDirectory();
+
+   inline QPixmap pixmapFor(const QString& name) {
+      return QPixmap(bitmapDirectory() + name + ".png");
+   }
+
+   QString language();
+   QString localePrefix();
+   QFont font();
+
+   bool checkVersion(const QString& line);
+
+   inline QString boolToString(bool boolean) {
+      return boolean ? QString("true") : QString("false");
+   }
+
+   inline bool stringToBool(const QString& str) {
+      return str == "true" ? true : false;
+   }
+
+   inline QString realToString(qreal val) {
+      return QString::number(val,'f',2);
+   }
 }
 
-void HelpDialog::setText(const QString &text)
-{
-  edit->setPlainText(text);
-}
+#endif //__GLOBAL_H

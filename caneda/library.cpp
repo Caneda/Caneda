@@ -19,10 +19,9 @@
 
 #include "library.h"
 
+#include "global.h"
 #include "schematicscene.h"
 #include "singletonowner.h"
-
-#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 #include "xmlutilities/validators.h"

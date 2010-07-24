@@ -37,7 +37,7 @@
 #include "canedatrans.h"
 #include "transline.h"
 #include "coax.h"
-#include "caneda-tools/propertygrid.h"
+#include "propertygrid.h"
 coax::coax() : transline()
 {
   description = "Coaxial";

@@ -19,7 +19,7 @@
 
 #include "property.h"
 
-#include "caneda-tools/global.h"
+#include "global.h"
 
 #include "xmlutilities/xmlutilities.h"
 

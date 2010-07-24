@@ -19,7 +19,7 @@
 
 #include "folderbrowser.h"
 
-#include "caneda-tools/global.h"
+#include "global.h"
 
 #include <QFileSystemModel>
 #include <QInputDialog>

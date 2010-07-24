@@ -19,12 +19,12 @@
 
 #include "attenuator.h"
 
-#include "caneda-tools/global.h"
+#include "global.h"
+
+#include <math.h>
 
 #include <QString>
 #include <QClipboard>
-
-#include <math.h>
 
 namespace Caneda
 {

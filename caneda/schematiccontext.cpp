@@ -21,12 +21,11 @@
 
 #include "actionmanager.h"
 #include "documentviewmanager.h"
+#include "global.h"
 #include "mainwindow.h"
 #include "schematicdocument.h"
 #include "schematicstatehandler.h"
 #include "singletonowner.h"
-
-#include "caneda-tools/global.h"
 
 #include <QDebug>
 #include <QFileInfo>

@@ -19,9 +19,8 @@
 
 #include "component.h"
 #include "componentssidebar.h"
+#include "global.h"
 #include "sidebarmodel.h"
-
-#include "caneda-tools/global.h"
 
 #include <QAction>
 #include <QDebug>

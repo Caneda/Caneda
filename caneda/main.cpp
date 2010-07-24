@@ -19,7 +19,7 @@
 
 #include "mainwindow.h"
 
-#include "caneda-tools/global.h"
+#include "global.h"
 
 #include <QApplication>
 #include <QSplashScreen>

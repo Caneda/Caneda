@@ -22,7 +22,7 @@
 
 #include "aboutdialog.h"
 
-#include "caneda-tools/global.h"
+#include "global.h"
 
 #include <QDialogButtonBox>
 #include <QLabel>

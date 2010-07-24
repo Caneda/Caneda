@@ -19,11 +19,10 @@
 
 #include "graphictextdialog.h"
 
+#include "global.h"
 #include "mnemo.h"
 #include "schematicscene.h"
 #include "undocommands.h"
-
-#include "caneda-tools/global.h"
 
 #include <QAction>
 #include <QApplication>

@@ -18,8 +18,10 @@
  ***************************************************************************/
 
 #include "global.h"
+
 #include <cmath>
-#include <QtCore/QDebug>
+
+#include <QDebug>
 
 using namespace std;
 

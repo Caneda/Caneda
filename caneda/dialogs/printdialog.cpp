@@ -19,11 +19,10 @@
 
 #include "printdialog.h"
 
+#include "global.h"
 #include "idocument.h"
 #include "schematicscene.h"
 #include "settings.h"
-
-#include "caneda-tools/global.h"
 
 #include <QFileDialog>
 #include <QPointer>

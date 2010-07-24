@@ -20,13 +20,12 @@
 #include "xmlsymbolformat.h"
 
 #include "component.h"
+#include "global.h"
 #include "item.h"
 #include "schematicdocument.h"
 #include "schematicscene.h"
 #include "schematicwidget.h"
 #include "settings.h"
-
-#include "caneda-tools/global.h"
 
 #include "xmlutilities/xmlutilities.h"
 

@@ -23,7 +23,7 @@
 
 #include "helpdialog.h"
 #include "optionsdialog.h"
-#include "caneda-tools/units.h"
+#include "units.h"
 #include "microstrip.h"
 #include "coax.h"
 #include "rectwaveguide.h"
@@ -53,7 +53,7 @@
 #include <QtCore/QDate>
 #include <QtCore/QTime>
 
-#include "caneda-tools/propertygrid.h"
+#include "propertygrid.h"
 QDir CanedaWorkDir;
 
 TransWidgets::TransWidgets()
