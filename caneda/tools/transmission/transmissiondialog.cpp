@@ -1,8 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006-2009 Xavier Guerrin                                  *
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
- * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Caneda.                                       *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,35 +17,18 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
-
-#include <QDialog>
-
-class QLabel;
+#include "transmissiondialog.h"
 
 namespace Caneda
 {
-    //! This class represents the dialog "About Caneda".
-    class AboutDialog : public QDialog {
-        Q_OBJECT
+    TransmissionDialog::TransmissionDialog(QWidget *parent) :
+            QDialog(parent)
+    {
+        ui.setupUi(this);
+    }
 
-    public:
-        // constructor, destructor
-        AboutDialog(QWidget *parent = 0);
-        virtual ~AboutDialog();
-
-        // methods
-    private:
-        QWidget *title() const;
-        QWidget *aboutTab() const;
-        QWidget *authorsTab() const;
-        QWidget *translatorsTab() const;
-        QWidget *contributorsTab() const;
-        QWidget *licenseTab() const;
-        void addAuthor(QLabel *, const QString &, const QString &, const QString &) const;
-    };
+    TransmissionDialog::~TransmissionDialog()
+    {
+    }
 
 } // namespace Caneda
-
-#endif //ABOUTDIALOG_H

@@ -50,6 +50,7 @@
 #include "tools/attenuator/attenuator.h"
 #include "tools/filter/filterdialog.h"
 #include "tools/qtermwidget/qtermwidget.h"
+#include "tools/transmission/transmissiondialog.h"
 
 #include "xmlutilities/transformers.h"
 #include "xmlutilities/validators.h"
@@ -570,10 +571,10 @@ namespace Caneda
         action->setWhatsThis(tr("Filter synthesis\n\nStarts CanedaFilter"));
         connect(action, SIGNAL(triggered()), SLOT(slotCallFilter()));
 
-        action = am->createAction("callLine", icon("tools-wizard"), tr("Line calculation"));
+        action = am->createAction("callLine", icon("tools-wizard"), tr("Transmission line"));
         action->setShortcut(CTRL+Key_2);
-        action->setStatusTip(tr("Starts CanedaTrans"));
-        action->setWhatsThis(tr("Line calculation\n\nStarts transmission line calculator"));
+        action->setStatusTip(tr("Starts transmission line calculator"));
+        action->setWhatsThis(tr("Transmission line\n\nStarts transmission line calculator"));
         connect(action, SIGNAL(triggered()), SLOT(slotCallLine()));
 
         action = am->createAction("callMatch", icon("tools-wizard"), tr("Matching circuit"));
@@ -1029,9 +1030,7 @@ namespace Caneda
     {
         if(slotFileSaveAll()) {
             e->accept();
-
             saveSettings();
-            emit(signalKillWidgets());
         }
         else {
             e->ignore();
@@ -1468,13 +1467,9 @@ namespace Caneda
     {
         setNormalAction();
 
-        QProcess *CanedaLine = new QProcess(this);
-        CanedaLine->start(QString(Caneda::binaryDir + "canedatrans"));
-
-        connect(CanedaLine, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProccessError(QProcess::ProcessError)));
-
-        // Kill before Caneda ends
-        connect(this, SIGNAL(signalKillWidgets()), CanedaLine, SLOT(kill()));
+        QPointer<TransmissionDialog> p = new TransmissionDialog(this);
+        p->exec();
+        delete p;
     }
 
     void MainWindow::slotCallMatch()
@@ -1535,41 +1530,13 @@ namespace Caneda
         slotFileOpen(QString(Caneda::docDir + "/en/index.html"));
     }
 
-    void MainWindow::slotProccessError(QProcess::ProcessError error)
-    {
-        switch(error) {
-            case QProcess::FailedToStart :
-                {
-                    QMessageBox::critical(0, tr("Process error"),
-                            tr("The process failed to start. Either the invoked program is missing, or you may have insufficient permissions to invoke the program."));
-                    return;
-                }
-            case QProcess::Crashed :
-                {
-                    QMessageBox::critical(0, tr("Process error"),
-                            tr("The process crashed while running."));
-                    return;
-                }
-            case QProcess::UnknownError :
-                {
-                    QMessageBox::critical(0, tr("Process error"),
-                            tr("An unknown error occurred."));
-                    return;
-                }
-            default:
-                {
-                    QMessageBox::critical(0, tr("Process error"),
-                            tr("An unknown error occurred."));
-                    return;
-                }
-        }
-    }
-
     void MainWindow::slotHelpAbout()
     {
         setNormalAction();
-        AboutDialog *about = new AboutDialog();
-        about->exec();
+
+        QPointer<AboutDialog> p = new AboutDialog(this);
+        p->exec();
+        delete p;
     }
 
     void MainWindow::slotHelpAboutQt()

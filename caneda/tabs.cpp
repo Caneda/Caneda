@@ -32,6 +32,7 @@
 #include <QSplitter>
 #include <QStackedWidget>
 #include <QTabBar>
+#include <QToolBar>
 #include <QWheelEvent>
 #include <QUndoGroup>
 

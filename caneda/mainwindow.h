@@ -25,15 +25,14 @@
 
 #include <QMainWindow>
 #include <QMap>
-#include <QMenu>
-#include <QProcess>
-#include <QToolBar>
-#include <QUndoView>
 
 // Forward declarations
-class QTermWidget;
 class QLabel;
+class QMenu;
+class QTermWidget;
+class QToolBar;
 class QUndoGroup;
+class QUndoView;
 
 namespace Caneda
 {
@@ -48,7 +47,8 @@ namespace Caneda
 
     class MainWindow : public QMainWindow
     {
-    Q_OBJECT
+        Q_OBJECT
+
     public:
         ~MainWindow();
 
@@ -117,15 +117,11 @@ namespace Caneda
         void slotUpdateSettingsChanges();
         void slotStatusBarMessage(const QString& newPos);
 
-    signals:
-        void signalKillWidgets();
-
     protected:
         void closeEvent(QCloseEvent *closeEvent);
 
     private Q_SLOTS:
         void loadSettings();
-        void slotProccessError(QProcess::ProcessError error);
 
     private:
         MainWindow(QWidget *w=0);
