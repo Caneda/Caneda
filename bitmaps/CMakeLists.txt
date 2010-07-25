@@ -12,7 +12,7 @@ clearFilterText.png document-save-all.png filedelete.png media-playback-start.pn
 code-context.png document-save-as.png foldernew.png next.png printer.png textjustify.png
 deactiv.png document-save.png formula.png nodename.png project-new.png textleft.png
 modified.png unmodified.png view-grid.png view-left-close.png view-split-left-right.png view-split-top-bottom.png transform-scale.png
-att_bridge.png att_pi.png att_tee.png
+att_bridge.png att_pi.png att_tee.png c_microstrip.png coax.png microstrip.png rectwaveguide.png
 )
 
 SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg rectangle.svg text.svg splash.jpg)
