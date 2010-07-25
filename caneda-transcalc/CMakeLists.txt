@@ -1,7 +1,5 @@
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR/caneda-transcalc} ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
-ADD_SUBDIRECTORY( examples )
-
 SET(CANEDATRANSCALC_SRCS helpdialog.cpp microstrip.cpp coax.cpp canedatrans.cpp
 transline.cpp main.cpp optionsdialog.cpp c_microstrip.cpp rectwaveguide.cpp
 propertygrid.cpp units.cpp

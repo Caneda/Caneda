@@ -66,6 +66,7 @@ ADD_SUBDIRECTORY( caneda-transcalc )
 ADD_SUBDIRECTORY( bitmaps )
 ADD_SUBDIRECTORY( docs )
 ADD_SUBDIRECTORY( lang )
+ADD_SUBDIRECTORY( misc )
 
 # ==================================================================================
 # Licence and other files
