@@ -22,7 +22,9 @@
 
 #ifndef __TRANSLINE_H
 #define __TRANSLINE_H
-#include <QtCore/QString>
+
+#include <QString>
+
 class TransWidgets;
 class QString;
 

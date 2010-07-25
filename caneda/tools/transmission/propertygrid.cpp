@@ -17,24 +17,24 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include <cmath>
-//using std::M_PI;
 #include "propertygrid.h"
 
-#include <QtCore/QVariant>
-#include <QtGui/QGridLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
-#include <QtGui/QIntValidator>
-#include <QtGui/QDoubleValidator>
-#include <QtGui/QRadioButton>
-#include <QtGui/QScrollArea>
-#include <QtCore/QMapIterator>
+#include <cmath>
+//using std::M_PI;
 
-#include <QtCore/QTextStream>
+#include <QVariant>
+#include <QGridLayout>
+#include <QLabel>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QIntValidator>
+#include <QDoubleValidator>
+#include <QRadioButton>
+#include <QScrollArea>
+#include <QMapIterator>
+#include <QTextStream>
 
-Value::Value(double value, Units::UnitType ut, int inUnit)
+Value::Value(double value, Caneda::UnitType ut, int inUnit)
 {
   m_value = value;
   m_unitType = ut;
@@ -67,13 +67,13 @@ void Value::setValue(double val)
 }
 Value Value::convertedTo(int unit) const
 {
-  double cnv = Units::convert(m_value,m_unitType,m_currentUnit,unit);
+  double cnv = Caneda::convert(m_value,m_unitType,m_currentUnit,unit);
   return Value(cnv,m_unitType,unit);
 }
 
 void Value::convertTo(int unit)
 {
-  m_value = Units::convert(m_value,m_unitType,m_currentUnit,unit);
+  m_value = Caneda::convert(m_value,m_unitType,m_currentUnit,unit);
   m_currentUnit = unit;
 }
 
@@ -92,7 +92,7 @@ int Value::currentUnit() const
   return m_currentUnit;
 }
 
-Units::UnitType Value::unitType() const
+Caneda::UnitType Value::unitType() const
 {
   return m_unitType;
 }
@@ -135,7 +135,7 @@ QIntValidator* PropertyBox::intValidator()
 }
 
 void PropertyBox::addDoubleProperty(const QString& name,const QString &tip,double val,
-                                    Units::UnitType ut,int curUnit,bool isSelectable)
+                                    Caneda::UnitType ut,int curUnit,bool isSelectable)
 {
    if(paramMap.contains(name))
       return;
@@ -145,22 +145,22 @@ void PropertyBox::addDoubleProperty(const QString& name,const QString &tip,doubl
    row->le = new QLineEdit();
    row->le->setValidator(doubleValidator());
    connect(row->le, SIGNAL(textEdited(const QString&)), this, SLOT(storeLineEditValues()));
-   if(ut != Units::None) {
+   if(ut != Caneda::None) {
       row->cb = new QComboBox();
       connect(row->cb, SIGNAL(activated(int)), this, SLOT(storeComboValues()));
       switch(ut)
       {
-         case Units::Frequency:
-            row->cb->addItems(Units::freqList);
+         case Caneda::Frequency:
+            row->cb->addItems(Caneda::freqList);
             break;
-         case Units::Resistance:
-            row->cb->addItems(Units::resList);
+         case Caneda::Resistance:
+            row->cb->addItems(Caneda::resList);
             break;
-         case Units::Length:
-            row->cb->addItems(Units::lenList);
+         case Caneda::Length:
+            row->cb->addItems(Caneda::lenList);
             break;
-         case Units::Angle:
-            row->cb->addItems(Units::angleList);
+         case Caneda::Angle:
+            row->cb->addItems(Caneda::angleList);
             break;
          default:break;
       };
@@ -170,13 +170,13 @@ void PropertyBox::addDoubleProperty(const QString& name,const QString &tip,doubl
       row->rb = new QRadioButton();
    }
    row->val = Value(val,ut,curUnit);
-   if(ut != Units::None)
+   if(ut != Caneda::None)
       row->cb->setCurrentIndex(curUnit);
    row->le->setText(row->val.toString());
 
    layout->addWidget(row->l,lastRow,0);
    layout->addWidget(row->le,lastRow,1);
-   if(ut != Units::None)
+   if(ut != Caneda::None)
       layout->addWidget(row->cb,lastRow,2);
    if(isSelectable)
       layout->addWidget(row->rb,lastRow,3);
@@ -312,7 +312,7 @@ int PropertyBox::unit(const QString& name) const
   return paramMap[name]->val.currentUnit();
 }
 
-Units::UnitType PropertyBox::unitType(const QString& name)
+Caneda::UnitType PropertyBox::unitType(const QString& name)
 {
   Q_ASSERT(paramMap.contains(name));
   return paramMap[name]->val.unitType();
@@ -330,7 +330,7 @@ void PropertyBox::storeComboValues()
   while( i.hasNext()) {
     i.next();
     PropertyBox::PropertyRow *r = i.value();
-    if(r->val.unitType() != Units::None)
+    if(r->val.unitType() != Caneda::None)
       r->val.setUnit(r->cb->currentIndex());
   }
 }
@@ -352,9 +352,9 @@ QTextStream& operator<<(QTextStream &str, const PropertyBox& box)
   while( i.hasNext()) {
     i.next();
     PropertyBox::PropertyRow *r = i.value();
-    if(r->val.unitType() != Units::None)
+    if(r->val.unitType() != Caneda::None)
       str << "  " << i.key() << " " << r->val.value() << " "
-	  << Units::toString(r->val.currentUnit(), r->val.unitType()) << "\n";
+          << Caneda::toString(r->val.currentUnit(), r->val.unitType()) << "\n";
     else
       str << "  " << i.key() << " " << r->val.value() << " " << "NA\n";
   }

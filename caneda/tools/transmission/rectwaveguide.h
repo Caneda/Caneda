@@ -24,6 +24,8 @@
 #ifndef __RECTWAVEGUIDE_H
 #define __RECTWAVEGUIDE_H
 
+#include "transline.h"
+
 class rectwaveguide : public transline {
  public:
   rectwaveguide();

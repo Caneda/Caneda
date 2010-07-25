@@ -18,8 +18,9 @@
  ***************************************************************************/
 
 #include "units.h"
-#include <QtGui/QGroupBox>
-#include <QtCore/QMap>
+
+#include <QGroupBox>
+#include <QMap>
 
 class QVariant;
 class QGridLayout;
@@ -34,7 +35,7 @@ class QTextStream;
 class Value
 {
  public:
-  Value(double value, Units::UnitType ut = Units::None, int inUnit = Units::None);
+  Value(double value, Caneda::UnitType ut = Caneda::None, int inUnit = Caneda::None);
   Value(const Value& value);
   Value& operator=(const Value& val);
   void setValue(double val);
@@ -44,11 +45,11 @@ class Value
   void setUnit(int unit);// just set unit
   QString toString() const;
   int currentUnit() const;
-  Units::UnitType unitType() const;
+  Caneda::UnitType unitType() const;
 
  private:
   double m_value;
-  Units::UnitType m_unitType;
+  Caneda::UnitType m_unitType;
   int m_currentUnit;
 };
 
@@ -62,7 +63,7 @@ public:
   PropertyBox(const QString& title,QWidget *parent=0l );
   ~PropertyBox(){};
   void addDoubleProperty(const QString& name,const QString &tip,double val = 0.0,
-		    Units::UnitType ut = Units::None,int curUnit = Units::None,bool isSel = false);
+                    Caneda::UnitType ut = Caneda::None,int curUnit = Caneda::None,bool isSel = false);
   void addIntProperty(const QString& name,const QString &tip,int value);
   void addComboProperty(const QString& name, const QString& tip,const QStringList& values);
   double doubleValue(const QString& name) const;
@@ -82,7 +83,7 @@ public:
   void setSelected(const QString& name, bool state);
   bool isSelected(const QString& name) const;
   int unit(const QString& name) const;
-  Units::UnitType unitType(const QString& name);
+  Caneda::UnitType unitType(const QString& name);
   static QDoubleValidator* doubleValidator();
   static QIntValidator* intValidator();
 

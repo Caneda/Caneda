@@ -21,8 +21,10 @@
  */
 
 #include "transline.h"
-#include "canedatrans.h"
+
+#include "transmissiondialog.h"
 #include "propertygrid.h"
+
 /* Constructor creates a transmission line instance. */
 transline::transline () {
   transWidgets = 0;
@@ -54,7 +56,7 @@ void transline::setProperty (const QString& prop, double value,int unit) {
   PropertyBox *box = transWidgets->boxWithProperty(prop);
   Q_ASSERT(box != 0l);
   int dstunit = box->unit(prop);
-  Q_ASSERT(dstunit != Units::None);
+  Q_ASSERT(dstunit != Caneda::None);
   box->setDoubleValue(prop,value,unit);
   box->convertTo(prop,dstunit);
 }

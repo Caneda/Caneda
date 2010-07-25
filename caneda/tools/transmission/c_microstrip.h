@@ -24,6 +24,9 @@
 #ifndef _C_MICROSTRIP_H_
 #define _C_MICROSTRIP_H_
 
+#include "transline.h"
+#include "microstrip.h"
+
 class c_microstrip : public transline {
  public:
   c_microstrip();

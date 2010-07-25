@@ -21,14 +21,14 @@
  *
  */
 
+#include "rectwaveguide.h"
+
+#include "transmissiondialog.h"
+#include "propertygrid.h"
+
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
-
-#include "canedatrans.h"
-#include "transline.h"
-#include "rectwaveguide.h"
-#include "propertygrid.h"
 
 rectwaveguide::rectwaveguide() : transline()
 {
@@ -174,7 +174,7 @@ void rectwaveguide::get_rectwaveguide_sub ()
  */
 void rectwaveguide::get_rectwaveguide_comp ()
 {
-  f = getProperty ("Freq", Units::Hz);
+  f = getProperty ("Freq", Caneda::Hz);
 }
 
 /*
@@ -184,8 +184,8 @@ void rectwaveguide::get_rectwaveguide_comp ()
  */
 void rectwaveguide::get_rectwaveguide_elec ()
 {
-  Z0 = getProperty ("Z0", Units::Ohm);
-  ang_l = getProperty ("Ang_l", Units::Rad);
+  Z0 = getProperty ("Z0", Caneda::Ohm);
+  ang_l = getProperty ("Ang_l", Caneda::Rad);
 }
 
 
@@ -196,9 +196,9 @@ void rectwaveguide::get_rectwaveguide_elec ()
  */
 void rectwaveguide::get_rectwaveguide_phys ()
 {
-  a = getProperty ("a", Units::m);
-  b = getProperty ("b", Units::m);
-  l = getProperty ("L", Units::m);
+  a = getProperty ("a", Caneda::m);
+  b = getProperty ("b", Caneda::m);
+  l = getProperty ("L", Caneda::m);
 }
 
 
@@ -245,8 +245,8 @@ void rectwaveguide::analyze ()
     atten_cond = alphac_cutoff () * l;
   }
 
-  setProperty ("Z0", Z0, Units::Ohm);
-  setProperty ("Ang_l", ang_l, Units::Rad);
+  setProperty ("Z0", Z0, Caneda::Ohm);
+  setProperty ("Ang_l", ang_l, Caneda::Rad);
 
   show_results ();
 }
@@ -275,12 +275,12 @@ void rectwaveguide::synthesize ()
     /* solve for b */
     b = Z0 * a * sqrt(1.0 - pow((fc(1,0)/f),2.0))/
       (2. * ZF0);
-    setProperty ("b", b, Units::m);
+    setProperty ("b", b, Caneda::m);
   } else if (isSelected ("a")) {
     /* solve for a */
     a = sqrt(pow((2.0 * ZF0 * b/Z0), 2.0) + 
 		 pow((C0/(2.0 * f)),2.0));
-    setProperty ("a", a, Units::m);
+    setProperty ("a", a, Caneda::m);
   }
 
   k = kval ();
@@ -288,7 +288,7 @@ void rectwaveguide::synthesize ()
   lambda_g = (2. * M_PI)/beta;
   l = (ang_l * lambda_g)/(2.0 * M_PI);    /* in m */
 
-  setProperty ("L", l, Units::m);
+  setProperty ("L", l, Caneda::m);
 
   if (kc(1,0) <= k) {
     /*propagating modes */

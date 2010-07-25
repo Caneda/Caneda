@@ -22,6 +22,23 @@
 
 #include "ui_transmissiondialog.h"
 
+// Forward declarations
+class transline;
+class PropertyBox;
+class ResultBox;
+
+struct TransWidgets
+{
+  PropertyBox *subParams;
+  PropertyBox *phyParams;
+  PropertyBox *comParams;
+  PropertyBox *eleParams;
+  ResultBox *result;
+  transline *line;
+  TransWidgets();
+  PropertyBox* boxWithProperty(const QString& name);
+};
+
 namespace Caneda
 {
     class TransmissionDialog : public QDialog
@@ -33,6 +50,23 @@ namespace Caneda
         ~TransmissionDialog();
 
     private:
+        void setupMicrostrip();
+        void setupRectWaveGuide();
+        void setupCoaxialLine();
+        void setupCoupledMicrostrip();
+
+    private slots:
+        void slotTypeChanged();
+        void slotAnalyze();
+        void slotSynthesize();
+        void slotCreateSchematic();
+
+        void slotFileLoad();
+        void slotFileSave();
+
+    private:
+        TransWidgets *transWidgets[4];
+
         Ui::TransmissionDialog ui;
     };
 

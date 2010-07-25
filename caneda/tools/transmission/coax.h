@@ -24,6 +24,8 @@
 #ifndef __COAX_H
 #define __COAX_H
 
+#include "transline.h"
+
 class coax : public transline {
  public:
   coax();

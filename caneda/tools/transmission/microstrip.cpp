@@ -28,14 +28,16 @@
  * Based on the original microstrip.c by Gopal Narayanan 
  */
 
+#include "microstrip.h"
+
+#include "propertygrid.h"
+#include "transmissiondialog.h"
+#include "units.h"
+
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 
-#include "microstrip.h"
-#include "canedatrans.h"
-#include "propertygrid.h"
-#include "units.h"
 microstrip::microstrip() : transline()
 {
   description = "Microstrip";
@@ -432,12 +434,12 @@ void microstrip::get_microstrip_sub()
 {
   er = getProperty ("Er");
   mur = getProperty ("Mur");
-  h = getProperty ("H", Units::m);
-  ht = getProperty ("H_t", Units::m);
-  t = getProperty ("T", Units::m);
+  h = getProperty ("H", Caneda::m);
+  ht = getProperty ("H_t", Caneda::m);
+  t = getProperty ("T", Caneda::m);
   sigma = getProperty ("Cond");
   tand = getProperty ("Tand");
-  rough = getProperty ("Rough", Units::m);
+  rough = getProperty ("Rough", Caneda::m);
 }
 
 /*
@@ -446,7 +448,7 @@ void microstrip::get_microstrip_sub()
  */
 void microstrip::get_microstrip_comp()
 {
-  f = getProperty ("Freq", Units::Hz);
+  f = getProperty ("Freq", Caneda::Hz);
 }
 
 /*
@@ -455,8 +457,8 @@ void microstrip::get_microstrip_comp()
  */
 void microstrip::get_microstrip_elec()
 {
-  Z0 = getProperty ("Z0", Units::Ohm);
-  ang_l = getProperty ("Ang_l", Units::Rad);
+  Z0 = getProperty ("Z0", Caneda::Ohm);
+  ang_l = getProperty ("Ang_l", Caneda::Rad);
 }
 
 
@@ -466,15 +468,15 @@ void microstrip::get_microstrip_elec()
  */
 void microstrip::get_microstrip_phys()
 {
-  w = getProperty ("W", Units::m);
-  l = getProperty ("L", Units::m);
+  w = getProperty ("W", Caneda::m);
+  l = getProperty ("L", Caneda::m);
 }
 
 
 void microstrip::show_results()
 {
-  setProperty ("Z0", Z0, Units::Ohm);
-  setProperty ("Ang_l", ang_l, Units::Rad);
+  setProperty ("Z0", Z0, Caneda::Ohm);
+  setProperty ("Ang_l", ang_l, Caneda::Rad);
 
   setResult (QObject::tr("ErEff"), er_eff, "");
   setResult (QObject::tr("Conductor Losses"), atten_cond, "dB");
@@ -482,8 +484,8 @@ void microstrip::show_results()
 
   PropertyBox* box = transWidgets->boxWithProperty("T");
   Q_ASSERT(box != 0l);
-  double val = Units::convert(skindepth,box->unitType("T"),Units::m,box->unit("T"));
-  setResult (QObject::tr("Skin Depth"), val, Units::toString(box->unit("T"),box->value("T").unitType()));
+  double val = Caneda::convert(skindepth,box->unitType("T"),Caneda::m,box->unit("T"));
+  setResult (QObject::tr("Skin Depth"), val, Caneda::toString(box->unit("T"),box->value("T").unitType()));
 }
 
 /*
@@ -573,11 +575,11 @@ void microstrip::synthesize()
       break;
   }
 
-  setProperty ("W", w, Units::m);
+  setProperty ("W", w, Caneda::m);
   /* calculate physical length */
-  ang_l = getProperty ("Ang_l", Units::Rad);
+  ang_l = getProperty ("Ang_l", Caneda::Rad);
   l = C0 / f / sqrt(er_eff * mur_eff) * ang_l / 2.0 / M_PI;    /* in m */
-  setProperty ("L", l, Units::m);
+  setProperty ("L", l, Caneda::m);
 
   /* compute microstrip parameters */
   calc();

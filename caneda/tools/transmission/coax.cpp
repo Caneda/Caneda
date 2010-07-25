@@ -28,16 +28,16 @@
  * performs the associated calculations
  */
 
+#include "coax.h"
 
+#include "propertygrid.h"
+#include "transmissiondialog.h"
+
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 
-#include "canedatrans.h"
-#include "transline.h"
-#include "coax.h"
-#include "propertygrid.h"
 coax::coax() : transline()
 {
   description = "Coaxial";
@@ -65,7 +65,7 @@ void coax::get_coax_sub ()
  */
 void coax::get_coax_comp ()
 {
-  f = getProperty ("Freq", Units::Hz);
+  f = getProperty ("Freq", Caneda::Hz);
 }
 
 /*
@@ -74,8 +74,8 @@ void coax::get_coax_comp ()
  */
 void coax::get_coax_elec ()
 {
-  Z0 = getProperty ("Z0", Units::Ohm);
-  ang_l = getProperty ("Ang_l", Units::Rad);
+  Z0 = getProperty ("Z0", Caneda::Ohm);
+  ang_l = getProperty ("Ang_l", Caneda::Rad);
 }
 
 /*
@@ -84,9 +84,9 @@ void coax::get_coax_elec ()
  */
 void coax::get_coax_phys ()
 {
-  din = getProperty ("din", Units::m);
-  dout = getProperty ("dout", Units::m);
-  l = getProperty ("L", Units::m);
+  din = getProperty ("din", Caneda::m);
+  dout = getProperty ("dout", Caneda::m);
+  l = getProperty ("L", Caneda::m);
 }
 
 double coax::alphad_coax ()
@@ -130,8 +130,8 @@ void coax::analyze ()
   /* calculate electrical angle */
   ang_l = (2.0 * M_PI * l)/lambda_g;    /* in radians */
      
-  setProperty ("Z0", Z0, Units::Ohm);
-  setProperty ("Ang_l", ang_l, Units::Rad);
+  setProperty ("Z0", Z0, Caneda::Ohm);
+  setProperty ("Ang_l", ang_l, Caneda::Rad);
 
   show_results();
 }
@@ -159,17 +159,17 @@ void coax::synthesize ()
   if (isSelected ("din")) {
     /* solve for din */
     din = dout / exp(Z0*sqrt(er)/ZF0/2/M_PI);
-    setProperty ("din", din, Units::m);
+    setProperty ("din", din, Caneda::m);
   } else if (isSelected ("dout")) {
     /* solve for dout */
     dout = din * exp(Z0*sqrt(er)/ZF0/2/M_PI);
-    setProperty ("dout", dout, Units::m);
+    setProperty ("dout", dout, Caneda::m);
   }
 
   lambda_g = (C0/(f))/sqrt(er * mur);
   /* calculate physical length */
   l = (lambda_g * ang_l)/(2.0 * M_PI);    /* in m */
-  setProperty ("L", l, Units::m);
+  setProperty ("L", l, Caneda::m);
 
   show_results();
 }
