@@ -74,6 +74,9 @@ namespace Caneda
       return QString::number(val,'f',2);
    }
 
+   QString latexToUnicode(const QString& input);
+   QString unicodeToLatex(QString unicode);
+
    enum SideBarRole {
        ItemSelection,
        PropertyBrowser
