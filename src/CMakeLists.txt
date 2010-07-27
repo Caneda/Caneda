@@ -1,16 +1,16 @@
 INCLUDE_DIRECTORIES(
-   ${CMAKE_BINARY_DIR}/caneda/dialogs
-   ${CMAKE_BINARY_DIR}/caneda/tools/attenuator
-   ${CMAKE_BINARY_DIR}/caneda/tools/filter
-   ${CMAKE_BINARY_DIR}/caneda/tools/transmission
+   ${CMAKE_BINARY_DIR}/src/dialogs
+   ${CMAKE_BINARY_DIR}/src/tools/attenuator
+   ${CMAKE_BINARY_DIR}/src/tools/filter
+   ${CMAKE_BINARY_DIR}/src/tools/transmission
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR} )
 
-ADD_SUBDIRECTORY( xmlutilities )
-ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( diagrams )
+ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( paintings )
 ADD_SUBDIRECTORY( tools )
+ADD_SUBDIRECTORY( xmlutilities )
 
 SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   schematicscene.cpp sidebarmodel.cpp
@@ -43,13 +43,12 @@ SET(CANEDA_MOC_HDRS schematicscene.h schematicwidget.h
 
 QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )
 
-LINK_DIRECTORIES( ${Caneda_BINARY_DIR}/caneda-tools
-                  ${Caneda_BINARY_DIR}/caneda/tools/qtermwidget )
+LINK_DIRECTORIES( ${Caneda_BINARY_DIR}/src/tools/qtermwidget )
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} ${CANEDA_MOC_SRCS} )
 
 TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES}
-                       canedatools paintings dialogs diagrams xmlutilities
+                       diagrams dialogs paintings xmlutilities
                        attenuator filter qtermwidget transmission)
 
 INSTALL(TARGETS caneda DESTINATION ${BINARYDIR})
