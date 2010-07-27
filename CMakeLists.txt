@@ -35,7 +35,7 @@ ADD_DEFINITIONS( ${LIBXSLT_DEFINITIONS} )
 # Configure runtime directories
 
 SET( BASEDIR     "share/caneda/" )
-SET( BITMAPDIR   "share/caneda/bitmaps/" )
+SET( BITMAPDIR   "share/caneda/images/" )
 SET( BINARYDIR   "bin/" )
 SET( DOCDIR      "share/caneda/docs/" )
 SET( MANDIR      "share/man/man1/" )
@@ -61,8 +61,8 @@ INCLUDE_DIRECTORIES(
 
 ADD_SUBDIRECTORY( src )
 
-ADD_SUBDIRECTORY( bitmaps )
 ADD_SUBDIRECTORY( docs )
+ADD_SUBDIRECTORY( images )
 ADD_SUBDIRECTORY( lang )
 ADD_SUBDIRECTORY( misc )
 
