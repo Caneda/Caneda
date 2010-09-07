@@ -19,9 +19,9 @@
 
 #include "styledialog.h"
 
-#include "paintings.h"
+#include "arrow.h"
+#include "ellipsearc.h"
 #include "schematicscene.h"
-#include "undocommands.h"
 
 #include <QColorDialog>
 #include <QPainter>

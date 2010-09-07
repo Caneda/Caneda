@@ -17,9 +17,13 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "paintings.h"
+#include "arrow.h"
+#include "ellipse.h"
+#include "ellipsearc.h"
+#include "graphicline.h"
+#include "graphictext.h"
+#include "rectangle.h"
 #include "schematicscene.h"
-#include "styledialog.h"
 
 #include "xmlutilities/xmlutilities.h"
 

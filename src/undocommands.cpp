@@ -23,7 +23,6 @@
 #include "port.h"
 #include "schematicscene.h"
 
-#include "paintings/paintings.h"
 #include "paintings/graphictext.h"
 
 #include "xmlutilities/xmlutilities.h"

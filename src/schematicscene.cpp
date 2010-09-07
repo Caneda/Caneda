@@ -33,7 +33,8 @@
 
 #include "diagrams/diagram.h"
 
-#include "paintings/paintings.h"
+#include "paintings/ellipsearc.h"
+#include "paintings/graphictextdialog.h"
 
 #include "xmlutilities/xmlutilities.h"
 
