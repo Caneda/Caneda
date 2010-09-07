@@ -8,6 +8,7 @@ INCLUDE_DIRECTORIES(
 
 ADD_SUBDIRECTORY( diagrams )
 ADD_SUBDIRECTORY( dialogs )
+ADD_SUBDIRECTORY( layers )
 ADD_SUBDIRECTORY( paintings )
 ADD_SUBDIRECTORY( tools )
 ADD_SUBDIRECTORY( xmlutilities )
@@ -48,7 +49,7 @@ LINK_DIRECTORIES( ${Caneda_BINARY_DIR}/src/tools/qtermwidget )
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} ${CANEDA_MOC_SRCS} )
 
 TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES}
-                       diagrams dialogs paintings xmlutilities
+                       diagrams dialogs layers paintings xmlutilities
                        attenuator filter qtermwidget transmission)
 
 INSTALL(TARGETS caneda DESTINATION ${BINARYDIR})

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,13 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "painting.h"
+#include "layer.h"
 
-#include "arrow.h"
-#include "ellipse.h"
-#include "ellipsearc.h"
-#include "graphicline.h"
-#include "graphictext.h"
 #include "rectangle.h"
 #include "schematicscene.h"
 
@@ -38,9 +33,9 @@
 namespace Caneda
 {
     //! Constructs a painting item with default pen and default brush.
-    Painting::Painting(SchematicScene *scene) : SchematicItem(0, scene),
-    m_pen(defaultPaintingPen),
-    m_brush(defaultPaintingBrush),
+    Layer::Layer(SchematicScene *scene) : SchematicItem(0, scene),
+    m_pen(defaultLayerPen),
+    m_brush(defaultLayerBrush),
     m_resizeHandles(Caneda::NoHandle),
     m_activeHandle(Caneda::NoHandle)
     {
@@ -50,16 +45,16 @@ namespace Caneda
     }
 
     //! Destructor
-    Painting::~Painting()
+    Layer::~Layer()
     {
     }
 
     /*!
      * \brief Sets the painting rect to \a rect.
      *
-     * \copydoc Painting::m_paintingRect
+     * \copydoc Layer::m_paintingRect
      */
-    void Painting::setPaintingRect(const QRectF& rect)
+    void Layer::setPaintingRect(const QRectF& rect)
     {
         if(rect == m_paintingRect) {
             return;
@@ -78,7 +73,7 @@ namespace Caneda
      *
      * Subclasses can use this to customize their shapes.
      */
-    QPainterPath Painting::shapeForRect(const QRectF& rect) const
+    QPainterPath Layer::shapeForRect(const QRectF& rect) const
     {
         QPainterPath path;
         path.addRect(rect);
@@ -86,7 +81,7 @@ namespace Caneda
     }
 
     //! Sets item's pen to \a _pen.
-    void Painting::setPen(const QPen& _pen)
+    void Layer::setPen(const QPen& _pen)
     {
         if(m_pen == _pen) {
             return;
@@ -99,7 +94,7 @@ namespace Caneda
     }
 
     //! Sets item's brush to \a _brush.
-    void Painting::setBrush(const QBrush& _brush)
+    void Layer::setBrush(const QBrush& _brush)
     {
         if(m_brush == _brush) {
             return;
@@ -119,7 +114,7 @@ namespace Caneda
      * as hint to draw. The subclassed paint method should also call this
      * base method in the end to get the resize handles drawn.
      */
-    void Painting::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+    void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                          QWidget *)
     {
         if(option->state & QStyle::State_Selected) {
@@ -128,7 +123,7 @@ namespace Caneda
     }
 
     //!\brief Indicate the resize handles to be shown.
-    void Painting::setResizeHandles(Caneda::ResizeHandles handles)
+    void Layer::setResizeHandles(Caneda::ResizeHandles handles)
     {
         if(m_resizeHandles == handles) {
             return;
@@ -144,91 +139,61 @@ namespace Caneda
      * \brief Returns a pointer to new Painting object created appropriately
      * according to name.
      */
-    Painting* Painting::fromName(const QString& name)
+    Layer* Layer::fromName(const QString& name)
     {
         static QRectF rect(-30, -30, 90, 60);
 
         //check if name begins with capital letter and if so use the following.
         //This happens when painting is placed by selecting in sidebar.
         if(name.at(0).isUpper()) {
-            if(name == QObject::tr("Line")) {
-                return new GraphicLine(QLineF(rect.bottomLeft(), rect.topRight()));
-            }
-            else if(name == QObject::tr("Arrow")) {
-                return new Arrow(QLineF(rect.bottomLeft(), rect.topRight()));
-            }
-            else if(name == QObject::tr("Ellipse")) {
-                return new Ellipse(rect);
-            }
-            else if(name == QObject::tr("Rectangle")) {
+            if(name == QObject::tr("Rectangle")) {
                 return new Rectangle(rect);
-            }
-            else if(name == QObject::tr("Elliptic Arc")) {
-                return new EllipseArc(rect, 100, 300);
-            }
-            else if(name == QObject::tr("Text")) {
-                return new GraphicText;
             }
         }
 
         // This is true usually when painting is being read from xml file.
         else {
-            if(name == QLatin1String("line")) {
-                return new GraphicLine(QLineF(rect.bottomLeft(), rect.topRight()));
-            }
-            else if(name == QLatin1String("arrow")) {
-                return new Arrow(QLineF(rect.bottomLeft(), rect.topRight()));
-            }
-            else if(name == QLatin1String("ellipse")) {
-                return new Ellipse(rect);
-            }
-            else if(name == QLatin1String("rectangle")) {
+            if(name == QLatin1String("rectangle")) {
                 return new Rectangle(rect);
-            }
-            else if(name == QLatin1String("ellipseArc")) {
-                return new EllipseArc(rect, 100, 300);
-            }
-            else if(name == QLatin1String("text")) {
-                return new GraphicText;
             }
         }
         return 0;
     }
 
     //! Reimplemented for convenience though it doesn't do actual work.
-    Painting* Painting::copy(SchematicScene *) const
+    Layer* Layer::copy(SchematicScene *) const
     {
         return 0;
     }
 
     //! \copydoc SchematicItem::copyDataTo()
-    void Painting::copyDataTo(Painting *painting) const
+    void Layer::copyDataTo(Layer *layer) const
     {
-        painting->setPen(pen());
-        painting->setBrush(brush());
-        SchematicItem::copyDataTo(static_cast<SchematicItem*>(painting));
+        layer->setPen(pen());
+        layer->setBrush(brush());
+        SchematicItem::copyDataTo(static_cast<SchematicItem*>(layer));
     }
 
     /*!
      * \brief Loads and returns a pointer to new painting object as read
      * from \a reader. On failure returns null.
      */
-    Painting* Painting::loadPainting(Caneda::XmlReader *reader, SchematicScene *scene)
+    Layer* Layer::loadLayer(Caneda::XmlReader *reader, SchematicScene *scene)
     {
-        Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+        Q_ASSERT(reader->isStartElement() && reader->name() == "layer");
 
-        Painting *painting = Painting::fromName(reader->attributes().value("name").toString());
-        if(painting) {
-            painting->loadData(reader);
+        Layer *layer = Layer::fromName(reader->attributes().value("name").toString());
+        if(layer) {
+            layer->loadData(reader);
             if(scene) {
-                scene->addItem(painting);
+                scene->addItem(layer);
             }
         }
-        return painting;
+        return layer;
     }
 
     //! Adjust geometry of item to accommodate resize handles.
-    void Painting::adjustGeometry()
+    void Layer::adjustGeometry()
     {
         QRectF boundRect = boundForRect(m_paintingRect);
         QPainterPath _shape = shapeForRect(m_paintingRect);
@@ -265,7 +230,7 @@ namespace Caneda
     }
 
     //! Takes care of handle resizing on mouse press event.
-    void Painting::mousePressEvent(QGraphicsSceneMouseEvent *event)
+    void Layer::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         m_activeHandle = Caneda::NoHandle;
 
@@ -283,7 +248,7 @@ namespace Caneda
     }
 
     //! Takes care of handle resizing on mouse move event.
-    void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+    void Layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     {
         if(m_activeHandle == Caneda::NoHandle) {
             SchematicItem::mouseMoveEvent(event);
@@ -321,12 +286,12 @@ namespace Caneda
     }
 
     //! Takes care of handle resizing on mouse release event.
-    void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+    void Layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
         SchematicItem::mouseReleaseEvent(event);
         if(m_activeHandle != Caneda::NoHandle && m_paintingRect != m_store) {
             schematicScene()->undoStack()->push(
-                    new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect));
+                    new LayerRectChangeCmd(this, storedPaintingRect(), m_paintingRect));
         }
         m_activeHandle = Caneda::NoHandle;
     }

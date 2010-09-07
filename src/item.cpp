@@ -173,10 +173,9 @@ namespace Caneda
         m_boundingRect(0, 0, 0, 0)
     {
         m_shape.addRect(m_boundingRect);
-#if QT_VERSION >= 0x040600
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
-#endif
+
         if(scene) {
             scene->addItem(this);
         }

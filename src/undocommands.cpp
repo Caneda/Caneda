@@ -23,6 +23,8 @@
 #include "port.h"
 #include "schematicscene.h"
 
+#include "layers/layer.h"
+
 #include "paintings/graphictext.h"
 
 #include "xmlutilities/xmlutilities.h"
@@ -526,6 +528,32 @@ namespace Caneda
         }
     }
 
+    /*
+    ##########################################################################
+    #                          LayerRectChangeCmd                            #
+    ##########################################################################
+    */
+
+
+    LayerRectChangeCmd::LayerRectChangeCmd(Layer *layer, QRectF oldRect,
+            QRectF newRect,
+            QUndoCommand *parent) :
+        QUndoCommand(parent),
+        m_layer(layer),
+        m_oldRect(oldRect),
+        m_newRect(newRect)
+    {
+    }
+
+    void LayerRectChangeCmd::undo()
+    {
+        m_layer->setPaintingRect(m_oldRect);
+    }
+
+    void LayerRectChangeCmd::redo()
+    {
+        m_layer->setPaintingRect(m_newRect);
+    }
 
     /*
     ##########################################################################

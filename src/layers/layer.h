@@ -1,0 +1,135 @@
+/***************************************************************************
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
+ ***************************************************************************/
+
+#ifndef LAYER_H
+#define LAYER_H
+
+#include "item.h"
+
+#include <QBrush>
+#include <QPen>
+
+namespace Caneda
+{
+    static const QPen defaultLayerPen(Qt::black);
+    static const QBrush defaultLayerBrush(Qt::NoBrush);
+
+    /*!
+     * \brief This class is base for layout items like metal, poly, active...
+     *
+     * This class also takes care of resize handles. All the derived classes will be
+     * passed a rectangle and they should use this rectangle as a hint to draw.
+     * For example, a line can use the topleft and bottom right of the rectangle to
+     * represent itself. The rectangle is set using \a setPaintingRect.
+     * The mouse functionalities corresponding to resize handles are also handled
+     * by this class.
+     */
+    class Layer : public SchematicItem
+    {
+    public:
+        enum {
+            NoLayerType = 0,
+            Type = SchematicItem::LayerType
+        };
+
+        enum LayerType {
+            RectangleType
+        };
+
+        Layer(SchematicScene *scene = 0);
+        ~Layer();
+
+        //! \copydoc SchematicItem::type()
+        int type() const { return Type; }
+
+        /*!
+         * \brief Returns paintingRect of this painting item.
+         *
+         * \copydoc Painting::m_paintingRect
+         */
+        QRectF paintingRect() const { return m_paintingRect; }
+        void setPaintingRect(const QRectF& rect);
+
+        virtual QPainterPath shapeForRect(const QRectF& rect) const;
+
+        //! Returns the adjusted painting bound rect for paintingrect \a rect.
+        virtual QRectF boundForRect(const QRectF& rect) const {
+            return rect;
+        }
+
+        //! Returns the pen with which the item is drawn.
+        QPen pen() const { return m_pen; }
+        virtual void setPen(const QPen& _pen);
+
+        //! Returns the brush with which the item is drawn.
+        QBrush brush() const { return m_brush; }
+        virtual void setBrush(const QBrush& _brush);
+
+        void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
+
+        //! Returns an OR representation of used resize handles.
+        Caneda::ResizeHandles resizeHandles() const { return m_resizeHandles; }
+        void setResizeHandles(Caneda::ResizeHandles handles);
+
+        //! Returns the active handle i.e the one with mouse focus.
+        Caneda::ResizeHandle activeHandle() const { return m_activeHandle; }
+
+        Layer* copy(SchematicScene *scene = 0) const;
+
+        virtual void copyDataTo(Layer *layer) const;
+
+        static Layer* fromName(const QString& name);
+        static Layer* loadLayer(Caneda::XmlReader *reader, SchematicScene *scene = 0);
+
+        QRectF storedPaintingRect() const { return m_store; }
+        void storePaintingRect() { m_store = paintingRect(); }
+
+    protected:
+        /*!
+         * Subclasses should reimplement to do calculations this is notified
+         * usually in call \a setPaintingRect.
+         */
+        virtual void geometryChange() {}
+
+        void adjustGeometry();
+
+        void mousePressEvent(QGraphicsSceneMouseEvent *event);
+        void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+        void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+    private:
+        /*!
+         * Represents the rectangle withing which painting should be drawn.
+         *
+         * For eg. GraphicLine can use topleft and bottom right of painting
+         * rectangles to represent itself.
+         * \note paintingRect is not same as bounding rect. The latter includes
+         * resizehandles also.
+         */
+        QRectF m_paintingRect;
+        QPen m_pen;
+        QBrush m_brush;
+        Caneda::ResizeHandles m_resizeHandles;
+        Caneda::ResizeHandle m_activeHandle;
+        QRectF m_store;
+    };
+
+} // namespace Caneda
+
+#endif //LAYER_H
