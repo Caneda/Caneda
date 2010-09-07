@@ -86,31 +86,40 @@ namespace Caneda
            painter->setPen(QPen(Qt::NoPen));
        }
 
+
        QBrush _brush(Qt::gray);
 
        if(layerName() == QObject::tr("Metal 1")) {
            _brush.setColor(Qt::blue);
+           setZValue(0);
        }
        else if(layerName() == QObject::tr("Metal 2")) {
            _brush.setColor(Qt::gray);
+           setZValue(1);
        }
        else if(layerName() == QObject::tr("Poly 1")) {
            _brush.setColor(Qt::red);
+           setZValue(2);
        }
        else if(layerName() == QObject::tr("Poly 2")) {
            _brush.setColor(Qt::darkRed);
+           setZValue(3);
        }
        else if(layerName() == QObject::tr("Active")) {
            _brush.setColor(Qt::green);
+           setZValue(4);
        }
        else if(layerName() == QObject::tr("Contact")) {
            _brush.setColor(Qt::black);
+           setZValue(5);
        }
        else if(layerName() == QObject::tr("N Well")) {
            _brush.setColor(Qt::darkYellow);
+           setZValue(6);
        }
        else if(layerName() == QObject::tr("P Well")) {
            _brush.setColor(Qt::darkCyan);
+           setZValue(7);
        }
 
        painter->setOpacity(0.5);
