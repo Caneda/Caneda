@@ -171,6 +171,21 @@ namespace Caneda
         QList<QPair<QString, QPixmap> > layerItems;
         layerItems << qMakePair(QObject::tr("Metal 1"),
                 QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+        layerItems << qMakePair(QObject::tr("Metal 2"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+        layerItems << qMakePair(QObject::tr("Poly 1"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+        layerItems << qMakePair(QObject::tr("Poly 2"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+        layerItems << qMakePair(QObject::tr("Active"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+        layerItems << qMakePair(QObject::tr("Contact"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+        layerItems << qMakePair(QObject::tr("N Well"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+        layerItems << qMakePair(QObject::tr("P Well"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+
 
         m_componentsSidebar->plugItem("Components", QPixmap(), "root");
         m_componentsSidebar->plugItems(paintingItems, QObject::tr("Paint Tools"));

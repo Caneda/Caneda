@@ -34,12 +34,14 @@ namespace Caneda
      * \param rect Rectangle in local coords.
      * \param scene Scene to which this item should be added.
      */
-    Layer::Layer(const QRectF& rect, SchematicScene *scene) :
+    Layer::Layer(const QRectF &rect, const QString &layerName, SchematicScene *scene) :
        Painting(scene)
     {
        setRect(rect);
        setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
                         Caneda::TopRightHandle| Caneda::BottomLeftHandle);
+
+       setLayerName(layerName);
     }
 
     //! \brief Destructor.
@@ -83,7 +85,36 @@ namespace Caneda
        else {
            painter->setPen(QPen(Qt::NoPen));
        }
-       painter->setBrush(QBrush(Qt::blue, Qt::Dense4Pattern));
+
+       QBrush _brush(Qt::gray);
+
+       if(layerName() == QObject::tr("Metal 1")) {
+           _brush.setColor(Qt::blue);
+       }
+       else if(layerName() == QObject::tr("Metal 2")) {
+           _brush.setColor(Qt::gray);
+       }
+       else if(layerName() == QObject::tr("Poly 1")) {
+           _brush.setColor(Qt::red);
+       }
+       else if(layerName() == QObject::tr("Poly 2")) {
+           _brush.setColor(Qt::darkRed);
+       }
+       else if(layerName() == QObject::tr("Active")) {
+           _brush.setColor(Qt::green);
+       }
+       else if(layerName() == QObject::tr("Contact")) {
+           _brush.setColor(Qt::black);
+       }
+       else if(layerName() == QObject::tr("N Well")) {
+           _brush.setColor(Qt::darkYellow);
+       }
+       else if(layerName() == QObject::tr("P Well")) {
+           _brush.setColor(Qt::darkCyan);
+       }
+
+       painter->setOpacity(0.5);
+       painter->setBrush(_brush);
        painter->drawRect(rect());
 
        //call base method to draw resize handles.
@@ -93,9 +124,9 @@ namespace Caneda
     //! \copydoc Painting::copy()
     Layer* Layer::copy(SchematicScene *scene) const
     {
-       Layer *rectItem = new Layer(rect(), scene);
-       Painting::copyDataTo(rectItem);
-       return rectItem;
+       Layer *layerItem = new Layer(rect(), layerName(), scene);
+       Painting::copyDataTo(layerItem);
+       return layerItem;
     }
 
     //! \brief Saves rectangle data to xml using \a writer.

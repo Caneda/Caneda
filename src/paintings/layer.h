@@ -37,7 +37,7 @@ namespace Caneda
             Type = Painting::LayerType
         };
 
-        Layer(const QRectF &rect, SchematicScene *scene = 0);
+        Layer(const QRectF &rect, const QString &layerName, SchematicScene *scene = 0);
         ~Layer();
 
         QPainterPath shapeForRect(const QRectF& rect) const;
@@ -49,6 +49,9 @@ namespace Caneda
         QRectF rect() const { return paintingRect(); }
         void setRect(const QRectF& rect) { setPaintingRect(rect); }
 
+        QString layerName() const { return m_layerName; }
+        void setLayerName(const QString& layerName) { m_layerName = layerName; }
+
         int type() const { return Layer::Type; }
         Layer* copy(SchematicScene *scene = 0) const;
 
@@ -56,6 +59,9 @@ namespace Caneda
         void loadData(Caneda::XmlReader *reader);
 
         int launchPropertyDialog(Caneda::UndoOption opt);
+
+    private:
+        QString m_layerName;
     };
 
 } // namespace Caneda
