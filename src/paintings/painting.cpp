@@ -24,6 +24,7 @@
 #include "ellipsearc.h"
 #include "graphicline.h"
 #include "graphictext.h"
+#include "layer.h"
 #include "rectangle.h"
 #include "schematicscene.h"
 
@@ -169,6 +170,10 @@ namespace Caneda
             else if(name == QObject::tr("Text")) {
                 return new GraphicText;
             }
+
+            else if(name == QObject::tr("Metal 1")) {
+                return new Layer(rect);
+            }
         }
 
         // This is true usually when painting is being read from xml file.
@@ -191,6 +196,7 @@ namespace Caneda
             else if(name == QLatin1String("text")) {
                 return new GraphicText;
             }
+
         }
         return 0;
     }

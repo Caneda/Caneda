@@ -32,7 +32,6 @@ namespace Caneda
 {
     // Forward declarations.
     class Component;
-    class Layer;
     class Painting;
     class Port;
     class SchematicItem;
@@ -243,21 +242,6 @@ namespace Caneda
     protected:
         typedef QPair<Component*, Caneda::ActiveStatus> ComponentStatusPair;
         QList<ComponentStatusPair> m_componentStatusPairs;
-    };
-
-    class LayerRectChangeCmd : public QUndoCommand
-    {
-    public:
-        LayerRectChangeCmd(Layer *layer, QRectF oldRect, QRectF newRect,
-                QUndoCommand *parent = 0);
-
-        void undo();
-        void redo();
-
-    protected:
-        Layer *const m_layer;
-        QRectF m_oldRect;
-        QRectF m_newRect;
     };
 
     class PaintingRectChangeCmd : public QUndoCommand

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,28 +17,28 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef RECTANGLE_H
-#define RECTANGLE_H
+#ifndef LAYER_H
+#define LAYER_H
 
-#include "layer.h"
+#include "painting.h"
 
 namespace Caneda
 {
     /*!
-     * \brief Represents rectangular painting item.
+     * \brief Represents rectangular layer painting item.
      *
-     * This class allows user to draw rectangle on schematic. The rectangles can
+     * This class allows user to draw a rectangle layer on schematic. The rectangles can
      * be filled by setting \a Painting::setBrush() .
      */
-    class Rectangle : public Layer
+    class Layer : public Painting
     {
     public:
         enum {
-            Type = Layer::RectangleType
+            Type = Painting::LayerType
         };
 
-        Rectangle(const QRectF &rect, SchematicScene *scene = 0);
-        ~Rectangle();
+        Layer(const QRectF &rect, SchematicScene *scene = 0);
+        ~Layer();
 
         QPainterPath shapeForRect(const QRectF& rect) const;
         QRectF boundForRect(const QRectF &rect) const;
@@ -49,8 +49,8 @@ namespace Caneda
         QRectF rect() const { return paintingRect(); }
         void setRect(const QRectF& rect) { setPaintingRect(rect); }
 
-        int type() const { return Rectangle::Type; }
-        Rectangle* copy(SchematicScene *scene = 0) const;
+        int type() const { return Layer::Type; }
+        Layer* copy(SchematicScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
@@ -60,4 +60,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //RECTANGLE_H
+#endif //LAYER_H

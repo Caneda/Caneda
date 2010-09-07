@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,9 +17,9 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "rectangle.h"
+#include "layer.h"
 
-//#include "styledialog.h"
+#include "styledialog.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -34,8 +34,8 @@ namespace Caneda
      * \param rect Rectangle in local coords.
      * \param scene Scene to which this item should be added.
      */
-    Rectangle::Rectangle(const QRectF& rect, SchematicScene *scene) :
-       Layer(scene)
+    Layer::Layer(const QRectF& rect, SchematicScene *scene) :
+       Painting(scene)
     {
        setRect(rect);
        setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
@@ -43,27 +43,27 @@ namespace Caneda
     }
 
     //! \brief Destructor.
-    Rectangle::~Rectangle()
+    Layer::~Layer()
     {
     }
 
-    //! \copydoc Layer::shapeForRect()
-    QPainterPath Rectangle::shapeForRect(const QRectF& rect) const
+    //! \copydoc Painting::shapeForRect()
+    QPainterPath Layer::shapeForRect(const QRectF& rect) const
     {
        QPainterPath path;
        path.addRect(boundForRect(rect));
        return path;
     }
 
-    //! \copydoc Layer::boundForRect()
-    QRectF Rectangle::boundForRect(const QRectF &rect) const
+    //! \copydoc Painting::boundForRect()
+    QRectF Layer::boundForRect(const QRectF &rect) const
     {
        qreal adj = (pen().width() + 5) / 2;
        return rect.adjusted(-adj, -adj, adj, adj);
     }
 
     //! \brief Draw the rectangle.
-    void Rectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
+    void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
     {
        if(option->state & QStyle::State_Selected) {
           painter->setBrush(Qt::NoBrush);
@@ -81,31 +81,31 @@ namespace Caneda
           painter->setPen(_pen);
        }
        else {
-          painter->setPen(pen());
+           painter->setPen(QPen(Qt::NoPen));
        }
-       painter->setBrush(brush());
+       painter->setBrush(QBrush(Qt::blue, Qt::Dense4Pattern));
        painter->drawRect(rect());
 
        //call base method to draw resize handles.
-       Layer::paint(painter, option, w);
+       Painting::paint(painter, option, w);
     }
 
-    //! \copydoc Layer::copy()
-    Rectangle* Rectangle::copy(SchematicScene *scene) const
+    //! \copydoc Painting::copy()
+    Layer* Layer::copy(SchematicScene *scene) const
     {
-       Rectangle *rectItem = new Rectangle(rect(), scene);
-       Layer::copyDataTo(rectItem);
+       Layer *rectItem = new Layer(rect(), scene);
+       Painting::copyDataTo(rectItem);
        return rectItem;
     }
 
     //! \brief Saves rectangle data to xml using \a writer.
-    void Rectangle::saveData(Caneda::XmlWriter *writer) const
+    void Layer::saveData(Caneda::XmlWriter *writer) const
     {
-       writer->writeStartElement("layer");
-       writer->writeAttribute("name", "rectangle");
+       writer->writeStartElement("painting");
+       writer->writeAttribute("name", "layer");
 
        writer->writeEmptyElement("properties");
-       writer->writeRectAttribute(rect(), QLatin1String("rectangle"));
+       writer->writeRectAttribute(rect(), QLatin1String("layer"));
        writer->writePointAttribute(pos(), "pos");
 
        writer->writePen(pen());
@@ -116,10 +116,10 @@ namespace Caneda
     }
 
     //! \brief Loads data from xml referred by \a reader.
-    void Rectangle::loadData(Caneda::XmlReader *reader)
+    void Layer::loadData(Caneda::XmlReader *reader)
     {
-       Q_ASSERT(reader->isStartElement() && reader->name() == "layer");
-       Q_ASSERT(reader->attributes().value("name") == "rectangle");
+       Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+       Q_ASSERT(reader->attributes().value("name") == "layer");
 
        while(!reader->atEnd()) {
           reader->readNext();
@@ -130,8 +130,8 @@ namespace Caneda
 
           if(reader->isStartElement()) {
              if(reader->name() == "properties") {
-                QRectF rectangle = reader->readRectAttribute(QLatin1String("rectangle"));
-                setRect(rectangle);
+                QRectF layer = reader->readRectAttribute(QLatin1String("layer"));
+                setRect(layer);
 
                 QPointF pos = reader->readPointAttribute("pos");
                 setPos(pos);
@@ -158,11 +158,10 @@ namespace Caneda
        }
     }
 
-    int Rectangle::launchPropertyDialog(Caneda::UndoOption opt)
+    int Layer::launchPropertyDialog(Caneda::UndoOption opt)
     {
-//       StyleDialog dia(this, opt);
-//       return dia.exec();
-        return 0;
+       StyleDialog dia(this, opt);
+       return dia.exec();
     }
 
 } // namespace Caneda

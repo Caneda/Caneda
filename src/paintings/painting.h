@@ -56,7 +56,8 @@ namespace Caneda
             GraphicTextType,
             IdTextType,
             PortSymbolType,
-            RectangleType
+            RectangleType,
+            LayerType
         };
 
         Painting(SchematicScene *scene = 0);

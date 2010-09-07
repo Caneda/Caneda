@@ -30,9 +30,6 @@
 #include <QPointF>
 #include <QVarLengthArray>
 
-class SchematicItem;
-class Diagram;
-class Painting;
 class QRubberBand;
 class QUndoCommand;
 class QUndoStack;
@@ -42,8 +39,11 @@ namespace Caneda
 {
     // Forward declarations
     class Component;
-    class Wire;
+    class Diagram;
+    class Painting;
     class SchematicWidget;
+    class SchematicItem;
+    class Wire;
 
     enum Mode {
         SchematicMode,

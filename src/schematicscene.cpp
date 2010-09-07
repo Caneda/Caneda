@@ -1111,7 +1111,7 @@ namespace Caneda
             return false;
         }
 
-        if(category == "Paint Tools") {
+        if(category == "Paint Tools" || category == "Layout Tools") {
             return sidebarItemClickedPaintingsItems(itemName);
         }
         else {
@@ -2631,7 +2631,7 @@ namespace Caneda
      */
     SchematicItem* SchematicScene::itemForName(const QString& name, const QString& category)
     {
-        if(category == QObject::tr("Paint Tools")) {
+        if(category == QObject::tr("Paint Tools") || category == QObject::tr("Layout Tools")) {
             return Painting::fromName(name);
         }
 

@@ -177,7 +177,7 @@ namespace Caneda
     void SchematicStateHandler::slotSidebarItemClicked(const QString& item,
             const QString& category)
     {
-        if (category == "Paint Tools") {
+        if (category == "Paint Tools" || category == "Layout Tools") {
             if (d->paintingDrawItem) {
                 // Clear old item first.
                 if (d->paintingDrawItem->scene()) {
@@ -193,7 +193,8 @@ namespace Caneda
                 d->paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
                 slotPerformToggleAction("paintingDraw", true);
             }
-        } else {
+        }
+        else {
             d->clearInsertibles();
             LibraryLoader *libLoader = LibraryLoader::instance();
             SchematicItem *qItem = libLoader->newComponent(item, 0, category);

@@ -168,8 +168,13 @@ namespace Caneda
         paintingItems << qMakePair(QObject::tr("Text"),
                 QPixmap(Caneda::bitmapDirectory() + "text.svg"));
 
+        QList<QPair<QString, QPixmap> > layerItems;
+        layerItems << qMakePair(QObject::tr("Metal 1"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+
         m_componentsSidebar->plugItem("Components", QPixmap(), "root");
         m_componentsSidebar->plugItems(paintingItems, QObject::tr("Paint Tools"));
+        m_componentsSidebar->plugItems(layerItems, QObject::tr("Layout Tools"));
     }
 
     /*!
