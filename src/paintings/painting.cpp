@@ -201,6 +201,8 @@ namespace Caneda
         }
 
         // This is true usually when painting is being read from xml file.
+        // Do not change. To allow i18n interoperation, saved tag
+        // should not depend on language settings.
         else {
             if(name == QLatin1String("line")) {
                 return new GraphicLine(QLineF(rect.bottomLeft(), rect.topRight()));
