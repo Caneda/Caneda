@@ -168,24 +168,24 @@ namespace Caneda
         paintingItems << qMakePair(QObject::tr("Text"),
                 QPixmap(Caneda::bitmapDirectory() + "text.svg"));
 
+        QPixmap layer(20,20);
         QList<QPair<QString, QPixmap> > layerItems;
-        layerItems << qMakePair(QObject::tr("Metal 1"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
-        layerItems << qMakePair(QObject::tr("Metal 2"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
-        layerItems << qMakePair(QObject::tr("Poly 1"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
-        layerItems << qMakePair(QObject::tr("Poly 2"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
-        layerItems << qMakePair(QObject::tr("Active"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
-        layerItems << qMakePair(QObject::tr("Contact"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
-        layerItems << qMakePair(QObject::tr("N Well"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
-        layerItems << qMakePair(QObject::tr("P Well"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
-
+        layer.fill(Qt::blue);
+        layerItems << qMakePair(QObject::tr("Metal 1"), layer);
+        layer.fill(Qt::gray);
+        layerItems << qMakePair(QObject::tr("Metal 2"), layer);
+        layer.fill(Qt::red);
+        layerItems << qMakePair(QObject::tr("Poly 1"), layer);
+        layer.fill(Qt::darkRed);
+        layerItems << qMakePair(QObject::tr("Poly 2"), layer);
+        layer.fill(Qt::green);
+        layerItems << qMakePair(QObject::tr("Active"), layer);
+        layer.fill(Qt::black);
+        layerItems << qMakePair(QObject::tr("Contact"), layer);
+        layer.fill(Qt::darkYellow);
+        layerItems << qMakePair(QObject::tr("N Well"), layer);
+        layer.fill(Qt::darkCyan);
+        layerItems << qMakePair(QObject::tr("P Well"), layer);
 
         m_componentsSidebar->plugItem("Components", QPixmap(), "root");
         m_componentsSidebar->plugItems(paintingItems, QObject::tr("Paint Tools"));
