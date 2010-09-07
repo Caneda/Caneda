@@ -142,24 +142,21 @@ namespace Caneda
     void Layer::saveData(Caneda::XmlWriter *writer) const
     {
        writer->writeStartElement("painting");
-       writer->writeAttribute("name", "layer");
+       writer->writeAttribute("name", layerName());
 
        writer->writeEmptyElement("properties");
-       writer->writeRectAttribute(rect(), QLatin1String("layer"));
+       writer->writeRectAttribute(rect(), QLatin1String("rect"));
        writer->writePointAttribute(pos(), "pos");
-
-       writer->writePen(pen());
-       writer->writeBrush(brush());
        writer->writeTransform(transform());
 
-       writer->writeEndElement(); // </layer>
+       writer->writeEndElement(); // </painting>
     }
 
     //! \brief Loads data from xml referred by \a reader.
     void Layer::loadData(Caneda::XmlReader *reader)
     {
        Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-       Q_ASSERT(reader->attributes().value("name") == "layer");
+       setLayerName(reader->attributes().value("name").toString());
 
        while(!reader->atEnd()) {
           reader->readNext();
@@ -170,27 +167,17 @@ namespace Caneda
 
           if(reader->isStartElement()) {
              if(reader->name() == "properties") {
-                QRectF layer = reader->readRectAttribute(QLatin1String("layer"));
-                setRect(layer);
+                QRectF rect = reader->readRectAttribute(QLatin1String("rect"));
+                setRect(rect);
 
                 QPointF pos = reader->readPointAttribute("pos");
                 setPos(pos);
 
                 reader->readUnknownElement(); //read till end tag
              }
-
-             else if(reader->name() == "pen") {
-                setPen(reader->readPen());
-             }
-
-             else if(reader->name() == "brush") {
-                setBrush(reader->readBrush());
-             }
-
              else if(reader->name() == "transform") {
                 setTransform(reader->readTransform());
              }
-
              else {
                 reader->readUnknownElement();
              }
