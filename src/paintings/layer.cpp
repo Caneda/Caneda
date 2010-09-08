@@ -19,6 +19,7 @@
 
 #include "layer.h"
 
+#include "settings.h"
 #include "styledialog.h"
 
 #include "xmlutilities/xmlutilities.h"
@@ -44,37 +45,38 @@ namespace Caneda
        setLayerName(layerName);
 
        m_brush = QBrush(Qt::gray);
+       Settings *settings = Settings::instance();
 
        if(layerName == "Metal 1") {
-           m_brush.setColor(Qt::blue);
+           m_brush.setColor(settings->currentValue("gui/layout/metal1").value<QColor>());
            setZValue(0);
        }
        else if(layerName == "Metal 2") {
-           m_brush.setColor(Qt::gray);
+           m_brush.setColor(settings->currentValue("gui/layout/metal2").value<QColor>());
            setZValue(1);
        }
        else if(layerName == "Poly 1") {
-           m_brush.setColor(Qt::red);
+           m_brush.setColor(settings->currentValue("gui/layout/poly1").value<QColor>());
            setZValue(2);
        }
        else if(layerName == "Poly 2") {
-           m_brush.setColor(Qt::darkRed);
+           m_brush.setColor(settings->currentValue("gui/layout/poly2").value<QColor>());
            setZValue(3);
        }
        else if(layerName == "Active") {
-           m_brush.setColor(Qt::green);
+           m_brush.setColor(settings->currentValue("gui/layout/active").value<QColor>());
            setZValue(4);
        }
        else if(layerName == "Contact") {
-           m_brush.setColor(Qt::black);
+           m_brush.setColor(settings->currentValue("gui/layout/contact").value<QColor>());
            setZValue(5);
        }
        else if(layerName == "N Well") {
-           m_brush.setColor(Qt::darkYellow);
+           m_brush.setColor(settings->currentValue("gui/layout/nwell").value<QColor>());
            setZValue(6);
        }
        else if(layerName == "P Well") {
-           m_brush.setColor(Qt::darkCyan);
+           m_brush.setColor(settings->currentValue("gui/layout/pwell").value<QColor>());
            setZValue(7);
        }
     }

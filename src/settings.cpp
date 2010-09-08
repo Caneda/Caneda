@@ -61,6 +61,15 @@ namespace Caneda
         data["gui/hdl/comment"] = VariantPair(QColor(Qt::red));
         data["gui/hdl/system"] = VariantPair(QColor(Qt::darkYellow));
 
+        data["gui/layout/metal1"] = VariantPair(QColor(Qt::blue));
+        data["gui/layout/metal2"] = VariantPair(QColor(Qt::gray));
+        data["gui/layout/poly1"] = VariantPair(QColor(Qt::red));
+        data["gui/layout/poly2"] = VariantPair(QColor(Qt::darkRed));
+        data["gui/layout/active"] = VariantPair(QColor(Qt::green));
+        data["gui/layout/contact"] = VariantPair(QColor(Qt::black));
+        data["gui/layout/nwell"] = VariantPair(QColor(Qt::darkYellow));
+        data["gui/layout/pwell"] = VariantPair(QColor(Qt::darkCyan));
+
         QString canedaFilter =
                 QObject::tr("Schematic-xml")+" (*.xsch);;"+
                 QObject::tr("Symbol-xml")+" (*.xsym);;"+

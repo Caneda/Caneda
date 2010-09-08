@@ -168,23 +168,29 @@ namespace Caneda
         paintingItems << qMakePair(QObject::tr("Text"),
                 QPixmap(Caneda::bitmapDirectory() + "text.svg"));
 
+
+        QSettings qSettings;
+        Settings *settings = Settings::instance();
+        settings->load(qSettings);
+
         QPixmap layer(20,20);
+
         QList<QPair<QString, QPixmap> > layerItems;
-        layer.fill(Qt::blue);
+        layer.fill(settings->currentValue("gui/layout/metal1").value<QColor>());
         layerItems << qMakePair(QString("Metal 1"), layer);
-        layer.fill(Qt::gray);
+        layer.fill(settings->currentValue("gui/layout/metal2").value<QColor>());
         layerItems << qMakePair(QString("Metal 2"), layer);
-        layer.fill(Qt::red);
+        layer.fill(settings->currentValue("gui/layout/poly1").value<QColor>());
         layerItems << qMakePair(QString("Poly 1"), layer);
-        layer.fill(Qt::darkRed);
+        layer.fill(settings->currentValue("gui/layout/poly2").value<QColor>());
         layerItems << qMakePair(QString("Poly 2"), layer);
-        layer.fill(Qt::green);
+        layer.fill(settings->currentValue("gui/layout/active").value<QColor>());
         layerItems << qMakePair(QString("Active"), layer);
-        layer.fill(Qt::black);
+        layer.fill(settings->currentValue("gui/layout/contact").value<QColor>());
         layerItems << qMakePair(QString("Contact"), layer);
-        layer.fill(Qt::darkYellow);
+        layer.fill(settings->currentValue("gui/layout/nwell").value<QColor>());
         layerItems << qMakePair(QString("N Well"), layer);
-        layer.fill(Qt::darkCyan);
+        layer.fill(settings->currentValue("gui/layout/pwell").value<QColor>());
         layerItems << qMakePair(QString("P Well"), layer);
 
         m_componentsSidebar->plugItem("Components", QPixmap(), "root");
