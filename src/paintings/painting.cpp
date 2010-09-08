@@ -172,28 +172,28 @@ namespace Caneda
             }
 
 
-            else if(name == QObject::tr("Metal 1")) {
+            else if(name == "Metal 1") {
                 return new Layer(rect, "Metal 1");
             }
-            else if(name == QObject::tr("Metal 2")) {
+            else if(name == "Metal 2") {
                 return new Layer(rect, "Metal 2");
             }
-            else if(name == QObject::tr("Poly 1")) {
+            else if(name == "Poly 1") {
                 return new Layer(rect, "Poly 1");
             }
-            else if(name == QObject::tr("Poly 2")) {
+            else if(name == "Poly 2") {
                 return new Layer(rect, "Poly 2");
             }
-            else if(name == QObject::tr("Active")) {
+            else if(name == "Active") {
                 return new Layer(rect, "Active");
             }
-            else if(name == QObject::tr("Contact")) {
+            else if(name == "Contact") {
                 return new Layer(rect, "Contact");
             }
-            else if(name == QObject::tr("N Well")) {
+            else if(name == "N Well") {
                 return new Layer(rect, "N Well");
             }
-            else if(name == QObject::tr("P Well")) {
+            else if(name == "P Well") {
                 return new Layer(rect, "P Well");
             }
 

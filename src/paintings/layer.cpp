@@ -42,6 +42,41 @@ namespace Caneda
                         Caneda::TopRightHandle| Caneda::BottomLeftHandle);
 
        setLayerName(layerName);
+
+       m_brush = QBrush(Qt::gray);
+
+       if(layerName == "Metal 1") {
+           m_brush.setColor(Qt::blue);
+           setZValue(0);
+       }
+       else if(layerName == "Metal 2") {
+           m_brush.setColor(Qt::gray);
+           setZValue(1);
+       }
+       else if(layerName == "Poly 1") {
+           m_brush.setColor(Qt::red);
+           setZValue(2);
+       }
+       else if(layerName == "Poly 2") {
+           m_brush.setColor(Qt::darkRed);
+           setZValue(3);
+       }
+       else if(layerName == "Active") {
+           m_brush.setColor(Qt::green);
+           setZValue(4);
+       }
+       else if(layerName == "Contact") {
+           m_brush.setColor(Qt::black);
+           setZValue(5);
+       }
+       else if(layerName == "N Well") {
+           m_brush.setColor(Qt::darkYellow);
+           setZValue(6);
+       }
+       else if(layerName == "P Well") {
+           m_brush.setColor(Qt::darkCyan);
+           setZValue(7);
+       }
     }
 
     //! \brief Destructor.
@@ -86,44 +121,8 @@ namespace Caneda
            painter->setPen(QPen(Qt::NoPen));
        }
 
-
-       QBrush _brush(Qt::gray);
-
-       if(layerName() == QObject::tr("Metal 1")) {
-           _brush.setColor(Qt::blue);
-           setZValue(0);
-       }
-       else if(layerName() == QObject::tr("Metal 2")) {
-           _brush.setColor(Qt::gray);
-           setZValue(1);
-       }
-       else if(layerName() == QObject::tr("Poly 1")) {
-           _brush.setColor(Qt::red);
-           setZValue(2);
-       }
-       else if(layerName() == QObject::tr("Poly 2")) {
-           _brush.setColor(Qt::darkRed);
-           setZValue(3);
-       }
-       else if(layerName() == QObject::tr("Active")) {
-           _brush.setColor(Qt::green);
-           setZValue(4);
-       }
-       else if(layerName() == QObject::tr("Contact")) {
-           _brush.setColor(Qt::black);
-           setZValue(5);
-       }
-       else if(layerName() == QObject::tr("N Well")) {
-           _brush.setColor(Qt::darkYellow);
-           setZValue(6);
-       }
-       else if(layerName() == QObject::tr("P Well")) {
-           _brush.setColor(Qt::darkCyan);
-           setZValue(7);
-       }
-
        painter->setOpacity(0.5);
-       painter->setBrush(_brush);
+       painter->setBrush(m_brush);
        painter->drawRect(rect());
 
        //call base method to draw resize handles.

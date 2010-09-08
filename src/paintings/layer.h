@@ -62,6 +62,7 @@ namespace Caneda
 
     private:
         QString m_layerName;
+        QBrush m_brush;
     };
 
 } // namespace Caneda
