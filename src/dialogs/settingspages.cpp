@@ -826,4 +826,274 @@ namespace Caneda
         }
     }
 
+    //*!**************************************************
+    // Layout configuration pages
+    //*!**************************************************
+    /*!
+     * Constructor
+     * @param QWidget *parent The parent of the dialog.
+     */
+    LayoutConfigurationPage::LayoutConfigurationPage(QWidget *parent) : SettingsPage(parent) {
+
+        //First we set the color settings group of options **********************************
+        QGroupBox *colorsLayers = new QGroupBox(tr("Layer Colors"),
+                this);
+        QGridLayout *generalLayout = new QGridLayout(colorsLayers);
+
+        metal1Button = new QPushButton(tr("Metal 1"), colorsLayers);
+        metal2Button = new QPushButton(tr("Metal 2"), colorsLayers);
+        poly1Button = new QPushButton(tr("Poly 1"), colorsLayers);
+        poly2Button = new QPushButton(tr("Poly 2"), colorsLayers);
+        activeButton = new QPushButton(tr("Active"), colorsLayers);
+        contactButton = new QPushButton(tr("Contact"), colorsLayers);
+        nwellButton = new QPushButton(tr("N Well"), colorsLayers);
+        pwellButton = new QPushButton(tr("P Well"), colorsLayers);
+
+        Settings *settings = Settings::instance();
+
+        const QColor currentMetal1Color =
+            settings->currentValue("gui/layout/metal1").value<QColor>();
+        const QColor currentMeta2Color =
+            settings->currentValue("gui/layout/metal2").value<QColor>();
+        const QColor currentPoly1Color =
+            settings->currentValue("gui/layout/poly1").value<QColor>();
+        const QColor currentPoly2Color =
+            settings->currentValue("gui/layout/poly2").value<QColor>();
+        const QColor currentActiveColor =
+            settings->currentValue("gui/layout/active").value<QColor>();
+        const QColor currentContactColor =
+            settings->currentValue("gui/layout/contact").value<QColor>();
+        const QColor currentNwellColor =
+            settings->currentValue("gui/layout/nwell").value<QColor>();
+        const QColor currentPwellColor =
+            settings->currentValue("gui/layout/pwell").value<QColor>();
+
+        const QColor currentForegroundColor =
+            settings->currentValue("gui/foregroundColor").value<QColor>();
+
+        setBackgroundColor(metal1Button, currentMetal1Color);
+        setForegroundColor(metal1Button, currentForegroundColor);
+
+        setBackgroundColor(metal2Button, currentMeta2Color);
+        setForegroundColor(metal2Button, currentForegroundColor);
+
+        setBackgroundColor(poly1Button, currentPoly1Color);
+        setForegroundColor(poly1Button, currentForegroundColor);
+
+        setBackgroundColor(poly2Button, currentPoly2Color);
+        setForegroundColor(poly2Button, currentForegroundColor);
+
+        setBackgroundColor(activeButton, currentActiveColor);
+        setForegroundColor(activeButton, currentForegroundColor);
+
+        setBackgroundColor(contactButton, currentContactColor);
+        setForegroundColor(contactButton, currentForegroundColor);
+
+        setBackgroundColor(nwellButton, currentNwellColor);
+        setForegroundColor(nwellButton, currentForegroundColor);
+
+        setBackgroundColor(pwellButton, currentPwellColor);
+        setForegroundColor(pwellButton, currentForegroundColor);
+
+        connect(metal1Button, SIGNAL(clicked()), SLOT(slotColorMetal1()));
+        connect(metal2Button, SIGNAL(clicked()), SLOT(slotColorMetal2()));
+        connect(poly1Button, SIGNAL(clicked()), SLOT(slotColorPoly1()));
+        connect(poly2Button, SIGNAL(clicked()), SLOT(slotColorPoly2()));
+        connect(activeButton, SIGNAL(clicked()), SLOT(slotColorActive()));
+        connect(contactButton, SIGNAL(clicked()), SLOT(slotColorContact()));
+        connect(nwellButton, SIGNAL(clicked()), SLOT(slotColorNwell()));
+        connect(pwellButton, SIGNAL(clicked()), SLOT(slotColorPwell()));
+
+        generalLayout->addWidget(metal1Button, 0, 0);
+        generalLayout->addWidget(metal2Button, 0, 1);
+        generalLayout->addWidget(poly1Button, 1, 0);
+        generalLayout->addWidget(poly2Button, 1, 1);
+        generalLayout->addWidget(activeButton, 2, 0);
+        generalLayout->addWidget(contactButton, 2, 1);
+        generalLayout->addWidget(nwellButton, 3, 0);
+        generalLayout->addWidget(pwellButton, 3, 1);
+
+
+        //Finally we set the general layout of all groups ***********************************
+        QVBoxLayout *vlayout1 = new QVBoxLayout();
+        QLabel *title_label_ = new QLabel(title());
+        vlayout1->addWidget(title_label_);
+
+        QFrame *horiz_line_ = new QFrame();
+        horiz_line_->setFrameShape(QFrame::HLine);
+        vlayout1->addWidget(horiz_line_);
+
+        vlayout1->addWidget(colorsLayers);
+
+        vlayout1->addStretch();
+
+        setLayout(vlayout1);
+    }
+
+    //! Destructor
+    LayoutConfigurationPage::~LayoutConfigurationPage() {
+    }
+
+    //! Applies the configuration of this page
+    void LayoutConfigurationPage::applyConf() {
+
+        bool changed = false;
+        Settings *settings = Settings::instance();
+
+        const QColor currentMetal1Color =
+            settings->currentValue("gui/layout/metal1").value<QColor>();
+        const QColor newMetal1Color = getBackgroundColor(metal1Button);
+        if (newMetal1Color != currentMetal1Color) {
+            settings->setCurrentValue("gui/layout/metal1", newMetal1Color);
+            changed = true;
+        }
+
+        const QColor currentMeta2Color =
+            settings->currentValue("gui/layout/metal2").value<QColor>();
+        const QColor newMeta2Color = getBackgroundColor(metal2Button);
+        if (newMeta2Color != currentMeta2Color) {
+            settings->setCurrentValue("gui/layout/metal2", newMeta2Color);
+            changed = true;
+        }
+
+        const QColor currentPoly1Color =
+            settings->currentValue("gui/layout/poly1").value<QColor>();
+        const QColor newPoly1Color = getBackgroundColor(poly1Button);
+        if (newPoly1Color != currentPoly1Color) {
+            settings->setCurrentValue("gui/layout/poly1", newPoly1Color);
+            changed = true;
+        }
+
+        const QColor currentPoly2Color =
+            settings->currentValue("gui/layout/poly2").value<QColor>();
+        const QColor newPoly2Color = getBackgroundColor(poly2Button);
+        if (newPoly2Color != currentPoly2Color) {
+            settings->setCurrentValue("gui/layout/poly2", newPoly2Color);
+            changed = true;
+        }
+
+        const QColor currentActiveColor =
+            settings->currentValue("gui/layout/active").value<QColor>();
+        const QColor newActiveColor = getBackgroundColor(activeButton);
+        if (newActiveColor != currentActiveColor) {
+            settings->setCurrentValue("gui/layout/active", newActiveColor);
+            changed = true;
+        }
+
+        const QColor currentContactColor =
+            settings->currentValue("gui/layout/contact").value<QColor>();
+        const QColor newContactColor = getBackgroundColor(contactButton);
+        if (newContactColor != currentContactColor) {
+            settings->setCurrentValue("gui/layout/contact", newContactColor);
+            changed = true;
+        }
+
+        const QColor currentNwellColor =
+            settings->currentValue("gui/layout/nwell").value<QColor>();
+        const QColor newNwellColor = getBackgroundColor(nwellButton);
+        if (newNwellColor != currentNwellColor) {
+            settings->setCurrentValue("gui/layout/nwell", newNwellColor);
+            changed = true;
+        }
+
+        const QColor currentPwellColor =
+            settings->currentValue("gui/layout/pwell").value<QColor>();
+        const QColor newPwellColor = getBackgroundColor(pwellButton);
+        if (newPwellColor != currentPwellColor) {
+            settings->setCurrentValue("gui/layout/pwell", newPwellColor);
+            changed = true;
+        }
+
+        QSettings qSettings;
+        settings->save(qSettings);
+        if(changed) {
+            MainWindow::instance()->slotUpdateSettingsChanges();
+            MainWindow::instance()->repaint();
+        }
+    }
+
+    //! @return Icon of this page
+    QIcon LayoutConfigurationPage::icon() const
+    {
+        return(QIcon(Caneda::bitmapDirectory() + "vhdl-code.png"));
+    }
+
+    //! @return Title of this page
+    QString LayoutConfigurationPage::title() const
+    {
+        return(tr("Layout", "layout page title"));
+    }
+
+    void LayoutConfigurationPage::slotColorMetal1()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(metal1Button), this);
+        if(c.isValid()) {
+            setBackgroundColor(metal1Button, c);
+        }
+    }
+
+    void LayoutConfigurationPage::slotColorMetal2()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(metal2Button), this);
+        if(c.isValid()) {
+            setBackgroundColor(metal2Button, c);
+        }
+    }
+
+    void LayoutConfigurationPage::slotColorPoly1()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(poly1Button), this);
+        if(c.isValid()) {
+            setBackgroundColor(poly1Button, c);
+        }
+    }
+
+    void LayoutConfigurationPage::slotColorPoly2()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(poly2Button), this);
+        if(c.isValid()) {
+            setBackgroundColor(poly2Button, c);
+        }
+    }
+
+    void LayoutConfigurationPage::slotColorActive()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(activeButton), this);
+        if(c.isValid()) {
+            setBackgroundColor(activeButton, c);
+        }
+    }
+
+    void LayoutConfigurationPage::slotColorContact()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(contactButton), this);
+        if(c.isValid()) {
+            setBackgroundColor(contactButton, c);
+        }
+    }
+
+    void LayoutConfigurationPage::slotColorNwell()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(nwellButton), this);
+        if(c.isValid()) {
+            setBackgroundColor(nwellButton, c);
+        }
+    }
+
+    void LayoutConfigurationPage::slotColorPwell()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(pwellButton), this);
+        if(c.isValid()) {
+            setBackgroundColor(pwellButton, c);
+        }
+    }
+
 } // namespace Caneda

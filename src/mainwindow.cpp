@@ -1256,6 +1256,8 @@ namespace Caneda
         wantedPages << page;
         page = new HdlConfigurationPage(this);
         wantedPages << page;
+        page = new LayoutConfigurationPage(this);
+        wantedPages << page;
         page = new SimulationConfigurationPage(this);
         wantedPages << page;
 

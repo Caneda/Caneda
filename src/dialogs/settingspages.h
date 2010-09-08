@@ -163,6 +163,39 @@ namespace Caneda
                     *commentButton, *systemButton;
     };
 
+    //! This class represents the layout configuration page
+    class LayoutConfigurationPage : public SettingsPage
+    {
+        Q_OBJECT;
+
+    public:
+        LayoutConfigurationPage(QWidget *parent = 0);
+        virtual ~LayoutConfigurationPage();
+
+    private Q_SLOTS:
+        void slotColorMetal1();
+        void slotColorMetal2();
+        void slotColorPoly1();
+        void slotColorPoly2();
+        void slotColorActive();
+        void slotColorContact();
+        void slotColorNwell();
+        void slotColorPwell();
+
+    public:
+        void applyConf();
+        QString title() const;
+        QIcon icon() const;
+
+    public:
+        QLabel *title_label_;
+        QFrame *horiz_line_;
+
+        QPushButton *metal1Button, *metal2Button, *poly1Button,
+                    *poly2Button, *activeButton, *contactButton,
+                    *nwellButton, *pwellButton;
+    };
+
 } // namespace Caneda
 
 #endif //SETTINGS_PAGES_H
