@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StyleDialogBase</class>
+ <widget class="QDialog" name="StyleDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>487</width>
+    <height>508</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Style Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QGroupBox" name="groupPreview">
+       <property name="title">
+        <string>Preview</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QCheckBox" name="backgroundCheckBox">
+          <property name="text">
+           <string>Draw background boxes</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QGroupBox" name="arcGroupBox">
+         <property name="title">
+          <string>Arc Property</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_2">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::ExpandingFieldsGrow</enum>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="startAngleLabel">
+            <property name="text">
+             <string>Start Angle</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="startAngleSpinBox">
+            <property name="maximum">
+             <number>360</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="spanAngleLabel">
+            <property name="text">
+             <string>Span Angle</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="spanAngleSpinBox">
+            <property name="maximum">
+             <number>360</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="arrowGroupBox">
+         <property name="title">
+          <string>Arrow Property</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_3">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::ExpandingFieldsGrow</enum>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="headStyleLabel">
+            <property name="text">
+             <string>Head Style</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="arrowStyleComboBox">
+            <item>
+             <property name="text">
+              <string>two lines</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>filled</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="headWidthLabel">
+            <property name="text">
+             <string>Head Width</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="arrowWidthSpinBox"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="headHeightLabel">
+            <property name="text">
+             <string>Head Height</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="arrowHeightSpinBox"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="lineGroupBox">
+         <property name="title">
+          <string>Line Style</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_4">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::ExpandingFieldsGrow</enum>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="widthLabel">
+            <property name="text">
+             <string>Width</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="lineWidthSpinBox">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QToolButton" name="lineColorButton">
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="styleLabel">
+            <property name="text">
+             <string>Style</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="lineStyleComboBox">
+            <item>
+             <property name="text">
+              <string>no line</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>solid line</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dash line</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dot line</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dash dot line</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dash dot dot line</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="colorLabel">
+            <property name="text">
+             <string>Color</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="fillGroupBox">
+         <property name="title">
+          <string>Filling Style</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_5">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::ExpandingFieldsGrow</enum>
+          </property>
+          <item row="2" column="0">
+           <widget class="QLabel" name="styleLabel_2">
+            <property name="text">
+             <string>Style</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="fillStyleComboBox">
+            <item>
+             <property name="text">
+              <string>no fill</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>solid</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dense1 (densest)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dense2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dense3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dense4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dense5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dense6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dense 7 (least dense)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>horizontal line</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>vertical line</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>crossed lines</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>hatched backward</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>hatched forward</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>diagonal crossed</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QToolButton" name="fillColorButton">
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="colorLabel_2">
+            <property name="text">
+             <string>Color</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>StyleDialogBase</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>StyleDialogBase</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
