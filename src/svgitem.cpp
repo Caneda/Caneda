@@ -41,7 +41,7 @@ namespace Caneda
 
     /*!
      * \brief Item stroke width
-     * \todo should be cnfigurable
+     * \todo should be configurable
      */
     static const double itemstrokewidth = 1.0;
 
@@ -172,7 +172,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief This method paints( or renders) a registerd svg using \a painter.
+     * \brief This method paints (or renders) a registerd svg using \a painter.
      *
      * This also takes care of updating the cache ifcaching is enabled.
      *
@@ -185,12 +185,12 @@ namespace Caneda
         QMatrix m = painter->worldMatrix();
         QRect deviceRect = m.mapRect(data->boundingRect()).toRect();
 
-        // If Caching disabled or ifthere is transformation render without cache.
+        // If Caching disabled or if there is transformation render without cache.
         if(!isCachingEnabled() || painter->worldTransform().isScaling()) {
             data->renderer.render(painter, data->boundingRect());
             return;
         }
-        // else when cache is enabled ..
+        // else when cache is enabled...
 
         QPixmap pix;
         if(!QPixmapCache::find(svg_id, pix)) {

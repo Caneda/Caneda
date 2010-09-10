@@ -266,7 +266,6 @@ namespace Caneda
         QPainterPath _shape = shapeForRect(m_paintingRect);
 
         // Now determine how to adjust bounding rect based on resize handles being used.
-
         if(m_resizeHandles.testFlag(Caneda::TopLeftHandle)) {
             QRectF rect = Caneda::handleRect.translated(m_paintingRect.topLeft());
             boundRect |= rect;

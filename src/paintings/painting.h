@@ -66,11 +66,7 @@ namespace Caneda
         //! \copydoc SchematicItem::type()
         int type() const { return Type; }
 
-        /*!
-         * \brief Returns paintingRect of this painting item.
-         *
-         * \copydoc Painting::m_paintingRect
-         */
+        //! Returns paintingRect of this painting item.
         QRectF paintingRect() const { return m_paintingRect; }
         void setPaintingRect(const QRectF& rect);
 

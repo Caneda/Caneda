@@ -108,7 +108,6 @@ namespace Caneda {
             PaintingType = PATTERN(SchematicItemType, 4),
             //!Recognizes classes derived from Display
             DisplayType = PATTERN(SchematicItemType, 5)
-
         };
 
         //! Item identifier \sa SchematicItemTypes

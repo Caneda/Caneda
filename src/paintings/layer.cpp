@@ -31,8 +31,9 @@
 namespace Caneda
 {
     /*!
-     * \brief Constructs a rectangle painting item.
+     * \brief Constructs a rectangle layer painting item.
      * \param rect Rectangle in local coords.
+     * \param layerName Phisical layer to recreate
      * \param scene Scene to which this item should be added.
      */
     Layer::Layer(const QRectF &rect, const QString &layerName, SchematicScene *scene) :
@@ -139,7 +140,7 @@ namespace Caneda
        return layerItem;
     }
 
-    //! \brief Saves rectangle data to xml using \a writer.
+    //! \brief Saves layer data to xml using \a writer.
     void Layer::saveData(Caneda::XmlWriter *writer) const
     {
        writer->writeStartElement("painting");
@@ -153,7 +154,7 @@ namespace Caneda
        writer->writeEndElement(); // </painting>
     }
 
-    //! \brief Loads data from xml referred by \a reader.
+    //! \brief Loads layer data from xml referred by \a reader.
     void Layer::loadData(Caneda::XmlReader *reader)
     {
        Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
