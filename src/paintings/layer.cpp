@@ -82,7 +82,6 @@ namespace Caneda
        }
 
        setBrush(_brush);
-       setPen(QPen(Qt::NoPen));
     }
 
     //! \brief Destructor.
@@ -105,7 +104,7 @@ namespace Caneda
        return rect.adjusted(-adj, -adj, adj, adj);
     }
 
-    //! \brief Draw the rectangle.
+    //! \brief Draw the layer item.
     void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
     {
        if(option->state & QStyle::State_Selected) {
@@ -124,7 +123,7 @@ namespace Caneda
           painter->setPen(_pen);
        }
        else {
-           painter->setPen(pen());
+           painter->setPen(QPen(Qt::NoPen));
        }
 
        painter->setOpacity(0.5);
