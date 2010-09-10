@@ -31,7 +31,7 @@ namespace Caneda
     static const QBrush defaultPaintingBrush(Qt::NoBrush);
 
     /*!
-     * \brief This class is base for painting items like lines, rectangles..
+     * \brief This class is base for painting items like lines, rectangles...
      *
      * This class also takes care of resize handles. All the derived classes will be
      * passed a rectangle and they should use this rectangle as a hint to draw.

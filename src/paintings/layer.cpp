@@ -45,41 +45,44 @@ namespace Caneda
 
        setLayerName(layerName);
 
-       m_brush = QBrush(Qt::gray);
+       // Initialize layer colors, depending on current layer and settings
        Settings *settings = Settings::instance();
-
+       QBrush _brush(Qt::transparent);
        if(layerName == "Metal 1") {
-           m_brush.setColor(settings->currentValue("gui/layout/metal1").value<QColor>());
+           _brush.setColor(settings->currentValue("gui/layout/metal1").value<QColor>());
            setZValue(0);
        }
        else if(layerName == "Metal 2") {
-           m_brush.setColor(settings->currentValue("gui/layout/metal2").value<QColor>());
+           _brush.setColor(settings->currentValue("gui/layout/metal2").value<QColor>());
            setZValue(1);
        }
        else if(layerName == "Poly 1") {
-           m_brush.setColor(settings->currentValue("gui/layout/poly1").value<QColor>());
+           _brush.setColor(settings->currentValue("gui/layout/poly1").value<QColor>());
            setZValue(2);
        }
        else if(layerName == "Poly 2") {
-           m_brush.setColor(settings->currentValue("gui/layout/poly2").value<QColor>());
+           _brush.setColor(settings->currentValue("gui/layout/poly2").value<QColor>());
            setZValue(3);
        }
        else if(layerName == "Active") {
-           m_brush.setColor(settings->currentValue("gui/layout/active").value<QColor>());
+           _brush.setColor(settings->currentValue("gui/layout/active").value<QColor>());
            setZValue(4);
        }
        else if(layerName == "Contact") {
-           m_brush.setColor(settings->currentValue("gui/layout/contact").value<QColor>());
+           _brush.setColor(settings->currentValue("gui/layout/contact").value<QColor>());
            setZValue(5);
        }
        else if(layerName == "N Well") {
-           m_brush.setColor(settings->currentValue("gui/layout/nwell").value<QColor>());
+           _brush.setColor(settings->currentValue("gui/layout/nwell").value<QColor>());
            setZValue(6);
        }
        else if(layerName == "P Well") {
-           m_brush.setColor(settings->currentValue("gui/layout/pwell").value<QColor>());
+           _brush.setColor(settings->currentValue("gui/layout/pwell").value<QColor>());
            setZValue(7);
        }
+
+       setBrush(_brush);
+       setPen(QPen(Qt::NoPen));
     }
 
     //! \brief Destructor.
@@ -121,14 +124,14 @@ namespace Caneda
           painter->setPen(_pen);
        }
        else {
-           painter->setPen(QPen(Qt::NoPen));
+           painter->setPen(pen());
        }
 
        painter->setOpacity(0.5);
-       painter->setBrush(m_brush);
+       painter->setBrush(brush());
        painter->drawRect(rect());
 
-       //call base method to draw resize handles.
+       // Call base method to draw resize handles.
        Painting::paint(painter, option, w);
     }
 
