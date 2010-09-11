@@ -48,14 +48,14 @@ namespace Caneda
         toolbar->setIconSize(QSize(15, 15));
 
         QToolButton *buttonUp = new QToolButton();
-        buttonUp->setIcon(QIcon(Caneda::bitmapDirectory() + "previous.png"));
+        buttonUp->setIcon(Caneda::icon("go-up"));
         buttonUp->setShortcut(Qt::Key_Backspace);
         buttonUp->setStatusTip(tr("Go up one folder"));
         buttonUp->setToolTip(tr("Go up one folder"));
         buttonUp->setWhatsThis(tr("Go up one folder"));
 
         buttonBack = new QToolButton();
-        buttonBack->setIcon(QIcon(Caneda::bitmapDirectory() + "back.png"));
+        buttonBack->setIcon(Caneda::icon("go-previous"));
         buttonBack->setShortcut(Qt::ALT + Qt::Key_Left);
         buttonBack->setStatusTip(tr("Go previous folder"));
         buttonBack->setToolTip(tr("Go previous folder"));
@@ -63,7 +63,7 @@ namespace Caneda
         buttonBack->setEnabled(false);
 
         buttonForward = new QToolButton();
-        buttonForward->setIcon(QIcon(Caneda::bitmapDirectory() + "forward.png"));
+        buttonForward->setIcon(Caneda::icon("go-next"));
         buttonForward->setShortcut(Qt::ALT + Qt::Key_Right);
         buttonForward->setStatusTip(tr("Go next folder"));
         buttonForward->setToolTip(tr("Go next folder"));
@@ -71,20 +71,20 @@ namespace Caneda
         buttonForward->setEnabled(false);
 
         QToolButton *buttonHome = new QToolButton();
-        buttonHome->setIcon(QIcon(Caneda::bitmapDirectory() + "home.png"));
+        buttonHome->setIcon(Caneda::icon("go-home"));
         buttonHome->setShortcut(Qt::CTRL + Qt::Key_Home);
         buttonHome->setStatusTip(tr("Go to the home folder"));
         buttonHome->setToolTip(tr("Go to the home folder"));
         buttonHome->setWhatsThis(tr("Go to the home folder"));
 
         QToolButton *buttonNewFolder = new QToolButton();
-        buttonNewFolder->setIcon(QIcon(Caneda::bitmapDirectory() + "foldernew.png"));
+        buttonNewFolder->setIcon(Caneda::icon("folder-new"));
         buttonNewFolder->setStatusTip(tr("Create new folder"));
         buttonNewFolder->setToolTip(tr("Create new folder"));
         buttonNewFolder->setWhatsThis(tr("Create new folder"));
 
         QToolButton *buttonDeleteFile = new QToolButton();
-        buttonDeleteFile->setIcon(QIcon(Caneda::bitmapDirectory() + "filedelete.png"));
+        buttonDeleteFile->setIcon(Caneda::icon("archive-remove"));
         buttonDeleteFile->setStatusTip(tr("Delete file/folder"));
         buttonDeleteFile->setToolTip(tr("Delete file/folder"));
         buttonDeleteFile->setWhatsThis(tr("Delete file/folder"));
