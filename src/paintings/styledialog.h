@@ -20,8 +20,9 @@
 #ifndef STYLEDIALOG_H
 #define STYLEDIALOG_H
 
+#include "ui_styledialog.h"
+
 #include "item.h"
-#include "ui_filldialog.h"
 
 #include <QBrush>
 #include <QPen>
@@ -102,7 +103,7 @@ namespace Caneda
         int m_paintingType;
     };
 
-    class StyleDialog : public QDialog, public Ui::StyleDialogBase
+    class StyleDialog : public QDialog
     {
         Q_OBJECT;
 
@@ -128,6 +129,8 @@ namespace Caneda
 
         Painting *painting;
         Caneda::UndoOption undoOption;
+
+        Ui::StyleDialogBase ui;
     };
 
 } // namespace Caneda

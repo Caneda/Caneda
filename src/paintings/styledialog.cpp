@@ -29,6 +29,11 @@
 
 namespace Caneda
 {
+    /*
+    ##########################################################################
+    #                             PreviewWidget                              #
+    ##########################################################################
+    */
     PreviewWidget::PreviewWidget(int paintingType, QWidget *parent) :
         QWidget(parent),
         m_lightPixmap(10, 10),
@@ -272,6 +277,11 @@ namespace Caneda
         update();
     }
 
+    /*
+    ##########################################################################
+    #                              StyleDialog                               #
+    ##########################################################################
+    */
     StyleDialog::StyleDialog(Painting *_painting, Caneda::UndoOption option, QWidget *parent) :
         QDialog(parent),
         lineColor(defaultPaintingPen.color()),
@@ -284,7 +294,7 @@ namespace Caneda
         lineColorPixmap.fill(lineColor);
         fillColorPixmap.fill(fillColor);
 
-        setupUi(this);
+        ui.setupUi(this);
         setupStyleWidgets();
         adjustSize();
     }
@@ -294,63 +304,62 @@ namespace Caneda
         QPen pen = painting->pen();
         QBrush brush = painting->brush();
 
-        lineWidthSpinBox->setValue(pen.width());
+        ui.lineWidthSpinBox->setValue(pen.width());
         lineColor = pen.color();
         lineColorPixmap.fill(lineColor);
-        lineStyleComboBox->setCurrentIndex(pen.style());
+        ui.lineStyleComboBox->setCurrentIndex(pen.style());
 
         fillColor = brush.color();
         fillColorPixmap.fill(brush.color());
-        fillStyleComboBox->setCurrentIndex(brush.style());
+        ui.fillStyleComboBox->setCurrentIndex(brush.style());
 
         if(painting->type() == Painting::ArrowType) {
             Arrow *arrow = canedaitem_cast<Arrow*>(painting);
-            arrowStyleComboBox->setCurrentIndex(arrow->headStyle());
-            arrowWidthSpinBox->setValue(static_cast<int>(arrow->headWidth()));
-            arrowHeightSpinBox->setValue(static_cast<int>(arrow->headHeight()));
+            ui.arrowStyleComboBox->setCurrentIndex(arrow->headStyle());
+            ui.arrowWidthSpinBox->setValue(static_cast<int>(arrow->headWidth()));
+            ui.arrowHeightSpinBox->setValue(static_cast<int>(arrow->headHeight()));
         }
         else {
-            arrowGroupBox->hide();
+            ui.arrowGroupBox->hide();
         }
 
         if(painting->type() == Painting::EllipseArcType) {
             EllipseArc *arc = canedaitem_cast<EllipseArc*>(painting);
-            startAngleSpinBox->setValue(arc->startAngle());
-            spanAngleSpinBox->setValue(arc->spanAngle());
-            fillGroupBox->hide();
+            ui.startAngleSpinBox->setValue(arc->startAngle());
+            ui.spanAngleSpinBox->setValue(arc->spanAngle());
+            ui.fillGroupBox->hide();
         }
         else {
-            arcGroupBox->hide();
+            ui.arcGroupBox->hide();
         }
 
         if(painting->type() == Painting::GraphicLineType) {
-            fillGroupBox->hide();
+            ui.fillGroupBox->hide();
         }
 
-        lineColorButton->setIcon(lineColorPixmap);
-        fillColorButton->setIcon(fillColorPixmap);
+        ui.lineColorButton->setIcon(lineColorPixmap);
+        ui.fillColorButton->setIcon(fillColorPixmap);
 
-        connect(startAngleSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
-        connect(spanAngleSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
+        connect(ui.startAngleSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
+        connect(ui.spanAngleSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
 
-        connect(arrowStyleComboBox, SIGNAL(activated(int)), SLOT(updatePreview()));
-        connect(arrowWidthSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
-        connect(arrowHeightSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
+        connect(ui.arrowStyleComboBox, SIGNAL(activated(int)), SLOT(updatePreview()));
+        connect(ui.arrowWidthSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
+        connect(ui.arrowHeightSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
 
-        connect(lineWidthSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
-        connect(lineColorButton, SIGNAL(clicked()), SLOT(launchColorDialog()));
-        connect(lineStyleComboBox, SIGNAL(activated(int)), SLOT(updatePreview()));
+        connect(ui.lineWidthSpinBox, SIGNAL(valueChanged(int)), SLOT(updatePreview()));
+        connect(ui.lineColorButton, SIGNAL(clicked()), SLOT(launchColorDialog()));
+        connect(ui.lineStyleComboBox, SIGNAL(activated(int)), SLOT(updatePreview()));
 
-        connect(fillColorButton, SIGNAL(clicked()), SLOT(launchColorDialog()));
-        connect(fillStyleComboBox, SIGNAL(activated(int)), SLOT(updatePreview()));
+        connect(ui.fillColorButton, SIGNAL(clicked()), SLOT(launchColorDialog()));
+        connect(ui.fillStyleComboBox, SIGNAL(activated(int)), SLOT(updatePreview()));
 
         connect(this, SIGNAL(accepted()), SLOT(applySettings()));
 
         previewWidget = new PreviewWidget(painting->type());
+        ui.previewLayout->addWidget(previewWidget);
 
-        QHBoxLayout *layout = new QHBoxLayout(previewGroupBox);
-        layout->addWidget(previewWidget);
-        connect(backgroundCheckBox, SIGNAL(toggled(bool)), previewWidget, SLOT(toggleBackground(bool)));
+        connect(ui.backgroundCheckBox, SIGNAL(toggled(bool)), previewWidget, SLOT(toggleBackground(bool)));
 
         updatePreview();
     }
@@ -358,19 +367,19 @@ namespace Caneda
     void StyleDialog::updatePreview()
     {
         QPen pen(lineColor);
-        pen.setWidth(lineWidthSpinBox->value());
-        pen.setStyle((Qt::PenStyle)lineStyleComboBox->currentIndex());
+        pen.setWidth(ui.lineWidthSpinBox->value());
+        pen.setStyle((Qt::PenStyle)ui.lineStyleComboBox->currentIndex());
 
         QColor color(fillColor);
         QBrush brush(color);
-        brush.setStyle((Qt::BrushStyle)fillStyleComboBox->currentIndex());
+        brush.setStyle((Qt::BrushStyle)ui.fillStyleComboBox->currentIndex());
 
-        previewWidget->setHeadStyle(arrowStyleComboBox->currentIndex());
-        previewWidget->setHeadSize(QSize(arrowWidthSpinBox->value(), arrowHeightSpinBox->value()));
+        previewWidget->setHeadStyle(ui.arrowStyleComboBox->currentIndex());
+        previewWidget->setHeadSize(QSize(ui.arrowWidthSpinBox->value(), ui.arrowHeightSpinBox->value()));
         previewWidget->setPen(pen);
         previewWidget->setBrush(brush);
-        previewWidget->setStartAngle(startAngleSpinBox->value());
-        previewWidget->setSpanAngle(spanAngleSpinBox->value());
+        previewWidget->setStartAngle(ui.startAngleSpinBox->value());
+        previewWidget->setSpanAngle(ui.spanAngleSpinBox->value());
         previewWidget->update();
     }
 
@@ -381,7 +390,7 @@ namespace Caneda
             return;
         }
 
-        bool lineButtonClicked = (button == lineColorButton);
+        bool lineButtonClicked = (button == ui.lineColorButton);
         QColor defaultColor = lineButtonClicked ? lineColor : fillColor;
 
         QColor color = QColorDialog::getColor(defaultColor);
@@ -389,13 +398,13 @@ namespace Caneda
             if(lineButtonClicked && lineColor != color) {
                 lineColor = color;
                 lineColorPixmap.fill(lineColor);
-                lineColorButton->setIcon(lineColorPixmap);
+                ui.lineColorButton->setIcon(lineColorPixmap);
                 updatePreview();
             }
             else if(!lineButtonClicked && fillColor != color) {
                 fillColor = color;
                 fillColorPixmap.fill(fillColor);
-                fillColorButton->setIcon(fillColorPixmap);
+                ui.fillColorButton->setIcon(fillColorPixmap);
                 updatePreview();
             }
         }
@@ -406,6 +415,7 @@ namespace Caneda
         QString saveData = painting->saveDataText();
 
         painting->setPen(previewWidget->pen());
+
         if(painting->type() != Painting::GraphicLineType) {
             painting->setBrush(previewWidget->brush());
         }
@@ -421,6 +431,7 @@ namespace Caneda
             arc->setStartAngle(previewWidget->startAngle());
             arc->setSpanAngle(previewWidget->spanAngle());
         }
+
         if(painting->schematicScene()) {
             QUndoCommand *cmd = new PaintingPropertyChangeCmd(painting, saveData);
             painting->schematicScene()->undoStack()->push(cmd);

@@ -1,5 +1,3 @@
-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
-
 SET(DIALOGS_SRCS aboutdialog.cpp settingsdialog.cpp settingspages.cpp exportdialog.cpp
     printdialog.cpp projectfilenewdialog.cpp savedocumentsdialog.cpp
     projectfileopendialog.cpp gitmanager.cpp propertydialog.cpp librarymanager.cpp

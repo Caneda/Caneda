@@ -1,5 +1,6 @@
 INCLUDE_DIRECTORIES(
    ${CMAKE_BINARY_DIR}/src/dialogs
+   ${CMAKE_BINARY_DIR}/src/paintings
    ${CMAKE_BINARY_DIR}/src/tools/attenuator
    ${CMAKE_BINARY_DIR}/src/tools/filter
    ${CMAKE_BINARY_DIR}/src/tools/transmission

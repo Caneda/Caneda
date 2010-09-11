@@ -3,6 +3,10 @@ graphictext.cpp ellipsearc.cpp id_text.cpp portsymbol.cpp styledialog.cpp graphi
 
 SET(PAINTINGS_MOC_HDRS styledialog.h graphictextdialog.h)
 
+SET(PAINTINGS_UIS styledialog.ui)
+
+QT4_WRAP_UI( PAINTINGS_UI_HDRS ${PAINTINGS_UIS})
+
 QT4_WRAP_CPP( PAINTINGS_MOC_SRCS ${PAINTINGS_MOC_HDRS} )
 
-ADD_LIBRARY(paintings ${PAINTINGS_SRCS} ${PAINTINGS_MOC_SRCS} )
+ADD_LIBRARY(paintings ${PAINTINGS_SRCS} ${PAINTINGS_MOC_SRCS} ${PAINTINGS_UI_HDRS})
