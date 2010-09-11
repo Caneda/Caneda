@@ -23,7 +23,6 @@
 
 #include "xmlutilities/xmlutilities.h"
 
-#include <QDebug>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 

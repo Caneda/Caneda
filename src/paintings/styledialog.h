@@ -24,9 +24,10 @@
 
 #include "item.h"
 
-#include <QBrush>
-#include <QPen>
-#include <QPolygon>
+// Forward declarations
+class QBrush;
+class QPen;
+class QPolygon;
 
 namespace Caneda
 {

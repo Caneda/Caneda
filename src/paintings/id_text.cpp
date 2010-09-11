@@ -23,6 +23,7 @@
 
 #include "xmlutilities/xmlutilities.h"
 
+#include <QFont>
 #include <QFontMetrics>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>

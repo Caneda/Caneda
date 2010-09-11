@@ -25,6 +25,7 @@
 #include <QDialog>
 #include <QTextFormat>
 
+// Forward declarations
 class QAction;
 class QComboBox;
 class QFontComboBox;

@@ -30,10 +30,11 @@
 
 #include "xmlutilities/xmlutilities.h"
 
-#include <QDebug>
+#include <QBrush>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
+#include <QPen>
 #include <QStyleOptionGraphicsItem>
 
 namespace Caneda

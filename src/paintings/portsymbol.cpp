@@ -24,7 +24,7 @@
 
 #include "xmlutilities/xmlutilities.h"
 
-#include <QDebug>
+#include <QFont>
 #include <QFontMetrics>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>

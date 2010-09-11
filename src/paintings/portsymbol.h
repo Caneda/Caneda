@@ -22,7 +22,8 @@
 
 #include "painting.h"
 
-#include <QFont>
+// Forward declarations
+class QFont;
 
 namespace Caneda
 {

@@ -23,8 +23,11 @@
 #include "ellipsearc.h"
 #include "schematicscene.h"
 
+#include <QBrush>
 #include <QColorDialog>
 #include <QPainter>
+#include <QPen>
+#include <QPolygon>
 
 namespace Caneda
 {
