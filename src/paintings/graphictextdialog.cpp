@@ -154,28 +154,25 @@ namespace Caneda
     void GraphicTextDialog::setupEditActions()
     {
         QToolBar *tb = toolBar;
-
         QAction *a;
 
-        QString rsrcPath = Caneda::bitmapDirectory();
-        a = actionUndo = new QAction(QIcon(rsrcPath + "undo.png"), tr("&Undo"), this);
+        a = actionUndo = new QAction(Caneda::icon("edit-undo"), tr("&Undo"), this);
         a->setShortcut(QKeySequence::Undo);
         tb->addAction(a);
 
-        a = actionRedo = new QAction(QIcon(rsrcPath + "redo.png"), tr("&Redo"), this);
+        a = actionRedo = new QAction(Caneda::icon("edit-redo"), tr("&Redo"), this);
         a->setShortcut(QKeySequence::Redo);
         tb->addAction(a);
 
-
-        a = actionCut = new QAction(QIcon(rsrcPath + "editcut.png"), tr("Cu&t"), this);
+        a = actionCut = new QAction(Caneda::icon("edit-cut"), tr("Cu&t"), this);
         a->setShortcut(QKeySequence::Cut);
         tb->addAction(a);
 
-        a = actionCopy = new QAction(QIcon(rsrcPath + "editcopy.png"), tr("&Copy"), this);
+        a = actionCopy = new QAction(Caneda::icon("edit-copy"), tr("&Copy"), this);
         a->setShortcut(QKeySequence::Copy);
         tb->addAction(a);
 
-        a = actionPaste = new QAction(QIcon(rsrcPath + "editpaste.png"), tr("&Paste"), this);
+        a = actionPaste = new QAction(Caneda::icon("edit-paste"), tr("&Paste"), this);
         a->setShortcut(QKeySequence::Paste);
         tb->addAction(a);
 
@@ -187,8 +184,7 @@ namespace Caneda
     {
         QToolBar *tb = toolBar;
 
-        QString rsrcPath = Caneda::bitmapDirectory();
-        actionTextBold = new QAction(QIcon(rsrcPath + "textbold.png"), tr("&Bold"), this);
+        actionTextBold = new QAction(Caneda::icon("format-text-bold"), tr("&Bold"), this);
         actionTextBold->setShortcut(Qt::CTRL + Qt::Key_B);
         QFont bold;
         bold.setBold(true);
@@ -198,7 +194,7 @@ namespace Caneda
 
         actionTextBold->setCheckable(true);
 
-        actionTextItalic = new QAction(QIcon(rsrcPath + "textitalic.png"), tr("&Italic"), this);
+        actionTextItalic = new QAction(Caneda::icon("format-text-italic"), tr("&Italic"), this);
         actionTextItalic->setShortcut(Qt::CTRL + Qt::Key_I);
         QFont italic;
         italic.setItalic(true);
@@ -208,7 +204,7 @@ namespace Caneda
 
         actionTextItalic->setCheckable(true);
 
-        actionTextUnderline = new QAction(QIcon(rsrcPath + "textunder.png"), tr("&Underline"), this);
+        actionTextUnderline = new QAction(Caneda::icon("format-text-underline"), tr("&Underline"), this);
         actionTextUnderline->setShortcut(Qt::CTRL + Qt::Key_U);
         QFont underline;
         underline.setUnderline(true);
@@ -221,16 +217,16 @@ namespace Caneda
         QActionGroup *grp = new QActionGroup(this);
         connect(grp, SIGNAL(triggered(QAction *)), this, SLOT(textAlign(QAction *)));
 
-        actionAlignLeft = new QAction(QIcon(rsrcPath + "textleft.png"), tr("&Left"), grp);
+        actionAlignLeft = new QAction(Caneda::icon("format-justify-left"), tr("&Left"), grp);
         actionAlignLeft->setShortcut(Qt::CTRL + Qt::Key_L);
         actionAlignLeft->setCheckable(true);
-        actionAlignCenter = new QAction(QIcon(rsrcPath + "textcenter.png"), tr("C&enter"), grp);
+        actionAlignCenter = new QAction(Caneda::icon("format-justify-center"), tr("C&enter"), grp);
         actionAlignCenter->setShortcut(Qt::CTRL + Qt::Key_E);
         actionAlignCenter->setCheckable(true);
-        actionAlignRight = new QAction(QIcon(rsrcPath + "textright.png"), tr("&Right"), grp);
+        actionAlignRight = new QAction(Caneda::icon("format-justify-right"), tr("&Right"), grp);
         actionAlignRight->setShortcut(Qt::CTRL + Qt::Key_R);
         actionAlignRight->setCheckable(true);
-        actionAlignJustify = new QAction(QIcon(rsrcPath + "textjustify.png"), tr("&Justify"), grp);
+        actionAlignJustify = new QAction(Caneda::icon("format-justify-fill"), tr("&Justify"), grp);
         actionAlignJustify->setShortcut(Qt::CTRL + Qt::Key_J);
         actionAlignJustify->setCheckable(true);
 
@@ -282,13 +278,13 @@ namespace Caneda
         grp = new QActionGroup(this);
         connect(grp, SIGNAL(triggered(QAction *)), this, SLOT(textAlignSubSuperScript(QAction *)));
 
-        actionAlignSubscript = new QAction(QIcon(rsrcPath + "sub.png"), tr("Subscript"), grp);
+        actionAlignSubscript = new QAction(Caneda::icon("format-text-subscript"), tr("Subscript"), grp);
         actionAlignSubscript->setCheckable(true);
 
-        actionAlignSupersript = new QAction(QIcon(rsrcPath + "super.png"), tr("Superscript"), grp);
+        actionAlignSupersript = new QAction(Caneda::icon("format-text-superscript"), tr("Superscript"), grp);
         actionAlignSupersript->setCheckable(true);
 
-        actionAlignNormalscript = new QAction(QIcon(rsrcPath + "text.png"), tr("Normal"), grp);
+        actionAlignNormalscript = new QAction(Caneda::icon("format-text-bold"), tr("Normal"), grp);
         actionAlignNormalscript->setCheckable(true);
 
         tb->addActions(grp->actions());
