@@ -25,7 +25,6 @@
 
 #include <QColorDialog>
 #include <QPainter>
-#include <QTimer>
 
 namespace Caneda
 {
@@ -57,7 +56,8 @@ namespace Caneda
         QSizePolicy policy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         policy.setHeightForWidth(true);
         setSizePolicy(policy);
-        QTimer::singleShot(100, this, SLOT(update()));
+
+        update();
     }
 
     void PreviewWidget::setPen(QPen pen)
@@ -228,6 +228,7 @@ namespace Caneda
         painter.setBrush(brush());
 
         switch(m_paintingType) {
+
             case Painting::ArrowType:
                 drawArrow(&painter); break;
 
@@ -241,6 +242,9 @@ namespace Caneda
                 drawLine(&painter); break;
 
             case Painting::RectangleType:
+                drawRectangle(&painter); break;
+
+            case Painting::LayerType:
                 drawRectangle(&painter); break;
 
             default: ;
