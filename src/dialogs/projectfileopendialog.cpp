@@ -19,9 +19,10 @@
 
 #include "projectfileopendialog.h"
 
+#include "componentssidebar.h"
 #include "global.h"
 
-#include "componentssidebar.h"
+#include <QFileInfo>
 
 namespace Caneda
 {

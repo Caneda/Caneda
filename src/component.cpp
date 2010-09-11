@@ -32,6 +32,7 @@
 #include "xmlutilities/xmlutilities.h"
 
 #include <QDebug>
+#include <QFile>
 #include <QPainter>
 
 namespace Caneda

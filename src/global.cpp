@@ -19,198 +19,212 @@
 
 #include "global.h"
 
-#include <cmath>
+#include <QDir>
+#include <QFont>
+#include <QLocale>
+#include <QIcon>
+#include <QSettings>
 
-#include <QDebug>
+#include <cmath>
 
 using namespace std;
 
 namespace Caneda
 {
-   QString pathForCanedaFile(const QString& fileName)
-   {
-      QString retVal = QDir::homePath();
-      retVal += QDir::convertSeparators(QString("/.caneda/")+fileName);
-      return retVal;
-   }
+    QString baseDirectory()
+    {
+        const QString var(BASEDIR);
+        QDir CanedaDir = QDir(var);
+        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+    }
 
-   QString getenv()
-   {
-      // is application relocated?
-      static QString var(::getenv("CANEDADIR"));
-      return var;
-   }
+    QString binaryDirectory()
+    {
+        const QString var(BINARYDIR);
+        QDir CanedaDir = QDir(var);
+        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+    }
 
-   QString baseDirectory()
-   {
-      QString var = Caneda::getenv();
-      if(!var.isEmpty())
-      {
-         QDir CanedaDir = QDir (var);
-         return QDir::convertSeparators (CanedaDir.canonicalPath () + "/share/caneda/");
-      }
-      return Caneda::baseDir;
-   }
+    QString bitmapDirectory()
+    {
+        const QString var(BITMAPDIR);
+        QDir CanedaDir = QDir(var);
+        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+    }
 
-   QString binaryDirectory()
-   {
-      QString var = Caneda::getenv();
-      if(!var.isEmpty())
-      {
-         QDir CanedaDir = QDir (var);
-         return QDir::convertSeparators (CanedaDir.canonicalPath () + "/bin/");
-      }
-      return Caneda::binaryDir;
-   }
+    QString docDirectory()
+    {
+        const QString var(DOCDIR);
+        QDir CanedaDir = QDir(var);
+        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+    }
 
-   QString bitmapDirectory()
-   {
-      QString var = Caneda::getenv();
-      if(!var.isEmpty())
-      {
-         QDir CanedaDir = QDir (var);
-         return QDir::convertSeparators (CanedaDir.canonicalPath () + "/share/caneda/bitmaps/");
-      }
-      return Caneda::bitmapDir;
-   }
+    QString langDirectory()
+    {
+        const QString var(LANGUAGEDIR);
+        QDir CanedaDir = QDir(var);
+        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+    }
 
-   QString langDirectory()
-   {
+    QString libraryDirectory()
+    {
+        const QString var(LIBRARYDIR);
+        QDir CanedaDir = QDir(var);
+        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+    }
 
-      QString var = Caneda::getenv();
-      if(!var.isEmpty())
-      {
-         QDir CanedaDir = QDir (var);
-         return QDir::convertSeparators (CanedaDir.canonicalPath () + "/share/caneda/lang/");
-      }
-      return Caneda::langDir;
-   }
+    QString version()
+    {
+        const QString var(PACKAGE_VERSION);
+        return var;
+    }
 
-   QString language()
-   {
-      QString _default = QLocale().name();
-      QSettings settings;
-      settings.beginGroup("MainWindow");
-      QString retVal = settings.value("language",_default).toString();
-      settings.endGroup();
-      return retVal;
-   }
+    QString versionString()
+    {
+        const QString var(PACKAGE_STRING);
+        return var;
+    }
 
-   QString localePrefix()
-   {
-      QString retVal = QLocale::system().name();
-      retVal = retVal.left(retVal.indexOf('_'));
-      return retVal;
-   }
+    /*!
+    * \brief Returns an icon from current theme or a fallback default.
+    */
+    QIcon icon(const QString& iconName)
+    {
+        return QIcon::fromTheme(iconName, QIcon(Caneda::bitmapDirectory() + iconName + ".png"));
+    }
 
-   QFont font()
-   {
-      QSettings settings;
-      settings.beginGroup("MainWindow");
-      QString fontStr = settings.value("font").toString();
-      QFont fnt;
-      fnt.fromString(fontStr);
-      settings.endGroup();
-      return fnt;
-   }
+    QString pathForCanedaFile(const QString& fileName)
+    {
+        QString retVal = QDir::homePath();
+        retVal += QDir::convertSeparators(QString("/.caneda/") + fileName);
+        return retVal;
+    }
 
-   bool checkVersion(const QString& Line)
-   {
-      QStringList sl = Caneda::version.split('.', QString::SkipEmptyParts);
-      QStringList ll = Line.split('.',QString::SkipEmptyParts);
-      if (ll.count() != 3 || sl.count() != 3)
-         return false;
-      int sv = (sl.at(0)).toInt() * 10000 + (sl.at(1)).toInt() * 100 +
-         (sl.at(2)).toInt();
-      int lv = (ll.at(0)).toInt() * 10000 + (ll.at(1)).toInt() * 100 +
-         (ll.at(2)).toInt();
-      if(lv > sv) // wrong version number ? (only backward compatible)
-         return false;
-      return true;
-   }
+    QString language()
+    {
+        QString _default = QLocale().name();
+        QSettings settings;
+        settings.beginGroup("MainWindow");
+        QString retVal = settings.value("language",_default).toString();
+        settings.endGroup();
+        return retVal;
+    }
 
-   /*!
+    QString localePrefix()
+    {
+        QString retVal = QLocale::system().name();
+        retVal = retVal.left(retVal.indexOf('_'));
+        return retVal;
+    }
+
+    QFont font()
+    {
+        QSettings settings;
+        settings.beginGroup("MainWindow");
+        QString fontStr = settings.value("font").toString();
+        QFont fnt;
+        fnt.fromString(fontStr);
+        settings.endGroup();
+        return fnt;
+    }
+
+    bool checkVersion(const QString& Line)
+    {
+        QStringList sl = Caneda::version().split('.', QString::SkipEmptyParts);
+        QStringList ll = Line.split('.',QString::SkipEmptyParts);
+        if (ll.count() != 3 || sl.count() != 3)
+            return false;
+        int sv = (sl.at(0)).toInt() * 10000 + (sl.at(1)).toInt() * 100 +
+                 (sl.at(2)).toInt();
+        int lv = (ll.at(0)).toInt() * 10000 + (ll.at(1)).toInt() * 100 +
+                 (ll.at(2)).toInt();
+        if(lv > sv) // wrong version number ? (only backward compatible)
+            return false;
+        return true;
+    }
+
+    /*!
     * \brief Special characters used in LaTeX to unicode and unicode
     * to LaTeX conversions.
     */
-   struct tSpecialChar {
-       char Mnemonic[16];
-       unsigned short Unicode;
-   };
+    struct tSpecialChar {
+        char Mnemonic[16];
+        unsigned short Unicode;
+    };
 
-   struct tSpecialChar SpecialChars[] = {
-       {"alpha", 0x03B1}, {"beta", 0x03B2}, {"gamma", 0x03B3},
-       {"delta", 0x03B4}, {"epsilon", 0x03B5}, {"zeta", 0x03B6},
-       {"eta", 0x03B7}, {"theta", 0x03B8}, {"iota", 0x03B9},
-       {"kappa", 0x03BA}, {"lambda", 0x03BB}, {"mu", 0x03BC},
-       {"nu", 0x03BD}, {"xi", 0x03BE}, {"pi", 0x03C0},
-       {"rho", 0x03C1}, {"sigma", 0x03C3}, {"tau", 0x03C4},
-       {"upsilon", 0x03C5}, {"phi", 0x03C6}, {"chi", 0x03C7},
-       {"psi", 0x03C8}, {"omega", 0x03C9},
+    struct tSpecialChar SpecialChars[] = {
+        {"alpha", 0x03B1}, {"beta", 0x03B2}, {"gamma", 0x03B3},
+        {"delta", 0x03B4}, {"epsilon", 0x03B5}, {"zeta", 0x03B6},
+        {"eta", 0x03B7}, {"theta", 0x03B8}, {"iota", 0x03B9},
+        {"kappa", 0x03BA}, {"lambda", 0x03BB}, {"mu", 0x03BC},
+        {"nu", 0x03BD}, {"xi", 0x03BE}, {"pi", 0x03C0},
+        {"rho", 0x03C1}, {"sigma", 0x03C3}, {"tau", 0x03C4},
+        {"upsilon", 0x03C5}, {"phi", 0x03C6}, {"chi", 0x03C7},
+        {"psi", 0x03C8}, {"omega", 0x03C9},
 
-       {"varpi", 0x03D6}, {"varrho", 0x03F1},
+        {"varpi", 0x03D6}, {"varrho", 0x03F1},
 
-       {"Gamma", 0x0393}, {"Delta", 0x0394}, {"Theta", 0x0398},
-       {"Lambda", 0x039B}, {"Xi", 0x039E}, {"Pi", 0x03A0},
-       {"Sigma", 0x03A3}, {"Upsilon", 0x03A5}, {"Phi", 0x03A6},
-       {"Psi", 0x03A8}, {"Omega", 0x03A9},
+        {"Gamma", 0x0393}, {"Delta", 0x0394}, {"Theta", 0x0398},
+        {"Lambda", 0x039B}, {"Xi", 0x039E}, {"Pi", 0x03A0},
+        {"Sigma", 0x03A3}, {"Upsilon", 0x03A5}, {"Phi", 0x03A6},
+        {"Psi", 0x03A8}, {"Omega", 0x03A9},
 
-       {"textmu", 0x00B5}, {"cdot", 0x00B7}, {"times", 0x00D7},
-       {"pm", 0x00B1}, {"mp", 0x2213}, {"partial", 0x2202},
-       {"nabla", 0x2207}, {"infty", 0x221E}, {"int", 0x222B},
-       {"approx", 0x2248}, {"neq", 0x2260}, {"in", 0x220A},
-       {"leq", 0x2264}, {"geq", 0x2265}, {"sim", 0x223C},
-       {"propto", 0x221D}, {"onehalf", 0x00BD}, {"onequarter", 0x00BC},
-       {"twosuperior", 0x00B2}, {"threesuperior", 0x00B3},
-       {"diameter", 0x00F8}, {"ohm", 0x03A9},
+        {"textmu", 0x00B5}, {"cdot", 0x00B7}, {"times", 0x00D7},
+        {"pm", 0x00B1}, {"mp", 0x2213}, {"partial", 0x2202},
+        {"nabla", 0x2207}, {"infty", 0x221E}, {"int", 0x222B},
+        {"approx", 0x2248}, {"neq", 0x2260}, {"in", 0x220A},
+        {"leq", 0x2264}, {"geq", 0x2265}, {"sim", 0x223C},
+        {"propto", 0x221D}, {"onehalf", 0x00BD}, {"onequarter", 0x00BC},
+        {"twosuperior", 0x00B2}, {"threesuperior", 0x00B3},
+        {"diameter", 0x00F8}, {"ohm", 0x03A9},
 
-       {"", 0}  // end mark
-   };
+        {"", 0}  // end mark
+    };
 
-   /*!
+    /*!
     * \brief This function replaces the LaTeX tags for special characters
     * into its unicode value.
     */
-   QString latexToUnicode(const QString& Input)
-   {
-       int Begin = 0, End = 0;
-       struct tSpecialChar *p;
+    QString latexToUnicode(const QString& Input)
+    {
+        int Begin = 0, End = 0;
+        struct tSpecialChar *p;
 
-       QString Output = "";
-       Output.reserve(Input.size());
+        QString Output = "";
+        Output.reserve(Input.size());
 
-       while((Begin=Input.indexOf('\\', Begin)) >= 0) {
-           Output += Input.mid(End, Begin - End);
-           End = Begin++;
+        while((Begin=Input.indexOf('\\', Begin)) >= 0) {
+            Output += Input.mid(End, Begin - End);
+            End = Begin++;
 
-           p = SpecialChars;
-           while(p->Unicode != 0) {  // test all special characters
-               if(Input.mid(Begin).startsWith(p->Mnemonic)) {
-                   Output += QChar(p->Unicode);
-                   End = Begin + qstrlen(p->Mnemonic);
-                   break;
-               }
-               else {
-                   p++;
-               }
-           }
-       }
-       Output += Input.mid(End);
-       return Output;
-   }
+            p = SpecialChars;
+            while(p->Unicode != 0) {  // test all special characters
+                if(Input.mid(Begin).startsWith(p->Mnemonic)) {
+                    Output += QChar(p->Unicode);
+                    End = Begin + qstrlen(p->Mnemonic);
+                    break;
+                }
+                else {
+                    p++;
+                }
+            }
+        }
+        Output += Input.mid(End);
+        return Output;
+    }
 
-   /*!
+    /*!
     * \brief This function replaces the unicode of special characters
     * by its LaTeX tags.
     */
-   QString unicodeToLatex(QString Output)
-   {
-       struct tSpecialChar *p = SpecialChars;
-       while(p->Unicode != 0) {   // test all special characters
-           Output.replace(QChar(p->Unicode), "\\" + QString(p->Mnemonic));
-           p++;
-       }
-       return Output;
-   }
+    QString unicodeToLatex(QString Output)
+    {
+        struct tSpecialChar *p = SpecialChars;
+        while(p->Unicode != 0) {   // test all special characters
+            Output.replace(QChar(p->Unicode), "\\" + QString(p->Mnemonic));
+            p++;
+        }
+        return Output;
+    }
 
 } // namespace Caneda

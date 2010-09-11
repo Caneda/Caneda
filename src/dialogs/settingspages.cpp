@@ -28,6 +28,7 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QDateEdit>
+#include <QDir>
 #include <QFontDialog>
 #include <QFormLayout>
 #include <QFrame>
@@ -38,6 +39,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QSettings>
 #include <QSpinBox>
 
 namespace Caneda

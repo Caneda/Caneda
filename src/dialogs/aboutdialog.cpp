@@ -25,6 +25,7 @@
 #include "global.h"
 
 #include <QDialogButtonBox>
+#include <QFile>
 #include <QLabel>
 #include <QTabWidget>
 #include <QTextEdit>
@@ -78,7 +79,7 @@ namespace Caneda
         icon->setPixmap(QPixmap(Caneda::bitmapDirectory() + "caneda.png"));
         // label "Caneda"
         QLabel *title = new QLabel("<span style=\"font-weight:0;font-size:16pt;\">Caneda v"
-                                   + Caneda::version + "</span>");
+                                   + Caneda::version() + "</span>");
         title->setTextFormat(Qt::RichText);
         // All in a grid
         QGridLayout *grid_layout = new QGridLayout();
@@ -160,7 +161,7 @@ namespace Caneda
                 new QLabel(tr("This program is licensed under the GNU/GPL v2."));
 
         // Text of the GNU/GPL v2 in a scrollable non-editable text box
-        QFile *file = new QFile(Caneda::baseDir + "COPYING");
+        QFile *file = new QFile(Caneda::baseDirectory() + "COPYING");
         QString text;
         // Verification that the file exists
         if(!file->exists()) {

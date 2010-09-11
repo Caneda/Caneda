@@ -30,6 +30,8 @@
 #include "xmlutilities/xmlutilities.h"
 
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QSvgGenerator>
 
@@ -95,7 +97,7 @@ namespace Caneda
 
         QFileInfo info(fileName());
         writer->writeAttribute("name", info.baseName());
-        writer->writeAttribute("version", Caneda::version);
+        writer->writeAttribute("version", Caneda::version());
         writer->writeAttribute("label", "comp");
 
         writer->writeStartElement("displaytext");

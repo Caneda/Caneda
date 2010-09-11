@@ -24,81 +24,70 @@
 # include <config.h>
 #endif
 
-#include <QDir>
 #include <QDebug>
-#include <QFont>
-#include <QLocale>
-#include <QPixmap>
-#include <QSettings>
-#include <QString>
+
+// Forward declarations
+class QFont;
+class QIcon;
 
 namespace Caneda
 {
-   const QString baseDir(BASEDIR);
-   const QString binaryDir(BINARYDIR);
-   const QString bitmapDir(BITMAPDIR);
-   const QString docDir(DOCDIR);
-   const QString langDir(LANGUAGEDIR);
-   const QString libDir(LIBRARYDIR);
-   const QString version(PACKAGE_VERSION);
-   const QString versionString(PACKAGE_STRING);
+    QString baseDirectory();
+    QString binaryDirectory();
+    QString bitmapDirectory();
+    QString docDirectory();
+    QString langDirectory();
+    QString libDirectory();
 
-   QString pathForCanedaFile(const QString& fileName);
+    QString version();
+    QString versionString();
 
-   QString getenv();
+    QIcon icon(const QString& iconName);
+    QString pathForCanedaFile(const QString& fileName);
 
-   QString baseDirectory();
-   QString binaryDirectory();
-   QString bitmapDirectory();
-   QString langDirectory();
+    QString language();
+    QString localePrefix();
+    QFont font();
 
-   inline QPixmap pixmapFor(const QString& name) {
-      return QPixmap(bitmapDirectory() + name + ".png");
-   }
+    bool checkVersion(const QString& line);
 
-   QString language();
-   QString localePrefix();
-   QFont font();
+    inline QString boolToString(bool boolean) {
+        return boolean ? QString("true") : QString("false");
+    }
 
-   bool checkVersion(const QString& line);
+    inline bool stringToBool(const QString& str) {
+        return str == "true" ? true : false;
+    }
 
-   inline QString boolToString(bool boolean) {
-      return boolean ? QString("true") : QString("false");
-   }
+    inline QString realToString(qreal val) {
+        return QString::number(val,'f',2);
+    }
 
-   inline bool stringToBool(const QString& str) {
-      return str == "true" ? true : false;
-   }
+    QString latexToUnicode(const QString& input);
+    QString unicodeToLatex(QString unicode);
 
-   inline QString realToString(qreal val) {
-      return QString::number(val,'f',2);
-   }
+    enum SideBarRole {
+        ItemSelection,
+        PropertyBrowser
+    };
 
-   QString latexToUnicode(const QString& input);
-   QString unicodeToLatex(QString unicode);
+    struct ZoomRange
+    {
+        const qreal min;
+        const qreal max;
 
-   enum SideBarRole {
-       ItemSelection,
-       PropertyBrowser
-   };
+        ZoomRange(qreal _min = 0., qreal _max = 1.0) :
+                min(_min), max(_max)
+        {
+            if (max < min) {
+                qWarning() << Q_FUNC_INFO << "Invalid range" << min << max;
+            }
+        }
 
-   struct ZoomRange
-   {
-       const qreal min;
-       const qreal max;
-
-       ZoomRange(qreal _min = 0., qreal _max = 1.0) :
-           min(_min), max(_max)
-       {
-           if (max < min) {
-               qWarning() << Q_FUNC_INFO << "Invalid range" << min << max;
-           }
-       }
-
-       bool contains(qreal value) const {
-           return value >= min && value <= max;
-       }
-   };
+        bool contains(qreal value) const {
+            return value >= min && value <= max;
+        }
+    };
 
 } // namespace Caneda
 

@@ -107,7 +107,7 @@ namespace Caneda
     void Attenuator::slotCreateSchematic()
     {
         // Create the Caneda schematic
-        QString *s = new QString("<Caneda Schematic " + Caneda::version + ">\n");
+        QString *s = new QString("<Caneda Schematic " + Caneda::version() + ">\n");
         *s += "<Components>\n";
 
         if ( ui.comboTopology->currentText() == "Pi" ) {

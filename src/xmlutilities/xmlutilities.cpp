@@ -23,6 +23,7 @@
 
 #include <QBrush>
 #include <QDebug>
+#include <QFont>
 #include <QLineF>
 #include <QPen>
 #include <QRectF>

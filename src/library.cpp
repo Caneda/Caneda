@@ -201,7 +201,7 @@ namespace Caneda
         writer->writeStartDocument();
         writer->writeStartElement("library");
         writer->writeAttribute("name", libraryName());
-        writer->writeAttribute("version", Caneda::version);
+        writer->writeAttribute("version", Caneda::version());
 
         writer->writeStartElement("displaytext");
         writer->writeLocaleText("en", displayText());

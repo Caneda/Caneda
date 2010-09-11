@@ -245,7 +245,7 @@ namespace Caneda
     void TransmissionDialog::slotCreateSchematic()
     {
         int created = 0;
-        QString s = "<Caneda Schematic " + Caneda::version + ">\n";
+        QString s = "<Caneda Schematic " + Caneda::version() + ">\n";
 
         // create microstrip schematic
         if (ui.comboType->currentIndex() == 0) {

@@ -458,7 +458,7 @@ namespace Caneda
         writer->writeStartDocument();
         writer->writeDTD(QString("<!DOCTYPE caneda>"));
         writer->writeStartElement("caneda");
-        writer->writeAttribute("version", Caneda::version);
+        writer->writeAttribute("version", Caneda::version());
 
         foreach(SchematicItem *_item, _items) {
             _item->saveData(writer);

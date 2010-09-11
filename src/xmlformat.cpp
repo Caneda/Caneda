@@ -33,11 +33,12 @@
 
 #include "xmlutilities/xmlutilities.h"
 
+#include <QDebug>
+#include <QFile>
 #include <QMatrix>
 #include <QMessageBox>
 #include <QRectF>
 #include <QScrollBar>
-#include <QtDebug>
 
 namespace Caneda
 {
@@ -157,7 +158,7 @@ namespace Caneda
         writer->writeStartDocument();
         writer->writeDTD(QString("<!DOCTYPE caneda>"));
         writer->writeStartElement("caneda");
-        writer->writeAttribute("version", Caneda::version);
+        writer->writeAttribute("version", Caneda::version());
 
         //Now we copy all the elements and properties in the schematic
         saveSchematics(writer);
@@ -183,7 +184,7 @@ namespace Caneda
         writer->writeStartDocument();
         writer->writeDTD(QString("<!DOCTYPE caneda>"));
         writer->writeStartElement("caneda");
-        writer->writeAttribute("version", Caneda::version);
+        writer->writeAttribute("version", Caneda::version());
 
         //Now we copy all the elements and properties previously defined in the schematic
         QFile file(fileName());
