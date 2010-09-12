@@ -21,6 +21,7 @@
 
 #include "arrow.h"
 #include "ellipsearc.h"
+#include "layer.h"
 #include "schematicscene.h"
 
 #include <QBrush>
@@ -342,6 +343,9 @@ namespace Caneda
         }
         
         if(painting->type() == Painting::LayerType) {
+            Layer *layer = canedaitem_cast<Layer*>(painting);
+            ui.layerComboBox->setCurrentIndex(layer->layerName());
+
             ui.lineStyleComboBox->setCurrentIndex(0);
             ui.lineGroupBox->hide();
             ui.fillGroupBox->hide();
@@ -444,6 +448,10 @@ namespace Caneda
             EllipseArc *arc = static_cast<EllipseArc*>(painting);
             arc->setStartAngle(previewWidget->startAngle());
             arc->setSpanAngle(previewWidget->spanAngle());
+        }
+        else if(painting->type() == Painting::LayerType) {
+            Layer *layer = static_cast<Layer*>(painting);
+            layer->setLayerName((Layer::LayerName)ui.layerComboBox->currentIndex());
         }
 
         if(painting->schematicScene()) {
