@@ -1,24 +1,24 @@
 # toolbar pictures
-SET(PNGS  align-horizontal-center.png chronometer.png dialog-close.png draw-eraser.png forward.png object-flip-horizontal.png qt.png text-plain.png
-align-horizontal-left.png distribute-horizontal-center.png draw-freehand.png go-bottom.png object-flip-vertical.png select-rectangular.png textright.png
-align-horizontal-right.png distribute-vertical-center.png edit-copy.png go-top.png object-locked.png stop.png textunder.png
-align-vertical-bottom.png document-close.png edit-delete.png ground.png object-rotate-left.png sub.png tools-wizard.png
-align-vertical-center.png document-new.png edit-find.png help-contents.png object-unlocked.png super.png wire.png
-align-vertical-top.png document-open.png edit-redo.png home.png pause.png system-switch-user.png zoom-fit-best.png
-application-exit.png document-preview.png edit-select.png image-x-generic.png pdf.png terminal.png zoom-in.png
-back.png document-print.png edit-undo.png edit-cut.png edit-paste.png library.png port.png textbold.png zoom-original.png
-caneda.png document-properties.png eps.png marker.png preferences-other.png textcenter.png zoom-out.png
-clearFilterText.png document-save-all.png filedelete.png media-playback-start.png previous.png textitalic.png
-code-context.png document-save-as.png foldernew.png next.png printer.png textjustify.png
-deactiv.png document-save.png formula.png nodename.png project-new.png textleft.png
-modified.png unmodified.png view-grid.png view-left-close.png view-split-left-right.png view-split-top-bottom.png transform-scale.png
-att_bridge.png att_pi.png att_tee.png c_microstrip.png coax.png microstrip.png rectwaveguide.png
+SET(PNGS align-horizontal-center.png c_microstrip.png document-save-as.png format-justify-center.png go-top.png object-locked.png terminal.png
+align-horizontal-left.png coax.png document-save.png format-justify-fill.png go-up.png object-rotate-left.png text-plain.png
+align-horizontal-right.png code-context.png draw-eraser.png format-justify-left.png ground.png object-unlocked.png tools-wizard.png
+align-vertical-bottom.png deactiv.png draw-freehand.png format-justify-right.png help-contents.png pause.png transform-scale.png
+align-vertical-center.png dialog-close.png edit-copy.png format-text-bold.png image-x-generic.png pdf.png unmodified.png
+align-vertical-top.png distribute-horizontal-center.png edit-cut.png format-text-italic.png library.png port.png view-grid.png
+application-exit.png distribute-vertical-center.png edit-delete.png format-text-subscript.png marker.png preferences-other.png view-left-close.png
+archive-remove.png document-close.png edit-find.png format-text-superscript.png media-playback-start.png printer.png view-split-left-right.png
+att_bridge.png document-new.png edit-paste.png format-text-underline.png microstrip.png project-new.png view-split-top-bottom.png
+att_pi.png document-open.png edit-redo.png formula.png modified.png qt.png wire.png
+att_tee.png document-preview.png edit-select.png go-bottom.png next.png rectwaveguide.png zoom-fit-best.png
+caneda.png document-print.png edit-undo.png go-home.png nodename.png select-rectangular.png zoom-in.png
+chronometer.png document-properties.png eps.png go-next.png object-flip-horizontal.png stop.png zoom-original.png
+clearFilterText.png document-save-all.png folder-new.png go-previous.png object-flip-vertical.png system-switch-user.png zoom-out.png
 )
 
 SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg rectangle.svg text.svg splash.jpg)
 
 # application pictures
-SET(ICONS  big.button.caneda.xpm big.caneda.xpm tiny.button.caneda.xpm tiny.caneda.xpm )
+SET(ICONS big.button.caneda.xpm big.caneda.xpm tiny.button.caneda.xpm tiny.caneda.xpm )
 
 INSTALL(FILES ${PNGS} DESTINATION ${BITMAPDIR})
 INSTALL(FILES ${SVGS} DESTINATION ${BITMAPDIR})
