@@ -104,13 +104,13 @@ namespace Caneda
     };
 
     //! This class represents the document configuration page.
-    class DocumentConfigurationPage : public SettingsPage
+    class SchematicDocumentConfigurationPage : public SettingsPage
     {
         Q_OBJECT;
 
     public:
-        DocumentConfigurationPage(SchematicScene *scene, QWidget *parent = 0);
-        virtual ~DocumentConfigurationPage();
+        SchematicDocumentConfigurationPage(SchematicScene *scene, QWidget *parent = 0);
+        virtual ~SchematicDocumentConfigurationPage();
 
     public:
         void applyConf();

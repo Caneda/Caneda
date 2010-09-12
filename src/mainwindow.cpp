@@ -35,7 +35,6 @@
 #include "textcontext.h"
 
 #include "dialogs/aboutdialog.h"
-#include "dialogs/exportdialog.h"
 #include "dialogs/librarymanager.h"
 #include "dialogs/projectfileopendialog.h"
 #include "dialogs/printdialog.h"
@@ -1189,24 +1188,13 @@ namespace Caneda
 
     void MainWindow::slotExportImage()
     {
-        //PORT:
-#if 0
-        QList<SchematicScene *> schemasToExport;
-
-        int i = 0;
-        CanedaView *view = 0;
-        while(i < tabWidget()->count()) {
-            view = viewFromWidget(tabWidget()->widget(i));
-            SchematicScene *scene = view->toSchematicWidget()->schematicScene();
-            schemasToExport << scene;
-
-            view = 0;
-            ++i;
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (!document) {
+            return;
         }
 
-        ExportDialog *expDial = new ExportDialog(schemasToExport, this);
-        expDial->exec();
-#endif
+        document->exportImage();
     }
 
     void MainWindow::slotApplSettings()

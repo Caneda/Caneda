@@ -384,7 +384,7 @@ namespace Caneda
      * Constructor
      * @param QWidget *parent The parent of the dialog.
      */
-    DocumentConfigurationPage::DocumentConfigurationPage(SchematicScene *scene,
+    SchematicDocumentConfigurationPage::SchematicDocumentConfigurationPage(SchematicScene *scene,
             QWidget *parent) : SettingsPage(parent)
     {
 
@@ -469,14 +469,14 @@ namespace Caneda
     }
 
     //! Destructor
-    DocumentConfigurationPage::~DocumentConfigurationPage()
+    SchematicDocumentConfigurationPage::~SchematicDocumentConfigurationPage()
     {
     }
 
     /*!
       Applies the configuration of this page
       */
-    void DocumentConfigurationPage::applyConf()
+    void SchematicDocumentConfigurationPage::applyConf()
     {
         bool changed = false;
 
@@ -547,13 +547,13 @@ namespace Caneda
     }
 
     //! @return Icon of this page
-    QIcon DocumentConfigurationPage::icon() const
+    QIcon SchematicDocumentConfigurationPage::icon() const
     {
         return(QIcon(Caneda::bitmapDirectory() + "document-edit.png"));
     }
 
     //! @return Title of this page
-    QString DocumentConfigurationPage::title() const
+    QString SchematicDocumentConfigurationPage::title() const
     {
         return(tr("General", "document page title"));
     }

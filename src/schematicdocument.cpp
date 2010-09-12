@@ -26,6 +26,7 @@
 #include "settings.h"
 #include "xmlsymbolformat.h"
 
+#include "dialogs/exportdialog.h"
 #include "dialogs/settingsdialog.h"
 
 #include <QFileInfo>
@@ -202,16 +203,20 @@ namespace Caneda
         Settings::instance()->setCurrentValue("gui/gridVisible", viewGridStatus);
     }
 
-    void SchematicDocument::exportToPaintDevice(QPaintDevice *device,
-            const QVariantMap &configuration)
+    void SchematicDocument::exportImage()
     {
+        QList<SchematicScene *> schemasToExport;
 
+        schemasToExport << schematicScene();
+
+        ExportDialog *d = new ExportDialog(schemasToExport);
+        d->exec();
     }
 
     void SchematicDocument::documentSettings()
     {
         QList<SettingsPage *> wantedPages;
-        SettingsPage *page = new DocumentConfigurationPage(schematicScene());
+        SettingsPage *page = new SchematicDocumentConfigurationPage(schematicScene());
         wantedPages << page;
         page = new SimulationConfigurationPage();
         wantedPages << page;

@@ -155,8 +155,7 @@ namespace Caneda
         m_textDocument->print(printer);
     }
 
-    void TextDocument::exportToPaintDevice(QPaintDevice *device,
-            const QVariantMap &configuration)
+    void TextDocument::exportImage()
     {
 
     }

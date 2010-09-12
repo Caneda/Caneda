@@ -126,9 +126,9 @@ namespace Caneda
         page->print(printer);
     }
 
-    void WebDocument::exportToPaintDevice(QPaintDevice *device,
-            const QVariantMap &configuration)
+    void WebDocument::exportImage()
     {
+
     }
 
     void WebDocument::documentSettings()
