@@ -60,6 +60,7 @@ namespace Caneda
         // Get the current line number
         QTextCursor textcursor = textCursor();
         QTextLayout* blocklayout = textcursor.block().layout();
+
         // Get the relative position in the block
         int position = textcursor.position() - textcursor.block().position();
         int line = blocklayout->lineForTextPosition(position).lineNumber() +

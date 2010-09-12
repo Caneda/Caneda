@@ -23,11 +23,8 @@
 #include "global.h"
 #include "item.h"
 #include "port.h"
-#include "schematicdocument.h"
 #include "schematicscene.h"
-#include "schematicwidget.h"
 #include "wire.h"
-#include "wireline.h"
 
 #include "paintings/painting.h"
 
@@ -35,10 +32,7 @@
 
 #include <QDebug>
 #include <QFile>
-#include <QMatrix>
 #include <QMessageBox>
-#include <QRectF>
-#include <QScrollBar>
 
 namespace Caneda
 {
@@ -175,7 +169,6 @@ namespace Caneda
 
     QString XmlFormat::saveSymbolText()
     {
-        SchematicScene *scene = schematicScene();
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
         writer->setAutoFormatting(true);

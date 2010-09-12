@@ -24,8 +24,6 @@
 
 namespace Caneda
 {
-    class XmlReader;
-
     class XmlSymbolFormat : public FileFormatHandler
     {
     public:

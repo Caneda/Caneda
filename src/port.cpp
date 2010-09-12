@@ -24,8 +24,9 @@
 #include "schematicscene.h"
 #include "wire.h"
 
-#include <QApplication>
 #include <QDebug>
+#include <QGraphicsItem>
+#include <QPainter>
 
 namespace Caneda
 {
@@ -42,10 +43,9 @@ namespace Caneda
 
     /*************************************************************
      *
-     *  PORT OWNER
+     *  PortOwner
      *
      *************************************************************/
-
 
     //! \brief Construct portowner with wire as owner.
     PortOwner::PortOwner(SchematicItem * item) : m_item(item)
@@ -89,7 +89,7 @@ namespace Caneda
 
     /**************************************************************************
      *
-     *         port
+     *  Port
      *
      ***************************************************************************/
 
@@ -504,8 +504,6 @@ namespace Caneda
             painter->drawEllipse(portEllipseConnected.translated(pos()));
         }
 
-
-
         /* dump number of connection near each port */
         if(DEBUG_PORT_CONNECTION) {
             painter->setPen(QPen(Qt::red, 0));
@@ -541,7 +539,7 @@ namespace Caneda
         QRectF debugTextRect;
         QPointF delta(5, 5);
         if(DEBUG_PORT_CONNECTION) {
-            QFontMetricsF fm(qApp->font());
+            QFontMetricsF fm(QFont("Helvetica", 6));
             debugTextRect = fm.boundingRect(QString("W"));
             debugTextRect.adjust(-1, -1, 1, 1);
         }

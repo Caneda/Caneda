@@ -21,7 +21,6 @@
 #define XMLFORMAT_H
 
 #include "fileformathandler.h"
-#include "schematicscene.h"
 
 namespace Caneda
 {

@@ -22,12 +22,8 @@
 
 #include "item.h"
 
-#include <QGraphicsItem>
 #include <QList>
-#include <QPainter>
-#include <QPointF>
 #include <QSharedData>
-#include <QString>
 
 namespace Caneda
 {

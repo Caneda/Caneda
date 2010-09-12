@@ -27,6 +27,7 @@
 #include "xmlsymbolformat.h"
 
 #include <QFileInfo>
+#include <QPainter>
 #include <QPrinter>
 
 #include <cmath>

@@ -25,8 +25,6 @@
 #include "library.h"
 #include "schematiccontext.h"
 #include "schematicdocument.h"
-#include "schematicscene.h"
-#include "schematicwidget.h"
 #include "xmlsymbolformat.h"
 
 #include "dialogs/projectfilenewdialog.h"

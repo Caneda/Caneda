@@ -27,9 +27,6 @@
 
 namespace Caneda
 {
-    // Forward declarations
-    class SvgPainter;
-
     /*!
      * \brief This class packs some information needed by svg items which are
      *        shared by many items.

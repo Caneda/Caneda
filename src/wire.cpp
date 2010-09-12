@@ -20,20 +20,13 @@
 #include "wire.h"
 
 #include "global.h"
-#include "port.h"
 #include "schematicscene.h"
-#include "undocommands.h"
 
 #include "xmlutilities/xmlutilities.h"
 
-#include <QDebug>
 #include <QGraphicsSceneEvent>
-#include <QGraphicsView>
-#include <QList>
-#include <QRubberBand>
+#include <QPainter>
 #include <QStyleOptionGraphicsItem>
-#include <QtAlgorithms>
-#include <QVariant>
 
 namespace Caneda
 {

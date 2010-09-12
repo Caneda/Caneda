@@ -21,6 +21,8 @@
 
 #include "settings.h"
 
+#include <QTextCharFormat>
+
 namespace Caneda
 {
     //*************************************************************

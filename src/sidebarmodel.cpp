@@ -27,7 +27,6 @@
 #include <QList>
 #include <QMimeData>
 #include <QPainter>
-#include <QtAlgorithms>
 #include <QVariant>
 
 namespace Caneda

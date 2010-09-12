@@ -24,18 +24,18 @@
 #include "webpage.h"
 
 #include <QApplication>
-#include <QFont>
 #include <QFontInfo>
 
 namespace Caneda
 {
     WebView::WebView(WebDocument *document) :
         IView(document),
-        m_zoomRange(6.0, 30.0),
-        m_originalZoom(QFontInfo(qApp->font()).pointSizeF())
+        m_zoomRange(0.4, 10.0),
+        m_originalZoom(QFontInfo(qApp->font()).pointSizeF()/10)
     {
         m_currentZoom = m_originalZoom;
         m_webPage = new WebPage(document->webUrl());
+        m_webPage->setZoomFactor(m_currentZoom);
         connect(m_webPage, SIGNAL(focussed()), this,
                 SLOT(onFocussed()));
         connect(m_webPage, SIGNAL(statusBarMessage(const QString &)),
@@ -79,17 +79,17 @@ namespace Caneda
 
     void WebView::zoomIn()
     {
-        setZoomLevel(m_currentZoom + 1);
+        setZoomLevel(m_currentZoom + 0.1);
     }
 
     void WebView::zoomOut()
     {
-        setZoomLevel(m_currentZoom - 1);
+        setZoomLevel(m_currentZoom - 0.1);
     }
 
     void WebView::zoomFitInBest()
     {
-        setZoomLevel(4);
+        setZoomLevel(2);
     }
 
     void WebView::zoomOriginal()

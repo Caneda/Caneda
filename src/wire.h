@@ -32,7 +32,6 @@ class QGraphicsLineItem;
 namespace Caneda
 {
     // Forward declarations
-    class Port;
     class SchematicScene;
 
     typedef QList<WireLine> WireLines;

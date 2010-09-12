@@ -23,6 +23,7 @@
 #include <QMap>
 #include <QVariant>
 
+// Forward declarations
 class QSettings;
 
 namespace Caneda

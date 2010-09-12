@@ -20,12 +20,11 @@
 #ifndef SYNTAXHIGHLIGHTERS_H
 #define SYNTAXHIGHLIGHTERS_H
 
-#include <QHash>
 #include <QSyntaxHighlighter>
-#include <QTextCharFormat>
 
 // Forward declarations
 class QTextDocument;
+class QTextCharFormat;
 
 namespace Caneda
 {

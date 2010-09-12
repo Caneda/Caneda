@@ -24,7 +24,6 @@
 #include "item.h"
 #include "schematicdocument.h"
 #include "schematicscene.h"
-#include "schematicwidget.h"
 #include "settings.h"
 
 #include "xmlutilities/xmlutilities.h"

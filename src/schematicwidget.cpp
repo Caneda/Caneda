@@ -19,18 +19,11 @@
 
 #include "schematicwidget.h"
 
-#include "item.h"
 #include "schematicdocument.h"
 #include "schematicscene.h"
 #include "schematicview.h"
-#include "xmlformat.h"
 
-#include <QDebug>
-#include <QFileDialog>
-#include <QFileInfo>
-#include <QMessageBox>
 #include <QScrollBar>
-#include <QTimer>
 #include <QWheelEvent>
 
 namespace Caneda

@@ -19,7 +19,6 @@
 
 #include "undocommands.h"
 
-#include "component.h"
 #include "port.h"
 #include "schematicscene.h"
 

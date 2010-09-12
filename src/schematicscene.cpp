@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 Gopala Krishna A <krishna.ggk@gmail.com>             *
- * Copyright (C) 2008 Bastien Roucaries <roucaries.bastien+qucs@gmail.com> *
+ * Copyright (C) 2008 Bastien Roucaries <roucaries.bastien@gmail.com>      *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,16 +20,11 @@
 
 #include "schematicscene.h"
 
-#include "component.h"
-#include "global.h"
 #include "library.h"
-#include "port.h"
 #include "propertygroup.h"
 #include "schematicwidget.h"
 #include "schematicview.h"
 #include "settings.h"
-#include "undocommands.h"
-#include "wire.h"
 
 #include "paintings/ellipsearc.h"
 #include "paintings/graphictextdialog.h"
@@ -38,12 +33,9 @@
 
 #include <QApplication>
 #include <QClipboard>
-#include <QColor>
 #include <QDate>
 #include <QGraphicsSceneEvent>
-#include <QGraphicsView>
 #include <QKeySequence>
-#include <QMessageBox>
 #include <QPainter>
 #include <QScrollBar>
 #include <QShortcutEvent>

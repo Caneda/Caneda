@@ -22,9 +22,6 @@
 
 #include <QWidget>
 
-// Forward declarations
-class QToolButton;
-
 namespace Caneda
 {
     // Forward declarations

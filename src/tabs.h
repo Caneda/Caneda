@@ -20,7 +20,6 @@
 #ifndef TABS_H
 #define TABS_H
 
-#include <QPointer>
 #include <QTabWidget>
 
 // Forward declartions.

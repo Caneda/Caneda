@@ -24,7 +24,6 @@
 #include "textedit.h"
 
 #include <QApplication>
-#include <QFont>
 #include <QFontInfo>
 
 namespace Caneda

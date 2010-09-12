@@ -222,7 +222,7 @@ namespace Caneda
         parentContainer->setView(0);
         parentContainer->deleteLater();
         m_views.removeAll(view);
-        // Remember, we do not delete the view itself here. Its handled in
+        // Remember, we do not delete the view itself here. It is handled in
         // DocumentViewManager.
 
         bool removeThisTab = false;

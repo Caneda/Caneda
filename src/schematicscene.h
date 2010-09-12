@@ -22,27 +22,22 @@
 
 #include "undocommands.h"
 
-#include <QColor>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QList>
-#include <QPair>
-#include <QPointF>
-#include <QVarLengthArray>
 
-class QRubberBand;
+// Forward declarations
 class QUndoCommand;
 class QUndoStack;
-class SvgPainter;
 
 namespace Caneda
 {
     // Forward declarations
     class Component;
-    class Diagram;
     class Painting;
     class SchematicWidget;
     class SchematicItem;
+    class SvgPainter;
     class Wire;
 
     enum Mode {

@@ -29,7 +29,6 @@
 #include <QFileInfo>
 #include <QTextCodec>
 #include <QTextDocument>
-#include <QTextEdit>
 #include <QTextStream>
 #include <QUndoStack>
 

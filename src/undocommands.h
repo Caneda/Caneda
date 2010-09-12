@@ -24,7 +24,6 @@
 #include "wire.h"
 
 #include <QPair>
-#include <QPointF>
 #include <QUndoCommand>
 #include <QVariant>
 
