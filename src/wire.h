@@ -87,7 +87,7 @@ namespace Caneda
 
         void setWireLines(const WireLines& wirelines);
 
-        void removeNullLines();
+        void optimize();
 
         void saveData(Caneda::XmlWriter *writer) const;
         void saveData(Caneda::XmlWriter *writer, int id) const;

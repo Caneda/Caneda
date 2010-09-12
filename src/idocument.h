@@ -21,13 +21,12 @@
 #define CANEDA_IDOCUMENT_H
 
 #include <QObject>
-#include <QString>
-#include <QUndoStack>
 #include <QVariant>
 
 // Forward declarations
 class QPaintDevice;
 class QPrinter;
+class QUndoStack;
 
 namespace Caneda
 {

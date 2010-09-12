@@ -28,6 +28,9 @@
 
 #include <limits>
 
+// Forward declarations
+class QMenu;
+
 /*!
  * \brief This macro determines the pattern for derived class.
  *
@@ -36,11 +39,8 @@
  */
 #define PATTERN(base,shift) (((base) >> (shift)) | (base))
 
-// forward declaration
-class QMenu;
-
-
-namespace Caneda {
+namespace Caneda
+{
     class XmlReader;
     class XmlWriter;
     class SchematicScene;

@@ -24,6 +24,7 @@
 #include "webpage.h"
 #include "webview.h"
 
+#include <QUndoStack>
 #include <QUrl>
 
 namespace Caneda

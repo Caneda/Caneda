@@ -23,6 +23,8 @@
 #include "xmlformat.h"
 #include "xmlsymbolformat.h"
 
+#include <QString>
+
 namespace Caneda
 {
     //! Constructor

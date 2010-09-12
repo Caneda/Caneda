@@ -20,6 +20,8 @@
 #include "idocument.h"
 #include "documentviewmanager.h"
 
+#include <QUndoStack>
+
 namespace Caneda
 {
     /*!

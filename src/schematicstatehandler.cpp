@@ -356,8 +356,6 @@ namespace Caneda
             func = &SchematicScene::toggleActiveStatus;
         }
 
-        Action *norm = am->actionForName("select");
-
         QList<Action*> mouseActions = ActionManager::instance()->mouseActions();
 
         //toggling off any action switches normal select action "on"

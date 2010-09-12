@@ -31,6 +31,7 @@
 #include <QTextDocument>
 #include <QTextEdit>
 #include <QTextStream>
+#include <QUndoStack>
 
 namespace Caneda
 {

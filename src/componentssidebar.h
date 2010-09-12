@@ -20,8 +20,6 @@
 #ifndef COMPONENTSSIDEBAR_H
 #define COMPONENTSSIDEBAR_H
 
-#include "sidebarmodel.h"
-
 #include <QTreeView>
 
 // Forward declarations
@@ -32,6 +30,7 @@ namespace Caneda
 {
     // Forward declarations
     class FilterProxyModel;
+    class SidebarModel;
 
     class TreeView : public QTreeView
     {

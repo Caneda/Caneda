@@ -20,12 +20,6 @@
 #ifndef QXMLSTREAMREADEREXT_H
 #define QXMLSTREAMREADEREXT_H
 
-/*!
- * \file QXmlStreamReaderExt.h
- * \author ROUCARIES Bastien
- * \brief Implement xml parser extending QXmlStreamReader class
- */
-
 #include "QRelaxNGvalidator.h"
 #include "QXsltTransformer.h"
 

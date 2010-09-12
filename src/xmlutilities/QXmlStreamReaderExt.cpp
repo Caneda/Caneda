@@ -17,12 +17,6 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/*!
- * \file QXmlStreamReaderExt.cpp
- * \author ROUCARIES Bastien
- * \brief Implement xml parser extending QXmlStreamReader class
- */
-
 #include "QXmlStreamReaderExt.h"
 
 #include <QDebug>

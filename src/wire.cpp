@@ -108,10 +108,8 @@ namespace Caneda
 
         /* set flags */
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-#if QT_VERSION >= 0x040600
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
-#endif
 
         /* create port */
         QPointF localStartPos = mapFromScene(startPos);
@@ -124,7 +122,7 @@ namespace Caneda
 
         /* show in scene */
         if(scene) {
-            removeNullLines();
+            optimize();
         }
 
         if(doConnect) {
@@ -149,10 +147,8 @@ namespace Caneda
 
             /* set flags */
             setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-#if QT_VERSION >= 0x040600
             setFlag(ItemSendsGeometryChanges, true);
             setFlag(ItemSendsScenePositionChanges, true);
-#endif
 
             /* create port
                BR->GPK: Why not add startport and endport
@@ -166,7 +162,7 @@ namespace Caneda
             initWireline();
 
             if(scene) {
-                removeNullLines();
+                optimize();
             }
 
             port1()->connectTo(startPort);
@@ -331,19 +327,10 @@ namespace Caneda
             painter->drawLine(*it);
             ++it;
         }
-        /*
-           {
-        //debugging purpose only.
-        if(0) {
-        painter->setPen(Qt::darkGreen);
-        painter->drawPath(shape());
-        }
-        }*/
 
         /* restore pen */
         painter->setPen(savedPen);
         drawPorts(m_ports, painter, option);
-
     }
 
     /*!
@@ -438,7 +425,7 @@ namespace Caneda
     {
         m_grabbedIndex = -1; //reset index
 
-        removeNullLines();
+        optimize();
         updateGeometry();
     }
 
@@ -452,9 +439,8 @@ namespace Caneda
     /*!
      * \brief Removes zero length lines and optimizes multiple straight lines
      * to one big straight line.
-     * \todo rename to optimize
      */
-    void Wire::removeNullLines()
+    void Wire::optimize()
     {
         QList<WireLine>::iterator it = m_wLines.begin(), it1;
 

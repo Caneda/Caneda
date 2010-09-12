@@ -20,17 +20,12 @@
 #ifndef CANEDA_MAINWINDOW_H
 #define CANEDA_MAINWINDOW_H
 
-#include "schematicscene.h"
-#include "undocommands.h"
-
 #include <QMainWindow>
 #include <QMap>
 
 // Forward declarations
 class QLabel;
-class QMenu;
 class QTermWidget;
-class QToolBar;
 class QUndoGroup;
 class QUndoView;
 
@@ -142,7 +137,6 @@ namespace Caneda
         void createFolderView();
         void setupSidebar();
         void setupProjectsSidebar();
-
 
         // menus contain the items of their menubar
         QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,

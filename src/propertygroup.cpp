@@ -137,18 +137,14 @@ namespace Caneda
         }
         if(visibleItemsCount > 0) {
             setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-#if QT_VERSION >= 0x040600
-        setFlag(ItemSendsGeometryChanges, true);
-        setFlag(ItemSendsScenePositionChanges, true);
-#endif
+            setFlag(ItemSendsGeometryChanges, true);
+            setFlag(ItemSendsScenePositionChanges, true);
         }
         else {
             //Disables moving , selection and focussing of empty groups.
             setFlags(0);
-#if QT_VERSION >= 0x040600
-        setFlag(ItemSendsGeometryChanges, true);
-        setFlag(ItemSendsScenePositionChanges, true);
-#endif
+            setFlag(ItemSendsGeometryChanges, true);
+            setFlag(ItemSendsScenePositionChanges, true);
         }
         forceUpdate();
     }

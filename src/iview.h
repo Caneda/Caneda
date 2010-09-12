@@ -20,7 +20,6 @@
 #ifndef CANEDA_IVIEW_H
 #define CANEDA_IVIEW_H
 
-#include <QDebug>
 #include <QObject>
 
 // Forward declaration

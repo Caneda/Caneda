@@ -17,12 +17,6 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-/*!
- * \file QXsltTransformer.h
- * \author ROUCARIES Bastien
- * \brief Implement xslt transformer engine
- */
-
 #ifndef QXSLTTRANSFORMER_H
 #define QXSLTTRANSFORMER_H
 

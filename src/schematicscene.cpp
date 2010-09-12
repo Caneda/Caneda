@@ -31,8 +31,6 @@
 #include "undocommands.h"
 #include "wire.h"
 
-#include "diagrams/diagram.h"
-
 #include "paintings/ellipsearc.h"
 #include "paintings/graphictextdialog.h"
 
@@ -41,21 +39,14 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QColor>
-#include <QCursor>
 #include <QDate>
-#include <QFileInfo>
 #include <QGraphicsSceneEvent>
 #include <QGraphicsView>
 #include <QKeySequence>
 #include <QMessageBox>
-#include <QMimeData>
 #include <QPainter>
 #include <QScrollBar>
 #include <QShortcutEvent>
-#include <QStyleOptionGraphicsItem>
-#include <QtDebug>
-#include <QtGlobal>
-#include <QUndoStack>
 
 #include <cmath>
 #include <memory>
@@ -1135,7 +1126,7 @@ namespace Caneda
     {
         m_currentWiringWire->show();
         m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
-        m_currentWiringWire->removeNullLines();
+        m_currentWiringWire->optimize();
         m_currentWiringWire->updateGeometry();
 
 
@@ -1168,7 +1159,7 @@ namespace Caneda
         m_undoStack->beginMacro(tr("Add wiring control point"));
 
         /* clean up line */
-        m_currentWiringWire->removeNullLines();
+        m_currentWiringWire->optimize();
 
         /* wiring command */
         m_undoStack->push(cmd);
@@ -2541,11 +2532,10 @@ namespace Caneda
             if(wire) {
                 wire->checkAndConnect(Caneda::PushUndoCmd);
             }
-
         }
 
         foreach(Wire *wire, movingWires) {
-            wire->removeNullLines();
+            wire->optimize();
             wire->show();
             wire->movePort1(wire->port1()->pos());
             m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
@@ -2553,7 +2543,7 @@ namespace Caneda
             wire->checkAndConnect(Caneda::PushUndoCmd);
         }
         foreach(Wire *wire, grabMovingWires) {
-            wire->removeNullLines();
+            wire->optimize();
             wire->show();
             wire->movePort1(wire->port1()->pos());
             m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),

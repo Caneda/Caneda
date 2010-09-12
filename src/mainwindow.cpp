@@ -25,19 +25,14 @@
 #include "folderbrowser.h"
 #include "global.h"
 #include "idocument.h"
-#include "item.h"
 #include "iview.h"
 #include "library.h"
 #include "project.h"
 #include "schematiccontext.h"
-#include "schematicdocument.h"
-#include "schematicscene.h"
 #include "schematicstatehandler.h"
-#include "schematicwidget.h"
 #include "settings.h"
 #include "tabs.h"
 #include "textcontext.h"
-#include "xmlsymbolformat.h"
 
 #include "dialogs/aboutdialog.h"
 #include "dialogs/exportdialog.h"
@@ -54,27 +49,6 @@
 
 #include "xmlutilities/transformers.h"
 #include "xmlutilities/validators.h"
-
-#include <QApplication>
-#include <QCloseEvent>
-#include <QDebug>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QDockWidget>
-#include <QFileDialog>
-#include <QGraphicsItem>
-#include <QLabel>
-#include <QListWidget>
-#include <QMenu>
-#include <QMenuBar>
-#include <QMessageBox>
-#include <QStatusBar>
-#include <QTimer>
-#include <QToolBar>
-#include <QUndoGroup>
-#include <QUndoView>
-#include <QVBoxLayout>
-#include <QWhatsThis>
 
 namespace Caneda
 {

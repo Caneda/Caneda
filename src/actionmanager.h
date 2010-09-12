@@ -20,10 +20,10 @@
 #ifndef ACTIONMANAGER_H
 #define ACTIONMANAGER_H
 
+#include "schematicscene.h"
+
 #include <QAction>
 #include <QHash>
-
-#include "schematicscene.h"
 
 namespace Caneda
 {
