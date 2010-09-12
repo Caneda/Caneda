@@ -25,8 +25,6 @@
 #include <QIcon>
 #include <QSettings>
 
-#include <cmath>
-
 using namespace std;
 
 namespace Caneda

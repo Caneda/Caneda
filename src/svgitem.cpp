@@ -28,8 +28,6 @@
 #include <QPixmapCache>
 #include <QStyleOptionGraphicsItem>
 
-#include <memory>
-
 namespace Caneda
 {
     /*

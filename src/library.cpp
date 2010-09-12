@@ -36,7 +36,6 @@
 #include <QString>
 #include <QTextStream>
 
-
 namespace Caneda
 {
     //*************************************************************

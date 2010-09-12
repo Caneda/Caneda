@@ -31,7 +31,6 @@ namespace Caneda
         static TextContext* instance();
         virtual ~TextContext();
 
-        // Interface implementation
         virtual void init();
 
         virtual bool canOpen(const QFileInfo& info) const;
@@ -39,7 +38,6 @@ namespace Caneda
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
-        // End of interface implementation.
 
     private:
         TextContext(QObject *parent = 0);

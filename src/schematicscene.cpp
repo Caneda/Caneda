@@ -41,7 +41,6 @@
 #include <QShortcutEvent>
 
 #include <cmath>
-#include <memory>
 
 namespace Caneda
 {

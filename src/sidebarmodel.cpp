@@ -19,7 +19,6 @@
 
 #include "sidebarmodel.h"
 
-#include "global.h"
 #include "library.h"
 
 #include <QDebug>
