@@ -446,7 +446,6 @@ namespace Caneda
 
     void SchematicStateHandler::applyCursor(SchematicWidget *widget)
     {
-        static QString bitmapPath = Caneda::bitmapDirectory();
         QCursor cursor;
 
         switch (d->mouseAction) {
@@ -455,11 +454,11 @@ namespace Caneda
                 break;
 
             case SchematicScene::Deleting:
-                cursor = QCursor(QIcon::fromTheme("draw-eraser", QIcon(bitmapPath + "draw-eraser.png")).pixmap(20));
+                cursor = QCursor(Caneda::icon("draw-eraser").pixmap(20));
                 break;
 
             case SchematicScene::Rotating:
-                cursor = QCursor(QIcon::fromTheme("object-rotate-left", QIcon(bitmapPath + "object-rotate-left.png")).pixmap(20));
+                cursor = QCursor(Caneda::icon("object-rotate-left").pixmap(20));
                 break;
 
             case SchematicScene::MirroringX:
@@ -471,7 +470,7 @@ namespace Caneda
                 break;
 
             case SchematicScene::ZoomingAreaEvent:
-                cursor = QCursor(QIcon::fromTheme("zoom-in", QIcon(bitmapPath +  "zoom-in.png")).pixmap(20));
+                cursor = QCursor(Caneda::icon("zoom-in").pixmap(20));
                 break;
 
             case SchematicScene::PaintingDrawEvent:

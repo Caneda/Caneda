@@ -66,10 +66,9 @@ namespace Caneda
     void Component::init()
     {
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-#if QT_VERSION >= 0x040600
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
-#endif
+
         Property _label("label", tr("Label"), QVariant::String, true,
                 false, labelPrefix().append('1'));
         d->propertyMap.insert("label", _label);
