@@ -172,38 +172,35 @@ namespace Caneda
                 return new GraphicText;
             }
 
-
-            else if(name == "Metal 1") {
+            else if(name == QObject::tr("Metal 1")) {
                 return new Layer(rect, Layer::Metal1);
             }
-            else if(name == "Metal 2") {
+            else if(name == QObject::tr("Metal 2")) {
                 return new Layer(rect, Layer::Metal2);
             }
-            else if(name == "Poly 1") {
+            else if(name == QObject::tr("Poly 1")) {
                 return new Layer(rect, Layer::Poly1);
             }
-            else if(name == "Poly 2") {
+            else if(name == QObject::tr("Poly 2")) {
                 return new Layer(rect, Layer::Poly2);
             }
-            else if(name == "Active") {
+            else if(name == QObject::tr("Active")) {
                 return new Layer(rect, Layer::Active);
             }
-            else if(name == "Contact") {
+            else if(name == QObject::tr("Contact")) {
                 return new Layer(rect, Layer::Contact);
             }
-            else if(name == "N Well") {
+            else if(name == QObject::tr("N Well")) {
                 return new Layer(rect, Layer::NWell);
             }
-            else if(name == "P Well") {
+            else if(name == QObject::tr("P Well")) {
                 return new Layer(rect, Layer::PWell);
             }
-
 
         }
 
         // This is true usually when painting is being read from xml file.
-        // Do not change. To allow i18n interoperation, saved tag
-        // should not depend on language settings.
+        // To allow i18n interoperation, saved tag should not depend on language settings.
         else {
             if(name == QLatin1String("line")) {
                 return new GraphicLine(QLineF(rect.bottomLeft(), rect.topRight()));

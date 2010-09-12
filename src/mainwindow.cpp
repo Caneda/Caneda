@@ -83,7 +83,7 @@ namespace Caneda
      */
     MainWindow::MainWindow(QWidget *w) : QMainWindow(w)
     {
-        titleText = QString("Caneda ") + (Caneda::version()) + QString(" : %1[*]");
+        titleText = QString("Caneda ") + Caneda::version() + QString(" : %1[*]");
 
         m_tabWidget = new TabWidget(this);
         m_tabWidget->setFocusPolicy(Qt::NoFocus);
@@ -176,21 +176,21 @@ namespace Caneda
 
         QList<QPair<QString, QPixmap> > layerItems;
         layer.fill(settings->currentValue("gui/layout/metal1").value<QColor>());
-        layerItems << qMakePair(QString("Metal 1"), layer);
+        layerItems << qMakePair(QObject::tr("Metal 1"), layer);
         layer.fill(settings->currentValue("gui/layout/metal2").value<QColor>());
-        layerItems << qMakePair(QString("Metal 2"), layer);
+        layerItems << qMakePair(QObject::tr("Metal 2"), layer);
         layer.fill(settings->currentValue("gui/layout/poly1").value<QColor>());
-        layerItems << qMakePair(QString("Poly 1"), layer);
+        layerItems << qMakePair(QObject::tr("Poly 1"), layer);
         layer.fill(settings->currentValue("gui/layout/poly2").value<QColor>());
-        layerItems << qMakePair(QString("Poly 2"), layer);
+        layerItems << qMakePair(QObject::tr("Poly 2"), layer);
         layer.fill(settings->currentValue("gui/layout/active").value<QColor>());
-        layerItems << qMakePair(QString("Active"), layer);
+        layerItems << qMakePair(QObject::tr("Active"), layer);
         layer.fill(settings->currentValue("gui/layout/contact").value<QColor>());
-        layerItems << qMakePair(QString("Contact"), layer);
+        layerItems << qMakePair(QObject::tr("Contact"), layer);
         layer.fill(settings->currentValue("gui/layout/nwell").value<QColor>());
-        layerItems << qMakePair(QString("N Well"), layer);
+        layerItems << qMakePair(QObject::tr("N Well"), layer);
         layer.fill(settings->currentValue("gui/layout/pwell").value<QColor>());
-        layerItems << qMakePair(QString("P Well"), layer);
+        layerItems << qMakePair(QObject::tr("P Well"), layer);
 
         m_componentsSidebar->plugItem("Components", QPixmap(), "root");
         m_componentsSidebar->plugItems(paintingItems, QObject::tr("Paint Tools"));
