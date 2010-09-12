@@ -72,6 +72,7 @@ namespace Caneda
         virtual void print(QPrinter *printer, bool fitInPage) = 0;
         virtual void exportToPaintDevice(QPaintDevice *device,
                 const QVariantMap &configuration) = 0;
+        virtual void documentSettings() = 0;
 
         virtual bool load(QString *errorMessage = 0) = 0;
         virtual bool save(QString *errorMessage = 0) = 0;

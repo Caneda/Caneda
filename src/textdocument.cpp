@@ -25,6 +25,8 @@
 #include "textedit.h"
 #include "textview.h"
 
+#include "dialogs/settingsdialog.h"
+
 #include <QFile>
 #include <QFileInfo>
 #include <QTextCodec>
@@ -156,6 +158,19 @@ namespace Caneda
     void TextDocument::exportToPaintDevice(QPaintDevice *device,
             const QVariantMap &configuration)
     {
+
+    }
+
+    void TextDocument::documentSettings()
+    {
+        QList<SettingsPage *> wantedPages;
+        SettingsPage *page = new HdlConfigurationPage();
+        wantedPages << page;
+        page = new SimulationConfigurationPage();
+        wantedPages << page;
+
+        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document");
+        d->exec();
     }
 
     bool TextDocument::load(QString *errorMessage)

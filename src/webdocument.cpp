@@ -131,6 +131,10 @@ namespace Caneda
     {
     }
 
+    void WebDocument::documentSettings()
+    {
+    }
+
     bool WebDocument::load(QString *errorMessage)
     {
         if (fileName().isEmpty()) {

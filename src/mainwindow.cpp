@@ -1189,8 +1189,6 @@ namespace Caneda
 
     void MainWindow::slotExportImage()
     {
-        setNormalAction();
-
         //PORT:
 #if 0
         QList<SchematicScene *> schemasToExport;
@@ -1213,8 +1211,6 @@ namespace Caneda
 
     void MainWindow::slotApplSettings()
     {
-        setNormalAction();
-
         QList<SettingsPage *> wantedPages;
         SettingsPage *page = new GeneralConfigurationPage(this);
         wantedPages << page;
@@ -1231,24 +1227,13 @@ namespace Caneda
 
     void MainWindow::slotFileSettings()
     {
-        setNormalAction();
-
-        //PORT:
-#if 0
-        if(tabWidget()->count() > 0){
-            CanedaView *view = viewFromWidget(tabWidget()->currentWidget());
-            SchematicScene *scene = view->toSchematicWidget()->schematicScene();
-
-            QList<SettingsPage *> wantedPages;
-            SettingsPage *page = new DocumentConfigurationPage(scene, this);
-            wantedPages << page;
-            page = new SimulationConfigurationPage(this);
-            wantedPages << page;
-
-            SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document", this);
-            d->exec();
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (!document) {
+            return;
         }
-#endif
+
+        document->documentSettings();
     }
 
     void MainWindow::slotEditUndo()

@@ -26,6 +26,8 @@
 #include "settings.h"
 #include "xmlsymbolformat.h"
 
+#include "dialogs/settingsdialog.h"
+
 #include <QFileInfo>
 #include <QPainter>
 #include <QPrinter>
@@ -204,6 +206,18 @@ namespace Caneda
             const QVariantMap &configuration)
     {
 
+    }
+
+    void SchematicDocument::documentSettings()
+    {
+        QList<SettingsPage *> wantedPages;
+        SettingsPage *page = new DocumentConfigurationPage(schematicScene());
+        wantedPages << page;
+        page = new SimulationConfigurationPage();
+        wantedPages << page;
+
+        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document");
+        d->exec();
     }
 
     bool SchematicDocument::load(QString *errorMessage)
