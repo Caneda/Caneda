@@ -35,7 +35,6 @@ namespace Caneda
     // Forward declarations
     class Component;
     class Painting;
-    class SchematicWidget;
     class SchematicItem;
     class SvgPainter;
     class Wire;

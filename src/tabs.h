@@ -110,6 +110,8 @@ namespace Caneda
         Tab* currentTab() const;
         void setCurrentTab(Tab *tab);
 
+        void closeAllTabs();
+
         void highlightView(IView *view);
         void closeView(IView *view);
 

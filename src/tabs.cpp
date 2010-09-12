@@ -455,6 +455,25 @@ namespace Caneda
         setCurrentWidget(tab);
     }
 
+    void TabWidget::closeAllTabs()
+    {
+        while(count() > 0){
+            if(currentIndex() >= 0) {
+                QWidget *w = widget(currentIndex());
+
+                if(w->close()) {
+                    //FIXME:emit closedWidget(w);
+                    w->deleteLater();
+                }
+                else {
+                    return;
+                }
+
+                removeTab(currentIndex());
+            }
+        }
+    }
+
     void TabWidget::highlightView(IView *view)
     {
         QWidget *asWidget = view->toWidget();

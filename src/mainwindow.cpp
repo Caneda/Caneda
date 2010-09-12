@@ -1395,7 +1395,7 @@ namespace Caneda
         setNormalAction();
 
         if(slotFileSaveAll()) {
-            closeAllTabs();
+            m_tabWidget->closeAllTabs();
             projectDockWidget->setVisible(true);
             projectDockWidget->raise();
             m_project->slotNewProject();
@@ -1407,7 +1407,7 @@ namespace Caneda
         setNormalAction();
 
         if(slotFileSaveAll()) {
-            closeAllTabs();
+            m_tabWidget->closeAllTabs();
             projectDockWidget->setVisible(true);
             projectDockWidget->raise();
             m_project->slotOpenProject(fileName);
@@ -1436,7 +1436,7 @@ namespace Caneda
 
         if(slotFileSaveAll()) {
             m_project->slotCloseProject();
-            closeAllTabs();
+            m_tabWidget->closeAllTabs();
         }
     }
 
@@ -1651,33 +1651,6 @@ namespace Caneda
     void MainWindow::slotStatusBarMessage(const QString& newPos)
     {
         m_statusLabel->setText(newPos);
-    }
-
-    void MainWindow::removeChildWidget(QWidget *widget, bool deleteWidget)
-    {
-        int index = m_tabWidget->indexOf(widget);
-        if(index >= 0) {
-            QWidget *w = m_tabWidget->widget(index);
-
-            if(w->close()) {
-                //FIXME:emit closedWidget(w);
-                if(deleteWidget) {
-                    w->deleteLater();
-                }
-            }
-            else {
-                return;
-            }
-
-            m_tabWidget->removeTab(index);
-        }
-    }
-
-    void MainWindow::closeAllTabs()
-    {
-        while(m_tabWidget->count() > 0) {
-            removeChildWidget(m_tabWidget->widget(m_tabWidget->currentIndex()), true);
-        }
     }
 
 } // namespace Caneda

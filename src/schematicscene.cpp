@@ -672,7 +672,6 @@ namespace Caneda
      * \param painter: Where to draw
      * \param rect: Visible area
      * \todo Finish visual representation
-     * \todo draw origin should be configurable
      */
     void SchematicScene::drawBackground(QPainter *painter, const QRectF& rect)
     {
@@ -741,8 +740,6 @@ namespace Caneda
         /* draw origin */
         const QPointF origin(0, 0);
         if(isOriginDrawn() && rect.contains(origin)) {
-            //qreal width = width();
-            //qreal height = height();
             painter->drawLine(QLineF(origin.x() - 3.0, origin.y(),
                         origin.x() + 3.0, origin.y()));
             painter->drawLine(QLineF(origin.x(), origin.y() - 3.0,

@@ -123,10 +123,6 @@ namespace Caneda
         void addAsDockWidget(QWidget *w, const QString &title = QString(),
                 Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
 
-        // REMOVE the below methods later.
-        void removeChildWidget(QWidget *widget, bool deleteWidget = true);
-        void closeAllTabs();
-
         void initActions();
         void initMouseActions();
         void initMenus();
