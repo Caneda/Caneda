@@ -35,52 +35,15 @@ namespace Caneda
      * \param layerName Phisical layer to recreate
      * \param scene Scene to which this item should be added.
      */
-    Layer::Layer(const QRectF &rect, const QString &layerName, SchematicScene *scene) :
-       Painting(scene)
+    Layer::Layer(const QRectF &rect, LayerName layerName, SchematicScene *scene) :
+       Painting(scene),
+       m_layerName(layerName)
     {
        setRect(rect);
        setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
                         Caneda::TopRightHandle| Caneda::BottomLeftHandle);
 
-       setLayerName(layerName);
-
-       // Initialize layer colors, depending on current layer and settings
-       Settings *settings = Settings::instance();
-       QBrush _brush(Qt::transparent);
-       if(layerName == "Metal 1") {
-           _brush.setColor(settings->currentValue("gui/layout/metal1").value<QColor>());
-           setZValue(0);
-       }
-       else if(layerName == "Metal 2") {
-           _brush.setColor(settings->currentValue("gui/layout/metal2").value<QColor>());
-           setZValue(1);
-       }
-       else if(layerName == "Poly 1") {
-           _brush.setColor(settings->currentValue("gui/layout/poly1").value<QColor>());
-           setZValue(2);
-       }
-       else if(layerName == "Poly 2") {
-           _brush.setColor(settings->currentValue("gui/layout/poly2").value<QColor>());
-           setZValue(3);
-       }
-       else if(layerName == "Active") {
-           _brush.setColor(settings->currentValue("gui/layout/active").value<QColor>());
-           setZValue(4);
-       }
-       else if(layerName == "Contact") {
-           _brush.setColor(settings->currentValue("gui/layout/contact").value<QColor>());
-           setZValue(5);
-       }
-       else if(layerName == "N Well") {
-           _brush.setColor(settings->currentValue("gui/layout/nwell").value<QColor>());
-           setZValue(6);
-       }
-       else if(layerName == "P Well") {
-           _brush.setColor(settings->currentValue("gui/layout/pwell").value<QColor>());
-           setZValue(7);
-       }
-
-       setBrush(_brush);
+       updateBrush();
     }
 
     //! \brief Destructor.
@@ -102,6 +65,48 @@ namespace Caneda
        qreal adj = (pen().width() + 5) / 2;
        return rect.adjusted(-adj, -adj, adj, adj);
     }
+
+    //! \brief Updates the brush according to current layer.
+    void Layer::updateBrush()
+    {
+        Settings *settings = Settings::instance();
+        QBrush _brush(Qt::transparent);
+        if(layerName() == Layer::Metal1) {
+            _brush.setColor(settings->currentValue("gui/layout/metal1").value<QColor>());
+            setZValue(0);
+        }
+        else if(layerName() == Layer::Metal2) {
+            _brush.setColor(settings->currentValue("gui/layout/metal2").value<QColor>());
+            setZValue(1);
+        }
+        else if(layerName() == Layer::Poly1) {
+            _brush.setColor(settings->currentValue("gui/layout/poly1").value<QColor>());
+            setZValue(2);
+        }
+        else if(layerName() == Layer::Poly2) {
+            _brush.setColor(settings->currentValue("gui/layout/poly2").value<QColor>());
+            setZValue(3);
+        }
+        else if(layerName() == Layer::Active) {
+            _brush.setColor(settings->currentValue("gui/layout/active").value<QColor>());
+            setZValue(4);
+        }
+        else if(layerName() == Layer::Contact) {
+            _brush.setColor(settings->currentValue("gui/layout/contact").value<QColor>());
+            setZValue(5);
+        }
+        else if(layerName() == Layer::NWell) {
+            _brush.setColor(settings->currentValue("gui/layout/nwell").value<QColor>());
+            setZValue(6);
+        }
+        else if(layerName() == Layer::PWell) {
+            _brush.setColor(settings->currentValue("gui/layout/pwell").value<QColor>());
+            setZValue(7);
+        }
+
+        setBrush(_brush);
+    }
+
 
     //! \brief Draw the layer item.
     void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
@@ -145,11 +150,12 @@ namespace Caneda
     void Layer::saveData(Caneda::XmlWriter *writer) const
     {
        writer->writeStartElement("painting");
-       writer->writeAttribute("name", layerName());
+       writer->writeAttribute("name", "layer");
 
        writer->writeEmptyElement("properties");
        writer->writeRectAttribute(rect(), QLatin1String("rect"));
        writer->writePointAttribute(pos(), "pos");
+       writer->writeAttribute("layerName", QString::number(int(m_layerName)));
        writer->writeTransform(transform());
 
        writer->writeEndElement(); // </painting>
@@ -159,7 +165,7 @@ namespace Caneda
     void Layer::loadData(Caneda::XmlReader *reader)
     {
        Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-       setLayerName(reader->attributes().value("name").toString());
+       Q_ASSERT(reader->attributes().value("name") == "layer");
 
        while(!reader->atEnd()) {
           reader->readNext();
@@ -176,6 +182,9 @@ namespace Caneda
                 QPointF pos = reader->readPointAttribute("pos");
                 setPos(pos);
 
+                int layer = reader->attributes().value("layerName").toString().toInt();
+                setLayerName((LayerName)layer);
+
                 reader->readUnknownElement(); //read till end tag
              }
              else if(reader->name() == "transform") {
@@ -186,6 +195,8 @@ namespace Caneda
              }
           }
        }
+
+       updateBrush();
     }
 
     int Layer::launchPropertyDialog(Caneda::UndoOption opt)

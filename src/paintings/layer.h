@@ -37,20 +37,33 @@ namespace Caneda
             Type = Painting::LayerType
         };
 
-        Layer(const QRectF &rect, const QString &layerName, SchematicScene *scene = 0);
+        //! Represents the layer name type.
+        enum LayerName {
+            Metal1,
+            Metal2,
+            Poly1,
+            Poly2,
+            Active,
+            Contact,
+            NWell,
+            PWell
+        };
+
+        Layer(const QRectF &rect, LayerName layerName = Metal1, SchematicScene *scene = 0);
         ~Layer();
 
         QPainterPath shapeForRect(const QRectF& rect) const;
         QRectF boundForRect(const QRectF &rect) const;
 
+        void updateBrush();
         void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
         //! \brief Returns rectangle coords as QRectF.
         QRectF rect() const { return paintingRect(); }
         void setRect(const QRectF& rect) { setPaintingRect(rect); }
 
-        QString layerName() const { return m_layerName; }
-        void setLayerName(const QString& layerName) { m_layerName = layerName; }
+        LayerName layerName() const { return m_layerName; }
+        void setLayerName(LayerName layerName) { m_layerName = layerName; }
 
         int type() const { return Layer::Type; }
         Layer* copy(SchematicScene *scene = 0) const;
@@ -61,7 +74,7 @@ namespace Caneda
         int launchPropertyDialog(Caneda::UndoOption opt);
 
     private:
-        QString m_layerName;
+        LayerName m_layerName;
     };
 
 } // namespace Caneda

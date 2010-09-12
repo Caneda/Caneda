@@ -174,28 +174,28 @@ namespace Caneda
 
 
             else if(name == "Metal 1") {
-                return new Layer(rect, "Metal 1");
+                return new Layer(rect, Layer::Metal1);
             }
             else if(name == "Metal 2") {
-                return new Layer(rect, "Metal 2");
+                return new Layer(rect, Layer::Metal2);
             }
             else if(name == "Poly 1") {
-                return new Layer(rect, "Poly 1");
+                return new Layer(rect, Layer::Poly1);
             }
             else if(name == "Poly 2") {
-                return new Layer(rect, "Poly 2");
+                return new Layer(rect, Layer::Poly2);
             }
             else if(name == "Active") {
-                return new Layer(rect, "Active");
+                return new Layer(rect, Layer::Active);
             }
             else if(name == "Contact") {
-                return new Layer(rect, "Contact");
+                return new Layer(rect, Layer::Contact);
             }
             else if(name == "N Well") {
-                return new Layer(rect, "N Well");
+                return new Layer(rect, Layer::NWell);
             }
             else if(name == "P Well") {
-                return new Layer(rect, "P Well");
+                return new Layer(rect, Layer::PWell);
             }
 
 
@@ -222,6 +222,9 @@ namespace Caneda
             }
             else if(name == QLatin1String("text")) {
                 return new GraphicText;
+            }
+            else if(name == QLatin1String("layer")) {
+                return new Layer(rect);
             }
 
         }
