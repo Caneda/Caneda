@@ -28,7 +28,7 @@
 
 namespace Caneda
 {
-    const qreal SchematicWidget::zoomFactor = 0.1;
+    const qreal SchematicWidget::zoomFactor = 0.3;
 
     //! Constructor
     SchematicWidget::SchematicWidget(SchematicView *sv) :
@@ -36,7 +36,7 @@ namespace Caneda
         m_schematicView(sv),
         m_horizontalScroll(0),
         m_verticalScroll(0),
-        m_zoomRange(0.50, 4.0),
+        m_zoomRange(0.30, 10.0),
         m_currentZoom(1.0)
     {
         setAcceptDrops(true);
@@ -87,13 +87,13 @@ namespace Caneda
 
     void SchematicWidget::zoomIn()
     {
-        qreal newZoom = m_currentZoom + zoomFactor;
+        qreal newZoom = m_currentZoom * (1 + zoomFactor);
         setZoomLevel(qMin(newZoom, m_zoomRange.max));
     }
 
     void SchematicWidget::zoomOut()
     {
-        qreal newZoom = m_currentZoom - zoomFactor;
+        qreal newZoom = m_currentZoom * (1 - zoomFactor);
         setZoomLevel(qMax(newZoom, m_zoomRange.min));
     }
 
