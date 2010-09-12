@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>487</width>
-    <height>508</height>
+    <height>652</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -223,6 +223,23 @@
           <property name="fieldGrowthPolicy">
            <enum>QFormLayout::ExpandingFieldsGrow</enum>
           </property>
+          <item row="1" column="0">
+           <widget class="QLabel" name="colorLabel_2">
+            <property name="text">
+             <string>Color</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QToolButton" name="fillColorButton">
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="styleLabel_2">
             <property name="text">
@@ -309,20 +326,110 @@
             </item>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QToolButton" name="fillColorButton">
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="layerGroupBox">
+         <property name="minimumSize">
+          <size>
+           <width>274</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Layer Options</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::ExpandingFieldsGrow</enum>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="layerLabel">
             <property name="text">
-             <string/>
+             <string>Layer</string>
             </property>
            </widget>
           </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="layerComboBox">
+            <item>
+             <property name="text">
+              <string>Metal 1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Metal 2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Poly 1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Poly 2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Active</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Contact</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>N Well</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>P Well</string>
+             </property>
+            </item>
+           </widget>
+          </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="colorLabel_2">
+           <widget class="QLabel" name="labelLabel">
             <property name="text">
-             <string>Color</string>
+             <string>Label</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="layerLabelLineEdit"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="widthLabel_2">
+            <property name="text">
+             <string>Width</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="layerWidthSpinBox">
+            <property name="maximum">
+             <number>9999</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="heightLabel">
+            <property name="text">
+             <string>Height</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="layerHeightSpinBox">
+            <property name="maximum">
+             <number>9999</number>
             </property>
            </widget>
           </item>

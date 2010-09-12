@@ -247,9 +247,6 @@ namespace Caneda
             case Painting::RectangleType:
                 drawRectangle(&painter); break;
 
-            case Painting::LayerType:
-                drawRectangle(&painter); break;
-
             default: ;
         }
     }
@@ -342,6 +339,16 @@ namespace Caneda
 
         if(painting->type() == Painting::GraphicLineType) {
             ui.fillGroupBox->hide();
+        }
+        
+        if(painting->type() == Painting::LayerType) {
+            ui.lineStyleComboBox->setCurrentIndex(0);
+            ui.lineGroupBox->hide();
+            ui.fillGroupBox->hide();
+            ui.previewGroupBox->hide();
+        }
+        else {
+            ui.layerGroupBox->hide();
         }
 
         ui.lineColorButton->setIcon(lineColorPixmap);
