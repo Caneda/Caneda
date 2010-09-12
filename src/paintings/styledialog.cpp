@@ -346,6 +346,8 @@ namespace Caneda
             Layer *layer = canedaitem_cast<Layer*>(painting);
             ui.layerComboBox->setCurrentIndex(layer->layerName());
             ui.layerLabelLineEdit->setText(layer->netLabel());
+            ui.layerWidthSpinBox->setValue(qRound(layer->rect().width()));
+            ui.layerHeightSpinBox->setValue(qRound(layer->rect().height()));
 
             ui.lineGroupBox->hide();
             ui.fillGroupBox->hide();
@@ -453,6 +455,11 @@ namespace Caneda
             Layer *layer = static_cast<Layer*>(painting);
             layer->setLayerName((Layer::LayerName)ui.layerComboBox->currentIndex());
             layer->setNetLabel(ui.layerLabelLineEdit->text());
+
+            QRectF newRect = layer->rect();
+            newRect.setWidth(ui.layerWidthSpinBox->value());
+            newRect.setHeight(ui.layerHeightSpinBox->value());
+            layer->setPaintingRect(newRect);
         }
 
         if(painting->schematicScene()) {
