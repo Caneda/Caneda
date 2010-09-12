@@ -49,7 +49,8 @@ namespace Caneda
             PWell
         };
 
-        Layer(const QRectF &rect, LayerName layerName = Metal1, SchematicScene *scene = 0);
+        Layer(const QRectF &rect, LayerName layerName = Metal1, const QString &netLabel = "",
+              SchematicScene *scene = 0);
         ~Layer();
 
         QPainterPath shapeForRect(const QRectF& rect) const;
@@ -65,6 +66,9 @@ namespace Caneda
         LayerName layerName() const { return m_layerName; }
         void setLayerName(LayerName layerName) { m_layerName = layerName; }
 
+        QString netLabel() const { return m_netLabel; }
+        void setNetLabel(QString netLabel) { m_netLabel = netLabel; }
+
         int type() const { return Layer::Type; }
         Layer* copy(SchematicScene *scene = 0) const;
 
@@ -75,6 +79,7 @@ namespace Caneda
 
     private:
         LayerName m_layerName;
+        QString m_netLabel;
     };
 
 } // namespace Caneda

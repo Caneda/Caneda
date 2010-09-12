@@ -35,9 +35,11 @@ namespace Caneda
      * \param layerName Phisical layer to recreate
      * \param scene Scene to which this item should be added.
      */
-    Layer::Layer(const QRectF &rect, LayerName layerName, SchematicScene *scene) :
+    Layer::Layer(const QRectF &rect, LayerName layerName, const QString &netLabel,
+                 SchematicScene *scene) :
        Painting(scene),
-       m_layerName(layerName)
+       m_layerName(layerName),
+       m_netLabel(netLabel)
     {
        setRect(rect);
        setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
@@ -141,7 +143,7 @@ namespace Caneda
     //! \copydoc Painting::copy()
     Layer* Layer::copy(SchematicScene *scene) const
     {
-       Layer *layerItem = new Layer(rect(), layerName(), scene);
+       Layer *layerItem = new Layer(rect(), layerName(), netLabel(), scene);
        Painting::copyDataTo(layerItem);
        return layerItem;
     }
@@ -156,6 +158,7 @@ namespace Caneda
        writer->writeRectAttribute(rect(), QLatin1String("rect"));
        writer->writePointAttribute(pos(), "pos");
        writer->writeAttribute("layerName", QString::number(int(m_layerName)));
+       writer->writeAttribute("netLabel", netLabel());
        writer->writeTransform(transform());
 
        writer->writeEndElement(); // </painting>
@@ -184,6 +187,9 @@ namespace Caneda
 
                 int layer = reader->attributes().value("layerName").toString().toInt();
                 setLayerName((LayerName)layer);
+
+                QString label = reader->attributes().value("netLabel").toString();
+                setNetLabel(label);
 
                 reader->readUnknownElement(); //read till end tag
              }

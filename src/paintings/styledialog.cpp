@@ -345,8 +345,8 @@ namespace Caneda
         if(painting->type() == Painting::LayerType) {
             Layer *layer = canedaitem_cast<Layer*>(painting);
             ui.layerComboBox->setCurrentIndex(layer->layerName());
+            ui.layerLabelLineEdit->setText(layer->netLabel());
 
-            ui.lineStyleComboBox->setCurrentIndex(0);
             ui.lineGroupBox->hide();
             ui.fillGroupBox->hide();
             ui.previewGroupBox->hide();
@@ -452,6 +452,7 @@ namespace Caneda
         else if(painting->type() == Painting::LayerType) {
             Layer *layer = static_cast<Layer*>(painting);
             layer->setLayerName((Layer::LayerName)ui.layerComboBox->currentIndex());
+            layer->setNetLabel(ui.layerLabelLineEdit->text());
         }
 
         if(painting->schematicScene()) {
