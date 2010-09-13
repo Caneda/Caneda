@@ -205,7 +205,7 @@ namespace Caneda
 
     void SchematicDocument::exportImage()
     {
-        ExportDialog *d = new ExportDialog(schematicScene());
+        ExportDialog *d = new ExportDialog(this);
         d->exec();
     }
 

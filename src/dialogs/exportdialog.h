@@ -20,14 +20,16 @@
 #ifndef EXPORTDIALOG_H
 #define EXPORTDIALOG_H
 
-#include "schematicscene.h"
-
 #include "ui_exportdialog.h"
 
 class QFile;
 
 namespace Caneda
 {
+    // Forward declations
+    class SchematicDocument;
+    class SchematicScene;
+
     /*!
      * \brief This represents the dialog for exporting a schematic
      * to an image.
@@ -37,7 +39,7 @@ namespace Caneda
         Q_OBJECT;
 
     public:
-        ExportDialog(SchematicScene *, QWidget *parent = 0);
+        ExportDialog(SchematicDocument *, QWidget *parent = 0);
         ~ExportDialog();
 
     public Q_SLOTS:

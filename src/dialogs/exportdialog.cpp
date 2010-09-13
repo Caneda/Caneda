@@ -20,6 +20,8 @@
 #include "exportdialog.h"
 
 #include "global.h"
+#include "schematicscene.h"
+#include "schematicdocument.h"
 #include "settings.h"
 
 #include <QCompleter>
@@ -36,15 +38,18 @@
 namespace Caneda
 {
     //! Constructor
-    ExportDialog::ExportDialog(SchematicScene * scene, QWidget *parent) :
-            QDialog(parent),
-            m_scene(scene)
+    ExportDialog::ExportDialog(SchematicDocument *document, QWidget *parent) :
+            QDialog(parent)
     {
         ui.setupUi(this);
 
+        m_scene = document->schematicScene();
+
         // Title and file name of the scene
-        QString diagramFilename;//PORT: = schema->fileName();
-        if(diagramFilename.isEmpty()) diagramFilename = QObject::tr("Untitled");
+        QString diagramFilename = document->fileName();
+        if(diagramFilename.isEmpty()) {
+            diagramFilename = QObject::tr("untitled");
+        }
 
         ui.labelSchematicName->setText(diagramFilename);
         ui.editFilename->setText(diagramFilename);
