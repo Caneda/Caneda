@@ -1,8 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006-2009 Xavier Guerrin                                  *
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
- * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Caneda.                                       *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -25,94 +22,45 @@
 
 #include "schematicscene.h"
 
-#include <QDialog>
+#include "ui_exportdialog.h"
 
-class QBoxLayout;
-class QCheckBox;
-class QComboBox;
-class QDialogButtonBox;
 class QFile;
-class QGroupBox;
-class QLabel;
-class QLineEdit;
-class QSignalMapper;
-class QSpinBox;
-class QSvgGenerator;
 
 namespace Caneda
 {
     /*!
-     * This class represents the dialog for exporting a schema
-     * as an image according to the selection of the user.
-     * \todo In the long run base it on .ui file.
+     * \brief This represents the dialog for exporting a schematic
+     * to an image.
      */
     class ExportDialog : public QDialog
     {
         Q_OBJECT;
 
     public:
-        ExportDialog(QList<SchematicScene *> schemasToExport, QWidget *parent = 0);
-        virtual ~ExportDialog();
-
-    private:
-        struct ExportDiagramLine
-        {
-            ExportDiagramLine(SchematicScene *);
-            virtual ~ExportDiagramLine();
-
-            SchematicScene *schema;
-            QBoxLayout *sizeLayout();
-
-            QCheckBox *must_export;
-            QLabel *title_label;
-            QLineEdit *file_name;
-            QSpinBox *width;
-            QLabel *x_label;
-            QSpinBox *height;
-            QPushButton *keep_ratio;
-            QPushButton *reset_size;
-            QPushButton *preview;
-        };
-
-    private:
-        QList<SchematicScene *> schemas;
-        QHash<int, ExportDialog::ExportDiagramLine *> diagramsList;
-
-        QWidget *diagramsListPart();
-        QWidget *lastPart();
-        QGroupBox *setupOptionsGroupBox();
-
-        qreal diagramRatio(SchematicScene *);
-        QSizeF diagramSize(SchematicScene *);
-        int diagramsToExportCount() const;
-        void exportDiagram(ExportDiagramLine *);
-        QImage generateImage(SchematicScene *, int, int, bool);
-        void generateSvg(SchematicScene *, int, int, bool, QFile &);
-        void saveReloadDiagramParameters(SchematicScene *, bool = true);
-
-        QLineEdit *dirpath;
-        QComboBox *format;
-        QCheckBox *draw_grid;
-        QCheckBox *draw_frame;
-        QDialogButtonBox *buttons;
-
-        QSignalMapper *preview_mapper_;
-        QSignalMapper *width_mapper_;
-        QSignalMapper *height_mapper_;
-        QSignalMapper *ratio_mapper_;
-        QSignalMapper *reset_mapper_;
+        ExportDialog(SchematicScene *, QWidget *parent = 0);
+        ~ExportDialog();
 
     public Q_SLOTS:
-        void slot_correctWidth(int);
-        void slot_correctHeight(int);
-        void slot_keepRatioChanged(int);
-        void slot_resetSize(int);
-        void slot_chooseDirectory();
-        void slot_export();
-        void slot_changeUseFrame();
-        void slot_checkDiagramsCount();
-        void slot_changeFilesExtension(bool = false);
-        void slot_previewDiagram(int);
+        void slotChooseDirectory();
+        void slotCorrectWidth();
+        void slotCorrectHeight();
+        void slotLockRatioChanged();
+        void slotResetSize();
+        void slotPreview();
+        void slotChangeFilesExtension();
+        void slotExport();
+
+    private:
+        qreal diagramRatio();
+        QSizeF diagramSize();
+
+        QImage generateImage();
+        void generateSvg(QFile &);
+        void saveReloadDiagramParameters(bool = true);
+
+        SchematicScene *m_scene;
+
+        Ui::ExportDialog ui;
     };
 
 } // namespace Caneda

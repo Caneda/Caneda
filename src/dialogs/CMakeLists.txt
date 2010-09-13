@@ -10,7 +10,7 @@ SET(DIALOGS_MOC_HDRS aboutdialog.h settingsdialog.h settingspages.h exportdialog
 
 SET(DIALOGS_UIS savedocumentsdialog.ui gitmanager.ui printdialog.ui
     projectfilenewdialog.ui projectfileopendialog.ui propertydialog.ui
-    librarymanager.ui
+    librarymanager.ui exportdialog.ui
 )
 
 QT4_WRAP_UI( DIALOGS_UI_HDRS ${DIALOGS_UIS})

@@ -205,11 +205,7 @@ namespace Caneda
 
     void SchematicDocument::exportImage()
     {
-        QList<SchematicScene *> schemasToExport;
-
-        schemasToExport << schematicScene();
-
-        ExportDialog *d = new ExportDialog(schemasToExport);
+        ExportDialog *d = new ExportDialog(schematicScene());
         d->exec();
     }
 
