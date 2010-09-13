@@ -265,7 +265,7 @@ namespace Caneda
         bool useFrame = m_scene->isFrameVisible();
 
         m_scene->setFrameVisible(ui.checkDrawFrame->isChecked());
-        QSizeF size = QSizeF(m_scene->sceneRect().width(), m_scene->sceneRect().height());
+        QSizeF size = QSizeF(m_scene->imageBoundingRect().width(), m_scene->imageBoundingRect().height());
         m_scene->setFrameVisible(useFrame);
 
         return(size);
