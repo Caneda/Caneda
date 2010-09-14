@@ -204,6 +204,11 @@ namespace Caneda
         else if ( fileInfo.suffix() == "v" ) {
             VerilogHighlighter *highlighter = new VerilogHighlighter(m_textDocument);
         }
+        else if ( fileInfo.suffix() == "net" ||
+                  fileInfo.suffix() == "cir" ||
+                  fileInfo.suffix() == "spc" ) {
+            SpiceHighlighter *highlighter = new SpiceHighlighter(m_textDocument);
+        }
 
         m_textDocument->setModified(false);
         return true;

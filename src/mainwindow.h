@@ -68,7 +68,7 @@ namespace Caneda
         void slotFilePrint();
         void slotExportImage();
         void slotFileSettings();
-        void slotApplSettings();
+        void slotAppSettings();
 
         void slotEditUndo();
         void slotEditRedo();

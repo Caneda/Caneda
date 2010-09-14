@@ -56,6 +56,9 @@ namespace Caneda
         supportedSuffixes << "";
         supportedSuffixes << "txt";
         supportedSuffixes << "log";
+        supportedSuffixes << "net";
+        supportedSuffixes << "cir";
+        supportedSuffixes << "spc";
         supportedSuffixes << "vhd";
         supportedSuffixes << "vhdl";
         supportedSuffixes << "v";

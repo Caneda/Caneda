@@ -305,10 +305,10 @@ namespace Caneda
         action->setWhatsThis(tr("Settings\n\nSets properties of the file"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileSettings()));
 
-        action = am->createAction("applSettings", Caneda::icon("preferences-other"), tr("Application Settings..."));
+        action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("Application Settings..."));
         action->setShortcut(CTRL+Key_Comma);
         action->setWhatsThis(tr("Caneda Settings\n\nSets properties of the application"));
-        connect(action, SIGNAL(triggered()), SLOT(slotApplSettings()));
+        connect(action, SIGNAL(triggered()), SLOT(slotAppSettings()));
 
         action = am->createAction("fileQuit", Caneda::icon("application-exit"), tr("E&xit"));
         action->setShortcut(CTRL+Key_Q);
@@ -789,7 +789,7 @@ namespace Caneda
         fileMenu->addSeparator();
 
         fileMenu->addAction(action("fileSettings"));
-        fileMenu->addAction(action("applSettings"));
+        fileMenu->addAction(action("appSettings"));
 
         fileMenu->addSeparator();
 
@@ -1197,7 +1197,7 @@ namespace Caneda
         document->exportImage();
     }
 
-    void MainWindow::slotApplSettings()
+    void MainWindow::slotAppSettings()
     {
         QList<SettingsPage *> wantedPages;
         SettingsPage *page = new GeneralConfigurationPage(this);

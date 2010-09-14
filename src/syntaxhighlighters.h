@@ -75,6 +75,13 @@ namespace Caneda
         VerilogHighlighter(QTextDocument *parent = 0);
     };
 
+    class SpiceHighlighter : public Highlighter
+    {
+        Q_OBJECT
+    public:
+        SpiceHighlighter(QTextDocument *parent = 0);
+    };
+
 } // namespace Caneda
 
 #endif // SYNTAXHIGHLIGHTERS_H

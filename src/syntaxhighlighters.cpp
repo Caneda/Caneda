@@ -336,4 +336,107 @@ namespace Caneda
         }
     }
 
+    //*************************************************************
+    //******************** Spice highlighter **********************
+    //*************************************************************
+
+    SpiceHighlighter::SpiceHighlighter(QTextDocument *parent)
+        : Highlighter(parent)
+    {
+        Settings *settings = Settings::instance();
+        HighlightingRule rule;
+
+        const QColor currentKeywordColor =
+            settings->currentValue("gui/hdl/keyword").value<QColor>();
+        keywordFormat.setForeground(currentKeywordColor);
+        keywordFormat.setFontWeight(QFont::Bold);
+        QStringList keywordPatterns;
+        keywordPatterns << "\\bTRAN\\b" << "\\bDC\\b" << "\\bAC\\b" <<
+                "\\bTRIG\\b" << "\\bVAL\\b" << "\\bTD\\b" <<
+                "\\bCROSS\\b" << "\\bRISE\\b" << "\\bFALL\\b" <<
+                "\\bAT\\b" << "\\bFROM\\b" << "\\bTO\\b" <<
+                "\\bWHEN\\b" << "\\bLAST\\b" << "\\bFIND\\b" <<
+                "\\bINTEG\\b" << "\\bINTEGRAL\\b" << "\\bDERIV\\b" <<
+                "\\bDERIVATIVE\\b" << "\\bAVG\\b" << "\\bMIN\\b" <<
+                "\\bMAX\\b" << "\\bPP\\b" << "\\bRMS\\b" <<
+                "\\bSIN\\b" << "\\bPULSE\\b" << "\\bEXP\\b" <<
+                "\\bPWL\\b" << "\\bSFFM\\b" << "\\bSINE\\b" <<
+                "[VI]\\([A-Za-z0-9\\,]*\\)";
+        foreach (QString pattern, keywordPatterns) {
+            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
+            rule.format = keywordFormat;
+            highlightingRules.append(rule);
+        }
+
+        const QColor currentDataColor =
+            settings->currentValue("gui/hdl/data").value<QColor>();
+        dataFormat.setForeground(currentDataColor);
+        QStringList dataPatterns;
+        dataPatterns << "[\\d][fpnumkKGT]{0,1}" << "[\\d](Meg){0,1}";
+        foreach (QString pattern, dataPatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = dataFormat;
+            highlightingRules.append(rule);
+        }
+
+        const QColor currentAttributeColor =
+            settings->currentValue("gui/hdl/attribute").value<QColor>();
+        attributeFormat.setForeground(currentAttributeColor);
+        QStringList attributePatterns;
+        attributePatterns << "\\{[A-Za-z0-9\\*\\/]*\\}"
+                << "\\'[A-Za-z0-9\\*\\/]*\\'";
+        foreach (QString pattern, attributePatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = attributeFormat;
+            highlightingRules.append(rule);
+        }
+
+        const QColor currentTypeColor =
+            settings->currentValue("gui/hdl/type").value<QColor>();
+        typeFormat.setForeground(currentTypeColor);
+        typeFormat.setFontItalic(true);
+        QStringList typePatterns;
+        typePatterns << "^[RCLDQJMZXSWGEFHBTUVI][A-Za-z0-9\\_]+\\b";
+        foreach (QString pattern, typePatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = typeFormat;
+            highlightingRules.append(rule);
+        }
+
+        const QColor currentCommentColor =
+            settings->currentValue("gui/hdl/comment").value<QColor>();
+
+        singleLineCommentFormat.setForeground(currentCommentColor);
+        QStringList comentPatterns;
+        comentPatterns << "^\\*[^\n]*" << "//[^\n]*" << "\\$[^\n]*";
+        foreach (QString pattern, comentPatterns) {
+            rule.pattern = QRegExp(pattern);
+            rule.format = singleLineCommentFormat;
+            highlightingRules.append(rule);
+        }
+
+        multiLineCommentFormat.setForeground(currentCommentColor);
+        commentStartExpression = QRegExp("(\\.control)|(^\\.end\\b)");
+        commentEndExpression = QRegExp("\\.endc");
+
+        const QColor currentSystemColor =
+            settings->currentValue("gui/hdl/system").value<QColor>();
+        systemFormat.setForeground(currentSystemColor);
+        QStringList systemPatterns;
+        systemPatterns << "^\\.options" << "^\\.param" << "^\\.lib" <<
+                "^\\.tran" << "^\\.model" << "^\\.ic" <<
+                "^\\.ac" << "^\\.dc" << "^\\.disto" <<
+                "^\\.noise" << "^\\.op" << "^\\.pz" <<
+                "^\\.sens" << "^\\.tf" << "^\\.meas" <<
+                "^\\.plot" << "^\\.print" << "^\\.measure" <<
+                "^\\.include" << "^\\.save" << "^\\.subckt" <<
+                "^\\.four" << "^\\.global" << "^\\.func" <<
+                "^\\.ends";
+        foreach (QString pattern, systemPatterns) {
+            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
+            rule.format = systemFormat;
+            highlightingRules.append(rule);
+        }
+    }
+
 } // namespace Caneda
