@@ -203,24 +203,6 @@ namespace Caneda
         Settings::instance()->setCurrentValue("gui/gridVisible", viewGridStatus);
     }
 
-    void SchematicDocument::exportImage()
-    {
-        ExportDialog *d = new ExportDialog(this);
-        d->exec();
-    }
-
-    void SchematicDocument::documentSettings()
-    {
-        QList<SettingsPage *> wantedPages;
-        SettingsPage *page = new SchematicDocumentConfigurationPage(schematicScene());
-        wantedPages << page;
-        page = new SimulationConfigurationPage();
-        wantedPages << page;
-
-        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document");
-        d->exec();
-    }
-
     bool SchematicDocument::load(QString *errorMessage)
     {
         FileFormatHandler *format =
@@ -289,6 +271,24 @@ namespace Caneda
 #endif
 
         return true;
+    }
+
+    void SchematicDocument::exportImage()
+    {
+        ExportDialog *d = new ExportDialog(this);
+        d->exec();
+    }
+
+    void SchematicDocument::documentSettings()
+    {
+        QList<SettingsPage *> wantedPages;
+        SettingsPage *page = new SchematicDocumentConfigurationPage(schematicScene());
+        wantedPages << page;
+        page = new SimulationConfigurationPage();
+        wantedPages << page;
+
+        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document");
+        d->exec();
     }
 
     IView* SchematicDocument::createView()

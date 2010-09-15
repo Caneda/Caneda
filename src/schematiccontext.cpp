@@ -234,12 +234,6 @@ namespace Caneda
         //TODO: implement this or rather port directly
     }
 
-    void SchematicContext::slotSimulate()
-    {
-        setNormalAction();
-        //TODO: implement this or rather port directly
-    }
-
     void SchematicContext::slotToPage()
     {
         setNormalAction();

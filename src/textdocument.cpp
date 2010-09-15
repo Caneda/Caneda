@@ -155,23 +155,6 @@ namespace Caneda
         m_textDocument->print(printer);
     }
 
-    void TextDocument::exportImage()
-    {
-
-    }
-
-    void TextDocument::documentSettings()
-    {
-        QList<SettingsPage *> wantedPages;
-        SettingsPage *page = new HdlConfigurationPage();
-        wantedPages << page;
-        page = new SimulationConfigurationPage();
-        wantedPages << page;
-
-        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document");
-        d->exec();
-    }
-
     bool TextDocument::load(QString *errorMessage)
     {
         if (fileName().isEmpty()) {
@@ -240,6 +223,18 @@ namespace Caneda
 
         m_textDocument->setModified(false);
         return true;
+    }
+
+    void TextDocument::documentSettings()
+    {
+        QList<SettingsPage *> wantedPages;
+        SettingsPage *page = new HdlConfigurationPage();
+        wantedPages << page;
+        page = new SimulationConfigurationPage();
+        wantedPages << page;
+
+        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document");
+        d->exec();
     }
 
     IView* TextDocument::createView()

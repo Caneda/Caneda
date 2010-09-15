@@ -63,7 +63,6 @@ namespace Caneda
 
         void slotInsertEntity();
 
-        void slotSimulate();
         void slotToPage();
         void slotDCbias();
         void slotExportGraphAsCsv();

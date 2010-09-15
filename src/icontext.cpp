@@ -49,19 +49,4 @@ namespace Caneda
 
     }
 
-    QToolBar* IContext::toolBar()
-    {
-        return 0;
-    }
-
-    QWidget* IContext::statusBarWidget()
-    {
-        return 0;
-    }
-
-    QWidget* IContext::sideBarWidget(Caneda::SideBarRole role)
-    {
-        return 0;
-    }
-
 } // namespace Caneda

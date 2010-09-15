@@ -600,7 +600,7 @@ namespace Caneda
         action->setShortcut(Key_F5);
         action->setStatusTip(tr("Simulates the current schematic"));
         action->setWhatsThis(tr("Simulate\n\nSimulates the current schematic"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotSimulate()));
+        connect(action, SIGNAL(triggered()), SLOT(slotSimulate()));
         sc->addNormalAction(action);
 
         action = am->createAction("dpl_sch", Caneda::icon("system-switch-user"), tr("View Data Display/Schematic"));
@@ -1487,6 +1487,19 @@ namespace Caneda
         else if(consoleDockWidget->isVisible()) {
             consoleDockWidget->setVisible(false);
         }
+    }
+
+    void MainWindow::slotSimulate()
+    {
+        setNormalAction();
+
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (!document) {
+            return;
+        }
+
+        document->simulate();
     }
 
     void MainWindow::slotHelpIndex()

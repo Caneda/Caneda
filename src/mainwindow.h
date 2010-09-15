@@ -103,6 +103,8 @@ namespace Caneda
         void slotImportData();
         void slotShowConsole();
 
+        void slotSimulate();
+
         void slotHelpIndex();
         void slotHelpAbout();
         void slotHelpAboutQt();

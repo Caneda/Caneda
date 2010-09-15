@@ -126,15 +126,6 @@ namespace Caneda
         page->print(printer);
     }
 
-    void WebDocument::exportImage()
-    {
-
-    }
-
-    void WebDocument::documentSettings()
-    {
-    }
-
     bool WebDocument::load(QString *errorMessage)
     {
         if (fileName().isEmpty()) {
