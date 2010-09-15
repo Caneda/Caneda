@@ -59,7 +59,6 @@ namespace Caneda
     bool SchematicContext::canOpen(const QFileInfo &info) const
     {
         QStringList supportedSuffixes;
-        supportedSuffixes << "xsym";
         supportedSuffixes << "xsch";
 
         foreach (const QString &suffix, supportedSuffixes) {

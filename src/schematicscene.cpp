@@ -92,7 +92,6 @@ namespace Caneda
         m_snapToGrid = true;
         m_OriginDrawn = true;
 
-        m_currentMode = Caneda::SchematicMode;
         m_backgroundVisible = true;
         m_frameVisible = false;
         m_modified = false;
@@ -303,16 +302,6 @@ namespace Caneda
         if(isFrameVisible()) {
             update();
         }
-    }
-
-    //!  \brief Set the current mode (one of symbol mode and schematic mode)
-    void SchematicScene::setMode(const Caneda::Mode mode)
-    {
-        if(m_currentMode == mode) {
-            return;
-        }
-        m_currentMode = mode;
-        update();
     }
 
     /*!

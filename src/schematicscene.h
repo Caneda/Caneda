@@ -39,11 +39,6 @@ namespace Caneda
     class SvgPainter;
     class Wire;
 
-    enum Mode {
-        SchematicMode,
-        SymbolMode
-    };
-
     typedef QGraphicsSceneMouseEvent MouseActionEvent;
 
     /*!
@@ -160,9 +155,6 @@ namespace Caneda
         int frameRows() const { return m_frameRows; }
         int frameColumns() const { return m_frameColumns; }
         void setFrameSize(int rows, int columns);
-
-        Caneda::Mode currentMode() const { return m_currentMode; }
-        void setMode(const Caneda::Mode mode);
 
         MouseAction mouseAction() const { return m_mouseAction; }
         void setMouseAction(const MouseAction ma);
@@ -368,7 +360,6 @@ namespace Caneda
         QUndoStack *m_undoStack;
         //! Current mouse action
         MouseAction m_mouseAction;
-        Caneda::Mode m_currentMode;
 
         //! Data Set file name
         QString m_dataSet;

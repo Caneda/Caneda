@@ -89,13 +89,7 @@ namespace Caneda
             return false;
         }
 
-        QString text;
-        if(scene->currentMode() == Caneda::SchematicMode) {
-            text = saveText();
-        }
-        else if(scene->currentMode() == Caneda::SymbolMode) {
-            text = saveSymbolText();
-        }
+        QString text = saveText();
 
         if(text.isEmpty()) {
             qDebug("Looks buggy! Null data to save! Was this expected?");
@@ -130,13 +124,7 @@ namespace Caneda
 
         QTextStream stream(&file);
 
-        bool result = false;
-        if(scene->currentMode() == Caneda::SchematicMode) {
-            result = loadFromText(stream.readAll());
-        }
-        else if(scene->currentMode() == Caneda::SymbolMode) {
-            result = loadSymbolFromText(stream.readAll());
-        }
+        bool result = loadFromText(stream.readAll());
 
         file.close();
         return result;
@@ -157,71 +145,9 @@ namespace Caneda
         //Now we copy all the elements and properties in the schematic
         saveSchematics(writer);
 
-        //Now we copy the previously defined symbol if created
-        copyCanedaElement("symbol", writer);
-
         //Finally we finish the document
         writer->writeEndDocument(); //</caneda>
 
-        delete writer;
-        return retVal;
-    }
-
-    QString XmlFormat::saveSymbolText()
-    {
-        QString retVal;
-        Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
-        writer->setAutoFormatting(true);
-
-        //Fist we start the document and write current version
-        writer->writeStartDocument();
-        writer->writeDTD(QString("<!DOCTYPE caneda>"));
-        writer->writeStartElement("caneda");
-        writer->writeAttribute("version", Caneda::version());
-
-        //Now we copy all the elements and properties previously defined in the schematic
-        QFile file(fileName());
-        if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            return "";
-        }
-
-        QTextStream stream(&file);
-        QString text = stream.readAll();
-        file.close();
-        QXmlStreamReader *reader = new QXmlStreamReader(text.toUtf8());
-        while(!reader->atEnd()) {
-            reader->readNext();
-            if(reader->isStartElement() && reader->name() != "caneda"
-                    && reader->name() != "symbol") {
-
-                QString qualifiedName = reader->name().toString();
-                writer->writeStartElement(qualifiedName);
-                reader->readNext();
-                while(!reader->isEndElement() || reader->name() != qualifiedName){
-                    writer->writeCurrentToken(*reader);
-                    reader->readNext();
-                }
-                writer->writeEndElement();
-            }
-            else if(reader->isStartElement() && reader->name() == "symbol"){
-                while(!reader->isEndElement() || reader->name() != "symbol") {
-                    reader->readNext();
-                }
-            }
-        }
-
-        //Now we save the symbol
-        writer->writeStartElement("symbol");
-        //saveSchematics(writer);
-        saveComponents(writer);
-        saveWires(writer);
-        savePaintings(writer);
-        writer->writeEndElement(); //</symbol>
-
-        //Finally we finish the document
-        writer->writeEndDocument(); //</caneda>
-
-        delete reader;
         delete writer;
         return retVal;
     }
@@ -317,36 +243,6 @@ namespace Caneda
         }
     }
 
-    //Copies a previously defined element if created. Empty otherwise
-    void XmlFormat::copyCanedaElement(const QString& qualifiedName , Caneda::XmlWriter *writer)
-    {
-        SchematicScene *scene = schematicScene();
-        writer->writeStartElement(qualifiedName);
-
-        QFile file(fileName());
-        if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            return;
-        }
-
-        QTextStream stream(&file);
-        QString text = stream.readAll();
-        file.close();
-        QXmlStreamReader *reader = new QXmlStreamReader(text.toUtf8());
-        while(!reader->atEnd()) {
-            reader->readNext();
-            if(reader->isStartElement() && reader->name() == qualifiedName) {
-                reader->readNext();
-                while(!reader->isEndElement() || reader->name() != qualifiedName) {
-                    writer->writeCurrentToken(*reader);
-                    reader->readNext();
-                }
-            }
-        }
-
-        writer->writeEndElement();
-        delete reader;
-    }
-
     bool XmlFormat::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
@@ -368,30 +264,6 @@ namespace Caneda
                 }
                 else {
                     reader->raiseError(QObject::tr("Not a caneda file or probably malformatted file"));
-                }
-            }
-        }
-
-        if(reader->hasError()) {
-            QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
-            delete reader;
-            return false;
-        }
-
-        delete reader;
-        return true;
-    }
-
-    bool XmlFormat::loadSymbolFromText(const QString& text)
-    {
-        Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
-        while(!reader->atEnd()) {
-            reader->readNext();
-            if(reader->isStartElement() && reader->name() == "symbol") {
-                reader->readNext();
-                while(!reader->isEndElement() || reader->name() != "symbol"){
-                    loadSchematics(reader);
-                    reader->readNext();
                 }
             }
         }

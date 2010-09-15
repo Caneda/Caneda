@@ -38,17 +38,13 @@ namespace Caneda
 
     private:
         QString saveText();
-        QString saveSymbolText();
         void saveSchematics(Caneda::XmlWriter *writer);
         void saveView(Caneda::XmlWriter *writer);
         void saveComponents(Caneda::XmlWriter *writer);
         void saveWires(Caneda::XmlWriter *writer);
         void savePaintings(Caneda::XmlWriter *writer);
 
-        void copyCanedaElement(const QString& qualifiedName , Caneda::XmlWriter *writer);
-
         bool loadFromText(const QString& text);
-        bool loadSymbolFromText(const QString& text);
         void loadSchematics(Caneda::XmlReader *reader);
         void loadView(Caneda::XmlReader *reader);
         void loadComponents(Caneda::XmlReader *reader);

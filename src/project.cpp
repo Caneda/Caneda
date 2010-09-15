@@ -314,6 +314,8 @@ namespace Caneda
      */
     void Project::generateSymbol(const QString& fileName)
     {
+        //PORT:
+#if 0
         QString symbolFileName = fileName;
 
         // First, we open the symbol from corresponding schematic
@@ -334,6 +336,7 @@ namespace Caneda
         projectLibrary->saveLibrary();
         m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
         m_projectsSidebar->plugLibrary(m_libraryName, "root");
+#endif
     }
 
 } // namespace Caneda
