@@ -32,12 +32,14 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QString>
 #include <QSvgGenerator>
 
 namespace Caneda
 {
     //! Constructor
-    XmlSymbolFormat::XmlSymbolFormat(SchematicDocument *doc) : FileFormatHandler(doc)
+    XmlSymbolFormat::XmlSymbolFormat(SchematicDocument *doc) :
+        m_schematicDocument(doc)
     {
     }
 
@@ -165,6 +167,21 @@ namespace Caneda
 
         delete writer;
         return retVal;
+    }
+
+    SchematicDocument* XmlSymbolFormat::schematicDocument() const
+    {
+        return m_schematicDocument;
+    }
+
+    SchematicScene* XmlSymbolFormat::schematicScene() const
+    {
+        return m_schematicDocument ? m_schematicDocument->schematicScene() : 0;
+    }
+
+    QString XmlSymbolFormat::fileName() const
+    {
+        return m_schematicDocument ? m_schematicDocument->fileName() : QString();
     }
 
 } // namespace Caneda

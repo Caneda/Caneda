@@ -16,7 +16,7 @@ ADD_SUBDIRECTORY( xmlutilities )
 SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   schematicscene.cpp sidebarmodel.cpp
   global.cpp units.cpp main.cpp mainwindow.cpp
-  schematicwidget.cpp  undocommands.cpp fileformathandler.cpp
+  schematicwidget.cpp  undocommands.cpp
   svgitem.cpp property.cpp propertyitem.cpp
   propertygroup.cpp component.cpp port.cpp library.cpp
   xmlformat.cpp

@@ -20,11 +20,16 @@
 #ifndef XMLSYMBOLFORMAT_H
 #define XMLSYMBOLFORMAT_H
 
-#include "fileformathandler.h"
+// Forward declarations
+class QString;
 
 namespace Caneda
 {
-    class XmlSymbolFormat : public FileFormatHandler
+    // Forward declarations
+    class SchematicDocument;
+    class SchematicScene;
+
+    class XmlSymbolFormat
     {
     public:
         XmlSymbolFormat(SchematicDocument *doc = 0);
@@ -33,8 +38,14 @@ namespace Caneda
         bool save();
         bool load();
 
+        SchematicDocument* schematicDocument() const;
+        SchematicScene* schematicScene() const;
+        QString fileName() const;
+
     private:
         QString saveText();
+
+        SchematicDocument *m_schematicDocument;
     };
 
 } // namespace Caneda

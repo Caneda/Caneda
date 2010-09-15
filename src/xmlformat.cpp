@@ -23,6 +23,7 @@
 #include "global.h"
 #include "item.h"
 #include "port.h"
+#include "schematicdocument.h"
 #include "schematicscene.h"
 #include "wire.h"
 
@@ -33,6 +34,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QMessageBox>
+#include <QString>
 
 namespace Caneda
 {
@@ -78,7 +80,8 @@ namespace Caneda
     }
 
     //! Constructor
-    XmlFormat::XmlFormat(SchematicDocument *doc) : FileFormatHandler(doc)
+    XmlFormat::XmlFormat(SchematicDocument *doc):
+        m_schematicDocument(doc)
     {
     }
 
@@ -489,6 +492,21 @@ namespace Caneda
                 }
             }
         }
+    }
+
+    SchematicDocument* XmlFormat::schematicDocument() const
+    {
+        return m_schematicDocument;
+    }
+
+    SchematicScene* XmlFormat::schematicScene() const
+    {
+        return m_schematicDocument ? m_schematicDocument->schematicScene() : 0;
+    }
+
+    QString XmlFormat::fileName() const
+    {
+        return m_schematicDocument ? m_schematicDocument->fileName() : QString();
     }
 
 } // namespace Caneda

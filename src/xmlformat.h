@@ -20,14 +20,19 @@
 #ifndef XMLFORMAT_H
 #define XMLFORMAT_H
 
-#include "fileformathandler.h"
+// Forward declarations
+class QString;
 
 namespace Caneda
 {
+    // Forward declarations
+    class SchematicDocument;
+    class SchematicScene;
+
     class XmlReader;
     class XmlWriter;
 
-    class XmlFormat : public FileFormatHandler
+    class XmlFormat
     {
     public:
         XmlFormat(SchematicDocument *doc = 0);
@@ -35,6 +40,10 @@ namespace Caneda
 
         bool save();
         bool load();
+
+        SchematicDocument* schematicDocument() const;
+        SchematicScene* schematicScene() const;
+        QString fileName() const;
 
     private:
         QString saveText();
@@ -50,6 +59,8 @@ namespace Caneda
         void loadComponents(Caneda::XmlReader *reader);
         void loadWires(Caneda::XmlReader *reader);
         void loadPaintings(Caneda::XmlReader *reader);
+
+        SchematicDocument *m_schematicDocument;
     };
 
 } // namespace Caneda
