@@ -110,37 +110,24 @@ namespace Caneda
      */
     void SchematicContext::slotSymbolEdit()
     {
-        //PORT:
-#if 0
-        CanedaView *currentView = viewFromWidget(tabWidget()->currentWidget());
-        if(!currentView) {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+
+        if (!document) {
             return;
         }
 
-        if(!currentView->fileName().isEmpty()) {
-            QString fileName = currentView->fileName();
-
-            if(currentView->toSchematicWidget()->schematicScene()->currentMode() == Caneda::SchematicMode) {
-                //First, we try to open the corresponding symbol file
-                bool isLoaded = gotoPage(fileName, Caneda::SymbolMode);
-
-                //If it's a new symbol, we create it
-                if(!isLoaded){
-                    addView(new SchematicWidget(0, this));
-
-                    CanedaView *v = viewFromWidget(tabWidget()->currentWidget());
-                    SchematicScene *sc = v->toSchematicWidget()->schematicScene();
-                    sc->setMode(Caneda::SymbolMode);
-
-                    v->setFileName(fileName);
-                }
-            }
-            else if(currentView->toSchematicWidget()->schematicScene()->currentMode() == Caneda::SymbolMode) {
-                gotoPage(fileName, Caneda::SchematicMode);
-            }
+        if (document->fileName().isEmpty()) {
+            QMessageBox::critical(0, tr("Critical"),
+                    tr("Please, save schematic first!"));
+            return;
         }
-#endif
 
+        QString filename = document->fileName();
+        QFileInfo info(filename);
+        filename = info.completeBaseName() + ".xsym";
+
+        MainWindow::instance()->slotFileOpen(filename);
     }
 
     void SchematicContext::slotIntoHierarchy()
@@ -200,7 +187,7 @@ namespace Caneda
         if (schDoc) {
             if (!schDoc->schematicScene()->distributeElements(Qt::Horizontal)) {
                 QMessageBox::information(0, tr("Info"),
-                        tr("At least two elements must be selected !"));
+                        tr("At least two elements must be selected!"));
             }
         }
     }
@@ -213,7 +200,7 @@ namespace Caneda
         if (schDoc) {
             if (!schDoc->schematicScene()->distributeElements(Qt::Vertical)) {
                 QMessageBox::information(0, tr("Info"),
-                        tr("At least two elements must be selected !"));
+                        tr("At least two elements must be selected!"));
             }
         }
     }
@@ -261,7 +248,7 @@ namespace Caneda
         if (schDoc) {
             if (!schDoc->schematicScene()->alignElements(alignment)) {
                 QMessageBox::information(0, tr("Info"),
-                        tr("At least two elements must be selected !"));
+                        tr("At least two elements must be selected!"));
             }
         }
     }

@@ -80,6 +80,7 @@ namespace Caneda
 
     bool XmlSymbolFormat::load()
     {
+        return false;
     }
 
     QString XmlSymbolFormat::saveText()
