@@ -66,8 +66,6 @@ namespace Caneda
         void slotToPage();
         void slotDCbias();
         void slotExportGraphAsCsv();
-        void slotShowLastMsg();
-        void slotShowLastNetlist();
 
     private:
         SchematicContext(QObject *parent = 0);

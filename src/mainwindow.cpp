@@ -628,14 +628,14 @@ namespace Caneda
         action->setShortcut(Key_F9);
         action->setStatusTip(tr("Shows last simulation messages"));
         action->setWhatsThis(tr("Show Last Messages\n\nShows the messages of the last simulation"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotShowLastMsg()));
+        connect(action, SIGNAL(triggered()), SLOT(slotShowLastMsg()));
         sc->addNormalAction(action);
 
         action = am->createAction("showNet", Caneda::icon("document-preview"), tr("Show Last Netlist"));
         action->setShortcut(Key_F10);
         action->setStatusTip(tr("Shows last simulation netlist"));
         action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotShowLastNetlist()));
+        connect(action, SIGNAL(triggered()), SLOT(slotShowLastNetlist()));
         sc->addNormalAction(action);
 
         action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("Help Index..."));
@@ -1500,6 +1500,18 @@ namespace Caneda
         }
 
         document->simulate();
+    }
+
+    void MainWindow::slotShowLastMsg()
+    {
+        setNormalAction();
+        slotFileOpen(Caneda::pathForCanedaFile("output.log"));
+    }
+
+    void MainWindow::slotShowLastNetlist()
+    {
+        setNormalAction();
+        slotFileOpen(Caneda::pathForCanedaFile("spice.net"));
     }
 
     void MainWindow::slotHelpIndex()

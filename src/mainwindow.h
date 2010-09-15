@@ -104,6 +104,8 @@ namespace Caneda
         void slotShowConsole();
 
         void slotSimulate();
+        void slotShowLastMsg();
+        void slotShowLastNetlist();
 
         void slotHelpIndex();
         void slotHelpAbout();

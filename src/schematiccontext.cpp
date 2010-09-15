@@ -252,18 +252,6 @@ namespace Caneda
         //TODO: implement this or rather port directly
     }
 
-    void SchematicContext::slotShowLastMsg()
-    {
-        setNormalAction();
-        MainWindow::instance()->slotFileOpen(Caneda::pathForCanedaFile("log.txt"));
-    }
-
-    void SchematicContext::slotShowLastNetlist()
-    {
-        setNormalAction();
-        MainWindow::instance()->slotFileOpen(Caneda::pathForCanedaFile("netlist.txt"));
-    }
-
     //! \brief Align selected elements appropriately based on \a alignment
     void SchematicContext::alignElements(Qt::Alignment alignment)
     {
