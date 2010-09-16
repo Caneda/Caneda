@@ -486,13 +486,13 @@ namespace Caneda
             Scn->setFrameVisible(checkShowFrame->isChecked());
             changed = true;
         }
-        if(Scn->width() != spinSchemaX->value()) {
+        if(Scn->frameWidth() != spinSchemaX->value()) {
             Scn->undoStack()->push(new ScenePropertyChangeCmd("frame width",
                         spinSchemaX->value(), Scn->frameWidth(), Scn));
             Scn->setFrameSize(spinSchemaX->value(), Scn->frameHeight());
             changed = true;
         }
-        if(Scn->height() != spinSchemaY->value()) {
+        if(Scn->frameHeight() != spinSchemaY->value()) {
             Scn->undoStack()->push(new ScenePropertyChangeCmd("frame height",
                         spinSchemaY->value(), Scn->frameHeight(), Scn));
             Scn->setFrameSize(Scn->frameWidth(), spinSchemaY->value());
@@ -501,13 +501,13 @@ namespace Caneda
         if(Scn->frameRows() != spinFrameY->value()) {
             Scn->undoStack()->push(new ScenePropertyChangeCmd("frame rows",
                         spinFrameY->value(), Scn->frameRows(), Scn));
-            Scn->setFrameSize(spinFrameY->value(), Scn->frameColumns());
+            Scn->setFrameGeometry(spinFrameY->value(), Scn->frameColumns());
             changed = true;
         }
         if(Scn->frameColumns() != spinFrameX->value()) {
             Scn->undoStack()->push(new ScenePropertyChangeCmd("frame columns",
                         spinFrameX->value(), Scn->frameColumns(), Scn));
-            Scn->setFrameSize(Scn->frameRows(), spinFrameX->value());
+            Scn->setFrameGeometry(Scn->frameRows(), spinFrameX->value());
             changed = true;
         }
 
