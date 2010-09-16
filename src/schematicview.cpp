@@ -93,6 +93,11 @@ namespace Caneda
         m_schematicWidget->resetCachedContent();
     }
 
+    qreal SchematicView::currentZoom()
+    {
+        return m_schematicWidget->currentZoom();
+    }
+
     void SchematicView::onWidgetFocussedIn()
     {
         emit focussedIn(static_cast<IView*>(this));

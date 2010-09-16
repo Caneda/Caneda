@@ -53,6 +53,8 @@ namespace Caneda
 
         // End of IView interface methods
 
+        qreal currentZoom();
+
     private Q_SLOTS:
         void onWidgetFocussedIn();
         void onWidgetFocussedOut();

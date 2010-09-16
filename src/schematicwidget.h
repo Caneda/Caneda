@@ -52,6 +52,7 @@ namespace Caneda
         void zoomOriginal();
 
         void zoomFitRect(const QRectF &rect);
+        qreal currentZoom() { return m_currentZoom; };
 
     Q_SIGNALS:
         void cursorPositionChanged(const QString& newPos);

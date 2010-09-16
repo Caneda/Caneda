@@ -211,8 +211,6 @@ namespace Caneda
         void normalEvent(MouseActionEvent *e);
 
     private:
-        void init();
-
         /* private reset state wiring */
         void resetStateWiring();
 

@@ -20,6 +20,7 @@
 
 #include "schematicscene.h"
 
+#include "documentviewmanager.h"
 #include "library.h"
 #include "propertygroup.h"
 #include "schematicwidget.h"
@@ -79,12 +80,6 @@ namespace Caneda
     SchematicScene::SchematicScene(QObject *parent) :
         QGraphicsScene(SchematicScene::DefaultSceneRect, parent)
     {
-        init();
-    }
-
-    //! \brief Initialize a schematic scene
-    void SchematicScene::init()
-    {
         /* setup undo stack */
         m_undoStack = new QUndoStack(this);
 
@@ -100,6 +95,7 @@ namespace Caneda
             << tr("Date: ") + QDate::currentDate().toString() << tr("Revision: ");
         m_frameRows = 11;
         m_frameColumns = 16;
+
         m_macroProgress = false;
         m_areItemsMoving = false;
         m_shortcutsBlocked = false;
@@ -112,10 +108,12 @@ namespace Caneda
         m_paintingDrawClicks = 0;
 
         Settings *settings = Settings::instance();
-        const QColor zoomBandColor =
+        QColor zoomBandColor =
             settings->currentValue("gui/foregroundColor").value<QColor>();
         m_zoomBand = new QGraphicsRectItem();
-        m_zoomBand->setPen(QPen(zoomBandColor, 0, Qt::DashLine));
+        m_zoomBand->setPen(QPen(zoomBandColor));
+        zoomBandColor.setAlpha(25);
+        m_zoomBand->setBrush(QBrush(zoomBandColor));
         m_zoomBand->hide();
         addItem(m_zoomBand);
 
@@ -726,10 +724,15 @@ namespace Caneda
             int drawingGridHeight = DEFAULT_GRID_SPACE;
 
             //Make grid size display dinamic, depending on zoom level
-            QRectF currentScale = rect;
-            if(currentScale.width() > 1000) {
+            DocumentViewManager *manager = DocumentViewManager::instance();
+            SchematicView *v = static_cast<SchematicView *>(manager->currentView());
+            if(!v) {
+                return;
+            }
+
+            if(v->currentZoom() < 1) {
                 // While drawing, choose spacing to be multiple times the actual grid size.
-                if(currentScale.width() < 4000) {
+                if(v->currentZoom() > 0.5) {
                     drawingGridWidth *= 4;
                     drawingGridHeight *= 4;
                 }
@@ -965,16 +968,12 @@ namespace Caneda
         if(!sv) {
             return;
         }
-        SchematicView *view = sv->schematicView();
-        if (!view) {
-            return;
-        }
 
         if(e->modifiers() & Qt::ControlModifier){
             if(e->delta() > 0) {
                 QPoint viewPoint = sv->mapFromScene(e->scenePos());
 
-                view->zoomIn();
+                sv->zoomIn();
 
                 QPointF afterScalePoint(sv->mapFromScene(e->scenePos()));
                 int dx = (afterScalePoint - viewPoint).toPoint().x();
@@ -983,7 +982,7 @@ namespace Caneda
                 sv->translate(-dx,-dy);
             }
             else {
-                view->zoomOut();
+                sv->zoomOut();
             }
         }
         else if(e->modifiers() & Qt::ShiftModifier){
@@ -2048,6 +2047,7 @@ namespace Caneda
         if(!schematicWidget) {
             return;
         }
+
         QPointF dest = smartNearingGridPoint(event->scenePos());
 
         if(event->type() == QEvent::GraphicsSceneMousePress) {
