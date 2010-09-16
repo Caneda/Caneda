@@ -24,6 +24,8 @@
 #include "schematicscene.h"
 #include "settings.h"
 
+#include <QCompleter>
+#include <QDirModel>
 #include <QFileDialog>
 #include <QPointer>
 #include <QPrintDialog>
@@ -38,10 +40,11 @@ namespace Caneda
     {
         ui.setupUi(this);
         ui.widget->setEnabled(false);
-        ui.printerChoice->setIcon(QIcon(Caneda::bitmapDirectory() + "printer.png"));
-        ui.pdfChoice->setIcon(QIcon(Caneda::bitmapDirectory() + "pdf.png"));
-        ui.psChoice->setIcon(QIcon(Caneda::bitmapDirectory() + "eps.png"));
-        ui.fitInPageButton->setIcon(QIcon(Caneda::bitmapDirectory() + "viewmagfit.png"));
+        ui.printerChoice->setIcon(Caneda::icon("printer"));
+        ui.pdfChoice->setIcon(Caneda::icon("pdf"));
+        ui.psChoice->setIcon(Caneda::icon("eps"));
+        ui.fitInPageButton->setIcon(Caneda::icon("zoom-fit-best"));
+        ui.browseButton->setIcon(Caneda::icon("document-open"));
 
         if (!m_document->printSupportsFitInPage()) {
             ui.fitInPageButton->setChecked(false);
@@ -56,11 +59,19 @@ namespace Caneda
         m_printer = new QPrinter;
         m_printer->setOrientation(QPrinter::Landscape);
 
+        QCompleter *completer = new QCompleter(this);
+        completer->setModel(new QDirModel(completer));
+        ui.filePathEdit->setCompleter(completer);
+
         const QString fileName = m_document->fileName();
         if (!fileName.isEmpty()) {
             m_printer->setDocName(fileName);
             ui.filePathEdit->setText(fileName + ".pdf");
         }
+        else {
+            ui.filePathEdit->setText(QDir::toNativeSeparators(QDir::homePath()));
+        }
+
     }
 
     //! Destructor
@@ -110,7 +121,9 @@ namespace Caneda
                 if (path.endsWith(".ps")) {
                     path.replace(path.length() - 3, 3, ".pdf");
                 }
-            } else /* ui.psChoice->isChecked() */{
+            }
+            /* ui.psChoice->isChecked() */
+            else {
                 if (path.endsWith(".pdf")) {
                     path.replace(path.length() - 4, 4, ".ps");
                 }
