@@ -127,10 +127,6 @@ namespace Caneda
         //! return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
 
-        //! get origin drawing status
-        bool isOriginDrawn() const { return m_OriginDrawn; }
-        void setOriginDrawn(const bool visibility);
-
         //! set variant property
         bool setProperty(const QString& propName, const QVariant& value);
 
@@ -401,8 +397,6 @@ namespace Caneda
         bool m_frameVisible;
         //! Snap component to grid
         bool m_snapToGrid;
-        //! Draw origin boolean
-        bool m_OriginDrawn;
         //! \brief A state holder whether an UndoStack's macro is started or not
         bool m_macroProgress;
         /*!

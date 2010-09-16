@@ -90,7 +90,6 @@ namespace Caneda
 
         /* setup grid */
         m_snapToGrid = true;
-        m_OriginDrawn = true;
 
         m_backgroundVisible = true;
         m_frameVisible = false;
@@ -205,22 +204,6 @@ namespace Caneda
         }
 
         return false;
-    }
-
-    /*!
-     * \brief Set origin visibility
-     *
-     * \param visibility: origin visibility
-     */
-    void SchematicScene::setOriginDrawn(const bool visibility)
-    {
-        /* avoid updating */
-        if(m_OriginDrawn == visibility)  {
-            return;
-        }
-
-        m_OriginDrawn = visibility;
-        update();
     }
 
     //! \brief Set the dataset filename(file which holds the plot data)
@@ -728,7 +711,7 @@ namespace Caneda
 
         /* draw origin */
         const QPointF origin(0, 0);
-        if(isOriginDrawn() && rect.contains(origin)) {
+        if(rect.contains(origin)) {
             painter->drawLine(QLineF(origin.x() - 3.0, origin.y(),
                         origin.x() + 3.0, origin.y()));
             painter->drawLine(QLineF(origin.x(), origin.y() - 3.0,
