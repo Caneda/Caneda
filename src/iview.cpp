@@ -21,10 +21,13 @@
 
 #include "documentviewmanager.h"
 #include "idocument.h"
+#include "global.h"
 
 #include <QAction>
+#include <QToolButton>
 #include <QComboBox>
 #include <QFileInfo>
+#include <QHBoxLayout>
 #include <QToolBar>
 
 namespace Caneda
@@ -76,7 +79,24 @@ namespace Caneda
         connect(m_documentSelector, SIGNAL(currentIndexChanged(int)), this,
                 SLOT(onDocumentSelectorIndexChanged(int)));
 
+
+        QToolButton *_splitHorizontalButton = new QToolButton(m_toolBar);
+        _splitHorizontalButton->setIcon(Caneda::icon("view-split-left-right"));
+        QToolButton *_splitVerticalButton = new QToolButton(m_toolBar);
+        _splitVerticalButton->setIcon(Caneda::icon("view-split-top-bottom"));
+        QToolButton *_closeViewButton = new QToolButton(m_toolBar);
+        _closeViewButton->setIcon(Caneda::icon("view-left-close"));
+
+        connect(_splitHorizontalButton, SIGNAL(clicked()), this, SLOT(slotSplitHorizontal()));
+        connect(_splitVerticalButton, SIGNAL(clicked()), this, SLOT(slotSplitVertical()));
+        connect(_closeViewButton, SIGNAL(clicked()), this, SLOT(slotCloseView()));
+
         m_toolBar->addWidget(m_documentSelector);
+        m_toolBar->addSeparator();
+        m_toolBar->addWidget(_splitHorizontalButton);
+        m_toolBar->addWidget(_splitVerticalButton);
+        m_toolBar->addWidget(_closeViewButton);
+
         onDocumentViewManagerChanged();
     }
 
@@ -130,6 +150,25 @@ namespace Caneda
         DocumentViewManager *manager = DocumentViewManager::instance();
         // This call will result in this view being destructed!
         manager->replaceView(this, manager->documents()[index]);
+    }
+
+
+    void IView::slotSplitHorizontal()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->splitView(this, Qt::Horizontal);
+    }
+
+    void IView::slotSplitVertical()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->splitView(this, Qt::Vertical);
+    }
+
+    void IView::slotCloseView()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->closeView(this);
     }
 
 } // namespace Caneda

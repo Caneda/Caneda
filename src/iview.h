@@ -66,6 +66,9 @@ namespace Caneda
     private Q_SLOTS:
         void onDocumentViewManagerChanged();
         void onDocumentSelectorIndexChanged(int index);
+        void slotSplitHorizontal();
+        void slotSplitVertical();
+        void slotCloseView();
 
     protected:
         IDocument * const m_document;
