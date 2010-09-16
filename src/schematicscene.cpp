@@ -95,6 +95,8 @@ namespace Caneda
             << tr("Date: ") + QDate::currentDate().toString() << tr("Revision: ");
         m_frameRows = 11;
         m_frameColumns = 16;
+        m_frameWidth = 1024;
+        m_frameHeight = 768;
 
         m_macroProgress = false;
         m_areItemsMoving = false;
@@ -189,15 +191,15 @@ namespace Caneda
             return true;
         }
         else if(propName == "frame columns"){
-            setFrameSize(frameRows(), value.toInt());
+            setFrameGeometry(frameRows(), value.toInt());
             return true;
         }
-        else if(propName == "schematic width"){
-            setSceneRect(0, 0, value.toDouble(), height());
+        else if(propName == "frame width"){
+            setFrameSize(value.toInt(), frameHeight());
             return true;
         }
-        else if(propName == "schematic height"){
-            setSceneRect(0, 0, width(), value.toDouble());
+        else if(propName == "frame height"){
+            setFrameSize(frameWidth(), value.toInt());
             return true;
         }
 
@@ -271,15 +273,30 @@ namespace Caneda
     }
 
     /*!
-     * \brief Sets current schematic's frame size.
+     * \brief Sets current schematic's frame geometry.
      *
      * \param rows Number of rows to be set
      * \param columns Number of columns to be set
      */
-    void SchematicScene::setFrameSize(int rows, int columns)
+    void SchematicScene::setFrameGeometry(int rows, int columns)
     {
         m_frameRows = rows;
         m_frameColumns = columns;
+        if(isFrameVisible()) {
+            update();
+        }
+    }
+
+    /*!
+     * \brief Sets current schematic's frame size.
+     *
+     * \param width Width of frame to be set
+     * \param heigth Heigth of frame to be set
+     */
+    void SchematicScene::setFrameSize(int width, int heigth)
+    {
+        m_frameWidth = width;
+        m_frameHeight = heigth;
         if(isFrameVisible()) {
             update();
         }
@@ -616,7 +633,12 @@ namespace Caneda
             return itemsBoundingRect();
         }
         else {
-            return QRectF(0, 0, width(), height());
+            const QPointF origin(width()/2, height()/2);
+
+            return QRectF(origin.x() - frameWidth()/2,
+                          origin.y() - frameHeight()/2,
+                          origin.x() + frameWidth()/2,
+                          origin.y() + frameHeight()/2);
         }
     }
 
@@ -634,6 +656,68 @@ namespace Caneda
             m_modified = !m;
             emit changed();
         }
+    }
+
+    /*!
+     * \brief Return a frame item
+     */
+    QPainterPath SchematicScene::frame(const QPointF &startPoint)
+    {
+        QPainterPath frame = QPainterPath(startPoint);
+
+        QFont frameFont = QApplication::font();
+
+        foreach(QString frame_text, m_frameTexts){
+            if(frame_text.contains("Title: ")) {
+                frame.addText(frameWidth()/3, frameHeight()-30, frameFont, frame_text);
+            }
+            else if(frame_text.contains("Drawn By: ")) {
+                frame.addText(10, frameHeight()-30, frameFont, frame_text);
+            }
+            else if(frame_text.contains("Date: ")) {
+                frame.addText(10, frameHeight()-10, frameFont,  frame_text);
+            }
+            else if(frame_text.contains("Revision: ")) {
+                frame.addText(frameWidth()*4/5, frameHeight()-30, frameFont, frame_text);
+            }
+        }
+
+        // Next we draw the footer lines
+        //Bounding rect
+        frame.addRect(0, 0, frameWidth(), frameHeight());
+        //Upper footer line
+        frame.moveTo(0, frameHeight()-50);
+        frame.lineTo(frameWidth(), frameHeight()-50);
+        //Name division
+        frame.moveTo(frameWidth()/3-20, frameHeight()-50);
+        frame.lineTo(frameWidth()/3-20, frameHeight());
+        //Title division
+        frame.moveTo(frameWidth()*4/5-20, frameHeight()-50);
+        frame.lineTo(frameWidth()*4/5-20, frameHeight());
+        //Left line
+        frame.moveTo(20, 0);
+        frame.lineTo(20, frameHeight()-50);
+        //Upper line
+        frame.moveTo(0, 20);
+        frame.lineTo(frameWidth(), 20);
+
+        // Finally we draw the rows and columns
+        //Row numbering
+        int step = (frameHeight()-20-50) / frameRows();
+        for(int i=1; i<frameRows()+1; i++) {
+            frame.moveTo(0, i*step+20);
+            frame.lineTo(20, i*step+20);
+            frame.addText(6, (i*step)-(step/2)+20, frameFont, QString(QChar('A'+i-1)));
+        }
+        //Column numbering
+        step = (frameWidth()-20) / frameColumns();
+        for(int i=1; i<frameColumns()+1; i++) {
+            frame.moveTo(i*step+20, 0);
+            frame.lineTo(i*step+20, 20);
+            frame.addText((i*step)-(step/2)+20, 16, frameFont, QString::number(i));
+        }
+
+        return frame;
     }
 
     /*!
@@ -664,58 +748,21 @@ namespace Caneda
         painter->setPen(QPen(foregroundColor, 0));
         painter->setBrush(Qt::NoBrush);
 
+
+        const QPointF origin(width()/2, height()/2);
+
         /* draw frame */
         if(isFrameVisible()) {
-            // First we draw the users content
-            foreach(QString frame_text, m_frameTexts){
-                if(frame_text.contains("Title: ")) {
-                    painter->drawText(width()/3, height()-30, frame_text);
-                }
-                else if(frame_text.contains("Drawn By: ")) {
-                    painter->drawText(10, height()-30, frame_text);
-                }
-                else if(frame_text.contains("Date: ")) {
-                    painter->drawText(10, height()-10, frame_text);
-                }
-                else if(frame_text.contains("Revision: ")) {
-                    painter->drawText(width()*4/5, height()-30, frame_text);
-                }
-            }
-
-            // Next we draw the footer lines
-            painter->drawRect(sceneRect()); //Bounding rect
-            painter->drawLine(QLineF(0, height()-50, width(),
-                        height()-50)); //Upper footer line
-            painter->drawLine(QLineF(width()/3-20, height()-50, width()/3-20,
-                        height())); //Name division
-            painter->drawLine(QLineF(width()*4/5-20, height()-50,
-                        width()*4/5-20, height())); //Title division
-            painter->drawLine(QLineF(20, 0, 20, height()-50)); //Left line
-            painter->drawLine(QLineF(0, 20, width(), 20));  //Upper line
-
-            // Finally we draw the rows and columns
-            int step = (height()-20-50) / frameRows();
-            for(int i=1; i<frameRows()+1; i++) { //Row numbering
-                painter->drawLine(QLineF(0, i*step+20, 20, i*step+20));
-                painter->drawText(6, (i*step)-(step/2)+20, QString(QChar('A'+i-1)));
-            }
-            step = (width()-20) / frameColumns();
-            for(int i=1; i<frameColumns()+1; i++) { //Column numbering
-                painter->drawLine(QLineF(i*step+20, 0, i*step+20, 20));
-                painter->drawText((i*step)-(step/2)+20, 16, QString::number(i));
-            }
+            painter->drawPath(frame(origin));
         }
 
-
         /* draw origin */
-        const QPointF origin(width()/2, height()/2);
         if(rect.contains(origin)) {
             painter->drawLine(QLineF(origin.x() - 3.0, origin.y(),
                         origin.x() + 3.0, origin.y()));
             painter->drawLine(QLineF(origin.x(), origin.y() - 3.0,
                         origin.x(), origin.y() + 3.0));
         }
-
 
         /* draw grid */
         if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {

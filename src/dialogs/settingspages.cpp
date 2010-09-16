@@ -397,12 +397,12 @@ namespace Caneda
         spinSchemaX = new QSpinBox;
         spinSchemaX->setMinimum(500);
         spinSchemaX->setMaximum(10000);
-        spinSchemaX->setValue(Scn->width());
+        spinSchemaX->setValue(Scn->frameWidth());
 
         spinSchemaY = new QSpinBox;
         spinSchemaY->setMinimum(300);
         spinSchemaY->setMaximum(10000);
-        spinSchemaY->setValue(Scn->height());
+        spinSchemaY->setValue(Scn->frameHeight());
 
         spinFrameY = new QSpinBox;
         spinFrameY->setMinimum(1);
@@ -417,10 +417,10 @@ namespace Caneda
         QGroupBox *frame = new QGroupBox(tr("Frame"), this);
         QFormLayout *frameLayout = new QFormLayout(frame);
         frameLayout->addRow(tr("Show frame:"), checkShowFrame);
-        frameLayout->addRow(tr("Schematic Width:"), spinSchemaX);
-        frameLayout->addRow(tr("Schematic Height:"), spinSchemaY);
-        frameLayout->addRow(tr("Number of Rows:"), spinFrameY);
-        frameLayout->addRow(tr("Number of Columns:"), spinFrameX);
+        frameLayout->addRow(tr("Frame Width:"), spinSchemaX);
+        frameLayout->addRow(tr("Frame Height:"), spinSchemaY);
+        frameLayout->addRow(tr("Frame Rows:"), spinFrameY);
+        frameLayout->addRow(tr("Frame Columns:"), spinFrameX);
 
 
         //Next we set the document group of options *******************************
@@ -487,15 +487,15 @@ namespace Caneda
             changed = true;
         }
         if(Scn->width() != spinSchemaX->value()) {
-            Scn->undoStack()->push(new ScenePropertyChangeCmd("schematic width",
-                        spinSchemaX->value(), Scn->width(), Scn));
-            Scn->setSceneRect(0, 0, spinSchemaX->value(), Scn->height());
+            Scn->undoStack()->push(new ScenePropertyChangeCmd("frame width",
+                        spinSchemaX->value(), Scn->frameWidth(), Scn));
+            Scn->setFrameSize(spinSchemaX->value(), Scn->frameHeight());
             changed = true;
         }
         if(Scn->height() != spinSchemaY->value()) {
-            Scn->undoStack()->push(new ScenePropertyChangeCmd("schematic height",
-                        spinSchemaY->value(), Scn->height(), Scn));
-            Scn->setSceneRect(0, 0, Scn->width(), spinSchemaY->value());
+            Scn->undoStack()->push(new ScenePropertyChangeCmd("frame height",
+                        spinSchemaY->value(), Scn->frameHeight(), Scn));
+            Scn->setFrameSize(Scn->frameWidth(), spinSchemaY->value());
             changed = true;
         }
         if(Scn->frameRows() != spinFrameY->value()) {

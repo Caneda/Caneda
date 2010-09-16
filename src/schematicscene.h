@@ -150,7 +150,11 @@ namespace Caneda
 
         int frameRows() const { return m_frameRows; }
         int frameColumns() const { return m_frameColumns; }
-        void setFrameSize(int rows, int columns);
+        void setFrameGeometry(int rows, int columns);
+
+        int frameWidth() const { return m_frameWidth; }
+        int frameHeight() const { return m_frameHeight; }
+        void setFrameSize(int width, int height);
 
         MouseAction mouseAction() const { return m_mouseAction; }
         void setMouseAction(const MouseAction ma);
@@ -182,6 +186,7 @@ namespace Caneda
         void mirrorInvokedWhileInserting();
 
     protected:
+        QPainterPath frame(const QPointF &startPoint);
         void drawBackground(QPainter *p, const QRectF& r);
 
         bool event(QEvent *event);
@@ -363,8 +368,10 @@ namespace Caneda
         QString m_fileName;
         //! Frame texts
         QStringList m_frameTexts;
-        //! Frame size
+        //! Frame geometry
         int m_frameRows, m_frameColumns;
+        //! Frame size
+        int m_frameWidth, m_frameHeight;
 
         /*!
          * \brief A flag to hold whether a schematic is modified or not

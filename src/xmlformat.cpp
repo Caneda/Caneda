@@ -168,10 +168,6 @@ namespace Caneda
         SchematicScene *scene = schematicScene();
         writer->writeStartElement("view");
 
-        writer->writeStartElement("scenerect");
-        writer->writeRect(scene->sceneRect());
-        writer->writeEndElement(); //</scenerect>
-
         writer->writeStartElement("data");
         writer->writeElement("dataset", scene->dataSet());
         writer->writeElement("datadisplay", scene->dataDisplay());
@@ -180,7 +176,8 @@ namespace Caneda
 
         writer->writeStartElement("frame");
         writer->writeAttribute("visible", Caneda::boolToString(scene->isFrameVisible()));
-        writer->writeSize(QSize(scene->frameColumns(), scene->frameRows()));
+        writer->writeSize(QSize(scene->frameWidth(), scene->frameHeight()), "size");
+        writer->writeSize(QSize(scene->frameColumns(), scene->frameRows()), "geometry");
         writer->writeStartElement("frametexts");
         foreach(QString text, scene->frameTexts()) {
             writer->writeElement("text",text);
@@ -309,11 +306,11 @@ namespace Caneda
             reader->raiseError(QObject::tr("Malformatted file"));
         }
 
-        QRectF sceneRect;
         QString dataSet;
         QString dataDisplay;
         bool opensDataDisplay = false;
         bool frameVisible = false;
+        QSize frameGeometry;
         QSize frameSize;
         QStringList frameTexts;
 
@@ -326,17 +323,7 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
-                if(reader->name() == "scenerect") {
-                    reader->readFurther();
-                    sceneRect = reader->readRect();
-                    if(!sceneRect.isValid()) {
-                        reader->raiseError(QObject::tr("Invalid QRect attribute"));
-                        break;
-                    }
-                    reader->readFurther();
-                    Q_ASSERT(reader->isEndElement() && reader->name() == "scenerect");
-                }
-                else if(reader->name() == "data") {
+                if(reader->name() == "data") {
                     reader->readFurther();
                     dataSet = reader->readElementText(/*dataset*/);
                     reader->readFurther();
@@ -356,7 +343,14 @@ namespace Caneda
                     frameVisible = (att == "true");
 
                     reader->readFurther();
-                    frameSize = reader->readSize();
+                    if(reader->isStartElement() && reader->name() == "size") {
+                        frameSize = reader->readSize();
+                    }
+
+                    reader->readFurther();
+                    if(reader->isStartElement() && reader->name() == "geometry") {
+                        frameGeometry = reader->readSize();
+                    }
 
                     reader->readFurther();
                     if(reader->isStartElement() && reader->name() == "frametexts") {
@@ -385,12 +379,12 @@ namespace Caneda
         }
 
         if(!reader->hasError()) {
-            scene->setSceneRect(sceneRect);
             scene->setDataSet(dataSet);
             scene->setDataDisplay(dataDisplay);
             scene->setOpensDataDisplay(opensDataDisplay);
             scene->setFrameVisible(frameVisible);
-            scene->setFrameSize(frameSize.height(), frameSize.width());
+            scene->setFrameSize(frameSize.width(), frameSize.height());
+            scene->setFrameGeometry(frameGeometry.height(), frameGeometry.width());
             scene->setFrameTexts(frameTexts);
         }
     }
