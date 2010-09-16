@@ -43,9 +43,6 @@ namespace Caneda
         SchematicView* schematicView() const;
         SchematicScene* schematicScene() const;
 
-        void saveScrollState();
-        void restoreScrollState();
-
         void zoomIn();
         void zoomOut();
         void zoomFitInBest();
@@ -71,9 +68,6 @@ namespace Caneda
         void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);
 
         SchematicView *m_schematicView;
-
-        int m_horizontalScroll;
-        int m_verticalScroll;
 
         ZoomRange m_zoomRange;
         qreal m_currentZoom;

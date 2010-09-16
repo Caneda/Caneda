@@ -386,7 +386,6 @@ namespace Caneda
 
         if(!reader->hasError()) {
             scene->setSceneRect(sceneRect);
-            scene->setSceneRect(sceneRect);
             scene->setDataSet(dataSet);
             scene->setDataDisplay(dataDisplay);
             scene->setOpensDataDisplay(opensDataDisplay);

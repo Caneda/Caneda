@@ -23,7 +23,6 @@
 #include "schematicscene.h"
 #include "schematicview.h"
 
-#include <QScrollBar>
 #include <QWheelEvent>
 
 namespace Caneda
@@ -34,11 +33,18 @@ namespace Caneda
     SchematicWidget::SchematicWidget(SchematicView *sv) :
         QGraphicsView(sv ? sv->schematicDocument()->schematicScene() : 0),
         m_schematicView(sv),
-        m_horizontalScroll(0),
-        m_verticalScroll(0),
         m_zoomRange(0.30, 10.0),
         m_currentZoom(1.0)
     {
+        if(sv){
+            int _width = sv->schematicDocument()->schematicScene()->width();
+            int _heigth = sv->schematicDocument()->schematicScene()->height();
+            centerOn(_width/2, _heigth/2);
+        }
+
+        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
         setAcceptDrops(true);
         setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
         setViewportUpdateMode(SmartViewportUpdate);
@@ -71,18 +77,6 @@ namespace Caneda
         SchematicScene* s = qobject_cast<SchematicScene*>(scene());
         Q_ASSERT(s);// This should never fail!
         return s;
-    }
-
-    void SchematicWidget::saveScrollState()
-    {
-        m_horizontalScroll = horizontalScrollBar()->value();
-        m_verticalScroll  = verticalScrollBar()->value();
-    }
-
-    void SchematicWidget::restoreScrollState()
-    {
-        horizontalScrollBar()->setValue(m_horizontalScroll);
-        verticalScrollBar()->setValue(m_verticalScroll);
     }
 
     void SchematicWidget::zoomIn()
@@ -118,11 +112,6 @@ namespace Caneda
         // Find the ideal x / y scaling ratio to fit \a rect in the view.
         int margin = 0;
 
-        // This is needed to handle situation where in the actual viewport size
-        // is reduced due to appearance of scrollbar after transformation!
-        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-        setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
         QRectF viewRect = viewport()->rect().adjusted(margin, margin, -margin, -margin);
         viewRect = transform().mapRect(viewRect);
         if (viewRect.isEmpty()) {
@@ -145,15 +134,15 @@ namespace Caneda
 
         // Now set that zoom level.
         setZoomLevel(minRatio, &center);
-
-        // Reset the scrollpolicies.
-        setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     }
 
     void SchematicWidget::mouseMoveEvent(QMouseEvent *event)
     {
-        QPoint newCursorPos = mapToScene(event->pos()).toPoint();
+        int _width = m_schematicView->schematicDocument()->schematicScene()->width();
+        int _heigth = m_schematicView->schematicDocument()->schematicScene()->height();
+        QPoint center = QPoint(_width/2, _heigth/2);
+
+        QPoint newCursorPos = mapToScene(event->pos()).toPoint() - center;
         QString str = QString("%1 : %2")
             .arg(newCursorPos.x())
             .arg(newCursorPos.y());

@@ -48,7 +48,7 @@ namespace Caneda
     //! \brief Default grid spacing
     static const uint DEFAULT_GRID_SPACE = 10;
 
-    const QRectF SchematicScene::DefaultSceneRect = QRectF(0, 0, 1024, 678);
+    const QRectF SchematicScene::DefaultSceneRect = QRectF(0, 0, 5000, 5000);
 
     /*!
      * \brief This template method calculates the center of the items on the scene
@@ -708,7 +708,7 @@ namespace Caneda
 
 
         /* draw origin */
-        const QPointF origin(0, 0);
+        const QPointF origin(width()/2, height()/2);
         if(rect.contains(origin)) {
             painter->drawLine(QLineF(origin.x() - 3.0, origin.y(),
                         origin.x() + 3.0, origin.y()));
@@ -861,13 +861,6 @@ namespace Caneda
     {
         if(event->mimeData()->formats().contains("application/caneda.sidebarItem")) {
             event->accept();
-            QWidget *parentWidget = event->widget() ? event->widget()->parentWidget() : 0;
-            SchematicWidget *view = qobject_cast<SchematicWidget*>(parentWidget);
-            if (!view) {
-                event->ignore();
-                return;
-            }
-            view->saveScrollState();
 
             QByteArray encodedData = event->mimeData()->data("application/caneda.sidebarItem");
             QDataStream stream(&encodedData, QIODevice::ReadOnly);
@@ -890,7 +883,6 @@ namespace Caneda
                 QPointF dest = smartNearingGridPoint(event->scenePos());
 
                 placeItem(qItem, dest, Caneda::PushUndoCmd);
-                view->restoreScrollState();
                 event->acceptProposedAction();
             }
         }
