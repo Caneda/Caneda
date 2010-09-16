@@ -275,7 +275,7 @@ namespace Caneda
 
     //! @return Icon of this page
     QIcon GeneralConfigurationPage::icon() const {
-        return(QIcon(Caneda::bitmapDirectory() + "configure.png"));
+        return(Caneda::icon("preferences-other"));
     }
 
     //! @return Title of this page
@@ -366,7 +366,7 @@ namespace Caneda
     //! @return Icon of this page
     QIcon SimulationConfigurationPage::icon() const
     {
-        return(QIcon(Caneda::bitmapDirectory() + "start.png"));
+        return(Caneda::icon("media-playback-start"));
     }
 
     //! @return Title of this page
@@ -549,7 +549,7 @@ namespace Caneda
     //! @return Icon of this page
     QIcon SchematicDocumentConfigurationPage::icon() const
     {
-        return(QIcon(Caneda::bitmapDirectory() + "document-edit.png"));
+        return(Caneda::icon("document-properties"));
     }
 
     //! @return Title of this page
@@ -747,7 +747,7 @@ namespace Caneda
     //! @return Icon of this page
     QIcon HdlConfigurationPage::icon() const
     {
-        return(QIcon(Caneda::bitmapDirectory() + "vhdl-code.png"));
+        return(Caneda::icon("code-context"));
     }
 
     //! @return Title of this page
@@ -1017,7 +1017,7 @@ namespace Caneda
     //! @return Icon of this page
     QIcon LayoutConfigurationPage::icon() const
     {
-        return(QIcon(Caneda::bitmapDirectory() + "vhdl-code.png"));
+        return(Caneda::icon("view-grid"));
     }
 
     //! @return Title of this page
