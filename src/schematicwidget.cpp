@@ -36,11 +36,7 @@ namespace Caneda
         m_zoomRange(0.30, 10.0),
         m_currentZoom(1.0)
     {
-        if(sv){
-            int _width = sv->schematicDocument()->schematicScene()->width();
-            int _heigth = sv->schematicDocument()->schematicScene()->height();
-            centerOn(_width/2, _heigth/2);
-        }
+        centerOn(QPointF(0, 0));
 
         setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -110,9 +106,7 @@ namespace Caneda
         }
 
         // Find the ideal x / y scaling ratio to fit \a rect in the view.
-        int margin = 0;
-
-        QRectF viewRect = viewport()->rect().adjusted(margin, margin, -margin, -margin);
+        QRectF viewRect = viewport()->rect();
         viewRect = transform().mapRect(viewRect);
         if (viewRect.isEmpty()) {
             return;
@@ -138,11 +132,7 @@ namespace Caneda
 
     void SchematicWidget::mouseMoveEvent(QMouseEvent *event)
     {
-        int _width = m_schematicView->schematicDocument()->schematicScene()->width();
-        int _heigth = m_schematicView->schematicDocument()->schematicScene()->height();
-        QPoint center = QPoint(_width/2, _heigth/2);
-
-        QPoint newCursorPos = mapToScene(event->pos()).toPoint() - center;
+        QPoint newCursorPos = mapToScene(event->pos()).toPoint();
         QString str = QString("%1 : %2")
             .arg(newCursorPos.x())
             .arg(newCursorPos.y());
@@ -180,6 +170,7 @@ namespace Caneda
         if (!m_zoomRange.contains(zoomLevel)) {
             return;
         }
+
         QPointF currentCenter;
         if (toCenter) {
             currentCenter = *toCenter;

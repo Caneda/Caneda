@@ -80,7 +80,7 @@ namespace Caneda
         static const QRectF DefaultSceneRect;
 
         /* constructor/destructor */
-        SchematicScene(QObject *parent =0);
+        SchematicScene(QObject *parent = 0);
         ~SchematicScene();
 
         bool areItemsMoving() const { return m_areItemsMoving; }
@@ -186,7 +186,7 @@ namespace Caneda
         void mirrorInvokedWhileInserting();
 
     protected:
-        QPainterPath frame(const QPointF &startPoint);
+        QPainterPath frame();
         void drawBackground(QPainter *p, const QRectF& r);
 
         bool event(QEvent *event);

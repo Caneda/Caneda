@@ -48,7 +48,8 @@ namespace Caneda
     //! \brief Default grid spacing
     static const uint DEFAULT_GRID_SPACE = 10;
 
-    const QRectF SchematicScene::DefaultSceneRect = QRectF(0, 0, 5000, 5000);
+    const QRectF SchematicScene::DefaultSceneRect = QRectF(QPoint(-2500, -2500),
+                                                           QPoint(2500, 2500));
 
     /*!
      * \brief This template method calculates the center of the items on the scene
@@ -187,7 +188,7 @@ namespace Caneda
             return true;
         }
         else if(propName == "frame rows"){
-            setFrameSize(value.toInt(), frameColumns());
+            setFrameGeometry(value.toInt(), frameColumns());
             return true;
         }
         else if(propName == "frame columns"){
@@ -633,12 +634,8 @@ namespace Caneda
             return itemsBoundingRect();
         }
         else {
-            const QPointF origin(width()/2, height()/2);
-
-            return QRectF(origin.x() - frameWidth()/2,
-                          origin.y() - frameHeight()/2,
-                          origin.x() + frameWidth()/2,
-                          origin.y() + frameHeight()/2);
+            return QRectF(-frameWidth()/2, -frameHeight()/2,
+                          frameWidth(), frameHeight());
         }
     }
 
@@ -661,9 +658,9 @@ namespace Caneda
     /*!
      * \brief Return a frame item
      */
-    QPainterPath SchematicScene::frame(const QPointF &startPoint)
+    QPainterPath SchematicScene::frame()
     {
-        QPainterPath frame = QPainterPath(startPoint);
+        QPainterPath frame;
 
         QFont frameFont = QApplication::font();
 
@@ -701,7 +698,7 @@ namespace Caneda
         frame.moveTo(0, 20);
         frame.lineTo(frameWidth(), 20);
 
-        // Finally we draw the rows and columns
+        //Finally we draw the rows and columns
         //Row numbering
         int step = (frameHeight()-20-50) / frameRows();
         for(int i=1; i<frameRows()+1; i++) {
@@ -716,6 +713,9 @@ namespace Caneda
             frame.lineTo(i*step+20, 20);
             frame.addText((i*step)-(step/2)+20, 16, frameFont, QString::number(i));
         }
+
+        //Center the frame in the origin
+        frame.translate(-frameWidth()/2, -frameHeight()/2);
 
         return frame;
     }
@@ -749,11 +749,11 @@ namespace Caneda
         painter->setBrush(Qt::NoBrush);
 
 
-        const QPointF origin(width()/2, height()/2);
+        const QPointF origin(0, 0);
 
         /* draw frame */
         if(isFrameVisible()) {
-            painter->drawPath(frame(origin));
+            painter->drawPath(frame());
         }
 
         /* draw origin */
