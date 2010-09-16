@@ -997,11 +997,7 @@ namespace Caneda
                 int dx = (afterScalePoint - viewPoint).toPoint().x();
                 int dy = (afterScalePoint - viewPoint).toPoint().y();
 
-                QScrollBar *hb = sv->horizontalScrollBar();
-                QScrollBar *vb = sv->verticalScrollBar();
-
-                hb->setValue(hb->value() + dx);
-                vb->setValue(vb->value() + dy);
+                sv->translate(-dx,-dy);
             }
             else {
                 view->zoomOut();
@@ -1009,18 +1005,18 @@ namespace Caneda
         }
         else if(e->modifiers() & Qt::ShiftModifier){
             if(e->delta() > 0) {
-                sv->horizontalScrollBar()->setValue(sv->horizontalScrollBar()->value()+50);
+                sv->translate(-50,0);
             }
             else {
-                sv->horizontalScrollBar()->setValue(sv->horizontalScrollBar()->value()-50);
+                sv->translate(50,0);
             }
         }
         else{
             if(e->delta() > 0) {
-                sv->verticalScrollBar()->setValue(sv->verticalScrollBar()->value()-50);
+                sv->translate(0,50);
             }
             else {
-                sv->verticalScrollBar()->setValue(sv->verticalScrollBar()->value()+50);
+                sv->translate(0,-50);
             }
         }
 
