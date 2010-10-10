@@ -25,6 +25,9 @@
 
 namespace Caneda
 {
+    //*************************************************************
+    //******************** PropertyModel **************************
+    //*************************************************************
     PropertyModel::PropertyModel(PropertyMap map, QObject *parent) :
         QAbstractTableModel(parent),
         propMap(map),
@@ -116,6 +119,10 @@ namespace Caneda
         return false;
     }
 
+
+    //*************************************************************
+    //***************** PropertyValueDelegate *********************
+    //*************************************************************
     PropertyValueDelegate::PropertyValueDelegate(QObject *parent) : QItemDelegate(parent)
     {
     }
@@ -162,6 +169,10 @@ namespace Caneda
         model->setData(index, comboBox->currentText());
     }
 
+
+    //*************************************************************
+    //******************** PropertyDialog *************************
+    //*************************************************************
     //! Constructor
     PropertyDialog::PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent) :
         QDialog(parent),
