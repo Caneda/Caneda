@@ -20,10 +20,7 @@
 #include "global.h"
 
 #include <QDir>
-#include <QFont>
-#include <QLocale>
 #include <QIcon>
-#include <QSettings>
 
 using namespace std;
 
@@ -98,32 +95,11 @@ namespace Caneda
         return retVal;
     }
 
-    QString language()
-    {
-        QString _default = QLocale().name();
-        QSettings settings;
-        settings.beginGroup("MainWindow");
-        QString retVal = settings.value("language",_default).toString();
-        settings.endGroup();
-        return retVal;
-    }
-
     QString localePrefix()
     {
         QString retVal = QLocale::system().name();
         retVal = retVal.left(retVal.indexOf('_'));
         return retVal;
-    }
-
-    QFont font()
-    {
-        QSettings settings;
-        settings.beginGroup("MainWindow");
-        QString fontStr = settings.value("font").toString();
-        QFont fnt;
-        fnt.fromString(fontStr);
-        settings.endGroup();
-        return fnt;
     }
 
     bool checkVersion(const QString& Line)

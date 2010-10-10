@@ -27,7 +27,6 @@
 #include <QDebug>
 
 // Forward declarations
-class QFont;
 class QIcon;
 
 namespace Caneda
@@ -45,9 +44,7 @@ namespace Caneda
     QIcon icon(const QString& iconName);
     QString pathForCanedaFile(const QString& fileName);
 
-    QString language();
     QString localePrefix();
-    QFont font();
 
     bool checkVersion(const QString& line);
 

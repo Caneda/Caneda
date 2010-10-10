@@ -106,8 +106,8 @@ namespace Caneda
         checkShowGrid->setChecked(settings->currentValue("gui/gridVisible").value<bool>());
 
         buttonFont = new QPushButton;
-        font = Caneda::font();
-        buttonFont->setText(font.toString());
+        font = settings->currentValue("gui/font").value<QFont>();
+        buttonFont->setText(font.family());
 
         buttonBackground = new QPushButton;
         const QColor currentBackgroundColor =
@@ -131,7 +131,7 @@ namespace Caneda
         QGroupBox *appereance = new QGroupBox(tr("Appereance"), this);
         QFormLayout *appereanceLayout = new QFormLayout(appereance);
         appereanceLayout->addRow(tr("Show grid:"), checkShowGrid);
-        appereanceLayout->addRow(tr("Fonts (set after reload):"), buttonFont);
+        appereanceLayout->addRow(tr("Fonts:"), buttonFont);
         appereanceLayout->addRow(tr("Document background color:"), buttonBackground);
         appereanceLayout->addRow(tr("Document foreground color:"), buttonForeground);
         appereanceLayout->addRow(tr("Icons size:"), spinIcons);
@@ -180,7 +180,7 @@ namespace Caneda
         QFont tmpFont = QFontDialog::getFont(&ok, font, this);
         if(ok) {
             font = tmpFont;
-            buttonFont->setText(font.toString());
+            buttonFont->setText(font.family());
         }
     }
 
