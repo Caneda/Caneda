@@ -83,7 +83,7 @@ namespace Caneda
 
     void SchematicWidget::zoomOut()
     {
-        qreal newZoom = m_currentZoom * (1 - zoomFactor);
+        qreal newZoom = m_currentZoom / (1 + zoomFactor);
         setZoomLevel(qMax(newZoom, m_zoomRange.min));
     }
 

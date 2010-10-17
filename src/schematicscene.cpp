@@ -21,10 +21,10 @@
 #include "schematicscene.h"
 
 #include "documentviewmanager.h"
+#include "iview.h"
 #include "library.h"
 #include "propertygroup.h"
 #include "schematicwidget.h"
-#include "schematicview.h"
 #include "settings.h"
 
 #include "paintings/ellipsearc.h"
@@ -776,7 +776,7 @@ namespace Caneda
 
             //Make grid size display dinamic, depending on zoom level
             DocumentViewManager *manager = DocumentViewManager::instance();
-            SchematicView *v = static_cast<SchematicView *>(manager->currentView());
+            IView *v = manager->currentView();
             if(!v) {
                 return;
             }

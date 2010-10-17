@@ -96,6 +96,11 @@ namespace Caneda
         setZoomLevel(m_originalZoom);
     }
 
+    qreal TextView::currentZoom()
+    {
+        return m_currentZoom;
+    }
+
     IView* TextView::duplicate()
     {
         return document()->createView();

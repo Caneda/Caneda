@@ -50,6 +50,7 @@ namespace Caneda
         virtual void zoomOut() = 0;
         virtual void zoomFitInBest() = 0;
         virtual void zoomOriginal() = 0;
+        virtual qreal currentZoom() = 0;
 
         virtual IView* duplicate() = 0;
 

@@ -46,14 +46,13 @@ namespace Caneda
         virtual void zoomOut();
         virtual void zoomFitInBest();
         virtual void zoomOriginal();
+        virtual qreal currentZoom();
 
         virtual IView* duplicate();
 
         virtual void updateSettingsChanges();
 
         // End of IView interface methods
-
-        qreal currentZoom();
 
     private Q_SLOTS:
         void onWidgetFocussedIn();

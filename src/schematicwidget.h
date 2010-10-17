@@ -47,9 +47,9 @@ namespace Caneda
         void zoomOut();
         void zoomFitInBest();
         void zoomOriginal();
+        qreal currentZoom() { return m_currentZoom; };
 
         void zoomFitRect(const QRectF &rect);
-        qreal currentZoom() { return m_currentZoom; };
 
     Q_SIGNALS:
         void cursorPositionChanged(const QString& newPos);

@@ -82,6 +82,11 @@ namespace Caneda
         m_schematicWidget->zoomOriginal();
     }
 
+    qreal SchematicView::currentZoom()
+    {
+        return m_schematicWidget->currentZoom();
+    }
+
     IView* SchematicView::duplicate()
     {
         return document()->createView();
@@ -91,11 +96,6 @@ namespace Caneda
     {
         m_schematicWidget->invalidateScene();
         m_schematicWidget->resetCachedContent();
-    }
-
-    qreal SchematicView::currentZoom()
-    {
-        return m_schematicWidget->currentZoom();
     }
 
     void SchematicView::onWidgetFocussedIn()
