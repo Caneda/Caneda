@@ -168,12 +168,6 @@ namespace Caneda
         CGraphicsScene *scene = cGraphicsScene();
         writer->writeStartElement("view");
 
-        writer->writeStartElement("data");
-        writer->writeElement("dataset", scene->dataSet());
-        writer->writeElement("datadisplay", scene->dataDisplay());
-        writer->writeElement("opensdatadisplay", scene->opensDataDisplay());
-        writer->writeEndElement(); //</data>
-
         writer->writeStartElement("frame");
         writer->writeAttribute("visible", Caneda::boolToString(scene->isFrameVisible()));
         writer->writeSize(QSize(scene->frameWidth(), scene->frameHeight()), "size");
@@ -306,9 +300,6 @@ namespace Caneda
             reader->raiseError(QObject::tr("Malformatted file"));
         }
 
-        QString dataSet;
-        QString dataDisplay;
-        bool opensDataDisplay = false;
         bool frameVisible = false;
         QSize frameGeometry;
         QSize frameSize;
@@ -323,17 +314,7 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
-                if(reader->name() == "data") {
-                    reader->readFurther();
-                    dataSet = reader->readElementText(/*dataset*/);
-                    reader->readFurther();
-                    dataDisplay = reader->readElementText(/*datadisplay*/);
-                    reader->readFurther();
-                    opensDataDisplay = (reader->readElementText(/*opensdatadisplay*/) == "true");
-                    reader->readFurther();
-                    Q_ASSERT(reader->isEndElement() && reader->name() == "data");
-                }
-                else if(reader->name() == "frame") {
+                if(reader->name() == "frame") {
                     QString att = reader->attributes().value("visible").toString();
                     att = att.toLower();
                     if(att != "true" && att != "false") {
@@ -379,9 +360,6 @@ namespace Caneda
         }
 
         if(!reader->hasError()) {
-            scene->setDataSet(dataSet);
-            scene->setDataDisplay(dataDisplay);
-            scene->setOpensDataDisplay(opensDataDisplay);
             scene->setFrameVisible(frameVisible);
             scene->setFrameSize(frameSize.width(), frameSize.height());
             scene->setFrameGeometry(frameGeometry.height(), frameGeometry.width());

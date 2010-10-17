@@ -95,7 +95,6 @@ namespace Caneda
         m_frameVisible = false;
         m_modified = false;
 
-        m_opensDataDisplay = true;
         m_frameTexts = QStringList() << tr("Title: ") << tr("Drawn By: ")
             << tr("Date: ") + QDate::currentDate().toString() << tr("Revision: ");
         m_frameRows = 11;
@@ -209,24 +208,6 @@ namespace Caneda
         }
 
         return false;
-    }
-
-    //! \brief Set the dataset filename(file which holds the plot data)
-    void CGraphicsScene::setDataSet(const QString& _dataSet)
-    {
-        m_dataSet = _dataSet;
-    }
-
-    //! \todo Documenent
-    void CGraphicsScene::setDataDisplay(const QString& display)
-    {
-        m_dataDisplay = display;
-    }
-
-    //! \todo Documenent
-    void CGraphicsScene::setOpensDataDisplay(const bool state)
-    {
-        m_opensDataDisplay = state;
     }
 
     /*!

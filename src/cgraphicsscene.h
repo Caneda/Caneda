@@ -130,15 +130,6 @@ namespace Caneda
         //! set variant property
         bool setProperty(const QString& propName, const QVariant& value);
 
-        QString dataSet() const { return m_dataSet; }
-        void setDataSet(const QString& str);
-
-        QString dataDisplay() const { return m_dataDisplay; }
-        void setDataDisplay(const QString& disp);
-
-        bool opensDataDisplay() const { return m_opensDataDisplay; }
-        void setOpensDataDisplay(bool b);
-
         bool isBackgroundVisible() const { return m_backgroundVisible; }
         void setBackgroundVisible(bool vis);
 
@@ -360,12 +351,6 @@ namespace Caneda
         //! Current mouse action
         MouseAction m_mouseAction;
 
-        //! Data Set file name
-        QString m_dataSet;
-        //! Data display file name
-        QString m_dataDisplay;
-        //! File name
-        QString m_fileName;
         //! Frame texts
         QStringList m_frameTexts;
         //! Frame geometry
@@ -383,13 +368,6 @@ namespace Caneda
          * \sa setModified
          */
         bool m_modified;
-        /*!
-         * \brief A flag to hold whether a plot diagram should be opened on completion
-         * of simulation.
-         *
-         * This is user configurable and only for convienience of the user.
-         */
-        bool m_opensDataDisplay;
         /*!
          * \brief Flag to hold whether the background color should be drawn or not
          * \sa setBackgroundVisible
