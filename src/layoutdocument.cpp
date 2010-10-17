@@ -255,8 +255,8 @@ namespace Caneda
 
     void LayoutDocument::exportImage()
     {
-//        ExportDialog *d = new ExportDialog(this);
-//        d->exec();
+        ExportDialog *d = new ExportDialog(this, m_cGraphicsScene);
+        d->exec();
     }
 
     void LayoutDocument::documentSettings()
@@ -264,7 +264,7 @@ namespace Caneda
         QList<SettingsPage *> wantedPages;
         SettingsPage *page = new SchematicDocumentConfigurationPage(cGraphicsScene());
         wantedPages << page;
-        page = new SimulationConfigurationPage();
+        page = new LayoutConfigurationPage();
         wantedPages << page;
 
         SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document");

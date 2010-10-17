@@ -21,7 +21,7 @@
 
 #include "cgraphicsscene.h"
 #include "global.h"
-#include "schematicdocument.h"
+#include "idocument.h"
 #include "settings.h"
 
 #include <QCompleter>
@@ -38,12 +38,12 @@
 namespace Caneda
 {
     //! Constructor
-    ExportDialog::ExportDialog(SchematicDocument *document, QWidget *parent) :
+    ExportDialog::ExportDialog(IDocument *document, CGraphicsScene *scene, QWidget *parent) :
             QDialog(parent)
     {
         ui.setupUi(this);
 
-        m_scene = document->cGraphicsScene();
+        m_scene = scene;
 
         // Title and file name of the scene
         QString diagramFilename = document->fileName();

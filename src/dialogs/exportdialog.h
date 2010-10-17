@@ -29,8 +29,8 @@ class QFile;
 namespace Caneda
 {
     // Forward declations
-    class SchematicDocument;
     class CGraphicsScene;
+    class IDocument;
 
     /*!
      * \brief This represents the dialog for exporting a schematic
@@ -41,7 +41,7 @@ namespace Caneda
         Q_OBJECT;
 
     public:
-        ExportDialog(SchematicDocument *, QWidget *parent = 0);
+        ExportDialog(IDocument *, CGraphicsScene *, QWidget *parent = 0);
         ~ExportDialog();
 
     public Q_SLOTS:
