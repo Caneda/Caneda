@@ -56,8 +56,9 @@ namespace Caneda
         QUndoGroup *m_undoGroup;
 
     public Q_SLOTS:
-        void slotFileNew();
-        void slotTextNew();
+        void slotNewSchematic();
+        void slotNewLayout();
+        void slotNewText();
         void slotFileOpen(QString fileName = QString());
         void slotFileSave();
         void slotFileSaveAs();

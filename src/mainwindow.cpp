@@ -26,6 +26,7 @@
 #include "global.h"
 #include "idocument.h"
 #include "iview.h"
+#include "layoutcontext.h"
 #include "library.h"
 #include "project.h"
 #include "schematiccontext.h"
@@ -85,7 +86,7 @@ namespace Caneda
 
         loadSettings();
 
-        QTimer::singleShot(100, this, SLOT(slotFileNew()));
+        QTimer::singleShot(100, this, SLOT(slotNewSchematic()));
     }
 
     //! Destructor
@@ -247,17 +248,23 @@ namespace Caneda
         StateHandler *handler = StateHandler::instance();
         SchematicContext *sc = SchematicContext::instance();
 
-        action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New"));
+        action = am->createAction("newSchematic", Caneda::icon("document-new"), tr("&New schematic"));
         action->setShortcut(CTRL+Key_N);
-        action->setStatusTip(tr("Creates a new document"));
-        action->setWhatsThis(tr("New\n\nCreates a new schematic or data display document"));
-        connect(action, SIGNAL(triggered()), SLOT(slotFileNew()));
+        action->setStatusTip(tr("Creates a new schematic document"));
+        action->setWhatsThis(tr("New schematic\n\nCreates a new schematic or data display document"));
+        connect(action, SIGNAL(triggered()), SLOT(slotNewSchematic()));
 
-        action = am->createAction("textNew", Caneda::icon("text-plain"), tr("New &Text"));
+        action = am->createAction("newLayout", Caneda::icon("view-grid"), tr("New &layout"));
+        action->setShortcut(CTRL+ALT+Key_N);
+        action->setStatusTip(tr("Creates a new layout document"));
+        action->setWhatsThis(tr("New layout\n\nCreates a new layout document"));
+        connect(action, SIGNAL(triggered()), SLOT(slotNewLayout()));
+
+        action = am->createAction("newText", Caneda::icon("text-plain"), tr("New &text"));
         action->setShortcut(CTRL+SHIFT+Key_V);
         action->setStatusTip(tr("Creates a new text document"));
-        action->setWhatsThis(tr("New Text\n\nCreates a new text document"));
-        connect(action, SIGNAL(triggered()), SLOT(slotTextNew()));
+        action->setWhatsThis(tr("New text\n\nCreates a new text document"));
+        connect(action, SIGNAL(triggered()), SLOT(slotNewText()));
 
         action = am->createAction("fileOpen", Caneda::icon("document-open"), tr("&Open..."));
         action->setShortcut(CTRL+Key_O);
@@ -277,7 +284,7 @@ namespace Caneda
         action->setWhatsThis(tr("Save As\n\nSaves the current document under a new filename"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileSaveAs()));
 
-        action = am->createAction("fileSaveAll", Caneda::icon("document-save-all"), tr("Save &All"));
+        action = am->createAction("fileSaveAll", Caneda::icon("document-save-all"), tr("Save &all"));
         action->setShortcut(CTRL+Key_Plus);
         action->setStatusTip(tr("Saves all open documents"));
         action->setWhatsThis(tr("Save All Files\n\nSaves all open documents"));
@@ -295,17 +302,17 @@ namespace Caneda
         action->setWhatsThis(tr("Print File\n\nPrints the current document"));
         connect(action, SIGNAL(triggered()), SLOT(slotFilePrint()));
 
-        action = am->createAction("fileExportImage", Caneda::icon("image-x-generic"), tr("&Export Image..."));
+        action = am->createAction("fileExportImage", Caneda::icon("image-x-generic"), tr("&Export image..."));
         action->setShortcut(CTRL+Key_E);
         action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
         connect(action, SIGNAL(triggered()), SLOT(slotExportImage()));
 
-        action = am->createAction("fileSettings", Caneda::icon("document-properties"), tr("&Document Settings..."));
+        action = am->createAction("fileSettings", Caneda::icon("document-properties"), tr("&Document settings..."));
         action->setShortcut(CTRL+Key_Period);
         action->setWhatsThis(tr("Settings\n\nSets properties of the file"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileSettings()));
 
-        action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("Application Settings..."));
+        action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("Application settings..."));
         action->setShortcut(CTRL+Key_Comma);
         action->setWhatsThis(tr("Caneda Settings\n\nSets properties of the application"));
         connect(action, SIGNAL(triggered()), SLOT(slotAppSettings()));
@@ -346,7 +353,7 @@ namespace Caneda
         action->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to the cursor position"));
         connect(action, SIGNAL(triggered()), SLOT(slotEditPaste()));
 
-        action = am->createAction("selectAll", Caneda::icon("select-rectangular"), tr("Select All"));
+        action = am->createAction("selectAll", Caneda::icon("select-rectangular"), tr("Select all"));
         action->setShortcut(CTRL+Key_A);
         action->setStatusTip(tr("Selects all elements"));
         action->setWhatsThis(tr("Select All\n\nSelects all elements of the document"));
@@ -358,14 +365,14 @@ namespace Caneda
         action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
         connect(action, SIGNAL(triggered()), SLOT(slotEditFind()));
 
-        action = am->createAction("symEdit", Caneda::icon("draw-freehand"), tr("&Edit Circuit Symbol/Schematic"));
+        action = am->createAction("symEdit", Caneda::icon("draw-freehand"), tr("&Edit circuit symbol/schematic"));
         action->setShortcut(Key_F7);
         action->setStatusTip(tr("Switches between symbol and schematic edit"));
         action->setWhatsThis(tr("Edit Circuit Symbol/Schematic\n\nSwitches between symbol and schematic edit"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotSymbolEdit()));
         sc->addNormalAction(action);
 
-        action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into Subcircuit"));
+        action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into subcircuit"));
         action->setShortcut(CTRL+Key_I);
         action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotIntoHierarchy()));
@@ -402,19 +409,19 @@ namespace Caneda
         action->setWhatsThis(tr("Zoom Out \n\nZooms out the content"));
         connect(action, SIGNAL(triggered()), SLOT(slotZoomOut()));
 
-        action = am->createAction("splitHorizontal", Caneda::icon("view-split-left-right"), tr("Split &Horizontal"));
+        action = am->createAction("splitHorizontal", Caneda::icon("view-split-left-right"), tr("Split &horizontal"));
         action->setShortcut(ALT+Key_1);
         action->setStatusTip(tr("Splits the current view in horizontal orientation"));
         action->setWhatsThis(tr("Split Horizontal\n\nSplits the current view in horizontal orientation"));
         connect(action, SIGNAL(triggered()), SLOT(slotSplitHorizontal()));
 
-        action = am->createAction("splitVertical", Caneda::icon("view-split-top-bottom"), tr("Split &Vertical"));
+        action = am->createAction("splitVertical", Caneda::icon("view-split-top-bottom"), tr("Split &vertical"));
         action->setShortcut(ALT+Key_2);
         action->setStatusTip(tr("Splits the current view in vertical orientation"));
         action->setWhatsThis(tr("Split Vertical\n\nSplits the current view in vertical orientation"));
         connect(action, SIGNAL(triggered()), SLOT(slotSplitVertical()));
 
-        action = am->createAction("splitClose", Caneda::icon("view-left-close"), tr("&Close Split"));
+        action = am->createAction("splitClose", Caneda::icon("view-left-close"), tr("&Close split"));
         action->setShortcut(ALT+Key_3);
         action->setStatusTip(tr("Closes the current split"));
         action->setWhatsThis(tr("Close Split\n\nCloses the current split"));
@@ -434,7 +441,7 @@ namespace Caneda
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
 
-        action = am->createAction("snapToGrid", Caneda::icon("view-grid"), tr("Snap to Grid"));
+        action = am->createAction("snapToGrid", Caneda::icon("view-grid"), tr("Snap to grid"));
         action->setShortcut(CTRL+Key_U);
         action->setStatusTip(tr("Set grid snap"));
         action->setWhatsThis(tr("Snap to Grid\n\nSets snap to grid"));
@@ -490,57 +497,57 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), sc, SLOT(slotDistributeVertical()));
         sc->addNormalAction(action);
 
-        action = am->createAction("projNew", Caneda::icon("project-new"), tr("&New Project..."));
+        action = am->createAction("projNew", Caneda::icon("project-new"), tr("&New project..."));
         action->setShortcut(CTRL+SHIFT+Key_N);
         action->setStatusTip(tr("Creates a new project"));
         action->setWhatsThis(tr("New Project\n\nCreates a new project"));
         connect(action, SIGNAL(triggered()), SLOT(slotNewProject()));
 
-        action = am->createAction("projOpen", Caneda::icon("document-open"), tr("&Open Project..."));
+        action = am->createAction("projOpen", Caneda::icon("document-open"), tr("&Open project..."));
         action->setShortcut(CTRL+SHIFT+Key_O);
         action->setStatusTip(tr("Opens an existing project"));
         action->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
         connect(action, SIGNAL(triggered()), SLOT(slotOpenProject()));
 
-        action = am->createAction("addToProj", Caneda::icon("document-new"), tr("&Add File to Project..."));
+        action = am->createAction("addToProj", Caneda::icon("document-new"), tr("&Add file to project..."));
         action->setShortcut(CTRL+SHIFT+Key_A);
         action->setStatusTip(tr("Adds a file to current project"));
         action->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
         connect(action, SIGNAL(triggered()), SLOT(slotAddToProject()));
 
-        action = am->createAction("projDel", Caneda::icon("document-close"), tr("&Remove from Project"));
+        action = am->createAction("projDel", Caneda::icon("document-close"), tr("&Remove from project"));
         action->setShortcut(CTRL+SHIFT+Key_R);
         action->setStatusTip(tr("Removes a file from current project"));
         action->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
         connect(action, SIGNAL(triggered()), SLOT(slotRemoveFromProject()));
 
-        action = am->createAction("projClose", Caneda::icon("dialog-close"), tr("&Close Project"));
+        action = am->createAction("projClose", Caneda::icon("dialog-close"), tr("&Close project"));
         action->setShortcut(CTRL+SHIFT+Key_W);
         action->setStatusTip(tr("Closes the current project"));
         action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
         connect(action, SIGNAL(triggered()), SLOT(slotCloseProject()));
 
-        action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and History..."));
+        action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and history..."));
         action->setShortcut(CTRL+SHIFT+Key_B);
         action->setStatusTip(tr("Opens backup and history dialog"));
         action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
         connect(action, SIGNAL(triggered()), SLOT(slotBackupAndHistory()));
 
-        action = am->createAction("insEquation", Caneda::icon("formula"), tr("Insert Equation"));
+        action = am->createAction("insEquation", Caneda::icon("formula"), tr("Insert equation"));
         action->setCheckable(true);
         action->setShortcut(Key_E);
         action->setWhatsThis(tr("Insert Equation\n\nInserts a user defined equation"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotInsertToolbarComponent(const QString&, bool)));
 
-        action = am->createAction("insGround", Caneda::icon("ground"), tr("Insert Ground"));
+        action = am->createAction("insGround", Caneda::icon("ground"), tr("Insert ground"));
         action->setCheckable(true);
         action->setShortcut(Key_G);
         action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotInsertToolbarComponent(const QString&, bool)));
 
-        action = am->createAction("insPort", Caneda::icon("port"), tr("Insert Port"));
+        action = am->createAction("insPort", Caneda::icon("port"), tr("Insert port"));
         action->setCheckable(true);
         action->setShortcut(Key_P);
         action->setWhatsThis(tr("Insert Port\n\nInserts a port symbol"));
@@ -590,7 +597,7 @@ namespace Caneda
         action->setWhatsThis(tr("Import Data\n\nConvert data file to Caneda data file"));
         connect(action, SIGNAL(triggered()), SLOT(slotImportData()));
 
-        action = am->createAction("showConsole", Caneda::icon("terminal"), tr("&Show Console..."));
+        action = am->createAction("showConsole", Caneda::icon("terminal"), tr("&Show console..."));
         action->setShortcut(Key_F8);
         action->setStatusTip(tr("Show Console"));
         action->setWhatsThis(tr("Show Console\n\nOpen console terminal"));
@@ -603,7 +610,7 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(slotSimulate()));
         sc->addNormalAction(action);
 
-        action = am->createAction("dpl_sch", Caneda::icon("system-switch-user"), tr("View Data Display/Schematic"));
+        action = am->createAction("dpl_sch", Caneda::icon("system-switch-user"), tr("View data display/schematic"));
         action->setShortcut(Key_F4);
         action->setStatusTip(tr("Changes to data display or schematic page"));
         action->setWhatsThis(tr("View Data Display/Schematic\n\n")+tr("Changes to data display or schematic page"));
@@ -624,21 +631,21 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), sc, SLOT(slotExportGraphAsCsv()));
         sc->addNormalAction(action);
 
-        action = am->createAction("showMsg", Caneda::icon("document-preview"), tr("Show Last Messages"));
+        action = am->createAction("showMsg", Caneda::icon("document-preview"), tr("Show last messages"));
         action->setShortcut(Key_F9);
         action->setStatusTip(tr("Shows last simulation messages"));
         action->setWhatsThis(tr("Show Last Messages\n\nShows the messages of the last simulation"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowLastMsg()));
         sc->addNormalAction(action);
 
-        action = am->createAction("showNet", Caneda::icon("document-preview"), tr("Show Last Netlist"));
+        action = am->createAction("showNet", Caneda::icon("document-preview"), tr("Show last netlist"));
         action->setShortcut(Key_F10);
         action->setStatusTip(tr("Shows last simulation netlist"));
         action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowLastNetlist()));
         sc->addNormalAction(action);
 
-        action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("Help Index..."));
+        action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("Help index..."));
         action->setShortcut(Key_F1);
         action->setStatusTip(tr("Index of Caneda Help"));
         action->setWhatsThis(tr("Help Index\n\nIndex of intern Caneda help"));
@@ -773,8 +780,9 @@ namespace Caneda
     {
         fileMenu = menuBar()->addMenu(tr("&File"));
 
-        fileMenu->addAction(action("fileNew"));
-        fileMenu->addAction(action("textNew"));
+        fileMenu->addAction(action("newSchematic"));
+        fileMenu->addAction(action("newLayout"));
+        fileMenu->addAction(action("newText"));
         fileMenu->addAction(action("fileOpen"));
         fileMenu->addAction(action("fileClose"));
 
@@ -940,8 +948,8 @@ namespace Caneda
         fileToolbar  = addToolBar(tr("File"));
         fileToolbar->setObjectName("fileToolBar");
 
-        fileToolbar->addAction(action("fileNew"));
-        fileToolbar->addAction(action("textNew"));
+        fileToolbar->addAction(action("newSchematic"));
+        fileToolbar->addAction(action("newText"));
         fileToolbar->addAction(action("fileOpen"));
         fileToolbar->addAction(action("fileSave"));
         fileToolbar->addAction(action("fileSaveAll"));
@@ -1030,7 +1038,7 @@ namespace Caneda
     /*!
      * \brief Creates a new schematic view and adds it the tabwidget.
      */
-    void MainWindow::slotFileNew()
+    void MainWindow::slotNewSchematic()
     {
         DocumentViewManager *manager = DocumentViewManager::instance();
         if(m_project->isValid()) {
@@ -1041,8 +1049,22 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Creates a new layout view and adds it the tabwidget.
+     */
+    void MainWindow::slotNewLayout()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        if(m_project->isValid()) {
+            slotAddToProject();
+        }
+        else {
+            manager->newDocument(LayoutContext::instance());
+        }
+    }
+
     //! \brief Creates a new text view.
-    void MainWindow::slotTextNew()
+    void MainWindow::slotNewText()
     {
         setNormalAction();
         DocumentViewManager *manager = DocumentViewManager::instance();

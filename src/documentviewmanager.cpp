@@ -22,6 +22,7 @@
 #include "icontext.h"
 #include "idocument.h"
 #include "iview.h"
+#include "layoutcontext.h"
 #include "mainwindow.h"
 #include "schematiccontext.h"
 #include "singletonowner.h"
@@ -458,6 +459,7 @@ namespace Caneda
 
     void DocumentViewManager::setupContexts()
     {
+        m_contexts << LayoutContext::instance();
         m_contexts << SchematicContext::instance();
         m_contexts << TextContext::instance();
         m_contexts << WebContext::instance();

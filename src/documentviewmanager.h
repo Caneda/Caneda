@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef CANEDA_DOCUMENTVIEWMANAGER_H
-#define CANEDA_DOCUMENTVIEWMANAGER_H
+#ifndef DOCUMENT_VIEW_MANAGER_H
+#define DOCUMENT_VIEW_MANAGER_H
 
 #include <QObject>
 
@@ -86,4 +86,4 @@ namespace Caneda
 
 }
 
-#endif //CANEDA_DOCUMENTVIEWMANAGER_H
+#endif //DOCUMENT_VIEW_MANAGER_H
