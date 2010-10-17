@@ -19,7 +19,6 @@
 
 #include "xmlsymbol.h"
 
-#include "cgraphicsitem.h"
 #include "cgraphicsscene.h"
 #include "component.h"
 #include "global.h"

@@ -24,7 +24,7 @@
 #include "layoutview.h"
 #include "settings.h"
 #include "statehandler.h"
-#include "xmlschematic.h"
+#include "xmllayout.h"
 
 #include "dialogs/exportdialog.h"
 #include "dialogs/settingsdialog.h"
@@ -205,50 +205,50 @@ namespace Caneda
 
     bool LayoutDocument::load(QString *errorMessage)
     {
-//        QFileInfo info(fileName());
-//
-//        if(info.suffix() == "xsch") {
-//            XmlSchematic *format = new XmlSchematic(this);
-//            return format->load();
-//        }
-//
-//        if (errorMessage) {
-//            *errorMessage = tr("Unknown file format!");
-//        }
+        QFileInfo info(fileName());
+
+        if(info.suffix() == "xlay") {
+            XmlLayout *format = new XmlLayout(this);
+            return format->load();
+        }
+
+        if (errorMessage) {
+            *errorMessage = tr("Unknown file format!");
+        }
 
         return false;
     }
 
     bool LayoutDocument::save(QString *errorMessage)
     {
-//        if(fileName().isEmpty()) {
-//            if (errorMessage) {
-//                *errorMessage = tr("Empty file name");
-//            }
-//            return false;
-//        }
-//
-//        QFileInfo info(fileName());
-//
-//        // Correct the extension.
-//        if(QString(info.suffix()).isEmpty()) {
-//            setFileName(fileName() + ".xsch");
-//            info = QFileInfo(fileName());
-//        }
-//
-//        if(info.suffix() == "xsch") {
-//            XmlSchematic *format = new XmlSchematic(this);
-//            if(!format->save()) {
-//                return false;
-//            }
-//
-//            m_cGraphicsScene->undoStack()->clear();
-//            return true;
-//        }
-//
-//        if(errorMessage) {
-//            *errorMessage = tr("Unknown file format!");
-//        }
+        if(fileName().isEmpty()) {
+            if (errorMessage) {
+                *errorMessage = tr("Empty file name");
+            }
+            return false;
+        }
+
+        QFileInfo info(fileName());
+
+        // Correct the extension.
+        if(QString(info.suffix()).isEmpty()) {
+            setFileName(fileName() + ".xlay");
+            info = QFileInfo(fileName());
+        }
+
+        if(info.suffix() == "xlay") {
+            XmlLayout *format = new XmlLayout(this);
+            if(!format->save()) {
+                return false;
+            }
+
+            m_cGraphicsScene->undoStack()->clear();
+            return true;
+        }
+
+        if(errorMessage) {
+            *errorMessage = tr("Unknown file format!");
+        }
 
         return false;
     }

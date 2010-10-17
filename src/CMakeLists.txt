@@ -19,8 +19,8 @@ SET(CANEDA_SRCS wire.cpp componentssidebar.cpp cgraphicsitem.cpp
   cgraphicsview.cpp  undocommands.cpp
   svgitem.cpp property.cpp propertyitem.cpp
   propertygroup.cpp component.cpp port.cpp library.cpp
-  xmlschematic.cpp
-  wireline.cpp folderbrowser.cpp xmlsymbol.cpp settings.cpp
+  xmlschematic.cpp xmllayout.cpp xmlsymbol.cpp
+  wireline.cpp folderbrowser.cpp settings.cpp
   actionmanager.cpp singletonowner.cpp project.cpp
   statehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp

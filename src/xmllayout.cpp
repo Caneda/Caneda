@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,14 +17,11 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "xmlschematic.h"
+#include "xmllayout.h"
 
 #include "cgraphicsscene.h"
-#include "component.h"
 #include "global.h"
-#include "port.h"
-#include "schematicdocument.h"
-#include "wire.h"
+#include "layoutdocument.h"
 
 #include "paintings/painting.h"
 
@@ -37,54 +34,13 @@
 
 namespace Caneda
 {
-    static void getConnectedWires(Wire *wire, QList<Wire*> &out)
-    {
-        if(out.contains(wire)) {
-            return;
-        }
-
-        out << wire;
-
-        QList<Port*> *port1_connections = wire->port1()->connections();
-        QList<Port*> *port2_connections = wire->port2()->connections();
-
-        if(port1_connections) {
-            foreach(Port *port, *port1_connections) {
-                if(port->owner()->isWire()) {
-                    getConnectedWires(port->owner()->wire(), out);
-                }
-            }
-        }
-
-        if(port2_connections) {
-            foreach(Port *port, *port2_connections) {
-                if(port->owner()->isWire()) {
-                    getConnectedWires(port->owner()->wire(), out);
-                }
-            }
-        }
-    }
-
-    void writeEquiWires(Caneda::XmlWriter *writer, int id, int wireStartId,
-            const QList<Wire*> &wires)
-    {
-        writer->writeStartElement("equipotential");
-        writer->writeAttribute("id", QString::number(id));
-
-        foreach(Wire *wire, wires) {
-            wire->saveData(writer, wireStartId++);
-        }
-
-        writer->writeEndElement();
-    }
-
     //! Constructor
-    XmlSchematic::XmlSchematic(SchematicDocument *doc):
-        m_schematicDocument(doc)
+    XmlLayout::XmlLayout(LayoutDocument *doc):
+        m_layoutDocument(doc)
     {
     }
 
-    bool XmlSchematic::save()
+    bool XmlLayout::save()
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
@@ -110,7 +66,7 @@ namespace Caneda
         return true;
     }
 
-    bool XmlSchematic::load()
+    bool XmlLayout::load()
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
@@ -132,7 +88,7 @@ namespace Caneda
         return result;
     }
 
-    QString XmlSchematic::saveText()
+    QString XmlLayout::saveText()
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
@@ -145,7 +101,8 @@ namespace Caneda
         writer->writeAttribute("version", Caneda::version());
 
         //Now we copy all the elements and properties in the schematic
-        saveSchematics(writer);
+        saveView(writer);
+        savePaintings(writer);
 
         //Finally we finish the document
         writer->writeEndDocument(); //</caneda>
@@ -154,15 +111,7 @@ namespace Caneda
         return retVal;
     }
 
-    void XmlSchematic::saveSchematics(Caneda::XmlWriter *writer)
-    {
-        saveView(writer);
-        saveComponents(writer);
-        saveWires(writer);
-        savePaintings(writer);
-    }
-
-    void XmlSchematic::saveView(Caneda::XmlWriter *writer)
+    void XmlLayout::saveView(Caneda::XmlWriter *writer)
     {
         CGraphicsScene *scene = cGraphicsScene();
         writer->writeStartElement("view");
@@ -180,49 +129,7 @@ namespace Caneda
         writer->writeEndElement(); //</view>
     }
 
-    void XmlSchematic::saveComponents(Caneda::XmlWriter *writer)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-        QList<QGraphicsItem*> items = scene->items();
-        QList<Component*> components = filterItems<Component>(items, RemoveItems);
-        if(!components.isEmpty()) {
-            writer->writeStartElement("components");
-            foreach(Component *c, components) {
-                c->saveData(writer);
-            }
-            writer->writeEndElement(); //</components>
-        }
-    }
-
-    void XmlSchematic::saveWires(Caneda::XmlWriter *writer)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-        QList<QGraphicsItem*> items = scene->items();
-        QList<Wire*> wires = filterItems<Wire>(items, RemoveItems);
-        if(!wires.isEmpty()) {
-            int wireId = 0;
-            int equiId = 0;
-            writer->writeStartElement("wires");
-
-            QList<Wire*> parsedWires;
-            foreach(Wire *w, wires) {
-                if(parsedWires.contains(w)) {
-                    continue;
-                }
-
-                QList<Wire*> equi;
-                getConnectedWires(w, equi);
-                writeEquiWires(writer, equiId++, wireId, equi);
-
-                parsedWires += equi;
-                wireId += equi.size();
-            }
-
-            writer->writeEndElement(); //</wires>
-        }
-    }
-
-    void XmlSchematic::savePaintings(Caneda::XmlWriter *writer)
+    void XmlLayout::savePaintings(Caneda::XmlWriter *writer)
     {
         CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
@@ -236,7 +143,7 @@ namespace Caneda
         }
     }
 
-    bool XmlSchematic::loadFromText(const QString& text)
+    bool XmlLayout::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
         while(!reader->atEnd()) {
@@ -252,7 +159,19 @@ namespace Caneda
                             Q_ASSERT(reader->name() == "caneda");
                             break;
                         }
-                        loadSchematics(reader);
+
+                        if(reader->isStartElement()) {
+                            if(reader->name() == "view") {
+                                loadView(reader);
+                            }
+                            else if(reader->name() == "paintings") {
+                                loadPaintings(reader);
+                            }
+                            else {
+                                reader->readUnknownElement();
+                            }
+                        }
+
                     }
                 }
                 else {
@@ -271,28 +190,7 @@ namespace Caneda
         return true;
     }
 
-    void XmlSchematic::loadSchematics(Caneda::XmlReader* reader)
-    {
-        if(reader->isStartElement()) {
-            if(reader->name() == "view") {
-                loadView(reader);
-            }
-            else if(reader->name() == "components") {
-                loadComponents(reader);
-            }
-            else if(reader->name() == "wires") {
-                loadWires(reader);
-            }
-            else if(reader->name() == "paintings") {
-                loadPaintings(reader);
-            }
-            else {
-                reader->readUnknownElement();
-            }
-        }
-    }
-
-    void XmlSchematic::loadView(Caneda::XmlReader *reader)
+    void XmlLayout::loadView(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "view") {
@@ -366,76 +264,7 @@ namespace Caneda
         }
     }
 
-    void XmlSchematic::loadComponents(Caneda::XmlReader *reader)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-        if(!reader->isStartElement() || reader->name() != "components") {
-            reader->raiseError(QObject::tr("Malformatted file"));
-        }
-
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                Q_ASSERT(reader->name() == "components");
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                if(reader->name() == "component") {
-                    Component::loadComponentData(reader,scene);
-                }
-                else {
-                    qWarning() << "Error: Found unknown component type" << reader->name().toString();
-                    reader->readUnknownElement();
-                    reader->raiseError(QObject::tr("Malformatted file"));
-                }
-            }
-        }
-    }
-
-    void XmlSchematic::loadWires(Caneda::XmlReader* reader)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-        if(!reader->isStartElement() || reader->name() != "wires") {
-            reader->raiseError(QObject::tr("Malformatted file"));
-        }
-
-        while(!reader->atEnd()) {
-            reader->readFurther();
-
-            if(reader->isEndElement()) {
-                Q_ASSERT(reader->name() == "wires");
-                break;
-            }
-
-            if(!reader->isStartElement() || reader->name() != "equipotential") {
-                reader->raiseError(QObject::tr("Malformatted file")+reader->name().toString());
-            }
-
-            while(!reader->atEnd()){
-                reader->readNext();
-
-                if(reader->isEndElement()) {
-                    Q_ASSERT(reader->name() == "equipotential");
-                    break;
-                }
-
-                if(reader->isStartElement()) {
-                    if(reader->name() == "wire") {
-                        Wire *w = Wire::loadWireData(reader,scene);
-                        w->checkAndConnect(Caneda::DontPushUndoCmd);
-                    }
-                    else {
-                        reader->readUnknownElement();
-                        reader->raiseError(QObject::tr("Malformatted file"));
-                    }
-                }
-            }
-        }
-    }
-
-    void XmlSchematic::loadPaintings(Caneda::XmlReader *reader)
+    void XmlLayout::loadPaintings(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "paintings") {
@@ -464,19 +293,19 @@ namespace Caneda
         }
     }
 
-    SchematicDocument* XmlSchematic::schematicDocument() const
+    LayoutDocument* XmlLayout::layoutDocument() const
     {
-        return m_schematicDocument;
+        return m_layoutDocument;
     }
 
-    CGraphicsScene* XmlSchematic::cGraphicsScene() const
+    CGraphicsScene* XmlLayout::cGraphicsScene() const
     {
-        return m_schematicDocument ? m_schematicDocument->cGraphicsScene() : 0;
+        return m_layoutDocument ? m_layoutDocument->cGraphicsScene() : 0;
     }
 
-    QString XmlSchematic::fileName() const
+    QString XmlLayout::fileName() const
     {
-        return m_schematicDocument ? m_schematicDocument->fileName() : QString();
+        return m_layoutDocument ? m_layoutDocument->fileName() : QString();
     }
 
 } // namespace Caneda
