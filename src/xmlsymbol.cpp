@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "xmlsymbolformat.h"
+#include "xmlsymbol.h"
 
 #include "component.h"
 #include "global.h"
@@ -38,12 +38,12 @@
 namespace Caneda
 {
     //! Constructor
-    XmlSymbolFormat::XmlSymbolFormat(SchematicDocument *doc) :
+    XmlSymbol::XmlSymbol(SchematicDocument *doc) :
         m_schematicDocument(doc)
     {
     }
 
-    bool XmlSymbolFormat::save()
+    bool XmlSymbol::save()
     {
         SchematicScene *scene = schematicScene();
         if(!scene) {
@@ -80,12 +80,12 @@ namespace Caneda
         return true;
     }
 
-    bool XmlSymbolFormat::load()
+    bool XmlSymbol::load()
     {
         return false;
     }
 
-    QString XmlSymbolFormat::saveText()
+    QString XmlSymbol::saveText()
     {
         SchematicScene *scene = schematicScene();
 
@@ -169,17 +169,17 @@ namespace Caneda
         return retVal;
     }
 
-    SchematicDocument* XmlSymbolFormat::schematicDocument() const
+    SchematicDocument* XmlSymbol::schematicDocument() const
     {
         return m_schematicDocument;
     }
 
-    SchematicScene* XmlSymbolFormat::schematicScene() const
+    SchematicScene* XmlSymbol::schematicScene() const
     {
         return m_schematicDocument ? m_schematicDocument->schematicScene() : 0;
     }
 
-    QString XmlSymbolFormat::fileName() const
+    QString XmlSymbol::fileName() const
     {
         return m_schematicDocument ? m_schematicDocument->fileName() : QString();
     }

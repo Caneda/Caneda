@@ -25,7 +25,7 @@
 #include "library.h"
 #include "schematiccontext.h"
 #include "schematicdocument.h"
-#include "xmlsymbolformat.h"
+#include "xmlsymbol.h"
 
 #include "dialogs/projectfilenewdialog.h"
 #include "dialogs/gitmanager.h"
@@ -328,7 +328,7 @@ namespace Caneda
         // Then we save the symbol in a xsym file
         symbolFileName.replace(".xsch",".xsym");
         document->setFileName(symbolFileName);
-        XmlSymbolFormat *symbol = new XmlSymbolFormat(document.data());
+        XmlSymbol *symbol = new XmlSymbol(document.data());
         symbol->save();
 
         // Finally we load the new component in the library

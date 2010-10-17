@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef XMLFORMAT_H
-#define XMLFORMAT_H
+#ifndef XMLSYMBOL_H
+#define XMLSYMBOL_H
 
 // Forward declarations
 class QString;
@@ -29,14 +29,11 @@ namespace Caneda
     class SchematicDocument;
     class SchematicScene;
 
-    class XmlReader;
-    class XmlWriter;
-
-    class XmlFormat
+    class XmlSymbol
     {
     public:
-        XmlFormat(SchematicDocument *doc = 0);
-        ~XmlFormat() {}
+        XmlSymbol(SchematicDocument *doc = 0);
+        ~XmlSymbol() {}
 
         bool save();
         bool load();
@@ -47,22 +44,10 @@ namespace Caneda
 
     private:
         QString saveText();
-        void saveSchematics(Caneda::XmlWriter *writer);
-        void saveView(Caneda::XmlWriter *writer);
-        void saveComponents(Caneda::XmlWriter *writer);
-        void saveWires(Caneda::XmlWriter *writer);
-        void savePaintings(Caneda::XmlWriter *writer);
-
-        bool loadFromText(const QString& text);
-        void loadSchematics(Caneda::XmlReader *reader);
-        void loadView(Caneda::XmlReader *reader);
-        void loadComponents(Caneda::XmlReader *reader);
-        void loadWires(Caneda::XmlReader *reader);
-        void loadPaintings(Caneda::XmlReader *reader);
 
         SchematicDocument *m_schematicDocument;
     };
 
 } // namespace Caneda
 
-#endif //XMLFORMAT_H
+#endif //XMLSYMBOL_H

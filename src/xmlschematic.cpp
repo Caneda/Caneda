@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "xmlformat.h"
+#include "xmlschematic.h"
 
 #include "component.h"
 #include "global.h"
@@ -80,12 +80,12 @@ namespace Caneda
     }
 
     //! Constructor
-    XmlFormat::XmlFormat(SchematicDocument *doc):
+    XmlSchematic::XmlSchematic(SchematicDocument *doc):
         m_schematicDocument(doc)
     {
     }
 
-    bool XmlFormat::save()
+    bool XmlSchematic::save()
     {
         SchematicScene *scene = schematicScene();
         if(!scene) {
@@ -111,7 +111,7 @@ namespace Caneda
         return true;
     }
 
-    bool XmlFormat::load()
+    bool XmlSchematic::load()
     {
         SchematicScene *scene = schematicScene();
         if(!scene) {
@@ -133,7 +133,7 @@ namespace Caneda
         return result;
     }
 
-    QString XmlFormat::saveText()
+    QString XmlSchematic::saveText()
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
@@ -155,7 +155,7 @@ namespace Caneda
         return retVal;
     }
 
-    void XmlFormat::saveSchematics(Caneda::XmlWriter *writer)
+    void XmlSchematic::saveSchematics(Caneda::XmlWriter *writer)
     {
         saveView(writer);
         saveComponents(writer);
@@ -163,7 +163,7 @@ namespace Caneda
         savePaintings(writer);
     }
 
-    void XmlFormat::saveView(Caneda::XmlWriter *writer)
+    void XmlSchematic::saveView(Caneda::XmlWriter *writer)
     {
         SchematicScene *scene = schematicScene();
         writer->writeStartElement("view");
@@ -187,7 +187,7 @@ namespace Caneda
         writer->writeEndElement(); //</view>
     }
 
-    void XmlFormat::saveComponents(Caneda::XmlWriter *writer)
+    void XmlSchematic::saveComponents(Caneda::XmlWriter *writer)
     {
         SchematicScene *scene = schematicScene();
         QList<QGraphicsItem*> items = scene->items();
@@ -201,7 +201,7 @@ namespace Caneda
         }
     }
 
-    void XmlFormat::saveWires(Caneda::XmlWriter *writer)
+    void XmlSchematic::saveWires(Caneda::XmlWriter *writer)
     {
         SchematicScene *scene = schematicScene();
         QList<QGraphicsItem*> items = scene->items();
@@ -229,7 +229,7 @@ namespace Caneda
         }
     }
 
-    void XmlFormat::savePaintings(Caneda::XmlWriter *writer)
+    void XmlSchematic::savePaintings(Caneda::XmlWriter *writer)
     {
         SchematicScene *scene = schematicScene();
         QList<QGraphicsItem*> items = scene->items();
@@ -243,7 +243,7 @@ namespace Caneda
         }
     }
 
-    bool XmlFormat::loadFromText(const QString& text)
+    bool XmlSchematic::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
         while(!reader->atEnd()) {
@@ -278,7 +278,7 @@ namespace Caneda
         return true;
     }
 
-    void XmlFormat::loadSchematics(Caneda::XmlReader* reader)
+    void XmlSchematic::loadSchematics(Caneda::XmlReader* reader)
     {
         if(reader->isStartElement()) {
             if(reader->name() == "view") {
@@ -299,7 +299,7 @@ namespace Caneda
         }
     }
 
-    void XmlFormat::loadView(Caneda::XmlReader *reader)
+    void XmlSchematic::loadView(Caneda::XmlReader *reader)
     {
         SchematicScene *scene = schematicScene();
         if(!reader->isStartElement() || reader->name() != "view") {
@@ -389,7 +389,7 @@ namespace Caneda
         }
     }
 
-    void XmlFormat::loadComponents(Caneda::XmlReader *reader)
+    void XmlSchematic::loadComponents(Caneda::XmlReader *reader)
     {
         SchematicScene *scene = schematicScene();
         if(!reader->isStartElement() || reader->name() != "components") {
@@ -417,7 +417,7 @@ namespace Caneda
         }
     }
 
-    void XmlFormat::loadWires(Caneda::XmlReader* reader)
+    void XmlSchematic::loadWires(Caneda::XmlReader* reader)
     {
         SchematicScene *scene = schematicScene();
         if(!reader->isStartElement() || reader->name() != "wires") {
@@ -458,7 +458,7 @@ namespace Caneda
         }
     }
 
-    void XmlFormat::loadPaintings(Caneda::XmlReader *reader)
+    void XmlSchematic::loadPaintings(Caneda::XmlReader *reader)
     {
         SchematicScene *scene = schematicScene();
         if(!reader->isStartElement() || reader->name() != "paintings") {
@@ -487,17 +487,17 @@ namespace Caneda
         }
     }
 
-    SchematicDocument* XmlFormat::schematicDocument() const
+    SchematicDocument* XmlSchematic::schematicDocument() const
     {
         return m_schematicDocument;
     }
 
-    SchematicScene* XmlFormat::schematicScene() const
+    SchematicScene* XmlSchematic::schematicScene() const
     {
         return m_schematicDocument ? m_schematicDocument->schematicScene() : 0;
     }
 
-    QString XmlFormat::fileName() const
+    QString XmlSchematic::fileName() const
     {
         return m_schematicDocument ? m_schematicDocument->fileName() : QString();
     }
