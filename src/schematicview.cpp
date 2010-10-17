@@ -32,7 +32,7 @@ namespace Caneda
     SchematicView::SchematicView(SchematicDocument *document) :
         IView(document)
     {
-        m_schematicWidget = new SchematicWidget(this);
+        m_schematicWidget = new SchematicWidget(document->schematicScene());
         SchematicStateHandler::instance()->registerWidget(m_schematicWidget);
         connect(m_schematicWidget, SIGNAL(focussedIn(SchematicWidget*)), this,
                 SLOT(onWidgetFocussedIn()));

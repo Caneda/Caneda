@@ -19,9 +19,7 @@
 
 #include "schematicwidget.h"
 
-#include "schematicdocument.h"
 #include "schematicscene.h"
-#include "schematicview.h"
 
 #include <QWheelEvent>
 
@@ -30,9 +28,8 @@ namespace Caneda
     const qreal SchematicWidget::zoomFactor = 0.3;
 
     //! Constructor
-    SchematicWidget::SchematicWidget(SchematicView *sv) :
-        QGraphicsView(sv ? sv->schematicDocument()->schematicScene() : 0),
-        m_schematicView(sv),
+    SchematicWidget::SchematicWidget(SchematicScene *sv) :
+        QGraphicsView(sv ? sv : 0),
         m_zoomRange(0.30, 10.0),
         m_currentZoom(1.0)
     {
@@ -61,11 +58,6 @@ namespace Caneda
     //! Destructor
     SchematicWidget::~SchematicWidget()
     {
-    }
-
-    SchematicView* SchematicWidget::schematicView() const
-    {
-        return m_schematicView;
     }
 
     SchematicScene* SchematicWidget::schematicScene() const

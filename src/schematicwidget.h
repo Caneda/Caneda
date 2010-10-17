@@ -29,7 +29,6 @@ namespace Caneda
     // Forward declarations
     class SchematicItem;
     class SchematicScene;
-    class SchematicView;
 
     class SchematicWidget : public QGraphicsView
     {
@@ -37,10 +36,9 @@ namespace Caneda
     public:
         static const qreal zoomFactor;
 
-        SchematicWidget(SchematicView *view = 0);
+        SchematicWidget(SchematicScene *scene = 0);
         ~SchematicWidget();
 
-        SchematicView* schematicView() const;
         SchematicScene* schematicScene() const;
 
         void zoomIn();
@@ -66,8 +64,6 @@ namespace Caneda
 
     private:
         void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);
-
-        SchematicView *m_schematicView;
 
         ZoomRange m_zoomRange;
         qreal m_currentZoom;
