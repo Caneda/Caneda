@@ -36,7 +36,7 @@ namespace Caneda
      * \param scene Scene to which this item should be added.
      */
     Layer::Layer(const QRectF &rect, LayerName layerName, const QString &netLabel,
-                 SchematicScene *scene) :
+                 CGraphicsScene *scene) :
        Painting(scene),
        m_layerName(layerName),
        m_netLabel(netLabel)
@@ -141,7 +141,7 @@ namespace Caneda
     }
 
     //! \copydoc Painting::copy()
-    Layer* Layer::copy(SchematicScene *scene) const
+    Layer* Layer::copy(CGraphicsScene *scene) const
     {
        Layer *layerItem = new Layer(rect(), layerName(), netLabel(), scene);
        Painting::copyDataTo(layerItem);

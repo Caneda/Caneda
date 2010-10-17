@@ -29,8 +29,8 @@
 #include "library.h"
 #include "project.h"
 #include "schematiccontext.h"
-#include "schematicstatehandler.h"
 #include "settings.h"
+#include "statehandler.h"
 #include "tabs.h"
 #include "textcontext.h"
 
@@ -115,7 +115,7 @@ namespace Caneda
      */
     void MainWindow::setupSidebar()
     {
-        SchematicStateHandler *handler = SchematicStateHandler::instance();
+        StateHandler *handler = StateHandler::instance();
         m_componentsSidebar = new ComponentsSidebar(this);
         connect(m_componentsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
@@ -175,7 +175,7 @@ namespace Caneda
      */
     void MainWindow::setupProjectsSidebar()
     {
-        SchematicStateHandler *handler = SchematicStateHandler::instance();
+        StateHandler *handler = StateHandler::instance();
         m_project = new Project(this);
         connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
@@ -244,7 +244,7 @@ namespace Caneda
         using namespace Qt;
         Action *action = 0;
         ActionManager *am = ActionManager::instance();
-        SchematicStateHandler *handler = SchematicStateHandler::instance();
+        StateHandler *handler = StateHandler::instance();
         SchematicContext *sc = SchematicContext::instance();
 
         action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New"));
@@ -664,11 +664,11 @@ namespace Caneda
     {
         using namespace Qt;
         Action *action = 0;
-        SchematicStateHandler *handler = SchematicStateHandler::instance();
+        StateHandler *handler = StateHandler::instance();
         SchematicContext *sc = SchematicContext::instance();
 
         ActionManager *am = ActionManager::instance();
-        action = am->createMouseAction("editDelete", SchematicScene::Deleting,
+        action = am->createMouseAction("editDelete", CGraphicsScene::Deleting,
                 Caneda::icon("edit-delete"), tr("&Delete"));
         action->setShortcut(Key_Delete);
         action->setStatusTip(tr("Deletes the selected components"));
@@ -677,7 +677,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addMouseAction(action);
 
-        action = am->createMouseAction("select", SchematicScene::Normal,
+        action = am->createMouseAction("select", CGraphicsScene::Normal,
                 Caneda::icon("edit-select"), tr("Select"));
         action->setShortcut(Key_Escape);
         action->setStatusTip(tr("Activate select mode"));
@@ -687,7 +687,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("editRotate", SchematicScene::Rotating,
+        action = am->createMouseAction("editRotate", CGraphicsScene::Rotating,
                 Caneda::icon("object-rotate-left"), tr("Rotate"));
         action->setShortcut(CTRL+Key_R);
         action->setStatusTip(tr("Rotates the selected component by 90°"));
@@ -696,7 +696,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("editMirror", SchematicScene::MirroringX,
+        action = am->createMouseAction("editMirror", CGraphicsScene::MirroringX,
                 Caneda::icon("object-flip-vertical"), tr("Mirror about X Axis"));
         action->setShortcut(Key_V);
         action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
@@ -704,7 +704,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("editMirrorY", SchematicScene::MirroringY,
+        action = am->createMouseAction("editMirrorY", CGraphicsScene::MirroringY,
                 Caneda::icon("object-flip-horizontal"), tr("Mirror about Y Axis"));
         action->setShortcut(Key_H);
         action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
@@ -712,7 +712,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("insWire", SchematicScene::Wiring,
+        action = am->createMouseAction("insWire", CGraphicsScene::Wiring,
                 Caneda::icon("wire"), tr("Wire"));
         action->setShortcut(Key_W);
         action->setWhatsThis(tr("Wire\n\nInserts a wire"));
@@ -720,7 +720,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("insLabel", SchematicScene::InsertingWireLabel,
+        action = am->createMouseAction("insLabel", CGraphicsScene::InsertingWireLabel,
                 Caneda::icon("nodename"), tr("Wire Label"));
         action->setShortcut(Key_L);
         action->setStatusTip(tr("Inserts a wire or pin label"));
@@ -729,7 +729,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("editActivate", SchematicScene::ChangingActiveStatus,
+        action = am->createMouseAction("editActivate", CGraphicsScene::ChangingActiveStatus,
                 Caneda::icon("deactiv"), tr("Deactivate/Activate"));
         action->setShortcut(Key_D);
         action->setStatusTip(tr("Deactivate/Activate selected components"));
@@ -738,7 +738,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("setMarker", SchematicScene::Marking,
+        action = am->createMouseAction("setMarker", CGraphicsScene::Marking,
                 Caneda::icon("marker"), tr("Set Marker on Graph"));
         action->setShortcut(Key_F2);
         action->setStatusTip(tr("Sets a marker on a diagram's graph"));
@@ -747,7 +747,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("zoomArea", SchematicScene::ZoomingAreaEvent,
+        action = am->createMouseAction("zoomArea", CGraphicsScene::ZoomingAreaEvent,
                 Caneda::icon("transform-scale"), tr("Zoom area"));
         action->setStatusTip(tr("Zooms a selected are in the current view"));
         action->setWhatsThis(tr("Zooms a selected are in the current view"));
@@ -755,13 +755,13 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("insertItem", SchematicScene::InsertingItems,
+        action = am->createMouseAction("insertItem", CGraphicsScene::InsertingItems,
                 tr("Insert item action"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("paintingDraw", SchematicScene::PaintingDrawEvent,
+        action = am->createMouseAction("paintingDraw", CGraphicsScene::PaintingDrawEvent,
                 tr("Painting draw action"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
@@ -1008,7 +1008,7 @@ namespace Caneda
     //! \brief Toggles the normal select action on.
     void MainWindow::setNormalAction()
     {
-        SchematicStateHandler *handler = SchematicStateHandler::instance();
+        StateHandler *handler = StateHandler::instance();
         handler->slotSetNormalAction();
     }
 

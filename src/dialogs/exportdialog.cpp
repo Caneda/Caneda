@@ -19,8 +19,8 @@
 
 #include "exportdialog.h"
 
+#include "cgraphicsscene.h"
 #include "global.h"
-#include "schematicscene.h"
 #include "schematicdocument.h"
 #include "settings.h"
 
@@ -43,7 +43,7 @@ namespace Caneda
     {
         ui.setupUi(this);
 
-        m_scene = document->schematicScene();
+        m_scene = document->cGraphicsScene();
 
         // Title and file name of the scene
         QString diagramFilename = document->fileName();
@@ -251,7 +251,7 @@ namespace Caneda
         file.close();
     }
 
-    //! @return the aspect ratio of the schema
+    //! @return the aspect ratio of the schematic
     qreal ExportDialog::diagramRatio()
     {
         QSizeF size = diagramSize();

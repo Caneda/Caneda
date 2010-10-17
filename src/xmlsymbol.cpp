@@ -19,11 +19,11 @@
 
 #include "xmlsymbol.h"
 
+#include "cgraphicsitem.h"
+#include "cgraphicsscene.h"
 #include "component.h"
 #include "global.h"
-#include "item.h"
 #include "schematicdocument.h"
-#include "schematicscene.h"
 #include "settings.h"
 
 #include "xmlutilities/xmlutilities.h"
@@ -45,7 +45,7 @@ namespace Caneda
 
     bool XmlSymbol::save()
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
             return false;
         }
@@ -87,7 +87,7 @@ namespace Caneda
 
     QString XmlSymbol::saveText()
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
 
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
@@ -174,9 +174,9 @@ namespace Caneda
         return m_schematicDocument;
     }
 
-    SchematicScene* XmlSymbol::schematicScene() const
+    CGraphicsScene* XmlSymbol::cGraphicsScene() const
     {
-        return m_schematicDocument ? m_schematicDocument->schematicScene() : 0;
+        return m_schematicDocument ? m_schematicDocument->cGraphicsScene() : 0;
     }
 
     QString XmlSymbol::fileName() const

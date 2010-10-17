@@ -42,7 +42,7 @@ namespace Caneda
 
         PortSymbol(const QString& nameStr_= "1",
                 const QString& numberStr_= "",
-                SchematicScene *scene = 0);
+                CGraphicsScene *scene = 0);
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
@@ -67,7 +67,7 @@ namespace Caneda
         void mirrorAlong(Qt::Axis axis);
 
         int type() const { return PortSymbol::Type; }
-        PortSymbol* copy(SchematicScene *scene = 0) const;
+        PortSymbol* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

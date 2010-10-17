@@ -37,10 +37,10 @@ namespace Caneda
      * \param style The arrow's head style. See \a HeadStyle
      * \param headWidth The base width of triangle of arrow's head.
      * \param headHeight The height of triangle of arrow head.
-     * \param scene The schematic to which this arrow is to be added.
+     * \param scene The graphics scene to which this arrow is to be added.
      */
     Arrow::Arrow(const QLineF &line, HeadStyle style, qreal headWidth, qreal headHeight,
-            SchematicScene *scene) :
+            CGraphicsScene *scene) :
         Painting(scene),
         m_headStyle(style),
         m_headWidth(headWidth),
@@ -118,7 +118,7 @@ namespace Caneda
     }
 
     //! \brief Returns a copy of this arrow.
-    Arrow* Arrow::copy(SchematicScene *scene) const
+    Arrow* Arrow::copy(CGraphicsScene *scene) const
     {
         Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), scene);
         Painting::copyDataTo(arrow);

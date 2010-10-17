@@ -33,7 +33,7 @@ namespace Caneda
      * \param rect Rectangle in local coords.
      * \param scene Scene to which this item should be added.
      */
-    Rectangle::Rectangle(const QRectF& rect, SchematicScene *scene) :
+    Rectangle::Rectangle(const QRectF& rect, CGraphicsScene *scene) :
        Painting(scene)
     {
        setRect(rect);
@@ -90,7 +90,7 @@ namespace Caneda
     }
 
     //! \copydoc Painting::copy()
-    Rectangle* Rectangle::copy(SchematicScene *scene) const
+    Rectangle* Rectangle::copy(CGraphicsScene *scene) const
     {
        Rectangle *rectItem = new Rectangle(rect(), scene);
        Painting::copyDataTo(rectItem);

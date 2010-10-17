@@ -22,6 +22,8 @@
 
 #include "ui_projectfileopendialog.h"
 
+#include <QDialog>
+
 namespace Caneda
 {
     // Forward declarations

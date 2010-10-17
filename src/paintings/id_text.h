@@ -65,7 +65,7 @@ namespace Caneda
             Type = Painting::IdTextType
         };
 
-        IdText(SchematicScene *scene = 0);
+        IdText(CGraphicsScene *scene = 0);
         ~IdText();
 
         //! \brief Returns the prefix of subckt component.
@@ -92,7 +92,7 @@ namespace Caneda
         void updateGeometry();
 
         int type() const { return IdText::Type; }
-        IdText* copy(SchematicScene *scene) const;
+        IdText* copy(CGraphicsScene *scene) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

@@ -37,7 +37,7 @@ namespace Caneda
             Type = Painting::RectangleType
         };
 
-        Rectangle(const QRectF &rect, SchematicScene *scene = 0);
+        Rectangle(const QRectF &rect, CGraphicsScene *scene = 0);
         ~Rectangle();
 
         QPainterPath shapeForRect(const QRectF& rect) const;
@@ -50,7 +50,7 @@ namespace Caneda
         void setRect(const QRectF& rect) { setPaintingRect(rect); }
 
         int type() const { return Rectangle::Type; }
-        Rectangle* copy(SchematicScene *scene = 0) const;
+        Rectangle* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

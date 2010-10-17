@@ -20,7 +20,7 @@
 #ifndef SETTINGS_PAGES_H
 #define SETTINGS_PAGES_H
 
-#include "schematicscene.h"
+#include "cgraphicsscene.h"
 
 class QComboBox;
 class QCheckBox;
@@ -109,7 +109,7 @@ namespace Caneda
         Q_OBJECT;
 
     public:
-        SchematicDocumentConfigurationPage(SchematicScene *scene, QWidget *parent = 0);
+        SchematicDocumentConfigurationPage(CGraphicsScene *scene, QWidget *parent = 0);
         virtual ~SchematicDocumentConfigurationPage();
 
     public:
@@ -118,7 +118,7 @@ namespace Caneda
         QIcon icon() const;
 
     public:
-        SchematicScene *Scn;
+        CGraphicsScene *m_scene;
 
         QLabel *title_label_;
         QFrame *horiz_line_;

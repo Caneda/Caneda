@@ -22,6 +22,7 @@
 
 #include "ui_savedocumentsdialog.h"
 
+#include <QDialog>
 #include <QSet>
 
 // Forward declarations.

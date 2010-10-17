@@ -25,7 +25,7 @@
 namespace Caneda
 {
     /*!
-     * \brief This class is used to represent resizable arrow item on schematic.
+     * \brief This class is used to represent resizable arrow item on a graphics scene.
      *
      * This class supports two different styles of arrow. See \a HeadStyle
      */
@@ -46,7 +46,7 @@ namespace Caneda
 
         Arrow(const QLineF &line = QLineF(), HeadStyle style = FilledArrow,
                 qreal headWidth = 12, qreal headHeight = 20,
-                SchematicScene *scene = 0);
+                CGraphicsScene *scene = 0);
         ~Arrow();
 
         QPainterPath shapeForRect(const QRectF &rect) const;
@@ -55,7 +55,7 @@ namespace Caneda
         void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
         int type() const { return Arrow::Type; }
-        Arrow* copy(SchematicScene *scene = 0) const;
+        Arrow* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

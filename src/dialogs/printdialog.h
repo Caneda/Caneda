@@ -22,10 +22,11 @@
 
 #include "ui_printdialog.h"
 
+#include <QDialog>
+
 namespace Caneda
 {
     class IDocument;
-    class SchematicScene;
 
     class PrintDialog : public QDialog
     {

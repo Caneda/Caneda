@@ -15,29 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
-//EDIT by Gopala Krishna A: I'll port this little later. For now I need
-//                          only definition of the class
-
 #ifndef DIAGRAM_H
 #define DIAGRAM_H
 
-#include "item.h"
+#include "cgraphicsitem.h"
 
 namespace Caneda
 {
-    class Diagram : public SchematicItem
+    class Diagram : public CGraphicsItem
     {
     public:
         enum {
-            Type = SchematicItem::DisplayType
+            Type = CGraphicsItem::DisplayType
         };
 
-        Diagram(SchematicScene* scene = 0);
+        Diagram(CGraphicsScene* scene = 0);
         ~Diagram();
 
-        int type() const { return SchematicItem::DisplayType; }
+        int type() const { return CGraphicsItem::DisplayType; }
     };
 
 } // namespace Caneda
 
-#endif
+#endif //DIAGRAM_H

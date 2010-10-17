@@ -17,9 +17,9 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "item.h"
-#include "schematicscene.h"
-#include "schematicwidget.h"
+#include "cgraphicsitem.h"
+#include "cgraphicsscene.h"
+#include "cgraphicsview.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -168,7 +168,7 @@ namespace Caneda
 
     //! Constructor
     //! \brief Create a new item and add to scene.
-    SchematicItem::SchematicItem(QGraphicsItem* parent, SchematicScene* scene) :
+    CGraphicsItem::CGraphicsItem(QGraphicsItem* parent, CGraphicsScene* scene) :
         QGraphicsItem(parent),
         m_boundingRect(0, 0, 0, 0)
     {
@@ -182,11 +182,11 @@ namespace Caneda
     }
 
     //! Destructor
-    SchematicItem::~SchematicItem()
+    CGraphicsItem::~CGraphicsItem()
     {
     }
 
-    void SchematicItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+    void CGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     {
         if(event->buttons().testFlag(Qt::LeftButton)) {
             launchPropertyDialog(Caneda::PushUndoCmd);
@@ -202,7 +202,7 @@ namespace Caneda
      * \param rect The bound rect to be cached.
      * \param pw Pen width of pen used to paint outer stroke of item.
      */
-    void SchematicItem::setShapeAndBoundRect(const QPainterPath& path,
+    void CGraphicsItem::setShapeAndBoundRect(const QPainterPath& path,
             const QRectF& rect, qreal pw)
     {
         // Inform scene about change in geometry.
@@ -217,10 +217,10 @@ namespace Caneda
         }
     }
 
-    //! \brief returns a pointer to the schematic scene to which the item belongs.
-    SchematicScene* SchematicItem::schematicScene() const
+    //! \brief returns a pointer to the graphics scene to which the item belongs.
+    CGraphicsScene* CGraphicsItem::cGraphicsScene() const
     {
-        return qobject_cast<SchematicScene*>(scene());
+        return qobject_cast<CGraphicsScene*>(scene());
     }
 
     /*!
@@ -230,7 +230,7 @@ namespace Caneda
      * there will be unnecessary creation of xml writer and reader instances which
      * will render the program inefficient.
      */
-    QString SchematicItem::saveDataText() const
+    QString CGraphicsItem::saveDataText() const
     {
         QString retVal;
         Caneda::XmlWriter writer(&retVal);
@@ -245,7 +245,7 @@ namespace Caneda
      * there will be unnecessary creation of xml writer and reader instances which
      * will render the program inefficient.
      */
-    void SchematicItem::loadDataFromText(const QString &text)
+    void CGraphicsItem::loadDataFromText(const QString &text)
     {
         Caneda::XmlReader reader(text.toUtf8());
         while(!reader.atEnd()) {
@@ -266,7 +266,7 @@ namespace Caneda
      * \brief Graphically mirror item according to x axis
      * \note Items can be mirrored only along x and y axis.
      */
-    void SchematicItem::mirrorAlong(Qt::Axis axis)
+    void CGraphicsItem::mirrorAlong(Qt::Axis axis)
     {
         update();
 
@@ -280,7 +280,7 @@ namespace Caneda
     }
 
     //! \brief Rotate item by -90 degrees
-    void SchematicItem::rotate90(Caneda::AngleDirection dir)
+    void CGraphicsItem::rotate90(Caneda::AngleDirection dir)
     {
         rotate(dir == Caneda::AntiClockwise ? -90.0 : 90.0);
     }
@@ -291,7 +291,7 @@ namespace Caneda
      * Now it returns null but subclasses should reimplement this to return the
      * appropriate copy of that reimplemented item.
      */
-    SchematicItem* SchematicItem::copy(SchematicScene *) const
+    CGraphicsItem* CGraphicsItem::copy(CGraphicsScene *) const
     {
         return 0;
     }
@@ -301,7 +301,7 @@ namespace Caneda
      *
      * Sublasses should reimplement it to copy their data.
      */
-    void SchematicItem::copyDataTo(SchematicItem *item) const
+    void CGraphicsItem::copyDataTo(CGraphicsItem *item) const
     {
         item->setTransform(transform());
         item->prepareGeometryChange();
@@ -314,7 +314,7 @@ namespace Caneda
      * \brief Constructs and returns a menu with default actions inderted.
      * \todo Implement this function.
      */
-    QMenu* SchematicItem::defaultContextMenu() const
+    QMenu* CGraphicsItem::defaultContextMenu() const
     {
         return 0;
     }

@@ -13,16 +13,16 @@ ADD_SUBDIRECTORY( paintings )
 ADD_SUBDIRECTORY( tools )
 ADD_SUBDIRECTORY( xmlutilities )
 
-SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
-  schematicscene.cpp sidebarmodel.cpp
+SET(CANEDA_SRCS wire.cpp componentssidebar.cpp cgraphicsitem.cpp
+  cgraphicsscene.cpp sidebarmodel.cpp
   global.cpp units.cpp main.cpp mainwindow.cpp
-  schematicwidget.cpp  undocommands.cpp
+  cgraphicsview.cpp  undocommands.cpp
   svgitem.cpp property.cpp propertyitem.cpp
   propertygroup.cpp component.cpp port.cpp library.cpp
   xmlschematic.cpp
   wireline.cpp folderbrowser.cpp xmlsymbol.cpp settings.cpp
   actionmanager.cpp singletonowner.cpp project.cpp
-  schematicstatehandler.cpp documentviewmanager.cpp icontext.cpp
+  statehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp
   schematicdocument.cpp schematiccontext.cpp schematicview.cpp
   syntaxhighlighters.cpp
@@ -30,11 +30,11 @@ SET(CANEDA_SRCS wire.cpp componentssidebar.cpp item.cpp
   webdocument.cpp webcontext.cpp webview.cpp webpage.cpp
 )
 
-SET(CANEDA_MOC_HDRS schematicscene.h schematicwidget.h
+SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   mainwindow.h componentssidebar.h svgitem.h library.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
   folderbrowser.h project.h
-  actionmanager.h singletonowner.h schematicstatehandler.h
+  actionmanager.h singletonowner.h statehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
   schematicdocument.h schematiccontext.h schematicview.h
   syntaxhighlighters.h

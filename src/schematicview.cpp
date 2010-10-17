@@ -20,10 +20,10 @@
 #include "schematicview.h"
 
 #include "actionmanager.h"
+#include "cgraphicsview.h"
 #include "schematiccontext.h"
 #include "schematicdocument.h"
-#include "schematicstatehandler.h"
-#include "schematicwidget.h"
+#include "statehandler.h"
 
 #include <QToolBar>
 
@@ -32,19 +32,19 @@ namespace Caneda
     SchematicView::SchematicView(SchematicDocument *document) :
         IView(document)
     {
-        m_schematicWidget = new SchematicWidget(document->schematicScene());
-        SchematicStateHandler::instance()->registerWidget(m_schematicWidget);
-        connect(m_schematicWidget, SIGNAL(focussedIn(SchematicWidget*)), this,
+        m_cGraphicsView = new CGraphicsView(document->cGraphicsScene());
+        StateHandler::instance()->registerWidget(m_cGraphicsView);
+        connect(m_cGraphicsView, SIGNAL(focussedIn(CGraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
-        connect(m_schematicWidget, SIGNAL(focussedOut(SchematicWidget*)), this,
+        connect(m_cGraphicsView, SIGNAL(focussedOut(CGraphicsView*)), this,
                 SLOT(onWidgetFocussedOut()));
-        connect(m_schematicWidget, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_cGraphicsView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     SchematicView::~SchematicView()
     {
-        delete m_schematicWidget;
+        delete m_cGraphicsView;
     }
 
     SchematicDocument* SchematicView::schematicDocument() const
@@ -54,7 +54,7 @@ namespace Caneda
 
     QWidget* SchematicView::toWidget() const
     {
-        return m_schematicWidget;
+        return m_cGraphicsView;
     }
 
     IContext* SchematicView::context() const
@@ -64,27 +64,27 @@ namespace Caneda
 
     void SchematicView::zoomIn()
     {
-        m_schematicWidget->zoomIn();
+        m_cGraphicsView->zoomIn();
     }
 
     void SchematicView::zoomOut()
     {
-        m_schematicWidget->zoomOut();
+        m_cGraphicsView->zoomOut();
     }
 
     void SchematicView::zoomFitInBest()
     {
-        m_schematicWidget->zoomFitInBest();
+        m_cGraphicsView->zoomFitInBest();
     }
 
     void SchematicView::zoomOriginal()
     {
-        m_schematicWidget->zoomOriginal();
+        m_cGraphicsView->zoomOriginal();
     }
 
     qreal SchematicView::currentZoom()
     {
-        return m_schematicWidget->currentZoom();
+        return m_cGraphicsView->currentZoom();
     }
 
     IView* SchematicView::duplicate()
@@ -94,8 +94,8 @@ namespace Caneda
 
     void SchematicView::updateSettingsChanges()
     {
-        m_schematicWidget->invalidateScene();
-        m_schematicWidget->resetCachedContent();
+        m_cGraphicsView->invalidateScene();
+        m_cGraphicsView->resetCachedContent();
     }
 
     void SchematicView::onWidgetFocussedIn()
@@ -103,7 +103,7 @@ namespace Caneda
         emit focussedIn(static_cast<IView*>(this));
         ActionManager *am = ActionManager::instance();
         Action *action = am->actionForName("snapToGrid");
-        action->setChecked(m_schematicWidget->schematicScene()->gridSnap());
+        action->setChecked(m_cGraphicsView->cGraphicsScene()->gridSnap());
     }
 
     void SchematicView::onWidgetFocussedOut()

@@ -20,7 +20,7 @@
 #ifndef PORT_H
 #define PORT_H
 
-#include "item.h"
+#include "cgraphicsitem.h"
 
 #include <QList>
 #include <QSharedData>
@@ -30,7 +30,7 @@ namespace Caneda
     //Forward declarations.
     class Wire;
     class Component;
-    class SchematicScene;
+    class CGraphicsScene;
 
     //! \todo Make these constants settings.
     static const QPen connectedPen(Qt::blue, 0);
@@ -57,7 +57,7 @@ namespace Caneda
     class PortOwner
     {
     public:
-        PortOwner(SchematicItem * item);
+        PortOwner(CGraphicsItem * item);
 
         //! return type of owner
         int type() const { return m_item->type(); }
@@ -75,7 +75,7 @@ namespace Caneda
 
     private:
         //! owner of the port
-        SchematicItem *const m_item;
+        CGraphicsItem *const m_item;
         //! Disable copy
         PortOwner(const PortOwner& other);
     };
@@ -92,8 +92,8 @@ namespace Caneda
     class Port
     {
     public:
-        Port(SchematicItem  *owner, const QSharedDataPointer<PortData> &data);
-        Port(SchematicItem  *owner, QPointF _pos, QString portName = QString());
+        Port(CGraphicsItem  *owner, const QSharedDataPointer<PortData> &data);
+        Port(CGraphicsItem  *owner, QPointF _pos, QString portName = QString());
 
         ~Port();
 
@@ -114,7 +114,7 @@ namespace Caneda
         //! Returns a pointer to list of connected ports(null if unconnected).
         QList<Port*> * connections() const { return m_connections; }
 
-        SchematicScene* schematicScene() const;
+        CGraphicsScene* cGraphicsScene() const;
 
         static void connect(Port* port1, Port *port2);
         static void disconnect(Port *port, Port *from);

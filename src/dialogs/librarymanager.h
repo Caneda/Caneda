@@ -22,6 +22,8 @@
 
 #include "ui_librarymanager.h"
 
+#include <QDialog>
+
 namespace Caneda
 {
     /*!

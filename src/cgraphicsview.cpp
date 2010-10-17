@@ -17,18 +17,18 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicwidget.h"
+#include "cgraphicsview.h"
 
-#include "schematicscene.h"
+#include "cgraphicsscene.h"
 
 #include <QWheelEvent>
 
 namespace Caneda
 {
-    const qreal SchematicWidget::zoomFactor = 0.3;
+    const qreal CGraphicsView::zoomFactor = 0.3;
 
     //! Constructor
-    SchematicWidget::SchematicWidget(SchematicScene *sv) :
+    CGraphicsView::CGraphicsView(CGraphicsScene *sv) :
         QGraphicsView(sv ? sv : 0),
         m_zoomRange(0.30, 10.0),
         m_currentZoom(1.0)
@@ -48,7 +48,7 @@ namespace Caneda
         viewport()->setMouseTracking(true);
         viewport()->setAttribute(Qt::WA_NoSystemBackground);
 
-        connect(schematicScene(), SIGNAL(mouseActionChanged()), this,
+        connect(cGraphicsScene(), SIGNAL(mouseActionChanged()), this,
                 SLOT(onMouseActionChanged()));
 
         // Update current drag mode
@@ -56,42 +56,42 @@ namespace Caneda
     }
 
     //! Destructor
-    SchematicWidget::~SchematicWidget()
+    CGraphicsView::~CGraphicsView()
     {
     }
 
-    SchematicScene* SchematicWidget::schematicScene() const
+    CGraphicsScene* CGraphicsView::cGraphicsScene() const
     {
-        SchematicScene* s = qobject_cast<SchematicScene*>(scene());
+        CGraphicsScene* s = qobject_cast<CGraphicsScene*>(scene());
         Q_ASSERT(s);// This should never fail!
         return s;
     }
 
-    void SchematicWidget::zoomIn()
+    void CGraphicsView::zoomIn()
     {
         qreal newZoom = m_currentZoom * (1 + zoomFactor);
         setZoomLevel(qMin(newZoom, m_zoomRange.max));
     }
 
-    void SchematicWidget::zoomOut()
+    void CGraphicsView::zoomOut()
     {
         qreal newZoom = m_currentZoom / (1 + zoomFactor);
         setZoomLevel(qMax(newZoom, m_zoomRange.min));
     }
 
-    void SchematicWidget::zoomFitInBest()
+    void CGraphicsView::zoomFitInBest()
     {
         if (scene()) {
             zoomFitRect(scene()->itemsBoundingRect());
         }
     }
 
-    void SchematicWidget::zoomOriginal()
+    void CGraphicsView::zoomOriginal()
     {
         setZoomLevel(1.0);
     }
 
-    void SchematicWidget::zoomFitRect(const QRectF &rect)
+    void CGraphicsView::zoomFitRect(const QRectF &rect)
     {
         if (rect.isEmpty()) {
             return;
@@ -122,7 +122,7 @@ namespace Caneda
         setZoomLevel(minRatio, &center);
     }
 
-    void SchematicWidget::mouseMoveEvent(QMouseEvent *event)
+    void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
     {
         QPoint newCursorPos = mapToScene(event->pos()).toPoint();
         QString str = QString("%1 : %2")
@@ -132,7 +132,7 @@ namespace Caneda
         QGraphicsView::mouseMoveEvent(event);
     }
 
-    void SchematicWidget::focusInEvent(QFocusEvent *event)
+    void CGraphicsView::focusInEvent(QFocusEvent *event)
     {
         QGraphicsView::focusInEvent(event);
         if (hasFocus()) {
@@ -140,7 +140,7 @@ namespace Caneda
         }
     }
 
-    void SchematicWidget::focusOutEvent(QFocusEvent *event)
+    void CGraphicsView::focusOutEvent(QFocusEvent *event)
     {
         QGraphicsView::focusOutEvent(event);
         if (!hasFocus()) {
@@ -148,16 +148,16 @@ namespace Caneda
         }
     }
 
-    void SchematicWidget::onMouseActionChanged()
+    void CGraphicsView::onMouseActionChanged()
     {
-        if (schematicScene()->mouseAction() == SchematicScene::Normal) {
+        if (cGraphicsScene()->mouseAction() == CGraphicsScene::Normal) {
             setDragMode(QGraphicsView::RubberBandDrag);
         } else {
             setDragMode(QGraphicsView::NoDrag);
         }
     }
 
-    void SchematicWidget::setZoomLevel(qreal zoomLevel, QPointF *toCenter)
+    void CGraphicsView::setZoomLevel(qreal zoomLevel, QPointF *toCenter)
     {
         if (!m_zoomRange.contains(zoomLevel)) {
             return;

@@ -24,8 +24,8 @@
 #include "global.h"
 #include "mainwindow.h"
 #include "schematicdocument.h"
-#include "schematicstatehandler.h"
 #include "singletonowner.h"
+#include "statehandler.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -147,7 +147,7 @@ namespace Caneda
         SchematicDocument *schDoc = qobject_cast<SchematicDocument*>(doc);
 
         if (schDoc) {
-            schDoc->schematicScene()->setSnapToGrid(snap);
+            schDoc->cGraphicsScene()->setSnapToGrid(snap);
         }
     }
 
@@ -184,7 +184,7 @@ namespace Caneda
         SchematicDocument *schDoc = qobject_cast<SchematicDocument*>(doc);
 
         if (schDoc) {
-            if (!schDoc->schematicScene()->distributeElements(Qt::Horizontal)) {
+            if (!schDoc->cGraphicsScene()->distributeElements(Qt::Horizontal)) {
                 QMessageBox::information(0, tr("Info"),
                         tr("At least two elements must be selected!"));
             }
@@ -197,7 +197,7 @@ namespace Caneda
         SchematicDocument *schDoc = qobject_cast<SchematicDocument*>(doc);
 
         if (schDoc) {
-            if (!schDoc->schematicScene()->distributeElements(Qt::Vertical)) {
+            if (!schDoc->cGraphicsScene()->distributeElements(Qt::Vertical)) {
                 QMessageBox::information(0, tr("Info"),
                         tr("At least two elements must be selected!"));
             }
@@ -245,7 +245,7 @@ namespace Caneda
         SchematicDocument *schDoc = qobject_cast<SchematicDocument*>(doc);
 
         if (schDoc) {
-            if (!schDoc->schematicScene()->alignElements(alignment)) {
+            if (!schDoc->cGraphicsScene()->alignElements(alignment)) {
                 QMessageBox::information(0, tr("Info"),
                         tr("At least two elements must be selected!"));
             }

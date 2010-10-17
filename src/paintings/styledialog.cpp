@@ -19,10 +19,11 @@
 
 #include "styledialog.h"
 
+#include "cgraphicsscene.h"
+
 #include "arrow.h"
 #include "ellipsearc.h"
 #include "layer.h"
-#include "schematicscene.h"
 
 #include <QBrush>
 #include <QColorDialog>
@@ -462,9 +463,9 @@ namespace Caneda
             layer->setPaintingRect(newRect);
         }
 
-        if(painting->schematicScene()) {
+        if(painting->cGraphicsScene()) {
             QUndoCommand *cmd = new PaintingPropertyChangeCmd(painting, saveData);
-            painting->schematicScene()->undoStack()->push(cmd);
+            painting->cGraphicsScene()->undoStack()->push(cmd);
         }
     }
 

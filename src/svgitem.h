@@ -20,7 +20,7 @@
 #ifndef SVGITEM_H
 #define SVGITEM_H
 
-#include "item.h"
+#include "cgraphicsitem.h"
 
 #include <QHash>
 #include <QSvgRenderer>
@@ -102,16 +102,16 @@ namespace Caneda
      *
      * \sa SvgPainter, SvgItem::registerConnections()
      */
-    class SvgItem : public QObject, public SchematicItem
+    class SvgItem : public QObject, public CGraphicsItem
     {
         Q_OBJECT
     public:
-        //! Item identifier. \sa SchematicItemTypes
+        //! Item identifier. \sa CGraphicsItemTypes
         enum {
-            Type = SchematicItem::SvgItemType
+            Type = CGraphicsItem::SvgItemType
         };
 
-        explicit SvgItem(SvgPainter *_svgPainter = 0, SchematicScene *scene = 0);
+        explicit SvgItem(SvgPainter *_svgPainter = 0, CGraphicsScene *scene = 0);
         ~SvgItem();
 
         //! Item identifier.

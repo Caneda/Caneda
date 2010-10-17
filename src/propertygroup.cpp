@@ -19,9 +19,9 @@
 
 #include "propertygroup.h"
 
+#include "cgraphicsscene.h"
 #include "component.h"
 #include "propertyitem.h"
-#include "schematicscene.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -32,9 +32,9 @@ namespace Caneda
     /*!
      * Constructor
      * \param propMap A reference to PropertyMap of a component.
-     * \param scene The schematic scene to which this property should belong.
+     * \param scene The graphics scene to which this property should belong.
      */
-    PropertiesGroup::PropertiesGroup(SchematicScene *scene) :
+    PropertiesGroup::PropertiesGroup(CGraphicsScene *scene) :
         m_pointSize(qApp->font().pointSize())
     {
         if(scene) {
@@ -94,7 +94,7 @@ namespace Caneda
                 //Create new property item if it doesn't exist.
                 if(!m_propertyItemsMap.contains(property.name())) {
                     PropertyItem *item = new PropertyItem(property.name(),
-                            schematicScene());
+                            cGraphicsScene());
                     QFont font = item->font();
                     if(font.pointSize() != m_pointSize) {
                         font.setPointSize(m_pointSize);
@@ -160,10 +160,10 @@ namespace Caneda
         delete dummy;
     }
 
-    //! \brief Returns the schematic scene associated.
-    SchematicScene* PropertiesGroup::schematicScene() const
+    //! \brief Returns the graphics scene associated.
+    CGraphicsScene* PropertiesGroup::cGraphicsScene() const
     {
-        return qobject_cast<SchematicScene*>(scene());
+        return qobject_cast<CGraphicsScene*>(scene());
     }
 
     /*!

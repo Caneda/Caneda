@@ -19,11 +19,11 @@
 
 #include "schematicdocument.h"
 
+#include "cgraphicsscene.h"
 #include "schematiccontext.h"
-#include "schematicscene.h"
-#include "schematicstatehandler.h"
 #include "schematicview.h"
 #include "settings.h"
+#include "statehandler.h"
 #include "xmlschematic.h"
 
 #include "dialogs/exportdialog.h"
@@ -39,14 +39,14 @@ namespace Caneda
 {
     SchematicDocument::SchematicDocument()
     {
-        m_schematicScene = new SchematicScene(this);
-        connect(m_schematicScene, SIGNAL(changed()), this,
+        m_cGraphicsScene = new CGraphicsScene(this);
+        connect(m_cGraphicsScene, SIGNAL(changed()), this,
                 SLOT(emitDocumentChanged()));
-        connect(m_schematicScene->undoStack(), SIGNAL(canUndoChanged(bool)),
+        connect(m_cGraphicsScene->undoStack(), SIGNAL(canUndoChanged(bool)),
                 this, SLOT(emitDocumentChanged()));
-        connect(m_schematicScene->undoStack(), SIGNAL(canRedoChanged(bool)),
+        connect(m_cGraphicsScene->undoStack(), SIGNAL(canRedoChanged(bool)),
                 this, SLOT(emitDocumentChanged()));
-        connect(m_schematicScene, SIGNAL(selectionChanged()), this,
+        connect(m_cGraphicsScene, SIGNAL(selectionChanged()), this,
                 SLOT(emitDocumentChanged()));
     }
 
@@ -62,38 +62,38 @@ namespace Caneda
 
     bool SchematicDocument::isModified() const
     {
-        return m_schematicScene->isModified();
+        return m_cGraphicsScene->isModified();
     }
 
     bool SchematicDocument::canUndo() const
     {
-        return m_schematicScene->undoStack()->canUndo();
+        return m_cGraphicsScene->undoStack()->canUndo();
     }
 
     bool SchematicDocument::canRedo() const
     {
-        return m_schematicScene->undoStack()->canRedo();
+        return m_cGraphicsScene->undoStack()->canRedo();
     }
 
     void SchematicDocument::undo()
     {
-        m_schematicScene->undoStack()->undo();
+        m_cGraphicsScene->undoStack()->undo();
     }
 
     void SchematicDocument::redo()
     {
-        m_schematicScene->undoStack()->redo();
+        m_cGraphicsScene->undoStack()->redo();
     }
 
     QUndoStack* SchematicDocument::undoStack()
     {
-        return m_schematicScene->undoStack();
+        return m_cGraphicsScene->undoStack();
     }
 
     bool SchematicDocument::canCut() const
     {
-        QList<QGraphicsItem*> qItems = m_schematicScene->selectedItems();
-        QList<SchematicItem*> schItems = filterItems<SchematicItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
+        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
 
         return schItems.isEmpty() == false;
     }
@@ -110,34 +110,34 @@ namespace Caneda
 
     void SchematicDocument::cut()
     {
-        QList<QGraphicsItem*> qItems = m_schematicScene->selectedItems();
-        QList<SchematicItem*> schItems = filterItems<SchematicItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
+        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
 
         if(!schItems.isEmpty()) {
-            m_schematicScene->cutItems(schItems);
+            m_cGraphicsScene->cutItems(schItems);
         }
     }
 
     void SchematicDocument::copy()
     {
-        QList<QGraphicsItem*> qItems = m_schematicScene->selectedItems();
-        QList<SchematicItem*> schItems = filterItems<SchematicItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
+        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
 
         if(!schItems.isEmpty()) {
-            m_schematicScene->copyItems(schItems);
+            m_cGraphicsScene->copyItems(schItems);
         }
     }
 
     void SchematicDocument::paste()
     {
-        SchematicStateHandler::instance()->slotHandlePaste();
+        StateHandler::instance()->slotHandlePaste();
     }
 
     void SchematicDocument::selectAll()
     {
         QPainterPath path;
-        path.addRect(m_schematicScene->sceneRect());
-        m_schematicScene->setSelectionArea(path);
+        path.addRect(m_cGraphicsScene->sceneRect());
+        m_cGraphicsScene->setSelectionArea(path);
     }
 
     bool SchematicDocument::printSupportsFitInPage() const
@@ -155,9 +155,9 @@ namespace Caneda
         const bool viewGridStatus = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
         Settings::instance()->setCurrentValue("gui/gridVisible", false);
 
-        const QRectF diagramRect = m_schematicScene->imageBoundingRect();
+        const QRectF diagramRect = m_cGraphicsScene->imageBoundingRect();
         if(fitInView) {
-            m_schematicScene->render(&p,
+            m_cGraphicsScene->render(&p,
                     QRectF(), // Dest rect
                     diagramRect, // Src rect
                     Qt::KeepAspectRatio);
@@ -190,7 +190,7 @@ namespace Caneda
 
             for (int i = 0; i < pagesToPrint.size(); ++i) {
                 const QRectF rect = pagesToPrint.at(i);
-                m_schematicScene->render(&p,
+                m_cGraphicsScene->render(&p,
                         rect.translated(-rect.topLeft()), // dest - topleft at (0, 0)
                         rect.translated(diagramRect.topLeft()), // src
                         Qt::KeepAspectRatio);
@@ -242,7 +242,7 @@ namespace Caneda
                 return false;
             }
 
-            m_schematicScene->undoStack()->clear();
+            m_cGraphicsScene->undoStack()->clear();
             return true;
         }
 
@@ -262,7 +262,7 @@ namespace Caneda
     void SchematicDocument::documentSettings()
     {
         QList<SettingsPage *> wantedPages;
-        SettingsPage *page = new SchematicDocumentConfigurationPage(schematicScene());
+        SettingsPage *page = new SchematicDocumentConfigurationPage(cGraphicsScene());
         wantedPages << page;
         page = new SimulationConfigurationPage();
         wantedPages << page;
@@ -281,9 +281,9 @@ namespace Caneda
     }
 
     // End of Interface implemention.
-    SchematicScene* SchematicDocument::schematicScene() const
+    CGraphicsScene* SchematicDocument::cGraphicsScene() const
     {
-        return m_schematicScene;
+        return m_cGraphicsScene;
     }
 
 } // namespace Caneda

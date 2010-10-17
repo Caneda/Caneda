@@ -31,9 +31,9 @@ namespace Caneda
     /*!
      * \brief Constructs a line item.
      * \param line Line in local coords.
-     * \param scene SchematicScene to which this item should be added.
+     * \param scene CGraphicsScene to which this item should be added.
      */
-    GraphicLine::GraphicLine(const QLineF &line, SchematicScene *scene) :
+    GraphicLine::GraphicLine(const QLineF &line, CGraphicsScene *scene) :
           Painting(scene)
     {
        setLine(line);
@@ -85,7 +85,7 @@ namespace Caneda
     }
 
     //! \brief Returns copy of this line item.
-    GraphicLine* GraphicLine::copy(SchematicScene *scene) const
+    GraphicLine* GraphicLine::copy(CGraphicsScene *scene) const
     {
        GraphicLine *lineItem = new GraphicLine(line(), scene);
        Painting::copyDataTo(lineItem);

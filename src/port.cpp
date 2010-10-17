@@ -19,9 +19,9 @@
 
 #include "port.h"
 
+#include "cgraphicsitem.h"
+#include "cgraphicsscene.h"
 #include "component.h"
-#include "item.h"
-#include "schematicscene.h"
 #include "wire.h"
 
 #include <QDebug>
@@ -48,7 +48,7 @@ namespace Caneda
      *************************************************************/
 
     //! \brief Construct portowner with wire as owner.
-    PortOwner::PortOwner(SchematicItem * item) : m_item(item)
+    PortOwner::PortOwner(CGraphicsItem * item) : m_item(item)
     {
         Q_ASSERT(isWire() || isComponent());
     }
@@ -68,7 +68,7 @@ namespace Caneda
     //! \brief Return the wire if stored, or null otherwise.
     Wire* PortOwner::wire() const
     {
-        if(m_item->type() == SchematicItem::WireType) {
+        if(m_item->type() == CGraphicsItem::WireType) {
             return static_cast<Wire*>(m_item);
         }
         else {
@@ -79,7 +79,7 @@ namespace Caneda
     //! \brief Return the wire if stored, or null otherwise.
     Component* PortOwner::component() const
     {
-        if(m_item->type() == SchematicItem::ComponentType) {
+        if(m_item->type() == CGraphicsItem::ComponentType) {
             return static_cast<Component*>(m_item);
         }
         else {
@@ -96,7 +96,7 @@ namespace Caneda
     /*! Constructor
      *  \brief Construct port with canedaitem as owner and shared data \data.
      */
-    Port::Port(SchematicItem *owner, const QSharedDataPointer<PortData> &data) :
+    Port::Port(CGraphicsItem *owner, const QSharedDataPointer<PortData> &data) :
         d(data),
         m_owner(new PortOwner(owner)),
         m_connections(0),
@@ -107,7 +107,7 @@ namespace Caneda
     /*! Constructor
       \brief Construct port with canedaitem as owner, position \pos and port's name \portName.
       */
-    Port::Port(SchematicItem *owner, QPointF _pos, QString portName) :
+    Port::Port(CGraphicsItem *owner, QPointF _pos, QString portName) :
         d(new PortData(_pos, portName)),
         m_owner(new PortOwner(owner)),
         m_connections(0),
@@ -164,13 +164,13 @@ namespace Caneda
         d->pos = newPos;
     }
 
-    SchematicScene* Port::schematicScene() const
+    CGraphicsScene* Port::cGraphicsScene() const
     {
         if(owner()->wire()) {
-            return owner()->wire()->schematicScene();
+            return owner()->wire()->cGraphicsScene();
         }
         else {
-            return owner()->component()->schematicScene();
+            return owner()->component()->cGraphicsScene();
         }
     }
 
@@ -396,8 +396,8 @@ namespace Caneda
     //! \brief Finds an interecting port on schematic.
     Port* Port::findIntersectingPort() const
     {
-        SchematicScene *scene =
-            qobject_cast<SchematicScene*>(ownerItem()->scene());
+        CGraphicsScene *scene =
+            qobject_cast<CGraphicsScene*>(ownerItem()->scene());
         if(!scene) {
             return 0;
         }
@@ -438,8 +438,8 @@ namespace Caneda
     //! \brief Finds a coinciding port on schematic.
     Port* Port::findCoincidingPort() const
     {
-        SchematicScene *scene =
-            qobject_cast<SchematicScene*>(ownerItem()->scene());
+        CGraphicsScene *scene =
+            qobject_cast<CGraphicsScene*>(ownerItem()->scene());
         if(!scene) {
             return 0;
         }

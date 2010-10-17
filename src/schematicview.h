@@ -25,8 +25,8 @@
 namespace Caneda
 {
     // Forward declrations
+    class CGraphicsView;
     class SchematicDocument;
-    class SchematicWidget;
 
     class SchematicView : public IView
     {
@@ -59,7 +59,7 @@ namespace Caneda
         void onWidgetFocussedOut();
 
     private:
-        SchematicWidget *m_schematicWidget;
+        CGraphicsView *m_cGraphicsView;
     };
 
 } // namespace Caneda

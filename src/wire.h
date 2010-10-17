@@ -20,7 +20,7 @@
 #ifndef WIRE_H
 #define WIRE_H
 
-#include "item.h"
+#include "cgraphicsitem.h"
 #include "port.h"
 #include "wireline.h"
 
@@ -32,17 +32,17 @@ class QGraphicsLineItem;
 namespace Caneda
 {
     // Forward declarations
-    class SchematicScene;
+    class CGraphicsScene;
 
     typedef QList<WireLine> WireLines;
 
     /*!
      * \brief This class represents a wire on schematic.
      */
-    class Wire : public SchematicItem
+    class Wire : public CGraphicsItem
     {
     public:
-        enum { Type = SchematicItem::WireType };
+        enum { Type = CGraphicsItem::WireType };
 
         //! A struct to store wire's details.
         struct Data {
@@ -53,8 +53,8 @@ namespace Caneda
         };
 
         Wire(const QPointF &startPos, const QPointF &endPos, bool doConnect = true,
-                SchematicScene *scene = 0);
-        Wire(Port *startPort, Port *endPort, SchematicScene *scene = 0);
+                CGraphicsScene *scene = 0);
+        Wire(Port *startPort, Port *endPort, CGraphicsScene *scene = 0);
         ~Wire();
 
         //! Return's the wire's ports list.
@@ -91,7 +91,7 @@ namespace Caneda
         void saveData(Caneda::XmlWriter *writer) const;
         void saveData(Caneda::XmlWriter *writer, int id) const;
 
-        static Wire* loadWireData(Caneda::XmlReader *reader, SchematicScene *scene);
+        static Wire* loadWireData(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);
 
         //! No rotate defined for wires.
@@ -110,7 +110,7 @@ namespace Caneda
 
         int checkAndConnect(Caneda::UndoOption opt);
 
-        Wire* copy(SchematicScene *scene = 0) const;
+        Wire* copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(Wire *wire) const;
 
         bool isComponent() const { return false; }

@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef ITEM_H
-#define ITEM_H
+#ifndef C_GRAPHICS_ITEM_H
+#define C_GRAPHICS_ITEM_H
 
 #include <QBrush>
 #include <QDialog>
@@ -43,7 +43,7 @@ namespace Caneda
 {
     class XmlReader;
     class XmlWriter;
-    class SchematicScene;
+    class CGraphicsScene;
 
     //! This enum determines the rotation direction.
     enum AngleDirection {
@@ -81,8 +81,8 @@ namespace Caneda
             const QRectF& rect);
 
 
-    //! \brief SchematicItem - The base class for components, wires, nodes..
-    class SchematicItem : public QGraphicsItem
+    //! \brief CGraphicsItem - The base class for components, wires, nodes..
+    class CGraphicsItem : public QGraphicsItem
     {
     public:
         /*!
@@ -95,37 +95,37 @@ namespace Caneda
          * }
          * \sa canedaitem_cast and PATTERN.
          */
-        enum SchematicItemTypes {
-            //!Recognizes all classes derived from SchematicItem
-            SchematicItemType = (1 << (std::numeric_limits<int>::digits-1)),
+        enum CGraphicsItemTypes {
+            //!Recognizes all classes derived from CGraphicsItem
+            CGraphicsItemType = (1 << (std::numeric_limits<int>::digits-1)),
             //!Recognizes classes derived from SvgItem
-            SvgItemType = PATTERN(SchematicItemType, 1),
+            SvgItemType = PATTERN(CGraphicsItemType, 1),
             //!Recognizes classes derived from Component
             ComponentType = PATTERN(SvgItemType, 1),
             //!Recognizes classes derived from Wire
-            WireType = PATTERN(SchematicItemType, 3),
+            WireType = PATTERN(CGraphicsItemType, 3),
             //!Recognizes classes derived from Painting
-            PaintingType = PATTERN(SchematicItemType, 4),
+            PaintingType = PATTERN(CGraphicsItemType, 4),
             //!Recognizes classes derived from Display
-            DisplayType = PATTERN(SchematicItemType, 5)
+            DisplayType = PATTERN(CGraphicsItemType, 5)
         };
 
-        //! Item identifier \sa SchematicItemTypes
+        //! Item identifier \sa CGraphicsItemTypes
         enum {
-            Type = SchematicItemType
+            Type = CGraphicsItemType
         };
 
-        SchematicItem(QGraphicsItem* parent = 0, SchematicScene* scene = 0);
-        virtual ~SchematicItem();
+        CGraphicsItem(QGraphicsItem* parent = 0, CGraphicsScene* scene = 0);
+        virtual ~CGraphicsItem();
 
         //! Return type of item
-        int type() const { return SchematicItemType; }
+        int type() const { return CGraphicsItemType; }
         //! Return bounding box
         QRectF boundingRect() const { return m_boundingRect; }
         //! Return the shape of the item.
         QPainterPath shape() const { return m_shape; }
 
-        SchematicScene* schematicScene() const;
+        CGraphicsScene* cGraphicsScene() const;
 
         //! Virtual method to write item's properties to writer.
         virtual void saveData(Caneda::XmlWriter *) const {}
@@ -138,8 +138,8 @@ namespace Caneda
         virtual void mirrorAlong(Qt::Axis axis);
         virtual void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise);
 
-        virtual SchematicItem* copy(SchematicScene *scene = 0) const;
-        virtual void copyDataTo(SchematicItem *item) const;
+        virtual CGraphicsItem* copy(CGraphicsScene *scene = 0) const;
+        virtual void copyDataTo(CGraphicsItem*item) const;
 
         //! This is convenience method used for rtti.
         virtual bool isComponent() const { return false; }
@@ -168,7 +168,7 @@ namespace Caneda
      * This function actually works for items following the rules.
      * Firstly, items should use appropriate Type constant.
      * Secondly, type() should return this Type.
-     * \sa SchematicItemTypes
+     * \sa CGraphicsItemTypes
      */
     template<typename T> T canedaitem_cast(QGraphicsItem *item)
     {
@@ -223,12 +223,12 @@ namespace Caneda
      *               or not.
      */
     template<typename T>
-    QList<T*> filterItems(QList<SchematicItem*> &items, FilterOption option = DontRemoveItems)
+    QList<T*> filterItems(QList<CGraphicsItem*> &items, FilterOption option = DontRemoveItems)
     {
         QList<T*> tItems;
-        QList<SchematicItem*>::iterator it = items.begin();
+        QList<CGraphicsItem*>::iterator it = items.begin();
         while(it != items.end()) {
-            SchematicItem *item = *it;
+            CGraphicsItem *item = *it;
             T *tItem = canedaitem_cast<T*>(item);
             if(tItem) {
                 tItems << tItem;
@@ -254,4 +254,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //ITEM_H
+#endif //C_GRAPHICS_ITEM_H

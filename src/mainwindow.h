@@ -36,8 +36,6 @@ namespace Caneda
     class ComponentsSidebar;
     class FolderBrowser;
     class Project;
-    class SchematicScene;
-    class SchematicWidget;
     class TabWidget;
 
     class MainWindow : public QMainWindow

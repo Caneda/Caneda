@@ -27,14 +27,14 @@
 namespace Caneda
 {
     //Forward declarations.
-    class SchematicScene;
+    class CGraphicsScene;
 
     //! \brief Class used to represent the text corresponding to property on schematic.
     class PropertyItem : public QGraphicsTextItem
     {
         Q_OBJECT;
     public:
-        PropertyItem(const QString& name, SchematicScene *scene);
+        PropertyItem(const QString& name, CGraphicsScene *scene);
 
         QRectF boundingRect() const;
         QPainterPath shape() const;

@@ -19,8 +19,8 @@
 
 #include "undocommands.h"
 
+#include "cgraphicsscene.h"
 #include "port.h"
-#include "schematicscene.h"
 
 #include "paintings/graphictext.h"
 
@@ -68,23 +68,23 @@ namespace Caneda
     ScenePropertyChangeCmd::ScenePropertyChangeCmd(const QString& propertyName,
             const QVariant& newValue,
             const QVariant& oldValue,
-            SchematicScene *const schematic,
+            CGraphicsScene *const scene,
             QUndoCommand *parent) :
         QUndoCommand(parent),
         m_property(propertyName), m_newValue(newValue), m_oldValue(oldValue),
-        m_schematic(schematic)
+        m_scene(scene)
     {
         setText(QString("Changed ") + propertyName);
     }
 
     void ScenePropertyChangeCmd::undo()
     {
-        m_schematic->setProperty(m_property, m_oldValue);
+        m_scene->setProperty(m_property, m_oldValue);
     }
 
     void ScenePropertyChangeCmd::redo()
     {
-        m_schematic->setProperty(m_property, m_newValue);
+        m_scene->setProperty(m_property, m_newValue);
     }
 
     /*
@@ -152,7 +152,7 @@ namespace Caneda
     };
 
     ConnectCmd::ConnectCmd(Port *p1, Port *p2, const QList<Wire*> &wires,
-            SchematicScene *scene, QUndoCommand *parent) :
+            CGraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_port1(p1), m_port2(p2), m_scene(scene)
     {
@@ -247,7 +247,7 @@ namespace Caneda
     ##########################################################################
     */
 
-    AddWireCmd::AddWireCmd(Wire *wire, SchematicScene *scene, QUndoCommand *parent) :
+    AddWireCmd::AddWireCmd(Wire *wire, CGraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_wire(wire),
         m_scene(scene),
@@ -281,7 +281,7 @@ namespace Caneda
     AddWireBetweenPortsCmd::AddWireBetweenPortsCmd(Port *p1, Port *p2, QUndoCommand *parent) :
         QUndoCommand(parent), m_port1(p1), m_port2(p2)
     {
-        m_scene = m_port1->schematicScene();
+        m_scene = m_port1->cGraphicsScene();
         m_wire = new Wire(m_port1, m_port2, m_scene);
         m_pos = m_wire->scenePos();
     }
@@ -347,7 +347,7 @@ namespace Caneda
     ##########################################################################
     */
 
-    InsertItemCmd::InsertItemCmd(QGraphicsItem *const item, SchematicScene *scene,
+    InsertItemCmd::InsertItemCmd(QGraphicsItem *const item, CGraphicsScene *scene,
             QPointF pos, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_item(item), m_scene(scene)
@@ -391,12 +391,12 @@ namespace Caneda
     ##########################################################################
     */
 
-    RemoveItemsCmd::RemoveItemsCmd(const QList<SchematicItem*> &items, SchematicScene *scene,
+    RemoveItemsCmd::RemoveItemsCmd(const QList<CGraphicsItem*> &items, CGraphicsScene *scene,
             QUndoCommand *parent) :
         QUndoCommand(parent),
         m_scene(scene)
     {
-        foreach(SchematicItem *item, items) {
+        foreach(CGraphicsItem *item, items) {
             m_itemPointPairs << ItemPointPair(item, item->pos());
         }
     }
@@ -432,14 +432,14 @@ namespace Caneda
     ##########################################################################
     */
 
-    RotateItemsCmd::RotateItemsCmd(QList<SchematicItem*> items, const Caneda::AngleDirection dir, QUndoCommand *parent) :
+    RotateItemsCmd::RotateItemsCmd(QList<CGraphicsItem*> items, const Caneda::AngleDirection dir, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_items(items)
     {
         m_angleDirection = dir;
     }
 
-    RotateItemsCmd::RotateItemsCmd(SchematicItem *item, const Caneda::AngleDirection dir, QUndoCommand *parent) :
+    RotateItemsCmd::RotateItemsCmd(CGraphicsItem *item, const Caneda::AngleDirection dir, QUndoCommand *parent) :
         QUndoCommand(parent)
     {
         m_items << item;
@@ -448,14 +448,14 @@ namespace Caneda
 
     void RotateItemsCmd::undo()
     {
-        foreach(SchematicItem *item, m_items) {
+        foreach(CGraphicsItem *item, m_items) {
             item->rotate90(m_angleDirection == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise);
         }
     }
 
     void RotateItemsCmd::redo()
     {
-        foreach(SchematicItem *item, m_items) {
+        foreach(CGraphicsItem *item, m_items) {
             item->rotate90(Caneda::AntiClockwise);
         }
     }
@@ -466,14 +466,14 @@ namespace Caneda
     ##########################################################################
     */
 
-    MirrorItemsCmd::MirrorItemsCmd(QList<SchematicItem*> items, const Qt::Axis axis, QUndoCommand *parent) :
+    MirrorItemsCmd::MirrorItemsCmd(QList<CGraphicsItem*> items, const Qt::Axis axis, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_items(items),
         m_axis(axis)
     {
     }
 
-    MirrorItemsCmd::MirrorItemsCmd(SchematicItem *item, const Qt::Axis axis, QUndoCommand *parent) :
+    MirrorItemsCmd::MirrorItemsCmd(CGraphicsItem *item, const Qt::Axis axis, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_axis(axis)
     {
@@ -482,14 +482,14 @@ namespace Caneda
 
     void MirrorItemsCmd::undo()
     {
-        foreach(SchematicItem *item, m_items) {
+        foreach(CGraphicsItem *item, m_items) {
             item->mirrorAlong(m_axis);
         }
     }
 
     void MirrorItemsCmd::redo()
     {
-        foreach(SchematicItem *item, m_items) {
+        foreach(CGraphicsItem *item, m_items) {
             item->mirrorAlong(m_axis);
         }
     }

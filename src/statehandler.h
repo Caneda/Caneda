@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,58 +17,50 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SCHEMATIC_WIDGET_H
-#define SCHEMATIC_WIDGET_H
+#ifndef STATE_HANDLER_H
+#define STATE_HANDLER_H
 
-#include "global.h"
-
-#include <QGraphicsView>
+#include <QObject>
 
 namespace Caneda
 {
-    // Forward declarations
-    class SchematicItem;
-    class SchematicScene;
+    // Forward declarations.
+    class StateHandlerPrivate;
+    class CGraphicsView;
 
-    class SchematicWidget : public QGraphicsView
+    class StateHandler : public QObject
     {
         Q_OBJECT
     public:
-        static const qreal zoomFactor;
+        static StateHandler* instance();
+        ~StateHandler();
 
-        SchematicWidget(SchematicScene *scene = 0);
-        ~SchematicWidget();
+        void registerWidget(CGraphicsView *widget);
+        void unregisterWidget(CGraphicsView *widget);
 
-        SchematicScene* schematicScene() const;
 
-        void zoomIn();
-        void zoomOut();
-        void zoomFitInBest();
-        void zoomOriginal();
-        qreal currentZoom() { return m_currentZoom; };
-
-        void zoomFitRect(const QRectF &rect);
-
-    Q_SIGNALS:
-        void cursorPositionChanged(const QString& newPos);
-        void focussedIn(SchematicWidget *view);
-        void focussedOut(SchematicWidget *view);
-
-    protected:
-        void mouseMoveEvent(QMouseEvent *event);
-        void focusInEvent(QFocusEvent *event);
-        void focusOutEvent(QFocusEvent *event);
-
-    private Q_SLOTS:
-        void onMouseActionChanged();
+    public Q_SLOTS:
+        void slotSidebarItemClicked(const QString& item, const QString& category);
+        void slotHandlePaste();
+        void slotRotateInsertibles();
+        void slotMirrorInsertibles();
+        void slotOnObjectDestroyed(QObject *sender);
+        void slotUpdateFocussedWidget(CGraphicsView *widget);
+        void slotPerformToggleAction(const QString& sender, bool on);
+        void slotSetNormalAction();
+        void slotInsertToolbarComponent(const QString& action, bool on);
+        void slotUpdateToolbarInsertibles();
 
     private:
-        void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);
+        StateHandler(QObject *parent = 0);
 
-        ZoomRange m_zoomRange;
-        qreal m_currentZoom;
+        void applyCursor(CGraphicsView *widget);
+        void applyState(CGraphicsView *widget);
+        void applyStateToAllWidgets();
+
+        StateHandlerPrivate *d;
     };
 
 } // namespace Caneda
 
-#endif //SCHEMATIC_WIDGET_H
+#endif //STATE_HANDLER_H

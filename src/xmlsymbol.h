@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef XMLSYMBOL_H
-#define XMLSYMBOL_H
+#ifndef XML_SYMBOL_H
+#define XML_SYMBOL_H
 
 // Forward declarations
 class QString;
@@ -26,8 +26,8 @@ class QString;
 namespace Caneda
 {
     // Forward declarations
+    class CGraphicsScene;
     class SchematicDocument;
-    class SchematicScene;
 
     class XmlSymbol
     {
@@ -39,7 +39,7 @@ namespace Caneda
         bool load();
 
         SchematicDocument* schematicDocument() const;
-        SchematicScene* schematicScene() const;
+        CGraphicsScene* cGraphicsScene() const;
         QString fileName() const;
 
     private:
@@ -50,4 +50,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //XMLSYMBOL_H
+#endif //XML_SYMBOL_H

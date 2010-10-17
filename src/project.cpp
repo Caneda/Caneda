@@ -322,7 +322,7 @@ namespace Caneda
         SchematicContext *context = SchematicContext::instance();
         QScopedPointer<SchematicDocument> document(qobject_cast<SchematicDocument*>(context->newDocument()));
         document->setFileName(symbolFileName);
-        document->schematicScene()->setMode(Caneda::SymbolMode);
+        document->cGraphicsScene()->setMode(Caneda::SymbolMode);
         document->load();
 
         // Then we save the symbol in a xsym file

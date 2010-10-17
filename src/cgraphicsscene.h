@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SCHEMATIC_SCENE_H
-#define SCHEMATIC_SCENE_H
+#ifndef C_GRAPHICS_SCENE_H
+#define C_GRAPHICS_SCENE_H
 
 #include "undocommands.h"
 
@@ -34,18 +34,18 @@ namespace Caneda
 {
     // Forward declarations
     class Component;
+    class CGraphicsItem;
     class Painting;
-    class SchematicItem;
     class SvgPainter;
     class Wire;
 
     typedef QGraphicsSceneMouseEvent MouseActionEvent;
 
     /*!
-     * SchematicScene
+     * CGraphicsScene
      * This class provides a surface for managing a large number of schematic element
      */
-    class SchematicScene : public QGraphicsScene
+    class CGraphicsScene : public QGraphicsScene
     {
     Q_OBJECT
     public:
@@ -80,37 +80,37 @@ namespace Caneda
         static const QRectF DefaultSceneRect;
 
         /* constructor/destructor */
-        SchematicScene(QObject *parent = 0);
-        ~SchematicScene();
+        CGraphicsScene(QObject *parent = 0);
+        ~CGraphicsScene();
 
         bool areItemsMoving() const { return m_areItemsMoving; }
 
         /* geometry change */
 
         /* mirror */
-        void mirrorItems(QList<SchematicItem*> &itemsenum,
+        void mirrorItems(QList<CGraphicsItem*> &itemsenum,
                 const Caneda::UndoOption opt,
                 const Qt::Axis axis);
-        void mirrorXItems(QList<SchematicItem*> &items, const Caneda::UndoOption opt) {
+        void mirrorXItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption opt) {
             mirrorItems(items, opt, Qt::XAxis);
         }
 
-        void mirrorYItems(QList<SchematicItem*> &items, const Caneda::UndoOption opt) {
+        void mirrorYItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption opt) {
             mirrorItems(items, opt, Qt::YAxis);
         }
 
-        void rotateItems(QList<SchematicItem*> &items, const Caneda::AngleDirection dir,
+        void rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir,
                 const Caneda::UndoOption);
-        void rotateItems(QList<SchematicItem*> &items, const Caneda::UndoOption undo) {
+        void rotateItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption undo) {
             rotateItems(items, Caneda::Clockwise, undo);
         }
 
-        void deleteItems(QList<SchematicItem*> &items, const Caneda::UndoOption);
-        void toggleActiveStatus(QList<SchematicItem*> &components, const Caneda::UndoOption);
+        void deleteItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption);
+        void toggleActiveStatus(QList<CGraphicsItem*> &components, const Caneda::UndoOption);
 
         // these aren't toggle actions.
-        void cutItems(QList<SchematicItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
-        void copyItems(QList<SchematicItem*> &items) const;
+        void cutItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
+        void copyItems(QList<CGraphicsItem*> &items) const;
 
         bool isModified() const { return m_modified; }
 
@@ -161,7 +161,7 @@ namespace Caneda
 
         void resetState();
         void beginPaintingDraw(Painting *item);
-        void beginInsertingItems(const QList<SchematicItem*> &items);
+        void beginInsertingItems(const QList<CGraphicsItem*> &items);
 
         bool alignElements(const Qt::Alignment alignment);
         bool distributeElements(const Qt::Orientation orientation);
@@ -245,8 +245,8 @@ namespace Caneda
         void deletingEventLeftMouseClick(const QPointF &pos);
 
         /* private distribute */
-        void distributeElementsHorizontally(QList<SchematicItem*> items);
-        void distributeElementsVertically(QList<SchematicItem*> items);
+        void distributeElementsHorizontally(QList<CGraphicsItem*> items);
+        void distributeElementsVertically(QList<CGraphicsItem*> items);
 
         /* alignment */
         static const QString Alignment2QString(const Qt::Alignment alignment);
@@ -255,17 +255,17 @@ namespace Caneda
         bool sidebarItemClickedPaintingsItems(const QString& itemName);
         bool sidebarItemClickedNormalItems(const QString& itemName, const QString& category);
 
-        SchematicItem* itemForName(const QString& name, const QString& category);
-        void placeItem(SchematicItem *item, const QPointF &pos, const Caneda::UndoOption opt);
+        CGraphicsItem* itemForName(const QString& name, const QString& category);
+        void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
         int componentLabelSuffix(const QString& labelPrefix) const;
 
         int unusedPortNumber();
         bool isPortNumberUsed(int num) const;
         void setNumberUnused(int num);
 
-        void disconnectItems(const QList<SchematicItem*> &qItems,
+        void disconnectItems(const QList<CGraphicsItem*> &qItems,
                 const Caneda::UndoOption opt = Caneda::PushUndoCmd);
-        void connectItems(const QList<SchematicItem*> &qItems, const Caneda::UndoOption opt);
+        void connectItems(const QList<CGraphicsItem*> &qItems, const Caneda::UndoOption opt);
 
         void placeAndDuplicatePainting();
 
@@ -310,10 +310,10 @@ namespace Caneda
         QPointF lastPos;
 
         /*!
-         * \brief A list of SchematicItem which are to be placed/pasted.
+         * \brief A list of CGraphicsItem which are to be placed/pasted.
          * \sa beginInsertingItems
          */
-        QList<SchematicItem*> m_insertibles;
+        QList<CGraphicsItem*> m_insertibles;
 
         //! Wiring state machine state  enum
         enum wiringStateEnum {
@@ -406,11 +406,11 @@ namespace Caneda
         bool m_macroProgress;
         /*!
          * \brief A state holder to know whether shortcut events are blocked or not
-         * \sa SchematicScene::eventFilter, SchematicScene::blockShortcuts
+         * \sa CGraphicsScene::eventFilter, CGraphicsScene::blockShortcuts
          */
         bool m_shortcutsBlocked;
     };
 
 } // namespace Caneda
 
-#endif //SCHEMATIC_SCENE_H
+#endif //C_GRAPHICS_SCENE_H

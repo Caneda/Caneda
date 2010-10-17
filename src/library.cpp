@@ -19,8 +19,8 @@
 
 #include "library.h"
 
+#include "cgraphicsscene.h"
 #include "global.h"
-#include "schematicscene.h"
 #include "singletonowner.h"
 
 #include "xmlutilities/xmlutilities.h"
@@ -355,7 +355,7 @@ namespace Caneda
      *  it searches for all libraries for component and returns first match.
      * \return Component on success and null pointer on failure.
      */
-    Component* LibraryLoader::newComponent(QString componentName, SchematicScene *scene,
+    Component* LibraryLoader::newComponent(QString componentName, CGraphicsScene *scene,
             QString library)
     {
         ComponentDataPtr data;

@@ -19,8 +19,8 @@
 
 #include "wire.h"
 
+#include "cgraphicsscene.h"
 #include "global.h"
-#include "schematicscene.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -94,7 +94,7 @@ namespace Caneda
      * \todo try to remove doconnect and do another operation for do connect
      */
     Wire::Wire(const QPointF& startPos, const QPointF& endPos, bool doConnect,
-            SchematicScene *scene) : SchematicItem(0, scene), m_grabbedIndex(-1)
+            CGraphicsScene *scene) : CGraphicsItem(0, scene), m_grabbedIndex(-1)
     {
         /* set position */
         setPos((startPos + endPos)/2);
@@ -129,8 +129,8 @@ namespace Caneda
      * Also connects the wire's port's to coinciding ports.
      * \bug br->gpk: does the new port is a purpose??
      */
-    Wire::Wire(Port *startPort, Port *endPort, SchematicScene *scene) :
-        SchematicItem(0, scene), m_grabbedIndex(-1)
+    Wire::Wire(Port *startPort, Port *endPort, CGraphicsScene *scene) :
+        CGraphicsItem(0, scene), m_grabbedIndex(-1)
         {
             QPointF startPos = startPort->scenePos();
             QPointF endPos = endPort->scenePos();
@@ -535,7 +535,7 @@ namespace Caneda
         writer->writeEndElement();
     }
 
-    Wire* Wire::loadWireData(Caneda::XmlReader *reader, SchematicScene *scene)
+    Wire* Wire::loadWireData(Caneda::XmlReader *reader, CGraphicsScene *scene)
     {
         Wire *retVal = new Wire(QPointF(10, 10), QPointF(50,50), false, scene);
         retVal->loadData(reader);
@@ -599,7 +599,7 @@ namespace Caneda
         int num_of_connections = 0;
 
         if(opt == Caneda::PushUndoCmd) {
-            schematicScene()->undoStack()->beginMacro(QString());
+            cGraphicsScene()->undoStack()->beginMacro(QString());
         }
 
         foreach(Port *port, m_ports) {
@@ -607,8 +607,8 @@ namespace Caneda
             if(other) {
                 if(opt == Caneda::PushUndoCmd) {
                     QList<Wire*> wires = Port::wiresBetween(port, other);
-                    ConnectCmd *cmd = new ConnectCmd(port, other, wires, schematicScene());
-                    schematicScene()->undoStack()->push(cmd);
+                    ConnectCmd *cmd = new ConnectCmd(port, other, wires, cGraphicsScene());
+                    cGraphicsScene()->undoStack()->push(cmd);
                 }
                 else {
                     port->connectTo(other);
@@ -618,13 +618,13 @@ namespace Caneda
         }
 
         if(opt == Caneda::PushUndoCmd) {
-            schematicScene()->undoStack()->endMacro();
+            cGraphicsScene()->undoStack()->endMacro();
         }
 
         return num_of_connections;
     }
 
-    Wire* Wire::copy(SchematicScene *scene) const
+    Wire* Wire::copy(CGraphicsScene *scene) const
     {
         Wire *wire = new Wire(QPointF(1,1), QPointF(5,5), false, scene);
         Wire::copyDataTo(wire);
@@ -633,7 +633,7 @@ namespace Caneda
 
     void Wire::copyDataTo(Wire *wire) const
     {
-        SchematicItem::copyDataTo(static_cast<SchematicItem*>(wire));
+        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(wire));
         Wire::Data _data;
 
         _data.wLines = m_wLines;
@@ -650,7 +650,7 @@ namespace Caneda
         m_grabbedIndex = -1;
         scene()->clearSelection();
         scene()->clearFocus();
-        SchematicItem::mousePressEvent(event);
+        CGraphicsItem::mousePressEvent(event);
         Q_ASSERT(mapFromScene(event->scenePos()) == event->pos());
         m_grabbedIndex = indexForPos(event->pos());
     }
@@ -666,7 +666,7 @@ namespace Caneda
     //! \todo Not called at all!
     void Wire::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
-        SchematicItem::mouseReleaseEvent(event);
+        CGraphicsItem::mouseReleaseEvent(event);
     }
 
     //! \brief Updates the wire's geometry and caches it.
@@ -684,7 +684,7 @@ namespace Caneda
 
         addPortEllipses(m_ports, path);
         rect = portsRect(m_ports, rect);
-        SchematicItem::setShapeAndBoundRect(path, path.boundingRect());
+        CGraphicsItem::setShapeAndBoundRect(path, path.boundingRect());
     }
 
     //! \brief Returns index corresponding to position \a pos.

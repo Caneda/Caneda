@@ -19,9 +19,9 @@
 
 #include "propertyitem.h"
 
+#include "cgraphicsscene.h"
 #include "component.h"
 #include "propertygroup.h"
-#include "schematicscene.h"
 #include "undocommands.h"
 
 #include <QApplication>
@@ -45,7 +45,7 @@ namespace Caneda
      * \param propMap The reference of property map. The property is fetched from here.
      * \param scene The schematic scene to which this item should belong.
      */
-    PropertyItem::PropertyItem(const QString &propName , SchematicScene *scene) :
+    PropertyItem::PropertyItem(const QString &propName , CGraphicsScene *scene) :
         m_propertyName(propName), m_staticText(m_propertyName), m_edited(false)
     {
         m_staticText.append(" = ");
@@ -292,8 +292,8 @@ namespace Caneda
                 QVariant newProperty(component()->property(m_propertyName));
                 PropertiesGroup *parentGroup = static_cast<PropertiesGroup*>(group());
                 Q_ASSERT(parentGroup);
-                SchematicScene *schScene = parentGroup->schematicScene();
-                schScene->undoStack()->push(new PropertyChangeCmd(m_propertyName,
+                CGraphicsScene *scene = parentGroup->cGraphicsScene();
+                scene->undoStack()->push(new PropertyChangeCmd(m_propertyName,
                             newProperty, oldProperty, component()));
             }
             clearFocus();

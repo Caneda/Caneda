@@ -384,35 +384,35 @@ namespace Caneda
      * Constructor
      * @param QWidget *parent The parent of the dialog.
      */
-    SchematicDocumentConfigurationPage::SchematicDocumentConfigurationPage(SchematicScene *scene,
+    SchematicDocumentConfigurationPage::SchematicDocumentConfigurationPage(CGraphicsScene *scene,
             QWidget *parent) : SettingsPage(parent)
     {
 
-        Scn = scene;
+        m_scene = scene;
 
         //We set the frame group of options **********************************
         checkShowFrame = new QCheckBox;
-        checkShowFrame->setChecked(Scn->isFrameVisible());
+        checkShowFrame->setChecked(m_scene->isFrameVisible());
 
         spinSchemaX = new QSpinBox;
         spinSchemaX->setMinimum(500);
         spinSchemaX->setMaximum(10000);
-        spinSchemaX->setValue(Scn->frameWidth());
+        spinSchemaX->setValue(m_scene->frameWidth());
 
         spinSchemaY = new QSpinBox;
         spinSchemaY->setMinimum(300);
         spinSchemaY->setMaximum(10000);
-        spinSchemaY->setValue(Scn->frameHeight());
+        spinSchemaY->setValue(m_scene->frameHeight());
 
         spinFrameY = new QSpinBox;
         spinFrameY->setMinimum(1);
         spinFrameY->setMaximum(50);
-        spinFrameY->setValue(Scn->frameRows());
+        spinFrameY->setValue(m_scene->frameRows());
 
         spinFrameX = new QSpinBox;
         spinFrameX->setMinimum(1);
         spinFrameX->setMaximum(50);
-        spinFrameX->setValue(Scn->frameColumns());
+        spinFrameX->setValue(m_scene->frameColumns());
 
         QGroupBox *frame = new QGroupBox(tr("Frame"), this);
         QFormLayout *frameLayout = new QFormLayout(frame);
@@ -428,7 +428,7 @@ namespace Caneda
         editName = new QLineEdit;
         editRevision = new QLineEdit;
         editDate = new QDateEdit;
-        foreach(QString frame_text, Scn->frameTexts()){
+        foreach(QString frame_text, m_scene->frameTexts()){
             if(frame_text.contains("Title: ")) {
                 editTitle->setText(frame_text.remove("Title: "));
             }
@@ -480,52 +480,52 @@ namespace Caneda
     {
         bool changed = false;
 
-        if(Scn->isFrameVisible() != checkShowFrame->isChecked()) {
-            Scn->undoStack()->push(new ScenePropertyChangeCmd("frame visibility",
-                        checkShowFrame->isChecked(), Scn->isFrameVisible(), Scn));
-            Scn->setFrameVisible(checkShowFrame->isChecked());
+        if(m_scene->isFrameVisible() != checkShowFrame->isChecked()) {
+            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame visibility",
+                        checkShowFrame->isChecked(), m_scene->isFrameVisible(), m_scene));
+            m_scene->setFrameVisible(checkShowFrame->isChecked());
             changed = true;
         }
-        if(Scn->frameWidth() != spinSchemaX->value()) {
-            Scn->undoStack()->push(new ScenePropertyChangeCmd("frame width",
-                        spinSchemaX->value(), Scn->frameWidth(), Scn));
-            Scn->setFrameSize(spinSchemaX->value(), Scn->frameHeight());
+        if(m_scene->frameWidth() != spinSchemaX->value()) {
+            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame width",
+                        spinSchemaX->value(), m_scene->frameWidth(), m_scene));
+            m_scene->setFrameSize(spinSchemaX->value(), m_scene->frameHeight());
             changed = true;
         }
-        if(Scn->frameHeight() != spinSchemaY->value()) {
-            Scn->undoStack()->push(new ScenePropertyChangeCmd("frame height",
-                        spinSchemaY->value(), Scn->frameHeight(), Scn));
-            Scn->setFrameSize(Scn->frameWidth(), spinSchemaY->value());
+        if(m_scene->frameHeight() != spinSchemaY->value()) {
+            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame height",
+                        spinSchemaY->value(), m_scene->frameHeight(), m_scene));
+            m_scene->setFrameSize(m_scene->frameWidth(), spinSchemaY->value());
             changed = true;
         }
-        if(Scn->frameRows() != spinFrameY->value()) {
-            Scn->undoStack()->push(new ScenePropertyChangeCmd("frame rows",
-                        spinFrameY->value(), Scn->frameRows(), Scn));
-            Scn->setFrameGeometry(spinFrameY->value(), Scn->frameColumns());
+        if(m_scene->frameRows() != spinFrameY->value()) {
+            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame rows",
+                        spinFrameY->value(), m_scene->frameRows(), m_scene));
+            m_scene->setFrameGeometry(spinFrameY->value(), m_scene->frameColumns());
             changed = true;
         }
-        if(Scn->frameColumns() != spinFrameX->value()) {
-            Scn->undoStack()->push(new ScenePropertyChangeCmd("frame columns",
-                        spinFrameX->value(), Scn->frameColumns(), Scn));
-            Scn->setFrameGeometry(Scn->frameRows(), spinFrameX->value());
+        if(m_scene->frameColumns() != spinFrameX->value()) {
+            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame columns",
+                        spinFrameX->value(), m_scene->frameColumns(), m_scene));
+            m_scene->setFrameGeometry(m_scene->frameRows(), spinFrameX->value());
             changed = true;
         }
 
 
         bool modified = false;
-        if(!Scn->frameTexts().contains(tr("Title: ")+editTitle->text())) {
+        if(!m_scene->frameTexts().contains(tr("Title: ")+editTitle->text())) {
             modified = true;
             changed = true;
         }
-        else if(!Scn->frameTexts().contains(tr("Drawn By: ")+editName->text())) {
+        else if(!m_scene->frameTexts().contains(tr("Drawn By: ")+editName->text())) {
             modified = true;
             changed = true;
         }
-        else if(!Scn->frameTexts().contains(tr("Date: ")+editDate->date().toString())) {
+        else if(!m_scene->frameTexts().contains(tr("Date: ")+editDate->date().toString())) {
             modified = true;
             changed = true;
         }
-        else if(!Scn->frameTexts().contains(tr("Revision: ")+editRevision->text())) {
+        else if(!m_scene->frameTexts().contains(tr("Revision: ")+editRevision->text())) {
             modified = true;
             changed = true;
         }
@@ -535,9 +535,9 @@ namespace Caneda
                 tr("Title: ")+editTitle->text() << tr("Drawn By: ")+editName->text() <<
                 tr("Date: ")+editDate->date().toString() <<
                 tr("Revision: ")+editRevision->text();
-            Scn->undoStack()->push(new ScenePropertyChangeCmd("document properties",
-                        documentProperties, Scn->frameTexts(), Scn));
-            Scn->setFrameTexts(documentProperties);
+            m_scene->undoStack()->push(new ScenePropertyChangeCmd("document properties",
+                        documentProperties, m_scene->frameTexts(), m_scene));
+            m_scene->setFrameTexts(documentProperties);
         }
 
         if(changed) {

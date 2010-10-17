@@ -22,7 +22,7 @@
 
 #include "ui_styledialog.h"
 
-#include "item.h"
+#include "painting.h"
 
 // Forward declarations
 class QBrush;

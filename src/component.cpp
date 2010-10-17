@@ -18,11 +18,12 @@
  ***************************************************************************/
 
 #include "component.h"
+
+#include "cgraphicsscene.h"
 #include "global.h"
 #include "library.h"
 #include "port.h"
 #include "propertygroup.h"
-#include "schematicscene.h"
 #include "undocommands.h"
 #include "wire.h"
 
@@ -38,7 +39,7 @@
 namespace Caneda
 {
     //! \brief Constructs and initializes default empty component object.
-    Component::Component(SchematicScene *scene) :
+    Component::Component(CGraphicsScene *scene) :
         SvgItem(0, scene),
         d(new ComponentData()), m_propertyGroup(0)
     {
@@ -48,7 +49,7 @@ namespace Caneda
     //! \brief Constructs a component from \a other data.
     Component::Component(const QSharedDataPointer<ComponentData>& other,
             SvgPainter *svgPainter_,
-            SchematicScene *scene) :
+            CGraphicsScene *scene) :
         SvgItem(svgPainter_, scene),
         d(other), m_propertyGroup(0)
     {
@@ -113,7 +114,7 @@ namespace Caneda
     {
         //delete the old group if it exists.
         delete m_propertyGroup;
-        m_propertyGroup = new PropertiesGroup(schematicScene());
+        m_propertyGroup = new PropertiesGroup(cGraphicsScene());
         m_propertyGroup->setParentItem(this);
         m_propertyGroup->setTransform(transform().inverted());
         m_propertyGroup->realignItems();
@@ -271,10 +272,10 @@ namespace Caneda
      * \brief Convenience static method to load component saved as xml.
      *
      * \param reader The xmlreader used to read xml data.
-     * \param scene SchematicScene to which component should be parented to.
+     * \param scene CGraphicsScene to which component should be parented to.
      * \return Returns new component pointer on success and null on failure.
      */
-    Component* Component::loadComponentData(Caneda::XmlReader *reader, SchematicScene *scene)
+    Component* Component::loadComponentData(Caneda::XmlReader *reader, CGraphicsScene *scene)
     {
         Component *retVal = 0;
         Q_ASSERT(reader->isStartElement() && reader->name() == "component");
@@ -416,7 +417,7 @@ namespace Caneda
         int num_of_connections = 0;
 
         if(opt == Caneda::PushUndoCmd) {
-            schematicScene()->undoStack()->beginMacro(QString());
+            cGraphicsScene()->undoStack()->beginMacro(QString());
         }
         foreach(Port *port, m_ports) {
             Port *other = port->findCoincidingPort();
@@ -424,8 +425,8 @@ namespace Caneda
                 QList<Wire*> wires = Port::wiresBetween(port, other);
 
                 if(opt == Caneda::PushUndoCmd) {
-                    ConnectCmd *cmd = new ConnectCmd(port, other, wires, schematicScene());
-                    schematicScene()->undoStack()->push(cmd);
+                    ConnectCmd *cmd = new ConnectCmd(port, other, wires, cGraphicsScene());
+                    cGraphicsScene()->undoStack()->push(cmd);
                 }
                 else {
                     qDeleteAll(wires);
@@ -437,18 +438,18 @@ namespace Caneda
         }
 
         if(opt == Caneda::PushUndoCmd) {
-            schematicScene()->undoStack()->endMacro();
+            cGraphicsScene()->undoStack()->endMacro();
         }
 
         return num_of_connections;
     }
 
     //! \brief Returns a copy of this component.
-    Component* Component::copy(SchematicScene *scene) const
+    Component* Component::copy(CGraphicsScene *scene) const
     {
         Component *retVal = new Component(d, svgPainter(), scene);
         //no need for Component::copyDataTo() because the data is already copied from d pointer.
-        SchematicItem::copyDataTo(static_cast<SchematicItem*>(retVal));
+        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
         retVal->setSymbol(symbol()); //to register svg connections
         retVal->updatePropertyGroup();
         return retVal;
@@ -457,13 +458,13 @@ namespace Caneda
     //! \brief Copies the data to \a component.
     void Component::copyDataTo(Component *component) const
     {
-        SchematicItem::copyDataTo(static_cast<SchematicItem*>(component));
+        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(component));
         component->d = d;
         component->updatePropertyGroup();
         component->update();
     }
 
-    //! \copydoc SchematicItem::launchPropertyDialog()
+    //! \copydoc CGraphicsItem::launchPropertyDialog()
     int Component::launchPropertyDialog(Caneda::UndoOption)
     {
         PropertyDialog *dia = new PropertyDialog(this, Caneda::PushUndoCmd);
@@ -496,8 +497,8 @@ namespace Caneda
      * \brief Read an svg schematic
      *
      * \param svgContent svg content as utf8
-     * \param svgPainter The SvgPainter object to which the symbols should be exported to.
      * \param schName Schematic name
+     * \param svgPainter The SvgPainter object to which the symbols should be exported to.
      * \param d (Output variable) The data ptr where data should be uploaded.
      *  \todo Check error
      */

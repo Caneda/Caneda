@@ -17,13 +17,13 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "schematicstatehandler.h"
+#include "statehandler.h"
 
 #include "actionmanager.h"
+#include "cgraphicsscene.h"
+#include "cgraphicsview.h"
 #include "global.h"
 #include "library.h"
-#include "schematicscene.h"
-#include "schematicwidget.h"
 #include "settings.h"
 #include "singletonowner.h"
 #include "undocommands.h"
@@ -40,15 +40,15 @@
 
 namespace Caneda
 {
-    struct SchematicStateHandlerPrivate
+    struct StateHandlerPrivate
     {
-        SchematicStateHandlerPrivate() {
-            mouseAction = SchematicScene::Normal;
+        StateHandlerPrivate() {
+            mouseAction = CGraphicsScene::Normal;
             paintingDrawItem = 0;
 
         }
 
-        ~SchematicStateHandlerPrivate() {
+        ~StateHandlerPrivate() {
             delete paintingDrawItem;
             clearInsertibles();
         }
@@ -62,7 +62,7 @@ namespace Caneda
         }
 
         void clearInsertibles() {
-            foreach (SchematicItem* item, insertibles) {
+            foreach (CGraphicsItem* item, insertibles) {
                 if (item->scene()) {
                     item->scene()->removeItem(item);
                 }
@@ -71,18 +71,18 @@ namespace Caneda
             insertibles.clear();
         }
 
-        SchematicScene::MouseAction mouseAction;
-        QList<SchematicItem*> insertibles;
+        CGraphicsScene::MouseAction mouseAction;
+        QList<CGraphicsItem*> insertibles;
         Painting *paintingDrawItem;
 
-        QSet<SchematicScene*> scenes;
-        QSet<SchematicWidget*> widgets;
+        QSet<CGraphicsScene*> scenes;
+        QSet<CGraphicsView*> widgets;
 
-        QPointer<SchematicWidget> focussedWidget;
-        QHash<QString, SchematicItem*> toolbarInsertibles;
+        QPointer<CGraphicsView> focussedWidget;
+        QHash<QString, CGraphicsItem*> toolbarInsertibles;
     };
 
-    static bool areItemsEquivalent(SchematicItem *a, SchematicItem *b)
+    static bool areItemsEquivalent(CGraphicsItem *a, CGraphicsItem *b)
     {
         if (!a || !b) {
             return false;
@@ -101,35 +101,35 @@ namespace Caneda
 
         // Implement for other kinds of comparison required to compare
         // insertibles and toolbarInsertibles of
-        // SchematicStateHandlerPrivate class.
+        // StateHandlerPrivate class.
         return false;
     }
 
-    SchematicStateHandler::SchematicStateHandler(QObject *parent) : QObject(parent)
+    StateHandler::StateHandler(QObject *parent) : QObject(parent)
     {
-        d = new SchematicStateHandlerPrivate;
+        d = new StateHandlerPrivate;
 
         LibraryLoader *loader = LibraryLoader::instance();
         connect(loader, SIGNAL(basicLibrariesLoaded()), this, SLOT(slotUpdateToolbarInsertibles()));
     }
 
-    SchematicStateHandler* SchematicStateHandler::instance()
+    StateHandler* StateHandler::instance()
     {
-        static SchematicStateHandler *instance = 0;
+        static StateHandler *instance = 0;
         if (!instance) {
-            instance = new SchematicStateHandler(SingletonOwner::instance());
+            instance = new StateHandler(SingletonOwner::instance());
         }
         return instance;
     }
 
-    SchematicStateHandler::~SchematicStateHandler()
+    StateHandler::~StateHandler()
     {
         delete d;
     }
 
-    void SchematicStateHandler::registerWidget(SchematicWidget *widget)
+    void StateHandler::registerWidget(CGraphicsView *widget)
     {
-        SchematicScene *scene = widget->schematicScene();
+        CGraphicsScene *scene = widget->cGraphicsScene();
         if (!scene) {
             qWarning() << Q_FUNC_INFO << "Widget doesn't have an associated scene";
             return;
@@ -137,8 +137,8 @@ namespace Caneda
         if (!d->widgets.contains(widget)) {
             d->widgets << widget;
             connect(widget, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
-            connect(widget, SIGNAL(focussedIn(SchematicWidget*)),
-                    SLOT(slotUpdateFocussedWidget(SchematicWidget*)));
+            connect(widget, SIGNAL(focussedIn(CGraphicsView*)),
+                    SLOT(slotUpdateFocussedWidget(CGraphicsView*)));
         }
 
         if (!d->scenes.contains(scene)) {
@@ -151,7 +151,7 @@ namespace Caneda
         }
     }
 
-    void SchematicStateHandler::unregisterWidget(SchematicWidget *widget)
+    void StateHandler::unregisterWidget(CGraphicsView *widget)
     {
         if (!widget) {
             return;
@@ -159,11 +159,11 @@ namespace Caneda
         if (d->widgets.contains(widget)) {
             d->widgets.remove(widget);
             disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
-            disconnect(widget, SIGNAL(focussedIn(SchematicWidget*)), this,
-                    SLOT(slotUpdateFocussedWidget(SchematicWidget*)));
+            disconnect(widget, SIGNAL(focussedIn(CGraphicsView*)), this,
+                    SLOT(slotUpdateFocussedWidget(CGraphicsView*)));
         }
 
-        SchematicScene *scene = widget->schematicScene();
+        CGraphicsScene *scene = widget->cGraphicsScene();
         if (scene && d->scenes.contains(scene)) {
             d->scenes.remove(scene);
             disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
@@ -174,7 +174,7 @@ namespace Caneda
         }
     }
 
-    void SchematicStateHandler::slotSidebarItemClicked(const QString& item,
+    void StateHandler::slotSidebarItemClicked(const QString& item,
             const QString& category)
     {
         if (category == "Paint Tools" || category == "Layout Tools") {
@@ -197,7 +197,7 @@ namespace Caneda
         else {
             d->clearInsertibles();
             LibraryLoader *libLoader = LibraryLoader::instance();
-            SchematicItem *qItem = libLoader->newComponent(item, 0, category);
+            CGraphicsItem *qItem = libLoader->newComponent(item, 0, category);
             if (!qItem) {
                 slotSetNormalAction();
             } else {
@@ -207,7 +207,7 @@ namespace Caneda
         }
     }
 
-    void SchematicStateHandler::slotHandlePaste()
+    void StateHandler::slotHandlePaste()
     {
         const QString text = qApp->clipboard()->text();
 
@@ -229,7 +229,7 @@ namespace Caneda
             return;
         }
 
-        QList<SchematicItem*> _items;
+        QList<CGraphicsItem*> _items;
         while(!reader.atEnd()) {
             reader.readNext();
 
@@ -238,7 +238,7 @@ namespace Caneda
             }
 
             if(reader.isStartElement()) {
-                SchematicItem *readItem = 0;
+                CGraphicsItem *readItem = 0;
                 if(reader.name() == "component") {
                     readItem = Component::loadComponentData(&reader, 0);
                 }
@@ -262,9 +262,9 @@ namespace Caneda
         }
     }
 
-    void SchematicStateHandler::slotRotateInsertibles()
+    void StateHandler::slotRotateInsertibles()
     {
-        if (d->mouseAction != SchematicScene::InsertingItems) {
+        if (d->mouseAction != CGraphicsScene::InsertingItems) {
             qDebug() << Q_FUNC_INFO << "Wrong mouse action mode!";
             return;
         }
@@ -277,9 +277,9 @@ namespace Caneda
         slotPerformToggleAction("insertItem", true);
     }
 
-    void SchematicStateHandler::slotMirrorInsertibles()
+    void StateHandler::slotMirrorInsertibles()
     {
-        if (d->mouseAction != SchematicScene::InsertingItems) {
+        if (d->mouseAction != CGraphicsScene::InsertingItems) {
             qDebug() << Q_FUNC_INFO << "Wrong mouse action mode!";
             return;
         }
@@ -292,10 +292,10 @@ namespace Caneda
         slotPerformToggleAction("insertItem", true);
     }
 
-    void SchematicStateHandler::slotInsertToolbarComponent(const QString& sender,
+    void StateHandler::slotInsertToolbarComponent(const QString& sender,
             bool on)
     {
-        SchematicItem *item = d->toolbarInsertibles[sender];
+        CGraphicsItem *item = d->toolbarInsertibles[sender];
         if (!on || !item) {
             slotSetNormalAction();
             return;
@@ -306,7 +306,7 @@ namespace Caneda
         slotPerformToggleAction("insertItem", true);
     }
 
-    void SchematicStateHandler::slotOnObjectDestroyed(QObject *object)
+    void StateHandler::slotOnObjectDestroyed(QObject *object)
     {
         //HACK: Using static cast to convert QObject pointers to scene and widget
         //      respectively. This might result in invalid pointers, but the main
@@ -314,15 +314,15 @@ namespace Caneda
         //
         //      Using of these pointers to access any method or variable will result
         //      in ugly crash!!
-        SchematicScene *scene = static_cast<SchematicScene*>(object);
-        SchematicWidget *widget = static_cast<SchematicWidget*>(object);
+        CGraphicsScene *scene = static_cast<CGraphicsScene*>(object);
+        CGraphicsView *widget = static_cast<CGraphicsView*>(object);
 
 
         d->scenes.remove(scene);
         d->widgets.remove(widget);
     }
 
-    void SchematicStateHandler::slotUpdateFocussedWidget(SchematicWidget *widget)
+    void StateHandler::slotUpdateFocussedWidget(CGraphicsView *widget)
     {
         d->focussedWidget = widget;
     }
@@ -334,26 +334,26 @@ namespace Caneda
      * \a func if on is true. This method takes care to preserve the mutual
      * exclusiveness off the checkable actions.
      */
-    void SchematicStateHandler::slotPerformToggleAction(const QString& sender, bool on)
+    void StateHandler::slotPerformToggleAction(const QString& sender, bool on)
     {
-        typedef void (SchematicScene::*pActionFunc) (QList<SchematicItem*>&, const Caneda::UndoOption);
+        typedef void (CGraphicsScene::*pActionFunc) (QList<CGraphicsItem*>&, const Caneda::UndoOption);
 
         ActionManager *am = ActionManager::instance();
 
         Action *action = am->actionForName(sender);
-        SchematicScene::MouseAction ma = am->mouseActionForAction(action);
+        CGraphicsScene::MouseAction ma = am->mouseActionForAction(action);
         pActionFunc func = 0;
 
         if (sender == "editDelete") {
-            func = &SchematicScene::deleteItems;
+            func = &CGraphicsScene::deleteItems;
         } else if (sender == "editRotate") {
-            func = &SchematicScene::rotateItems;
+            func = &CGraphicsScene::rotateItems;
         } else if (sender == "editMirror") {
-            func = &SchematicScene::mirrorXItems;
+            func = &CGraphicsScene::mirrorXItems;
         } else if (sender == "editMirrorY") {
-            func = &SchematicScene::mirrorYItems;
+            func = &CGraphicsScene::mirrorYItems;
         } else if (sender == "editActivate") {
-            func = &SchematicScene::toggleActiveStatus;
+            func = &CGraphicsScene::toggleActiveStatus;
         }
 
         QList<Action*> mouseActions = ActionManager::instance()->mouseActions();
@@ -367,9 +367,9 @@ namespace Caneda
         }
 
         //else part
-        SchematicScene *scene = 0;
+        CGraphicsScene *scene = 0;
         if (d->focussedWidget.isNull() == false) {
-            scene = d->focussedWidget->schematicScene();
+            scene = d->focussedWidget->cGraphicsScene();
         }
         QList<QGraphicsItem*> selectedItems;
         if (scene) {
@@ -378,7 +378,7 @@ namespace Caneda
 
         do {
             if(!selectedItems.isEmpty() && func != 0) {
-                QList<SchematicItem*> funcable = filterItems<SchematicItem>(selectedItems);
+                QList<CGraphicsItem*> funcable = filterItems<CGraphicsItem>(selectedItems);
 
                 if(funcable.isEmpty()) {
                     break;
@@ -401,7 +401,7 @@ namespace Caneda
             }
         }
 
-        QHash<QString, SchematicItem*>::const_iterator it =
+        QHash<QString, CGraphicsItem*>::const_iterator it =
             d->toolbarInsertibles.begin();
         while (it != d->toolbarInsertibles.end()) {
             Action *act = am->actionForName(it.key());
@@ -432,50 +432,50 @@ namespace Caneda
         applyStateToAllWidgets();
     }
 
-    void SchematicStateHandler::slotSetNormalAction()
+    void StateHandler::slotSetNormalAction()
     {
         slotPerformToggleAction("select", true);
     }
 
-    void SchematicStateHandler::slotUpdateToolbarInsertibles()
+    void StateHandler::slotUpdateToolbarInsertibles()
     {
         d->updateToolbarInsertibles();
     }
 
-    void SchematicStateHandler::applyCursor(SchematicWidget *widget)
+    void StateHandler::applyCursor(CGraphicsView *widget)
     {
         QCursor cursor;
 
         switch (d->mouseAction) {
-            case SchematicScene::Wiring:
+            case CGraphicsScene::Wiring:
                 cursor.setShape(Qt::CrossCursor);
                 break;
 
-            case SchematicScene::Deleting:
+            case CGraphicsScene::Deleting:
                 cursor = QCursor(Caneda::icon("draw-eraser").pixmap(20));
                 break;
 
-            case SchematicScene::Rotating:
+            case CGraphicsScene::Rotating:
                 cursor = QCursor(Caneda::icon("object-rotate-left").pixmap(20));
                 break;
 
-            case SchematicScene::MirroringX:
+            case CGraphicsScene::MirroringX:
                 cursor.setShape(Qt::SizeVerCursor);
                 break;
 
-            case SchematicScene::MirroringY:
+            case CGraphicsScene::MirroringY:
                 cursor.setShape(Qt::SizeHorCursor);
                 break;
 
-            case SchematicScene::ZoomingAreaEvent:
+            case CGraphicsScene::ZoomingAreaEvent:
                 cursor = QCursor(Caneda::icon("zoom-in").pixmap(20));
                 break;
 
-            case SchematicScene::PaintingDrawEvent:
+            case CGraphicsScene::PaintingDrawEvent:
                 cursor.setShape(Qt::CrossCursor);
                 break;
 
-            case SchematicScene::InsertingItems:
+            case CGraphicsScene::InsertingItems:
                 cursor.setShape(Qt::ClosedHandCursor);
                 break;
 
@@ -486,24 +486,24 @@ namespace Caneda
         widget->setCursor(cursor);
     }
 
-    void SchematicStateHandler::applyState(SchematicWidget *widget)
+    void StateHandler::applyState(CGraphicsView *widget)
     {
         applyCursor(widget);
-        SchematicScene *scene = widget->schematicScene();
+        CGraphicsScene *scene = widget->cGraphicsScene();
         if (!scene) {
             return;
         }
 
         scene->setMouseAction(d->mouseAction);
-        if (d->mouseAction == SchematicScene::InsertingItems) {
+        if (d->mouseAction == CGraphicsScene::InsertingItems) {
             if (!d->insertibles.isEmpty()) {
-                QList<SchematicItem*> copy;
-                foreach (SchematicItem *it, d->insertibles) {
+                QList<CGraphicsItem*> copy;
+                foreach (CGraphicsItem *it, d->insertibles) {
                     copy << it->copy(scene);
                 }
                 scene->beginInsertingItems(copy);
             }
-        } else if (d->mouseAction == SchematicScene::PaintingDrawEvent) {
+        } else if (d->mouseAction == CGraphicsScene::PaintingDrawEvent) {
             if (d->paintingDrawItem) {
                 Painting *copy = d->paintingDrawItem->copy();
                 scene->beginPaintingDraw(copy);
@@ -511,9 +511,9 @@ namespace Caneda
         }
     }
 
-    void SchematicStateHandler::applyStateToAllWidgets()
+    void StateHandler::applyStateToAllWidgets()
     {
-        foreach (SchematicWidget *widget, d->widgets) {
+        foreach (CGraphicsView *widget, d->widgets) {
             applyState(widget);
         }
     }

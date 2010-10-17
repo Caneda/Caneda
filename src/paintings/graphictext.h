@@ -32,7 +32,7 @@ namespace Caneda
             Type = Painting::GraphicTextType
         };
 
-        GraphicText(const QString &text = QString(), SchematicScene *scene = 0);
+        GraphicText(const QString &text = QString(), CGraphicsScene *scene = 0);
         ~GraphicText();
 
         QString plainText() const;
@@ -46,7 +46,7 @@ namespace Caneda
         void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
 
         int type() const { return GraphicText::Type; }
-        GraphicText* copy(SchematicScene *scene = 0) const;
+        GraphicText* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

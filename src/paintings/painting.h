@@ -20,7 +20,7 @@
 #ifndef PAINTING_H
 #define PAINTING_H
 
-#include "item.h"
+#include "cgraphicsitem.h"
 
 // Forward declarations
 class QBrush;
@@ -41,16 +41,16 @@ namespace Caneda
      * The mouse functionalities corresponding to resize handles are also handled
      * by this class.
      */
-    class Painting : public SchematicItem
+    class Painting : public CGraphicsItem
     {
     public:
         enum {
             NoPaintingType = 0,
-            Type = SchematicItem::PaintingType
+            Type = CGraphicsItem::PaintingType
         };
 
         enum PaintingType {
-            ArrowType = SchematicItem::PaintingType + 1,
+            ArrowType = CGraphicsItem::PaintingType + 1,
             EllipseType,
             EllipseArcType,
             GraphicLineType,
@@ -61,10 +61,10 @@ namespace Caneda
             LayerType
         };
 
-        Painting(SchematicScene *scene = 0);
+        Painting(CGraphicsScene *scene = 0);
         ~Painting();
 
-        //! \copydoc SchematicItem::type()
+        //! \copydoc CGraphicsItem::type()
         int type() const { return Type; }
 
         //! Returns paintingRect of this painting item.
@@ -95,12 +95,12 @@ namespace Caneda
         //! Returns the active handle i.e the one with mouse focus.
         Caneda::ResizeHandle activeHandle() const { return m_activeHandle; }
 
-        Painting* copy(SchematicScene *scene = 0) const;
+        Painting* copy(CGraphicsScene *scene = 0) const;
 
         virtual void copyDataTo(Painting *painting) const;
 
         static Painting* fromName(const QString& name);
-        static Painting* loadPainting(Caneda::XmlReader *reader, SchematicScene *scene = 0);
+        static Painting* loadPainting(Caneda::XmlReader *reader, CGraphicsScene *scene = 0);
 
         QRectF storedPaintingRect() const { return m_store; }
         void storePaintingRect() { m_store = paintingRect(); }

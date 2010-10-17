@@ -31,9 +31,9 @@ namespace Caneda
     /*!
      * \brief Constructs an Ellipse item.
      * \param rect Ellipse rect
-     * \param scene SchematicScene to which this item should be added.
+     * \param scene CGraphicsScene to which this item should be added.
      */
-    Ellipse::Ellipse(QRectF rect, SchematicScene *scene) : Painting(scene)
+    Ellipse::Ellipse(QRectF rect, CGraphicsScene *scene) : Painting(scene)
     {
         setEllipse(rect);
         setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
@@ -88,7 +88,7 @@ namespace Caneda
     }
 
     //! \brief Returns a copy of this Ellipse item.
-    Ellipse* Ellipse::copy(SchematicScene *scene) const
+    Ellipse* Ellipse::copy(CGraphicsScene *scene) const
     {
         Ellipse *ell = new Ellipse(ellipse(), scene);
         Painting::copyDataTo(ell);

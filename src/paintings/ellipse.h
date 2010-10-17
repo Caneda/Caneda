@@ -24,7 +24,7 @@
 
 namespace Caneda
 {
-    //! * \brief Represents an ellipse on schematic.
+    //! * \brief Represents an ellipse on a graphics scene.
     class Ellipse : public Painting
     {
     public:
@@ -32,7 +32,7 @@ namespace Caneda
             Type = Painting::EllipseType
         };
 
-        Ellipse(QRectF rect, SchematicScene *scene = 0);
+        Ellipse(QRectF rect, CGraphicsScene *scene = 0);
         ~Ellipse();
 
         QRectF boundForRect(const QRectF &rect) const;
@@ -45,7 +45,7 @@ namespace Caneda
         void setEllipse(const QRectF& rect) { setPaintingRect(rect); }
 
         int type() const { return Ellipse::Type; }
-        Ellipse* copy(SchematicScene *scene = 0) const;
+        Ellipse* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

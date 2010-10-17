@@ -19,12 +19,12 @@
 
 #include "xmlschematic.h"
 
+#include "cgraphicsitem.h"
+#include "cgraphicsscene.h"
 #include "component.h"
 #include "global.h"
-#include "item.h"
 #include "port.h"
 #include "schematicdocument.h"
-#include "schematicscene.h"
 #include "wire.h"
 
 #include "paintings/painting.h"
@@ -87,7 +87,7 @@ namespace Caneda
 
     bool XmlSchematic::save()
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
             return false;
         }
@@ -113,7 +113,7 @@ namespace Caneda
 
     bool XmlSchematic::load()
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
             return false;
         }
@@ -165,7 +165,7 @@ namespace Caneda
 
     void XmlSchematic::saveView(Caneda::XmlWriter *writer)
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         writer->writeStartElement("view");
 
         writer->writeStartElement("data");
@@ -189,7 +189,7 @@ namespace Caneda
 
     void XmlSchematic::saveComponents(Caneda::XmlWriter *writer)
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
         QList<Component*> components = filterItems<Component>(items, RemoveItems);
         if(!components.isEmpty()) {
@@ -203,7 +203,7 @@ namespace Caneda
 
     void XmlSchematic::saveWires(Caneda::XmlWriter *writer)
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
         QList<Wire*> wires = filterItems<Wire>(items, RemoveItems);
         if(!wires.isEmpty()) {
@@ -231,7 +231,7 @@ namespace Caneda
 
     void XmlSchematic::savePaintings(Caneda::XmlWriter *writer)
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
         QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
         if(!paintings.isEmpty()) {
@@ -301,7 +301,7 @@ namespace Caneda
 
     void XmlSchematic::loadView(Caneda::XmlReader *reader)
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "view") {
             reader->raiseError(QObject::tr("Malformatted file"));
         }
@@ -391,7 +391,7 @@ namespace Caneda
 
     void XmlSchematic::loadComponents(Caneda::XmlReader *reader)
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "components") {
             reader->raiseError(QObject::tr("Malformatted file"));
         }
@@ -419,7 +419,7 @@ namespace Caneda
 
     void XmlSchematic::loadWires(Caneda::XmlReader* reader)
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "wires") {
             reader->raiseError(QObject::tr("Malformatted file"));
         }
@@ -460,7 +460,7 @@ namespace Caneda
 
     void XmlSchematic::loadPaintings(Caneda::XmlReader *reader)
     {
-        SchematicScene *scene = schematicScene();
+        CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "paintings") {
             reader->raiseError(QObject::tr("Malformatted file"));
         }
@@ -492,9 +492,9 @@ namespace Caneda
         return m_schematicDocument;
     }
 
-    SchematicScene* XmlSchematic::schematicScene() const
+    CGraphicsScene* XmlSchematic::cGraphicsScene() const
     {
-        return m_schematicDocument ? m_schematicDocument->schematicScene() : 0;
+        return m_schematicDocument ? m_schematicDocument->cGraphicsScene() : 0;
     }
 
     QString XmlSchematic::fileName() const

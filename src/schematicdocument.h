@@ -25,7 +25,7 @@
 namespace Caneda
 {
     // Forward declations
-    class SchematicScene;
+    class CGraphicsScene;
 
     class SchematicDocument : public IDocument
     {
@@ -71,10 +71,10 @@ namespace Caneda
         virtual void updateSettingsChanges();
 
         // End of Interface implemention.
-        SchematicScene* schematicScene() const;
+        CGraphicsScene* cGraphicsScene() const;
 
     private:
-        SchematicScene *m_schematicScene;
+        CGraphicsScene *m_cGraphicsScene;
     };
 
 } // namespace Caneda

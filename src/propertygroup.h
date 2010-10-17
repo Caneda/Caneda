@@ -27,8 +27,8 @@ namespace Caneda
 {
     // Forward declarations.
     class Component;
+    class CGraphicsScene;
     class PropertyItem;
-    class SchematicScene;
 
     /*!
      * \brief This class groups the properties of a item.
@@ -43,7 +43,7 @@ namespace Caneda
         enum { PropertiesGroupType = UserType + 73 };
         enum { Type = PropertiesGroupType };
 
-        PropertiesGroup(SchematicScene *scene = 0);
+        PropertiesGroup(CGraphicsScene *scene = 0);
 
         //! Class identifier.
         int type() { return PropertiesGroupType; }
@@ -51,7 +51,7 @@ namespace Caneda
         void realignItems();
         void forceUpdate();
 
-        SchematicScene* schematicScene() const;
+        CGraphicsScene* cGraphicsScene() const;
         Component* component() const;
 
         void setFontSize(int pointSize);

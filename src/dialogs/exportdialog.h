@@ -22,13 +22,15 @@
 
 #include "ui_exportdialog.h"
 
+#include <QDialog>
+
 class QFile;
 
 namespace Caneda
 {
     // Forward declations
     class SchematicDocument;
-    class SchematicScene;
+    class CGraphicsScene;
 
     /*!
      * \brief This represents the dialog for exporting a schematic
@@ -60,7 +62,7 @@ namespace Caneda
         void generateSvg(QFile &);
         void saveReloadDiagramParameters(bool = true);
 
-        SchematicScene *m_scene;
+        CGraphicsScene *m_scene;
 
         Ui::ExportDialog ui;
     };

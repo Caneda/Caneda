@@ -27,7 +27,7 @@ namespace Caneda
     /*!
      * \brief Represents rectangular layer painting item.
      *
-     * This class allows user to draw a rectangle layer on schematic. The rectangles can
+     * This class allows user to draw a rectangle layer. The rectangles can
      * be filled by setting \a Painting::setBrush() .
      */
     class Layer : public Painting
@@ -50,7 +50,7 @@ namespace Caneda
         };
 
         Layer(const QRectF &rect, LayerName layerName = Metal1, const QString &netLabel = "",
-              SchematicScene *scene = 0);
+              CGraphicsScene *scene = 0);
         ~Layer();
 
         QPainterPath shapeForRect(const QRectF& rect) const;
@@ -70,7 +70,7 @@ namespace Caneda
         void setNetLabel(QString netLabel) { m_netLabel = netLabel; }
 
         int type() const { return Layer::Type; }
-        Layer* copy(SchematicScene *scene = 0) const;
+        Layer* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

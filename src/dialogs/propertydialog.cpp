@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
+#include "cgraphicsscene.h"
 #include "propertydialog.h"
-#include "schematicscene.h"
 #include "undocommands.h"
 
 #include <QComboBox>
@@ -190,8 +190,8 @@ namespace Caneda
     {
         PropertyMapCmd *cmd = new PropertyMapCmd(m_component, m_component->propertyMap(),
                 m_model->propMap);
-        if(m_undoOption == Caneda::PushUndoCmd && m_component->schematicScene()) {
-            m_component->schematicScene()->undoStack()->push(cmd);
+        if(m_undoOption == Caneda::PushUndoCmd && m_component->cGraphicsScene()) {
+            m_component->cGraphicsScene()->undoStack()->push(cmd);
         }
         else {
             cmd->redo();

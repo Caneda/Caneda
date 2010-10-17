@@ -33,9 +33,9 @@ namespace Caneda
     /*!
      * \brief Constructs a text item.
      * \param text Item's text.
-     * \param scene SchematicScene to which this item should be added.
+     * \param scene CGraphicsScene to which this item should be added.
      */
-    GraphicText::GraphicText(const QString &text, SchematicScene *scene) : Painting(scene)
+    GraphicText::GraphicText(const QString &text, CGraphicsScene *scene) : Painting(scene)
     {
         m_textItem = new QGraphicsTextItem(this);
         m_textItem->setAcceptedMouseButtons(0);
@@ -99,7 +99,7 @@ namespace Caneda
     }
 
     //! \brief Returns a copy of this item.
-    GraphicText* GraphicText::copy(SchematicScene *scene) const
+    GraphicText* GraphicText::copy(CGraphicsScene *scene) const
     {
         GraphicText *text = new GraphicText(richText(), scene);
         Painting::copyDataTo(text);

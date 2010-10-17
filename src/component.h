@@ -83,12 +83,12 @@ namespace Caneda
     {
         Q_OBJECT
     public:
-        enum { Type = SchematicItem::ComponentType };
+        enum { Type = CGraphicsItem::ComponentType };
 
-        Component(SchematicScene *scene = 0);
+        Component(CGraphicsScene *scene = 0);
         Component(const QSharedDataPointer<ComponentData>& other,
                   SvgPainter *svgPainter,
-                  SchematicScene *scene = 0);
+                  CGraphicsScene *scene = 0);
         ~Component();
 
         //! Returns a list of ports of the component.
@@ -158,7 +158,7 @@ namespace Caneda
         void setActiveStatus(Caneda::ActiveStatus status);
         void toggleActiveStatus();
 
-        static Component* loadComponentData(Caneda::XmlReader *reader, SchematicScene *scene);
+        static Component* loadComponentData(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);
         void saveData(Caneda::XmlWriter *writer) const;
 
@@ -166,7 +166,7 @@ namespace Caneda
 
         int checkAndConnect(Caneda::UndoOption opt);
 
-        Component *copy(SchematicScene *scene = 0) const;
+        Component *copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(Component *comp) const;
 
         //! \reimp Reimplemented to return rtti info.

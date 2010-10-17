@@ -21,7 +21,6 @@
 
 #include "global.h"
 #include "idocument.h"
-#include "schematicscene.h"
 #include "settings.h"
 
 #include <QCompleter>

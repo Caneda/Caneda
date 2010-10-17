@@ -20,7 +20,7 @@
 #ifndef ACTIONMANAGER_H
 #define ACTIONMANAGER_H
 
-#include "schematicscene.h"
+#include "cgraphicsscene.h"
 
 #include <QAction>
 #include <QHash>
@@ -59,14 +59,14 @@ namespace Caneda
         Action* createAction(const QString& id, const QIcon& icon, const QString& text);
         Action* createAction(const QString& id, const QString& text);
 
-        Action* createMouseAction(const QString& id, SchematicScene::MouseAction action,
+        Action* createMouseAction(const QString& id, CGraphicsScene::MouseAction action,
                 const QIcon& icon, const QString& text);
-        Action* createMouseAction(const QString& id, SchematicScene::MouseAction action,
+        Action* createMouseAction(const QString& id, CGraphicsScene::MouseAction action,
                 const QString& text);
 
         Action* actionForName(const QString& name) const;
-        Action* actionForMouseAction(SchematicScene::MouseAction ma) const;
-        SchematicScene::MouseAction mouseActionForAction(Action *action) const;
+        Action* actionForMouseAction(CGraphicsScene::MouseAction ma) const;
+        CGraphicsScene::MouseAction mouseActionForAction(Action *action) const;
 
         QList<Action*> mouseActions() const;
 
@@ -74,7 +74,7 @@ namespace Caneda
         ActionManager(QObject *parent = 0);
 
         QHash<QString, Action*> m_actionHash;
-        QHash<Action*, SchematicScene::MouseAction> m_mouseActionHash;
+        QHash<Action*, CGraphicsScene::MouseAction> m_mouseActionHash;
     };
 
 } // namespace Caneda

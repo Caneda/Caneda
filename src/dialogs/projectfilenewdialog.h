@@ -22,6 +22,8 @@
 
 #include "ui_projectfilenewdialog.h"
 
+#include <QDialog>
+
 namespace Caneda
 {
     enum ProjectFileNewChoice {

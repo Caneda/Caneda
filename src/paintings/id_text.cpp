@@ -37,7 +37,7 @@ namespace Caneda
     }
 
     //! \brief Constructs IdText item with default prefix set to SUB.
-    IdText::IdText(SchematicScene *scene) :
+    IdText::IdText(CGraphicsScene *scene) :
         Painting(scene),
         m_prefix("SUB")
     {
@@ -163,7 +163,7 @@ namespace Caneda
     }
 
     //! \brief Returns a copy of this item parented to scene \a scene.
-    IdText* IdText::copy(SchematicScene *scene) const
+    IdText* IdText::copy(CGraphicsScene *scene) const
     {
         IdText *id = new IdText(scene);
 

@@ -19,6 +19,8 @@
 
 #include "painting.h"
 
+#include "cgraphicsscene.h"
+
 #include "arrow.h"
 #include "ellipse.h"
 #include "ellipsearc.h"
@@ -26,7 +28,6 @@
 #include "graphictext.h"
 #include "layer.h"
 #include "rectangle.h"
-#include "schematicscene.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -40,7 +41,7 @@
 namespace Caneda
 {
     //! Constructs a painting item with default pen and default brush.
-    Painting::Painting(SchematicScene *scene) : SchematicItem(0, scene),
+    Painting::Painting(CGraphicsScene *scene) : CGraphicsItem(0, scene),
     m_pen(defaultPaintingPen),
     m_brush(defaultPaintingBrush),
     m_resizeHandles(Caneda::NoHandle),
@@ -229,24 +230,24 @@ namespace Caneda
     }
 
     //! Reimplemented for convenience though it doesn't do actual work.
-    Painting* Painting::copy(SchematicScene *) const
+    Painting* Painting::copy(CGraphicsScene *) const
     {
         return 0;
     }
 
-    //! \copydoc SchematicItem::copyDataTo()
+    //! \copydoc CGraphicsItem::copyDataTo()
     void Painting::copyDataTo(Painting *painting) const
     {
         painting->setPen(pen());
         painting->setBrush(brush());
-        SchematicItem::copyDataTo(static_cast<SchematicItem*>(painting));
+        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(painting));
     }
 
     /*!
      * \brief Loads and returns a pointer to new painting object as read
      * from \a reader. On failure returns null.
      */
-    Painting* Painting::loadPainting(Caneda::XmlReader *reader, SchematicScene *scene)
+    Painting* Painting::loadPainting(Caneda::XmlReader *reader, CGraphicsScene *scene)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
 
@@ -307,7 +308,7 @@ namespace Caneda
 
         //call base method to get move behaviour as no handle is pressed
         if(m_activeHandle == Caneda::NoHandle) {
-            SchematicItem::mousePressEvent(event);
+            CGraphicsItem::mousePressEvent(event);
         }
         else {
             storePaintingRect();
@@ -318,7 +319,7 @@ namespace Caneda
     void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     {
         if(m_activeHandle == Caneda::NoHandle) {
-            SchematicItem::mouseMoveEvent(event);
+            CGraphicsItem::mouseMoveEvent(event);
             Q_ASSERT(scene()->mouseGrabberItem() == this);
             return;
         }
@@ -355,9 +356,9 @@ namespace Caneda
     //! Takes care of handle resizing on mouse release event.
     void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
-        SchematicItem::mouseReleaseEvent(event);
+        CGraphicsItem::mouseReleaseEvent(event);
         if(m_activeHandle != Caneda::NoHandle && m_paintingRect != m_store) {
-            schematicScene()->undoStack()->push(
+            cGraphicsScene()->undoStack()->push(
                     new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect));
         }
         m_activeHandle = Caneda::NoHandle;

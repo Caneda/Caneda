@@ -19,7 +19,7 @@
 
 #include "svgitem.h"
 
-#include "schematicscene.h"
+#include "cgraphicsscene.h"
 #include "singletonowner.h"
 
 #include <QDebug>
@@ -253,7 +253,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Returns the default svg painter object, shared by default schematics
+     * \brief Returns the default svg painter object, shared by default graphicsscenes
      */
     SvgPainter* SvgPainter::instance()
     {
@@ -277,7 +277,7 @@ namespace Caneda
      * svg id should already be registered with SvgPainter.
      * \sa SvgItem::registerConnections, SvgPainter::registerSvg()
      */
-    SvgItem::SvgItem(SvgPainter *svgP, SchematicScene *_scene) : SchematicItem(0, _scene),
+    SvgItem::SvgItem(SvgPainter *svgP, CGraphicsScene *_scene) : CGraphicsItem(0, _scene),
     m_svgPainter(svgP)
     {
     }

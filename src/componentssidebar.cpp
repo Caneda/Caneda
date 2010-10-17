@@ -17,8 +17,9 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "component.h"
 #include "componentssidebar.h"
+
+#include "component.h"
 #include "global.h"
 #include "sidebarmodel.h"
 

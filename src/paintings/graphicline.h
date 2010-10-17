@@ -32,7 +32,7 @@ namespace Caneda
             Type = Painting::GraphicLineType
         };
 
-        GraphicLine(const QLineF &line, SchematicScene *scene = 0);
+        GraphicLine(const QLineF &line, CGraphicsScene *scene = 0);
         ~GraphicLine();
 
         QPainterPath shapeForRect(const QRectF &rect) const;
@@ -44,7 +44,7 @@ namespace Caneda
         void setLine(const QLineF &line);
 
         int type() const { return GraphicLine::Type; }
-        GraphicLine* copy(SchematicScene *scene = 0) const;
+        GraphicLine* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,51 +17,57 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SCHEMATIC_STATE_HANDLER_H
-#define SCHEMATIC_STATE_HANDLER_H
+#ifndef C_GRAPHICS_VIEW_H
+#define C_GRAPHICS_VIEW_H
 
-#include <QObject>
+#include "global.h"
+
+#include <QGraphicsView>
 
 namespace Caneda
 {
-    // Forward declarations.
-    class SchematicStateHandlerPrivate;
-    class SchematicScene;
-    class SchematicWidget;
+    // Forward declarations
+    class CGraphicsScene;
 
-    class SchematicStateHandler : public QObject
+    class CGraphicsView : public QGraphicsView
     {
         Q_OBJECT
     public:
-        static SchematicStateHandler* instance();
-        ~SchematicStateHandler();
+        static const qreal zoomFactor;
 
-        void registerWidget(SchematicWidget *widget);
-        void unregisterWidget(SchematicWidget *widget);
+        CGraphicsView(CGraphicsScene *scene = 0);
+        ~CGraphicsView();
 
+        CGraphicsScene* cGraphicsScene() const;
 
-    public Q_SLOTS:
-        void slotSidebarItemClicked(const QString& item, const QString& category);
-        void slotHandlePaste();
-        void slotRotateInsertibles();
-        void slotMirrorInsertibles();
-        void slotOnObjectDestroyed(QObject *sender);
-        void slotUpdateFocussedWidget(SchematicWidget *widget);
-        void slotPerformToggleAction(const QString& sender, bool on);
-        void slotSetNormalAction();
-        void slotInsertToolbarComponent(const QString& action, bool on);
-        void slotUpdateToolbarInsertibles();
+        void zoomIn();
+        void zoomOut();
+        void zoomFitInBest();
+        void zoomOriginal();
+        qreal currentZoom() { return m_currentZoom; };
+
+        void zoomFitRect(const QRectF &rect);
+
+    Q_SIGNALS:
+        void cursorPositionChanged(const QString& newPos);
+        void focussedIn(CGraphicsView *view);
+        void focussedOut(CGraphicsView *view);
+
+    protected:
+        void mouseMoveEvent(QMouseEvent *event);
+        void focusInEvent(QFocusEvent *event);
+        void focusOutEvent(QFocusEvent *event);
+
+    private Q_SLOTS:
+        void onMouseActionChanged();
 
     private:
-        SchematicStateHandler(QObject *parent = 0);
+        void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);
 
-        void applyCursor(SchematicWidget *widget);
-        void applyState(SchematicWidget *widget);
-        void applyStateToAllWidgets();
-
-        SchematicStateHandlerPrivate *d;
+        ZoomRange m_zoomRange;
+        qreal m_currentZoom;
     };
 
 } // namespace Caneda
 
-#endif //SCHEMATIC_STATE_HANDLER_H
+#endif //C_GRAPHICS_VIEW_H

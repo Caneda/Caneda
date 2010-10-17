@@ -33,7 +33,7 @@ namespace Caneda
     class Component;
     class Painting;
     class Port;
-    class SchematicItem;
+    class CGraphicsItem;
 
     static const QPointF InvalidPoint(-30000, -30000);
 
@@ -62,7 +62,7 @@ namespace Caneda
         ScenePropertyChangeCmd(const QString& propertyName,
                 const QVariant& newValue,
                 const QVariant& oldValue,
-                SchematicScene *const schematic,
+                CGraphicsScene *const scene,
                 QUndoCommand *parent = 0);
 
         virtual void undo();
@@ -72,7 +72,7 @@ namespace Caneda
         const QString m_property;
         const QVariant m_newValue;
         const QVariant m_oldValue;
-        SchematicScene *const m_schematic;
+        CGraphicsScene *const m_scene;
     };
 
     class MoveCmd : public QUndoCommand
@@ -94,7 +94,7 @@ namespace Caneda
     {
     public:
         ConnectCmd(Port *p1, Port *p2, const QList<Wire*> &wires,
-                SchematicScene *scene, QUndoCommand *parent = 0);
+                CGraphicsScene *scene, QUndoCommand *parent = 0);
         ~ConnectCmd();
 
         void undo();
@@ -105,7 +105,7 @@ namespace Caneda
         Port * const m_port2;
         QList<WireConnectionInfo*> m_wireConnectionInfos;
 
-        SchematicScene *const m_scene;
+        CGraphicsScene *const m_scene;
     };
 
     class DisconnectCmd : public QUndoCommand
@@ -123,7 +123,7 @@ namespace Caneda
     class AddWireCmd : public QUndoCommand
     {
     public:
-        AddWireCmd(Wire *wire, SchematicScene *scene, QUndoCommand *parent = 0);
+        AddWireCmd(Wire *wire, CGraphicsScene *scene, QUndoCommand *parent = 0);
         ~AddWireCmd();
 
         void undo();
@@ -131,7 +131,7 @@ namespace Caneda
 
     private:
         Wire *m_wire;
-        SchematicScene *m_scene;
+        CGraphicsScene *m_scene;
         QPointF m_pos;
     };
 
@@ -147,7 +147,7 @@ namespace Caneda
     private:
         Port * const m_port1;
         Port * const m_port2;
-        SchematicScene *m_scene;
+        CGraphicsScene *m_scene;
         Wire *m_wire;
         QPointF m_pos;
     };
@@ -170,7 +170,7 @@ namespace Caneda
     class InsertItemCmd : public QUndoCommand
     {
     public:
-        InsertItemCmd(QGraphicsItem *const item, SchematicScene *scene,
+        InsertItemCmd(QGraphicsItem *const item, CGraphicsScene *scene,
                 QPointF pos = InvalidPoint, QUndoCommand *parent = 0);
         ~InsertItemCmd();
 
@@ -179,16 +179,16 @@ namespace Caneda
 
     protected:
         QGraphicsItem *const m_item;
-        SchematicScene *const m_scene;
+        CGraphicsScene *const m_scene;
         QPointF m_pos;
     };
 
     class RemoveItemsCmd : public QUndoCommand
     {
     public:
-        typedef QPair<SchematicItem*, QPointF> ItemPointPair;
+        typedef QPair<CGraphicsItem*, QPointF> ItemPointPair;
 
-        RemoveItemsCmd(const QList<SchematicItem*> &items, SchematicScene *scene,
+        RemoveItemsCmd(const QList<CGraphicsItem*> &items, CGraphicsScene *scene,
                 QUndoCommand *parent = 0);
         ~RemoveItemsCmd();
 
@@ -197,36 +197,36 @@ namespace Caneda
 
     protected:
         QList<ItemPointPair> m_itemPointPairs;
-        SchematicScene *const m_scene;
+        CGraphicsScene *const m_scene;
     };
 
     class RotateItemsCmd : public QUndoCommand
     {
     public:
-        RotateItemsCmd(QList<SchematicItem*> items, const  Caneda::AngleDirection=Caneda::Clockwise,
+        RotateItemsCmd(QList<CGraphicsItem*> items, const  Caneda::AngleDirection=Caneda::Clockwise,
                 QUndoCommand *parent = 0);
-        RotateItemsCmd(SchematicItem *item, const  Caneda::AngleDirection=Caneda::Clockwise,
+        RotateItemsCmd(CGraphicsItem *item, const  Caneda::AngleDirection=Caneda::Clockwise,
                 QUndoCommand *parent = 0);
 
         void undo();
         void redo();
 
     protected:
-        QList<SchematicItem*> m_items;
+        QList<CGraphicsItem*> m_items;
         Caneda::AngleDirection m_angleDirection;
     };
 
     class MirrorItemsCmd : public QUndoCommand
     {
     public:
-        MirrorItemsCmd(QList<SchematicItem*> items, const Qt::Axis axis, QUndoCommand *parent = 0);
-        MirrorItemsCmd(SchematicItem *item, const Qt::Axis axis, QUndoCommand *parent = 0);
+        MirrorItemsCmd(QList<CGraphicsItem*> items, const Qt::Axis axis, QUndoCommand *parent = 0);
+        MirrorItemsCmd(CGraphicsItem *item, const Qt::Axis axis, QUndoCommand *parent = 0);
 
         void undo();
         void redo();
 
     protected:
-        QList<SchematicItem*> m_items;
+        QList<CGraphicsItem*> m_items;
         Qt::Axis m_axis;
     };
 

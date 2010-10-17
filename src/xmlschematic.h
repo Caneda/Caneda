@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef XMLSCHEMATIC_H
-#define XMLSCHEMATIC_H
+#ifndef XML_SCHEMATIC_H
+#define XML_SCHEMATIC_H
 
 // Forward declarations
 class QString;
@@ -26,8 +26,8 @@ class QString;
 namespace Caneda
 {
     // Forward declarations
+    class CGraphicsScene;
     class SchematicDocument;
-    class SchematicScene;
 
     class XmlReader;
     class XmlWriter;
@@ -42,7 +42,7 @@ namespace Caneda
         bool load();
 
         SchematicDocument* schematicDocument() const;
-        SchematicScene* schematicScene() const;
+        CGraphicsScene* cGraphicsScene() const;
         QString fileName() const;
 
     private:
@@ -65,4 +65,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //XMLSCHEMATIC_H
+#endif //XML_SCHEMATIC_H

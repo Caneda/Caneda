@@ -37,10 +37,10 @@ namespace Caneda
      * \brief Constructs a port symbol painting item.
      * \param nameStr_ Represents the name part of port id.
      * \param numberStr_ Represents the number part of port id.
-     * \param scene SchematicScene on which this item should be added.
+     * \param scene CGraphicsScene on which this item should be added.
      */
     PortSymbol::PortSymbol(const QString& nameStr_, const QString& numberStr_,
-            SchematicScene *scene) :
+            CGraphicsScene *scene) :
         Painting(scene),
         m_mirrored(false),
 
@@ -135,7 +135,7 @@ namespace Caneda
     }
 
     //! \brief Returns a copy of port symbol item parented to scene \a scene.
-    PortSymbol* PortSymbol::copy(SchematicScene *scene) const
+    PortSymbol* PortSymbol::copy(CGraphicsScene *scene) const
     {
         PortSymbol *port = new PortSymbol(m_numberString, m_nameString, scene);
         port->m_mirrored = m_mirrored;

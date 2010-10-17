@@ -104,7 +104,7 @@ namespace Caneda
         ~LibraryLoader();
 
         Component* newComponent(QString componentName,
-                SchematicScene *scene,
+                CGraphicsScene *scene,
                 QString library = QString());
 
         bool newLibrary(const QString& libPath, SvgPainter* svg = 0);
