@@ -59,7 +59,7 @@ namespace Caneda
     bool LayoutContext::canOpen(const QFileInfo &info) const
     {
         QStringList supportedSuffixes;
-        supportedSuffixes << "xsch";
+        supportedSuffixes << "xlay";
 
         foreach (const QString &suffix, supportedSuffixes) {
             if (suffix == info.suffix()) {
@@ -104,41 +104,16 @@ namespace Caneda
         m_mouseActions << action;
     }
 
-    /*!
-     * \brief Opens the current schematics' symbol for editing
-     */
-    void LayoutContext::slotSymbolEdit()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
-
-        if (!document) {
-            return;
-        }
-
-        if (document->fileName().isEmpty()) {
-            QMessageBox::critical(0, tr("Critical"),
-                    tr("Please, save schematic first!"));
-            return;
-        }
-
-        QString filename = document->fileName();
-        QFileInfo info(filename);
-        filename = info.completeBaseName() + ".xsym";
-
-        MainWindow::instance()->slotFileOpen(filename);
-    }
-
     void LayoutContext::slotIntoHierarchy()
     {
         setNormalAction();
-        //TODO: implement this or rather port directly
+        //TODO: implement this
     }
 
     void LayoutContext::slotPopHierarchy()
     {
         setNormalAction();
-        //TODO: implement this or rather port directly
+        //TODO: implement this
     }
 
     void LayoutContext::slotSnapToGrid(bool snap)
@@ -212,30 +187,6 @@ namespace Caneda
     void LayoutContext::slotCenterVertical()
     {
         alignElements(Qt::AlignVCenter);
-    }
-
-    void LayoutContext::slotInsertEntity()
-    {
-        setNormalAction();
-        //TODO: implement this or rather port directly
-    }
-
-    void LayoutContext::slotToPage()
-    {
-        setNormalAction();
-        //TODO: implement this or rather port directly
-    }
-
-    void LayoutContext::slotDCbias()
-    {
-        setNormalAction();
-        //TODO: implement this or rather port directly
-    }
-
-    void LayoutContext::slotExportGraphAsCsv()
-    {
-        setNormalAction();
-        //TODO: implement this or rather port directly
     }
 
     //! \brief Align selected elements appropriately based on \a alignment

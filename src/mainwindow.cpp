@@ -247,6 +247,7 @@ namespace Caneda
         ActionManager *am = ActionManager::instance();
         StateHandler *handler = StateHandler::instance();
         SchematicContext *sc = SchematicContext::instance();
+        LayoutContext *lc = LayoutContext::instance();
 
         action = am->createAction("newSchematic", Caneda::icon("document-new"), tr("&New schematic"));
         action->setShortcut(CTRL+Key_N);
@@ -376,14 +377,18 @@ namespace Caneda
         action->setShortcut(CTRL+Key_I);
         action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotIntoHierarchy()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotIntoHierarchy()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("popH", Caneda::icon("go-top"), tr("Pop out"));
         action->setShortcut(CTRL+SHIFT+Key_I);
         action->setStatusTip(tr("Pop outside subcircuit"));
         action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotPopHierarchy()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotPopHierarchy()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("zoomFitInBest", Caneda::icon("zoom-fit-best"), tr("View all"));
         action->setShortcut(Key_0);
@@ -447,55 +452,73 @@ namespace Caneda
         action->setWhatsThis(tr("Snap to Grid\n\nSets snap to grid"));
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), sc, SLOT(slotSnapToGrid(bool)));
+        connect(action, SIGNAL(toggled(bool)), lc, SLOT(slotSnapToGrid(bool)));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("alignTop", Caneda::icon("align-vertical-top"), tr("Align top"));
         action->setStatusTip(tr("Align top selected elements"));
         action->setWhatsThis(tr("Align top\n\nAlign selected elements to their upper edge"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotAlignTop()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotAlignTop()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("alignBottom", Caneda::icon("align-vertical-bottom"), tr("Align bottom"));
         action->setStatusTip(tr("Align bottom selected elements"));
         action->setWhatsThis(tr("Align bottom\n\nAlign selected elements to their lower edge"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotAlignBottom()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotAlignBottom()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("alignLeft", Caneda::icon("align-horizontal-left"), tr("Align left"));
         action->setStatusTip(tr("Align left selected elements"));
         action->setWhatsThis(tr("Align left\n\nAlign selected elements to their left edge"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotAlignLeft()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotAlignLeft()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("alignRight", Caneda::icon("align-horizontal-right"), tr("Align right"));
         action->setStatusTip(tr("Align right selected elements"));
         action->setWhatsThis(tr("Align right\n\nAlign selected elements to their right edge"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotAlignRight()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotAlignRight()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("centerHor", Caneda::icon("align-horizontal-center"), tr("Center horizontally"));
         action->setStatusTip(tr("Center horizontally selected elements"));
         action->setWhatsThis(tr("Center horizontally\n\nCenter horizontally selected elements"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotCenterHorizontal()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotCenterHorizontal()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("centerVert", Caneda::icon("align-vertical-center"), tr("Center vertically"));
         action->setStatusTip(tr("Center vertically selected elements"));
         action->setWhatsThis(tr("Center vertically\n\nCenter vertically selected elements"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotCenterVertical()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotCenterVertical()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("distrHor", Caneda::icon("distribute-horizontal-center"), tr("Distribute horizontally"));
         action->setStatusTip(tr("Distribute equally horizontally"));
         action->setWhatsThis(tr("Distribute horizontally\n\n""Distribute horizontally selected elements"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotDistributeHorizontal()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotDistributeHorizontal()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("distrVert", Caneda::icon("distribute-vertical-center"), tr("Distribute vertically"));
         action->setStatusTip(tr("Distribute equally vertically"));
         action->setWhatsThis(tr("Distribute vertically\n\n""Distribute vertically selected elements"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotDistributeVertical()));
+        connect(action, SIGNAL(triggered()), lc, SLOT(slotDistributeVertical()));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createAction("projNew", Caneda::icon("project-new"), tr("&New project..."));
         action->setShortcut(CTRL+SHIFT+Key_N);
@@ -605,15 +628,15 @@ namespace Caneda
 
         action = am->createAction("simulate", Caneda::icon("media-playback-start"), tr("Simulate"));
         action->setShortcut(Key_F5);
-        action->setStatusTip(tr("Simulates the current schematic"));
-        action->setWhatsThis(tr("Simulate\n\nSimulates the current schematic"));
+        action->setStatusTip(tr("Simulates the current circuit"));
+        action->setWhatsThis(tr("Simulate\n\nSimulates the current circuit"));
         connect(action, SIGNAL(triggered()), SLOT(slotSimulate()));
         sc->addNormalAction(action);
 
-        action = am->createAction("dpl_sch", Caneda::icon("system-switch-user"), tr("View data display/schematic"));
+        action = am->createAction("dpl_sch", Caneda::icon("system-switch-user"), tr("View circuit/simulation"));
         action->setShortcut(Key_F4);
-        action->setStatusTip(tr("Changes to data display or schematic page"));
-        action->setWhatsThis(tr("View Data Display/Schematic\n\n")+tr("Changes to data display or schematic page"));
+        action->setStatusTip(tr("Changes to circuit or simulation"));
+        action->setWhatsThis(tr("View circuit/simulation\n\n")+tr("Changes to circuit or simulation"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotToPage()));
         sc->addNormalAction(action);
 
@@ -636,14 +659,12 @@ namespace Caneda
         action->setStatusTip(tr("Shows last simulation messages"));
         action->setWhatsThis(tr("Show Last Messages\n\nShows the messages of the last simulation"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowLastMsg()));
-        sc->addNormalAction(action);
 
         action = am->createAction("showNet", Caneda::icon("document-preview"), tr("Show last netlist"));
         action->setShortcut(Key_F10);
         action->setStatusTip(tr("Shows last simulation netlist"));
         action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowLastNetlist()));
-        sc->addNormalAction(action);
 
         action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("Help index..."));
         action->setShortcut(Key_F1);
@@ -673,6 +694,7 @@ namespace Caneda
         Action *action = 0;
         StateHandler *handler = StateHandler::instance();
         SchematicContext *sc = SchematicContext::instance();
+        LayoutContext *lc = LayoutContext::instance();
 
         ActionManager *am = ActionManager::instance();
         action = am->createMouseAction("editDelete", CGraphicsScene::Deleting,
@@ -683,6 +705,7 @@ namespace Caneda
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addMouseAction(action);
+        lc->addMouseAction(action);
 
         action = am->createMouseAction("select", CGraphicsScene::Normal,
                 Caneda::icon("edit-select"), tr("Select"));
@@ -693,6 +716,7 @@ namespace Caneda
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createMouseAction("editRotate", CGraphicsScene::Rotating,
                 Caneda::icon("object-rotate-left"), tr("Rotate"));
@@ -702,6 +726,7 @@ namespace Caneda
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createMouseAction("editMirror", CGraphicsScene::MirroringX,
                 Caneda::icon("object-flip-vertical"), tr("Mirror about X Axis"));
@@ -710,6 +735,7 @@ namespace Caneda
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createMouseAction("editMirrorY", CGraphicsScene::MirroringY,
                 Caneda::icon("object-flip-horizontal"), tr("Mirror about Y Axis"));
@@ -718,6 +744,7 @@ namespace Caneda
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createMouseAction("insWire", CGraphicsScene::Wiring,
                 Caneda::icon("wire"), tr("Wire"));
@@ -761,6 +788,7 @@ namespace Caneda
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
 
         action = am->createMouseAction("insertItem", CGraphicsScene::InsertingItems,
                 tr("Insert item action"));
@@ -773,6 +801,7 @@ namespace Caneda
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
+        lc->addNormalAction(action);
     }
 
     //! \brief Create and initialize menus.

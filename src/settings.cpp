@@ -72,10 +72,13 @@ namespace Caneda
 
         QString canedaFilter =
                 QObject::tr("Schematic-xml")+" (*.xsch);;"+
+                QObject::tr("Layout-xml")+" (*.xlay);;"+
                 QObject::tr("Symbol-xml")+" (*.xsym);;"+
-                QObject::tr("Caneda Project")+" (*.xpro);;"+
-                QObject::tr("Data Display")+" (*.dpl);;"+
-                QObject::tr("HDL Sources")+" (*.vhdl *.vhd *.v);;"+
+                QObject::tr("Caneda project")+" (*.xpro);;"+
+                QObject::tr("Data display")+" (*.dpl);;"+
+                QObject::tr("Spice netlist")+" (*.spc *.sp *.net *.cir);;"+
+                QObject::tr("HDL source")+" (*.vhdl *.vhd *.v);;"+
+                QObject::tr("Text file")+" (*.txt);;"+
                 QObject::tr("Any File")+" (*)";
         data["nosave/canedaFilter"] = VariantPair(canedaFilter);
     }
