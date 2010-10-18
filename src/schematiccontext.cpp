@@ -72,7 +72,10 @@ namespace Caneda
 
     QStringList SchematicContext::fileNameFilters() const
     {
-        return QStringList();
+        QStringList nameFilters;
+        nameFilters << QObject::tr("Schematic-xml")+" (*.xsch);;";
+
+        return nameFilters;
     }
 
     IDocument* SchematicContext::newDocument()

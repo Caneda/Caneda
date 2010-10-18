@@ -1179,7 +1179,7 @@ namespace Caneda
         }
 
         QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "",
-                Settings::instance()->currentValue("nosave/canedaFilter").toString());
+                manager->currentDocument()->context()->fileNameFilters().join(""));
         if(fileName.isEmpty()) {
             return;
         }

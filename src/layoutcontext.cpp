@@ -72,7 +72,10 @@ namespace Caneda
 
     QStringList LayoutContext::fileNameFilters() const
     {
-        return QStringList();
+        QStringList nameFilters;
+        nameFilters << QObject::tr("Layout-xml")+" (*.xlay);;";
+
+        return nameFilters;
     }
 
     IDocument* LayoutContext::newDocument()

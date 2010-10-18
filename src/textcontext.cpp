@@ -75,7 +75,13 @@ namespace Caneda
 
     QStringList TextContext::fileNameFilters() const
     {
-        return QStringList();
+        QStringList nameFilters;
+        nameFilters << QObject::tr("Spice netlist")+" (*.spc *.sp *.net *.cir);;";
+        nameFilters << QObject::tr("HDL source")+" (*.vhdl *.vhd *.v);;";
+        nameFilters << QObject::tr("Text file")+" (*.txt);;";
+        nameFilters << QObject::tr("Any File")+" (*)";
+
+        return nameFilters;
     }
 
     IDocument* TextContext::newDocument()

@@ -67,7 +67,10 @@ namespace Caneda
 
     QStringList WebContext::fileNameFilters() const
     {
-        return QStringList();
+        QStringList nameFilters;
+        nameFilters << QObject::tr("Web-html")+" (*.htm *.html);;";
+
+        return nameFilters;
     }
 
     IDocument* WebContext::newDocument()
