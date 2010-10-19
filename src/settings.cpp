@@ -69,18 +69,6 @@ namespace Caneda
         data["gui/layout/contact"] = VariantPair(QColor(Qt::black));
         data["gui/layout/nwell"] = VariantPair(QColor(Qt::darkYellow));
         data["gui/layout/pwell"] = VariantPair(QColor(Qt::darkCyan));
-
-        QString canedaFilter =
-                QObject::tr("Schematic-xml")+" (*.xsch);;"+
-                QObject::tr("Layout-xml")+" (*.xlay);;"+
-                QObject::tr("Symbol-xml")+" (*.xsym);;"+
-                QObject::tr("Caneda project")+" (*.xpro);;"+
-                QObject::tr("Data display")+" (*.dpl);;"+
-                QObject::tr("Spice netlist")+" (*.spc *.sp *.net *.cir);;"+
-                QObject::tr("HDL source")+" (*.vhdl *.vhd *.v);;"+
-                QObject::tr("Text file")+" (*.txt);;"+
-                QObject::tr("Any File")+" (*)";
-        data["nosave/canedaFilter"] = VariantPair(canedaFilter);
     }
 
     Settings::~Settings()
@@ -119,10 +107,7 @@ namespace Caneda
     {
         QStringList childKeys = data.keys();
         foreach (const QString& childKey, childKeys) {
-            // Save only keys which aren't having "nosave/" prefix.
-            if (!childKey.startsWith("nosave/")) {
-                settings.setValue(childKey, currentValue(childKey));
-            }
+            settings.setValue(childKey, currentValue(childKey));
         }
     }
 

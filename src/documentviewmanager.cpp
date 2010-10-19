@@ -260,6 +260,24 @@ namespace Caneda
         return closedAllDocuments;
     }
 
+    QStringList DocumentViewManager::fileNameFilters() const
+    {
+        QStringList nameFilters;
+
+        foreach (IContext *context, m_contexts) {
+            nameFilters << context->fileNameFilters();
+        }
+
+        // Symbol and data display filters should be removed when proper
+        // icontexts are implemented.
+        nameFilters << QObject::tr("Symbol-xml (*.xsym)")+" (*.xsym);;";
+        nameFilters << QObject::tr("Data display (*.dpl)")+" (*.dpl);;";
+        nameFilters << QObject::tr("Caneda project (*.xpro)")+" (*.xpro);;";
+        nameFilters << QObject::tr("Any File (*)")+" (*);;";
+
+        return nameFilters;
+    }
+
     bool DocumentViewManager::splitView(IView *view, Qt::Orientation orientation)
     {
         IView *newView = createView(view->document());

@@ -43,16 +43,14 @@ namespace Caneda
         void highlightViewForDocument(IDocument *document);
 
         void newDocument(IContext *context);
-
         bool openFile(const QString &fileName);
-
         bool saveDocuments(const QList<IDocument*> &documents);
         bool closeDocuments(const QList<IDocument*> &documents, bool askForSave = true);
 
+        QStringList fileNameFilters() const;
+
         bool splitView(IView *view, Qt::Orientation orientation);
-
         bool closeView(IView *view, bool askForSave = true);
-
         void replaceView(IView *view, IDocument *withViewOf);
 
         IDocument* currentDocument() const;

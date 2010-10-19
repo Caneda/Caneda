@@ -76,10 +76,9 @@ namespace Caneda
     QStringList TextContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Spice netlist")+" (*.spc *.sp *.net *.cir);;";
-        nameFilters << QObject::tr("HDL source")+" (*.vhdl *.vhd *.v);;";
-        nameFilters << QObject::tr("Text file")+" (*.txt);;";
-        nameFilters << QObject::tr("Any File")+" (*)";
+        nameFilters << QObject::tr("Spice netlist (*.spc *.sp *.net *.cir)")+" (*.spc *.sp *.net *.cir);;";
+        nameFilters << QObject::tr("HDL source (*.vhdl *.vhd *.v)")+" (*.vhdl *.vhd *.v);;";
+        nameFilters << QObject::tr("Text file (*.txt)")+" (*.txt);;";
 
         return nameFilters;
     }

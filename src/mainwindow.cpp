@@ -1114,7 +1114,7 @@ namespace Caneda
         if (fileName.isEmpty()) {
             if(!m_project->isValid()) {
                 fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
-                        Settings::instance()->currentValue("nosave/canedaFilter").toString());
+                        manager->fileNameFilters().join(""));
             }
             else {
                 ProjectFileOpenDialog *p =

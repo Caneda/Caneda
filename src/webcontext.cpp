@@ -68,7 +68,7 @@ namespace Caneda
     QStringList WebContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Web-html")+" (*.htm *.html);;";
+        nameFilters << QObject::tr("Web page (*.htm *.html)")+" (*.htm *.html);;";
 
         return nameFilters;
     }
