@@ -996,6 +996,7 @@ namespace Caneda
         viewToolbar  = addToolBar(tr("View"));
         viewToolbar->setObjectName("viewToolbar");
 
+        viewToolbar->addSeparator();
         viewToolbar->addAction(action("zoomFitInBest"));
         viewToolbar->addAction(action("zoomOriginal"));
         viewToolbar->addAction(action("zoomIn"));
@@ -1036,9 +1037,14 @@ namespace Caneda
     void MainWindow::initStatusBar()
     {
         QStatusBar *statusBarWidget = statusBar();
-        // Initially its empty space.
+
+        // Initially it is an empty space.
         m_statusLabel = new QLabel(QString(""), statusBarWidget);
         statusBarWidget->addPermanentWidget(m_statusLabel);
+
+        viewToolbar->setIconSize(QSize(10, 10));
+        statusBarWidget->addPermanentWidget(viewToolbar);
+
         statusBarWidget->setVisible(action("viewStatusBar")->isChecked());
     }
 
