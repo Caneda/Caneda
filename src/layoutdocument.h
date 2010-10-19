@@ -34,7 +34,7 @@ namespace Caneda
         LayoutDocument();
         ~LayoutDocument();
 
-        // Interface implementation
+        // IDocument interface methods
         virtual IContext* context();
 
         virtual bool isModified() const;
@@ -69,8 +69,8 @@ namespace Caneda
         virtual IView* createView();
 
         virtual void updateSettingsChanges();
+        // End of IDocument interface methods
 
-        // End of Interface implemention.
         CGraphicsScene* cGraphicsScene() const;
 
     private:

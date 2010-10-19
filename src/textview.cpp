@@ -35,6 +35,7 @@ namespace Caneda
     {
         m_currentZoom = m_originalZoom;
         m_textEdit = new TextEdit(document->textDocument());
+
         connect(m_textEdit, SIGNAL(focussed()), this,
                 SLOT(onFocussed()));
         connect(m_textEdit, SIGNAL(cursorPositionChanged(const QString &)),

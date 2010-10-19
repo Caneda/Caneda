@@ -31,7 +31,7 @@ namespace Caneda
         static WebContext* instance();
         virtual ~WebContext();
 
-        // Interface implementation
+        // IContext interface methods
         virtual void init();
 
         virtual bool canOpen(const QFileInfo& info) const;
@@ -39,7 +39,7 @@ namespace Caneda
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
-        // End of interface implementation.
+        // End of IContext interface methods
 
     private:
         WebContext(QObject *parent = 0);

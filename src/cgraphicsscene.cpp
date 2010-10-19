@@ -47,13 +47,6 @@ namespace Caneda
 {
     //! \brief Default grid spacing
     static const uint DEFAULT_GRID_SPACE = 10;
-    //! \brief Default scene size
-    static const int DEFAULT_SCENE_SIZE = 5000;
-
-    const QRectF CGraphicsScene::DefaultSceneRect = QRectF(-DEFAULT_SCENE_SIZE/2,
-                                                           -DEFAULT_SCENE_SIZE/2,
-                                                            DEFAULT_SCENE_SIZE,
-                                                            DEFAULT_SCENE_SIZE);
 
     /*!
      * \brief This template method calculates the center of the items on the scene
@@ -83,7 +76,7 @@ namespace Caneda
 
     //! \brief Default Constructor
     CGraphicsScene::CGraphicsScene(QObject *parent) :
-        QGraphicsScene(CGraphicsScene::DefaultSceneRect, parent)
+        QGraphicsScene(QRectF(-2500, -2500, 5000, 5000), parent)
     {
         /* setup undo stack */
         m_undoStack = new QUndoStack(this);
@@ -135,14 +128,6 @@ namespace Caneda
     {
         delete m_undoStack;
     }
-
-    /*!
-     * \brief Data set file suffix
-     * \todo use something more explicit
-     */
-    static const char dataSetSuffix[] = ".dat";
-    //! \brief Data display file suffix
-    static const char dataDisplaySuffix[] = ".dpl";
 
     //! \brief A helper method to return sign of given integer.
     inline int sign(int value)

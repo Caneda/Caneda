@@ -33,8 +33,6 @@ namespace Caneda
     {
         Q_OBJECT
     public:
-        static const qreal zoomFactor;
-
         CGraphicsView(CGraphicsScene *scene = 0);
         ~CGraphicsView();
 
@@ -64,6 +62,7 @@ namespace Caneda
     private:
         void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);
 
+        const qreal m_zoomFactor;
         ZoomRange m_zoomRange;
         qreal m_currentZoom;
     };

@@ -77,8 +77,6 @@ namespace Caneda
             Normal
         };
 
-        static const QRectF DefaultSceneRect;
-
         /* constructor/destructor */
         CGraphicsScene(QObject *parent = 0);
         ~CGraphicsScene();

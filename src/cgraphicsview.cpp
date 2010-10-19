@@ -25,12 +25,11 @@
 
 namespace Caneda
 {
-    const qreal CGraphicsView::zoomFactor = 0.3;
-
     //! Constructor
     CGraphicsView::CGraphicsView(CGraphicsScene *sv) :
         QGraphicsView(sv ? sv : 0),
         m_zoomRange(0.30, 10.0),
+        m_zoomFactor(0.3),
         m_currentZoom(1.0)
     {
         centerOn(QPointF(0, 0));
@@ -69,13 +68,13 @@ namespace Caneda
 
     void CGraphicsView::zoomIn()
     {
-        qreal newZoom = m_currentZoom * (1 + zoomFactor);
+        qreal newZoom = m_currentZoom * (1 + m_zoomFactor);
         setZoomLevel(qMin(newZoom, m_zoomRange.max));
     }
 
     void CGraphicsView::zoomOut()
     {
-        qreal newZoom = m_currentZoom / (1 + zoomFactor);
+        qreal newZoom = m_currentZoom / (1 + m_zoomFactor);
         setZoomLevel(qMax(newZoom, m_zoomRange.min));
     }
 

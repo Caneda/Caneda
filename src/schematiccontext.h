@@ -34,7 +34,7 @@ namespace Caneda
         static SchematicContext* instance();
         ~SchematicContext();
 
-        // IContext interface methods.
+        // IContext interface methods
         virtual void init();
 
         virtual bool canOpen(const QFileInfo &info) const;
@@ -42,6 +42,7 @@ namespace Caneda
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+        // End of IContext interface methods
 
         void addNormalAction(Action *action);
         void addMouseAction(Action *action);

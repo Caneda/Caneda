@@ -38,7 +38,7 @@ namespace Caneda
         WebDocument();
         virtual ~WebDocument();
 
-        // Interface implementation
+        // IDocument interface methods
         virtual IContext* context();
 
         virtual bool isModified() const;
@@ -70,7 +70,7 @@ namespace Caneda
         virtual IView* createView();
 
         virtual void updateSettingsChanges();
-        // End of Interface implemention.
+        // End of IDocument interface methods
 
         QUrl* webUrl() const;
 

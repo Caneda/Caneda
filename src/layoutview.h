@@ -38,7 +38,6 @@ namespace Caneda
         LayoutDocument* layoutDocument() const;
 
         // IView interface methods
-
         virtual QWidget* toWidget() const;
         virtual IContext* context() const;
 
@@ -51,7 +50,6 @@ namespace Caneda
         virtual IView* duplicate();
 
         virtual void updateSettingsChanges();
-
         // End of IView interface methods
 
     private Q_SLOTS:
