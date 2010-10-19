@@ -80,22 +80,22 @@ namespace Caneda
                 SLOT(onDocumentSelectorIndexChanged(int)));
 
 
-        QToolButton *_splitHorizontalButton = new QToolButton(m_toolBar);
-        _splitHorizontalButton->setIcon(Caneda::icon("view-split-left-right"));
-        QToolButton *_splitVerticalButton = new QToolButton(m_toolBar);
-        _splitVerticalButton->setIcon(Caneda::icon("view-split-top-bottom"));
-        QToolButton *_closeViewButton = new QToolButton(m_toolBar);
-        _closeViewButton->setIcon(Caneda::icon("view-left-close"));
+        QToolButton *splitHorizontalButton = new QToolButton(m_toolBar);
+        splitHorizontalButton->setIcon(Caneda::icon("view-split-left-right"));
+        QToolButton *splitVerticalButton = new QToolButton(m_toolBar);
+        splitVerticalButton->setIcon(Caneda::icon("view-split-top-bottom"));
+        QToolButton *closeViewButton = new QToolButton(m_toolBar);
+        closeViewButton->setIcon(Caneda::icon("view-left-close"));
 
-        connect(_splitHorizontalButton, SIGNAL(clicked()), this, SLOT(slotSplitHorizontal()));
-        connect(_splitVerticalButton, SIGNAL(clicked()), this, SLOT(slotSplitVertical()));
-        connect(_closeViewButton, SIGNAL(clicked()), this, SLOT(slotCloseView()));
+        connect(splitHorizontalButton, SIGNAL(clicked()), this, SLOT(slotSplitHorizontal()));
+        connect(splitVerticalButton, SIGNAL(clicked()), this, SLOT(slotSplitVertical()));
+        connect(closeViewButton, SIGNAL(clicked()), this, SLOT(slotCloseView()));
 
         m_toolBar->addWidget(m_documentSelector);
         m_toolBar->addSeparator();
-        m_toolBar->addWidget(_splitHorizontalButton);
-        m_toolBar->addWidget(_splitVerticalButton);
-        m_toolBar->addWidget(_closeViewButton);
+        m_toolBar->addWidget(splitHorizontalButton);
+        m_toolBar->addWidget(splitVerticalButton);
+        m_toolBar->addWidget(closeViewButton);
 
         onDocumentViewManagerChanged();
     }
