@@ -62,21 +62,6 @@ namespace Caneda
         return WebContext::instance();
     }
 
-    void WebView::setZoomLevel(qreal zoomLevel)
-    {
-        if (!m_zoomRange.contains(zoomLevel)) {
-            return;
-        }
-
-        if (qFuzzyCompare(zoomLevel, m_currentZoom)) {
-            return;
-        }
-
-        m_currentZoom = zoomLevel;
-
-        m_webPage->setZoomFactor(m_currentZoom);
-    }
-
     void WebView::zoomIn()
     {
         setZoomLevel(m_currentZoom + 0.1);
@@ -102,6 +87,11 @@ namespace Caneda
         return m_currentZoom;
     }
 
+    void WebView::setZoom(int percentage)
+    {
+        setZoomLevel((m_zoomRange.max - m_zoomRange.min)*percentage/100 + m_zoomRange.min);
+    }
+
     IView* WebView::duplicate()
     {
         return document()->createView();
@@ -114,6 +104,21 @@ namespace Caneda
     void WebView::onFocussed()
     {
         emit focussedIn(static_cast<IView*>(this));
+    }
+
+    void WebView::setZoomLevel(qreal zoomLevel)
+    {
+        if (!m_zoomRange.contains(zoomLevel)) {
+            return;
+        }
+
+        if (qFuzzyCompare(zoomLevel, m_currentZoom)) {
+            return;
+        }
+
+        m_currentZoom = zoomLevel;
+
+        m_webPage->setZoomFactor(m_currentZoom);
     }
 
 } // namespace Caneda

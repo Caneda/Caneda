@@ -90,6 +90,11 @@ namespace Caneda
         setZoomLevel(1.0);
     }
 
+    void CGraphicsView::setZoom(int percentage)
+    {
+        setZoomLevel((m_zoomRange.max - m_zoomRange.min)*percentage/100 + m_zoomRange.min);
+    }
+
     void CGraphicsView::zoomFitRect(const QRectF &rect)
     {
         if (rect.isEmpty()) {

@@ -62,7 +62,7 @@ namespace Caneda
      */
 
     /*!
-     * \fn IView::setZoom(qreal percentage)
+     * \fn IView::setZoom(int percentage)
      *
      * \brief Zooms the view to the value pointed by percentage argument.
      */

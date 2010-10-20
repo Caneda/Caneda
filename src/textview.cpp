@@ -62,21 +62,6 @@ namespace Caneda
         return TextContext::instance();
     }
 
-    void TextView::setZoomLevel(qreal zoomLevel)
-    {
-        if (!m_zoomRange.contains(zoomLevel)) {
-            return;
-        }
-
-        if (qFuzzyCompare(zoomLevel, m_currentZoom)) {
-            return;
-        }
-
-        m_currentZoom = zoomLevel;
-
-        m_textEdit->setPointSize(m_currentZoom);
-    }
-
     void TextView::zoomIn()
     {
         setZoomLevel(m_currentZoom + 1);
@@ -102,6 +87,11 @@ namespace Caneda
         return m_currentZoom;
     }
 
+    void TextView::setZoom(int percentage)
+    {
+        setZoomLevel((m_zoomRange.max - m_zoomRange.min)*percentage/100 + m_zoomRange.min);
+    }
+
     IView* TextView::duplicate()
     {
         return document()->createView();
@@ -114,6 +104,21 @@ namespace Caneda
     void TextView::onFocussed()
     {
         emit focussedIn(static_cast<IView*>(this));
+    }
+
+    void TextView::setZoomLevel(qreal zoomLevel)
+    {
+        if (!m_zoomRange.contains(zoomLevel)) {
+            return;
+        }
+
+        if (qFuzzyCompare(zoomLevel, m_currentZoom)) {
+            return;
+        }
+
+        m_currentZoom = zoomLevel;
+
+        m_textEdit->setPointSize(m_currentZoom);
     }
 
 } // namespace Caneda

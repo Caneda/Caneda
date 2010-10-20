@@ -993,16 +993,6 @@ namespace Caneda
         editToolbar->addAction(action("editUndo"));
         editToolbar->addAction(action("editRedo"));
 
-        viewToolbar  = addToolBar(tr("View"));
-        viewToolbar->setObjectName("viewToolbar");
-
-        viewToolbar->addSeparator();
-        viewToolbar->addAction(action("zoomFitInBest"));
-        viewToolbar->addAction(action("zoomOriginal"));
-        viewToolbar->addAction(action("zoomIn"));
-        viewToolbar->addAction(action("zoomOut"));
-        viewToolbar->addAction(action("zoomArea"));
-
         workToolbar  = addToolBar(tr("Work"));
         workToolbar->setObjectName("workToolbar");
 
@@ -1038,12 +1028,35 @@ namespace Caneda
     {
         QStatusBar *statusBarWidget = statusBar();
 
-        // Initially it is an empty space.
+        // Initially the label is an empty space.
         m_statusLabel = new QLabel(QString(""), statusBarWidget);
-        statusBarWidget->addPermanentWidget(m_statusLabel);
+
+        // Configure viewToolbar
+        viewToolbar  = addToolBar(tr("View"));
+        viewToolbar->setObjectName("viewToolbar");
+
+        viewToolbar->addSeparator();
+        viewToolbar->addAction(action("zoomFitInBest"));
+        viewToolbar->addAction(action("zoomOriginal"));
+        viewToolbar->addAction(action("zoomIn"));
+        viewToolbar->addAction(action("zoomOut"));
+        viewToolbar->addAction(action("zoomArea"));
 
         viewToolbar->setIconSize(QSize(10, 10));
+
+        // Create a slider for the zoom
+        QSlider *zoomSlider = new QSlider(Qt::Horizontal, this);
+        zoomSlider->setMinimum(0);
+        zoomSlider->setMaximum(100);
+        zoomSlider->setValue(10);
+        zoomSlider->setPageStep(10);
+        zoomSlider->setFixedWidth(100);
+        connect(zoomSlider, SIGNAL(valueChanged(int)), SLOT(slotSetZoom(int)));
+
+        // Add the widgets to the toolbar
+        statusBarWidget->addPermanentWidget(m_statusLabel);
         statusBarWidget->addPermanentWidget(viewToolbar);
+        statusBarWidget->addPermanentWidget(zoomSlider);
 
         statusBarWidget->setVisible(action("viewStatusBar")->isChecked());
     }
@@ -1342,6 +1355,24 @@ namespace Caneda
         //TODO: implement this or rather port directly
     }
 
+    void MainWindow::slotZoomIn()
+    {
+        setNormalAction();
+        IView* view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->zoomIn();
+        }
+    }
+
+    void MainWindow::slotZoomOut()
+    {
+        setNormalAction();
+        IView* view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->zoomOut();
+        }
+    }
+
     void MainWindow::slotZoomBestFit()
     {
         setNormalAction();
@@ -1360,21 +1391,12 @@ namespace Caneda
         }
     }
 
-    void MainWindow::slotZoomIn()
+    void MainWindow::slotSetZoom(int percentage)
     {
         setNormalAction();
         IView* view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->zoomIn();
-        }
-    }
-
-    void MainWindow::slotZoomOut()
-    {
-        setNormalAction();
-        IView* view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->zoomOut();
+        if(view) {
+            view->setZoom(percentage);
         }
     }
 

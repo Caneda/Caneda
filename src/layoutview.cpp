@@ -87,6 +87,11 @@ namespace Caneda
         return m_cGraphicsView->currentZoom();
     }
 
+    void LayoutView::setZoom(int percentage)
+    {
+        m_cGraphicsView->setZoom(percentage);
+    }
+
     IView* LayoutView::duplicate()
     {
         return document()->createView();

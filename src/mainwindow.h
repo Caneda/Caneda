@@ -77,10 +77,11 @@ namespace Caneda
         void slotEditFind();
         void slotSelectAll();
 
-        void slotZoomBestFit();
-        void slotZoomOriginal();
         void slotZoomIn();
         void slotZoomOut();
+        void slotZoomBestFit();
+        void slotZoomOriginal();
+        void slotSetZoom(int percentage);
         void slotSplitHorizontal();
         void slotSplitVertical();
         void slotCloseSplit();
