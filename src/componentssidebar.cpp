@@ -47,7 +47,8 @@ namespace Caneda
         setDragDropMode(QAbstractItemView::DragOnly);
         setDragEnabled(true);
         setAlternatingRowColors(true);
-        setIconSize(QSize(32, 32));
+        setAnimated(true);
+        setIconSize(QSize(24, 24));
     }
 
     void TreeView::mousePressEvent(QMouseEvent *event)

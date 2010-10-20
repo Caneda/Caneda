@@ -63,11 +63,6 @@ namespace Caneda
     QString latexToUnicode(const QString& input);
     QString unicodeToLatex(QString unicode);
 
-    enum SideBarRole {
-        ItemSelection,
-        PropertyBrowser
-    };
-
     struct ZoomRange
     {
         const qreal min;
