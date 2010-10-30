@@ -33,7 +33,7 @@ namespace Caneda
 {
     // Forward declarations
     class Action;
-    class ComponentsSidebar;
+    class SidebarBrowser;
     class FolderBrowser;
     class Project;
     class TabWidget;
@@ -146,7 +146,7 @@ namespace Caneda
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
         QDockWidget *sidebarDockWidget;
         QUndoView *undoView;
-        ComponentsSidebar *m_componentsSidebar;
+        SidebarBrowser *m_sidebarBrowser;
         Project *m_project;
         QDockWidget *projectDockWidget;
         FolderBrowser *m_folderBrowser;

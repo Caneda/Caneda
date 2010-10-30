@@ -20,7 +20,6 @@
 #include "mainwindow.h"
 
 #include "actionmanager.h"
-#include "componentssidebar.h"
 #include "documentviewmanager.h"
 #include "folderbrowser.h"
 #include "global.h"
@@ -31,6 +30,7 @@
 #include "project.h"
 #include "schematiccontext.h"
 #include "settings.h"
+#include "sidebarbrowser.h"
 #include "statehandler.h"
 #include "tabs.h"
 #include "textcontext.h"
@@ -117,12 +117,12 @@ namespace Caneda
     void MainWindow::setupSidebar()
     {
         StateHandler *handler = StateHandler::instance();
-        m_componentsSidebar = new ComponentsSidebar(this);
-        connect(m_componentsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+        m_sidebarBrowser = new SidebarBrowser(this);
+        connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
-        sidebarDockWidget = new QDockWidget(m_componentsSidebar->windowTitle(),this);
-        sidebarDockWidget->setWidget(m_componentsSidebar);
+        sidebarDockWidget = new QDockWidget(m_sidebarBrowser->windowTitle(),this);
+        sidebarDockWidget->setWidget(m_sidebarBrowser);
         sidebarDockWidget->setObjectName("componentsSidebar");
         addDockWidget(Qt::LeftDockWidgetArea, sidebarDockWidget);
         docksMenu->addAction(sidebarDockWidget->toggleViewAction());
@@ -166,9 +166,9 @@ namespace Caneda
         layer.fill(settings->currentValue("gui/layout/pwell").value<QColor>());
         layerItems << qMakePair(QObject::tr("P Well"), layer);
 
-        m_componentsSidebar->plugItem("Components", QPixmap(), "root");
-        m_componentsSidebar->plugItems(paintingItems, QObject::tr("Paint Tools"));
-        m_componentsSidebar->plugItems(layerItems, QObject::tr("Layout Tools"));
+        m_sidebarBrowser->plugItem("Components", QPixmap(), "root");
+        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
+        m_sidebarBrowser->plugItems(layerItems, QObject::tr("Layout Tools"));
     }
 
     /*!
@@ -1683,9 +1683,9 @@ namespace Caneda
             return;
         }
 
-        m_componentsSidebar->plugLibrary("Passive", "Components");
-        m_componentsSidebar->plugLibrary("Active", "Components");
-        m_componentsSidebar->plugLibrary("Semiconductor", "Components");
+        m_sidebarBrowser->plugLibrary("Passive", "Components");
+        m_sidebarBrowser->plugLibrary("Active", "Components");
+        m_sidebarBrowser->plugLibrary("Semiconductor", "Components");
     }
 
     void MainWindow::saveSettings()

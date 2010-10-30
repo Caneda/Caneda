@@ -13,7 +13,7 @@ ADD_SUBDIRECTORY( paintings )
 ADD_SUBDIRECTORY( tools )
 ADD_SUBDIRECTORY( xmlutilities )
 
-SET(CANEDA_SRCS wire.cpp componentssidebar.cpp cgraphicsitem.cpp
+SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp cgraphicsitem.cpp
   cgraphicsscene.cpp sidebarmodel.cpp
   global.cpp units.cpp main.cpp mainwindow.cpp
   cgraphicsview.cpp  undocommands.cpp
@@ -32,7 +32,7 @@ SET(CANEDA_SRCS wire.cpp componentssidebar.cpp cgraphicsitem.cpp
 )
 
 SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
-  mainwindow.h componentssidebar.h svgitem.h library.h
+  mainwindow.h sidebarbrowser.h svgitem.h library.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
   folderbrowser.h project.h
   actionmanager.h singletonowner.h statehandler.h

@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef COMPONENTSSIDEBAR_H
-#define COMPONENTSSIDEBAR_H
+#ifndef SIDEBAR_BROWSER_H
+#define SIDEBAR_BROWSER_H
 
 #include <QTreeView>
 
@@ -53,12 +53,12 @@ namespace Caneda
     };
 
     //! Represents sidebar which allows components to be selected.
-    class ComponentsSidebar : public QWidget
+    class SidebarBrowser : public QWidget
     {
         Q_OBJECT;
     public:
-        ComponentsSidebar(QWidget *parent = 0);
-        ~ComponentsSidebar();
+        SidebarBrowser(QWidget *parent = 0);
+        ~SidebarBrowser();
 
         void plugLibrary(QString str, QString category);
         void unPlugLibrary(QString str, QString category);
@@ -89,4 +89,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //COMPONENTSSIDEBAR_H
+#endif //SIDEBAR_BROWSER_H

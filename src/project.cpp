@@ -20,11 +20,11 @@
 #include "project.h"
 
 #include "actionmanager.h"
-#include "componentssidebar.h"
 #include "global.h"
 #include "library.h"
 #include "schematiccontext.h"
 #include "schematicdocument.h"
+#include "sidebarbrowser.h"
 #include "xmlsymbol.h"
 
 #include "dialogs/projectfilenewdialog.h"
@@ -65,7 +65,7 @@ namespace Caneda
         toolbar->addAction(am->actionForName("projDel"));
         toolbar->addAction(am->actionForName("projClose"));
 
-        m_projectsSidebar = new ComponentsSidebar(this);
+        m_projectsSidebar = new SidebarBrowser(this);
         connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
                 SIGNAL(itemClicked(const QString&, const QString&)));
         connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,

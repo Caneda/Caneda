@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "componentssidebar.h"
+#include "sidebarbrowser.h"
 
 #include "component.h"
 #include "global.h"
@@ -104,7 +104,7 @@ namespace Caneda
     };
 
     //! Constructor
-    ComponentsSidebar::ComponentsSidebar(QWidget *parent) : QWidget(parent)
+    SidebarBrowser::SidebarBrowser(QWidget *parent) : QWidget(parent)
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
         QHBoxLayout *hl = new QHBoxLayout();
@@ -147,39 +147,39 @@ namespace Caneda
         m_currentComponent = "";
     }
 
-    ComponentsSidebar::~ComponentsSidebar()
+    SidebarBrowser::~SidebarBrowser()
     {
         m_treeView->setModel(0);
     }
 
-    void ComponentsSidebar::plugLibrary(QString str, QString category)
+    void SidebarBrowser::plugLibrary(QString str, QString category)
     {
         m_model->plugLibrary(str, category);
     }
 
-    void ComponentsSidebar::unPlugLibrary(QString str, QString category)
+    void SidebarBrowser::unPlugLibrary(QString str, QString category)
     {
         m_model->unPlugLibrary(str, category);
     }
 
-    void ComponentsSidebar::plugItem(QString itemName, const QPixmap& itemPixmap,
+    void SidebarBrowser::plugItem(QString itemName, const QPixmap& itemPixmap,
             QString category)
     {
         m_model->plugItem(itemName, itemPixmap, category);
     }
 
-    void ComponentsSidebar::plugItems(const QList<QPair<QString, QPixmap> > &items,
+    void SidebarBrowser::plugItems(const QList<QPair<QString, QPixmap> > &items,
             QString category)
     {
         m_model->plugItems(items, category);
     }
 
-    QString ComponentsSidebar::currentComponent()
+    QString SidebarBrowser::currentComponent()
     {
         return m_currentComponent;
     }
 
-    void ComponentsSidebar::filterTextChanged()
+    void SidebarBrowser::filterTextChanged()
     {
         QString text = m_filterEdit->text();
         m_clearButton->setEnabled(!text.isEmpty());
@@ -187,8 +187,9 @@ namespace Caneda
         m_proxyModel->setFilterRegExp(regExp);
     }
 
-    void ComponentsSidebar::slotOnClicked(const QModelIndex& index)
+    void SidebarBrowser::slotOnClicked(const QModelIndex& index)
     {
+        m_treeView->setRowHidden(0, m_model->index(0,0, QModelIndex()), true);
         if(index.isValid()) {
             QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
             if(mime) {
@@ -202,8 +203,9 @@ namespace Caneda
         }
     }
 
-    void ComponentsSidebar::slotOnDoubleClicked(const QModelIndex& index)
+    void SidebarBrowser::slotOnDoubleClicked(const QModelIndex& index)
     {
+        m_treeView->setRowHidden(0, m_model->index(0,0, QModelIndex()), false);
         if(index.isValid()) {
             QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
             if(mime) {
