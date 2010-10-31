@@ -108,6 +108,11 @@ namespace Caneda
         return m_tabWidget;
     }
 
+    QDockWidget* MainWindow::sidebarDockWidget() const
+    {
+        return m_sidebarDockWidget;
+    }
+
     /*!
      * \brief This initializes the components sidebar.
      *
@@ -123,11 +128,11 @@ namespace Caneda
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
-        sidebarDockWidget = new QDockWidget(m_sidebarBrowser->windowTitle(),this);
-        sidebarDockWidget->setWidget(m_sidebarBrowser);
-        sidebarDockWidget->setObjectName("componentsSidebar");
-        addDockWidget(Qt::LeftDockWidgetArea, sidebarDockWidget);
-        docksMenu->addAction(sidebarDockWidget->toggleViewAction());
+        m_sidebarDockWidget = new QDockWidget(m_sidebarBrowser->windowTitle(),this);
+        m_sidebarDockWidget->setWidget(m_sidebarBrowser);
+        m_sidebarDockWidget->setObjectName("componentsSidebar");
+        addDockWidget(Qt::LeftDockWidgetArea, m_sidebarDockWidget);
+        docksMenu->addAction(m_sidebarDockWidget->toggleViewAction());
 
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
@@ -185,12 +190,12 @@ namespace Caneda
         connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
                 SLOT(slotFileOpen(QString)));
 
-        projectDockWidget = new QDockWidget(m_project->windowTitle(), this);
-        projectDockWidget->setWidget(m_project);
-        projectDockWidget->setObjectName("projectsSidebar");
-        projectDockWidget->setVisible(false);
-        addDockWidget(Qt::LeftDockWidgetArea, projectDockWidget);
-        docksMenu->addAction(projectDockWidget->toggleViewAction());
+        m_projectDockWidget = new QDockWidget(m_project->windowTitle(), this);
+        m_projectDockWidget->setWidget(m_project);
+        m_projectDockWidget->setObjectName("projectsSidebar");
+        m_projectDockWidget->setVisible(false);
+        addDockWidget(Qt::LeftDockWidgetArea, m_projectDockWidget);
+        docksMenu->addAction(m_projectDockWidget->toggleViewAction());
     }
 
     void MainWindow::createUndoView()
@@ -198,12 +203,12 @@ namespace Caneda
         undoView = new QUndoView(m_undoGroup);
         undoView->setWindowTitle(tr("Command List"));
 
-        undoDockWidget = new QDockWidget(undoView->windowTitle(), this);
-        undoDockWidget->setWidget(undoView);
-        undoDockWidget->setObjectName("undoSidebar");
-        undoDockWidget->setVisible(false);
-        addDockWidget(Qt::RightDockWidgetArea, undoDockWidget);
-        docksMenu->addAction(undoDockWidget->toggleViewAction());
+        m_undoDockWidget = new QDockWidget(undoView->windowTitle(), this);
+        m_undoDockWidget->setWidget(undoView);
+        m_undoDockWidget->setObjectName("undoSidebar");
+        m_undoDockWidget->setVisible(false);
+        addDockWidget(Qt::RightDockWidgetArea, m_undoDockWidget);
+        docksMenu->addAction(m_undoDockWidget->toggleViewAction());
     }
 
     void MainWindow::createFolderView()
@@ -213,12 +218,12 @@ namespace Caneda
         connect(m_folderBrowser, SIGNAL(itemDoubleClicked(QString)), this,
                 SLOT(slotFileOpen(QString)));
 
-        browserDockWidget = new QDockWidget(m_folderBrowser->windowTitle(), this);
-        browserDockWidget->setWidget(m_folderBrowser);
-        browserDockWidget->setObjectName("folderBrowserSidebar");
-        addDockWidget(Qt::LeftDockWidgetArea, browserDockWidget);
-        tabifyDockWidget(browserDockWidget, projectDockWidget);
-        docksMenu->addAction(browserDockWidget->toggleViewAction());
+        m_browserDockWidget = new QDockWidget(m_folderBrowser->windowTitle(), this);
+        m_browserDockWidget->setWidget(m_folderBrowser);
+        m_browserDockWidget->setObjectName("folderBrowserSidebar");
+        addDockWidget(Qt::LeftDockWidgetArea, m_browserDockWidget);
+        tabifyDockWidget(m_browserDockWidget, m_projectDockWidget);
+        docksMenu->addAction(m_browserDockWidget->toggleViewAction());
     }
 
     Action* MainWindow::action(const QString& name)
@@ -1450,8 +1455,8 @@ namespace Caneda
 
         if(slotFileSaveAll()) {
             m_tabWidget->closeAllTabs();
-            projectDockWidget->setVisible(true);
-            projectDockWidget->raise();
+            m_projectDockWidget->setVisible(true);
+            m_projectDockWidget->raise();
             m_project->slotNewProject();
         }
     }
@@ -1462,8 +1467,8 @@ namespace Caneda
 
         if(slotFileSaveAll()) {
             m_tabWidget->closeAllTabs();
-            projectDockWidget->setVisible(true);
-            projectDockWidget->raise();
+            m_projectDockWidget->setVisible(true);
+            m_projectDockWidget->raise();
             m_project->slotOpenProject(fileName);
         }
     }
@@ -1471,16 +1476,16 @@ namespace Caneda
     void MainWindow::slotAddToProject()
     {
         setNormalAction();
-        projectDockWidget->setVisible(true);
-        projectDockWidget->raise();
+        m_projectDockWidget->setVisible(true);
+        m_projectDockWidget->raise();
         m_project->slotAddToProject();
     }
 
     void MainWindow::slotRemoveFromProject()
     {
         setNormalAction();
-        projectDockWidget->setVisible(true);
-        projectDockWidget->raise();
+        m_projectDockWidget->setVisible(true);
+        m_projectDockWidget->raise();
         m_project->slotRemoveFromProject();
     }
 

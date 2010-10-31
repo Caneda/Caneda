@@ -48,6 +48,7 @@ namespace Caneda
         static MainWindow* instance();
 
         TabWidget* tabWidget() const;
+        QDockWidget* sidebarDockWidget() const;
 
         void saveSettings();
         void setNormalAction();
@@ -144,8 +145,8 @@ namespace Caneda
 
         QLabel *m_statusLabel;
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
-        QDockWidget *sidebarDockWidget, *projectDockWidget,
-                    *browserDockWidget,*undoDockWidget;
+        QDockWidget *m_sidebarDockWidget, *m_projectDockWidget,
+                    *m_browserDockWidget,*m_undoDockWidget;
         SidebarBrowser *m_sidebarBrowser;
         Project *m_project;
         FolderBrowser *m_folderBrowser;
