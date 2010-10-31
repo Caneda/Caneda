@@ -149,6 +149,36 @@ namespace Caneda
         reset();
     }
 
+    /*!
+     * \brief Returns the library row upon success, -1 if not found
+     *
+     * \param libraryName library to look for
+     * \param category library's category
+     */
+    int SidebarModel::libraryRow(const QString &libraryName, const QString &category)
+    {
+        if(category == "root") {
+            for(int i = 0; i < rootItem->childCount(); i++) {
+                if(rootItem->child(i)->name() == libraryName) {
+                    return i;
+                }
+            }
+        }
+        else {
+            for(int i = 0; i < rootItem->childCount(); i++) {
+                if(rootItem->child(i)->name() == category) {
+                    for(int j = 0; j < rootItem->child(i)->childCount(); j++) {
+                        if(rootItem->child(i)->child(j)->name() == libraryName) {
+                            return j;
+                        }
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
     void SidebarModel::plugItem(QString itemName, const QPixmap& itemPixmap, QString category)
     {
         CategoryItem *catItem = 0;

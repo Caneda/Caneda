@@ -60,7 +60,6 @@ namespace Caneda
         QList<IView*> viewsForDocument(const IDocument *document) const;
         QList<IDocument*> documents() const;
 
-
         void updateSettingsChanges();
 
     Q_SIGNALS:

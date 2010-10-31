@@ -152,14 +152,30 @@ namespace Caneda
         m_treeView->setModel(0);
     }
 
-    void SidebarBrowser::plugLibrary(QString str, QString category)
+    void SidebarBrowser::plugLibrary(QString libraryName, QString category)
     {
-        m_model->plugLibrary(str, category);
+        m_model->plugLibrary(libraryName, category);
     }
 
-    void SidebarBrowser::unPlugLibrary(QString str, QString category)
+    void SidebarBrowser::unPlugLibrary(QString libraryName, QString category)
     {
-        m_model->unPlugLibrary(str, category);
+        m_model->unPlugLibrary(libraryName, category);
+    }
+
+    void SidebarBrowser::hideLibrary(QString libraryName, bool hide)
+    {
+        int id = m_model->libraryRow(libraryName, "root");
+
+        if(id != -1) {
+            m_treeView->setRowHidden(id, m_model->index(0,0, QModelIndex()), hide);
+        }
+    }
+
+    void SidebarBrowser::hideAllLibraries(bool hide)
+    {
+        for(int i = 0; i < m_model->rowCount(QModelIndex()); i++) {
+            m_treeView->setRowHidden(i, m_model->index(0,0, QModelIndex()), hide);
+        }
     }
 
     void SidebarBrowser::plugItem(QString itemName, const QPixmap& itemPixmap,
@@ -189,7 +205,6 @@ namespace Caneda
 
     void SidebarBrowser::slotOnClicked(const QModelIndex& index)
     {
-        m_treeView->setRowHidden(0, m_model->index(0,0, QModelIndex()), true);
         if(index.isValid()) {
             QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
             if(mime) {
@@ -205,7 +220,6 @@ namespace Caneda
 
     void SidebarBrowser::slotOnDoubleClicked(const QModelIndex& index)
     {
-        m_treeView->setRowHidden(0, m_model->index(0,0, QModelIndex()), false);
         if(index.isValid()) {
             QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
             if(mime) {

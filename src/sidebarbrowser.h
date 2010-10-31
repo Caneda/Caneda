@@ -60,11 +60,13 @@ namespace Caneda
         SidebarBrowser(QWidget *parent = 0);
         ~SidebarBrowser();
 
-        void plugLibrary(QString str, QString category);
-        void unPlugLibrary(QString str, QString category);
+        void plugLibrary(QString libraryName, QString category);
+        void unPlugLibrary(QString libraryName, QString category);
+
+        void hideLibrary(QString libraryName, bool hide);
+        void hideAllLibraries(bool hide);
 
         void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
-
         void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
 
         QString currentComponent();
