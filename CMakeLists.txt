@@ -69,5 +69,5 @@ ADD_SUBDIRECTORY( misc )
 # ==================================================================================
 # Licence and other files
 
-SET( MISC ChangeLog INSTALL AUTHORS TODO COPYING RELEASE )
+SET( MISC ChangeLog INSTALL AUTHORS COPYING RELEASE )
 INSTALL( FILES ${MISC} DESTINATION ${BASEDIR} )
