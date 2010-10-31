@@ -147,7 +147,6 @@ namespace Caneda
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
         QDockWidget *m_sidebarDockWidget, *m_projectDockWidget,
                     *m_browserDockWidget,*m_undoDockWidget;
-        SidebarBrowser *m_sidebarBrowser;
         Project *m_project;
         FolderBrowser *m_folderBrowser;
         QUndoView *undoView;

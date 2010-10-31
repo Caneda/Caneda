@@ -162,22 +162,6 @@ namespace Caneda
         m_model->unPlugLibrary(libraryName, category);
     }
 
-    void SidebarBrowser::hideLibrary(QString libraryName, bool hide)
-    {
-        int id = m_model->libraryRow(libraryName, "root");
-
-        if(id != -1) {
-            m_treeView->setRowHidden(id, m_model->index(0,0, QModelIndex()), hide);
-        }
-    }
-
-    void SidebarBrowser::hideAllLibraries(bool hide)
-    {
-        for(int i = 0; i < m_model->rowCount(QModelIndex()); i++) {
-            m_treeView->setRowHidden(i, m_model->index(0,0, QModelIndex()), hide);
-        }
-    }
-
     void SidebarBrowser::plugItem(QString itemName, const QPixmap& itemPixmap,
             QString category)
     {

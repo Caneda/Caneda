@@ -22,11 +22,13 @@
 #include "actionmanager.h"
 #include "documentviewmanager.h"
 #include "global.h"
+#include "icontext.h"
 #include "idocument.h"
 #include "iview.h"
 #include "mainwindow.h"
 
 #include <QDebug>
+#include <QDockWidget>
 #include <QFileInfo>
 #include <QHBoxLayout>
 #include <QSplitter>
@@ -573,6 +575,7 @@ namespace Caneda
         mw->action("editUndo")->setEnabled(document->canUndo());
         mw->action("editRedo")->setEnabled(document->canRedo());
 
+        mw->sidebarDockWidget()->setWidget(view->context()->sideBarWidget());
         mw->m_undoGroup->setActiveStack(document->undoStack());
     }
 

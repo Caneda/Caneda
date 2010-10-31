@@ -24,18 +24,67 @@
 #include "global.h"
 #include "layoutdocument.h"
 #include "mainwindow.h"
+#include "settings.h"
+#include "sidebarbrowser.h"
 #include "singletonowner.h"
 #include "statehandler.h"
 
 #include <QDebug>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QSettings>
 #include <QStringList>
 
 namespace Caneda
 {
     LayoutContext::LayoutContext(QObject *parent) : IContext(parent)
     {
+        // We create the sidebar corresponding to this context
+        StateHandler *handler = StateHandler::instance();
+        m_sidebarBrowser = new SidebarBrowser();
+        connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+
+        QSettings qSettings;
+        Settings *settings = Settings::instance();
+        settings->load(qSettings);
+
+        QPixmap layer(20,20);
+
+        QList<QPair<QString, QPixmap> > layerItems;
+        layer.fill(settings->currentValue("gui/layout/metal1").value<QColor>());
+        layerItems << qMakePair(QObject::tr("Metal 1"), layer);
+        layer.fill(settings->currentValue("gui/layout/metal2").value<QColor>());
+        layerItems << qMakePair(QObject::tr("Metal 2"), layer);
+        layer.fill(settings->currentValue("gui/layout/poly1").value<QColor>());
+        layerItems << qMakePair(QObject::tr("Poly 1"), layer);
+        layer.fill(settings->currentValue("gui/layout/poly2").value<QColor>());
+        layerItems << qMakePair(QObject::tr("Poly 2"), layer);
+        layer.fill(settings->currentValue("gui/layout/active").value<QColor>());
+        layerItems << qMakePair(QObject::tr("Active"), layer);
+        layer.fill(settings->currentValue("gui/layout/contact").value<QColor>());
+        layerItems << qMakePair(QObject::tr("Contact"), layer);
+        layer.fill(settings->currentValue("gui/layout/nwell").value<QColor>());
+        layerItems << qMakePair(QObject::tr("N Well"), layer);
+        layer.fill(settings->currentValue("gui/layout/pwell").value<QColor>());
+        layerItems << qMakePair(QObject::tr("P Well"), layer);
+
+        QList<QPair<QString, QPixmap> > paintingItems;
+        paintingItems << qMakePair(QObject::tr("Arrow"),
+                QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
+        paintingItems << qMakePair(QObject::tr("Ellipse"),
+                QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
+        paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
+                QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
+        paintingItems << qMakePair(QObject::tr("Line"),
+                QPixmap(Caneda::bitmapDirectory() + "line.svg"));
+        paintingItems << qMakePair(QObject::tr("Rectangle"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+        paintingItems << qMakePair(QObject::tr("Text"),
+                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
+
+        m_sidebarBrowser->plugItems(layerItems, QObject::tr("Layout Tools"));
+        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
     LayoutContext* LayoutContext::instance()
@@ -49,11 +98,15 @@ namespace Caneda
 
     LayoutContext::~LayoutContext()
     {
-
     }
 
     void LayoutContext::init()
     {
+    }
+
+    QWidget* LayoutContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
     }
 
     bool LayoutContext::canOpen(const QFileInfo &info) const

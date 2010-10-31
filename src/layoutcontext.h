@@ -26,6 +26,7 @@ namespace Caneda
 {
     //Forward declarations
     class Action;
+    class SidebarBrowser;
 
     class LayoutContext : public IContext
     {
@@ -36,6 +37,8 @@ namespace Caneda
 
         // IContext interface methods
         virtual void init();
+
+        virtual QWidget* sideBarWidget();
 
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
@@ -70,6 +73,8 @@ namespace Caneda
         // was focussed in which case schematic actions become irrelevant.
         QList<Action*> m_normalActions;
         QList<Action*> m_mouseActions;
+
+        SidebarBrowser *m_sidebarBrowser;
     };
 
 } // namespace Caneda

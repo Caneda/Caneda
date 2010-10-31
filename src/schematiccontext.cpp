@@ -22,20 +22,54 @@
 #include "actionmanager.h"
 #include "documentviewmanager.h"
 #include "global.h"
+#include "library.h"
 #include "mainwindow.h"
 #include "schematicdocument.h"
+#include "settings.h"
+#include "sidebarbrowser.h"
 #include "singletonowner.h"
 #include "statehandler.h"
 
 #include <QDebug>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QSettings>
 #include <QStringList>
+
+#include "xmlutilities/transformers.h"
+#include "xmlutilities/validators.h"
 
 namespace Caneda
 {
     SchematicContext::SchematicContext(QObject *parent) : IContext(parent)
     {
+        StateHandler *handler = StateHandler::instance();
+        m_sidebarBrowser = new SidebarBrowser();
+        connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+
+        QList<QPair<QString, QPixmap> > paintingItems;
+        paintingItems << qMakePair(QObject::tr("Arrow"),
+                QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
+        paintingItems << qMakePair(QObject::tr("Ellipse"),
+                QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
+        paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
+                QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
+        paintingItems << qMakePair(QObject::tr("Line"),
+                QPixmap(Caneda::bitmapDirectory() + "line.svg"));
+        paintingItems << qMakePair(QObject::tr("Rectangle"),
+                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+        paintingItems << qMakePair(QObject::tr("Text"),
+                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
+
+        loadLibraries();
+
+        m_sidebarBrowser->plugItem("Components", QPixmap(), "root");
+        m_sidebarBrowser->plugLibrary("Passive", "Components");
+        m_sidebarBrowser->plugLibrary("Active", "Components");
+        m_sidebarBrowser->plugLibrary("Semiconductor", "Components");
+
+        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
     SchematicContext* SchematicContext::instance()
@@ -49,11 +83,15 @@ namespace Caneda
 
     SchematicContext::~SchematicContext()
     {
-
     }
 
     void SchematicContext::init()
     {
+    }
+
+    QWidget* SchematicContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
     }
 
     bool SchematicContext::canOpen(const QFileInfo &info) const
@@ -258,6 +296,58 @@ namespace Caneda
     void SchematicContext::setNormalAction()
     {
         MainWindow::instance()->setNormalAction();
+    }
+
+    void SchematicContext::loadLibraries()
+    {
+        QSettings qSettings;
+
+        Settings *settings = Settings::instance();
+        settings->load(qSettings);
+
+        /* Load library database settings */
+        QString libpath = settings->currentValue("sidebarLibrary").toString();
+        if(QFileInfo(libpath).exists() == false) {
+            QMessageBox::warning(0, tr("Cannot load Components library in the sidebar"),
+                    tr("Please set the appropriate path to components library through Application settings and restart the application to load components in the sidebar"));
+            return;
+        }
+
+        /* Load validators */
+        Caneda::validators * validator = Caneda::validators::defaultInstance();
+        if(validator->load(libpath)) {
+            qDebug() << "Succesfully loaded validators!";
+        }
+        else {
+            //invalidate entry.
+            qWarning() << "MainWindow::loadSettings() : Could not load validators. "
+                                                        << "Expect crashing in case of incorrect xml file";
+        }
+
+        /* Load transformers */
+        Caneda::transformers * transformer = Caneda::transformers::defaultInstance();
+        if(transformer->load(libpath)) {
+            qDebug() << "Succesfully loaded transformers!";
+        }
+        else {
+            //invalidate entry.
+            qWarning() << "MainWindow::loadSettings() : Could not load XSLT transformers. "
+                                                        << "Expect strange schematic symbols";
+        }
+
+        LibraryLoader *library = LibraryLoader::instance();
+
+        if(library->loadtree(libpath)) {
+            qDebug() << "Succesfully loaded library!";
+        }
+        else {
+            //invalidate entry.
+            qWarning() << "MainWindow::loadSettings() : Entry is invalid. Run once more to set"
+                                                        << "the appropriate path.";
+            settings->setCurrentValue("sidebarLibrary",
+                    settings->defaultValue("sidebarLibrary").toString());
+            return;
+        }
     }
 
 } // namespace Caneda

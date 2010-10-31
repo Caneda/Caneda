@@ -26,11 +26,9 @@
 #include "idocument.h"
 #include "iview.h"
 #include "layoutcontext.h"
-#include "library.h"
 #include "project.h"
 #include "schematiccontext.h"
 #include "settings.h"
-#include "sidebarbrowser.h"
 #include "statehandler.h"
 #include "tabs.h"
 #include "textcontext.h"
@@ -46,9 +44,6 @@
 #include "tools/filter/filterdialog.h"
 #include "tools/qtermwidget/qtermwidget.h"
 #include "tools/transmission/transmissiondialog.h"
-
-#include "xmlutilities/transformers.h"
-#include "xmlutilities/validators.h"
 
 namespace Caneda
 {
@@ -115,67 +110,13 @@ namespace Caneda
 
     /*!
      * \brief This initializes the components sidebar.
-     *
-     * \todo This method only fill the sidebar with painting items. The components
-     * are loaded in loadSettings() as of now. This should be corrected.
-     * Also the sidebars should be created in each context and updated through tabwidget,
-     * instead of a general sidebar that hides libraries depending on current context.
      */
     void MainWindow::setupSidebar()
     {
-        StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarBrowser(this);
-        connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
-
-        m_sidebarDockWidget = new QDockWidget(m_sidebarBrowser->windowTitle(),this);
-        m_sidebarDockWidget->setWidget(m_sidebarBrowser);
+        m_sidebarDockWidget = new QDockWidget("Components Browser",this);
         m_sidebarDockWidget->setObjectName("componentsSidebar");
         addDockWidget(Qt::LeftDockWidgetArea, m_sidebarDockWidget);
         docksMenu->addAction(m_sidebarDockWidget->toggleViewAction());
-
-        QList<QPair<QString, QPixmap> > paintingItems;
-        paintingItems << qMakePair(QObject::tr("Arrow"),
-                QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
-        paintingItems << qMakePair(QObject::tr("Ellipse"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
-        paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
-        paintingItems << qMakePair(QObject::tr("Line"),
-                QPixmap(Caneda::bitmapDirectory() + "line.svg"));
-        paintingItems << qMakePair(QObject::tr("Rectangle"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
-        paintingItems << qMakePair(QObject::tr("Text"),
-                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
-
-
-        QSettings qSettings;
-        Settings *settings = Settings::instance();
-        settings->load(qSettings);
-
-        QPixmap layer(20,20);
-
-        QList<QPair<QString, QPixmap> > layerItems;
-        layer.fill(settings->currentValue("gui/layout/metal1").value<QColor>());
-        layerItems << qMakePair(QObject::tr("Metal 1"), layer);
-        layer.fill(settings->currentValue("gui/layout/metal2").value<QColor>());
-        layerItems << qMakePair(QObject::tr("Metal 2"), layer);
-        layer.fill(settings->currentValue("gui/layout/poly1").value<QColor>());
-        layerItems << qMakePair(QObject::tr("Poly 1"), layer);
-        layer.fill(settings->currentValue("gui/layout/poly2").value<QColor>());
-        layerItems << qMakePair(QObject::tr("Poly 2"), layer);
-        layer.fill(settings->currentValue("gui/layout/active").value<QColor>());
-        layerItems << qMakePair(QObject::tr("Active"), layer);
-        layer.fill(settings->currentValue("gui/layout/contact").value<QColor>());
-        layerItems << qMakePair(QObject::tr("Contact"), layer);
-        layer.fill(settings->currentValue("gui/layout/nwell").value<QColor>());
-        layerItems << qMakePair(QObject::tr("N Well"), layer);
-        layer.fill(settings->currentValue("gui/layout/pwell").value<QColor>());
-        layerItems << qMakePair(QObject::tr("P Well"), layer);
-
-        m_sidebarBrowser->plugItem("Components", QPixmap(), "root");
-        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
-        m_sidebarBrowser->plugItems(layerItems, QObject::tr("Layout Tools"));
     }
 
     /*!
@@ -1628,8 +1569,7 @@ namespace Caneda
         Settings *settings = Settings::instance();
         settings->load(qSettings);
 
-        // First load geometry and dock pos as later setting values might
-        // depend on these values
+        // Load geometry and docks positions
         const QByteArray geometryData = settings->currentValue("gui/geometry").toByteArray();
         if (geometryData.isEmpty() == false) {
             restoreGeometry(geometryData);
@@ -1645,54 +1585,6 @@ namespace Caneda
 
         const QSize iconSize = settings->currentValue("gui/iconSize").toSize();
         setIconSize(iconSize);
-
-        /* Load library database settings */
-        QString libpath = settings->currentValue("sidebarLibrary").toString();
-        if(QFileInfo(libpath).exists() == false) {
-            QMessageBox::warning(0, tr("Cannot load Components library in the sidebar"),
-                    tr("Please set the appropriate path to components library through Application settings and restart the application to load components in the sidebar"));
-            return;
-        }
-
-        /* Load validators */
-        Caneda::validators * validator = Caneda::validators::defaultInstance();
-        if(validator->load(libpath)) {
-            qDebug() << "Succesfully loaded validators!";
-        }
-        else {
-            //invalidate entry.
-            qWarning() << "MainWindow::loadSettings() : Could not load validators. "
-                                                        << "Expect crashing in case of incorrect xml file";
-        }
-
-        /* Load transformers */
-        Caneda::transformers * transformer = Caneda::transformers::defaultInstance();
-        if(transformer->load(libpath)) {
-            qDebug() << "Succesfully loaded transformers!";
-        }
-        else {
-            //invalidate entry.
-            qWarning() << "MainWindow::loadSettings() : Could not load XSLT transformers. "
-                                                        << "Expect strange schematic symbols";
-        }
-
-        LibraryLoader *library = LibraryLoader::instance();
-
-        if(library->loadtree(libpath)) {
-            qDebug() << "Succesfully loaded library!";
-        }
-        else {
-            //invalidate entry.
-            qWarning() << "MainWindow::loadSettings() : Entry is invalid. Run once more to set"
-                                                        << "the appropriate path.";
-            settings->setCurrentValue("sidebarLibrary",
-                    settings->defaultValue("sidebarLibrary").toString());
-            return;
-        }
-
-        m_sidebarBrowser->plugLibrary("Passive", "Components");
-        m_sidebarBrowser->plugLibrary("Active", "Components");
-        m_sidebarBrowser->plugLibrary("Semiconductor", "Components");
     }
 
     void MainWindow::saveSettings()

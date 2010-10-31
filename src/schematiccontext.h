@@ -26,6 +26,7 @@ namespace Caneda
 {
     //Forward declarations
     class Action;
+    class SidebarBrowser;
 
     class SchematicContext : public IContext
     {
@@ -36,6 +37,8 @@ namespace Caneda
 
         // IContext interface methods
         virtual void init();
+
+        virtual QWidget* sideBarWidget();
 
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
@@ -70,13 +73,18 @@ namespace Caneda
 
     private:
         SchematicContext(QObject *parent = 0);
+
         void alignElements(Qt::Alignment alignment);
         void setNormalAction();
+
+        void loadLibraries();
 
         //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case schematic actions become irrelevant.
         QList<Action*> m_normalActions;
         QList<Action*> m_mouseActions;
+
+        SidebarBrowser *m_sidebarBrowser;
     };
 
 } // namespace Caneda

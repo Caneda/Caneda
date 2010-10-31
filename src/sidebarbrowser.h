@@ -63,9 +63,6 @@ namespace Caneda
         void plugLibrary(QString libraryName, QString category);
         void unPlugLibrary(QString libraryName, QString category);
 
-        void hideLibrary(QString libraryName, bool hide);
-        void hideAllLibraries(bool hide);
-
         void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
         void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
 
