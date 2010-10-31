@@ -113,6 +113,8 @@ namespace Caneda
      *
      * \todo This method only fill the sidebar with painting items. The components
      * are loaded in loadSettings() as of now. This should be corrected.
+     * Also the sidebars should be created in each context and updated through tabwidget,
+     * instead of a general sidebar that hides libraries depending on current context.
      */
     void MainWindow::setupSidebar()
     {
@@ -196,12 +198,12 @@ namespace Caneda
         undoView = new QUndoView(m_undoGroup);
         undoView->setWindowTitle(tr("Command List"));
 
-        sidebarDockWidget = new QDockWidget(undoView->windowTitle(), this);
-        sidebarDockWidget->setWidget(undoView);
-        sidebarDockWidget->setObjectName("undoSidebar");
-        sidebarDockWidget->setVisible(false);
-        addDockWidget(Qt::RightDockWidgetArea, sidebarDockWidget);
-        docksMenu->addAction(sidebarDockWidget->toggleViewAction());
+        undoDockWidget = new QDockWidget(undoView->windowTitle(), this);
+        undoDockWidget->setWidget(undoView);
+        undoDockWidget->setObjectName("undoSidebar");
+        undoDockWidget->setVisible(false);
+        addDockWidget(Qt::RightDockWidgetArea, undoDockWidget);
+        docksMenu->addAction(undoDockWidget->toggleViewAction());
     }
 
     void MainWindow::createFolderView()
@@ -211,12 +213,12 @@ namespace Caneda
         connect(m_folderBrowser, SIGNAL(itemDoubleClicked(QString)), this,
                 SLOT(slotFileOpen(QString)));
 
-        sidebarDockWidget = new QDockWidget(m_folderBrowser->windowTitle(), this);
-        sidebarDockWidget->setWidget(m_folderBrowser);
-        sidebarDockWidget->setObjectName("folderBrowserSidebar");
-        addDockWidget(Qt::LeftDockWidgetArea, sidebarDockWidget);
-        tabifyDockWidget(sidebarDockWidget, projectDockWidget);
-        docksMenu->addAction(sidebarDockWidget->toggleViewAction());
+        browserDockWidget = new QDockWidget(m_folderBrowser->windowTitle(), this);
+        browserDockWidget->setWidget(m_folderBrowser);
+        browserDockWidget->setObjectName("folderBrowserSidebar");
+        addDockWidget(Qt::LeftDockWidgetArea, browserDockWidget);
+        tabifyDockWidget(browserDockWidget, projectDockWidget);
+        docksMenu->addAction(browserDockWidget->toggleViewAction());
     }
 
     Action* MainWindow::action(const QString& name)

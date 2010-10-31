@@ -268,7 +268,7 @@ namespace Caneda
             nameFilters << context->fileNameFilters();
         }
 
-        // Symbol and data display filters should be removed when proper
+        // TODO: Symbol and data display filters should be removed when proper
         // icontexts are implemented.
         nameFilters << QObject::tr("Symbol-xml (*.xsym)")+" (*.xsym);;";
         nameFilters << QObject::tr("Data display (*.dpl)")+" (*.dpl);;";

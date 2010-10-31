@@ -400,7 +400,7 @@ namespace Caneda
     {
         setTabBar(new TabBarPrivate(this));
         connect(this, SIGNAL(currentChanged(int)), this,
-                SLOT(updateTabInfo()));
+                SLOT(updateTabContext()));
         connect(this, SIGNAL(tabCloseRequested(int)), this,
                 SLOT(onTabCloseRequested(int)));
     }
@@ -426,7 +426,7 @@ namespace Caneda
     void TabWidget::insertTab(int index, Tab *tab)
     {
         QTabWidget::insertTab(index, tab, tab->tabIcon(), tab->tabText());
-        connect(tab, SIGNAL(tabInfoChanged(Tab*)), this, SLOT(updateTabInfo()));
+        connect(tab, SIGNAL(tabInfoChanged(Tab*)), this, SLOT(updateTabContext()));
         connect(tab, SIGNAL(statusBarMessage(Tab*, const QString&)), this,
                 SLOT(onStatusBarMessage(Tab*, const QString&)));
 
@@ -542,7 +542,7 @@ namespace Caneda
         return tab;
     }
 
-    void TabWidget::updateTabInfo()
+    void TabWidget::updateTabContext()
     {
         int index = currentIndex();
         if (index < 0 || index >= count()) {

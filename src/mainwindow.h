@@ -144,12 +144,12 @@ namespace Caneda
 
         QLabel *m_statusLabel;
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
-        QDockWidget *sidebarDockWidget;
-        QUndoView *undoView;
+        QDockWidget *sidebarDockWidget, *projectDockWidget,
+                    *browserDockWidget,*undoDockWidget;
         SidebarBrowser *m_sidebarBrowser;
         Project *m_project;
-        QDockWidget *projectDockWidget;
         FolderBrowser *m_folderBrowser;
+        QUndoView *undoView;
         TabWidget *m_tabWidget;
         QTermWidget *console;
         QDockWidget *consoleDockWidget;

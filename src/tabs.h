@@ -121,7 +121,7 @@ namespace Caneda
         void statusBarMessage(const QString &message);
 
     private Q_SLOTS:
-        void updateTabInfo();
+        void updateTabContext();
         void onStatusBarMessage(Tab *tab, const QString &message);
         void onTabCloseRequested(int index);
     };
