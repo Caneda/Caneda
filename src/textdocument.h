@@ -75,6 +75,8 @@ namespace Caneda
 
         QTextDocument* textDocument() const;
 
+        void pasteTemplate(const QString& text);
+
     private Q_SLOTS:
         void onContentsChanged();
 

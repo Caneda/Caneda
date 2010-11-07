@@ -251,6 +251,15 @@ namespace Caneda
         return m_textDocument;
     }
 
+    void TextDocument::pasteTemplate(const QString& text)
+    {
+        TextEdit *te = activeTextEdit();
+        if (!te) {
+            return;
+        }
+        te->insertPlainText(text);
+    }
+
     TextEdit* TextDocument::activeTextEdit()
     {
         IView *view = DocumentViewManager::instance()->currentView();

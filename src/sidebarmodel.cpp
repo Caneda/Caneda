@@ -82,7 +82,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Adding a library to the sidebar
+     * \brief Add a library to the sidebar
      *
      * @param QString &libraryName     Library name
      * @param QString &category        Category to place the library
@@ -117,6 +117,12 @@ namespace Caneda
         reset();
     }
 
+    /*!
+     * \brief Remove a library from the sidebar
+     *
+     * @param QString &libraryName     Library name
+     * @param QString &category        Category of the library to be removed
+     */
     void SidebarModel::unPlugLibrary(const QString& libraryName, const QString& category)
     {
         const Library *libItem = LibraryLoader::instance()->library(libraryName);

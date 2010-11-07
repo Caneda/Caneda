@@ -179,7 +179,7 @@ namespace Caneda
     {
         if (category == "Paint Tools" || category == "Layout Tools") {
             if (d->paintingDrawItem) {
-                // Clear old item first.
+                // Clear old item first
                 if (d->paintingDrawItem->scene()) {
                     d->paintingDrawItem->scene()->removeItem(d->paintingDrawItem);
                 }
