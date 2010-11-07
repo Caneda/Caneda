@@ -416,8 +416,8 @@ namespace Caneda
         }
 
         multiLineCommentFormat.setForeground(currentCommentColor);
-        commentStartExpression = QRegExp("(\\.control)|(^\\.end\\b)");
-        commentEndExpression = QRegExp("\\.endc");
+        commentStartExpression = QRegExp("(\\.control)|(^\\.end\\b)", Qt::CaseInsensitive);
+        commentEndExpression = QRegExp("\\.endc", Qt::CaseInsensitive);
 
         const QColor currentSystemColor =
             settings->currentValue("gui/hdl/system").value<QColor>();
