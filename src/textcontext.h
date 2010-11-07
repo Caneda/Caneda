@@ -22,15 +22,11 @@
 
 #include "icontext.h"
 
-#include <QModelIndex>
-
-// Forward declarations
-class QFileSystemModel;
-class QListView;
-class QTreeView;
-
 namespace Caneda
 {
+    //Forward declarations
+    class SidebarTextBrowser;
+
     class TextContext : public IContext
     {
         Q_OBJECT
@@ -50,14 +46,10 @@ namespace Caneda
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
         // End of IContext interface methods
 
-    private Q_SLOTS:
-        void slotPasteTemplate(const QModelIndex& index);
-
     private:
         TextContext(QObject *parent = 0);
 
-        QFileSystemModel *m_fileModel;
-        QTreeView *m_treeView;
+        SidebarTextBrowser *m_sidebarTextBrowser;
     };
 
 } // namespace Caneda

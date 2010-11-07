@@ -37,6 +37,10 @@
 
 namespace Caneda
 {
+    //*************************************************************
+    //************************** TreeView *************************
+    //*************************************************************
+
     //! Constructor
     TreeView::TreeView(QWidget *parent) :
         QTreeView(parent),
@@ -84,6 +88,10 @@ namespace Caneda
         drag->exec(supportedActions);
     }
 
+    //*************************************************************
+    //********************* FilterProxyModel **********************
+    //*************************************************************
+
     //! \brief This helps in filtering sidebar display corresponding to lineedit.
     class FilterProxyModel : public QSortFilterProxyModel
     {
@@ -96,12 +104,17 @@ namespace Caneda
         {
             QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
             SidebarModel *sm = static_cast<SidebarModel*>(sourceModel());
+
             if(sm->isLeaf(index0) == false) {
                 return true;
             }
             return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
         }
     };
+
+    //*************************************************************
+    //*********************** SidebarBrowser **********************
+    //*************************************************************
 
     //! Constructor
     SidebarBrowser::SidebarBrowser(QWidget *parent) : QWidget(parent)
@@ -133,8 +146,8 @@ namespace Caneda
 
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
                 this, SLOT(filterTextChanged()));
-
         connect(m_clearButton, SIGNAL(clicked()), m_filterEdit, SLOT(clear()));
+
         connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
         connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this,
                 SLOT(slotOnClicked(const QModelIndex&)));

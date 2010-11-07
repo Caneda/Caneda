@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,78 +17,42 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIDEBAR_BROWSER_H
-#define SIDEBAR_BROWSER_H
+#ifndef SIDEBAR_TEXT_BROWSER_H
+#define SIDEBAR_TEXT_BROWSER_H
 
 #include <QTreeView>
 
 // Forward declarations
+class QFileSystemModel;
 class QLineEdit;
 class QToolButton;
 
 namespace Caneda
 {
     // Forward declarations
-    class FilterProxyModel;
     class FileFilterProxyModel;
-    class SidebarModel;
 
-    class TreeView : public QTreeView
+    //! Represents sidebar which allows text templates to be inserted
+    class SidebarTextBrowser : public QWidget
     {
         Q_OBJECT;
     public:
-        TreeView(QWidget *parent = 0);
-        ~TreeView() {}
-
-        void startDrag(Qt::DropActions supportedActions);
-
-    signals:
-        void invalidAreaClicked(const QModelIndex &index);
-
-        protected:
-        void mousePressEvent(QMouseEvent *event);
-        void mouseMoveEvent(QMouseEvent *event);
-        void mouseReleaseEvent(QMouseEvent *event);
-
-        bool invalidPressed;
-    };
-
-    //! Represents sidebar which allows components to be selected.
-    class SidebarBrowser : public QWidget
-    {
-        Q_OBJECT;
-    public:
-        SidebarBrowser(QWidget *parent = 0);
-        ~SidebarBrowser();
-
-        void plugLibrary(QString libraryName, QString category);
-        void unPlugLibrary(QString libraryName, QString category);
-
-        void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
-        void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
-
-        QString currentComponent();
-
-    signals:
-        void itemClicked(const QString& item, const QString& category);
-        void itemDoubleClicked(const QString& item, const QString& category);
+        SidebarTextBrowser(QWidget *parent = 0);
+        ~SidebarTextBrowser();
 
     private Q_SLOTS:
         void filterTextChanged();
-        void slotOnClicked(const QModelIndex& index);
         void slotOnDoubleClicked(const QModelIndex& index);
 
     private:
-        SidebarModel *m_model;
-        FilterProxyModel *m_proxyModel;
-        TreeView *m_treeView;
+        QFileSystemModel *m_fileModel;
+        FileFilterProxyModel *m_proxyModel;
+        QTreeView *m_treeView;
 
         QLineEdit *m_filterEdit;
         QToolButton *m_clearButton;
-
-        QString m_currentComponent;
     };
 
 } // namespace Caneda
 
-#endif //SIDEBAR_BROWSER_H
+#endif //SIDEBAR_TEXT_BROWSER_H
