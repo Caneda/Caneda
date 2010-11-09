@@ -107,7 +107,7 @@ namespace Caneda
                 "\\band\\b" << "\\bor\\b" << "\\bxor\\b" <<
                 "\\bnot\\b";
         foreach (QString pattern, keywordPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
             rule.format = keywordFormat;
             highlightingRules.append(rule);
         }
@@ -128,7 +128,7 @@ namespace Caneda
                 "\\bmux_bit\\b" << "\\bmux_vector\\b" << "\\breg_bit\\b" <<
                 "\\breg_vector\\b" << "\\bwor_bit\\b" << "\\bwor_vector\\b";
         foreach (QString pattern, typePatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
             rule.format = typeFormat;
             highlightingRules.append(rule);
         }
@@ -140,7 +140,7 @@ namespace Caneda
         attributePatterns << "\\bsignal\\b" << "\\bvariable\\b" << "\\bconstant\\b" <<
                 "\\btype\\b";
         foreach (QString pattern, attributePatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
             rule.format = attributeFormat;
             highlightingRules.append(rule);
         }
@@ -153,7 +153,7 @@ namespace Caneda
         blockPatterns << "\\bprocess\\b" << "\\bif\\b" << "\\belse\\b" <<
                 "\\belsif\\b" << "\\bloop\\b" << "\\bend if\\b";
         foreach (QString pattern, blockPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
             rule.format = blockFormat;
             highlightingRules.append(rule);
         }
@@ -170,7 +170,7 @@ namespace Caneda
                 "\\bpackage body+(?= [A-Za-z0-9_]* is\\b)" <<
                 "\\bof\\b" << "\\bis\\b";
         foreach (QString pattern, classPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
             rule.format = classFormat;
             highlightingRules.append(rule);
         }
@@ -178,7 +178,7 @@ namespace Caneda
         const QColor currentDataColor =
             settings->currentValue("gui/hdl/data").value<QColor>();
         dataFormat.setForeground(currentDataColor);
-        rule.pattern = QRegExp("\"[A-Za-z0-9]*\"|\'[A-Za-z0-9]*\'|\'event");
+        rule.pattern = QRegExp("\"[A-Za-z0-9]*\"|\'[A-Za-z0-9]*\'|\'event", Qt::CaseInsensitive);
         rule.format = dataFormat;
         highlightingRules.append(rule);
 
