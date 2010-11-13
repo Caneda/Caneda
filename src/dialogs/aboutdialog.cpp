@@ -101,8 +101,8 @@ namespace Caneda
                 "<br><br>" +
                 tr("\251 2008-2010 Caneda developer team") +
                 "<br><br>"
-                "<a href=\"http://caneda.tuxfamily.org/\">"
-                "http://caneda.tuxfamily.org/</a>"
+                "<a href=\"http://caneda.sourceforge.net/\">"
+                "http://caneda.sourceforge.net/</a>"
                 );
         about->setAlignment(Qt::AlignCenter);
         about->setOpenExternalLinks(true);
