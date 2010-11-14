@@ -113,9 +113,6 @@ namespace Caneda
     void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& prMap);
     void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap);
 
-    QVariant::Type stringToType(const QString& string);
-    QString typeToString(QVariant::Type type);
-
     //! This is factory class used to construct properties.
     struct PropertyFactory
     {

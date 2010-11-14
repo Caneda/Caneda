@@ -158,68 +158,6 @@ namespace Caneda
         }
     }
 
-    //! \brief A function which returns corresponding variant type from given \a atring.
-    QVariant::Type stringToType(const QString& _string)
-    {
-        char first = _string.at(0).toAscii();
-        QString remain = _string.right(_string.size() - 1);
-        QVariant::Type retVal = QVariant::Invalid;
-        switch(first) {
-        case 's':
-            if(remain == "tring") {
-                retVal = QVariant::String;
-            }
-            break;
-
-        case 'b':
-            if(remain == "oolean") {
-                retVal = QVariant::Bool;
-            }
-            break;
-
-        case 'i':
-            if(remain == "nt") {
-                retVal = QVariant::Int;
-            }
-            break;
-
-        case 'd':
-            if(remain == "ouble") {
-                retVal = QVariant::Double;
-            }
-            break;
-        };
-
-        if(retVal == QVariant::Invalid) {
-            qDebug() << "stringToType() : Invalid qvariant type found" << _string;
-        }
-
-        return retVal;
-    }
-
-    //! \brief Returns string corresponding to \a type.
-    QString typeToString(QVariant::Type type)
-    {
-        switch(type)
-        {
-        case QVariant::String:
-            return QString("string");
-
-        case QVariant::Bool:
-            return QString("boolean");
-
-        case QVariant::Int:
-            return QString("int");
-
-        case QVariant::Double:
-            return QString("double");
-
-        default: ;
-        };
-        qDebug() << "typeToString() : Invalid type" << type;
-        return QString();
-    }
-
     //! \brief This static object is used to represent common empty property.
     Property PropertyFactory::sharedNull;
 

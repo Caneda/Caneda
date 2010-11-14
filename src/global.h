@@ -25,6 +25,7 @@
 #endif
 
 #include <QDebug>
+#include <QVariant>
 
 // Forward declarations
 class QIcon;
@@ -47,6 +48,9 @@ namespace Caneda
     QString localePrefix();
 
     bool checkVersion(const QString& line);
+
+    QVariant::Type stringToType(const QString& string);
+    QString typeToString(QVariant::Type type);
 
     inline QString boolToString(bool boolean) {
         return boolean ? QString("true") : QString("false");
