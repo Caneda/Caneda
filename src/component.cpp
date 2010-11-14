@@ -760,15 +760,32 @@ namespace Caneda
                         return false;
                     }
                 }
+
                 /* Read properties */
                 else if(reader->name() == "properties") {
                     readComponentProperties(reader,d);
                 }
-                /* default (be quiet)*/
+
+                /* Read ports*/
                 else if(reader->name() == "ports") {
-                    /* todos */
-                    do {} while(0);
+
+                    while(!reader->atEnd()) {
+                        reader->readNext();
+
+                        if(reader->isEndElement()) {
+                            Q_ASSERT(reader->name() == "ports");
+                            break;
+                        }
+
+                        if(reader->isStartElement() && reader->name() == "port") {
+                            //TODO: Read ports information
+                            reader->readFurther();
+                            Q_ASSERT(reader->isEndElement() && reader->name() == "port");
+                        }
+                    }
+
                 }
+
                 else {
                     reader->readUnknownElement();
                 }
