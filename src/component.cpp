@@ -761,14 +761,8 @@ namespace Caneda
                     }
                 }
 
-                /* Read properties */
-                else if(reader->name() == "properties") {
-                    readComponentProperties(reader,d);
-                }
-
                 /* Read ports*/
                 else if(reader->name() == "ports") {
-
                     while(!reader->atEnd()) {
                         reader->readNext();
 
@@ -783,7 +777,11 @@ namespace Caneda
                             Q_ASSERT(reader->isEndElement() && reader->name() == "port");
                         }
                     }
+                }
 
+                /* Read properties */
+                else if(reader->name() == "properties") {
+                    readComponentProperties(reader,d);
                 }
 
                 else {
