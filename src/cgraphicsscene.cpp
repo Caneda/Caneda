@@ -1080,7 +1080,6 @@ namespace Caneda
      *            WIRING ACTION
      *
      *********************************************************************/
-
     /*!
      * \brief Finalize wire ie last control point == end
      * \todo Why not a wire operation ?
@@ -1090,8 +1089,6 @@ namespace Caneda
     {
         m_currentWiringWire->show();
         m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
-        m_currentWiringWire->updateGeometry();
-
 
         /* detach current wire */
         m_currentWiringWire = NULL;
@@ -1103,12 +1100,14 @@ namespace Caneda
      */
     void CGraphicsScene::wiringEventLeftMouseClickAddSegment()
     {
-//        /* add segment */
-//        m_currentWiringWire->storeState();
-//
-//        WireLines& wLinesRef = m_currentWiringWire->wireLinesRef();
-//        WireLine toAppend(wLinesRef.last().p2(), wLinesRef.last().p2());
-//        wLinesRef << toAppend << toAppend;
+        /* add segment */
+        m_currentWiringWire->storeState();
+
+        Wire *ref = m_currentWiringWire;
+
+        m_currentWiringWire = new Wire(ref->port2()->pos() + ref->pos(),
+                                       ref->port2()->pos() + ref->pos(),
+                                       this);
     }
 
     /*!
@@ -1129,7 +1128,6 @@ namespace Caneda
 
         m_undoStack->endMacro();
     }
-
 
     /*!
      * \brief Left mouse click wire event
@@ -1249,7 +1247,6 @@ namespace Caneda
         return;
     }
 
-
     /*!
      * \brief Mouse move wire event
      *
@@ -1280,8 +1277,6 @@ namespace Caneda
         }
     }
 
-
-
     //! \todo document
     void CGraphicsScene::markingEvent(MouseActionEvent *event)
     {
@@ -1289,17 +1284,12 @@ namespace Caneda
         //TODO:
     }
 
-
-
-
     /***************************************************************************
      *
      *             Mirror
      *
      *
      ***************************************************************************/
-
-
     /*!
      * \brief Mirror an item list
      *
