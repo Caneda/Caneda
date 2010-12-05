@@ -127,6 +127,8 @@ namespace Caneda
     void Wire::grabMoveBy(qreal dx, qreal dy)
     {
         m_wLine.translate(QPointF(dx, dy));
+        movePort1(port1()->pos() + QPointF(dx, dy));
+        movePort2(port2()->pos() + QPointF(dx, dy));
 
         // Now update the wires.
         updateGeometry();
