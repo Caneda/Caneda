@@ -282,7 +282,7 @@ namespace Caneda
         QUndoCommand(parent), m_port1(p1), m_port2(p2)
     {
         m_scene = m_port1->cGraphicsScene();
-        m_wire = new Wire(m_port1, m_port2, m_scene);
+        m_wire = new Wire(m_port1->pos(), m_port2->pos(), m_scene);
         m_pos = m_wire->scenePos();
     }
 

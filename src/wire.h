@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,25 +21,18 @@
 #ifndef WIRE_H
 #define WIRE_H
 
-#include "cgraphicsitem.h"
 #include "port.h"
 #include "wireline.h"
 
 #include <QList>
 
-// Forward declarations
-class QGraphicsLineItem;
-
 namespace Caneda
 {
     // Forward declarations
+    class CGraphicsItem;
     class CGraphicsScene;
 
-    typedef QList<WireLine> WireLines;
-
-    /*!
-     * \brief This class represents a wire on schematic.
-     */
+    //! \brief This class represents a wire on schematic.
     class Wire : public CGraphicsItem
     {
     public:
@@ -46,15 +40,14 @@ namespace Caneda
 
         //! A struct to store wire's details.
         struct Data {
-            WireLines wLines;
+            WireLine wLine;
             QPointF pos;
             QPointF port1Pos;
             QPointF port2Pos;
         };
 
-        Wire(const QPointF &startPos, const QPointF &endPos, bool doConnect = true,
+        Wire(const QPointF &startPos, const QPointF &endPos,
                 CGraphicsScene *scene = 0);
-        Wire(Port *startPort, Port *endPort, CGraphicsScene *scene = 0);
         ~Wire();
 
         //! Return's the wire's ports list.
@@ -74,25 +67,16 @@ namespace Caneda
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0);
 
-        void beginGrabMode();
         void grabMoveBy(qreal dx, qreal dy);
-        void endGrabMode();
 
-        //! Returns the internal representation of wires as line's list.
-        WireLines wireLines() const { return m_wLines; }
+        void tryConnectPorts();
+        int checkAndConnect(Caneda::UndoOption opt);
+        void updateGeometry();
 
-        //! Returns a reference of internal representaion of wire lines.
-        WireLines& wireLinesRef() { return m_wLines; }
-
-        void setWireLines(const WireLines& wirelines);
-
-        void optimize();
-
-        void saveData(Caneda::XmlWriter *writer) const;
-        void saveData(Caneda::XmlWriter *writer, int id) const;
-
-        static Wire* loadWireData(Caneda::XmlReader *reader, CGraphicsScene *scene);
-        void loadData(Caneda::XmlReader *reader);
+        //! check if port 1 and 2 overlap
+        bool overlap() const {
+            return port1()->scenePos() == port2()->scenePos();
+        }
 
         //! No rotate defined for wires.
         void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise) {
@@ -102,29 +86,20 @@ namespace Caneda
         //! No mirroring defined for wires.
         void mirrorAlong(Qt::Axis) {}
 
-        void storeState();
-        Data storedState() const;
-
-        Data currentState() const;
-        void setState(Data state);
-
-        int checkAndConnect(Caneda::UndoOption opt);
-
         Wire* copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(Wire *wire) const;
 
         bool isComponent() const { return false; }
         bool isWire() const { return true; }
 
-        void updateGeometry();
+        Wire::Data storedState() const;
+        void storeState();
+        void setState(Data state);
+        Data currentState() const;
 
-        //! check if port 1 and 2 overlap
-        bool overlap() const {
-            return port1()->scenePos() == port2()->scenePos();
-        }
-
-        void tryConnectPorts();
-        void tryConnectPort(Port * port);
+        void saveData(Caneda::XmlWriter *writer, int id=-1) const;
+        static Wire* loadWireData(Caneda::XmlReader *reader, CGraphicsScene *scene);
+        void loadData(Caneda::XmlReader *reader);
 
     protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -132,19 +107,9 @@ namespace Caneda
         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
     private:
-
-        void initWireline();
-
-        int indexForPos(const QPointF& pos) const;
-
-        int m_grabbedIndex; //!< Represents the index of wireline being dragged.
-
         QList<Port*> m_ports;//!< The ports of wires (always contain only 2 elements).
-        WireLines m_wLines;//!< Internal line representation of wires.
+        WireLine m_wLine;//!< Internal line representation of wires.
         Wire::Data store; //!< Stores the wire data when needed(undo/redo).
-
-        QColor m_wireColor;
-        qreal m_width;
     };
 
     Wire::Data readWireData(Caneda::XmlReader *reader);

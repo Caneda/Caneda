@@ -1090,7 +1090,6 @@ namespace Caneda
     {
         m_currentWiringWire->show();
         m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
-        m_currentWiringWire->optimize();
         m_currentWiringWire->updateGeometry();
 
 
@@ -1104,12 +1103,12 @@ namespace Caneda
      */
     void CGraphicsScene::wiringEventLeftMouseClickAddSegment()
     {
-        /* add segment */
-        m_currentWiringWire->storeState();
-
-        WireLines& wLinesRef = m_currentWiringWire->wireLinesRef();
-        WireLine toAppend(wLinesRef.last().p2(), wLinesRef.last().p2());
-        wLinesRef << toAppend << toAppend;
+//        /* add segment */
+//        m_currentWiringWire->storeState();
+//
+//        WireLines& wLinesRef = m_currentWiringWire->wireLinesRef();
+//        WireLine toAppend(wLinesRef.last().p2(), wLinesRef.last().p2());
+//        wLinesRef << toAppend << toAppend;
     }
 
     /*!
@@ -1121,9 +1120,6 @@ namespace Caneda
     {
         /* configure undo */
         m_undoStack->beginMacro(tr("Add wiring control point"));
-
-        /* clean up line */
-        m_currentWiringWire->optimize();
 
         /* wiring command */
         m_undoStack->push(cmd);
@@ -1145,7 +1141,7 @@ namespace Caneda
     {
         if(m_wiringState == NO_WIRE) {
             /* create a new wire */
-            m_currentWiringWire = new Wire(pos, pos, false, this);
+            m_currentWiringWire = new Wire(pos, pos, this);
             m_wiringState = SINGLETON_WIRE;
             return;
         }
@@ -2500,7 +2496,6 @@ namespace Caneda
         }
 
         foreach(Wire *wire, movingWires) {
-            wire->optimize();
             wire->show();
             wire->movePort1(wire->port1()->pos());
             m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
@@ -2508,7 +2503,6 @@ namespace Caneda
             wire->checkAndConnect(Caneda::PushUndoCmd);
         }
         foreach(Wire *wire, grabMovingWires) {
-            wire->optimize();
             wire->show();
             wire->movePort1(wire->port1()->pos());
             m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),

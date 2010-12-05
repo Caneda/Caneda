@@ -85,6 +85,8 @@ namespace Caneda
         }
     };
 
+    QColor invertcolor(const QColor & color);
+
 } // namespace Caneda
 
 #endif //GLOBAL_H

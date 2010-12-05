@@ -263,4 +263,12 @@ namespace Caneda
         return Output;
     }
 
+    //! \brief Invert a color
+    QColor invertcolor(const QColor & color)
+    {
+        QColor inverted;
+        inverted.setRgbF(1.0 - color.redF(), 1.0 - color.greenF(), 1.0 - color.blueF(),1.0);
+        return inverted;
+    }
+
 } // namespace Caneda
