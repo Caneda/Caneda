@@ -2418,7 +2418,7 @@ namespace Caneda
 
     /*!
      * \brief End the special move by pushing the UndoCommands for position change
-     * of items on scene. Also fwire's segements are finalized here.
+     * of items on scene. Also wire's segements are finalized here.
      */
     void CGraphicsScene::endSpecialMove()
     {

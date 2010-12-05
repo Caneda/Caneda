@@ -60,8 +60,6 @@ namespace Caneda
         m_ports << new Port(this, localEndPos);
 
         m_wLine = WireLine(port1()->pos(), port2()->pos());
-
-        tryConnectPorts();
     }
 
     //! Destructor.
@@ -132,20 +130,6 @@ namespace Caneda
 
         // Now update the wires.
         updateGeometry();
-    }
-
-    //! \brief Try to connect ports
-    void Wire::tryConnectPorts()
-    {
-        Port * p1 = port1()->findCoincidingPort();
-        if(p1) {
-            p1->connectTo(p1);
-        }
-
-        Port * p2 = port2()->findCoincidingPort();
-        if(p2) {
-            p2->connectTo(p2);
-        }
     }
 
     /*!

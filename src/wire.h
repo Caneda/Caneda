@@ -69,7 +69,6 @@ namespace Caneda
 
         void grabMoveBy(qreal dx, qreal dy);
 
-        void tryConnectPorts();
         int checkAndConnect(Caneda::UndoOption opt);
         void updateGeometry();
 
