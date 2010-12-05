@@ -124,11 +124,21 @@ namespace Caneda
     //! \brief Moves wire by (\a dx, \a dy).
     void Wire::grabMoveBy(qreal dx, qreal dy)
     {
+        // Disconnect all ports
+        foreach(Port *port, m_ports) {
+            Port *other = port->getAnyConnectedPort();
+
+            if(other != NULL) {
+                port->disconnectFrom(other);
+            }
+        }
+
+        // Translate the wire
         m_wLine.translate(QPointF(dx, dy));
         movePort1(port1()->pos() + QPointF(dx, dy));
         movePort2(port2()->pos() + QPointF(dx, dy));
 
-        // Now update the wires.
+        // Update the wire
         updateGeometry();
     }
 
