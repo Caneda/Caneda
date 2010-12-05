@@ -330,19 +330,8 @@ namespace Caneda
                 delete m_currentWiringWire;
                 m_wiringState = NO_WIRE;
                 return;
-
-            case COMPLEX_WIRE:
-                /* last inserted point is end point */
-                Q_ASSERT(m_currentWiringWire != NULL);
-                m_currentWiringWire->show();
-                m_currentWiringWire->setState(m_currentWiringWire->storedState());
-                m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
-                delete m_currentWiringWire;
-                m_wiringState = NO_WIRE;
-                return;
         }
     }
-
 
     /*!
      * \brief Reset the state
@@ -1159,28 +1148,6 @@ namespace Caneda
             }
             else  {
                 wiringEventLeftMouseClickAddSegment();
-                m_wiringState = COMPLEX_WIRE;
-            }
-            return;
-        }
-        if(m_wiringState == COMPLEX_WIRE) {
-            if(m_currentWiringWire->overlap())  {
-                return;
-            }
-
-            QUndoCommand * complex_wire = new WireStateChangeCmd(m_currentWiringWire,
-                    m_currentWiringWire->storedState(),
-                    m_currentWiringWire->currentState());
-
-            wiringEventLeftMouseClickCommonComplexSingletonWire(complex_wire);
-
-            if(m_currentWiringWire->port2()->hasConnection()) {
-                /* finalize */
-                wiringEventMouseClickFinalize();
-                m_wiringState = NO_WIRE;
-            } else  {
-                wiringEventLeftMouseClickAddSegment();
-                m_wiringState = COMPLEX_WIRE;
             }
             return;
         }
@@ -1204,22 +1171,6 @@ namespace Caneda
             /* do wiring */
             QUndoCommand * singleton_wire = new AddWireCmd(m_currentWiringWire, this);
             wiringEventLeftMouseClickCommonComplexSingletonWire(singleton_wire);
-
-            /* finalize */
-            wiringEventMouseClickFinalize();
-            m_wiringState = NO_WIRE;
-            return;
-        }
-        if(m_wiringState == COMPLEX_WIRE) {
-            if(m_currentWiringWire->overlap()) {
-                return;
-            }
-
-            /* do wiring */
-            QUndoCommand * complex_wire = new WireStateChangeCmd(m_currentWiringWire,
-                    m_currentWiringWire->storedState(),
-                    m_currentWiringWire->currentState());
-            wiringEventLeftMouseClickCommonComplexSingletonWire(complex_wire);
 
             /* finalize */
             wiringEventMouseClickFinalize();

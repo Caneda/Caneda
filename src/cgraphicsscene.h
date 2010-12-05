@@ -306,9 +306,8 @@ namespace Caneda
 
         //! Wiring state machine state  enum
         enum wiringStateEnum {
-            NO_WIRE,               /*!< They are no wire */
-            SINGLETON_WIRE,        /*!< Wire is a singleton, ie only one single point */
-            COMPLEX_WIRE           /*!< Wire is composed by more than one point */
+            NO_WIRE,               /*!< There are no wires yet */
+            SINGLETON_WIRE,        /*!< Currently creating wires */
         };
 
         //! State variable for the wire state machine
