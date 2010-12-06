@@ -103,7 +103,6 @@ namespace Caneda
     protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-        void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
     private:
         QList<Port*> m_ports;//!< The ports of wires (always contain only 2 elements).

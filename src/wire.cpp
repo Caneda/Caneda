@@ -128,7 +128,7 @@ namespace Caneda
         foreach(Port *port, m_ports) {
             Port *other = port->getAnyConnectedPort();
 
-            // If other owner's is a wire, move, any other case disconnect
+            // If other owner's is a wire, move it, if it's a component disconnect
             if(other != NULL && other->owner()->isWire()) {
                 other->setPos(other->pos() + QPointF(dx, dy));
                 Wire *connectedWire = static_cast<Wire*>(other->ownerItem());
@@ -139,7 +139,7 @@ namespace Caneda
             }
         }
 
-        // Translate the wire
+        // Translate the ports
         movePort1(port1()->pos() + QPointF(dx, dy));
         movePort2(port2()->pos() + QPointF(dx, dy));
 
@@ -182,7 +182,7 @@ namespace Caneda
         return num_of_connections;
     }
 
-    //! \brief Updates the wire's geometry and caches it.
+    //! \brief Updates the wire's wireline, geometry and caches it.
     void Wire::updateGeometry()
     {
         m_wLine.setP1(port1()->pos());
@@ -316,12 +316,6 @@ namespace Caneda
     void Wire::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     {
         event->ignore();
-    }
-
-    //! \todo Not called at all!
-    void Wire::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-    {
-        CGraphicsItem::mouseReleaseEvent(event);
     }
 
     Wire::Data readWireData(Caneda::XmlReader *reader)
