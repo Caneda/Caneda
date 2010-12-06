@@ -128,13 +128,18 @@ namespace Caneda
         foreach(Port *port, m_ports) {
             Port *other = port->getAnyConnectedPort();
 
-            if(other != NULL) {
+            // If other owner's is a wire, move, any other case disconnect
+            if(other != NULL && other->owner()->isWire()) {
+                other->setPos(other->pos() + QPointF(dx, dy));
+                Wire *connectedWire = static_cast<Wire*>(other->ownerItem());
+                connectedWire->updateGeometry();
+            }
+            else {
                 port->disconnectFrom(other);
             }
         }
 
         // Translate the wire
-        m_wLine.translate(QPointF(dx, dy));
         movePort1(port1()->pos() + QPointF(dx, dy));
         movePort2(port2()->pos() + QPointF(dx, dy));
 
@@ -180,6 +185,9 @@ namespace Caneda
     //! \brief Updates the wire's geometry and caches it.
     void Wire::updateGeometry()
     {
+        m_wLine.setP1(port1()->pos());
+        m_wLine.setP2(port2()->pos());
+
         QRectF rect;
         QPainterPath path;
 
