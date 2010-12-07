@@ -1207,7 +1207,15 @@ namespace Caneda
     {
         if(m_wiringState != NO_WIRE) {
             QPointF newPos = m_currentWiringWire->mapFromScene(pos);
-            m_currentWiringWire->movePort2(newPos);
+
+            QPointF refPos = m_currentWiringWire->port1()->pos();
+            if( abs(refPos.x()-newPos.x()) > abs(refPos.y()-newPos.y()) ) {
+                m_currentWiringWire->movePort2(QPointF(newPos.x(), refPos.y()));
+            }
+            else {
+                m_currentWiringWire->movePort2(QPointF(refPos.x(), newPos.y()));
+            }
+
         }
     }
 
