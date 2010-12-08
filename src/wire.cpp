@@ -84,7 +84,6 @@ namespace Caneda
     {
         port1()->setPos(newLocalPos);
         m_wLine.setP1(newLocalPos);
-
         updateGeometry();
     }
 
@@ -93,7 +92,6 @@ namespace Caneda
     {
         port2()->setPos(newLocalPos);
         m_wLine.setP2(newLocalPos);
-
         updateGeometry();
     }
 
@@ -124,19 +122,32 @@ namespace Caneda
     //! \brief Moves wire by (\a dx, \a dy).
     void Wire::grabMoveBy(qreal dx, qreal dy)
     {
-        // Disconnect all ports
+        // Disconnect connected components and move connected wires
         foreach(Port *port, m_ports) {
-            Port *other = port->getAnyConnectedPort();
 
-            // If other owner's is a wire, move it, if it's a component disconnect
-            if(other != NULL && other->owner()->isWire()) {
-                other->setPos(other->pos() + QPointF(dx, dy));
-                Wire *connectedWire = static_cast<Wire*>(other->ownerItem());
-                connectedWire->updateGeometry();
+            QList<Port*> *connections = port->connections();
+            if(!connections) {
+                continue;
             }
-            else {
-                port->disconnectFrom(other);
+
+            foreach(Port *other, *connections) {
+
+                if(other == port ) {
+                    continue;
+                }
+
+                // If other owner's is a wire, move it, if it's a component disconnect
+                if(other != NULL && other->owner()->isWire()) {
+                    other->setPos(other->pos() + QPointF(dx, dy));
+                    Wire *connectedWire = static_cast<Wire*>(other->ownerItem());
+                    connectedWire->updateGeometry();
+                }
+                else {
+                    port->disconnectFrom(other);
+                }
+
             }
+
         }
 
         // Translate the ports
