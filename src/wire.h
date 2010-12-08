@@ -70,6 +70,7 @@ namespace Caneda
         void grabMoveBy(qreal dx, qreal dy);
 
         int checkAndConnect(Caneda::UndoOption opt);
+        bool splitAndCreateNodes();
         void updateGeometry();
 
         //! check if port 1 and 2 overlap
@@ -77,12 +78,12 @@ namespace Caneda
             return port1()->scenePos() == port2()->scenePos();
         }
 
-        //! No rotate defined for wires.
+        //! TODO: Implement this
         void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise) {
             Q_UNUSED(dir);
         }
 
-        //! No mirroring defined for wires.
+        //! TODO: Implement this
         void mirrorAlong(Qt::Axis) {}
 
         Wire* copy(CGraphicsScene *scene = 0) const;

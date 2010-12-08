@@ -156,6 +156,7 @@ namespace Caneda
     {
         int num_of_connections = 0;
 
+        // Find existing intersecting ports and connect
         if(opt == Caneda::PushUndoCmd) {
             cGraphicsScene()->undoStack()->beginMacro(QString());
         }
@@ -179,7 +180,81 @@ namespace Caneda
             cGraphicsScene()->undoStack()->endMacro();
         }
 
+        splitAndCreateNodes();
+
         return num_of_connections;
+    }
+
+    /*!
+     * \brief If a collision is present, splits a wire in two and creates
+     * a new node.
+     *
+     * \return Returns true if new node was created.
+     */
+    bool Wire::splitAndCreateNodes()
+    {
+        bool nodeCreated = false;
+
+        // Check both ends for collisions
+        foreach(Port *port, m_ports) {
+            QList<QGraphicsItem*> collisions =
+                    collidingItems(Qt::IntersectsItemBoundingRect);
+
+            // Filter colliding wires only
+            foreach(QGraphicsItem *item, collisions) {
+
+                Wire* _collidingItem = static_cast<Wire*>(item);
+                if(_collidingItem->isWire()) {
+
+                    // If wires are connected, the collision is the result of the connection.
+                    // Otherwise, there is a potential new node.
+                    bool wiresAreConnected = Port::isConnected(port1(), _collidingItem->port1()) ||
+                                             Port::isConnected(port1(), _collidingItem->port2()) ||
+                                             Port::isConnected(port2(), _collidingItem->port1()) ||
+                                             Port::isConnected(port2(), _collidingItem->port2());
+
+                    if(!wiresAreConnected){
+
+                        // Check if the collision is in the extremes of the wire (ports). Otherwise,
+                        // they intersect, but no node should be created.
+                        bool verticalCollision = _collidingItem->m_wLine.isHorizontal() &&
+                                                 port->pos().y() + pos().y() == _collidingItem->pos().y();
+                        bool horizontalCollision = _collidingItem->m_wLine.isVertical() &&
+                                                   port->pos().x() + pos().x() == _collidingItem->pos().x();
+
+                        if( verticalCollision || horizontalCollision ) {
+
+                            QPointF startPoint = _collidingItem->port1()->pos() + _collidingItem->pos();
+                            QPointF middlePoint = port->pos() + pos();
+                            QPointF endPoint =  _collidingItem->port2()->pos() + _collidingItem->pos();
+
+                            // Create two new wires
+                            Wire *wire1 = new Wire(startPoint, middlePoint, cGraphicsScene());
+                            Wire *wire2 = new Wire(middlePoint, endPoint, cGraphicsScene());
+
+                            // Delete old wire
+                            delete _collidingItem;
+
+                            // Create new node (connections to the colliding wire)
+                            port->connectTo(wire1->port2());
+                            port->connectTo(wire1->port1());
+
+                            wire1->updateGeometry();
+                            wire2->updateGeometry();
+
+                            // Restore old wire connections
+                            wire1->checkAndConnect(Caneda::DontPushUndoCmd);
+                            wire2->checkAndConnect(Caneda::DontPushUndoCmd);
+
+                            nodeCreated = true;
+
+                        }
+                    }
+                }
+            }
+        }
+
+        return nodeCreated;
     }
 
     //! \brief Updates the wire's wireline, geometry and caches it.
