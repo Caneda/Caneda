@@ -1070,55 +1070,6 @@ namespace Caneda
      *
      *********************************************************************/
     /*!
-     * \brief Finalize wire ie last control point == end
-     * \todo Why not a wire operation ?
-     * \todo Add undo operation for this
-     */
-    void CGraphicsScene::wiringEventMouseClickFinalize()
-    {
-        m_currentWiringWire->show();
-        m_currentWiringWire->movePort1(m_currentWiringWire->port1()->pos());
-
-        /* detach current wire */
-        m_currentWiringWire = NULL;
-    }
-
-    /*!
-     * \brief Add a wire segment
-     * \todo Why not a wire operation
-     */
-    void CGraphicsScene::wiringEventLeftMouseClickAddSegment()
-    {
-        /* add segment */
-        m_currentWiringWire->storeState();
-
-        Wire *ref = m_currentWiringWire;
-
-        m_currentWiringWire = new Wire(ref->port2()->pos() + ref->pos(),
-                                       ref->port2()->pos() + ref->pos(),
-                                       this);
-    }
-
-    /*!
-     * \brief Common wiring part
-     *
-     * \param cmd: undo command to run
-     */
-    void CGraphicsScene::wiringEventLeftMouseClickCommonComplexSingletonWire(QUndoCommand * cmd)
-    {
-        /* configure undo */
-        m_undoStack->beginMacro(tr("Add wiring control point"));
-
-        /* wiring command */
-        m_undoStack->push(cmd);
-
-        /* check and connect */
-        m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
-
-        m_undoStack->endMacro();
-    }
-
-    /*!
      * \brief Left mouse click wire event
      *
      * \param Event: mouse event
@@ -1138,16 +1089,27 @@ namespace Caneda
                 return;
             }
 
+            /* configure undo */
             QUndoCommand * singleton_wire = new AddWireCmd(m_currentWiringWire, this);
-            wiringEventLeftMouseClickCommonComplexSingletonWire(singleton_wire);
+            m_undoStack->beginMacro(tr("Add wiring control point"));
+
+            m_undoStack->push(singleton_wire);
+            m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
+
+            m_undoStack->endMacro();
 
             /* if connect finalize */
             if(m_currentWiringWire->port2()->hasConnection()) {
-                wiringEventMouseClickFinalize();
+                /* detach current wire */
+                m_currentWiringWire = NULL;
                 m_wiringState = NO_WIRE;
             }
             else  {
-                wiringEventLeftMouseClickAddSegment();
+                // Add a wire segment
+                m_currentWiringWire->storeState();
+
+                QPointF refPos = m_currentWiringWire->port2()->pos() + m_currentWiringWire->pos();
+                m_currentWiringWire = new Wire(refPos, refPos, this);
             }
             return;
         }
@@ -1168,12 +1130,18 @@ namespace Caneda
                 return;
             }
 
-            /* do wiring */
+            /* configure undo */
             QUndoCommand * singleton_wire = new AddWireCmd(m_currentWiringWire, this);
-            wiringEventLeftMouseClickCommonComplexSingletonWire(singleton_wire);
+            m_undoStack->beginMacro(tr("Add wiring control point"));
+
+            m_undoStack->push(singleton_wire);
+            m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
+
+            m_undoStack->endMacro();
 
             /* finalize */
-            wiringEventMouseClickFinalize();
+            /* detach current wire */
+            m_currentWiringWire = NULL;
             m_wiringState = NO_WIRE;
             return;
         }

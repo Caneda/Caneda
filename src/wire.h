@@ -78,12 +78,12 @@ namespace Caneda
             return port1()->scenePos() == port2()->scenePos();
         }
 
-        //! TODO: Implement this
+        //! \todo Implement this
         void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise) {
             Q_UNUSED(dir);
         }
 
-        //! TODO: Implement this
+        //! \todo Implement this
         void mirrorAlong(Qt::Axis) {}
 
         Wire* copy(CGraphicsScene *scene = 0) const;

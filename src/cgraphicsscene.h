@@ -216,11 +216,8 @@ namespace Caneda
         void endSpecialMove();
 
         /* private wiring function */
-        void wiringEventLeftMouseClickCommonComplexSingletonWire(QUndoCommand * cmd);
-        void wiringEventLeftMouseClickAddSegment();
         void wiringEventLeftMouseClick(const QPointF &pos);
         void wiringEventRightMouseClick();
-        void wiringEventMouseClickFinalize();
         void wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos);
         void wiringEventMouseMove(const QPointF &pos);
 

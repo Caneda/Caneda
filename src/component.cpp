@@ -419,6 +419,7 @@ namespace Caneda
         if(opt == Caneda::PushUndoCmd) {
             cGraphicsScene()->undoStack()->beginMacro(QString());
         }
+
         foreach(Port *port, m_ports) {
             Port *other = port->findCoincidingPort();
             if(other) {
