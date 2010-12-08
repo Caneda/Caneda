@@ -33,14 +33,6 @@ namespace Caneda
     //! Define to 1 to print number of port connection in schematic
 #define DEBUG_PORT_CONNECTION 0
 
-    //! Returns whether two circle's of same radii intersect's or not.
-    bool circleIntersects(const QPointF& c1, const QPointF& c2, qreal radius)
-    {
-        qreal x_sqr = (c1.x() - c2.x()) * (c1.x() * c2.x());
-        qreal y_sqr = (c1.y() - c2.y()) * (c1.y() * c2.y());
-        return x_sqr + y_sqr - (4 * radius * radius) <= 0;
-    }
-
     /*************************************************************
      *
      *  PortOwner
@@ -379,48 +371,6 @@ namespace Caneda
             Q_ASSERT(m_connections->size() > 1);
         }
         return retVal;
-    }
-
-    //! \brief Finds an intersecting port in a given list of ports.
-    Port* Port::findIntersectingPort(const QList<Port*> &ports) const
-    {
-        foreach(Port *p, ports) {
-            if(circleIntersects(p->scenePos(), scenePos(), portRadius) &&
-                    (!m_connections || !m_connections->contains(p))) {
-                return p;
-            }
-        }
-        return 0;
-    }
-
-    //! \brief Finds an interecting port on schematic.
-    Port* Port::findIntersectingPort() const
-    {
-        CGraphicsScene *scene =
-            qobject_cast<CGraphicsScene*>(ownerItem()->scene());
-        if(!scene) {
-            return 0;
-        }
-        QList<QGraphicsItem*> collisions =
-            ownerItem()->collidingItems(Qt::IntersectsItemBoundingRect);
-        QList<Port*> ports;
-        foreach(QGraphicsItem *item, collisions) {
-            if(canedaitem_cast<Component*>(item)) {
-                ports = canedaitem_cast<Component*>(item)->ports();
-            }
-            else if(canedaitem_cast<Wire*>(item)) {
-                ports = canedaitem_cast<Wire*>(item)->ports();
-            }
-            else {
-                continue;
-            }
-
-            Port *p = findIntersectingPort(ports);
-            if(p) {
-                return p;
-            }
-        }
-        return 0;
     }
 
     //! \brief Finds a coinciding port in a given list of ports.

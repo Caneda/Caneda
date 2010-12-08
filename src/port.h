@@ -111,8 +111,8 @@ namespace Caneda
         //! Shorthand method for owner->item()
         QGraphicsItem* ownerItem() const { return m_owner->item(); }
 
-        //! Returns a pointer to list of connected ports(null if unconnected).
-        QList<Port*> * connections() const { return m_connections; }
+        //! Returns a pointer to list of connected ports (null if unconnected).
+        QList<Port*> *connections() const { return m_connections; }
 
         CGraphicsScene* cGraphicsScene() const;
 
@@ -128,21 +128,19 @@ namespace Caneda
          * Shorthand for Port::disconnect(this, from)
          * \note from == NULL is allowed
          */
-        void disconnectFrom(Port *from) { Port::disconnect(this, from); }
+        void disconnectFrom(Port* from) { Port::disconnect(this, from); }
 
         Port* getAnyConnectedPort();
         void removeConnections();
 
         static QList<Wire*> wiresBetween(Port* port1, Port* port2);
 
-        Port* findIntersectingPort() const;
         Port* findCoincidingPort() const;
 
         bool areAllOwnersSelected() const;
         void paint(QPainter *painter, const QStyleOptionGraphicsItem* option);
 
     private:
-        Port* findIntersectingPort(const QList<Port*> &ports) const;
         Port* findCoincidingPort(const QList<Port*> &ports) const;
 
         void setPos(const QPointF& newPos);
