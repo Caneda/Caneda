@@ -30,7 +30,6 @@ namespace Caneda
 {
     // Forward declarations
     class FilterProxyModel;
-    class FileFilterProxyModel;
     class SidebarModel;
 
     class TreeView : public QTreeView

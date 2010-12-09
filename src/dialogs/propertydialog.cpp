@@ -18,10 +18,12 @@
  ***************************************************************************/
 
 #include "cgraphicsscene.h"
+#include "global.h"
 #include "propertydialog.h"
 #include "undocommands.h"
 
 #include <QComboBox>
+#include <QSortFilterProxyModel>
 
 namespace Caneda
 {
@@ -180,10 +182,26 @@ namespace Caneda
         m_undoOption(opt)
     {
         ui.setupUi(this);
+
+        ui.m_clearButton->setIcon(QIcon(Caneda::bitmapDirectory() + "clearFilterText.png"));
+        ui.m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
+        ui.m_clearButton->setWhatsThis(
+                tr("Clear Filter Text\n\nClears the filter text thus reshowing all properties"));
+
         m_model = new PropertyModel(m_component->propertyMap(), this);
-        ui.tableView->setModel(m_model);
+
+        m_proxyModel = new QSortFilterProxyModel(this);
+        m_proxyModel->setDynamicSortFilter(true);
+        m_proxyModel->setSourceModel(m_model);
+        m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+        ui.tableView->setModel(m_proxyModel);
         ui.tableView->setItemDelegate(new PropertyValueDelegate(this));
         ui.tableView->resizeColumnsToContents();
+
+        connect(ui.m_filterEdit, SIGNAL(textChanged(const QString &)),
+                this, SLOT(filterTextChanged()));
+        connect(ui.m_clearButton, SIGNAL(clicked()), ui.m_filterEdit, SLOT(clear()));
     }
 
     void PropertyDialog::accept()
@@ -198,6 +216,14 @@ namespace Caneda
             delete cmd;
         }
         QDialog::accept();
+    }
+
+    void PropertyDialog::filterTextChanged()
+    {
+        QString text = ui.m_filterEdit->text();
+        ui.m_clearButton->setEnabled(!text.isEmpty());
+        QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+        m_proxyModel->setFilterRegExp(regExp);
     }
 
 } // namespace Caneda

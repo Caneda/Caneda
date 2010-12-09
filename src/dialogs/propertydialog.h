@@ -30,6 +30,7 @@
 
 // Forward declarations.
 class QStandardItemModel;
+class QSortFilterProxyModel;
 
 namespace Caneda
 {
@@ -90,8 +91,13 @@ namespace Caneda
     public Q_SLOTS:
         void accept();
 
+    private Q_SLOTS:
+        void filterTextChanged();
+
     private:
         PropertyModel *m_model;
+        QSortFilterProxyModel *m_proxyModel;
+
         Component *m_component;
         Caneda::UndoOption m_undoOption;
 
