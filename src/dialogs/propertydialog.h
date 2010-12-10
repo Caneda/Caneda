@@ -51,7 +51,7 @@ namespace Caneda
         PropertyModel(PropertyMap map, QObject *parent = 0);
 
         int rowCount(IndexConstRef) const { return propMap.size(); }
-        int columnCount(IndexConstRef) const { return 3; }
+        int columnCount(IndexConstRef) const { return 4; }
 
         QVariant data(IndexConstRef, int role) const;
         QVariant headerData(int section, Qt::Orientation o, int role) const;

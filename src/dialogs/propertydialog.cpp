@@ -49,12 +49,12 @@ namespace Caneda
             switch(index.column()) {
                 case 0: return key;
                 case 1: return propMap[key].value();
-                case 2: return propMap[key].description();
+                case 3: return propMap[key].description();
                 default: ;
             }
         }
-        else if(role == Qt::CheckStateRole && index.column() == 0) {
-            return QVariant(propMap[key].isVisible());
+        else if(role == Qt::CheckStateRole && index.column() == 2) {
+            return propMap[key].isVisible() ? Qt::Checked : Qt::Unchecked;
         }
         else if(role == OptionsRole && index.column() == 1) {
             return propMap[keys[index.row()]].options();
@@ -75,7 +75,8 @@ namespace Caneda
             switch(section) {
                 case 0: return tr("Name");
                 case 1: return tr("Value");
-                case 2: return tr("Description");
+                case 2: return tr("Visible");
+                case 3: return tr("Description");
             }
         }
         return QVariant();
@@ -89,7 +90,7 @@ namespace Caneda
         }
         else {
             flags = QAbstractTableModel::flags(index);
-            if(index.column() == 0) {
+            if(index.column() == 2) {
                 flags |= Qt::ItemIsUserCheckable;
             }
             else if(index.column() == 1) {
@@ -110,7 +111,7 @@ namespace Caneda
                 }
                 return res;
             }
-            else if(role == Qt::CheckStateRole && index.column() == 0) {
+            else if(role == Qt::CheckStateRole && index.column() == 2) {
                 Property &prop = propMap[keys[index.row()]];
                 prop.setVisible(!prop.isVisible());
                 emit dataChanged(index, index);
