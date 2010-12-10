@@ -176,7 +176,21 @@ namespace Caneda
     //*************************************************************
     //******************** PropertyDialog *************************
     //*************************************************************
-    //! Constructor
+    /*!
+     * \brief Constructor
+     *
+     * This dialog presents the user, the properties of the selected
+     * component. By default, string properties are presented with a
+     * QLineEdit, while numeric properties (int, double, etc) are
+     * presented with a QSpinBox. For better representation it is
+     * recommended for components to have string properties rather
+     * than numeric. In this way, the user can use prefixes, like 'p'
+     * for pico, 'u' for micro, etc. Even parametric properties could
+     * be used as string properties, using for example brackets as in
+     * '{R}'.
+     *
+     * \param comp The component to create de properties dialog for.
+     */
     PropertyDialog::PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent) :
         QDialog(parent),
         m_component(comp),
