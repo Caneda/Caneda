@@ -718,9 +718,10 @@ namespace Caneda
     {
         fileMenu = menuBar()->addMenu(tr("&File"));
 
-        fileMenu->addAction(action("newSchematic"));
-        fileMenu->addAction(action("newLayout"));
-        fileMenu->addAction(action("newText"));
+        QMenu *newFileMenu = fileMenu->addMenu(Caneda::icon("document-new"), tr("New File"));
+        newFileMenu->addAction(action("newSchematic"));
+        newFileMenu->addAction(action("newLayout"));
+        newFileMenu->addAction(action("newText"));
         fileMenu->addAction(action("fileOpen"));
         fileMenu->addAction(action("fileClose"));
 
