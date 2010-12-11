@@ -29,6 +29,7 @@ SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   syntaxhighlighters.cpp
   textdocument.cpp textcontext.cpp textview.cpp textedit.cpp
   webdocument.cpp webcontext.cpp webview.cpp webpage.cpp
+  clineedit.cpp
 )
 
 SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
@@ -42,6 +43,7 @@ SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   syntaxhighlighters.h
   textdocument.h textcontext.h textview.h textedit.h
   webdocument.h webcontext.h webview.h webpage.h
+  clineedit.h
 )
 
 QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )

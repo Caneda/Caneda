@@ -31,7 +31,6 @@
 
 namespace Caneda
 {
-
     /*! Constructor
      * \brief This class implements a simple folder browser widget
      *

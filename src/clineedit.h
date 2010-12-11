@@ -17,40 +17,32 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIDEBAR_TEXT_BROWSER_H
-#define SIDEBAR_TEXT_BROWSER_H
+#ifndef C_LINE_EDIT_H
+#define C_LINE_EDIT_H
 
-#include <QTreeView>
+#include <QLineEdit>
 
-// Forward declarations
-class QFileSystemModel;
+class QToolButton;
 
 namespace Caneda
 {
-    // Forward declarations
-    class CLineEdit;
-    class FileFilterProxyModel;
-
-    //! Represents sidebar which allows text templates to be inserted
-    class SidebarTextBrowser : public QWidget
+    class CLineEdit : public QLineEdit
     {
-        Q_OBJECT;
-    public:
-        SidebarTextBrowser(QWidget *parent = 0);
-        ~SidebarTextBrowser();
+        Q_OBJECT
 
-    private Q_SLOTS:
-        void filterTextChanged();
-        void slotOnDoubleClicked(const QModelIndex& index);
+    public:
+        CLineEdit(QWidget *parent = 0);
+
+    protected:
+        void resizeEvent(QResizeEvent *);
+
+    private slots:
+        void updateCloseButton(const QString &text);
 
     private:
-        QFileSystemModel *m_fileModel;
-        FileFilterProxyModel *m_proxyModel;
-        QTreeView *m_treeView;
-
-        CLineEdit *m_filterEdit;
+        QToolButton *clearButton;
     };
 
 } // namespace Caneda
 
-#endif //SIDEBAR_TEXT_BROWSER_H
+#endif //C_LINE_EDIT_H

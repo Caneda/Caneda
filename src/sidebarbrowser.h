@@ -22,13 +22,10 @@
 
 #include <QTreeView>
 
-// Forward declarations
-class QLineEdit;
-class QToolButton;
-
 namespace Caneda
 {
     // Forward declarations
+    class CLineEdit;
     class FilterProxyModel;
     class SidebarModel;
 
@@ -82,8 +79,7 @@ namespace Caneda
         FilterProxyModel *m_proxyModel;
         TreeView *m_treeView;
 
-        QLineEdit *m_filterEdit;
-        QToolButton *m_clearButton;
+        CLineEdit *m_filterEdit;
 
         QString m_currentComponent;
     };

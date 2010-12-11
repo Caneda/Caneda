@@ -32,7 +32,7 @@ namespace Caneda
 {
     class FolderBrowser : public QWidget
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         FolderBrowser(QWidget *parent = 0);

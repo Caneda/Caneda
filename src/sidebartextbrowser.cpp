@@ -19,6 +19,7 @@
 
 #include "sidebartextbrowser.h"
 
+#include "clineedit.h"
 #include "documentviewmanager.h"
 #include "global.h"
 #include "settings.h"
@@ -26,11 +27,9 @@
 
 #include <QFileSystemModel>
 #include <QDebug>
-#include <QLineEdit>
 #include <QSettings>
 #include <QSortFilterProxyModel>
 #include <QTextCodec>
-#include <QToolButton>
 #include <QVBoxLayout>
 
 namespace Caneda
@@ -68,19 +67,9 @@ namespace Caneda
     SidebarTextBrowser::SidebarTextBrowser(QWidget *parent) : QWidget(parent)
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
-        QHBoxLayout *hl = new QHBoxLayout();
-        layout->addLayout(hl);
-        m_filterEdit = new QLineEdit();
-        hl->addWidget(m_filterEdit);
 
-        m_clearButton = new QToolButton();
-        m_clearButton->setIcon(QIcon(Caneda::bitmapDirectory() + "clearFilterText.png"));
-        m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
-        m_clearButton->setWhatsThis(
-                tr("Clear Filter Text\n\nClears the filter text thus reshowing all components"));
-
-        hl->addWidget(m_clearButton);
-        m_clearButton->setEnabled(false);
+        m_filterEdit = new CLineEdit();
+        layout->addWidget(m_filterEdit);
 
         QSettings qSettings;
 
@@ -118,7 +107,6 @@ namespace Caneda
 
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
                 this, SLOT(filterTextChanged()));
-        connect(m_clearButton, SIGNAL(clicked()), m_filterEdit, SLOT(clear()));
 
         connect(m_fileModel, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
         connect(m_treeView, SIGNAL(activated(const QModelIndex&)), this,
@@ -135,7 +123,6 @@ namespace Caneda
     void SidebarTextBrowser::filterTextChanged()
     {
         QString text = m_filterEdit->text();
-        m_clearButton->setEnabled(!text.isEmpty());
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
     }

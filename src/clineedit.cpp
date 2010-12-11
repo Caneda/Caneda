@@ -17,40 +17,43 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIDEBAR_TEXT_BROWSER_H
-#define SIDEBAR_TEXT_BROWSER_H
+#include "clineedit.h"
 
-#include <QTreeView>
+#include "global.h"
 
-// Forward declarations
-class QFileSystemModel;
+#include <QStyle>
+#include <QToolButton>
 
 namespace Caneda
 {
-    // Forward declarations
-    class CLineEdit;
-    class FileFilterProxyModel;
-
-    //! Represents sidebar which allows text templates to be inserted
-    class SidebarTextBrowser : public QWidget
+    CLineEdit::CLineEdit(QWidget *parent) : QLineEdit(parent)
     {
-        Q_OBJECT;
-    public:
-        SidebarTextBrowser(QWidget *parent = 0);
-        ~SidebarTextBrowser();
+        clearButton = new QToolButton(this);
 
-    private Q_SLOTS:
-        void filterTextChanged();
-        void slotOnDoubleClicked(const QModelIndex& index);
+        clearButton->setIcon(Caneda::icon("clearFilterText"));
+        clearButton->setCursor(Qt::ArrowCursor);
+        clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
+        clearButton->setWhatsThis(tr("Clear text\n\nClears the filter text"));
+        clearButton->setToolTip(tr("Clear text"));
+        clearButton->hide();
 
-    private:
-        QFileSystemModel *m_fileModel;
-        FileFilterProxyModel *m_proxyModel;
-        QTreeView *m_treeView;
+        connect(clearButton, SIGNAL(clicked()), this, SLOT(clear()));
+        connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateCloseButton(const QString&)));
+    }
 
-        CLineEdit *m_filterEdit;
-    };
+    void CLineEdit::resizeEvent(QResizeEvent *)
+    {
+        QSize sz = clearButton->sizeHint();
+
+        int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+
+        clearButton->move(rect().right() - frameWidth - sz.width() - 3,
+                          (rect().bottom() + 3 - sz.height())/2 );
+    }
+
+    void CLineEdit::updateCloseButton(const QString& text)
+    {
+        clearButton->setVisible(!text.isEmpty());
+    }
 
 } // namespace Caneda
-
-#endif //SIDEBAR_TEXT_BROWSER_H
