@@ -57,8 +57,6 @@ namespace Caneda
             LibraryLoader *loader = LibraryLoader::instance();
             toolbarInsertibles.insert("insGround",
                     loader->newComponent("Ground", 0, "Passive"));
-            toolbarInsertibles.insert("insPort",
-                    loader->newComponent("Port", 0, "Passive"));
         }
 
         void clearInsertibles() {
