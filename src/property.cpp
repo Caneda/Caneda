@@ -27,6 +27,17 @@
 
 namespace Caneda
 {
+/*!
+ * Define to 1 to read components property types from file,
+ * 0 if properties should be always strings.
+ * This is currently used to treat properties as always
+ * of type string, but allow in future implementations to
+ * use a more specific type. On the other hand, string types
+ * allow the use of suffixes and parameters like p for pico,
+ * u for micro, and {R} for parameter, for example.
+ */
+#define READ_PROPERTY_TYPE 0
+
     //! Default constructor
     PropertyData::PropertyData()
     {
@@ -182,7 +193,10 @@ namespace Caneda
             reader->raiseError("Couldn't find 'type' attribute in property description");
             return sharedNull;
         }
-        QString vt(attributes.value("type").toString());
+        QString vt("string");
+        if(READ_PROPERTY_TYPE) {
+            vt = attributes.value("type").toString();
+        }
         data->valueType = stringToType(vt);
         if(data->valueType == QVariant::Invalid) {
             reader->raiseError(QObject::tr("Invalid property type %1 found").arg(vt));

@@ -30,7 +30,7 @@
 
 namespace Caneda
 {
-    //! Define to 1 to print number of port connection in schematic
+//! Define to 1 to print number of port connection in schematic
 #define DEBUG_PORT_CONNECTION 0
 
     /*************************************************************
