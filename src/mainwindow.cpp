@@ -926,11 +926,9 @@ namespace Caneda
         fileToolbar->setObjectName("fileToolBar");
 
         fileToolbar->addAction(action("newSchematic"));
-        fileToolbar->addAction(action("newText"));
         fileToolbar->addAction(action("fileOpen"));
         fileToolbar->addAction(action("fileSave"));
-        fileToolbar->addAction(action("fileSaveAll"));
-        fileToolbar->addAction(action("filePrint"));
+        fileToolbar->addAction(action("fileSaveAs"));
 
         editToolbar  = addToolBar(tr("Edit"));
         editToolbar->setObjectName("editToolbar");
@@ -954,10 +952,7 @@ namespace Caneda
 
         workToolbar->addAction(action("insWire"));
         workToolbar->addAction(action("insLabel"));
-        workToolbar->addAction(action("insEquation"));
         workToolbar->addAction(action("insGround"));
-        workToolbar->addAction(action("insPort"));
-        workToolbar->addAction(action("editActivate"));
         workToolbar->addAction(action("intoH"));
         workToolbar->addAction(action("popH"));
 
@@ -965,11 +960,6 @@ namespace Caneda
 
         workToolbar->addAction(action("simulate"));
         workToolbar->addAction(action("dpl_sch"));
-        workToolbar->addAction(action("setMarker"));
-
-        workToolbar->addSeparator();
-
-        workToolbar->addAction(action("whatsThis"));
     }
 
     void MainWindow::initStatusBar()
