@@ -255,19 +255,7 @@ namespace Caneda
         alignElements(Qt::AlignVCenter);
     }
 
-    void SchematicContext::slotInsertEntity()
-    {
-        setNormalAction();
-        //TODO: implement this or rather port directly
-    }
-
     void SchematicContext::slotToPage()
-    {
-        setNormalAction();
-        //TODO: implement this or rather port directly
-    }
-
-    void SchematicContext::slotDCbias()
     {
         setNormalAction();
         //TODO: implement this or rather port directly

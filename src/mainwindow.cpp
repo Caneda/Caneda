@@ -395,7 +395,6 @@ namespace Caneda
         connect(action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
 
         action = am->createAction("snapToGrid", Caneda::icon("view-grid"), tr("Snap to grid"));
-        action->setShortcut(CTRL+Key_U);
         action->setStatusTip(tr("Set grid snap"));
         action->setWhatsThis(tr("Snap to Grid\n\nSets snap to grid"));
         action->setCheckable(true);
@@ -504,33 +503,12 @@ namespace Caneda
         action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
         connect(action, SIGNAL(triggered()), SLOT(slotBackupAndHistory()));
 
-        action = am->createAction("insEquation", Caneda::icon("formula"), tr("Insert equation"));
-        action->setCheckable(true);
-        action->setShortcut(Key_E);
-        action->setWhatsThis(tr("Insert Equation\n\nInserts a user defined equation"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotInsertToolbarComponent(const QString&, bool)));
-
         action = am->createAction("insGround", Caneda::icon("ground"), tr("Insert ground"));
         action->setCheckable(true);
         action->setShortcut(Key_G);
         action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotInsertToolbarComponent(const QString&, bool)));
-
-        action = am->createAction("insPort", Caneda::icon("port"), tr("Insert port"));
-        action->setCheckable(true);
-        action->setShortcut(Key_P);
-        action->setWhatsThis(tr("Insert Port\n\nInserts a port symbol"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotInsertToolbarComponent(const QString&, bool)));
-
-        action = am->createAction("insEntity", Caneda::icon("code-context"), tr("VHDL entity"));
-        action->setShortcut(SHIFT+Key_V);
-        action->setStatusTip(tr("Inserts skeleton of VHDL entity"));
-        action->setWhatsThis(tr("VHDL entity\n\nInserts the skeleton of a VHDL entity"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotInsertEntity()));
-        sc->addNormalAction(action);
 
         action = am->createAction("callFilter", Caneda::icon("tools-wizard"), tr("Filter synthesis"));
         action->setShortcut(CTRL+Key_1);
@@ -588,15 +566,7 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), sc, SLOT(slotToPage()));
         sc->addNormalAction(action);
 
-        action = am->createAction("dcbias",  tr("Calculate DC bias"));
-        action->setShortcut(Key_F3);
-        action->setStatusTip(tr("Calculates DC bias and shows it"));
-        action->setWhatsThis(tr("Calculate DC bias\n\nCalculates DC bias and shows it"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotDCbias()));
-        sc->addNormalAction(action);
-
         action = am->createAction("graph2csv",  tr("Export to &CSV..."));
-        action->setShortcut(Key_F6);
         action->setStatusTip(tr("Convert graph data to CSV file"));
         action->setWhatsThis(tr("Export to CSV\n\nConvert graph data to CSV file"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotExportGraphAsCsv()));
@@ -716,15 +686,6 @@ namespace Caneda
         action->setShortcut(Key_D);
         action->setStatusTip(tr("Deactivate/Activate selected components"));
         action->setWhatsThis(tr("Deactivate/Activate\n\nDeactivate/Activate the selected components"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
-        sc->addNormalAction(action);
-
-        action = am->createMouseAction("setMarker", CGraphicsScene::Marking,
-                Caneda::icon("marker"), tr("Set Marker on Graph"));
-        action->setShortcut(Key_F2);
-        action->setStatusTip(tr("Sets a marker on a diagram's graph"));
-        action->setWhatsThis(tr("Set Marker\n\nSets a marker on a diagram's graph"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
@@ -868,10 +829,7 @@ namespace Caneda
 
         toolMenu->addAction(action("insWire"));
         toolMenu->addAction(action("insLabel"));
-        toolMenu->addAction(action("insEquation"));
         toolMenu->addAction(action("insGround"));
-        toolMenu->addAction(action("insPort"));
-        toolMenu->addAction(action("insEntity"));
         toolMenu->addAction(action("editActivate"));
         toolMenu->addAction(action("editDelete"));
 
@@ -898,8 +856,6 @@ namespace Caneda
 
         simMenu->addSeparator();
 
-        simMenu->addAction(action("dcbias"));
-        simMenu->addAction(action("setMarker"));
         simMenu->addAction(action("graph2csv"));
 
         simMenu->addSeparator();

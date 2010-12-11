@@ -65,10 +65,7 @@ namespace Caneda
         void slotCenterHorizontal();
         void slotCenterVertical();
 
-        void slotInsertEntity();
-
         void slotToPage();
-        void slotDCbias();
         void slotExportGraphAsCsv();
 
     private:
