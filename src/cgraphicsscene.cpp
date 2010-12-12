@@ -803,10 +803,11 @@ namespace Caneda
      */
     void CGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
-        ActionManager* am = ActionManager::instance();
-        QMenu *_menu = new QMenu();
+        if(m_mouseAction == Normal) {
+            ActionManager* am = ActionManager::instance();
+            QMenu *_menu = new QMenu();
 
-        switch(selectedItems().size()) {
+            switch(selectedItems().size()) {
             case 0:
                 //launch a general menu
                 _menu->addAction(am->actionForName("select"));
@@ -868,6 +869,7 @@ namespace Caneda
                 _menu->addAction(am->actionForName("distrVert"));
 
                 _menu->exec(event->screenPos());
+            }
         }
     }
 
