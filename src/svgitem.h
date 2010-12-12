@@ -59,8 +59,8 @@ namespace Caneda
      */
     struct SvgPainter : public QObject
     {
-        Q_OBJECT
     public:
+        static SvgPainter* instance();
         ~SvgPainter();
 
         void registerSvg(const QString& svg_id, const QByteArray& content);
@@ -85,10 +85,9 @@ namespace Caneda
         bool isCachingEnabled() const { return m_cachingEnabled; }
         void setCachingEnabled(bool caching);
 
-        static SvgPainter* instance();
-
     private:
         SvgPainter(QObject *parent = 0);
+
         QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
         bool m_cachingEnabled; //!< State to hold whether caching is enabled or not.
     };
@@ -111,7 +110,7 @@ namespace Caneda
             Type = CGraphicsItem::SvgItemType
         };
 
-        explicit SvgItem(SvgPainter *_svgPainter = 0, CGraphicsScene *scene = 0);
+        SvgItem(SvgPainter* _svgPainter = 0, CGraphicsScene* scene = 0);
         ~SvgItem();
 
         //! Item identifier.
@@ -133,8 +132,8 @@ namespace Caneda
 
         bool isRegistered() const;
 
-        public slots:
-            void updateBoundingRect();
+    public slots:
+        void updateBoundingRect();
 
     protected:
         /*!
