@@ -638,7 +638,7 @@ namespace Caneda
 
         action = am->createMouseAction("editRotate", CGraphicsScene::Rotating,
                 Caneda::icon("object-rotate-left"), tr("Rotate"));
-        action->setShortcut(CTRL+Key_R);
+        action->setShortcut(Key_R);
         action->setStatusTip(tr("Rotates the selected component by 90°"));
         action->setWhatsThis(tr("Rotate\n\nRotates the selected component by 90° counter-clockwise"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
