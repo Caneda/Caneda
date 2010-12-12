@@ -22,6 +22,7 @@
 
 #include <QLineEdit>
 
+// Forward declarations
 class QToolButton;
 
 namespace Caneda

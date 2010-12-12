@@ -28,9 +28,6 @@
 
 #include <limits>
 
-// Forward declarations
-class QMenu;
-
 /*!
  * \brief This macro determines the pattern for derived class.
  *
@@ -41,6 +38,7 @@ class QMenu;
 
 namespace Caneda
 {
+    // Forward declarations
     class XmlReader;
     class XmlWriter;
     class CGraphicsScene;
@@ -81,7 +79,7 @@ namespace Caneda
             const QRectF& rect);
 
 
-    //! \brief CGraphicsItem - The base class for components, wires, nodes..
+    //! \brief CGraphicsItem - The base class for components, wires, nodes...
     class CGraphicsItem : public QGraphicsItem
     {
     public:
@@ -148,8 +146,6 @@ namespace Caneda
 
         //! Subclasses should implement this to launch its own dialog.
         virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
-
-        QMenu* defaultContextMenu() const;
 
     protected:
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

@@ -20,6 +20,7 @@
 
 #include "cgraphicsscene.h"
 
+#include "actionmanager.h"
 #include "cgraphicsview.h"
 #include "documentviewmanager.h"
 #include "iview.h"
@@ -37,6 +38,7 @@
 #include <QDate>
 #include <QGraphicsSceneEvent>
 #include <QKeySequence>
+#include <QMenu>
 #include <QPainter>
 #include <QScrollBar>
 #include <QShortcutEvent>
@@ -797,14 +799,34 @@ namespace Caneda
     }
 
     /*!
-     * \brief Context menu
-     * \todo Implement
+     * \brief Constructs and returns a menu with default actions inserted.
      */
     void CGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
+        ActionManager* am = ActionManager::instance();
+        QMenu *_menu = new QMenu();
+
         switch(selectedItems().size()) {
             case 0:
                 //launch a general menu
+                _menu->addAction(am->actionForName("select"));
+                _menu->addAction(am->actionForName("insWire"));
+                _menu->addAction(am->actionForName("insLabel"));
+                _menu->addAction(am->actionForName("insGround"));
+                _menu->addAction(am->actionForName("editActivate"));
+                _menu->addAction(am->actionForName("editDelete"));
+
+                _menu->addSeparator();
+
+                _menu->addAction(am->actionForName("symEdit"));
+                _menu->addAction(am->actionForName("intoH"));
+                _menu->addAction(am->actionForName("popH"));
+
+                _menu->addSeparator();
+
+                _menu->addAction(am->actionForName("fileSettings"));
+
+                _menu->exec(event->screenPos());
                 break;
 
             case 1:
@@ -812,8 +834,40 @@ namespace Caneda
                 QGraphicsScene::contextMenuEvent(event);
                 break;
 
-            default: ;
-                     //launch a common menu
+            default:
+                //launch a common menu
+                _menu->addAction(am->actionForName("editCut"));
+                _menu->addAction(am->actionForName("editCopy"));
+                _menu->addAction(am->actionForName("editPaste"));
+
+                _menu->addSeparator();
+
+                _menu->addAction(am->actionForName("editRotate"));
+                _menu->addAction(am->actionForName("editMirror"));
+                _menu->addAction(am->actionForName("editMirrorY"));
+
+                _menu->addSeparator();
+
+                _menu->addAction(am->actionForName("editDelete"));
+
+                _menu->addSeparator();
+
+                _menu->addAction(am->actionForName("centerHor"));
+                _menu->addAction(am->actionForName("centerVert"));
+
+                _menu->addSeparator();
+
+                _menu->addAction(am->actionForName("alignTop"));
+                _menu->addAction(am->actionForName("alignBottom"));
+                _menu->addAction(am->actionForName("alignLeft"));
+                _menu->addAction(am->actionForName("alignRight"));
+
+                _menu->addSeparator();
+
+                _menu->addAction(am->actionForName("distrHor"));
+                _menu->addAction(am->actionForName("distrVert"));
+
+                _menu->exec(event->screenPos());
         }
     }
 

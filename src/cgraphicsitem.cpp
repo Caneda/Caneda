@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "cgraphicsitem.h"
+
 #include "cgraphicsscene.h"
 #include "cgraphicsview.h"
 
@@ -308,15 +309,6 @@ namespace Caneda
         item->m_boundingRect = m_boundingRect;
         item->m_shape = m_shape;
         item->setPos(pos());
-    }
-
-    /*!
-     * \brief Constructs and returns a menu with default actions inderted.
-     * \todo Implement this function.
-     */
-    QMenu* CGraphicsItem::defaultContextMenu() const
-    {
-        return 0;
     }
 
     /*!

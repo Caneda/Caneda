@@ -47,7 +47,7 @@ namespace Caneda
      */
     class CGraphicsScene : public QGraphicsScene
     {
-    Q_OBJECT
+        Q_OBJECT
     public:
         //! \brief The different mouse action possible
         enum MouseAction {
