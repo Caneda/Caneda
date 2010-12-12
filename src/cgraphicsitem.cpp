@@ -19,12 +19,14 @@
 
 #include "cgraphicsitem.h"
 
+#include "actionmanager.h"
 #include "cgraphicsscene.h"
 #include "cgraphicsview.h"
 
 #include "xmlutilities/xmlutilities.h"
 
 #include <QGraphicsSceneEvent>
+#include <QMenu>
 #include <QStyleOptionGraphicsItem>
 #include <QXmlStreamWriter>
 
@@ -185,6 +187,32 @@ namespace Caneda
     //! Destructor
     CGraphicsItem::~CGraphicsItem()
     {
+    }
+
+    /*!
+     * \brief Context menu
+     */
+    void CGraphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+    {
+        ActionManager* am = ActionManager::instance();
+        QMenu *_menu = new QMenu();
+
+        //launch context menu of item
+        _menu->addAction(am->actionForName("editCut"));
+        _menu->addAction(am->actionForName("editCopy"));
+
+        _menu->addSeparator();
+
+        _menu->addAction(am->actionForName("editRotate"));
+        _menu->addAction(am->actionForName("editMirror"));
+        _menu->addAction(am->actionForName("editMirrorY"));
+
+        _menu->addSeparator();
+
+        _menu->addAction(am->actionForName("editActivate"));
+        _menu->addAction(am->actionForName("editDelete"));
+
+        _menu->exec(event->screenPos());
     }
 
     void CGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

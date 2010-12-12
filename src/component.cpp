@@ -19,7 +19,6 @@
 
 #include "component.h"
 
-#include "actionmanager.h"
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "library.h"
@@ -35,8 +34,6 @@
 
 #include <QDebug>
 #include <QFile>
-#include <QGraphicsSceneEvent>
-#include <QMenu>
 #include <QPainter>
 
 namespace Caneda
@@ -66,15 +63,6 @@ namespace Caneda
         qDeleteAll(m_ports);
     }
 
-    int Component::slotPropertyDialog()
-    {
-        PropertyDialog *dia = new PropertyDialog(this, Caneda::PushUndoCmd);
-        int status = dia->exec();
-        delete dia;
-
-        return status;
-    }
-
     //! \brief Intialize the component.
     void Component::init()
     {
@@ -85,9 +73,6 @@ namespace Caneda
         Property _label("label", tr("Label"), QVariant::String, true,
                 false, labelPrefix().append('1'));
         d->propertyMap.insert("label", _label);
-
-        m_propertyDialogAction = new Action(tr("Properties"), this);
-        connect(m_propertyDialogAction, SIGNAL(triggered()), SLOT(slotPropertyDialog()));
     }
 
     /*!
@@ -483,37 +468,11 @@ namespace Caneda
     //! \copydoc CGraphicsItem::launchPropertyDialog()
     int Component::launchPropertyDialog(Caneda::UndoOption)
     {
-        return slotPropertyDialog();
-    }
+        PropertyDialog *dia = new PropertyDialog(this, Caneda::PushUndoCmd);
+        int status = dia->exec();
+        delete dia;
 
-    /*!
-     * \brief Context menu
-     */
-    void Component::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-    {
-        ActionManager* am = ActionManager::instance();
-        QMenu *_menu = new QMenu();
-
-        //launch context menu of item
-        _menu->addAction(am->actionForName("editCut"));
-        _menu->addAction(am->actionForName("editCopy"));
-
-        _menu->addSeparator();
-
-        _menu->addAction(am->actionForName("editRotate"));
-        _menu->addAction(am->actionForName("editMirror"));
-        _menu->addAction(am->actionForName("editMirrorY"));
-
-        _menu->addSeparator();
-
-        _menu->addAction(am->actionForName("editActivate"));
-        _menu->addAction(am->actionForName("editDelete"));
-
-        _menu->addSeparator();
-
-        _menu->addAction(m_propertyDialogAction);
-
-        _menu->exec(event->screenPos());
+        return status;
     }
 
     //! \brief Returns the rect adjusted to accomodate ports too.

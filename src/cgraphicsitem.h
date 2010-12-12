@@ -148,6 +148,7 @@ namespace Caneda
         virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
 
     protected:
+        void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
         void setShapeAndBoundRect(const QPainterPath& path,

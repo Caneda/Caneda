@@ -177,12 +177,8 @@ namespace Caneda
         int launchPropertyDialog(Caneda::UndoOption opt);
 
     protected:
-        void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
         QRectF adjustedBoundRect(const QRectF& rect);
         QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-
-    private Q_SLOTS:
-        int slotPropertyDialog();
 
     private:
         void init();
@@ -193,8 +189,6 @@ namespace Caneda
         PropertiesGroup *m_propertyGroup;
         //! \brief Ports list
         QList<Port*> m_ports;
-
-        QAction* m_propertyDialogAction;
     };
 
     bool readComponentData(Caneda::XmlReader *reader, const QString& path,
