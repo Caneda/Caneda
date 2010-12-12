@@ -497,7 +497,6 @@ namespace Caneda
         //launch context menu of item
         _menu->addAction(am->actionForName("editCut"));
         _menu->addAction(am->actionForName("editCopy"));
-        _menu->addAction(am->actionForName("editPaste"));
 
         _menu->addSeparator();
 

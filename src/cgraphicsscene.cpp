@@ -819,6 +819,10 @@ namespace Caneda
 
                 _menu->addSeparator();
 
+                _menu->addAction(am->actionForName("editPaste"));
+
+                _menu->addSeparator();
+
                 _menu->addAction(am->actionForName("symEdit"));
                 _menu->addAction(am->actionForName("intoH"));
                 _menu->addAction(am->actionForName("popH"));
@@ -839,7 +843,6 @@ namespace Caneda
                 //launch a common menu
                 _menu->addAction(am->actionForName("editCut"));
                 _menu->addAction(am->actionForName("editCopy"));
-                _menu->addAction(am->actionForName("editPaste"));
 
                 _menu->addSeparator();
 
