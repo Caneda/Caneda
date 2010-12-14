@@ -82,7 +82,7 @@ namespace Caneda
 
         loadSettings();
 
-        QTimer::singleShot(100, this, SLOT(slotNewSchematic()));
+        QTimer::singleShot(100, this, SLOT(initFile()));
     }
 
     //! Destructor
@@ -198,26 +198,11 @@ namespace Caneda
         SchematicContext *sc = SchematicContext::instance();
         LayoutContext *lc = LayoutContext::instance();
 
-        action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New file..."));
+        action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New..."));
         action->setShortcut(CTRL+Key_N);
         action->setStatusTip(tr("Creates a new file document"));
         action->setWhatsThis(tr("New file\n\nCreates a new file document"));
         connect(action, SIGNAL(triggered()), SLOT(slotFileNew()));
-
-        action = am->createAction("newSchematic", Caneda::icon("document-new"), tr("&New schematic"));
-        action->setStatusTip(tr("Creates a new schematic document"));
-        action->setWhatsThis(tr("New schematic\n\nCreates a new schematic or data display document"));
-        connect(action, SIGNAL(triggered()), SLOT(slotNewSchematic()));
-
-        action = am->createAction("newLayout", Caneda::icon("view-grid"), tr("New &layout"));
-        action->setStatusTip(tr("Creates a new layout document"));
-        action->setWhatsThis(tr("New layout\n\nCreates a new layout document"));
-        connect(action, SIGNAL(triggered()), SLOT(slotNewLayout()));
-
-        action = am->createAction("newText", Caneda::icon("text-plain"), tr("New &text"));
-        action->setStatusTip(tr("Creates a new text document"));
-        action->setWhatsThis(tr("New text\n\nCreates a new text document"));
-        connect(action, SIGNAL(triggered()), SLOT(slotNewText()));
 
         action = am->createAction("fileOpen", Caneda::icon("document-open"), tr("&Open..."));
         action->setShortcut(CTRL+Key_O);
@@ -722,10 +707,7 @@ namespace Caneda
     {
         fileMenu = menuBar()->addMenu(tr("&File"));
 
-        QMenu *newFileMenu = fileMenu->addMenu(Caneda::icon("document-new"), tr("New file"));
-        newFileMenu->addAction(action("newSchematic"));
-        newFileMenu->addAction(action("newLayout"));
-        newFileMenu->addAction(action("newText"));
+        fileMenu->addAction(action("fileNew"));
         fileMenu->addAction(action("fileOpen"));
         fileMenu->addAction(action("fileClose"));
 
@@ -997,42 +979,6 @@ namespace Caneda
             p->exec();
             delete p;
         }
-    }
-
-    /*!
-     * \brief Creates a new schematic view and adds it the tabwidget.
-     */
-    void MainWindow::slotNewSchematic()
-    {
-        if(m_project->isValid()) {
-            slotAddToProject();
-        }
-        else {
-            DocumentViewManager *manager = DocumentViewManager::instance();
-            manager->newDocument(SchematicContext::instance());
-        }
-    }
-
-    /*!
-     * \brief Creates a new layout view and adds it the tabwidget.
-     */
-    void MainWindow::slotNewLayout()
-    {
-        if(m_project->isValid()) {
-            slotAddToProject();
-        }
-        else {
-            DocumentViewManager *manager = DocumentViewManager::instance();
-            manager->newDocument(LayoutContext::instance());
-        }
-    }
-
-    //! \brief Creates a new text view.
-    void MainWindow::slotNewText()
-    {
-        setNormalAction();
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        manager->newDocument(TextContext::instance());
     }
 
     /*!
@@ -1528,6 +1474,12 @@ namespace Caneda
     {
         setNormalAction();
         QApplication::aboutQt();
+    }
+
+    void MainWindow::initFile()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->newDocument(SchematicContext::instance());
     }
 
     void MainWindow::loadSettings()

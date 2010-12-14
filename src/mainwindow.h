@@ -57,9 +57,6 @@ namespace Caneda
 
     public Q_SLOTS:
         void slotFileNew();
-        void slotNewSchematic();
-        void slotNewLayout();
-        void slotNewText();
         void slotFileOpen(QString fileName = QString());
         void slotFileSave();
         void slotFileSaveAs();
@@ -121,6 +118,7 @@ namespace Caneda
         void closeEvent(QCloseEvent *closeEvent);
 
     private Q_SLOTS:
+        void initFile();
         void loadSettings();
 
     private:
