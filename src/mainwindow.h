@@ -56,6 +56,7 @@ namespace Caneda
         QUndoGroup *m_undoGroup;
 
     public Q_SLOTS:
+        void slotFileNew();
         void slotNewSchematic();
         void slotNewLayout();
         void slotNewText();

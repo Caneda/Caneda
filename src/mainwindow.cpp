@@ -34,6 +34,7 @@
 #include "textcontext.h"
 
 #include "dialogs/aboutdialog.h"
+#include "dialogs/filenewdialog.h"
 #include "dialogs/librarymanager.h"
 #include "dialogs/projectfileopendialog.h"
 #include "dialogs/printdialog.h"
@@ -197,20 +198,23 @@ namespace Caneda
         SchematicContext *sc = SchematicContext::instance();
         LayoutContext *lc = LayoutContext::instance();
 
-        action = am->createAction("newSchematic", Caneda::icon("document-new"), tr("&New schematic"));
+        action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New file..."));
         action->setShortcut(CTRL+Key_N);
+        action->setStatusTip(tr("Creates a new file document"));
+        action->setWhatsThis(tr("New file\n\nCreates a new file document"));
+        connect(action, SIGNAL(triggered()), SLOT(slotFileNew()));
+
+        action = am->createAction("newSchematic", Caneda::icon("document-new"), tr("&New schematic"));
         action->setStatusTip(tr("Creates a new schematic document"));
         action->setWhatsThis(tr("New schematic\n\nCreates a new schematic or data display document"));
         connect(action, SIGNAL(triggered()), SLOT(slotNewSchematic()));
 
         action = am->createAction("newLayout", Caneda::icon("view-grid"), tr("New &layout"));
-        action->setShortcut(CTRL+ALT+Key_N);
         action->setStatusTip(tr("Creates a new layout document"));
         action->setWhatsThis(tr("New layout\n\nCreates a new layout document"));
         connect(action, SIGNAL(triggered()), SLOT(slotNewLayout()));
 
         action = am->createAction("newText", Caneda::icon("text-plain"), tr("New &text"));
-        action->setShortcut(CTRL+SHIFT+Key_V);
         action->setStatusTip(tr("Creates a new text document"));
         action->setWhatsThis(tr("New text\n\nCreates a new text document"));
         connect(action, SIGNAL(triggered()), SLOT(slotNewText()));
@@ -718,7 +722,7 @@ namespace Caneda
     {
         fileMenu = menuBar()->addMenu(tr("&File"));
 
-        QMenu *newFileMenu = fileMenu->addMenu(Caneda::icon("document-new"), tr("New File"));
+        QMenu *newFileMenu = fileMenu->addMenu(Caneda::icon("document-new"), tr("New file"));
         newFileMenu->addAction(action("newSchematic"));
         newFileMenu->addAction(action("newLayout"));
         newFileMenu->addAction(action("newText"));
@@ -882,7 +886,7 @@ namespace Caneda
         fileToolbar  = addToolBar(tr("File"));
         fileToolbar->setObjectName("fileToolBar");
 
-        fileToolbar->addAction(action("newSchematic"));
+        fileToolbar->addAction(action("fileNew"));
         fileToolbar->addAction(action("fileOpen"));
         fileToolbar->addAction(action("fileSave"));
         fileToolbar->addAction(action("fileSaveAs"));
@@ -979,15 +983,32 @@ namespace Caneda
     }
 
     /*!
-     * \brief Creates a new schematic view and adds it the tabwidget.
+     * \brief Opens the file new dialog.
      */
-    void MainWindow::slotNewSchematic()
+    void MainWindow::slotFileNew()
     {
-        DocumentViewManager *manager = DocumentViewManager::instance();
+        setNormalAction();
+
         if(m_project->isValid()) {
             slotAddToProject();
         }
         else {
+            QPointer<FileNewDialog> p = new FileNewDialog(this);
+            p->exec();
+            delete p;
+        }
+    }
+
+    /*!
+     * \brief Creates a new schematic view and adds it the tabwidget.
+     */
+    void MainWindow::slotNewSchematic()
+    {
+        if(m_project->isValid()) {
+            slotAddToProject();
+        }
+        else {
+            DocumentViewManager *manager = DocumentViewManager::instance();
             manager->newDocument(SchematicContext::instance());
         }
     }
@@ -997,11 +1018,11 @@ namespace Caneda
      */
     void MainWindow::slotNewLayout()
     {
-        DocumentViewManager *manager = DocumentViewManager::instance();
         if(m_project->isValid()) {
             slotAddToProject();
         }
         else {
+            DocumentViewManager *manager = DocumentViewManager::instance();
             manager->newDocument(LayoutContext::instance());
         }
     }

@@ -1,16 +1,17 @@
 SET(DIALOGS_SRCS aboutdialog.cpp settingsdialog.cpp settingspages.cpp exportdialog.cpp
     printdialog.cpp projectfilenewdialog.cpp savedocumentsdialog.cpp
     projectfileopendialog.cpp gitmanager.cpp propertydialog.cpp librarymanager.cpp
+    filenewdialog.cpp
 )
 
 SET(DIALOGS_MOC_HDRS aboutdialog.h settingsdialog.h settingspages.h exportdialog.h
     printdialog.h projectfilenewdialog.h savedocumentsdialog.h projectfileopendialog.h
-    gitmanager.h propertydialog.h librarymanager.h
+    gitmanager.h propertydialog.h librarymanager.h filenewdialog.h
 )
 
 SET(DIALOGS_UIS savedocumentsdialog.ui gitmanager.ui printdialog.ui
     projectfilenewdialog.ui projectfileopendialog.ui propertydialog.ui
-    librarymanager.ui exportdialog.ui
+    librarymanager.ui exportdialog.ui filenewdialog.ui
 )
 
 QT4_WRAP_UI( DIALOGS_UI_HDRS ${DIALOGS_UIS})
