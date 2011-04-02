@@ -87,7 +87,7 @@ namespace Caneda
         void slotViewStatusBar(bool);
 
         void slotNewProject();
-        void slotOpenProject(QString fileName = 0);
+        void slotOpenProject(QString fileName = QString());
         void slotAddToProject();
         void slotRemoveFromProject();
         void slotCloseProject();
