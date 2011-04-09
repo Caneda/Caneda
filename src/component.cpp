@@ -416,6 +416,7 @@ namespace Caneda
     {
         int num_of_connections = 0;
 
+        // Find existing intersecting ports and connect
         if(opt == Caneda::PushUndoCmd) {
             cGraphicsScene()->undoStack()->beginMacro(QString());
         }

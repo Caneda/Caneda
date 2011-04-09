@@ -97,7 +97,6 @@ namespace Caneda
         m_frameWidth = 1024;
         m_frameHeight = 768;
 
-        m_macroProgress = false;
         m_areItemsMoving = false;
         m_shortcutsBlocked = false;
 
@@ -309,37 +308,15 @@ namespace Caneda
         //TODO: Implemement this appropriately for all mouse actions
     }
 
-
     /***********************************************************************
      *
      *       RESET STATE
      *
      ***********************************************************************/
-
-
-    //! \brief Reset state helper wire part
-    void CGraphicsScene::resetStateWiring()
-    {
-        switch(m_wiringState) {
-            case NO_WIRE:
-                /* do nothing */
-                m_wiringState = NO_WIRE;
-                return;
-
-            case SINGLETON_WIRE:
-                /* wire is singleton do nothing except delete last attempt */
-                Q_ASSERT(m_currentWiringWire != NULL);
-                delete m_currentWiringWire;
-                m_wiringState = NO_WIRE;
-                return;
-        }
-    }
-
     /*!
      * \brief Reset the state
      *
      * This callback is called when for instance you press esc key
-     * \todo document each step
      */
     void CGraphicsScene::resetState()
     {
@@ -352,14 +329,19 @@ namespace Caneda
         qDeleteAll(m_insertibles);
         m_insertibles.clear();
 
-        /* reset wiring */
-        resetStateWiring();
+        // If current state is wiring, delete last attempt
+        if(m_wiringState == SINGLETON_WIRE){
+            Q_ASSERT(m_currentWiringWire != NULL);
+            delete m_currentWiringWire;
+            m_wiringState = NO_WIRE;
+        }
 
-        /* reset drawing item */
+        // Reset drawing item
         delete m_paintingDrawItem;
         m_paintingDrawItem = 0;
         m_paintingDrawClicks = 0;
 
+        // Clear zoom
         m_zoomRect = QRectF();
         m_zoomBand->hide();
         m_zoomBandClicks = 0;
@@ -692,7 +674,7 @@ namespace Caneda
     {
         QPen savedpen = painter->pen();
 
-        /* disable anti aliasing */
+        // Disable anti aliasing
         painter->setRenderHint(QPainter::Antialiasing, false);
 
         if(isBackgroundVisible()) {
@@ -703,7 +685,7 @@ namespace Caneda
             painter->drawRect(rect);
         }
 
-        /* configure pen */
+        // Configure pen
         const QColor foregroundColor =
             Settings::instance()->currentValue("gui/foregroundColor").value<QColor>();
         painter->setPen(QPen(foregroundColor, 0));
@@ -712,12 +694,12 @@ namespace Caneda
 
         const QPointF origin(0, 0);
 
-        /* draw frame */
+        // Draw frame
         if(isFrameVisible()) {
             painter->drawPath(frame());
         }
 
-        /* draw origin */
+        // Draw origin
         if(rect.contains(origin)) {
             painter->drawLine(QLineF(origin.x() - 3.0, origin.y(),
                         origin.x() + 3.0, origin.y()));
@@ -725,7 +707,7 @@ namespace Caneda
                         origin.x(), origin.y() + 3.0));
         }
 
-        /* draw grid */
+        // Draw grid
         if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {
 
             int drawingGridWidth = DEFAULT_GRID_SPACE;
@@ -750,14 +732,14 @@ namespace Caneda
                 }
             }
 
-            /* extrema grid points */
+            // Extrema grid points
             qreal left = int(rect.left()) + drawingGridWidth - (int(rect.left()) % drawingGridWidth);
             qreal top = int(rect.top()) + drawingGridHeight - (int(rect.top()) % drawingGridHeight);
             qreal right = int(rect.right()) - (int(rect.right()) % drawingGridWidth);
             qreal bottom = int(rect.bottom()) - (int(rect.bottom()) % drawingGridHeight);
             qreal x, y;
 
-            /* draw grid */
+            // Draw grid
             painter->setBrush(Qt::NoBrush);
             for(x = left; x <= right; x += drawingGridWidth) {
                 for(y = top; y <=bottom; y += drawingGridHeight) {
@@ -766,7 +748,7 @@ namespace Caneda
             }
         }
 
-        /* restore painter */
+        // Restore painter
         painter->setRenderHint(QPainter::Antialiasing, true);
         painter->setPen(savedpen);
     }
@@ -960,11 +942,10 @@ namespace Caneda
 
     /*!
      * \brief Event called when mouse is pressed
-     * \todo finish grid snap mode
      */
     void CGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
     {
-        /* grid snap mode */
+        // Grid snap mode
         if(m_snapToGrid) {
             lastPos = nearingGridPoint(e->scenePos());
 
@@ -972,35 +953,38 @@ namespace Caneda
             e->setScenePos(lastPos);
             e->setPos(lastPos);
         }
+
         sendMouseActionEvent(e);
     }
 
     /*!
-     * \brief mouse move event
-     * \todo document
+     * \brief Mouse move event
      */
     void CGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
     {
         if(m_snapToGrid) {
-            //HACK: Fool the event receivers by changing event parameters with new grid position.
+
             QPointF point = nearingGridPoint(e->scenePos());
             if(point == lastPos) {
                 e->accept();
                 return;
             }
+
+            // Implement grid snap by changing event parameters with new grid position
             e->setScenePos(point);
             e->setPos(point);
             e->setLastScenePos(lastPos);
             e->setLastPos(lastPos);
-            //Now cache this point for next move
+
+            // Now cache this point for next move
             lastPos = point;
         }
+
         sendMouseActionEvent(e);
     }
 
     /*!
-     * \brief release mouse
-     * \todo Document
+     * \brief Release mouse event
      */
     void CGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
     {
@@ -1008,7 +992,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Mouse double click
+     * \brief Mouse double click event
      *
      * Encapsulates the mouseDoubleClickEvent as one of MouseAction and calls
      * corresponding callback.
@@ -1062,13 +1046,11 @@ namespace Caneda
         e->accept();
     }
 
-
     /******************************************************************************
      *
      *          Sidebar
      *
      *****************************************************************************/
-
     /*!
      * \brief Action when a painting item is selected
      *
@@ -1122,7 +1104,6 @@ namespace Caneda
         }
     }
 
-
     /*********************************************************************
      *
      *            WIRING ACTION
@@ -1131,77 +1112,61 @@ namespace Caneda
     /*!
      * \brief Left mouse click wire event
      *
-     * \param Event: mouse event
-     * \param rounded: coordinate of mouse action point (rounded if needed)
+     * \param pos: coordinate of mouse action point
      */
     void CGraphicsScene::wiringEventLeftMouseClick(const QPointF &pos)
     {
         if(m_wiringState == NO_WIRE) {
-            /* create a new wire */
+            // Create a new wire
             m_currentWiringWire = new Wire(pos, pos, this);
             m_wiringState = SINGLETON_WIRE;
             return;
         }
+
         if(m_wiringState == SINGLETON_WIRE) {
-            /* check if wire do not overlap */
+            // Check if port 1 and 2 overlap
             if(m_currentWiringWire->overlap())  {
                 return;
             }
 
-            /* configure undo */
-            QUndoCommand * singleton_wire = new AddWireCmd(m_currentWiringWire, this);
-            m_undoStack->beginMacro(tr("Add wiring control point"));
-
-            m_undoStack->push(singleton_wire);
+            // Connect ports to any coinciding port in the scene
             m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
 
-            m_undoStack->endMacro();
-
-            /* if connect finalize */
             if(m_currentWiringWire->port2()->hasConnection()) {
-                /* detach current wire */
+                // If a connection was made, detach current wire and finalize
                 m_currentWiringWire = NULL;
                 m_wiringState = NO_WIRE;
             }
             else  {
                 // Add a wire segment
-                m_currentWiringWire->storeState();
-
                 QPointF refPos = m_currentWiringWire->port2()->pos() + m_currentWiringWire->pos();
                 m_currentWiringWire = new Wire(refPos, refPos, this);
             }
+
             return;
         }
+
     }
 
-    //! \brief Right mouse click wire event. This is finish wire event
+    //! \brief Right mouse click wire event, ie finish wire event
     void CGraphicsScene::wiringEventRightMouseClick()
     {
-
-        /* state machine */
         if(m_wiringState == NO_WIRE) {
-            m_wiringState = NO_WIRE;
             return;
         }
+
         if(m_wiringState ==  SINGLETON_WIRE) {
-            /* check overlap */
+            // Check if port 1 and 2 overlap
             if(m_currentWiringWire->overlap()) {
                 return;
             }
 
-            /* configure undo */
-            QUndoCommand * singleton_wire = new AddWireCmd(m_currentWiringWire, this);
-            m_undoStack->beginMacro(tr("Add wiring control point"));
-
-            m_undoStack->push(singleton_wire);
             m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
 
-            m_undoStack->endMacro();
-
-            /* finalize */
-            /* detach current wire */
+            // Detach current wire and finalize
             m_currentWiringWire = NULL;
             m_wiringState = NO_WIRE;
+
             return;
         }
     }
@@ -1210,32 +1175,31 @@ namespace Caneda
      * \brief Mouse click wire event
      *
      * \param Event: mouse event
-     * \param pos: coordinate of mouse action point (rounded if needed)
+     * \param pos: coordinate of mouse action point
      */
     void CGraphicsScene::wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos)
     {
-        /* left click */
+        // Left click
         if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)  {
             return wiringEventLeftMouseClick(pos);
         }
-        /* right click */
+        // Right click
         if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
             return wiringEventRightMouseClick();
         }
-        return;
     }
 
     /*!
      * \brief Mouse move wire event
      *
-     * \param pos: coordinate of mouse action point (rounded if needed)
+     * \param pos: coordinate of mouse action point
      */
     void CGraphicsScene::wiringEventMouseMove(const QPointF &pos)
     {
         if(m_wiringState != NO_WIRE) {
             QPointF newPos = m_currentWiringWire->mapFromScene(pos);
-
             QPointF refPos = m_currentWiringWire->port1()->pos();
+
             if( abs(refPos.x()-newPos.x()) > abs(refPos.y()-newPos.y()) ) {
                 m_currentWiringWire->movePort2(QPointF(newPos.x(), refPos.y()));
             }
@@ -1249,15 +1213,13 @@ namespace Caneda
     //! \brief Wiring event
     void CGraphicsScene::wiringEvent(MouseActionEvent *event)
     {
-        /* round */
-        QPointF pos;
-        pos = smartNearingGridPoint(event->scenePos());
+        QPointF pos = smartNearingGridPoint(event->scenePos());
 
-        /* press mouse */
+        // Press mouse event
         if(event->type() == QEvent::GraphicsSceneMousePress)  {
             return wiringEventMouseClick(event, pos);
         }
-        /* move mouse */
+        // Move mouse event
         else if(event->type() == QEvent::GraphicsSceneMouseMove)  {
             return wiringEventMouseMove(pos);
         }
@@ -1383,14 +1345,11 @@ namespace Caneda
         return;
     }
 
-
     /******************************************************************
      *
      *                   Rotate
      *
      *****************************************************************/
-
-
     /*!
      * \brief Rotate an item list
      *
@@ -1472,7 +1431,6 @@ namespace Caneda
      *   Distribute element
      *
      ***************************************************************************/
-
     //! \brief Short function for qsort sort by abscissa
     static inline bool pointCmpFunction_X(const CGraphicsItem *lhs, const CGraphicsItem  *rhs)
     {
@@ -1616,16 +1574,13 @@ namespace Caneda
         return true;
     }
 
-
     /***********************************************************************
      *
-     * Alignement
+     * Alignment
      *
      ***********************************************************************/
-
-
-    //! \brief Check if alignement flags are compatible used in assert
-    static bool checkAlignementFlag(const Qt::Alignment alignment)
+    //! \brief Check if alignment flags are compatible used in assert
+    static bool checkAlignmentFlag(const Qt::Alignment alignment)
     {
         switch(alignment) {
             case Qt::AlignLeft :
@@ -1645,7 +1600,7 @@ namespace Caneda
     //! @return A string corresponding to alignement
     const QString CGraphicsScene::Alignment2QString(const Qt::Alignment alignment)
     {
-        Q_ASSERT(checkAlignementFlag(alignment));
+        Q_ASSERT(checkAlignmentFlag(alignment));
 
         switch(alignment) {
             case Qt::AlignLeft :
@@ -1678,7 +1633,7 @@ namespace Caneda
      */
     bool CGraphicsScene::alignElements(const Qt::Alignment alignment)
     {
-        Q_ASSERT(checkAlignementFlag(alignment));
+        Q_ASSERT(checkAlignmentFlag(alignment));
 
         QList<QGraphicsItem*> gItems = selectedItems();
         QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems, DontRemoveItems);
@@ -1755,14 +1710,11 @@ namespace Caneda
         return true;
     }
 
-
     /******************************************************************************
      *
      *     Active status
      *
      *****************************************************************************/
-
-
     /*!
      * \brief Toggle active status
      *
@@ -1822,23 +1774,16 @@ namespace Caneda
         }
     }
 
-
     /*************************************************************
      *
      *          DELETE
      *
      *************************************************************/
-
-
-
     /*!
      * \brief Delete an item list
      *
      * \param items: item list
      * \param opt: undo option
-     * \todo Document
-     * \todo Create a custom undo class for avoiding if
-     * \todo removeitems delete item use asingle name scheme
      */
     void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items,
             const Caneda::UndoOption opt)
@@ -1878,7 +1823,6 @@ namespace Caneda
         }
     }
 
-
     /*!
      * \brief Left button deleting event: delete items
      *
@@ -1896,7 +1840,6 @@ namespace Caneda
             }
         }
     }
-
 
     /*!
      * \brief Delete action
@@ -1923,25 +1866,20 @@ namespace Caneda
 
     /*********************************************************************
      *
-     *  Connect -- disconnect
+     *  Connect - disconnect
      *
      ********************************************************************/
-
     /*!
      * \brief Automatically connect items if port or wire overlap
      *
      * \param qItems: item to connect
      * \param opt: undo option
      * \todo remove the cast and create a class connectable item
+     * ie merge and move checkAndConnect to caneda item
      */
-
     void CGraphicsScene::connectItems(const QList<CGraphicsItem*> &qItems,
             const Caneda::UndoOption opt)
     {
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(QString("Connect items"));
-        }
-
         /* remove this cast */
         foreach(CGraphicsItem *qItem, qItems) {
             if(qItem->isComponent()) {
@@ -1951,12 +1889,7 @@ namespace Caneda
                 canedaitem_cast<Wire*>(qItem)->checkAndConnect(opt);
             }
         }
-
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
     }
-
 
     /*!
      * \brief Disconnect an item from wire or other components
@@ -2010,7 +1943,6 @@ namespace Caneda
      *  Zoom in -- Zoom out
      *
      ********************************************************************/
-
     /*!
      * \brief Zoom in event handles zooming of the view based on mouse signals.
      *
@@ -2035,7 +1967,7 @@ namespace Caneda
             clearSelection();
             ++m_zoomBandClicks;
 
-            // This is generic case
+            // This is the generic case
             if(m_zoomBandClicks == 1) {
                 m_zoomRect.setRect(dest.x(), dest.y(), 0, 0);
                 m_zoomBand->setRect(m_zoomRect.normalized());
@@ -2073,7 +2005,6 @@ namespace Caneda
         }
     }
 
-    //! \todo Document
     void CGraphicsScene::paintingDrawEvent(MouseActionEvent *event)
     {
         if(!m_paintingDrawItem) {
@@ -2176,23 +2107,28 @@ namespace Caneda
     void CGraphicsScene::insertingItemsEvent(MouseActionEvent *event)
     {
         if(event->type() == QEvent::GraphicsSceneMousePress) {
+
             if (event->button() == Qt::LeftButton) {
+
                 clearSelection();
                 foreach(CGraphicsItem *item, m_insertibles) {
                     removeItem(item);
                 }
+
                 m_undoStack->beginMacro(QString("Insert items"));
                 foreach(CGraphicsItem *item, m_insertibles) {
                     CGraphicsItem *copied = item->copy(0);
-                    /* round */
                     placeItem(copied, smartNearingGridPoint(item->pos()), Caneda::PushUndoCmd);
                 }
                 m_undoStack->endMacro();
+
                 foreach(CGraphicsItem *item, m_insertibles) {
                     addItem(item);
                     item->setSelected(true);
                 }
+
             } else if (event->button() == Qt::RightButton) {
+
                 emit rotateInvokedWhileInserting();
                 // HACK: Assuming the above signal is connected to StateHandler
                 // through Qt::DirectConnection, all m_insertibles would have been
@@ -2204,7 +2140,9 @@ namespace Caneda
                     item->show();
                     item->setPos(smartNearingGridPoint(item->pos() + delta));
                 }
+
             } else if (event->button() == Qt::MidButton) {
+
                 emit mirrorInvokedWhileInserting();
                 // HACK: Same as above!
                 QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
@@ -2212,16 +2150,19 @@ namespace Caneda
                     item->show();
                     item->setPos(smartNearingGridPoint(item->pos() + delta));
                 }
+
             }
 
         }
         else if(event->type() == QEvent::GraphicsSceneMouseMove) {
+
             QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
 
             foreach(CGraphicsItem *item, m_insertibles) {
                 item->show();
                 item->setPos(smartNearingGridPoint(item->pos() + delta));
             }
+
         }
     }
 
@@ -2237,11 +2178,11 @@ namespace Caneda
     }
 
     /*!
-     * \brief Here events other than the specized mouse actions are handled.
+     * \brief Handle events other than the specilized mouse actions.
      *
-     * This involves moving items when selected items are dragged in a special way
-     * so that wires are created if a connected component is moved away from
-     * unselected component.
+     * This involves moving items in a special way so that wires
+     * are created if a connected component is moved away from
+     * an unselected component.
      */
     void CGraphicsScene::normalEvent(MouseActionEvent *e)
     {
@@ -2253,22 +2194,18 @@ namespace Caneda
                 }
                 break;
 
-
             case QEvent::GraphicsSceneMouseMove:
                 {
                     if(!m_areItemsMoving) {
                         if(e->buttons() & Qt::LeftButton && !selectedItems().isEmpty()) {
                             m_areItemsMoving = true;
-                            if(!m_macroProgress) {
-                                m_macroProgress = true;
-                                m_undoStack->beginMacro(QString("Move items"));
-                            }
+                            m_undoStack->beginMacro(QString("Move items"));
+                        }
+                        else {
+                            return;
                         }
                     }
 
-                    if(!m_areItemsMoving) {
-                        return;
-                    }
                     disconnectDisconnectibles();
                     QGraphicsScene::mouseMoveEvent(e);
                     QPointF delta = smartNearingGridPoint(e->scenePos() - e->lastScenePos());
@@ -2276,18 +2213,14 @@ namespace Caneda
                 }
                 break;
 
-
             case QEvent::GraphicsSceneMouseRelease:
                 {
                     if(m_areItemsMoving) {
                         m_areItemsMoving = false;
                         endSpecialMove();
-                    }
-                    if(m_macroProgress) {
-                        m_macroProgress = false;
                         m_undoStack->endMacro();
                     }
-                    QGraphicsScene::mouseReleaseEvent(e); // other behaviour by base
+                    QGraphicsScene::mouseReleaseEvent(e);
                 }
                 break;
 
@@ -2301,8 +2234,8 @@ namespace Caneda
     }
 
     /*!
-     * \brief Check which all selected items should be moved specially
-     *        and where there is possible wirable nodes.
+     * \brief Check which items should be moved in a special way
+     *        and where there are possible wirable nodes.
      */
     void CGraphicsScene::processForSpecialMove(QList<QGraphicsItem*> _items)
     {
@@ -2311,12 +2244,13 @@ namespace Caneda
         grabMovingWires.clear();
 
         foreach(QGraphicsItem *item, _items) {
-            Component *c = canedaitem_cast<Component*>(item);
-            // save item's position for later use.
+            // Save item's position for later use
             storePos(item, smartNearingGridPoint(item->scenePos()));
-            if(c) {
-                //check for disconnections and wire resizing.
-                foreach(Port *port, c->ports()) {
+
+            Component *_component = canedaitem_cast<Component*>(item);
+            if(_component) {
+                // Check for disconnections and wire resizing
+                foreach(Port *port, _component->ports()) {
                     QList<Port*> *connections = port->connections();
                     if(!connections) {
                         continue;
@@ -2327,16 +2261,14 @@ namespace Caneda
                             continue;
                         }
 
-
                         Component *otherComponent = 0;
                         // Determine whether the "other" and "port" should be disconnected and wired
                         // on mouse move later.
                         if((otherComponent = other->owner()->component())
                                 && !otherComponent->isSelected()) {
-                            disconnectibles << c;
+                            disconnectibles << _component;
                             break;
                         }
-
 
                         Wire *wire = other->owner()->wire();
                         if(wire) {
@@ -2374,37 +2306,37 @@ namespace Caneda
 
     /*!
      * \brief Disconnect the ports in the disconnectibles list and add wire's in
-     * between them. This happens when two(or more) components are connected and one of
+     * between them. This happens when two (or more) components are connected and one of
      * them is clicked and dragged.
      */
     void CGraphicsScene::disconnectDisconnectibles()
     {
         QSet<Component*> remove;
         foreach(Component *c, disconnectibles) {
+
             int disconnections = 0;
+
             foreach(Port *port, c->ports()) {
                 if(!port->connections()) {
                     continue;
                 }
 
-                Port *fromPort = 0;
                 foreach(Port *other, *port->connections()) {
                     if(other->owner()->component() && other->owner()->component() != c &&
                             !other->owner()->component()->isSelected()) {
-                        fromPort = other;
+
+                        m_undoStack->push(new DisconnectCmd(port, other));
+                        ++disconnections;
+                        AddWireBetweenPortsCmd *wc = new AddWireBetweenPortsCmd(port, other);
+                        Wire *wire = wc->wire();
+                        m_undoStack->push(wc);
+                        movingWires << wire;
+
                         break;
                     }
                 }
-
-                if(fromPort) {
-                    m_undoStack->push(new DisconnectCmd(port, fromPort));
-                    ++disconnections;
-                    AddWireBetweenPortsCmd *wc = new AddWireBetweenPortsCmd(port, fromPort);
-                    Wire *wire = wc->wire();
-                    m_undoStack->push(wc);
-                    movingWires << wire;
-                }
             }
+
             if(disconnections) {
                 remove << c;
             }
@@ -2414,36 +2346,31 @@ namespace Caneda
     }
 
     /*!
-     * \brief Move the selected items specially to allow proper wire movements
+     * \brief Move the selected items in a special way to allow proper wire movements
      * and as well as checking for possible disconnections.
      */
     void CGraphicsScene::specialMove(qreal dx, qreal dy)
     {
         foreach(Wire *wire, movingWires) {
+
             if(wire->port1()->connections()) {
-                Port *other = 0;
-                foreach(Port *o, *(wire->port1()->connections())) {
-                    if(o != wire->port1()) {
-                        other = o;
+                foreach(Port *other, *(wire->port1()->connections())) {
+                    if(other != wire->port1()) {
+                        wire->movePort(wire->port1()->connections(), smartNearingGridPoint(other->scenePos()));
                         break;
                     }
                 }
-                if(other) {
-                    wire->movePort(wire->port1()->connections(), smartNearingGridPoint(other->scenePos()));
-                }
             }
+
             if(wire->port2()->connections()) {
-                Port *other = 0;
-                foreach(Port *o, *(wire->port2()->connections())) {
-                    if(o != wire->port2()) {
-                        other = o;
+                foreach(Port *other, *(wire->port2()->connections())) {
+                    if(other != wire->port2()) {
+                        wire->movePort(wire->port2()->connections(), smartNearingGridPoint(other->scenePos()));
                         break;
                     }
                 }
-                if(other) {
-                    wire->movePort(wire->port2()->connections(), smartNearingGridPoint(other->scenePos()));
-                }
             }
+
         }
 
         foreach(Wire *wire, grabMovingWires) {
@@ -2457,14 +2384,16 @@ namespace Caneda
      */
     void CGraphicsScene::endSpecialMove()
     {
-        disconnectibles.clear();
         foreach(QGraphicsItem *item, selectedItems()) {
+
             m_undoStack->push(new MoveCmd(item, storedPos(item),
                         smartNearingGridPoint(item->scenePos())));
+
             Component * comp = canedaitem_cast<Component*>(item);
             if(comp) {
                 comp->checkAndConnect(Caneda::PushUndoCmd);
             }
+
             Wire *wire = canedaitem_cast<Wire*>(item);
             if(wire) {
                 wire->checkAndConnect(Caneda::PushUndoCmd);
@@ -2472,14 +2401,12 @@ namespace Caneda
         }
 
         foreach(Wire *wire, movingWires) {
-            wire->show();
             wire->movePort1(wire->port1()->pos());
             m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
                         wire->currentState()));
-            wire->checkAndConnect(Caneda::PushUndoCmd);
         }
+
         foreach(Wire *wire, grabMovingWires) {
-            wire->show();
             wire->movePort1(wire->port1()->pos());
             m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
                         wire->currentState()));
@@ -2487,22 +2414,21 @@ namespace Caneda
 
         grabMovingWires.clear();
         movingWires.clear();
+        disconnectibles.clear();
     }
-
 
     /**********************************************************************
      *
      *                           place item
      *
      **********************************************************************/
-
     /*!
      * \brief Place an item on the scene
      *
      * \param item: item to place
-     * \param: pos position where to place
+     * \param: pos position of the item
      * \param opt: undo option
-     * \warning: pos is not rounded
+     * \warning: pos is not rounded (grid snapping)
      */
     void CGraphicsScene::placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt)
     {
@@ -2532,11 +2458,10 @@ namespace Caneda
                 canedaitem_cast<Wire*>(item)->checkAndConnect(opt);
             }
         }
-
         else {
             m_undoStack->beginMacro(QString("Place item"));
-
             m_undoStack->push(new InsertItemCmd(item, this, pos));
+
             if(item->isComponent()) {
                 canedaitem_cast<Component*>(item)->checkAndConnect(opt);
             }
@@ -2566,14 +2491,14 @@ namespace Caneda
     /*!
      * \brief Returns an appropriate label suffix as 1 and 2 in R1, R2
      *
-     * This method walks through all the items present on scene matching the
-     * labelprefix "prefix" and uses the
-     * highest of these corresponding suffixes + 1
-     * as the new suffix candidate.
+     * This method walks through all the items on the scene matching the
+     * labelprefix and uses the highest of these suffixes + 1 as the new
+     * suffix candidate.
      */
     int CGraphicsScene::componentLabelSuffix(const QString& prefix) const
     {
         int _max = 1;
+
         foreach(QGraphicsItem *item, items()) {
             Component *comp = canedaitem_cast<Component*>(item);
             if(comp && comp->labelPrefix() == prefix) {
@@ -2584,49 +2509,12 @@ namespace Caneda
                 }
             }
         }
+
         return _max;
     }
 
     /*!
-     * \todo document
-     * Looks like i am not using this. If so please remove.
-     */
-    int CGraphicsScene::unusedPortNumber()
-    {
-        int retVal = -1;
-        if(m_usablePortNumbers.isEmpty()) {
-            retVal = m_usablePortNumbers.takeFirst();
-        }
-        else {
-            retVal = m_usedPortNumbers.last() + 1;
-
-            while(m_usedPortNumbers.contains(retVal)) {
-                retVal++;
-            }
-        }
-        return retVal;
-    }
-
-    /*!
-     * \todo document
-     * Looks like i am not using this. If so please remove.
-     */
-    bool CGraphicsScene::isPortNumberUsed(int num) const
-    {
-        (void) num;
-        return false;
-    }
-    /*!
-     * \todo document
-     * Looks like i am not using this. If so please remove.
-     */
-    void CGraphicsScene::setNumberUnused(int num)
-    {
-        (void) num;
-    }
-
-    /*!
-     * \brief Call the appropriate mouseAction event based on current mouse action.
+     * \brief Call the appropriate mouseAction event based on the current mouse action
      */
     void CGraphicsScene::sendMouseActionEvent(MouseActionEvent *e)
     {

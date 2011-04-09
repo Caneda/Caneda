@@ -77,15 +77,12 @@ namespace Caneda
             Normal
         };
 
-        /* constructor/destructor */
+        // Constructor/destructor
         CGraphicsScene(QObject *parent = 0);
         ~CGraphicsScene();
 
         bool areItemsMoving() const { return m_areItemsMoving; }
 
-        /* geometry change */
-
-        /* mirror */
         void mirrorItems(QList<CGraphicsItem*> &itemsenum,
                 const Caneda::UndoOption opt,
                 const Qt::Axis axis);
@@ -205,9 +202,6 @@ namespace Caneda
         void normalEvent(MouseActionEvent *e);
 
     private:
-        /* private reset state wiring */
-        void resetStateWiring();
-
         void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
 
         void processForSpecialMove(QList<QGraphicsItem*> _items);
@@ -244,10 +238,6 @@ namespace Caneda
         CGraphicsItem* itemForName(const QString& name, const QString& category);
         void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
         int componentLabelSuffix(const QString& labelPrefix) const;
-
-        int unusedPortNumber();
-        bool isPortNumberUsed(int num) const;
-        void setNumberUnused(int num);
 
         void disconnectItems(const QList<CGraphicsItem*> &qItems,
                 const Caneda::UndoOption opt = Caneda::PushUndoCmd);
@@ -334,11 +324,6 @@ namespace Caneda
         QRectF m_zoomRect;
         int m_zoomBandClicks;
 
-        //! \todo document
-        QList<int> m_usedPortNumbers;
-        //! \todo document
-        QList<int> m_usablePortNumbers;
-
         //Document properties
         //! Undo stack state
         QUndoStack *m_undoStack;
@@ -374,8 +359,6 @@ namespace Caneda
         bool m_frameVisible;
         //! Snap component to grid
         bool m_snapToGrid;
-        //! \brief A state holder whether an UndoStack's macro is started or not
-        bool m_macroProgress;
         /*!
          * \brief A state holder to know whether shortcut events are blocked or not
          * \sa CGraphicsScene::eventFilter, CGraphicsScene::blockShortcuts
