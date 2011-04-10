@@ -214,9 +214,8 @@ namespace Caneda
             // Filter colliding wires only
             foreach(QGraphicsItem *item, collisions) {
 
-                Wire* _collidingItem = static_cast<Wire*>(item);
-                if(_collidingItem->isWire()) {
-
+                Wire* _collidingItem = canedaitem_cast<Wire*>(item);
+                if(_collidingItem) {
                     // If wires are connected, the collision is the result of the connection.
                     // Otherwise, there is a potential new node.
                     bool wiresAreConnected = Port::isConnected(port1(), _collidingItem->port1()) ||

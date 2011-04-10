@@ -103,7 +103,6 @@ namespace Caneda
         void deleteItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption);
         void toggleActiveStatus(QList<CGraphicsItem*> &components, const Caneda::UndoOption);
 
-        // these aren't toggle actions.
         void cutItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
         void copyItems(QList<CGraphicsItem*> &items) const;
 
