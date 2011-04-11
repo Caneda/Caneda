@@ -1941,6 +1941,7 @@ namespace Caneda
             // Save item's position for later use
             storePos(item, smartNearingGridPoint(item->scenePos()));
 
+            // The item about to move is a component
             Component *_component = canedaitem_cast<Component*>(item);
             if(_component) {
                 // Check for disconnections and wire resizing
@@ -1955,20 +1956,21 @@ namespace Caneda
                             continue;
                         }
 
-                        Component *otherComponent = 0;
-                        // Determine whether the "other" and "port" should be disconnected and wired
-                        // on mouse move later.
-                        if((otherComponent = other->owner()->component())
-                                && !otherComponent->isSelected()) {
+                        // The item connected to the component is another component
+                        Component *otherComponent = other->owner()->component();
+                        // Determine whether the ports "other" and "port" should
+                        // be disconnected and wired on mouse move later.
+                        if(otherComponent && !otherComponent->isSelected()) {
                             disconnectibles << _component;
                             break;
                         }
 
+                        // The item connected to the component is a wire
                         Wire *wire = other->owner()->wire();
                         if(wire) {
-                            // Determine whether this wire should be resized or not.
-                            // resized means = creating and deleting segments of wire.
-                            // on mouse moves later.
+                            // Determine whether this wire should be resized or not
+                            // ie, the other end of the wire has components not
+                            // selected
                             Port* otherPort = wire->port1() == other ? wire->port2() :
                                 wire->port1();
                             if(!otherPort->areAllOwnersSelected()) {
@@ -1980,16 +1982,15 @@ namespace Caneda
                 }
             }
 
+            // The item about to move is a wire
             Wire *wire = canedaitem_cast<Wire*>(item);
-            // Now determine whether the wire should just be moved rather than resized
-            // resized means = creating and deleting segments of wire.
+            // Determine whether the wire should just be moved rather than resized
             if(wire && !movingWires.contains(wire)) {
-                bool condition = wire->isSelected();
-                condition = condition && ((!wire->port1()->areAllOwnersSelected() ||
-                            !wire->port2()->areAllOwnersSelected()) ||
-                        (wire->port1()->connections() == 0 &&
-                         wire->port2()->connections() == 0));
-                ;
+                bool condition = wire->isSelected() &&
+                                 ((!wire->port1()->areAllOwnersSelected() ||
+                                   !wire->port2()->areAllOwnersSelected()) ||
+                                   (wire->port1()->connections() == 0 &&
+                                    wire->port2()->connections() == 0));
                 if(condition) {
                     grabMovingWires << wire;
                     wire->storeState();

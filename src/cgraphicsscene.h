@@ -272,23 +272,20 @@ namespace Caneda
         /*!
          * \brief List of wire's requiring segment changes due to mouse event
          *
-         * When a component is moved(click + drag) and one of the connected wire isn't
-         * selected its segments needs to be altered to retain connection to the wire
-         * and also the wire should be composed of only horizontal and vertical
-         * segments only
-         * Hence these kinds of wires are predetermined in processForSpecialMove and
-         * are resized( + or - wire segments) in specialMove
+         * When a component is moved (click + drag) and one of the connected wires
+         * aren't selected, its segments needs to be altered to retain connection
+         * to the wire. Hence these kinds of wires are predetermined in
+         * processForSpecialMove and are resized in specialMove.
          */
         QList<Wire*> movingWires;
 
         /*!
-         * \brief List of wires that need to be literally moved
-         * (no change in segments)
+         * \brief List of wires that need to be literally moved (no change
+         * in segments)
          *
-         * These wires are predetermined in processForSpecialMove.
          * A wire is scheduled for grabMove if its both ports have all their owners
-         * selected (the wire being scheduled may or may not be selected)
-         * In the grabMove method, only a delta is added to the wire.
+         * selected (the wire itself may or may not be selected). In this case,
+         * only a delta is added to the wire.
          */
         QList<Wire*> grabMovingWires;
 
