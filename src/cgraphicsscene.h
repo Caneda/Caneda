@@ -139,18 +139,15 @@ namespace Caneda
         // Mouse actions
         MouseAction mouseAction() const { return m_mouseAction; }
         void setMouseAction(const MouseAction ma);
-        void resetState();
+
+        bool eventFilter(QObject *object, QEvent *event);
+        void blockShortcuts(bool block);
 
         void beginPaintingDraw(Painting *item);
         void beginInsertingItems(const QList<CGraphicsItem*> &items);
 
-        bool eventFilter(QObject *object, QEvent *event);
-        bool shortcutsBlocked() const { return m_shortcutsBlocked; }
-        void blockShortcuts(bool block);
-
         //! Return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
-
         bool isModified() const { return m_modified; }
 
     public Q_SLOTS:
@@ -185,16 +182,27 @@ namespace Caneda
 
         // Custom handlers
         void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
+        void resetState();
 
         void wiringEvent(MouseActionEvent *e);
+        void wiringEventLeftMouseClick(const QPointF &pos);
+        void wiringEventRightMouseClick();
+        void wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos);
+        void wiringEventMouseMove(const QPointF &pos);
+
         void deletingEvent(const MouseActionEvent *e);
-        void markingEvent(MouseActionEvent *e);
+        void deletingEventLeftMouseClick(const QPointF &pos);
+        void deletingEventRightMouseClick(const QPointF &pos);
+
         void rotatingEvent(MouseActionEvent *e);
-        void changingActiveStatusEvent(const MouseActionEvent *e);
         void zoomingAreaEvent(MouseActionEvent *e);
+        void markingEvent(MouseActionEvent *e);
+        void changingActiveStatusEvent(const MouseActionEvent *e);
         void paintingDrawEvent(MouseActionEvent *e);
         void insertingItemsEvent(MouseActionEvent *e);
         void insertingWireLabelEvent(MouseActionEvent *event);
+
+        void placeAndDuplicatePainting();
 
         void normalEvent(MouseActionEvent *e);
         void processForSpecialMove(QList<QGraphicsItem*> _items);
@@ -202,21 +210,19 @@ namespace Caneda
         void specialMove(qreal dx, qreal dy);
         void endSpecialMove();
 
-        void placeAndDuplicatePainting();
+        // Sidebar click
+        bool sidebarItemClickedPaintingsItems(const QString& itemName);
+        bool sidebarItemClickedNormalItems(const QString& itemName, const QString& category);
 
-        // Private wiring events
-        void wiringEventLeftMouseClick(const QPointF &pos);
-        void wiringEventRightMouseClick();
-        void wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos);
-        void wiringEventMouseMove(const QPointF &pos);
+        // Placing items
+        void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
+        CGraphicsItem* itemForName(const QString& name, const QString& category);
+        int componentLabelSuffix(const QString& labelPrefix) const;
 
         // Private edit events
         void mirroringEvent(const MouseActionEvent *event, const Qt::Axis axis);
         void mirroringXEvent(const MouseActionEvent *e);
         void mirroringYEvent(const MouseActionEvent *e);
-
-        void deletingEventRightMouseClick(const QPointF &pos);
-        void deletingEventLeftMouseClick(const QPointF &pos);
 
         void distributeElementsHorizontally(QList<CGraphicsItem*> items);
         void distributeElementsVertically(QList<CGraphicsItem*> items);
@@ -226,15 +232,6 @@ namespace Caneda
         void connectItems(const QList<CGraphicsItem*> &qItems, const Caneda::UndoOption opt);
         void disconnectItems(const QList<CGraphicsItem*> &qItems,
                 const Caneda::UndoOption opt = Caneda::PushUndoCmd);
-
-        // Sidebar click
-        bool sidebarItemClickedPaintingsItems(const QString& itemName);
-        bool sidebarItemClickedNormalItems(const QString& itemName, const QString& category);
-
-        // Placing items
-        CGraphicsItem* itemForName(const QString& name, const QString& category);
-        void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
-        int componentLabelSuffix(const QString& labelPrefix) const;
 
         // Helper variables (aka state holders)
         //! \brief Last grid position of mouse cursor

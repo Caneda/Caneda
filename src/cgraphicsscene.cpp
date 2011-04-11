@@ -60,7 +60,6 @@ namespace Caneda
      *
      * \param items The items with respect to which the geometrical center has to
      * be calculated.
-     *
      * \return Returns the geometrical center of the items sent through parameter.
      */
     template <typename T>
@@ -77,14 +76,20 @@ namespace Caneda
         return rect.center();
     }
 
+    //! \brief A helper method to return sign of given integer.
+    inline int sign(int value)
+    {
+        return value >= 0 ? +1 : -1;
+    }
+
     //! \brief Default Constructor
     CGraphicsScene::CGraphicsScene(QObject *parent) :
         QGraphicsScene(QRectF(-2500, -2500, 5000, 5000), parent)
     {
-        /* setup undo stack */
+        // Setup undo stack
         m_undoStack = new QUndoStack(this);
 
-        /* setup grid */
+        // Setup grid
         m_snapToGrid = true;
 
         m_backgroundVisible = true;
@@ -101,7 +106,7 @@ namespace Caneda
         m_areItemsMoving = false;
         m_shortcutsBlocked = false;
 
-        /* wire state machine */
+        // Wire state machine
         m_wiringState = NO_WIRE;
         m_currentWiringWire = NULL;
 
@@ -131,37 +136,261 @@ namespace Caneda
         delete m_undoStack;
     }
 
-    //! \brief A helper method to return sign of given integer.
-    inline int sign(int value)
+    //! \brief Cut items
+    void CGraphicsScene::cutItems(QList<CGraphicsItem*> &_items, const Caneda::UndoOption opt)
     {
-        return value >= 0 ? +1 : -1;
+        copyItems(_items);
+        deleteItems(_items, opt);
     }
 
     /*!
-     * \brief Get nearest grid point according to grid snapping setting
-     *
-     * \param pos: current position to be rounded
-     * \return rounded position
+     * \brief Copy item
+     * \todo Document format
+     * \todo Use own mime type
      */
-    QPointF CGraphicsScene::smartNearingGridPoint(const QPointF &pos) const
+    void CGraphicsScene::copyItems(QList<CGraphicsItem*> &_items) const
     {
-        if(m_snapToGrid) {
-            const QPoint point = pos.toPoint();
-
-            int x = qAbs(point.x());
-            x += (DEFAULT_GRID_SPACE >> 1);
-            x -= x % DEFAULT_GRID_SPACE;
-            x *= sign(point.x());
-
-            int y = qAbs(point.y());
-            y += (DEFAULT_GRID_SPACE >> 1);
-            y -= y % DEFAULT_GRID_SPACE;
-            y *= sign(point.y());
-
-            return QPointF(x, y);
+        if(_items.isEmpty()) {
+            return;
         }
 
-        return pos;
+        QString clipText;
+        Caneda::XmlWriter *writer = new Caneda::XmlWriter(&clipText);
+        writer->setAutoFormatting(true);
+        writer->writeStartDocument();
+        writer->writeDTD(QString("<!DOCTYPE caneda>"));
+        writer->writeStartElement("caneda");
+        writer->writeAttribute("version", Caneda::version());
+
+        foreach(CGraphicsItem *_item, _items) {
+            _item->saveData(writer);
+        }
+
+        writer->writeEndDocument();
+
+        QClipboard *clipboard =  QApplication::clipboard();
+        clipboard->setText(clipText);
+    }
+
+    /*!
+     * \brief Delete an item list
+     *
+     * \param items: item list
+     * \param opt: undo option
+     */
+    void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items,
+            const Caneda::UndoOption opt)
+    {
+        if(opt == Caneda::DontPushUndoCmd) {
+            foreach(CGraphicsItem* item, items) {
+                delete item;
+            }
+        }
+        else {
+            // Configure undo
+            m_undoStack->beginMacro(QString("Delete items"));
+
+            // Diconnect then remove
+            disconnectItems(items, opt);
+            m_undoStack->push(new RemoveItemsCmd(items, this));
+
+            m_undoStack->endMacro();
+        }
+    }
+
+    /*!
+     * \brief Mirror an item list
+     *
+     * \param items: item to mirror
+     * \param opt: undo option
+     * \param axis: mirror axis
+     * \todo Create a custom undo class for avoiding if
+     * \note assert X or Y axis
+     */
+    void CGraphicsScene::mirrorItems(QList<CGraphicsItem*> &items,
+            const Caneda::UndoOption opt,
+            const Qt::Axis axis)
+    {
+        Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
+
+        // Prepare undo stack
+        if(opt == Caneda::PushUndoCmd) {
+            if(axis == Qt::XAxis) {
+                m_undoStack->beginMacro(QString("Mirror X"));
+            }
+            else {
+                m_undoStack->beginMacro(QString("Mirror Y"));
+            }
+        }
+
+        // Disconnect item before mirroring
+        disconnectItems(items, opt);
+
+        // Mirror
+        MirrorItemsCmd *cmd = new MirrorItemsCmd(items, axis);
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->push(cmd);
+        }
+        else {
+            cmd->redo();
+            delete cmd;
+        }
+
+        // Try to reconnect
+        connectItems(items, opt);
+
+        // End undo
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->endMacro();
+        }
+    }
+
+    /*!
+     * \brief Align elements
+     *
+     * \param alignment: alignement used
+     * \todo use smart alignment ie: port alignement
+     * \todo string of undo
+     * \todo filter wires ???
+     */
+    bool CGraphicsScene::alignElements(const Qt::Alignment alignment)
+    {
+        QList<QGraphicsItem*> gItems = selectedItems();
+        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems, DontRemoveItems);
+
+        // Could not align less than two elements
+        if(items.size() < 2) {
+            return false;
+        }
+
+        // Setup undo
+        m_undoStack->beginMacro(Alignment2QString(alignment));
+
+        // Disconnect
+        disconnectItems(items, Caneda::PushUndoCmd);
+
+        // Compute bounding rectangle
+        QRectF rect = items.first()->sceneBoundingRect();
+        QList<CGraphicsItem*>::iterator it = items.begin()+1;
+        while(it != items.end()) {
+            rect |= (*it)->sceneBoundingRect();
+            ++it;
+        }
+
+        it = items.begin();
+        while(it != items.end()) {
+            if((*it)->isWire()) {
+                ++it;
+                continue;
+            }
+
+            QRectF itemRect = (*it)->sceneBoundingRect();
+            QPointF delta;
+
+            switch(alignment) {
+                case Qt::AlignLeft :
+                    delta.rx() =  rect.left() - itemRect.left();
+                    break;
+                case Qt::AlignRight :
+                    delta.rx() = rect.right() - itemRect.right();
+                    break;
+                case Qt::AlignTop :
+                    delta.ry() = rect.top() - itemRect.top();
+                    break;
+                case Qt::AlignBottom :
+                    delta.ry() = rect.bottom() - itemRect.bottom();
+                    break;
+                case Qt::AlignHCenter :
+                    delta.rx() = rect.center().x() - itemRect.center().x();
+                    break;
+                case Qt::AlignVCenter :
+                    delta.ry() = rect.center().y() - itemRect.center().y();
+                    break;
+                case Qt::AlignCenter:
+                    delta.rx() = rect.center().x() - itemRect.center().x();
+                    delta.ry() = rect.center().y() - itemRect.center().y();
+                    break;
+                default:
+                    break;
+            }
+
+            // Move item
+            QPointF itemPos = (*it)->pos();
+            m_undoStack->push(new MoveCmd(*it, itemPos, itemPos + delta));;
+            ++it;
+        }
+
+        // Reconnect items
+        connectItems(items, Caneda::PushUndoCmd);
+
+        // Finish undo
+        m_undoStack->endMacro();
+        return true;
+    }
+
+    /*!
+     * \brief Distribute elements
+     *
+     * Distribute elements ie each element is equally spaced
+     *
+     * \param orientation: distribute according to orientation
+     * \todo filter wire ??? Do not distribute wire ??
+     */
+    bool CGraphicsScene::distributeElements(const Qt::Orientation orientation)
+    {
+        QList<QGraphicsItem*> gItems = selectedItems();
+        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems);
+
+        /* could not distribute single items */
+        if(items.size() < 2) {
+            return false;
+        }
+
+        if(orientation == Qt::Horizontal) {
+            distributeElementsHorizontally(items);
+        }
+        else {
+            distributeElementsVertically(items);
+        }
+        return true;
+    }
+
+    /*!
+     * \brief Toggle active status
+     *
+     * \param items: item list
+     * \param opt: undo option
+     * \todo Create a custom undo class for avoiding if
+     * \todo Change direction of toogle
+     */
+    void CGraphicsScene::toggleActiveStatus(QList<CGraphicsItem*> &items,
+            const Caneda::UndoOption opt)
+    {
+        /* Apply only to components */
+        QList<Component*> components = filterItems<Component>(items);
+        if(components.isEmpty()) {
+            return;
+        }
+
+        /* setup undo */
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->beginMacro(QString("Toggle active status"));
+        }
+
+        /* toogle */
+        ToggleActiveStatusCmd *cmd = new ToggleActiveStatusCmd(components);
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->push(cmd);
+        }
+        else {
+            cmd->redo();
+            delete cmd;
+        }
+
+        /* finalize undo */
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->endMacro();
+        }
     }
 
     /*!
@@ -280,234 +509,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Set mouse action
-     * This method takes care to disable the shortcuts while items are being added
-     * to the scene thus preventing side effects. It also sets the appropriate
-     * drag mode for all the views associated with this scene.
-     * Finally the state variables are reset.
-     *
-     * \param MouseAction: mouse action to set
-     */
-    void CGraphicsScene::setMouseAction(const MouseAction action)
-    {
-        if(m_mouseAction == action) {
-            return;
-        }
-
-        // Remove the shortcut blocking if the current action uptil now was InsertItems
-        if(m_mouseAction == InsertingItems) {
-            blockShortcuts(false);
-        }
-
-        // Blocks shortcut if the new action to be set is InsertingItems
-        if(action == InsertingItems) {
-            blockShortcuts(true);
-        }
-
-        m_areItemsMoving = false;
-        m_mouseAction = action;
-
-        emit mouseActionChanged();
-
-        resetState();
-        //TODO: Implemement this appropriately for all mouse actions
-    }
-
-    /*!
-     * \brief Reset the state
-     *
-     * This callback is called when for instance you press esc key
-     */
-    void CGraphicsScene::resetState()
-    {
-        // Clear focus on any item on this scene.
-        setFocusItem(0);
-        // Clear selection.
-        clearSelection();
-
-        // Clear the list holding items to be pasted/placed on graphics scene.
-        qDeleteAll(m_insertibles);
-        m_insertibles.clear();
-
-        // If current state is wiring, delete last attempt
-        if(m_wiringState == SINGLETON_WIRE){
-            Q_ASSERT(m_currentWiringWire != NULL);
-            delete m_currentWiringWire;
-            m_wiringState = NO_WIRE;
-        }
-
-        // Reset drawing item
-        delete m_paintingDrawItem;
-        m_paintingDrawItem = 0;
-        m_paintingDrawClicks = 0;
-
-        // Clear zoom
-        m_zoomRect = QRectF();
-        m_zoomBand->hide();
-        m_zoomBandClicks = 0;
-    }
-
-    //! \brief Cut items
-    void CGraphicsScene::cutItems(QList<CGraphicsItem*> &_items, const Caneda::UndoOption opt)
-    {
-        copyItems(_items);
-        deleteItems(_items, opt);
-    }
-
-    /*!
-     * \brief Copy item
-     * \todo Document format
-     * \todo Use own mime type
-     */
-    void CGraphicsScene::copyItems(QList<CGraphicsItem*> &_items) const
-    {
-        if(_items.isEmpty()) {
-            return;
-        }
-
-        QString clipText;
-        Caneda::XmlWriter *writer = new Caneda::XmlWriter(&clipText);
-        writer->setAutoFormatting(true);
-        writer->writeStartDocument();
-        writer->writeDTD(QString("<!DOCTYPE caneda>"));
-        writer->writeStartElement("caneda");
-        writer->writeAttribute("version", Caneda::version());
-
-        foreach(CGraphicsItem *_item, _items) {
-            _item->saveData(writer);
-        }
-
-        writer->writeEndDocument();
-
-        QClipboard *clipboard =  QApplication::clipboard();
-        clipboard->setText(clipText);
-    }
-
-    void CGraphicsScene::beginPaintingDraw(Painting *item)
-    {
-        Q_ASSERT(m_mouseAction == CGraphicsScene::PaintingDrawEvent);
-        m_paintingDrawClicks = 0;
-        delete m_paintingDrawItem;
-        m_paintingDrawItem = item->copy();
-    }
-
-    /*!
-     * \brief Starts insertItem mode.
-     *
-     * This is the mode which is used while pasting components or inserting
-     * components after selecting it from the sidebar. This initiates the process
-     * by filling the internal m_insertibles list whose contents will be moved on
-     * mouse events.
-     * Meanwhile it also prepares for this process by hiding component's properties
-     * which should not be shown while responding to mouse events in this mode.
-     *
-     * \todo create a insert canedacomponents property in order to avoid ugly cast
-     * \todo gpk: why two loop??
-     *
-     * \note Follow up for the above question:
-     * Actually there are 3 loops involved here one encapsulated in centerOfItems
-     * method.
-     * The first loop prepares the items for insertion by either hiding/showing
-     * based on cursor position.
-     * Then we have to calculate center of these items with respect to which the
-     * items have to be moved. (encapsulated in centerOfItems method)
-     * Finally, the third loop actually moves the items.
-     * Now the second implicit loop is very much required to run completely as
-     * we have to parse each item's bounding rect to calcuate final center.
-     * So best approach would be to call centerOfItems first to find delta.
-     * Then combine the first and the third loop.
-     * Bastein can you look into that ?
-     *
-     * \note Regarding ugly cast:
-     * I think a virtual member function - prepareForInsertion() should be added
-     * to CGraphicsItem which does nothing. Then classes like component can specialize
-     * this method to do necessary operation like hiding properties.
-     * Then in the loop, there is no need for cast. Just call that prepare method
-     * on all items.
-     */
-    void CGraphicsScene::beginInsertingItems(const QList<CGraphicsItem*> &items)
-    {
-        Q_ASSERT(m_mouseAction == CGraphicsScene::InsertingItems);
-
-        // Delete all previous insertibles
-        qDeleteAll(m_insertibles);
-        /* add to insert list */
-        m_insertibles = items;
-
-        /* add items */
-        foreach(CGraphicsItem *item, m_insertibles) {
-            item->setSelected(true);
-            // Hide all items here, they are made visible in ::insertingItemsEvent
-            item->hide();
-            /* replace by item->insertonscene() */
-            if(item->isComponent()) {
-                Component *comp = canedaitem_cast<Component*>(item);
-                if(comp->propertyGroup()) {
-                    comp->propertyGroup()->hide();
-                }
-            }
-        }
-    }
-
-    /*!
-     * \brief Event filter filter's out some events on the watched object.
-     *
-     * This filter is used to install on QApplication object to filter our
-     * shortcut events.
-     * This filter is installed by \a setMouseAction method if the new action
-     * is InsertingItems and removed if the new action is different, thus blocking
-     * shortcuts on InsertItems and unblocking for other mouse actions
-     * \sa CGraphicsScene::setMouseAction, CGraphicsScene::blockShortcuts
-     * \sa QObject::eventFilter
-     *
-     * \todo Take care if multiple scenes install event filters.
-     */
-    bool CGraphicsScene::eventFilter(QObject *watched, QEvent *event)
-    {
-        if(event->type() != QEvent::Shortcut && event->type() != QEvent::ShortcutOverride) {
-            return QGraphicsScene::eventFilter(watched, event);
-        }
-
-        QKeySequence key;
-
-        if(event->type() == QEvent::Shortcut) {
-            key = static_cast<QShortcutEvent*>(event)->key();
-        }
-        else {
-            key = static_cast<QKeyEvent*>(event)->key();
-        }
-
-        if(key == QKeySequence(Qt::Key_Escape)) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-
-    /*!
-     * \brief Blocks/unblocks the shortcuts on the QApplication.
-     *
-     * \param block True blocks while false unblocks the shortcuts.
-     * \sa CGraphicsScene::eventFilter
-     */
-    void CGraphicsScene::blockShortcuts(const bool block)
-    {
-        if(block) {
-            if(!m_shortcutsBlocked) {
-                qApp->installEventFilter(this);
-                m_shortcutsBlocked = true;
-            }
-        }
-        else {
-            if(m_shortcutsBlocked) {
-                qApp->removeEventFilter(this);
-                m_shortcutsBlocked = false;
-            }
-        }
-    }
-
-    /*!
      * \brief Exports the scene to an image
      *
      * @return bool True on success, false otherwise
@@ -583,6 +584,196 @@ namespace Caneda
     }
 
     /*!
+     * \brief Get nearest grid point according to grid snapping setting
+     *
+     * \param pos: current position to be rounded
+     * \return rounded position
+     */
+    QPointF CGraphicsScene::smartNearingGridPoint(const QPointF &pos) const
+    {
+        if(m_snapToGrid) {
+            const QPoint point = pos.toPoint();
+
+            int x = qAbs(point.x());
+            x += (DEFAULT_GRID_SPACE >> 1);
+            x -= x % DEFAULT_GRID_SPACE;
+            x *= sign(point.x());
+
+            int y = qAbs(point.y());
+            y += (DEFAULT_GRID_SPACE >> 1);
+            y -= y % DEFAULT_GRID_SPACE;
+            y *= sign(point.y());
+
+            return QPointF(x, y);
+        }
+
+        return pos;
+    }
+
+    /*!
+     * \brief Set mouse action
+     * This method takes care to disable the shortcuts while items are being added
+     * to the scene thus preventing side effects. It also sets the appropriate
+     * drag mode for all the views associated with this scene.
+     * Finally the state variables are reset.
+     *
+     * \param MouseAction: mouse action to set
+     */
+    void CGraphicsScene::setMouseAction(const MouseAction action)
+    {
+        if(m_mouseAction == action) {
+            return;
+        }
+
+        // Remove the shortcut blocking if the current action uptil now was InsertItems
+        if(m_mouseAction == InsertingItems) {
+            blockShortcuts(false);
+        }
+
+        // Blocks shortcut if the new action to be set is InsertingItems
+        if(action == InsertingItems) {
+            blockShortcuts(true);
+        }
+
+        m_areItemsMoving = false;
+        m_mouseAction = action;
+
+        emit mouseActionChanged();
+
+        resetState();
+        //TODO: Implemement this appropriately for all mouse actions
+    }
+
+    /*!
+     * \brief Event filter filter's out some events on the watched object.
+     *
+     * This filter is used to install on QApplication object to filter our
+     * shortcut events.
+     * This filter is installed by \a setMouseAction method if the new action
+     * is InsertingItems and removed if the new action is different, thus blocking
+     * shortcuts on InsertItems and unblocking for other mouse actions
+     * \sa CGraphicsScene::setMouseAction, CGraphicsScene::blockShortcuts
+     * \sa QObject::eventFilter
+     *
+     * \todo Take care if multiple scenes install event filters.
+     */
+    bool CGraphicsScene::eventFilter(QObject *watched, QEvent *event)
+    {
+        if(event->type() != QEvent::Shortcut && event->type() != QEvent::ShortcutOverride) {
+            return QGraphicsScene::eventFilter(watched, event);
+        }
+
+        QKeySequence key;
+
+        if(event->type() == QEvent::Shortcut) {
+            key = static_cast<QShortcutEvent*>(event)->key();
+        }
+        else {
+            key = static_cast<QKeyEvent*>(event)->key();
+        }
+
+        if(key == QKeySequence(Qt::Key_Escape)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    /*!
+     * \brief Blocks/unblocks the shortcuts on the QApplication.
+     *
+     * \param block True blocks while false unblocks the shortcuts.
+     * \sa CGraphicsScene::eventFilter
+     */
+    void CGraphicsScene::blockShortcuts(const bool block)
+    {
+        if(block) {
+            if(!m_shortcutsBlocked) {
+                qApp->installEventFilter(this);
+                m_shortcutsBlocked = true;
+            }
+        }
+        else {
+            if(m_shortcutsBlocked) {
+                qApp->removeEventFilter(this);
+                m_shortcutsBlocked = false;
+            }
+        }
+    }
+
+    /*!
+     * \brief Starts beginPaintingDraw mode.
+     *
+     * This is the mode which is used while inserting painting items.
+     */
+    void CGraphicsScene::beginPaintingDraw(Painting *item)
+    {
+        Q_ASSERT(m_mouseAction == CGraphicsScene::PaintingDrawEvent);
+        m_paintingDrawClicks = 0;
+        delete m_paintingDrawItem;
+        m_paintingDrawItem = item->copy();
+    }
+
+    /*!
+     * \brief Starts insertItem mode.
+     *
+     * This is the mode which is used while pasting components or inserting
+     * components after selecting it from the sidebar. This initiates the process
+     * by filling the internal m_insertibles list whose contents will be moved on
+     * mouse events.
+     * Meanwhile it also prepares for this process by hiding component's properties
+     * which should not be shown while responding to mouse events in this mode.
+     *
+     * \todo create a insert canedacomponents property in order to avoid ugly cast
+     * \todo gpk: why two loop??
+     *
+     * \note Follow up for the above question:
+     * Actually there are 3 loops involved here one encapsulated in centerOfItems
+     * method.
+     * The first loop prepares the items for insertion by either hiding/showing
+     * based on cursor position.
+     * Then we have to calculate center of these items with respect to which the
+     * items have to be moved. (encapsulated in centerOfItems method)
+     * Finally, the third loop actually moves the items.
+     * Now the second implicit loop is very much required to run completely as
+     * we have to parse each item's bounding rect to calcuate final center.
+     * So best approach would be to call centerOfItems first to find delta.
+     * Then combine the first and the third loop.
+     * Bastein can you look into that ?
+     *
+     * \note Regarding ugly cast:
+     * I think a virtual member function - prepareForInsertion() should be added
+     * to CGraphicsItem which does nothing. Then classes like component can specialize
+     * this method to do necessary operation like hiding properties.
+     * Then in the loop, there is no need for cast. Just call that prepare method
+     * on all items.
+     */
+    void CGraphicsScene::beginInsertingItems(const QList<CGraphicsItem*> &items)
+    {
+        Q_ASSERT(m_mouseAction == CGraphicsScene::InsertingItems);
+
+        // Delete all previous insertibles
+        qDeleteAll(m_insertibles);
+        // Add to insert list
+        m_insertibles = items;
+
+        // Add items
+        foreach(CGraphicsItem *item, m_insertibles) {
+            item->setSelected(true);
+            // Hide all items here, they are made visible in ::insertingItemsEvent
+            item->hide();
+            // Replace by item->prepareForInsertion()
+            if(item->isComponent()) {
+                Component *comp = canedaitem_cast<Component*>(item);
+                if(comp->propertyGroup()) {
+                    comp->propertyGroup()->hide();
+                }
+            }
+        }
+    }
+
+    /*!
      * \brief Set whether this scene is modified or not
      *
      * This method emits the signal modificationChanged(bool) as well
@@ -596,71 +787,6 @@ namespace Caneda
             m_modified = !m;
             emit changed();
         }
-    }
-
-    /*!
-     * \brief Return a frame item
-     */
-    QPainterPath CGraphicsScene::frame()
-    {
-        QPainterPath frame;
-
-        QFont frameFont = QApplication::font();
-
-        foreach(QString frame_text, m_frameTexts){
-            if(frame_text.contains("Title: ")) {
-                frame.addText(frameWidth()/3, frameHeight()-30, frameFont, frame_text);
-            }
-            else if(frame_text.contains("Drawn By: ")) {
-                frame.addText(10, frameHeight()-30, frameFont, frame_text);
-            }
-            else if(frame_text.contains("Date: ")) {
-                frame.addText(10, frameHeight()-10, frameFont,  frame_text);
-            }
-            else if(frame_text.contains("Revision: ")) {
-                frame.addText(frameWidth()*4/5, frameHeight()-30, frameFont, frame_text);
-            }
-        }
-
-        // Next we draw the footer lines
-        //Bounding rect
-        frame.addRect(0, 0, frameWidth(), frameHeight());
-        //Upper footer line
-        frame.moveTo(0, frameHeight()-50);
-        frame.lineTo(frameWidth(), frameHeight()-50);
-        //Name division
-        frame.moveTo(frameWidth()/3-20, frameHeight()-50);
-        frame.lineTo(frameWidth()/3-20, frameHeight());
-        //Title division
-        frame.moveTo(frameWidth()*4/5-20, frameHeight()-50);
-        frame.lineTo(frameWidth()*4/5-20, frameHeight());
-        //Left line
-        frame.moveTo(20, 0);
-        frame.lineTo(20, frameHeight()-50);
-        //Upper line
-        frame.moveTo(0, 20);
-        frame.lineTo(frameWidth(), 20);
-
-        //Finally we draw the rows and columns
-        //Row numbering
-        int step = (frameHeight()-20-50) / frameRows();
-        for(int i=1; i<frameRows()+1; i++) {
-            frame.moveTo(0, i*step+20);
-            frame.lineTo(20, i*step+20);
-            frame.addText(6, (i*step)-(step/2)+20, frameFont, QString(QChar('A'+i-1)));
-        }
-        //Column numbering
-        step = (frameWidth()-20) / frameColumns();
-        for(int i=1; i<frameColumns()+1; i++) {
-            frame.moveTo(i*step+20, 0);
-            frame.lineTo(i*step+20, 20);
-            frame.addText((i*step)-(step/2)+20, 16, frameFont, QString::number(i));
-        }
-
-        //Center the frame in the origin
-        frame.translate(-frameWidth()/2, -frameHeight()/2);
-
-        return frame;
     }
 
     /*!
@@ -751,6 +877,71 @@ namespace Caneda
         // Restore painter
         painter->setRenderHint(QPainter::Antialiasing, true);
         painter->setPen(savedpen);
+    }
+
+    /*!
+     * \brief Return a frame item
+     */
+    QPainterPath CGraphicsScene::frame()
+    {
+        QPainterPath frame;
+
+        QFont frameFont = QApplication::font();
+
+        foreach(QString frame_text, m_frameTexts){
+            if(frame_text.contains("Title: ")) {
+                frame.addText(frameWidth()/3, frameHeight()-30, frameFont, frame_text);
+            }
+            else if(frame_text.contains("Drawn By: ")) {
+                frame.addText(10, frameHeight()-30, frameFont, frame_text);
+            }
+            else if(frame_text.contains("Date: ")) {
+                frame.addText(10, frameHeight()-10, frameFont,  frame_text);
+            }
+            else if(frame_text.contains("Revision: ")) {
+                frame.addText(frameWidth()*4/5, frameHeight()-30, frameFont, frame_text);
+            }
+        }
+
+        // Next we draw the footer lines
+        //Bounding rect
+        frame.addRect(0, 0, frameWidth(), frameHeight());
+        //Upper footer line
+        frame.moveTo(0, frameHeight()-50);
+        frame.lineTo(frameWidth(), frameHeight()-50);
+        //Name division
+        frame.moveTo(frameWidth()/3-20, frameHeight()-50);
+        frame.lineTo(frameWidth()/3-20, frameHeight());
+        //Title division
+        frame.moveTo(frameWidth()*4/5-20, frameHeight()-50);
+        frame.lineTo(frameWidth()*4/5-20, frameHeight());
+        //Left line
+        frame.moveTo(20, 0);
+        frame.lineTo(20, frameHeight()-50);
+        //Upper line
+        frame.moveTo(0, 20);
+        frame.lineTo(frameWidth(), 20);
+
+        //Finally we draw the rows and columns
+        //Row numbering
+        int step = (frameHeight()-20-50) / frameRows();
+        for(int i=1; i<frameRows()+1; i++) {
+            frame.moveTo(0, i*step+20);
+            frame.lineTo(20, i*step+20);
+            frame.addText(6, (i*step)-(step/2)+20, frameFont, QString(QChar('A'+i-1)));
+        }
+        //Column numbering
+        step = (frameWidth()-20) / frameColumns();
+        for(int i=1; i<frameColumns()+1; i++) {
+            frame.moveTo(i*step+20, 0);
+            frame.lineTo(i*step+20, 20);
+            frame.addText((i*step)-(step/2)+20, 16, frameFont, QString::number(i));
+        }
+
+        //Center the frame in the origin
+        frame.translate(-frameWidth()/2, -frameHeight()/2);
+
+        return frame;
     }
 
     /*!
@@ -1046,69 +1237,157 @@ namespace Caneda
         e->accept();
     }
 
-    /******************************************************************************
-     *
-     *          Sidebar
-     *
-     *****************************************************************************/
     /*!
-     * \brief Action when a painting item is selected
-     *
-     * \param itemName: name of item
+     * \brief Call the appropriate mouseAction event based on the current mouse action
      */
-    bool CGraphicsScene::sidebarItemClickedPaintingsItems(const QString& itemName)
+    void CGraphicsScene::sendMouseActionEvent(MouseActionEvent *e)
     {
-        setMouseAction(PaintingDrawEvent);
-        m_paintingDrawItem = Painting::fromName(itemName);
-        if(!m_paintingDrawItem) {
-            setMouseAction(Normal);
-            return false;
-        }
-        m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-        return true;
+        switch(m_mouseAction) {
+            case Wiring:
+                wiringEvent(e);
+                break;
+
+            case Deleting:
+                deletingEvent(e);
+                break;
+
+            case Marking:
+                markingEvent(e);
+                break;
+
+            case Rotating:
+                rotatingEvent(e);
+                break;
+
+            case MirroringX:
+                mirroringXEvent(e);
+                break;
+
+            case MirroringY:
+                mirroringYEvent(e);
+                break;
+
+            case ChangingActiveStatus:
+                changingActiveStatusEvent(e);
+                break;
+
+            case ZoomingAreaEvent:
+                zoomingAreaEvent(e);
+                break;
+
+            case PaintingDrawEvent:
+                paintingDrawEvent(e);
+                break;
+
+            case InsertingItems:
+                insertingItemsEvent(e);
+                break;
+
+            case InsertingWireLabel:
+                insertingWireLabelEvent(e);
+                break;
+
+            case Normal:
+                normalEvent(e);
+                break;
+
+            default:;
+        };
     }
 
-    bool CGraphicsScene::sidebarItemClickedNormalItems(const QString& itemName, const QString& category)
-    {
-        CGraphicsItem *item = itemForName(itemName, category);
-        if(!item) {
-            return false;
-        }
-
-        addItem(item);
-        setMouseAction(InsertingItems);
-        beginInsertingItems(QList<CGraphicsItem*>() << item);
-
-        return true;
-    }
-
-
     /*!
-     * \brief This function is called when a side bar item is clicked
+     * \brief Reset the state
      *
-     * \param itemName: name of item
-     * \param category: categoy name
-     * \todo Add tracing
+     * This callback is called when for instance you press esc key
      */
-    bool CGraphicsScene::sidebarItemClicked(const QString& itemName, const QString& category)
+    void CGraphicsScene::resetState()
     {
-        if(itemName.isEmpty()) {
-            return false;
+        // Clear focus on any item on this scene.
+        setFocusItem(0);
+        // Clear selection.
+        clearSelection();
+
+        // Clear the list holding items to be pasted/placed on graphics scene.
+        qDeleteAll(m_insertibles);
+        m_insertibles.clear();
+
+        // If current state is wiring, delete last attempt
+        if(m_wiringState == SINGLETON_WIRE){
+            Q_ASSERT(m_currentWiringWire != NULL);
+            delete m_currentWiringWire;
+            m_wiringState = NO_WIRE;
         }
 
-        if(category == "Paint Tools" || category == "Layout Tools") {
-            return sidebarItemClickedPaintingsItems(itemName);
-        }
-        else {
-            return sidebarItemClickedNormalItems(itemName, category);
-        }
+        // Reset drawing item
+        delete m_paintingDrawItem;
+        m_paintingDrawItem = 0;
+        m_paintingDrawClicks = 0;
+
+        // Clear zoom
+        m_zoomRect = QRectF();
+        m_zoomBand->hide();
+        m_zoomBandClicks = 0;
     }
 
     /*********************************************************************
      *
-     *            WIRING ACTION
+     *            WIRING
      *
      *********************************************************************/
+    //! \brief Wiring event
+    void CGraphicsScene::wiringEvent(MouseActionEvent *event)
+    {
+        QPointF pos = smartNearingGridPoint(event->scenePos());
+
+        // Press mouse event
+        if(event->type() == QEvent::GraphicsSceneMousePress)  {
+            return wiringEventMouseClick(event, pos);
+        }
+        // Move mouse event
+        else if(event->type() == QEvent::GraphicsSceneMouseMove)  {
+            return wiringEventMouseMove(pos);
+        }
+    }
+
+    /*!
+     * \brief Mouse move wire event
+     *
+     * \param pos: coordinate of mouse action point
+     */
+    void CGraphicsScene::wiringEventMouseMove(const QPointF &pos)
+    {
+        if(m_wiringState != NO_WIRE) {
+            QPointF newPos = m_currentWiringWire->mapFromScene(pos);
+            QPointF refPos = m_currentWiringWire->port1()->pos();
+
+            if( abs(refPos.x()-newPos.x()) > abs(refPos.y()-newPos.y()) ) {
+                m_currentWiringWire->movePort2(QPointF(newPos.x(), refPos.y()));
+            }
+            else {
+                m_currentWiringWire->movePort2(QPointF(refPos.x(), newPos.y()));
+            }
+
+        }
+    }
+
+    /*!
+     * \brief Mouse click wire event
+     *
+     * \param Event: mouse event
+     * \param pos: coordinate of mouse action point
+     */
+    void CGraphicsScene::wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos)
+    {
+        // Left click
+        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)  {
+            return wiringEventLeftMouseClick(pos);
+        }
+        // Right click
+        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
+            return wiringEventRightMouseClick();
+        }
+    }
+
     /*!
      * \brief Left mouse click wire event
      *
@@ -1171,638 +1450,32 @@ namespace Caneda
         }
     }
 
-    /*!
-     * \brief Mouse click wire event
-     *
-     * \param Event: mouse event
-     * \param pos: coordinate of mouse action point
-     */
-    void CGraphicsScene::wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos)
-    {
-        // Left click
-        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)  {
-            return wiringEventLeftMouseClick(pos);
-        }
-        // Right click
-        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
-            return wiringEventRightMouseClick();
-        }
-    }
-
-    /*!
-     * \brief Mouse move wire event
-     *
-     * \param pos: coordinate of mouse action point
-     */
-    void CGraphicsScene::wiringEventMouseMove(const QPointF &pos)
-    {
-        if(m_wiringState != NO_WIRE) {
-            QPointF newPos = m_currentWiringWire->mapFromScene(pos);
-            QPointF refPos = m_currentWiringWire->port1()->pos();
-
-            if( abs(refPos.x()-newPos.x()) > abs(refPos.y()-newPos.y()) ) {
-                m_currentWiringWire->movePort2(QPointF(newPos.x(), refPos.y()));
-            }
-            else {
-                m_currentWiringWire->movePort2(QPointF(refPos.x(), newPos.y()));
-            }
-
-        }
-    }
-
-    //! \brief Wiring event
-    void CGraphicsScene::wiringEvent(MouseActionEvent *event)
-    {
-        QPointF pos = smartNearingGridPoint(event->scenePos());
-
-        // Press mouse event
-        if(event->type() == QEvent::GraphicsSceneMousePress)  {
-            return wiringEventMouseClick(event, pos);
-        }
-        // Move mouse event
-        else if(event->type() == QEvent::GraphicsSceneMouseMove)  {
-            return wiringEventMouseMove(pos);
-        }
-    }
-
-    //! \todo document
-    void CGraphicsScene::markingEvent(MouseActionEvent *event)
-    {
-        Q_UNUSED(event);
-        //TODO:
-    }
-
-    /***************************************************************************
-     *
-     *             Mirror
-     *
-     *
-     ***************************************************************************/
-    /*!
-     * \brief Mirror an item list
-     *
-     * \param items: item to mirror
-     * \param opt: undo option
-     * \param axis: mirror axis
-     * \todo Create a custom undo class for avoiding if
-     * \note assert X or Y axis
-     */
-    void CGraphicsScene::mirrorItems(QList<CGraphicsItem*> &items,
-            const Caneda::UndoOption opt,
-            const Qt::Axis axis)
-    {
-        Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
-
-        /* prepare undo stack */
-        if(opt == Caneda::PushUndoCmd) {
-            if(axis == Qt::XAxis) {
-                m_undoStack->beginMacro(QString("Mirror X"));
-            }
-            else {
-                m_undoStack->beginMacro(QString("Mirror Y"));
-            }
-        }
-
-        /* disconnect item before mirroring */
-        disconnectItems(items, opt);
-
-        /* mirror */
-        MirrorItemsCmd *cmd = new MirrorItemsCmd(items, axis);
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->push(cmd);
-        }
-        else {
-            cmd->redo();
-            delete cmd;
-        }
-
-        /* try to reconnect */
-        connectItems(items, opt);
-
-        /* end undo */
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
-    }
-
-
-    /*!
-     * \brief Mirror event
-     *
-     * \param event: event
-     * \param axis: mirror axis
-     */
-    void CGraphicsScene::mirroringEvent(const MouseActionEvent *event,
-            const Qt::Axis axis)
-    {
-        /* select item */
-        QList<QGraphicsItem*> _list = items(event->scenePos());
-        /* filters item */
-        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list, DontRemoveItems);
-        if(!qItems.isEmpty()) {
-            /* mirror */
-            mirrorItems(QList<CGraphicsItem*>() << qItems.first(), Caneda::PushUndoCmd, axis);
-        }
-    }
-
-    /*!
-     * \brief Mirror X event
-     * \note right button mirror Y
-     */
-    void CGraphicsScene::mirroringXEvent(const MouseActionEvent *event)
-    {
-        if(event->type() != QEvent::GraphicsSceneMousePress) {
-            return;
-        }
-
-        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
-            return mirroringEvent(event, Qt::XAxis);
-        }
-        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
-            return mirroringEvent(event, Qt::YAxis);
-        }
-
-        return;
-    }
-
-    /*!
-     * \brief Mirror Y event
-     * \note right button mirror X
-     */
-    void CGraphicsScene::mirroringYEvent(const MouseActionEvent *event)
-    {
-        if(event->type() != QEvent::GraphicsSceneMousePress) {
-            return;
-        }
-
-        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
-            return mirroringEvent(event, Qt::YAxis);
-        }
-        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
-            return mirroringEvent(event, Qt::XAxis);
-        }
-
-        return;
-    }
-
-    /******************************************************************
-     *
-     *                   Rotate
-     *
-     *****************************************************************/
-    /*!
-     * \brief Rotate an item list
-     *
-     * \param items: item list
-     * \param opt: undo option
-     * \param diect: is rotation in trigonometric sense
-     * \todo Create a custom undo class for avoiding if
-     */
-    void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items,
-            const Caneda::AngleDirection dir,
-            const Caneda::UndoOption opt)
-    {
-        /* setup undo */
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(dir == Caneda::Clockwise ?
-                    QString("Rotate Clockwise") :
-                    QString("Rotate Anti-Clockwise"));
-        }
-
-        /* disconnect */
-        disconnectItems(items, opt);
-
-        /* rotate */
-        RotateItemsCmd *cmd = new RotateItemsCmd(items, dir);
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->push(cmd);
-        }
-        else {
-            cmd->redo();
-            delete cmd;
-        }
-
-        /* reconnect */
-        connectItems(items, opt);
-
-        /* finish undo */
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
-    }
-
-
-    /*!
-     * \brief Rotate item
-     * \note right anticlockwise
-     */
-    void CGraphicsScene::rotatingEvent(MouseActionEvent *event)
-    {
-        Caneda::AngleDirection angle;
-
-        if(event->type() != QEvent::GraphicsSceneMousePress) {
-            return;
-        }
-
-        /* left == clock wise */
-        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
-            angle = Caneda::Clockwise;
-        }
-        /* right == anticlock wise */
-        else if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
-            angle = Caneda::AntiClockwise;
-        }
-        /* avoid angle unitialized */
-        else {
-            return;
-        }
-
-        /* get items */
-        QList<QGraphicsItem*> _list = items(event->scenePos());
-        /* filter item */
-        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list, DontRemoveItems);
-        if(!qItems.isEmpty()) {
-            rotateItems(QList<CGraphicsItem*>() << qItems.first(), angle, Caneda::PushUndoCmd);
-        }
-    }
-
-    /***************************************************************************
-     *
-     *   Distribute element
-     *
-     ***************************************************************************/
-    //! \brief Short function for qsort sort by abscissa
-    static inline bool pointCmpFunction_X(const CGraphicsItem *lhs, const CGraphicsItem  *rhs)
-    {
-        return lhs->pos().x() < rhs->pos().x();
-    }
-
-    //!Short function for qsort sort by abscissa
-    static inline bool pointCmpFunction_Y(const CGraphicsItem *lhs, const CGraphicsItem  *rhs)
-    {
-        return lhs->pos().y() < rhs->pos().y();
-    }
-
-    /*!
-     * \brief Distribute horizontally
-     *
-     * \param items: items to distribute
-     * \todo Why not filter wire ??
-     * +     * Ans: Because wires need special treatment. Wire's don't have single
-     * +     * x and y coord (think of several segments of wires which form single
-     * +     * Wire object)
-     * +     * Therefore distribution needs separate check for segments which make it
-     * +     * hard now. We should come out with some good solution for this.
-     * +     * Bastein: Do you have any solution ?
-     */
-    void CGraphicsScene::distributeElementsHorizontally(QList<CGraphicsItem*> items)
-    {
-        qreal x1, x2, x, dx;
-        QPointF newPos;
-
-        /* undo */
-        m_undoStack->beginMacro("Distribute horizontally");
-
-        /* disconnect */
-        disconnectItems(items, Caneda::PushUndoCmd);
-
-        /*sort item */
-        qSort(items.begin(), items.end(), pointCmpFunction_X);
-        x1 = items.first()->pos().x();
-        x2 = items.last()->pos().x();
-
-        /* compute step */
-        dx = (x2 - x1) / (items.size() - 1);
-        x = x1;
-
-        foreach(CGraphicsItem *item, items) {
-            /* why not filter wire ??? */
-            if(item->isWire()) {
-                continue;
-            }
-
-            /* compute new position */
-            newPos = item->pos();
-            newPos.setX(x);
-            x += dx;
-
-            /* move to new pos */
-            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
-        }
-
-        /* try to reconnect */
-        connectItems(items, Caneda::PushUndoCmd);
-
-        /* end command */
-        m_undoStack->endMacro();
-
-    }
-
-    /*!
-     * \brief Distribute vertically
-     *
-     * \param items: items to distribute
-     * \todo Why not filter wire ??
-     */
-    void CGraphicsScene::distributeElementsVertically(QList<CGraphicsItem*> items)
-    {
-        qreal y1, y2, y, dy;
-        QPointF newPos;
-
-        /* undo */
-        m_undoStack->beginMacro("Distribute vertically");
-
-        /* disconnect */
-        disconnectItems(items, Caneda::PushUndoCmd);
-
-        /*sort item */
-        qSort(items.begin(), items.end(), pointCmpFunction_Y);
-        y1 = items.first()->pos().y();
-        y2 = items.last()->pos().y();
-
-        /* compute step */
-        dy = (y2 - y1) / (items.size() - 1);
-        y = y1;
-
-        foreach(CGraphicsItem *item, items) {
-            /* why not filter wire ??? */
-            if(item->isWire()) {
-                continue;
-            }
-
-            /* compute new position */
-            newPos = item->pos();
-            newPos.setY(y);
-            y += dy;
-
-            /* move to new pos */
-            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
-        }
-
-        /* try to reconnect */
-        connectItems(items, Caneda::PushUndoCmd);
-
-        /* end command */
-        m_undoStack->endMacro();
-
-    }
-
-    /*!
-     * \brief Distribute elements
-     *
-     * Distribute elements ie each element is equally spaced
-     *
-     * \param orientation: distribute according to orientation
-     * \todo filter wire ??? Do not distribute wire ??
-     */
-    bool CGraphicsScene::distributeElements(const Qt::Orientation orientation)
-    {
-        QList<QGraphicsItem*> gItems = selectedItems();
-        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems);
-
-        /* could not distribute single items */
-        if(items.size() < 2) {
-            return false;
-        }
-
-        if(orientation == Qt::Horizontal) {
-            distributeElementsHorizontally(items);
-        }
-        else {
-            distributeElementsVertically(items);
-        }
-        return true;
-    }
-
-    /***********************************************************************
-     *
-     * Alignment
-     *
-     ***********************************************************************/
-    //! \brief Check if alignment flags are compatible used in assert
-    static bool checkAlignmentFlag(const Qt::Alignment alignment)
-    {
-        switch(alignment) {
-            case Qt::AlignLeft :
-            case Qt::AlignRight :
-            case Qt::AlignTop :
-            case Qt::AlignBottom :
-            case Qt::AlignHCenter :
-            case Qt::AlignVCenter :
-            case Qt::AlignCenter:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-
-    //! @return A string corresponding to alignement
-    const QString CGraphicsScene::Alignment2QString(const Qt::Alignment alignment)
-    {
-        Q_ASSERT(checkAlignmentFlag(alignment));
-
-        switch(alignment) {
-            case Qt::AlignLeft :
-                return tr("Align left");
-            case Qt::AlignRight :
-                return tr("Align right");
-            case Qt::AlignTop :
-                return tr("Align top");
-            case Qt::AlignBottom :
-                return tr("Align bottom");
-            case Qt::AlignHCenter :
-                return tr("Centers horizontally");
-            case Qt::AlignVCenter :
-                return tr("Centers vertically");
-            case Qt::AlignCenter:
-                return tr("Center both vertically and horizontally");
-                /* impossible case */
-            default:
-                return "";
-        }
-    }
-
-    /*!
-     * \brief Align element
-     *
-     * \param alignment: alignement used
-     * \todo use smart alignment ie: port alignement
-     * \todo string of undo
-     * \todo filter wires ???
-     */
-    bool CGraphicsScene::alignElements(const Qt::Alignment alignment)
-    {
-        Q_ASSERT(checkAlignmentFlag(alignment));
-
-        QList<QGraphicsItem*> gItems = selectedItems();
-        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems, DontRemoveItems);
-
-
-        /* Could not align less than two elements */
-        if(items.size() < 2) {
-            return false;
-        }
-
-        /* setup undo */
-        m_undoStack->beginMacro(Alignment2QString(alignment));
-
-        /* disconnect */
-        disconnectItems(items, Caneda::PushUndoCmd);
-
-        /* compute bounding rectangle */
-        QRectF rect = items.first()->sceneBoundingRect();
-        QList<CGraphicsItem*>::iterator it = items.begin()+1;
-        while(it != items.end()) {
-            rect |= (*it)->sceneBoundingRect();
-            ++it;
-        }
-
-        it = items.begin();
-        while(it != items.end()) {
-            if((*it)->isWire()) {
-                ++it;
-                continue;
-            }
-
-            QRectF itemRect = (*it)->sceneBoundingRect();
-            QPointF delta;
-
-            switch(alignment) {
-                case Qt::AlignLeft :
-                    delta.rx() =  rect.left() - itemRect.left();
-                    break;
-                case Qt::AlignRight :
-                    delta.rx() = rect.right() - itemRect.right();
-                    break;
-                case Qt::AlignTop :
-                    delta.ry() = rect.top() - itemRect.top();
-                    break;
-                case Qt::AlignBottom :
-                    delta.ry() = rect.bottom() - itemRect.bottom();
-                    break;
-                case Qt::AlignHCenter :
-                    delta.rx() = rect.center().x() - itemRect.center().x();
-                    break;
-                case Qt::AlignVCenter :
-                    delta.ry() = rect.center().y() - itemRect.center().y();
-                    break;
-                case Qt::AlignCenter:
-                    delta.rx() = rect.center().x() - itemRect.center().x();
-                    delta.ry() = rect.center().y() - itemRect.center().y();
-                    break;
-                default:
-                    /* impossible */
-                    break;
-            }
-
-            /* move item */
-            QPointF itemPos = (*it)->pos();
-            m_undoStack->push(new MoveCmd(*it, itemPos, itemPos + delta));;
-            ++it;
-        }
-
-        /* reconnect items */
-        connectItems(items, Caneda::PushUndoCmd);
-
-        /* finish undo */
-        m_undoStack->endMacro();
-        return true;
-    }
-
-    /******************************************************************************
-     *
-     *     Active status
-     *
-     *****************************************************************************/
-    /*!
-     * \brief Toggle active status
-     *
-     * \param items: item list
-     * \param opt: undo option
-     * \todo Create a custom undo class for avoiding if
-     * \todo Change direction of toogle
-     */
-    void CGraphicsScene::toggleActiveStatus(QList<CGraphicsItem*> &items,
-            const Caneda::UndoOption opt)
-    {
-        /* Apply only to components */
-        QList<Component*> components = filterItems<Component>(items);
-        if(components.isEmpty()) {
-            return;
-        }
-
-        /* setup undo */
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(QString("Toggle active status"));
-        }
-
-        /* toogle */
-        ToggleActiveStatusCmd *cmd = new ToggleActiveStatusCmd(components);
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->push(cmd);
-        }
-        else {
-            cmd->redo();
-            delete cmd;
-        }
-
-        /* finalize undo */
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
-    }
-
-
-    /*!
-     * \brief Activate deactivate
-     * \todo implement left right behavior
-     */
-    void CGraphicsScene::changingActiveStatusEvent(const MouseActionEvent *event)
-    {
-        if(event->type() != QEvent::GraphicsSceneMousePress) {
-            return;
-        }
-        if((event->buttons() & Qt::LeftButton) != Qt::LeftButton) {
-            return;
-        }
-
-        QList<QGraphicsItem*> _list = items(event->scenePos());
-        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list, DontRemoveItems);
-        if(!qItems.isEmpty()) {
-            toggleActiveStatus(QList<CGraphicsItem*>() << qItems.first(), Caneda::PushUndoCmd);
-        }
-    }
-
     /*************************************************************
      *
-     *          DELETE
+     *          DELETING
      *
      *************************************************************/
     /*!
-     * \brief Delete an item list
+     * \brief Delete action
      *
-     * \param items: item list
-     * \param opt: undo option
+     * Delete action: left click delete, right click disconnect item
      */
-    void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items,
-            const Caneda::UndoOption opt)
+    void CGraphicsScene::deletingEvent(const MouseActionEvent *event)
     {
-        if(opt == Caneda::DontPushUndoCmd) {
-            foreach(CGraphicsItem* item, items) {
-                delete item;
-            }
+        if(event->type() != QEvent::GraphicsSceneMousePress) {
+            return;
         }
-        else {
-            /* configure undo */
-            m_undoStack->beginMacro(QString("Delete items"));
 
-            /* diconnect then remove */
-            disconnectItems(items, opt);
-            m_undoStack->push(new RemoveItemsCmd(items, this));
-
-            m_undoStack->endMacro();
+        QPointF pos = event->scenePos();
+        /* left click */
+        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
+            return deletingEventLeftMouseClick(pos);
         }
+        /* right click */
+        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
+            return deletingEventRightMouseClick(pos);
+        }
+        return;
     }
 
     /*!
@@ -1841,108 +1514,91 @@ namespace Caneda
         }
     }
 
-    /*!
-     * \brief Delete action
+    /******************************************************************
      *
-     * Delete action: left click delete, right click disconnect item
+     *                   Rotate Event
+     *
+     *****************************************************************/
+    /*!
+     * \brief Rotate item
+     * \note right anticlockwise
      */
-    void CGraphicsScene::deletingEvent(const MouseActionEvent *event)
+    void CGraphicsScene::rotatingEvent(MouseActionEvent *event)
     {
+        Caneda::AngleDirection angle;
+
         if(event->type() != QEvent::GraphicsSceneMousePress) {
             return;
         }
 
-        QPointF pos = event->scenePos();
-        /* left click */
+        // left == clock wise
         if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
-            return deletingEventLeftMouseClick(pos);
+            angle = Caneda::Clockwise;
         }
-        /* right click */
-        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
-            return deletingEventRightMouseClick(pos);
+        // right == anticlock wise
+        else if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
+            angle = Caneda::AntiClockwise;
         }
-        return;
-    }
+        // Avoid angle unitialized
+        else {
+            return;
+        }
 
-    /*********************************************************************
-     *
-     *  Connect - disconnect
-     *
-     ********************************************************************/
-    /*!
-     * \brief Automatically connect items if port or wire overlap
-     *
-     * \param qItems: item to connect
-     * \param opt: undo option
-     * \todo remove the cast and create a class connectable item
-     * ie merge and move checkAndConnect to caneda item
-     */
-    void CGraphicsScene::connectItems(const QList<CGraphicsItem*> &qItems,
-            const Caneda::UndoOption opt)
-    {
-        /* remove this cast */
-        foreach(CGraphicsItem *qItem, qItems) {
-            if(qItem->isComponent()) {
-                canedaitem_cast<Component*>(qItem)->checkAndConnect(opt);
-            }
-            else if(qItem->isWire()) {
-                canedaitem_cast<Wire*>(qItem)->checkAndConnect(opt);
-            }
+        // Get items
+        QList<QGraphicsItem*> _list = items(event->scenePos());
+        // Filter item
+        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list, DontRemoveItems);
+        if(!qItems.isEmpty()) {
+            rotateItems(QList<CGraphicsItem*>() << qItems.first(), angle, Caneda::PushUndoCmd);
         }
     }
 
     /*!
-     * \brief Disconnect an item from wire or other components
+     * \brief Rotate an item list
      *
-     * \param qItems: item to connect
+     * \param items: item list
      * \param opt: undo option
-     * \todo remove the cast and create a class connectable item
+     * \param diect: is rotation in trigonometric sense
+     * \todo Create a custom undo class for avoiding if
      */
-    void CGraphicsScene::disconnectItems(const QList<CGraphicsItem*> &qItems,
+    void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items,
+            const Caneda::AngleDirection dir,
             const Caneda::UndoOption opt)
     {
+        // Setup undo
         if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(QString("Disconnect items"));
+            m_undoStack->beginMacro(dir == Caneda::Clockwise ?
+                    QString("Rotate Clockwise") :
+                    QString("Rotate Anti-Clockwise"));
         }
 
-        foreach(CGraphicsItem *item, qItems) {
-            QList<Port*> ports;
+        // Disconnect
+        disconnectItems(items, opt);
 
-            /* remove this cast */
-            if(item->isComponent()) {
-                ports = canedaitem_cast<Component*>(item)->ports();
-            }
-            else if(item->isWire()) {
-                ports = canedaitem_cast<Wire*>(item)->ports();
-            }
-
-            foreach(Port *p, ports) {
-                Port *other = p->getAnyConnectedPort();
-
-                /* do not register new undo if nothing to do */
-                if(other == NULL) {
-                    continue;
-                }
-
-                if(opt == Caneda::PushUndoCmd) {
-                    m_undoStack->push(new DisconnectCmd(p, other));
-                }
-                else {
-                    p->disconnectFrom(other);
-                }
-            }
+        // Rotate
+        RotateItemsCmd *cmd = new RotateItemsCmd(items, dir);
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->push(cmd);
+        }
+        else {
+            cmd->redo();
+            delete cmd;
         }
 
+        // Reconnect
+        connectItems(items, opt);
+
+        // Finish undo
         if(opt == Caneda::PushUndoCmd) {
             m_undoStack->endMacro();
         }
     }
 
-    /*********************************************************************
+    /******************************************************************
      *
-     *  Zoom in -- Zoom out
+     *  Zooming Area Event
      *
-     ********************************************************************/
+     *****************************************************************/
     /*!
      * \brief Zoom in event handles zooming of the view based on mouse signals.
      *
@@ -1989,19 +1645,35 @@ namespace Caneda
         }
     }
 
-    void CGraphicsScene::placeAndDuplicatePainting()
+    /******************************************************************
+     *
+     *                   Other Events
+     *
+     *****************************************************************/
+    //! \todo document
+    void CGraphicsScene::markingEvent(MouseActionEvent *event)
     {
-        if(!m_paintingDrawItem) {
+        Q_UNUSED(event);
+        //TODO:
+    }
+
+    /*!
+     * \brief Activate deactivate
+     * \todo implement left right behavior
+     */
+    void CGraphicsScene::changingActiveStatusEvent(const MouseActionEvent *event)
+    {
+        if(event->type() != QEvent::GraphicsSceneMousePress) {
+            return;
+        }
+        if((event->buttons() & Qt::LeftButton) != Qt::LeftButton) {
             return;
         }
 
-        QPointF dest = m_paintingDrawItem->pos();
-        placeItem(m_paintingDrawItem, dest, Caneda::PushUndoCmd);
-
-        m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
-        m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-        if(m_paintingDrawItem->type() == GraphicText::Type) {
-            static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
+        QList<QGraphicsItem*> _list = items(event->scenePos());
+        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list, DontRemoveItems);
+        if(!qItems.isEmpty()) {
+            toggleActiveStatus(QList<CGraphicsItem*>() << qItems.first(), Caneda::PushUndoCmd);
         }
     }
 
@@ -2178,6 +1850,27 @@ namespace Caneda
         //TODO:
     }
 
+    void CGraphicsScene::placeAndDuplicatePainting()
+    {
+        if(!m_paintingDrawItem) {
+            return;
+        }
+
+        QPointF dest = m_paintingDrawItem->pos();
+        placeItem(m_paintingDrawItem, dest, Caneda::PushUndoCmd);
+
+        m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
+        m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
+        if(m_paintingDrawItem->type() == GraphicText::Type) {
+            static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
+        }
+    }
+
+    /******************************************************************
+     *
+     *                   Moving Events
+     *
+     *****************************************************************/
     /*!
      * \brief Handle events other than the specilized mouse actions.
      *
@@ -2418,9 +2111,66 @@ namespace Caneda
         disconnectibles.clear();
     }
 
+    /******************************************************************************
+     *
+     *          Sidebar
+     *
+     *****************************************************************************/
+    /*!
+     * \brief This function is called when a side bar item is clicked
+     *
+     * \param itemName: name of item
+     * \param category: categoy name
+     * \todo Add tracing
+     */
+    bool CGraphicsScene::sidebarItemClicked(const QString& itemName, const QString& category)
+    {
+        if(itemName.isEmpty()) {
+            return false;
+        }
+
+        if(category == "Paint Tools" || category == "Layout Tools") {
+            return sidebarItemClickedPaintingsItems(itemName);
+        }
+        else {
+            return sidebarItemClickedNormalItems(itemName, category);
+        }
+    }
+
+    /*!
+     * \brief Action when a painting item is selected
+     *
+     * \param itemName: name of item
+     */
+    bool CGraphicsScene::sidebarItemClickedPaintingsItems(const QString& itemName)
+    {
+        setMouseAction(PaintingDrawEvent);
+        m_paintingDrawItem = Painting::fromName(itemName);
+        if(!m_paintingDrawItem) {
+            setMouseAction(Normal);
+            return false;
+        }
+        m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
+        return true;
+    }
+
+    bool CGraphicsScene::sidebarItemClickedNormalItems(const QString& itemName, const QString& category)
+    {
+        CGraphicsItem *item = itemForName(itemName, category);
+        if(!item) {
+            return false;
+        }
+
+        addItem(item);
+        setMouseAction(InsertingItems);
+        beginInsertingItems(QList<CGraphicsItem*>() << item);
+
+        return true;
+    }
+
     /**********************************************************************
      *
-     *                           place item
+     *                           Place item
      *
      **********************************************************************/
     /*!
@@ -2514,62 +2264,286 @@ namespace Caneda
         return _max;
     }
 
+    /**********************************************************************
+     *
+     *                           Mirror
+     *
+     **********************************************************************/
     /*!
-     * \brief Call the appropriate mouseAction event based on the current mouse action
+     * \brief Mirror event
+     *
+     * \param event: event
+     * \param axis: mirror axis
      */
-    void CGraphicsScene::sendMouseActionEvent(MouseActionEvent *e)
+    void CGraphicsScene::mirroringEvent(const MouseActionEvent *event,
+            const Qt::Axis axis)
     {
-        switch(m_mouseAction) {
-            case Wiring:
-                wiringEvent(e);
-                break;
+        /* select item */
+        QList<QGraphicsItem*> _list = items(event->scenePos());
+        /* filters item */
+        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list, DontRemoveItems);
+        if(!qItems.isEmpty()) {
+            /* mirror */
+            mirrorItems(QList<CGraphicsItem*>() << qItems.first(), Caneda::PushUndoCmd, axis);
+        }
+    }
 
-            case Deleting:
-                deletingEvent(e);
-                break;
+    /*!
+     * \brief Mirror X event
+     * \note right button mirror Y
+     */
+    void CGraphicsScene::mirroringXEvent(const MouseActionEvent *event)
+    {
+        if(event->type() != QEvent::GraphicsSceneMousePress) {
+            return;
+        }
 
-            case Marking:
-                markingEvent(e);
-                break;
+        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
+            return mirroringEvent(event, Qt::XAxis);
+        }
+        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
+            return mirroringEvent(event, Qt::YAxis);
+        }
 
-            case Rotating:
-                rotatingEvent(e);
-                break;
+        return;
+    }
 
-            case MirroringX:
-                mirroringXEvent(e);
-                break;
+    /*!
+     * \brief Mirror Y event
+     * \note right button mirror X
+     */
+    void CGraphicsScene::mirroringYEvent(const MouseActionEvent *event)
+    {
+        if(event->type() != QEvent::GraphicsSceneMousePress) {
+            return;
+        }
 
-            case MirroringY:
-                mirroringYEvent(e);
-                break;
+        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
+            return mirroringEvent(event, Qt::YAxis);
+        }
+        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
+            return mirroringEvent(event, Qt::XAxis);
+        }
 
-            case ChangingActiveStatus:
-                changingActiveStatusEvent(e);
-                break;
+        return;
+    }
 
-            case ZoomingAreaEvent:
-                zoomingAreaEvent(e);
-                break;
+    /**********************************************************************
+     *
+     *                           Distribute elements
+     *
+     **********************************************************************/
+    //! \brief Short function for qsort sort by abscissa
+    static inline bool pointCmpFunction_X(const CGraphicsItem *lhs, const CGraphicsItem  *rhs)
+    {
+        return lhs->pos().x() < rhs->pos().x();
+    }
 
-            case PaintingDrawEvent:
-                paintingDrawEvent(e);
-                break;
+    //!Short function for qsort sort by abscissa
+    static inline bool pointCmpFunction_Y(const CGraphicsItem *lhs, const CGraphicsItem  *rhs)
+    {
+        return lhs->pos().y() < rhs->pos().y();
+    }
 
-            case InsertingItems:
-                insertingItemsEvent(e);
-                break;
+    /*!
+     * \brief Distribute horizontally
+     *
+     * \param items: items to distribute
+     * \todo Why not filter wire ??
+     * +     * Ans: Because wires need special treatment. Wire's don't have single
+     * +     * x and y coord (think of several segments of wires which form single
+     * +     * Wire object)
+     * +     * Therefore distribution needs separate check for segments which make it
+     * +     * hard now. We should come out with some good solution for this.
+     * +     * Bastein: Do you have any solution ?
+     */
+    void CGraphicsScene::distributeElementsHorizontally(QList<CGraphicsItem*> items)
+    {
+        qreal x1, x2, x, dx;
+        QPointF newPos;
 
-            case InsertingWireLabel:
-                insertingWireLabelEvent(e);
-                break;
+        /* undo */
+        m_undoStack->beginMacro("Distribute horizontally");
 
-            case Normal:
-                normalEvent(e);
-                break;
+        /* disconnect */
+        disconnectItems(items, Caneda::PushUndoCmd);
 
-            default:;
-        };
+        /*sort item */
+        qSort(items.begin(), items.end(), pointCmpFunction_X);
+        x1 = items.first()->pos().x();
+        x2 = items.last()->pos().x();
+
+        /* compute step */
+        dx = (x2 - x1) / (items.size() - 1);
+        x = x1;
+
+        foreach(CGraphicsItem *item, items) {
+            /* why not filter wire ??? */
+            if(item->isWire()) {
+                continue;
+            }
+
+            /* compute new position */
+            newPos = item->pos();
+            newPos.setX(x);
+            x += dx;
+
+            /* move to new pos */
+            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+        }
+
+        /* try to reconnect */
+        connectItems(items, Caneda::PushUndoCmd);
+
+        /* end command */
+        m_undoStack->endMacro();
+
+    }
+
+    /*!
+     * \brief Distribute vertically
+     *
+     * \param items: items to distribute
+     * \todo Why not filter wire ??
+     */
+    void CGraphicsScene::distributeElementsVertically(QList<CGraphicsItem*> items)
+    {
+        qreal y1, y2, y, dy;
+        QPointF newPos;
+
+        /* undo */
+        m_undoStack->beginMacro("Distribute vertically");
+
+        /* disconnect */
+        disconnectItems(items, Caneda::PushUndoCmd);
+
+        /*sort item */
+        qSort(items.begin(), items.end(), pointCmpFunction_Y);
+        y1 = items.first()->pos().y();
+        y2 = items.last()->pos().y();
+
+        /* compute step */
+        dy = (y2 - y1) / (items.size() - 1);
+        y = y1;
+
+        foreach(CGraphicsItem *item, items) {
+            /* why not filter wire ??? */
+            if(item->isWire()) {
+                continue;
+            }
+
+            /* compute new position */
+            newPos = item->pos();
+            newPos.setY(y);
+            y += dy;
+
+            /* move to new pos */
+            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+        }
+
+        /* try to reconnect */
+        connectItems(items, Caneda::PushUndoCmd);
+
+        /* end command */
+        m_undoStack->endMacro();
+
+    }
+
+    /**********************************************************************
+     *
+     *                           Misc
+     *
+     **********************************************************************/
+    //! @return A string corresponding to alignement
+    const QString CGraphicsScene::Alignment2QString(const Qt::Alignment alignment)
+    {
+        switch(alignment) {
+            case Qt::AlignLeft :
+                return tr("Align left");
+            case Qt::AlignRight :
+                return tr("Align right");
+            case Qt::AlignTop :
+                return tr("Align top");
+            case Qt::AlignBottom :
+                return tr("Align bottom");
+            case Qt::AlignHCenter :
+                return tr("Centers horizontally");
+            case Qt::AlignVCenter :
+                return tr("Centers vertically");
+            case Qt::AlignCenter:
+                return tr("Center both vertically and horizontally");
+            default:
+                return "";
+        }
+    }
+
+    /*!
+     * \brief Automatically connect items if port or wire overlap
+     *
+     * \param qItems: item to connect
+     * \param opt: undo option
+     * \todo remove the cast and create a class connectable item
+     * ie merge and move checkAndConnect to caneda item
+     */
+    void CGraphicsScene::connectItems(const QList<CGraphicsItem*> &qItems,
+            const Caneda::UndoOption opt)
+    {
+        // Remove this cast
+        foreach(CGraphicsItem *qItem, qItems) {
+            if(qItem->isComponent()) {
+                canedaitem_cast<Component*>(qItem)->checkAndConnect(opt);
+            }
+            else if(qItem->isWire()) {
+                canedaitem_cast<Wire*>(qItem)->checkAndConnect(opt);
+            }
+        }
+    }
+
+    /*!
+     * \brief Disconnect an item from wire or other components
+     *
+     * \param qItems: item to connect
+     * \param opt: undo option
+     * \todo remove the cast and create a class connectable item
+     */
+    void CGraphicsScene::disconnectItems(const QList<CGraphicsItem*> &qItems,
+            const Caneda::UndoOption opt)
+    {
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->beginMacro(QString("Disconnect items"));
+        }
+
+        foreach(CGraphicsItem *item, qItems) {
+            QList<Port*> ports;
+
+            // Remove this cast
+            if(item->isComponent()) {
+                ports = canedaitem_cast<Component*>(item)->ports();
+            }
+            else if(item->isWire()) {
+                ports = canedaitem_cast<Wire*>(item)->ports();
+            }
+
+            foreach(Port *p, ports) {
+                Port *other = p->getAnyConnectedPort();
+
+                // Do not register new undo if nothing to do
+                if(other == NULL) {
+                    continue;
+                }
+
+                if(opt == Caneda::PushUndoCmd) {
+                    m_undoStack->push(new DisconnectCmd(p, other));
+                }
+                else {
+                    p->disconnectFrom(other);
+                }
+            }
+        }
+
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->endMacro();
+        }
     }
 
 } // namespace Caneda
