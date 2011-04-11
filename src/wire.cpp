@@ -119,45 +119,6 @@ namespace Caneda
         drawPorts(m_ports, painter, option);
     }
 
-    //! \brief Moves wire by (\a dx, \a dy).
-    void Wire::grabMoveBy(qreal dx, qreal dy)
-    {
-        // Disconnect connected components and move connected wires
-        foreach(Port *port, m_ports) {
-
-            QList<Port*> *connections = port->connections();
-            if(!connections) {
-                continue;
-            }
-
-            foreach(Port *other, *connections) {
-
-                if(other == port ) {
-                    continue;
-                }
-
-                // If other owner's is a wire, move it, if it's a component disconnect
-                if(other != NULL && other->owner()->isWire()) {
-                    other->setPos(other->pos() + QPointF(dx, dy));
-                    Wire *connectedWire = static_cast<Wire*>(other->ownerItem());
-                    connectedWire->updateGeometry();
-                }
-                else {
-                    port->disconnectFrom(other);
-                }
-
-            }
-
-        }
-
-        // Translate the ports
-        movePort1(port1()->pos() + QPointF(dx, dy));
-        movePort2(port2()->pos() + QPointF(dx, dy));
-
-        // Update the wire
-        updateGeometry();
-    }
-
     /*!
      * \brief Check for connections and connect the coinciding ports.
      *
@@ -395,12 +356,6 @@ namespace Caneda
         scene()->clearFocus();
         CGraphicsItem::mousePressEvent(event);
         Q_ASSERT(mapFromScene(event->scenePos()) == event->pos());
-    }
-
-    //! \brief Hide's on first call and then loses focus. Then updated through scene.
-    void Wire::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-    {
-        event->ignore();
     }
 
     Wire::Data readWireData(Caneda::XmlReader *reader)

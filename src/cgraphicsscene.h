@@ -207,7 +207,7 @@ namespace Caneda
         void normalEvent(MouseActionEvent *e);
         void processForSpecialMove(QList<QGraphicsItem*> _items);
         void disconnectDisconnectibles();
-        void specialMove(qreal dx, qreal dy);
+        void specialMove();
         void endSpecialMove();
 
         // Sidebar click
@@ -272,22 +272,12 @@ namespace Caneda
         /*!
          * \brief List of wire's requiring segment changes due to mouse event
          *
-         * When a component is moved (click + drag) and one of the connected wires
-         * aren't selected, its segments needs to be altered to retain connection
-         * to the wire. Hence these kinds of wires are predetermined in
-         * processForSpecialMove and are resized in specialMove.
+         * When an item is moved (click + drag) and one of the connected wires
+         * aren't selected, its geometry needs to be altered to retain connection
+         * to the wire. Hence these wires are selected in processForSpecialMove
+         * and are resized in specialMove.
          */
         QList<Wire*> movingWires;
-
-        /*!
-         * \brief List of wires that need to be literally moved (no change
-         * in segments)
-         *
-         * A wire is scheduled for grabMove if its both ports have all their owners
-         * selected (the wire itself may or may not be selected). In this case,
-         * only a delta is added to the wire.
-         */
-        QList<Wire*> grabMovingWires;
 
         //! Wiring state machine state enum
         enum wiringStateEnum {

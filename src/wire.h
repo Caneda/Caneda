@@ -67,8 +67,6 @@ namespace Caneda
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0);
 
-        void grabMoveBy(qreal dx, qreal dy);
-
         int checkAndConnect(Caneda::UndoOption opt);
         bool splitAndCreateNodes();
         void updateGeometry();
@@ -103,7 +101,6 @@ namespace Caneda
 
     protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
-        void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
     private:
         QList<Port*> m_ports;//!< The ports of wires (always contain only 2 elements).
