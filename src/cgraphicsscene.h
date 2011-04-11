@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2009-2011 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -43,13 +44,13 @@ namespace Caneda
 
     /*!
      * CGraphicsScene
-     * This class provides a surface for managing a large number of schematic element
+     * This class provides a canvas for managing schematic elements
      */
     class CGraphicsScene : public QGraphicsScene
     {
         Q_OBJECT
     public:
-        //! \brief The different mouse action possible
+        //! \brief Possible mouse actions
         enum MouseAction {
             //! Wire action
             Wiring,
@@ -77,11 +78,14 @@ namespace Caneda
             Normal
         };
 
-        // Constructor/destructor
+        // Constructor-destructor
         CGraphicsScene(QObject *parent = 0);
         ~CGraphicsScene();
 
-        bool areItemsMoving() const { return m_areItemsMoving; }
+        // Edit actions
+        void cutItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
+        void copyItems(QList<CGraphicsItem*> &items) const;
+        void deleteItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption);
 
         void mirrorItems(QList<CGraphicsItem*> &itemsenum,
                 const Caneda::UndoOption opt,
@@ -89,7 +93,6 @@ namespace Caneda
         void mirrorXItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption opt) {
             mirrorItems(items, opt, Qt::XAxis);
         }
-
         void mirrorYItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption opt) {
             mirrorItems(items, opt, Qt::YAxis);
         }
@@ -100,28 +103,12 @@ namespace Caneda
             rotateItems(items, Caneda::Clockwise, undo);
         }
 
-        void deleteItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption);
+        bool alignElements(const Qt::Alignment alignment);
+        bool distributeElements(const Qt::Orientation orientation);
+
         void toggleActiveStatus(QList<CGraphicsItem*> &components, const Caneda::UndoOption);
 
-        void cutItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
-        void copyItems(QList<CGraphicsItem*> &items) const;
-
-        bool isModified() const { return m_modified; }
-
-        bool gridSnap() const { return m_snapToGrid; }
-        void setSnapToGrid(const bool snap) {
-            m_snapToGrid = snap;
-        }
-
-        //! round to nearest grid point according to grid snapping setting
-        QPointF smartNearingGridPoint(const QPointF &pos) const {
-            return m_snapToGrid == true ? nearingGridPoint(pos) : pos;
-        }
-
-        //! return current undo stack
-        QUndoStack* undoStack() { return m_undoStack; }
-
-        //! set variant property
+        // Document properties
         bool setProperty(const QString& propName, const QVariant& value);
 
         bool isBackgroundVisible() const { return m_backgroundVisible; }
@@ -141,24 +128,30 @@ namespace Caneda
         int frameHeight() const { return m_frameHeight; }
         void setFrameSize(int width, int height);
 
-        MouseAction mouseAction() const { return m_mouseAction; }
-        void setMouseAction(const MouseAction ma);
-
-        void resetState();
-        void beginPaintingDraw(Painting *item);
-        void beginInsertingItems(const QList<CGraphicsItem*> &items);
-
-        bool alignElements(const Qt::Alignment alignment);
-        bool distributeElements(const Qt::Orientation orientation);
-
-        bool eventFilter(QObject *object, QEvent *event);
-
-        bool shortcutsBlocked() const { return m_shortcutsBlocked; }
-        void blockShortcuts(bool block);
-
         bool toPaintDevice(QPaintDevice &, qreal = -1, qreal = -1,
                 Qt::AspectRatioMode = Qt::KeepAspectRatio);
         QRectF imageBoundingRect() const;
+
+        bool snapToGrid() const { return m_snapToGrid; }
+        void setSnapToGrid(const bool snap) { m_snapToGrid = snap; }
+        QPointF smartNearingGridPoint(const QPointF &pos) const;
+
+        // Mouse actions
+        MouseAction mouseAction() const { return m_mouseAction; }
+        void setMouseAction(const MouseAction ma);
+        void resetState();
+
+        void beginPaintingDraw(Painting *item);
+        void beginInsertingItems(const QList<CGraphicsItem*> &items);
+
+        bool eventFilter(QObject *object, QEvent *event);
+        bool shortcutsBlocked() const { return m_shortcutsBlocked; }
+        void blockShortcuts(bool block);
+
+        //! Return current undo stack
+        QUndoStack* undoStack() { return m_undoStack; }
+
+        bool isModified() const { return m_modified; }
 
     public Q_SLOTS:
         void setModified(const bool m = true);
@@ -171,11 +164,10 @@ namespace Caneda
         void mirrorInvokedWhileInserting();
 
     protected:
-        QPainterPath frame();
         void drawBackground(QPainter *p, const QRectF& r);
 
+        // Events
         bool event(QEvent *event);
-
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
 
         void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
@@ -188,7 +180,12 @@ namespace Caneda
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e);
         void wheelEvent(QGraphicsSceneWheelEvent *e);
 
+    private:
+        QPainterPath frame();
+
         // Custom handlers
+        void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
+
         void wiringEvent(MouseActionEvent *e);
         void deletingEvent(const MouseActionEvent *e);
         void markingEvent(MouseActionEvent *e);
@@ -198,70 +195,85 @@ namespace Caneda
         void paintingDrawEvent(MouseActionEvent *e);
         void insertingItemsEvent(MouseActionEvent *e);
         void insertingWireLabelEvent(MouseActionEvent *event);
+
         void normalEvent(MouseActionEvent *e);
-
-    private:
-        void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
-
         void processForSpecialMove(QList<QGraphicsItem*> _items);
         void disconnectDisconnectibles();
         void specialMove(qreal dx, qreal dy);
         void endSpecialMove();
 
-        /* private wiring function */
+        void placeAndDuplicatePainting();
+
+        // Private wiring events
         void wiringEventLeftMouseClick(const QPointF &pos);
         void wiringEventRightMouseClick();
         void wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos);
         void wiringEventMouseMove(const QPointF &pos);
 
-        /* mirror */
+        // Private edit events
         void mirroringEvent(const MouseActionEvent *event, const Qt::Axis axis);
         void mirroringXEvent(const MouseActionEvent *e);
         void mirroringYEvent(const MouseActionEvent *e);
 
-        /* private delete */
         void deletingEventRightMouseClick(const QPointF &pos);
         void deletingEventLeftMouseClick(const QPointF &pos);
 
-        /* private distribute */
         void distributeElementsHorizontally(QList<CGraphicsItem*> items);
         void distributeElementsVertically(QList<CGraphicsItem*> items);
 
-        /* alignment */
         static const QString Alignment2QString(const Qt::Alignment alignment);
 
-        /* sidebar click */
+        void connectItems(const QList<CGraphicsItem*> &qItems, const Caneda::UndoOption opt);
+        void disconnectItems(const QList<CGraphicsItem*> &qItems,
+                const Caneda::UndoOption opt = Caneda::PushUndoCmd);
+
+        // Sidebar click
         bool sidebarItemClickedPaintingsItems(const QString& itemName);
         bool sidebarItemClickedNormalItems(const QString& itemName, const QString& category);
 
+        // Placing items
         CGraphicsItem* itemForName(const QString& name, const QString& category);
         void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
         int componentLabelSuffix(const QString& labelPrefix) const;
 
-        void disconnectItems(const QList<CGraphicsItem*> &qItems,
-                const Caneda::UndoOption opt = Caneda::PushUndoCmd);
-        void connectItems(const QList<CGraphicsItem*> &qItems, const Caneda::UndoOption opt);
-
-        void placeAndDuplicatePainting();
-
-        QPointF nearingGridPoint(const QPointF &pos) const;
-
-        //These are helper variables (aka state holders)
+        // Helper variables (aka state holders)
+        //! \brief Last grid position of mouse cursor
+        QPointF lastPos;
 
         /*!
-         * \brief A flag to determine whether items are being moved or not
+         * \brief Flag to determine whether items are being moved or not
          *        using mouse click + drag (not drag and drop) on scene.
-         * \note Used in normalEvent
          */
         bool m_areItemsMoving;
+
         /*!
-         * \brief A list of components whose port's needs to be disconencted
+         * \brief List of components whose port's needs to be disconencted
          *        due to mouse events
-         * \sa disconnectDisconnectibles
          */
         QList<Component*> disconnectibles;
+
         /*!
-         * \brief A list of wire's requiring segment changes due to mouse event
+         * \brief List of CGraphicsItem which are to be placed/pasted.
+         */
+        QList<CGraphicsItem*> m_insertibles;
+
+        //! \brief The Painting (Ellipse, Rectangle...) being drawn currently
+        Painting *m_paintingDrawItem;
+
+        /*!
+         * \brief Number of mouse clicks inserting a painting item
+         *
+         * This is used to determine what feedback to show while painting.
+         * For example:
+         * - One click of arc should determine corresponding elliptical point.
+         * - Second click should fix this ellipse and let select the start
+         * angle of ellipse.
+         * - Third click should finalize by selecing span of the elliptical arc.
+         */
+        int m_paintingDrawClicks;
+
+        /*!
+         * \brief List of wire's requiring segment changes due to mouse event
          *
          * When a component is moved(click + drag) and one of the connected wire isn't
          * selected its segments needs to be altered to retain connection to the wire
@@ -271,8 +283,9 @@ namespace Caneda
          * are resized( + or - wire segments) in specialMove
          */
         QList<Wire*> movingWires;
+
         /*!
-         * \brief A list of wires which needs to be literally moved
+         * \brief List of wires that need to be literally moved
          * (no change in segments)
          *
          * These wires are predetermined in processForSpecialMove.
@@ -281,16 +294,8 @@ namespace Caneda
          * In the grabMove method, only a delta is added to the wire.
          */
         QList<Wire*> grabMovingWires;
-        //! \brief A helper variable to hold last grid position of mouse cursor
-        QPointF lastPos;
 
-        /*!
-         * \brief A list of CGraphicsItem which are to be placed/pasted.
-         * \sa beginInsertingItems
-         */
-        QList<CGraphicsItem*> m_insertibles;
-
-        //! Wiring state machine state  enum
+        //! Wiring state machine state enum
         enum wiringStateEnum {
             NO_WIRE,               /*!< There are no wires yet */
             SINGLETON_WIRE,        /*!< Currently creating wires */
@@ -298,46 +303,21 @@ namespace Caneda
 
         //! State variable for the wire state machine
         wiringStateEnum m_wiringState;
+
         //! Current wire
         Wire *m_currentWiringWire;
 
-        //! \brief The Painting(Ellipse, Rectangle..) being drawn currently
-        Painting *m_paintingDrawItem;
-        /*!
-         * \brief Helper which holds the number of mouse clicks happened.
-         *
-         * This is used to determine what feedback to show while painting
-         * For example
-         * One click of arc should determine corresponding elliptical point
-         * Second click should fix this ellipse and let select the start angle
-         * of ellipse
-         * Third click should finalize by selecing span of the elliptical arc.
-         */
-        int m_paintingDrawClicks;
-        /*!
-         * \brief A rectangular dotted line widget to show feedback of
-         * an area being selected for zooming
-         */
-        QGraphicsRectItem * m_zoomBand;
-
-        QRectF m_zoomRect;
-        int m_zoomBandClicks;
-
-        //Document properties
-        //! Undo stack state
-        QUndoStack *m_undoStack;
         //! Current mouse action
         MouseAction m_mouseAction;
 
-        //! Frame texts
-        QStringList m_frameTexts;
-        //! Frame geometry
-        int m_frameRows, m_frameColumns;
-        //! Frame size
-        int m_frameWidth, m_frameHeight;
+        /*!
+         * \brief State holder to know whether shortcut events are blocked or not
+         * \sa CGraphicsScene::eventFilter, CGraphicsScene::blockShortcuts
+         */
+        bool m_shortcutsBlocked;
 
         /*!
-         * \brief A flag to hold whether a schematic is modified or not
+         * \brief Flag to hold whether a schematic is modified or not
          * i.e to determine whether a file should be saved or not on closing.
          *
          * This flag should be set as and when any modification is done to schematic
@@ -346,23 +326,43 @@ namespace Caneda
          * \sa setModified
          */
         bool m_modified;
+
         /*!
          * \brief Flag to hold whether the background color should be drawn or not
          * \sa setBackgroundVisible
          */
         bool m_backgroundVisible;
+
         /*!
          * \brief Flag to hold whether a frame should be drawn or not
          * \sa setFrameVisible
          */
         bool m_frameVisible;
-        //! Snap component to grid
-        bool m_snapToGrid;
+
         /*!
-         * \brief A state holder to know whether shortcut events are blocked or not
-         * \sa CGraphicsScene::eventFilter, CGraphicsScene::blockShortcuts
+         * \brief Flag to hold whether or not snap to grid is set
+         * \sa setSnapToGrid
          */
-        bool m_shortcutsBlocked;
+        bool m_snapToGrid;
+
+        /*!
+         * \brief Rectangular widget to show feedback of an area being
+         * selected for zooming
+         */
+        QGraphicsRectItem *m_zoomBand;
+        QRectF m_zoomRect;
+        int m_zoomBandClicks;
+
+        //Document properties
+        //! Frame texts
+        QStringList m_frameTexts;
+        //! Frame geometry
+        int m_frameRows, m_frameColumns;
+        //! Frame size
+        int m_frameWidth, m_frameHeight;
+
+        //! Undo stack state
+        QUndoStack *m_undoStack;
     };
 
 } // namespace Caneda

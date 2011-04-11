@@ -108,7 +108,7 @@ namespace Caneda
         emit focussedIn(static_cast<IView*>(this));
         ActionManager *am = ActionManager::instance();
         Action *action = am->actionForName("snapToGrid");
-        action->setChecked(m_cGraphicsView->cGraphicsScene()->gridSnap());
+        action->setChecked(m_cGraphicsView->cGraphicsScene()->snapToGrid());
     }
 
     void LayoutView::onWidgetFocussedOut()

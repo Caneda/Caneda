@@ -1,6 +1,7 @@
 /***************************************************************************
  * Copyright (C) 2006 Gopala Krishna A <krishna.ggk@gmail.com>             *
  * Copyright (C) 2008 Bastien Roucaries <roucaries.bastien@gmail.com>      *
+ * Copyright (C) 2009-2011 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -137,26 +138,30 @@ namespace Caneda
     }
 
     /*!
-     * \brief Get nearest point on grid
+     * \brief Get nearest grid point according to grid snapping setting
      *
      * \param pos: current position to be rounded
      * \return rounded position
      */
-    QPointF CGraphicsScene::nearingGridPoint(const QPointF &pos) const
+    QPointF CGraphicsScene::smartNearingGridPoint(const QPointF &pos) const
     {
-        const QPoint point = pos.toPoint();
+        if(m_snapToGrid) {
+            const QPoint point = pos.toPoint();
 
-        int x = qAbs(point.x());
-        x += (DEFAULT_GRID_SPACE >> 1);
-        x -= x % DEFAULT_GRID_SPACE;
-        x *= sign(point.x());
+            int x = qAbs(point.x());
+            x += (DEFAULT_GRID_SPACE >> 1);
+            x -= x % DEFAULT_GRID_SPACE;
+            x *= sign(point.x());
 
-        int y = qAbs(point.y());
-        y += (DEFAULT_GRID_SPACE >> 1);
-        y -= y % DEFAULT_GRID_SPACE;
-        y *= sign(point.y());
+            int y = qAbs(point.y());
+            y += (DEFAULT_GRID_SPACE >> 1);
+            y -= y % DEFAULT_GRID_SPACE;
+            y *= sign(point.y());
 
-        return QPointF(x, y);
+            return QPointF(x, y);
+        }
+
+        return pos;
     }
 
     /*!
@@ -168,27 +173,27 @@ namespace Caneda
      */
     bool CGraphicsScene::setProperty(const QString& propName, const QVariant& value)
     {
-        if(propName == "frame visibility"){
+        if(propName == "frame visibility") {
             setFrameVisible(value.toBool());
             return true;
         }
-        else if(propName == "document properties"){
+        else if(propName == "document properties") {
             setFrameTexts(value.toStringList());
             return true;
         }
-        else if(propName == "frame rows"){
+        else if(propName == "frame rows") {
             setFrameGeometry(value.toInt(), frameColumns());
             return true;
         }
-        else if(propName == "frame columns"){
+        else if(propName == "frame columns") {
             setFrameGeometry(frameRows(), value.toInt());
             return true;
         }
-        else if(propName == "frame width"){
+        else if(propName == "frame width") {
             setFrameSize(value.toInt(), frameHeight());
             return true;
         }
-        else if(propName == "frame height"){
+        else if(propName == "frame height") {
             setFrameSize(frameWidth(), value.toInt());
             return true;
         }
@@ -308,11 +313,6 @@ namespace Caneda
         //TODO: Implemement this appropriately for all mouse actions
     }
 
-    /***********************************************************************
-     *
-     *       RESET STATE
-     *
-     ***********************************************************************/
     /*!
      * \brief Reset the state
      *
@@ -947,7 +947,7 @@ namespace Caneda
     {
         // Grid snap mode
         if(m_snapToGrid) {
-            lastPos = nearingGridPoint(e->scenePos());
+            lastPos = smartNearingGridPoint(e->scenePos());
 
             // This is not to lose grid snaping when moving objects
             e->setScenePos(lastPos);
@@ -964,7 +964,7 @@ namespace Caneda
     {
         if(m_snapToGrid) {
 
-            QPointF point = nearingGridPoint(e->scenePos());
+            QPointF point = smartNearingGridPoint(e->scenePos());
             if(point == lastPos) {
                 e->accept();
                 return;
@@ -2010,6 +2010,7 @@ namespace Caneda
         if(!m_paintingDrawItem) {
             return;
         }
+
         EllipseArc *arc = 0;
         GraphicText *text = 0;
         QPointF dest = event->scenePos();
@@ -2019,6 +2020,7 @@ namespace Caneda
         if(m_paintingDrawItem->type() == EllipseArc::Type) {
             arc = static_cast<EllipseArc*>(m_paintingDrawItem);
         }
+
         if(m_paintingDrawItem->type() == GraphicText::Type) {
             text = static_cast<GraphicText*>(m_paintingDrawItem);
         }
@@ -2041,7 +2043,6 @@ namespace Caneda
                 }
                 return;
             }
-
             else if(text) {
                 Q_ASSERT(m_paintingDrawClicks == 1);
                 text->setPos(dest);
