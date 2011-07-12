@@ -185,9 +185,9 @@ namespace Caneda
         void resetState();
 
         void wiringEvent(MouseActionEvent *e);
+        void wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos);
         void wiringEventLeftMouseClick(const QPointF &pos);
         void wiringEventRightMouseClick();
-        void wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos);
         void wiringEventMouseMove(const QPointF &pos);
 
         void deletingEvent(const MouseActionEvent *e);

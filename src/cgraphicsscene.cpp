@@ -1350,27 +1350,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Mouse move wire event
-     *
-     * \param pos: coordinate of mouse action point
-     */
-    void CGraphicsScene::wiringEventMouseMove(const QPointF &pos)
-    {
-        if(m_wiringState != NO_WIRE) {
-            QPointF newPos = m_currentWiringWire->mapFromScene(pos);
-            QPointF refPos = m_currentWiringWire->port1()->pos();
-
-            if( abs(refPos.x()-newPos.x()) > abs(refPos.y()-newPos.y()) ) {
-                m_currentWiringWire->movePort2(QPointF(newPos.x(), refPos.y()));
-            }
-            else {
-                m_currentWiringWire->movePort2(QPointF(refPos.x(), newPos.y()));
-            }
-
-        }
-    }
-
-    /*!
      * \brief Mouse click wire event
      *
      * \param Event: mouse event
@@ -1378,11 +1357,11 @@ namespace Caneda
      */
     void CGraphicsScene::wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos)
     {
-        // Left click
+        // Left click - Add control point
         if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)  {
             return wiringEventLeftMouseClick(pos);
         }
-        // Right click
+        // Right click - Finish wire
         if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
             return wiringEventRightMouseClick();
         }
@@ -1430,10 +1409,6 @@ namespace Caneda
     //! \brief Right mouse click wire event, ie finish wire event
     void CGraphicsScene::wiringEventRightMouseClick()
     {
-        if(m_wiringState == NO_WIRE) {
-            return;
-        }
-
         if(m_wiringState ==  SINGLETON_WIRE) {
             // Check if port 1 and 2 overlap
             if(m_currentWiringWire->overlap()) {
@@ -1447,6 +1422,27 @@ namespace Caneda
             m_wiringState = NO_WIRE;
 
             return;
+        }
+    }
+
+    /*!
+     * \brief Mouse move wire event
+     *
+     * \param pos: coordinate of mouse action point
+     */
+    void CGraphicsScene::wiringEventMouseMove(const QPointF &pos)
+    {
+        if(m_wiringState != NO_WIRE) {
+            QPointF newPos = m_currentWiringWire->mapFromScene(pos);
+            QPointF refPos = m_currentWiringWire->port1()->pos();
+
+            if( abs(refPos.x()-newPos.x()) > abs(refPos.y()-newPos.y()) ) {
+                m_currentWiringWire->movePort2(QPointF(newPos.x(), refPos.y()));
+            }
+            else {
+                m_currentWiringWire->movePort2(QPointF(refPos.x(), newPos.y()));
+            }
+
         }
     }
 
@@ -1929,6 +1925,10 @@ namespace Caneda
     /*!
      * \brief Check which items should be moved in a special way
      *        and where there are possible wirable nodes.
+     *
+     * \todo Merge the following (one check for components and
+     * another for wires) into only one. In order to do that,
+     * move ports into CGraphicsItem.
      */
     void CGraphicsScene::processForSpecialMove(QList<QGraphicsItem*> _items)
     {
