@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2011 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,7 +20,6 @@
 
 #include "wire.h"
 
-#include "cgraphicsitem.h"
 #include "cgraphicsscene.h"
 #include "global.h"
 
@@ -44,20 +43,17 @@ namespace Caneda
     Wire::Wire(const QPointF& startPos, const QPointF& endPos,
             CGraphicsScene *scene) : CGraphicsItem(0, scene)
     {
-        /* set position */
+        // Set position
         setPos((startPos + endPos)/2);
 
-        /* set flags */
+        // Set flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
-        /* create port */
-        QPointF localStartPos = mapFromScene(startPos);
-        QPointF localEndPos = mapFromScene(endPos);
-
-        m_ports << new Port(this, localStartPos);
-        m_ports << new Port(this, localEndPos);
+        // Create ports
+        m_ports << new Port(this, mapFromScene(startPos));
+        m_ports << new Port(this, mapFromScene(endPos));
 
         m_wLine = WireLine(port1()->pos(), port2()->pos());
     }
@@ -99,11 +95,8 @@ namespace Caneda
     void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
-        Q_UNUSED(widget);
-        QPen savedPen;
-
-        /* save painter */
-        savedPen = painter->pen();
+        // Save painter
+        QPen savedPen = painter->pen();
 
         if(option->state & QStyle::State_Selected) {
             painter->setPen(QPen(Caneda::invertcolor(unselectedWire), wirewidth));
@@ -114,7 +107,7 @@ namespace Caneda
 
         painter->drawLine(m_wLine);
 
-        /* restore pen */
+        // Restore pen
         painter->setPen(savedPen);
         drawPorts(m_ports, painter, option);
     }
@@ -152,7 +145,7 @@ namespace Caneda
             cGraphicsScene()->undoStack()->endMacro();
         }
 
-        splitAndCreateNodes();
+        splitAndCreateNodes(cGraphicsScene());
 
         return num_of_connections;
     }
@@ -163,7 +156,7 @@ namespace Caneda
      *
      * \return Returns true if new node was created.
      */
-    bool Wire::splitAndCreateNodes()
+    bool Wire::splitAndCreateNodes(CGraphicsScene *scene)
     {
         bool nodeCreated = false;
 
@@ -200,8 +193,8 @@ namespace Caneda
                             QPointF endPoint =  _collidingItem->port2()->pos() + _collidingItem->pos();
 
                             // Create two new wires
-                            Wire *wire1 = new Wire(startPoint, middlePoint, cGraphicsScene());
-                            Wire *wire2 = new Wire(middlePoint, endPoint, cGraphicsScene());
+                            Wire *wire1 = new Wire(startPoint, middlePoint, scene);
+                            Wire *wire2 = new Wire(middlePoint, endPoint, scene);
 
                             // Delete old wire
                             delete _collidingItem;

@@ -68,7 +68,7 @@ namespace Caneda
                 QWidget *widget = 0);
 
         int checkAndConnect(Caneda::UndoOption opt);
-        bool splitAndCreateNodes();
+        bool splitAndCreateNodes(CGraphicsScene *scene = 0);
         void updateGeometry();
 
         //! check if port 1 and 2 overlap
