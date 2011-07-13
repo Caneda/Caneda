@@ -42,6 +42,7 @@ namespace Caneda
     class XmlReader;
     class XmlWriter;
     class CGraphicsScene;
+    class Port;
 
     //! This enum determines the rotation direction.
     enum AngleDirection {
@@ -116,6 +117,10 @@ namespace Caneda
         CGraphicsItem(QGraphicsItem* parent = 0, CGraphicsScene* scene = 0);
         virtual ~CGraphicsItem();
 
+        //! Returns a list of ports of the item.
+        QList<Port*> ports() const { return m_ports; }
+        int checkAndConnect(Caneda::UndoOption opt);
+
         //! Return type of item
         int type() const { return CGraphicsItemType; }
         //! Return bounding box
@@ -155,8 +160,10 @@ namespace Caneda
                 const QRectF& rect,
                 qreal penWidth = 1.0);
 
-        QRectF m_boundingRect; //!< Bounding box cache
-        QPainterPath m_shape; //!< Shape cache
+        QRectF m_boundingRect; //! Bounding box cache
+        QPainterPath m_shape; //! Shape cache
+
+        QList<Port*> m_ports; //! Ports list
     };
 
     /*!

@@ -50,8 +50,6 @@ namespace Caneda
                 CGraphicsScene *scene = 0);
         ~Wire();
 
-        //! Return's the wire's ports list.
-        QList<Port*> ports() const { return m_ports; }
         //! Return's the list's first member.
         Port* port1() const { return m_ports[0]; }
         //! Returns the list's second member.
@@ -103,7 +101,6 @@ namespace Caneda
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     private:
-        QList<Port*> m_ports;//!< The ports of wires (always contain only 2 elements).
         WireLine m_wLine;//!< Internal line representation of wires.
         Wire::Data store; //!< Stores the wire data when needed(undo/redo).
     };

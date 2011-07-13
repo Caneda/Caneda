@@ -22,6 +22,7 @@
 #include "actionmanager.h"
 #include "cgraphicsscene.h"
 #include "cgraphicsview.h"
+#include "port.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -187,6 +188,42 @@ namespace Caneda
     //! Destructor
     CGraphicsItem::~CGraphicsItem()
     {
+    }
+
+    /*!
+     * \brief Check for connections and connect the coinciding ports.
+     *
+     * \return Returns the number of connections made.
+     */
+    int CGraphicsItem::checkAndConnect(Caneda::UndoOption opt)
+    {
+        int num_of_connections = 0;
+
+        // Find existing intersecting ports and connect
+        if(opt == Caneda::PushUndoCmd) {
+            cGraphicsScene()->undoStack()->beginMacro(QString());
+        }
+
+        foreach(Port *port, m_ports) {
+            Port *other = port->findCoincidingPort();
+            if(other) {
+                if(opt == Caneda::PushUndoCmd) {
+                    QList<Wire*> wires = Port::wiresBetween(port, other);
+                    ConnectCmd *cmd = new ConnectCmd(port, other, wires, cGraphicsScene());
+                    cGraphicsScene()->undoStack()->push(cmd);
+                }
+                else {
+                    port->connectTo(other);
+                }
+                ++num_of_connections;
+            }
+        }
+
+        if(opt == Caneda::PushUndoCmd) {
+            cGraphicsScene()->undoStack()->endMacro();
+        }
+
+        return num_of_connections;
     }
 
     /*!

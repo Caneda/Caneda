@@ -22,10 +22,7 @@
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "library.h"
-#include "port.h"
 #include "propertygroup.h"
-#include "undocommands.h"
-#include "wire.h"
 
 #include "dialogs/propertydialog.h"
 
@@ -405,45 +402,6 @@ namespace Caneda
             painter->drawLine(tl, br);
             painter->drawLine(bl, tr);
         }
-    }
-
-    /*!
-     * \brief Check for connections and connect the coinciding ports.
-     *
-     * \return Returns the number of connections made.
-     */
-    int Component::checkAndConnect(Caneda::UndoOption opt)
-    {
-        int num_of_connections = 0;
-
-        // Find existing intersecting ports and connect
-        if(opt == Caneda::PushUndoCmd) {
-            cGraphicsScene()->undoStack()->beginMacro(QString());
-        }
-
-        foreach(Port *port, m_ports) {
-            Port *other = port->findCoincidingPort();
-            if(other) {
-                QList<Wire*> wires = Port::wiresBetween(port, other);
-
-                if(opt == Caneda::PushUndoCmd) {
-                    ConnectCmd *cmd = new ConnectCmd(port, other, wires, cGraphicsScene());
-                    cGraphicsScene()->undoStack()->push(cmd);
-                }
-                else {
-                    qDeleteAll(wires);
-                    port->connectTo(other);
-                }
-
-                num_of_connections++;
-            }
-        }
-
-        if(opt == Caneda::PushUndoCmd) {
-            cGraphicsScene()->undoStack()->endMacro();
-        }
-
-        return num_of_connections;
     }
 
     //! \brief Returns a copy of this component.

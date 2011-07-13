@@ -27,7 +27,6 @@ namespace Caneda
 {
     // Forward declarations
     class PropertiesGroup;
-    class Port;
     class PortData;
 
     //! Represents status of component - short, open or just active.
@@ -90,9 +89,6 @@ namespace Caneda
                   SvgPainter *svgPainter,
                   CGraphicsScene *scene = 0);
         ~Component();
-
-        //! Returns a list of ports of the component.
-        QList<Port*> ports() const { return m_ports; }
 
         //! Used for component identification at runtime.
         int type() const { return Component::Type; }
@@ -164,8 +160,6 @@ namespace Caneda
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
 
-        int checkAndConnect(Caneda::UndoOption opt);
-
         Component *copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(Component *comp) const;
 
@@ -187,8 +181,6 @@ namespace Caneda
         QSharedDataPointer<ComponentData> d;
         //! \brief Property group (ie property of this component)
         PropertiesGroup *m_propertyGroup;
-        //! \brief Ports list
-        QList<Port*> m_ports;
     };
 
     bool readComponentData(Caneda::XmlReader *reader, const QString& path,
