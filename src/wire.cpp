@@ -22,6 +22,7 @@
 
 #include "cgraphicsscene.h"
 #include "global.h"
+#include "settings.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -31,10 +32,6 @@
 
 namespace Caneda
 {
-    //! \todo Make these constants settings.
-    static const QColor unselectedWire(Qt::blue);
-    static const qreal wirewidth = 1.0;
-
     /*!
      * \brief Constructs a wire between \a startPos and \a endPos.
      *
@@ -98,11 +95,15 @@ namespace Caneda
         // Save painter
         QPen savedPen = painter->pen();
 
+        Settings *settings = Settings::instance();
+
         if(option->state & QStyle::State_Selected) {
-            painter->setPen(QPen(Caneda::invertcolor(unselectedWire), wirewidth));
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").value<qreal>()));
         }
         else {
-            painter->setPen(QPen(unselectedWire, wirewidth));
+            painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").value<qreal>()));
         }
 
         painter->drawLine(m_wLine);

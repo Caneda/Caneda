@@ -47,6 +47,9 @@ namespace Caneda
         data["gui/gridVisible"] = VariantPair(bool(true));
         data["gui/foregroundColor"] = VariantPair(QColor(Qt::darkGray));
         data["gui/backgroundColor"] = VariantPair(QColor(Qt::white));
+        data["gui/lineColor"] = VariantPair(QColor(Qt::blue));
+        data["gui/selectionColor"] = VariantPair(QColor(Qt::yellow));
+        data["gui/lineWidth"] = VariantPair(qreal(1.0));
         data["gui/font"] = VariantPair(QFont());
         data["gui/largeFontSize"] = VariantPair(qreal(16.0));
         data["gui/iconSize"] = VariantPair(QSize(24, 24));
