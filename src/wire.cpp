@@ -99,11 +99,11 @@ namespace Caneda
 
         if(option->state & QStyle::State_Selected) {
             painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
-                                 settings->currentValue("gui/lineWidth").value<qreal>()));
+                                 settings->currentValue("gui/lineWidth").toInt()));
         }
         else {
             painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
-                                 settings->currentValue("gui/lineWidth").value<qreal>()));
+                                 settings->currentValue("gui/lineWidth").toInt()));
         }
 
         painter->drawLine(m_wLine);

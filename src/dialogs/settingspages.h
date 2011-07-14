@@ -83,7 +83,7 @@ namespace Caneda
         QLineEdit *editLibrary;
         QFont font;
         QPushButton *buttonFont, *buttonForeground, *buttonBackground, *buttonLine, *buttonSelection;
-        QSpinBox *spinUndoNum, *spinIcons;
+        QSpinBox *spinUndoNum, *spinIcons, *spinWidth;
     };
 
     //! This class represents the simulation configuration page.

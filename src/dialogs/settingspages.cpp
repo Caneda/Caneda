@@ -129,6 +129,11 @@ namespace Caneda
             settings->currentValue("gui/selectionColor").value<QColor>();
         setBackgroundColor(buttonSelection, currentSelectionColor);
 
+        spinWidth = new QSpinBox;
+        spinWidth->setValue(settings->currentValue("gui/lineWidth").toInt());
+        spinWidth->setMinimum(1);
+        spinWidth->setMaximum(10);
+
         spinIcons = new QSpinBox;
         spinIcons->setValue(settings->currentValue("gui/iconSize").toSize().height());
         spinIcons->setMinimum(10);
@@ -148,6 +153,7 @@ namespace Caneda
         appereanceLayout->addRow(tr("Foreground color:"), buttonForeground);
         appereanceLayout->addRow(tr("Line color:"), buttonLine);
         appereanceLayout->addRow(tr("Selection color:"), buttonSelection);
+        appereanceLayout->addRow(tr("Line width:"), spinWidth);
         appereanceLayout->addRow(tr("Icons size:"), spinIcons);
 
 
@@ -286,6 +292,13 @@ namespace Caneda
         if(currentFont != newFont) {
             settings->setCurrentValue("gui/font", newFont);
             qApp->setFont(newFont);
+            changed = true;
+        }
+
+        const int currentLineWidth = settings->currentValue("gui/lineWidth").toInt();
+        const int newLineWidth = spinWidth->value();
+        if (currentLineWidth != newLineWidth) {
+            settings->setCurrentValue("gui/lineWidth", newLineWidth);
             changed = true;
         }
 
