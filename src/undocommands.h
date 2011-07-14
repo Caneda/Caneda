@@ -135,23 +135,6 @@ namespace Caneda
         QPointF m_pos;
     };
 
-    class AddWireBetweenPortsCmd : public QUndoCommand
-    {
-    public:
-        AddWireBetweenPortsCmd(Port *p1, Port* p2, QUndoCommand *parent = 0);
-        void undo();
-        void redo();
-
-        Wire* wire() const { return m_wire; }
-
-    private:
-        Port * const m_port1;
-        Port * const m_port2;
-        CGraphicsScene *m_scene;
-        Wire *m_wire;
-        QPointF m_pos;
-    };
-
     class WireStateChangeCmd : public QUndoCommand
     {
     public:
@@ -273,7 +256,7 @@ namespace Caneda
         QString m_newPropertyText;
     };
 
-    class GraphicText;
+    class GraphicText;  // Forward declaration
 
     class GraphicTextChangeCmd : public QUndoCommand
     {

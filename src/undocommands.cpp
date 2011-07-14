@@ -274,50 +274,6 @@ namespace Caneda
 
     /*
     ##########################################################################
-    #                         AddWireBetweenPortsCmd                         #
-    ##########################################################################
-    */
-
-    AddWireBetweenPortsCmd::AddWireBetweenPortsCmd(Port *p1, Port *p2, QUndoCommand *parent) :
-        QUndoCommand(parent), m_port1(p1), m_port2(p2)
-    {
-        m_scene = m_port1->cGraphicsScene();
-        m_wire = new Wire(m_port1->pos(), m_port2->pos(), m_scene);
-        m_pos = m_wire->scenePos();
-    }
-
-    void AddWireBetweenPortsCmd::undo()
-    {
-        QString port1Name = m_port1->owner()->component() ?
-            m_port1->owner()->component()->name() : "Wire";
-        QString port2Name = m_port2->owner()->component() ?
-            m_port2->owner()->component()->name() : "Wire";
-
-
-        m_wire->port1()->disconnectFrom(m_port1);
-        m_wire->port2()->disconnectFrom(m_port2);
-        m_scene->removeItem(m_wire);
-    }
-
-    void AddWireBetweenPortsCmd::redo()
-    {
-        QString port1Name = m_port1->owner()->component() ?
-            m_port1->owner()->component()->name() : "Wire";
-        QString port2Name = m_port2->owner()->component() ?
-            m_port2->owner()->component()->name() : "Wire";
-
-
-        m_scene->addItem(m_wire);
-        m_wire->setPos(m_pos);
-        m_wire->port1()->connectTo(m_port1);
-        m_wire->port2()->connectTo(m_port2);
-
-        Q_ASSERT(m_wire->port1()->connections() == m_port1->connections());
-        Q_ASSERT(m_wire->port2()->connections() == m_port2->connections());
-    }
-
-    /*
-    ##########################################################################
     #                           WireStateChangeCmd                           #
     ##########################################################################
     */
