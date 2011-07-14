@@ -2448,7 +2448,6 @@ namespace Caneda
      *
      * \param qItems: item to connect
      * \param opt: undo option
-     * \todo remove the cast and create a class connectable item
      */
     void CGraphicsScene::disconnectItems(const QList<CGraphicsItem*> &qItems,
             const Caneda::UndoOption opt)
@@ -2458,15 +2457,7 @@ namespace Caneda
         }
 
         foreach(CGraphicsItem *item, qItems) {
-            QList<Port*> ports;
-
-            // Remove this cast
-            if(item->isComponent()) {
-                ports = canedaitem_cast<Component*>(item)->ports();
-            }
-            else if(item->isWire()) {
-                ports = canedaitem_cast<Wire*>(item)->ports();
-            }
+            QList<Port*> ports = item->ports();
 
             foreach(Port *p, ports) {
                 Port *other = p->getAnyConnectedPort();
