@@ -247,7 +247,7 @@ namespace Caneda
          * \brief List of components whose port's needs to be disconencted
          *        due to mouse events
          */
-        QList<Component*> disconnectibles;
+        QList<CGraphicsItem*> disconnectibles;
 
         /*!
          * \brief List of CGraphicsItem which are to be placed/pasted.
