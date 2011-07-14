@@ -119,6 +119,16 @@ namespace Caneda
             settings->currentValue("gui/foregroundColor").value<QColor>();
         setBackgroundColor(buttonForeground, currentForegroundColor);
 
+        buttonLine = new QPushButton;
+        const QColor currentLineColor =
+            settings->currentValue("gui/lineColor").value<QColor>();
+        setBackgroundColor(buttonLine, currentLineColor);
+
+        buttonSelection = new QPushButton;
+        const QColor currentSelectionColor =
+            settings->currentValue("gui/selectionColor").value<QColor>();
+        setBackgroundColor(buttonSelection, currentSelectionColor);
+
         spinIcons = new QSpinBox;
         spinIcons->setValue(settings->currentValue("gui/iconSize").toSize().height());
         spinIcons->setMinimum(10);
@@ -127,13 +137,17 @@ namespace Caneda
         connect(buttonFont, SIGNAL(clicked()), SLOT(slotFontDialog()));
         connect(buttonBackground, SIGNAL(clicked()), SLOT(slotBGColorDialog()));
         connect(buttonForeground, SIGNAL(clicked()), SLOT(slotFGColorDialog()));
+        connect(buttonLine, SIGNAL(clicked()), SLOT(slotLNColorDialog()));
+        connect(buttonSelection, SIGNAL(clicked()), SLOT(slotSLColorDialog()));
 
         QGroupBox *appereance = new QGroupBox(tr("Appereance"), this);
         QFormLayout *appereanceLayout = new QFormLayout(appereance);
         appereanceLayout->addRow(tr("Show grid:"), checkShowGrid);
         appereanceLayout->addRow(tr("Fonts:"), buttonFont);
-        appereanceLayout->addRow(tr("Document background color:"), buttonBackground);
-        appereanceLayout->addRow(tr("Document foreground color:"), buttonForeground);
+        appereanceLayout->addRow(tr("Background color:"), buttonBackground);
+        appereanceLayout->addRow(tr("Foreground color:"), buttonForeground);
+        appereanceLayout->addRow(tr("Line color:"), buttonLine);
+        appereanceLayout->addRow(tr("Selection color:"), buttonSelection);
         appereanceLayout->addRow(tr("Icons size:"), spinIcons);
 
 
@@ -202,6 +216,24 @@ namespace Caneda
         }
     }
 
+    void GeneralConfigurationPage::slotLNColorDialog()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(buttonLine), this);
+        if(c.isValid()) {
+            setBackgroundColor(buttonLine,c);
+        }
+    }
+
+    void GeneralConfigurationPage::slotSLColorDialog()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(buttonSelection), this);
+        if(c.isValid()) {
+            setBackgroundColor(buttonSelection,c);
+        }
+    }
+
     //! Applies the configuration of this page
     void GeneralConfigurationPage::applyConf()
     {
@@ -230,6 +262,22 @@ namespace Caneda
         const QColor newForegroundColor = getBackgroundColor(buttonForeground);
         if (currentForegroundColor != newForegroundColor) {
             settings->setCurrentValue("gui/foregroundColor", newForegroundColor);
+            changed = true;
+        }
+
+        const QColor currentLineColor =
+            settings->currentValue("gui/lineColor").value<QColor>();
+        const QColor newLineColor = getBackgroundColor(buttonLine);
+        if (currentLineColor != newLineColor) {
+            settings->setCurrentValue("gui/lineColor", newLineColor);
+            changed = true;
+        }
+
+        const QColor currentSelectionColor =
+            settings->currentValue("gui/selectionColor").value<QColor>();
+        const QColor newSelectionColor = getBackgroundColor(buttonSelection);
+        if (currentSelectionColor != newSelectionColor) {
+            settings->setCurrentValue("gui/selectionColor", newSelectionColor);
             changed = true;
         }
 

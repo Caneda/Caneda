@@ -68,6 +68,8 @@ namespace Caneda
         void slotFontDialog();
         void slotBGColorDialog();
         void slotFGColorDialog();
+        void slotLNColorDialog();
+        void slotSLColorDialog();
 
     public:
         void applyConf();
@@ -80,7 +82,7 @@ namespace Caneda
         QCheckBox *checkShowGrid;
         QLineEdit *editLibrary;
         QFont font;
-        QPushButton *buttonFont, *buttonForeground, *buttonBackground;
+        QPushButton *buttonFont, *buttonForeground, *buttonBackground, *buttonLine, *buttonSelection;
         QSpinBox *spinUndoNum, *spinIcons;
     };
 
