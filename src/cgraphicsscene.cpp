@@ -1939,38 +1939,30 @@ namespace Caneda
             if(_item) {
                 // Check for disconnections and wire resizing
                 foreach(Port *port, _item->ports()) {
+
                     QList<Port*> *connections = port->connections();
-                    if(!connections) {
-                        continue;
-                    }
+                    if(connections) {
 
-                    foreach(Port *other, *connections) {
-                        if(other == port ) {
-                            continue;
-                        }
+                        foreach(Port *other, *connections) {
 
-                        // The item connected is a component
-                        Component *otherComponent = other->owner()->component();
-                        // Determine whether the ports "other" and "port" should
-                        // be disconnected.
-                        if(otherComponent && !otherComponent->isSelected()) {
-                            disconnectibles << _item;
-                            break;
-                        }
-
-                        // The item connected is a wire
-                        Wire *wire = other->owner()->wire();
-                        if(wire && !wire->isSelected()) {
-                            // Determine whether this wire should be resized or not
-                            // ie, the other end of the wire has components not
-                            // selected
-                            Port* otherPort = wire->port1() == other ? wire->port2() :
-                                wire->port1();
-                            if(!otherPort->areAllOwnersSelected()) {
-                                movingWires << wire;
-                                wire->storeState();
+                            // The item connected is a component
+                            Component *otherComponent = other->owner()->component();
+                            // Determine whether the ports "other" and "port" should
+                            // be disconnected.
+                            if(otherComponent && !otherComponent->isSelected()) {
+                                disconnectibles << _item;
                             }
+
+                            // The item connected is a wire
+                            Wire *wire = other->owner()->wire();
+                            // Determine whether this wire should be resized or
+                            // moved.
+                            if(wire && !wire->isSelected()) {
+                                movingWires << wire;
+                            }
+
                         }
+
                     }
                 }
             }
@@ -2023,6 +2015,8 @@ namespace Caneda
     void CGraphicsScene::specialMove()
     {
         foreach(Wire *wire, movingWires) {
+            
+            wire->storeState();
 
             if(wire->port1()->connections()) {
                 foreach(Port *other, *(wire->port1()->connections())) {
@@ -2065,7 +2059,6 @@ namespace Caneda
         }
 
         foreach(Wire *wire, movingWires) {
-            wire->movePort1(wire->port1()->pos());
             m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
                         wire->currentState()));
         }

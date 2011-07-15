@@ -64,7 +64,7 @@ namespace Caneda
             return static_cast<Wire*>(m_item);
         }
         else {
-            return 0;
+            return NULL;
         }
     }
 
