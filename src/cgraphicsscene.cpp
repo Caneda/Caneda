@@ -93,15 +93,7 @@ namespace Caneda
         m_snapToGrid = true;
 
         m_backgroundVisible = true;
-        m_frameVisible = false;
         m_modified = false;
-
-        m_frameTexts = QStringList() << tr("Title: ") << tr("Drawn By: ")
-            << tr("Date: ") + QDate::currentDate().toString() << tr("Revision: ");
-        m_frameRows = 11;
-        m_frameColumns = 16;
-        m_frameWidth = 1024;
-        m_frameHeight = 768;
 
         m_areItemsMoving = false;
         m_shortcutsBlocked = false;
@@ -394,43 +386,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Method that unifies various property setters.
-     *
-     * \param propName The property which is to be set.
-     * \param value The new value to be set.
-     * \return Returns true if successful, else returns false.
-     */
-    bool CGraphicsScene::setProperty(const QString& propName, const QVariant& value)
-    {
-        if(propName == "frame visibility") {
-            setFrameVisible(value.toBool());
-            return true;
-        }
-        else if(propName == "document properties") {
-            setFrameTexts(value.toStringList());
-            return true;
-        }
-        else if(propName == "frame rows") {
-            setFrameGeometry(value.toInt(), frameColumns());
-            return true;
-        }
-        else if(propName == "frame columns") {
-            setFrameGeometry(frameRows(), value.toInt());
-            return true;
-        }
-        else if(propName == "frame width") {
-            setFrameSize(value.toInt(), frameHeight());
-            return true;
-        }
-        else if(propName == "frame height") {
-            setFrameSize(frameWidth(), value.toInt());
-            return true;
-        }
-
-        return false;
-    }
-
-    /*!
      * \brief Makes the background color visible.
      *
      * \param visibility Set true of false to show or hide the background color.
@@ -447,68 +402,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Makes the outer frame visible.
-     *
-     * The frame is the outer rectangles with printed fields to enter name and other
-     * properties of the scene diagram.
-     *
-     * \param visibility Set true of false to show or hide the frame.
-     */
-    void CGraphicsScene::setFrameVisible(const bool visibility)
-    {
-        /* avoid updating */
-        if(m_frameVisible == visibility) {
-            return;
-        }
-
-        m_frameVisible = visibility;
-        update();
-    }
-
-    /*!
-     * \brief Sets current scene's frame texts.
-     *
-     * \param texts The texts to be set
-     */
-    void CGraphicsScene::setFrameTexts(const QStringList& texts)
-    {
-        m_frameTexts = texts;
-        if(isFrameVisible()) {
-            update();
-        }
-    }
-
-    /*!
-     * \brief Sets current scene's frame geometry.
-     *
-     * \param rows Number of rows to be set
-     * \param columns Number of columns to be set
-     */
-    void CGraphicsScene::setFrameGeometry(int rows, int columns)
-    {
-        m_frameRows = rows;
-        m_frameColumns = columns;
-        if(isFrameVisible()) {
-            update();
-        }
-    }
-
-    /*!
-     * \brief Sets current scene's frame size.
-     *
-     * \param width Width of frame to be set
-     * \param heigth Heigth of frame to be set
-     */
-    void CGraphicsScene::setFrameSize(int width, int heigth)
-    {
-        m_frameWidth = width;
-        m_frameHeight = heigth;
-        if(isFrameVisible()) {
-            update();
-        }
-    }
-
-    /*!
      * \brief Exports the scene to an image
      *
      * @return bool True on success, false otherwise
@@ -516,7 +409,7 @@ namespace Caneda
     bool CGraphicsScene::toPaintDevice(QPaintDevice &pix, qreal width, qreal height,
             Qt::AspectRatioMode aspectRatioMode)
     {
-        QRectF source_area = imageBoundingRect();
+        QRectF source_area = itemsBoundingRect();
 
         // we move the origin to fit in grid
         QPointF newOrigin = smartNearingGridPoint(source_area.topLeft());
@@ -565,22 +458,6 @@ namespace Caneda
         }
 
         return(true);
-    }
-
-    /*!
-     * \brief Used to know the dimensions of the image
-     *
-     * @return The bounding rect of the image
-     */
-    QRectF CGraphicsScene::imageBoundingRect() const
-    {
-        if(!isFrameVisible()) {
-            return itemsBoundingRect();
-        }
-        else {
-            return QRectF(-frameWidth()/2, -frameHeight()/2,
-                          frameWidth(), frameHeight());
-        }
     }
 
     /*!
@@ -820,11 +697,6 @@ namespace Caneda
 
         const QPointF origin(0, 0);
 
-        // Draw frame
-        if(isFrameVisible()) {
-            painter->drawPath(frame());
-        }
-
         // Draw origin
         if(rect.contains(origin)) {
             painter->drawLine(QLineF(origin.x() - 3.0, origin.y(),
@@ -877,71 +749,6 @@ namespace Caneda
         // Restore painter
         painter->setRenderHint(QPainter::Antialiasing, true);
         painter->setPen(savedpen);
-    }
-
-    /*!
-     * \brief Return a frame item
-     */
-    QPainterPath CGraphicsScene::frame()
-    {
-        QPainterPath frame;
-
-        QFont frameFont = QApplication::font();
-
-        foreach(QString frame_text, m_frameTexts){
-            if(frame_text.contains("Title: ")) {
-                frame.addText(frameWidth()/3, frameHeight()-30, frameFont, frame_text);
-            }
-            else if(frame_text.contains("Drawn By: ")) {
-                frame.addText(10, frameHeight()-30, frameFont, frame_text);
-            }
-            else if(frame_text.contains("Date: ")) {
-                frame.addText(10, frameHeight()-10, frameFont,  frame_text);
-            }
-            else if(frame_text.contains("Revision: ")) {
-                frame.addText(frameWidth()*4/5, frameHeight()-30, frameFont, frame_text);
-            }
-        }
-
-        // Next we draw the footer lines
-        //Bounding rect
-        frame.addRect(0, 0, frameWidth(), frameHeight());
-        //Upper footer line
-        frame.moveTo(0, frameHeight()-50);
-        frame.lineTo(frameWidth(), frameHeight()-50);
-        //Name division
-        frame.moveTo(frameWidth()/3-20, frameHeight()-50);
-        frame.lineTo(frameWidth()/3-20, frameHeight());
-        //Title division
-        frame.moveTo(frameWidth()*4/5-20, frameHeight()-50);
-        frame.lineTo(frameWidth()*4/5-20, frameHeight());
-        //Left line
-        frame.moveTo(20, 0);
-        frame.lineTo(20, frameHeight()-50);
-        //Upper line
-        frame.moveTo(0, 20);
-        frame.lineTo(frameWidth(), 20);
-
-        //Finally we draw the rows and columns
-        //Row numbering
-        int step = (frameHeight()-20-50) / frameRows();
-        for(int i=1; i<frameRows()+1; i++) {
-            frame.moveTo(0, i*step+20);
-            frame.lineTo(20, i*step+20);
-            frame.addText(6, (i*step)-(step/2)+20, frameFont, QString(QChar('A'+i-1)));
-        }
-        //Column numbering
-        step = (frameWidth()-20) / frameColumns();
-        for(int i=1; i<frameColumns()+1; i++) {
-            frame.moveTo(i*step+20, 0);
-            frame.lineTo(i*step+20, 20);
-            frame.addText((i*step)-(step/2)+20, 16, frameFont, QString::number(i));
-        }
-
-        //Center the frame in the origin
-        frame.translate(-frameWidth()/2, -frameHeight()/2);
-
-        return frame;
     }
 
     /*!

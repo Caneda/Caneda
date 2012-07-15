@@ -56,25 +56,6 @@ namespace Caneda
         Component *const m_component;
     };
 
-    class ScenePropertyChangeCmd : public QUndoCommand
-    {
-    public:
-        ScenePropertyChangeCmd(const QString& propertyName,
-                const QVariant& newValue,
-                const QVariant& oldValue,
-                CGraphicsScene *const scene,
-                QUndoCommand *parent = 0);
-
-        virtual void undo();
-        virtual void redo();
-
-    private:
-        const QString m_property;
-        const QVariant m_newValue;
-        const QVariant m_oldValue;
-        CGraphicsScene *const m_scene;
-    };
-
     class MoveCmd : public QUndoCommand
     {
     public:

@@ -451,67 +451,6 @@ namespace Caneda
 
         m_scene = scene;
 
-        //We set the frame group of options **********************************
-        checkShowFrame = new QCheckBox;
-        checkShowFrame->setChecked(m_scene->isFrameVisible());
-
-        spinSchemaX = new QSpinBox;
-        spinSchemaX->setMinimum(500);
-        spinSchemaX->setMaximum(10000);
-        spinSchemaX->setValue(m_scene->frameWidth());
-
-        spinSchemaY = new QSpinBox;
-        spinSchemaY->setMinimum(300);
-        spinSchemaY->setMaximum(10000);
-        spinSchemaY->setValue(m_scene->frameHeight());
-
-        spinFrameY = new QSpinBox;
-        spinFrameY->setMinimum(1);
-        spinFrameY->setMaximum(50);
-        spinFrameY->setValue(m_scene->frameRows());
-
-        spinFrameX = new QSpinBox;
-        spinFrameX->setMinimum(1);
-        spinFrameX->setMaximum(50);
-        spinFrameX->setValue(m_scene->frameColumns());
-
-        QGroupBox *frame = new QGroupBox(tr("Frame"), this);
-        QFormLayout *frameLayout = new QFormLayout(frame);
-        frameLayout->addRow(tr("Show frame:"), checkShowFrame);
-        frameLayout->addRow(tr("Frame Width:"), spinSchemaX);
-        frameLayout->addRow(tr("Frame Height:"), spinSchemaY);
-        frameLayout->addRow(tr("Frame Rows:"), spinFrameY);
-        frameLayout->addRow(tr("Frame Columns:"), spinFrameX);
-
-
-        //Next we set the document group of options *******************************
-        editTitle = new QLineEdit;
-        editName = new QLineEdit;
-        editRevision = new QLineEdit;
-        editDate = new QDateEdit;
-        foreach(QString frame_text, m_scene->frameTexts()){
-            if(frame_text.contains("Title: ")) {
-                editTitle->setText(frame_text.remove("Title: "));
-            }
-            else if(frame_text.contains("Drawn By: ")) {
-                editName->setText(frame_text.remove("Drawn By: "));
-            }
-            else if(frame_text.contains("Revision: ")) {
-                editRevision->setText(frame_text.remove("Revision: "));
-            }
-            else if(frame_text.contains("Date: ")) {
-                editDate->setDate(QDate::fromString(frame_text.remove("Date: ")));
-            }
-        }
-
-        QGroupBox *document = new QGroupBox(tr("Document"), this);
-        QFormLayout *documentLayout = new QFormLayout(document);
-        documentLayout->addRow(tr("Title:"), editTitle);
-        documentLayout->addRow(tr("Name:"), editName);
-        documentLayout->addRow(tr("Revision:"), editRevision);
-        documentLayout->addRow(tr("Date:"), editDate);
-
-
         //Finally we set the general layout of all groups *************************
         QVBoxLayout *vlayout1 = new QVBoxLayout();
         QLabel *title_label_ = new QLabel(title());
@@ -520,9 +459,6 @@ namespace Caneda
         QFrame *horiz_line_ = new QFrame();
         horiz_line_->setFrameShape(QFrame::HLine);
         vlayout1->addWidget(horiz_line_);
-
-        vlayout1->addWidget(frame);
-        vlayout1->addWidget(document);
 
         vlayout1->addStretch();
 
@@ -539,72 +475,6 @@ namespace Caneda
       */
     void SchematicDocumentConfigurationPage::applyConf()
     {
-        bool changed = false;
-
-        if(m_scene->isFrameVisible() != checkShowFrame->isChecked()) {
-            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame visibility",
-                        checkShowFrame->isChecked(), m_scene->isFrameVisible(), m_scene));
-            m_scene->setFrameVisible(checkShowFrame->isChecked());
-            changed = true;
-        }
-        if(m_scene->frameWidth() != spinSchemaX->value()) {
-            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame width",
-                        spinSchemaX->value(), m_scene->frameWidth(), m_scene));
-            m_scene->setFrameSize(spinSchemaX->value(), m_scene->frameHeight());
-            changed = true;
-        }
-        if(m_scene->frameHeight() != spinSchemaY->value()) {
-            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame height",
-                        spinSchemaY->value(), m_scene->frameHeight(), m_scene));
-            m_scene->setFrameSize(m_scene->frameWidth(), spinSchemaY->value());
-            changed = true;
-        }
-        if(m_scene->frameRows() != spinFrameY->value()) {
-            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame rows",
-                        spinFrameY->value(), m_scene->frameRows(), m_scene));
-            m_scene->setFrameGeometry(spinFrameY->value(), m_scene->frameColumns());
-            changed = true;
-        }
-        if(m_scene->frameColumns() != spinFrameX->value()) {
-            m_scene->undoStack()->push(new ScenePropertyChangeCmd("frame columns",
-                        spinFrameX->value(), m_scene->frameColumns(), m_scene));
-            m_scene->setFrameGeometry(m_scene->frameRows(), spinFrameX->value());
-            changed = true;
-        }
-
-
-        bool modified = false;
-        if(!m_scene->frameTexts().contains(tr("Title: ")+editTitle->text())) {
-            modified = true;
-            changed = true;
-        }
-        else if(!m_scene->frameTexts().contains(tr("Drawn By: ")+editName->text())) {
-            modified = true;
-            changed = true;
-        }
-        else if(!m_scene->frameTexts().contains(tr("Date: ")+editDate->date().toString())) {
-            modified = true;
-            changed = true;
-        }
-        else if(!m_scene->frameTexts().contains(tr("Revision: ")+editRevision->text())) {
-            modified = true;
-            changed = true;
-        }
-
-        if(modified) {
-            QStringList documentProperties = QStringList() <<
-                tr("Title: ")+editTitle->text() << tr("Drawn By: ")+editName->text() <<
-                tr("Date: ")+editDate->date().toString() <<
-                tr("Revision: ")+editRevision->text();
-            m_scene->undoStack()->push(new ScenePropertyChangeCmd("document properties",
-                        documentProperties, m_scene->frameTexts(), m_scene));
-            m_scene->setFrameTexts(documentProperties);
-        }
-
-        if(changed) {
-            MainWindow::instance()->slotUpdateSettingsChanges();
-            MainWindow::instance()->repaint();
-        }
     }
 
     //! @return Icon of this page

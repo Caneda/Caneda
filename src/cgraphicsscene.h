@@ -109,28 +109,11 @@ namespace Caneda
         void toggleActiveStatus(QList<CGraphicsItem*> &components, const Caneda::UndoOption);
 
         // Document properties
-        bool setProperty(const QString& propName, const QVariant& value);
-
         bool isBackgroundVisible() const { return m_backgroundVisible; }
         void setBackgroundVisible(bool vis);
 
-        bool isFrameVisible() const { return m_frameVisible; }
-        void setFrameVisible(bool vis);
-
-        QStringList frameTexts() const { return m_frameTexts; }
-        void setFrameTexts(const QStringList& texts);
-
-        int frameRows() const { return m_frameRows; }
-        int frameColumns() const { return m_frameColumns; }
-        void setFrameGeometry(int rows, int columns);
-
-        int frameWidth() const { return m_frameWidth; }
-        int frameHeight() const { return m_frameHeight; }
-        void setFrameSize(int width, int height);
-
         bool toPaintDevice(QPaintDevice &, qreal = -1, qreal = -1,
                 Qt::AspectRatioMode = Qt::KeepAspectRatio);
-        QRectF imageBoundingRect() const;
 
         bool snapToGrid() const { return m_snapToGrid; }
         void setSnapToGrid(const bool snap) { m_snapToGrid = snap; }
@@ -178,8 +161,6 @@ namespace Caneda
         void wheelEvent(QGraphicsSceneWheelEvent *e);
 
     private:
-        QPainterPath frame();
-
         // Custom handlers
         void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
         void resetState();
@@ -318,12 +299,6 @@ namespace Caneda
         bool m_backgroundVisible;
 
         /*!
-         * \brief Flag to hold whether a frame should be drawn or not
-         * \sa setFrameVisible
-         */
-        bool m_frameVisible;
-
-        /*!
          * \brief Flag to hold whether or not snap to grid is set
          * \sa setSnapToGrid
          */
@@ -336,14 +311,6 @@ namespace Caneda
         QGraphicsRectItem *m_zoomBand;
         QRectF m_zoomRect;
         int m_zoomBandClicks;
-
-        //Document properties
-        //! Frame texts
-        QStringList m_frameTexts;
-        //! Frame geometry
-        int m_frameRows, m_frameColumns;
-        //! Frame size
-        int m_frameWidth, m_frameHeight;
 
         //! Undo stack state
         QUndoStack *m_undoStack;

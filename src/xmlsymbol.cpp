@@ -72,7 +72,7 @@ namespace Caneda
         QSvgGenerator svg_engine;
         QFileInfo info(schematicDocument()->fileName());
         svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
-        scene->toPaintDevice(svg_engine, scene->imageBoundingRect().width(), scene->imageBoundingRect().height());
+        scene->toPaintDevice(svg_engine, scene->itemsBoundingRect().width(), scene->itemsBoundingRect().height());
 
         Settings::instance()->setCurrentValue("gui/gridVisible", viewGridStatus);
 
@@ -129,7 +129,7 @@ namespace Caneda
                     writer->writeAttribute("name", c->label());
 
                     // We adjust the port to fit in grid
-                    QRectF source_area = scene->imageBoundingRect();
+                    QRectF source_area = scene->itemsBoundingRect();
                     QPointF newOrigin = scene->smartNearingGridPoint(source_area.topLeft());
                     source_area.setLeft(newOrigin.x());
                     source_area.setTop(newOrigin.y());

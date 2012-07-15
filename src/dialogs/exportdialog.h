@@ -38,7 +38,7 @@ namespace Caneda
      */
     class ExportDialog : public QDialog
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         ExportDialog(IDocument *, CGraphicsScene *, QWidget *parent = 0);
@@ -56,7 +56,6 @@ namespace Caneda
 
     private:
         qreal diagramRatio();
-        QSizeF diagramSize();
 
         QImage generateImage();
         void generateSvg(QFile &);

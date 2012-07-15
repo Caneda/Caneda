@@ -39,7 +39,8 @@ namespace Caneda
      */
     class SettingsPage : public QWidget
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         SettingsPage(QWidget *parent);
         virtual ~SettingsPage();
@@ -58,7 +59,7 @@ namespace Caneda
     //! This class represents the general configuration page.
     class GeneralConfigurationPage : public SettingsPage
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         GeneralConfigurationPage(QWidget *parent = 0);
@@ -89,7 +90,7 @@ namespace Caneda
     //! This class represents the simulation configuration page.
     class SimulationConfigurationPage : public SettingsPage
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         SimulationConfigurationPage(QWidget *parent = 0);
@@ -108,7 +109,7 @@ namespace Caneda
     //! This class represents the document configuration page.
     class SchematicDocumentConfigurationPage : public SettingsPage
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         SchematicDocumentConfigurationPage(CGraphicsScene *scene, QWidget *parent = 0);
@@ -124,18 +125,13 @@ namespace Caneda
 
         QLabel *title_label_;
         QFrame *horiz_line_;
-
-        QCheckBox *checkShowFrame;
-        QSpinBox *spinSchemaX, *spinSchemaY, *spinFrameX, *spinFrameY;
-        QLineEdit *editName, *editTitle, *editRevision;
-        QDateEdit *editDate;
     };
 
 
     //! This class represents the hdl configuration page
     class HdlConfigurationPage : public SettingsPage
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         HdlConfigurationPage(QWidget *parent = 0);
@@ -168,7 +164,7 @@ namespace Caneda
     //! This class represents the layout configuration page
     class LayoutConfigurationPage : public SettingsPage
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         LayoutConfigurationPage(QWidget *parent = 0);

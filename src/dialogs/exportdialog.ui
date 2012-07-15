@@ -190,16 +190,6 @@
       <item row="1" column="1">
        <widget class="QCheckBox" name="checkDrawGrid"/>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelDrawFrame">
-        <property name="text">
-         <string>Draw Frame</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QCheckBox" name="checkDrawFrame"/>
-      </item>
      </layout>
     </widget>
    </item>

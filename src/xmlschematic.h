@@ -48,14 +48,12 @@ namespace Caneda
     private:
         QString saveText();
         void saveSchematics(Caneda::XmlWriter *writer);
-        void saveView(Caneda::XmlWriter *writer);
         void saveComponents(Caneda::XmlWriter *writer);
         void saveWires(Caneda::XmlWriter *writer);
         void savePaintings(Caneda::XmlWriter *writer);
 
         bool loadFromText(const QString& text);
         void loadSchematics(Caneda::XmlReader *reader);
-        void loadView(Caneda::XmlReader *reader);
         void loadComponents(Caneda::XmlReader *reader);
         void loadWires(Caneda::XmlReader *reader);
         void loadPaintings(Caneda::XmlReader *reader);

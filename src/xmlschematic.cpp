@@ -156,28 +156,9 @@ namespace Caneda
 
     void XmlSchematic::saveSchematics(Caneda::XmlWriter *writer)
     {
-        saveView(writer);
         saveComponents(writer);
         saveWires(writer);
         savePaintings(writer);
-    }
-
-    void XmlSchematic::saveView(Caneda::XmlWriter *writer)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-        writer->writeStartElement("view");
-
-        writer->writeStartElement("frame");
-        writer->writeAttribute("visible", Caneda::boolToString(scene->isFrameVisible()));
-        writer->writeSize(QSize(scene->frameWidth(), scene->frameHeight()), "size");
-        writer->writeSize(QSize(scene->frameColumns(), scene->frameRows()), "geometry");
-        writer->writeStartElement("frametexts");
-        foreach(QString text, scene->frameTexts()) {
-            writer->writeElement("text",text);
-        }
-        writer->writeEndElement(); //</frametexts>
-        writer->writeEndElement(); //</frame>
-        writer->writeEndElement(); //</view>
     }
 
     void XmlSchematic::saveComponents(Caneda::XmlWriter *writer)
@@ -274,10 +255,7 @@ namespace Caneda
     void XmlSchematic::loadSchematics(Caneda::XmlReader* reader)
     {
         if(reader->isStartElement()) {
-            if(reader->name() == "view") {
-                loadView(reader);
-            }
-            else if(reader->name() == "components") {
+            if(reader->name() == "components") {
                 loadComponents(reader);
             }
             else if(reader->name() == "wires") {
@@ -289,80 +267,6 @@ namespace Caneda
             else {
                 reader->readUnknownElement();
             }
-        }
-    }
-
-    void XmlSchematic::loadView(Caneda::XmlReader *reader)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-        if(!reader->isStartElement() || reader->name() != "view") {
-            reader->raiseError(QObject::tr("Malformatted file"));
-        }
-
-        bool frameVisible = false;
-        QSize frameGeometry;
-        QSize frameSize;
-        QStringList frameTexts;
-
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                Q_ASSERT(reader->name() == "view");
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                if(reader->name() == "frame") {
-                    QString att = reader->attributes().value("visible").toString();
-                    att = att.toLower();
-                    if(att != "true" && att != "false") {
-                        reader->raiseError(QObject::tr("Invalid bool attribute"));
-                        break;
-                    }
-                    frameVisible = (att == "true");
-
-                    reader->readFurther();
-                    if(reader->isStartElement() && reader->name() == "size") {
-                        frameSize = reader->readSize();
-                    }
-
-                    reader->readFurther();
-                    if(reader->isStartElement() && reader->name() == "geometry") {
-                        frameGeometry = reader->readSize();
-                    }
-
-                    reader->readFurther();
-                    if(reader->isStartElement() && reader->name() == "frametexts") {
-                        while(!reader->atEnd()) {
-                            reader->readNext();
-                            if(reader->isEndElement()) {
-                                Q_ASSERT(reader->name() == "frametexts");
-                                break;
-                            }
-
-                            if(reader->isStartElement()) {
-                                if(reader->name() == "text") {
-                                    QString text = reader->readElementText();
-                                    frameTexts << text;
-                                }
-                                else {
-                                    reader->readUnknownElement();
-                                }
-                            }
-                        }
-                    }
-                    reader->readFurther();
-                    Q_ASSERT(reader->isEndElement() && reader->name() == "frame");
-                }
-            }
-        }
-
-        if(!reader->hasError()) {
-            scene->setFrameVisible(frameVisible);
-            scene->setFrameSize(frameSize.width(), frameSize.height());
-            scene->setFrameGeometry(frameGeometry.height(), frameGeometry.width());
-            scene->setFrameTexts(frameTexts);
         }
     }
 

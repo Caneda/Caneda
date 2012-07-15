@@ -61,34 +61,6 @@ namespace Caneda
 
     /*
     ##########################################################################
-    #                         ScenePropertyChangeCmd                         #
-    ##########################################################################
-    */
-
-    ScenePropertyChangeCmd::ScenePropertyChangeCmd(const QString& propertyName,
-            const QVariant& newValue,
-            const QVariant& oldValue,
-            CGraphicsScene *const scene,
-            QUndoCommand *parent) :
-        QUndoCommand(parent),
-        m_property(propertyName), m_newValue(newValue), m_oldValue(oldValue),
-        m_scene(scene)
-    {
-        setText(QString("Changed ") + propertyName);
-    }
-
-    void ScenePropertyChangeCmd::undo()
-    {
-        m_scene->setProperty(m_property, m_oldValue);
-    }
-
-    void ScenePropertyChangeCmd::redo()
-    {
-        m_scene->setProperty(m_property, m_newValue);
-    }
-
-    /*
-    ##########################################################################
     #                                 MoveCmd                                #
     ##########################################################################
     */

@@ -47,11 +47,9 @@ namespace Caneda
 
     private:
         QString saveText();
-        void saveView(Caneda::XmlWriter *writer);
         void savePaintings(Caneda::XmlWriter *writer);
 
         bool loadFromText(const QString& text);
-        void loadView(Caneda::XmlReader *reader);
         void loadPaintings(Caneda::XmlReader *reader);
 
         LayoutDocument *m_layoutDocument;

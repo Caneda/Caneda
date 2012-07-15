@@ -155,7 +155,7 @@ namespace Caneda
         const bool viewGridStatus = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
         Settings::instance()->setCurrentValue("gui/gridVisible", false);
 
-        const QRectF diagramRect = m_cGraphicsScene->imageBoundingRect();
+        const QRectF diagramRect = m_cGraphicsScene->itemsBoundingRect();
         if(fitInView) {
             m_cGraphicsScene->render(&p,
                     QRectF(), // Dest rect

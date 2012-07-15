@@ -101,7 +101,6 @@ namespace Caneda
         writer->writeAttribute("version", Caneda::version());
 
         //Now we copy all the elements and properties in the schematic
-        saveView(writer);
         savePaintings(writer);
 
         //Finally we finish the document
@@ -109,24 +108,6 @@ namespace Caneda
 
         delete writer;
         return retVal;
-    }
-
-    void XmlLayout::saveView(Caneda::XmlWriter *writer)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-        writer->writeStartElement("view");
-
-        writer->writeStartElement("frame");
-        writer->writeAttribute("visible", Caneda::boolToString(scene->isFrameVisible()));
-        writer->writeSize(QSize(scene->frameWidth(), scene->frameHeight()), "size");
-        writer->writeSize(QSize(scene->frameColumns(), scene->frameRows()), "geometry");
-        writer->writeStartElement("frametexts");
-        foreach(QString text, scene->frameTexts()) {
-            writer->writeElement("text",text);
-        }
-        writer->writeEndElement(); //</frametexts>
-        writer->writeEndElement(); //</frame>
-        writer->writeEndElement(); //</view>
     }
 
     void XmlLayout::savePaintings(Caneda::XmlWriter *writer)
@@ -161,10 +142,7 @@ namespace Caneda
                         }
 
                         if(reader->isStartElement()) {
-                            if(reader->name() == "view") {
-                                loadView(reader);
-                            }
-                            else if(reader->name() == "paintings") {
+                            if(reader->name() == "paintings") {
                                 loadPaintings(reader);
                             }
                             else {
@@ -188,80 +166,6 @@ namespace Caneda
 
         delete reader;
         return true;
-    }
-
-    void XmlLayout::loadView(Caneda::XmlReader *reader)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-        if(!reader->isStartElement() || reader->name() != "view") {
-            reader->raiseError(QObject::tr("Malformatted file"));
-        }
-
-        bool frameVisible = false;
-        QSize frameGeometry;
-        QSize frameSize;
-        QStringList frameTexts;
-
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                Q_ASSERT(reader->name() == "view");
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                if(reader->name() == "frame") {
-                    QString att = reader->attributes().value("visible").toString();
-                    att = att.toLower();
-                    if(att != "true" && att != "false") {
-                        reader->raiseError(QObject::tr("Invalid bool attribute"));
-                        break;
-                    }
-                    frameVisible = (att == "true");
-
-                    reader->readFurther();
-                    if(reader->isStartElement() && reader->name() == "size") {
-                        frameSize = reader->readSize();
-                    }
-
-                    reader->readFurther();
-                    if(reader->isStartElement() && reader->name() == "geometry") {
-                        frameGeometry = reader->readSize();
-                    }
-
-                    reader->readFurther();
-                    if(reader->isStartElement() && reader->name() == "frametexts") {
-                        while(!reader->atEnd()) {
-                            reader->readNext();
-                            if(reader->isEndElement()) {
-                                Q_ASSERT(reader->name() == "frametexts");
-                                break;
-                            }
-
-                            if(reader->isStartElement()) {
-                                if(reader->name() == "text") {
-                                    QString text = reader->readElementText();
-                                    frameTexts << text;
-                                }
-                                else {
-                                    reader->readUnknownElement();
-                                }
-                            }
-                        }
-                    }
-                    reader->readFurther();
-                    Q_ASSERT(reader->isEndElement() && reader->name() == "frame");
-                }
-            }
-        }
-
-        if(!reader->hasError()) {
-            scene->setFrameVisible(frameVisible);
-            scene->setFrameSize(frameSize.width(), frameSize.height());
-            scene->setFrameGeometry(frameGeometry.height(), frameGeometry.width());
-            scene->setFrameTexts(frameTexts);
-        }
     }
 
     void XmlLayout::loadPaintings(Caneda::XmlReader *reader)

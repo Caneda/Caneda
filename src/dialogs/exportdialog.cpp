@@ -83,7 +83,6 @@ namespace Caneda
         connect(ui.btnReset, SIGNAL(clicked()), this, SLOT(slotResetSize()));
         connect(ui.btnPreview, SIGNAL(clicked()), SLOT(slotPreview()));
         connect(ui.comboFormat, SIGNAL(currentIndexChanged(int)), SLOT(slotChangeFilesExtension()));
-        connect(ui.checkDrawFrame, SIGNAL(stateChanged(int)), SLOT(slotResetSize()));
 
         connect(this, SIGNAL(accepted()), SLOT(slotExport()));
     }
@@ -157,7 +156,7 @@ namespace Caneda
     //! Reset the size of a schematic
     void ExportDialog::slotResetSize()
     {
-        QSizeF size = diagramSize();
+        QSizeF size = m_scene->itemsBoundingRect().size();
 
         ui.spinWidth->blockSignals(true);
         ui.spinHeight->blockSignals(true);
@@ -254,21 +253,9 @@ namespace Caneda
     //! @return the aspect ratio of the schematic
     qreal ExportDialog::diagramRatio()
     {
-        QSizeF size = diagramSize();
+        QSizeF size = m_scene->itemsBoundingRect().size();
         qreal ratio = size.width() / size.height();
         return(ratio);
-    }
-
-    //! @return dimensions of the schematic, taking into account the type of export
-    QSizeF ExportDialog::diagramSize()
-    {
-        bool useFrame = m_scene->isFrameVisible();
-
-        m_scene->setFrameVisible(ui.checkDrawFrame->isChecked());
-        QSizeF size = QSizeF(m_scene->imageBoundingRect().width(), m_scene->imageBoundingRect().height());
-        m_scene->setFrameVisible(useFrame);
-
-        return(size);
     }
 
     /*!
@@ -318,21 +305,17 @@ namespace Caneda
      */
     void ExportDialog::saveReloadDiagramParameters(bool save)
     {
-        static bool state_drawFrame;
         static bool state_drawGrid;
 
         if(save) {
             // save the parameters
-            state_drawFrame = m_scene->isFrameVisible();
             state_drawGrid = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
 
             Settings::instance()->setCurrentValue("gui/gridVisible", ui.checkDrawGrid->isChecked());
-            m_scene->setFrameVisible(ui.checkDrawFrame->isChecked());
         }
         else {
             // restore the parameters
             Settings::instance()->setCurrentValue("gui/gridVisible", state_drawGrid);
-            m_scene->setFrameVisible(state_drawFrame);
         }
     }
 
