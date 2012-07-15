@@ -245,11 +245,6 @@ namespace Caneda
         action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
         connect(action, SIGNAL(triggered()), SLOT(slotExportImage()));
 
-        action = am->createAction("fileSettings", Caneda::icon("document-properties"), tr("&Document settings..."));
-        action->setShortcut(CTRL+Key_Period);
-        action->setWhatsThis(tr("Settings\n\nSets properties of the file"));
-        connect(action, SIGNAL(triggered()), SLOT(slotFileSettings()));
-
         action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("Application settings..."));
         action->setShortcut(CTRL+Key_Comma);
         action->setWhatsThis(tr("Caneda Settings\n\nSets properties of the application"));
@@ -697,7 +692,6 @@ namespace Caneda
 
         fileMenu->addSeparator();
 
-        fileMenu->addAction(action("fileSettings"));
         fileMenu->addAction(action("appSettings"));
 
         fileMenu->addSeparator();
@@ -1112,17 +1106,6 @@ namespace Caneda
 
         SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Caneda", this);
         d->exec();
-    }
-
-    void MainWindow::slotFileSettings()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
-        if (!document) {
-            return;
-        }
-
-        document->documentSettings();
     }
 
     void MainWindow::slotEditUndo()

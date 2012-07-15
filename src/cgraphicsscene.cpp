@@ -762,10 +762,6 @@ namespace Caneda
                 _menu->addAction(am->actionForName("intoH"));
                 _menu->addAction(am->actionForName("popH"));
 
-                _menu->addSeparator();
-
-                _menu->addAction(am->actionForName("fileSettings"));
-
                 _menu->exec(event->screenPos());
                 break;
 

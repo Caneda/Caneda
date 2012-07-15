@@ -106,28 +106,6 @@ namespace Caneda
         QFrame *horiz_line_;
     };
 
-    //! This class represents the document configuration page.
-    class SchematicDocumentConfigurationPage : public SettingsPage
-    {
-        Q_OBJECT
-
-    public:
-        SchematicDocumentConfigurationPage(CGraphicsScene *scene, QWidget *parent = 0);
-        virtual ~SchematicDocumentConfigurationPage();
-
-    public:
-        void applyConf();
-        QString title() const;
-        QIcon icon() const;
-
-    public:
-        CGraphicsScene *m_scene;
-
-        QLabel *title_label_;
-        QFrame *horiz_line_;
-    };
-
-
     //! This class represents the hdl configuration page
     class HdlConfigurationPage : public SettingsPage
     {

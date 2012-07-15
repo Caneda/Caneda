@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2011 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -52,28 +52,17 @@ namespace Caneda
     public:
         //! \brief Possible mouse actions
         enum MouseAction {
-            //! Wire action
-            Wiring,
-            //! Delete
-            Deleting,
-            //! Placing a mark on the graph.
-            Marking,
-            //! Rotate
-            Rotating,
-            //! Mirror X
-            MirroringX,
-            //! Mirror Y
-            MirroringY,
-            //! Zoom an area
-            ZoomingAreaEvent,
-            //! Painting item's drawing (like Ellipse, Rectangle)
-            PaintingDrawEvent,
-            //! insert an item
-            InsertingItems,
-            //! insert a wire label
-            InsertingWireLabel,
-            //! Normal (ie select)
-            Normal
+            Wiring,             // Wire action
+            Deleting,           // Delete
+            Marking,            // Placing a mark on the graph.
+            Rotating,           // Rotate
+            MirroringX,         // Mirror X
+            MirroringY,         // Mirror Y
+            ZoomingAreaEvent,   // Zoom an area
+            PaintingDrawEvent,  // Painting item's drawing (like Ellipse, Rectangle)
+            InsertingItems,     // Inserting an item
+            InsertingWireLabel, // Inserting a wire label
+            Normal              // Normal action (ie select)
         };
 
         // Constructor-destructor

@@ -438,58 +438,6 @@ namespace Caneda
 
 
     //*!**************************************************
-    // Document configuration pages
-    //*!**************************************************
-
-    /*!
-     * Constructor
-     * @param QWidget *parent The parent of the dialog.
-     */
-    SchematicDocumentConfigurationPage::SchematicDocumentConfigurationPage(CGraphicsScene *scene,
-            QWidget *parent) : SettingsPage(parent)
-    {
-
-        m_scene = scene;
-
-        //Finally we set the general layout of all groups *************************
-        QVBoxLayout *vlayout1 = new QVBoxLayout();
-        QLabel *title_label_ = new QLabel(title());
-        vlayout1->addWidget(title_label_);
-
-        QFrame *horiz_line_ = new QFrame();
-        horiz_line_->setFrameShape(QFrame::HLine);
-        vlayout1->addWidget(horiz_line_);
-
-        vlayout1->addStretch();
-
-        setLayout(vlayout1);
-    }
-
-    //! Destructor
-    SchematicDocumentConfigurationPage::~SchematicDocumentConfigurationPage()
-    {
-    }
-
-    /*!
-      Applies the configuration of this page
-      */
-    void SchematicDocumentConfigurationPage::applyConf()
-    {
-    }
-
-    //! @return Icon of this page
-    QIcon SchematicDocumentConfigurationPage::icon() const
-    {
-        return(Caneda::icon("document-properties"));
-    }
-
-    //! @return Title of this page
-    QString SchematicDocumentConfigurationPage::title() const
-    {
-        return(tr("General", "document page title"));
-    }
-
-    //*!**************************************************
     // HDL configuration pages
     //*!**************************************************
     /*!

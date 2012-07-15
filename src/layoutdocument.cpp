@@ -27,7 +27,6 @@
 #include "xmllayout.h"
 
 #include "dialogs/exportdialog.h"
-#include "dialogs/settingsdialog.h"
 
 #include <QFileInfo>
 #include <QPainter>
@@ -256,18 +255,6 @@ namespace Caneda
     void LayoutDocument::exportImage()
     {
         ExportDialog *d = new ExportDialog(this, m_cGraphicsScene);
-        d->exec();
-    }
-
-    void LayoutDocument::documentSettings()
-    {
-        QList<SettingsPage *> wantedPages;
-        SettingsPage *page = new SchematicDocumentConfigurationPage(cGraphicsScene());
-        wantedPages << page;
-        page = new LayoutConfigurationPage();
-        wantedPages << page;
-
-        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Document");
         d->exec();
     }
 

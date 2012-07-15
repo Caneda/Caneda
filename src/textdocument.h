@@ -67,8 +67,6 @@ namespace Caneda
         virtual bool load(QString *errorMessage = 0);
         virtual bool save(QString *errorMessage = 0);
 
-        virtual void documentSettings();
-
         virtual IView* createView();
 
         virtual void updateSettingsChanges();
