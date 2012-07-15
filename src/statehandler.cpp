@@ -350,8 +350,6 @@ namespace Caneda
             func = &CGraphicsScene::mirrorXItems;
         } else if (sender == "editMirrorY") {
             func = &CGraphicsScene::mirrorYItems;
-        } else if (sender == "editActivate") {
-            func = &CGraphicsScene::toggleActiveStatus;
         }
 
         QList<Action*> mouseActions = ActionManager::instance()->mouseActions();

@@ -64,8 +64,6 @@ namespace Caneda
             MirroringX,
             //! Mirror Y
             MirroringY,
-            //! Change status ie short, open
-            ChangingActiveStatus,
             //! Zoom an area
             ZoomingAreaEvent,
             //! Painting item's drawing (like Ellipse, Rectangle)
@@ -105,8 +103,6 @@ namespace Caneda
 
         bool alignElements(const Qt::Alignment alignment);
         bool distributeElements(const Qt::Orientation orientation);
-
-        void toggleActiveStatus(QList<CGraphicsItem*> &components, const Caneda::UndoOption);
 
         // Document properties
         bool isBackgroundVisible() const { return m_backgroundVisible; }
@@ -176,7 +172,6 @@ namespace Caneda
         void rotatingEvent(MouseActionEvent *e);
         void zoomingAreaEvent(MouseActionEvent *e);
         void markingEvent(MouseActionEvent *e);
-        void changingActiveStatusEvent(const MouseActionEvent *e);
         void paintingDrawEvent(MouseActionEvent *e);
         void insertingItemsEvent(MouseActionEvent *e);
         void insertingWireLabelEvent(MouseActionEvent *event);

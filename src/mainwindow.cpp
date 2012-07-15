@@ -655,15 +655,6 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("editActivate", CGraphicsScene::ChangingActiveStatus,
-                Caneda::icon("deactiv"), tr("Deactivate/Activate"));
-        action->setShortcut(Key_D);
-        action->setStatusTip(tr("Deactivate/Activate selected components"));
-        action->setWhatsThis(tr("Deactivate/Activate\n\nDeactivate/Activate the selected components"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
-        sc->addNormalAction(action);
-
         action = am->createMouseAction("zoomArea", CGraphicsScene::ZoomingAreaEvent,
                 Caneda::icon("transform-scale"), tr("Zoom area"));
         action->setStatusTip(tr("Zooms a selected are in the current view"));
@@ -798,7 +789,6 @@ namespace Caneda
         toolMenu->addAction(action("insWire"));
         toolMenu->addAction(action("insLabel"));
         toolMenu->addAction(action("insGround"));
-        toolMenu->addAction(action("editActivate"));
         toolMenu->addAction(action("editDelete"));
 
         toolMenu->addSeparator();

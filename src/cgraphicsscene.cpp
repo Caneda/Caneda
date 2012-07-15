@@ -346,44 +346,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Toggle active status
-     *
-     * \param items: item list
-     * \param opt: undo option
-     * \todo Create a custom undo class for avoiding if
-     * \todo Change direction of toogle
-     */
-    void CGraphicsScene::toggleActiveStatus(QList<CGraphicsItem*> &items,
-            const Caneda::UndoOption opt)
-    {
-        /* Apply only to components */
-        QList<Component*> components = filterItems<Component>(items);
-        if(components.isEmpty()) {
-            return;
-        }
-
-        /* setup undo */
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(QString("Toggle active status"));
-        }
-
-        /* toogle */
-        ToggleActiveStatusCmd *cmd = new ToggleActiveStatusCmd(components);
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->push(cmd);
-        }
-        else {
-            cmd->redo();
-            delete cmd;
-        }
-
-        /* finalize undo */
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
-    }
-
-    /*!
      * \brief Makes the background color visible.
      *
      * \param visibility Set true of false to show or hide the background color.
@@ -788,7 +750,6 @@ namespace Caneda
                 _menu->addAction(am->actionForName("insWire"));
                 _menu->addAction(am->actionForName("insLabel"));
                 _menu->addAction(am->actionForName("insGround"));
-                _menu->addAction(am->actionForName("editActivate"));
                 _menu->addAction(am->actionForName("editDelete"));
 
                 _menu->addSeparator();
@@ -1060,10 +1021,6 @@ namespace Caneda
 
             case MirroringY:
                 mirroringYEvent(e);
-                break;
-
-            case ChangingActiveStatus:
-                changingActiveStatusEvent(e);
                 break;
 
             case ZoomingAreaEvent:
@@ -1446,26 +1403,6 @@ namespace Caneda
     {
         Q_UNUSED(event);
         //TODO:
-    }
-
-    /*!
-     * \brief Activate deactivate
-     * \todo implement left right behavior
-     */
-    void CGraphicsScene::changingActiveStatusEvent(const MouseActionEvent *event)
-    {
-        if(event->type() != QEvent::GraphicsSceneMousePress) {
-            return;
-        }
-        if((event->buttons() & Qt::LeftButton) != Qt::LeftButton) {
-            return;
-        }
-
-        QList<QGraphicsItem*> _list = items(event->scenePos());
-        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list, DontRemoveItems);
-        if(!qItems.isEmpty()) {
-            toggleActiveStatus(QList<CGraphicsItem*>() << qItems.first(), Caneda::PushUndoCmd);
-        }
     }
 
     void CGraphicsScene::paintingDrawEvent(MouseActionEvent *event)

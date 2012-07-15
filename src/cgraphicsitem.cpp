@@ -246,7 +246,6 @@ namespace Caneda
 
         _menu->addSeparator();
 
-        _menu->addAction(am->actionForName("editActivate"));
         _menu->addAction(am->actionForName("editDelete"));
 
         _menu->exec(event->screenPos());
