@@ -16,34 +16,31 @@ ADD_SUBDIRECTORY( xmlutilities )
 SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   cgraphicsitem.cpp cgraphicsscene.cpp sidebarmodel.cpp
   global.cpp units.cpp main.cpp mainwindow.cpp
-  cgraphicsview.cpp  undocommands.cpp
-  svgitem.cpp property.cpp propertyitem.cpp
-  propertygroup.cpp component.cpp port.cpp library.cpp
+  cgraphicsview.cpp  undocommands.cpp svgitem.cpp property.cpp
+  propertyitem.cpp propertygroup.cpp component.cpp port.cpp library.cpp
   xmlschematic.cpp xmllayout.cpp xmlsymbol.cpp
   wireline.cpp folderbrowser.cpp settings.cpp
   actionmanager.cpp singletonowner.cpp project.cpp
   statehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp
+  syntaxhighlighters.cpp clineedit.cpp
   schematicdocument.cpp schematiccontext.cpp schematicview.cpp
   layoutdocument.cpp layoutcontext.cpp layoutview.cpp
-  syntaxhighlighters.cpp
   textdocument.cpp textcontext.cpp textview.cpp textedit.cpp
   webdocument.cpp webcontext.cpp webview.cpp webpage.cpp
-  clineedit.cpp
+
 )
 
 SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   mainwindow.h sidebarbrowser.h sidebartextbrowser.h svgitem.h library.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
-  folderbrowser.h project.h
-  actionmanager.h singletonowner.h statehandler.h
+  folderbrowser.h project.h actionmanager.h singletonowner.h statehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
+  syntaxhighlighters.h clineedit.h
   schematicdocument.h schematiccontext.h schematicview.h
   layoutdocument.h layoutcontext.h layoutview.h
-  syntaxhighlighters.h
   textdocument.h textcontext.h textview.h textedit.h
   webdocument.h webcontext.h webview.h webpage.h
-  clineedit.h
 )
 
 QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )
