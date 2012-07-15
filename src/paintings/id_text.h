@@ -40,8 +40,7 @@ namespace Caneda
             display(display_),
             name(Name_),
             description(Descr_),
-            defaultValue(defVal)
-        {};
+            defaultValue(defVal) {}
 
         QString text() const;
 
@@ -83,9 +82,9 @@ namespace Caneda
         SubParameter* parameter(const QString &name) const;
 
         //! \brief Disable rotate.
-        void rotate90(Caneda::AngleDirection) {};
+        void rotate90(Caneda::AngleDirection) {}
         //! \brief Disable mirroring.
-        void mirrorAlong(Qt::Axis) {};
+        void mirrorAlong(Qt::Axis) {}
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 

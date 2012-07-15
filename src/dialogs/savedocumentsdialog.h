@@ -39,6 +39,7 @@ namespace Caneda
     class FileBrowserLineEdit : public QWidget
     {
         Q_OBJECT
+
     public:
         FileBrowserLineEdit(QTreeWidgetItem *item, const QFileInfo& fileInfo,
                 QWidget *parent = 0);
@@ -57,6 +58,7 @@ namespace Caneda
     class SaveDocumentsDialog : public QDialog
     {
         Q_OBJECT
+
     public:
         enum ResultType {
             SaveSelected = QDialogButtonBox::AcceptRole,

@@ -39,7 +39,7 @@ namespace Caneda
 {
     class GraphicTextDialog : public QDialog
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt,

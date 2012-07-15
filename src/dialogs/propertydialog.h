@@ -42,7 +42,8 @@ namespace Caneda
 
     class PropertyModel : public QAbstractTableModel
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         enum {
             OptionsRole = Qt::UserRole + 1
@@ -69,7 +70,8 @@ namespace Caneda
 
     class PropertyValueDelegate : public QItemDelegate
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         PropertyValueDelegate(QObject *parent = 0);
 
@@ -84,7 +86,8 @@ namespace Caneda
 
     class PropertyDialog : public QDialog
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent = 0);
 

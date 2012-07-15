@@ -37,7 +37,7 @@ namespace Caneda
     {
     public:
         //! default constructor
-        QXsltTransformer () { this->init(); };
+        QXsltTransformer () { this->init(); }
         //! construct from a byte array
         QXsltTransformer (const QString & filename);
         //! construct from a filename
@@ -53,10 +53,10 @@ namespace Caneda
         friend class QXmlStreamReaderExt;
 
         //! Return error status
-        bool hasError() const { return this->errorflag; };
+        bool hasError() const { return this->errorflag; }
 
         //! Return error string
-        QString ErrorString() const { return this->Error; };
+        QString ErrorString() const { return this->Error; }
 
     private:
         //!  pointer to in memory parsed script

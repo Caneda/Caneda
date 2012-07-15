@@ -29,7 +29,7 @@ namespace Caneda
 {
     class GitManager : public QDialog
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         GitManager(const QString& dir, QWidget *parent = 0);

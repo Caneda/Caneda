@@ -45,10 +45,10 @@ namespace Caneda
         friend class QXmlStreamReaderExt;
 
         //! Return error status
-        bool hasError() const { return this->errorflag; };
+        bool hasError() const { return this->errorflag; }
 
         //! Return error string
-        QString ErrorString() const { return this->Error; };
+        QString ErrorString() const { return this->Error; }
 
     private:
         void * rng;

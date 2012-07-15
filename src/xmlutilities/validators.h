@@ -37,7 +37,7 @@ namespace Caneda
         //! \brief schema used for library validation
         QRelaxNGvalidator * library() {
             return this->libraryschema;
-        };
+        }
 
         //! \brief Default constructor
         validators() {

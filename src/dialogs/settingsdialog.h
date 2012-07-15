@@ -42,7 +42,7 @@ namespace Caneda
      */
     class SettingsDialog : public QDialog
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         SettingsDialog(QList<SettingsPage *> pages, const char *title,

@@ -35,7 +35,7 @@ namespace Caneda
      */
     class ProjectFileOpenDialog : public QDialog
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         ProjectFileOpenDialog(QString = "", QWidget * = 0);

@@ -36,7 +36,8 @@ namespace Caneda
 
     class PreviewWidget : public QWidget
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         PreviewWidget(int paintingType, QWidget *widget = 0);
 
@@ -106,7 +107,7 @@ namespace Caneda
 
     class StyleDialog : public QDialog
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         StyleDialog(Painting *painting, Caneda::UndoOption opt, QWidget *parent = 0);

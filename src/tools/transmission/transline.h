@@ -43,8 +43,8 @@ class transline {
   void   setResult (const QString&,const QString&);
   bool   isSelected (const QString&);
 
-  virtual void synthesize () { };
-  virtual void analyze () { };
+  virtual void synthesize () {}
+  virtual void analyze () {}
 
   QString description;
   
