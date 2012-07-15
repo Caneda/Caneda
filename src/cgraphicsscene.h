@@ -115,8 +115,6 @@ namespace Caneda
         bool toPaintDevice(QPaintDevice &, qreal = -1, qreal = -1,
                 Qt::AspectRatioMode = Qt::KeepAspectRatio);
 
-        bool snapToGrid() const { return m_snapToGrid; }
-        void setSnapToGrid(const bool snap) { m_snapToGrid = snap; }
         QPointF smartNearingGridPoint(const QPointF &pos) const;
 
         // Mouse actions
@@ -297,12 +295,6 @@ namespace Caneda
          * \sa setBackgroundVisible
          */
         bool m_backgroundVisible;
-
-        /*!
-         * \brief Flag to hold whether or not snap to grid is set
-         * \sa setSnapToGrid
-         */
-        bool m_snapToGrid;
 
         /*!
          * \brief Rectangular widget to show feedback of an area being

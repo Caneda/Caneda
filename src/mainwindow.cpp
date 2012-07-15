@@ -383,15 +383,6 @@ namespace Caneda
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(slotViewStatusBar(bool)));
 
-        action = am->createAction("snapToGrid", Caneda::icon("view-grid"), tr("Snap to grid"));
-        action->setStatusTip(tr("Set grid snap"));
-        action->setWhatsThis(tr("Snap to Grid\n\nSets snap to grid"));
-        action->setCheckable(true);
-        connect(action, SIGNAL(toggled(bool)), sc, SLOT(slotSnapToGrid(bool)));
-        connect(action, SIGNAL(toggled(bool)), lc, SLOT(slotSnapToGrid(bool)));
-        sc->addNormalAction(action);
-        lc->addNormalAction(action);
-
         action = am->createAction("alignTop", Caneda::icon("align-vertical-top"), tr("Align top"));
         action->setStatusTip(tr("Align top selected elements"));
         action->setWhatsThis(tr("Align top\n\nAlign selected elements to their upper edge"));
@@ -774,10 +765,6 @@ namespace Caneda
         viewMenu->addSeparator();
 
         alignMenu = menuBar()->addMenu(tr("P&ositioning"));
-
-        alignMenu->addAction(action("snapToGrid"));
-
-        alignMenu->addSeparator();
 
         alignMenu->addAction(action("centerHor"));
         alignMenu->addAction(action("centerVert"));

@@ -56,7 +56,6 @@ namespace Caneda
         void slotIntoHierarchy();
         void slotPopHierarchy();
 
-        void slotSnapToGrid(bool);
         void slotAlignTop();
         void slotAlignBottom();
         void slotAlignLeft();

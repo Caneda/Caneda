@@ -182,16 +182,6 @@ namespace Caneda
         //TODO: implement this or rather port directly
     }
 
-    void SchematicContext::slotSnapToGrid(bool snap)
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        SchematicDocument *schDoc = qobject_cast<SchematicDocument*>(doc);
-
-        if (schDoc) {
-            schDoc->cGraphicsScene()->setSnapToGrid(snap);
-        }
-    }
-
     //! \brief Align elements in a row correponding to top most elements coords.
     void SchematicContext::slotAlignTop()
     {

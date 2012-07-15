@@ -90,8 +90,6 @@ namespace Caneda
         m_undoStack = new QUndoStack(this);
 
         // Setup grid
-        m_snapToGrid = true;
-
         m_backgroundVisible = true;
         m_modified = false;
 
@@ -461,30 +459,26 @@ namespace Caneda
     }
 
     /*!
-     * \brief Get nearest grid point according to grid snapping setting
+     * \brief Get nearest grid point (grid snapping)
      *
      * \param pos: current position to be rounded
      * \return rounded position
      */
     QPointF CGraphicsScene::smartNearingGridPoint(const QPointF &pos) const
     {
-        if(m_snapToGrid) {
-            const QPoint point = pos.toPoint();
+        const QPoint point = pos.toPoint();
 
-            int x = qAbs(point.x());
-            x += (DEFAULT_GRID_SPACE >> 1);
-            x -= x % DEFAULT_GRID_SPACE;
-            x *= sign(point.x());
+        int x = qAbs(point.x());
+        x += (DEFAULT_GRID_SPACE >> 1);
+        x -= x % DEFAULT_GRID_SPACE;
+        x *= sign(point.x());
 
-            int y = qAbs(point.y());
-            y += (DEFAULT_GRID_SPACE >> 1);
-            y -= y % DEFAULT_GRID_SPACE;
-            y *= sign(point.y());
+        int y = qAbs(point.y());
+        y += (DEFAULT_GRID_SPACE >> 1);
+        y -= y % DEFAULT_GRID_SPACE;
+        y *= sign(point.y());
 
-            return QPointF(x, y);
-        }
-
-        return pos;
+        return QPointF(x, y);
     }
 
     /*!
@@ -943,14 +937,11 @@ namespace Caneda
      */
     void CGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
     {
-        // Grid snap mode
-        if(m_snapToGrid) {
-            lastPos = smartNearingGridPoint(e->scenePos());
+        lastPos = smartNearingGridPoint(e->scenePos());
 
-            // This is not to lose grid snaping when moving objects
-            e->setScenePos(lastPos);
-            e->setPos(lastPos);
-        }
+        // This is not to lose grid snaping when moving objects
+        e->setScenePos(lastPos);
+        e->setPos(lastPos);
 
         sendMouseActionEvent(e);
     }
@@ -960,23 +951,20 @@ namespace Caneda
      */
     void CGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
     {
-        if(m_snapToGrid) {
-
-            QPointF point = smartNearingGridPoint(e->scenePos());
-            if(point == lastPos) {
-                e->accept();
-                return;
-            }
-
-            // Implement grid snap by changing event parameters with new grid position
-            e->setScenePos(point);
-            e->setPos(point);
-            e->setLastScenePos(lastPos);
-            e->setLastPos(lastPos);
-
-            // Now cache this point for next move
-            lastPos = point;
+        QPointF point = smartNearingGridPoint(e->scenePos());
+        if(point == lastPos) {
+            e->accept();
+            return;
         }
+
+        // Implement grid snap by changing event parameters with new grid position
+        e->setScenePos(point);
+        e->setPos(point);
+        e->setLastScenePos(lastPos);
+        e->setLastPos(lastPos);
+
+        // Now cache this point for next move
+        lastPos = point;
 
         sendMouseActionEvent(e);
     }

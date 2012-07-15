@@ -172,16 +172,6 @@ namespace Caneda
         //TODO: implement this
     }
 
-    void LayoutContext::slotSnapToGrid(bool snap)
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        LayoutDocument *schDoc = qobject_cast<LayoutDocument*>(doc);
-
-        if (schDoc) {
-            schDoc->cGraphicsScene()->setSnapToGrid(snap);
-        }
-    }
-
     //! \brief Align elements in a row correponding to top most elements coords.
     void LayoutContext::slotAlignTop()
     {
