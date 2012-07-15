@@ -281,39 +281,6 @@ namespace Caneda
         disconnectFrom(other);
     }
 
-    QList<Wire*> Port::wiresBetween(Port* port1, Port* port2)
-    {
-        Q_ASSERT(port1 != port2);
-        QSet<Wire*> wires;
-
-        QSet<Wire*> port1Wires, port2Wires;
-
-        QList<Port*> *_connections = 0;
-
-        _connections = port1->connections();
-        if(_connections) {
-            foreach(Port *other, *_connections) {
-                if(!other->owner()->isWire()) {
-                    continue;
-                }
-                port1Wires << other->owner()->wire();
-            }
-        }
-
-        _connections = port2->connections();
-        if(_connections) {
-            foreach(Port *other, *_connections) {
-                if(!other->owner()->isWire()) {
-                    continue;
-                }
-                port2Wires << other->owner()->wire();
-            }
-        }
-
-        wires = port1Wires.intersect(port2Wires);
-        return wires.toList();
-    }
-
     /*!
      * \brief Disconnect two ports
      *

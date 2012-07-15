@@ -208,8 +208,7 @@ namespace Caneda
             Port *other = port->findCoincidingPort();
             if(other) {
                 if(opt == Caneda::PushUndoCmd) {
-                    QList<Wire*> wires = Port::wiresBetween(port, other);
-                    ConnectCmd *cmd = new ConnectCmd(port, other, wires, cGraphicsScene());
+                    ConnectCmd *cmd = new ConnectCmd(port, other, cGraphicsScene());
                     cGraphicsScene()->undoStack()->push(cmd);
                 }
                 else {

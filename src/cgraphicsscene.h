@@ -244,8 +244,8 @@ namespace Caneda
 
         //! Wiring state machine state enum
         enum wiringStateEnum {
-            NO_WIRE,               /*!< There are no wires yet */
-            SINGLETON_WIRE         /*!< Currently creating wires */
+            NO_WIRE,               /*!< There are no wire segments yet */
+            SINGLETON_WIRE         /*!< Already created wire segments */
         };
 
         //! State variable for the wire state machine
@@ -266,10 +266,6 @@ namespace Caneda
         /*!
          * \brief Flag to hold whether a schematic is modified or not
          * i.e to determine whether a file should be saved or not on closing.
-         *
-         * This flag should be set as and when any modification is done to schematic
-         * and usually these are done in event handlers. Usually programmatic changes
-         * to the schematic won't set this flag.
          * \sa setModified
          */
         bool m_modified;

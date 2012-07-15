@@ -103,81 +103,20 @@ namespace Caneda
     ##########################################################################
     */
 
-    struct WireConnectionInfo
-    {
-        WireConnectionInfo(Wire *w, Port *p1 = 0, Port *p2 = 0) :
-            wire(w), port1(p1), port2(p2)
-        {
-        }
-
-        ~WireConnectionInfo()
-        {
-            if(!wire->scene()) {
-                delete wire;
-            }
-        }
-
-        Wire *const wire;
-        Port *port1;
-        Port *port2;
-        QPointF wirePos;
-    };
-
-    ConnectCmd::ConnectCmd(Port *p1, Port *p2, const QList<Wire*> &wires,
+    ConnectCmd::ConnectCmd(Port *p1, Port *p2,
             CGraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_port1(p1), m_port2(p2), m_scene(scene)
     {
-        foreach(Wire *w, wires) {
-            m_wireConnectionInfos << new WireConnectionInfo(w);
-        }
-    }
-
-    ConnectCmd::~ConnectCmd()
-    {
-        qDeleteAll(m_wireConnectionInfos);
     }
 
     void ConnectCmd::undo()
     {
-        QString port1Name = m_port1->owner()->component() ?
-            m_port1->owner()->component()->name() : "Wire";
-        QString port2Name = m_port2->owner()->component() ?
-            m_port2->owner()->component()->name() : "Wire";
-
         m_port1->disconnectFrom(m_port2);
-
-        foreach(WireConnectionInfo *info, m_wireConnectionInfos) {
-            m_scene->addItem(info->wire);
-            info->wire->setPos(info->wirePos);
-
-            info->wire->port1()->connectTo(info->port1);
-            info->wire->port2()->connectTo(info->port2);
-        }
     }
 
     void ConnectCmd::redo()
     {
-        QString port1Name = m_port1->owner()->component() ?
-            m_port1->owner()->component()->name() : "Wire";
-        QString port2Name = m_port2->owner()->component() ?
-            m_port2->owner()->component()->name() : "Wire";
-
-
-        foreach(WireConnectionInfo *info, m_wireConnectionInfos) {
-            info->port1 = info->wire->port1()->getAnyConnectedPort();
-            info->port2 = info->wire->port2()->getAnyConnectedPort();
-
-            Q_ASSERT(info->port1);
-            Q_ASSERT(info->port2);
-
-            info->wire->port1()->removeConnections();
-            info->wire->port2()->removeConnections();
-
-            info->wirePos = info->wire->pos();
-            m_scene->removeItem(info->wire);
-        }
-
         m_port1->connectTo(m_port2);
     }
 

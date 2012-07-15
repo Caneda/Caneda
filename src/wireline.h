@@ -85,7 +85,6 @@ namespace Caneda
          *
          * Normally a wireline has a height of zero quantity to add in order
          * to have a true rectangle
-         * \todo Made Configurable
          */
         static qreal m_adjust;
     };
@@ -101,14 +100,14 @@ namespace Caneda
     inline WireLine::WireLine(const QLineF& line) : m_line(line) {}
 
     /*!
-     * \brief Construct a wire from two point
+     * \brief Construct a wire from two points
      * \param p1 origin point
      * \param p2 end point
      */
     inline WireLine::WireLine(const QPointF& p1, const QPointF& p2) : m_line(p1,p2) {}
 
     /*!
-     * \brief Construct a wire from two tupple of coordinate
+     * \brief Construct a wire from two tupples of coordinates
      * \param x1: origin  abscissa
      * \param x2: end abscissa
      * \param y1: origin ordinate
@@ -140,8 +139,8 @@ namespace Caneda
     }
 
     /*!
-     * \brief Set orign point
-     * \param pt new orign point
+     * \brief Set origin point
+     * \param pt new origin point
      */
     inline void WireLine::setP1(const QPointF& pt)
     {

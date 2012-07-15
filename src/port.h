@@ -32,22 +32,14 @@ namespace Caneda
     class Component;
     class CGraphicsScene;
 
-    //! \todo Make these constants settings.
     static const QPen connectedPen(Qt::blue, 0);
-    //! \todo Make these constants settings.
     static const QBrush connectedBrush(Qt::blue);
-    //! \todo Make these constants settings.
     static const QPen unconnectedPen(Qt::darkRed, 0);
-    //! \todo Make these constants settings.
     static const QBrush unconnectedBrush(Qt::NoBrush);
-    //! \todo Make these constants settings.
     static const qreal portRadius(3.0);
-    //! \todo Make these constants settings.
     static const QRectF portEllipse(-portRadius, -portRadius, 2*portRadius,
             2*portRadius);
-    //! \todo Make these constants settings.
     static const qreal portConnectedRadius(2.0);
-    //! \todo Make these constants settings.
     static const QRectF portEllipseConnected(-portConnectedRadius, -portConnectedRadius,
             2*portConnectedRadius,
             2*portConnectedRadius);
@@ -118,23 +110,15 @@ namespace Caneda
 
         static void connect(Port* port1, Port *port2);
         static void disconnect(Port *port, Port *from);
-
-        static bool isConnected(Port *port1, Port* port2);
-
-        bool hasConnection() const;
-
         void connectTo(Port *other);
-        /*!
-         * Shorthand for Port::disconnect(this, from)
-         * \note from == NULL is allowed
-         */
         void disconnectFrom(Port* from) { Port::disconnect(this, from); }
 
-        Port* getAnyConnectedPort();
         void removeConnections();
 
-        static QList<Wire*> wiresBetween(Port* port1, Port* port2);
+        static bool isConnected(Port *port1, Port* port2);
+        bool hasConnection() const;
 
+        Port* getAnyConnectedPort();
         Port* findCoincidingPort() const;
 
         bool areAllOwnersSelected() const;

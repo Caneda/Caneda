@@ -70,21 +70,17 @@ namespace Caneda
         QPointF m_finalPos;
     };
 
-    class WireConnectionInfo;
     class ConnectCmd : public QUndoCommand
     {
     public:
-        ConnectCmd(Port *p1, Port *p2, const QList<Wire*> &wires,
+        ConnectCmd(Port *p1, Port *p2,
                 CGraphicsScene *scene, QUndoCommand *parent = 0);
-        ~ConnectCmd();
-
         void undo();
         void redo();
 
     private:
         Port * const m_port1;
         Port * const m_port2;
-        QList<WireConnectionInfo*> m_wireConnectionInfos;
 
         CGraphicsScene *const m_scene;
     };

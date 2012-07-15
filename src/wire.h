@@ -101,7 +101,7 @@ namespace Caneda
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     private:
-        WireLine m_wLine;//!< Internal line representation of wires.
+        WireLine m_wLine; //!< Internal line representation of wires.
         Wire::Data store; //!< Stores the wire data when needed(undo/redo).
     };
 
