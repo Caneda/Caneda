@@ -43,8 +43,9 @@
 
 #include "tools/attenuator/attenuator.h"
 #include "tools/filter/filterdialog.h"
-#include "tools/qtermwidget/qtermwidget.h"
 #include "tools/transmission/transmissiondialog.h"
+
+#include <QtGui>
 
 namespace Caneda
 {
@@ -66,7 +67,6 @@ namespace Caneda
         setObjectName("MainWindow"); //for debugging purpose
         setDocumentTitle("Untitled");
 
-        console = 0;
         m_undoGroup = new QUndoGroup();
 
         // Be vary of the order as all the pointers are uninitialized at this moment.
@@ -535,12 +535,6 @@ namespace Caneda
         action->setWhatsThis(tr("Import Data\n\nConvert data file to Caneda data file"));
         connect(action, SIGNAL(triggered()), SLOT(slotImportData()));
 
-        action = am->createAction("showConsole", Caneda::icon("terminal"), tr("&Show console..."));
-        action->setShortcut(Key_F8);
-        action->setStatusTip(tr("Show Console"));
-        action->setWhatsThis(tr("Show Console\n\nOpen console terminal"));
-        connect(action, SIGNAL(triggered()), SLOT(slotShowConsole()));
-
         action = am->createAction("simulate", Caneda::icon("media-playback-start"), tr("Simulate"));
         action->setShortcut(Key_F5);
         action->setStatusTip(tr("Simulates the current circuit"));
@@ -833,8 +827,6 @@ namespace Caneda
         toolMenu->addAction(action("importData"));
 
         toolMenu->addSeparator();
-
-        toolMenu->addAction(action("showConsole"));
 
         simMenu = menuBar()->addMenu(tr("&Simulation"));
 
@@ -1406,28 +1398,6 @@ namespace Caneda
     {
         setNormalAction();
         //TODO: implement this or rather port directly
-    }
-
-    void MainWindow::slotShowConsole()
-    {
-        if(!console) {
-            console = new QTermWidget();
-            console->setScrollBarPosition(QTermWidget::ScrollBarRight);
-            console->setMinimumHeight(40);
-
-            consoleDockWidget = new QDockWidget("Console",this);
-            consoleDockWidget->setWidget(console);
-            consoleDockWidget->setObjectName("consoleWidget");
-            addDockWidget(Qt::BottomDockWidgetArea, consoleDockWidget);
-
-            connect(console, SIGNAL(finished()), consoleDockWidget, SLOT(close()));
-        }
-        else if(consoleDockWidget->isHidden()) {
-            consoleDockWidget->setVisible(true);
-        }
-        else if(consoleDockWidget->isVisible()) {
-            consoleDockWidget->setVisible(false);
-        }
     }
 
     void MainWindow::slotSimulate()

@@ -25,7 +25,6 @@
 
 // Forward declarations
 class QLabel;
-class QTermWidget;
 class QUndoGroup;
 class QUndoView;
 
@@ -99,7 +98,6 @@ namespace Caneda
         void slotCallAtt();
         void slotCallLibrary();
         void slotImportData();
-        void slotShowConsole();
 
         void slotSimulate();
         void slotShowLastMsg();
@@ -149,8 +147,6 @@ namespace Caneda
         FolderBrowser *m_folderBrowser;
         QUndoView *undoView;
         TabWidget *m_tabWidget;
-        QTermWidget *console;
-        QDockWidget *consoleDockWidget;
         QString titleText;
     };
 
