@@ -1,6 +1,6 @@
 build
 build_original
-CMakeLists.txt.user
+CMakeLists.txt.user*
 *.swp
 .my-setup
 tags
