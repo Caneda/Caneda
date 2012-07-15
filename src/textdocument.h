@@ -67,6 +67,9 @@ namespace Caneda
         virtual bool load(QString *errorMessage = 0);
         virtual bool save(QString *errorMessage = 0);
 
+        virtual void exportImage() {}
+        virtual void simulate() {}
+
         virtual IView* createView();
 
         virtual void updateSettingsChanges();

@@ -88,10 +88,6 @@ namespace Caneda
         return false;
     }
 
-    void WebDocument::cut()
-    {
-    }
-
     void WebDocument::copy()
     {
         WebPage *page = activeWebPage();
@@ -99,14 +95,6 @@ namespace Caneda
             return;
         }
         page->triggerPageAction(QWebPage::Copy);
-    }
-
-    void WebDocument::paste()
-    {
-    }
-
-    void WebDocument::selectAll()
-    {
     }
 
     bool WebDocument::printSupportsFitInPage() const

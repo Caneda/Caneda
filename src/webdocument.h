@@ -55,17 +55,20 @@ namespace Caneda
         virtual bool canCopy() const;
         virtual bool canPaste() const;
 
-        virtual void cut();
+        virtual void cut() {}
         virtual void copy();
-        virtual void paste();
+        virtual void paste() {}
 
-        virtual void selectAll();
+        virtual void selectAll() {}
 
         virtual bool printSupportsFitInPage() const;
         virtual void print(QPrinter *printer, bool fitInView);
 
         virtual bool load(QString *errorMessage = 0);
         virtual bool save(QString *errorMessage = 0);
+
+        virtual void exportImage() {}
+        virtual void simulate() {}
 
         virtual IView* createView();
 
