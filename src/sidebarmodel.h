@@ -64,10 +64,11 @@ namespace Caneda
 
     class SidebarModel : public QAbstractItemModel
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         enum {
-            DragPixmapRole = Qt::UserRole + 1,
+            DragPixmapRole = Qt::UserRole + 1
         };
 
         SidebarModel(QObject *parent=0);

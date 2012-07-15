@@ -27,6 +27,7 @@ namespace Caneda
     class TextEdit : public QPlainTextEdit
     {
         Q_OBJECT
+
     public:
         TextEdit(QTextDocument *document);
         ~TextEdit();

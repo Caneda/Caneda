@@ -57,14 +57,14 @@ namespace Caneda
 
     enum ResizeHandle {
         NoHandle = 0,
-        TopLeftHandle = 1, //0001
-        TopRightHandle = 2, //0010
+        TopLeftHandle = 1,     //0001
+        TopRightHandle = 2,    //0010
         BottomRightHandle = 4, //0100
-        BottomLeftHandle = 8, //1000
+        BottomLeftHandle = 8   //1000
     };
 
-    Q_DECLARE_FLAGS(ResizeHandles, ResizeHandle);
-    Q_DECLARE_OPERATORS_FOR_FLAGS(Caneda::ResizeHandles);
+    Q_DECLARE_FLAGS(ResizeHandles, ResizeHandle)
+    Q_DECLARE_OPERATORS_FOR_FLAGS(Caneda::ResizeHandles)
 
     static const QPen handlePen(Qt::darkRed);
     static const QBrush handleBrush(Qt::NoBrush);

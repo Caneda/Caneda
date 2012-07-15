@@ -73,8 +73,9 @@ namespace Caneda
         QRectF boundingRect () const;
 
         //! Get adjust value
-        static unsigned int getAdjust() { return m_adjust;};
-        static void setAdjust(unsigned int adjust) { m_adjust = adjust; };
+        static unsigned int getAdjust() { return m_adjust;}
+        static void setAdjust(unsigned int adjust) { m_adjust = adjust; }
+
     private:
         //! \brief Line object
         QLineF m_line;

@@ -27,6 +27,7 @@ namespace Caneda
     class WebContext : public IContext
     {
         Q_OBJECT
+
     public:
         static WebContext* instance();
         virtual ~WebContext();

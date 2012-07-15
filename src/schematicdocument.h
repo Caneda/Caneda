@@ -30,6 +30,7 @@ namespace Caneda
     class SchematicDocument : public IDocument
     {
         Q_OBJECT
+
     public:
         SchematicDocument();
         ~SchematicDocument();

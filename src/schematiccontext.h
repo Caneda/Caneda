@@ -31,6 +31,7 @@ namespace Caneda
     class SchematicContext : public IContext
     {
         Q_OBJECT
+
     public:
         static SchematicContext* instance();
         ~SchematicContext();

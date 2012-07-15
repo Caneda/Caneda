@@ -31,6 +31,7 @@ namespace Caneda
     class StateHandler : public QObject
     {
         Q_OBJECT
+
     public:
         static StateHandler* instance();
         ~StateHandler();

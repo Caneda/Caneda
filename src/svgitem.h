@@ -104,6 +104,7 @@ namespace Caneda
     class SvgItem : public QObject, public CGraphicsItem
     {
         Q_OBJECT
+
     public:
         //! Item identifier. \sa CGraphicsItemTypes
         enum {

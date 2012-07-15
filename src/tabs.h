@@ -35,6 +35,7 @@ namespace Caneda
     class ViewContainer : public QWidget
     {
         Q_OBJECT
+
     public:
         ViewContainer(IView *view, QWidget *parent = 0);
         ~ViewContainer();
@@ -58,6 +59,7 @@ namespace Caneda
     class Tab: public QWidget
     {
         Q_OBJECT
+
     public:
         Tab(IView *view, QWidget *parent = 0);
         ~Tab();
@@ -98,6 +100,7 @@ namespace Caneda
     class TabWidget : public QTabWidget
     {
         Q_OBJECT
+
     public:
         TabWidget(QWidget *parent = 0);
         QList<Tab*> tabs() const;

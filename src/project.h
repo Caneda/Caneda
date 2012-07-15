@@ -30,7 +30,7 @@ namespace Caneda
 
     class Project : public QWidget
     {
-        Q_OBJECT;
+        Q_OBJECT
 
     public:
         Project(QWidget *parent = 0);

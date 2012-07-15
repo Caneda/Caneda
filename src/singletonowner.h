@@ -27,6 +27,7 @@ namespace Caneda
     class SingletonOwner : public QObject
     {
         Q_OBJECT
+
     public:
         ~SingletonOwner();
 

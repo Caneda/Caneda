@@ -43,7 +43,7 @@ namespace Caneda
         void zoomFitInBest();
         void zoomOriginal();
 
-        qreal currentZoom() { return m_currentZoom; };
+        qreal currentZoom() { return m_currentZoom; }
         void setZoom(int percentage);
         void zoomFitRect(const QRectF &rect);
 

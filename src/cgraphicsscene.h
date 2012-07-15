@@ -282,7 +282,7 @@ namespace Caneda
         //! Wiring state machine state enum
         enum wiringStateEnum {
             NO_WIRE,               /*!< There are no wires yet */
-            SINGLETON_WIRE,        /*!< Currently creating wires */
+            SINGLETON_WIRE         /*!< Currently creating wires */
         };
 
         //! State variable for the wire state machine

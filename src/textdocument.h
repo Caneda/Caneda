@@ -33,6 +33,7 @@ namespace Caneda
     class TextDocument : public IDocument
     {
         Q_OBJECT
+
     public:
         TextDocument();
         virtual ~TextDocument();

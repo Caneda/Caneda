@@ -32,6 +32,7 @@ namespace Caneda
     class TextView : public IView
     {
         Q_OBJECT
+
     public:
         TextView(TextDocument *document);
         virtual ~TextView();

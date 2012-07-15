@@ -27,6 +27,7 @@ namespace Caneda
     class WebPage : public QWebView
     {
         Q_OBJECT
+
     public:
         WebPage(QUrl *url);
         ~WebPage();

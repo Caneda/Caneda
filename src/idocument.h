@@ -74,9 +74,9 @@ namespace Caneda
         virtual bool load(QString *errorMessage = 0) = 0;
         virtual bool save(QString *errorMessage = 0) = 0;
 
-        virtual void exportImage() { return; };
-        virtual void documentSettings()  { return; };
-        virtual void simulate()  { return; };
+        virtual void exportImage() { return; }
+        virtual void documentSettings()  { return; }
+        virtual void simulate()  { return; }
 
         virtual IView* createView() = 0;
 

@@ -44,8 +44,8 @@ namespace Caneda
 
         virtual void init();
 
-        virtual QToolBar* toolBar() { return 0; };
-        virtual QWidget* sideBarWidget()  { return 0; };
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget()  { return 0; }
 
         virtual bool canOpen(const QFileInfo& info) const = 0;
         virtual QStringList fileNameFilters() const = 0;

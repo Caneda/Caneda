@@ -31,7 +31,8 @@ namespace Caneda
 
     class TreeView : public QTreeView
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         TreeView(QWidget *parent = 0);
         ~TreeView() {}
@@ -52,7 +53,8 @@ namespace Caneda
     //! Represents sidebar which allows components to be selected.
     class SidebarBrowser : public QWidget
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         SidebarBrowser(QWidget *parent = 0);
         ~SidebarBrowser();

@@ -34,7 +34,8 @@ namespace Caneda
     //! Represents sidebar which allows text templates to be inserted
     class SidebarTextBrowser : public QWidget
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         SidebarTextBrowser(QWidget *parent = 0);
         ~SidebarTextBrowser();

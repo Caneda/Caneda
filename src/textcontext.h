@@ -30,6 +30,7 @@ namespace Caneda
     class TextContext : public IContext
     {
         Q_OBJECT
+
     public:
         static TextContext* instance();
         virtual ~TextContext();

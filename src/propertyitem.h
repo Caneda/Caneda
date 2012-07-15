@@ -32,7 +32,8 @@ namespace Caneda
     //! \brief Class used to represent the text corresponding to property on schematic.
     class PropertyItem : public QGraphicsTextItem
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         PropertyItem(const QString& name, CGraphicsScene *scene);
 

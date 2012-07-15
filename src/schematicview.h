@@ -31,6 +31,7 @@ namespace Caneda
     class SchematicView : public IView
     {
         Q_OBJECT
+
     public:
         SchematicView(SchematicDocument *document);
         virtual ~SchematicView();

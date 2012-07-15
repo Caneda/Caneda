@@ -38,7 +38,8 @@ namespace Caneda
      */
     class PropertiesGroup : public QObject, public QGraphicsItemGroup
     {
-        Q_OBJECT;
+        Q_OBJECT
+
     public:
         enum { PropertiesGroupType = UserType + 73 };
         enum { Type = PropertiesGroupType };
