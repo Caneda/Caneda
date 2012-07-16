@@ -264,6 +264,9 @@ namespace Caneda
     {
         QStringList nameFilters;
 
+        nameFilters << QObject::tr("Any File (*)")+" (*);;";
+        nameFilters << QObject::tr("Caneda project (*.xpro)")+" (*.xpro);;";
+
         foreach (IContext *context, m_contexts) {
             nameFilters << context->fileNameFilters();
         }
@@ -272,8 +275,6 @@ namespace Caneda
         // icontexts are implemented.
         nameFilters << QObject::tr("Symbol-xml (*.xsym)")+" (*.xsym);;";
         nameFilters << QObject::tr("Data display (*.dpl)")+" (*.dpl);;";
-        nameFilters << QObject::tr("Caneda project (*.xpro)")+" (*.xpro);;";
-        nameFilters << QObject::tr("Any File (*)")+" (*);;";
 
         return nameFilters;
     }
