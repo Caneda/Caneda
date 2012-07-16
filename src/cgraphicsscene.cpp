@@ -1131,7 +1131,7 @@ namespace Caneda
 
         if(m_wiringState == SINGLETON_WIRE) {
             // Check if port 1 and 2 overlap
-            if(m_currentWiringWire->overlap())  {
+            if(m_currentWiringWire->isNull())  {
                 return;
             }
 
@@ -1159,7 +1159,7 @@ namespace Caneda
     {
         if(m_wiringState ==  SINGLETON_WIRE) {
             // Check if port 1 and 2 overlap
-            if(m_currentWiringWire->overlap()) {
+            if(m_currentWiringWire->isNull()) {
                 return;
             }
 

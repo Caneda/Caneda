@@ -63,23 +63,19 @@ namespace Caneda
         bool isHorizontal() const { return port1()->pos().y() == port2()->pos().y(); }
         //! Return true if wire is vertical
         bool isVertical() const { return port1()->pos().x() == port2()->pos().x(); }
-
-        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-                QWidget *widget = 0);
+        //! Check if port 1 and 2 overlap
+        bool isNull() const { return port1()->scenePos() == port2()->scenePos(); }
 
         int checkAndConnect(Caneda::UndoOption opt);
         bool splitAndCreateNodes(CGraphicsScene *scene = 0);
         void updateGeometry();
         QRectF boundingRect () const;
 
-        //! check if port 1 and 2 overlap
-        bool overlap() const { return port1()->scenePos() == port2()->scenePos(); }
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                QWidget *widget = 0);
 
         //! \todo Implement this
-        void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise) {
-            Q_UNUSED(dir);
-        }
-
+        void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise) { Q_UNUSED(dir); }
         //! \todo Implement this
         void mirrorAlong(Qt::Axis) {}
 
