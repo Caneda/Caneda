@@ -104,8 +104,6 @@ namespace Caneda
         Wire::Data store; //!< Stores the wire data when needed(undo/redo).
     };
 
-    Wire::Data readWireData(Caneda::XmlReader *reader);
-
 } // namespace Caneda
 
 #endif //WIRE_H

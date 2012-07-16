@@ -288,14 +288,6 @@ namespace Caneda
         writer->writeAttribute("start", start);
         writer->writeAttribute("end", end);
 
-        //write the lines
-        writer->writeEmptyElement("line");
-
-        writer->writeAttribute("x1", QString::number(m_wLine.x1()));
-        writer->writeAttribute("y1", QString::number(m_wLine.y1()));
-        writer->writeAttribute("x2", QString::number(m_wLine.x2()));
-        writer->writeAttribute("y2", QString::number(m_wLine.y2()));
-
         writer->writeEndElement();
     }
 
@@ -309,10 +301,22 @@ namespace Caneda
 
     void Wire::loadData(Caneda::XmlReader *reader)
     {
-        Wire::Data data = readWireData(reader);
-        port1()->setPos(mapFromScene(data.port1Pos));
-        port2()->setPos(mapFromScene(data.port2Pos));
-        m_wLine = data.wLine;
+        Q_ASSERT(reader->isStartElement() && reader->name() == "wire");
+
+        QPointF port1Pos = reader->readPointAttribute("start");
+        QPointF port2Pos = reader->readPointAttribute("end");
+
+        port1()->setPos(mapFromScene(port1Pos));
+        port2()->setPos(mapFromScene(port2Pos));
+        m_wLine = WireLine(port1Pos, port2Pos);
+
+        while(!reader->atEnd()) {
+            reader->readNext();
+            if(reader->isEndElement()) {
+                break;
+            }
+        }
+
         updateGeometry();
     }
 
@@ -323,40 +327,6 @@ namespace Caneda
         scene()->clearFocus();
         CGraphicsItem::mousePressEvent(event);
         Q_ASSERT(mapFromScene(event->scenePos()) == event->pos());
-    }
-
-    Wire::Data readWireData(Caneda::XmlReader *reader)
-    {
-        Q_ASSERT(reader->isStartElement() && reader->name() == "wire");
-
-        Wire::Data data;
-
-        data.port1Pos = reader->readPointAttribute("start");
-        data.port2Pos = reader->readPointAttribute("end");
-
-        while(!reader->atEnd()) {
-            reader->readNext();
-            if(reader->isEndElement()) {
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                if(reader->name() == "line") {
-                    qreal x1 = reader->readDoubleAttribute("x1");
-                    qreal y1 = reader->readDoubleAttribute("y1");
-                    qreal x2 = reader->readDoubleAttribute("x2");
-                    qreal y2 = reader->readDoubleAttribute("y2");
-                    data.wLine = WireLine(x1, y1, x2, y2);
-
-                    //read till end now of line tag now
-                    reader->readUnknownElement();
-                }
-                else {
-                    reader->readUnknownElement();
-                }
-            }
-        }
-        return data;
     }
 
 } // namespace Caneda
