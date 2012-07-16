@@ -361,37 +361,6 @@ namespace Caneda
         }
     }
 
-
-    /*
-    ##########################################################################
-    #                        ToggleActiveStatusCmd                           #
-    ##########################################################################
-    */
-
-
-    ToggleActiveStatusCmd::ToggleActiveStatusCmd(const QList<Component*> &components,
-            QUndoCommand *parent) :
-        QUndoCommand(parent)
-    {
-        foreach(Component *component, components) {
-            m_componentStatusPairs << qMakePair(component, component->activeStatus());
-        }
-    }
-
-    void ToggleActiveStatusCmd::undo()
-    {
-        foreach(ComponentStatusPair p, m_componentStatusPairs) {
-            p.first->setActiveStatus(p.second);
-        }
-    }
-
-    void ToggleActiveStatusCmd::redo()
-    {
-        foreach(ComponentStatusPair p, m_componentStatusPairs) {
-            p.first->toggleActiveStatus();
-        }
-    }
-
     /*
     ##########################################################################
     #                        PaintingRectChangeCmd                           #

@@ -239,32 +239,6 @@ namespace Caneda
         setSymbol(propMap["symbol"].value().toString());
     }
 
-    //! \brief Sets the component's activeStatus to \a status.
-    void Component::setActiveStatus(Caneda::ActiveStatus status)
-    {
-        if(status == Caneda::Short && m_ports.size() <= 1) {
-            qWarning() << "Cannot short components with <= 1 ports";
-            return;
-        }
-        d->activeStatus = status;
-        update();
-    }
-
-    /*!
-     * \brief Toggles active status appropriately.
-     *
-     * Also taking care of special condition where components with <= 1 port
-     * shouldn't be shorted.
-     */
-    void Component::toggleActiveStatus()
-    {
-        Caneda::ActiveStatus status = (Caneda::ActiveStatus)((d->activeStatus + 1) % 3);
-        if(status == Caneda::Short && m_ports.size() <= 1) {
-            status = (Caneda::ActiveStatus)((status + 1) % 3);
-        }
-        setActiveStatus(status);
-    }
-
     /*!
      * \brief Convenience static method to load component saved as xml.
      *
@@ -301,19 +275,6 @@ namespace Caneda
 
         d->name = reader->attributes().value("name").toString();
         d->library = reader->attributes().value("library").toString();
-
-        QString activeStr = reader->attributes().value("activeStatus").toString();
-        if(activeStr.isEmpty()) {
-            activeStr = "active";
-        }
-
-        if(activeStr == "active") {
-            setActiveStatus(Caneda::Active);
-        } else if(activeStr == "open") {
-            setActiveStatus(Caneda::Open);
-        } else {
-            setActiveStatus(Caneda::Short);
-        }
 
         while(!reader->atEnd()) {
             reader->readNext();
@@ -356,17 +317,6 @@ namespace Caneda
         writer->writeAttribute("name", name());
         writer->writeAttribute("library", library());
 
-        QString activeStr;
-        if(d->activeStatus == Caneda::Active) {
-            activeStr = QString("active");
-        } else if(d->activeStatus == Caneda::Open) {
-            activeStr = QString("open");
-        } else {
-            activeStr = QString("short");
-        }
-
-        writer->writeAttribute("activeStatus", activeStr);
-
         writer->writePoint(pos(), "pos");
         if(m_propertyGroup) {
             writer->writePoint(m_propertyGroup->pos(), "propertyPos");
@@ -379,29 +329,12 @@ namespace Caneda
         writer->writeEndElement();
     }
 
-    //! \brief Draw the compnent using svg painter. Also handle active status.
+    //! \brief Draw the compnent using svg painter.
     void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
             QWidget *w)
     {
         SvgItem::paint(painter, o, w);
         drawPorts(m_ports, painter, o);
-
-        if(activeStatus() != Caneda::Active) {
-            painter->setPen(activeStatus() == Caneda::Short ?
-                    Qt::darkGreen :
-                    Qt::darkRed);
-            painter->setBrush(Qt::NoBrush);
-
-            painter->drawRect(boundingRect());
-
-            QPointF tl = boundingRect().topLeft();
-            QPointF br = boundingRect().bottomRight();
-            QPointF tr = boundingRect().topRight();
-            QPointF bl = boundingRect().bottomLeft();
-
-            painter->drawLine(tl, br);
-            painter->drawLine(bl, tr);
-        }
     }
 
     //! \brief Returns a copy of this component.

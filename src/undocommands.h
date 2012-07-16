@@ -31,6 +31,7 @@ namespace Caneda
 {
     // Forward declarations.
     class Component;
+    class GraphicText;
     class Painting;
     class Port;
     class CGraphicsItem;
@@ -190,19 +191,6 @@ namespace Caneda
         Qt::Axis m_axis;
     };
 
-    class ToggleActiveStatusCmd : public QUndoCommand
-    {
-    public:
-        ToggleActiveStatusCmd(const QList<Component*> &components, QUndoCommand *parent = 0);
-
-        void undo();
-        void redo();
-
-    protected:
-        typedef QPair<Component*, Caneda::ActiveStatus> ComponentStatusPair;
-        QList<ComponentStatusPair> m_componentStatusPairs;
-    };
-
     class PaintingRectChangeCmd : public QUndoCommand
     {
     public:
@@ -232,8 +220,6 @@ namespace Caneda
         QString m_oldPropertyText;
         QString m_newPropertyText;
     };
-
-    class GraphicText;  // Forward declaration
 
     class GraphicTextChangeCmd : public QUndoCommand
     {

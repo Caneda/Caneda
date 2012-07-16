@@ -29,13 +29,6 @@ namespace Caneda
     class PropertiesGroup;
     class PortData;
 
-    //! Represents status of component - short, open or just active.
-    enum ActiveStatus {
-        Open=0,
-        Active,
-        Short
-    };
-
     /*!
      * \brief Represents the shareable data of component.
      *
@@ -44,7 +37,7 @@ namespace Caneda
      */
     struct ComponentData : public QSharedData
     {
-        ComponentData(Caneda::ActiveStatus a = Caneda::Active) : activeStatus(a) {}
+        ComponentData() {}
 
         //! \brief Component name
         QString name;
@@ -60,8 +53,6 @@ namespace Caneda
         QString library;
         //! \brief Properties
         PropertyMap propertyMap;
-        //! \brief Status of component
-        Caneda::ActiveStatus activeStatus;
         //! \brief Map of component port (common port data)
         QMap<QString, QList<PortData*> > schematicPortMap;
     };
@@ -132,21 +123,13 @@ namespace Caneda
 
         void setPropertyVisible(const QString& propName, bool visibility);
 
-        /*!
-         * Returns the label of the component which is of form
-         * {label_prefix}{number_suffix}
-         */
+        //! Returns the label of the component in the form {label_prefix}{number_suffix}
         QString label() const { return property("label").toString(); }
         bool setLabel(const QString& _label);
 
         //! Returns current symbol of component.
         QString symbol() const { return property("symbol").toString(); }
         bool setSymbol(const QString& newSymbol);
-
-        //! Returns the active status of the component.
-        Caneda::ActiveStatus activeStatus() const { return d->activeStatus; }
-        void setActiveStatus(Caneda::ActiveStatus status);
-        void toggleActiveStatus();
 
         static Component* loadComponentData(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);
