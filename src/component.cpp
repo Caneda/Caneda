@@ -330,11 +330,14 @@ namespace Caneda
     }
 
     //! \brief Draw the compnent using svg painter.
-    void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
+    void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *w)
     {
-        SvgItem::paint(painter, o, w);
-        drawPorts(m_ports, painter, o);
+        SvgItem::paint(painter, option, w);
+
+        foreach(Port *port, m_ports) {
+            port->paint(painter, option);
+        }
     }
 
     //! \brief Returns a copy of this component.

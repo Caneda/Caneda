@@ -122,7 +122,7 @@ namespace Caneda
         void loadData(Caneda::XmlReader *reader);
         void saveData(Caneda::XmlWriter *writer) const;
 
-        void paint(QPainter *painter, const QStyleOptionGraphicsItem *o, QWidget *);
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
 
         Component *copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(Component *comp) const;

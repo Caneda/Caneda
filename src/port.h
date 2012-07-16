@@ -127,26 +127,15 @@ namespace Caneda
     private:
         Port* findCoincidingPort(const QList<Port*> &ports) const;
 
-        void setPos(const QPointF& newPos);
-
         friend class Wire;
+        void setPos(const QPointF& newPos); // Only needed for wires
 
         QSharedDataPointer<PortData> d;
         PortOwner *m_owner;
         QList<Port*> *m_connections;
-        /*!
-         * This represents the connection name.
-         * \todo Implement this feature.
-         */
-        QString *m_nodeName;
     };
 
-    void drawPorts(const QList<Port*> & ports, QPainter *painter,
-            const QStyleOptionGraphicsItem* option);
-
     QRectF portsRect(const QList<Port*> &ports, const QRectF& rect);
-
-    void addPortEllipses(const QList<Port*> &ports, QPainterPath &path);
 
 } // namespace Caneda
 

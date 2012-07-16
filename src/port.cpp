@@ -91,8 +91,7 @@ namespace Caneda
     Port::Port(CGraphicsItem *owner, const QSharedDataPointer<PortData> &data) :
         d(data),
         m_owner(new PortOwner(owner)),
-        m_connections(0),
-        m_nodeName(0)
+        m_connections(0)
     {
     }
 
@@ -102,8 +101,7 @@ namespace Caneda
     Port::Port(CGraphicsItem *owner, QPointF _pos, QString portName) :
         d(new PortData(_pos, portName)),
         m_owner(new PortOwner(owner)),
-        m_connections(0),
-        m_nodeName(0)
+        m_connections(0)
     {
     }
 
@@ -437,19 +435,6 @@ namespace Caneda
         painter->setPen(savedPen);
     }
 
-    /*!
-     * \brief A helper method used to draw multiple ports.
-     *
-     * \todo create a QList<Port *> ports class and avoid this call
-     */
-    void drawPorts(const QList<Port*> &ports, QPainter *painter,
-            const QStyleOptionGraphicsItem* option)
-    {
-        foreach(Port *port, ports) {
-            port->paint(painter, option);
-        }
-    }
-
     //! \brief Returns a rect accomodating pRect as well as all ports.
     QRectF portsRect(const QList<Port*> &ports, const QRectF& pRect)
     {
@@ -468,14 +453,6 @@ namespace Caneda
             }
         }
         return rect;
-    }
-
-    //! \brief Adds the port's as ellipses to painterpath \a path.
-    void addPortEllipses(const QList<Port*> &ports, QPainterPath &path)
-    {
-        foreach(Port *port, ports) {
-            path.addEllipse(portEllipse.translated(port->pos()));
-        }
     }
 
 } // namespace Caneda

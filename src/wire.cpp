@@ -92,6 +92,10 @@ namespace Caneda
     void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
+        foreach(Port *port, m_ports) {
+            port->paint(painter, option);
+        }
+
         // Save painter
         QPen savedPen = painter->pen();
 
@@ -110,7 +114,6 @@ namespace Caneda
 
         // Restore pen
         painter->setPen(savedPen);
-        drawPorts(m_ports, painter, option);
     }
 
     /*!
@@ -210,7 +213,6 @@ namespace Caneda
         rect = m_wLine.boundingRect();
         path.addRect(m_wLine.boundingRect());
 
-        addPortEllipses(m_ports, path);
         rect = portsRect(m_ports, rect);
         CGraphicsItem::setShapeAndBoundRect(path, path.boundingRect());
     }
