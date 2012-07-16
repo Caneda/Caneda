@@ -52,15 +52,9 @@ namespace Caneda
         QString filename;
         //! \brief Component prefix
         QString labelPrefix;
-        /*!
-         * \brief Component display text
-         * \todo Create a localization class
-         */
+        //! \brief Component display text
         QString displayText;
-        /*!
-         * \brief Component description
-         * \todo Create a localization class
-         */
+        //! \brief Component description
         QString description;
         //! \brief library
         QString library;
