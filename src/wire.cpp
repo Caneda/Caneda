@@ -208,13 +208,15 @@ namespace Caneda
         m_wLine.setP2(port2()->pos());
 
         QRectF rect;
-        QPainterPath path;
-
         rect = m_wLine.boundingRect();
-        path.addRect(m_wLine.boundingRect());
+        foreach(Port *port, m_ports) {
+            rect |= portEllipse.translated(port->pos());
+        }
 
-        rect = portsRect(m_ports, rect);
-        CGraphicsItem::setShapeAndBoundRect(path, path.boundingRect());
+        QPainterPath path;
+        path.addRect(rect);
+
+        CGraphicsItem::setShapeAndBoundRect(path, rect);
     }
 
     Wire* Wire::copy(CGraphicsScene *scene) const
@@ -230,7 +232,6 @@ namespace Caneda
          Wire::Data _data;
 
          _data.wLine = m_wLine;
-         _data.pos = pos();
          _data.port1Pos = port1()->pos();
          _data.port2Pos = port2()->pos();
 
@@ -247,7 +248,6 @@ namespace Caneda
     void Wire::storeState()
     {
         store.wLine = m_wLine;
-        store.pos = pos();
         store.port1Pos = port1()->pos();
         store.port2Pos = port2()->pos();
     }
@@ -255,7 +255,6 @@ namespace Caneda
     //! \brief Set's the wire status to \a state. Required for undo/redo.
     void Wire::setState(Wire::Data state)
     {
-        setPos(state.pos);
         port1()->setPos(state.port1Pos);
         port2()->setPos(state.port2Pos);
         m_wLine = state.wLine;
@@ -267,7 +266,6 @@ namespace Caneda
     {
         Wire::Data retVal;
         retVal.wLine = m_wLine;
-        retVal.pos = pos();
         retVal.port1Pos = port1()->pos();
         retVal.port2Pos = port2()->pos();
         return retVal;
@@ -286,11 +284,9 @@ namespace Caneda
 
         QString start = QString("%1,%2").arg(p1.x()).arg(p1.y());
         QString end = QString("%1,%2").arg(p2.x()).arg(p2.y());
-        QString pos_str = QString("%1,%2").arg(pos().x()).arg(pos().y());
 
         writer->writeAttribute("start", start);
         writer->writeAttribute("end", end);
-        writer->writeAttribute("pos", pos_str);
 
         //write the lines
         writer->writeEmptyElement("line");
@@ -314,7 +310,6 @@ namespace Caneda
     void Wire::loadData(Caneda::XmlReader *reader)
     {
         Wire::Data data = readWireData(reader);
-        setPos(data.pos);
         port1()->setPos(mapFromScene(data.port1Pos));
         port2()->setPos(mapFromScene(data.port2Pos));
         m_wLine = data.wLine;
@@ -338,7 +333,6 @@ namespace Caneda
 
         data.port1Pos = reader->readPointAttribute("start");
         data.port2Pos = reader->readPointAttribute("end");
-        data.pos = reader->readPointAttribute("pos");
 
         while(!reader->atEnd()) {
             reader->readNext();

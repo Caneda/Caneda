@@ -41,7 +41,6 @@ namespace Caneda
         //! A struct to store wire's details.
         struct Data {
             WireLine wLine;
-            QPointF pos;
             QPointF port1Pos;
             QPointF port2Pos;
         };

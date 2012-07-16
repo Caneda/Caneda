@@ -373,7 +373,11 @@ namespace Caneda
     //! \brief Returns the rect adjusted to accomodate ports too.
     QRectF Component::adjustedBoundRect(const QRectF& rect)
     {
-        return portsRect(m_ports, rect);
+        QRectF adjustedRect = rect;
+        foreach(Port *port, m_ports) {
+            adjustedRect |= portEllipse.translated(port->pos());
+        }
+        return adjustedRect;
     }
 
     //! \brief React to change of item position.

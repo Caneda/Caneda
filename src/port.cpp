@@ -30,9 +30,6 @@
 
 namespace Caneda
 {
-//! Define to 1 to print number of port connection in schematic
-#define DEBUG_PORT_CONNECTION 0
-
     /*************************************************************
      *
      *  PortOwner
@@ -419,40 +416,8 @@ namespace Caneda
             painter->drawEllipse(portEllipseConnected.translated(pos()));
         }
 
-        /* dump number of connection near each port */
-        if(DEBUG_PORT_CONNECTION) {
-            painter->setPen(QPen(Qt::red, 0));
-            QFont savedFont = painter->font();
-            painter->setFont(QFont ("Helvetica", 6));
-            painter->drawText(pos() + QPointF(5,5),
-                    m_connections != NULL ?
-                    QString::number(m_connections->size()):
-                    QString("0"));
-            painter->setFont(savedFont);
-        }
-
         /* restore pen */
         painter->setPen(savedPen);
-    }
-
-    //! \brief Returns a rect accomodating pRect as well as all ports.
-    QRectF portsRect(const QList<Port*> &ports, const QRectF& pRect)
-    {
-        QRectF debugTextRect;
-        QPointF delta(5, 5);
-        if(DEBUG_PORT_CONNECTION) {
-            QFontMetricsF fm(QFont("Helvetica", 6));
-            debugTextRect = fm.boundingRect(QString("W"));
-            debugTextRect.adjust(-1, -1, 1, 1);
-        }
-        QRectF rect = pRect;
-        foreach(Port *port, ports) {
-            rect |= portEllipse.translated(port->pos());
-            if(DEBUG_PORT_CONNECTION) {
-                rect |= debugTextRect.translated(port->pos() + delta);
-            }
-        }
-        return rect;
     }
 
 } // namespace Caneda

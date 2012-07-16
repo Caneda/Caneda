@@ -27,11 +27,12 @@
 
 namespace Caneda
 {
-    //Forward declarations.
+    // Forward declarations.
     class Wire;
     class Component;
     class CGraphicsScene;
 
+    // Style constants definitions
     static const QPen connectedPen(Qt::blue, 0);
     static const QBrush connectedBrush(Qt::blue);
     static const QPen unconnectedPen(Qt::darkRed, 0);
@@ -134,8 +135,6 @@ namespace Caneda
         PortOwner *m_owner;
         QList<Port*> *m_connections;
     };
-
-    QRectF portsRect(const QList<Port*> &ports, const QRectF& rect);
 
 } // namespace Caneda
 
