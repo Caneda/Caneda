@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2011 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -40,9 +40,6 @@ namespace Caneda
     Wire::Wire(const QPointF& startPos, const QPointF& endPos,
             CGraphicsScene *scene) : CGraphicsItem(0, scene)
     {
-        // Set position
-        setPos((startPos + endPos)/2);
-
         // Set flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
@@ -51,8 +48,6 @@ namespace Caneda
         // Create ports
         m_ports << new Port(this, mapFromScene(startPos));
         m_ports << new Port(this, mapFromScene(endPos));
-
-        m_wLine = WireLine(port1()->pos(), port2()->pos());
     }
 
     //! Destructor.
@@ -72,19 +67,17 @@ namespace Caneda
         }
     }
 
-    //! \brief Moves port1 to \a newLocalPos and adjust's the wire's lines.
+    //! \brief Moves port1 to \a newLocalPos.
     void Wire::movePort1(const QPointF& newLocalPos)
     {
         port1()->setPos(newLocalPos);
-        m_wLine.setP1(newLocalPos);
         updateGeometry();
     }
 
-    //! \brief Moves port2 to \a newLocalPos and adjust's the wire's lines.
+    //! \brief Moves port2 to \a newLocalPos.
     void Wire::movePort2(const QPointF& newLocalPos)
     {
         port2()->setPos(newLocalPos);
-        m_wLine.setP2(newLocalPos);
         updateGeometry();
     }
 
@@ -96,11 +89,10 @@ namespace Caneda
             port->paint(painter, option);
         }
 
-        // Save painter
+        // Save pen
         QPen savedPen = painter->pen();
 
         Settings *settings = Settings::instance();
-
         if(option->state & QStyle::State_Selected) {
             painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
@@ -110,7 +102,7 @@ namespace Caneda
                                  settings->currentValue("gui/lineWidth").toInt()));
         }
 
-        painter->drawLine(m_wLine);
+        painter->drawLine(port1()->pos(), port2()->pos());
 
         // Restore pen
         painter->setPen(savedPen);
@@ -160,17 +152,18 @@ namespace Caneda
                     if(!wiresAreConnected){
 
                         // Check if the collision is in the extremes of the wire (ports). Otherwise,
-                        // they intersect, but no node should be created.
-                        bool verticalCollision = _collidingItem->m_wLine.isHorizontal() &&
-                                                 port->pos().y() + pos().y() == _collidingItem->pos().y();
-                        bool horizontalCollision = _collidingItem->m_wLine.isVertical() &&
-                                                   port->pos().x() + pos().x() == _collidingItem->pos().x();
+                        // they intersect, but no node should be created. Either port1 or port2 can
+                        // be used for collision detection (x coordinate is used for vertical wires
+                        // and y coordinate for horizontal wires).
+                        bool verticalCollision = _collidingItem->isHorizontal() &&
+                                                 port->pos().y() == _collidingItem->port1()->pos().y();
+                        bool horizontalCollision = _collidingItem->isVertical() &&
+                                                   port->pos().x() == _collidingItem->port1()->pos().x();
 
                         if( verticalCollision || horizontalCollision ) {
-
-                            QPointF startPoint = _collidingItem->port1()->pos() + _collidingItem->pos();
-                            QPointF middlePoint = port->pos() + pos();
-                            QPointF endPoint =  _collidingItem->port2()->pos() + _collidingItem->pos();
+                            QPointF startPoint = _collidingItem->port1()->pos();
+                            QPointF middlePoint = port->pos();
+                            QPointF endPoint =  _collidingItem->port2()->pos();
 
                             // Create two new wires
                             Wire *wire1 = new Wire(startPoint, middlePoint, scene);
@@ -191,7 +184,6 @@ namespace Caneda
                             wire2->checkAndConnect(Caneda::DontPushUndoCmd);
 
                             nodeCreated = true;
-
                         }
                     }
                 }
@@ -201,22 +193,24 @@ namespace Caneda
         return nodeCreated;
     }
 
-    //! \brief Updates the wire's wireline, geometry and caches it.
+    //! \brief Updates the wire's geometry and caches it.
     void Wire::updateGeometry()
     {
-        m_wLine.setP1(port1()->pos());
-        m_wLine.setP2(port2()->pos());
-
-        QRectF rect;
-        rect = m_wLine.boundingRect();
-        foreach(Port *port, m_ports) {
-            rect |= portEllipse.translated(port->pos());
-        }
-
         QPainterPath path;
-        path.addRect(rect);
+        path.addRect(boundingRect());
 
-        CGraphicsItem::setShapeAndBoundRect(path, rect);
+        CGraphicsItem::setShapeAndBoundRect(path, boundingRect());
+    }
+
+    //! \brief Returns bounding rectangle arround the wire
+    QRectF Wire::boundingRect() const
+    {
+        QRectF rect;
+        rect.setTopLeft(port1()->pos());
+        rect.setBottomRight(port2()->pos());
+        rect = rect.normalized();
+        rect.adjust(-portRadius, -portRadius, +portRadius, +portRadius);
+        return rect;
     }
 
     Wire* Wire::copy(CGraphicsScene *scene) const
@@ -231,7 +225,6 @@ namespace Caneda
          CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(wire));
          Wire::Data _data;
 
-         _data.wLine = m_wLine;
          _data.port1Pos = port1()->pos();
          _data.port2Pos = port2()->pos();
 
@@ -247,7 +240,6 @@ namespace Caneda
     //! \brief Stores wire's status. Required for undo/redo.
     void Wire::storeState()
     {
-        store.wLine = m_wLine;
         store.port1Pos = port1()->pos();
         store.port2Pos = port2()->pos();
     }
@@ -257,7 +249,6 @@ namespace Caneda
     {
         port1()->setPos(state.port1Pos);
         port2()->setPos(state.port2Pos);
-        m_wLine = state.wLine;
         updateGeometry();
     }
 
@@ -265,7 +256,6 @@ namespace Caneda
     Wire::Data Wire::currentState() const
     {
         Wire::Data retVal;
-        retVal.wLine = m_wLine;
         retVal.port1Pos = port1()->pos();
         retVal.port2Pos = port2()->pos();
         return retVal;
@@ -275,9 +265,7 @@ namespace Caneda
     {
         writer->writeStartElement("wire");
 
-        if(id != -1){
-            writer->writeAttribute("id", QString::number(id));
-        }
+        writer->writeAttribute("id", QString::number(id));
 
         QPointF p1 = port1()->scenePos();
         QPointF p2 = port2()->scenePos();
@@ -308,7 +296,6 @@ namespace Caneda
 
         port1()->setPos(mapFromScene(port1Pos));
         port2()->setPos(mapFromScene(port2Pos));
-        m_wLine = WireLine(port1Pos, port2Pos);
 
         while(!reader->atEnd()) {
             reader->readNext();
