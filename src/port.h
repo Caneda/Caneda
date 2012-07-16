@@ -51,7 +51,7 @@ namespace Caneda
     public:
         PortOwner(CGraphicsItem * item);
 
-        //! return type of owner
+        //! Return type of owner
         int type() const { return m_item->type(); }
 
         Wire* wire() const;
@@ -60,19 +60,19 @@ namespace Caneda
         //! Returns the owner item as graphicsitem.
         QGraphicsItem* item() const;
 
-        //! return weather item is a wire
+        //! Return weather item is a wire
         bool isWire() const { return m_item->isWire(); }
-        //! return weather item is a component
+        //! Return weather item is a component
         bool isComponent() const { return m_item->isComponent(); }
 
     private:
-        //! owner of the port
+        //! Owner of the port
         CGraphicsItem *const m_item;
         //! Disable copy
         PortOwner(const PortOwner& other);
     };
 
-    //! Class used to represend sharable port's data.
+    //! Sharable port's data.
     struct PortData : public QSharedData
     {
         PortData(QPointF _pos, QString _name) : pos(_pos), name(_name) {}

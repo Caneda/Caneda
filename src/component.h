@@ -29,32 +29,19 @@ namespace Caneda
     class PropertiesGroup;
     class PortData;
 
-    /*!
-     * \brief Represents the shareable data of component.
-     *
-     * This class inherits \a QSharedData which enables implicit sharing
-     * of this class.
-     */
+    //! Shareable component's data
     struct ComponentData : public QSharedData
     {
         ComponentData() {}
 
-        //! \brief Component name
         QString name;
-        //! \brief Component filename
         QString filename;
-        //! \brief Component prefix
         QString labelPrefix;
-        //! \brief Component display text
         QString displayText;
-        //! \brief Component description
         QString description;
-        //! \brief library
         QString library;
-        //! \brief Properties
-        PropertyMap propertyMap;
-        //! \brief Map of component port (common port data)
-        QMap<QString, QList<PortData*> > schematicPortMap;
+        PropertyMap propertyMap; //! Properties
+        QMap<QString, QList<PortData*> > schematicPortMap; //! Map of component's ports
     };
 
     /*!
@@ -88,7 +75,7 @@ namespace Caneda
         //! Represents model of component, which is infact a property.
         QString model() const { return property("model").toString(); }
 
-        //! Returns string to be displayed in sidebar, toolbar or ..
+        //! Returns string to be displayed in sidebar.
         QString displayText() const { return d->displayText; }
 
         //! Returns a helpful text corresponding to component.
@@ -97,7 +84,7 @@ namespace Caneda
         //! Returns the library to which this component belongs.
         QString library() const { return d->library; }
 
-        //! Returns the property map (actually copy of property map)
+        //! Returns the property map (actually copy of property map).
         PropertyMap propertyMap() const { return d->propertyMap; }
         void setPropertyMap(const PropertyMap& propMap);
 
