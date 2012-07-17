@@ -28,7 +28,7 @@
 
 namespace Caneda
 {
-    // Forward declarations.
+    // Forward declarations
     class Wire;
     class Component;
     class CGraphicsScene;

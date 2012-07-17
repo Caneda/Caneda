@@ -85,13 +85,14 @@ namespace Caneda
     {
     public:
         /*!
-         * \brief This enum helps in polymorphic cast without using dynamic_cast.
+         * \brief Graphics View Framework id. This enum helps in polymorphic cast
+         * without using dynamic_cast.
          *
-         * Actually a bitpattern is used to determine whether the cast
+         * Represents item type used by graphics view framework's cast
+         * mechanism. Actually a bitpattern is used to determine whether the cast
          * is valid or not. The cast function is approximately defined like this
-         * cast(a,b) {
-         * return (a&b) == a;
-         * }
+         * cast(a,b) { return (a&b) == a; }
+         *
          * \sa canedaitem_cast and PATTERN.
          */
         enum CGraphicsItemTypes {
@@ -100,13 +101,15 @@ namespace Caneda
             //!Recognizes classes derived from SvgItem
             SvgItemType = PATTERN(CGraphicsItemType, 1),
             //!Recognizes classes derived from Component
-            ComponentType = PATTERN(SvgItemType, 1),
+            ComponentType = PATTERN(SvgItemType, 2),
             //!Recognizes classes derived from Wire
             WireType = PATTERN(CGraphicsItemType, 3),
+            //!Recognizes classes derived from Node
+            NodeType = PATTERN(CGraphicsItemType, 4),
             //!Recognizes classes derived from Painting
-            PaintingType = PATTERN(CGraphicsItemType, 4),
+            PaintingType = PATTERN(CGraphicsItemType, 5),
             //!Recognizes classes derived from Display
-            DisplayType = PATTERN(CGraphicsItemType, 5)
+            DisplayType = PATTERN(CGraphicsItemType, 6)
         };
 
         //! Item identifier \sa CGraphicsItemTypes

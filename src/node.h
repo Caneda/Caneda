@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -24,164 +25,158 @@
 
 #include <QList>
 
-// forward declaration
-class Wire;
-
-/*!
- * \brief Node class
- * A graphical node is little circle allowing to plug wires or components
- */
-class Node : public SchematicItem
+namespace Caneda
 {
-public:
+    // Forward declarations
+    class CGraphicsItem;
+    class CGraphicsScene;
+    class Wire;
+
     /*!
-     * \brief Graphics View Framework id.
-     *
-     * Represents item type used by graphics view framework's cast
-     * mechanism.
-     * \sa canedaitem_cast
+     * \brief Node class
+     * A graphical node is little circle allowing to plug wires or components
      */
-    enum {
-        Type = SchematicItem::NodeType
+    class Node : public CGraphicsItem
+    {
+    public:
+        enum { Type = CGraphicsItem::NodeType };
+
+        //! \brief Represents radius of the node's visual circular representation.
+        static const qreal Radius;
+        //! \brief Represens the z-level of the node
+        static const qreal ZValue;
+        //! \brief The bounding rect of a every node is constant. So cache it.
+        static const QRectF BoundRect;
+        //! \brief The shape of every node is const, so cache it too.
+        static QPainterPath Shape;
+
+        Node(const QString& name = QString(), CGraphicsScene *scene = 0);
+        ~Node();
+
+        void addComponent(Component *comp);
+        void removeComponent(Component *comp);
+
+        //! \brief Return the list of components attached to this node
+        QList<Component*> components() { return m_components; }
+        QList<Component*> selectedComponents() const;
+
+        bool areAllComponentsSelected() const;
+        void addAllComponentsFrom(const Node *other);
+
+        void addWire(Wire *w);
+        void removeWire(Wire *w);
+
+        //! \brief Return list of wire attached to this node
+        QList<Wire*> wires() const { return m_wires; }
+        QList<Wire*> selectedWires() const;
+
+        void addAllWiresFrom(const Node *other);
+
+        //! \brief Test if this node has one and only one connection
+        bool isOpen() const {
+            return totalConnections() == 1;
+        }
+        /*!
+         * \brief Test if this node is empty
+         * This is mostly used to determine if this node can be deleted.
+         */
+        bool isEmpty() const {
+            return (m_components.isEmpty() && m_wires.isEmpty());
+        }
+
+        //! \brief Return the number of connection attached to this node
+        int totalConnections() const {
+            return m_components.size() + m_wires.size();
+        }
+
+        void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
+
+        /*!
+         * \brief Test if point is included in node
+         * \param pt: point to test
+         * \return true if this point is in the node; otherwise returns false.
+         * \todo This method should be as fast as possible
+         * Therefore try to avoid sqrt
+         * do sometthing like pt.x()*pt.x()+pt.y()*pt.y()- Node::Radius*Node::Radius <= 0
+         */
+        bool contains(const QPointF& pt) const {
+            return pt.x()*pt.x() + pt.y()*pt.y() - Node::Radius*Node::Radius <= 0.0;
+        }
+        bool collidesWithItem(QGraphicsItem *other) const;
+
+        //!\brief Bounding box of this item (square tangent to a circle)
+        QRectF boundingRect() const {
+            return Node::BoundRect;
+        }
+        //!\brief Shape of node
+        QPainterPath shape() const {
+            return Node::Shape;
+        }
+
+        /*!
+         * \brief Return name of node
+         * \sa setName
+         */
+        QString name() const {
+            return m_name;
+        }
+        void setName(const QString& name);
+
+
+        /*!
+         * \brief Sets the node's movement controller on screen to c.
+         *
+         * This is needed because a single node is usually shared by many
+         * components. When the components are moved care should be taken
+         * not to move the same node again and again. In those cases one
+         * of component is chosen as the controller.
+         * \param c This is the component which when moved also moves this node.
+         */
+        void setController(Component *c) {
+            m_controller = c;
+        }
+        /*!
+         * \brief Returns the active controller component.
+         * \sa setController
+         */
+        Component* controller() const {
+            return m_controller;
+        }
+
+        //! \brief Returns GraphicsView framwork id.
+        int type() const { return CGraphicsItem::NodeType; }
+
+        //! \brief Empty because circle at any rotation is the same.
+        virtual void rotate() {}
+        //! \brief Empty because circle when mirrored is the same.
+        void mirrorAlong(Qt::Axis) {}
+
+        void writeXml(Caneda::XmlWriter *) {
+            qWarning("Node::writeXml(): Nothing to write.");
+        }
+        void readXml(Caneda::XmlReader *) {
+            qWarning("Node::readXml(): Nothing to read.");
+        }
+
+        void invokePropertiesDialog() { }
+
+    private:
+        //! \brief List of components attached to this node.
+        QList<Component*> m_components;
+
+        //! \brief List of wires attached to this node
+        QList<Wire*> m_wires;
+
+        //! \brief Name of node
+        QString m_name;
+
+        /*!
+         * \brief Component responsible for controling position of node.
+         * \sa setController()
+         */
+        Component *m_controller;
     };
 
-    //! \brief Represents radius of the node's visual circular representation.
-    static const qreal Radius;
-
-    //! \brief Represens the z-level of the node
-    static const qreal ZValue;
-
-    //! \brief The bounding rect of a every node is constant. So cache it.
-    static const QRectF BoundRect;
-
-    //! \brief The shape of every node is const, so cache it too.
-    static QPainterPath Shape;
-
-    Node(const QString& name = QString(),SchematicScene *scene = 0);
-    ~Node();
-
-    void addComponent(Component *comp);
-    void removeComponent(Component *comp);
-
-    //! \brief Return the list of components attached to this node
-    QList<Component*> components() { return m_components; }
-    QList<Component*> selectedComponents() const;
-
-    bool areAllComponentsSelected() const;
-    void addAllComponentsFrom(const Node *other);
-
-    void addWire(Wire *w);
-    void removeWire(Wire *w);
-
-    //! \brief Return list of wire attached to this node
-    QList<Wire*> wires() const { return m_wires; }
-    QList<Wire*> selectedWires() const;
-
-    void addAllWiresFrom(const Node *other);
-
-    //! \brief Test if this node has one and only one connection
-    bool isOpen() const {
-        return totalConnections() == 1;
-    }
-    /*!
-     * \brief Test if this node is empty
-     * This is mostly used to determine if this node can be deleted.
-     */
-    bool isEmpty() const {
-        return (m_components.isEmpty() && m_wires.isEmpty());
-    }
-
-    //! \brief Return the number of connection attached to this node
-    int totalConnections() const {
-        return m_components.size() + m_wires.size();
-    }
-
-    void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
-
-    /*!
-     * \brief Test if point is included in node
-     * \param pt: point to test
-     * \return true if this point is in the node; otherwise returns false.
-     * \todo This method should be as fast as possible
-     * Therefore try to avoid sqrt
-     * do sometthing like pt.x()*pt.x()+pt.y()*pt.y()- Node::Radius*Node::Radius <= 0
-     */
-    bool contains(const QPointF& pt) const {
-        return pt.x()*pt.x() + pt.y()*pt.y() - Node::Radius*Node::Radius <= 0.0;
-    }
-    bool collidesWithItem(QGraphicsItem *other) const;
-
-    //!\brief Bounding box of this item (square tangent to a circle)
-    QRectF boundingRect() const {
-        return Node::BoundRect;
-    }
-    //!\brief Shape of node
-    QPainterPath shape() const {
-        return Node::Shape;
-    }
-
-    /*!
-     * \brief Return name of node
-     * \sa setName
-     */
-    QString name() const {
-        return m_name;
-    }
-    void setName(const QString& name);
-
-
-    /*!
-     * \brief Sets the node's movement controller on screen to c.
-     *
-     * This is needed because a single node is usually shared by many
-     * components. When the components are moved care should be taken
-     * not to move the same node again and again. In those cases one
-     * of component is chosen as the controller.
-     * \param c This is the component which when moved also moves this node.
-     */
-    void setController(Component *c) {
-        m_controller = c;
-    }
-    /*!
-     * \brief Returns the active controller component.
-     * \sa setController
-     */
-    Component* controller() const {
-        return m_controller;
-    }
-
-    /*!
-     * \brief return GraphicsView framwork id.
-     * \sa Type
-     */
-    int type() const { return SchematicItem::NodeType; }
-
-    //!\brief Empty because circle at any rotation is the same.
-    virtual void rotate() {}
-    //!\brief Empty because circle when mirrored is the same.
-    void mirrorAlong(Qt::Axis) {}
-    void writeXml(Caneda::XmlWriter *) {
-        qWarning("Node::writeXml(): Nothing to write.");
-    }
-    void readXml(Caneda::XmlReader *) {
-        qWarning("Node::readXml(): Nothing to read.");
-    }
-    void invokePropertiesDialog() { }
-private:
-    //! \brief List of components attached to this node.
-    QList<Component*> m_components;
-
-    //! \brief List of wires attached to this node
-    QList<Wire*> m_wires;
-
-    //! \brief Name of node
-    QString m_name;
-
-    /*!
-     * \brief Component responsible for controling position of node.
-     * \sa setController()
-     */
-    Component *m_controller;
-};
+} // namespace Caneda
 
 #endif //NODE_H
