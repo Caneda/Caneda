@@ -70,7 +70,24 @@ namespace Caneda
 
     bool XmlSymbol::load()
     {
-        return false;
+        CGraphicsScene *scene = cGraphicsScene();
+        if(!scene) {
+            return false;
+        }
+
+        QFile file(fileName());
+        if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QMessageBox::critical(0, QObject::tr("Error"),
+                    QObject::tr("Cannot load document ")+fileName());
+            return false;
+        }
+
+        QTextStream stream(&file);
+
+        bool result = loadFromText(stream.readAll());
+
+        file.close();
+        return result;
     }
 
     QString XmlSymbol::saveText()
@@ -126,6 +143,96 @@ namespace Caneda
 
         delete writer;
         return retVal;
+    }
+
+    bool XmlSymbol::loadFromText(const QString& text)
+    {
+        Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isStartElement()) {
+                if(reader->name() == "caneda" &&
+                        Caneda::checkVersion(reader->attributes().value("version").toString())) {
+
+                    while(!reader->atEnd()) {
+                        reader->readNext();
+                        if(reader->isEndElement()) {
+                            Q_ASSERT(reader->name() == "caneda");
+                            break;
+                        }
+
+                        reader->readNext();
+
+                        if(!reader->isStartElement() || reader->name() != "component") {
+                            reader->raiseError(QObject::tr("Malformatted file"));
+                            break;
+                        }
+
+                        while(!reader->atEnd()) {
+                            reader->readNext();
+                            if(reader->isEndElement()) {
+                                Q_ASSERT(reader->name() == "component");
+                                break;
+                            }
+                            reader->readNext();
+
+                            if(reader->name() == "displaytext") {
+                                // TODO: Implement this.
+                                reader->readUnknownElement();
+                            }
+                            else if(reader->name() == "description") {
+                                // TODO: Implement this.
+                                reader->readUnknownElement();
+                            }
+                            else if(reader->name() == "symbol") {
+
+                                while(!reader->atEnd()) {
+                                    reader->readNext();
+
+                                    if(reader->isEndElement()) {
+                                        Q_ASSERT(reader->name() == "symbol");
+                                        break;
+                                    }
+
+                                    if(reader->isStartElement()) {
+                                        if(reader->name() == "painting") {
+                                            Painting::loadPainting(reader, cGraphicsScene());
+                                        }
+                                        else {
+                                            qWarning() << "Error: Found unknown painting type" <<
+                                                          reader->name().toString();
+                                            reader->readUnknownElement();
+                                            reader->raiseError(QObject::tr("Malformatted file"));
+                                        }
+                                    }
+                                }
+
+                            }
+                            else if(reader->name() == "properties") {
+                                // TODO: Implement this.
+                                reader->readUnknownElement();
+                            }
+                            else {
+                                reader->readUnknownElement();
+                            }
+                        }
+                    }
+                }
+                else {
+                    reader->raiseError(QObject::tr("Not a caneda file or probably malformatted file"));
+                }
+            }
+        }
+
+        if(reader->hasError()) {
+            QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
+            delete reader;
+            return false;
+        }
+
+        delete reader;
+        return true;
     }
 
     SymbolDocument* XmlSymbol::symbolDocument() const

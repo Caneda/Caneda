@@ -44,6 +44,7 @@ namespace Caneda
 
     private:
         QString saveText();
+        bool loadFromText(const QString& text);
 
         SymbolDocument *m_symbolDocument;
     };
