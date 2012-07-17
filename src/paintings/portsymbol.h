@@ -44,6 +44,8 @@ namespace Caneda
                 const QString& numberStr_= "",
                 CGraphicsScene *scene = 0);
 
+        ~PortSymbol();
+
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
         //! \brief Returns the number part of port id.

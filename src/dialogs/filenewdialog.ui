@@ -41,6 +41,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QRadioButton" name="choiceSymbol">
+     <property name="text">
+      <string>Symbol file</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QRadioButton" name="choiceLayout">
      <property name="text">
       <string>Layout file</string>

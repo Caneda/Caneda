@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,37 +17,67 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef XML_SYMBOL_H
-#define XML_SYMBOL_H
+#ifndef SYMBOL_DOCUMENT_H
+#define SYMBOL_DOCUMENT_H
 
-// Forward declarations
-class QString;
+#include "idocument.h"
 
 namespace Caneda
 {
-    // Forward declarations
+    // Forward declations
     class CGraphicsScene;
-    class SymbolDocument;
 
-    class XmlSymbol
+    class SymbolDocument : public IDocument
     {
+        Q_OBJECT
+
     public:
-        XmlSymbol(SymbolDocument *doc = 0);
-        ~XmlSymbol() {}
+        SymbolDocument();
+        ~SymbolDocument();
 
-        bool save();
-        bool load();
+        // IDocument interface methods
+        virtual IContext* context();
 
-        SymbolDocument* symbolDocument() const;
+        virtual bool isModified() const;
+
+        virtual bool canUndo() const;
+        virtual bool canRedo() const;
+
+        virtual void undo();
+        virtual void redo();
+
+        virtual QUndoStack* undoStack();
+
+        virtual bool canCut() const;
+        virtual bool canCopy() const;
+        virtual bool canPaste() const;
+
+        virtual void cut();
+        virtual void copy();
+        virtual void paste();
+
+        virtual void selectAll();
+
+        virtual bool printSupportsFitInPage() const;
+        virtual void print(QPrinter *printer, bool fitInView);
+
+        virtual bool load(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0);
+
+        virtual void exportImage();
+        virtual void simulate() {}
+
+        virtual IView* createView();
+
+        virtual void updateSettingsChanges();
+        // End of IDocument interface methods
+
         CGraphicsScene* cGraphicsScene() const;
-        QString fileName() const;
 
     private:
-        QString saveText();
-
-        SymbolDocument *m_symbolDocument;
+        CGraphicsScene *m_cGraphicsScene;
     };
 
 } // namespace Caneda
 
-#endif //XML_SYMBOL_H
+#endif //SYMBOL_DOCUMENT_H

@@ -25,6 +25,7 @@ SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   idocument.cpp iview.cpp tabs.cpp
   syntaxhighlighters.cpp clineedit.cpp
   schematicdocument.cpp schematiccontext.cpp schematicview.cpp
+  symboldocument.cpp symbolcontext.cpp symbolview.cpp
   layoutdocument.cpp layoutcontext.cpp layoutview.cpp
   textdocument.cpp textcontext.cpp textview.cpp textedit.cpp
   webdocument.cpp webcontext.cpp webview.cpp webpage.cpp
@@ -38,6 +39,7 @@ SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
   syntaxhighlighters.h clineedit.h port.h node.h
   schematicdocument.h schematiccontext.h schematicview.h
+  symboldocument.h symbolcontext.h symbolview.h
   layoutdocument.h layoutcontext.h layoutview.h
   textdocument.h textcontext.h textview.h textedit.h
   webdocument.h webcontext.h webview.h webpage.h

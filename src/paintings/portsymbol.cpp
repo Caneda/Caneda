@@ -50,6 +50,11 @@ namespace Caneda
         updateGeometry();
     }
 
+    //! Destructor
+    PortSymbol::~PortSymbol()
+    {
+    }
+
     //! \brief Draw port ellipse and id.
     void PortSymbol::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
     {

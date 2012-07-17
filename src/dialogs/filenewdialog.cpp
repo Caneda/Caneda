@@ -23,6 +23,7 @@
 #include "global.h"
 #include "layoutcontext.h"
 #include "schematiccontext.h"
+#include "symbolcontext.h"
 #include "textcontext.h"
 
 namespace Caneda
@@ -33,6 +34,7 @@ namespace Caneda
         ui.setupUi(this);
 
         ui.choiceSchematic->setIcon(Caneda::icon("document-new"));
+        ui.choiceSymbol->setIcon(Caneda::icon("document-properties"));
         ui.choiceLayout->setIcon(Caneda::icon("view-grid"));
         ui.choiceText->setIcon(Caneda::icon("text-plain"));
     }
@@ -50,6 +52,9 @@ namespace Caneda
 
             if(ui.choiceSchematic->isChecked()) {
                 manager->newDocument(SchematicContext::instance());
+            }
+            else if(ui.choiceSymbol->isChecked()) {
+                manager->newDocument(SymbolContext::instance());
             }
             else if(ui.choiceLayout->isChecked()) {
                 manager->newDocument(LayoutContext::instance());

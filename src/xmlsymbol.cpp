@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,7 +22,7 @@
 #include "cgraphicsscene.h"
 #include "component.h"
 #include "global.h"
-#include "schematicdocument.h"
+#include "symboldocument.h"
 #include "settings.h"
 
 #include "xmlutilities/xmlutilities.h"
@@ -37,8 +37,8 @@
 namespace Caneda
 {
     //! Constructor
-    XmlSymbol::XmlSymbol(SchematicDocument *doc) :
-        m_schematicDocument(doc)
+    XmlSymbol::XmlSymbol(SymbolDocument *doc) :
+        m_symbolDocument(doc)
     {
     }
 
@@ -70,7 +70,7 @@ namespace Caneda
         Settings::instance()->setCurrentValue("gui/gridVisible", false);
 
         QSvgGenerator svg_engine;
-        QFileInfo info(schematicDocument()->fileName());
+        QFileInfo info(symbolDocument()->fileName());
         svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
         scene->toPaintDevice(svg_engine, scene->itemsBoundingRect().width(), scene->itemsBoundingRect().height());
 
@@ -108,14 +108,14 @@ namespace Caneda
         writer->writeEndElement(); //</displaytext>
 
         writer->writeStartElement("description");
-        writer->writeLocaleText("C", "User created component based on user schematic");
+        writer->writeLocaleText("C", "User created component based on user symbol");
         //   TODO: When available use this to save user defined description
         //   writer->writeLocaleText("C", scene->description());
         writer->writeEndElement(); //</description>
 
-        writer->writeStartElement("schematics");
+        writer->writeStartElement("symbols");
         writer->writeAttribute("default", "userdefined");
-        writer->writeStartElement("schematic");
+        writer->writeStartElement("symbol");
         writer->writeAttribute("name", "userdefined");
         writer->writeAttribute("href", info.baseName()+".svg");
 
@@ -140,8 +140,8 @@ namespace Caneda
             }
         }
 
-        writer->writeEndElement(); //</schematic>
-        writer->writeEndElement(); //</schematics>
+        writer->writeEndElement(); //</symbol>
+        writer->writeEndElement(); //</symbols>
 
         //Write ports properties
         writer->writeStartElement("ports");
@@ -168,19 +168,19 @@ namespace Caneda
         return retVal;
     }
 
-    SchematicDocument* XmlSymbol::schematicDocument() const
+    SymbolDocument* XmlSymbol::symbolDocument() const
     {
-        return m_schematicDocument;
+        return m_symbolDocument;
     }
 
     CGraphicsScene* XmlSymbol::cGraphicsScene() const
     {
-        return m_schematicDocument ? m_schematicDocument->cGraphicsScene() : 0;
+        return m_symbolDocument ? m_symbolDocument->cGraphicsScene() : 0;
     }
 
     QString XmlSymbol::fileName() const
     {
-        return m_schematicDocument ? m_schematicDocument->fileName() : QString();
+        return m_symbolDocument ? m_symbolDocument->fileName() : QString();
     }
 
 } // namespace Caneda

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,37 +17,52 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef XML_SYMBOL_H
-#define XML_SYMBOL_H
+#ifndef SYMBOL_VIEW_H
+#define SYMBOL_VIEW_H
 
-// Forward declarations
-class QString;
+#include "iview.h"
 
 namespace Caneda
 {
-    // Forward declarations
-    class CGraphicsScene;
+    // Forward declrations
+    class CGraphicsView;
     class SymbolDocument;
 
-    class XmlSymbol
+    class SymbolView : public IView
     {
-    public:
-        XmlSymbol(SymbolDocument *doc = 0);
-        ~XmlSymbol() {}
+        Q_OBJECT
 
-        bool save();
-        bool load();
+    public:
+        SymbolView(SymbolDocument *document);
+        virtual ~SymbolView();
 
         SymbolDocument* symbolDocument() const;
-        CGraphicsScene* cGraphicsScene() const;
-        QString fileName() const;
+
+        // IView interface methods
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
+
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        virtual qreal currentZoom();
+        virtual void setZoom(int percentage);
+
+        virtual IView* duplicate();
+
+        virtual void updateSettingsChanges();
+        // End of IView interface methods
+
+    private Q_SLOTS:
+        void onWidgetFocussedIn();
+        void onWidgetFocussedOut();
 
     private:
-        QString saveText();
-
-        SymbolDocument *m_symbolDocument;
+        CGraphicsView *m_cGraphicsView;
     };
 
 } // namespace Caneda
 
-#endif //XML_SYMBOL_H
+#endif //SYMBOL_VIEW_H

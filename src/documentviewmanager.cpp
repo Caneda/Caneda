@@ -25,6 +25,7 @@
 #include "layoutcontext.h"
 #include "mainwindow.h"
 #include "schematiccontext.h"
+#include "symbolcontext.h"
 #include "singletonowner.h"
 #include "tabs.h"
 #include "textcontext.h"
@@ -271,9 +272,8 @@ namespace Caneda
             nameFilters << context->fileNameFilters();
         }
 
-        // TODO: Symbol and data display filters should be removed when proper
+        // TODO: Data display filter should be removed when proper
         // icontexts are implemented.
-        nameFilters << QObject::tr("Symbol-xml (*.xsym)")+" (*.xsym);;";
         nameFilters << QObject::tr("Data display (*.dpl)")+" (*.dpl);;";
 
         return nameFilters;
@@ -480,6 +480,7 @@ namespace Caneda
     {
         m_contexts << LayoutContext::instance();
         m_contexts << SchematicContext::instance();
+        m_contexts << SymbolContext::instance();
         m_contexts << TextContext::instance();
         m_contexts << WebContext::instance();
     }
