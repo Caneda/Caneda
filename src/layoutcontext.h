@@ -31,6 +31,7 @@ namespace Caneda
     class LayoutContext : public IContext
     {
         Q_OBJECT
+
     public:
         static LayoutContext* instance();
         ~LayoutContext();
@@ -65,6 +66,7 @@ namespace Caneda
 
     private:
         LayoutContext(QObject *parent = 0);
+
         void alignElements(Qt::Alignment alignment);
         void setNormalAction();
 

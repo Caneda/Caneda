@@ -202,10 +202,10 @@ namespace Caneda
     void LayoutContext::slotDistributeHorizontal()
     {
         IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        LayoutDocument *schDoc = qobject_cast<LayoutDocument*>(doc);
+        LayoutDocument *layDoc = qobject_cast<LayoutDocument*>(doc);
 
-        if (schDoc) {
-            if (!schDoc->cGraphicsScene()->distributeElements(Qt::Horizontal)) {
+        if (layDoc) {
+            if (!layDoc->cGraphicsScene()->distributeElements(Qt::Horizontal)) {
                 QMessageBox::information(0, tr("Info"),
                         tr("At least two elements must be selected!"));
             }
@@ -215,10 +215,10 @@ namespace Caneda
     void LayoutContext::slotDistributeVertical()
     {
         IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        LayoutDocument *schDoc = qobject_cast<LayoutDocument*>(doc);
+        LayoutDocument *layDoc = qobject_cast<LayoutDocument*>(doc);
 
-        if (schDoc) {
-            if (!schDoc->cGraphicsScene()->distributeElements(Qt::Vertical)) {
+        if (layDoc) {
+            if (!layDoc->cGraphicsScene()->distributeElements(Qt::Vertical)) {
                 QMessageBox::information(0, tr("Info"),
                         tr("At least two elements must be selected!"));
             }
@@ -239,10 +239,10 @@ namespace Caneda
     void LayoutContext::alignElements(Qt::Alignment alignment)
     {
         IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        LayoutDocument *schDoc = qobject_cast<LayoutDocument*>(doc);
+        LayoutDocument *layDoc = qobject_cast<LayoutDocument*>(doc);
 
-        if (schDoc) {
-            if (!schDoc->cGraphicsScene()->alignElements(alignment)) {
+        if (layDoc) {
+            if (!layDoc->cGraphicsScene()->alignElements(alignment)) {
                 QMessageBox::information(0, tr("Info"),
                         tr("At least two elements must be selected!"));
             }
