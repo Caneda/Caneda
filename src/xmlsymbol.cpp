@@ -23,7 +23,8 @@
 #include "component.h"
 #include "global.h"
 #include "symboldocument.h"
-#include "settings.h"
+
+#include "paintings/painting.h"
 
 #include "xmlutilities/xmlutilities.h"
 
@@ -32,7 +33,6 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QString>
-#include <QSvgGenerator>
 
 namespace Caneda
 {
@@ -49,8 +49,8 @@ namespace Caneda
             return false;
         }
 
-        //Generate and save the xml description ********************
         QString text = saveText();
+
         if(text.isEmpty()) {
             qDebug("Looks buggy! Null data to save! Was this expected?");
         }
@@ -65,17 +65,6 @@ namespace Caneda
         stream << text;
         file.close();
 
-        //Generate and save svg ************************************
-        bool viewGridStatus = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
-        Settings::instance()->setCurrentValue("gui/gridVisible", false);
-
-        QSvgGenerator svg_engine;
-        QFileInfo info(symbolDocument()->fileName());
-        svg_engine.setFileName(info.absolutePath()+"/"+info.baseName()+".svg");
-        scene->toPaintDevice(svg_engine, scene->itemsBoundingRect().width(), scene->itemsBoundingRect().height());
-
-        Settings::instance()->setCurrentValue("gui/gridVisible", viewGridStatus);
-
         return true;
     }
 
@@ -86,19 +75,20 @@ namespace Caneda
 
     QString XmlSymbol::saveText()
     {
-        CGraphicsScene *scene = cGraphicsScene();
-
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
         writer->setAutoFormatting(true);
+
+        //Fist we start the document and write current version
         writer->writeStartDocument();
+        writer->writeDTD(QString("<!DOCTYPE caneda>"));
+        writer->writeStartElement("caneda");
+        writer->writeAttribute("version", Caneda::version());
 
         //Write all view details
         writer->writeStartElement("component");
-
         QFileInfo info(fileName());
         writer->writeAttribute("name", info.baseName());
-        writer->writeAttribute("version", Caneda::version());
         writer->writeAttribute("label", "comp");
 
         writer->writeStartElement("displaytext");
@@ -113,56 +103,26 @@ namespace Caneda
         //   writer->writeLocaleText("C", scene->description());
         writer->writeEndElement(); //</description>
 
-        writer->writeStartElement("symbols");
-        writer->writeAttribute("default", "userdefined");
         writer->writeStartElement("symbol");
         writer->writeAttribute("name", "userdefined");
-        writer->writeAttribute("href", info.baseName()+".svg");
 
-        //Write the ports positions
-        QList<QGraphicsItem*> items = scene->items();
-        QList<Component*> components = filterItems<Component>(items, RemoveItems);
-        if(!components.isEmpty()) {
-            foreach(Component *c, components) {
-                if(c->name() == "Port") {
-                    writer->writeEmptyElement("port");
-                    writer->writeAttribute("name", c->label());
 
-                    // We adjust the port to fit in grid
-                    QRectF source_area = scene->itemsBoundingRect();
-                    QPointF newOrigin = scene->smartNearingGridPoint(source_area.topLeft());
-                    source_area.setLeft(newOrigin.x());
-                    source_area.setTop(newOrigin.y());
-
-                    writer->writeAttribute("x", QString::number(c->pos().x() - source_area.x()));
-                    writer->writeAttribute("y", QString::number(c->pos().y() - source_area.y()));
-                }
+        //Now we copy all the elements and properties in the schematic
+        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
+        if(!paintings.isEmpty()) {
+            foreach(Painting *p, paintings) {
+                p->saveData(writer);
             }
         }
-
+        //Finally we finish the document
         writer->writeEndElement(); //</symbol>
-        writer->writeEndElement(); //</symbols>
-
-        //Write ports properties
-        writer->writeStartElement("ports");
-        if(!components.isEmpty()) {
-            foreach(Component *c, components) {
-                if(c->name() == "Port") {
-                    writer->writeEmptyElement("port");
-                    writer->writeAttribute("name", c->label());
-                    writer->writeAttribute("type", "analog");
-                    // TODO: To be replaced by the following line once properties are handled
-                    //       writer->writeAttribute("type", c->property("type").toString());
-                }
-            }
-        }
-        writer->writeEndElement(); //</ports>
 
         //TODO Write properties
         writer->writeStartElement("properties");
         writer->writeEndElement(); //</properties>
 
-        writer->writeEndDocument(); //</component>
+        writer->writeEndDocument(); //</caneda>
 
         delete writer;
         return retVal;
