@@ -22,7 +22,35 @@
 
 #define qf_double_t long double
 
-#include "qf_matrix.h"
+
+class qf_matrix
+{
+ public:
+  // constructor
+  qf_matrix (unsigned int d) {
+    data = (qf_double_t *) calloc (d * d, sizeof (qf_double_t));
+    n = d;
+  }
+
+  // destructor
+  ~qf_matrix () {
+    free (data);
+  }
+
+  // accessor operators
+  qf_double_t operator () (int r, int c) const {
+    return data[r * n + c];
+  }
+  qf_double_t & operator () (int r, int c) {
+    return data[r * n + c];
+  }
+
+  // size of matrix
+  unsigned int n;
+
+ private:
+  qf_double_t * data;
+};
 
 // A polynom can be described either by a product of monoms equal to
 // (x - r[i]) where r[i] is the ith root and a constant factor, or by
