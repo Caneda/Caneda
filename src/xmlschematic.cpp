@@ -37,47 +37,6 @@
 
 namespace Caneda
 {
-    static void getConnectedWires(Wire *wire, QList<Wire*> &out)
-    {
-        if(out.contains(wire)) {
-            return;
-        }
-
-        out << wire;
-
-        QList<Port*> *port1_connections = wire->port1()->connections();
-        QList<Port*> *port2_connections = wire->port2()->connections();
-
-        if(port1_connections) {
-            foreach(Port *port, *port1_connections) {
-                if(port->owner()->isWire()) {
-                    getConnectedWires(port->owner()->wire(), out);
-                }
-            }
-        }
-
-        if(port2_connections) {
-            foreach(Port *port, *port2_connections) {
-                if(port->owner()->isWire()) {
-                    getConnectedWires(port->owner()->wire(), out);
-                }
-            }
-        }
-    }
-
-    void writeEquiWires(Caneda::XmlWriter *writer, int id, int wireStartId,
-            const QList<Wire*> &wires)
-    {
-        writer->writeStartElement("equipotential");
-        writer->writeAttribute("id", QString::number(id));
-
-        foreach(Wire *wire, wires) {
-            wire->saveData(writer, wireStartId++);
-        }
-
-        writer->writeEndElement();
-    }
-
     //! Constructor
     XmlSchematic::XmlSchematic(SchematicDocument *doc):
         m_schematicDocument(doc)
@@ -177,30 +136,39 @@ namespace Caneda
 
     void XmlSchematic::saveWires(Caneda::XmlWriter *writer)
     {
-        CGraphicsScene *scene = cGraphicsScene();
-        QList<QGraphicsItem*> items = scene->items();
+        QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Wire*> wires = filterItems<Wire>(items, RemoveItems);
-        if(!wires.isEmpty()) {
-            int wireId = 0;
-            int equiId = 0;
-            writer->writeStartElement("wires");
 
-            QList<Wire*> parsedWires;
-            foreach(Wire *w, wires) {
-                if(parsedWires.contains(w)) {
-                    continue;
-                }
+        if(wires.isEmpty()) {
+            return;
+        }
 
-                QList<Wire*> equi;
-                getConnectedWires(w, equi);
-                writeEquiWires(writer, equiId++, wireId, equi);
+        int wireId = 0;
+        int equiId = 0;
+        QList<Wire*> parsedWires;
 
-                parsedWires += equi;
-                wireId += equi.size();
+        writer->writeStartElement("wires");
+
+        foreach(Wire *w, wires) {
+            if(parsedWires.contains(w)) {
+                continue;
             }
 
-            writer->writeEndElement(); //</wires>
+            QList<Wire*> equi;
+            w->getConnectedWires(equi);
+
+            writer->writeStartElement("equipotential");
+            writer->writeAttribute("id", QString::number(equiId++));
+            foreach(Wire *wire, equi) {
+                wire->saveData(writer, wireId++);
+            }
+            writer->writeEndElement();
+
+            parsedWires += equi;
         }
+
+        writer->writeEndElement(); //</wires>
+
     }
 
     void XmlSchematic::savePaintings(Caneda::XmlWriter *writer)

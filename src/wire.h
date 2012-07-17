@@ -59,6 +59,9 @@ namespace Caneda
         void movePort1(const QPointF& newLocalPos);
         void movePort2(const QPointF& newLocalPos);
 
+        //! Returns the list of wires attached to this wire
+        void getConnectedWires(QList<Wire*> &connectedWires);
+
         //! Return true if wire is horizontal
         bool isHorizontal() const { return port1()->pos().y() == port2()->pos().y(); }
         //! Return true if wire is vertical

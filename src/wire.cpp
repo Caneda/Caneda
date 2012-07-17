@@ -81,6 +81,37 @@ namespace Caneda
         updateGeometry();
     }
 
+    // TODO: Implement a list of components and wires connections and
+    // return directly that list, simplifying this procedure and
+    // avoiding the recursion.
+    void Wire::getConnectedWires(QList<Wire*> &connectedWires)
+    {
+        if(connectedWires.contains(this)) {
+            return;
+        }
+
+        connectedWires << this;
+
+        QList<Port*> *port1_connections = port1()->connections();
+        QList<Port*> *port2_connections = port2()->connections();
+
+        if(port1_connections) {
+            foreach(Port *port, *port1_connections) {
+                if(port->owner()->isWire()) {
+                    port->owner()->wire()->getConnectedWires(connectedWires);
+                }
+            }
+        }
+
+        if(port2_connections) {
+            foreach(Port *port, *port2_connections) {
+                if(port->owner()->isWire()) {
+                    port->owner()->wire()->getConnectedWires(connectedWires);
+                }
+            }
+        }
+    }
+
     //! \brief Draw wire.
     void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
