@@ -64,7 +64,6 @@ ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( docs )
 ADD_SUBDIRECTORY( images )
 ADD_SUBDIRECTORY( i18n )
-ADD_SUBDIRECTORY( misc )
 
 # ==================================================================================
 # Licence and other files
