@@ -87,11 +87,13 @@ namespace Caneda
         return newView;
     }
 
+    //! \brief Raises and makes focus on an opened view
     void DocumentViewManager::highlightView(IView *view)
     {
         tabWidget()->highlightView(view);
     }
 
+    //! \brief Raises and makes focus on the view corresponding to a document
     void DocumentViewManager::highlightViewForDocument(IDocument *document)
     {
         DocumentData *data = documentDataForDocument(document);
@@ -277,7 +279,7 @@ namespace Caneda
 
         // TODO: Data display filter should be removed when proper
         // icontexts are implemented.
-        nameFilters << QObject::tr("Data display (*.dpl)")+" (*.dpl);;";
+        nameFilters << QObject::tr("Data display (*.xdpl)")+" (*.xdpl);;";
 
         return nameFilters;
     }
