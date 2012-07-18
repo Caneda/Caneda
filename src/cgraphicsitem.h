@@ -96,12 +96,15 @@ namespace Caneda
          * \sa canedaitem_cast and PATTERN.
          */
         enum CGraphicsItemTypes {
+            // Be carefull when changing the numbers, as the cast can generate
+            // problems (for example shortcircuits while saving).
+
             //!Recognizes all classes derived from CGraphicsItem
             CGraphicsItemType = (1 << (std::numeric_limits<int>::digits-1)),
             //!Recognizes classes derived from SvgItem
             SvgItemType = PATTERN(CGraphicsItemType, 1),
             //!Recognizes classes derived from Component
-            ComponentType = PATTERN(SvgItemType, 2),
+            ComponentType = PATTERN(SvgItemType, 1),
             //!Recognizes classes derived from Wire
             WireType = PATTERN(CGraphicsItemType, 3),
             //!Recognizes classes derived from Node
