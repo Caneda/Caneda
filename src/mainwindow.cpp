@@ -246,12 +246,14 @@ namespace Caneda
 
         action = am->createAction("fileExportImage", Caneda::icon("image-x-generic"), tr("&Export image..."));
         action->setShortcut(CTRL+Key_E);
-        action->setWhatsThis(tr("Export Image\n\n""Export current view to image file"));
+        action->setStatusTip(tr("Exports the current view to an image file"));
+        action->setWhatsThis(tr("Export Image\n\n""Exports the current view to an image file"));
         connect(action, SIGNAL(triggered()), SLOT(slotExportImage()));
 
         action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("Application settings..."));
         action->setShortcut(CTRL+Key_Comma);
-        action->setWhatsThis(tr("Caneda Settings\n\nSets properties of the application"));
+        action->setStatusTip(tr("Sets the properties of the application"));
+        action->setWhatsThis(tr("Caneda Settings\n\nSets the properties of the application"));
         connect(action, SIGNAL(triggered()), SLOT(slotAppSettings()));
 
         action = am->createAction("fileQuit", Caneda::icon("application-exit"), tr("E&xit"));
@@ -322,6 +324,7 @@ namespace Caneda
 
         action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into subcircuit"));
         action->setShortcut(CTRL+Key_I);
+        action->setStatusTip(tr("Goes inside the selected subcircuit"));
         action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
         connect(action, SIGNAL(triggered()), lc, SLOT(slotIntoHierarchy()));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotIntoHierarchy()));
@@ -330,8 +333,8 @@ namespace Caneda
 
         action = am->createAction("popH", Caneda::icon("go-top"), tr("Pop out"));
         action->setShortcut(CTRL+SHIFT+Key_I);
-        action->setStatusTip(tr("Pop outside subcircuit"));
-        action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level, i.e. leaves subcircuit"));
+        action->setStatusTip(tr("Goes outside the current subcircuit"));
+        action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level (leaves the current subcircuit)"));
         connect(action, SIGNAL(triggered()), lc, SLOT(slotPopHierarchy()));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotPopHierarchy()));
         lc->addNormalAction(action);
@@ -512,6 +515,7 @@ namespace Caneda
         action = am->createAction("insGround", Caneda::icon("ground"), tr("Insert ground"));
         action->setCheckable(true);
         action->setShortcut(Key_G);
+        action->setStatusTip(tr("Inserts a ground symbol"));
         action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotInsertToolbarComponent(const QString&, bool)));
@@ -591,11 +595,13 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(slotHelpIndex()));
 
         action = am->createAction("helpAboutApp", Caneda::icon("caneda"), tr("&About Caneda..."));
+        action->setStatusTip(tr("About the application"));
         action->setWhatsThis(tr("About\n\nAbout the application"));
         connect(action, SIGNAL(triggered()), SLOT(slotHelpAbout()));
 
         action = am->createAction("helpAboutQt", Caneda::icon("qt"), tr("About Qt..."));
-        action->setWhatsThis(tr("About Qt\n\nAbout Qt by Trolltech"));
+        action->setStatusTip(tr("About Qt by Nokia"));
+        action->setWhatsThis(tr("About Qt\n\nAbout Qt by Nokia"));
         connect(action, SIGNAL(triggered()), SLOT(slotHelpAboutQt()));
 
         QAction *qAction = QWhatsThis::createAction(this);
@@ -653,6 +659,7 @@ namespace Caneda
         action = am->createMouseAction("editMirror", CGraphicsScene::MirroringX,
                 Caneda::icon("object-flip-vertical"), tr("Mirror about X Axis"));
         action->setShortcut(Key_V);
+        action->setStatusTip(tr("Mirrors the selected component about X axis"));
         action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
@@ -663,6 +670,7 @@ namespace Caneda
         action = am->createMouseAction("editMirrorY", CGraphicsScene::MirroringY,
                 Caneda::icon("object-flip-horizontal"), tr("Mirror about Y Axis"));
         action->setShortcut(Key_H);
+        action->setStatusTip(tr("Mirrors the selected component about Y axis"));
         action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
@@ -673,6 +681,7 @@ namespace Caneda
         action = am->createMouseAction("insWire", CGraphicsScene::Wiring,
                 Caneda::icon("wire"), tr("Wire"));
         action->setShortcut(Key_W);
+        action->setStatusTip(tr("Inserts a wire"));
         action->setWhatsThis(tr("Wire\n\nInserts a wire"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
