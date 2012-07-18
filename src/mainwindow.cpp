@@ -324,6 +324,7 @@ namespace Caneda
 
         action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into subcircuit"));
         action->setShortcut(CTRL+Key_I);
+        action->setToolTip(tr("Go into Subcircuit") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Goes inside the selected subcircuit"));
         action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
         connect(action, SIGNAL(triggered()), lc, SLOT(slotIntoHierarchy()));
@@ -333,8 +334,9 @@ namespace Caneda
 
         action = am->createAction("popH", Caneda::icon("go-top"), tr("Pop out"));
         action->setShortcut(CTRL+SHIFT+Key_I);
+        action->setToolTip(tr("Pop Out") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Goes outside the current subcircuit"));
-        action->setWhatsThis(tr("Pop out\n\nGoes up one hierarchy level (leaves the current subcircuit)"));
+        action->setWhatsThis(tr("Pop Out\n\nGoes up one hierarchy level (leaves the current subcircuit)"));
         connect(action, SIGNAL(triggered()), lc, SLOT(slotPopHierarchy()));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotPopHierarchy()));
         lc->addNormalAction(action);
@@ -515,6 +517,7 @@ namespace Caneda
         action = am->createAction("insGround", Caneda::icon("ground"), tr("Insert ground"));
         action->setCheckable(true);
         action->setShortcut(Key_G);
+        action->setToolTip(tr("Insert Ground") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Inserts a ground symbol"));
         action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
@@ -558,6 +561,7 @@ namespace Caneda
 
         action = am->createAction("simulate", Caneda::icon("media-playback-start"), tr("Simulate"));
         action->setShortcut(Key_F9);
+        action->setToolTip(tr("Simulate") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Simulates the current circuit"));
         action->setWhatsThis(tr("Simulate\n\nSimulates the current circuit"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotSimulate()));
@@ -565,6 +569,7 @@ namespace Caneda
 
         action = am->createAction("openSym", Caneda::icon("system-switch-user"), tr("View circuit simulation"));
         action->setShortcut(Key_F8);
+        action->setToolTip(tr("View Circuit Simulation") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Changes to circuit simulation"));
         action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
         connect(action, SIGNAL(triggered()), sc, SLOT(openSimulation()));
@@ -625,6 +630,7 @@ namespace Caneda
         action = am->createMouseAction("editDelete", CGraphicsScene::Deleting,
                 Caneda::icon("edit-delete"), tr("&Delete"));
         action->setShortcut(Key_Delete);
+        action->setToolTip(tr("Delete") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Deletes the selected components"));
         action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
@@ -636,6 +642,7 @@ namespace Caneda
         action = am->createMouseAction("select", CGraphicsScene::Normal,
                 Caneda::icon("edit-select"), tr("Select"));
         action->setShortcut(Key_Escape);
+        action->setToolTip(tr("Select") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Activate select mode"));
         action->setWhatsThis(tr("Select\n\nActivates select mode"));
         action->setChecked(true);
@@ -648,8 +655,9 @@ namespace Caneda
         action = am->createMouseAction("editRotate", CGraphicsScene::Rotating,
                 Caneda::icon("object-rotate-left"), tr("Rotate"));
         action->setShortcut(Key_R);
-        action->setStatusTip(tr("Rotates the selected component by 90°"));
-        action->setWhatsThis(tr("Rotate\n\nRotates the selected component by 90° counter-clockwise"));
+        action->setToolTip(tr("Rotate") + " (" + action->shortcut().toString() + ")");
+        action->setStatusTip(tr("Rotates the selected component"));
+        action->setWhatsThis(tr("Rotate\n\nRotates the selected component counter-clockwise"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         lc->addMouseAction(action);
@@ -659,6 +667,7 @@ namespace Caneda
         action = am->createMouseAction("editMirror", CGraphicsScene::MirroringX,
                 Caneda::icon("object-flip-vertical"), tr("Mirror about X Axis"));
         action->setShortcut(Key_V);
+        action->setToolTip(tr("Mirror about X Axis") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Mirrors the selected component about X axis"));
         action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
@@ -670,6 +679,7 @@ namespace Caneda
         action = am->createMouseAction("editMirrorY", CGraphicsScene::MirroringY,
                 Caneda::icon("object-flip-horizontal"), tr("Mirror about Y Axis"));
         action->setShortcut(Key_H);
+        action->setToolTip(tr("Mirror about Y Axis") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Mirrors the selected component about Y axis"));
         action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
@@ -681,6 +691,7 @@ namespace Caneda
         action = am->createMouseAction("insWire", CGraphicsScene::Wiring,
                 Caneda::icon("wire"), tr("Wire"));
         action->setShortcut(Key_W);
+        action->setToolTip(tr("Wire") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Inserts a wire"));
         action->setWhatsThis(tr("Wire\n\nInserts a wire"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
@@ -690,6 +701,7 @@ namespace Caneda
         action = am->createMouseAction("insLabel", CGraphicsScene::InsertingWireLabel,
                 Caneda::icon("nodename"), tr("Wire Label"));
         action->setShortcut(Key_L);
+        action->setToolTip(tr("Wire Label") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Inserts a wire or pin label"));
         action->setWhatsThis(tr("Wire Label\n\nInserts a wire or pin label"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
@@ -698,8 +710,8 @@ namespace Caneda
 
         action = am->createMouseAction("zoomArea", CGraphicsScene::ZoomingAreaEvent,
                 Caneda::icon("transform-scale"), tr("Zoom area"));
-        action->setStatusTip(tr("Zooms a selected are in the current view"));
-        action->setWhatsThis(tr("Zooms a selected are in the current view"));
+        action->setStatusTip(tr("Zooms a selected area in the current view"));
+        action->setWhatsThis(tr("Zooms a selected area in the current view"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         lc->addMouseAction(action);
@@ -832,13 +844,6 @@ namespace Caneda
         projMenu->addAction(action("backupAndHistory"));
 
         toolMenu = menuBar()->addMenu(tr("&Tools"));
-
-        toolMenu->addAction(action("insWire"));
-        toolMenu->addAction(action("insLabel"));
-        toolMenu->addAction(action("insGround"));
-        toolMenu->addAction(action("editDelete"));
-
-        toolMenu->addSeparator();
 
         toolMenu->addAction(action("callFilter"));
         toolMenu->addAction(action("callLine"));
