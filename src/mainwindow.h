@@ -58,6 +58,7 @@ namespace Caneda
     public Q_SLOTS:
         void slotFileNew();
         void slotFileOpen(QString fileName = QString());
+        void slotFileOpenFormat(const QString &suffix);
         void slotFileSave();
         void slotFileSaveAs();
         bool slotFileSaveAll();
@@ -77,7 +78,6 @@ namespace Caneda
         void openLayout();
         void openSchematic();
         void openSymbol();
-        void openFileFormat(const QString &suffix);
 
         void slotZoomIn();
         void slotZoomOut();

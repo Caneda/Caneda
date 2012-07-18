@@ -1031,6 +1031,26 @@ namespace Caneda
         }
     }
 
+    //! \brief Opens the selected file format for editing given an opened file
+    void MainWindow::slotFileOpenFormat(const QString &suffix)
+    {
+        IDocument *doc = DocumentViewManager::instance()->currentDocument();
+
+        if (!doc) return;
+
+        if (doc->fileName().isEmpty()) {
+            QMessageBox::critical(0, tr("Critical"),
+                                  tr("Please, save current file first!"));
+            return;
+        }
+
+        QString filename = doc->fileName();
+        QFileInfo info(filename);
+        filename = info.path() + "/" + info.completeBaseName() + "." + suffix;
+
+        slotFileOpen(filename);
+    }
+
     /*!
      * \brief Saves the current active document.
      */
@@ -1211,41 +1231,21 @@ namespace Caneda
     void MainWindow::openLayout()
     {
         LayoutContext *ly = LayoutContext::instance();
-        openFileFormat(ly->defaultSuffix());
+        slotFileOpenFormat(ly->defaultSuffix());
     }
 
     //! \brief Opens the schematic corresponding to current file
     void MainWindow::openSchematic()
     {
         SchematicContext *sc = SchematicContext::instance();
-        openFileFormat(sc->defaultSuffix());
+        slotFileOpenFormat(sc->defaultSuffix());
     }
 
     //! \brief Opens the symbol corresponding to current file
     void MainWindow::openSymbol()
     {
         SymbolContext *sy = SymbolContext::instance();
-        openFileFormat(sy->defaultSuffix());
-    }
-
-    //! \brief Switches to the selected file format for editing
-    void MainWindow::openFileFormat(const QString &suffix)
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-
-        if (!doc) return;
-
-        if (doc->fileName().isEmpty()) {
-            QMessageBox::critical(0, tr("Critical"),
-                                  tr("Please, save current file first!"));
-            return;
-        }
-
-        QString filename = doc->fileName();
-        QFileInfo info(filename);
-        filename = info.path() + "/" + info.completeBaseName() + "." + suffix;
-
-        slotFileOpen(filename);
+        slotFileOpenFormat(sy->defaultSuffix());
     }
 
     void MainWindow::slotEditFind()
