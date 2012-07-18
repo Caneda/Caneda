@@ -110,9 +110,7 @@ namespace Caneda
             //!Recognizes classes derived from Node
             NodeType = PATTERN(CGraphicsItemType, 4),
             //!Recognizes classes derived from Painting
-            PaintingType = PATTERN(CGraphicsItemType, 5),
-            //!Recognizes classes derived from Display
-            DisplayType = PATTERN(CGraphicsItemType, 6)
+            PaintingType = PATTERN(CGraphicsItemType, 5)
         };
 
         //! Item identifier \sa CGraphicsItemTypes

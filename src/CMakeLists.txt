@@ -7,7 +7,6 @@ INCLUDE_DIRECTORIES(
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR} )
 
-ADD_SUBDIRECTORY( diagrams )
 ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( paintings )
 ADD_SUBDIRECTORY( tools )
@@ -50,7 +49,7 @@ QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} ${CANEDA_MOC_SRCS} )
 
 TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES}
-                       diagrams dialogs paintings xmlutilities
+                       dialogs paintings xmlutilities
                        attenuator filter transmission)
 
 INSTALL(TARGETS caneda DESTINATION ${BINARYDIR})
