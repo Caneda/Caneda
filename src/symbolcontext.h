@@ -52,7 +52,7 @@ namespace Caneda
         void addMouseAction(Action *action);
 
     private Q_SLOTS:
-        void slotSymbolEdit();
+        void slotSchematicEdit();
 
         void slotAlignTop();
         void slotAlignBottom();

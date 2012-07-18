@@ -136,26 +136,24 @@ namespace Caneda
     /*!
      * \brief Opens the current symbols' schematic for editing
      */
-    void SymbolContext::slotSymbolEdit()
+    void SymbolContext::slotSchematicEdit()
     {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
+        IDocument *doc = DocumentViewManager::instance()->currentDocument();
+        SymbolDocument *symDoc = qobject_cast<SymbolDocument*>(doc);
 
-        if (!document) {
-            return;
+        if (symDoc) {
+            if (symDoc->fileName().isEmpty()) {
+                QMessageBox::critical(0, tr("Critical"),
+                                      tr("Please, save symbol first!"));
+                return;
+            }
+
+            QString filename = symDoc->fileName();
+            QFileInfo info(filename);
+            filename = info.path() + "/" + info.completeBaseName() + ".xsch";
+
+            MainWindow::instance()->slotFileOpen(filename);
         }
-
-        if (document->fileName().isEmpty()) {
-            QMessageBox::critical(0, tr("Critical"),
-                    tr("Please, save symbol first!"));
-            return;
-        }
-
-        QString filename = document->fileName();
-        QFileInfo info(filename);
-        filename = info.completeBaseName() + ".xsch";
-
-        MainWindow::instance()->slotFileOpen(filename);
     }
 
     //! \brief Align elements in a row correponding to top most elements coords.

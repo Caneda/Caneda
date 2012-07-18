@@ -151,24 +151,22 @@ namespace Caneda
      */
     void SchematicContext::slotSymbolEdit()
     {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
+        IDocument *doc = DocumentViewManager::instance()->currentDocument();
+        SchematicDocument *schDoc = qobject_cast<SchematicDocument*>(doc);
 
-        if (!document) {
-            return;
+        if (schDoc) {
+            if (schDoc->fileName().isEmpty()) {
+                QMessageBox::critical(0, tr("Critical"),
+                                      tr("Please, save schematic first!"));
+                return;
+            }
+
+            QString filename = schDoc->fileName();
+            QFileInfo info(filename);
+            filename = info.path() + "/" + info.completeBaseName() + ".xsym";
+
+            MainWindow::instance()->slotFileOpen(filename);
         }
-
-        if (document->fileName().isEmpty()) {
-            QMessageBox::critical(0, tr("Critical"),
-                    tr("Please, save schematic first!"));
-            return;
-        }
-
-        QString filename = document->fileName();
-        QFileInfo info(filename);
-        filename = info.completeBaseName() + ".xsym";
-
-        MainWindow::instance()->slotFileOpen(filename);
     }
 
     void SchematicContext::slotIntoHierarchy()

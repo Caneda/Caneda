@@ -306,7 +306,7 @@ namespace Caneda
         action->setStatusTip(tr("Switches between symbol and schematic edit"));
         action->setWhatsThis(tr("Edit Circuit Symbol/Schematic\n\nSwitches between symbol and schematic edit"));
         connect(action, SIGNAL(triggered()), sc, SLOT(slotSymbolEdit()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotSymbolEdit()));
+        connect(action, SIGNAL(triggered()), sy, SLOT(slotSchematicEdit()));
         sc->addNormalAction(action);
         sy->addNormalAction(action);
 
