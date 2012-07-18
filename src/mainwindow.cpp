@@ -1210,27 +1210,23 @@ namespace Caneda
     //! \brief Opens the layout corresponding to current file
     void MainWindow::openLayout()
     {
-        // TODO: Make each context return its specific suffix, splitting
-        // the format management into each context.
-        openFileFormat(".xlay");
+        LayoutContext *ly = LayoutContext::instance();
+        openFileFormat(ly->defaultSuffix());
     }
 
     //! \brief Opens the schematic corresponding to current file
     void MainWindow::openSchematic()
     {
-        // TODO: Make each context return its specific suffix, splitting
-        // the format management into each context.
-        openFileFormat(".xsch");
+        SchematicContext *sc = SchematicContext::instance();
+        openFileFormat(sc->defaultSuffix());
     }
 
     //! \brief Opens the symbol corresponding to current file
     void MainWindow::openSymbol()
     {
-        // TODO: Make each context return its specific suffix, splitting
-        // the format management into each context.
-        openFileFormat(".xsym");
+        SymbolContext *sy = SymbolContext::instance();
+        openFileFormat(sy->defaultSuffix());
     }
-
 
     //! \brief Switches to the selected file format for editing
     void MainWindow::openFileFormat(const QString &suffix)
@@ -1247,7 +1243,7 @@ namespace Caneda
 
         QString filename = doc->fileName();
         QFileInfo info(filename);
-        filename = info.path() + "/" + info.completeBaseName() + suffix;
+        filename = info.path() + "/" + info.completeBaseName() + "." + suffix;
 
         slotFileOpen(filename);
     }

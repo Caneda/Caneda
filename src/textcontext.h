@@ -43,6 +43,7 @@ namespace Caneda
 
         virtual bool canOpen(const QFileInfo& info) const;
         virtual QStringList fileNameFilters() const;
+        virtual QString defaultSuffix() const { return "txt";}
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
