@@ -146,29 +146,6 @@ namespace Caneda
         m_mouseActions << action;
     }
 
-    /*!
-     * \brief Opens the current schematics' symbol for editing
-     */
-    void SchematicContext::slotSymbolEdit()
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        SchematicDocument *schDoc = qobject_cast<SchematicDocument*>(doc);
-
-        if (schDoc) {
-            if (schDoc->fileName().isEmpty()) {
-                QMessageBox::critical(0, tr("Critical"),
-                                      tr("Please, save schematic first!"));
-                return;
-            }
-
-            QString filename = schDoc->fileName();
-            QFileInfo info(filename);
-            filename = info.path() + "/" + info.completeBaseName() + ".xsym";
-
-            MainWindow::instance()->slotFileOpen(filename);
-        }
-    }
-
     void SchematicContext::slotIntoHierarchy()
     {
         setNormalAction();
@@ -244,16 +221,22 @@ namespace Caneda
         alignElements(Qt::AlignVCenter);
     }
 
-    void SchematicContext::slotToPage()
+    void SchematicContext::slotSimulate()
     {
         setNormalAction();
-        //TODO: implement this or rather port directly
+        //TODO: implement this
+    }
+
+    void SchematicContext::openSimulation()
+    {
+        setNormalAction();
+        //TODO: implement this
     }
 
     void SchematicContext::slotExportGraphAsCsv()
     {
         setNormalAction();
-        //TODO: implement this or rather port directly
+        //TODO: implement this
     }
 
     //! \brief Align selected elements appropriately based on \a alignment

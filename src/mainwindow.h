@@ -99,7 +99,6 @@ namespace Caneda
         void slotCallLibrary();
         void slotImportData();
 
-        void slotSimulate();
         void slotShowLastMsg();
         void slotShowLastNetlist();
 

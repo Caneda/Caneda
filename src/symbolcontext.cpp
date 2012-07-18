@@ -133,29 +133,6 @@ namespace Caneda
         m_mouseActions << action;
     }
 
-    /*!
-     * \brief Opens the current symbols' schematic for editing
-     */
-    void SymbolContext::slotSchematicEdit()
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        SymbolDocument *symDoc = qobject_cast<SymbolDocument*>(doc);
-
-        if (symDoc) {
-            if (symDoc->fileName().isEmpty()) {
-                QMessageBox::critical(0, tr("Critical"),
-                                      tr("Please, save symbol first!"));
-                return;
-            }
-
-            QString filename = symDoc->fileName();
-            QFileInfo info(filename);
-            filename = info.path() + "/" + info.completeBaseName() + ".xsch";
-
-            MainWindow::instance()->slotFileOpen(filename);
-        }
-    }
-
     //! \brief Align elements in a row correponding to top most elements coords.
     void SymbolContext::slotAlignTop()
     {

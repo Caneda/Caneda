@@ -33,6 +33,7 @@ namespace Caneda
     class DocumentViewManager : public QObject
     {
         Q_OBJECT
+
     public:
         static DocumentViewManager* instance();
         ~DocumentViewManager();
@@ -67,6 +68,9 @@ namespace Caneda
 
     private Q_SLOTS:
         void onViewFocussedIn(IView *who);
+        void openLayout();
+        void openSchematic();
+        void openSymbol();
 
     private:
         DocumentViewManager(QObject *parent = 0);
@@ -76,6 +80,8 @@ namespace Caneda
 
         void setupContexts();
         TabWidget* tabWidget() const;
+
+        void openFileFormat(const QString &suffix);
 
         QList<DocumentData*> m_documentDataList;
         QList<IContext*> m_contexts;

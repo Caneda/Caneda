@@ -53,7 +53,6 @@ namespace Caneda
         void addMouseAction(Action *action);
 
     private Q_SLOTS:
-        void slotSymbolEdit();
         void slotIntoHierarchy();
         void slotPopHierarchy();
 
@@ -66,7 +65,8 @@ namespace Caneda
         void slotCenterHorizontal();
         void slotCenterVertical();
 
-        void slotToPage();
+        void slotSimulate();
+        void openSimulation();
         void slotExportGraphAsCsv();
 
     private:

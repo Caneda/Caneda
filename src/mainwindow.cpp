@@ -197,6 +197,7 @@ namespace Caneda
         Action *action = 0;
         ActionManager *am = ActionManager::instance();
         StateHandler *handler = StateHandler::instance();
+        DocumentViewManager *manager = DocumentViewManager::instance();
         LayoutContext *lc = LayoutContext::instance();
         SchematicContext *sc = SchematicContext::instance();
         SymbolContext *sy = SymbolContext::instance();
@@ -301,14 +302,23 @@ namespace Caneda
         action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
         connect(action, SIGNAL(triggered()), SLOT(slotEditFind()));
 
-        action = am->createAction("symEdit", Caneda::icon("draw-freehand"), tr("&Edit circuit symbol/schematic"));
+        action = am->createAction("schEdit", Caneda::icon("draw-freehand"), tr("&Edit circuit schematic"));
+        action->setShortcut(Key_F5);
+        action->setStatusTip(tr("Switches to schematic edit"));
+        action->setWhatsThis(tr("Edit Circuit Schematic\n\nSwitches to schematic edit"));
+        connect(action, SIGNAL(triggered()), manager, SLOT(openSchematic()));
+
+        action = am->createAction("symEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &symbol"));
+        action->setShortcut(Key_F6);
+        action->setStatusTip(tr("Switches to symbol edit"));
+        action->setWhatsThis(tr("Edit Circuit Symbol\n\nSwitches to symbol edit"));
+        connect(action, SIGNAL(triggered()), manager, SLOT(openSymbol()));
+
+        action = am->createAction("layEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &layout"));
         action->setShortcut(Key_F7);
-        action->setStatusTip(tr("Switches between symbol and schematic edit"));
-        action->setWhatsThis(tr("Edit Circuit Symbol/Schematic\n\nSwitches between symbol and schematic edit"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotSymbolEdit()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotSchematicEdit()));
-        sc->addNormalAction(action);
-        sy->addNormalAction(action);
+        action->setStatusTip(tr("Switches to layout edit"));
+        action->setWhatsThis(tr("Edit Circuit Layout\n\nSwitches to layout edit"));
+        connect(action, SIGNAL(triggered()), manager, SLOT(openLayout()));
 
         action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into subcircuit"));
         action->setShortcut(CTRL+Key_I);
@@ -543,17 +553,17 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(slotImportData()));
 
         action = am->createAction("simulate", Caneda::icon("media-playback-start"), tr("Simulate"));
-        action->setShortcut(Key_F5);
+        action->setShortcut(Key_F9);
         action->setStatusTip(tr("Simulates the current circuit"));
         action->setWhatsThis(tr("Simulate\n\nSimulates the current circuit"));
-        connect(action, SIGNAL(triggered()), SLOT(slotSimulate()));
+        connect(action, SIGNAL(triggered()), sc, SLOT(slotSimulate()));
         sc->addNormalAction(action);
 
-        action = am->createAction("dpl_sch", Caneda::icon("system-switch-user"), tr("View circuit/simulation"));
-        action->setShortcut(Key_F4);
-        action->setStatusTip(tr("Changes to circuit or simulation"));
-        action->setWhatsThis(tr("View circuit/simulation\n\n")+tr("Changes to circuit or simulation"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotToPage()));
+        action = am->createAction("dpl_sch", Caneda::icon("system-switch-user"), tr("View circuit simulation"));
+        action->setShortcut(Key_F8);
+        action->setStatusTip(tr("Changes to circuit simulation"));
+        action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
+        connect(action, SIGNAL(triggered()), sc, SLOT(openSimulation()));
         sc->addNormalAction(action);
 
         action = am->createAction("graph2csv",  tr("Export to &CSV..."));
@@ -563,13 +573,13 @@ namespace Caneda
         sc->addNormalAction(action);
 
         action = am->createAction("showMsg", Caneda::icon("document-preview"), tr("Show last messages"));
-        action->setShortcut(Key_F9);
+        action->setShortcut(Key_F10);
         action->setStatusTip(tr("Shows last simulation messages"));
         action->setWhatsThis(tr("Show Last Messages\n\nShows the messages of the last simulation"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowLastMsg()));
 
         action = am->createAction("showNet", Caneda::icon("document-preview"), tr("Show last netlist"));
-        action->setShortcut(Key_F10);
+        action->setShortcut(Key_F11);
         action->setStatusTip(tr("Shows last simulation netlist"));
         action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowLastNetlist()));
@@ -749,7 +759,12 @@ namespace Caneda
 
         editMenu->addSeparator();
 
+        editMenu->addAction(action("schEdit"));
         editMenu->addAction(action("symEdit"));
+        editMenu->addAction(action("layEdit"));
+
+        editMenu->addSeparator();
+
         editMenu->addAction(action("intoH"));
         editMenu->addAction(action("popH"));
 
@@ -1387,19 +1402,6 @@ namespace Caneda
     {
         setNormalAction();
         //TODO: implement this or rather port directly
-    }
-
-    void MainWindow::slotSimulate()
-    {
-        setNormalAction();
-
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
-        if (!document) {
-            return;
-        }
-
-        document->simulate();
     }
 
     void MainWindow::slotShowLastMsg()

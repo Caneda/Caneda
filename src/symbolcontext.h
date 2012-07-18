@@ -52,8 +52,6 @@ namespace Caneda
         void addMouseAction(Action *action);
 
     private Q_SLOTS:
-        void slotSchematicEdit();
-
         void slotAlignTop();
         void slotAlignBottom();
         void slotAlignLeft();
