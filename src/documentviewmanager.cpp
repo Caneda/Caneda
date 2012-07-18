@@ -447,50 +447,6 @@ namespace Caneda
         }
     }
 
-    //! \brief Opens the layout corresponding to current file
-    void DocumentViewManager::openLayout()
-    {
-        // TODO: Make each context return its specific suffix, splitting
-        // the format management into each context.
-        openFileFormat(".xlay");
-    }
-
-    //! \brief Opens the schematic corresponding to current file
-    void DocumentViewManager::openSchematic()
-    {
-        // TODO: Make each context return its specific suffix, splitting
-        // the format management into each context.
-        openFileFormat(".xsch");
-    }
-
-    //! \brief Opens the symbol corresponding to current file
-    void DocumentViewManager::openSymbol()
-    {
-        // TODO: Make each context return its specific suffix, splitting
-        // the format management into each context.
-        openFileFormat(".xsym");
-    }
-
-    //! \brief Switches to the selected file format for editing
-    void DocumentViewManager::openFileFormat(const QString &suffix)
-    {
-        IDocument *doc = currentDocument();
-
-        if (!doc) return;
-
-        if (doc->fileName().isEmpty()) {
-            QMessageBox::critical(0, tr("Critical"),
-                                  tr("Please, save current file first!"));
-            return;
-        }
-
-        QString filename = doc->fileName();
-        QFileInfo info(filename);
-        filename = info.path() + "/" + info.completeBaseName() + suffix;
-
-        MainWindow::instance()->slotFileOpen(filename);
-    }
-
     DocumentData* DocumentViewManager::documentDataForFileName(const QString &fileName) const
     {
         if (fileName.isEmpty()) {

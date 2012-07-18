@@ -306,19 +306,19 @@ namespace Caneda
         action->setShortcut(Key_F5);
         action->setStatusTip(tr("Switches to schematic edit"));
         action->setWhatsThis(tr("Edit Circuit Schematic\n\nSwitches to schematic edit"));
-        connect(action, SIGNAL(triggered()), manager, SLOT(openSchematic()));
+        connect(action, SIGNAL(triggered()), SLOT(openSchematic()));
 
         action = am->createAction("symEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &symbol"));
         action->setShortcut(Key_F6);
         action->setStatusTip(tr("Switches to symbol edit"));
         action->setWhatsThis(tr("Edit Circuit Symbol\n\nSwitches to symbol edit"));
-        connect(action, SIGNAL(triggered()), manager, SLOT(openSymbol()));
+        connect(action, SIGNAL(triggered()), SLOT(openSymbol()));
 
         action = am->createAction("layEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &layout"));
         action->setShortcut(Key_F7);
         action->setStatusTip(tr("Switches to layout edit"));
         action->setWhatsThis(tr("Edit Circuit Layout\n\nSwitches to layout edit"));
-        connect(action, SIGNAL(triggered()), manager, SLOT(openLayout()));
+        connect(action, SIGNAL(triggered()), SLOT(openLayout()));
 
         action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into subcircuit"));
         action->setShortcut(CTRL+Key_I);
@@ -559,7 +559,7 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), sc, SLOT(slotSimulate()));
         sc->addNormalAction(action);
 
-        action = am->createAction("dpl_sch", Caneda::icon("system-switch-user"), tr("View circuit simulation"));
+        action = am->createAction("openSym", Caneda::icon("system-switch-user"), tr("View circuit simulation"));
         action->setShortcut(Key_F8);
         action->setStatusTip(tr("Changes to circuit simulation"));
         action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
@@ -846,7 +846,7 @@ namespace Caneda
         simMenu = menuBar()->addMenu(tr("&Simulation"));
 
         simMenu->addAction(action("simulate"));
-        simMenu->addAction(action("dpl_sch"));
+        simMenu->addAction(action("openSym"));
 
         simMenu->addSeparator();
 
@@ -909,7 +909,7 @@ namespace Caneda
         workToolbar->addSeparator();
 
         workToolbar->addAction(action("simulate"));
-        workToolbar->addAction(action("dpl_sch"));
+        workToolbar->addAction(action("openSym"));
     }
 
     void MainWindow::initStatusBar()
@@ -1205,6 +1205,51 @@ namespace Caneda
         if (document) {
             document->selectAll();
         }
+    }
+
+    //! \brief Opens the layout corresponding to current file
+    void MainWindow::openLayout()
+    {
+        // TODO: Make each context return its specific suffix, splitting
+        // the format management into each context.
+        openFileFormat(".xlay");
+    }
+
+    //! \brief Opens the schematic corresponding to current file
+    void MainWindow::openSchematic()
+    {
+        // TODO: Make each context return its specific suffix, splitting
+        // the format management into each context.
+        openFileFormat(".xsch");
+    }
+
+    //! \brief Opens the symbol corresponding to current file
+    void MainWindow::openSymbol()
+    {
+        // TODO: Make each context return its specific suffix, splitting
+        // the format management into each context.
+        openFileFormat(".xsym");
+    }
+
+
+    //! \brief Switches to the selected file format for editing
+    void MainWindow::openFileFormat(const QString &suffix)
+    {
+        IDocument *doc = DocumentViewManager::instance()->currentDocument();
+
+        if (!doc) return;
+
+        if (doc->fileName().isEmpty()) {
+            QMessageBox::critical(0, tr("Critical"),
+                                  tr("Please, save current file first!"));
+            return;
+        }
+
+        QString filename = doc->fileName();
+        QFileInfo info(filename);
+        filename = info.path() + "/" + info.completeBaseName() + suffix;
+
+        slotFileOpen(filename);
     }
 
     void MainWindow::slotEditFind()

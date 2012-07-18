@@ -74,6 +74,11 @@ namespace Caneda
         void slotEditFind();
         void slotSelectAll();
 
+        void openLayout();
+        void openSchematic();
+        void openSymbol();
+        void openFileFormat(const QString &suffix);
+
         void slotZoomIn();
         void slotZoomOut();
         void slotZoomBestFit();
