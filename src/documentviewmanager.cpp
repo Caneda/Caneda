@@ -132,7 +132,7 @@ namespace Caneda
 
         DocumentData *data = documentDataForFileName(fileName);
 
-        // Try opening file which will create corresponding DocumetnData
+        // Try opening file which will create corresponding DocumentData
         if (!data) {
             QFileInfo fileInfo(fileName);
             foreach (IContext *context, m_contexts) {
