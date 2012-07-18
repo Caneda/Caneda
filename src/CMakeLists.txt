@@ -1,15 +1,15 @@
 INCLUDE_DIRECTORIES(
    ${CMAKE_BINARY_DIR}/src/dialogs
    ${CMAKE_BINARY_DIR}/src/paintings
-   ${CMAKE_BINARY_DIR}/src/tools/attenuator
-   ${CMAKE_BINARY_DIR}/src/tools/filter
-   ${CMAKE_BINARY_DIR}/src/tools/transmission
+   ${CMAKE_BINARY_DIR}/src/plugins/attenuator
+   ${CMAKE_BINARY_DIR}/src/plugins/filter
+   ${CMAKE_BINARY_DIR}/src/plugins/transmission
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR} )
 
 ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( paintings )
-ADD_SUBDIRECTORY( tools )
+ADD_SUBDIRECTORY( plugins )
 ADD_SUBDIRECTORY( xmlutilities )
 
 SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
@@ -36,7 +36,7 @@ SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
   folderbrowser.h project.h actionmanager.h singletonowner.h statehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
-  syntaxhighlighters.h clineedit.h port.h node.h
+  syntaxhighlighters.h clineedit.h
   schematicdocument.h schematiccontext.h schematicview.h
   symboldocument.h symbolcontext.h symbolview.h
   layoutdocument.h layoutcontext.h layoutview.h

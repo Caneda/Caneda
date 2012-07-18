@@ -43,9 +43,9 @@
 #include "dialogs/savedocumentsdialog.h"
 #include "dialogs/settingsdialog.h"
 
-#include "tools/attenuator/attenuator.h"
-#include "tools/filter/filterdialog.h"
-#include "tools/transmission/transmissiondialog.h"
+#include "plugins/attenuator/attenuator.h"
+#include "plugins/filter/filterdialog.h"
+#include "plugins/transmission/transmissiondialog.h"
 
 #include <QtGui>
 
