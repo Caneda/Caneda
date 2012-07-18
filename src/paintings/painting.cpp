@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -27,6 +28,7 @@
 #include "graphicline.h"
 #include "graphictext.h"
 #include "layer.h"
+#include "portsymbol.h"
 #include "rectangle.h"
 
 #include "xmlutilities/xmlutilities.h"
@@ -172,6 +174,9 @@ namespace Caneda
             else if(name == QObject::tr("Text")) {
                 return new GraphicText;
             }
+            else if(name == QObject::tr("Port Symbol")) {
+                return new PortSymbol;
+            }
 
             else if(name == QObject::tr("Metal 1")) {
                 return new Layer(rect, Layer::Metal1);
@@ -220,6 +225,9 @@ namespace Caneda
             }
             else if(name == QLatin1String("text")) {
                 return new GraphicText;
+            }
+            else if(name == QLatin1String("portSymbol")) {
+                return new PortSymbol;
             }
             else if(name == QLatin1String("layer")) {
                 return new Layer(rect);

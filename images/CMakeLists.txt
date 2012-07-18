@@ -15,7 +15,7 @@ chronometer.png document-properties.png eps.png go-next.png object-flip-horizont
 clearFilterText.png document-save-all.png folder-new.png go-previous.png object-flip-vertical.png system-switch-user.png zoom-out.png
 )
 
-SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg rectangle.svg text.svg splash.jpg)
+SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg portsymbol.svg rectangle.svg text.svg splash.jpg)
 
 # application pictures
 SET(ICONS big.button.caneda.xpm big.caneda.xpm tiny.button.caneda.xpm tiny.caneda.xpm )

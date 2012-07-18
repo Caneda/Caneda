@@ -50,8 +50,8 @@ namespace Caneda
                 QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
         paintingItems << qMakePair(QObject::tr("Line"),
                 QPixmap(Caneda::bitmapDirectory() + "line.svg"));
-        paintingItems << qMakePair(QObject::tr("Port"),
-                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
+        paintingItems << qMakePair(QObject::tr("Port Symbol"),
+                QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
         paintingItems << qMakePair(QObject::tr("Rectangle"),
                 QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
         paintingItems << qMakePair(QObject::tr("Text"),
