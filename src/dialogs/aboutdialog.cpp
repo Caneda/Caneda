@@ -99,7 +99,7 @@ namespace Caneda
                 "<br>" +
                 tr("An application for eletric schematics editing and simulation.") +
                 "<br><br>" +
-                tr("\251 2008-2010 Caneda developer team") +
+                tr("\251 2008-2012 Caneda developer team") +
                 "<br><br>"
                 "<a href=\"http://caneda.sourceforge.net/\">"
                 "http://caneda.sourceforge.net/</a>"
@@ -114,11 +114,10 @@ namespace Caneda
     QWidget *AboutDialog::authorsTab() const
     {
         QLabel *authors = new QLabel();
-        addAuthor(authors, "Bastien Roucaries", "roucaries.bastien@gmail.com",
-                  tr("Programming"));
-        addAuthor(authors, "Gopala Krishna", "krishna.ggk@gmail.com", tr("Programming"));
+
         addAuthor(authors, "Pablo Daniel Pareja Obregon", "parejaobregon@gmail.com",
-                  tr("Programming"));
+                  tr("Current maintainer"));
+
         authors->setAlignment(Qt::AlignCenter);
         authors->setOpenExternalLinks(true);
         authors->setTextFormat(Qt::RichText);
@@ -144,7 +143,9 @@ namespace Caneda
     {
         QLabel *contributors = new QLabel();
 
-        // addAuthor(contributors, "Name Lastname", "mail@domain.com", tr("Whatever"));
+        addAuthor(contributors, "Bastien Roucaries", "roucaries.bastien@gmail.com",
+                  tr("Programming"));
+        addAuthor(contributors, "Gopala Krishna", "krishna.ggk@gmail.com", tr("Programming"));
 
         contributors->setAlignment(Qt::AlignCenter);
         contributors->setOpenExternalLinks(true);
