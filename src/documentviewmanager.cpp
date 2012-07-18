@@ -98,14 +98,17 @@ namespace Caneda
 
         IView *view = 0;
 
+        // If the document was just opened, a view must be created
         if (data->views.isEmpty()) {
             view = createView(document);
             tabWidget()->addTab(new Tab(view));
         }
-
-        if (view) {
-            highlightView(view);
+        else {
+            // Grab the first view of the document
+            view = viewsForDocument(document).first();
         }
+
+        highlightView(view);
     }
 
     void DocumentViewManager::newDocument(IContext *context)

@@ -478,6 +478,8 @@ namespace Caneda
 
     void TabWidget::highlightView(IView *view)
     {
+        if (!view) return;
+
         QWidget *asWidget = view->toWidget();
         if (!asWidget) return;
 
