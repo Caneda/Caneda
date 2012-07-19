@@ -52,9 +52,9 @@ namespace Caneda
 
         virtual QUndoStack* undoStack();
 
-        virtual bool canCut() const;
-        virtual bool canCopy() const;
-        virtual bool canPaste() const;
+        virtual bool canCut() const { return true; }
+        virtual bool canCopy() const { return true; }
+        virtual bool canPaste() const { return true; }
 
         virtual void cut();
         virtual void copy();
@@ -62,7 +62,7 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual bool printSupportsFitInPage() const;
+        virtual bool printSupportsFitInPage() const { return false; }
         virtual void print(QPrinter *printer, bool fitInView);
 
         virtual bool load(QString *errorMessage = 0);
@@ -72,10 +72,10 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void updateSettingsChanges();
+        virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 
-        QTextDocument* textDocument() const;
+        QTextDocument* textDocument() const { return m_textDocument; }
 
         void pasteTemplate(const QString& text);
 

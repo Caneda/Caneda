@@ -50,11 +50,6 @@ namespace Caneda
                 SLOT(emitDocumentChanged()));
     }
 
-    SchematicDocument::~SchematicDocument()
-    {
-    }
-
-    // Interface implementation
     IContext* SchematicDocument::context()
     {
         return SchematicContext::instance();
@@ -103,11 +98,6 @@ namespace Caneda
         return SchematicDocument::canCut();
     }
 
-    bool SchematicDocument::canPaste() const
-    {
-        return true;
-    }
-
     void SchematicDocument::cut()
     {
         QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
@@ -138,11 +128,6 @@ namespace Caneda
         QPainterPath path;
         path.addRect(m_cGraphicsScene->sceneRect());
         m_cGraphicsScene->setSelectionArea(path);
-    }
-
-    bool SchematicDocument::printSupportsFitInPage() const
-    {
-        return true;
     }
 
     void SchematicDocument::print(QPrinter *printer, bool fitInView)
@@ -256,16 +241,6 @@ namespace Caneda
     IView* SchematicDocument::createView()
     {
         return new SchematicView(this);
-    }
-
-    void SchematicDocument::updateSettingsChanges()
-    {
-    }
-
-    // End of Interface implemention.
-    CGraphicsScene* SchematicDocument::cGraphicsScene() const
-    {
-        return m_cGraphicsScene;
     }
 
 } // namespace Caneda

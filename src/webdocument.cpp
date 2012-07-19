@@ -89,11 +89,6 @@ namespace Caneda
         return new WebView(this);
     }
 
-    QUrl* WebDocument::webUrl() const
-    {
-        return m_webUrl;
-    }
-
     WebPage* WebDocument::activeWebPage()
     {
         IView *view = DocumentViewManager::instance()->currentView();

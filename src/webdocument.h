@@ -74,7 +74,7 @@ namespace Caneda
         virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 
-        QUrl* webUrl() const;
+        QUrl* webUrl() const { return m_webUrl; }
 
     private:
         WebPage* activeWebPage();

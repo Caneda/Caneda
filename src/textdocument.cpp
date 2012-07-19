@@ -91,21 +91,6 @@ namespace Caneda
         return stack;
     }
 
-    bool TextDocument::canCut() const
-    {
-        return true;
-    }
-
-    bool TextDocument::canCopy() const
-    {
-        return true;
-    }
-
-    bool TextDocument::canPaste() const
-    {
-        return true;
-    }
-
     void TextDocument::cut()
     {
         TextEdit *te = activeTextEdit();
@@ -140,11 +125,6 @@ namespace Caneda
             return;
         }
         te->selectAll();
-    }
-
-    bool TextDocument::printSupportsFitInPage() const
-    {
-        return false;
     }
 
     void TextDocument::print(QPrinter *printer, bool fitInView)
@@ -227,15 +207,6 @@ namespace Caneda
     IView* TextDocument::createView()
     {
         return new TextView(this);
-    }
-
-    void TextDocument::updateSettingsChanges()
-    {
-    }
-
-    QTextDocument* TextDocument::textDocument() const
-    {
-        return m_textDocument;
     }
 
     void TextDocument::pasteTemplate(const QString& text)

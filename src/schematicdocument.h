@@ -34,7 +34,7 @@ namespace Caneda
 
     public:
         SchematicDocument();
-        ~SchematicDocument();
+        ~SchematicDocument() {}
 
         // IDocument interface methods
         virtual IContext* context();
@@ -51,7 +51,7 @@ namespace Caneda
 
         virtual bool canCut() const;
         virtual bool canCopy() const;
-        virtual bool canPaste() const;
+        virtual bool canPaste() const { return true; }
 
         virtual void cut();
         virtual void copy();
@@ -59,7 +59,7 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual bool printSupportsFitInPage() const;
+        virtual bool printSupportsFitInPage() const { return true; }
         virtual void print(QPrinter *printer, bool fitInView);
 
         virtual bool load(QString *errorMessage = 0);
@@ -69,10 +69,10 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void updateSettingsChanges();
+        virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 
-        CGraphicsScene* cGraphicsScene() const;
+        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
 
     private:
         CGraphicsScene *m_cGraphicsScene;

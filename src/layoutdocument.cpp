@@ -49,11 +49,6 @@ namespace Caneda
                 SLOT(emitDocumentChanged()));
     }
 
-    LayoutDocument::~LayoutDocument()
-    {
-    }
-
-    // Interface implementation
     IContext* LayoutDocument::context()
     {
         return LayoutContext::instance();
@@ -102,11 +97,6 @@ namespace Caneda
         return LayoutDocument::canCut();
     }
 
-    bool LayoutDocument::canPaste() const
-    {
-        return true;
-    }
-
     void LayoutDocument::cut()
     {
         QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
@@ -137,11 +127,6 @@ namespace Caneda
         QPainterPath path;
         path.addRect(m_cGraphicsScene->sceneRect());
         m_cGraphicsScene->setSelectionArea(path);
-    }
-
-    bool LayoutDocument::printSupportsFitInPage() const
-    {
-        return true;
     }
 
     void LayoutDocument::print(QPrinter *printer, bool fitInView)
@@ -255,16 +240,6 @@ namespace Caneda
     IView* LayoutDocument::createView()
     {
         return new LayoutView(this);
-    }
-
-    void LayoutDocument::updateSettingsChanges()
-    {
-    }
-
-    // End of Interface implemention.
-    CGraphicsScene* LayoutDocument::cGraphicsScene() const
-    {
-        return m_cGraphicsScene;
     }
 
 } // namespace Caneda
