@@ -67,7 +67,6 @@ namespace Caneda
         void slotCenterVertical();
 
         void slotSimulate();
-        void openSimulation();
         void slotExportGraphAsCsv();
 
     private:

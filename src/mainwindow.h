@@ -104,6 +104,7 @@ namespace Caneda
         void slotCallLibrary();
         void slotImportData();
 
+        void openSimulation();
         void slotShowLastMsg();
         void slotShowLastNetlist();
 
@@ -139,7 +140,7 @@ namespace Caneda
         void setupSidebar();
         void setupProjectsSidebar();
 
-        // menus contain the items of their menubar
+        // Menus contain the items of their menubar
         QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
               *docksMenu, *helpMenu, *alignMenu, *toolMenu;
 

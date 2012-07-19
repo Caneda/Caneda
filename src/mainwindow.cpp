@@ -29,6 +29,7 @@
 #include "layoutcontext.h"
 #include "project.h"
 #include "schematiccontext.h"
+#include "simulationcontext.h"
 #include "symbolcontext.h"
 #include "settings.h"
 #include "statehandler.h"
@@ -572,7 +573,7 @@ namespace Caneda
         action->setToolTip(tr("View Circuit Simulation") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Changes to circuit simulation"));
         action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(openSimulation()));
+        connect(action, SIGNAL(triggered()), SLOT(openSimulation()));
         sc->addNormalAction(action);
 
         action = am->createAction("graph2csv",  tr("Export to &CSV..."));
@@ -1457,6 +1458,13 @@ namespace Caneda
     {
         setNormalAction();
         //TODO: implement this or rather port directly
+    }
+
+    //! \brief Opens the simulation corresponding to current file
+    void MainWindow::openSimulation()
+    {
+        SimulationContext *si = SimulationContext::instance();
+        slotFileOpenFormat(si->defaultSuffix());
     }
 
     void MainWindow::slotShowLastMsg()

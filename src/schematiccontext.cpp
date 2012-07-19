@@ -226,12 +226,6 @@ namespace Caneda
         //TODO: implement this
     }
 
-    void SchematicContext::openSimulation()
-    {
-        setNormalAction();
-        //TODO: implement this
-    }
-
     void SchematicContext::slotExportGraphAsCsv()
     {
         setNormalAction();
