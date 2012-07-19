@@ -150,12 +150,6 @@ namespace Caneda
 
         QFileInfo info(fileName());
 
-        // Correct the extension.
-        if(QString(info.suffix()).isEmpty()) {
-            setFileName(fileName() + ".xdat");
-            info = QFileInfo(fileName());
-        }
-
         if(info.suffix() == "xdat") {
             // TODO: Create classes for loading/saving simulation data (axis, waveforms, etc)
 //            XmlSymbol *format = new XmlSymbol(this);

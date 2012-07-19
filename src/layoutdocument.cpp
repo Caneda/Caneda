@@ -229,12 +229,6 @@ namespace Caneda
 
         QFileInfo info(fileName());
 
-        // Correct the extension.
-        if(QString(info.suffix()).isEmpty()) {
-            setFileName(fileName() + ".xlay");
-            info = QFileInfo(fileName());
-        }
-
         if(info.suffix() == "xlay") {
             XmlLayout *format = new XmlLayout(this);
             if(!format->save()) {

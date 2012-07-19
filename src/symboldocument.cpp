@@ -229,12 +229,6 @@ namespace Caneda
 
         QFileInfo info(fileName());
 
-        // Correct the extension.
-        if(QString(info.suffix()).isEmpty()) {
-            setFileName(fileName() + ".xsym");
-            info = QFileInfo(fileName());
-        }
-
         if(info.suffix() == "xsym") {
             XmlSymbol *format = new XmlSymbol(this);
             if(!format->save()) {
