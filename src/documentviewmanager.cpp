@@ -25,6 +25,7 @@
 #include "layoutcontext.h"
 #include "mainwindow.h"
 #include "schematiccontext.h"
+#include "simulationcontext.h"
 #include "symbolcontext.h"
 #include "singletonowner.h"
 #include "tabs.h"
@@ -277,10 +278,6 @@ namespace Caneda
             nameFilters << context->fileNameFilters();
         }
 
-        // TODO: Data display filter should be removed when proper
-        // icontexts are implemented.
-        nameFilters << QObject::tr("Data display (*.xdpl)")+" (*.xdpl);;";
-
         return nameFilters;
     }
 
@@ -483,9 +480,10 @@ namespace Caneda
 
     void DocumentViewManager::setupContexts()
     {
-        m_contexts << LayoutContext::instance();
         m_contexts << SchematicContext::instance();
         m_contexts << SymbolContext::instance();
+        m_contexts << LayoutContext::instance();
+        m_contexts << SimulationContext::instance();
         m_contexts << TextContext::instance();
         m_contexts << WebContext::instance();
     }
