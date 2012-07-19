@@ -20,7 +20,6 @@
 #include "xmlsymbol.h"
 
 #include "cgraphicsscene.h"
-#include "component.h"
 #include "global.h"
 #include "symboldocument.h"
 
