@@ -21,7 +21,6 @@
 
 #include "actionmanager.h"
 #include "documentviewmanager.h"
-#include "global.h"
 #include "mainwindow.h"
 #include "symboldocument.h"
 #include "sidebarbrowser.h"

@@ -22,7 +22,6 @@
 
 #include "actionmanager.h"
 #include "documentviewmanager.h"
-#include "global.h"
 #include "library.h"
 #include "mainwindow.h"
 #include "schematicdocument.h"

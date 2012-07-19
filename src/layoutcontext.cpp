@@ -21,7 +21,6 @@
 
 #include "actionmanager.h"
 #include "documentviewmanager.h"
-#include "global.h"
 #include "layoutdocument.h"
 #include "mainwindow.h"
 #include "settings.h"
