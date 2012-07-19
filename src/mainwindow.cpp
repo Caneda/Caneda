@@ -198,7 +198,6 @@ namespace Caneda
         Action *action = 0;
         ActionManager *am = ActionManager::instance();
         StateHandler *handler = StateHandler::instance();
-        DocumentViewManager *manager = DocumentViewManager::instance();
         LayoutContext *lc = LayoutContext::instance();
         SchematicContext *sc = SchematicContext::instance();
         SimulationContext *sim = SimulationContext::instance();
