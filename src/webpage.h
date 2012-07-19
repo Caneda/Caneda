@@ -30,7 +30,7 @@ namespace Caneda
 
     public:
         WebPage(QUrl *url);
-        ~WebPage();
+        ~WebPage() {}
 
         void setPointSize(qreal size);
 

@@ -27,10 +27,6 @@ namespace Caneda
         show();
     }
 
-    WebPage::~WebPage()
-    {
-    }
-
     void WebPage::setPointSize(qreal size)
     {
         QFont fnt = font();
