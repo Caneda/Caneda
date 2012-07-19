@@ -20,6 +20,8 @@
 #include "simulationscene.h"
 
 #include <QUndoStack>
+#include <QVBoxLayout>
+
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 
@@ -35,24 +37,27 @@ namespace Caneda
         // Setup undo stack
         m_undoStack = new QUndoStack(this);
 
-        QwtPlot *myPlot = new QwtPlot(this);
+        QwtPlot *waveform = new QwtPlot(this);
 
         // Add curves
         // QwtPlotCurve *curve1 = new QwtPlotCurve("Curve 1");
         // QwtPlotCurve *curve2 = new QwtPlotCurve("Curve 2");
 
         // Copy the data into the curves
-        // curve1->setData(...);
-        // curve2->setData(...);
+        // curve1->setData();
+        // curve2->setData();
 
-        // curve1->attach(myPlot);
-        // curve2->attach(myPlot);
+        // curve1->attach(waveform);
+        // curve2->attach(waveform);
 
         // Finally, refresh the plot
-        myPlot->replot();
-
+        waveform->replot();
 
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
+
+        QVBoxLayout *vlayout = new QVBoxLayout();
+        vlayout->addWidget(waveform);
+        setLayout(vlayout);
     }
 
     SimulationScene::~SimulationScene()
