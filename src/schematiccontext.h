@@ -67,7 +67,6 @@ namespace Caneda
         void slotCenterVertical();
 
         void slotSimulate();
-        void slotExportGraphAsCsv();
 
     private:
         SchematicContext(QObject *parent = 0);

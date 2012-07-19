@@ -100,6 +100,12 @@ namespace Caneda
         m_mouseActions << action;
     }
 
+    void SimulationContext::exportCsv()
+    {
+        setNormalAction();
+        //TODO: implement this
+    }
+
     void SimulationContext::setNormalAction()
     {
         MainWindow::instance()->setNormalAction();

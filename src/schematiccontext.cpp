@@ -226,12 +226,6 @@ namespace Caneda
         //TODO: implement this
     }
 
-    void SchematicContext::slotExportGraphAsCsv()
-    {
-        setNormalAction();
-        //TODO: implement this
-    }
-
     //! \brief Align selected elements appropriately based on \a alignment
     void SchematicContext::alignElements(Qt::Alignment alignment)
     {

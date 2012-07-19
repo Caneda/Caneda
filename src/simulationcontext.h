@@ -50,6 +50,9 @@ namespace Caneda
         void addNormalAction(Action *action);
         void addMouseAction(Action *action);
 
+    private Q_SLOTS:
+        void exportCsv();
+
     private:
         SimulationContext(QObject *parent = 0);
 

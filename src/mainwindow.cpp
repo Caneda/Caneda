@@ -201,6 +201,7 @@ namespace Caneda
         DocumentViewManager *manager = DocumentViewManager::instance();
         LayoutContext *lc = LayoutContext::instance();
         SchematicContext *sc = SchematicContext::instance();
+        SimulationContext *sim = SimulationContext::instance();
         SymbolContext *sy = SymbolContext::instance();
 
         action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New..."));
@@ -576,11 +577,11 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(openSimulation()));
         sc->addNormalAction(action);
 
-        action = am->createAction("graph2csv",  tr("Export to &CSV..."));
-        action->setStatusTip(tr("Convert graph data to CSV file"));
-        action->setWhatsThis(tr("Export to CSV\n\nConvert graph data to CSV file"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotExportGraphAsCsv()));
-        sc->addNormalAction(action);
+        action = am->createAction("data2csv",  tr("Export to &CSV..."));
+        action->setStatusTip(tr("Export simulation data to CSV file"));
+        action->setWhatsThis(tr("Export to CSV\n\nExport simulation data to CSV file"));
+        connect(action, SIGNAL(triggered()), sim, SLOT(exportCsv()));
+        sim->addNormalAction(action);
 
         action = am->createAction("showMsg", Caneda::icon("document-preview"), tr("Show last messages"));
         action->setShortcut(Key_F10);
@@ -865,7 +866,7 @@ namespace Caneda
 
         simMenu->addSeparator();
 
-        simMenu->addAction(action("graph2csv"));
+        simMenu->addAction(action("data2csv"));
 
         simMenu->addSeparator();
 
