@@ -23,7 +23,7 @@
 #include "simulationscene.h"
 #include "simulationview.h"
 #include "statehandler.h"
-#include "xmlsymbol.h"
+#include "xmlsimulation.h"
 
 #include "dialogs/exportdialog.h"
 
@@ -88,9 +88,8 @@ namespace Caneda
         QFileInfo info(fileName());
 
         if(info.suffix() == "xdat") {
-            // TODO: Create classes for loading/saving simulation data (axis, waveforms, etc)
-//            XmlSymbol *format = new XmlSymbol(this);
-//            return format->load();
+            XmlSimulation *format = new XmlSimulation(this);
+            return format->load();
         }
 
         if (errorMessage) {
@@ -112,11 +111,10 @@ namespace Caneda
         QFileInfo info(fileName());
 
         if(info.suffix() == "xdat") {
-            // TODO: Create classes for loading/saving simulation data (axis, waveforms, etc)
-//            XmlSymbol *format = new XmlSymbol(this);
-//            if(!format->save()) {
-//                return false;
-//            }
+            XmlSimulation *format = new XmlSimulation(this);
+            if(!format->save()) {
+                return false;
+            }
 
             m_simulationScene->undoStack()->clear();
             return true;
