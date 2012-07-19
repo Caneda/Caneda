@@ -17,66 +17,46 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIMULATION_DOCUMENT_H
-#define SIMULATION_DOCUMENT_H
+#ifndef SIMULATION_SCENE_H
+#define SIMULATION_SCENE_H
 
-#include "idocument.h"
+#include <QWidget>
+
+// Forward declarations
+class QUndoStack;
 
 namespace Caneda
 {
-    // Forward declations
-    class SimulationScene;
-
-    class SimulationDocument : public IDocument
+    class SimulationScene : public QWidget
     {
         Q_OBJECT
 
     public:
-        SimulationDocument();
-        ~SimulationDocument();
+        SimulationScene(QWidget *parent = 0);
+        ~SimulationScene();
 
-        // IDocument interface methods
-        virtual IContext* context();
+        //! Return current undo stack
+        QUndoStack* undoStack() { return m_undoStack; }
+        bool isModified() const { return m_modified; }
 
-        virtual bool isModified() const;
+    public Q_SLOTS:
+        void setModified(const bool m = true);
 
-        virtual bool canUndo() const { return false; }
-        virtual bool canRedo() const { return false; }
-
-        virtual void undo() {}
-        virtual void redo() {}
-
-        virtual QUndoStack* undoStack();
-
-        virtual bool canCut() const { return false; }
-        virtual bool canCopy() const { return false; }
-        virtual bool canPaste() const { return false; }
-
-        virtual void cut() {}
-        virtual void copy() {}
-        virtual void paste() {}
-
-        virtual void selectAll() {}
-
-        virtual bool printSupportsFitInPage() const { return true; }
-        virtual void print(QPrinter *printer, bool fitInView);
-
-        virtual bool load(QString *errorMessage = 0);
-        virtual bool save(QString *errorMessage = 0);
-
-        virtual void exportImage();
-
-        virtual IView* createView();
-
-        virtual void updateSettingsChanges();
-        // End of IDocument interface methods
-
-        SimulationScene* simulationScene() const;
+    Q_SIGNALS:
+        void changed();
 
     private:
-        SimulationScene *m_simulationScene;
+        /*!
+         * \brief Flag to hold whether a simulation is modified or not
+         * i.e to determine whether a file should be saved or not on closing.
+         * \sa setModified
+         */
+        bool m_modified;
+
+        //! Undo stack state
+        QUndoStack *m_undoStack;
     };
 
 } // namespace Caneda
 
-#endif //SIMULATION_DOCUMENT_H
+#endif // SIMULATION_SCENE_H

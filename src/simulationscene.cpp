@@ -17,52 +17,58 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIMULATION_VIEW_H
-#define SIMULATION_VIEW_H
+#include "simulationscene.h"
 
-#include "iview.h"
+#include <QUndoStack>
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
 
 namespace Caneda
 {
-    // Forward declrations
-    class SimulationScene;
-    class SimulationDocument;
-
-    class SimulationView : public IView
+    SimulationScene::SimulationScene(QWidget *parent) :
+        QWidget(parent)
     {
-        Q_OBJECT
+        // Setup undo stack
+        m_undoStack = new QUndoStack(this);
 
-    public:
-        SimulationView(SimulationDocument *document);
-        virtual ~SimulationView();
+        QwtPlot *myPlot = new QwtPlot(this);
 
-        SimulationDocument* simulationDocument() const;
+        // Add curves
+        // QwtPlotCurve *curve1 = new QwtPlotCurve("Curve 1");
+        // QwtPlotCurve *curve2 = new QwtPlotCurve("Curve 2");
 
-        // IView interface methods
-        virtual QWidget* toWidget() const;
-        virtual IContext* context() const;
+        // Copy the data into the curves
+        // curve1->setData(...);
+        // curve2->setData(...);
 
-        virtual void zoomIn();
-        virtual void zoomOut();
-        virtual void zoomFitInBest();
-        virtual void zoomOriginal();
+        // curve1->attach(myPlot);
+        // curve2->attach(myPlot);
 
-        virtual qreal currentZoom();
-        virtual void setZoom(int percentage);
+        // Finally, refresh the plot
+        myPlot->replot();
 
-        virtual IView* duplicate();
 
-        virtual void updateSettingsChanges();
-        // End of IView interface methods
+        connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
+    }
 
-    private Q_SLOTS:
-        void onWidgetFocussedIn();
-        void onWidgetFocussedOut();
+    SimulationScene::~SimulationScene()
+    {
+        delete m_undoStack;
+    }
 
-    private:
-        SimulationScene *m_simulationScene;
-    };
+    /*!
+     * \brief Set whether this scene is modified or not
+     *
+     * This method emits the signal changed(bool)
+     *
+     * \param m True/false to set it to unmodified/modified.
+     */
+    void SimulationScene::setModified(const bool m)
+    {
+        if(m_modified != !m) {
+            m_modified = !m;
+            emit changed();
+        }
+    }
 
 } // namespace Caneda
-
-#endif //SIMULATION_VIEW_H

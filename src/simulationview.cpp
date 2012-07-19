@@ -19,34 +19,28 @@
 
 #include "simulationview.h"
 
-#include "actionmanager.h"
-#include "cgraphicsview.h"
 #include "simulationcontext.h"
 #include "simulationdocument.h"
+#include "simulationscene.h"
 #include "statehandler.h"
-
-#include <QToolBar>
 
 namespace Caneda
 {
     SimulationView::SimulationView(SimulationDocument *document) :
         IView(document)
     {
-        // TODO: Create own class for view and scene derived from
-        // QwtPlot + QGraphicsScene
-        m_cGraphicsView = new CGraphicsView(document->cGraphicsScene());
-        StateHandler::instance()->registerWidget(m_cGraphicsView);
-        connect(m_cGraphicsView, SIGNAL(focussedIn(CGraphicsView*)), this,
+        m_simulationScene = new SimulationScene();
+        connect(m_simulationScene, SIGNAL(focussedIn(SimulationScene*)), this,
                 SLOT(onWidgetFocussedIn()));
-        connect(m_cGraphicsView, SIGNAL(focussedOut(CGraphicsView*)), this,
+        connect(m_simulationScene, SIGNAL(focussedOut(SimulationScene*)), this,
                 SLOT(onWidgetFocussedOut()));
-        connect(m_cGraphicsView, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_simulationScene, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     SimulationView::~SimulationView()
     {
-        delete m_cGraphicsView;
+        delete m_simulationScene;
     }
 
     SimulationDocument* SimulationView::simulationDocument() const
@@ -56,7 +50,7 @@ namespace Caneda
 
     QWidget* SimulationView::toWidget() const
     {
-        return m_cGraphicsView;
+        return m_simulationScene;
     }
 
     IContext* SimulationView::context() const
@@ -66,32 +60,32 @@ namespace Caneda
 
     void SimulationView::zoomIn()
     {
-        m_cGraphicsView->zoomIn();
+//        m_simulationScene->zoomIn();
     }
 
     void SimulationView::zoomOut()
     {
-        m_cGraphicsView->zoomOut();
+//        m_simulationScene->zoomOut();
     }
 
     void SimulationView::zoomFitInBest()
     {
-        m_cGraphicsView->zoomFitInBest();
+//        m_simulationScene->zoomFitInBest();
     }
 
     void SimulationView::zoomOriginal()
     {
-        m_cGraphicsView->zoomOriginal();
+//        m_simulationScene->zoomOriginal();
     }
 
     qreal SimulationView::currentZoom()
     {
-        return m_cGraphicsView->currentZoom();
+//        return m_simulationScene->currentZoom();
     }
 
     void SimulationView::setZoom(int percentage)
     {
-        m_cGraphicsView->setZoom(percentage);
+//        m_simulationScene->setZoom(percentage);
     }
 
     IView* SimulationView::duplicate()
@@ -101,8 +95,8 @@ namespace Caneda
 
     void SimulationView::updateSettingsChanges()
     {
-        m_cGraphicsView->invalidateScene();
-        m_cGraphicsView->resetCachedContent();
+//        m_simulationScene->invalidateScene();
+//        m_simulationScene->resetCachedContent();
     }
 
     void SimulationView::onWidgetFocussedIn()
