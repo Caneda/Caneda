@@ -33,18 +33,18 @@ namespace Caneda
 
     public:
         SimulationDocument();
-        ~SimulationDocument();
+        ~SimulationDocument() {}
 
         // IDocument interface methods
         virtual IContext* context();
 
         virtual bool isModified() const;
 
-        virtual bool canUndo() const { return false; }
-        virtual bool canRedo() const { return false; }
+        virtual bool canUndo() const;
+        virtual bool canRedo() const;
 
-        virtual void undo() {}
-        virtual void redo() {}
+        virtual void undo();
+        virtual void redo();
 
         virtual QUndoStack* undoStack();
 
@@ -68,10 +68,10 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void updateSettingsChanges();
+        virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 
-        SimulationScene* simulationScene() const;
+        SimulationScene* simulationScene() const { return m_simulationScene; }
 
     private:
         SimulationScene *m_simulationScene;

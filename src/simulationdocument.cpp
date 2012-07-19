@@ -43,11 +43,6 @@ namespace Caneda
                 SLOT(emitDocumentChanged()));
     }
 
-    SimulationDocument::~SimulationDocument()
-    {
-    }
-
-    // Interface implementation
     IContext* SimulationDocument::context()
     {
         return SimulationContext::instance();
@@ -58,10 +53,29 @@ namespace Caneda
         return m_simulationScene->isModified();
     }
 
+    bool SimulationDocument::canUndo() const
+    {
+        return m_simulationScene->undoStack()->canUndo();
+    }
+
+    bool SimulationDocument::canRedo() const
+    {
+        return m_simulationScene->undoStack()->canRedo();
+    }
+
+    void SimulationDocument::undo()
+    {
+        m_simulationScene->undoStack()->undo();
+    }
+
+    void SimulationDocument::redo()
+    {
+        m_simulationScene->undoStack()->redo();
+    }
+
     QUndoStack* SimulationDocument::undoStack()
     {
-        QUndoStack *stack = new QUndoStack(this);
-        return stack;
+        return m_simulationScene->undoStack();
     }
 
     void SimulationDocument::print(QPrinter *printer, bool fitInView)
@@ -117,23 +131,12 @@ namespace Caneda
 
     void SimulationDocument::exportImage()
     {
-//        ExportDialog *d = new ExportDialog(this, m_simulationScene);
-//        d->exec();
+        // TODO: Reimplement this
     }
 
     IView* SimulationDocument::createView()
     {
         return new SimulationView(this);
-    }
-
-    void SimulationDocument::updateSettingsChanges()
-    {
-    }
-
-    // End of Interface implemention.
-    SimulationScene* SimulationDocument::simulationScene() const
-    {
-        return m_simulationScene;
     }
 
 } // namespace Caneda

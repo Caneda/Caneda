@@ -20,6 +20,8 @@
 #ifndef SIMULATION_SCENE_H
 #define SIMULATION_SCENE_H
 
+#include "global.h"
+
 #include <QWidget>
 
 // Forward declarations
@@ -35,17 +37,41 @@ namespace Caneda
         SimulationScene(QWidget *parent = 0);
         ~SimulationScene();
 
+        void zoomIn();
+        void zoomOut();
+        void zoomFitInBest();
+        void zoomOriginal();
+
+        qreal currentZoom() { return m_currentZoom; }
+        void setZoom(int percentage);
+        void zoomFitRect(const QRectF &rect);
+
         //! Return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
         bool isModified() const { return m_modified; }
 
     public Q_SLOTS:
         void setModified(const bool m = true);
+        void repaint();
 
     Q_SIGNALS:
         void changed();
+        void cursorPositionChanged(const QString& newPos);
+        void focussedIn(SimulationScene *view);
+        void focussedOut(SimulationScene *view);
+
+    protected:
+        void mouseMoveEvent(QMouseEvent *event);
+        void focusInEvent(QFocusEvent *event);
+        void focusOutEvent(QFocusEvent *event);
 
     private:
+        void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);
+
+        const qreal m_zoomFactor;
+        ZoomRange m_zoomRange;
+        qreal m_currentZoom;
+
         /*!
          * \brief Flag to hold whether a simulation is modified or not
          * i.e to determine whether a file should be saved or not on closing.

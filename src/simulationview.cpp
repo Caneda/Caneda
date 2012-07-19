@@ -60,32 +60,32 @@ namespace Caneda
 
     void SimulationView::zoomIn()
     {
-//        m_simulationScene->zoomIn();
+        m_simulationScene->zoomIn();
     }
 
     void SimulationView::zoomOut()
     {
-//        m_simulationScene->zoomOut();
+        m_simulationScene->zoomOut();
     }
 
     void SimulationView::zoomFitInBest()
     {
-//        m_simulationScene->zoomFitInBest();
+        m_simulationScene->zoomFitInBest();
     }
 
     void SimulationView::zoomOriginal()
     {
-//        m_simulationScene->zoomOriginal();
+        m_simulationScene->zoomOriginal();
     }
 
     qreal SimulationView::currentZoom()
     {
-//        return m_simulationScene->currentZoom();
+        return m_simulationScene->currentZoom();
     }
 
     void SimulationView::setZoom(int percentage)
     {
-//        m_simulationScene->setZoom(percentage);
+        m_simulationScene->setZoom(percentage);
     }
 
     IView* SimulationView::duplicate()
@@ -95,8 +95,7 @@ namespace Caneda
 
     void SimulationView::updateSettingsChanges()
     {
-//        m_simulationScene->invalidateScene();
-//        m_simulationScene->resetCachedContent();
+        m_simulationScene->repaint();
     }
 
     void SimulationView::onWidgetFocussedIn()

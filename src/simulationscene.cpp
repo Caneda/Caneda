@@ -26,7 +26,11 @@
 namespace Caneda
 {
     SimulationScene::SimulationScene(QWidget *parent) :
-        QWidget(parent)
+        QWidget(parent),
+        m_zoomRange(0.30, 10.0),
+        m_zoomFactor(0.3),
+        m_currentZoom(1.0)
+
     {
         // Setup undo stack
         m_undoStack = new QUndoStack(this);
@@ -56,6 +60,66 @@ namespace Caneda
         delete m_undoStack;
     }
 
+    void SimulationScene::zoomIn()
+    {
+        qreal newZoom = m_currentZoom * (1 + m_zoomFactor);
+        setZoomLevel(qMin(newZoom, m_zoomRange.max));
+    }
+
+    void SimulationScene::zoomOut()
+    {
+        qreal newZoom = m_currentZoom / (1 + m_zoomFactor);
+        setZoomLevel(qMax(newZoom, m_zoomRange.min));
+    }
+
+    void SimulationScene::zoomFitInBest()
+    {
+        // TODO: Reimplement this
+        // zoomFitRect(itemsBoundingRect());
+    }
+
+    void SimulationScene::zoomOriginal()
+    {
+        setZoomLevel(1.0);
+    }
+
+    void SimulationScene::setZoom(int percentage)
+    {
+        setZoomLevel((m_zoomRange.max - m_zoomRange.min)*percentage/100 + m_zoomRange.min);
+    }
+
+    void SimulationScene::zoomFitRect(const QRectF &rect)
+    {
+        // TODO: Reimplement this
+//        if (rect.isEmpty()) {
+//            return;
+//        }
+
+//        // Find the ideal x / y scaling ratio to fit \a rect in the view.
+//        QRectF viewRect = viewport()->rect();
+//        viewRect = transform().mapRect(viewRect);
+//        if (viewRect.isEmpty()) {
+//            return;
+//        }
+
+//        QRectF sceneRect = transform().mapRect(rect);
+//        if (sceneRect.isEmpty()) {
+//            return;
+//        }
+
+//        const qreal xratio = viewRect.width() / sceneRect.width();
+//        const qreal yratio = viewRect.height() / sceneRect.height();
+
+//        // Qt::KeepAspecRatio
+//        const qreal minRatio = qMin(xratio, yratio);
+
+//        // Also compute where the the view should be centered
+//        QPointF center = rect.center();
+
+//        // Now set that zoom level.
+//        setZoomLevel(minRatio, &center);
+    }
+
     /*!
      * \brief Set whether this scene is modified or not
      *
@@ -69,6 +133,63 @@ namespace Caneda
             m_modified = !m;
             emit changed();
         }
+    }
+
+    void SimulationScene::repaint()
+    {
+        // TODO: rapaint each plot via myPlot->replot();
+        QWidget::repaint();
+    }
+
+    void SimulationScene::mouseMoveEvent(QMouseEvent *event)
+    {
+        // TODO: Get cursor position in current plot to display correct coordinates
+        QPoint newCursorPos = QPoint(0, 0);
+
+        QString str = QString("%1 : %2")
+            .arg(newCursorPos.x())
+            .arg(newCursorPos.y());
+        emit cursorPositionChanged(str);
+        QWidget::mouseMoveEvent(event);
+    }
+
+    void SimulationScene::focusInEvent(QFocusEvent *event)
+    {
+        QWidget::focusInEvent(event);
+        if (hasFocus()) {
+            emit focussedIn(this);
+        }
+    }
+
+    void SimulationScene::focusOutEvent(QFocusEvent *event)
+    {
+        QWidget::focusOutEvent(event);
+        if (!hasFocus()) {
+            emit focussedOut(this);
+        }
+    }
+
+    void SimulationScene::setZoomLevel(qreal zoomLevel, QPointF *toCenter)
+    {
+        // TODO: Reimplement this
+//        if (!m_zoomRange.contains(zoomLevel)) {
+//            return;
+//        }
+
+//        QPointF currentCenter;
+//        if (toCenter) {
+//            currentCenter = *toCenter;
+//        } else {
+//            currentCenter = mapToScene(viewport()->rect().center());
+//        }
+
+//        m_currentZoom = zoomLevel;
+
+//        QTransform transform;
+//        transform.scale(m_currentZoom, m_currentZoom);
+//        setTransform(transform);
+
+//        centerOn(currentCenter);
     }
 
 } // namespace Caneda
