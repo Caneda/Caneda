@@ -41,19 +41,19 @@ namespace Caneda
         // IDocument interface methods
         virtual IContext* context();
 
-        virtual bool isModified() const;
+        virtual bool isModified() const { return false; }
 
-        virtual bool canUndo() const;
-        virtual bool canRedo() const;
+        virtual bool canUndo() const { return false; }
+        virtual bool canRedo() const { return false; }
 
-        virtual void undo();
-        virtual void redo();
+        virtual void undo() {}
+        virtual void redo() {}
 
         virtual QUndoStack* undoStack();
 
-        virtual bool canCut() const;
-        virtual bool canCopy() const;
-        virtual bool canPaste() const;
+        virtual bool canCut() const { return false; }
+        virtual bool canCopy() const { return false; }
+        virtual bool canPaste() const { return false; }
 
         virtual void cut() {}
         virtual void copy();
@@ -61,17 +61,17 @@ namespace Caneda
 
         virtual void selectAll() {}
 
-        virtual bool printSupportsFitInPage() const;
+        virtual bool printSupportsFitInPage() const { return false; }
         virtual void print(QPrinter *printer, bool fitInView);
 
         virtual bool load(QString *errorMessage = 0);
-        virtual bool save(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0) {}
 
         virtual void exportImage() {}
 
         virtual IView* createView();
 
-        virtual void updateSettingsChanges();
+        virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 
         QUrl* webUrl() const;

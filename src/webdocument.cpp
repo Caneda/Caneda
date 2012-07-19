@@ -44,48 +44,10 @@ namespace Caneda
         return WebContext::instance();
     }
 
-    bool WebDocument::isModified() const
-    {
-        return false;
-    }
-
-    bool WebDocument::canUndo() const
-    {
-        return false;
-    }
-
-    bool WebDocument::canRedo() const
-    {
-        return false;
-    }
-
-    void WebDocument::undo()
-    {
-    }
-
-    void WebDocument::redo()
-    {
-    }
-
     QUndoStack* WebDocument::undoStack()
     {
         QUndoStack *stack = new QUndoStack(this);
         return stack;
-    }
-
-    bool WebDocument::canCut() const
-    {
-        return false;
-    }
-
-    bool WebDocument::canCopy() const
-    {
-        return true;
-    }
-
-    bool WebDocument::canPaste() const
-    {
-        return false;
     }
 
     void WebDocument::copy()
@@ -95,11 +57,6 @@ namespace Caneda
             return;
         }
         page->triggerPageAction(QWebPage::Copy);
-    }
-
-    bool WebDocument::printSupportsFitInPage() const
-    {
-        return false;
     }
 
     void WebDocument::print(QPrinter *printer, bool fitInView)
@@ -127,17 +84,9 @@ namespace Caneda
         return true;
     }
 
-    bool WebDocument::save(QString *errorMessage)
-    {
-    }
-
     IView* WebDocument::createView()
     {
         return new WebView(this);
-    }
-
-    void WebDocument::updateSettingsChanges()
-    {
     }
 
     QUrl* WebDocument::webUrl() const
