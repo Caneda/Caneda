@@ -21,7 +21,6 @@
 
 #include "singletonowner.h"
 #include "webdocument.h"
-#include "webview.h"
 
 #include <QFileInfo>
 #include <QStringList>
