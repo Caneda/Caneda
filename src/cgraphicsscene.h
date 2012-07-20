@@ -37,7 +37,6 @@ namespace Caneda
     class Component;
     class CGraphicsItem;
     class Painting;
-    class SvgPainter;
     class Wire;
 
     typedef QGraphicsSceneMouseEvent MouseActionEvent;
