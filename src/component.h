@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,6 +21,7 @@
 #ifndef QCOMPONENT_H
 #define QCOMPONENT_H
 
+#include "cgraphicsitem.h"
 #include "property.h"
 #include "svgitem.h"
 
@@ -49,10 +51,17 @@ namespace Caneda
      *
      * This component can either be directly loaded from an xml doc or
      * manually set data if it requires.
+     *
+     * This class implements an interface needed by SvgPainter to render the svg.
+     * To use the svg registered to \a SvgPainter the connection's of this item
+     * to SvgPainter should be made using \a registerConnections.
+     *
+     * \sa SvgPainter, Component::registerConnections()
      */
-    class Component : public SvgItem
+    class Component : public QObject, public CGraphicsItem
     {
         Q_OBJECT
+
     public:
         enum { Type = CGraphicsItem::ComponentType };
 
@@ -134,9 +143,26 @@ namespace Caneda
 
         int launchPropertyDialog(Caneda::UndoOption opt);
 
+
+        // ********************************************************************
+        // Svg related code
+        // ********************************************************************
+
+        //! Returns the svg id of this item.
+        QString svgId() const { return m_svgId; }
+        //! Returns the SvgPainter connected to (null if not registered).
+        SvgPainter* svgPainter() const { return m_svgPainter; }
+        QByteArray svgContent() const;
+
+        void registerConnections(const QString& id, SvgPainter *painter);
+        bool isRegistered() const;
+
     protected:
         QRectF adjustedBoundRect(const QRectF& rect);
         QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+    public slots:
+        void updateBoundingRect();
 
     private:
         void init();
@@ -145,6 +171,10 @@ namespace Caneda
         QSharedDataPointer<ComponentData> d;
         //! \brief Property group (ie property of this component)
         PropertiesGroup *m_propertyGroup;
+
+        // Svg related code
+        SvgPainter *m_svgPainter; //!< The pointer to SvgPainter responsible for painting item.
+        QString m_svgId; //!< The svg id registered with painter.
     };
 
     bool readComponentData(Caneda::XmlReader *reader, const QString& path,

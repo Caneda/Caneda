@@ -468,6 +468,7 @@ namespace Caneda
                 if(reader.name() == "library") {
                     Library *info = new Library(libPath, svgPainter_);
                     info->loadLibrary(&reader);
+
                     if(reader.hasError()) {
                         QMessageBox::critical(0, QObject::tr("Load library"),
                                 QObject::tr("Parsing library failed with following error: "

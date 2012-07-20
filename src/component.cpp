@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -35,19 +36,79 @@
 
 namespace Caneda
 {
-    //! \brief Constructs and initializes default empty component object.
+    /*
+    ##########################################################################
+    #                            HELPER METHODS                              #
+    ##########################################################################
+    */
+    /*!
+     * \brief Item stroke width
+     * \todo should be configurable
+     */
+    static const double itemstrokewidth = 1.0;
+
+    /*!
+     * \brief This code draws the highlighted rect around the item
+     * \note This code is stolen from source of qt ;-)
+     */
+    static void highlightSelectedSvgItem(
+            Component *item, QPainter *painter, const QStyleOptionGraphicsItem *option)
+    {
+        const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
+        if(qFuzzyCompare(qMax(murect.width(), murect.height()), qreal(0.0))) {
+            return;
+        }
+
+        const QRectF mbrect = painter->transform().mapRect(item->boundingRect());
+        if(qMin(mbrect.width(), mbrect.height()) < qreal(1.0)) {
+            return;
+        }
+
+        qreal itemStrokeWidth = itemstrokewidth;
+        const qreal pad = itemStrokeWidth / 2;
+        const qreal strokeWidth = 0; // cosmetic pen
+
+        const QColor fgcolor = option->palette.windowText().color();
+        const QColor bgcolor( // ensure good contrast against fgcolor
+                fgcolor.red()   > 127 ? 0 : 255,
+                fgcolor.green() > 127 ? 0 : 255,
+                fgcolor.blue()  > 127 ? 0 : 255);
+
+        painter->setPen(QPen(bgcolor, strokeWidth, Qt::SolidLine));
+        painter->setBrush(Qt::NoBrush);
+        painter->drawRect(item->boundingRect().adjusted(pad, pad, -pad, -pad));
+
+        painter->setPen(QPen(option->palette.windowText(), 0, Qt::DashLine));
+        painter->setBrush(Qt::NoBrush);
+        painter->drawRect(item->boundingRect().adjusted(pad, pad, -pad, -pad));
+    }
+
+    /*!
+     * \brief Constructs and initializes a default empty component item.
+     *
+     * The item is an unregistered, initially unrenderable component. To
+     * render the item it should be first connected to SvgPainter and the
+     * svg id should already be registered with SvgPainter.
+     * \sa SvgItem::registerConnections, SvgPainter::registerSvg()
+     */
     Component::Component(CGraphicsScene *scene) :
-        SvgItem(0, scene),
+        CGraphicsItem(0, scene), m_svgPainter(0),
         d(new ComponentData()), m_propertyGroup(0)
     {
         init();
     }
 
-    //! \brief Constructs a component from \a other data.
+    /*!
+     * \brief Constructs a component from \a other data.
+     *
+     * The item is an unregistered, initially unrenderable component. To
+     * render the item it should be first connected to SvgPainter and the
+     * svg id should already be registered with SvgPainter.
+     * \sa SvgItem::registerConnections, SvgPainter::registerSvg()
+     */
     Component::Component(const QSharedDataPointer<ComponentData>& other,
-            SvgPainter *svgPainter_,
-            CGraphicsScene *scene) :
-        SvgItem(svgPainter_, scene),
+            SvgPainter *svgPainter_, CGraphicsScene *scene) :
+        CGraphicsItem(0, scene), m_svgPainter(svgPainter_),
         d(other), m_propertyGroup(0)
     {
         init();
@@ -329,12 +390,26 @@ namespace Caneda
         writer->writeEndElement();
     }
 
-    //! \brief Draw the compnent using svg painter.
+    /*!
+     * \brief Paints the component using SvgPainter::paint method, peforms sanity
+     * checks and takes care of drawing selection rectangle.
+     */
     void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *w)
     {
-        SvgItem::paint(painter, option, w);
+        // Paint the component symbol
+        if(!isRegistered()) {
+            qWarning() << "Component::paint() : called when unregistered";
+            return;
+        }
 
+        svgPainter()->paint(painter, m_svgId);
+
+        if(option->state & QStyle::State_Selected) {
+            highlightSelectedSvgItem(this, painter, option);
+        }
+
+        // Paint the ports
         foreach(Port *port, m_ports) {
             port->paint(painter, option);
         }
@@ -370,6 +445,56 @@ namespace Caneda
         return status;
     }
 
+    //! \brief Returns svg corresponding to this item.
+    QByteArray Component::svgContent() const
+    {
+        if(isRegistered()) {
+            return m_svgPainter->svgContent(m_svgId);
+        }
+        return QByteArray();
+    }
+
+    /*!
+     * \brief Registers connections of this item with SvgPainter \a painter.
+     *
+     * Unless this item is connected this way, it won't be rendered. The svg
+     * corresponding to svg id \a svg_id should already be registered with
+     * SvgPainter \a painter using SvgPainter::registerSvg. This method also
+     * unregisters any previously connected SvgPainter.
+     *
+     * \sa SvgPainter::registerSvg()
+     */
+    void Component::registerConnections(const QString& svg_id, SvgPainter *painter)
+    {
+        Q_ASSERT(!svg_id.isEmpty());
+        Q_ASSERT(painter);
+
+        if(!painter->isSvgRegistered(svg_id)) {
+            qWarning() << "Component::registerConnections()  :  "
+                       << "Cannot register for ungregisted svgs. Register svg first";
+            return;
+        }
+
+        // Disconnect if this was connected to a different SvgPainter before.
+        if(isRegistered()) {
+            disconnect(m_svgPainter->rendererFor(m_svgId), SIGNAL(repaintNeeded()),
+                       this, SLOT(updateBoundingRect()));
+        }
+
+        m_svgId = svg_id;
+        m_svgPainter = painter;
+
+        connect(painter->rendererFor(svg_id), SIGNAL(repaintNeeded()), this,
+                SLOT(updateBoundingRect()));
+        updateBoundingRect();
+    }
+
+    //! \brief Returns whether item is registered to an svg or not.
+    bool Component::isRegistered() const
+    {
+        return svgPainter() && !m_svgId.isEmpty() && svgPainter()->isSvgRegistered(m_svgId);
+    }
+
     //! \brief Returns the rect adjusted to accomodate ports too.
     QRectF Component::adjustedBoundRect(const QRectF& rect)
     {
@@ -389,9 +514,33 @@ namespace Caneda
             //it maintains identity when transformed.
             m_propertyGroup->setTransform(transform().inverted());
         }
-        return SvgItem::itemChange(change, value);
+        return CGraphicsItem::itemChange(change, value);
     }
 
+    /*!
+     * \brief Updates the bounding rect of this item.
+     *
+     * This public slot is connected to the QSvgRenderer::repaintNeeded()
+     * signal.
+     */
+    void Component::updateBoundingRect()
+    {
+        if(!isRegistered()) {
+            qWarning() << "SvgItem::updateBoundingRect()  : Can't update"
+                       << "unregistered items";
+            return;
+        }
+
+        QRectF bound = m_svgPainter->boundingRect(m_svgId);
+        if(bound.isNull()) {
+            qWarning() << "SvgItem::calcBoundingRect() : Data parse error";
+        }
+
+        // Now get an adjusted rect for accomodating extra stuff like ports.
+        QRectF adjustedRect = adjustedBoundRect(bound);
+
+        setShapeAndBoundRect(QPainterPath(), adjustedRect, itemstrokewidth);
+    }
 
     /*!
      * \brief Read an svg schematic

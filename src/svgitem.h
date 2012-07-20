@@ -20,8 +20,6 @@
 #ifndef SVGITEM_H
 #define SVGITEM_H
 
-#include "cgraphicsitem.h"
-
 #include <QHash>
 #include <QSvgRenderer>
 
@@ -90,63 +88,6 @@ namespace Caneda
 
         QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
         bool m_cachingEnabled; //!< State to hold whether caching is enabled or not.
-    };
-
-    /*!
-     * \brief Base class for items which can be rendered using svg.
-     *
-     * This class implements an interface needed by SvgPainter to render the svg.
-     * To use the svg registered to \a SvgPainter the connection's of this item
-     * to SvgPainter should be made using \a registerConnections.
-     *
-     * \sa SvgPainter, SvgItem::registerConnections()
-     */
-    class SvgItem : public QObject, public CGraphicsItem
-    {
-        Q_OBJECT
-
-    public:
-        //! Item identifier. \sa CGraphicsItemTypes
-        enum {
-            Type = CGraphicsItem::SvgItemType
-        };
-
-        SvgItem(SvgPainter* _svgPainter = 0, CGraphicsScene* scene = 0);
-        ~SvgItem();
-
-        //! Item identifier.
-        int type() const { return SvgItem::Type; }
-
-        void paint(QPainter *p, const QStyleOptionGraphicsItem* o, QWidget *w);
-
-        void registerConnections(const QString& id, SvgPainter *painter);
-
-        //! Returns the svg id of this item.
-        QString svgId() const { return m_svgId; }
-
-        QByteArray svgContent() const;
-        /*!
-         * \brief Returns the \a SvgPainter to which the item is connected to.
-         * Returns null if it isn't registered.
-         */
-        SvgPainter* svgPainter() const { return m_svgPainter; }
-
-        bool isRegistered() const;
-
-    public slots:
-        void updateBoundingRect();
-
-    protected:
-        /*!
-         * \brief This virtual method is used to tackle special condition where the
-         * the rect of this item has to be bigger than the actual svg rect.
-         * Reimplement in derived classes to adjust accordingly.
-         */
-        virtual QRectF adjustedBoundRect(const QRectF &rect) { return rect; }
-
-    private:
-        SvgPainter *m_svgPainter; //!< The pointer to SvgPainter responsible for painting item.
-        QString m_svgId; //!< The svg id registered with painter.
     };
 
 } // namespace Caneda

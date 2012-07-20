@@ -33,7 +33,7 @@ SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
 )
 
 SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
-  mainwindow.h sidebarbrowser.h sidebartextbrowser.h svgitem.h library.h
+  mainwindow.h sidebarbrowser.h sidebartextbrowser.h library.h
   propertyitem.h propertygroup.h component.h sidebarmodel.h
   folderbrowser.h project.h actionmanager.h singletonowner.h statehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
