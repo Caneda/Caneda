@@ -43,9 +43,6 @@ namespace Caneda
         bool pixmapDirty; //!< Takes care of dirtyness of the pixmap cache.
     };
 
-    //! A typedef for string a hash table with string keys and pointer to svg data.
-    typedef QHash<QString, SvgItemData*> DataHash;
-
     /*!
      * \brief A class used to take care of rendering svg.
      *

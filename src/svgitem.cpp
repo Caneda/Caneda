@@ -80,7 +80,7 @@ namespace Caneda
      */
     SvgPainter::~SvgPainter()
     {
-        DataHash::iterator it = m_dataHash.begin(), end = m_dataHash.end();
+        QHash<QString, SvgItemData*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
         while(it != end) {
             delete it.value();
             it.value() = 0;
@@ -191,7 +191,7 @@ namespace Caneda
         }
         m_cachingEnabled = caching;
 
-        DataHash::iterator it = m_dataHash.begin(), end = m_dataHash.end();
+        QHash<QString, SvgItemData*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
         while(it != end) {
             it.value()->pixmapDirty = true;
             //force updation
