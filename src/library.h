@@ -36,13 +36,10 @@ namespace Caneda
     class Library
     {
     public:
-        Library(QString libraryPath, SvgPainter *painter);
-        ~Library();
+        Library(QString libraryPath);
+        ~Library() {}
 
         ComponentDataPtr componentDataPtr(const QString& name) const;
-
-        //! Returns svg painter in use.
-        SvgPainter* svgPainter() const { return m_svgPainter; }
 
         //! Returns library name.
         QString libraryName() const { return m_libraryName; }
@@ -67,8 +64,6 @@ namespace Caneda
             return m_componentHash;
         }
 
-        void render(QPainter *painter, QString component,
-                    QString symbol = QString()) const;
         QPixmap renderedPixmap(QString component, QString symbol = QString()) const;
 
         bool loadLibrary(Caneda::XmlReader *reader);
@@ -84,7 +79,6 @@ namespace Caneda
         QString m_displayText;
         QString m_description;
 
-        SvgPainter *m_svgPainter;
         QHash<QString, ComponentDataPtr> m_componentHash;
         bool m_valid;
     };
@@ -102,19 +96,16 @@ namespace Caneda
         Q_OBJECT
     public:
         static LibraryLoader* instance();
-        ~LibraryLoader();
+        ~LibraryLoader() {}
 
         Component* newComponent(QString componentName,
                 CGraphicsScene *scene,
                 QString library = QString());
 
-        bool newLibrary(const QString& libPath, SvgPainter* svg = 0);
-        bool load(const QString& libPath, SvgPainter* svg = 0);
-        bool loadtree(const QString& libpathtree, SvgPainter *svgPainter_ = 0);
+        bool newLibrary(const QString& libPath);
+        bool load(const QString& libPath);
+        bool loadtree(const QString& libpathtree);
         bool unload(const QString& libName);
-
-        //! Returns library hash table
-        const LibraryHash& libraries() const { return m_libraryHash; }
 
         Library* library(const QString& libName) const;
 

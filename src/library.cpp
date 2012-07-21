@@ -46,11 +46,8 @@ namespace Caneda
     /*! Constructor
      *  \brief Constructs library item from reader with file path \a path and svgpainter \a painter.
      */
-    Library::Library(QString libraryPath, SvgPainter *painter) :
-        m_svgPainter(painter)
+    Library::Library(QString libraryPath)
     {
-        Q_ASSERT(m_svgPainter);
-
         m_libraryName = QFileInfo(libraryPath).baseName();
         m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
 
@@ -67,40 +64,11 @@ namespace Caneda
         m_valid = true;
     }
 
-    /*!
-     * Destructor
-     * \warning No need to touch svgPainter because there can be objects on schematic using
-     * that svg's which will miserably crash on deleting svgPainter object!
-     */
-    Library::~Library()
-    {
-        //frees the component data ptrs automatically
-        if(m_svgPainter != SvgPainter::instance()) {
-            qWarning() << "Library::~Library() leaving behind an instance undeleted";
-        }
-    }
-
     //! \brief Returns the shared data of component from given name.
     ComponentDataPtr Library::componentDataPtr(const QString& name) const
     {
         return m_componentHash.contains(name) ?
             m_componentHash[name] : ComponentDataPtr();
-    }
-
-    //! \brief Renders an svg to given painter given \a component and \a symbol.
-    void Library::render(QPainter *painter, QString component, QString symbol) const
-    {
-        const ComponentDataPtr dataPtr = componentDataPtr(component);
-        if(!dataPtr.constData()) {
-            qWarning() << "Library::render() : " <<  component << " not found";
-            return;
-        }
-        if(symbol.isEmpty() ||
-                !dataPtr->propertyMap["symbol"].options().contains(symbol)) {
-            symbol = dataPtr->propertyMap["symbol"].value().toString();
-        }
-        QString svgId = dataPtr->name + '/' + symbol;
-        m_svgPainter->paint(painter, svgId);
     }
 
     /*!
@@ -117,20 +85,25 @@ namespace Caneda
             qWarning() << "Library::renderToPixmap() : " <<  component << " not found";
             return QPixmap();
         }
+
         if(symbol.isEmpty() ||
                 !dataPtr->propertyMap["symbol"].options().contains(symbol)) {
             symbol = dataPtr->propertyMap["symbol"].value().toString();
         }
+
         QString svgId = dataPtr->name + '/' + symbol;
-        QRectF rect = m_svgPainter->boundingRect(svgId);
+        SvgPainter *svgPainter = SvgPainter::instance();
+        QRectF rect =  svgPainter->boundingRect(svgId);
         QPixmap pix;
+
         if(!QPixmapCache::find(svgId, pix)) {
             pix = QPixmap(rect.toRect().size());
             pix.fill(Qt::transparent);
             QPainter painter(&pix);
             painter.setWindow(rect.toRect());
-            m_svgPainter->paint(&painter, svgId);
+            svgPainter->paint(&painter, svgId);
         }
+
         return pix;
     }
 
@@ -286,7 +259,6 @@ namespace Caneda
     //! \brief Registers svg as well as the component's shared data.
     bool Library::registerComponentData(Caneda::XmlReader *reader, QString componentPath)
     {
-        Q_ASSERT(m_svgPainter);
         bool readok;
 
         //Automatically registers svgs on success
@@ -294,8 +266,9 @@ namespace Caneda
         dataPtr->library = libraryName();
         dataPtr->filename = componentPath;
 
+        SvgPainter *svgPainter = SvgPainter::instance();
         QString parentPath = QFileInfo(componentPath).absolutePath();
-        readok = Caneda::readComponentData(reader, parentPath, m_svgPainter, dataPtr);
+        readok = Caneda::readComponentData(reader, parentPath, svgPainter, dataPtr);
 
         if(dataPtr.constData() == 0 || reader->hasError() || !readok) {
             qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();
@@ -314,11 +287,6 @@ namespace Caneda
 
     //! Constructor
     LibraryLoader::LibraryLoader(QObject *parent) : QObject(parent)
-    {
-    }
-
-    //! Destructor
-    LibraryLoader::~LibraryLoader()
     {
     }
 
@@ -360,13 +328,11 @@ namespace Caneda
             QString library)
     {
         ComponentDataPtr data;
-        SvgPainter *svgPainter = 0;
         if(library.isEmpty()) {
             LibraryHash::const_iterator it = m_libraryHash.constBegin(),
                 end = m_libraryHash.constEnd();
             while(it != end) {
                 data = it.value()->componentDataPtr(componentName);
-                svgPainter = it.value()->svgPainter();
                 if(data.constData()) {
                     break;
                 }
@@ -376,45 +342,25 @@ namespace Caneda
         else {
             if(m_libraryHash.contains(library)) {
                 data = m_libraryHash[library]->componentDataPtr(componentName);
-                svgPainter = m_libraryHash[library]->svgPainter();
             }
         }
+
+        SvgPainter *svgPainter = SvgPainter::instance();
+
         if(data.constData()) {
             Q_ASSERT(svgPainter);
-            Component* comp = new Component(data, svgPainter, scene);
+            Component* comp = new Component(data, scene);
             comp->setSymbol(comp->symbol());
             return comp;
         }
+
         return 0;
     }
 
-    /*!
-     * \brief Load a library tree
-     * \todo Implement a true loader
-     */
-    bool LibraryLoader::loadtree(const QString& libpathtree, SvgPainter *svgPainter_)
-    {
-        bool status = true;
-
-        status = status && load(libpathtree + "/components/basic/passive.xpro", svgPainter_);
-        status = status && load(libpathtree + "/components/basic/active.xpro", svgPainter_);
-        status = status && load(libpathtree + "/components/basic/semiconductor.xpro", svgPainter_);
-
-        if(status) {
-            emit basicLibrariesLoaded();
-        }
-
-        return status;
-    }
-
     //! \brief Create library indicated by path \a libPath.
-    bool LibraryLoader::newLibrary(const QString& libPath, SvgPainter *svgPainter_)
+    bool LibraryLoader::newLibrary(const QString& libPath)
     {
-        if(svgPainter_ == 0) {
-            svgPainter_ = SvgPainter::instance();
-        }
-
-        /* goto base dir */
+        // Go to base dir
         QString libParentPath = QFileInfo(libPath).dir().absolutePath();
         QString current = QDir::currentPath();
         if(!QDir::setCurrent(libParentPath)) {
@@ -422,7 +368,7 @@ namespace Caneda
             return false;
         }
 
-        Library *info = new Library(libPath, svgPainter_);
+        Library *info = new Library(libPath);
 
         m_libraryHash.insert(info->libraryName(), info);
 
@@ -430,13 +376,9 @@ namespace Caneda
     }
 
     //! \brief Load library indicated by path \a libPath.
-    bool LibraryLoader::load(const QString& libPath, SvgPainter *svgPainter_)
+    bool LibraryLoader::load(const QString& libPath)
     {
-        if(svgPainter_ == 0) {
-            svgPainter_ = SvgPainter::instance();
-        }
-
-        /* open file */
+        // Open file
         QFile file(libPath);
         if(!file.open(QIODevice::ReadOnly)) {
             QMessageBox::warning(0, QObject::tr("File open"),
@@ -444,7 +386,7 @@ namespace Caneda
             return false;
         }
 
-        /* goto base dir */
+        // Go to base dir
         QString libParentPath = QFileInfo(libPath).dir().absolutePath();
         QString current = QDir::currentPath();
         if(!QDir::setCurrent(libParentPath)) {
@@ -466,13 +408,13 @@ namespace Caneda
 
             if(reader.isStartElement()) {
                 if(reader.name() == "library") {
-                    Library *info = new Library(libPath, svgPainter_);
+                    Library *info = new Library(libPath);
                     info->loadLibrary(&reader);
 
                     if(reader.hasError()) {
                         QMessageBox::critical(0, QObject::tr("Load library"),
-                                QObject::tr("Parsing library failed with following error: "
-                                    "\"%1\"").arg(reader.errorString()));
+                                QObject::tr("Parsing library failed with following"
+                                            " error: \"%1\"").arg(reader.errorString()));
                         delete info;
                         return false;
                     }
@@ -482,7 +424,8 @@ namespace Caneda
                     }
                     else {
                         QMessageBox::critical(0, QObject::tr("Error"),
-                                QObject::tr("Library %1 currently opened. Please close library %1 first.").arg(info->libraryName()));
+                                QObject::tr("Library %1 currently opened. Please close"
+                                            "library %1 first.").arg(info->libraryName()));
                         delete info;
                         return false;
                     }
@@ -501,6 +444,25 @@ namespace Caneda
 
         (void) QDir::setCurrent(current);
         return !reader.hasError();
+    }
+
+    /*!
+     * \brief Load a library tree
+     * \todo Implement a true loader
+     */
+    bool LibraryLoader::loadtree(const QString& libpathtree)
+    {
+        bool status = true;
+
+        status = status && load(libpathtree + "/components/basic/passive.xpro");
+        status = status && load(libpathtree + "/components/basic/active.xpro");
+        status = status && load(libpathtree + "/components/basic/semiconductor.xpro");
+
+        if(status) {
+            emit basicLibrariesLoaded();
+        }
+
+        return status;
     }
 
     /*!

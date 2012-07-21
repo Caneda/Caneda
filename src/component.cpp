@@ -39,13 +39,12 @@ namespace Caneda
     /*!
      * \brief Constructs and initializes a default empty component item.
      *
-     * The item is an unregistered, initially unrenderable component. To
-     * render the item it should be first connected to SvgPainter and the
-     * svg id should already be registered with SvgPainter.
-     * \sa SvgItem::registerConnections, SvgPainter::registerSvg()
+     * To render the item it should be first connected to SvgPainter and the
+     * svg id should be already registered with SvgPainter.
+     * \sa Component::registerConnections, SvgPainter::registerSvg()
      */
     Component::Component(CGraphicsScene *scene) :
-        CGraphicsItem(0, scene), m_svgPainter(0),
+        CGraphicsItem(0, scene),
         d(new ComponentData()), m_propertyGroup(0)
     {
         init();
@@ -54,14 +53,12 @@ namespace Caneda
     /*!
      * \brief Constructs a component from \a other data.
      *
-     * The item is an unregistered, initially unrenderable component. To
-     * render the item it should be first connected to SvgPainter and the
-     * svg id should already be registered with SvgPainter.
-     * \sa SvgItem::registerConnections, SvgPainter::registerSvg()
+     * To render the item it should be first connected to SvgPainter and the
+     * svg id should be already registered with SvgPainter.
+     * \sa Component::registerConnections, SvgPainter::registerSvg()
      */
-    Component::Component(const QSharedDataPointer<ComponentData>& other,
-            SvgPainter *svgPainter_, CGraphicsScene *scene) :
-        CGraphicsItem(0, scene), m_svgPainter(svgPainter_),
+    Component::Component(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene) :
+        CGraphicsItem(0, scene),
         d(other), m_propertyGroup(0)
     {
         init();
@@ -207,7 +204,7 @@ namespace Caneda
         }
         svgid.prepend(prefix);
 
-        registerConnections(svgid, m_svgPainter);
+        registerConnections(svgid);
 
         updatePropertyGroup();
 
@@ -351,13 +348,9 @@ namespace Caneda
             QWidget *w)
     {
         // Paint the component symbol
-        if(!isRegistered()) {
-            qWarning() << "Component::paint() : called when unregistered";
-            return;
-        }
+        SvgPainter::instance()->paint(painter, m_svgId);
 
-        m_svgPainter->paint(painter, m_svgId);
-
+        // Paint the selection rectangle
         if(option->state & QStyle::State_Selected) {
             Caneda::drawHighlightRect(painter, this->boundingRect(), 1.0, option);
         }
@@ -371,7 +364,7 @@ namespace Caneda
     //! \brief Returns a copy of this component.
     Component* Component::copy(CGraphicsScene *scene) const
     {
-        Component *retVal = new Component(d, m_svgPainter, scene);
+        Component *retVal = new Component(d, scene);
         // No need for Component::copyDataTo() because the data is already copied from d pointer.
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
         retVal->setSymbol(symbol()); //to register svg connections
@@ -399,44 +392,29 @@ namespace Caneda
     }
 
     /*!
-     * \brief Registers connections of this item with SvgPainter \a painter.
+     * \brief Registers connections of this item with SvgPainter.
      *
      * Unless this item is connected this way, it won't be rendered. The svg
      * corresponding to svg id \a svg_id should already be registered with
-     * SvgPainter \a painter using SvgPainter::registerSvg. This method also
-     * unregisters any previously connected SvgPainter.
+     * SvgPainter \a painter using SvgPainter::registerSvg.
      *
      * \sa SvgPainter::registerSvg()
      */
-    void Component::registerConnections(const QString& svg_id, SvgPainter *painter)
+    void Component::registerConnections(const QString& svg_id)
     {
+        SvgPainter *svgPainter = SvgPainter::instance();
         Q_ASSERT(!svg_id.isEmpty());
-        Q_ASSERT(painter);
+        m_svgId = svg_id;
 
-        if(!painter->isSvgRegistered(svg_id)) {
+        if(!svgPainter->isSvgRegistered(svg_id)) {
             qWarning() << "Component::registerConnections()  :  "
                        << "Cannot register for ungregisted svgs. Register svg first";
             return;
         }
 
-        // Disconnect if this was connected to a different SvgPainter before.
-        if(isRegistered()) {
-            disconnect(m_svgPainter->rendererFor(m_svgId), SIGNAL(repaintNeeded()),
-                       this, SLOT(updateBoundingRect()));
-        }
-
-        m_svgId = svg_id;
-        m_svgPainter = painter;
-
-        connect(painter->rendererFor(svg_id), SIGNAL(repaintNeeded()), this,
+        connect(svgPainter->rendererFor(svg_id), SIGNAL(repaintNeeded()), this,
                 SLOT(updateBoundingRect()));
         updateBoundingRect();
-    }
-
-    //! \brief Returns whether item is registered to an svg or not.
-    bool Component::isRegistered() const
-    {
-        return m_svgPainter && !m_svgId.isEmpty() && m_svgPainter->isSvgRegistered(m_svgId);
     }
 
     //! \brief Returns the rect adjusted to accomodate ports too.
@@ -469,13 +447,8 @@ namespace Caneda
      */
     void Component::updateBoundingRect()
     {
-        if(!isRegistered()) {
-            qWarning() << "Component::updateBoundingRect()  : Can't update"
-                       << "unregistered items";
-            return;
-        }
-
-        QRectF bound = m_svgPainter->boundingRect(m_svgId);
+        SvgPainter *svgPainter = SvgPainter::instance();
+        QRectF bound = svgPainter->boundingRect(m_svgId);
         if(bound.isNull()) {
             qWarning() << "Component::calcBoundingRect() : Data parse error";
         }
