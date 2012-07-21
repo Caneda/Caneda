@@ -177,6 +177,8 @@ namespace Caneda
      *
      * This method sets the symbol property's value and then takes care
      * of geometry changes as well.
+     * The symbol corresponding to m_svgId should already be registered with
+     * SvgPainter using SvgPainter::registerSvg().
      *
      * \param newSymbol The symbol to be set now
      * \return True on success, and false on failure.
@@ -197,8 +199,8 @@ namespace Caneda
         }
 
         m_svgId.prepend(prefix);
-        registerConnections();
 
+        updateBoundingRect();
         updatePropertyGroup();
 
         return true;
@@ -381,29 +383,6 @@ namespace Caneda
         delete dia;
 
         return status;
-    }
-
-    /*!
-     * \brief Registers connections of this item with SvgPainter.
-     *
-     * Unless this item is connected this way, it won't be rendered. The svg
-     * corresponding to m_svgId should already be registered with
-     * SvgPainter using SvgPainter::registerSvg().
-     * \sa SvgPainter::registerSvg()
-     */
-    void Component::registerConnections()
-    {
-        SvgPainter *svgPainter = SvgPainter::instance();
-
-        if(!svgPainter->isSvgRegistered(m_svgId)) {
-            qWarning() << "Component::registerConnections()  :  "
-                       << "Cannot register for ungregisted svgs. Register svg first";
-            return;
-        }
-
-        connect(svgPainter->rendererFor(m_svgId), SIGNAL(repaintNeeded()), this,
-                SLOT(updateBoundingRect()));
-        updateBoundingRect();
     }
 
     //! \brief Returns the rect adjusted to accomodate ports too.

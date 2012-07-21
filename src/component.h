@@ -144,9 +144,6 @@ namespace Caneda
 
         int launchPropertyDialog(Caneda::UndoOption opt);
 
-        // Svg related code
-        void registerConnections();
-
     protected:
         QRectF adjustedBoundRect(const QRectF& rect);
         QVariant itemChange(GraphicsItemChange change, const QVariant &value);
