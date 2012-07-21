@@ -143,12 +143,12 @@ namespace Caneda
 
         int launchPropertyDialog(Caneda::UndoOption opt);
 
-
         // ********************************************************************
         // Svg related code
         // ********************************************************************
         void registerConnections(const QString& id, SvgPainter *painter);
         bool isRegistered() const;
+        // ********************************************************************
 
     protected:
         QRectF adjustedBoundRect(const QRectF& rect);
@@ -165,9 +165,12 @@ namespace Caneda
         //! \brief Property group (ie property of this component)
         PropertiesGroup *m_propertyGroup;
 
+        // ********************************************************************
         // Svg related code
+        // ********************************************************************
         SvgPainter *m_svgPainter; //!< The pointer to SvgPainter responsible for painting item.
         QString m_svgId; //!< The svg id registered with painter.
+        // ********************************************************************
     };
 
     bool readComponentData(Caneda::XmlReader *reader, const QString& path,
