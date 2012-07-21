@@ -676,18 +676,18 @@ namespace Caneda
 
         Q_ASSERT(reader->isStartElement() && reader->name() == "component");
 
-        //check version compatibility first.
+        // Check version compatibility first.
         Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
 
-        /* get name */
+        // Get name
         d->name = attributes.value("name").toString();
         Q_ASSERT(!d->name.isEmpty());
 
-        /* get label */
+        // Get label
         d->labelPrefix = attributes.value("label").toString();
         Q_ASSERT(!d->labelPrefix.isEmpty());
 
-        /* read the component body */
+        // Read the component body
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -696,19 +696,19 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
-                /* read display text */
+                // Read display text
                 if(reader->name() == "displaytext") {
                     d->displayText = reader->readLocaleText(Caneda::localePrefix());
                     Q_ASSERT(reader->isEndElement());
                 }
 
-                /* Read description */
+                // Read description
                 else if(reader->name() == "description") {
                     d->description = reader->readLocaleText(Caneda::localePrefix());
                     Q_ASSERT(reader->isEndElement());
                 }
 
-                /* Read schematic */
+                // Read schematic
                 else if(reader->name() == "schematics") {
                     if(readSchematics(reader, path, d)==false) {
                         d = static_cast<ComponentData*>(0);
@@ -716,7 +716,7 @@ namespace Caneda
                     }
                 }
 
-                /* Read ports*/
+                // Read ports
                 else if(reader->name() == "ports") {
                     while(!reader->atEnd()) {
                         reader->readNext();
@@ -734,7 +734,7 @@ namespace Caneda
                     }
                 }
 
-                /* Read properties */
+                // Read properties
                 else if(reader->name() == "properties") {
                     readComponentProperties(reader,d);
                 }
