@@ -372,7 +372,7 @@ namespace Caneda
     Component* Component::copy(CGraphicsScene *scene) const
     {
         Component *retVal = new Component(d, m_svgPainter, scene);
-        //no need for Component::copyDataTo() because the data is already copied from d pointer.
+        // No need for Component::copyDataTo() because the data is already copied from d pointer.
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
         retVal->setSymbol(symbol()); //to register svg connections
         retVal->updatePropertyGroup();
@@ -500,7 +500,7 @@ namespace Caneda
             SvgPainter *svgPainter,
             QSharedDataPointer<ComponentData> &d)
     {
-        /* process using xslt */
+        // Process using xslt
         Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
                 Caneda::transformers::defaultInstance()->componentsvg());
 
@@ -560,7 +560,7 @@ namespace Caneda
         QString schType = reader->attributes().value("href").toString();
         bool readok;
 
-        /* if external svg file */
+        // If external svg file
         if(!schType.isEmpty()) {
             QFile svgFile(svgPath + "/" + schType);
             if(!svgFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -586,7 +586,7 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
-                /* internal svg */
+                // Internal svg
                 if(reader->name() == "svg") {
                     Q_ASSERT(schType.isEmpty());
                     QByteArray svgContent = reader->readXmlFragment().toUtf8();
