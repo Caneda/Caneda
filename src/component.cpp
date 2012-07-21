@@ -180,31 +180,28 @@ namespace Caneda
      *
      * \param newSymbol The symbol to be set now
      * \return True on success, and false on failure.
-     * \todo Take care of undo\redo as well as connection changes.
      */
     bool Component::setSymbol(const QString& newSymbol)
     {
-        QString svgid = newSymbol;
+        m_svgId = newSymbol;
+
         QString prefix(name());
         prefix.append('/');
 
-        Q_ASSERT_X(propertyMap().contains("symbol"),
-                __FUNCTION__,"Component::setSymbol() : 'symbol' property not found");
-
-        if(!d->propertyMap["symbol"].setValue(svgid)) {
+        if(!d->propertyMap["symbol"].setValue(m_svgId)) {
             return false;
         }
 
         qDeleteAll(m_ports);
         m_ports.clear();
 
-        const QList<PortData*> portDatas = d.constData()->schematicPortMap[svgid];
+        const QList<PortData*> portDatas = d.constData()->schematicPortMap[m_svgId];
         foreach(const PortData *data, portDatas) {
             m_ports << new Port(this, data->pos, data->name);
         }
-        svgid.prepend(prefix);
 
-        registerConnections(svgid);
+        m_svgId.prepend(prefix);
+        registerConnections();
 
         updatePropertyGroup();
 
@@ -395,24 +392,21 @@ namespace Caneda
      * \brief Registers connections of this item with SvgPainter.
      *
      * Unless this item is connected this way, it won't be rendered. The svg
-     * corresponding to svg id \a svg_id should already be registered with
-     * SvgPainter \a painter using SvgPainter::registerSvg.
-     *
+     * corresponding to m_svgId should already be registered with
+     * SvgPainter using SvgPainter::registerSvg().
      * \sa SvgPainter::registerSvg()
      */
-    void Component::registerConnections(const QString& svg_id)
+    void Component::registerConnections()
     {
         SvgPainter *svgPainter = SvgPainter::instance();
-        Q_ASSERT(!svg_id.isEmpty());
-        m_svgId = svg_id;
 
-        if(!svgPainter->isSvgRegistered(svg_id)) {
+        if(!svgPainter->isSvgRegistered(m_svgId)) {
             qWarning() << "Component::registerConnections()  :  "
                        << "Cannot register for ungregisted svgs. Register svg first";
             return;
         }
 
-        connect(svgPainter->rendererFor(svg_id), SIGNAL(repaintNeeded()), this,
+        connect(svgPainter->rendererFor(m_svgId), SIGNAL(repaintNeeded()), this,
                 SLOT(updateBoundingRect()));
         updateBoundingRect();
     }
@@ -447,13 +441,11 @@ namespace Caneda
      */
     void Component::updateBoundingRect()
     {
+        // Get the bounding rect of the symbol
         SvgPainter *svgPainter = SvgPainter::instance();
         QRectF bound = svgPainter->boundingRect(m_svgId);
-        if(bound.isNull()) {
-            qWarning() << "Component::calcBoundingRect() : Data parse error";
-        }
 
-        // Now get an adjusted rect for accomodating extra stuff like ports.
+        // Get an adjusted rect for accomodating extra stuff like ports.
         QRectF adjustedRect = adjustedBoundRect(bound);
 
         setShapeAndBoundRect(QPainterPath(), adjustedRect, 1.0);
