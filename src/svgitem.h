@@ -58,11 +58,6 @@ namespace Caneda
         ~SvgPainter();
 
         void registerSvg(const QString& svg_id, const QByteArray& content);
-
-        /*!
-         * Returns whether the svg corresponding to \svg_id is registered
-         * or not with \a registerSvg.
-         */
         bool isSvgRegistered(const QString& svg_id) const {
             return m_dataHash.contains(svg_id);
         }
@@ -71,13 +66,11 @@ namespace Caneda
         QRectF boundingRect(const QString& svg_id) const;
 
         void paint(QPainter *painter, const QString& svg_id);
-        SvgItemData* svgData(const QString& svg_id) const;
-        QByteArray svgContent(const QString& svg_id) const;
 
     private:
         SvgPainter(QObject *parent = 0);
 
-        QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
+        QHash<QString, SvgItemData*> m_dataHash; //!< Hash table to hold svg data
     };
 
 } // namespace Caneda

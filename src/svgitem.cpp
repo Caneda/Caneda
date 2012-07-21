@@ -96,13 +96,15 @@ namespace Caneda
     //! \brief Returns QSvgRenderer corresponding to id \a svg_id.
     QSvgRenderer* SvgPainter::rendererFor(const QString& svg_id) const
     {
-        return &(svgData(svg_id)->renderer);
+        Q_ASSERT(isSvgRegistered(svg_id));
+        return &(m_dataHash[svg_id]->renderer);
     }
 
     //! \brief Returns bound rect corresponding to id \a svg_id.
     QRectF SvgPainter::boundingRect(const QString& svg_id) const
     {
-        return svgData(svg_id)->boundingRect();
+        Q_ASSERT(isSvgRegistered(svg_id));
+        return m_dataHash[svg_id]->boundingRect();
     }
 
     /*!
@@ -113,7 +115,8 @@ namespace Caneda
      */
     void SvgPainter::paint(QPainter *painter, const QString& svg_id)
     {
-        SvgItemData *data = svgData(svg_id);
+        Q_ASSERT(isSvgRegistered(svg_id));
+        SvgItemData *data = m_dataHash[svg_id];
         QMatrix m = painter->worldMatrix();
         QRect deviceRect = m.mapRect(data->boundingRect()).toRect();
 
@@ -148,19 +151,6 @@ namespace Caneda
         painter->setWorldMatrix(QMatrix());
         painter->drawPixmap(viewPoint, pix);
         painter->setTransform(xformSave);
-    }
-
-    //! \brief Returns the SvgItemData* corresponding to svg id \a svg_id.
-    SvgItemData* SvgPainter::svgData(const QString& svg_id) const
-    {
-        Q_ASSERT(isSvgRegistered(svg_id));
-        return m_dataHash[svg_id];
-    }
-
-    //! \brief Returns svg content corresponding to svg id \a svg_id.
-    QByteArray SvgPainter::svgContent(const QString& svg_id) const
-    {
-        return svgData(svg_id)->content;
     }
 
     /*!

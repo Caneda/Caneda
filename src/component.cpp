@@ -477,7 +477,7 @@ namespace Caneda
 
         QRectF bound = m_svgPainter->boundingRect(m_svgId);
         if(bound.isNull()) {
-            qWarning() << "SvgItem::calcBoundingRect() : Data parse error";
+            qWarning() << "Component::calcBoundingRect() : Data parse error";
         }
 
         // Now get an adjusted rect for accomodating extra stuff like ports.
