@@ -42,12 +42,6 @@ namespace Caneda
     ##########################################################################
     */
     /*!
-     * \brief Item stroke width
-     * \todo should be configurable
-     */
-    static const double itemstrokewidth = 1.0;
-
-    /*!
      * \brief This code draws the highlighted rect around the item
      * \note This code is stolen from source of qt ;-)
      */
@@ -64,8 +58,7 @@ namespace Caneda
             return;
         }
 
-        qreal itemStrokeWidth = itemstrokewidth;
-        const qreal pad = itemStrokeWidth / 2;
+        const qreal pad = 0.5;
         const qreal strokeWidth = 0; // cosmetic pen
 
         const QColor fgcolor = option->palette.windowText().color();
@@ -254,7 +247,7 @@ namespace Caneda
         }
         svgid.prepend(prefix);
 
-        registerConnections(svgid, svgPainter());
+        registerConnections(svgid, m_svgPainter);
 
         updatePropertyGroup();
 
@@ -391,8 +384,8 @@ namespace Caneda
     }
 
     /*!
-     * \brief Paints the component using SvgPainter::paint method, peforms sanity
-     * checks and takes care of drawing selection rectangle.
+     * \brief Paints the component, peforms sanity checks and takes
+     * care of drawing the selection rectangle.
      */
     void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *w)
@@ -403,7 +396,7 @@ namespace Caneda
             return;
         }
 
-        svgPainter()->paint(painter, m_svgId);
+        m_svgPainter->paint(painter, m_svgId);
 
         if(option->state & QStyle::State_Selected) {
             highlightSelectedSvgItem(this, painter, option);
@@ -418,7 +411,7 @@ namespace Caneda
     //! \brief Returns a copy of this component.
     Component* Component::copy(CGraphicsScene *scene) const
     {
-        Component *retVal = new Component(d, svgPainter(), scene);
+        Component *retVal = new Component(d, m_svgPainter, scene);
         //no need for Component::copyDataTo() because the data is already copied from d pointer.
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
         retVal->setSymbol(symbol()); //to register svg connections
@@ -443,15 +436,6 @@ namespace Caneda
         delete dia;
 
         return status;
-    }
-
-    //! \brief Returns svg corresponding to this item.
-    QByteArray Component::svgContent() const
-    {
-        if(isRegistered()) {
-            return m_svgPainter->svgContent(m_svgId);
-        }
-        return QByteArray();
     }
 
     /*!
@@ -492,7 +476,7 @@ namespace Caneda
     //! \brief Returns whether item is registered to an svg or not.
     bool Component::isRegistered() const
     {
-        return svgPainter() && !m_svgId.isEmpty() && svgPainter()->isSvgRegistered(m_svgId);
+        return m_svgPainter && !m_svgId.isEmpty() && m_svgPainter->isSvgRegistered(m_svgId);
     }
 
     //! \brief Returns the rect adjusted to accomodate ports too.
@@ -539,7 +523,7 @@ namespace Caneda
         // Now get an adjusted rect for accomodating extra stuff like ports.
         QRectF adjustedRect = adjustedBoundRect(bound);
 
-        setShapeAndBoundRect(QPainterPath(), adjustedRect, itemstrokewidth);
+        setShapeAndBoundRect(QPainterPath(), adjustedRect, 1.0);
     }
 
     /*!
@@ -628,7 +612,7 @@ namespace Caneda
                 return false;
             }
 
-            readok = readSchematicSvg(svgContent,schName,svgPainter,d);
+            readok = readSchematicSvg(svgContent, schName, svgPainter,d);
             if(!readok) {
                 return false;
             }
@@ -647,13 +631,13 @@ namespace Caneda
                     Q_ASSERT(schType.isEmpty());
                     QByteArray svgContent = reader->readXmlFragment().toUtf8();
                     // todo return error
-                    readok = readSchematicSvg(svgContent,schName,svgPainter,d);
+                    readok = readSchematicSvg(svgContent, schName, svgPainter, d);
                     if(!readok) {
                         return false;
                     }
                 }
                 else if(reader->name() == "port") {
-                    readSchematicPort(reader,schName,d);
+                    readSchematicPort(reader, schName, d);
                 }
                 else {
                     Q_ASSERT(!sizeof("unknow element in schematic element"));

@@ -72,7 +72,6 @@ namespace Caneda
 
         void paint(QPainter *painter, const QString& svg_id);
         SvgItemData* svgData(const QString& svg_id) const;
-
         QByteArray svgContent(const QString& svg_id) const;
 
     private:

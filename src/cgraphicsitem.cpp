@@ -57,8 +57,7 @@ namespace Caneda
             return;
         }
 
-        qreal itemStrokeWidth = pw;
-        const qreal pad = itemStrokeWidth / 2;
+        const qreal pad = pw / 2;
         const qreal strokeWidth = 0; // cosmetic pen
 
         const QColor fgcolor = option->palette.windowText().color();

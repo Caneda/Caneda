@@ -147,13 +147,6 @@ namespace Caneda
         // ********************************************************************
         // Svg related code
         // ********************************************************************
-
-        //! Returns the svg id of this item.
-        QString svgId() const { return m_svgId; }
-        //! Returns the SvgPainter connected to (null if not registered).
-        SvgPainter* svgPainter() const { return m_svgPainter; }
-        QByteArray svgContent() const;
-
         void registerConnections(const QString& id, SvgPainter *painter);
         bool isRegistered() const;
 
