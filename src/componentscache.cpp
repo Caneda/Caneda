@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "svgitem.h"
+#include "componentscache.h"
 
 #include "singletonowner.h"
 
@@ -28,19 +28,19 @@ namespace Caneda
 {
     /*
     ##########################################################################
-    #                          SvgPainter methods                            #
+    #                     ComponentsCache methods                            #
     ##########################################################################
     */
 
-    //! \brief Constructs svg painter object.
-    SvgPainter::SvgPainter(QObject *parent) : QObject(parent)
+    //! \brief Constructs ComponentsCache object.
+    ComponentsCache::ComponentsCache(QObject *parent) : QObject(parent)
     {
     }
 
     /*! Destructor.
      *  \brief Deletes the data belonging to this.
      */
-    SvgPainter::~SvgPainter()
+    ComponentsCache::~ComponentsCache()
     {
         QHash<QString, QSvgRenderer*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
         while(it != end) {
@@ -51,60 +51,59 @@ namespace Caneda
     }
 
     /*!
-     * \brief Registers svg with svg id \a svg_id with this instance.
+     * \brief Registers a component symbol with symbol_id in this instance.
      *
-     * Registering is required for rendering any svg with the instance of this
-     * class. If the \a svg_id is already registered does nothing.
+     * Registering is required for rendering any component with the instance of this
+     * class. If the symbol_id is already registered does nothing.
      */
-    void SvgPainter::registerSvg(const QString& svg_id, const QByteArray& svg)
+    void ComponentsCache::registerComponent(const QString& symbol_id, const QByteArray& svg)
     {
-        if(isSvgRegistered(svg_id)) {
+        if(isComponentRegistered(symbol_id)) {
             return;
         }
 
-        m_dataHash[svg_id] = new QSvgRenderer(svg);
+        m_dataHash[symbol_id] = new QSvgRenderer(svg);
     }
 
     /*!
-     * \brief Returns the registered status of svg_id.
+     * \brief Returns the registered status of symbol_id.
      *
-     * True if the svg_id data was previously registered,
-     * false otherwise.
+     * True if the symbol_id data was previously registered, false otherwise.
      */
-    bool SvgPainter::isSvgRegistered(const QString& svg_id) const
+    bool ComponentsCache::isComponentRegistered(const QString& symbol_id) const
     {
-        return m_dataHash.contains(svg_id);
+        return m_dataHash.contains(symbol_id);
     }
 
-    //! \brief Returns the bounding rect corresponding to svg_id.
-    QRectF SvgPainter::boundingRect(const QString& svg_id) const
+    //! \brief Returns the bounding rect corresponding to symbol_id.
+    QRectF ComponentsCache::boundingRect(const QString& symbol_id) const
     {
-        return m_dataHash[svg_id]->viewBox();
+        return m_dataHash[symbol_id]->viewBox();
     }
 
     /*!
-     * \brief This method paints (or renders) a registerd svg using \a painter.
+     * \brief This method paints (or renders) a registerd component using \a painter.
      *
-     * \param painter Painter with which svg should be rendered.
-     * \param svg_id Svg id which should be rendered.
+     * \param painter Painter to be used to render the component.
+     * \param symbol_id Symbol id which should be rendered.
      */
-    void SvgPainter::paint(QPainter *painter, const QString& svg_id)
+    void ComponentsCache::paint(QPainter *painter, const QString& symbol_id)
     {
-        QSvgRenderer *data = m_dataHash[svg_id];
+        QSvgRenderer *data = m_dataHash[symbol_id];
         QMatrix m = painter->worldMatrix();
-        QRect deviceRect = m.mapRect(boundingRect(svg_id)).toRect();
+        QRect deviceRect = m.mapRect(boundingRect(symbol_id)).toRect();
 
         // If there is transformation render without cache.
         if(painter->worldTransform().isScaling()) {
-            data->render(painter, boundingRect(svg_id));
+            data->render(painter, boundingRect(symbol_id));
             return;
         }
 
         QPixmap pix;
-        QPointF viewPoint = m.mapRect(boundingRect(svg_id)).topLeft();
+        QPointF viewPoint = m.mapRect(boundingRect(symbol_id)).topLeft();
         QPointF viewOrigo = m.map(QPointF(0, 0));
 
-        if(!QPixmapCache::find(svg_id, pix)) {
+        if(!QPixmapCache::find(symbol_id, pix)) {
             pix = QPixmap(deviceRect.size());
             pix.fill(Qt::transparent);
 
@@ -114,10 +113,10 @@ namespace Caneda
             p.setWorldMatrix(m, true);
             p.translate(m.inverted().map(QPointF(0, 0)));
 
-            data->render(&p, boundingRect(svg_id));
+            data->render(&p, boundingRect(symbol_id));
 
             p.end();
-            QPixmapCache::insert(svg_id,  pix);
+            QPixmapCache::insert(symbol_id,  pix);
         }
 
         const QTransform xformSave = painter->transform();
@@ -133,31 +132,31 @@ namespace Caneda
      * \param component Component to be rendered.
      * \param symbol Symbol to be rendered.
      */
-    QPixmap SvgPainter::renderedPixmap(QString component, QString symbol)
+    QPixmap ComponentsCache::renderedPixmap(QString component, QString symbol)
     {
-        QString svgId = component + '/' + symbol;
-        QRectF rect =  boundingRect(svgId);
+        QString symbol_id = component + '/' + symbol;
+        QRectF rect =  boundingRect(symbol_id);
         QPixmap pix;
 
-        if(!QPixmapCache::find(svgId, pix)) {
+        if(!QPixmapCache::find(symbol_id, pix)) {
             pix = QPixmap(rect.toRect().size());
             pix.fill(Qt::transparent);
             QPainter painter(&pix);
             painter.setWindow(rect.toRect());
-            paint(&painter, svgId);
+            paint(&painter, symbol_id);
         }
 
         return pix;
     }
 
     /*!
-     * \brief Returns the default svg painter object, shared by default graphicsscenes
+     * \brief Returns the default ComponentsCache painter object, shared by default graphicsscenes
      */
-    SvgPainter* SvgPainter::instance()
+    ComponentsCache* ComponentsCache::instance()
     {
-        static SvgPainter *instance = 0;
+        static ComponentsCache *instance = 0;
         if (!instance) {
-            instance = new SvgPainter(SingletonOwner::instance());
+            instance = new ComponentsCache(SingletonOwner::instance());
         }
         return instance;
     }

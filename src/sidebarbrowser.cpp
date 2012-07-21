@@ -73,7 +73,6 @@ namespace Caneda
         QTreeView::mouseReleaseEvent(event);
     }
 
-    //! \brief Custom drag The drag pixmap is drawn from svg.
     void TreeView::startDrag(Qt::DropActions supportedActions)
     {
         QModelIndex index = selectedIndexes().first();

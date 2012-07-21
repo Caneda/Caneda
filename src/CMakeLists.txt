@@ -15,16 +15,16 @@ ADD_SUBDIRECTORY( xmlutilities )
 SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   cgraphicsitem.cpp cgraphicsscene.cpp sidebarmodel.cpp
   global.cpp units.cpp main.cpp mainwindow.cpp library.cpp
-  cgraphicsview.cpp  undocommands.cpp svgitem.cpp property.cpp
-  propertyitem.cpp propertygroup.cpp component.cpp port.cpp node.cpp
+  cgraphicsview.cpp  undocommands.cpp component.cpp componentscache.cpp
+  property.cpp propertyitem.cpp propertygroup.cpp  port.cpp node.cpp
   xmlschematic.cpp xmllayout.cpp xmlsymbol.cpp xmlsimulation.cpp
   folderbrowser.cpp settings.cpp
   actionmanager.cpp singletonowner.cpp project.cpp
   statehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp
-  syntaxhighlighters.cpp clineedit.cpp
+  syntaxhighlighters.cpp clineedit.cpp simulationscene.cpp
+  simulationdocument.cpp simulationcontext.cpp simulationview.cpp
   schematicdocument.cpp schematiccontext.cpp schematicview.cpp
-  simulationdocument.cpp simulationcontext.cpp simulationview.cpp simulationscene.cpp
   symboldocument.cpp symbolcontext.cpp symbolview.cpp
   layoutdocument.cpp layoutcontext.cpp layoutview.cpp
   textdocument.cpp textcontext.cpp textview.cpp textedit.cpp
@@ -50,7 +50,8 @@ QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} ${CANEDA_MOC_SRCS} )
 
-TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${QWT_LIBRARIES}
+TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} ${LIBXML2_LIBRARIES}
+                       ${LIBXSLT_LIBRARIES} ${QWT_LIBRARIES}
                        dialogs paintings xmlutilities
                        attenuator filter transmission)
 

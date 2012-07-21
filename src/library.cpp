@@ -32,8 +32,6 @@
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
-#include <QPainter>
-#include <QPixmapCache>
 #include <QString>
 #include <QTextStream>
 
@@ -44,7 +42,7 @@ namespace Caneda
     //*************************************************************
 
     /*! Constructor
-     *  \brief Constructs library item from reader with file path \a path and svgpainter \a painter.
+     *  \brief Constructs library item from reader with file path \a path.
      */
     Library::Library(QString libraryPath)
     {
@@ -220,12 +218,12 @@ namespace Caneda
         return true;
     }
 
-    //! \brief Registers svg as well as the component's shared data.
+    //! \brief Registers a component's symbol as well as the component's shared data.
     bool Library::registerComponentData(Caneda::XmlReader *reader, QString componentPath)
     {
         bool readok;
 
-        //Automatically registers svgs on success
+        //Automatically registers component's symbol on success
         ComponentDataPtr dataPtr(new ComponentData);
         dataPtr->library = libraryName();
         dataPtr->filename = componentPath;
@@ -308,10 +306,7 @@ namespace Caneda
             }
         }
 
-        SvgPainter *svgPainter = SvgPainter::instance();
-
         if(data.constData()) {
-            Q_ASSERT(svgPainter);
             Component* comp = new Component(data, scene);
             comp->setSymbol(comp->symbol());
             return comp;

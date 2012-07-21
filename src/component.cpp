@@ -36,13 +36,7 @@
 
 namespace Caneda
 {
-    /*!
-     * \brief Constructs and initializes a default empty component item.
-     *
-     * To render the item it should be first connected to SvgPainter and the
-     * svg id should be already registered with SvgPainter.
-     * \sa Component::registerConnections, SvgPainter::registerSvg()
-     */
+    //! \brief Constructs and initializes a default empty component item.
     Component::Component(CGraphicsScene *scene) :
         CGraphicsItem(0, scene),
         d(new ComponentData()), m_propertyGroup(0)
@@ -50,13 +44,7 @@ namespace Caneda
         init();
     }
 
-    /*!
-     * \brief Constructs a component from \a other data.
-     *
-     * To render the item it should be first connected to SvgPainter and the
-     * svg id should be already registered with SvgPainter.
-     * \sa Component::registerConnections, SvgPainter::registerSvg()
-     */
+    //! \brief Constructs a component from \a other data.
     Component::Component(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene) :
         CGraphicsItem(0, scene),
         d(other), m_propertyGroup(0)
@@ -177,15 +165,15 @@ namespace Caneda
      *
      * This method sets the symbol property's value and then takes care
      * of geometry changes as well.
-     * The symbol corresponding to m_svgId should already be registered with
-     * SvgPainter using SvgPainter::registerSvg().
+     * The symbol corresponding to m_symbolId should already be registered with
+     * ComponentsCache using ComponentsCache::registerComponent().
      *
      * \param newSymbol The symbol to be set now
      * \return True on success, and false on failure.
      */
     bool Component::setSymbol(const QString& newSymbol)
     {
-        m_svgId = newSymbol;
+        m_symbolId = newSymbol;
 
         QString prefix(name());
         prefix.append('/');
@@ -193,12 +181,12 @@ namespace Caneda
         qDeleteAll(m_ports);
         m_ports.clear();
 
-        const QList<PortData*> portDatas = d.constData()->schematicPortMap[m_svgId];
+        const QList<PortData*> portDatas = d.constData()->schematicPortMap[m_symbolId];
         foreach(const PortData *data, portDatas) {
             m_ports << new Port(this, data->pos, data->name);
         }
 
-        m_svgId.prepend(prefix);
+        m_symbolId.prepend(prefix);
 
         updateBoundingRect();
         updatePropertyGroup();
@@ -342,7 +330,7 @@ namespace Caneda
             QWidget *w)
     {
         // Paint the component symbol
-        SvgPainter::instance()->paint(painter, m_svgId);
+        ComponentsCache::instance()->paint(painter, m_symbolId);
 
         // Paint the selection rectangle
         if(option->state & QStyle::State_Selected) {
@@ -361,7 +349,7 @@ namespace Caneda
         Component *retVal = new Component(d, scene);
         // No need for Component::copyDataTo() because the data is already copied from d pointer.
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
-        retVal->setSymbol(symbol()); //to register svg connections
+        retVal->setSymbol(symbol()); // To register components symbol
         retVal->updatePropertyGroup();
         return retVal;
     }
@@ -416,8 +404,8 @@ namespace Caneda
     void Component::updateBoundingRect()
     {
         // Get the bounding rect of the symbol
-        SvgPainter *svgPainter = SvgPainter::instance();
-        QRectF bound = svgPainter->boundingRect(m_svgId);
+        ComponentsCache *painter = ComponentsCache::instance();
+        QRectF bound = painter->boundingRect(m_symbolId);
 
         // Get an adjusted rect for accomodating extra stuff like ports.
         QRectF adjustedRect = adjustedBoundRect(bound);
@@ -430,7 +418,6 @@ namespace Caneda
      *
      * \param svgContent svg content as utf8
      * \param schName Schematic name
-     * \param svgPainter The SvgPainter object to which the symbols should be exported to.
      * \param d (Output variable) The data ptr where data should be uploaded.
      *  \todo Check error
      */
@@ -442,9 +429,9 @@ namespace Caneda
         Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
                 Caneda::transformers::defaultInstance()->componentsvg());
 
-        SvgPainter *svgPainter = SvgPainter::instance();
-        QString svgId = d.constData()->name + "/" + schName;
-        svgPainter->registerSvg(svgId, QXmlSvg.constData());
+        ComponentsCache *componentsCache = ComponentsCache::instance();
+        QString symbolId = d.constData()->name + "/" + schName;
+        componentsCache->registerComponent(symbolId, QXmlSvg.constData());
         if(QXmlSvg.hasError()) {
             qWarning() << "Could not read svg file" << schName << ": " << QXmlSvg.errorString();
             return false;

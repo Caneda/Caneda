@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SVGITEM_H
-#define SVGITEM_H
+#ifndef COMPONENTS_CACHE_H
+#define COMPONENTS_CACHE_H
 
 #include <QHash>
 #include <QSvgRenderer>
@@ -34,22 +34,22 @@ namespace Caneda
      * is created only once (independently of the number of components used by the
      * user in the final schematic).
      */
-    struct SvgPainter : public QObject
+    struct ComponentsCache : public QObject
     {
     public:
-        static SvgPainter* instance();
-        ~SvgPainter();
+        static ComponentsCache* instance();
+        ~ComponentsCache();
 
-        void registerSvg(const QString& svg_id, const QByteArray& content);
-        bool isSvgRegistered(const QString& svg_id) const;
+        void registerComponent(const QString& symbol_id, const QByteArray& content);
+        bool isComponentRegistered(const QString& symbol_id) const;
 
-        QRectF boundingRect(const QString& svg_id) const;
+        QRectF boundingRect(const QString& symbol_id) const;
 
-        void paint(QPainter *painter, const QString& svg_id);
+        void paint(QPainter *painter, const QString& symbol_id);
         QPixmap renderedPixmap(QString component, QString symbol);
 
     private:
-        SvgPainter(QObject *parent = 0);
+        ComponentsCache(QObject *parent = 0);
 
         //! Hash table to hold Svg renderer (wich has raw svg content cached).
         QHash<QString, QSvgRenderer*> m_dataHash;
@@ -57,4 +57,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //SVGITEM_H
+#endif //COMPONENTS_CACHE_H

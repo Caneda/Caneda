@@ -22,8 +22,8 @@
 #define QCOMPONENT_H
 
 #include "cgraphicsitem.h"
+#include "componentscache.h"
 #include "property.h"
-#include "svgitem.h"
 
 namespace Caneda
 {
@@ -54,11 +54,9 @@ namespace Caneda
      * This component can either be directly loaded from an xml doc or
      * manually set data if it requires.
      *
-     * This class implements an interface needed by SvgPainter to render the svg.
-     * To use the svg registered to \a SvgPainter the connection's of this item
-     * to SvgPainter should be made using \a registerConnections.
-     *
-     * \sa SvgPainter, Component::registerConnections()
+     * This class uses ComponentsCache as a cache to render the component.
+     * To be able to render the symbol registered to ComponentsCache, the
+     * symbol must be previously registered (by the library class).
      */
     class Component : public QObject, public CGraphicsItem
     {
@@ -159,8 +157,7 @@ namespace Caneda
         //! \brief Property group (ie property of this component)
         PropertiesGroup *m_propertyGroup;
 
-        // Svg related code
-        QString m_svgId; //!< The svg id registered with painter.
+        QString m_symbolId; //!< The symbol id registered with ComponentsCache.
     };
 
     bool readComponentData(Caneda::XmlReader *reader, const QString& path, QSharedDataPointer<ComponentData> &d);
