@@ -462,13 +462,13 @@ namespace Caneda
      */
     static bool readSchematicSvg(const QByteArray &svgContent,
             const QString &schName,
-            SvgPainter *svgPainter,
             QSharedDataPointer<ComponentData> &d)
     {
         // Process using xslt
         Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
                 Caneda::transformers::defaultInstance()->componentsvg());
 
+        SvgPainter *svgPainter = SvgPainter::instance();
         QString svgId = d.constData()->name + "/" + schName;
         svgPainter->registerSvg(svgId, QXmlSvg.constData());
         if(QXmlSvg.hasError()) {
@@ -513,10 +513,9 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      * \param path The path of the xml file being processed.
-     * \param svgPainter The SvgPainter object to which the symbols should be exported to.
      * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    static bool readSchematic(Caneda::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
+    static bool readSchematic(Caneda::XmlReader *reader, const QString& svgPath,
             QSharedDataPointer<ComponentData> &d)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "schematic");
@@ -537,7 +536,7 @@ namespace Caneda
                 return false;
             }
 
-            readok = readSchematicSvg(svgContent, schName, svgPainter,d);
+            readok = readSchematicSvg(svgContent, schName, d);
             if(!readok) {
                 return false;
             }
@@ -556,7 +555,7 @@ namespace Caneda
                     Q_ASSERT(schType.isEmpty());
                     QByteArray svgContent = reader->readXmlFragment().toUtf8();
                     // todo return error
-                    readok = readSchematicSvg(svgContent, schName, svgPainter, d);
+                    readok = readSchematicSvg(svgContent, schName, d);
                     if(!readok) {
                         return false;
                     }
@@ -577,10 +576,9 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      * \param path The path of the xml file being processed.
-     * \param svgPainter The SvgPainter object to which the symbols should be exported to.
      * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    static bool readSchematics(Caneda::XmlReader *reader, const QString& svgPath, SvgPainter *svgPainter,
+    static bool readSchematics(Caneda::XmlReader *reader, const QString& svgPath,
             QSharedDataPointer<ComponentData> &d)
     {
         /* list of symbols */
@@ -609,7 +607,7 @@ namespace Caneda
                     Q_ASSERT(!schName.isEmpty());
 
                     parsedSymbols << schName;
-                    if(!readSchematic(reader, svgPath, svgPainter, d)) {
+                    if(!readSchematic(reader, svgPath, d)) {
                         return false;
                     }
                 }
@@ -668,12 +666,11 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      * \param path The path of the xml file being processed.
-     * \param svgPainter The SvgPainter object to which the symbols should be exported to.
      * \param d (Output variable) The data ptr where data should be uploaded.
      * \note Policy is to assert well formed xml.
      */
     bool readComponentData(Caneda::XmlReader *reader, const QString& path,
-            SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d)
+            QSharedDataPointer<ComponentData> &d)
     {
         QXmlStreamAttributes attributes = reader->attributes();
 
@@ -713,7 +710,7 @@ namespace Caneda
 
                 /* Read schematic */
                 else if(reader->name() == "schematics") {
-                    if(readSchematics(reader, path, svgPainter, d)==false) {
+                    if(readSchematics(reader, path, d)==false) {
                         d = static_cast<ComponentData*>(0);
                         return false;
                     }

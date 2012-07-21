@@ -266,9 +266,8 @@ namespace Caneda
         dataPtr->library = libraryName();
         dataPtr->filename = componentPath;
 
-        SvgPainter *svgPainter = SvgPainter::instance();
         QString parentPath = QFileInfo(componentPath).absolutePath();
-        readok = Caneda::readComponentData(reader, parentPath, svgPainter, dataPtr);
+        readok = Caneda::readComponentData(reader, parentPath, dataPtr);
 
         if(dataPtr.constData() == 0 || reader->hasError() || !readok) {
             qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();

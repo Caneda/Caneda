@@ -164,8 +164,7 @@ namespace Caneda
         QString m_svgId; //!< The svg id registered with painter.
     };
 
-    bool readComponentData(Caneda::XmlReader *reader, const QString& path,
-                           SvgPainter *svgPainter, QSharedDataPointer<ComponentData> &d);
+    bool readComponentData(Caneda::XmlReader *reader, const QString& path, QSharedDataPointer<ComponentData> &d);
 
 } // namespace Caneda
 
