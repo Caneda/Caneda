@@ -46,6 +46,8 @@ namespace Caneda
         QMap<QString, QList<PortData*> > schematicPortMap; //! Map of component's ports
     };
 
+    typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
+
     /*!
      * \brief Represents the component on schematic.
      *

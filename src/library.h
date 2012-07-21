@@ -28,8 +28,6 @@
 
 namespace Caneda
 {
-    typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
-
     /*!
      * \brief This represents individual library unit.
      */
