@@ -40,7 +40,6 @@ namespace Caneda
 
         QByteArray content; //!< Represents raw svg content.
         QSvgRenderer renderer; //!< Represents svg renderer which renders svg.
-        bool pixmapDirty; //!< Takes care of dirtyness of the pixmap cache.
     };
 
     /*!
@@ -76,15 +75,10 @@ namespace Caneda
 
         QByteArray svgContent(const QString& svg_id) const;
 
-        //! Returns whether caching is enabled for the svgs or not.
-        bool isCachingEnabled() const { return m_cachingEnabled; }
-        void setCachingEnabled(bool caching);
-
     private:
         SvgPainter(QObject *parent = 0);
 
         QHash<QString, SvgItemData*> m_dataHash; //!< Holds svg data in a hash table.
-        bool m_cachingEnabled; //!< State to hold whether caching is enabled or not.
     };
 
 } // namespace Caneda

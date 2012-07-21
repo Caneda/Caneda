@@ -32,26 +32,16 @@ namespace Caneda
     ##########################################################################
     */
 
-    /*!
-     * \brief Constructs an SvgItemData with raw svg content.
-     *
-     * \param _content Raw svg content.
-     */
+    //! \brief Constructs an SvgItemData with raw svg content.
     SvgItemData::SvgItemData(const QByteArray& _content) :
         content(_content),
-        renderer(content),
-        pixmapDirty(true)
+        renderer(content)
     {
         Q_ASSERT(renderer.isValid());
         Q_ASSERT(!content.isEmpty());
     }
 
-
-    /*!
-     * \brief Returns the bounding rect of the svg element.
-     *
-     * Use viewBox (ifexist) and as a fallback use boundsOnElement
-     */
+    //! \brief Returns the bounding rect of the svg element.
     QRectF SvgItemData::boundingRect() const
     {
         QRectF viewbox;
@@ -72,7 +62,6 @@ namespace Caneda
     //! \brief Constructs svg painter object.
     SvgPainter::SvgPainter(QObject *parent) : QObject(parent)
     {
-        m_cachingEnabled = true;
     }
 
     /*! Destructor.
@@ -119,8 +108,6 @@ namespace Caneda
     /*!
      * \brief This method paints (or renders) a registerd svg using \a painter.
      *
-     * This also takes care of updating the cache ifcaching is enabled.
-     *
      * \param painter Painter with which svg should be rendered.
      * \param svg_id Svg id which should be rendered.
      */
@@ -130,27 +117,21 @@ namespace Caneda
         QMatrix m = painter->worldMatrix();
         QRect deviceRect = m.mapRect(data->boundingRect()).toRect();
 
-        // If Caching disabled or if there is transformation render without cache.
-        if(!isCachingEnabled() || painter->worldTransform().isScaling()) {
+        // If there is transformation render without cache.
+        if(painter->worldTransform().isScaling()) {
             data->renderer.render(painter, data->boundingRect());
             return;
         }
-        // else when cache is enabled...
 
         QPixmap pix;
-        if(!QPixmapCache::find(svg_id, pix)) {
-            pix = QPixmap(deviceRect.size());
-            data->pixmapDirty = true;
-        }
-
         QPointF viewPoint = m.mapRect(data->boundingRect()).topLeft();
         QPointF viewOrigo = m.map(QPointF(0, 0));
 
-        if(data->pixmapDirty) {
+        if(!QPixmapCache::find(svg_id, pix)) {
+            pix = QPixmap(deviceRect.size());
             pix.fill(Qt::transparent);
 
             QPainter p(&pix);
-
             QPointF offset = viewOrigo - viewPoint;
             p.translate(offset);
             p.setWorldMatrix(m, true);
@@ -160,7 +141,6 @@ namespace Caneda
 
             p.end();
             QPixmapCache::insert(svg_id,  pix);
-            data->pixmapDirty = false;
         }
 
         const QTransform xformSave = painter->transform();
@@ -181,23 +161,6 @@ namespace Caneda
     QByteArray SvgPainter::svgContent(const QString& svg_id) const
     {
         return svgData(svg_id)->content;
-    }
-
-    //! \brief Enables/Disables caching based on \a caching.
-    void SvgPainter::setCachingEnabled(bool caching)
-    {
-        if(m_cachingEnabled == caching) {
-            return;
-        }
-        m_cachingEnabled = caching;
-
-        QHash<QString, SvgItemData*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
-        while(it != end) {
-            it.value()->pixmapDirty = true;
-            //force updation
-            it.value()->renderer.load(it.value()->content);
-            ++it;
-        }
     }
 
     /*!
