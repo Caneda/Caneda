@@ -72,42 +72,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Returns the component rendered to pixmap.
-     *
-     * \param component Component to be rendered.
-     * \param symbol Symbol to be rendered. Empty string if default is to rendered.
-     */
-    QPixmap Library::renderedPixmap(QString component,
-            QString symbol) const
-    {
-        const ComponentDataPtr dataPtr = componentDataPtr(component);
-        if(!dataPtr.constData()) {
-            qWarning() << "Library::renderToPixmap() : " <<  component << " not found";
-            return QPixmap();
-        }
-
-        if(symbol.isEmpty() ||
-                !dataPtr->propertyMap["symbol"].options().contains(symbol)) {
-            symbol = dataPtr->propertyMap["symbol"].value().toString();
-        }
-
-        QString svgId = dataPtr->name + '/' + symbol;
-        SvgPainter *svgPainter = SvgPainter::instance();
-        QRectF rect =  svgPainter->boundingRect(svgId);
-        QPixmap pix;
-
-        if(!QPixmapCache::find(svgId, pix)) {
-            pix = QPixmap(rect.toRect().size());
-            pix.fill(Qt::transparent);
-            QPainter painter(&pix);
-            painter.setWindow(rect.toRect());
-            svgPainter->paint(&painter, svgId);
-        }
-
-        return pix;
-    }
-
-    /*!
      * \brief Parses the library xml file.
      *
      * \param reader XmlReader corresponding to file.

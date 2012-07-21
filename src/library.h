@@ -62,8 +62,6 @@ namespace Caneda
             return m_componentHash;
         }
 
-        QPixmap renderedPixmap(QString component, QString symbol = QString()) const;
-
         bool loadLibrary(Caneda::XmlReader *reader);
         bool saveLibrary();
         bool parseExternalComponent(QString componentPath);

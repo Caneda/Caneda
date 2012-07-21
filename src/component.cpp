@@ -188,10 +188,6 @@ namespace Caneda
         QString prefix(name());
         prefix.append('/');
 
-        if(!d->propertyMap["symbol"].setValue(m_svgId)) {
-            return false;
-        }
-
         qDeleteAll(m_ports);
         m_ports.clear();
 
@@ -225,7 +221,6 @@ namespace Caneda
             return false;
         }
 
-        //TODO: Yet to implement label prefix and number suffixing.
         bool state = d->propertyMap["label"].setValue(newLabel);
         if(state) {
             updatePropertyGroup();

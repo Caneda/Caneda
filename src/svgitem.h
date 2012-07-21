@@ -66,6 +66,7 @@ namespace Caneda
         QRectF boundingRect(const QString& svg_id) const;
 
         void paint(QPainter *painter, const QString& svg_id);
+        QPixmap renderedPixmap(QString component, QString symbol);
 
     private:
         SvgPainter(QObject *parent = 0);

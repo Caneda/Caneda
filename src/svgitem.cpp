@@ -154,6 +154,29 @@ namespace Caneda
     }
 
     /*!
+     * \brief Returns the component rendered to pixmap.
+     *
+     * \param component Component to be rendered.
+     * \param symbol Symbol to be rendered.
+     */
+    QPixmap SvgPainter::renderedPixmap(QString component, QString symbol)
+    {
+        QString svgId = component + '/' + symbol;
+        QRectF rect =  boundingRect(svgId);
+        QPixmap pix;
+
+        if(!QPixmapCache::find(svgId, pix)) {
+            pix = QPixmap(rect.toRect().size());
+            pix.fill(Qt::transparent);
+            QPainter painter(&pix);
+            painter.setWindow(rect.toRect());
+            paint(&painter, svgId);
+        }
+
+        return pix;
+    }
+
+    /*!
      * \brief Returns the default svg painter object, shared by default graphicsscenes
      */
     SvgPainter* SvgPainter::instance()

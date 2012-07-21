@@ -111,8 +111,10 @@ namespace Caneda
 
         QList<ComponentDataPtr> components = libItem->components().values();
         foreach(const ComponentDataPtr data, components) {
-            new CategoryItem(data->name, data->filename,
-                    libItem->renderedPixmap(data->name), false, libRoot);
+            SvgPainter *svgPainter = SvgPainter::instance();
+            QPixmap pixmap = svgPainter->renderedPixmap(data->name,
+                                                        data->propertyMap["symbol"].value().toString());
+            new CategoryItem(data->name, data->filename, pixmap, false, libRoot);
         }
         reset();
     }
