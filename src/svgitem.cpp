@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -28,33 +28,6 @@ namespace Caneda
 {
     /*
     ##########################################################################
-    #                          SvgItemData methods                           #
-    ##########################################################################
-    */
-
-    //! \brief Constructs an SvgItemData with raw svg content.
-    SvgItemData::SvgItemData(const QByteArray& _content) :
-        content(_content),
-        renderer(content)
-    {
-        Q_ASSERT(renderer.isValid());
-        Q_ASSERT(!content.isEmpty());
-    }
-
-    //! \brief Returns the bounding rect of the svg element.
-    QRectF SvgItemData::boundingRect() const
-    {
-        QRectF viewbox;
-        viewbox = renderer.viewBox();
-
-        if(viewbox.isNull()) {
-            return renderer.boundsOnElement("svg");
-        }
-        return viewbox;
-    }
-
-    /*
-    ##########################################################################
     #                          SvgPainter methods                            #
     ##########################################################################
     */
@@ -69,7 +42,7 @@ namespace Caneda
      */
     SvgPainter::~SvgPainter()
     {
-        QHash<QString, SvgItemData*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
+        QHash<QString, QSvgRenderer*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
         while(it != end) {
             delete it.value();
             it.value() = 0;
@@ -85,26 +58,28 @@ namespace Caneda
      */
     void SvgPainter::registerSvg(const QString& svg_id, const QByteArray& svg)
     {
-        Q_ASSERT(!svg_id.isEmpty());
         if(isSvgRegistered(svg_id)) {
             return;
         }
 
-        m_dataHash[svg_id] = new SvgItemData(svg);
+        m_dataHash[svg_id] = new QSvgRenderer(svg);
     }
 
-    //! \brief Returns QSvgRenderer corresponding to id \a svg_id.
-    QSvgRenderer* SvgPainter::rendererFor(const QString& svg_id) const
+    /*!
+     * \brief Returns the registered status of svg_id.
+     *
+     * True if the svg_id data was previously registered,
+     * false otherwise.
+     */
+    bool SvgPainter::isSvgRegistered(const QString& svg_id) const
     {
-        Q_ASSERT(isSvgRegistered(svg_id));
-        return &(m_dataHash[svg_id]->renderer);
+        return m_dataHash.contains(svg_id);
     }
 
-    //! \brief Returns bound rect corresponding to id \a svg_id.
+    //! \brief Returns the bounding rect corresponding to svg_id.
     QRectF SvgPainter::boundingRect(const QString& svg_id) const
     {
-        Q_ASSERT(isSvgRegistered(svg_id));
-        return m_dataHash[svg_id]->boundingRect();
+        return m_dataHash[svg_id]->viewBox();
     }
 
     /*!
@@ -115,19 +90,18 @@ namespace Caneda
      */
     void SvgPainter::paint(QPainter *painter, const QString& svg_id)
     {
-        Q_ASSERT(isSvgRegistered(svg_id));
-        SvgItemData *data = m_dataHash[svg_id];
+        QSvgRenderer *data = m_dataHash[svg_id];
         QMatrix m = painter->worldMatrix();
-        QRect deviceRect = m.mapRect(data->boundingRect()).toRect();
+        QRect deviceRect = m.mapRect(boundingRect(svg_id)).toRect();
 
         // If there is transformation render without cache.
         if(painter->worldTransform().isScaling()) {
-            data->renderer.render(painter, data->boundingRect());
+            data->render(painter, boundingRect(svg_id));
             return;
         }
 
         QPixmap pix;
-        QPointF viewPoint = m.mapRect(data->boundingRect()).topLeft();
+        QPointF viewPoint = m.mapRect(boundingRect(svg_id)).topLeft();
         QPointF viewOrigo = m.map(QPointF(0, 0));
 
         if(!QPixmapCache::find(svg_id, pix)) {
@@ -140,7 +114,7 @@ namespace Caneda
             p.setWorldMatrix(m, true);
             p.translate(m.inverted().map(QPointF(0, 0)));
 
-            data->renderer.render(&p, data->boundingRect());
+            data->render(&p, boundingRect(svg_id));
 
             p.end();
             QPixmapCache::insert(svg_id,  pix);

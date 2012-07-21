@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -26,30 +26,13 @@
 namespace Caneda
 {
     /*!
-     * \brief This class packs some information needed by svg items which are
-     *        shared by many items.
-     */
-    class SvgItemData
-    {
-    public:
-        SvgItemData(const QByteArray& _content);
-        QRectF boundingRect() const;
-
-    private:
-        friend class SvgPainter;
-
-        QByteArray content; //!< Represents raw svg content.
-        QSvgRenderer renderer; //!< Represents svg renderer which renders svg.
-    };
-
-    /*!
-     * \brief A class used to take care of rendering svg.
+     * \brief A class used to take care of rendering components.
      *
-     * This class renders a svg, given the svg id. The svg to be rendered should
-     * be first registered with the instance of this class. This class also
-     * supports modifying style of svg using css.
-     *
-     * \sa registerSvg()
+     * This class renders a component, given the symbol id. The component to be
+     * rendered should be first registered with the instance of this class. This
+     * way, a cache of components is created an data needed for painting components
+     * is created only once (independently of the number of components used by the
+     * user in the final schematic).
      */
     struct SvgPainter : public QObject
     {
@@ -58,11 +41,8 @@ namespace Caneda
         ~SvgPainter();
 
         void registerSvg(const QString& svg_id, const QByteArray& content);
-        bool isSvgRegistered(const QString& svg_id) const {
-            return m_dataHash.contains(svg_id);
-        }
+        bool isSvgRegistered(const QString& svg_id) const;
 
-        QSvgRenderer *rendererFor(const QString& svg_id) const;
         QRectF boundingRect(const QString& svg_id) const;
 
         void paint(QPainter *painter, const QString& svg_id);
@@ -71,7 +51,8 @@ namespace Caneda
     private:
         SvgPainter(QObject *parent = 0);
 
-        QHash<QString, SvgItemData*> m_dataHash; //!< Hash table to hold svg data
+        //! Hash table to hold Svg renderer (wich has raw svg content cached).
+        QHash<QString, QSvgRenderer*> m_dataHash;
     };
 
 } // namespace Caneda
