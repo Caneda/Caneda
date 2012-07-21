@@ -34,7 +34,7 @@
 namespace Caneda
 {
     /*!
-     * \brief Draw an hightlight rectangle arround an item
+     * \brief Draw an hightlight rectangle around an item
      *
      * \param painter painter where the item is highlighted
      * \param rect    The rectangular area to be drawn
