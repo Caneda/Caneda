@@ -89,61 +89,46 @@ namespace Caneda
      */
     void ComponentsCache::paint(QPainter *painter, const QString& symbol_id)
     {
-        QSvgRenderer *data = m_dataHash[symbol_id];
-        QMatrix m = painter->worldMatrix();
-        QRect deviceRect = m.mapRect(boundingRect(symbol_id)).toRect();
+        QRect deviceRect = boundingRect(symbol_id).toRect();
 
         // In the case of zooming, the paint is performed without the pixmap cache.
         if(painter->worldTransform().isScaling()) {
+            QSvgRenderer *data = m_dataHash[symbol_id];
             data->render(painter, boundingRect(symbol_id));
             return;
         }
 
-        QPixmap pix;
-        QPointF viewPoint = m.mapRect(boundingRect(symbol_id)).topLeft();
-        QPointF viewOrigen = m.map(QPointF(0, 0));
-
-        if(!QPixmapCache::find(symbol_id, pix)) {
-            pix = QPixmap(deviceRect.size());
-            pix.fill(Qt::transparent);
-
-            QPainter p(&pix);
-            QPointF offset = viewOrigen - viewPoint;
-            p.translate(offset);
-            p.setWorldMatrix(m, true);
-            p.translate(m.inverted().map(QPointF(0, 0)));
-
-            data->render(&p, boundingRect(symbol_id));
-
-            p.end();
-            QPixmapCache::insert(symbol_id,  pix);
-        }
-
-        const QTransform xformSave = painter->transform();
-
-        painter->setWorldMatrix(QMatrix());
-        painter->drawPixmap(viewPoint, pix);
-        painter->setTransform(xformSave);
+        // Else, a pixmap cached is used.
+        QPixmap pix = pixmapCache(symbol_id);
+        painter->drawPixmap(deviceRect, pix);
     }
 
     /*!
-     * \brief Returns the component rendered to pixmap.
+     * \brief Returns the cached pixmap of a component.
      *
-     * \param component Component to be rendered.
-     * \param symbol Symbol to be rendered.
+     * \param symbol_id Symbol id of the component to be rendered.
      */
-    QPixmap ComponentsCache::renderedPixmap(QString component, QString symbol)
+    const QPixmap ComponentsCache::pixmapCache(const QString& symbol_id)
     {
-        QString symbol_id = component + '/' + symbol;
-        QRectF rect =  boundingRect(symbol_id);
+        QRect rect =  boundingRect(symbol_id).toRect();
         QPixmap pix;
 
         if(!QPixmapCache::find(symbol_id, pix)) {
-            pix = QPixmap(rect.toRect().size());
+            pix = QPixmap(rect.size());
             pix.fill(Qt::transparent);
+
             QPainter painter(&pix);
-            painter.setWindow(rect.toRect());
-            paint(&painter, symbol_id);
+
+            QPointF viewPoint = boundingRect(symbol_id).topLeft();
+            QPointF viewOrigen = QPointF(0, 0);
+            QPointF offset = viewOrigen - viewPoint;
+            painter.translate(offset);
+
+            QSvgRenderer *data = m_dataHash[symbol_id];
+            data->render(&painter, boundingRect(symbol_id));
+
+            painter.end();
+            QPixmapCache::insert(symbol_id,  pix);
         }
 
         return pix;

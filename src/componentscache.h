@@ -46,7 +46,7 @@ namespace Caneda
         QRectF boundingRect(const QString& symbol_id) const;
 
         void paint(QPainter *painter, const QString& symbol_id);
-        QPixmap renderedPixmap(QString component, QString symbol);
+        const QPixmap pixmapCache(const QString &symbol_id);
 
     private:
         ComponentsCache(QObject *parent = 0);
