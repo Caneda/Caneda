@@ -36,6 +36,7 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
@@ -163,13 +164,9 @@ namespace Caneda
         spinUndoNum->setMinimum(0);
         spinUndoNum->setMaximum(200);
 
-        editLibrary = new QLineEdit;
-        editLibrary->setText(settings->currentValue("sidebarLibrary").toString());
-
         QGroupBox *misc = new QGroupBox(tr("Misc"), this);
         QFormLayout *miscLayout = new QFormLayout(misc);
         miscLayout->addRow(tr("Maximum undo operations:"), spinUndoNum);
-        miscLayout->addRow(tr("Components library:"), editLibrary);
 
 
         //Finally we set the general layout of all groups *************************
@@ -316,15 +313,6 @@ namespace Caneda
             //TODO: Also update all undostacks
         }
 
-        const QString currentLibrary = settings->currentValue("sidebarLibrary").toString();
-        QString newLibrary = editLibrary->text();
-        if (currentLibrary != newLibrary) {
-            if (newLibrary.endsWith(QDir::separator()) == false) {
-                newLibrary.append(QDir::separator());
-            }
-            settings->setCurrentValue("sidebarLibrary", newLibrary);
-        }
-
         QSettings qSettings;
         settings->save(qSettings);
 
@@ -344,6 +332,99 @@ namespace Caneda
         return(tr("General", "configuration page title"));
     }
 
+    //*!**************************************************
+    // Libraries configuration pages
+    //*!**************************************************
+
+    /*!
+     * Constructor
+     * @param QWidget *parent The parent of the dialog.
+     */
+    LibrariesConfigurationPage::LibrariesConfigurationPage(QWidget *parent) :
+        SettingsPage(parent)
+    {
+        Settings *settings = Settings::instance();
+
+        //First we set the different options *************************************
+        libraryList = new QListWidget(this);
+        addLibrary = new QPushButton(tr("Add library..."));
+        removeLibrary = new QPushButton(tr("Remove library"));
+        connect(addLibrary, SIGNAL(clicked()), SLOT(slotAddLibrary()));
+        connect(removeLibrary, SIGNAL(clicked()), SLOT(slotRemoveLibrary()));
+
+        QGroupBox *currentLibraries = new QGroupBox(tr("Current Libraries"), this);
+        QHBoxLayout *libraryButtons = new QHBoxLayout();
+        libraryButtons->addWidget(addLibrary);
+        libraryButtons->addWidget(removeLibrary);
+        QVBoxLayout *currentLibrariesLayout = new QVBoxLayout(currentLibraries);
+        currentLibrariesLayout->addWidget(libraryList);
+        currentLibrariesLayout->addLayout(libraryButtons);
+
+        editLibrary = new QLineEdit;
+        editLibrary->setText(settings->currentValue("sidebarLibrary").toString());
+
+        QGroupBox *oldConfig = new QGroupBox(tr("Old Config"), this);
+        QFormLayout *oldConfigLayout = new QFormLayout(oldConfig);
+        oldConfigLayout->addRow(tr("Components library:"), editLibrary);
+
+
+        //Finally we set the general layout of all groups *************************
+        QVBoxLayout *vlayout1 = new QVBoxLayout();
+        QLabel *title_label_ = new QLabel(title());
+        vlayout1->addWidget(title_label_);
+
+        QFrame *horiz_line_ = new QFrame();
+        horiz_line_->setFrameShape(QFrame::HLine);
+        vlayout1->addWidget(horiz_line_);
+
+        vlayout1->addWidget(currentLibraries);
+        vlayout1->addWidget(oldConfig);
+
+        vlayout1->addStretch();
+
+        setLayout(vlayout1);
+    }
+
+    //! Destructor
+    LibrariesConfigurationPage::~LibrariesConfigurationPage()
+    {
+    }
+
+    void LibrariesConfigurationPage::slotAddLibrary()
+    {
+    }
+
+    void LibrariesConfigurationPage::slotRemoveLibrary()
+    {
+    }
+
+    //! Applies the configuration of this page
+    void LibrariesConfigurationPage::applyConf()
+    {
+        Settings *settings = Settings::instance();
+
+        const QString currentLibrary = settings->currentValue("sidebarLibrary").toString();
+        QString newLibrary = editLibrary->text();
+        if (currentLibrary != newLibrary) {
+            if (newLibrary.endsWith(QDir::separator()) == false) {
+                newLibrary.append(QDir::separator());
+            }
+            settings->setCurrentValue("sidebarLibrary", newLibrary);
+        }
+
+        QSettings qSettings;
+        settings->save(qSettings);
+    }
+
+    //! @return Icon of this page
+    QIcon LibrariesConfigurationPage::icon() const {
+        return(Caneda::icon("library"));
+    }
+
+    //! @return Title of this page
+    QString LibrariesConfigurationPage::title() const {
+        return(tr("Libraries", "libraries page title"));
+    }
 
     //*!**************************************************
     // Simulation configuration pages

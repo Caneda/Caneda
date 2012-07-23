@@ -38,7 +38,6 @@
 
 #include "dialogs/aboutdialog.h"
 #include "dialogs/filenewdialog.h"
-#include "dialogs/librarymanager.h"
 #include "dialogs/projectfileopendialog.h"
 #include "dialogs/printdialog.h"
 #include "dialogs/savedocumentsdialog.h"
@@ -548,14 +547,8 @@ namespace Caneda
         action->setWhatsThis(tr("Attenuator synthesis\n\nStarts attenuator calculation program"));
         connect(action, SIGNAL(triggered()), SLOT(slotCallAtt()));
 
-        action = am->createAction("callLib", Caneda::icon("library"), tr("Library manager"));
-        action->setShortcut(CTRL+Key_5);
-        action->setStatusTip(tr("Opens library manager"));
-        action->setWhatsThis(tr("Library Manager\n\nOpens library manager dialog"));
-        connect(action, SIGNAL(triggered()), SLOT(slotCallLibrary()));
-
         action = am->createAction("importData",  tr("&Import Data..."));
-        action->setShortcut(CTRL+Key_6);
+        action->setShortcut(CTRL+Key_5);
         action->setStatusTip(tr("Convert file to Caneda data file"));
         action->setWhatsThis(tr("Import Data\n\nConvert data file to Caneda data file"));
         connect(action, SIGNAL(triggered()), SLOT(slotImportData()));
@@ -853,7 +846,6 @@ namespace Caneda
 
         toolMenu->addSeparator();
 
-        toolMenu->addAction(action("callLib"));
         toolMenu->addAction(action("importData"));
 
         toolMenu->addSeparator();
@@ -1178,6 +1170,8 @@ namespace Caneda
         wantedPages << page;
         page = new HdlConfigurationPage(this);
         wantedPages << page;
+        page = new LibrariesConfigurationPage(this);
+        wantedPages << page;
         page = new LayoutConfigurationPage(this);
         wantedPages << page;
         page = new SimulationConfigurationPage(this);
@@ -1441,15 +1435,6 @@ namespace Caneda
         setNormalAction();
 
         QPointer<Attenuator> p = new Attenuator(this);
-        p->exec();
-        delete p;
-    }
-
-    void MainWindow::slotCallLibrary()
-    {
-        setNormalAction();
-
-        QPointer<LibraryManager> p = new LibraryManager(this);
         p->exec();
         delete p;
     }

@@ -28,6 +28,7 @@ class QDateEdit;
 class QFrame;
 class QLabel;
 class QLineEdit;
+class QListWidget;
 class QSpinBox;
 
 namespace Caneda
@@ -81,10 +82,35 @@ namespace Caneda
         QFrame *horiz_line_;
 
         QCheckBox *checkShowGrid;
-        QLineEdit *editLibrary;
         QFont font;
         QPushButton *buttonFont, *buttonForeground, *buttonBackground, *buttonLine, *buttonSelection;
         QSpinBox *spinUndoNum, *spinIcons, *spinWidth;
+    };
+
+    //! This class represents the libraries configuration page.
+    class LibrariesConfigurationPage : public SettingsPage
+    {
+        Q_OBJECT
+
+    public:
+        LibrariesConfigurationPage(QWidget *parent = 0);
+        virtual ~LibrariesConfigurationPage();
+
+    private Q_SLOTS:
+        void slotAddLibrary();
+        void slotRemoveLibrary();
+
+    public:
+        void applyConf();
+        QString title() const;
+        QIcon icon() const;
+
+        QLabel *title_label_;
+        QFrame *horiz_line_;
+
+        QLineEdit *editLibrary;
+        QListWidget *libraryList;
+        QPushButton *addLibrary, *removeLibrary;
     };
 
     //! This class represents the simulation configuration page.

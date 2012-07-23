@@ -101,7 +101,6 @@ namespace Caneda
         void slotCallLine();
         void slotCallMatch();
         void slotCallAtt();
-        void slotCallLibrary();
         void slotImportData();
 
         void openSimulation();
