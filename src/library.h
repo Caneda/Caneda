@@ -97,12 +97,12 @@ namespace Caneda
      * This class is singleton class and its only static instance returned by
      * \a instance is to be used.
      */
-    class LibraryLoader : public QObject
+    class LibraryManager : public QObject
     {
         Q_OBJECT
     public:
-        static LibraryLoader* instance();
-        ~LibraryLoader();
+        static LibraryManager* instance();
+        ~LibraryManager();
 
         Component* newComponent(QString componentName,
                                 CGraphicsScene *scene,
@@ -128,7 +128,7 @@ namespace Caneda
         void basicLibrariesLoaded();
 
     private:
-        LibraryLoader(QObject *parent = 0);
+        LibraryManager(QObject *parent = 0);
 
         //! Hash table to hold libraries
         LibraryHash m_libraryHash;

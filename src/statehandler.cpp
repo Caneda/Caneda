@@ -54,7 +54,7 @@ namespace Caneda
         }
 
         void updateToolbarInsertibles() {
-            LibraryLoader *loader = LibraryLoader::instance();
+            LibraryManager *loader = LibraryManager::instance();
             toolbarInsertibles.insert("insGround",
                     loader->newComponent("Ground", 0, "Passive"));
         }
@@ -107,7 +107,7 @@ namespace Caneda
     {
         d = new StateHandlerPrivate;
 
-        LibraryLoader *loader = LibraryLoader::instance();
+        LibraryManager *loader = LibraryManager::instance();
         connect(loader, SIGNAL(basicLibrariesLoaded()), this, SLOT(slotUpdateToolbarInsertibles()));
     }
 
@@ -194,7 +194,7 @@ namespace Caneda
         }
         else {
             d->clearInsertibles();
-            LibraryLoader *libLoader = LibraryLoader::instance();
+            LibraryManager *libLoader = LibraryManager::instance();
             CGraphicsItem *qItem = libLoader->newComponent(item, 0, category);
             if (!qItem) {
                 slotSetNormalAction();

@@ -248,16 +248,16 @@ namespace Caneda
     //**********************Library Loader*************************
     //*************************************************************
     //! Constructor
-    LibraryLoader::LibraryLoader(QObject *parent) : QObject(parent)
+    LibraryManager::LibraryManager(QObject *parent) : QObject(parent)
     {
     }
 
     //! \brief Returns default instance of library.
-    LibraryLoader* LibraryLoader::instance()
+    LibraryManager* LibraryManager::instance()
     {
-        static LibraryLoader *instance = 0;
+        static LibraryManager *instance = 0;
         if (!instance) {
-            instance = new LibraryLoader(SingletonOwner::instance());
+            instance = new LibraryManager(SingletonOwner::instance());
         }
         return instance;
     }
@@ -265,7 +265,7 @@ namespace Caneda
     /*! Destructor.
      *  \brief Deletes the data belonging to this object.
      */
-    LibraryLoader::~LibraryLoader()
+    LibraryManager::~LibraryManager()
     {
         QHash<QString, QSvgRenderer*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
         while(it != end) {
@@ -284,7 +284,7 @@ namespace Caneda
      *  it searches for all libraries for component and returns first match.
      * \return Component on success and null pointer on failure.
      */
-    Component* LibraryLoader::newComponent(QString componentName, CGraphicsScene *scene,
+    Component* LibraryManager::newComponent(QString componentName, CGraphicsScene *scene,
             QString library)
     {
         ComponentDataPtr data;
@@ -315,7 +315,7 @@ namespace Caneda
     }
 
     //! \brief Create library indicated by path \a libPath.
-    bool LibraryLoader::newLibrary(const QString& libPath)
+    bool LibraryManager::newLibrary(const QString& libPath)
     {
         // Go to base dir
         QString libParentPath = QFileInfo(libPath).dir().absolutePath();
@@ -333,7 +333,7 @@ namespace Caneda
     }
 
     //! \brief Load library indicated by path \a libPath.
-    bool LibraryLoader::load(const QString& libPath)
+    bool LibraryManager::load(const QString& libPath)
     {
         // Open file
         QFile file(libPath);
@@ -407,7 +407,7 @@ namespace Caneda
      * \brief Load a library tree
      * \todo Implement a true loader
      */
-    bool LibraryLoader::loadtree(const QString& libpathtree)
+    bool LibraryManager::loadtree(const QString& libpathtree)
     {
         bool status = true;
 
@@ -426,7 +426,7 @@ namespace Caneda
      * \brief Unloads given library freeing memory pool.
      * \sa Library::~Library()
      */
-    bool LibraryLoader::unload(const QString& libName)
+    bool LibraryManager::unload(const QString& libName)
     {
         if(m_libraryHash.contains(libName)) {
             m_libraryHash.remove(libName);
@@ -442,7 +442,7 @@ namespace Caneda
      * \param str The library's name.
      * \return Library on success and null pointer on failure.
      */
-    Library* LibraryLoader::library(const QString& str) const
+    Library* LibraryManager::library(const QString& str) const
     {
         if(!m_libraryHash.contains(str)) {
             return 0;
@@ -457,7 +457,7 @@ namespace Caneda
      * Registering is required for rendering any component with the instance of this
      * class. If the symbol_id is already registered does nothing.
      */
-    void LibraryLoader::registerComponent(const QString& symbol_id, const QByteArray& svg)
+    void LibraryManager::registerComponent(const QString& symbol_id, const QByteArray& svg)
     {
         if(isComponentRegistered(symbol_id)) {
             return;
@@ -471,13 +471,13 @@ namespace Caneda
      *
      * True if the symbol_id data was previously registered, false otherwise.
      */
-    bool LibraryLoader::isComponentRegistered(const QString& symbol_id) const
+    bool LibraryManager::isComponentRegistered(const QString& symbol_id) const
     {
         return m_dataHash.contains(symbol_id);
     }
 
     //! \brief Returns the symbol of a component corresponding to symbol_id.
-    QSvgRenderer* LibraryLoader::symbolCache(const QString &symbol_id)
+    QSvgRenderer* LibraryManager::symbolCache(const QString &symbol_id)
     {
         return m_dataHash[symbol_id];
     }
@@ -487,7 +487,7 @@ namespace Caneda
      *
      * \param symbol_id Symbol id of the component to be rendered.
      */
-    const QPixmap LibraryLoader::pixmapCache(const QString& symbol_id)
+    const QPixmap LibraryManager::pixmapCache(const QString& symbol_id)
     {
         QPixmap pix;
 

@@ -249,7 +249,7 @@ namespace Caneda
 
         Q_ASSERT(!compName.isEmpty());
 
-        retVal = LibraryLoader::instance()->newComponent(compName, scene, libName);
+        retVal = LibraryManager::instance()->newComponent(compName, scene, libName);
         if(retVal) {
             retVal->loadData(reader);
         }
@@ -330,7 +330,7 @@ namespace Caneda
             QWidget *w)
     {
         // Paint the component symbol
-        LibraryLoader *libraryManager = LibraryLoader::instance();
+        LibraryManager *libraryManager = LibraryManager::instance();
         QSvgRenderer *symbol = libraryManager->symbolCache(m_symbolId);
 
         if(painter->worldTransform().isScaling()) {
@@ -416,7 +416,7 @@ namespace Caneda
     void Component::updateBoundingRect()
     {
         // Get the bounding rect of the symbol
-        QSvgRenderer *symbol = LibraryLoader::instance()->symbolCache(m_symbolId);
+        QSvgRenderer *symbol = LibraryManager::instance()->symbolCache(m_symbolId);
         QRectF bound = symbol->viewBox();  // viewBox() = boundingRect
 
         // Get an adjusted rect for accomodating extra stuff like ports.
@@ -441,7 +441,7 @@ namespace Caneda
         Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
                 Caneda::transformers::defaultInstance()->componentsvg());
 
-        LibraryLoader *libraryManager = LibraryLoader::instance();
+        LibraryManager *libraryManager = LibraryManager::instance();
         QString symbolId = d.constData()->name + "/" + schName;
         libraryManager->registerComponent(symbolId, QXmlSvg.constData());
         if(QXmlSvg.hasError()) {

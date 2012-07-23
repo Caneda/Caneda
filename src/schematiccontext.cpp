@@ -282,7 +282,7 @@ namespace Caneda
                                                         << "Expect strange schematic symbols";
         }
 
-        LibraryLoader *library = LibraryLoader::instance();
+        LibraryManager *library = LibraryManager::instance();
 
         if(library->loadtree(libpath)) {
             qDebug() << "Succesfully loaded library!";

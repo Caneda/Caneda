@@ -89,7 +89,7 @@ namespace Caneda
      */
     void SidebarModel::plugLibrary(const QString& libraryName, const QString& category)
     {
-        const Library *libItem = LibraryLoader::instance()->library(libraryName);
+        const Library *libItem = LibraryManager::instance()->library(libraryName);
         if(!libItem) {
             return;
         }
@@ -111,7 +111,7 @@ namespace Caneda
 
         QList<ComponentDataPtr> components = libItem->components().values();
         foreach(const ComponentDataPtr data, components) {
-            LibraryLoader *manager = LibraryLoader::instance();
+            LibraryManager *manager = LibraryManager::instance();
             QPixmap pixmap = manager->pixmapCache(data->name + '/' +
                                                   data->propertyMap["symbol"].value().toString());
             new CategoryItem(data->name, data->filename, pixmap, false, libRoot);
@@ -127,7 +127,7 @@ namespace Caneda
      */
     void SidebarModel::unPlugLibrary(const QString& libraryName, const QString& category)
     {
-        const Library *libItem = LibraryLoader::instance()->library(libraryName);
+        const Library *libItem = LibraryManager::instance()->library(libraryName);
         if(!libItem) {
             return;
         }

@@ -104,7 +104,7 @@ namespace Caneda
         fileName = filePath.absolutePath() + "/" + fileInfo.fileName();
 
         //Then we create the library/project
-        LibraryLoader *library = LibraryLoader::instance();
+        LibraryManager *library = LibraryManager::instance();
         if(library->newLibrary(fileName)) {
             slotCloseProject();
             setCurrentLibrary(fileName);
@@ -127,7 +127,7 @@ namespace Caneda
             return;
         }
 
-        LibraryLoader *library = LibraryLoader::instance();
+        LibraryManager *library = LibraryManager::instance();
         if(library->load(fileName)) {
             slotCloseProject();
             setCurrentLibrary(fileName);
@@ -209,7 +209,7 @@ namespace Caneda
     {
         if(projectLibrary) {
             m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-            LibraryLoader *library = LibraryLoader::instance();
+            LibraryManager *library = LibraryManager::instance();
             library->unload(m_libraryName);
 
             projectLibrary = 0;

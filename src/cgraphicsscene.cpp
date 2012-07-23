@@ -1909,7 +1909,7 @@ namespace Caneda
             return Painting::fromName(name);
         }
 
-        return LibraryLoader::instance()->newComponent(name, 0, category);
+        return LibraryManager::instance()->newComponent(name, 0, category);
     }
 
     /*!
