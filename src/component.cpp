@@ -323,14 +323,26 @@ namespace Caneda
     }
 
     /*!
-     * \brief Paints the component, peforms sanity checks and takes
+     * \brief Paints a registered component, peforms sanity checks and takes
      * care of drawing the selection rectangle.
      */
     void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *w)
     {
         // Paint the component symbol
-        ComponentsCache::instance()->paint(painter, m_symbolId);
+        ComponentsCache *componentsCache = ComponentsCache::instance();
+        QSvgRenderer *symbol = componentsCache->symbolCache(m_symbolId);
+
+        if(painter->worldTransform().isScaling()) {
+            // If zooming, the paint is performed without the pixmap cache.
+            symbol->render(painter, symbol->viewBox());  // viewBox() = boundingRect
+        }
+        else {
+            // Else, a pixmap cached is used.
+            QPixmap pix = componentsCache->pixmapCache(m_symbolId);
+            painter->drawPixmap(symbol->viewBox(), pix);  // viewBox() = boundingRect
+        }
+
 
         // Paint the selection rectangle
         if(option->state & QStyle::State_Selected) {
@@ -404,8 +416,8 @@ namespace Caneda
     void Component::updateBoundingRect()
     {
         // Get the bounding rect of the symbol
-        ComponentsCache *painter = ComponentsCache::instance();
-        QRectF bound = painter->boundingRect(m_symbolId);
+        QSvgRenderer *symbol = ComponentsCache::instance()->symbolCache(m_symbolId);
+        QRectF bound = symbol->viewBox();  // viewBox() = boundingRect
 
         // Get an adjusted rect for accomodating extra stuff like ports.
         QRectF adjustedRect = adjustedBoundRect(bound);

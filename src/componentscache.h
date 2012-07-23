@@ -43,9 +43,7 @@ namespace Caneda
         void registerComponent(const QString& symbol_id, const QByteArray& content);
         bool isComponentRegistered(const QString& symbol_id) const;
 
-        QRectF boundingRect(const QString& symbol_id) const;
-
-        void paint(QPainter *painter, const QString& symbol_id);
+        QSvgRenderer* symbolCache(const QString &symbol_id);
         const QPixmap pixmapCache(const QString &symbol_id);
 
     private:

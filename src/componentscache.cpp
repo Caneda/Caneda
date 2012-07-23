@@ -38,7 +38,7 @@ namespace Caneda
     }
 
     /*! Destructor.
-     *  \brief Deletes the data belonging to this.
+     *  \brief Deletes the data belonging to this object.
      */
     ComponentsCache::~ComponentsCache()
     {
@@ -75,32 +75,10 @@ namespace Caneda
         return m_dataHash.contains(symbol_id);
     }
 
-    //! \brief Returns the bounding rect corresponding to symbol_id.
-    QRectF ComponentsCache::boundingRect(const QString& symbol_id) const
+    //! \brief Returns the symbol of a component corresponding to symbol_id.
+    QSvgRenderer *ComponentsCache::symbolCache(const QString &symbol_id)
     {
-        return m_dataHash[symbol_id]->viewBox();
-    }
-
-    /*!
-     * \brief This method paints (or renders) a registerd component using \a painter.
-     *
-     * \param painter Painter to be used to render the component.
-     * \param symbol_id Symbol id which should be rendered.
-     */
-    void ComponentsCache::paint(QPainter *painter, const QString& symbol_id)
-    {
-        QRect deviceRect = boundingRect(symbol_id).toRect();
-
-        // In the case of zooming, the paint is performed without the pixmap cache.
-        if(painter->worldTransform().isScaling()) {
-            QSvgRenderer *data = m_dataHash[symbol_id];
-            data->render(painter, boundingRect(symbol_id));
-            return;
-        }
-
-        // Else, a pixmap cached is used.
-        QPixmap pix = pixmapCache(symbol_id);
-        painter->drawPixmap(deviceRect, pix);
+        return m_dataHash[symbol_id];
     }
 
     /*!
@@ -110,25 +88,22 @@ namespace Caneda
      */
     const QPixmap ComponentsCache::pixmapCache(const QString& symbol_id)
     {
-        QRect rect =  boundingRect(symbol_id).toRect();
         QPixmap pix;
 
         if(!QPixmapCache::find(symbol_id, pix)) {
+            QSvgRenderer *data = m_dataHash[symbol_id];
+            QRect rect =  data->viewBox();
             pix = QPixmap(rect.size());
             pix.fill(Qt::transparent);
 
             QPainter painter(&pix);
 
-            QPointF viewPoint = boundingRect(symbol_id).topLeft();
-            QPointF viewOrigen = QPointF(0, 0);
-            QPointF offset = viewOrigen - viewPoint;
+            QPointF offset = -rect.topLeft(); // (0,0)-topLeft()
             painter.translate(offset);
 
-            QSvgRenderer *data = m_dataHash[symbol_id];
-            data->render(&painter, boundingRect(symbol_id));
+            data->render(&painter, rect);
 
-            painter.end();
-            QPixmapCache::insert(symbol_id,  pix);
+            QPixmapCache::insert(symbol_id, pix);
         }
 
         return pix;
