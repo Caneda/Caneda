@@ -25,6 +25,7 @@
 
 #include <QHash>
 #include <QObject>
+#include <QSvgRenderer>
 
 namespace Caneda
 {
@@ -82,7 +83,16 @@ namespace Caneda
     typedef QHash<QString, Library*> LibraryHash;
 
     /*!
-     * \brief This class acts as container for \a Library s
+     * \brief This class acts as container and manages libraries.
+     *
+     * This class acts as container and manages libraries. It also acts as
+     * a container for the different symbols loaded during library loading.
+     * To render a component, the symbol id must be given and a pointer to
+     * the symbol drawing is returned (paths, rectangles, circles, etc).
+     * The component to be rendered should be first registered with the
+     * instance of this class. A cache of components is created an data
+     * needed for painting components is created only once (independently
+     * of the number of components used by the user in the final schematic).
      *
      * This class is singleton class and its only static instance returned by
      * \a instance is to be used.
@@ -92,12 +102,13 @@ namespace Caneda
         Q_OBJECT
     public:
         static LibraryLoader* instance();
-        ~LibraryLoader() {}
+        ~LibraryLoader();
 
         Component* newComponent(QString componentName,
-                CGraphicsScene *scene,
-                QString library = QString());
+                                CGraphicsScene *scene,
+                                QString library = QString());
 
+        // Library management related methods
         bool newLibrary(const QString& libPath);
         bool load(const QString& libPath);
         bool loadtree(const QString& libpathtree);
@@ -105,12 +116,25 @@ namespace Caneda
 
         Library* library(const QString& libName) const;
 
+        // Symbol caching related methods
+        void registerComponent(const QString& symbol_id, const QByteArray& content);
+        bool isComponentRegistered(const QString& symbol_id) const;
+
+        QSvgRenderer* symbolCache(const QString &symbol_id);
+        const QPixmap pixmapCache(const QString &symbol_id);
+
+
     Q_SIGNALS:
         void basicLibrariesLoaded();
 
     private:
         LibraryLoader(QObject *parent = 0);
+
+        //! Hash table to hold libraries
         LibraryHash m_libraryHash;
+
+        //! Hash table to hold Svg renderer (wich has raw svg content cached).
+        QHash<QString, QSvgRenderer*> m_dataHash;
     };
 
 } // namespace Caneda

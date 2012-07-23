@@ -32,6 +32,8 @@
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPixmapCache>
 #include <QString>
 #include <QTextStream>
 
@@ -245,7 +247,6 @@ namespace Caneda
     //*************************************************************
     //**********************Library Loader*************************
     //*************************************************************
-
     //! Constructor
     LibraryLoader::LibraryLoader(QObject *parent) : QObject(parent)
     {
@@ -261,19 +262,17 @@ namespace Caneda
         return instance;
     }
 
-    /*!
-     * \brief Returns library item corresponding to name.
-     *
-     * \param str The library's name.
-     * \return Library on success and null pointer on failure.
+    /*! Destructor.
+     *  \brief Deletes the data belonging to this object.
      */
-    Library* LibraryLoader::library(const QString& str) const
+    LibraryLoader::~LibraryLoader()
     {
-        if(!m_libraryHash.contains(str)) {
-            return 0;
+        QHash<QString, QSvgRenderer*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
+        while(it != end) {
+            delete it.value();
+            it.value() = 0;
+            ++it;
         }
-
-        return m_libraryHash[str];
     }
 
     /*!
@@ -435,6 +434,80 @@ namespace Caneda
         }
 
         return false;
+    }
+
+    /*!
+     * \brief Returns library item corresponding to name.
+     *
+     * \param str The library's name.
+     * \return Library on success and null pointer on failure.
+     */
+    Library* LibraryLoader::library(const QString& str) const
+    {
+        if(!m_libraryHash.contains(str)) {
+            return 0;
+        }
+
+        return m_libraryHash[str];
+    }
+
+    /*!
+     * \brief Registers a component symbol with symbol_id in this instance.
+     *
+     * Registering is required for rendering any component with the instance of this
+     * class. If the symbol_id is already registered does nothing.
+     */
+    void LibraryLoader::registerComponent(const QString& symbol_id, const QByteArray& svg)
+    {
+        if(isComponentRegistered(symbol_id)) {
+            return;
+        }
+
+        m_dataHash[symbol_id] = new QSvgRenderer(svg);
+    }
+
+    /*!
+     * \brief Returns the registered status of symbol_id.
+     *
+     * True if the symbol_id data was previously registered, false otherwise.
+     */
+    bool LibraryLoader::isComponentRegistered(const QString& symbol_id) const
+    {
+        return m_dataHash.contains(symbol_id);
+    }
+
+    //! \brief Returns the symbol of a component corresponding to symbol_id.
+    QSvgRenderer* LibraryLoader::symbolCache(const QString &symbol_id)
+    {
+        return m_dataHash[symbol_id];
+    }
+
+    /*!
+     * \brief Returns the cached pixmap of a component.
+     *
+     * \param symbol_id Symbol id of the component to be rendered.
+     */
+    const QPixmap LibraryLoader::pixmapCache(const QString& symbol_id)
+    {
+        QPixmap pix;
+
+        if(!QPixmapCache::find(symbol_id, pix)) {
+            QSvgRenderer *data = m_dataHash[symbol_id];
+            QRect rect =  data->viewBox();
+            pix = QPixmap(rect.size());
+            pix.fill(Qt::transparent);
+
+            QPainter painter(&pix);
+
+            QPointF offset = -rect.topLeft(); // (0,0)-topLeft()
+            painter.translate(offset);
+
+            data->render(&painter, rect);
+
+            QPixmapCache::insert(symbol_id, pix);
+        }
+
+        return pix;
     }
 
 } // namespace Caneda

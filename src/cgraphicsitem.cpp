@@ -184,11 +184,6 @@ namespace Caneda
         }
     }
 
-    //! Destructor
-    CGraphicsItem::~CGraphicsItem()
-    {
-    }
-
     /*!
      * \brief Check for connections and connect the coinciding ports.
      *

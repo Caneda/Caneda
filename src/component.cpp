@@ -166,7 +166,7 @@ namespace Caneda
      * This method sets the symbol property's value and then takes care
      * of geometry changes as well.
      * The symbol corresponding to m_symbolId should already be registered with
-     * ComponentsCache using ComponentsCache::registerComponent().
+     * LibraryManager using LibraryManager::registerComponent().
      *
      * \param newSymbol The symbol to be set now
      * \return True on success, and false on failure.
@@ -330,8 +330,8 @@ namespace Caneda
             QWidget *w)
     {
         // Paint the component symbol
-        ComponentsCache *componentsCache = ComponentsCache::instance();
-        QSvgRenderer *symbol = componentsCache->symbolCache(m_symbolId);
+        LibraryLoader *libraryManager = LibraryLoader::instance();
+        QSvgRenderer *symbol = libraryManager->symbolCache(m_symbolId);
 
         if(painter->worldTransform().isScaling()) {
             // If zooming, the paint is performed without the pixmap cache.
@@ -339,7 +339,7 @@ namespace Caneda
         }
         else {
             // Else, a pixmap cached is used.
-            QPixmap pix = componentsCache->pixmapCache(m_symbolId);
+            QPixmap pix = libraryManager->pixmapCache(m_symbolId);
             painter->drawPixmap(symbol->viewBox(), pix);  // viewBox() = boundingRect
         }
 
@@ -416,7 +416,7 @@ namespace Caneda
     void Component::updateBoundingRect()
     {
         // Get the bounding rect of the symbol
-        QSvgRenderer *symbol = ComponentsCache::instance()->symbolCache(m_symbolId);
+        QSvgRenderer *symbol = LibraryLoader::instance()->symbolCache(m_symbolId);
         QRectF bound = symbol->viewBox();  // viewBox() = boundingRect
 
         // Get an adjusted rect for accomodating extra stuff like ports.
@@ -441,9 +441,9 @@ namespace Caneda
         Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
                 Caneda::transformers::defaultInstance()->componentsvg());
 
-        ComponentsCache *componentsCache = ComponentsCache::instance();
+        LibraryLoader *libraryManager = LibraryLoader::instance();
         QString symbolId = d.constData()->name + "/" + schName;
-        componentsCache->registerComponent(symbolId, QXmlSvg.constData());
+        libraryManager->registerComponent(symbolId, QXmlSvg.constData());
         if(QXmlSvg.hasError()) {
             qWarning() << "Could not read svg file" << schName << ": " << QXmlSvg.errorString();
             return false;

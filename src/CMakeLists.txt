@@ -15,7 +15,7 @@ ADD_SUBDIRECTORY( xmlutilities )
 SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   cgraphicsitem.cpp cgraphicsscene.cpp sidebarmodel.cpp
   global.cpp units.cpp main.cpp mainwindow.cpp library.cpp
-  cgraphicsview.cpp  undocommands.cpp component.cpp componentscache.cpp
+  cgraphicsview.cpp  undocommands.cpp component.cpp
   property.cpp propertyitem.cpp propertygroup.cpp  port.cpp node.cpp
   xmlschematic.cpp xmllayout.cpp xmlsymbol.cpp xmlsimulation.cpp
   folderbrowser.cpp settings.cpp

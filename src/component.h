@@ -22,7 +22,6 @@
 #define QCOMPONENT_H
 
 #include "cgraphicsitem.h"
-#include "componentscache.h"
 #include "property.h"
 
 namespace Caneda
