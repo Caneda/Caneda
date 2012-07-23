@@ -36,9 +36,6 @@
 #include <QSettings>
 #include <QStringList>
 
-#include "xmlutilities/transformers.h"
-#include "xmlutilities/validators.h"
-
 namespace Caneda
 {
     SchematicContext::SchematicContext(QObject *parent) : IContext(parent)
