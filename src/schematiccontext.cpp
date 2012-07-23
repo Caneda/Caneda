@@ -48,6 +48,17 @@ namespace Caneda
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
+        // Load schematic libraries
+        LibraryManager *libraryManager = LibraryManager::instance();
+        if(libraryManager->loadtree()) {
+            qDebug() << "Succesfully loaded libraries!";
+        }
+        else {
+            // Invalidate entry
+            qDebug() << "Error loading component libraries";
+            qDebug() << "Please set the appropriate libraries through Application settings and restart the application.";
+        }
+
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
                 QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
@@ -62,13 +73,10 @@ namespace Caneda
         paintingItems << qMakePair(QObject::tr("Text"),
                 QPixmap(Caneda::bitmapDirectory() + "text.svg"));
 
-        loadLibraries();
-
         m_sidebarBrowser->plugItem("Components", QPixmap(), "root");
         m_sidebarBrowser->plugLibrary("Passive", "Components");
         m_sidebarBrowser->plugLibrary("Active", "Components");
         m_sidebarBrowser->plugLibrary("Semiconductor", "Components");
-
         m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
@@ -243,58 +251,6 @@ namespace Caneda
     void SchematicContext::setNormalAction()
     {
         MainWindow::instance()->setNormalAction();
-    }
-
-    void SchematicContext::loadLibraries()
-    {
-        QSettings qSettings;
-
-        Settings *settings = Settings::instance();
-        settings->load(qSettings);
-
-        /* Load library database settings */
-        QString libpath = settings->currentValue("sidebarLibrary").toString();
-        if(QFileInfo(libpath).exists() == false) {
-            QMessageBox::warning(0, tr("Cannot load Components library in the sidebar"),
-                    tr("Please set the appropriate path to components library through Application settings and restart the application to load components in the sidebar"));
-            return;
-        }
-
-        /* Load validators */
-        Caneda::validators * validator = Caneda::validators::defaultInstance();
-        if(validator->load(libpath)) {
-            qDebug() << "Succesfully loaded validators!";
-        }
-        else {
-            //invalidate entry.
-            qWarning() << "MainWindow::loadSettings() : Could not load validators. "
-                                                        << "Expect crashing in case of incorrect xml file";
-        }
-
-        /* Load transformers */
-        Caneda::transformers * transformer = Caneda::transformers::defaultInstance();
-        if(transformer->load(libpath)) {
-            qDebug() << "Succesfully loaded transformers!";
-        }
-        else {
-            //invalidate entry.
-            qWarning() << "MainWindow::loadSettings() : Could not load XSLT transformers. "
-                                                        << "Expect strange schematic symbols";
-        }
-
-        LibraryManager *library = LibraryManager::instance();
-
-        if(library->loadtree(libpath)) {
-            qDebug() << "Succesfully loaded library!";
-        }
-        else {
-            //invalidate entry.
-            qWarning() << "MainWindow::loadSettings() : Entry is invalid. Run once more to set"
-                                                        << "the appropriate path.";
-            settings->setCurrentValue("sidebarLibrary",
-                    settings->defaultValue("sidebarLibrary").toString());
-            return;
-        }
     }
 
 } // namespace Caneda

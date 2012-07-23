@@ -66,23 +66,23 @@ namespace Caneda
     //! Constructor
     SidebarTextBrowser::SidebarTextBrowser(QWidget *parent) : QWidget(parent)
     {
-        QVBoxLayout *layout = new QVBoxLayout(this);
-
-        m_filterEdit = new CLineEdit();
-        layout->addWidget(m_filterEdit);
-
         QSettings qSettings;
 
         Settings *settings = Settings::instance();
         settings->load(qSettings);
 
-        /* Load library database settings */
-        QString libpath = settings->currentValue("sidebarLibrary").toString() +
-                          "/components/hdl";
+        // Load library database settings
+        QString libpath = settings->currentValue("libraries/hdl").toString();
         if(QFileInfo(libpath).exists() == false) {
             qDebug() << "Error loading text libraries";
             return;
         }
+
+        // Fill the treeview and proxy models
+        QVBoxLayout *layout = new QVBoxLayout(this);
+
+        m_filterEdit = new CLineEdit();
+        layout->addWidget(m_filterEdit);
 
         m_fileModel = new QFileSystemModel;
         QModelIndex rootModelIndex = m_fileModel->setRootPath(libpath);

@@ -74,8 +74,6 @@ namespace Caneda
         void alignElements(Qt::Alignment alignment);
         void setNormalAction();
 
-        void loadLibraries();
-
         //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case schematic actions become irrelevant.
         QList<Action*> m_normalActions;

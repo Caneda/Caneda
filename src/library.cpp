@@ -23,6 +23,7 @@
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "singletonowner.h"
+#include "settings.h"
 
 #include "xmlutilities/xmlutilities.h"
 #include "xmlutilities/validators.h"
@@ -405,15 +406,17 @@ namespace Caneda
 
     /*!
      * \brief Load a library tree
-     * \todo Implement a true loader
      */
-    bool LibraryManager::loadtree(const QString& libpathtree)
+    bool LibraryManager::loadtree()
     {
         bool status = true;
 
-        status = status && load(libpathtree + "/components/basic/passive.xpro");
-        status = status && load(libpathtree + "/components/basic/active.xpro");
-        status = status && load(libpathtree + "/components/basic/semiconductor.xpro");
+        Settings *settings = Settings::instance();
+        QStringList libraries;
+        libraries << settings->currentValue("libraries/schematic").toStringList();
+        foreach (const QString &str, libraries) {
+            status = status && load(str);
+        }
 
         if(status) {
             emit basicLibrariesLoaded();

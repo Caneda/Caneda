@@ -29,6 +29,7 @@
 #include <QCheckBox>
 #include <QDateEdit>
 #include <QDir>
+#include <QFileDialog>
 #include <QFontDialog>
 #include <QFormLayout>
 #include <QFrame>
@@ -345,14 +346,21 @@ namespace Caneda
     {
         Settings *settings = Settings::instance();
 
-        //First we set the different options *************************************
+        // Set the schematic library options *************************************
         libraryList = new QListWidget(this);
+        QStringList libraries;
+        libraries << settings->currentValue("libraries/schematic").toStringList();
+        foreach (const QString &str, libraries) {
+            libraryList->addItem(str);
+        }
+        libraryList->sortItems(Qt::AscendingOrder);
+
         addLibrary = new QPushButton(tr("Add library..."));
         removeLibrary = new QPushButton(tr("Remove library"));
         connect(addLibrary, SIGNAL(clicked()), SLOT(slotAddLibrary()));
         connect(removeLibrary, SIGNAL(clicked()), SLOT(slotRemoveLibrary()));
 
-        QGroupBox *currentLibraries = new QGroupBox(tr("Current Libraries"), this);
+        QGroupBox *currentLibraries = new QGroupBox(tr("Schematic Libraries"), this);
         QHBoxLayout *libraryButtons = new QHBoxLayout();
         libraryButtons->addWidget(addLibrary);
         libraryButtons->addWidget(removeLibrary);
@@ -360,15 +368,32 @@ namespace Caneda
         currentLibrariesLayout->addWidget(libraryList);
         currentLibrariesLayout->addLayout(libraryButtons);
 
-        editLibrary = new QLineEdit;
-        editLibrary->setText(settings->currentValue("sidebarLibrary").toString());
 
-        QGroupBox *oldConfig = new QGroupBox(tr("Old Config"), this);
-        QFormLayout *oldConfigLayout = new QFormLayout(oldConfig);
-        oldConfigLayout->addRow(tr("Components library:"), editLibrary);
+        // Set the schematic library options *************************************
+        hdlLibraryList = new QListWidget(this);
+        QStringList hdlLibraries;
+        hdlLibraries << settings->currentValue("libraries/hdl").toStringList();
+        foreach (const QString &str, hdlLibraries) {
+            hdlLibraryList->addItem(str);
+        }
+        hdlLibraryList->sortItems(Qt::AscendingOrder);
 
+        addHdlLibrary = new QPushButton(tr("Add library..."));
+        removeHdlLibrary = new QPushButton(tr("Remove library"));
+        connect(addHdlLibrary, SIGNAL(clicked()), SLOT(slotAddHdlLibrary()));
+        connect(removeHdlLibrary, SIGNAL(clicked()), SLOT(slotRemoveHdlLibrary()));
+
+        QGroupBox *currentHdlLibraries = new QGroupBox(tr("Hdl Libraries"), this);
+        QHBoxLayout *hdlLibraryButtons = new QHBoxLayout();
+        hdlLibraryButtons->addWidget(addHdlLibrary);
+        hdlLibraryButtons->addWidget(removeHdlLibrary);
+        QVBoxLayout *currentHdlLibrariesLayout = new QVBoxLayout(currentHdlLibraries);
+        currentHdlLibrariesLayout->addWidget(hdlLibraryList);
+        currentHdlLibrariesLayout->addLayout(hdlLibraryButtons);
 
         //Finally we set the general layout of all groups *************************
+        QLabel *warningLabel = new QLabel(tr("Warning: libraries will be set upon program restart"));
+
         QVBoxLayout *vlayout1 = new QVBoxLayout();
         QLabel *title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);
@@ -378,7 +403,8 @@ namespace Caneda
         vlayout1->addWidget(horiz_line_);
 
         vlayout1->addWidget(currentLibraries);
-        vlayout1->addWidget(oldConfig);
+        vlayout1->addWidget(currentHdlLibraries);
+        vlayout1->addWidget(warningLabel);
 
         vlayout1->addStretch();
 
@@ -392,10 +418,34 @@ namespace Caneda
 
     void LibrariesConfigurationPage::slotAddLibrary()
     {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Select Library"),
+                                                        "", tr("Caneda Projects (*.xpro)"));
+        if(!fileName.isEmpty()) {
+            new QListWidgetItem(fileName, libraryList);
+        }
+
+        libraryList->sortItems(Qt::AscendingOrder);
     }
 
     void LibrariesConfigurationPage::slotRemoveLibrary()
     {
+        qDeleteAll(libraryList->selectedItems());
+    }
+
+    void LibrariesConfigurationPage::slotAddHdlLibrary()
+    {
+        QString dir = QFileDialog::getExistingDirectory(this, tr("Select Library"),
+                                                        "",  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        if(!dir.isEmpty()) {
+            new QListWidgetItem(dir, hdlLibraryList);
+        }
+
+        hdlLibraryList->sortItems(Qt::AscendingOrder);
+    }
+
+    void LibrariesConfigurationPage::slotRemoveHdlLibrary()
+    {
+        qDeleteAll(hdlLibraryList->selectedItems());
     }
 
     //! Applies the configuration of this page
@@ -403,13 +453,22 @@ namespace Caneda
     {
         Settings *settings = Settings::instance();
 
-        const QString currentLibrary = settings->currentValue("sidebarLibrary").toString();
-        QString newLibrary = editLibrary->text();
-        if (currentLibrary != newLibrary) {
-            if (newLibrary.endsWith(QDir::separator()) == false) {
-                newLibrary.append(QDir::separator());
-            }
-            settings->setCurrentValue("sidebarLibrary", newLibrary);
+        QStringList newLibraries;
+        for(int i=0; i<libraryList->count(); i++) {
+            newLibraries << libraryList->item(i)->text();
+        }
+        const QStringList currentLibraries = settings->currentValue("libraries/schematic").toStringList();
+        if (currentLibraries != newLibraries) {
+            settings->setCurrentValue("libraries/schematic", newLibraries);
+        }
+
+        QStringList newHdlLibraries;
+        for(int i=0; i<hdlLibraryList->count(); i++) {
+            newHdlLibraries << hdlLibraryList->item(i)->text();
+        }
+        const QStringList currentHdlLibraries = settings->currentValue("libraries/hdl").toStringList();
+        if (currentHdlLibraries != newHdlLibraries) {
+            settings->setCurrentValue("libraries/hdl", newHdlLibraries);
         }
 
         QSettings qSettings;

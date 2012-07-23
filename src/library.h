@@ -111,7 +111,7 @@ namespace Caneda
         // Library management related methods
         bool newLibrary(const QString& libPath);
         bool load(const QString& libPath);
-        bool loadtree(const QString& libpathtree);
+        bool loadtree();
         bool unload(const QString& libName);
 
         Library* library(const QString& libName) const;

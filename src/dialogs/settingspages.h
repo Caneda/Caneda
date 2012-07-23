@@ -99,6 +99,8 @@ namespace Caneda
     private Q_SLOTS:
         void slotAddLibrary();
         void slotRemoveLibrary();
+        void slotAddHdlLibrary();
+        void slotRemoveHdlLibrary();
 
     public:
         void applyConf();
@@ -108,9 +110,8 @@ namespace Caneda
         QLabel *title_label_;
         QFrame *horiz_line_;
 
-        QLineEdit *editLibrary;
-        QListWidget *libraryList;
-        QPushButton *addLibrary, *removeLibrary;
+        QListWidget *libraryList, *hdlLibraryList;
+        QPushButton *addLibrary, *removeLibrary, *addHdlLibrary, *removeHdlLibrary;
     };
 
     //! This class represents the simulation configuration page.
