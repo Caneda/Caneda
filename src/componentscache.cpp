@@ -93,7 +93,7 @@ namespace Caneda
         QMatrix m = painter->worldMatrix();
         QRect deviceRect = m.mapRect(boundingRect(symbol_id)).toRect();
 
-        // If there is transformation render without cache.
+        // In the case of zooming, the paint is performed without the pixmap cache.
         if(painter->worldTransform().isScaling()) {
             data->render(painter, boundingRect(symbol_id));
             return;
@@ -101,14 +101,14 @@ namespace Caneda
 
         QPixmap pix;
         QPointF viewPoint = m.mapRect(boundingRect(symbol_id)).topLeft();
-        QPointF viewOrigo = m.map(QPointF(0, 0));
+        QPointF viewOrigen = m.map(QPointF(0, 0));
 
         if(!QPixmapCache::find(symbol_id, pix)) {
             pix = QPixmap(deviceRect.size());
             pix.fill(Qt::transparent);
 
             QPainter p(&pix);
-            QPointF offset = viewOrigo - viewPoint;
+            QPointF offset = viewOrigen - viewPoint;
             p.translate(offset);
             p.setWorldMatrix(m, true);
             p.translate(m.inverted().map(QPointF(0, 0)));
