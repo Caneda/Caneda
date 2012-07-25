@@ -48,6 +48,19 @@ namespace Caneda
         // Load schematic libraries
         LibraryManager *libraryManager = LibraryManager::instance();
         if(libraryManager->loadLibraryTree()) {
+            // Plug the components root
+            m_sidebarBrowser->plugItem("Components", QPixmap(), "root");
+
+            // Get the libraries list and sort them alphabetically
+            QStringList libraries(libraryManager->librariesList());
+            libraries.sort();
+
+            // Plug each library into the sidebar browser
+            foreach(const QString library, libraries) {
+                m_sidebarBrowser->plugLibrary(library, "Components");
+                qDebug() << "Loaded " + library + " library";
+            }
+
             qDebug() << "Succesfully loaded libraries!";
         }
         else {
@@ -70,10 +83,6 @@ namespace Caneda
         paintingItems << qMakePair(QObject::tr("Text"),
                 QPixmap(Caneda::bitmapDirectory() + "text.svg"));
 
-        m_sidebarBrowser->plugItem("Components", QPixmap(), "root");
-        m_sidebarBrowser->plugLibrary("Passive", "Components");
-        m_sidebarBrowser->plugLibrary("Active", "Components");
-        m_sidebarBrowser->plugLibrary("Semiconductor", "Components");
         m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
