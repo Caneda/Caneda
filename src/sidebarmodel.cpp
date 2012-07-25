@@ -96,13 +96,13 @@ namespace Caneda
 
         CategoryItem *libRoot;
         if(category == "root") {
-            libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryFileName(),
+            libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryPath(),
                     QPixmap(), true, rootItem);
         }
         else {
             for(int i = 0; i < rootItem->childCount(); i++) {
                 if(rootItem->child(i)->name() == category) {
-                    libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryFileName(),
+                    libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryPath(),
                             QPixmap(), true, rootItem->child(i));
                     break;
                 }
@@ -134,7 +134,7 @@ namespace Caneda
 
         if(category == "root") {
             for(int i = 0; i < rootItem->childCount(); i++) {
-                if(rootItem->child(i)->filename() == libItem->libraryFileName()) {
+                if(rootItem->child(i)->filename() == libItem->libraryPath()) {
                     rootItem->removeChild(i);
                     break;
                 }
@@ -145,7 +145,7 @@ namespace Caneda
                 if(rootItem->child(i)->name() == category) {
                     for(int j = 0; j < rootItem->child(i)->childCount(); j++) {
                         if(rootItem->child(i)->child(j)->filename() ==
-                                libItem->libraryFileName()) {
+                                libItem->libraryPath()) {
                             rootItem->child(i)->removeChild(j);
                             break;
                         }

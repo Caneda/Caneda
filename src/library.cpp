@@ -49,7 +49,7 @@ namespace Caneda
      */
     Library::Library(QString libraryPath)
     {
-        m_libraryFileName = libraryPath;
+        m_libraryPath = libraryPath;
         m_libraryName = QFileInfo(libraryPath).baseName();
         m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
 
@@ -69,15 +69,15 @@ namespace Caneda
     bool Library::loadLibrary()
     {
         // Check if file exists and can be opened.
-        QFile file(m_libraryFileName);
+        QFile file(m_libraryPath);
         if(!file.open(QIODevice::ReadOnly)) {
             QMessageBox::warning(0, QObject::tr("File open"),
-                    QObject::tr("Cannot open file %1\n").arg(m_libraryFileName));
+                    QObject::tr("Cannot open file %1\n").arg(m_libraryPath));
             return false;
         }
 
         // Go to base dir
-        QString libParentPath = QFileInfo(m_libraryFileName).dir().absolutePath();
+        QString libParentPath = QFileInfo(m_libraryPath).dir().absolutePath();
         QString current = QDir::currentPath();
         if(!QDir::setCurrent(libParentPath)) {
             (void) QDir::setCurrent(current);
@@ -176,7 +176,7 @@ namespace Caneda
         delete writer;
 
 
-        QFile file(libraryFileName());
+        QFile file(m_libraryPath);
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
                     QObject::tr("Cannot save library!"));
@@ -226,10 +226,8 @@ namespace Caneda
         if(!m_componentHash.contains(componentName)) {
             return false;
         }
-        else {
-            m_componentHash.remove(componentName);
-        }
 
+        m_componentHash.remove(componentName);
         return true;
     }
 

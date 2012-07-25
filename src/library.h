@@ -41,7 +41,7 @@ namespace Caneda
         //! Returns library name.
         QString libraryName() const { return m_libraryName; }
         //! Returns library filename.
-        QString libraryFileName() const { return m_libraryFileName; }
+        QString libraryPath() const { return m_libraryPath; }
 
         //! Returns the shared data of component from given name.
         ComponentDataPtr componentDataPtr(const QString& name) const;
@@ -57,7 +57,7 @@ namespace Caneda
 
     private:
         QString m_libraryName;
-        QString m_libraryFileName;
+        QString m_libraryPath;
 
         bool registerComponentData(Caneda::XmlReader *reader, QString componentPath);
         QHash<QString, ComponentDataPtr> m_componentHash;
