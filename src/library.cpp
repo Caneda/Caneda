@@ -99,7 +99,7 @@ namespace Caneda
                             errorString = errorString.arg(QFileInfo(externalPath).absoluteFilePath());
                             reader->raiseError(errorString);
                         } else {
-                            //ignore rest of component' tag as the main data is only external
+                            // Ignore rest of component' tag as the main data is only external
                             reader->readUnknownElement();
                         }
                     }
@@ -126,7 +126,7 @@ namespace Caneda
         writer->writeAttribute("version", Caneda::version());
 
         //Save all components in library
-        QList<ComponentDataPtr> componentsList = components().values();
+        QList<ComponentDataPtr> componentsList = m_componentHash.values();
         foreach(const ComponentDataPtr data, componentsList) {
             writer->writeEmptyElement("component");
             writer->writeAttribute("href", QFileInfo(data->filename).fileName());
@@ -135,10 +135,6 @@ namespace Caneda
         writer->writeEndDocument(); //</library>
         delete writer;
 
-
-        if(saveText.isEmpty()) {
-            qDebug("Looks buggy! Null data to save! Was this expected ??");
-        }
 
         QFile file(libraryFileName());
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {

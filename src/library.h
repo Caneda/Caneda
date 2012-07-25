@@ -100,6 +100,7 @@ namespace Caneda
         Library* library(const QString& libName) const;
 
         // Symbol caching related methods
+        // TODO: Move this methods (and symbol cache) into library class
         void registerComponent(const QString& symbol_id, const QByteArray& content);
         bool isComponentRegistered(const QString& symbol_id) const;
 
@@ -116,7 +117,7 @@ namespace Caneda
         //! Hash table to hold libraries
         LibraryHash m_libraryHash;
 
-        //! Hash table to hold Svg renderer (wich has raw svg content cached).
+        //! Symbol cache (hash table) to hold svg renderers (wich have raw svg content).
         QHash<QString, QSvgRenderer*> m_dataHash;
     };
 
