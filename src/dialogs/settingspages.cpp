@@ -418,10 +418,10 @@ namespace Caneda
 
     void LibrariesConfigurationPage::slotAddLibrary()
     {
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Select Library"),
-                                                        "", tr("Caneda Projects (*.xpro)"));
-        if(!fileName.isEmpty()) {
-            new QListWidgetItem(fileName, libraryList);
+        QString dir = QFileDialog::getExistingDirectory(this, tr("Select Library"),
+                                                        "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        if(!dir.isEmpty()) {
+            new QListWidgetItem(dir, libraryList);
         }
 
         libraryList->sortItems(Qt::AscendingOrder);
@@ -435,7 +435,7 @@ namespace Caneda
     void LibrariesConfigurationPage::slotAddHdlLibrary()
     {
         QString dir = QFileDialog::getExistingDirectory(this, tr("Select Library"),
-                                                        "",  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+                                                        "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if(!dir.isEmpty()) {
             new QListWidgetItem(dir, hdlLibraryList);
         }

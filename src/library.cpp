@@ -51,11 +51,6 @@ namespace Caneda
     {
         m_libraryPath = libraryPath;
         m_libraryName = QFileInfo(libraryPath).baseName();
-        m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
-
-        if(m_libraryName.isEmpty()) {
-            qWarning() << "\nWarning: No 'name' attribute in library tag";
-        }
     }
 
     //! \brief Returns the shared data of component from given name.
@@ -68,89 +63,80 @@ namespace Caneda
     //! \brief Parses the library xml file.
     bool Library::loadLibrary()
     {
-        // Check if file exists and can be opened.
-        QFile file(m_libraryPath);
-        if(!file.open(QIODevice::ReadOnly)) {
-            QMessageBox::warning(0, QObject::tr("File open"),
-                    QObject::tr("Cannot open file %1\n").arg(m_libraryPath));
-            return false;
-        }
-
-        // Go to base dir
-        QString libParentPath = QFileInfo(m_libraryPath).dir().absolutePath();
+        // Go to base library dir
         QString current = QDir::currentPath();
-        if(!QDir::setCurrent(libParentPath)) {
-            (void) QDir::setCurrent(current);
+        if(!QDir::setCurrent(m_libraryPath)) {
+            QDir::setCurrent(current);
             return false;
         }
 
-        // Now read the file
-        QTextStream in(&file);
-        in.setCodec("UTF-8");
-        QByteArray data = in.readAll().toUtf8();
+        bool readOk = true;
+        // Check if translations file exists and can be opened.
+        // This file is necessary to hold the library names in
+        // different languages. In this file isn't present, the
+        // default library name is chosen (base dir).
+        QFile file("translations.xml");
+        if(file.open(QIODevice::ReadOnly)) {
+            // Read the translations file
+            QTextStream in(&file);
+            in.setCodec("UTF-8");
+            QByteArray data = in.readAll().toUtf8();
 
-        Caneda::XmlReader reader(data);
-        while(!reader.atEnd()) {
-            reader.readNext();
+            Caneda::XmlReader reader(data);
+            while(!reader.atEnd()) {
+                reader.readNext();
 
-            if(reader.isEndElement()) {
-                break;
+                if(reader.isEndElement()) {
+                    break;
+                }
+
+                if(reader.isStartElement()) {
+                    if(reader.name() == "library") {
+
+                        Q_ASSERT(reader.isStartElement() && reader.name() == "library");
+
+                        m_libraryName = reader.attributes().value("name").toString();
+                        if(m_libraryName.isEmpty()) {
+                            reader.raiseError("Invalid or no 'name' attribute in library tag");
+                        }
+
+                        while(!reader.atEnd()) {
+                            reader.readNext();
+                            if(reader.isEndElement()) {
+                                break;
+                            }
+                            reader.readUnknownElement();
+                        }
+
+                    }
+                    else {
+                        reader.readUnknownElement();
+                    }
+                }
             }
 
-            if(reader.isStartElement()) {
-                if(reader.name() == "library") {
+            if(reader.hasError()) {
+                QMessageBox::warning(0, QObject::tr("Error"),
+                                      QObject::tr("Invalid library file!"));
+                readOk = false;
+            }
 
-                    Q_ASSERT(reader.isStartElement() && reader.name() == "library");
+        }
 
-                    m_libraryName = reader.attributes().value("name").toString();
-                    if(m_libraryName.isEmpty()) {
-                        reader.raiseError("Invalid or no 'name' attribute in library tag");
-                        return false;
-                    }
-
-                    while(!reader.atEnd()) {
-                        reader.readNext();
-
-                        if(reader.isEndElement()) {
-                            break;
-                        }
-
-                        if(reader.isStartElement()) {
-                            if(reader.name() == "component") {
-                                QString externalPath = reader.attributes().value("href").toString();
-                                if(!externalPath.isEmpty()) {
-                                    bool status = parseExternalComponent(externalPath);
-                                    if(!status) {
-                                        QString errorString("Parsing external component data file %1 "
-                                                            "failed");
-                                        errorString = errorString.arg(QFileInfo(externalPath).absoluteFilePath());
-                                        reader.raiseError(errorString);
-                                    } else {
-                                        // Ignore the rest of the tags as the main data is only external
-                                        reader.readUnknownElement();
-                                    }
-                                }
-                            }
-                            else {
-                                reader.readUnknownElement();
-                            }
-                        }
-                    }
-
-                }
-                else {
-                    reader.readUnknownElement();
-                }
+        QDir libraryPath(m_libraryPath);
+        QStringList componentsList = libraryPath.entryList(QStringList("*.xsym"));  // Filter only component files
+        foreach (const QString &component, componentsList) {
+            // Read all components in the library path
+            readOk = readOk & parseExternalComponent(component);
+            if(!readOk) {
+                QMessageBox::warning(0, QObject::tr("Error"),
+                                     QObject::tr("Parsing component data file %1 failed")
+                                     .arg(QFileInfo(component).absoluteFilePath()));
             }
         }
 
-        if(reader.hasError()) {
-            QMessageBox::critical(0, QObject::tr("Error"),
-                    QObject::tr("Invalid library file!"));
-        }
-
-        (void) QDir::setCurrent(current);
-        return !reader.hasError();
+        QDir::setCurrent(current);
+        return readOk;
     }
 
     //! \brief Saves the library to a file.
@@ -194,7 +180,6 @@ namespace Caneda
     {
         bool readok = true;
         QFile file(QFileInfo(componentPath).absoluteFilePath());
-
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::warning(0, QObject::tr("File open"),
                     QObject::tr("Cannot open file %1").arg(componentPath));
@@ -252,6 +237,7 @@ namespace Caneda
         if(!m_componentHash.contains(dataPtr->name)) {
             m_componentHash.insert(dataPtr->name, dataPtr);
         }
+
         return true;
     }
 

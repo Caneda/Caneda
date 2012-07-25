@@ -98,6 +98,7 @@ namespace Caneda
         bool loadLibraryTree();
 
         Library* library(const QString& libName) const;
+        const QList<QString> librariesList() const { return m_libraryHash.uniqueKeys(); }
 
         // Symbol caching related methods
         // TODO: Move this methods (and symbol cache) into library class
