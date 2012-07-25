@@ -109,7 +109,6 @@ namespace Caneda
             slotCloseProject();
             setCurrentLibrary(fileName);
             projectLibrary = library->library(m_libraryName);
-            projectLibrary->saveLibrary();
             qDebug() << "Succesfully created library!";
             m_projectsSidebar->plugLibrary(m_libraryName, "root");
         }
@@ -177,7 +176,7 @@ namespace Caneda
                 switch (ret) {
                     case QMessageBox::Ok: {
 
-                        QString fileName = projectLibrary->componentDataPtr(m_projectsSidebar->currentComponent())->filename;
+                        QString fileName = projectLibrary->component(m_projectsSidebar->currentComponent())->filename;
                         fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).baseName();
 
                         QFile::remove(fileName + ".xsch");
@@ -185,7 +184,6 @@ namespace Caneda
                         QFile::remove(fileName + ".svg");
 
                         projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
-                        projectLibrary->saveLibrary();
                         m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
                         m_projectsSidebar->plugLibrary(m_libraryName, "root");
                         break;

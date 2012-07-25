@@ -89,7 +89,9 @@ namespace Caneda
      */
     void SidebarModel::plugLibrary(const QString& libraryName, const QString& category)
     {
-        const Library *libItem = LibraryManager::instance()->library(libraryName);
+        LibraryManager *manager = LibraryManager::instance();
+        const Library *libItem = manager->library(libraryName);
+
         if(!libItem) {
             return;
         }
@@ -109,9 +111,10 @@ namespace Caneda
             }
         }
 
-        QList<ComponentDataPtr> components = libItem->components().values();
-        foreach(const ComponentDataPtr data, components) {
-            LibraryManager *manager = LibraryManager::instance();
+        // Get the components list and plug each component into the sidebar browser
+        QStringList components(libItem->componentsList());
+        foreach(const QString component, components) {
+            ComponentDataPtr data = libItem->component(component);
             QPixmap pixmap = manager->pixmapCache(data->name + '/' +
                                                   data->propertyMap["symbol"].value().toString());
             new CategoryItem(data->name, data->filename, pixmap, false, libRoot);

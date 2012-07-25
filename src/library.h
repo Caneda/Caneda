@@ -43,22 +43,20 @@ namespace Caneda
         //! Returns library filename.
         QString libraryPath() const { return m_libraryPath; }
 
-        //! Returns the shared data of component from given name.
-        ComponentDataPtr componentDataPtr(const QString& name) const;
-        //! Returns the component' s shared hash table.
-        const QHash<QString, ComponentDataPtr>& components() const {
-            return m_componentHash;
-        }
+        ComponentDataPtr component(const QString& name) const;
+        //! Returns the components list.
+        const QList<QString> componentsList() const { return m_componentHash.uniqueKeys(); }
 
         bool loadLibrary();
-        bool saveLibrary();
-        bool parseExternalComponent(QString componentPath);
         bool removeComponent(QString componentName);
 
     private:
+        //! Library name. If not specified in "translations.xml", it is the base dir name.
         QString m_libraryName;
+        //! Library full path.
         QString m_libraryPath;
 
+        bool parseExternalComponent(QString componentPath);
         bool registerComponentData(Caneda::XmlReader *reader, QString componentPath);
         QHash<QString, ComponentDataPtr> m_componentHash;
     };
@@ -98,6 +96,7 @@ namespace Caneda
         bool loadLibraryTree();
 
         Library* library(const QString& libName) const;
+        //! Returns the libraries list.
         const QList<QString> librariesList() const { return m_libraryHash.uniqueKeys(); }
 
         // Symbol caching related methods
@@ -115,7 +114,7 @@ namespace Caneda
     private:
         LibraryManager(QObject *parent = 0);
 
-        //! Hash table to hold libraries
+        //! Hash table to hold libraries.
         LibraryHash m_libraryHash;
 
         //! Symbol cache (hash table) to hold svg renderers (wich have raw svg content).

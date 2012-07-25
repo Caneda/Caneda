@@ -54,13 +54,13 @@ namespace Caneda
     }
 
     //! \brief Returns the shared data of component from given name.
-    ComponentDataPtr Library::componentDataPtr(const QString& name) const
+    ComponentDataPtr Library::component(const QString& name) const
     {
         return m_componentHash.contains(name) ?
             m_componentHash[name] : ComponentDataPtr();
     }
 
-    //! \brief Parses the library xml file.
+    //! \brief Loads the library's components and its translated name.
     bool Library::loadLibrary()
     {
         // Go to base library dir
@@ -139,39 +139,14 @@ namespace Caneda
         return readOk;
     }
 
-    //! \brief Saves the library to a file.
-    bool Library::saveLibrary()
+    //! \brief Removes the component from library.
+    bool Library::removeComponent(QString componentName)
     {
-        QString saveText;
-        Caneda::XmlWriter *writer = new Caneda::XmlWriter(&saveText);
-        writer->setAutoFormatting(true);
-
-        writer->writeStartDocument();
-        writer->writeStartElement("library");
-        writer->writeAttribute("name", libraryName());
-        writer->writeAttribute("version", Caneda::version());
-
-        //Save all components in library
-        QList<ComponentDataPtr> componentsList = m_componentHash.values();
-        foreach(const ComponentDataPtr data, componentsList) {
-            writer->writeEmptyElement("component");
-            writer->writeAttribute("href", QFileInfo(data->filename).fileName());
-        }
-
-        writer->writeEndDocument(); //</library>
-        delete writer;
-
-
-        QFile file(m_libraryPath);
-        if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QMessageBox::critical(0, QObject::tr("Error"),
-                    QObject::tr("Cannot save library!"));
+        if(!m_componentHash.contains(componentName)) {
             return false;
         }
-        QTextStream stream(&file);
-        stream << saveText;
-        file.close();
 
+        m_componentHash.remove(componentName);
         return true;
     }
 
@@ -203,17 +178,6 @@ namespace Caneda
             readok = registerComponentData(&reader, componentPath);
         }
         return !reader.hasError() && readok;
-    }
-
-    //! \brief Removes the component from library.
-    bool Library::removeComponent(QString componentName)
-    {
-        if(!m_componentHash.contains(componentName)) {
-            return false;
-        }
-
-        m_componentHash.remove(componentName);
-        return true;
     }
 
     //! \brief Registers a component's symbol as well as the component's shared data.
@@ -287,9 +251,9 @@ namespace Caneda
         ComponentDataPtr data;
         if(library.isEmpty()) {
             LibraryHash::const_iterator it = m_libraryHash.constBegin(),
-                end = m_libraryHash.constEnd();
+                    end = m_libraryHash.constEnd();
             while(it != end) {
-                data = it.value()->componentDataPtr(componentName);
+                data = it.value()->component(componentName);
                 if(data.constData()) {
                     break;
                 }
@@ -298,7 +262,7 @@ namespace Caneda
         }
         else {
             if(m_libraryHash.contains(library)) {
-                data = m_libraryHash[library]->componentDataPtr(componentName);
+                data = m_libraryHash[library]->component(componentName);
             }
         }
 
