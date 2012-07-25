@@ -47,7 +47,7 @@ namespace Caneda
 
         // Load schematic libraries
         LibraryManager *libraryManager = LibraryManager::instance();
-        if(libraryManager->loadtree()) {
+        if(libraryManager->loadLibraryTree()) {
             qDebug() << "Succesfully loaded libraries!";
         }
         else {

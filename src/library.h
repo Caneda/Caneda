@@ -38,26 +38,13 @@ namespace Caneda
         Library(QString libraryPath);
         ~Library() {}
 
-        ComponentDataPtr componentDataPtr(const QString& name) const;
-
         //! Returns library name.
         QString libraryName() const { return m_libraryName; }
-
         //! Returns library filename.
         QString libraryFileName() const { return m_libraryFileName; }
 
-        //! Returns symbol id corresponding to library.
-        QString defaultSymbolId() const { return m_defaultSymbolId; }
-
-        //! Returns brief text used to display.
-        QString displayText() const { return m_displayText; }
-
-        //! Returns the description of library.
-        QString description() const { return m_description; }
-
-        //! Returns validity of this instance.
-        bool isValid() const { return m_valid; }
-
+        //! Returns the shared data of component from given name.
+        ComponentDataPtr componentDataPtr(const QString& name) const;
         //! Returns the component' s shared hash table.
         const QHash<QString, ComponentDataPtr>& components() const {
             return m_componentHash;
@@ -69,15 +56,11 @@ namespace Caneda
         bool removeComponent(QString componentName);
 
     private:
-        bool registerComponentData(Caneda::XmlReader *reader, QString componentPath);
         QString m_libraryName;
         QString m_libraryFileName;
-        QString m_defaultSymbolId;
-        QString m_displayText;
-        QString m_description;
 
+        bool registerComponentData(Caneda::XmlReader *reader, QString componentPath);
         QHash<QString, ComponentDataPtr> m_componentHash;
-        bool m_valid;
     };
 
     typedef QHash<QString, Library*> LibraryHash;
@@ -111,8 +94,8 @@ namespace Caneda
         // Library management related methods
         bool newLibrary(const QString& libPath);
         bool load(const QString& libPath);
-        bool loadtree();
         bool unload(const QString& libName);
+        bool loadLibraryTree();
 
         Library* library(const QString& libName) const;
 

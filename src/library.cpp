@@ -49,20 +49,13 @@ namespace Caneda
      */
     Library::Library(QString libraryPath)
     {
+        m_libraryFileName = libraryPath;
         m_libraryName = QFileInfo(libraryPath).baseName();
         m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
 
-        m_libraryFileName = libraryPath;
-
         if(m_libraryName.isEmpty()) {
-            qWarning() << "\nWarning: Invalid or no 'name' attribute in library tag";
-            return;
+            qWarning() << "\nWarning: No 'name' attribute in library tag";
         }
-
-        m_displayText = "User library";
-        m_description = "User created library";
-
-        m_valid = true;
     }
 
     //! \brief Returns the shared data of component from given name.
@@ -85,8 +78,7 @@ namespace Caneda
         m_libraryName = reader->attributes().value("name").toString();
         if(m_libraryName.isEmpty()) {
             reader->raiseError("Invalid or no 'name' attribute in library tag");
-            m_valid = false;
-            return m_valid;
+            return false;
         }
 
         while(!reader->atEnd()) {
@@ -97,15 +89,7 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
-                if(reader->name() == "displaytext") {
-                    m_displayText = reader->readLocaleText(Caneda::localePrefix());
-                    Q_ASSERT(reader->isEndElement() && reader->name() == "displaytext");
-                }
-                else if(reader->name() == "description") {
-                    m_description = reader->readLocaleText(Caneda::localePrefix());
-                    Q_ASSERT(reader->isEndElement() && reader->name() == "description");
-                }
-                else if(reader->name() == "component") {
+                if(reader->name() == "component") {
                     QString externalPath = reader->attributes().value("href").toString();
                     if(!externalPath.isEmpty()) {
                         bool status = parseExternalComponent(externalPath);
@@ -125,8 +109,8 @@ namespace Caneda
                 }
             }
         }
-        m_valid = !reader->hasError() && readok;
-        return m_valid;
+
+        return !reader->hasError() && readok;
     }
 
     //! \brief Saves the library to a file.
@@ -140,14 +124,6 @@ namespace Caneda
         writer->writeStartElement("library");
         writer->writeAttribute("name", libraryName());
         writer->writeAttribute("version", Caneda::version());
-
-        writer->writeStartElement("displaytext");
-        writer->writeLocaleText("en", displayText());
-        writer->writeEndElement(); //</displaytext>
-
-        writer->writeStartElement("description");
-        writer->writeLocaleText("en", description());
-        writer->writeEndElement(); //</description>
 
         //Save all components in library
         QList<ComponentDataPtr> componentsList = components().values();
@@ -327,10 +303,8 @@ namespace Caneda
         }
 
         Library *info = new Library(libPath);
-
         m_libraryHash.insert(info->libraryName(), info);
-
-        return info->isValid();
+        return true;
     }
 
     //! \brief Load library indicated by path \a libPath.
@@ -405,9 +379,21 @@ namespace Caneda
     }
 
     /*!
-     * \brief Load a library tree
+     * \brief Unloads given library freeing memory pool.
+     * \sa Library::~Library()
      */
-    bool LibraryManager::loadtree()
+    bool LibraryManager::unload(const QString& libName)
+    {
+        if(m_libraryHash.contains(libName)) {
+            m_libraryHash.remove(libName);
+            return true;
+        }
+
+        return false;
+    }
+
+    //! \brief Load the library tree
+    bool LibraryManager::loadLibraryTree()
     {
         bool status = true;
 
@@ -423,20 +409,6 @@ namespace Caneda
         }
 
         return status;
-    }
-
-    /*!
-     * \brief Unloads given library freeing memory pool.
-     * \sa Library::~Library()
-     */
-    bool LibraryManager::unload(const QString& libName)
-    {
-        if(m_libraryHash.contains(libName)) {
-            m_libraryHash.remove(libName);
-            return true;
-        }
-
-        return false;
     }
 
     /*!
