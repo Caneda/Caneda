@@ -102,7 +102,6 @@ namespace Caneda
         // Symbol caching related methods
         // TODO: Move this methods (and symbol cache) into library class
         void registerComponent(const QString& symbol_id, const QByteArray& content);
-        bool isComponentRegistered(const QString& symbol_id) const;
 
         QSvgRenderer* symbolCache(const QString &symbol_id);
         const QPixmap pixmapCache(const QString &symbol_id);

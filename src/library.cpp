@@ -370,21 +370,11 @@ namespace Caneda
      */
     void LibraryManager::registerComponent(const QString& symbol_id, const QByteArray& svg)
     {
-        if(isComponentRegistered(symbol_id)) {
+        if(m_dataHash.contains(symbol_id)) {
             return;
         }
 
         m_dataHash[symbol_id] = new QSvgRenderer(svg);
-    }
-
-    /*!
-     * \brief Returns the registered status of symbol_id.
-     *
-     * True if the symbol_id data was previously registered, false otherwise.
-     */
-    bool LibraryManager::isComponentRegistered(const QString& symbol_id) const
-    {
-        return m_dataHash.contains(symbol_id);
     }
 
     //! \brief Returns the symbol of a component corresponding to symbol_id.
