@@ -50,7 +50,7 @@ namespace Caneda
             return m_componentHash;
         }
 
-        bool loadLibrary(Caneda::XmlReader *reader);
+        bool loadLibrary();
         bool saveLibrary();
         bool parseExternalComponent(QString componentPath);
         bool removeComponent(QString componentName);

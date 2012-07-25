@@ -65,52 +65,92 @@ namespace Caneda
             m_componentHash[name] : ComponentDataPtr();
     }
 
-    /*!
-     * \brief Parses the library xml file.
-     *
-     * \param reader XmlReader corresponding to file.
-     */
-    bool Library::loadLibrary(Caneda::XmlReader *reader)
+    //! \brief Parses the library xml file.
+    bool Library::loadLibrary()
     {
-        bool readok = true;
-        Q_ASSERT(reader->isStartElement() && reader->name() == "library");
-
-        m_libraryName = reader->attributes().value("name").toString();
-        if(m_libraryName.isEmpty()) {
-            reader->raiseError("Invalid or no 'name' attribute in library tag");
+        // Check if file exists and can be opened.
+        QFile file(m_libraryFileName);
+        if(!file.open(QIODevice::ReadOnly)) {
+            QMessageBox::warning(0, QObject::tr("File open"),
+                    QObject::tr("Cannot open file %1\n").arg(m_libraryFileName));
             return false;
         }
 
-        while(!reader->atEnd()) {
-            reader->readNext();
+        // Go to base dir
+        QString libParentPath = QFileInfo(m_libraryFileName).dir().absolutePath();
+        QString current = QDir::currentPath();
+        if(!QDir::setCurrent(libParentPath)) {
+            (void) QDir::setCurrent(current);
+            return false;
+        }
 
-            if(reader->isEndElement()) {
+        // Now read the file
+        QTextStream in(&file);
+        in.setCodec("UTF-8");
+        QByteArray data = in.readAll().toUtf8();
+
+        Caneda::XmlReader reader(data);
+        while(!reader.atEnd()) {
+            reader.readNext();
+
+            if(reader.isEndElement()) {
                 break;
             }
 
-            if(reader->isStartElement()) {
-                if(reader->name() == "component") {
-                    QString externalPath = reader->attributes().value("href").toString();
-                    if(!externalPath.isEmpty()) {
-                        bool status = parseExternalComponent(externalPath);
-                        if(!status) {
-                            QString errorString("Parsing external component data file %1 "
-                                    "failed");
-                            errorString = errorString.arg(QFileInfo(externalPath).absoluteFilePath());
-                            reader->raiseError(errorString);
-                        } else {
-                            // Ignore rest of component' tag as the main data is only external
-                            reader->readUnknownElement();
+            if(reader.isStartElement()) {
+                if(reader.name() == "library") {
+
+                    Q_ASSERT(reader.isStartElement() && reader.name() == "library");
+
+                    m_libraryName = reader.attributes().value("name").toString();
+                    if(m_libraryName.isEmpty()) {
+                        reader.raiseError("Invalid or no 'name' attribute in library tag");
+                        return false;
+                    }
+
+                    while(!reader.atEnd()) {
+                        reader.readNext();
+
+                        if(reader.isEndElement()) {
+                            break;
+                        }
+
+                        if(reader.isStartElement()) {
+                            if(reader.name() == "component") {
+                                QString externalPath = reader.attributes().value("href").toString();
+                                if(!externalPath.isEmpty()) {
+                                    bool status = parseExternalComponent(externalPath);
+                                    if(!status) {
+                                        QString errorString("Parsing external component data file %1 "
+                                                            "failed");
+                                        errorString = errorString.arg(QFileInfo(externalPath).absoluteFilePath());
+                                        reader.raiseError(errorString);
+                                    } else {
+                                        // Ignore the rest of the tags as the main data is only external
+                                        reader.readUnknownElement();
+                                    }
+                                }
+                            }
+                            else {
+                                reader.readUnknownElement();
+                            }
                         }
                     }
+
                 }
                 else {
-                    reader->readUnknownElement();
+                    reader.readUnknownElement();
                 }
             }
         }
 
-        return !reader->hasError() && readok;
+        if(reader.hasError()) {
+            QMessageBox::critical(0, QObject::tr("Error"),
+                    QObject::tr("Invalid library file!"));
+        }
+
+        (void) QDir::setCurrent(current);
+        return !reader.hasError();
     }
 
     //! \brief Saves the library to a file.
@@ -306,72 +346,24 @@ namespace Caneda
     //! \brief Load library indicated by path \a libPath.
     bool LibraryManager::load(const QString& libPath)
     {
-        // Open file
-        QFile file(libPath);
-        if(!file.open(QIODevice::ReadOnly)) {
-            QMessageBox::warning(0, QObject::tr("File open"),
-                    QObject::tr("Cannot open file %1\n").arg(libPath));
+        Library *info = new Library(libPath);
+        bool loaded = info->loadLibrary();
+
+        if(!loaded) {
+            delete info;
             return false;
         }
 
-        // Go to base dir
-        QString libParentPath = QFileInfo(libPath).dir().absolutePath();
-        QString current = QDir::currentPath();
-        if(!QDir::setCurrent(libParentPath)) {
-            (void) QDir::setCurrent(current);
-            return false;
-        }
-
-        QTextStream in(&file);
-        in.setCodec("UTF-8");
-        QByteArray data = in.readAll().toUtf8();
-
-        Caneda::XmlReader reader(data);
-        while(!reader.atEnd()) {
-            reader.readNext();
-
-            if(reader.isEndElement()) {
-                break;
-            }
-
-            if(reader.isStartElement()) {
-                if(reader.name() == "library") {
-                    Library *info = new Library(libPath);
-                    info->loadLibrary(&reader);
-
-                    if(reader.hasError()) {
-                        QMessageBox::critical(0, QObject::tr("Load library"),
-                                QObject::tr("Parsing library failed with following"
-                                            " error: \"%1\"").arg(reader.errorString()));
-                        delete info;
-                        return false;
-                    }
-
-                    if(!library(info->libraryName())) {
-                        m_libraryHash.insert(info->libraryName(), info);
-                    }
-                    else {
-                        QMessageBox::critical(0, QObject::tr("Error"),
-                                QObject::tr("Library %1 currently opened. Please close"
-                                            "library %1 first.").arg(info->libraryName()));
-                        delete info;
-                        return false;
-                    }
-
-                }
-                else {
-                    reader.readUnknownElement();
-                }
-            }
-        }
-
-        if(reader.hasError()) {
+        if(library(info->libraryName())) {
             QMessageBox::critical(0, QObject::tr("Error"),
-                    QObject::tr("Invalid library file!"));
+                                  QObject::tr("Library %1 currently opened. Please close"
+                                              "library %1 first.").arg(info->libraryName()));
+            delete info;
+            return false;
         }
 
-        (void) QDir::setCurrent(current);
-        return !reader.hasError();
+        m_libraryHash.insert(info->libraryName(), info);
+        return true;
     }
 
     /*!
