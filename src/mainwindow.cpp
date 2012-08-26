@@ -1029,11 +1029,7 @@ namespace Caneda
                 slotOpenProject(fileName);
             }
             else {
-                bool isLoaded = manager->openFile(fileName);
-                if(!isLoaded) {
-                    QMessageBox::critical(0, tr("File load error"),
-                            tr("Cannot open file %1").arg(fileName));
-                }
+                manager->openFile(fileName);
             }
         }
     }
