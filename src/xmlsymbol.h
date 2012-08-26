@@ -54,8 +54,8 @@ namespace Caneda
         bool loadFromText(const QString& text);
 
         bool readComponentData(Caneda::XmlReader *reader);
-        bool readSchematics(Caneda::XmlReader *reader);
-        void readComponentProperties(Caneda::XmlReader *reader);
+        bool readSymbol(Caneda::XmlReader *reader);
+        void readProperties(Caneda::XmlReader *reader);
         bool readSchematic(Caneda::XmlReader *reader);
         void readSchematicPort(Caneda::XmlReader *reader, const QString & schName);
         bool readSchematicSvg(const QByteArray &svgContent, const QString &schName);

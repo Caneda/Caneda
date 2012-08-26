@@ -173,7 +173,7 @@ namespace Caneda
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
         writer->setAutoFormatting(true);
 
-        // Fist we start the document and write current version
+        // Fist we start the document
         writer->writeStartDocument();
         writer->writeDTD(QString("<!DOCTYPE caneda>"));
 
@@ -334,36 +334,19 @@ namespace Caneda
                     Q_ASSERT(reader->isEndElement());
                 }
 
-                // Read schematic
-                else if(reader->name() == "schematics") {
-                    if(readSchematics(reader)==false) {
+                // Read symbol
+                else if(reader->name() == "symbol") {
+                    if(readSymbol(reader)==false) {
                         return false;
-                    }
-                }
-
-                // Read ports
-                else if(reader->name() == "ports") {
-                    while(!reader->atEnd()) {
-                        reader->readNext();
-
-                        if(reader->isEndElement()) {
-                            Q_ASSERT(reader->name() == "ports");
-                            break;
-                        }
-
-                        if(reader->isStartElement() && reader->name() == "port") {
-                            //TODO: Read ports information
-                            reader->readFurther();
-                            Q_ASSERT(reader->isEndElement() && reader->name() == "port");
-                        }
                     }
                 }
 
                 // Read properties
                 else if(reader->name() == "properties") {
-                    readComponentProperties(reader);
+                    readProperties(reader);
                 }
 
+                // Read unknown element
                 else {
                     reader->readUnknownElement();
                 }
@@ -377,23 +360,21 @@ namespace Caneda
     }
 
     /*!
-     * \brief Read schematics section of component description xml file
+     * \brief Read symbol section of component description xml file
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    bool XmlSymbol::readSchematics(Caneda::XmlReader *reader)
+    bool XmlSymbol::readSymbol(Caneda::XmlReader *reader)
     {
-        /* list of symbols */
+        // List of symbols and default value
         QStringList parsedSymbols;
-
-        /* get default value */
         QString defaultSchematic =
             reader->attributes().value("default").toString();
 
-        Q_ASSERT(reader->isStartElement() && reader->name() == "schematics");
+        Q_ASSERT(reader->isStartElement() && reader->name() == "symbol");
         Q_ASSERT(!defaultSchematic.isEmpty());
 
-        /* read different schematic */
+        // Read all available symbols
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -419,10 +400,10 @@ namespace Caneda
             }
         }
 
-        /* check if default is present */
+        // Check if default is present
         Q_ASSERT(parsedSymbols.contains(defaultSchematic));
 
-        /* add symbols to property list */
+        // Add symbols to property list
         QString symbolDescription =
             QObject::tr("Represents the current symbol of component.");
         QVariant defValue(defaultSchematic);
@@ -439,7 +420,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void XmlSymbol::readComponentProperties(Caneda::XmlReader *reader)
+    void XmlSymbol::readProperties(Caneda::XmlReader *reader)
     {
         while(!reader->atEnd()) {
             reader->readNext();
@@ -453,9 +434,8 @@ namespace Caneda
                     Property prop = PropertyFactory::createProperty(reader);
                     component()->propertyMap.insert(prop.name(), prop);
                 }
-                /* default */
                 else {
-                    Q_ASSERT(!sizeof("unknow element in properties element"));
+                    Q_ASSERT(!sizeof("Found unknown element in properties section"));
                 }
             }
         }
@@ -474,7 +454,7 @@ namespace Caneda
         QString schType = reader->attributes().value("href").toString();
         bool readok;
 
-        // If external svg file
+        // Read svg file
         if(!schType.isEmpty()) {
             QString parentPath = QFileInfo(fileName()).absolutePath();
             QFile svgFile(parentPath + "/" + schType);
@@ -493,6 +473,7 @@ namespace Caneda
             }
         }
 
+        // Read component ports
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -500,23 +481,11 @@ namespace Caneda
                 break;
             }
 
-            if(reader->isStartElement()) {
-                // Internal svg
-                if(reader->name() == "svg") {
-                    Q_ASSERT(schType.isEmpty());
-                    QByteArray svgContent = reader->readXmlFragment().toUtf8();
-                    // TODO: return error
-                    readok = readSchematicSvg(svgContent, schName);
-                    if(!readok) {
-                        return false;
-                    }
-                }
-                else if(reader->name() == "port") {
-                    readSchematicPort(reader, schName);
-                }
-                else {
-                    Q_ASSERT(!sizeof("Unknown element in schematic element"));
-                }
+            if(reader->isStartElement() && reader->name() == "port") {
+                readSchematicPort(reader, schName);
+            }
+            else {
+                Q_ASSERT(!sizeof("Unknown element in schematic element"));
             }
         }
         return true;
@@ -530,17 +499,11 @@ namespace Caneda
      */
     void XmlSymbol::readSchematicPort(Caneda::XmlReader *reader, const QString & schName)
     {
-        Q_ASSERT(reader->isStartElement());
         QXmlStreamAttributes attribs = reader->attributes();
-        bool ok;
-
-        qreal x = attribs.value("x").toString().toDouble(&ok);
-        Q_ASSERT(ok);
-
-        qreal y = attribs.value("y").toString().toDouble(&ok);
-        Q_ASSERT(ok);
-
+        qreal x = attribs.value("x").toString().toDouble();
+        qreal y = attribs.value("y").toString().toDouble();
         QString portName = attribs.value("name").toString();
+
         component()->schematicPortMap[schName] <<
             new PortData(QPointF(x, y), portName);
 
