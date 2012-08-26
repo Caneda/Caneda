@@ -136,7 +136,7 @@ namespace Caneda
         bool readok = false;
 
         if(reader->isStartElement() && reader->name() == "component") {
-            readok = readComponentData(reader);
+            readok = readComponent(reader);
 
             if(reader->hasError() || !readok) {
                 qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(fileName()).absolutePath();
@@ -315,7 +315,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    bool XmlSymbol::readComponentData(Caneda::XmlReader *reader)
+    bool XmlSymbol::readComponent(Caneda::XmlReader *reader)
     {
         QXmlStreamAttributes attributes = reader->attributes();
 
@@ -410,7 +410,7 @@ namespace Caneda
                     Q_ASSERT(!schName.isEmpty());
 
                     parsedSymbols << schName;
-                    if(!readSchematic(reader)) {
+                    if(!readSvg(reader)) {
                         return false;
                     }
                 }
@@ -495,13 +495,12 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    bool XmlSymbol::readSchematic(Caneda::XmlReader *reader)
+    bool XmlSymbol::readSvg(Caneda::XmlReader *reader)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "schematic");
 
         QString schName = reader->attributes().value("name").toString();
         QString schType = reader->attributes().value("href").toString();
-        bool readok;
 
         // Read svg file
         if(!schType.isEmpty()) {
@@ -516,8 +515,15 @@ namespace Caneda
                 return false;
             }
 
-            readok = readSchematicSvg(svgContent, schName);
-            if(!readok) {
+            // Process using xslt
+            Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
+                    Caneda::transformers::defaultInstance()->componentsvg());
+
+            LibraryManager *libraryManager = LibraryManager::instance();
+            QString symbolId = component()->name + "/" + schName;
+            libraryManager->registerComponent(symbolId, QXmlSvg.constData());
+            if(QXmlSvg.hasError()) {
+                qWarning() << "Could not read svg file" << schName << ": " << QXmlSvg.errorString();
                 return false;
             }
 
@@ -526,30 +532,6 @@ namespace Caneda
         }
 
         return true;
-    }
-
-    /*!
-     * \brief Read an svg schematic
-     *
-     * \param svgContent svg content as utf8
-     * \param schName Schematic name
-     */
-    bool XmlSymbol::readSchematicSvg(const QByteArray &svgContent,
-                                     const QString &schName)
-    {
-        // Process using xslt
-        Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
-                Caneda::transformers::defaultInstance()->componentsvg());
-
-        LibraryManager *libraryManager = LibraryManager::instance();
-        QString symbolId = component()->name + "/" + schName;
-        libraryManager->registerComponent(symbolId, QXmlSvg.constData());
-        if(QXmlSvg.hasError()) {
-            qWarning() << "Could not read svg file" << schName << ": " << QXmlSvg.errorString();
-            return false;
-        }
-
-        return true;;
     }
 
 } // namespace Caneda
