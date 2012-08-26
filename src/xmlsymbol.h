@@ -41,7 +41,7 @@ namespace Caneda
         bool save();
         bool load();
 
-        bool readComponentData(Caneda::XmlReader *reader, const QString& path, QSharedDataPointer<ComponentData> &d);
+        bool loadComponent(ComponentDataPtr &component);
 
         SymbolDocument* symbolDocument() const;
         CGraphicsScene* cGraphicsScene() const;
@@ -51,6 +51,7 @@ namespace Caneda
         QString saveText();
         bool loadFromText(const QString& text);
 
+        bool readComponentData(Caneda::XmlReader *reader, const QString& path, QSharedDataPointer<ComponentData> &d);
         bool readSchematics(Caneda::XmlReader *reader, const QString& svgPath, QSharedDataPointer<ComponentData> &d);
         void readComponentProperties(Caneda::XmlReader *reader, QSharedDataPointer<ComponentData> &d);
         bool readSchematic(Caneda::XmlReader *reader, const QString& svgPath, QSharedDataPointer<ComponentData> &d);
@@ -58,6 +59,7 @@ namespace Caneda
         bool readSchematicSvg(const QByteArray &svgContent, const QString &schName, QSharedDataPointer<ComponentData> &d);
 
         SymbolDocument *m_symbolDocument;
+        QString m_fileName;
     };
 
 } // namespace Caneda

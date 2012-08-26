@@ -56,7 +56,6 @@ namespace Caneda
         //! Library full path.
         QString m_libraryPath;
 
-        bool parseComponent(QString componentPath);
         QHash<QString, ComponentDataPtr> m_componentHash;
     };
 

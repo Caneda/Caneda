@@ -27,7 +27,6 @@
 #include "xmlsymbol.h"
 
 #include "xmlutilities/xmlutilities.h"
-#include "xmlutilities/validators.h"
 
 #include <QByteArray>
 #include <QDebug>
@@ -126,13 +125,25 @@ namespace Caneda
 
         QDir libraryPath(m_libraryPath);
         QStringList componentsList = libraryPath.entryList(QStringList("*.xsym"));  // Filter only component files
-        foreach (const QString &component, componentsList) {
+        foreach (const QString &componentPath, componentsList) {
             // Read all components in the library path
-            readOk = readOk & parseComponent(component);
+            ComponentDataPtr component(new ComponentData);
+            component->library = libraryName();
+            component->filename = componentPath;
+
+            XmlSymbol *format = new XmlSymbol();
+            readOk = readOk & format->loadComponent(component);
+
             if(!readOk) {
                 QMessageBox::warning(0, QObject::tr("Error"),
                                      QObject::tr("Parsing component data file %1 failed")
-                                     .arg(QFileInfo(component).absoluteFilePath()));
+                                     .arg(QFileInfo(componentPath).absoluteFilePath()));
+            }
+            else {
+                // Register component's data
+                if(!m_componentHash.contains(component->name)) {
+                    m_componentHash.insert(component->name, component);
+                }
             }
         }
 
@@ -150,57 +161,6 @@ namespace Caneda
         m_componentHash.remove(componentName);
         return true;
     }
-
-    //! \brief Parses the component data from file \a path.
-    bool Library::parseComponent(QString componentPath)
-    {
-        bool readok = true;
-        QFile file(QFileInfo(componentPath).absoluteFilePath());
-        if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QMessageBox::warning(0, QObject::tr("File open"),
-                    QObject::tr("Cannot open file %1").arg(componentPath));
-            return false;
-        }
-        QTextStream in(&file);
-        in.setCodec("UTF-8");
-        QByteArray data = in.readAll().toUtf8();
-
-        Caneda::XmlReader reader(data,
-                Caneda::validators::defaultInstance()->components());
-
-        while(!reader.atEnd()) {
-            reader.readNext();
-
-            if(reader.isStartElement() && reader.name() == "component") {
-                break;
-            }
-        }
-
-        if(reader.isStartElement() && reader.name() == "component") {
-
-            ComponentDataPtr dataPtr(new ComponentData);
-            dataPtr->library = libraryName();
-            dataPtr->filename = componentPath;
-
-            QString parentPath = QFileInfo(componentPath).absolutePath();
-            XmlSymbol *format = new XmlSymbol();
-            readok = format->readComponentData(&reader, parentPath, dataPtr);
-
-            if(dataPtr.constData() == 0 || reader.hasError() || !readok) {
-                qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();
-                readok = false;
-            }
-            else {
-                // Register component's data
-                if(!m_componentHash.contains(dataPtr->name)) {
-                    m_componentHash.insert(dataPtr->name, dataPtr);
-                }
-            }
-
-        }
-        return !reader.hasError() && readok;
-    }
-
 
     //*************************************************************
     //**********************Library Loader*************************

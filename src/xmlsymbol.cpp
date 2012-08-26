@@ -27,6 +27,7 @@
 #include "paintings/painting.h"
 
 #include "xmlutilities/transformers.h"
+#include "xmlutilities/validators.h"
 #include "xmlutilities/xmlutilities.h"
 
 #include <QDebug>
@@ -41,6 +42,12 @@ namespace Caneda
     XmlSymbol::XmlSymbol(SymbolDocument *doc) :
         m_symbolDocument(doc)
     {
+        if(m_symbolDocument) {
+            m_fileName = m_symbolDocument->fileName();
+        }
+        else {
+            m_fileName = QString();
+        }
     }
 
     bool XmlSymbol::save()
@@ -79,7 +86,7 @@ namespace Caneda
         QFile file(fileName());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
-                    QObject::tr("Cannot load document ")+fileName());
+                    QObject::tr("Cannot load document ") + fileName());
             return false;
         }
 
@@ -91,94 +98,46 @@ namespace Caneda
         return result;
     }
 
-    /*!
-     * \brief Reads component data from component description xml file.
-     *
-     * \param reader XmlReader responsible for reading xml data.
-     * \param path The path of the xml file being processed.
-     * \param d (Output variable) The data ptr where data should be uploaded.
-     */
-    bool XmlSymbol::readComponentData(Caneda::XmlReader *reader, const QString& path,
-                                      QSharedDataPointer<ComponentData> &d)
+    //! \brief Parses the component data from file \a path.
+    bool XmlSymbol::loadComponent(ComponentDataPtr &component)
     {
-        QXmlStreamAttributes attributes = reader->attributes();
+        bool readok = false;
 
-        Q_ASSERT(reader->isStartElement() && reader->name() == "component");
-
-        // Check version compatibility first.
-        Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
-
-        // Get name
-        d->name = attributes.value("name").toString();
-        Q_ASSERT(!d->name.isEmpty());
-
-        // Get label
-        d->labelPrefix = attributes.value("label").toString();
-        Q_ASSERT(!d->labelPrefix.isEmpty());
-
-        // Read the component body
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                // Read display text
-                if(reader->name() == "displaytext") {
-                    d->displayText = reader->readLocaleText(Caneda::localePrefix());
-                    Q_ASSERT(reader->isEndElement());
-                }
-
-                // Read description
-                else if(reader->name() == "description") {
-                    d->description = reader->readLocaleText(Caneda::localePrefix());
-                    Q_ASSERT(reader->isEndElement());
-                }
-
-                // Read schematic
-                else if(reader->name() == "schematics") {
-                    if(readSchematics(reader, path, d)==false) {
-                        d = static_cast<ComponentData*>(0);
-                        return false;
-                    }
-                }
-
-                // Read ports
-                else if(reader->name() == "ports") {
-                    while(!reader->atEnd()) {
-                        reader->readNext();
-
-                        if(reader->isEndElement()) {
-                            Q_ASSERT(reader->name() == "ports");
-                            break;
-                        }
-
-                        if(reader->isStartElement() && reader->name() == "port") {
-                            //TODO: Read ports information
-                            reader->readFurther();
-                            Q_ASSERT(reader->isEndElement() && reader->name() == "port");
-                        }
-                    }
-                }
-
-                // Read properties
-                else if(reader->name() == "properties") {
-                    readComponentProperties(reader,d);
-                }
-
-                else {
-                    reader->readUnknownElement();
-                }
-            }
-        }
-
-        if(reader->hasError()) {
-            d = static_cast<ComponentData*>(0);
+        QFile file(QFileInfo(component->filename).absoluteFilePath());
+        if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QMessageBox::warning(0, QObject::tr("File open"),
+                    QObject::tr("Cannot open file %1").arg(component->filename));
             return false;
         }
-        return true;
+
+        QTextStream in(&file);
+        in.setCodec("UTF-8");
+        QByteArray data = in.readAll().toUtf8();
+
+        Caneda::XmlReader reader(data,
+                Caneda::validators::defaultInstance()->components());
+
+        while(!reader.atEnd()) {
+            reader.readNext();
+
+            if(reader.isStartElement() && reader.name() == "component") {
+                break;
+            }
+        }
+
+        if(reader.isStartElement() && reader.name() == "component") {
+
+            QString parentPath = QFileInfo(component->filename).absolutePath();
+            readok = readComponentData(&reader, parentPath, component);
+
+            if(component.constData() == 0 || reader.hasError() || !readok) {
+                qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(component->filename).absolutePath();
+                readok = false;
+            }
+
+        }
+
+        return !reader.hasError() && readok;
     }
 
     SymbolDocument* XmlSymbol::symbolDocument() const
@@ -193,7 +152,7 @@ namespace Caneda
 
     QString XmlSymbol::fileName() const
     {
-        return m_symbolDocument ? m_symbolDocument->fileName() : QString();
+        return m_fileName;
     }
 
     QString XmlSymbol::saveText()
@@ -338,6 +297,96 @@ namespace Caneda
         }
 
         delete reader;
+        return true;
+    }
+
+    /*!
+     * \brief Reads component data from component description xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     * \param path The path of the xml file being processed.
+     * \param d (Output variable) The data ptr where data should be uploaded.
+     */
+    bool XmlSymbol::readComponentData(Caneda::XmlReader *reader, const QString& path,
+                                      QSharedDataPointer<ComponentData> &d)
+    {
+        QXmlStreamAttributes attributes = reader->attributes();
+
+        Q_ASSERT(reader->isStartElement() && reader->name() == "component");
+
+        // Check version compatibility first.
+        Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
+
+        // Get name
+        d->name = attributes.value("name").toString();
+        Q_ASSERT(!d->name.isEmpty());
+
+        // Get label
+        d->labelPrefix = attributes.value("label").toString();
+        Q_ASSERT(!d->labelPrefix.isEmpty());
+
+        // Read the component body
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isEndElement()) {
+                break;
+            }
+
+            if(reader->isStartElement()) {
+                // Read display text
+                if(reader->name() == "displaytext") {
+                    d->displayText = reader->readLocaleText(Caneda::localePrefix());
+                    Q_ASSERT(reader->isEndElement());
+                }
+
+                // Read description
+                else if(reader->name() == "description") {
+                    d->description = reader->readLocaleText(Caneda::localePrefix());
+                    Q_ASSERT(reader->isEndElement());
+                }
+
+                // Read schematic
+                else if(reader->name() == "schematics") {
+                    if(readSchematics(reader, path, d)==false) {
+                        d = static_cast<ComponentData*>(0);
+                        return false;
+                    }
+                }
+
+                // Read ports
+                else if(reader->name() == "ports") {
+                    while(!reader->atEnd()) {
+                        reader->readNext();
+
+                        if(reader->isEndElement()) {
+                            Q_ASSERT(reader->name() == "ports");
+                            break;
+                        }
+
+                        if(reader->isStartElement() && reader->name() == "port") {
+                            //TODO: Read ports information
+                            reader->readFurther();
+                            Q_ASSERT(reader->isEndElement() && reader->name() == "port");
+                        }
+                    }
+                }
+
+                // Read properties
+                else if(reader->name() == "properties") {
+                    readComponentProperties(reader,d);
+                }
+
+                else {
+                    reader->readUnknownElement();
+                }
+            }
+        }
+
+        if(reader->hasError()) {
+            d = static_cast<ComponentData*>(0);
+            return false;
+        }
         return true;
     }
 
