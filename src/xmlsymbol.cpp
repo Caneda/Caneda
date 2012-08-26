@@ -118,7 +118,7 @@ namespace Caneda
     {
         bool readok = false;
 
-        QFile file(QFileInfo(component()->filename).absoluteFilePath());
+        QFile file(QFileInfo(fileName()).absoluteFilePath());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::warning(0, QObject::tr("File open"),
                     QObject::tr("Cannot open file %1").arg(component()->filename));
@@ -141,15 +141,12 @@ namespace Caneda
         }
 
         if(reader.isStartElement() && reader.name() == "component") {
-
-            QString parentPath = QFileInfo(component()->filename).absolutePath();
-            readok = readComponentData(&reader, parentPath);
+            readok = readComponentData(&reader);
 
             if(reader.hasError() || !readok) {
-                qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(component()->filename).absolutePath();
+                qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(fileName()).absolutePath();
                 readok = false;
             }
-
         }
 
         return !reader.hasError() && readok;
@@ -324,10 +321,8 @@ namespace Caneda
      * \brief Reads component data from component description xml file.
      *
      * \param reader XmlReader responsible for reading xml data.
-     * \param path The path of the xml file being processed.
-     * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    bool XmlSymbol::readComponentData(Caneda::XmlReader *reader, const QString& path)
+    bool XmlSymbol::readComponentData(Caneda::XmlReader *reader)
     {
         QXmlStreamAttributes attributes = reader->attributes();
 
@@ -367,7 +362,7 @@ namespace Caneda
 
                 // Read schematic
                 else if(reader->name() == "schematics") {
-                    if(readSchematics(reader, path)==false) {
+                    if(readSchematics(reader)==false) {
                         return false;
                     }
                 }
@@ -411,10 +406,8 @@ namespace Caneda
      * \brief Read schematics section of component description xml file
      *
      * \param reader XmlReader responsible for reading xml data.
-     * \param path The path of the xml file being processed.
-     * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    bool XmlSymbol::readSchematics(Caneda::XmlReader *reader, const QString& svgPath)
+    bool XmlSymbol::readSchematics(Caneda::XmlReader *reader)
     {
         /* list of symbols */
         QStringList parsedSymbols;
@@ -442,7 +435,7 @@ namespace Caneda
                     Q_ASSERT(!schName.isEmpty());
 
                     parsedSymbols << schName;
-                    if(!readSchematic(reader, svgPath)) {
+                    if(!readSchematic(reader)) {
                         return false;
                     }
                 }
@@ -499,10 +492,8 @@ namespace Caneda
      * \brief Reads the schematic tag of component description xml file.
      *
      * \param reader XmlReader responsible for reading xml data.
-     * \param path The path of the xml file being processed.
-     * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    bool XmlSymbol::readSchematic(Caneda::XmlReader *reader, const QString& svgPath)
+    bool XmlSymbol::readSchematic(Caneda::XmlReader *reader)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "schematic");
 
@@ -512,7 +503,8 @@ namespace Caneda
 
         // If external svg file
         if(!schType.isEmpty()) {
-            QFile svgFile(svgPath + "/" + schType);
+            QString parentPath = QFileInfo(fileName()).absolutePath();
+            QFile svgFile(parentPath + "/" + schType);
             if(!svgFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
                 return false;
             }
