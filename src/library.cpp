@@ -24,6 +24,7 @@
 #include "global.h"
 #include "singletonowner.h"
 #include "settings.h"
+#include "xmlsymbol.h"
 
 #include "xmlutilities/xmlutilities.h"
 #include "xmlutilities/validators.h"
@@ -191,7 +192,8 @@ namespace Caneda
         dataPtr->filename = componentPath;
 
         QString parentPath = QFileInfo(componentPath).absolutePath();
-        readok = Caneda::readComponentData(reader, parentPath, dataPtr);
+        XmlSymbol *format = new XmlSymbol();
+        readok = format->readComponentData(reader, parentPath, dataPtr);
 
         if(dataPtr.constData() == 0 || reader->hasError() || !readok) {
             qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();

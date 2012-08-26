@@ -159,8 +159,6 @@ namespace Caneda
         QString m_symbolId; //!< The symbol id registered with ComponentsCache.
     };
 
-    bool readComponentData(Caneda::XmlReader *reader, const QString& path, QSharedDataPointer<ComponentData> &d);
-
 } // namespace Caneda
 
 #endif //COMPONENT_H

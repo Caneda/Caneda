@@ -20,6 +20,8 @@
 #ifndef XML_SYMBOL_H
 #define XML_SYMBOL_H
 
+#include "component.h"
+
 // Forward declarations
 class QString;
 
@@ -28,6 +30,7 @@ namespace Caneda
     // Forward declarations
     class CGraphicsScene;
     class SymbolDocument;
+    class XmlReader;
 
     class XmlSymbol
     {
@@ -38,6 +41,8 @@ namespace Caneda
         bool save();
         bool load();
 
+        bool readComponentData(Caneda::XmlReader *reader, const QString& path, QSharedDataPointer<ComponentData> &d);
+
         SymbolDocument* symbolDocument() const;
         CGraphicsScene* cGraphicsScene() const;
         QString fileName() const;
@@ -45,6 +50,12 @@ namespace Caneda
     private:
         QString saveText();
         bool loadFromText(const QString& text);
+
+        bool readSchematics(Caneda::XmlReader *reader, const QString& svgPath, QSharedDataPointer<ComponentData> &d);
+        void readComponentProperties(Caneda::XmlReader *reader, QSharedDataPointer<ComponentData> &d);
+        bool readSchematic(Caneda::XmlReader *reader, const QString& svgPath, QSharedDataPointer<ComponentData> &d);
+        void readSchematicPort(Caneda::XmlReader *reader, const QString & schName, QSharedDataPointer<ComponentData> &d);
+        bool readSchematicSvg(const QByteArray &svgContent, const QString &schName, QSharedDataPointer<ComponentData> &d);
 
         SymbolDocument *m_symbolDocument;
     };
