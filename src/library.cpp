@@ -128,7 +128,7 @@ namespace Caneda
         QStringList componentsList = libraryPath.entryList(QStringList("*.xsym"));  // Filter only component files
         foreach (const QString &component, componentsList) {
             // Read all components in the library path
-            readOk = readOk & parseExternalComponent(component);
+            readOk = readOk & parseComponent(component);
             if(!readOk) {
                 QMessageBox::warning(0, QObject::tr("Error"),
                                      QObject::tr("Parsing component data file %1 failed")
@@ -152,7 +152,7 @@ namespace Caneda
     }
 
     //! \brief Parses the component data from file \a path.
-    bool Library::parseExternalComponent(QString componentPath)
+    bool Library::parseComponent(QString componentPath)
     {
         bool readok = true;
         QFile file(QFileInfo(componentPath).absoluteFilePath());
@@ -175,37 +175,32 @@ namespace Caneda
                 break;
             }
         }
+
         if(reader.isStartElement() && reader.name() == "component") {
-            readok = registerComponentData(&reader, componentPath);
+
+            ComponentDataPtr dataPtr(new ComponentData);
+            dataPtr->library = libraryName();
+            dataPtr->filename = componentPath;
+
+            QString parentPath = QFileInfo(componentPath).absolutePath();
+            XmlSymbol *format = new XmlSymbol();
+            readok = format->readComponentData(&reader, parentPath, dataPtr);
+
+            if(dataPtr.constData() == 0 || reader.hasError() || !readok) {
+                qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();
+                readok = false;
+            }
+            else {
+                // Register component's data
+                if(!m_componentHash.contains(dataPtr->name)) {
+                    m_componentHash.insert(dataPtr->name, dataPtr);
+                }
+            }
+
         }
         return !reader.hasError() && readok;
     }
 
-    //! \brief Registers a component's symbol as well as the component's shared data.
-    bool Library::registerComponentData(Caneda::XmlReader *reader, QString componentPath)
-    {
-        bool readok;
-
-        //Automatically registers component's symbol on success
-        ComponentDataPtr dataPtr(new ComponentData);
-        dataPtr->library = libraryName();
-        dataPtr->filename = componentPath;
-
-        QString parentPath = QFileInfo(componentPath).absolutePath();
-        XmlSymbol *format = new XmlSymbol();
-        readok = format->readComponentData(reader, parentPath, dataPtr);
-
-        if(dataPtr.constData() == 0 || reader->hasError() || !readok) {
-            qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(componentPath).absolutePath();
-            return false;
-        }
-
-        if(!m_componentHash.contains(dataPtr->name)) {
-            m_componentHash.insert(dataPtr->name, dataPtr);
-        }
-
-        return true;
-    }
 
     //*************************************************************
     //**********************Library Loader*************************

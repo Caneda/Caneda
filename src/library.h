@@ -56,8 +56,7 @@ namespace Caneda
         //! Library full path.
         QString m_libraryPath;
 
-        bool parseExternalComponent(QString componentPath);
-        bool registerComponentData(Caneda::XmlReader *reader, QString componentPath);
+        bool parseComponent(QString componentPath);
         QHash<QString, ComponentDataPtr> m_componentHash;
     };
 
