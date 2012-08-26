@@ -68,6 +68,11 @@ namespace Caneda
         Property _label("label", tr("Label"), QVariant::String, true,
                 false, labelPrefix().append('1'));
         d->propertyMap.insert("label", _label);
+
+        const QList<PortData*> portDatas = d.constData()->ports;
+        foreach(const PortData *data, portDatas) {
+            m_ports << new Port(this, data->pos, data->name);
+        }
     }
 
     /*!
@@ -81,7 +86,7 @@ namespace Caneda
         bool itemsVisible = false;
         PropertyMap::const_iterator it = propertyMap().constBegin(),
             end = propertyMap().constEnd();
-        // determine if any item is visible.
+        // Determine if any item is visible.
         while(it != end) {
             if(it->isVisible()) {
                 itemsVisible = true;
@@ -107,7 +112,7 @@ namespace Caneda
     //! \brief Creates property group for the first time.
     void Component::createPropertyGroup()
     {
-        //delete the old group if it exists.
+        // Delete the old group if it exists.
         delete m_propertyGroup;
         m_propertyGroup = new PropertiesGroup(cGraphicsScene());
         m_propertyGroup->setParentItem(this);
@@ -172,20 +177,7 @@ namespace Caneda
      */
     bool Component::setSymbol(const QString& newSymbol)
     {
-        m_symbolId = newSymbol;
-
-        QString prefix(name());
-        prefix.append('/');
-
-        qDeleteAll(m_ports);
-        m_ports.clear();
-
-        const QList<PortData*> portDatas = d.constData()->ports;
-        foreach(const PortData *data, portDatas) {
-            m_ports << new Port(this, data->pos, data->name);
-        }
-
-        m_symbolId.prepend(prefix);
+        m_symbolId = name() + '/' + newSymbol;
 
         updateBoundingRect();
         updatePropertyGroup();
@@ -253,7 +245,7 @@ namespace Caneda
             retVal->loadData(reader);
         }
         else {
-            //read upto end if component is not found in any of Caneda identified libraries.
+            // Read to the end of the file if not found in any of Caneda libraries.
             qWarning() << "Warning: Found unknown element" << compName << ", skipping";
             reader->readUnknownElement();
         }
@@ -289,7 +281,7 @@ namespace Caneda
                     setTransform(reader->readTransform());
                 }
                 else if(reader->name() == "properties") {
-                    //note the usage as it expects reference of property map.
+                    // Note the usage as it expects reference of property map.
                     readProperties(reader, d->propertyMap);
                     // This updates the visual representation appropriately.
                     setPropertyMap(d->propertyMap);
@@ -399,8 +391,8 @@ namespace Caneda
             const QVariant &value)
     {
         if(change == ItemTransformHasChanged && m_propertyGroup) {
-            //set the inverse of component's matrix to property group so that
-            //it maintains identity when transformed.
+            // Set the inverse of component's matrix to property group so that
+            // it maintains identity when transformed.
             m_propertyGroup->setTransform(transform().inverted());
         }
         return CGraphicsItem::itemChange(change, value);
