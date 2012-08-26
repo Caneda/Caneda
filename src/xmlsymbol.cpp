@@ -27,7 +27,6 @@
 #include "paintings/painting.h"
 
 #include "xmlutilities/transformers.h"
-#include "xmlutilities/validators.h"
 #include "xmlutilities/xmlutilities.h"
 
 #include <QDebug>
@@ -106,50 +105,46 @@ namespace Caneda
         }
 
         QTextStream stream(&file);
-
         bool result = loadFromText(stream.readAll());
-
         file.close();
+
         return result;
     }
 
     //! \brief Parses the component data from file \a path.
     bool XmlSymbol::loadComponent()
     {
-        bool readok = false;
-
         QFile file(QFileInfo(fileName()).absoluteFilePath());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QMessageBox::warning(0, QObject::tr("File open"),
+            QMessageBox::critical(0, QObject::tr("File open"),
                     QObject::tr("Cannot open file %1").arg(component()->filename));
             return false;
         }
 
-        QTextStream in(&file);
-        in.setCodec("UTF-8");
-        QByteArray data = in.readAll().toUtf8();
+        QTextStream stream(&file);
+        Caneda::XmlReader *reader = new Caneda::XmlReader(stream.readAll().toUtf8());
+        file.close();
 
-        Caneda::XmlReader reader(data,
-                Caneda::validators::defaultInstance()->components());
+        while(!reader->atEnd()) {
+            reader->readNext();
 
-        while(!reader.atEnd()) {
-            reader.readNext();
-
-            if(reader.isStartElement() && reader.name() == "component") {
+            if(reader->isStartElement() && reader->name() == "component") {
                 break;
             }
         }
 
-        if(reader.isStartElement() && reader.name() == "component") {
-            readok = readComponentData(&reader);
+        bool readok = false;
 
-            if(reader.hasError() || !readok) {
+        if(reader->isStartElement() && reader->name() == "component") {
+            readok = readComponentData(reader);
+
+            if(reader->hasError() || !readok) {
                 qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(fileName()).absolutePath();
                 readok = false;
             }
         }
 
-        return !reader.hasError() && readok;
+        return !reader->hasError() && readok;
     }
 
     SymbolDocument* XmlSymbol::symbolDocument() const
@@ -178,35 +173,34 @@ namespace Caneda
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
         writer->setAutoFormatting(true);
 
-        //Fist we start the document and write current version
+        // Fist we start the document and write current version
         writer->writeStartDocument();
         writer->writeDTD(QString("<!DOCTYPE caneda>"));
-        writer->writeStartElement("caneda");
-        writer->writeAttribute("version", Caneda::version());
 
-        //Write all view details
+        // Write all view details
         writer->writeStartElement("component");
         QFileInfo info(fileName());
         writer->writeAttribute("name", info.baseName());
+        writer->writeAttribute("version", Caneda::version());
         writer->writeAttribute("label", "comp");
 
         writer->writeStartElement("displaytext");
         writer->writeLocaleText("C", "User created component");
-        //   TODO: When available use this to save user defined displaytext
-        //   writer->writeLocaleText("C", scene->displayText());
+        // TODO: When available use this to save user defined displaytext
+        // writer->writeLocaleText("C", scene->displayText());
         writer->writeEndElement(); //</displaytext>
 
         writer->writeStartElement("description");
         writer->writeLocaleText("C", "User created component based on user symbol");
-        //   TODO: When available use this to save user defined description
-        //   writer->writeLocaleText("C", scene->description());
+        // TODO: When available use this to save user defined description
+        // writer->writeLocaleText("C", scene->description());
         writer->writeEndElement(); //</description>
 
         writer->writeStartElement("symbol");
         writer->writeAttribute("name", "userdefined");
 
 
-        //Now we copy all the elements and properties in the schematic
+        // Now we copy all the elements and properties in the schematic
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
         if(!paintings.isEmpty()) {
@@ -214,14 +208,14 @@ namespace Caneda
                 p->saveData(writer);
             }
         }
-        //Finally we finish the document
+        // Finally we finish the document
         writer->writeEndElement(); //</symbol>
 
-        //TODO Write properties
+        // TODO Write properties
         writer->writeStartElement("properties");
         writer->writeEndElement(); //</properties>
 
-        writer->writeEndDocument(); //</caneda>
+        writer->writeEndDocument(); //</component>
 
         delete writer;
         return retVal;
@@ -233,76 +227,56 @@ namespace Caneda
         while(!reader->atEnd()) {
             reader->readNext();
 
-            if(reader->isStartElement()) {
-                if(reader->name() == "caneda" &&
-                        Caneda::checkVersion(reader->attributes().value("version").toString())) {
+            if(reader->isStartElement() && reader->name() == "component" &&
+                    Caneda::checkVersion(reader->attributes().value("version").toString())) {
 
-                    while(!reader->atEnd()) {
-                        reader->readNext();
-                        if(reader->isEndElement()) {
-                            Q_ASSERT(reader->name() == "caneda");
-                            break;
-                        }
+                while(!reader->atEnd()) {
+                    reader->readNext();
+                    if(reader->isEndElement()) {
+                        Q_ASSERT(reader->name() == "component");
+                        break;
+                    }
+                    reader->readNext();
 
-                        reader->readNext();
-
-                        if(!reader->isStartElement() || reader->name() != "component") {
-                            reader->raiseError(QObject::tr("Malformatted file"));
-                            break;
-                        }
+                    if(reader->name() == "displaytext") {
+                        // TODO: Implement this.
+                        reader->readUnknownElement();
+                    }
+                    else if(reader->name() == "description") {
+                        // TODO: Implement this.
+                        reader->readUnknownElement();
+                    }
+                    else if(reader->name() == "symbol") {
 
                         while(!reader->atEnd()) {
                             reader->readNext();
+
                             if(reader->isEndElement()) {
-                                Q_ASSERT(reader->name() == "component");
+                                Q_ASSERT(reader->name() == "symbol");
                                 break;
                             }
-                            reader->readNext();
 
-                            if(reader->name() == "displaytext") {
-                                // TODO: Implement this.
-                                reader->readUnknownElement();
-                            }
-                            else if(reader->name() == "description") {
-                                // TODO: Implement this.
-                                reader->readUnknownElement();
-                            }
-                            else if(reader->name() == "symbol") {
-
-                                while(!reader->atEnd()) {
-                                    reader->readNext();
-
-                                    if(reader->isEndElement()) {
-                                        Q_ASSERT(reader->name() == "symbol");
-                                        break;
-                                    }
-
-                                    if(reader->isStartElement()) {
-                                        if(reader->name() == "painting") {
-                                            Painting::loadPainting(reader, cGraphicsScene());
-                                        }
-                                        else {
-                                            qWarning() << "Error: Found unknown painting type" <<
-                                                          reader->name().toString();
-                                            reader->readUnknownElement();
-                                            reader->raiseError(QObject::tr("Malformatted file"));
-                                        }
-                                    }
+                            if(reader->isStartElement()) {
+                                if(reader->name() == "painting") {
+                                    Painting::loadPainting(reader, cGraphicsScene());
                                 }
-
-                            }
-                            else if(reader->name() == "properties") {
-                                // TODO: Implement this.
-                                reader->readUnknownElement();
-                            }
-                            else {
-                                reader->readUnknownElement();
+                                else {
+                                    qWarning() << "Error: Found unknown painting type" <<
+                                                  reader->name().toString();
+                                    reader->readUnknownElement();
+                                    reader->raiseError(QObject::tr("Malformatted file: found unknown painting type"));
+                                }
                             }
                         }
+
                     }
-                }
-                else {
-                    reader->raiseError(QObject::tr("Not a caneda file or probably malformatted file"));
+                    else if(reader->name() == "properties") {
+                        // TODO: Implement this.
+                        reader->readUnknownElement();
+                    }
+                    else {
+                        reader->readUnknownElement();
+                    }
                 }
             }
         }
