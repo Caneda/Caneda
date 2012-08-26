@@ -41,8 +41,8 @@ namespace Caneda
         QString displayText;
         QString description;
         QString library;
+        QList<PortData*> ports; //! List of component's ports
         PropertyMap propertyMap; //! Properties the user can modify (in the properties dialog)
-        QMap<QString, QList<PortData*> > schematicPortMap; //! Map of component's ports
     };
 
     typedef QSharedDataPointer<ComponentData> ComponentDataPtr;

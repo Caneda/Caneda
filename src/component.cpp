@@ -180,7 +180,7 @@ namespace Caneda
         qDeleteAll(m_ports);
         m_ports.clear();
 
-        const QList<PortData*> portDatas = d.constData()->schematicPortMap[m_symbolId];
+        const QList<PortData*> portDatas = d.constData()->ports;
         foreach(const PortData *data, portDatas) {
             m_ports << new Port(this, data->pos, data->name);
         }

@@ -196,11 +196,10 @@ namespace Caneda
         // writer->writeLocaleText("C", scene->description());
         writer->writeEndElement(); //</description>
 
+        // Write symbol geometry (drawing)
         writer->writeStartElement("symbol");
         writer->writeAttribute("name", "userdefined");
 
-
-        // Now we copy all the elements and properties in the schematic
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
         if(!paintings.isEmpty()) {
@@ -208,13 +207,18 @@ namespace Caneda
                 p->saveData(writer);
             }
         }
-        // Finally we finish the document
+
         writer->writeEndElement(); //</symbol>
+
+        // TODO Write ports
+        writer->writeStartElement("ports");
+        writer->writeEndElement(); //</ports>
 
         // TODO Write properties
         writer->writeStartElement("properties");
         writer->writeEndElement(); //</properties>
 
+        // Finally we finish the document
         writer->writeEndDocument(); //</component>
 
         delete writer;
@@ -238,14 +242,19 @@ namespace Caneda
                     }
                     reader->readNext();
 
+                    // Read display text
                     if(reader->name() == "displaytext") {
                         // TODO: Implement this.
                         reader->readUnknownElement();
                     }
+
+                    // Read description
                     else if(reader->name() == "description") {
                         // TODO: Implement this.
                         reader->readUnknownElement();
                     }
+
+                    // Read symbol
                     else if(reader->name() == "symbol") {
 
                         while(!reader->atEnd()) {
@@ -270,10 +279,20 @@ namespace Caneda
                         }
 
                     }
+
+                    // Read ports
+                    else if(reader->name() == "ports") {
+                        // TODO: Implement this.
+                        reader->readUnknownElement();
+                    }
+
+                    // Read properties
                     else if(reader->name() == "properties") {
                         // TODO: Implement this.
                         reader->readUnknownElement();
                     }
+
+                    // Read unknown element
                     else {
                         reader->readUnknownElement();
                     }
@@ -302,14 +321,10 @@ namespace Caneda
 
         Q_ASSERT(reader->isStartElement() && reader->name() == "component");
 
-        // Check version compatibility first.
+        // Check version compatibility, get name and label
         Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
-
-        // Get name
         component()->name = attributes.value("name").toString();
         Q_ASSERT(!component()->name.isEmpty());
-
-        // Get label
         component()->labelPrefix = attributes.value("label").toString();
         Q_ASSERT(!component()->labelPrefix.isEmpty());
 
@@ -336,9 +351,14 @@ namespace Caneda
 
                 // Read symbol
                 else if(reader->name() == "symbol") {
-                    if(readSymbol(reader)==false) {
+                    if(readSymbol(reader) == false) {
                         return false;
                     }
+                }
+
+                // Read ports
+                else if(reader->name() == "ports") {
+                    readPorts(reader);
                 }
 
                 // Read properties
@@ -416,6 +436,37 @@ namespace Caneda
     }
 
     /*!
+     * \brief Reads the ports data from component description xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
+    void XmlSymbol::readPorts(Caneda::XmlReader *reader)
+    {
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isEndElement()) {
+                break;
+            }
+
+            if(reader->isStartElement() && reader->name() == "port") {
+                QXmlStreamAttributes attribs = reader->attributes();
+                qreal x = attribs.value("x").toString().toDouble();
+                qreal y = attribs.value("y").toString().toDouble();
+                QString portName = attribs.value("name").toString();
+
+                component()->ports << new PortData(QPointF(x, y), portName);
+
+                // Read until end of element
+                reader->readUnknownElement();
+            }
+            else {
+                Q_ASSERT(!sizeof("Found unknown element in ports section"));
+            }
+        }
+    }
+
+    /*!
      * \brief Reads component properties data from component description xml file.
      *
      * \param reader XmlReader responsible for reading xml data.
@@ -429,14 +480,12 @@ namespace Caneda
                 break;
             }
 
-            else if(reader->isStartElement()) {
-                if(reader->name() == "property") {
-                    Property prop = PropertyFactory::createProperty(reader);
-                    component()->propertyMap.insert(prop.name(), prop);
-                }
-                else {
-                    Q_ASSERT(!sizeof("Found unknown element in properties section"));
-                }
+            if(reader->isStartElement() && reader->name() == "property") {
+                Property prop = PropertyFactory::createProperty(reader);
+                component()->propertyMap.insert(prop.name(), prop);
+            }
+            else {
+                Q_ASSERT(!sizeof("Found unknown element in properties section"));
             }
         }
     }
@@ -471,44 +520,12 @@ namespace Caneda
             if(!readok) {
                 return false;
             }
+
+            // Read until end of element
+            reader->readUnknownElement();
         }
 
-        // Read component ports
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                break;
-            }
-
-            if(reader->isStartElement() && reader->name() == "port") {
-                readSchematicPort(reader, schName);
-            }
-            else {
-                Q_ASSERT(!sizeof("Unknown element in schematic element"));
-            }
-        }
         return true;
-    }
-
-    /*!
-     * \brief Reads the schematic port tag of component description xml file.
-     *
-     * \param reader XmlReader responsible for reading xml data.
-     * \param schName Schematic name
-     */
-    void XmlSymbol::readSchematicPort(Caneda::XmlReader *reader, const QString & schName)
-    {
-        QXmlStreamAttributes attribs = reader->attributes();
-        qreal x = attribs.value("x").toString().toDouble();
-        qreal y = attribs.value("y").toString().toDouble();
-        QString portName = attribs.value("name").toString();
-
-        component()->schematicPortMap[schName] <<
-            new PortData(QPointF(x, y), portName);
-
-        // Read until end element as all data we require is already obtained.
-        reader->readUnknownElement();
     }
 
     /*!
