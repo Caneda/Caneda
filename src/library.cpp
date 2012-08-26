@@ -127,12 +127,12 @@ namespace Caneda
         QStringList componentsList = libraryPath.entryList(QStringList("*.xsym"));  // Filter only component files
         foreach (const QString &componentPath, componentsList) {
             // Read all components in the library path
-            ComponentDataPtr component(new ComponentData);
+            ComponentData *component = new ComponentData();
             component->library = libraryName();
             component->filename = componentPath;
 
-            XmlSymbol *format = new XmlSymbol();
-            readOk = readOk & format->loadComponent(component);
+            XmlSymbol *format = new XmlSymbol(component);
+            readOk = readOk & format->loadComponent();
 
             if(!readOk) {
                 QMessageBox::warning(0, QObject::tr("Error"),
@@ -142,7 +142,8 @@ namespace Caneda
             else {
                 // Register component's data
                 if(!m_componentHash.contains(component->name)) {
-                    m_componentHash.insert(component->name, component);
+                    ComponentDataPtr componentDataPtr(component);
+                    m_componentHash.insert(component->name, componentDataPtr);
                 }
             }
         }

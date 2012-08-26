@@ -36,29 +36,32 @@ namespace Caneda
     {
     public:
         XmlSymbol(SymbolDocument *doc = 0);
+        XmlSymbol(ComponentData *component);
         ~XmlSymbol() {}
 
         bool save();
-        bool load();
-
-        bool loadComponent(ComponentDataPtr &component);
+        bool loadSymbol();
+        bool loadComponent();
 
         SymbolDocument* symbolDocument() const;
         CGraphicsScene* cGraphicsScene() const;
+        ComponentData* component() const;
+
         QString fileName() const;
 
     private:
         QString saveText();
         bool loadFromText(const QString& text);
 
-        bool readComponentData(Caneda::XmlReader *reader, const QString& path, QSharedDataPointer<ComponentData> &d);
-        bool readSchematics(Caneda::XmlReader *reader, const QString& svgPath, QSharedDataPointer<ComponentData> &d);
-        void readComponentProperties(Caneda::XmlReader *reader, QSharedDataPointer<ComponentData> &d);
-        bool readSchematic(Caneda::XmlReader *reader, const QString& svgPath, QSharedDataPointer<ComponentData> &d);
-        void readSchematicPort(Caneda::XmlReader *reader, const QString & schName, QSharedDataPointer<ComponentData> &d);
-        bool readSchematicSvg(const QByteArray &svgContent, const QString &schName, QSharedDataPointer<ComponentData> &d);
+        bool readComponentData(Caneda::XmlReader *reader, const QString& path);
+        bool readSchematics(Caneda::XmlReader *reader, const QString& svgPath);
+        void readComponentProperties(Caneda::XmlReader *reader);
+        bool readSchematic(Caneda::XmlReader *reader, const QString& svgPath);
+        void readSchematicPort(Caneda::XmlReader *reader, const QString & schName);
+        bool readSchematicSvg(const QByteArray &svgContent, const QString &schName);
 
         SymbolDocument *m_symbolDocument;
+        ComponentData *m_component;
         QString m_fileName;
     };
 

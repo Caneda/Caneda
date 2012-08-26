@@ -48,6 +48,21 @@ namespace Caneda
         else {
             m_fileName = QString();
         }
+
+        m_component = 0;
+    }
+
+    XmlSymbol::XmlSymbol(ComponentData *component) :
+        m_component(component)
+    {
+        if(m_component) {
+            m_fileName = m_component->filename;
+        }
+        else {
+            m_fileName = QString();
+        }
+
+        m_symbolDocument = 0;
     }
 
     bool XmlSymbol::save()
@@ -76,7 +91,7 @@ namespace Caneda
         return true;
     }
 
-    bool XmlSymbol::load()
+    bool XmlSymbol::loadSymbol()
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
@@ -99,14 +114,14 @@ namespace Caneda
     }
 
     //! \brief Parses the component data from file \a path.
-    bool XmlSymbol::loadComponent(ComponentDataPtr &component)
+    bool XmlSymbol::loadComponent()
     {
         bool readok = false;
 
-        QFile file(QFileInfo(component->filename).absoluteFilePath());
+        QFile file(QFileInfo(component()->filename).absoluteFilePath());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::warning(0, QObject::tr("File open"),
-                    QObject::tr("Cannot open file %1").arg(component->filename));
+                    QObject::tr("Cannot open file %1").arg(component()->filename));
             return false;
         }
 
@@ -127,11 +142,11 @@ namespace Caneda
 
         if(reader.isStartElement() && reader.name() == "component") {
 
-            QString parentPath = QFileInfo(component->filename).absolutePath();
-            readok = readComponentData(&reader, parentPath, component);
+            QString parentPath = QFileInfo(component()->filename).absolutePath();
+            readok = readComponentData(&reader, parentPath);
 
-            if(component.constData() == 0 || reader.hasError() || !readok) {
-                qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(component->filename).absolutePath();
+            if(reader.hasError() || !readok) {
+                qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(component()->filename).absolutePath();
                 readok = false;
             }
 
@@ -148,6 +163,11 @@ namespace Caneda
     CGraphicsScene* XmlSymbol::cGraphicsScene() const
     {
         return m_symbolDocument ? m_symbolDocument->cGraphicsScene() : 0;
+    }
+
+    ComponentData* XmlSymbol::component() const
+    {
+        return m_component;
     }
 
     QString XmlSymbol::fileName() const
@@ -307,8 +327,7 @@ namespace Caneda
      * \param path The path of the xml file being processed.
      * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    bool XmlSymbol::readComponentData(Caneda::XmlReader *reader, const QString& path,
-                                      QSharedDataPointer<ComponentData> &d)
+    bool XmlSymbol::readComponentData(Caneda::XmlReader *reader, const QString& path)
     {
         QXmlStreamAttributes attributes = reader->attributes();
 
@@ -318,12 +337,12 @@ namespace Caneda
         Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
 
         // Get name
-        d->name = attributes.value("name").toString();
-        Q_ASSERT(!d->name.isEmpty());
+        component()->name = attributes.value("name").toString();
+        Q_ASSERT(!component()->name.isEmpty());
 
         // Get label
-        d->labelPrefix = attributes.value("label").toString();
-        Q_ASSERT(!d->labelPrefix.isEmpty());
+        component()->labelPrefix = attributes.value("label").toString();
+        Q_ASSERT(!component()->labelPrefix.isEmpty());
 
         // Read the component body
         while(!reader->atEnd()) {
@@ -336,20 +355,19 @@ namespace Caneda
             if(reader->isStartElement()) {
                 // Read display text
                 if(reader->name() == "displaytext") {
-                    d->displayText = reader->readLocaleText(Caneda::localePrefix());
+                    component()->displayText = reader->readLocaleText(Caneda::localePrefix());
                     Q_ASSERT(reader->isEndElement());
                 }
 
                 // Read description
                 else if(reader->name() == "description") {
-                    d->description = reader->readLocaleText(Caneda::localePrefix());
+                    component()->description = reader->readLocaleText(Caneda::localePrefix());
                     Q_ASSERT(reader->isEndElement());
                 }
 
                 // Read schematic
                 else if(reader->name() == "schematics") {
-                    if(readSchematics(reader, path, d)==false) {
-                        d = static_cast<ComponentData*>(0);
+                    if(readSchematics(reader, path)==false) {
                         return false;
                     }
                 }
@@ -374,7 +392,7 @@ namespace Caneda
 
                 // Read properties
                 else if(reader->name() == "properties") {
-                    readComponentProperties(reader,d);
+                    readComponentProperties(reader);
                 }
 
                 else {
@@ -384,7 +402,6 @@ namespace Caneda
         }
 
         if(reader->hasError()) {
-            d = static_cast<ComponentData*>(0);
             return false;
         }
         return true;
@@ -397,8 +414,7 @@ namespace Caneda
      * \param path The path of the xml file being processed.
      * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    bool XmlSymbol::readSchematics(Caneda::XmlReader *reader, const QString& svgPath,
-                                   QSharedDataPointer<ComponentData> &d)
+    bool XmlSymbol::readSchematics(Caneda::XmlReader *reader, const QString& svgPath)
     {
         /* list of symbols */
         QStringList parsedSymbols;
@@ -426,7 +442,7 @@ namespace Caneda
                     Q_ASSERT(!schName.isEmpty());
 
                     parsedSymbols << schName;
-                    if(!readSchematic(reader, svgPath, d)) {
+                    if(!readSchematic(reader, svgPath)) {
                         return false;
                     }
                 }
@@ -446,7 +462,7 @@ namespace Caneda
         Q_ASSERT(defValue.convert(QVariant::String));
         Property symb("symbol", symbolDescription, QVariant::String, false,
                 false, defValue, parsedSymbols);
-        d->propertyMap.insert("symbol", symb);
+        component()->propertyMap.insert("symbol", symb);
 
         return true;
     }
@@ -457,8 +473,7 @@ namespace Caneda
      * \param reader XmlReader responsible for reading xml data.
      * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    void XmlSymbol::readComponentProperties(Caneda::XmlReader *reader,
-                                            QSharedDataPointer<ComponentData> &d)
+    void XmlSymbol::readComponentProperties(Caneda::XmlReader *reader)
     {
         while(!reader->atEnd()) {
             reader->readNext();
@@ -470,7 +485,7 @@ namespace Caneda
             else if(reader->isStartElement()) {
                 if(reader->name() == "property") {
                     Property prop = PropertyFactory::createProperty(reader);
-                    d->propertyMap.insert(prop.name(), prop);
+                    component()->propertyMap.insert(prop.name(), prop);
                 }
                 /* default */
                 else {
@@ -487,8 +502,7 @@ namespace Caneda
      * \param path The path of the xml file being processed.
      * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    bool XmlSymbol::readSchematic(Caneda::XmlReader *reader, const QString& svgPath,
-                                  QSharedDataPointer<ComponentData> &d)
+    bool XmlSymbol::readSchematic(Caneda::XmlReader *reader, const QString& svgPath)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "schematic");
 
@@ -508,7 +522,7 @@ namespace Caneda
                 return false;
             }
 
-            readok = readSchematicSvg(svgContent, schName, d);
+            readok = readSchematicSvg(svgContent, schName);
             if(!readok) {
                 return false;
             }
@@ -527,13 +541,13 @@ namespace Caneda
                     Q_ASSERT(schType.isEmpty());
                     QByteArray svgContent = reader->readXmlFragment().toUtf8();
                     // TODO: return error
-                    readok = readSchematicSvg(svgContent, schName, d);
+                    readok = readSchematicSvg(svgContent, schName);
                     if(!readok) {
                         return false;
                     }
                 }
                 else if(reader->name() == "port") {
-                    readSchematicPort(reader, schName, d);
+                    readSchematicPort(reader, schName);
                 }
                 else {
                     Q_ASSERT(!sizeof("Unknown element in schematic element"));
@@ -550,8 +564,7 @@ namespace Caneda
      * \param schName Schematic name
      * \param d (Output variable) The data ptr where data should be uploaded.
      */
-    void XmlSymbol::readSchematicPort(Caneda::XmlReader *reader, const QString & schName,
-                                      QSharedDataPointer<ComponentData> &d)
+    void XmlSymbol::readSchematicPort(Caneda::XmlReader *reader, const QString & schName)
     {
         Q_ASSERT(reader->isStartElement());
         QXmlStreamAttributes attribs = reader->attributes();
@@ -564,7 +577,7 @@ namespace Caneda
         Q_ASSERT(ok);
 
         QString portName = attribs.value("name").toString();
-        d->schematicPortMap[schName] <<
+        component()->schematicPortMap[schName] <<
             new PortData(QPointF(x, y), portName);
 
         // Read until end element as all data we require is already obtained.
@@ -580,15 +593,14 @@ namespace Caneda
      * \todo Check errors
      */
     bool XmlSymbol::readSchematicSvg(const QByteArray &svgContent,
-                                     const QString &schName,
-                                     QSharedDataPointer<ComponentData> &d)
+                                     const QString &schName)
     {
         // Process using xslt
         Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
                 Caneda::transformers::defaultInstance()->componentsvg());
 
         LibraryManager *libraryManager = LibraryManager::instance();
-        QString symbolId = d.constData()->name + "/" + schName;
+        QString symbolId = component()->name + "/" + schName;
         libraryManager->registerComponent(symbolId, QXmlSvg.constData());
         if(QXmlSvg.hasError()) {
             qWarning() << "Could not read svg file" << schName << ": " << QXmlSvg.errorString();

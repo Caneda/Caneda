@@ -193,7 +193,7 @@ namespace Caneda
 
         if(info.suffix() == "xsym") {
             XmlSymbol *format = new XmlSymbol(this);
-            return format->load();
+            return format->loadSymbol();
         }
 
         if (errorMessage) {
