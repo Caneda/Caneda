@@ -93,8 +93,6 @@ namespace Caneda
     //! \brief Parses the component data from file \a path.
     bool XmlSymbol::load()
     {
-        bool result;
-
         QFile file(fileName());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
@@ -105,6 +103,7 @@ namespace Caneda
         QTextStream stream(&file);
 
         // Check if we are reading a symbol or loading a component
+        bool result;
         if(cGraphicsScene()) {
             result = loadSymbol(stream.readAll());
         }
@@ -197,23 +196,38 @@ namespace Caneda
         return retVal;
     }
 
+    /*!
+     * \brief Reads symbol data from xml file text.
+     *
+     * \param text String containing xml data from component/symbol file.
+     */
+
     bool XmlSymbol::loadSymbol(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
+
         while(!reader->atEnd()) {
             reader->readNext();
+            if(reader->isStartElement() && reader->name() == "component") {
+                break;
+            }
+        }
 
-            if(reader->isStartElement() && reader->name() == "component" &&
-                    Caneda::checkVersion(reader->attributes().value("version").toString())) {
+        if(reader->isStartElement() && reader->name() == "component") {
 
-                while(!reader->atEnd()) {
-                    reader->readNext();
-                    if(reader->isEndElement()) {
-                        Q_ASSERT(reader->name() == "component");
-                        break;
-                    }
-                    reader->readNext();
+            // Check version compatibility
+            QXmlStreamAttributes attributes = reader->attributes();
+            Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
 
+            // Read the component body
+            while(!reader->atEnd()) {
+                reader->readNext();
+
+                if(reader->isEndElement()) {
+                    break;
+                }
+
+                if(reader->isStartElement()) {
                     // Read display text
                     if(reader->name() == "displaytext") {
                         // TODO: Implement this.
@@ -228,40 +242,17 @@ namespace Caneda
 
                     // Read symbol
                     else if(reader->name() == "symbol") {
-
-                        while(!reader->atEnd()) {
-                            reader->readNext();
-
-                            if(reader->isEndElement()) {
-                                Q_ASSERT(reader->name() == "symbol");
-                                break;
-                            }
-
-                            if(reader->isStartElement()) {
-                                if(reader->name() == "painting") {
-                                    Painting::loadPainting(reader, cGraphicsScene());
-                                }
-                                else {
-                                    qWarning() << "Error: Found unknown painting type" <<
-                                                  reader->name().toString();
-                                    reader->readUnknownElement();
-                                    reader->raiseError(QObject::tr("Malformatted file: found unknown painting type"));
-                                }
-                            }
-                        }
-
+                        readSymbol(reader);
                     }
 
                     // Read ports
                     else if(reader->name() == "ports") {
-                        // TODO: Implement this.
-                        reader->readUnknownElement();
+                        readPorts(reader);
                     }
 
                     // Read properties
                     else if(reader->name() == "properties") {
-                        // TODO: Implement this.
-                        reader->readUnknownElement();
+                        readProperties(reader);
                     }
 
                     // Read unknown element
@@ -273,6 +264,7 @@ namespace Caneda
         }
 
         if(reader->hasError()) {
+            qWarning() << "\nWarning: Failed to read data from\n" << fileName();
             QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
             delete reader;
             return false;
@@ -320,30 +312,26 @@ namespace Caneda
                     // Read display text
                     if(reader->name() == "displaytext") {
                         component()->displayText = reader->readLocaleText(Caneda::localePrefix());
-                        Q_ASSERT(reader->isEndElement());
                     }
 
                     // Read description
                     else if(reader->name() == "description") {
                         component()->description = reader->readLocaleText(Caneda::localePrefix());
-                        Q_ASSERT(reader->isEndElement());
                     }
 
                     // Read symbol
                     else if(reader->name() == "symbol") {
-                        if(readSymbol(reader) == false) {
-                            reader->raiseError(QObject::tr("Malformatted file: found problems during geometry loading"));
-                        }
+                        readComponentSymbol(reader);
                     }
 
                     // Read ports
                     else if(reader->name() == "ports") {
-                        readPorts(reader);
+                        readComponentPorts(reader);
                     }
 
                     // Read properties
                     else if(reader->name() == "properties") {
-                        readProperties(reader);
+                        readComponentProperties(reader);
                     }
 
                     // Read unknown element
@@ -371,7 +359,58 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    bool XmlSymbol::readSymbol(Caneda::XmlReader *reader)
+    void XmlSymbol::readSymbol(Caneda::XmlReader *reader)
+    {
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isEndElement()) {
+                Q_ASSERT(reader->name() == "symbol");
+                break;
+            }
+
+            if(reader->isStartElement()) {
+                if(reader->name() == "painting") {
+                    Painting::loadPainting(reader, cGraphicsScene());
+                }
+                else {
+                    qWarning() << "Error: Found unknown painting type" <<
+                                  reader->name().toString();
+                    reader->readUnknownElement();
+                    reader->raiseError(QObject::tr("Malformatted file: found unknown painting type"));
+                }
+            }
+        }
+    }
+
+    /*!
+     * \brief Reads the ports data from component description xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
+    void XmlSymbol::readPorts(Caneda::XmlReader *reader)
+    {
+        // TODO: Implement this.
+        reader->readUnknownElement();
+    }
+
+    /*!
+     * \brief Reads component properties data from component description xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
+    void XmlSymbol::readProperties(Caneda::XmlReader *reader)
+    {
+        // TODO: Implement this.
+        reader->readUnknownElement();
+    }
+
+    /*!
+     * \brief Read symbol section of component description xml file
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
+    void XmlSymbol::readComponentSymbol(Caneda::XmlReader *reader)
     {
         // List of symbols and default value
         QStringList parsedSymbols;
@@ -398,7 +437,7 @@ namespace Caneda
 
                     parsedSymbols << schName;
                     if(!readSvg(reader)) {
-                        return false;
+                        reader->raiseError(QObject::tr("Malformatted file: found problems during geometry loading"));
                     }
                 }
                 else {
@@ -418,8 +457,6 @@ namespace Caneda
         Property symb("symbol", symbolDescription, QVariant::String, false,
                 false, defValue, parsedSymbols);
         component()->propertyMap.insert("symbol", symb);
-
-        return true;
     }
 
     /*!
@@ -427,7 +464,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void XmlSymbol::readPorts(Caneda::XmlReader *reader)
+    void XmlSymbol::readComponentPorts(Caneda::XmlReader *reader)
     {
         while(!reader->atEnd()) {
             reader->readNext();
@@ -458,7 +495,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void XmlSymbol::readProperties(Caneda::XmlReader *reader)
+    void XmlSymbol::readComponentProperties(Caneda::XmlReader *reader)
     {
         while(!reader->atEnd()) {
             reader->readNext();
