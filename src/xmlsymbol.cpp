@@ -464,7 +464,6 @@ namespace Caneda
      * \brief Reads component properties data from component description xml file.
      *
      * \param reader XmlReader responsible for reading xml data.
-     * \param d (Output variable) The data ptr where data should be uploaded.
      */
     void XmlSymbol::readComponentProperties(Caneda::XmlReader *reader)
     {
@@ -554,7 +553,6 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      * \param schName Schematic name
-     * \param d (Output variable) The data ptr where data should be uploaded.
      */
     void XmlSymbol::readSchematicPort(Caneda::XmlReader *reader, const QString & schName)
     {
@@ -581,8 +579,6 @@ namespace Caneda
      *
      * \param svgContent svg content as utf8
      * \param schName Schematic name
-     * \param d (Output variable) The data ptr where data should be uploaded.
-     * \todo Check errors
      */
     bool XmlSymbol::readSchematicSvg(const QByteArray &svgContent,
                                      const QString &schName)
@@ -601,6 +597,5 @@ namespace Caneda
 
         return true;;
     }
-
 
 } // namespace Caneda
