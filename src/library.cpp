@@ -132,7 +132,7 @@ namespace Caneda
             component->filename = componentPath;
 
             XmlSymbol *format = new XmlSymbol(component);
-            readOk = readOk & format->loadComponent();
+            readOk = readOk & format->load();
 
             if(!readOk) {
                 QMessageBox::warning(0, QObject::tr("Error"),

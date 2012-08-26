@@ -90,41 +90,32 @@ namespace Caneda
         return true;
     }
 
-    bool XmlSymbol::loadSymbol()
+    //! \brief Parses the component data from file \a path.
+    bool XmlSymbol::load()
     {
-        CGraphicsScene *scene = cGraphicsScene();
-        if(!scene) {
-            return false;
-        }
+        bool result;
 
         QFile file(fileName());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
-                    QObject::tr("Cannot load document ") + fileName());
+                    QObject::tr("Cannot open file %1").arg(fileName()));
             return false;
         }
 
         QTextStream stream(&file);
-        bool result = loadFromText(stream.readAll());
-        file.close();
 
-        return result;
-    }
-
-    //! \brief Parses the component data from file \a path.
-    bool XmlSymbol::loadComponent()
-    {
-        QFile file(QFileInfo(fileName()).absoluteFilePath());
-        if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QMessageBox::critical(0, QObject::tr("File open"),
-                    QObject::tr("Cannot open file %1").arg(component()->filename));
-            return false;
+        // Check if we are reading a symbol or loading a component
+        if(cGraphicsScene()) {
+            result = loadSymbol(stream.readAll());
+        }
+        else if(component()) {
+            result = loadComponent(stream.readAll());
+        }
+        else {
+            result = false;
         }
 
-        QTextStream stream(&file);
-        bool result = readComponent(stream.readAll());
         file.close();
-
         return result;
     }
 
@@ -206,7 +197,7 @@ namespace Caneda
         return retVal;
     }
 
-    bool XmlSymbol::loadFromText(const QString& text)
+    bool XmlSymbol::loadSymbol(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
         while(!reader->atEnd()) {
@@ -296,7 +287,7 @@ namespace Caneda
      *
      * \param text String containing xml data from component/symbol file.
      */
-    bool XmlSymbol::readComponent(const QString &text)
+    bool XmlSymbol::loadComponent(const QString &text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
 
@@ -365,7 +356,7 @@ namespace Caneda
 
 
         if(reader->hasError()) {
-            qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(fileName()).absolutePath();
+            qWarning() << "\nWarning: Failed to read data from\n" << fileName();
             QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
             delete reader;
             return false;

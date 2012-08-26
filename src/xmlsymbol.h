@@ -40,8 +40,7 @@ namespace Caneda
         ~XmlSymbol() {}
 
         bool save();
-        bool loadSymbol();
-        bool loadComponent();
+        bool load();
 
         SymbolDocument* symbolDocument() const;
         CGraphicsScene* cGraphicsScene() const;
@@ -51,9 +50,9 @@ namespace Caneda
 
     private:
         QString saveText();
-        bool loadFromText(const QString& text);
+        bool loadSymbol(const QString& text);
+        bool loadComponent(const QString& text);
 
-        bool readComponent(const QString& text);
         bool readSymbol(Caneda::XmlReader *reader);
         void readPorts(Caneda::XmlReader *reader);
         void readProperties(Caneda::XmlReader *reader);
