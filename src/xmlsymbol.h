@@ -53,7 +53,7 @@ namespace Caneda
         QString saveText();
         bool loadFromText(const QString& text);
 
-        bool readComponent(Caneda::XmlReader *reader);
+        bool readComponent(const QString& text);
         bool readSymbol(Caneda::XmlReader *reader);
         void readPorts(Caneda::XmlReader *reader);
         void readProperties(Caneda::XmlReader *reader);

@@ -122,29 +122,10 @@ namespace Caneda
         }
 
         QTextStream stream(&file);
-        Caneda::XmlReader *reader = new Caneda::XmlReader(stream.readAll().toUtf8());
+        bool result = readComponent(stream.readAll());
         file.close();
 
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isStartElement() && reader->name() == "component") {
-                break;
-            }
-        }
-
-        bool readok = false;
-
-        if(reader->isStartElement() && reader->name() == "component") {
-            readok = readComponent(reader);
-
-            if(reader->hasError() || !readok) {
-                qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(fileName()).absolutePath();
-                readok = false;
-            }
-        }
-
-        return !reader->hasError() && readok;
+        return result;
     }
 
     SymbolDocument* XmlSymbol::symbolDocument() const
@@ -311,71 +292,86 @@ namespace Caneda
     }
 
     /*!
-     * \brief Reads component data from component description xml file.
+     * \brief Reads component data from xml file text.
      *
-     * \param reader XmlReader responsible for reading xml data.
+     * \param text String containing xml data from component/symbol file.
      */
-    bool XmlSymbol::readComponent(Caneda::XmlReader *reader)
+    bool XmlSymbol::readComponent(const QString &text)
     {
-        QXmlStreamAttributes attributes = reader->attributes();
+        Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
 
-        Q_ASSERT(reader->isStartElement() && reader->name() == "component");
-
-        // Check version compatibility, get name and label
-        Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
-        component()->name = attributes.value("name").toString();
-        Q_ASSERT(!component()->name.isEmpty());
-        component()->labelPrefix = attributes.value("label").toString();
-        Q_ASSERT(!component()->labelPrefix.isEmpty());
-
-        // Read the component body
         while(!reader->atEnd()) {
             reader->readNext();
-
-            if(reader->isEndElement()) {
+            if(reader->isStartElement() && reader->name() == "component") {
                 break;
             }
+        }
 
-            if(reader->isStartElement()) {
-                // Read display text
-                if(reader->name() == "displaytext") {
-                    component()->displayText = reader->readLocaleText(Caneda::localePrefix());
-                    Q_ASSERT(reader->isEndElement());
+        if(reader->isStartElement() && reader->name() == "component") {
+
+            // Check version compatibility, get name and label
+            QXmlStreamAttributes attributes = reader->attributes();
+            Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
+            component()->name = attributes.value("name").toString();
+            Q_ASSERT(!component()->name.isEmpty());
+            component()->labelPrefix = attributes.value("label").toString();
+            Q_ASSERT(!component()->labelPrefix.isEmpty());
+
+            // Read the component body
+            while(!reader->atEnd()) {
+                reader->readNext();
+
+                if(reader->isEndElement()) {
+                    break;
                 }
 
-                // Read description
-                else if(reader->name() == "description") {
-                    component()->description = reader->readLocaleText(Caneda::localePrefix());
-                    Q_ASSERT(reader->isEndElement());
-                }
-
-                // Read symbol
-                else if(reader->name() == "symbol") {
-                    if(readSymbol(reader) == false) {
-                        return false;
+                if(reader->isStartElement()) {
+                    // Read display text
+                    if(reader->name() == "displaytext") {
+                        component()->displayText = reader->readLocaleText(Caneda::localePrefix());
+                        Q_ASSERT(reader->isEndElement());
                     }
-                }
 
-                // Read ports
-                else if(reader->name() == "ports") {
-                    readPorts(reader);
-                }
+                    // Read description
+                    else if(reader->name() == "description") {
+                        component()->description = reader->readLocaleText(Caneda::localePrefix());
+                        Q_ASSERT(reader->isEndElement());
+                    }
 
-                // Read properties
-                else if(reader->name() == "properties") {
-                    readProperties(reader);
-                }
+                    // Read symbol
+                    else if(reader->name() == "symbol") {
+                        if(readSymbol(reader) == false) {
+                            reader->raiseError(QObject::tr("Malformatted file: found problems during geometry loading"));
+                        }
+                    }
 
-                // Read unknown element
-                else {
-                    reader->readUnknownElement();
+                    // Read ports
+                    else if(reader->name() == "ports") {
+                        readPorts(reader);
+                    }
+
+                    // Read properties
+                    else if(reader->name() == "properties") {
+                        readProperties(reader);
+                    }
+
+                    // Read unknown element
+                    else {
+                        reader->readUnknownElement();
+                    }
                 }
             }
         }
 
+
         if(reader->hasError()) {
+            qWarning() << "\nWarning: Failed to read data from\n" << QFileInfo(fileName()).absolutePath();
+            QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
+            delete reader;
             return false;
         }
+
+        delete reader;
         return true;
     }
 
