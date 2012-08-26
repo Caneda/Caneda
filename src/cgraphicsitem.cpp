@@ -270,7 +270,7 @@ namespace Caneda
         m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
         m_shape = path;
         if(m_shape.isEmpty()) {
-            //if path is empry just add the bounding rect itself to the path.
+            // If path is empty just add the bounding rect to the path.
             m_shape.addRect(m_boundingRect);
         }
     }

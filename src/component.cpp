@@ -422,6 +422,7 @@ namespace Caneda
         // Get an adjusted rect for accomodating extra stuff like ports.
         QRectF adjustedRect = adjustedBoundRect(bound);
 
+        // TODO: Set symbol QPainterPath instead of empty QPainterPath().
         setShapeAndBoundRect(QPainterPath(), adjustedRect, 1.0);
     }
 
@@ -527,7 +528,7 @@ namespace Caneda
                 if(reader->name() == "svg") {
                     Q_ASSERT(schType.isEmpty());
                     QByteArray svgContent = reader->readXmlFragment().toUtf8();
-                    // todo return error
+                    // TODO: return error
                     readok = readSchematicSvg(svgContent, schName, d);
                     if(!readok) {
                         return false;
@@ -537,7 +538,7 @@ namespace Caneda
                     readSchematicPort(reader, schName, d);
                 }
                 else {
-                    Q_ASSERT(!sizeof("unknow element in schematic element"));
+                    Q_ASSERT(!sizeof("Unknown element in schematic element"));
                 }
             }
         }
@@ -585,7 +586,7 @@ namespace Caneda
                     }
                 }
                 else {
-                    Q_ASSERT(!sizeof("unknow element in schematics element"));
+                    Q_ASSERT(!sizeof("Unknown element in schematics element"));
                 }
             }
         }
