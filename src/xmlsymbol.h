@@ -62,7 +62,7 @@ namespace Caneda
         void readComponentSymbol(Caneda::XmlReader *reader);
         void readComponentPorts(Caneda::XmlReader *reader);
         void readComponentProperties(Caneda::XmlReader *reader);
-        bool readSvg(Caneda::XmlReader *reader);
+        void readSvg(Caneda::XmlReader *reader);
 
         SymbolDocument *m_symbolDocument;
         ComponentData *m_component;

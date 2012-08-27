@@ -58,7 +58,15 @@ namespace Caneda
         qDeleteAll(m_ports);
     }
 
-    //! \brief Intialize the component.
+    /*!
+     * \brief Intialize the component.
+     *
+     * This method sets component's flags, adds initial label based on
+     * default prefix value and adds the component's ports.
+     *
+     * The symbol corresponding to this component should already be
+     * registered with LibraryManager using LibraryManager::registerComponent().
+     */
     void Component::init()
     {
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
@@ -73,6 +81,9 @@ namespace Caneda
         foreach(const PortData *data, portDatas) {
             m_ports << new Port(this, data->pos, data->name);
         }
+
+        updateBoundingRect();
+        updatePropertyGroup();
     }
 
     /*!
@@ -138,9 +149,6 @@ namespace Caneda
                      << "' doesn't exist!";
             return false;
         }
-        if(propName == "symbol") {
-            return setSymbol(value.toString());
-        }
         if(propName == "label") {
             return setLabel(value.toString());
         }
@@ -162,27 +170,6 @@ namespace Caneda
         }
         d->propertyMap[propName].setVisible(visiblity);
         updatePropertyGroup();
-    }
-
-    /*!
-     * \brief Sets the symbol of component to newSymbol if it exists.
-     *
-     * This method sets the symbol property's value and then takes care
-     * of geometry changes as well.
-     * The symbol corresponding to m_symbolId should already be registered with
-     * LibraryManager using LibraryManager::registerComponent().
-     *
-     * \param newSymbol The symbol to be set now
-     * \return True on success, and false on failure.
-     */
-    bool Component::setSymbol(const QString& newSymbol)
-    {
-        m_symbolId = name() + '/' + newSymbol;
-
-        updateBoundingRect();
-        updatePropertyGroup();
-
-        return true;
     }
 
     /*!
@@ -220,7 +207,6 @@ namespace Caneda
     void Component::setPropertyMap(const PropertyMap& propMap)
     {
         d->propertyMap = propMap;
-        setSymbol(propMap["symbol"].value().toString());
     }
 
     /*!
@@ -307,10 +293,9 @@ namespace Caneda
         }
 
         writer->writeTransform(transform());
-
         writeProperties(writer, d.constData()->propertyMap);
 
-        writer->writeEndElement();
+        writer->writeEndElement();  //</component>
     }
 
     /*!
@@ -322,7 +307,7 @@ namespace Caneda
     {
         // Paint the component symbol
         LibraryManager *libraryManager = LibraryManager::instance();
-        QSvgRenderer *symbol = libraryManager->symbolCache(m_symbolId);
+        QSvgRenderer *symbol = libraryManager->symbolCache(name());
 
         if(painter->worldTransform().isScaling()) {
             // If zooming, the paint is performed without the pixmap cache.
@@ -330,7 +315,7 @@ namespace Caneda
         }
         else {
             // Else, a pixmap cached is used.
-            QPixmap pix = libraryManager->pixmapCache(m_symbolId);
+            QPixmap pix = libraryManager->pixmapCache(name());
             painter->drawPixmap(symbol->viewBox(), pix);  // viewBox() = boundingRect
         }
 
@@ -352,7 +337,6 @@ namespace Caneda
         Component *retVal = new Component(d, scene);
         // No need for Component::copyDataTo() because the data is already copied from d pointer.
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
-        retVal->setSymbol(symbol()); // To register components symbol
         retVal->updatePropertyGroup();
         return retVal;
     }
@@ -407,7 +391,7 @@ namespace Caneda
     void Component::updateBoundingRect()
     {
         // Get the bounding rect of the symbol
-        QSvgRenderer *symbol = LibraryManager::instance()->symbolCache(m_symbolId);
+        QSvgRenderer *symbol = LibraryManager::instance()->symbolCache(name());
         QRectF bound = symbol->viewBox();  // viewBox() = boundingRect
 
         // Get an adjusted rect for accomodating extra stuff like ports.

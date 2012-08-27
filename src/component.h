@@ -121,10 +121,6 @@ namespace Caneda
         QString label() const { return property("label").toString(); }
         bool setLabel(const QString& _label);
 
-        //! Returns current symbol of component.
-        QString symbol() const { return property("symbol").toString(); }
-        bool setSymbol(const QString& newSymbol);
-
         static Component* loadComponentData(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);
         void saveData(Caneda::XmlWriter *writer) const;
@@ -155,8 +151,6 @@ namespace Caneda
         QSharedDataPointer<ComponentData> d;
         //! \brief Property group (ie property of this component)
         PropertiesGroup *m_propertyGroup;
-
-        QString m_symbolId; //!< The symbol id registered with ComponentsCache.
     };
 
 } // namespace Caneda

@@ -226,7 +226,6 @@ namespace Caneda
 
         if(data.constData()) {
             Component* comp = new Component(data, scene);
-            comp->setSymbol(comp->symbol());
             return comp;
         }
 

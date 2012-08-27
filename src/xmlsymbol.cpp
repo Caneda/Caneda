@@ -169,7 +169,6 @@ namespace Caneda
 
         // Write symbol geometry (drawing)
         writer->writeStartElement("symbol");
-        writer->writeAttribute("name", "userdefined");
 
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
@@ -332,7 +331,6 @@ namespace Caneda
             }
         }
 
-
         if(reader->hasError()) {
             qWarning() << "\nWarning: Failed to read data from\n" << fileName();
             QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
@@ -395,45 +393,18 @@ namespace Caneda
      */
     void XmlSymbol::readComponentSymbol(Caneda::XmlReader *reader)
     {
-        // List of symbols and default value
-        QStringList parsedSymbols;
-        QString defaultSchematic =
-            reader->attributes().value("default").toString();
-
-        // Read all available symbols
         while(!reader->atEnd()) {
             reader->readNext();
 
             if(reader->isEndElement()) {
                 break;
             }
-
             if(reader->isStartElement()) {
                 if(reader->name() == "schematic") {
-                    QString schName =
-                        reader->attributes().value("name").toString();
-
-                    Q_ASSERT(!schName.isEmpty());
-
-                    parsedSymbols << schName;
-                    if(!readSvg(reader)) {
-                        reader->raiseError(QObject::tr("Malformatted file: found problems during geometry loading"));
-                    }
+                    readSvg(reader);
                 }
             }
         }
-
-        // Check if default is present
-        if(!defaultSchematic.isEmpty() && parsedSymbols.contains(defaultSchematic)) {
-            // Add symbols to property list
-            QString symbolDescription =
-                QObject::tr("Represents the current symbol of component.");
-            QVariant defValue(defaultSchematic);
-            Property symb("symbol", symbolDescription, QVariant::String, false,
-                    false, defValue, parsedSymbols);
-            component()->propertyMap.insert("symbol", symb);
-        }
-
     }
 
     /*!
@@ -490,9 +461,8 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    bool XmlSymbol::readSvg(Caneda::XmlReader *reader)
+    void XmlSymbol::readSvg(Caneda::XmlReader *reader)
     {
-        QString schName = reader->attributes().value("name").toString();
         QString schType = reader->attributes().value("href").toString();
 
         // Read svg file
@@ -500,12 +470,14 @@ namespace Caneda
             QString parentPath = QFileInfo(fileName()).absolutePath();
             QFile svgFile(parentPath + "/" + schType);
             if(!svgFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                return false;
+                reader->raiseError(QObject::tr("Could not open file"));
+                return;
             }
 
             QByteArray svgContent(svgFile.readAll());
             if(svgContent.isEmpty()) {
-                return false;
+                reader->raiseError(QObject::tr("Empty svg content"));
+                return;
             }
 
             // Process using xslt
@@ -513,18 +485,15 @@ namespace Caneda
                     Caneda::transformers::defaultInstance()->componentsvg());
 
             LibraryManager *libraryManager = LibraryManager::instance();
-            QString symbolId = component()->name + "/" + schName;
-            libraryManager->registerComponent(symbolId, QXmlSvg.constData());
+            libraryManager->registerComponent(component()->name, QXmlSvg.constData());
             if(QXmlSvg.hasError()) {
-                qWarning() << "Could not read svg file" << schName << ": " << QXmlSvg.errorString();
-                return false;
+                reader->raiseError(QObject::tr("Could not read svg file"));
+                return;
             }
 
             // Read until end of element
             reader->readUnknownElement();
         }
-
-        return true;
     }
 
 } // namespace Caneda
