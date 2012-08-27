@@ -50,18 +50,12 @@ namespace Caneda
 
     private:
         QString saveText();
-        bool loadSymbol(const QString& text);
-        bool loadComponent(const QString& text);
+        bool loadFromText(const QString& text);
 
-        // Symbol related methods
         void readSymbol(Caneda::XmlReader *reader);
         void readPorts(Caneda::XmlReader *reader);
         void readProperties(Caneda::XmlReader *reader);
 
-        // Component related methods
-        void readComponentSymbol(Caneda::XmlReader *reader);
-        void readComponentPorts(Caneda::XmlReader *reader);
-        void readComponentProperties(Caneda::XmlReader *reader);
         void readSvg(Caneda::XmlReader *reader);
 
         SymbolDocument *m_symbolDocument;

@@ -66,13 +66,11 @@ namespace Caneda
 
     bool XmlSymbol::save()
     {
-        CGraphicsScene *scene = cGraphicsScene();
-        if(!scene) {
+        if(!cGraphicsScene()) {
             return false;
         }
 
         QString text = saveText();
-
         if(text.isEmpty()) {
             qDebug("Looks buggy! Null data to save! Was this expected?");
         }
@@ -83,6 +81,7 @@ namespace Caneda
                     QObject::tr("Cannot save document!"));
             return false;
         }
+
         QTextStream stream(&file);
         stream << text;
         file.close();
@@ -101,20 +100,9 @@ namespace Caneda
         }
 
         QTextStream stream(&file);
-
-        // Check if we are reading a symbol or loading a component
-        bool result;
-        if(cGraphicsScene()) {
-            result = loadSymbol(stream.readAll());
-        }
-        else if(component()) {
-            result = loadComponent(stream.readAll());
-        }
-        else {
-            result = false;
-        }
-
+        bool result = loadFromText(stream.readAll());
         file.close();
+
         return result;
     }
 
@@ -200,8 +188,7 @@ namespace Caneda
      *
      * \param text String containing xml data from component/symbol file.
      */
-
-    bool XmlSymbol::loadSymbol(const QString& text)
+    bool XmlSymbol::loadFromText(const QString &text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
 
@@ -214,9 +201,21 @@ namespace Caneda
 
         if(reader->isStartElement() && reader->name() == "component") {
 
-            // Check version compatibility
+            // Check version compatibility, get name and label
             QXmlStreamAttributes attributes = reader->attributes();
             Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
+
+            // Check if we are opening the file for edition or to include it in a library
+            if(cGraphicsScene()) {
+                // We are opening the file for symbol edition
+                // TODO: Implement this.
+            }
+            else if(component()) {
+                // We are opening the file as a component to include it in a library
+                component()->name = attributes.value("name").toString();
+                component()->labelPrefix = attributes.value("label").toString();
+            }
+
 
             // Read the component body
             while(!reader->atEnd()) {
@@ -227,16 +226,34 @@ namespace Caneda
                 }
 
                 if(reader->isStartElement()) {
+
                     // Read display text
                     if(reader->name() == "displaytext") {
-                        // TODO: Implement this.
-                        reader->readUnknownElement();
+                        // Check if we are opening the file for edition or to include it in a library
+                        if(cGraphicsScene()) {
+                            // We are opening the file for symbol edition
+                            // TODO: Implement this.
+                            reader->readUnknownElement();
+                        }
+                        else if(component()) {
+                            // We are opening the file as a component to include it in a library
+                            component()->displayText = reader->readLocaleText(Caneda::localePrefix());
+                        }
                     }
+
 
                     // Read description
                     else if(reader->name() == "description") {
-                        // TODO: Implement this.
-                        reader->readUnknownElement();
+                        // Check if we are opening the file for edition or to include it in a library
+                        if(cGraphicsScene()) {
+                            // We are opening the file for symbol edition
+                            // TODO: Implement this.
+                            reader->readUnknownElement();
+                        }
+                        else if(component()) {
+                            // We are opening the file as a component to include it in a library
+                            component()->description = reader->readLocaleText(Caneda::localePrefix());
+                        }
                     }
 
                     // Read symbol
@@ -270,79 +287,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Reads component data from xml file text.
-     *
-     * \param text String containing xml data from component/symbol file.
-     */
-    bool XmlSymbol::loadComponent(const QString &text)
-    {
-        Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
-
-        while(!reader->atEnd()) {
-            reader->readNext();
-            if(reader->isStartElement() && reader->name() == "component") {
-                break;
-            }
-        }
-
-        if(reader->isStartElement() && reader->name() == "component") {
-
-            // Check version compatibility, get name and label
-            QXmlStreamAttributes attributes = reader->attributes();
-            Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
-            component()->name = attributes.value("name").toString();
-            component()->labelPrefix = attributes.value("label").toString();
-
-            // Read the component body
-            while(!reader->atEnd()) {
-                reader->readNext();
-
-                if(reader->isEndElement()) {
-                    break;
-                }
-
-                if(reader->isStartElement()) {
-                    // Read display text
-                    if(reader->name() == "displaytext") {
-                        component()->displayText = reader->readLocaleText(Caneda::localePrefix());
-                    }
-
-                    // Read description
-                    else if(reader->name() == "description") {
-                        component()->description = reader->readLocaleText(Caneda::localePrefix());
-                    }
-
-                    // Read symbol
-                    else if(reader->name() == "symbol") {
-                        readComponentSymbol(reader);
-                    }
-
-                    // Read ports
-                    else if(reader->name() == "ports") {
-                        readComponentPorts(reader);
-                    }
-
-                    // Read properties
-                    else if(reader->name() == "properties") {
-                        readComponentProperties(reader);
-                    }
-                }
-
-            }
-        }
-
-        if(reader->hasError()) {
-            qWarning() << "\nWarning: Failed to read data from\n" << fileName();
-            QMessageBox::critical(0, QObject::tr("Xml parse error"), reader->errorString());
-            delete reader;
-            return false;
-        }
-
-        delete reader;
-        return true;
-    }
-
-    /*!
      * \brief Read symbol section of component description xml file
      *
      * \param reader XmlReader responsible for reading xml data.
@@ -356,51 +300,14 @@ namespace Caneda
                 break;
             }
 
-            if(reader->isStartElement()) {
-                if(reader->name() == "painting") {
+            if(reader->isStartElement() && reader->name() == "painting") {
+                // Check if we are opening the file for edition or to include it in a library
+                if(cGraphicsScene()) {
+                    // We are opening the file for symbol edition
                     Painting::loadPainting(reader, cGraphicsScene());
                 }
-            }
-        }
-    }
-
-    /*!
-     * \brief Reads the ports data from component description xml file.
-     *
-     * \param reader XmlReader responsible for reading xml data.
-     */
-    void XmlSymbol::readPorts(Caneda::XmlReader *reader)
-    {
-        // TODO: Implement this.
-        reader->readUnknownElement();
-    }
-
-    /*!
-     * \brief Reads component properties data from component description xml file.
-     *
-     * \param reader XmlReader responsible for reading xml data.
-     */
-    void XmlSymbol::readProperties(Caneda::XmlReader *reader)
-    {
-        // TODO: Implement this.
-        reader->readUnknownElement();
-    }
-
-    /*!
-     * \brief Read symbol section of component description xml file
-     *
-     * \param reader XmlReader responsible for reading xml data.
-     */
-    void XmlSymbol::readComponentSymbol(Caneda::XmlReader *reader)
-    {
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                break;
-            }
-            if(reader->isStartElement()) {
-                if(reader->name() == "painting") {
+                else if(component()) {
+                    // We are opening the file as a component to include it in a library
                     readSvg(reader);
                 }
             }
@@ -412,7 +319,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void XmlSymbol::readComponentPorts(Caneda::XmlReader *reader)
+    void XmlSymbol::readPorts(Caneda::XmlReader *reader)
     {
         while(!reader->atEnd()) {
             reader->readNext();
@@ -427,7 +334,16 @@ namespace Caneda
                 qreal y = attribs.value("y").toString().toDouble();
                 QString portName = attribs.value("name").toString();
 
-                component()->ports << new PortData(QPointF(x, y), portName);
+                // Check if we are opening the file for edition or to include it in a library
+                if(cGraphicsScene()) {
+                    // We are opening the file for symbol edition
+                    // TODO: Implement this.
+                    reader->readUnknownElement();
+                }
+                else if(component()) {
+                    // We are opening the file as a component to include it in a library
+                    component()->ports << new PortData(QPointF(x, y), portName);
+                }
 
                 // Read until end of element
                 reader->readUnknownElement();
@@ -440,7 +356,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void XmlSymbol::readComponentProperties(Caneda::XmlReader *reader)
+    void XmlSymbol::readProperties(Caneda::XmlReader *reader)
     {
         while(!reader->atEnd()) {
             reader->readNext();
@@ -451,7 +367,18 @@ namespace Caneda
 
             if(reader->isStartElement() && reader->name() == "property") {
                 Property prop = PropertyFactory::createProperty(reader);
-                component()->propertyMap.insert(prop.name(), prop);
+
+                // Check if we are opening the file for edition or to include it in a library
+                if(cGraphicsScene()) {
+                    // We are opening the file for symbol edition
+                    // TODO: Implement this.
+                    reader->readUnknownElement();
+                }
+                else if(component()) {
+                    // We are opening the file as a component to include it in a library
+                    component()->propertyMap.insert(prop.name(), prop);
+                }
+
             }
         }
     }
