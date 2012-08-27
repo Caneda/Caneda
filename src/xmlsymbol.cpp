@@ -254,12 +254,8 @@ namespace Caneda
                     else if(reader->name() == "properties") {
                         readProperties(reader);
                     }
-
-                    // Read unknown element
-                    else {
-                        reader->readUnknownElement();
-                    }
                 }
+
             }
         }
 
@@ -296,9 +292,7 @@ namespace Caneda
             QXmlStreamAttributes attributes = reader->attributes();
             Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
             component()->name = attributes.value("name").toString();
-            Q_ASSERT(!component()->name.isEmpty());
             component()->labelPrefix = attributes.value("label").toString();
-            Q_ASSERT(!component()->labelPrefix.isEmpty());
 
             // Read the component body
             while(!reader->atEnd()) {
@@ -333,12 +327,8 @@ namespace Caneda
                     else if(reader->name() == "properties") {
                         readComponentProperties(reader);
                     }
-
-                    // Read unknown element
-                    else {
-                        reader->readUnknownElement();
-                    }
                 }
+
             }
         }
 
@@ -365,19 +355,12 @@ namespace Caneda
             reader->readNext();
 
             if(reader->isEndElement()) {
-                Q_ASSERT(reader->name() == "symbol");
                 break;
             }
 
             if(reader->isStartElement()) {
                 if(reader->name() == "painting") {
                     Painting::loadPainting(reader, cGraphicsScene());
-                }
-                else {
-                    qWarning() << "Error: Found unknown painting type" <<
-                                  reader->name().toString();
-                    reader->readUnknownElement();
-                    reader->raiseError(QObject::tr("Malformatted file: found unknown painting type"));
                 }
             }
         }
@@ -417,9 +400,6 @@ namespace Caneda
         QString defaultSchematic =
             reader->attributes().value("default").toString();
 
-        Q_ASSERT(reader->isStartElement() && reader->name() == "symbol");
-        Q_ASSERT(!defaultSchematic.isEmpty());
-
         // Read all available symbols
         while(!reader->atEnd()) {
             reader->readNext();
@@ -440,23 +420,20 @@ namespace Caneda
                         reader->raiseError(QObject::tr("Malformatted file: found problems during geometry loading"));
                     }
                 }
-                else {
-                    Q_ASSERT(!sizeof("Unknown element in schematics element"));
-                }
             }
         }
 
         // Check if default is present
-        Q_ASSERT(parsedSymbols.contains(defaultSchematic));
+        if(!defaultSchematic.isEmpty() && parsedSymbols.contains(defaultSchematic)) {
+            // Add symbols to property list
+            QString symbolDescription =
+                QObject::tr("Represents the current symbol of component.");
+            QVariant defValue(defaultSchematic);
+            Property symb("symbol", symbolDescription, QVariant::String, false,
+                    false, defValue, parsedSymbols);
+            component()->propertyMap.insert("symbol", symb);
+        }
 
-        // Add symbols to property list
-        QString symbolDescription =
-            QObject::tr("Represents the current symbol of component.");
-        QVariant defValue(defaultSchematic);
-        Q_ASSERT(defValue.convert(QVariant::String));
-        Property symb("symbol", symbolDescription, QVariant::String, false,
-                false, defValue, parsedSymbols);
-        component()->propertyMap.insert("symbol", symb);
     }
 
     /*!
@@ -484,9 +461,6 @@ namespace Caneda
                 // Read until end of element
                 reader->readUnknownElement();
             }
-            else {
-                Q_ASSERT(!sizeof("Found unknown element in ports section"));
-            }
         }
     }
 
@@ -508,9 +482,6 @@ namespace Caneda
                 Property prop = PropertyFactory::createProperty(reader);
                 component()->propertyMap.insert(prop.name(), prop);
             }
-            else {
-                Q_ASSERT(!sizeof("Found unknown element in properties section"));
-            }
         }
     }
 
@@ -521,8 +492,6 @@ namespace Caneda
      */
     bool XmlSymbol::readSvg(Caneda::XmlReader *reader)
     {
-        Q_ASSERT(reader->isStartElement() && reader->name() == "schematic");
-
         QString schName = reader->attributes().value("name").toString();
         QString schType = reader->attributes().value("href").toString();
 
