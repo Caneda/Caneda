@@ -400,7 +400,7 @@ namespace Caneda
                 break;
             }
             if(reader->isStartElement()) {
-                if(reader->name() == "schematic") {
+                if(reader->name() == "painting") {
                     readSvg(reader);
                 }
             }
