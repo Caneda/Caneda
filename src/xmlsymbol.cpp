@@ -26,7 +26,6 @@
 
 #include "paintings/painting.h"
 
-#include "xmlutilities/transformers.h"
 #include "xmlutilities/xmlutilities.h"
 
 #include <QDebug>
@@ -308,7 +307,16 @@ namespace Caneda
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
-                    readSvg(reader);
+                    Painting *newSymbol = new Painting();
+                    newSymbol->loadPainting(reader);
+
+                    LibraryManager *libraryManager = LibraryManager::instance();
+                    // FIXME: Implement reading paintings from file, currently not working (newSymbol->shape() does not
+                    // return correct QPainterPath).
+//                    libraryManager->registerComponent(component()->name, newSymbol->shape());  // FIXME: Uncomment this
+                    QPainterPath *data = new QPainterPath();  // FIXME: Remove this
+                    data->addEllipse(-10,-10,20,20);  // FIXME: Remove this
+                    libraryManager->registerComponent(component()->name, data->simplified()); // FIXME: Remove this
                 }
             }
         }
@@ -380,46 +388,6 @@ namespace Caneda
                 }
 
             }
-        }
-    }
-
-    /*!
-     * \brief Reads the schematic tag of component description xml file.
-     *
-     * \param reader XmlReader responsible for reading xml data.
-     */
-    void XmlSymbol::readSvg(Caneda::XmlReader *reader)
-    {
-        QString schType = reader->attributes().value("href").toString();
-
-        // Read svg file
-        if(!schType.isEmpty()) {
-            QString parentPath = QFileInfo(fileName()).absolutePath();
-            QFile svgFile(parentPath + "/" + schType);
-            if(!svgFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                reader->raiseError(QObject::tr("Could not open file"));
-                return;
-            }
-
-            QByteArray svgContent(svgFile.readAll());
-            if(svgContent.isEmpty()) {
-                reader->raiseError(QObject::tr("Empty svg content"));
-                return;
-            }
-
-            // Process using xslt
-            Caneda::QXmlStreamReaderExt QXmlSvg(svgContent, 0,
-                    Caneda::transformers::defaultInstance()->componentsvg());
-
-            LibraryManager *libraryManager = LibraryManager::instance();
-            libraryManager->registerComponent(component()->name, QXmlSvg.constData());
-            if(QXmlSvg.hasError()) {
-                reader->raiseError(QObject::tr("Could not read svg file"));
-                return;
-            }
-
-            // Read until end of element
-            reader->readUnknownElement();
         }
     }
 

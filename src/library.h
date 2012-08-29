@@ -25,7 +25,6 @@
 
 #include <QHash>
 #include <QObject>
-#include <QSvgRenderer>
 
 namespace Caneda
 {
@@ -98,12 +97,11 @@ namespace Caneda
         const QList<QString> librariesList() const { return m_libraryHash.uniqueKeys(); }
 
         // Symbol caching related methods
-        // TODO: Move this methods (and symbol cache) into library class
-        void registerComponent(const QString& symbol_id, const QByteArray& content);
+        // TODO: Move these methods (and symbol cache) into library class
+        void registerComponent(const QString& symbol_id, const QPainterPath& content);
 
-        QSvgRenderer* symbolCache(const QString &symbol_id);
+        QPainterPath* symbolCache(const QString &symbol_id);
         const QPixmap pixmapCache(const QString &symbol_id);
-
 
     Q_SIGNALS:
         void basicLibrariesLoaded();
@@ -114,8 +112,8 @@ namespace Caneda
         //! Hash table to hold libraries.
         LibraryHash m_libraryHash;
 
-        //! Symbol cache (hash table) to hold svg renderers (wich have raw svg content).
-        QHash<QString, QSvgRenderer*> m_dataHash;
+        //! Symbol cache (hash table) to hold QPainterPaths contents (symbols cache).
+        QHash<QString, QPainterPath*> m_dataHash;
     };
 
 } // namespace Caneda

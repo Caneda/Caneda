@@ -186,7 +186,7 @@ namespace Caneda
      */
     LibraryManager::~LibraryManager()
     {
-        QHash<QString, QSvgRenderer*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
+        QHash<QString, QPainterPath*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
         while(it != end) {
             delete it.value();
             it.value() = 0;
@@ -325,17 +325,17 @@ namespace Caneda
      * Registering is required for rendering any component with the instance of this
      * class. If the symbol_id is already registered does nothing.
      */
-    void LibraryManager::registerComponent(const QString& symbol_id, const QByteArray& svg)
+    void LibraryManager::registerComponent(const QString& symbol_id, const QPainterPath &content)
     {
         if(m_dataHash.contains(symbol_id)) {
             return;
         }
 
-        m_dataHash[symbol_id] = new QSvgRenderer(svg);
+        m_dataHash[symbol_id] = new QPainterPath(content);
     }
 
     //! \brief Returns the symbol of a component corresponding to symbol_id.
-    QSvgRenderer* LibraryManager::symbolCache(const QString &symbol_id)
+    QPainterPath* LibraryManager::symbolCache(const QString &symbol_id)
     {
         return m_dataHash[symbol_id];
     }
@@ -350,8 +350,9 @@ namespace Caneda
         QPixmap pix;
 
         if(!QPixmapCache::find(symbol_id, pix)) {
-            QSvgRenderer *data = m_dataHash[symbol_id];
-            QRect rect =  data->viewBox();
+
+            QPainterPath *data = m_dataHash[symbol_id];
+            QRect rect =  data->boundingRect().toRect();
             pix = QPixmap(rect.size());
             pix.fill(Qt::transparent);
 
@@ -359,8 +360,7 @@ namespace Caneda
 
             QPointF offset = -rect.topLeft(); // (0,0)-topLeft()
             painter.translate(offset);
-
-            data->render(&painter, rect);
+            painter.drawPath(data->simplified());
 
             QPixmapCache::insert(symbol_id, pix);
         }

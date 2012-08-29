@@ -56,8 +56,6 @@ namespace Caneda
         void readPorts(Caneda::XmlReader *reader);
         void readProperties(Caneda::XmlReader *reader);
 
-        void readSvg(Caneda::XmlReader *reader);
-
         SymbolDocument *m_symbolDocument;
         ComponentData *m_component;
         QString m_fileName;

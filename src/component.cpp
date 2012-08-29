@@ -307,16 +307,17 @@ namespace Caneda
     {
         // Paint the component symbol
         LibraryManager *libraryManager = LibraryManager::instance();
-        QSvgRenderer *symbol = libraryManager->symbolCache(name());
+        QPainterPath *symbol = libraryManager->symbolCache(name());
 
         if(painter->worldTransform().isScaling()) {
             // If zooming, the paint is performed without the pixmap cache.
-            symbol->render(painter, symbol->viewBox());  // viewBox() = boundingRect
+            painter->drawPath(symbol->simplified());
         }
         else {
             // Else, a pixmap cached is used.
             QPixmap pix = libraryManager->pixmapCache(name());
-            painter->drawPixmap(symbol->viewBox(), pix);  // viewBox() = boundingRect
+            QRect rect =  symbol->boundingRect().toRect();
+            painter->drawPixmap(rect, pix);
         }
 
 
@@ -335,7 +336,7 @@ namespace Caneda
     Component* Component::copy(CGraphicsScene *scene) const
     {
         Component *retVal = new Component(d, scene);
-        // No need for Component::copyDataTo() because the data is already copied from d pointer.
+        // No need for Component::copyDataTo() because data is already copied from d pointer.
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
         retVal->updatePropertyGroup();
         return retVal;
@@ -382,22 +383,16 @@ namespace Caneda
         return CGraphicsItem::itemChange(change, value);
     }
 
-    /*!
-     * \brief Updates the bounding rect of this item.
-     *
-     * This public slot is connected to the QSvgRenderer::repaintNeeded()
-     * signal.
-     */
+    //! \brief Updates the bounding rect of this item.
     void Component::updateBoundingRect()
     {
         // Get the bounding rect of the symbol
-        QSvgRenderer *symbol = LibraryManager::instance()->symbolCache(name());
-        QRectF bound = symbol->viewBox();  // viewBox() = boundingRect
+        QPainterPath *symbol = LibraryManager::instance()->symbolCache(name());
 
         // Get an adjusted rect for accomodating extra stuff like ports.
-        QRectF adjustedRect = adjustedBoundRect(bound);
+        QRectF adjustedRect = adjustedBoundRect(symbol->boundingRect());
 
-        // TODO: Set symbol QPainterPath instead of empty QPainterPath().
+        // Set symbol bounding rect
         setShapeAndBoundRect(QPainterPath(), adjustedRect, 1.0);
     }
 
