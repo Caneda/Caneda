@@ -90,7 +90,7 @@ namespace Caneda
         return path;
     }
 
-    //! Sets item's pen to \a _pen.
+    //! \brief Sets item's pen to \a _pen.
     void Painting::setPen(const QPen& _pen)
     {
         if(m_pen == _pen) {
@@ -103,7 +103,7 @@ namespace Caneda
         adjustGeometry();
     }
 
-    //! Sets item's brush to \a _brush.
+    //! \brief Sets item's brush to \a _brush.
     void Painting::setBrush(const QBrush& _brush)
     {
         if(m_brush == _brush) {
@@ -132,7 +132,7 @@ namespace Caneda
         }
     }
 
-    //!\brief Indicate the resize handles to be shown.
+    //! \brief Indicate the resize handles to be shown.
     void Painting::setResizeHandles(Caneda::ResizeHandles handles)
     {
         if(m_resizeHandles == handles) {
@@ -153,8 +153,8 @@ namespace Caneda
     {
         static QRectF rect(-30, -30, 90, 60);
 
-        //check if name begins with capital letter and if so use the following.
-        //This happens when painting is placed by selecting in sidebar.
+        // Check if name begins with capital letter and if so use the following.
+        // This happens when painting is placed by selecting in sidebar.
         if(name.at(0).isUpper()) {
             if(name == QObject::tr("Line")) {
                 return new GraphicLine(QLineF(rect.bottomLeft(), rect.topRight()));
