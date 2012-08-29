@@ -300,6 +300,7 @@ namespace Caneda
             }
 
             if(reader->isStartElement() && reader->name() == "painting") {
+
                 // Check if we are opening the file for edition or to include it in a library
                 if(cGraphicsScene()) {
                     // We are opening the file for symbol edition
@@ -307,17 +308,13 @@ namespace Caneda
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
-                    Painting *newSymbol = new Painting();
-                    newSymbol->loadPainting(reader);
+                    Painting *newSymbol = Painting::loadPainting(reader);
+                    QPainterPath data = newSymbol->shapeForRect(newSymbol->paintingRect());
 
                     LibraryManager *libraryManager = LibraryManager::instance();
-                    // FIXME: Implement reading paintings from file, currently not working (newSymbol->shape() does not
-                    // return correct QPainterPath).
-//                    libraryManager->registerComponent(component()->name, newSymbol->shape());  // FIXME: Uncomment this
-                    QPainterPath *data = new QPainterPath();  // FIXME: Remove this
-                    data->addEllipse(-10,-10,20,20);  // FIXME: Remove this
-                    libraryManager->registerComponent(component()->name, data->simplified()); // FIXME: Remove this
+                    libraryManager->registerComponent(component()->name, data);
                 }
+
             }
         }
     }

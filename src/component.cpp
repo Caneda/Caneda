@@ -307,16 +307,17 @@ namespace Caneda
     {
         // Paint the component symbol
         LibraryManager *libraryManager = LibraryManager::instance();
-        QPainterPath *symbol = libraryManager->symbolCache(name());
+        QPainterPath symbol = libraryManager->symbolCache(name());
 
         if(painter->worldTransform().isScaling()) {
             // If zooming, the paint is performed without the pixmap cache.
-            painter->drawPath(symbol->simplified());
+            painter->drawPath(symbol);
         }
         else {
             // Else, a pixmap cached is used.
             QPixmap pix = libraryManager->pixmapCache(name());
-            QRect rect =  symbol->boundingRect().toRect();
+            QRect rect =  symbol.boundingRect().toRect();
+            rect.adjust(-1.0, -1.0, 1.0, 1.0);  // Adjust rect to avoid clipping when size = 1px in any dimension
             painter->drawPixmap(rect, pix);
         }
 
@@ -387,10 +388,10 @@ namespace Caneda
     void Component::updateBoundingRect()
     {
         // Get the bounding rect of the symbol
-        QPainterPath *symbol = LibraryManager::instance()->symbolCache(name());
+        QPainterPath symbol = LibraryManager::instance()->symbolCache(name());
 
         // Get an adjusted rect for accomodating extra stuff like ports.
-        QRectF adjustedRect = adjustedBoundRect(symbol->boundingRect());
+        QRectF adjustedRect = adjustedBoundRect(symbol.boundingRect());
 
         // Set symbol bounding rect
         setShapeAndBoundRect(QPainterPath(), adjustedRect, 1.0);

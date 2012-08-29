@@ -186,12 +186,6 @@ namespace Caneda
      */
     LibraryManager::~LibraryManager()
     {
-        QHash<QString, QPainterPath*>::iterator it = m_dataHash.begin(), end = m_dataHash.end();
-        while(it != end) {
-            delete it.value();
-            it.value() = 0;
-            ++it;
-        }
     }
 
     /*!
@@ -331,11 +325,11 @@ namespace Caneda
             return;
         }
 
-        m_dataHash[symbol_id] = new QPainterPath(content);
+        m_dataHash[symbol_id] = content;
     }
 
     //! \brief Returns the symbol of a component corresponding to symbol_id.
-    QPainterPath* LibraryManager::symbolCache(const QString &symbol_id)
+    QPainterPath LibraryManager::symbolCache(const QString &symbol_id)
     {
         return m_dataHash[symbol_id];
     }
@@ -351,8 +345,8 @@ namespace Caneda
 
         if(!QPixmapCache::find(symbol_id, pix)) {
 
-            QPainterPath *data = m_dataHash[symbol_id];
-            QRect rect =  data->boundingRect().toRect();
+            QPainterPath data = m_dataHash[symbol_id];
+            QRect rect =  data.boundingRect().toRect();
             rect.adjust(-1.0, -1.0, 1.0, 1.0); // Adjust rect to avoid clipping due to rounding (rectF -> rect)
             pix = QPixmap(rect.size());
             pix.fill(Qt::transparent);
@@ -361,7 +355,7 @@ namespace Caneda
 
             QPointF offset = -rect.topLeft(); // (0,0)-topLeft()
             painter.translate(offset);
-            painter.drawPath(data->simplified());
+            painter.drawPath(data);
 
             QPixmapCache::insert(symbol_id, pix);
         }
