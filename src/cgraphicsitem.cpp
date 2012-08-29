@@ -265,9 +265,11 @@ namespace Caneda
     {
         // Inform scene about change in geometry.
         prepareGeometryChange();
+
+        // Adjust the bounding rect by pen width as required by graphicsview.
         m_boundingRect = rect;
-        // Adjust the bounding rect by half pen width as required by graphicsview.
-        m_boundingRect.adjust(-pw/2, -pw/2, pw, pw);
+        m_boundingRect.adjust(-pw, -pw, pw, pw);
+
         m_shape = path;
         if(m_shape.isEmpty()) {
             // If path is empty just add the bounding rect to the path.

@@ -353,6 +353,7 @@ namespace Caneda
 
             QPainterPath *data = m_dataHash[symbol_id];
             QRect rect =  data->boundingRect().toRect();
+            rect.adjust(-1.0, -1.0, 1.0, 1.0); // Adjust rect to avoid clipping due to rounding (rectF -> rect)
             pix = QPixmap(rect.size());
             pix.fill(Qt::transparent);
 
