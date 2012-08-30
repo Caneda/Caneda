@@ -311,7 +311,9 @@ namespace Caneda
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
                     Painting *newSymbol = Painting::loadPainting(reader);
-                    data.addPath(newSymbol->shapeForRect(newSymbol->paintingRect()));
+                    QRectF rect = newSymbol->paintingRect();
+                    rect.moveTo(newSymbol->pos());
+                    data.addPath(newSymbol->shapeForRect(rect));
                 }
 
             }

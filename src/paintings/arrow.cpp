@@ -63,7 +63,7 @@ namespace Caneda
         path.moveTo(rect.topLeft());
         path.lineTo(rect.bottomRight());
 
-        path.addPolygon(m_head);
+        path.addPolygon(m_head.translated(rect.topLeft()));
         path.closeSubpath();
 
         return path;
