@@ -292,6 +292,8 @@ namespace Caneda
      */
     void XmlSymbol::readSymbol(Caneda::XmlReader *reader)
     {
+        QPainterPath data;
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -309,13 +311,17 @@ namespace Caneda
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
                     Painting *newSymbol = Painting::loadPainting(reader);
-                    QPainterPath data = newSymbol->shapeForRect(newSymbol->paintingRect());
-
-                    LibraryManager *libraryManager = LibraryManager::instance();
-                    libraryManager->registerComponent(component()->name, data);
+                    data.addPath(newSymbol->shapeForRect(newSymbol->paintingRect()));
                 }
 
             }
+        }
+
+
+        // If we are opening the file as a component, register the recreated QPainterPath
+        if(component()) {
+            LibraryManager *libraryManager = LibraryManager::instance();
+            libraryManager->registerComponent(component()->name, data);
         }
     }
 
