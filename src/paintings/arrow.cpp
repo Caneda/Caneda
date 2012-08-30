@@ -207,6 +207,8 @@ namespace Caneda
     {
         m_headWidth = width;
         setLine(line());//recalc geometry
+        calcHeadPoints();
+        update();
     }
 
     //! \brief Sets arrow's head height to \a height.
@@ -214,6 +216,8 @@ namespace Caneda
     {
         m_headHeight = height;
         setLine(line());//recalc geometry
+        calcHeadPoints();
+        update();
     }
 
     //! \brief Sets arrow's line to \a line.
