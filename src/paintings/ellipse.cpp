@@ -56,7 +56,7 @@ namespace Caneda
     QPainterPath Ellipse::shapeForRect(const QRectF &rect) const
     {
         QPainterPath path;
-        path.addEllipse(boundForRect(rect));
+        path.addEllipse(rect);
         return path;
     }
 

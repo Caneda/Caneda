@@ -57,7 +57,7 @@ namespace Caneda
     QPainterPath Layer::shapeForRect(const QRectF& rect) const
     {
        QPainterPath path;
-       path.addRect(boundForRect(rect));
+       path.addRect(rect);
        return path;
     }
 
