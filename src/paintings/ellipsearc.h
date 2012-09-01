@@ -36,7 +36,6 @@ namespace Caneda
                 CGraphicsScene *scene = 0);
         ~EllipseArc();
 
-        QRectF boundForRect(const QRectF &rect) const;
         QPainterPath shapeForRect(const QRectF &rect) const;
 
         //! \brief Returns arc's startAngle of this item.

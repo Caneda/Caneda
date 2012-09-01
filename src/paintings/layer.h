@@ -54,7 +54,6 @@ namespace Caneda
         ~Layer();
 
         QPainterPath shapeForRect(const QRectF& rect) const;
-        QRectF boundForRect(const QRectF &rect) const;
 
         void updateBrush();
         void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);

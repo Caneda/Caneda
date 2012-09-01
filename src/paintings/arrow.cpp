@@ -69,15 +69,6 @@ namespace Caneda
         return path;
     }
 
-    //! \copydoc Painting::boundForRect()
-    QRectF Arrow::boundForRect(const QRectF &rect) const
-    {
-        QRectF arrowRect  = m_head.boundingRect();
-        qreal adjust((pen().width() + 5) / 2.);
-        arrowRect.adjust(-adjust, -adjust, adjust, adjust);
-        return (rect | arrowRect);
-    }
-
     //! Draw's the arrow and arrow head based on \a style.
     void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *w)

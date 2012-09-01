@@ -61,13 +61,6 @@ namespace Caneda
        return path;
     }
 
-    //! \copydoc Painting::boundForRect()
-    QRectF Layer::boundForRect(const QRectF &rect) const
-    {
-       qreal adj = (pen().width() + 5) / 2;
-       return rect.adjusted(-adj, -adj, adj, adj);
-    }
-
     //! \brief Updates the brush according to current layer.
     void Layer::updateBrush()
     {

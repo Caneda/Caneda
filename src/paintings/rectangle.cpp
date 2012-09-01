@@ -54,13 +54,6 @@ namespace Caneda
        return path;
     }
 
-    //! \copydoc Painting::boundForRect()
-    QRectF Rectangle::boundForRect(const QRectF &rect) const
-    {
-       qreal adj = (pen().width() + 5) / 2;
-       return rect.adjusted(-adj, -adj, adj, adj);
-    }
-
     //! \brief Draw the rectangle.
     void Rectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
     {

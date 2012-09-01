@@ -272,7 +272,7 @@ namespace Caneda
     //! Adjust geometry of item to accommodate resize handles.
     void Painting::adjustGeometry()
     {
-        QRectF boundRect = boundForRect(m_paintingRect);
+        QRectF boundRect = m_paintingRect;
         QPainterPath _shape = shapeForRect(m_paintingRect);
 
         // Now determine how to adjust bounding rect based on resize handles being used.

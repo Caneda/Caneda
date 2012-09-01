@@ -72,12 +72,8 @@ namespace Caneda
         QRectF paintingRect() const { return m_paintingRect; }
         void setPaintingRect(const QRectF& rect);
 
+        //! Returns the adjusted shape to a given \a rect.
         virtual QPainterPath shapeForRect(const QRectF& rect) const;
-
-        //! Returns the adjusted painting bound rect for paintingrect \a rect.
-        virtual QRectF boundForRect(const QRectF& rect) const {
-            return rect;
-        }
 
         //! Returns the pen with which the item is drawn.
         QPen pen() const { return m_pen; }

@@ -51,13 +51,6 @@ namespace Caneda
     {
     }
 
-    //! \copydoc Painting::boundForRect()
-    QRectF EllipseArc::boundForRect(const QRectF &rect) const
-    {
-        qreal adj = (pen().width() + 5) / 2;
-        return rect.adjusted(-adj, -adj, adj, adj);
-    }
-
     //! \copydoc Painting::shapeForRect()
     QPainterPath EllipseArc::shapeForRect(const QRectF &rect) const
     {

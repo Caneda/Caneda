@@ -50,7 +50,6 @@ namespace Caneda
         ~Arrow();
 
         QPainterPath shapeForRect(const QRectF &rect) const;
-        QRectF boundForRect(const QRectF &rect) const;
 
         void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
