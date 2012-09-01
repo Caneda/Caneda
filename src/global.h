@@ -22,7 +22,7 @@
 #define GLOBAL_H
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
+#include <config.h>
 #endif
 
 #include <QDebug>
@@ -63,6 +63,12 @@ namespace Caneda
 
     inline QString realToString(qreal val) {
         return QString::number(val,'f',2);
+    }
+
+    //! \brief Helper method to return sign of given integer.
+    inline int sign(int value)
+    {
+        return value >= 0 ? +1 : -1;
     }
 
     QString latexToUnicode(const QString& input);

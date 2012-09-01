@@ -47,9 +47,6 @@
 
 namespace Caneda
 {
-    //! \brief Default grid spacing
-    static const uint DEFAULT_GRID_SPACE = 10;
-
     /*!
      * \brief This template method calculates the center of the items on the scene
      *
@@ -57,9 +54,8 @@ namespace Caneda
      * returns the center of the united rectangle. This center is used as
      * reference point while copy/paste/inserting items on the scene.
      *
-     * \param items The items with respect to which the geometrical center has to
-     * be calculated.
-     * \return Returns the geometrical center of the items sent through parameter.
+     * \param items The items which geometrical center has to be calculated.
+     * \return Returns the geometrical center of the items.
      */
     template <typename T>
     QPointF centerOfItems(const QList<T*> &items)
@@ -73,12 +69,6 @@ namespace Caneda
         }
 
         return rect.center();
-    }
-
-    //! \brief A helper method to return sign of given integer.
-    inline int sign(int value)
-    {
-        return value >= 0 ? +1 : -1;
     }
 
     //! \brief Default Constructor
@@ -430,13 +420,13 @@ namespace Caneda
         const QPoint point = pos.toPoint();
 
         int x = qAbs(point.x());
-        x += (DEFAULT_GRID_SPACE >> 1);
-        x -= x % DEFAULT_GRID_SPACE;
+        x += (Caneda::GRID_SPACE >> 1);
+        x -= x % Caneda::GRID_SPACE;
         x *= sign(point.x());
 
         int y = qAbs(point.y());
-        y += (DEFAULT_GRID_SPACE >> 1);
-        y -= y % DEFAULT_GRID_SPACE;
+        y += (Caneda::GRID_SPACE >> 1);
+        y -= y % Caneda::GRID_SPACE;
         y *= sign(point.y());
 
         return QPointF(x, y);
@@ -663,8 +653,8 @@ namespace Caneda
         // Draw grid
         if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {
 
-            int drawingGridWidth = DEFAULT_GRID_SPACE;
-            int drawingGridHeight = DEFAULT_GRID_SPACE;
+            int drawingGridWidth = Caneda::GRID_SPACE;
+            int drawingGridHeight = Caneda::GRID_SPACE;
 
             //Make grid size display dinamic, depending on zoom level
             DocumentViewManager *manager = DocumentViewManager::instance();

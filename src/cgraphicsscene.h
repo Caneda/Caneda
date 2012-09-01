@@ -41,6 +41,9 @@ namespace Caneda
 
     typedef QGraphicsSceneMouseEvent MouseActionEvent;
 
+    //! \brief Default grid spacing
+    static const uint GRID_SPACE = 10;
+
     /*!
      * CGraphicsScene
      * This class provides a canvas for managing schematic elements
