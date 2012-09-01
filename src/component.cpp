@@ -306,24 +306,26 @@ namespace Caneda
             QWidget *w)
     {
         // Paint the component symbol
+        Settings *settings = Settings::instance();
         LibraryManager *libraryManager = LibraryManager::instance();
         QPainterPath symbol = libraryManager->symbolCache(name());
 
-        // If zooming, the paint is performed without the pixmap cache
-        if(painter->worldTransform().isScaling()) {
-            // Save pen
-            QPen savedPen = painter->pen();
+        // Save pen
+        QPen savedPen = painter->pen();
 
-            // Get global pen settings
-            Settings *settings = Settings::instance();
+        if(option->state & QStyle::State_Selected) {
+            // If selected, the paint is performed without the pixmap cache
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+
+            painter->drawPath(symbol);  // Draw symbol
+        }
+        else if(painter->worldTransform().isScaling()) {
+            // If zooming, the paint is performed without the pixmap cache
             painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
 
-            // Draw symbol
-            painter->drawPath(symbol);
-
-            // Restore pen
-            painter->setPen(savedPen);
+            painter->drawPath(symbol);  // Draw symbol
         }
         else {
             // Else, a pixmap cached is used
@@ -333,11 +335,8 @@ namespace Caneda
             painter->drawPixmap(rect, pix);
         }
 
-
-        // Paint the selection rectangle
-        if(option->state & QStyle::State_Selected) {
-            Caneda::drawHighlightRect(painter, this->boundingRect(), 1.0, option);
-        }
+        // Restore pen
+        painter->setPen(savedPen);
 
         // Paint the ports
         foreach(Port *port, m_ports) {
