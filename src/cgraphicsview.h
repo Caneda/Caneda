@@ -29,6 +29,9 @@ namespace Caneda
     // Forward declarations
     class CGraphicsScene;
 
+    //! \brief Render hints
+    static const QPainter::RenderHints RENDER_HINTS = QPainter::Antialiasing | QPainter::SmoothPixmapTransform;
+
     class CGraphicsView : public QGraphicsView
     {
         Q_OBJECT

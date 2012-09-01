@@ -24,6 +24,7 @@
 #include "global.h"
 #include "library.h"
 #include "propertygroup.h"
+#include "settings.h"
 #include "xmlutilities.h"
 
 #include "dialogs/propertydialog.h"
@@ -308,12 +309,24 @@ namespace Caneda
         LibraryManager *libraryManager = LibraryManager::instance();
         QPainterPath symbol = libraryManager->symbolCache(name());
 
+        // If zooming, the paint is performed without the pixmap cache
         if(painter->worldTransform().isScaling()) {
-            // If zooming, the paint is performed without the pixmap cache.
+            // Save pen
+            QPen savedPen = painter->pen();
+
+            // Get global pen settings
+            Settings *settings = Settings::instance();
+            painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+
+            // Draw symbol
             painter->drawPath(symbol);
+
+            // Restore pen
+            painter->setPen(savedPen);
         }
         else {
-            // Else, a pixmap cached is used.
+            // Else, a pixmap cached is used
             QPixmap pix = libraryManager->pixmapCache(name());
             QRect rect =  symbol.boundingRect().toRect();
             rect.adjust(-1.0, -1.0, 1.0, 1.0);  // Adjust rect to avoid clipping when size = 1px in any dimension
@@ -393,7 +406,7 @@ namespace Caneda
         QRectF adjustedRect = adjustedBoundRect(symbol.boundingRect());
 
         // Set symbol bounding rect
-        setShapeAndBoundRect(QPainterPath(), adjustedRect, 1.0);
+        setShapeAndBoundRect(QPainterPath(), adjustedRect);
     }
 
 } // namespace Caneda

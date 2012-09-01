@@ -21,6 +21,7 @@
 #include "library.h"
 
 #include "cgraphicsscene.h"
+#include "cgraphicsview.h"
 #include "global.h"
 #include "singletonowner.h"
 #include "settings.h"
@@ -351,6 +352,11 @@ namespace Caneda
             pix.fill(Qt::transparent);
 
             QPainter painter(&pix);
+            painter.setRenderHints(Caneda::RENDER_HINTS);
+
+            Settings *settings = Settings::instance();
+            painter.setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
+                                settings->currentValue("gui/lineWidth").toInt()));
 
             QPointF offset = -rect.topLeft(); // (0,0)-topLeft()
             painter.translate(offset);

@@ -38,7 +38,7 @@ namespace Caneda
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
         setAcceptDrops(true);
-        setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+        setRenderHints(Caneda::RENDER_HINTS);
         setViewportUpdateMode(SmartViewportUpdate);
         setCacheMode(CacheBackground);
         setAlignment(static_cast<Qt::AlignmentFlag>(Qt::AlignLeft | Qt::AlignTop));
