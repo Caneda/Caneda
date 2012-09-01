@@ -28,11 +28,10 @@
 #include "library.h"
 #include "propertygroup.h"
 #include "settings.h"
+#include "xmlutilities.h"
 
 #include "paintings/ellipsearc.h"
 #include "paintings/graphictextdialog.h"
-
-#include "xmlutilities/xmlutilities.h"
 
 #include <QApplication>
 #include <QClipboard>

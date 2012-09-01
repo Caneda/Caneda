@@ -10,7 +10,6 @@ INCLUDE_DIRECTORIES(
 ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( paintings )
 ADD_SUBDIRECTORY( plugins )
-ADD_SUBDIRECTORY( xmlutilities )
 
 SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   cgraphicsitem.cpp cgraphicsscene.cpp sidebarmodel.cpp
@@ -29,7 +28,7 @@ SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   layoutdocument.cpp layoutcontext.cpp layoutview.cpp
   textdocument.cpp textcontext.cpp textview.cpp textedit.cpp
   webdocument.cpp webcontext.cpp webview.cpp webpage.cpp
-
+  xmlutilities.cpp
 )
 
 SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
@@ -50,9 +49,7 @@ QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} ${CANEDA_MOC_SRCS} )
 
-TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} ${LIBXML2_LIBRARIES}
-                       ${LIBXSLT_LIBRARIES} ${QWT_LIBRARIES}
-                       dialogs paintings xmlutilities
-                       attenuator filter transmission)
+TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} ${QWT_LIBRARIES}
+                       dialogs paintings attenuator filter transmission )
 
 INSTALL(TARGETS caneda DESTINATION ${BINARYDIR})

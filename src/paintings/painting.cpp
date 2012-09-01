@@ -30,8 +30,7 @@
 #include "layer.h"
 #include "portsymbol.h"
 #include "rectangle.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QBrush>
 #include <QGraphicsScene>

@@ -20,8 +20,7 @@
 #include "property.h"
 
 #include "global.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QDebug>
 

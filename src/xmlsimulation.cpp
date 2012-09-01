@@ -21,8 +21,7 @@
 
 #include "simulationdocument.h"
 #include "simulationscene.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QDebug>
 #include <QFile>

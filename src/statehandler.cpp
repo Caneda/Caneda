@@ -27,10 +27,9 @@
 #include "settings.h"
 #include "singletonowner.h"
 #include "undocommands.h"
+#include "xmlutilities.h"
 
 #include "paintings/painting.h"
-
-#include "xmlutilities/xmlutilities.h"
 
 #include <QApplication>
 #include <QClipboard>

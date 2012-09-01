@@ -23,8 +23,7 @@
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "settings.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QGraphicsSceneEvent>
 #include <QPainter>

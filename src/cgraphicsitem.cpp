@@ -23,8 +23,7 @@
 #include "cgraphicsscene.h"
 #include "cgraphicsview.h"
 #include "port.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QGraphicsSceneEvent>
 #include <QMenu>

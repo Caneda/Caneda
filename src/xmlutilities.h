@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,10 +21,10 @@
 #ifndef XMLUTILITIES_H
 #define XMLUTILITIES_H
 
-#include "QXmlStreamReaderExt.h"
-
+#include <QByteArray>
 #include <QMap>
 #include <QPolygonF>
+#include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
 // Forward declarations
@@ -42,18 +43,11 @@ namespace Caneda
      * \warning QXmlStreamReader doesn't have virtual destructor. Don't delete any
      * instance of this class from base pointer.
      */
-    class XmlReader : public QXmlStreamReaderExt
+    class XmlReader : public QXmlStreamReader
     {
     public:
-        //! Constructs an xml stream reader acting on \a device.
-        //XmlReader(QIODevice * device) : QXmlStreamReader(device) {}
         //! Constructs an xml stream reader acting on \a data.
-        XmlReader(const QByteArray & data,
-                const QRelaxNGvalidator * schema = NULL,
-                const QXsltTransformer * xslt = NULL)
-            : QXmlStreamReaderExt(data, schema, xslt) {}
-        //! Constructs an xml stream reader acting on \a data.
-        //XmlReader(const QString & data) : QXmlStreamReader(data) {}
+        XmlReader(const QByteArray & data) : QXmlStreamReader(data) {}
 
         int readInt();
         double readDouble();

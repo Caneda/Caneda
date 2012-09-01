@@ -23,10 +23,9 @@
 #include "global.h"
 #include "library.h"
 #include "symboldocument.h"
+#include "xmlutilities.h"
 
 #include "paintings/painting.h"
-
-#include "xmlutilities/xmlutilities.h"
 
 #include <QDebug>
 #include <QFile>

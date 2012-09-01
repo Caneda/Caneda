@@ -25,8 +25,7 @@
 #include "singletonowner.h"
 #include "settings.h"
 #include "xmlsymbol.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QByteArray>
 #include <QDebug>

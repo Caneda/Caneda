@@ -22,10 +22,9 @@
 
 #include "cgraphicsscene.h"
 #include "port.h"
+#include "xmlutilities.h"
 
 #include "paintings/graphictext.h"
-
-#include "xmlutilities/xmlutilities.h"
 
 #include <QDebug>
 

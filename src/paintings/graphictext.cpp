@@ -21,8 +21,7 @@
 
 #include "global.h"
 #include "graphictextdialog.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>

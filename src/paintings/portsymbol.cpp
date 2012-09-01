@@ -21,8 +21,7 @@
 
 #include "global.h"
 #include "port.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QFont>
 #include <QFontMetrics>

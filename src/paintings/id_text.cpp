@@ -20,8 +20,7 @@
 #include "id_text.h"
 
 #include "global.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QFont>
 #include <QFontMetrics>

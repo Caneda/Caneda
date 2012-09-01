@@ -26,10 +26,9 @@
 #include "port.h"
 #include "schematicdocument.h"
 #include "wire.h"
+#include "xmlutilities.h"
 
 #include "paintings/painting.h"
-
-#include "xmlutilities/xmlutilities.h"
 
 #include <QDebug>
 #include <QFile>

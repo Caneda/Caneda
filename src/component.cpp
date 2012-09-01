@@ -24,10 +24,9 @@
 #include "global.h"
 #include "library.h"
 #include "propertygroup.h"
+#include "xmlutilities.h"
 
 #include "dialogs/propertydialog.h"
-
-#include "xmlutilities/xmlutilities.h"
 
 #include <QDebug>
 #include <QFile>

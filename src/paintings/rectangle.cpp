@@ -20,8 +20,7 @@
 #include "rectangle.h"
 
 #include "styledialog.h"
-
-#include "xmlutilities/xmlutilities.h"
+#include "xmlutilities.h"
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
