@@ -21,6 +21,7 @@
 
 #include "global.h"
 #include "graphictextdialog.h"
+#include "settings.h"
 #include "xmlutilities.h"
 
 #include <QPainter>
@@ -93,7 +94,17 @@ namespace Caneda
     void GraphicText::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
     {
         if(option->state & QStyle::State_Selected) {
-            Caneda::drawHighlightRect(painter, boundingRect(), 1, option);
+            // Save pen
+            const QPen savePen = painter->pen();
+
+            // Draw selection rectangle
+            Settings *settings = Settings::instance();
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt(), Qt::DashLine));
+            painter->drawRect(boundingRect());
+
+            // Restore pen
+            painter->setPen(savePen);
         }
     }
 

@@ -70,9 +70,6 @@ namespace Caneda
     static const QBrush handleBrush(Qt::NoBrush);
     static const QRectF handleRect(-5, -5, 10, 10);
 
-    void drawHighlightRect(QPainter *p, QRectF rect, qreal pw = 1,
-            const QStyleOptionGraphicsItem *o = 0);
-
     void drawResizeHandle(const QPointF &centrePos, QPainter *painter);
     void drawResizeHandles(ResizeHandles handles, const QRectF& rect, QPainter *painter);
 

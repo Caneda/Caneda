@@ -33,53 +33,6 @@
 namespace Caneda
 {
     /*!
-     * \brief Draw an hightlight rectangle around an item
-     *
-     * \param painter painter where the item is highlighted
-     * \param rect    The rectangular area to be drawn
-     * \param pw      Pen width of highlight rectangle drawn.
-     * \param option  The style option which contains palette and other information.
-     */
-    void drawHighlightRect(QPainter *painter, QRectF rect, qreal pw,
-            const QStyleOptionGraphicsItem *option)
-    {
-        const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
-        if(qFuzzyCompare(qMax(murect.width(), murect.height()), qreal(0.0))) {
-            return;
-        }
-
-        const QPen savePen = painter->pen();
-        const QBrush saveBrush = painter->brush();
-
-        const QRectF mbrect = painter->transform().mapRect(rect);
-        if(qMin(mbrect.width(), mbrect.height()) < qreal(1.0)) {
-            return;
-        }
-
-        const qreal pad = pw / 2;
-        const qreal strokeWidth = 0; // cosmetic pen
-
-        const QColor fgcolor = option->palette.windowText().color();
-        const QColor bgcolor( // ensure good contrast against fgcolor
-                fgcolor.red()   > 127 ? 0 : 255,
-                fgcolor.green() > 127 ? 0 : 255,
-                fgcolor.blue()  > 127 ? 0 : 255);
-
-        rect.adjust(pad, pad, -pad, -pad);
-
-        painter->setPen(QPen(bgcolor, strokeWidth, Qt::SolidLine));
-        painter->setBrush(Qt::NoBrush);
-        painter->drawRect(rect);
-
-        painter->setPen(QPen(option->palette.windowText(), 0, Qt::DashLine));
-        painter->setBrush(Qt::NoBrush);
-        painter->drawRect(rect);
-
-        painter->setPen(savePen);
-        painter->setBrush(saveBrush);
-    }
-
-    /*!
      * \brief Utility function to draw resize handle for painting and other items.
      *
      * \param centrePos The point which will be center for the handle rectangle
