@@ -72,8 +72,6 @@ namespace Caneda
 
         void readFurther();
         void readUnknownElement();
-
-        QString readXmlFragment();
     };
 
     /*!

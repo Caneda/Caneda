@@ -57,46 +57,6 @@ namespace Caneda
         Q_ASSERT(depth == 0);
     }
 
-    /*!
-     * \brief Returns an xml fragment, as string. Thus embedded svgs for
-     * example can be extracted from an xml file.
-     */
-    QString XmlReader::readXmlFragment()
-    {
-        Q_ASSERT(isStartElement());
-
-        QString retVal;
-        int depth = 1;
-        Caneda::XmlWriter writer(&retVal);
-
-        writer.setCodec("UTF-8");
-
-        // Write the starting tag
-        writer.writeCurrentToken(*this);
-        QString startName = name().toString();
-
-        // Loop through the tokens till the starting tag's end element is found.
-        while(!atEnd()) {
-            readNext();
-
-            if(isEndElement() && name() == startName && --depth <= 0) {
-                break;
-            }
-
-            else if(isStartElement() && name() == startName) {
-                depth++;
-            }
-
-            // write the token
-            writer.writeCurrentToken(*this);
-        }
-        // Make sure depth is 0
-        Q_ASSERT(depth == 0);
-
-        writer.writeCurrentToken(*this);
-        return retVal;
-    }
-
     int XmlReader::readInt()
     {
         bool ok;
@@ -283,12 +243,12 @@ namespace Caneda
         // read till end tag
         readUnknownElement();
 
-        QTransform svgLike
+        QTransform transformMatrix
             (ele[0], ele[2], ele[4],
              ele[1], ele[3], ele[5],
              0,      0,          1);
 
-        QTransform retVal = svgLike.inverted(&ok);
+        QTransform retVal = transformMatrix.inverted(&ok);
 
         if(!ok) {
             qWarning() << Q_FUNC_INFO << "Singular matrix found";
@@ -450,21 +410,20 @@ namespace Caneda
     {
         writeEmptyElement("transform");
         bool ok;
-        QTransform svgLike = transform.inverted(&ok);
+        QTransform transformMatrix = transform.inverted(&ok);
         if(!ok) {
             qWarning() << Q_FUNC_INFO << "Singular matrix found";
         }
 
-        QStringList svgVec;
+        QStringList transformString;
+        transformString << QString::number(transformMatrix.m11())
+                        << QString::number(transformMatrix.m21())
+                        << QString::number(transformMatrix.m12())
+                        << QString::number(transformMatrix.m22())
+                        << QString::number(transformMatrix.m13())
+                        << QString::number(transformMatrix.m23());
 
-        svgVec << QString::number(svgLike.m11())
-            << QString::number(svgLike.m21())
-            << QString::number(svgLike.m12())
-            << QString::number(svgLike.m22())
-            << QString::number(svgLike.m13())
-            << QString::number(svgLike.m23());
-
-        writeAttribute("matrix", svgVec.join(","));
+        writeAttribute("matrix", transformString.join(","));
     }
 
     void XmlWriter::writeSize(const QSize& size, QString tag)
