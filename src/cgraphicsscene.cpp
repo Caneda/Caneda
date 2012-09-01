@@ -47,30 +47,6 @@
 
 namespace Caneda
 {
-    /*!
-     * \brief This template method calculates the center of the items on the scene
-     *
-     * It actually unites the boundingRect of the items sent as param and then
-     * returns the center of the united rectangle. This center is used as
-     * reference point while copy/paste/inserting items on the scene.
-     *
-     * \param items The items which geometrical center has to be calculated.
-     * \return Returns the geometrical center of the items.
-     */
-    template <typename T>
-    QPointF centerOfItems(const QList<T*> &items)
-    {
-        QRectF rect = items.isEmpty() ? QRectF() :
-            items.first()->sceneBoundingRect();
-
-
-        foreach(T *item, items) {
-            rect |= item->sceneBoundingRect();
-        }
-
-        return rect.center();
-    }
-
     //! \brief Default Constructor
     CGraphicsScene::CGraphicsScene(QObject *parent) :
         QGraphicsScene(QRectF(-2500, -2500, 5000, 5000), parent)
@@ -1924,6 +1900,28 @@ namespace Caneda
         }
 
         return _max;
+    }
+
+    /*!
+     * \brief Calculates the center of the items given as a parameter.
+     *
+     * It actually unites the boundingRect of the items sent as parameters
+     * and then returns the center of the united rectangle. This center is
+     * used as reference point while copy/paste/inserting items on the scene.
+     *
+     * \param items The items which geometrical center has to be calculated.
+     * \return Returns the geometrical center of the items.
+     */
+    QPointF CGraphicsScene::centerOfItems(const QList<CGraphicsItem*> &items)
+    {
+        QRectF rect = items.isEmpty() ? QRectF() :
+            items.first()->sceneBoundingRect();
+
+        foreach(CGraphicsItem *item, items) {
+            rect |= item->sceneBoundingRect();
+        }
+
+        return rect.center();
     }
 
     /**********************************************************************

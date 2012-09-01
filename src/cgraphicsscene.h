@@ -184,6 +184,7 @@ namespace Caneda
         void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
         CGraphicsItem* itemForName(const QString& name, const QString& category);
         int componentLabelSuffix(const QString& labelPrefix) const;
+        QPointF centerOfItems(const QList<CGraphicsItem*> &items);
 
         // Private edit events
         void mirroringEvent(const MouseActionEvent *event, const Qt::Axis axis);
