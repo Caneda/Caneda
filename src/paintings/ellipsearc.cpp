@@ -62,9 +62,8 @@ namespace Caneda
     QPainterPath EllipseArc::shapeForRect(const QRectF &rect) const
     {
         QPainterPath path;
-        path.moveTo(rect.center());
+        path.arcMoveTo(rect, m_startAngle);
         path.arcTo(rect, m_startAngle, m_spanAngle);
-        path.closeSubpath();
         return path;
     }
 
