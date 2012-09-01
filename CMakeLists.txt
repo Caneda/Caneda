@@ -44,7 +44,7 @@ SET( BINARYDIR   "bin/" )
 SET( DOCDIR      "share/caneda/docs/" )
 SET( MANDIR      "share/man/man1/" )
 SET( LANGUAGEDIR "share/caneda/i18n/" )
-SET( LIBRARYDIR  "share/caneda/lib/" )
+SET( LIBRARYDIR  "share/caneda/libraries/" )
 
 # ==================================================================================
 # Configure files and compilation options
@@ -67,6 +67,7 @@ ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( docs )
 ADD_SUBDIRECTORY( images )
 ADD_SUBDIRECTORY( i18n )
+ADD_SUBDIRECTORY( libraries )
 
 # ==================================================================================
 # Licence and other files

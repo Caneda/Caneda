@@ -39,14 +39,12 @@ namespace Caneda
 
     Settings::Settings()
     {
-        // The assumed default installation path of caneda components is
-        // <INSTALL>/libraries
         QStringList libraries;
-        libraries << Caneda::baseDirectory() + "libraries/components/active";
-        libraries << Caneda::baseDirectory() + "libraries/components/passive";
-        libraries << Caneda::baseDirectory() + "libraries/components/semiconductor";
+        libraries << Caneda::libDirectory() + "components/active";
+        libraries << Caneda::libDirectory() + "components/passive";
+        libraries << Caneda::libDirectory() + "components/semiconductor";
         data["libraries/schematic"] = VariantPair(QStringList(libraries));
-        data["libraries/hdl"] = VariantPair(QStringList(Caneda::baseDirectory() + "libraries/hdl"));
+        data["libraries/hdl"] = VariantPair(QStringList(Caneda::libDirectory() + "hdl"));
 
         data["gui/geometry"] = VariantPair(QByteArray());
         data["gui/dockPositions"] = VariantPair(QByteArray());

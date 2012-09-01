@@ -62,7 +62,7 @@ namespace Caneda
         return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
     }
 
-    QString libraryDirectory()
+    QString libDirectory()
     {
         const QString var(LIBRARYDIR);
         QDir CanedaDir = QDir(var);
