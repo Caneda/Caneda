@@ -181,7 +181,6 @@ namespace Caneda
 
                         QFile::remove(fileName + ".xsch");
                         QFile::remove(fileName + ".xsym");
-                        QFile::remove(fileName + ".svg");
 
                         projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
                         m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
