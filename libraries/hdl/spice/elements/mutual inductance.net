@@ -1,0 +1,4 @@
+* L1: first inductor
+* L2: second inductor
+* Kvalue: coupling coefficient between the two inductors
+Kname L1 L2 Kvalue

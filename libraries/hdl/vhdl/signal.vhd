@@ -1,0 +1,1 @@
+signal name: TYPE;

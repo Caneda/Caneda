@@ -1,0 +1,5 @@
+* PTS: number of points
+* FSTART: start frequency
+* FSTOP: stop frequency
+* LIN|DEC|OCT: linear, decade or octave frequency variation
+.AC (LIN|DEC|OCT) PTS FSTART FSTOP

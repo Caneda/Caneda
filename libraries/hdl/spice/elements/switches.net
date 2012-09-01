@@ -1,0 +1,18 @@
+* N1 and N2: terminals of the switch
+* C1 and C2: controlling terminals
+* Vname: zero-value voltage source whose current controls the switch
+* Mname: switch model
+
+* Voltage controlled switch
+Sname N1 N2 C1 C2 Mname
+* Current controlled switch
+Wname N1 N2 Vname Mname
+
+* Switch model
+* Dname: device type (Vswitch or Iswitch)
+* Pvalues are switch parameters:
+* RON: on resistance
+* ROFF: off resistance
+* VON: the on value (default = 1V)
+* VOFF: the off value (default = 0V)
+.MODEL Mname Dname(Pvalues)

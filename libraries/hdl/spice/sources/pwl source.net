@@ -1,0 +1,2 @@
+* (Ti Vi) specify the value Vi at time Ti
+Vname N1 N2 PWL(T1 V1 T2 V2 T3 V3 ...)

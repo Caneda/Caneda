@@ -1,0 +1,9 @@
+* First define the subcircuit
+.SUBCKT subcktName NS1 NS2 NS3 ...
+
+* Insert your circuit here
+
+.ENDS subname
+
+* Now include the subcircuit previously defined
+Xname N1 N2 N3 ... subcktName

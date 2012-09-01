@@ -1,0 +1,3 @@
+* output: output variable of the transfer function
+* source: input source of the transfer function
+.TF output source

@@ -1,0 +1,7 @@
+* V(n): node where the analysis is to be performed
+* VSRC: name of an independent source to which noise is referred
+* PTS: number of points
+* FSTART: start frequency
+* FSTOP: stop frequency
+* LIN|DEC|OCT: linear, decade or octave frequency variation
+.NOISE V(n) VSRC (LIN|DEC|OCT) PTS FSTART FSTOP

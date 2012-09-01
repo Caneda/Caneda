@@ -1,0 +1,8 @@
+* V1: initial voltage
+* V2: peak voltage
+* TD: initial delay time
+* TR: rise time
+* TF: fall time
+* PW: pulse width
+* PERIOD: period
+Vname N1 N2 PULSE(V1 V2 TD TR TF PW PERIOD)

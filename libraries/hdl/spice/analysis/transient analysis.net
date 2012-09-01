@@ -1,0 +1,6 @@
+* TSTEP: simulation increment
+* TSTOP: final simulation time
+* TSTART: starting time (optional)
+* TMAX: maximum step size (optional)
+* UIC: initial condition (optional)
+.TRAN TSTEP TSTOP <TSTART <TMAX>> <UIC>

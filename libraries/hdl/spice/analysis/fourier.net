@@ -1,0 +1,4 @@
+* The Fourier analysis is performed over the interval specified for the transient analysis
+* FREQ: fundamental frequency
+* OVn: output variables
+.FOUR FREQ OV1 OV2 OV3 ...

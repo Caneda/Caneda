@@ -1,0 +1,13 @@
+* OVn - output variables (can be voltages or currents)
+* Node voltages and device currents can be specified as:
+* M: Magnitude
+* DB: Magnitude in dB
+* P: Phase
+* R: Real part
+* I: Imaginary part
+*
+* Examples:
+* .PLOT DC V(1,2) V(3) I(Vin)
+* .PLOT AC VM(1,2) VDB(1,2) VP(1,2) IR(V2)
+.PRINT (DC|AC|TRAN) OV1 OV2 OV3 ...
+.PLOT (DC|AC|TRAN) OV1 OV2 OV3 ...

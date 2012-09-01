@@ -1,0 +1,7 @@
+* VO: offset voltage
+* VA: amplitude
+* FREQ: frequency
+* TD: delay in seconds
+* THETA: damping factor per second
+* PHASE: phase in degrees
+Vname N1 N2 SIN(VO VA FREQ <TD> <THETA> <PHASE>)

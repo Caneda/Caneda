@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+ ***************************************************************************
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
+ ***************************************************************************
+-->
+
+<component name="PNP Transistor" version="0.1.0" label="U">
+   <displaytext>
+      <lang lang="C">PNP Transistor</lang>
+   </displaytext>
+
+   <description>
+      <lang lang="C">A semiconductor amplifier device.</lang>
+   </description>
+
+   <symbol>
+        <painting name="line">
+            <properties line="0,0,0,20" pos="0,-10"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,10,0" pos="-10,0"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,10,5" pos="0,5"/>
+        </painting>
+        <painting name="arrow">
+            <properties line="0,0,-10,5" pos="10,-10" headStyle="1" headSize="4,6"/>
+        </painting>
+   </symbol>
+   
+   <ports>
+       <port name="b" x="-10" y="0"/>
+       <port name="c" x="10" y="10"/>
+       <port name="e" x="10" y="-10"/>
+   </ports>     
+
+   <properties>
+	 <property name="b" type="double" unit="-" visible="true"
+		   default="100">
+	   <description>
+	     <lang lang="C">Small signal gain</lang>
+	   </description>
+	 </property>
+   </properties>
+</component>

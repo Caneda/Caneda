@@ -1,0 +1,15 @@
+* Subcircuit for a generic opamp
+* 1 - positive input
+* 2 - negative input
+* 3 - output
+.SUBCKT opamp 1 2 3
+Rin 1 2 10Meg
+Eint 4 0 1 2 100k
+Rbw 4 5 1Meg
+Cbw 5 0 10n
+Eout 6 0 5 0 1
+Rout 6 3 100
+.ENDS opamp
+
+* Now include the subcircuit previously defined
+Xname N1 N2 N3 opamp

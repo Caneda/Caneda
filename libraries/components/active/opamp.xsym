@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+ ***************************************************************************
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
+ ***************************************************************************
+-->
+
+<component name="Opamp" version="0.1.0" label="U">
+   <displaytext>
+      <lang lang="C">Opamp</lang>
+   </displaytext>
+
+   <description>
+      <lang lang="C">An amplifier device.</lang>
+   </description>
+
+   <symbol>
+        <painting name="line">
+            <properties line="0,0,10,0" pos="-30,10"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,10,0" pos="-30,-10"/>
+        </painting>
+        
+        <painting name="line">
+            <properties line="0,0,10,0" pos="20,0"/>
+        </painting>
+        
+        <painting name="line">
+            <properties line="0,0,0,40" pos="-20,-20"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,40,-20" pos="-20,20"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,-40,-20" pos="20,0"/>
+        </painting>
+        
+        <painting name="line">
+            <properties line="0,0,5,0" pos="-17,-10"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,0,-5" pos="-14.5,-7.5"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,5,0" pos="-17,10"/>
+        </painting>
+   </symbol>
+   
+   <ports>
+       <port name="in+" x="-30" y="-10"/>
+       <port name="in-" x="-30" y="10"/>
+       <port name="out" x="30" y="0"/>
+   </ports>   
+
+   <properties>
+	 <property name="A" type="double" unit="-" visible="true"
+		   default="100000">
+	   <description>
+	     <lang lang="C">Open loop gain</lang>
+	   </description>
+	 </property>
+   </properties>
+</component>

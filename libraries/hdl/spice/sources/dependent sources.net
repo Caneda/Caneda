@@ -1,0 +1,12 @@
+* N1 and N2: positive and negative terminals of the dependent source
+* NC1 and NC2: positive and negative terminals of the controlling source
+* VCONTROL: zero value voltage source used to measure the controlling current
+
+* Voltage controlled voltage source
+Ename N1 N2 NC1 NC2 Value
+* Voltage controlled current source
+Gname N1 N2 NC1 NC2 Value
+* Current controlled voltage source
+Hname N1 N2 VCONTROL Value
+* Current controlled current source
+Fname N1 N2 VCONTROL Value

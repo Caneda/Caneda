@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+ ***************************************************************************
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
+ ***************************************************************************
+-->
+
+<component name="Coupled inductors" version="0.1.0" label="Lc">
+   <displaytext>
+      <lang lang="C">Coupled inductors</lang>
+      <lang lang="de">Gekoppelte Induktivitäten</lang>
+      <lang lang="es">Bobinas acopladas</lang>
+      <lang lang="fr">Bobines couplées</lang>
+      <lang lang="it">Induttori accoppiati</lang>
+   </displaytext>
+   
+   <description>
+      <lang lang="C">
+	A device that transfers electrical energy from one circuit to another 
+	through inductively coupling between two coils.
+      </lang>
+      <lang lang="fr">
+	Un composant qui transfere de l'énergie électrique d'un circuit vers un autre 
+	par couplage magnétique par un couplage entre deux bobines.
+      </lang>
+   </description>
+
+   <symbol>
+        <painting name="line">
+            <properties line="0,0,20,0" pos="-30,-20"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,20,0" pos="-30,20"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,-20,0" pos="30,-20"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,-20,0" pos="30,20"/>
+        </painting>
+
+        <painting name="ellipseArc">
+            <properties ellipse="0,0,10,10" startAngle="-90" spanAngle="180" pos="-15,-20"/>
+        </painting>
+        <painting name="ellipseArc">
+            <properties ellipse="0,0,10,10" startAngle="-90" spanAngle="180" pos="-15,-10"/>
+        </painting>
+        <painting name="ellipseArc">
+            <properties ellipse="0,0,10,10" startAngle="-90" spanAngle="180" pos="-15,0"/>
+        </painting>
+        <painting name="ellipseArc">
+            <properties ellipse="0,0,10,10" startAngle="-90" spanAngle="180" pos="-15,10"/>
+        </painting>
+
+        <painting name="ellipseArc">
+            <properties ellipse="0,0,10,10" startAngle="90" spanAngle="180" pos="5,-20"/>
+        </painting>
+        <painting name="ellipseArc">
+            <properties ellipse="0,0,10,10" startAngle="90" spanAngle="180" pos="5,-10"/>
+        </painting>
+        <painting name="ellipseArc">
+            <properties ellipse="0,0,10,10" startAngle="90" spanAngle="180" pos="5,0"/>
+        </painting>
+        <painting name="ellipseArc">
+            <properties ellipse="0,0,10,10" startAngle="90" spanAngle="180" pos="5,10"/>
+        </painting>
+
+        <painting name="ellipse">
+            <properties ellipse="0,0,2,2" pos="20,-30"/>
+        </painting>
+        <painting name="ellipse">
+            <properties ellipse="0,0,2,2" pos="-20,-30"/>
+        </painting>
+   </symbol>
+   
+   <ports>
+       <port name="1+" x="-30" y="-20"/>
+       <port name="2+" x="30" y="-20"/>
+       <port name="2-" x="30" y="20"/>
+       <port name="1-" x="-30" y="20"/>
+   </ports>   
+
+   <properties>
+	 <property name="L1" type="double" unit="L" visible="true"
+		   default="1e-3">
+	   <description>
+	     <lang lang="C">Inductance of coil #1</lang>
+	     <lang lang="ca">Inductancia de la bobina 1</lang>
+	     <lang lang="cs">Induktivita cívky 1</lang>
+	     <lang lang="de">Induktivität der Spule 1</lang>
+	     <lang lang="es">Inductancia de la bobina 1</lang>
+	     <lang lang="fr">Inductance de la 1ère bobine</lang>
+	     <lang lang="hu">1. tekercs induktivitása</lang>
+	     <lang lang="jp">コイル1のインダクタンス</lang>
+	     <lang lang="pl">Indukcyjnośc cewki 1</lang>
+	     <lang lang="ru">Индуктивность обмотки 1</lang>
+	     <lang lang="sv">Induktans hos spole 1</lang>
+	     <lang lang="uk">Індуктивність обмотки 1</lang>
+	   </description>
+	 </property>
+
+	 <property name="L2" type="double" unit="L" visible="true"
+		   default="1e-3">
+	   <description>
+	     <lang lang="C">Inductance of coil #2</lang>
+	     <lang lang="ca">Inductancia de la bobina 2</lang>
+	     <lang lang="cs">Induktivita cívky 2</lang>
+	     <lang lang="cs">Induktivita 2. cívky</lang>
+	     <lang lang="de">Induktivität der Spule 2</lang>
+	     <lang lang="es">Inductancia de la bobina 2</lang>
+	     <lang lang="fr">Inductance de la 2ème bobine</lang>
+	     <lang lang="hu">2. tekercs induktivitása</lang>
+	     <lang lang="jp">コイル2のインダクタンス</lang>
+	     <lang lang="pl">Indukcyjnośc cewki 2</lang>
+	     <lang lang="ru">Индуктивность обмотки 2</lang>
+	     <lang lang="sv">Induktans hos spole 2</lang>
+	     <lang lang="uk">Індуктивність обмотки 2</lang>
+	   </description>
+	 </property>
+	 
+	 <property name="k" type="double" unit="(1)" visible="false"
+		   default="0.9">
+	   <description>
+	     <lang lang="C">Coupling factor between coil 1 and 2</lang>
+	     <lang lang="ca">Inductancia mutua entre la bobina 1 y 2</lang>
+	     <lang lang="cs">Faktor svázání mezi cívkou 1 a 2</lang>
+	     <lang lang="de">Koppelfaktor zwischen Spule 1 und 2</lang>
+	     <lang lang="es">Inductancia mutua entre la bobina 1 y 2</lang>
+	     <lang lang="fr">Couplage entre la 1ère et 2ème bobine</lang>
+	     <lang lang="hu">1-2 tekercs közötti csatolási tényező</lang>
+	     <lang lang="it">Coefficiente di accoppiamento tra gli induttori 1 e 2</lang>
+	     <lang lang="jp">コイル1とコイル2間の結合係数</lang>
+	     <lang lang="pl">Współczynnik sprzężenie między 1 i 2</lang>
+	     <lang lang="ru">Коэффициент связи между обмоткой 1 и 2</lang>
+	     <lang lang="sv">Kopplingsfaktor mellan spole 1 och 2</lang>
+	     <lang lang="tr">Sargı 1 ve 2 arasındaki çiftlenim çarpanı</lang>
+	   </description>
+	 </property>
+   </properties>
+</component>

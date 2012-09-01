@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+ ***************************************************************************
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
+ ***************************************************************************
+-->
+
+<component name="Capacitor" version="0.1.0" label="C">
+   <displaytext>
+      <lang lang="C">Capacitor</lang>
+      <lang lang="de">Kondensator</lang>
+      <lang lang="es">Condensador</lang>
+      <lang lang="fr">Condensateur</lang>
+      <lang lang="he">קבל</lang>
+      <lang lang="hu">Kondenzátor</lang>
+      <lang lang="it">Condensatore</lang>
+      <lang lang="jp">コンデンサ</lang>
+      <lang lang="pl">Kondensator</lang>
+      <lang lang="ro">Capacitate</lang>
+      <lang lang="ru">Конденсатор</lang>
+      <lang lang="sv">Kondensator</lang>
+      <lang lang="tr">sığa</lang>
+   </displaytext>
+
+   <description>
+      <lang lang="C">A electrical energy storage device</lang>
+      <lang lang="fr">Un composant de stockage de l'énergie électrique</lang>
+   </description>
+
+   <symbol>
+        <painting name="line">
+            <properties line="0,0,17.5,0" pos="-20,0"/>
+        </painting>
+        <painting name="line">
+            <properties line="0,0,0,20" pos="-2.5,-10"/>
+        </painting>       
+        <painting name="line">
+            <properties line="0,0,0,20" pos="2.5,-10"/>
+        </painting>       
+        <painting name="line">
+            <properties line="0,0,-17.5,0" pos="20,0"/>
+        </painting>
+   </symbol>
+   
+   <ports>
+       <port name="+" x="-20" y="0"/>
+       <port name="-" x="20" y="0"/>
+   </ports>   
+
+   <properties>
+	 <property name="C" type="double" unit="F" visible="true"
+		   default="1e-12">
+	   <description>
+	     <lang lang="C">Capacitance</lang>
+	     <lang lang="de">Kapazität</lang>
+	     <lang lang="fr">Capacité</lang>
+	     <lang lang="es">Capacidad</lang>
+	     <lang lang="hu">Kapacitás</lang>
+	     <lang lang="it">Capacità</lang>
+	     <lang lang="jp">容量</lang>
+	     <lang lang="pl">Pojemność</lang>
+	     <lang lang="pt">Capacitância</lang>
+	     <lang lang="ro">Capacitate</lang>
+	     <lang lang="sv">Kapacitans</lang>
+	   </description>
+	 </property>
+	 <property name="V" type="double" unit="V" visible="false" 
+		   default="0">
+	   <description>
+	     <lang lang="C">Initial voltage (t=0)</lang>
+	     <lang lang="fr">Tension initiale (t=0)</lang>
+	   </description>
+	 </property>
+   </properties>
+</component>

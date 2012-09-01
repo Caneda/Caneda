@@ -1,0 +1,19 @@
+* MODName is the name of the model
+
+* Type can be any of the following:
+* D: Diode
+* NPN: npn bipolar transistor
+* PNP: pnp bipolar transistor
+* NMOS: nmos transistor
+* PMOS: pmos transistor
+* NJF: N-channel JFET model
+* PJF: P-channel JFET model
+
+* Pvalues are device parameters:
+* .MODEL MODName D (IS= N= Rs= CJO= Tt= BV= IBV=)
+* .MODEL MODName NPN (BF= IS= VAF=)
+* .MODEL MODName NMOS (KP= VT0= LAMBDA= GAMMA=)
+* .MODEL MODName NJF (VT0= BETA= LAMBDA= IS= CGD= CGS= RD= RS=)
+* For a complete list refer to the spice manual
+
+.MODEL MODName Type (Pvalues)
