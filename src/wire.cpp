@@ -122,6 +122,7 @@ namespace Caneda
         // Save pen
         QPen savedPen = painter->pen();
 
+        // Set global pen settings
         Settings *settings = Settings::instance();
         if(option->state & QStyle::State_Selected) {
             painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
@@ -132,6 +133,7 @@ namespace Caneda
                                  settings->currentValue("gui/lineWidth").toInt()));
         }
 
+        // Draw the wire
         painter->drawLine(port1()->pos(), port2()->pos());
 
         // Restore pen
