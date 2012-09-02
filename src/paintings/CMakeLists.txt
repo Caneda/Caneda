@@ -1,5 +1,5 @@
 SET(PAINTINGS_SRCS painting.cpp rectangle.cpp ellipse.cpp graphicline.cpp arrow.cpp layer.cpp
-graphictext.cpp ellipsearc.cpp id_text.cpp portsymbol.cpp styledialog.cpp graphictextdialog.cpp)
+graphictext.cpp ellipsearc.cpp portsymbol.cpp styledialog.cpp graphictextdialog.cpp)
 
 SET(PAINTINGS_MOC_HDRS styledialog.h graphictextdialog.h)
 
