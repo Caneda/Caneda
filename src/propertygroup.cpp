@@ -60,7 +60,7 @@ namespace Caneda
 
     /*!
      * \brief Realigns all the child items of this group (deletes hidden items).
-     * This is quite expensive . It removes all property items
+     * This is quite expensive. It removes all property items
      * from the group and then freshly adds them to the group again if it is
      * visible. If the property is hidden, then the corresponding property items
      * are removed from group and deleted. This also updates the visible value of
