@@ -35,11 +35,9 @@ namespace Caneda
     {
         m_currentZoom = m_originalZoom;
         m_webPage = new WebPage(document->webUrl());
-        m_webPage->setZoomFactor(m_currentZoom);
+
         connect(m_webPage, SIGNAL(focussed()), this,
                 SLOT(onFocussed()));
-        connect(m_webPage, SIGNAL(statusBarMessage(const QString &)),
-                this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     WebView::~WebView()
@@ -118,7 +116,7 @@ namespace Caneda
 
         m_currentZoom = zoomLevel;
 
-        m_webPage->setZoomFactor(m_currentZoom);
+        m_webPage->setPointSize(m_currentZoom);
     }
 
 } // namespace Caneda

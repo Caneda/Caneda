@@ -20,11 +20,11 @@
 #ifndef WEBPAGE_H
 #define WEBPAGE_H
 
-#include <QtWebKit/QWebView>
+#include <QTextBrowser>
 
 namespace Caneda
 {
-    class WebPage : public QWebView
+    class WebPage : public QTextBrowser
     {
         Q_OBJECT
 

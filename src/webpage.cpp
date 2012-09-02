@@ -23,7 +23,7 @@ namespace Caneda
 {
     WebPage::WebPage(QUrl *url)
     {
-        load(*url);
+        setSource(QUrl(url->path()));
         show();
     }
 
@@ -37,7 +37,7 @@ namespace Caneda
     void WebPage::focusInEvent(QFocusEvent *event)
     {
         emit focussed();
-        QWebView::focusInEvent(event);
+        QTextBrowser::focusInEvent(event);
     }
 
 } // namespace Caneda

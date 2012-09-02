@@ -56,7 +56,7 @@ namespace Caneda
         if (!page) {
             return;
         }
-        page->triggerPageAction(QWebPage::Copy);
+        page->copy();
     }
 
     void WebDocument::print(QPrinter *printer, bool fitInView)
