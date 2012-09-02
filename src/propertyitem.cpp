@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,6 +23,7 @@
 #include "cgraphicsscene.h"
 #include "component.h"
 #include "propertygroup.h"
+#include "settings.h"
 #include "undocommands.h"
 
 #include <QApplication>
@@ -121,64 +123,26 @@ namespace Caneda
         return false;
     }
 
-    /*!
-     * \brief Draws the the text item to painter.
-     *
-     * The static part of text is drawn explicitly and the remaining part
-     * is drawn by the base \a QGraphicsTextItem
-     */
-    void PropertyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *o,
+    //! \brief Draws the text item to painter.
+    void PropertyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
-        //Draw static part of text.
-        painter->setFont(font());
-        painter->setBrush(Qt::NoBrush);
-        //FIXME: Hardcoded color.
-        painter->setPen(QPen(Qt::black,0));
+        // Save pen
+        QPen savedPen = painter->pen();
+
+        // Set global pen settings
+        Settings *settings = Settings::instance();
+        painter->setPen(QPen(settings->currentValue("gui/foregroundColor").value<QColor>(),
+                             settings->currentValue("gui/lineWidth").toInt()));
+
+        // Draw static part of text (properties names)
         painter->drawText(m_staticPos, m_staticText);
 
-        // Remove const ness of option.
-        QStyleOptionGraphicsItem *option = const_cast<QStyleOptionGraphicsItem*>(o);
+        // Paint the remaining part of text (properties values and component label)
+        painter->drawText(QPointF(0, m_staticPos.y()), toPlainText());
 
-        // Save the values before changing.
-        QStyle::State savedState = option->state;
-        QRectF savedExposedRect = option->exposedRect;
-
-        if(option->exposedRect.left() < 0) {
-            option->exposedRect.setLeft(0);
-        }
-        // Clear the selection and focus flags to prevent the focus rect being drawn
-        option->state &= ~QStyle::State_Selected;
-        option->state &= ~QStyle::State_HasFocus;
-
-        // Paint the remaining part of text using base method.
-        QGraphicsTextItem::paint(painter, option, widget);
-
-        // Restore changed values.
-        option->state = savedState;
-        option->exposedRect = savedExposedRect;
-
-        //Now manually draw the focus rect.
-        if(option->state & QStyle::State_HasFocus) {
-            const qreal pad = 1.0 / 2;
-
-            const qreal penWidth = 0; // cosmetic pen
-
-            const QColor fgcolor = option->palette.windowText().color();
-            const QColor bgcolor(fgcolor.red()   > 127 ? 0 : 255,
-                    fgcolor.green() > 127 ? 0 : 255,
-                    fgcolor.blue()  > 127 ? 0 : 255);
-
-            painter->setPen(QPen(bgcolor, penWidth, Qt::SolidLine));
-            painter->setBrush(Qt::NoBrush);
-            painter->drawRect(QGraphicsTextItem::boundingRect().
-                    adjusted(pad, pad, -pad, -pad));
-
-            painter->setPen(QPen(fgcolor, penWidth, Qt::DashLine));
-            painter->setBrush(Qt::NoBrush);
-            painter->drawRect(QGraphicsTextItem::boundingRect().
-                    adjusted(pad, pad, -pad, -pad));
-        }
+        // Restore pen
+        painter->setPen(savedPen);
     }
 
     /*!

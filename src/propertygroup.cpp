@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,10 +23,13 @@
 #include "cgraphicsscene.h"
 #include "component.h"
 #include "propertyitem.h"
+#include "settings.h"
 
 #include <QApplication>
 #include <QDebug>
 #include <QFontMetricsF>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 namespace Caneda
 {
@@ -56,6 +60,27 @@ namespace Caneda
         m_propertyItemsMap.clear();
         m_pointSize = pointSize;
         realignItems();
+    }
+
+    //! \brief Draws the propertiesGroup bounding rect to painter.
+    void PropertiesGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+            QWidget *widget)
+    {
+        // Save pen
+        QPen savedPen = painter->pen();
+
+        // Set global pen settings
+        Settings *settings = Settings::instance();
+        if(option->state & QStyle::State_Selected) {
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+        }
+
+        // Draw bounding rect
+        QGraphicsItemGroup::paint(painter, option, widget);
+
+        // Restore pen
+        painter->setPen(savedPen);
     }
 
     /*!
