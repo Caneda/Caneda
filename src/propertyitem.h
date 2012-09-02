@@ -55,8 +55,6 @@ namespace Caneda
         QRectF boundingRect() const;
         QPainterPath shape() const;
 
-        void setFont(const QFont& f);
-
         bool eventFilter(QObject* object, QEvent* event);
         void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
                 QWidget * widget = 0 );

@@ -83,16 +83,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Set font and calculate the static position again.
-     * \note This hides the base implementation as base method isn't virtual!
-     */
-    void PropertyItem::setFont(const QFont& f)
-    {
-        QGraphicsTextItem::setFont(f);
-        calculatePos();
-    }
-
-    /*!
      * \brief Updates visual display of property value.
      * \note This method is key method to alter the visual text of property. Call
      * it wherever the property changes.

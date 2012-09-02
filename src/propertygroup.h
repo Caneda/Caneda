@@ -68,8 +68,6 @@ namespace Caneda
         CGraphicsScene* cGraphicsScene() const;
         Component* component() const;
 
-        void setFontSize(int pointSize);
-
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0 );
 
@@ -80,7 +78,6 @@ namespace Caneda
     private:
         //! Internal storage of property items for book keeping.
         QMap<QString, PropertyItem*> m_propertyItemsMap;
-        int m_pointSize;
     };
 
 } // namespace Caneda
