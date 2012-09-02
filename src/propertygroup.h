@@ -33,8 +33,20 @@ namespace Caneda
 
     /*!
      * \brief This class groups the properties of a item.
-     * This takes care of creation and destruction of property items as
-     * well. This stores a reference to the actual property map.
+     *
+     * Gouping all PropertyItems of a component into a QGraphicsItemGroup
+     * provides a convenient way of handling them all together. In this
+     * way, the properties of a component can be selected and moved
+     * all at once.
+     *
+     * This class takes care of creation and destruction of PropertyItems
+     * as well.
+     *
+     * While Property class holds actual properties, PropertyItem
+     * class is the object that renders them on a scene. Finally, PropertiesGroup
+     * is the class that groups all PropertyItems to allow selection and
+     * moving of all properties at once.
+     *
      * \sa Property, PropertyItem
      */
     class PropertiesGroup : public QObject, public QGraphicsItemGroup

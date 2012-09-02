@@ -62,29 +62,25 @@ namespace Caneda
         realignItems();
     }
 
-    //! \brief Draws the propertiesGroup bounding rect to painter.
+    /*!
+     * \brief Draws the propertiesGroup bounding rect to painter.
+     *
+     * This method is empty to avoid drawing a selection rectangle around
+     * property items in the scene. The selection state is instead
+     * handled by propertyItemp::paint method, changing the properties
+     * color to the global selection pen.
+     *
+     * \sa PropertyItem::paint()
+     */
     void PropertiesGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
-        // Save pen
-        QPen savedPen = painter->pen();
 
-        // Set global pen settings
-        Settings *settings = Settings::instance();
-        if(option->state & QStyle::State_Selected) {
-            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
-                                 settings->currentValue("gui/lineWidth").toInt()));
-        }
-
-        // Draw bounding rect
-        QGraphicsItemGroup::paint(painter, option, widget);
-
-        // Restore pen
-        painter->setPen(savedPen);
     }
 
     /*!
-     * \brief Realigns all the child items of this group (deletes hidden items).
+     * \brief Realigns all the child items of this group (and deletes hidden items).
+     *
      * This is quite expensive. It removes all property items
      * from the group and then freshly adds them to the group again if it is
      * visible. If the property is hidden, then the corresponding property items

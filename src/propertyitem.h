@@ -30,7 +30,21 @@ namespace Caneda
     //Forward declarations.
     class CGraphicsScene;
 
-    //! \brief Class used to represent the text corresponding to property on schematic.
+    /*!
+     * \brief Class used to render a property on a graphics scene.
+     *
+     * Gouping all PropertyItems of a component into a QGraphicsItemGroup
+     * provides a convenient way of handling them all together. In this
+     * way, the properties of a component can be selected and moved
+     * all at once.
+     *
+     * While Property class holds actual properties, PropertyItem
+     * class is the object that renders them on a scene. Finally, PropertiesGroup
+     * is the class that groups all PropertyItems to allow selection and
+     * moving of all properties at once.
+     *
+     * \sa Property, PropertiesGroup
+     */
     class PropertyItem : public QGraphicsTextItem
     {
         Q_OBJECT

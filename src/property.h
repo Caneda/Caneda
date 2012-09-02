@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -38,6 +39,7 @@ namespace Caneda
     /*!
      * \brief This struct hold data to be shared implicitly of a property.
      * \details This inherits QSharedData which takes care of reference counting.
+     *
      * \sa Property
      */
     struct PropertyData : public QSharedData
@@ -59,9 +61,16 @@ namespace Caneda
     /*!
      * \brief This class represents the property of a component.
      *
-     * This is implemented as an implicitly shared class thereby
-     * allowing to use the objects directly instead of pointer.
-     * \sa PropertyData
+     * Actual properties inside the Property class, are implemented as
+     * an implicitly shared class named PropertyData, thereby allowing
+     * the use of the property objects directly instead of using pointers.
+     *
+     * While Property class holds actual properties, PropertyItem
+     * class is the object that renders them on a scene. Finally, PropertiesGroup
+     * is the class that groups all PropertyItems to allow selection and
+     * moving of all properties at once.
+     *
+     * \sa PropertyData, PropertiesGroup, PropertyItem
      * \note Assumes that options list is always strings!
      */
     class Property

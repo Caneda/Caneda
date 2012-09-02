@@ -123,7 +123,20 @@ namespace Caneda
         return false;
     }
 
-    //! \brief Draws the text item to painter.
+    /*!
+     * \brief Draws the propertyItem to painter.
+     *
+     * This method draws the propertyItem on a scene. The pen color changes
+     * according to the selection state, thus giving state feedback to the
+     * user.
+     *
+     * The selection rectangle around all propertyItems is handled by the
+     * propertyGroup::paint method. An empty method in propertyGroup::paint
+     * will avoid drawing a selection rectangle around property items in the
+     * scene.
+     *
+     * \sa PropertiesGroup::paint()
+     */
     void PropertyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
@@ -132,8 +145,14 @@ namespace Caneda
 
         // Set global pen settings
         Settings *settings = Settings::instance();
-        painter->setPen(QPen(settings->currentValue("gui/foregroundColor").value<QColor>(),
-                             settings->currentValue("gui/lineWidth").toInt()));
+        if(isSelected()) {
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+        }
+        else {
+            painter->setPen(QPen(settings->currentValue("gui/foregroundColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+        }
 
         // Draw static part of text (properties names)
         painter->drawText(m_staticPos, m_staticText);
