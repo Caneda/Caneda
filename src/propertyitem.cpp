@@ -311,7 +311,7 @@ namespace Caneda
     {
         PropertiesGroup *propGroup = static_cast<PropertiesGroup*>(group());
         if(propGroup) {
-            propGroup->forceUpdate();
+            propGroup->updateGeometry();
         }
     }
 

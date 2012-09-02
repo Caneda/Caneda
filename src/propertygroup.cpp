@@ -35,6 +35,7 @@ namespace Caneda
 {
     /*!
      * Constructor
+     *
      * \param propMap A reference to PropertyMap of a component.
      * \param scene The graphics scene to which this property should belong.
      */
@@ -96,7 +97,6 @@ namespace Caneda
 
                 QList<QGraphicsItem*> _children = QGraphicsItemGroup::children();
                 if(!_children.isEmpty()) {
-
                     // Place the new item at bottom, properly aligned with group.
                     QPointF itemPos = mapToScene(boundingRect().bottomLeft());
                     itemPos.rx() -= item->boundingRect().left();
@@ -136,14 +136,14 @@ namespace Caneda
             setFlag(ItemSendsScenePositionChanges, true);
         }
 
-        forceUpdate();
+        updateGeometry();
     }
 
-    //! \brief Forces the updation of the geometry of the property group.
-    void PropertiesGroup::forceUpdate()
+    //! \brief Forces the update of the geometry of the property group.
+    void PropertiesGroup::updateGeometry()
     {
+        // HACK: This adds and removes a dummy item from group to update its geometry
         static const QLineF line(-5, -5, 5, 5);
-        // HACK:This adds and removes a dummy item from group to update its geometry
         QGraphicsLineItem *dummy = new QGraphicsLineItem(line);
         addToGroup(dummy);
         removeFromGroup(dummy);

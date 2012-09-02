@@ -63,7 +63,7 @@ namespace Caneda
         int type() { return PropertiesGroupType; }
 
         void realignItems();
-        void forceUpdate();
+        void updateGeometry();
 
         CGraphicsScene* cGraphicsScene() const;
         Component* component() const;
