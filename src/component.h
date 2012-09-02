@@ -102,8 +102,6 @@ namespace Caneda
         void updatePropertyGroup();
         void createPropertyGroup();
 
-        bool setProperty(const QString& propName, const QVariant& value);
-
         /*!
          * \brief Method to obtain property's value.
          * \param propName The name of property.
@@ -115,6 +113,7 @@ namespace Caneda
                     QVariant();
         }
 
+        bool setProperty(const QString& propName, const QVariant& value);
         void setPropertyVisible(const QString& propName, bool visibility);
 
         //! Returns the label of the component in the form {label_prefix}{number_suffix}

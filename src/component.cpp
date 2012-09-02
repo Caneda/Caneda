@@ -51,7 +51,7 @@ namespace Caneda
         init();
     }
 
-    //! Destructor.
+    //! \brief Destructor.
     Component::~Component()
     {
         delete m_propertyGroup;
@@ -87,17 +87,21 @@ namespace Caneda
     }
 
     /*!
-     * \brief This method updates the property display on schematic.
+     * \brief Updates the property display on a scene (schematic).
      *
-     * This also takes care of creating new property group if it didn't
-     * exist before and also deletes it if none of property are visible.
+     * This method also takes care of creating a new PropertyGroup if it
+     * didn't exist before and deletes it if none of the properties are
+     * visible.
+     *
+     * \sa PropertiesGroup, PropertiesGroup::realignItems(), createPropertyGroup()
      */
     void Component::updatePropertyGroup()
     {
         bool itemsVisible = false;
+
+        // Determine if any item is visible.
         PropertyMap::const_iterator it = propertyMap().constBegin(),
             end = propertyMap().constEnd();
-        // Determine if any item is visible.
         while(it != end) {
             if(it->isVisible()) {
                 itemsVisible = true;
@@ -105,6 +109,7 @@ namespace Caneda
             }
             ++it;
         }
+
         // Delete the group if none of the properties are visible.
         if(!itemsVisible) {
             delete m_propertyGroup;
@@ -112,6 +117,8 @@ namespace Caneda
             return;
         }
 
+        // If m_propertyGroup=0 create a new PopertyGroup, else
+        // just update it calling PopertyGroup::realignItems()
         if(!m_propertyGroup) {
             createPropertyGroup();
         }
@@ -120,7 +127,11 @@ namespace Caneda
         }
     }
 
-    //! \brief Creates property group for the first time.
+    /*!
+     * \brief Creates the property group for the first time.
+     *
+     * \sa PropertiesGroup, PropertiesGroup::realignItems(), updatePropertyGroup()
+     */
     void Component::createPropertyGroup()
     {
         // Delete the old group if it exists.
@@ -132,7 +143,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Method used to set property's value.
+     * \brief Method used to set a property's value.
      *
      * This also handles the property change of special properties such as
      * symbol, label and forwards the call to those methods on match.
@@ -141,6 +152,8 @@ namespace Caneda
      * \param propName The property which is to be set.
      * \param value The new value to be set.
      * \return Returns true if successful, else returns false.
+     *
+     * \sa setLabel(), Property, PropertyMap
      */
     bool Component::setProperty(const QString& propName, const QVariant& value)
     {
@@ -149,6 +162,7 @@ namespace Caneda
                      << "' doesn't exist!";
             return false;
         }
+
         if(propName == "label") {
             return setLabel(value.toString());
         }
@@ -168,6 +182,7 @@ namespace Caneda
                        << " doesn't exist!";
             return;
         }
+
         d->propertyMap[propName].setVisible(visiblity);
         updatePropertyGroup();
     }
@@ -176,9 +191,9 @@ namespace Caneda
      * \brief Sets the label of component.
      *
      * This also handles lable prefix and number suffix appropriately.
-     * \param newLabel The label to be set now.
-     * \return Returns true on success and false on failure.
-     * \todo Yet to implement label prefix and number suffixing.
+     *
+     * \param newLabel The label to be set.
+     * \return True on success and false on failure.
      */
     bool Component::setLabel(const QString& newLabel)
     {
@@ -203,18 +218,33 @@ namespace Caneda
         return _label.mid(labelPrefix().length());
     }
 
-    //! \brief Sets the propertyMap of this component to \a propMap
+    /*!
+     * \brief Sets the propertyMap of this component to \a propMap
+     *
+     * Sets the propertyMap of this component and takes care of
+     * updating the PropertyGroup which is the class that displays
+     * properties on a scene.
+     *
+     * \sa Property, PropertyMap, updatePropertyGroup(), PropertyGroup
+     */
     void Component::setPropertyMap(const PropertyMap& propMap)
     {
         d->propertyMap = propMap;
+        updatePropertyGroup();  // This is neccessary to update the properties display on a scene
     }
 
     /*!
-     * \brief Convenience static method to load component saved as xml.
+     * \brief Convenience static method to load a component saved as xml.
+     *
+     * This method loads a component saved as xml. Once the component name
+     * and library are retrieved, a new component is created from LibraryManager
+     * and its data is filled using the loadData() method.
      *
      * \param reader The xmlreader used to read xml data.
      * \param scene CGraphicsScene to which component should be parented to.
      * \return Returns new component pointer on success and null on failure.
+     *
+     * \sa LibraryManager::newComponent(), loadData()
      */
     Component* Component::loadComponentData(Caneda::XmlReader *reader, CGraphicsScene *scene)
     {
@@ -238,7 +268,14 @@ namespace Caneda
         return retVal;
     }
 
-    //! \reimp
+    /*!
+     * \brief Loads current component data from \a Caneda::XmlReader.
+     *
+     * Loads current component data (name, library, position, properties
+     * and transform) from \a Caneda::XmlReader.
+     *
+     * \sa loadComponentData(), saveData()
+     */
     void Component::loadData(Caneda::XmlReader *reader)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "component");
@@ -280,7 +317,14 @@ namespace Caneda
         }
     }
 
-    //! \reimp
+    /*!
+     * \brief Saves current component data to \a Caneda::XmlWriter.
+     *
+     * Saves current component data (name, library, position, properties
+     * and transform) to \a Caneda::XmlWriter.
+     *
+     * \sa loadComponentData(), loadData()
+     */
     void Component::saveData(Caneda::XmlWriter *writer) const
     {
         writer->writeStartElement("component");
@@ -299,8 +343,14 @@ namespace Caneda
     }
 
     /*!
-     * \brief Paints a registered component, peforms sanity checks and takes
-     * care of drawing the selection rectangle.
+     * \brief Paints a previously registered component.
+     *
+     * Takes care of painting a component on a scene. The component must be
+     * previously registered using LibraryManager::registerComponent(). This
+     * method also takes care of setting the correct global settings pen
+     * according to its selection state.
+     *
+     * \sa LibraryManager::registerComponent()
      */
     void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *w)
