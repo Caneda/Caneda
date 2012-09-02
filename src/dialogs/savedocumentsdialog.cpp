@@ -125,7 +125,6 @@ namespace Caneda
         ui.buttonBox->button(QDialogButtonBox::Save)->setFocus();
 
         // Populate items in tree.
-        DocumentViewManager *manager = DocumentViewManager::instance();
         for (int i = 0; i < modifiedDocuments.count(); ++i) {
             IDocument *document = modifiedDocuments[i];
             QTreeWidgetItem *item = new QTreeWidgetItem(ui.treeWidget);
