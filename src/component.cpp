@@ -73,8 +73,7 @@ namespace Caneda
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
-        Property _label("label", tr("Label"), QVariant::String, true,
-                false, labelPrefix().append('1'));
+        Property _label("label", labelPrefix().append('1'), tr("Label"), true);
         d->propertyMap.insert("label", _label);
 
         const QList<PortData*> portDatas = d.constData()->ports;
@@ -143,11 +142,27 @@ namespace Caneda
     }
 
     /*!
+     * \brief Method to obtain property's value.
+     *
+     * \param propName The name of property.
+     * \return Returns corresponding property if it exists otherwise
+     * returns empty QString().
+     */
+    QString Component::property(const QString& propName) const
+    {
+        if(d->propertyMap.contains(propName)){
+            return d->propertyMap[propName].value();
+        }
+
+        return QString();
+    }
+
+    /*!
      * \brief Method used to set a property's value.
      *
      * This also handles the property change of special properties such as
      * symbol, label and forwards the call to those methods on match.
-     * It also updates the textual display of property on schematic.
+     * It also updates the text display of the property on the schematic.
      *
      * \param propName The property which is to be set.
      * \param value The new value to be set.
@@ -155,7 +170,7 @@ namespace Caneda
      *
      * \sa setLabel(), Property, PropertyMap
      */
-    bool Component::setProperty(const QString& propName, const QVariant& value)
+    bool Component::setProperty(const QString& propName, const QString& value)
     {
         if(!propertyMap().contains(propName)) {
             qDebug() << "Component::setPropertyValue(): Property '" << propName
@@ -164,14 +179,12 @@ namespace Caneda
         }
 
         if(propName == "label") {
-            return setLabel(value.toString());
+            return setLabel(value);
         }
 
-        bool state = d->propertyMap[propName].setValue(value);
-        if(state) {
-            updatePropertyGroup();
-        }
-        return state;
+        d->propertyMap[propName].setValue(value);
+        updatePropertyGroup();
+        return true;
     }
 
     //! \brief Takes care of visibility of property text on schematic.
@@ -190,7 +203,9 @@ namespace Caneda
     /*!
      * \brief Sets the label of component.
      *
-     * This also handles lable prefix and number suffix appropriately.
+     * This method also handles label prefix and number suffix appropriately.
+     * In case the label doesn't start with the correct number prefix, the
+     * return value is false.
      *
      * \param newLabel The label to be set.
      * \return True on success and false on failure.
@@ -204,11 +219,9 @@ namespace Caneda
             return false;
         }
 
-        bool state = d->propertyMap["label"].setValue(newLabel);
-        if(state) {
-            updatePropertyGroup();
-        }
-        return state;
+        d->propertyMap["label"].setValue(newLabel);
+        updatePropertyGroup();
+        return true;
     }
 
     //! \brief Returns the label's suffix part.

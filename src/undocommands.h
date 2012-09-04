@@ -43,8 +43,8 @@ namespace Caneda
     {
     public:
         PropertyChangeCmd(const QString& propertyName,
-                const QVariant& newValue,
-                const QVariant& oldValue,
+                const QString &newValue,
+                const QString &oldValue,
                 Component *const component,
                 QUndoCommand *parent = 0);
 
@@ -53,8 +53,8 @@ namespace Caneda
 
     private:
         const QString m_property;
-        const QVariant m_newValue;
-        const QVariant m_oldValue;
+        const QString m_newValue;
+        const QString m_oldValue;
         Component *const m_component;
     };
 

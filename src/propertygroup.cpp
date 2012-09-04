@@ -175,7 +175,6 @@ namespace Caneda
     void PropertiesGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
-
     }
 
     /*!

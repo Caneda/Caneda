@@ -39,8 +39,8 @@ namespace Caneda
     static QString debugString;
 
     PropertyChangeCmd::PropertyChangeCmd(const QString& propertyName,
-            const QVariant& newValue,
-            const QVariant& oldValue,
+            const QString& newValue,
+            const QString& oldValue,
             Component *const component,
             QUndoCommand *parent) :
         QUndoCommand(parent),

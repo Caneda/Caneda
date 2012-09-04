@@ -47,15 +47,12 @@ namespace Caneda
         PropertyData();
         PropertyData(const PropertyData& p);
 
-        ~PropertyData() { delete options; }
+        ~PropertyData() { }
 
         QString name;
-        QVariant value;
-        QVariant::Type valueType;
+        QString value;
         QString description;
-        QStringList *options;
         bool visible;
-        bool netlistProperty;
     };
 
     /*!
@@ -64,6 +61,10 @@ namespace Caneda
      * Actual properties inside the Property class, are implemented as
      * an implicitly shared class named PropertyData, thereby allowing
      * the use of the property objects directly instead of using pointers.
+     *
+     * Properties should be always strings. While more specific types
+     * could be used, string types allow the use of suffixes and parameters
+     * like p for pico, u for micro, and {R} for parameter, for example.
      *
      * While Property class holds actual properties, PropertyItem
      * class is the object that renders them on a scene. Finally, PropertiesGroup
@@ -76,13 +77,10 @@ namespace Caneda
     class Property
     {
     public:
-        Property(const QString& _name = QString(),
-                 const QString& _description = QString(),
-                 QVariant::Type _valueType = QVariant::String,
-                 bool _visible=false,
-                 bool _isNetlistProp=true,
-                 const QVariant& _defaultValue = QVariant(QString()),
-                 const QStringList& _options = QStringList());
+        Property(const QString &_name = QString(),
+                 const QString &_defaultValue = QString(),
+                 const QString &_description = QString(),
+                 bool _visible=false);
 
         //! Returns the description of property.
         QString description() const { return d->description; }
@@ -90,27 +88,17 @@ namespace Caneda
         //! Returns the property name.
         QString name() const { return d->name; }
 
-        //! Returns the options for the value of property.
-        QStringList options() const {
-            return d->options ? *d->options : QStringList();
-        }
-
-        bool setValue(const QVariant& newValue);
+        //! Sets the value of property to \a newValue.
+        void setValue(const QString &newValue) { d->value = newValue; }
 
         //! Returns the value of property.
-        QVariant value() const { return d->value; }
+        QString value() const { return d->value; }
 
-        //! Returns the value's data type.
-        QVariant::Type valueType() const { return d->valueType; }
-
-        //! Sets the visibility of property tp \a visible .
+        //! Sets the visibility of property to \a visible .
         void setVisible(bool visible) { d->visible = visible; }
 
         //! Returns the visibility of property.
         bool isVisible() const { return d->visible; }
-
-        //! Returns whether this property should be written to netlist or not.
-        bool isNetlistProperty() const { return d->netlistProperty; }
 
     private:
         //! d pointer enabling sharing of data implicitly.

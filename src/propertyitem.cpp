@@ -93,10 +93,13 @@ namespace Caneda
             qDebug() << "PropertyItem::updateValue() : Component is null!";
             return;
         }
-        QString newValue = component()->property(m_propertyName).toString();
+
+        QString newValue = component()->property(m_propertyName);
+
         if(newValue.isEmpty()) {
             newValue = " ";
         }
+
         setPlainText(newValue);
     }
 
@@ -256,19 +259,22 @@ namespace Caneda
             clearFocus();
             return;
         }
-        QVariant oldProperty(component()->property(m_propertyName));
+
+        QString oldProperty(component()->property(m_propertyName));
+
         if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
-            if(m_edited &&
-                    component()->setProperty(m_propertyName, QVariant(toPlainText()))) {
+
+            if(m_edited && component()->setProperty(m_propertyName, toPlainText())) {
                 updateGroupGeometry();
                 m_edited = false;
-                QVariant newProperty(component()->property(m_propertyName));
+                QString newProperty(component()->property(m_propertyName));
                 PropertiesGroup *parentGroup = static_cast<PropertiesGroup*>(group());
                 Q_ASSERT(parentGroup);
                 CGraphicsScene *scene = parentGroup->cGraphicsScene();
                 scene->undoStack()->push(new PropertyChangeCmd(m_propertyName,
-                            newProperty, oldProperty, component()));
+                                                               newProperty, oldProperty, component()));
             }
+
             clearFocus();
             return;
         }

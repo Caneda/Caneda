@@ -56,9 +56,7 @@ namespace Caneda
         else if(role == Qt::CheckStateRole && index.column() == 2) {
             return propMap[key].isVisible() ? Qt::Checked : Qt::Unchecked;
         }
-        else if(role == OptionsRole && index.column() == 1) {
-            return propMap[keys[index.row()]].options();
-        }
+
         return QVariant();
     }
 
@@ -105,18 +103,15 @@ namespace Caneda
     {
         if(index.isValid()){
             if(role == Qt::EditRole && index.column() == 1) {
-                bool res = propMap[keys[index.row()]].setValue(value);
-                if(res) {
-                    emit dataChanged(index, index);
-                }
-                return res;
+                propMap[keys[index.row()]].setValue(value.toString());
             }
             else if(role == Qt::CheckStateRole && index.column() == 2) {
                 Property &prop = propMap[keys[index.row()]];
                 prop.setVisible(!prop.isVisible());
-                emit dataChanged(index, index);
-                return true;
             }
+
+            emit dataChanged(index, index);
+            return true;
         }
 
         return false;

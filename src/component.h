@@ -80,7 +80,7 @@ namespace Caneda
         QString labelSuffix() const;
 
         //! Represents model of component, which is infact a property.
-        QString model() const { return property("model").toString(); }
+        QString model() const { return property("model"); }
 
         //! Returns string to be displayed in sidebar.
         QString displayText() const { return d->displayText; }
@@ -102,22 +102,12 @@ namespace Caneda
         void updatePropertyGroup();
         void createPropertyGroup();
 
-        /*!
-         * \brief Method to obtain property's value.
-         * \param propName The name of property.
-         * \return Returns corresponding property if it exists otherwise
-         * returns empty QVariant().
-         */
-        QVariant property(const QString& propName) const {
-            return d->propertyMap.contains(propName) ? d->propertyMap[propName].value() :
-                    QVariant();
-        }
-
-        bool setProperty(const QString& propName, const QVariant& value);
+        QString property(const QString& propName) const;
+        bool setProperty(const QString& propName, const QString &value);
         void setPropertyVisible(const QString& propName, bool visibility);
 
         //! Returns the label of the component in the form {label_prefix}{number_suffix}
-        QString label() const { return property("label").toString(); }
+        QString label() const { return property("label"); }
         bool setLabel(const QString& _label);
 
         static Component* loadComponentData(Caneda::XmlReader *reader, CGraphicsScene *scene);
