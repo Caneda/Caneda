@@ -68,8 +68,7 @@
    </ports>  
 
    <properties>
-	 <property name="L" type="double" unit="H" visible="true"
-		   default="1e-9">
+	 <property name="L" default="1e-9" unit="H" visible="true">
 	   <description>
 	     <lang lang="C">Inductance</lang>
 	     <lang lang="ca">Inductancia</lang>
@@ -87,8 +86,7 @@
 	     <lang lang="uk">Індуктивність</lang>
 	   </description>
 	 </property>
-	 <property name="I" type="double" unit="A" visible="false" 
-		   default="0">
+	 <property name="I" default="0" unit="A" visible="false">
 	   <description>
 	     <lang lang="C">Initial current (t=0)</lang>
 	     <lang lang="fr">Courant initial (t=0)</lang>

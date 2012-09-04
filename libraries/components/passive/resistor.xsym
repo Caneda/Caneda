@@ -80,8 +80,7 @@
    </ports>   
 
    <properties>
-	 <property name="R" type="double" unit="Ω" visible="true"
-		   default="50">
+	 <property name="R" default="50" unit="Ω" visible="true">
 	   <description>
 	     <lang lang="C">Ohmic resistance</lang>
 	     <lang lang="cs">Ohmický odpor</lang>
@@ -96,29 +95,25 @@
 	     <lang lang="uk">Омічний опір</lang>
 	   </description>
 	 </property>
-	 <property name="Temp" type="double" unit="°C" visible="false" 
-		   default="26.5">
+	 <property name="Temp" default="26.5" unit="°C" visible="false">
 	   <description>
 	     <lang lang="C">Temperature</lang>
 	     <lang lang="fr">Température</lang>
 	   </description>
 	 </property>
-	 <property name="Tc1" type="double" unit="K⁻¹" visible="false" 
-		   default="0.0">
+	 <property name="Tc1" default="0.0" unit="K⁻¹" visible="false">
 	   <description>
 	     <lang lang="C">First order temperature coefficient</lang>
 	     <lang lang="fr">Coefficient de température au premier ordre</lang>
 	   </description>
 	 </property>
-	 <property name="Tc2" type="double" unit="K⁻²" visible="false" 
-		   default="0.0">
+	 <property name="Tc2" default="0.0" unit="K⁻²" visible="false">
 	   <description>
 	     <lang lang="C">Second order temperature coefficient</lang>
 	     <lang lang="fr">Coefficient de température au second ordre</lang>
 	   </description>
 	 </property>
-	 <property name="Tnom" type="double" unit="°C" visible="false" 
-		   default="26.5">
+	 <property name="Tnom" default="26.5" unit="°C" visible="false">
 	   <description>
 	     <lang lang="C">Temperature at which parameters were extracted</lang>
 	     <lang lang="fr">Température à laquelle les paramètres ont été mesurés</lang>

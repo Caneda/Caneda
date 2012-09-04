@@ -70,8 +70,7 @@
    </ports>
 
    <properties>
-	 <property name="G" type="double" unit="-" visible="true"
-		   default="10">
+         <property name="G" default="10" unit="V/V" visible="true">
 	   <description>
 	     <lang lang="C">Voltage gain</lang>
 	     <lang lang="ca">Ganancia de tensión</lang>
@@ -90,8 +89,7 @@
 	     <lang lang="uk">Підсилення напруги</lang>
 	   </description>
 	 </property>
-	 <property name="Zin" type="double" unit="Ω" visible="false" 
-		   default="50">
+	 <property name="Zin" default="50" unit="Ω" visible="false">
 	   <description>
 	     <lang lang="C">Reference impedance of input port</lang>
 	     <lang lang="ca">Impedancia de referencia del conector de entrada</lang>
@@ -112,8 +110,7 @@
 	     <lang lang="uk">Опорний повний опір вхідного виводу</lang>
 	   </description>
 	 </property>
-	 <property name="Zout" type="double" unit="Ω" visible="false" 
-		   default="50">
+	 <property name="Zout" default="50" unit="Ω" visible="false">
 	   <description>
 	     <lang lang="C">Reference impedance of output port</lang>
 	     <lang lang="ca">Impedancia de referencia del conector de salida</lang>

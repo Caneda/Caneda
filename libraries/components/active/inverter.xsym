@@ -59,26 +59,22 @@
    </ports>   
 
    <properties>
-	 <property name="wn" type="double" unit="-" visible="false"
-		   default="6">
+	 <property name="wn" default="6" unit="-" visible="false">
 	   <description>
 	     <lang lang="C">NMOS transistor width</lang>
 	   </description>
 	 </property>
-	 <property name="ln" type="double" unit="-" visible="false"
-		   default="2">
+	 <property name="ln" default="2" unit="-" visible="false">
 	   <description>
 	     <lang lang="C">NMOS transistor length</lang>
 	   </description>
 	 </property>
-	 <property name="wp" type="double" unit="-" visible="false"
-		   default="10">
+	 <property name="wp" default="10" unit="-" visible="false">
 	   <description>
 	     <lang lang="C">PMOS transistor width</lang>
 	   </description>
 	 </property>
-	 <property name="lp" type="double" unit="-" visible="false"
-		   default="2">
+	 <property name="lp" default="2" unit="-" visible="false">
 	   <description>
 	     <lang lang="C">PMOS transistor length</lang>
 	   </description>

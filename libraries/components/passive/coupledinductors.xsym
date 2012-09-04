@@ -97,8 +97,7 @@
    </ports>   
 
    <properties>
-	 <property name="L1" type="double" unit="L" visible="true"
-		   default="1e-3">
+	 <property name="L1" default="1e-3" unit="L" visible="true">
 	   <description>
 	     <lang lang="C">Inductance of coil #1</lang>
 	     <lang lang="ca">Inductancia de la bobina 1</lang>
@@ -115,8 +114,7 @@
 	   </description>
 	 </property>
 
-	 <property name="L2" type="double" unit="L" visible="true"
-		   default="1e-3">
+	 <property name="L2" default="1e-3" unit="L" visible="true">
 	   <description>
 	     <lang lang="C">Inductance of coil #2</lang>
 	     <lang lang="ca">Inductancia de la bobina 2</lang>
@@ -134,8 +132,7 @@
 	   </description>
 	 </property>
 	 
-	 <property name="k" type="double" unit="(1)" visible="false"
-		   default="0.9">
+	 <property name="k" default="0.9" unit="(1)" visible="false">
 	   <description>
 	     <lang lang="C">Coupling factor between coil 1 and 2</lang>
 	     <lang lang="ca">Inductancia mutua entre la bobina 1 y 2</lang>

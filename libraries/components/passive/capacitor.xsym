@@ -64,8 +64,7 @@
    </ports>   
 
    <properties>
-	 <property name="C" type="double" unit="F" visible="true"
-		   default="1e-12">
+	 <property name="C" default="1e-12" unit="F" visible="true">
 	   <description>
 	     <lang lang="C">Capacitance</lang>
 	     <lang lang="de">Kapazität</lang>
@@ -80,8 +79,7 @@
 	     <lang lang="sv">Kapacitans</lang>
 	   </description>
 	 </property>
-	 <property name="V" type="double" unit="V" visible="false" 
-		   default="0">
+	 <property name="V" default="0" unit="V" visible="false">
 	   <description>
 	     <lang lang="C">Initial voltage (t=0)</lang>
 	     <lang lang="fr">Tension initiale (t=0)</lang>

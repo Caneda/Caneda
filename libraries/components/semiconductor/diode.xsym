@@ -76,7 +76,7 @@
    </ports>  
 
   <properties>
-    <property name="Is" type="double" unit="A" visible="false" default="10e-12">
+    <property name="Is" default="10e-12" unit="A" visible="false">
       <description>
 	<lang lang="C">Saturation current</lang>
 	<lang lang="ca">Corriente de saturación</lang>
@@ -97,13 +97,13 @@
 	<lang lang="uk">Струм насичення</lang>
       </description>
     </property>
-    <property name="Xti" type="double" unit="-" visible="false" default="3.0">
+    <property name="Xti" default="3.0" unit="-" visible="false">
       <description>
 	<lang lang="C">Saturation current (Is) temperature exponent</lang>
 	<lang lang="fr">Exposant thermique du courant de saturation (Is)</lang>
       </description>
     </property>
-    <property name="N" type="double" unit="V" visible="false" default="1">
+    <property name="N" default="1" unit="V" visible="false">
       <description>
 	<lang lang="C">Emission coefficient</lang>
 	<lang lang="ca">Coeficiente de emisión</lang>
@@ -123,7 +123,7 @@
 	<lang lang="uk">Коефіцієнт емісії</lang>
       </description>
     </property>
-    <property name="Cj0" type="double" unit="F" visible="false" default="10e-15">
+    <property name="Cj0" default="10e-15" unit="F" visible="false">
       <description>
 	<lang lang="C">Emission coefficient</lang>
 	<lang lang="ca">Coeficiente de emisión</lang>
@@ -143,7 +143,7 @@
 	<lang lang="uk">Коефіцієнт емісії</lang>
       </description>
     </property>
-    <property name="M" type="double" unit="-" visible="false" default="0.5">
+    <property name="M" default="0.5" unit="-" visible="false">
       <description>
 	<lang lang="C">Grading coefficient</lang>
 	<lang lang="ca">Coeficiente de graduación</lang>
@@ -160,19 +160,19 @@
 	<lang lang="uk">Коефіцієнт неідеальності</lang>
       </description>
     </property>
-    <property name="Tm1" type="double" visible="false" unit="-" default="0">
+    <property name="Tm1" default="0" visible="false" unit="-">
       <description>
 	<lang lang="C">Grading coefficient (M) linear temperature coefficient</lang>
 	<lang lang="fr">Coefficient linéaire en température du coefficient de gradation (M)</lang>
       </description>
     </property>
-     <property name="Tm2" type="double" visible="false" unit="-" default="0">
+     <property name="Tm2" default="0" visible="false" unit="-">
       <description>
 	<lang lang="C">Grading coefficient (M) quadratic temperature coefficient</lang>
 	<lang lang="fr">Coefficient quadratique en température du coefficient de gradation (M)</lang>
       </description>
     </property>
-    <property name="Vj" type="double" unit="V" visible="false" default="0.7">
+    <property name="Vj" default="0.7" unit="V" visible="false">
       <description>
 	<lang lang="C">Junction potential</lang>
 	<lang lang="ca">Potencial de la unión</lang>
@@ -192,7 +192,7 @@
 	<lang lang="uk">Потенціал переходу</lang>
       </description>
     </property>
-    <property name="Fc" type="double" unit="-" visible="false" default="0.5">
+    <property name="Fc" default="0.5" unit="-" visible="false">
       <description>
 	<lang lang="C">Forward-bias depletion capacitance coefficient</lang>
 	<lang lang="ca">Coeficiente de pérdida de capacidad en polarización directa</lang>
@@ -209,7 +209,7 @@
 	<lang lang="uk">Коефіцієнт апроксимації бар&apos;єрній ємності з прямою зміщення</lang>
       </description>
     </property>
-    <property name="Cp" type="double" unit="F" visible="false" default="0">
+    <property name="Cp" default="0" unit="F" visible="false">
       <description>
 	<lang lang="C">Linear capacitance</lang>
 	<lang lang="ca">Capacidad lineal</lang>
@@ -230,7 +230,7 @@
 	<lang lang="uk">Лінійна ємність</lang>
       </description>
     </property>
-    <property name="Isr" type="double" unit="-" visible="false" default="0">
+    <property name="Isr" default="0" unit="-" visible="false">
       <description>
 	<lang lang="C">Recombination current parameter</lang>
 	<lang lang="ca">Parámetro de recombinación de la corriente</lang>
@@ -249,7 +249,7 @@
 	<lang lang="uk">Рекомбінаційний струм</lang>
       </description>
     </property>
-    <property name="Nr" type="double" unit="-" visible="false" default="2.0">
+    <property name="Nr" default="2.0" unit="-" visible="false">
       <description>
 	<lang lang="C">Emission coefficient for Isr</lang>
 	<lang lang="ca">Parámetro de recombinación de la corriente</lang>
@@ -268,7 +268,7 @@
 	<lang lang="uk">Рекомбінаційний струм</lang>
       </description>
     </property>
-    <property name="Rs" type="double" visible="false" unit="Ω" default="0">
+    <property name="Rs" default="0" unit="Ω" visible="false">
       <description>
 	<lang lang="C">Ohmic series resistance</lang>
 	<lang lang="ca">Resistencia serie en óhmios</lang>
@@ -289,13 +289,13 @@
 	<lang lang="uk">Омічний послідовний опір</lang>
       </description>
     </property>
-    <property name="Trs" type="double" visible="false" unit="-" default="0">
+    <property name="Trs" default="0" unit="-" visible="false">
       <description>
 	<lang lang="C">Ohmic series resistance (Rs) linear temperature coefficient</lang>
 	<lang lang="fr">Coefficient linéaire en température de la résistance série (Rs)</lang>
       </description>
     </property>
-    <property name="Tt" type="double" visible="false" unit="s" default="0">
+    <property name="Tt" default="0" unit="s" visible="false">
       <description>
 	<lang lang="C">Transit time</lang>
 	<lang lang="ca">Temps de tránsito</lang>
@@ -316,19 +316,19 @@
 	<lang lang="uk">Час переходу</lang>
       </description>
     </property>
-    <property name="Ttt1" type="double" visible="false" unit="-" default="0">
+    <property name="Ttt1" default="0" unit="-" visible="false">
       <description>
 	<lang lang="C">Transit time (Tt) linear temperature coefficient</lang>
 	<lang lang="fr">Coefficient linéaire en température du temps de transit (Tt)</lang>
       </description>
     </property>
-     <property name="Ttt2" type="double" visible="false" unit="-" default="0">
+     <property name="Ttt2" default="0" unit="-" visible="false">
       <description>
 	<lang lang="C">Transit time (Tt) quadratic temperature coefficient</lang>
 	<lang lang="fr">Coefficient quadratique en température du temps de transit (Tt)</lang>
       </description>
     </property>
-    <property name="Ikf" type="double" visible="false" unit="A" default="0">
+    <property name="Ikf" default="0" unit="A" visible="false">
       <description>
 	<lang lang="C">High-injection knee current (0=infinity)</lang>
 	<lang lang="de">Knickstrom bei Hochinjektion (0=unendlich)</lang>
@@ -338,7 +338,7 @@
 	<lang lang="uk">Граничний струм виводу інжекції (0=бесконечность)</lang>
       </description>
     </property>
-    <property name="Bv" type="double" visible="false" unit="V" default="0">
+    <property name="Bv" default="0" unit="V" visible="false">
       <description>
 	<lang lang="C">Reverse breakdown voltage</lang>
 	<lang lang="ca">Tensión de ruptura inversa</lang>
@@ -355,7 +355,7 @@
 	<lang lang="uk">Зворотня напруга пробою</lang>
       </description>
     </property>
-    <property name="IBv" type="double" visible="false" unit="A" default="1e-3">
+    <property name="IBv" default="1e-3" unit="A" visible="false">
       <description>
 	<lang lang="C">Current at reverse breakdown voltage</lang>
 	<lang lang="ca">Corriente en la tensión de ruptura inversa</lang>
@@ -372,13 +372,13 @@
 	<lang lang="uk">Струм при зворотній напрузі пробою</lang>
       </description>
     </property>
-    <property name="TBv" type="double" visible="false" unit="-" default="0">
+    <property name="TBv" default="0" unit="-" visible="false">
       <description>
 	<lang lang="C">Breakdown voltage (Bv) linear temperature coefficient</lang>
 	<lang lang="fr">Coefficient linéaire en température de la tension de claquage (Bv)</lang>
       </description>
     </property>
-    <property name="Eg" type="double" unit="eV" visible="false" default="1.11">
+    <property name="Eg" default="1.11" unit="eV" visible="false">
       <description>
 	<lang lang="C">Energy band gap</lang>
 	<lang lang="ca">Amplada del salto de energía</lang>
@@ -393,13 +393,13 @@
 	<lang lang="uk">Ширина забороненої зони</lang>
       </description>
     </property>
-    <property name="Area" type="double" unit="-" visible="false" default="1.11">
+    <property name="Area" default="1.11" unit="-" visible="false">
       <description>
 	<lang lang="C">Area factor</lang>
 	<lang lang="fr">Facteur d'aire</lang>
       </description>
     </property>
-    <property name="Kf" type="double" visible="false" unit="-" default="0">
+    <property name="Kf" default="0" unit="-" visible="false">
       <description>
 	<lang lang="C">Flicker noise coefficient</lang>
 	<lang lang="cs">Koeficient 1/f rušení</lang>
@@ -416,7 +416,7 @@
 	<lang lang="uk">Коефіцієнт 1/f-шуму</lang>
       </description>
     </property>
-    <property name="Af" type="double" visible="false" unit="-" default="0">
+    <property name="Af" default="0" unit="-" visible="false">
       <description>
 	<lang lang="C">Flicker noise exponent</lang>
 	<lang lang="cs">Exponent 1/f rušení</lang>
@@ -434,7 +434,7 @@
 	<lang lang="uk">Показник ступеня 1/f-шуму</lang>
       </description>
     </property>
-    <property name="Ffe" type="double" visible="false" unit="-" default="0">
+    <property name="Ffe" default="0" unit="-" visible="false">
       <description>
 	<lang lang="C">Flicker noise frequency exponent</lang>
 	<lang lang="cs">Frekvenční exponent 1/f rušení</lang>
@@ -452,14 +452,13 @@
 	<lang lang="uk">Частотна залежність 1/f-шуму</lang>
       </description>
     </property>
-    <property name="Temp" type="double" unit="°C" visible="false" default="26.5">
+    <property name="Temp" default="26.5" unit="°C" visible="false">
       <description>
 	<lang lang="C">Temperature</lang>
 	<lang lang="fr">Température</lang>
       </description>
     </property>
-    <property name="Tnom" type="double" unit="°C" visible="false" 
-		   default="26.5">
+    <property name="Tnom" default="26.5" unit="°C" visible="false">
 	   <description>
 	     <lang lang="C">Temperature at which parameters were extracted</lang>
 	     <lang lang="fr">Température à laquelle les paramètres ont été mesurés</lang>

@@ -70,8 +70,7 @@
    </ports>   
 
    <properties>
-	 <property name="A" type="double" unit="-" visible="true"
-		   default="100000">
+         <property name="A" default="100000" unit="V/V" visible="true">
 	   <description>
 	     <lang lang="C">Open loop gain</lang>
 	   </description>

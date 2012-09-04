@@ -70,8 +70,7 @@
    </ports>   
 
    <properties>
-	 <property name="gm" type="double" unit="-" visible="true"
-		   default="100">
+	 <property name="gm" default="100" unit="-" visible="true">
 	   <description>
 	     <lang lang="C">Small signal gain</lang>
 	   </description>
