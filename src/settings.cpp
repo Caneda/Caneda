@@ -52,7 +52,7 @@ namespace Caneda
         data["gui/foregroundColor"] = VariantPair(QColor(Qt::darkGray));
         data["gui/backgroundColor"] = VariantPair(QColor(Qt::white));
         data["gui/lineColor"] = VariantPair(QColor(Qt::blue));
-        data["gui/selectionColor"] = VariantPair(QColor(Qt::yellow));
+        data["gui/selectionColor"] = VariantPair(QColor(255, 128, 0)); // Dark orange
         data["gui/lineWidth"] = VariantPair(int(1));
         data["gui/font"] = VariantPair(QFont());
         data["gui/largeFontSize"] = VariantPair(qreal(16.0));
