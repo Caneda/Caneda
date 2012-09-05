@@ -180,7 +180,7 @@ namespace Caneda
     /*!
      * \brief Deselect other items on mouse click.
      *
-     * Deselects selected item and also clears focus of childeren items
+     * Deselects selected item and also clears focus of children items
      */
     void PropertiesGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
