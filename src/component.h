@@ -97,7 +97,6 @@ namespace Caneda
 
         //! Returns property group of the component.
         PropertiesGroup* propertyGroup() const { return m_propertyGroup; }
-
         void updatePropertyGroup();
         void createPropertyGroup();
 

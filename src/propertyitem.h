@@ -50,47 +50,18 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PropertyItem(const QString& name, CGraphicsScene *scene);
+        PropertyItem(const QString& name);
 
         QRectF boundingRect() const;
-        QPainterPath shape() const;
-
-        bool eventFilter(QObject* object, QEvent* event);
         void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
                 QWidget * widget = 0 );
 
-        Component* component() const {
-            return static_cast<PropertiesGroup*>(group())->component();
-        }
-
-    public Q_SLOTS:
         void updateValue();
 
-    protected:
-        bool sceneEvent(QEvent *event);
-
-        void mousePressEvent ( QGraphicsSceneMouseEvent * event );
-        void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-        void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-        void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
-
-        void focusInEvent(QFocusEvent *event);
-        void focusOutEvent(QFocusEvent *event);
-
-        void keyPressEvent(QKeyEvent *event);
-
-    private Q_SLOTS:
-        void textChanged();
-
     private:
-        void calculatePos();
-        bool isSendable(QGraphicsSceneMouseEvent *event) const;
-        void updateGroupGeometry() const;
-
-        const QString m_propertyName;
-        QString m_staticText;
+        const QString m_propertyName;  // Property name
+        QString m_staticText;  // Static part of text (property name and character "=")
         QPointF m_staticPos;
-        bool m_edited;
     };
 
 } // namespace Caneda

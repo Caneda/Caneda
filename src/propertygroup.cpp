@@ -85,8 +85,7 @@ namespace Caneda
                 bool newlyCreated = false;
                 // Create new property item if it doesn't exist.
                 if(!m_propertyItemsMap.contains(property.name())) {
-                    PropertyItem *item = new PropertyItem(property.name(),
-                            cGraphicsScene());
+                    PropertyItem *item = new PropertyItem(property.name());
 
                     m_propertyItemsMap.insert(property.name(), item);
                     newlyCreated = true;
