@@ -311,7 +311,7 @@ namespace Caneda
         writer->writeEndElement();
     }
 
-    Wire* Wire::loadWireData(Caneda::XmlReader *reader, CGraphicsScene *scene)
+    Wire* Wire::loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene)
     {
         Wire *retVal = new Wire(QPointF(10, 10), QPointF(50,50), scene);
         retVal->loadData(reader);

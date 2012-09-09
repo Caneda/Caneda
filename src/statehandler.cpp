@@ -237,10 +237,10 @@ namespace Caneda
             if(reader.isStartElement()) {
                 CGraphicsItem *readItem = 0;
                 if(reader.name() == "component") {
-                    readItem = Component::loadComponentData(&reader, 0);
+                    readItem = Component::loadComponent(&reader, 0);
                 }
                 else if(reader.name() == "wire") {
-                    readItem = Wire::loadWireData(&reader, 0);
+                    readItem = Wire::loadWire(&reader, 0);
                 }
                 else if(reader.name() == "painting")  {
                     readItem = Painting::loadPainting(&reader, 0);

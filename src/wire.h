@@ -93,8 +93,8 @@ namespace Caneda
         void setState(Data state);
         Data currentState() const;
 
+        static Wire* loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void saveData(Caneda::XmlWriter *writer, int id=-1) const;
-        static Wire* loadWireData(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);
 
     protected:

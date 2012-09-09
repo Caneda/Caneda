@@ -378,7 +378,7 @@ namespace Caneda
             }
 
             if(reader->isStartElement() && reader->name() == "property") {
-                Property prop = PropertyFactory::createProperty(reader);
+                Property prop = Property::loadProperty(reader);
 
                 // Check if we are opening the file for edition or to include it in a library
                 if(cGraphicsScene()) {

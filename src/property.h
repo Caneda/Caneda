@@ -31,14 +31,10 @@ namespace Caneda
     class XmlWriter;
     class XmlReader;
 
-    class Property;
-
-    //! \def PropertyMap This is typedef for map of string and property.
-    typedef QMap<QString, Property> PropertyMap;
-
     /*!
      * \brief This struct hold data to be shared implicitly of a property.
-     * \details This inherits QSharedData which takes care of reference counting.
+     *
+     * This inherits QSharedData which takes care of reference counting.
      *
      * \sa Property
      */
@@ -81,41 +77,36 @@ namespace Caneda
                  const QString &_defaultValue = QString(),
                  const QString &_description = QString(),
                  bool _visible=false);
-
-        //! Returns the description of property.
-        QString description() const { return d->description; }
+        Property(QSharedDataPointer<PropertyData> data);
 
         //! Returns the property name.
         QString name() const { return d->name; }
 
+        //! Returns the value of property.
+        QString value() const { return d->value; }
         //! Sets the value of property to \a newValue.
         void setValue(const QString &newValue) { d->value = newValue; }
 
-        //! Returns the value of property.
-        QString value() const { return d->value; }
-
-        //! Sets the visibility of property to \a visible .
-        void setVisible(bool visible) { d->visible = visible; }
+        //! Returns the description of property.
+        QString description() const { return d->description; }
 
         //! Returns the visibility of property.
         bool isVisible() const { return d->visible; }
+        //! Sets the visibility of property to \a visible .
+        void setVisible(bool visible) { d->visible = visible; }
+
+        static Property loadProperty(Caneda::XmlReader *reader);
 
     private:
-        //! d pointer enabling sharing of data implicitly.
+        //! Pointer enabling implicit sharing of data.
         QSharedDataPointer<PropertyData> d;
-        Property(QSharedDataPointer<PropertyData> data);
-        friend class PropertyFactory;
     };
+
+    //! \def PropertyMap This is typedef for map of string and property.
+    typedef QMap<QString, Property> PropertyMap;
 
     void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& prMap);
     void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap);
-
-    //! This is factory class used to construct properties.
-    struct PropertyFactory
-    {
-        static Property createProperty(Caneda::XmlReader *reader);
-        static Property sharedNull;
-    };
 
 } // namespace Caneda
 

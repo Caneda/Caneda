@@ -69,6 +69,49 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \brief Method used to create a property from an xml file.
+     *
+     * \param reader XmlReader which is in use for parsing.
+     */
+    Property Property::loadProperty(Caneda::XmlReader *reader)
+    {
+        Q_ASSERT(reader->isStartElement() && reader->name() == "property");
+        QSharedDataPointer<PropertyData> data(new PropertyData);
+
+        QXmlStreamAttributes attributes = reader->attributes();
+
+        data->name = attributes.value("name").toString();
+        if(data->name.isEmpty()) {
+            reader->raiseError("Couldn't find name attribute in property description");
+            return Property();
+        }
+
+        QString visible = attributes.value("visible").toString();
+        data->visible = !(visible.isEmpty() || visible == "false");
+
+        data->value = attributes.value("default").toString();
+
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isEndElement()) {
+                break;
+            }
+
+            if(reader->isStartElement()) {
+                if(reader->name() == "description") {
+                    data->description = reader->readLocaleText(Caneda::localePrefix());
+                }
+                else {
+                    reader->readUnknownElement();
+                }
+            }
+        }
+
+        return Property(data);
+    }
+
     //! \brief Helper function to write all properties in \a propMap in xml.
     void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& propMap)
     {
@@ -115,52 +158,6 @@ namespace Caneda
                 }
             }
         }
-    }
-
-    //! \brief This static object is used to represent common empty property.
-    Property PropertyFactory::sharedNull;
-
-    /*!
-     * \brief This factory method is used to create a property from an xml file.
-     *
-     * \param reader XmlReader which is in use for parsing.
-     */
-    Property PropertyFactory::createProperty(Caneda::XmlReader *reader)
-    {
-        Q_ASSERT(reader->isStartElement() && reader->name() == "property");
-        QSharedDataPointer<PropertyData> data(new PropertyData);
-
-        QXmlStreamAttributes attributes = reader->attributes();
-
-        data->name = attributes.value("name").toString();
-        if(data->name.isEmpty()) {
-            reader->raiseError("Couldn't find name attribute in property description");
-            return sharedNull;
-        }
-
-        QString visible = attributes.value("visible").toString();
-        data->visible = !(visible.isEmpty() || visible == "false");
-
-        data->value = attributes.value("default").toString();
-
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                if(reader->name() == "description") {
-                    data->description = reader->readLocaleText(Caneda::localePrefix());
-                }
-                else {
-                    reader->readUnknownElement();
-                }
-            }
-        }
-
-        return Property(data);
     }
 
 } // namespace Caneda

@@ -255,7 +255,7 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "component") {
-                    Component::loadComponentData(reader,scene);
+                    Component::loadComponent(reader,scene);
                 }
                 else {
                     qWarning() << "Error: Found unknown component type" << reader->name().toString();
@@ -295,7 +295,7 @@ namespace Caneda
 
                 if(reader->isStartElement()) {
                     if(reader->name() == "wire") {
-                        Wire *w = Wire::loadWireData(reader,scene);
+                        Wire *w = Wire::loadWire(reader,scene);
                         w->checkAndConnect(Caneda::DontPushUndoCmd);
                     }
                     else {

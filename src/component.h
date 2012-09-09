@@ -95,7 +95,6 @@ namespace Caneda
         PropertyMap propertyMap() const { return d->propertyMap; }
         void setPropertyMap(const PropertyMap& propMap);
 
-
         //! Returns property group of the component.
         PropertiesGroup* propertyGroup() const { return m_propertyGroup; }
 
@@ -110,7 +109,7 @@ namespace Caneda
         QString label() const { return property("label"); }
         bool setLabel(const QString& _label);
 
-        static Component* loadComponentData(Caneda::XmlReader *reader, CGraphicsScene *scene);
+        static Component* loadComponent(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);
         void saveData(Caneda::XmlWriter *writer) const;
 

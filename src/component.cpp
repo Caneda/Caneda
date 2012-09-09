@@ -259,7 +259,7 @@ namespace Caneda
      *
      * \sa LibraryManager::newComponent(), loadData()
      */
-    Component* Component::loadComponentData(Caneda::XmlReader *reader, CGraphicsScene *scene)
+    Component* Component::loadComponent(Caneda::XmlReader *reader, CGraphicsScene *scene)
     {
         Component *retVal = 0;
         Q_ASSERT(reader->isStartElement() && reader->name() == "component");
