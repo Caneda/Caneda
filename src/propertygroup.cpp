@@ -22,21 +22,105 @@
 
 #include "cgraphicsscene.h"
 #include "component.h"
-#include "propertyitem.h"
 #include "settings.h"
 
-#include <QApplication>
 #include <QDebug>
-#include <QFontMetricsF>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
 namespace Caneda
 {
+    //*************************************************************
+    //********************* PropertyItem **************************
+    //*************************************************************
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param propName The name of property.
+     */
+    PropertyItem::PropertyItem(const QString &propName) :
+        m_propertyName(propName)
+    {
+        // This is necessary to allow correct position update
+        setTextInteractionFlags(Qt::TextEditorInteraction);
+    }
+
+    /*!
+     * \brief Updates visual display of property value.
+     *
+     * \note This method is key method to alter the visual text of property. Call
+     * it wherever the property changes.
+     */
+    void PropertyItem::updateValue()
+    {
+        Component* component = static_cast<PropertiesGroup*>(group())->component();
+        if(!component) {
+            qDebug() << "PropertyItem::updateValue() : Component is null!";
+            return;
+        }
+
+        QString newValue;
+
+        // Add property name
+        if(m_propertyName.startsWith("label", Qt::CaseInsensitive)) {
+            newValue = "";  // Label is displayed without "label" tag
+        }
+        else {
+            newValue = m_propertyName + " = ";
+        }
+
+        // Add property value
+        newValue.append(component->property(m_propertyName));
+
+        setPlainText(newValue);
+    }
+
+    /*!
+     * \brief Draws the propertyItem to painter.
+     *
+     * This method draws the propertyItem on a scene. The pen color changes
+     * according to the selection state, thus giving state feedback to the
+     * user.
+     *
+     * The selection rectangle around all propertyItems is handled by the
+     * propertyGroup::paint method. An empty method in propertyGroup::paint
+     * will avoid drawing a selection rectangle around property items in the
+     * scene.
+     *
+     * \sa PropertiesGroup::paint()
+     */
+    void PropertyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+            QWidget *widget)
+    {
+        // Save pen
+        QPen savedPen = painter->pen();
+
+        // Set global pen settings
+        Settings *settings = Settings::instance();
+        if(isSelected()) {
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+        }
+        else {
+            painter->setPen(QPen(settings->currentValue("gui/foregroundColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+        }
+
+        // Paint the property text
+        painter->drawText(boundingRect(), toPlainText());
+
+        // Restore pen
+        painter->setPen(savedPen);
+    }
+
+    //*************************************************************
+    //******************** PropertiesGroup ************************
+    //*************************************************************
+
     /*!
      * Constructor
      *
-     * \param propMap A reference to PropertyMap of a component.
      * \param scene The graphics scene to which this property should belong.
      */
     PropertiesGroup::PropertiesGroup(CGraphicsScene *scene)
@@ -149,12 +233,6 @@ namespace Caneda
         delete dummy;
     }
 
-    //! \brief Returns the associated graphics scene.
-    CGraphicsScene* PropertiesGroup::cGraphicsScene() const
-    {
-        return qobject_cast<CGraphicsScene*>(scene());
-    }
-
     //! \brief Returns the associated component.
     Component* PropertiesGroup::component() const
     {
@@ -179,7 +257,7 @@ namespace Caneda
     /*!
      * \brief Deselect other items on mouse click.
      *
-     * Deselects selected item and also clears focus of children items
+     * Deselects selected items other than this, and also clears focus of children items
      */
     void PropertiesGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {

@@ -22,6 +22,7 @@
 #define PROPERTYGROUP_H
 
 #include <QGraphicsItemGroup>
+#include <QGraphicsTextItem>
 #include <QObject>
 
 namespace Caneda
@@ -29,7 +30,37 @@ namespace Caneda
     // Forward declarations.
     class Component;
     class CGraphicsScene;
-    class PropertyItem;
+
+    /*!
+     * \brief Class used to render a property on a graphics scene.
+     *
+     * Gouping all PropertyItems of a component into a QGraphicsItemGroup
+     * provides a convenient way of handling them all together. In this
+     * way, the properties of a component can be selected and moved
+     * all at once.
+     *
+     * While Property class holds actual properties, PropertyItem
+     * class is the object that renders them on a scene. Finally, PropertiesGroup
+     * is the class that groups all PropertyItems to allow selection and
+     * moving of all properties at once.
+     *
+     * \sa Property, PropertiesGroup
+     */
+    class PropertyItem : public QGraphicsTextItem
+    {
+        Q_OBJECT
+
+    public:
+        PropertyItem(const QString& name);
+
+        void updateValue();
+
+        void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
+                QWidget * widget = 0 );
+
+    private:
+        const QString m_propertyName;  // Property name
+    };
 
     /*!
      * \brief This class groups the properties of a item.
@@ -54,18 +85,11 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        enum { PropertiesGroupType = UserType + 73 };
-        enum { Type = PropertiesGroupType };
-
         PropertiesGroup(CGraphicsScene *scene = 0);
-
-        //! Class identifier.
-        int type() { return PropertiesGroupType; }
 
         void realignItems();
         void updateGeometry();
 
-        CGraphicsScene* cGraphicsScene() const;
         Component* component() const;
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
