@@ -136,7 +136,7 @@ namespace Caneda
 
         //! \brief Component Shared datas
         QSharedDataPointer<ComponentData> d;
-        //! \brief Property group (ie property of this component)
+        //! \brief Property group (ie properties display of this component)
         PropertiesGroup *m_propertyGroup;
     };
 

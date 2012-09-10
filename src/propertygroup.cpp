@@ -244,8 +244,8 @@ namespace Caneda
      *
      * This method is empty to avoid drawing a selection rectangle around
      * property items in the scene. The selection state is instead
-     * handled by propertyItemp::paint method, changing the properties
-     * color to the global selection pen.
+     * handled by PropertyItem::paint method, changing the properties'
+     * color according to the global selection pen.
      *
      * \sa PropertyItem::paint()
      */
