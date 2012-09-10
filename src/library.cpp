@@ -44,8 +44,10 @@ namespace Caneda
     //*************************Library*****************************
     //*************************************************************
 
-    /*! Constructor
-     *  \brief Constructs library item from reader with file path \a path.
+    /*!
+     * \brief Constructor
+     *
+     * Constructs library item from reader with file path \a path.
      */
     Library::Library(QString libraryPath)
     {
@@ -181,9 +183,7 @@ namespace Caneda
         return instance;
     }
 
-    /*! Destructor.
-     *  \brief Deletes the data belonging to this object.
-     */
+    //! Destructor
     LibraryManager::~LibraryManager()
     {
     }
@@ -267,6 +267,7 @@ namespace Caneda
 
     /*!
      * \brief Unloads given library freeing memory pool.
+     *
      * \sa Library::~Library()
      */
     bool LibraryManager::unload(const QString& libName)

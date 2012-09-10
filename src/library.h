@@ -29,7 +29,9 @@
 namespace Caneda
 {
     /*!
-     * \brief This represents individual library unit.
+     * \brief This class represents an individual library unit.
+     *
+     * \sa LibraryManager
      */
     class Library
     {
@@ -74,6 +76,8 @@ namespace Caneda
      *
      * This class is singleton class and its only static instance returned by
      * \a instance is to be used.
+     *
+     * \sa Library
      */
     class LibraryManager : public QObject
     {
