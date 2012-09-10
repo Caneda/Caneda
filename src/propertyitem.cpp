@@ -21,12 +21,9 @@
 #include "propertyitem.h"
 
 #include "component.h"
-#include "propertygroup.h"
 #include "settings.h"
 
-#include <QFontMetricsF>
 #include <QPainter>
-#include <QPointF>
 #include <QStyleOptionGraphicsItem>
 #include <QDebug>
 
@@ -38,29 +35,40 @@ namespace Caneda
      * \param propName The name of property.
      */
     PropertyItem::PropertyItem(const QString &propName) :
-        m_propertyName(propName), m_staticText(m_propertyName)
+        m_propertyName(propName)
     {
-        if(m_staticText.startsWith("label", Qt::CaseInsensitive)) {
-            m_staticText = "";  // Label is displayed without "label" tag
-        }
-        else {
-            m_staticText.append(" = ");
-        }
-
-        // Caculate the position of static text (name part of the property)
-        QFontMetricsF fm(font());
-        m_staticPos = QPointF(-fm.width(m_staticText), fm.ascent());
-
         // This is necessary to allow correct position update
         setTextInteractionFlags(Qt::TextEditorInteraction);
     }
 
-    //! \brief Returns the bounds of the item.
-    QRectF PropertyItem::boundingRect() const
+    /*!
+     * \brief Updates visual display of property value.
+     *
+     * \note This method is key method to alter the visual text of property. Call
+     * it wherever the property changes.
+     */
+    void PropertyItem::updateValue()
     {
-        QRectF bounds = QGraphicsTextItem::boundingRect();
-        bounds.setLeft(m_staticPos.x());
-        return bounds;
+        Component* component = static_cast<PropertiesGroup*>(group())->component();
+        if(!component) {
+            qDebug() << "PropertyItem::updateValue() : Component is null!";
+            return;
+        }
+
+        QString newValue;
+
+        // Add property name
+        if(m_propertyName.startsWith("label", Qt::CaseInsensitive)) {
+            newValue = "";  // Label is displayed without "label" tag
+        }
+        else {
+            newValue = m_propertyName + " = ";
+        }
+
+        // Add property value
+        newValue.append(component->property(m_propertyName));
+
+        setPlainText(newValue);
     }
 
     /*!
@@ -94,32 +102,11 @@ namespace Caneda
                                  settings->currentValue("gui/lineWidth").toInt()));
         }
 
-        // Draw static part of text (properties names)
-        painter->drawText(m_staticPos, m_staticText);
-        // Paint the remaining part of text (properties values and component label)
-        painter->drawText(QPointF(0, m_staticPos.y()), toPlainText());
+        // Paint the property text
+        painter->drawText(boundingRect(), toPlainText());
 
         // Restore pen
         painter->setPen(savedPen);
-    }
-
-    /*!
-     * \brief Updates visual display of property value.
-     *
-     * \note This method is key method to alter the visual text of property. Call
-     * it wherever the property changes.
-     */
-    void PropertyItem::updateValue()
-    {
-        Component* component = static_cast<PropertiesGroup*>(group())->component();
-
-        if(!component) {
-            qDebug() << "PropertyItem::updateValue() : Component is null!";
-            return;
-        }
-
-        QString newValue = component->property(m_propertyName);
-        setPlainText(newValue);
     }
 
 } // namespace Caneda

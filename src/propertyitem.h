@@ -52,16 +52,13 @@ namespace Caneda
     public:
         PropertyItem(const QString& name);
 
-        QRectF boundingRect() const;
+        void updateValue();
+
         void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
                 QWidget * widget = 0 );
 
-        void updateValue();
-
     private:
         const QString m_propertyName;  // Property name
-        QString m_staticText;  // Static part of text (property name and character "=")
-        QPointF m_staticPos;
     };
 
 } // namespace Caneda
