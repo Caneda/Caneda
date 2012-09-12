@@ -37,8 +37,8 @@ namespace Caneda
 
         QString name;
         QString filename;
-        QString labelPrefix;
         QString displayText;
+        QString labelPrefix;
         QString description;
         QString library;
         QList<PortData*> ports; //! List of component's ports
@@ -72,24 +72,32 @@ namespace Caneda
         //! Used for component identification at runtime.
         int type() const { return Component::Type; }
 
-        //! Returns name of the component.
+        //! Returns name of the component (without localization).
         QString name() const { return d->name; }
+
+        //! Returns string to be displayed in sidebar (with localization).
+        QString displayText() const { return d->displayText; }
 
         //! Returns label prefix of component.
         QString labelPrefix() const { return d->labelPrefix; }
         QString labelSuffix() const;
-
-        //! Represents model of component, which is infact a property.
-        QString model() const { return property("model"); }
-
-        //! Returns string to be displayed in sidebar.
-        QString displayText() const { return d->displayText; }
 
         //! Returns a helpful text corresponding to component.
         QString description() const { return d->description; }
 
         //! Returns the library to which this component belongs.
         QString library() const { return d->library; }
+
+        //! Returns the label of the component in the form {label_prefix}{number_suffix}
+        QString label() const { return property("label"); }
+        bool setLabel(const QString& _label);
+
+        //! Represents model of component, which is infact a property.
+        QString model() const { return property("model"); }
+
+        //! Returns property \a propName
+        QString property(const QString& propName) const;
+        bool setProperty(const QString& propName, const QString &value);
 
         //! Returns the property map (actually copy of property map).
         PropertyMap propertyMap() const { return d->propertyMap; }
@@ -98,15 +106,6 @@ namespace Caneda
         //! Returns property group of the component.
         PropertyDisplay* propertyDisplay() const { return m_propertyDisplay; }
         void updatePropertyDisplay();
-        void createPropertyDisplay();
-
-        QString property(const QString& propName) const;
-        bool setProperty(const QString& propName, const QString &value);
-        void setPropertyVisible(const QString& propName, bool visibility);
-
-        //! Returns the label of the component in the form {label_prefix}{number_suffix}
-        QString label() const { return property("label"); }
-        bool setLabel(const QString& _label);
 
         static Component* loadComponent(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);

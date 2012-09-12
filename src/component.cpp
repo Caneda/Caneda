@@ -86,13 +86,13 @@ namespace Caneda
     }
 
     /*!
-     * \brief Updates the property display on a scene (schematic).
+     * \brief Updates properties' display on a scene (schematic).
      *
-     * This method also takes care of creating a new PropertyDisplay if it
-     * didn't exist before and deletes it if none of the properties are
-     * visible.
+     * This method updates properties' display on a scene. It also takes
+     * care of creating a new PropertyDisplay if it didn't exist before
+     * and deletes it if none of the properties are visible.
      *
-     * \sa PropertyDisplay, PropertyDisplay::realignItems(), createPropertyDisplay()
+     * \sa PropertyDisplay, PropertyDisplay::realignItems()
      */
     void Component::updatePropertyDisplay()
     {
@@ -119,25 +119,11 @@ namespace Caneda
         // If m_propertyDisplay=0 create a new PopertyGroup, else
         // just update it calling PopertyGroup::realignItems()
         if(!m_propertyDisplay) {
-            createPropertyDisplay();
+            m_propertyDisplay = new PropertyDisplay(cGraphicsScene());
+            m_propertyDisplay->setParentItem(this);
+            m_propertyDisplay->setTransform(transform().inverted());
         }
-        else {
-            m_propertyDisplay->realignItems();
-        }
-    }
 
-    /*!
-     * \brief Creates the property group for the first time.
-     *
-     * \sa PropertyDisplay, PropertyDisplay::realignItems(), updatePropertyDisplay()
-     */
-    void Component::createPropertyDisplay()
-    {
-        // Delete the old group if it exists.
-        delete m_propertyDisplay;
-        m_propertyDisplay = new PropertyDisplay(cGraphicsScene());
-        m_propertyDisplay->setParentItem(this);
-        m_propertyDisplay->setTransform(transform().inverted());
         m_propertyDisplay->realignItems();
     }
 
@@ -161,8 +147,8 @@ namespace Caneda
      * \brief Method used to set a property's value.
      *
      * This also handles the property change of special properties such as
-     * symbol, label and forwards the call to those methods on match.
-     * It also updates the text display of the property on the schematic.
+     * the label and forwards the call to the corresponding methods on match.
+     * Finally, it updates the text display of the property on the schematic.
      *
      * \param propName The property which is to be set.
      * \param value The new value to be set.
@@ -173,7 +159,8 @@ namespace Caneda
     bool Component::setProperty(const QString& propName, const QString& value)
     {
         if(!propertyMap().contains(propName)) {
-            qDebug() << "Component::setPropertyValue(): Property '" << propName
+            qDebug() << "Component::setPropertyValue(): Property '"
+                     << propName
                      << "' doesn't exist!";
             return false;
         }
@@ -185,19 +172,6 @@ namespace Caneda
         d->propertyMap[propName].setValue(value);
         updatePropertyDisplay();
         return true;
-    }
-
-    //! \brief Takes care of visibility of property text on schematic.
-    void Component::setPropertyVisible(const QString& propName, bool visiblity)
-    {
-        if(!propertyMap().contains(propName)) {
-            qWarning() << "Component::setPropertyVisible() : Property " << propName
-                       << " doesn't exist!";
-            return;
-        }
-
-        d->propertyMap[propName].setVisible(visiblity);
-        updatePropertyDisplay();
     }
 
     /*!
