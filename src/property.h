@@ -62,13 +62,12 @@ namespace Caneda
      * could be used, string types allow the use of suffixes and parameters
      * like p for pico, u for micro, and {R} for parameter, for example.
      *
-     * While Property class holds actual properties, PropertyItem
-     * class is the object that renders them on a scene. Finally, PropertiesGroup
-     * is the class that groups all PropertyItems to allow selection and
+     * While Property class holds actual properties, PropertyDisplayItem
+     * class is the object that renders them on a scene. Finally, PropertyDisplay
+     * is the class that groups all PropertyDisplayItems to allow selection and
      * moving of all properties at once.
      *
-     * \sa PropertyData, PropertiesGroup, PropertyItem
-     * \note Assumes that options list is always strings!
+     * \sa PropertyData, PropertyDisplay, PropertyDisplayItem
      */
     class Property
     {

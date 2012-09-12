@@ -248,7 +248,7 @@ namespace Caneda
         m_item->setPos(m_pos);
         Component *comp = canedaitem_cast<Component*>(m_item);
         if(comp) {
-            comp->updatePropertyGroup();
+            comp->updatePropertyDisplay();
         }
     }
 

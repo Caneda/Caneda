@@ -27,7 +27,7 @@
 namespace Caneda
 {
     // Forward declarations
-    class PropertiesGroup;
+    class PropertyDisplay;
     class PortData;
 
     //! Shareable component's data
@@ -96,9 +96,9 @@ namespace Caneda
         void setPropertyMap(const PropertyMap& propMap);
 
         //! Returns property group of the component.
-        PropertiesGroup* propertyGroup() const { return m_propertyGroup; }
-        void updatePropertyGroup();
-        void createPropertyGroup();
+        PropertyDisplay* propertyDisplay() const { return m_propertyDisplay; }
+        void updatePropertyDisplay();
+        void createPropertyDisplay();
 
         QString property(const QString& propName) const;
         bool setProperty(const QString& propName, const QString &value);
@@ -136,8 +136,8 @@ namespace Caneda
 
         //! \brief Component Shared datas
         QSharedDataPointer<ComponentData> d;
-        //! \brief Property group (ie properties display of this component)
-        PropertiesGroup *m_propertyGroup;
+        //! \brief Property display of this component on schematic
+        PropertyDisplay *m_propertyDisplay;
     };
 
 } // namespace Caneda

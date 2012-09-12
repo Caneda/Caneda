@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "propertygroup.h"
+#include "propertydisplay.h"
 
 #include "cgraphicsscene.h"
 #include "component.h"
@@ -31,7 +31,7 @@
 namespace Caneda
 {
     //*************************************************************
-    //********************* PropertyItem **************************
+    //****************** PropertyDisplayItem **********************
     //*************************************************************
 
     /*!
@@ -39,7 +39,7 @@ namespace Caneda
      *
      * \param propName The name of property.
      */
-    PropertyItem::PropertyItem(const QString &propName) :
+    PropertyDisplayItem::PropertyDisplayItem(const QString &propName) :
         m_propertyName(propName)
     {
         // This is necessary to allow correct position update
@@ -52,11 +52,11 @@ namespace Caneda
      * \note This method is key method to alter the visual text of property. Call
      * it wherever the property changes.
      */
-    void PropertyItem::updateValue()
+    void PropertyDisplayItem::updateValue()
     {
-        Component* component = static_cast<PropertiesGroup*>(group())->component();
+        Component* component = static_cast<PropertyDisplay*>(group())->component();
         if(!component) {
-            qDebug() << "PropertyItem::updateValue() : Component is null!";
+            qDebug() << "PropertyDisplayItem::updateValue() : Component is null!";
             return;
         }
 
@@ -77,20 +77,20 @@ namespace Caneda
     }
 
     /*!
-     * \brief Draws the propertyItem to painter.
+     * \brief Draws the PropertyDisplayItem to painter.
      *
-     * This method draws the propertyItem on a scene. The pen color changes
+     * This method draws the PropertyDisplayItem on a scene. The pen color changes
      * according to the selection state, thus giving state feedback to the
      * user.
      *
-     * The selection rectangle around all propertyItems is handled by the
-     * propertyGroup::paint method. An empty method in propertyGroup::paint
+     * The selection rectangle around all PropertyDisplayItems is handled by the
+     * PropertyDisplay::paint() method. An empty method in PropertyDisplay::paint()
      * will avoid drawing a selection rectangle around property items in the
      * scene.
      *
-     * \sa PropertiesGroup::paint()
+     * \sa PropertyDisplay::paint()
      */
-    void PropertyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+    void PropertyDisplayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
         // Save pen
@@ -115,7 +115,7 @@ namespace Caneda
     }
 
     //*************************************************************
-    //******************** PropertiesGroup ************************
+    //******************** PropertyDisplay ************************
     //*************************************************************
 
     /*!
@@ -123,7 +123,7 @@ namespace Caneda
      *
      * \param scene The graphics scene to which this property should belong.
      */
-    PropertiesGroup::PropertiesGroup(CGraphicsScene *scene)
+    PropertyDisplay::PropertyDisplay(CGraphicsScene *scene)
     {
         if(scene) {
             scene->addItem(this);
@@ -139,7 +139,7 @@ namespace Caneda
      * are removed from group and deleted. This also updates the visible value of
      * property.
      */
-    void PropertiesGroup::realignItems()
+    void PropertyDisplay::realignItems()
     {
         // Nothing to do if scene doesn't exist.
         if(!scene()) {
@@ -155,7 +155,7 @@ namespace Caneda
         }
 
         // Remove items from group and make them top level items.
-        foreach(PropertyItem *item, m_propertyItemsMap) {
+        foreach(PropertyDisplayItem *item, m_propertyDisplayItemsMap) {
             item->updateValue();
             removeFromGroup(item);
             item->setParentItem(0);
@@ -168,14 +168,14 @@ namespace Caneda
 
                 bool newlyCreated = false;
                 // Create new property item if it doesn't exist.
-                if(!m_propertyItemsMap.contains(property.name())) {
-                    PropertyItem *item = new PropertyItem(property.name());
+                if(!m_propertyDisplayItemsMap.contains(property.name())) {
+                    PropertyDisplayItem *item = new PropertyDisplayItem(property.name());
 
-                    m_propertyItemsMap.insert(property.name(), item);
+                    m_propertyDisplayItemsMap.insert(property.name(), item);
                     newlyCreated = true;
                 }
 
-                PropertyItem *item = m_propertyItemsMap[property.name()];
+                PropertyDisplayItem *item = m_propertyDisplayItemsMap[property.name()];
                 visibleItemsCount++;
 
                 QList<QGraphicsItem*> _children = QGraphicsItemGroup::children();
@@ -198,9 +198,9 @@ namespace Caneda
             }
             else {
                 // Delete item if it existed before as it is being hidden now.
-                if(m_propertyItemsMap.contains(property.name())) {
-                    PropertyItem *item = m_propertyItemsMap[property.name()];
-                    m_propertyItemsMap.remove(property.name());
+                if(m_propertyDisplayItemsMap.contains(property.name())) {
+                    PropertyDisplayItem *item = m_propertyDisplayItemsMap[property.name()];
+                    m_propertyDisplayItemsMap.remove(property.name());
                     delete item;
                 }
             }
@@ -223,7 +223,7 @@ namespace Caneda
     }
 
     //! \brief Forces the update of the geometry of the property group.
-    void PropertiesGroup::updateGeometry()
+    void PropertyDisplay::updateGeometry()
     {
         // HACK: This adds and removes a dummy item from group to update its geometry
         static const QLineF line(-5, -5, 5, 5);
@@ -234,22 +234,22 @@ namespace Caneda
     }
 
     //! \brief Returns the associated component.
-    Component* PropertiesGroup::component() const
+    Component* PropertyDisplay::component() const
     {
         return static_cast<Component*>(parentItem());
     }
 
     /*!
-     * \brief Draws the propertiesGroup bounding rect to painter.
+     * \brief Draws the PropertyDisplay bounding rect to painter.
      *
      * This method is empty to avoid drawing a selection rectangle around
      * property items in the scene. The selection state is instead
-     * handled by PropertyItem::paint method, changing the properties'
+     * handled by PropertyDisplayItem::paint() method, changing the properties'
      * color according to the global selection pen.
      *
-     * \sa PropertyItem::paint()
+     * \sa PropertyDisplayItem::paint()
      */
-    void PropertiesGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+    void PropertyDisplay::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
     }
@@ -259,7 +259,7 @@ namespace Caneda
      *
      * Deselects selected items other than this, and also clears focus of children items
      */
-    void PropertiesGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
+    void PropertyDisplay::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         if(scene()) {
             foreach(QGraphicsItem *item, scene()->selectedItems()) {
@@ -269,7 +269,7 @@ namespace Caneda
             }
         }
 
-        foreach(PropertyItem *p, m_propertyItemsMap) {
+        foreach(PropertyDisplayItem *p, m_propertyDisplayItemsMap) {
             if(p->hasFocus()) {
                 p->clearFocus();
             }
@@ -279,7 +279,7 @@ namespace Caneda
     }
 
     //! \brief Launches property dialog on double click.
-    void PropertiesGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
+    void PropertyDisplay::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
     {
         component()->launchPropertyDialog(Caneda::PushUndoCmd);
     }

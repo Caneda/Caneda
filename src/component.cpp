@@ -23,7 +23,7 @@
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "library.h"
-#include "propertygroup.h"
+#include "propertydisplay.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -38,7 +38,7 @@ namespace Caneda
     //! \brief Constructs and initializes a default empty component item.
     Component::Component(CGraphicsScene *scene) :
         CGraphicsItem(0, scene),
-        d(new ComponentData()), m_propertyGroup(0)
+        d(new ComponentData()), m_propertyDisplay(0)
     {
         init();
     }
@@ -46,7 +46,7 @@ namespace Caneda
     //! \brief Constructs a component from \a other data.
     Component::Component(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene) :
         CGraphicsItem(0, scene),
-        d(other), m_propertyGroup(0)
+        d(other), m_propertyDisplay(0)
     {
         init();
     }
@@ -54,7 +54,7 @@ namespace Caneda
     //! \brief Destructor.
     Component::~Component()
     {
-        delete m_propertyGroup;
+        delete m_propertyDisplay;
         qDeleteAll(m_ports);
     }
 
@@ -82,19 +82,19 @@ namespace Caneda
         }
 
         updateBoundingRect();
-        updatePropertyGroup();
+        updatePropertyDisplay();
     }
 
     /*!
      * \brief Updates the property display on a scene (schematic).
      *
-     * This method also takes care of creating a new PropertyGroup if it
+     * This method also takes care of creating a new PropertyDisplay if it
      * didn't exist before and deletes it if none of the properties are
      * visible.
      *
-     * \sa PropertiesGroup, PropertiesGroup::realignItems(), createPropertyGroup()
+     * \sa PropertyDisplay, PropertyDisplay::realignItems(), createPropertyDisplay()
      */
-    void Component::updatePropertyGroup()
+    void Component::updatePropertyDisplay()
     {
         bool itemsVisible = false;
 
@@ -111,34 +111,34 @@ namespace Caneda
 
         // Delete the group if none of the properties are visible.
         if(!itemsVisible) {
-            delete m_propertyGroup;
-            m_propertyGroup = 0;
+            delete m_propertyDisplay;
+            m_propertyDisplay = 0;
             return;
         }
 
-        // If m_propertyGroup=0 create a new PopertyGroup, else
+        // If m_propertyDisplay=0 create a new PopertyGroup, else
         // just update it calling PopertyGroup::realignItems()
-        if(!m_propertyGroup) {
-            createPropertyGroup();
+        if(!m_propertyDisplay) {
+            createPropertyDisplay();
         }
         else {
-            m_propertyGroup->realignItems();
+            m_propertyDisplay->realignItems();
         }
     }
 
     /*!
      * \brief Creates the property group for the first time.
      *
-     * \sa PropertiesGroup, PropertiesGroup::realignItems(), updatePropertyGroup()
+     * \sa PropertyDisplay, PropertyDisplay::realignItems(), updatePropertyDisplay()
      */
-    void Component::createPropertyGroup()
+    void Component::createPropertyDisplay()
     {
         // Delete the old group if it exists.
-        delete m_propertyGroup;
-        m_propertyGroup = new PropertiesGroup(cGraphicsScene());
-        m_propertyGroup->setParentItem(this);
-        m_propertyGroup->setTransform(transform().inverted());
-        m_propertyGroup->realignItems();
+        delete m_propertyDisplay;
+        m_propertyDisplay = new PropertyDisplay(cGraphicsScene());
+        m_propertyDisplay->setParentItem(this);
+        m_propertyDisplay->setTransform(transform().inverted());
+        m_propertyDisplay->realignItems();
     }
 
     /*!
@@ -183,7 +183,7 @@ namespace Caneda
         }
 
         d->propertyMap[propName].setValue(value);
-        updatePropertyGroup();
+        updatePropertyDisplay();
         return true;
     }
 
@@ -197,7 +197,7 @@ namespace Caneda
         }
 
         d->propertyMap[propName].setVisible(visiblity);
-        updatePropertyGroup();
+        updatePropertyDisplay();
     }
 
     /*!
@@ -220,7 +220,7 @@ namespace Caneda
         }
 
         d->propertyMap["label"].setValue(newLabel);
-        updatePropertyGroup();
+        updatePropertyDisplay();
         return true;
     }
 
@@ -235,15 +235,15 @@ namespace Caneda
      * \brief Sets the propertyMap of this component to \a propMap
      *
      * Sets the propertyMap of this component and takes care of
-     * updating the PropertyGroup which is the class that displays
+     * updating the PropertyDisplay which is the class that displays
      * properties on a scene.
      *
-     * \sa Property, PropertyMap, updatePropertyGroup(), PropertyGroup
+     * \sa Property, PropertyMap, updatePropertyDisplay(), PropertyDisplay
      */
     void Component::setPropertyMap(const PropertyMap& propMap)
     {
         d->propertyMap = propMap;
-        updatePropertyGroup();  // This is neccessary to update the properties display on a scene
+        updatePropertyDisplay();  // This is neccessary to update the properties display on a scene
     }
 
     /*!
@@ -309,8 +309,8 @@ namespace Caneda
                 }
                 else if(reader->name() == "propertyPos") {
                     QPointF point = reader->readPoint();
-                    if(m_propertyGroup) {
-                        m_propertyGroup->setPos(point);
+                    if(m_propertyDisplay) {
+                        m_propertyDisplay->setPos(point);
                     }
                 }
                 else if(reader->name() == "transform") {
@@ -345,8 +345,8 @@ namespace Caneda
         writer->writeAttribute("library", library());
 
         writer->writePoint(pos(), "pos");
-        if(m_propertyGroup) {
-            writer->writePoint(m_propertyGroup->pos(), "propertyPos");
+        if(m_propertyDisplay) {
+            writer->writePoint(m_propertyDisplay->pos(), "propertyPos");
         }
 
         writer->writeTransform(transform());
@@ -413,7 +413,7 @@ namespace Caneda
         Component *retVal = new Component(d, scene);
         // No need for Component::copyDataTo() because data is already copied from d pointer.
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
-        retVal->updatePropertyGroup();
+        retVal->updatePropertyDisplay();
         return retVal;
     }
 
@@ -422,7 +422,7 @@ namespace Caneda
     {
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(component));
         component->d = d;
-        component->updatePropertyGroup();
+        component->updatePropertyDisplay();
         component->update();
     }
 
@@ -450,10 +450,10 @@ namespace Caneda
     QVariant Component::itemChange(GraphicsItemChange change,
             const QVariant &value)
     {
-        if(change == ItemTransformHasChanged && m_propertyGroup) {
+        if(change == ItemTransformHasChanged && m_propertyDisplay) {
             // Set the inverse of component's matrix to property group so that
             // it maintains identity when transformed.
-            m_propertyGroup->setTransform(transform().inverted());
+            m_propertyDisplay->setTransform(transform().inverted());
         }
         return CGraphicsItem::itemChange(change, value);
     }

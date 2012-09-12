@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef PROPERTYGROUP_H
-#define PROPERTYGROUP_H
+#ifndef PROPERTYDISPLAY_H
+#define PROPERTYDISPLAY_H
 
 #include <QGraphicsItemGroup>
 #include <QGraphicsTextItem>
@@ -34,24 +34,24 @@ namespace Caneda
     /*!
      * \brief Class used to render a property on a graphics scene.
      *
-     * Gouping all PropertyItems of a component into a QGraphicsItemGroup
+     * Gouping all PropertyDisplayItems of a component into a QGraphicsItemGroup
      * provides a convenient way of handling them all together. In this
      * way, the properties of a component can be selected and moved
      * all at once.
      *
-     * While Property class holds actual properties, PropertyItem
-     * class is the object that renders them on a scene. Finally, PropertiesGroup
-     * is the class that groups all PropertyItems to allow selection and
+     * While Property class holds actual properties, PropertyDisplayItem
+     * class is the object that renders them on a scene. Finally, PropertyDisplay
+     * is the class that groups all PropertyDisplayItems to allow selection and
      * moving of all properties at once.
      *
-     * \sa Property, PropertiesGroup
+     * \sa Property, PropertyDisplay
      */
-    class PropertyItem : public QGraphicsTextItem
+    class PropertyDisplayItem : public QGraphicsTextItem
     {
         Q_OBJECT
 
     public:
-        PropertyItem(const QString& name);
+        PropertyDisplayItem(const QString& name);
 
         void updateValue();
 
@@ -65,27 +65,27 @@ namespace Caneda
     /*!
      * \brief This class groups the properties of a item.
      *
-     * Gouping all PropertyItems of a component into a QGraphicsItemGroup
+     * Gouping all PropertyDisplayItems of a component into a QGraphicsItemGroup
      * provides a convenient way of handling them all together. In this
      * way, the properties of a component can be selected and moved
      * all at once.
      *
-     * This class takes care of creation and destruction of PropertyItems
+     * This class takes care of creation and destruction of PropertyDisplayItems
      * as well.
      *
-     * While Property class holds actual properties, PropertyItem
-     * class is the object that renders them on a scene. Finally, PropertiesGroup
-     * is the class that groups all PropertyItems to allow selection and
+     * While Property class holds actual properties, PropertyDisplayItem
+     * class is the object that renders them on a scene. Finally, PropertyDisplay
+     * is the class that groups all PropertyDisplayItems to allow selection and
      * moving of all properties at once.
      *
-     * \sa Property, PropertyItem
+     * \sa Property, PropertyDisplayItem
      */
-    class PropertiesGroup : public QObject, public QGraphicsItemGroup
+    class PropertyDisplay : public QObject, public QGraphicsItemGroup
     {
         Q_OBJECT
 
     public:
-        PropertiesGroup(CGraphicsScene *scene = 0);
+        PropertyDisplay(CGraphicsScene *scene = 0);
 
         void realignItems();
         void updateGeometry();
@@ -101,9 +101,9 @@ namespace Caneda
 
     private:
         //! Internal storage of property items for book keeping.
-        QMap<QString, PropertyItem*> m_propertyItemsMap;
+        QMap<QString, PropertyDisplayItem*> m_propertyDisplayItemsMap;
     };
 
 } // namespace Caneda
 
-#endif //PROPERTYGROUP_H
+#endif //PROPERTYDISPLAY_H
