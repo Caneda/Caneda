@@ -652,8 +652,8 @@ namespace Caneda
             }
 
             // Extrema grid points
-            qreal left = int(rect.left()) + drawingGridWidth - (int(rect.left()) % drawingGridWidth);
-            qreal top = int(rect.top()) + drawingGridHeight - (int(rect.top()) % drawingGridHeight);
+            qreal left = int(rect.left()) - (int(rect.left()) % drawingGridWidth);
+            qreal top = int(rect.top()) - (int(rect.top()) % drawingGridHeight);
             qreal right = int(rect.right()) - (int(rect.right()) % drawingGridWidth);
             qreal bottom = int(rect.bottom()) - (int(rect.bottom()) % drawingGridHeight);
             qreal x, y;
