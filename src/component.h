@@ -97,8 +97,6 @@ namespace Caneda
 
         //! Returns property \a propName
         QString property(const QString& propName) const;
-        bool setProperty(const QString& propName, const QString &value);
-
         //! Returns the property map (actually copy of property map).
         PropertyMap propertyMap() const { return d->propertyMap; }
         void setPropertyMap(const PropertyMap& propMap);

@@ -144,37 +144,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Method used to set a property's value.
-     *
-     * This also handles the property change of special properties such as
-     * the label and forwards the call to the corresponding methods on match.
-     * Finally, it updates the text display of the property on the schematic.
-     *
-     * \param propName The property which is to be set.
-     * \param value The new value to be set.
-     * \return Returns true if successful, else returns false.
-     *
-     * \sa setLabel(), Property, PropertyMap
-     */
-    bool Component::setProperty(const QString& propName, const QString& value)
-    {
-        if(!propertyMap().contains(propName)) {
-            qDebug() << "Component::setPropertyValue(): Property '"
-                     << propName
-                     << "' doesn't exist!";
-            return false;
-        }
-
-        if(propName == "label") {
-            return setLabel(value);
-        }
-
-        d->propertyMap[propName].setValue(value);
-        updatePropertyDisplay();
-        return true;
-    }
-
-    /*!
      * \brief Sets the label of component.
      *
      * This method also handles label prefix and number suffix appropriately.
@@ -206,11 +175,16 @@ namespace Caneda
     }
 
     /*!
-     * \brief Sets the propertyMap of this component to \a propMap
+     * \brief Set the component's properties' values.
      *
-     * Sets the propertyMap of this component and takes care of
-     * updating the PropertyDisplay which is the class that displays
-     * properties on a scene.
+     * This method sets the component's properties' values by updating
+     * its propertyMap to \a propMap.
+     *
+     * First it sets the propertyMap of this component and then takes
+     * care of updating the PropertyDisplay (which is the class that displays
+     * properties on a scene).
+     *
+     * \param propMap The new property map to be set.
      *
      * \sa Property, PropertyMap, updatePropertyDisplay(), PropertyDisplay
      */

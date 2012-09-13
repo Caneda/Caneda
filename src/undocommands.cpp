@@ -32,35 +32,6 @@ namespace Caneda
 {
     /*
     ##########################################################################
-    #                            PropertyChangeCmd                           #
-    ##########################################################################
-    */
-
-    static QString debugString;
-
-    PropertyChangeCmd::PropertyChangeCmd(const QString& propertyName,
-            const QString& newValue,
-            const QString& oldValue,
-            Component *const component,
-            QUndoCommand *parent) :
-        QUndoCommand(parent),
-        m_property(propertyName), m_newValue(newValue), m_oldValue(oldValue),
-        m_component(component)
-    {
-    }
-
-    void PropertyChangeCmd::undo()
-    {
-        m_component->setProperty(m_property, m_oldValue);
-    }
-
-    void PropertyChangeCmd::redo()
-    {
-        m_component->setProperty(m_property, m_newValue);
-    }
-
-    /*
-    ##########################################################################
     #                                 MoveCmd                                #
     ##########################################################################
     */

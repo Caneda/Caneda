@@ -39,25 +39,6 @@ namespace Caneda
 
     static const QPointF InvalidPoint(-30000, -30000);
 
-    class PropertyChangeCmd : public QUndoCommand
-    {
-    public:
-        PropertyChangeCmd(const QString& propertyName,
-                const QString &newValue,
-                const QString &oldValue,
-                Component *const component,
-                QUndoCommand *parent = 0);
-
-        virtual void undo();
-        virtual void redo();
-
-    private:
-        const QString m_property;
-        const QString m_newValue;
-        const QString m_oldValue;
-        Component *const m_component;
-    };
-
     class MoveCmd : public QUndoCommand
     {
     public:
