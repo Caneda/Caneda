@@ -128,22 +128,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Method to obtain property's value.
-     *
-     * \param propName The name of property.
-     * \return Returns corresponding property if it exists otherwise
-     * returns empty QString().
-     */
-    QString Component::property(const QString& propName) const
-    {
-        if(d->propertyMap.contains(propName)){
-            return d->propertyMap[propName].value();
-        }
-
-        return QString();
-    }
-
-    /*!
      * \brief Sets the label of component.
      *
      * This method also handles label prefix and number suffix appropriately.

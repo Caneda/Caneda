@@ -89,14 +89,12 @@ namespace Caneda
         QString library() const { return d->library; }
 
         //! Returns the label of the component in the form {label_prefix}{number_suffix}
-        QString label() const { return property("label"); }
+        QString label() const { return d->propertyMap["label"].value(); }
         bool setLabel(const QString& _label);
 
         //! Represents model of component, which is infact a property.
-        QString model() const { return property("model"); }
+        QString model() const { return d->propertyMap["model"].value(); }
 
-        //! Returns property \a propName
-        QString property(const QString& propName) const;
         //! Returns the property map (actually copy of property map).
         PropertyMap propertyMap() const { return d->propertyMap; }
         void setPropertyMap(const PropertyMap& propMap);
