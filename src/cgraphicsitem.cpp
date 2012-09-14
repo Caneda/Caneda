@@ -208,6 +208,7 @@ namespace Caneda
      *
      * This method abstracts the method of changing the geometry with support for
      * cache as well.
+     *
      * \param path The path to be cached. If empty, bound rect is added.
      * \param rect The bound rect to be cached.
      * \param pw Pen width of pen used to paint outer stroke of item.

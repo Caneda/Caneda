@@ -92,7 +92,7 @@ namespace Caneda
      * care of creating a new PropertyDisplay if it didn't exist before
      * and deletes it if none of the properties are visible.
      *
-     * \sa PropertyDisplay, PropertyDisplay::realignItems()
+     * \sa PropertyDisplay, PropertyDisplay::update()
      */
     void Component::updatePropertyDisplay()
     {
@@ -116,15 +116,15 @@ namespace Caneda
             return;
         }
 
-        // If m_propertyDisplay=0 create a new PopertyGroup, else
-        // just update it calling PopertyGroup::realignItems()
+        // If m_propertyDisplay=0 create a new PopertyDisplay, else
+        // just update it calling PopertyDisplay::updateProperties()
         if(!m_propertyDisplay) {
             m_propertyDisplay = new PropertyDisplay(cGraphicsScene());
             m_propertyDisplay->setParentItem(this);
             m_propertyDisplay->setTransform(transform().inverted());
         }
 
-        m_propertyDisplay->realignItems();
+        m_propertyDisplay->updateProperties();
     }
 
     /*!

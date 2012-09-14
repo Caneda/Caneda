@@ -1,5 +1,4 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
@@ -21,8 +20,7 @@
 #ifndef PROPERTYDISPLAY_H
 #define PROPERTYDISPLAY_H
 
-#include <QGraphicsItemGroup>
-#include <QGraphicsTextItem>
+#include <QGraphicsSimpleTextItem>
 #include <QObject>
 
 namespace Caneda
@@ -32,76 +30,36 @@ namespace Caneda
     class CGraphicsScene;
 
     /*!
-     * \brief Class used to render a property on a graphics scene.
+     * \brief Class used to render a properties on a graphics scene.
      *
-     * Gouping all PropertyDisplayItems of a component into a QGraphicsItemGroup
+     * Gouping all properties of a component into a QMap (PropertyGroup)
      * provides a convenient way of handling them all together. In this
      * way, the properties of a component can be selected and moved
      * all at once.
      *
-     * While Property class holds actual properties, PropertyDisplayItem
-     * class is the object that renders them on a scene. Finally, PropertyDisplay
-     * is the class that groups all PropertyDisplayItems to allow selection and
-     * moving of all properties at once.
+     * While Property class holds actual properties, PropertyGroup class
+     * groups them all together and PropertyDisplay class is the object
+     * that renders them on a scene, allowing selection and moving of all
+     * properties at once.
      *
-     * \sa Property, PropertyDisplay
+     * \sa Property, PropertyGroup
      */
-    class PropertyDisplayItem : public QGraphicsTextItem
-    {
-        Q_OBJECT
-
-    public:
-        PropertyDisplayItem(const QString& name);
-
-        void updateValue();
-
-        void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
-                QWidget * widget = 0 );
-
-    private:
-        const QString m_propertyName;  // Property name
-    };
-
-    /*!
-     * \brief This class groups the properties of a item.
-     *
-     * Gouping all PropertyDisplayItems of a component into a QGraphicsItemGroup
-     * provides a convenient way of handling them all together. In this
-     * way, the properties of a component can be selected and moved
-     * all at once.
-     *
-     * This class takes care of creation and destruction of PropertyDisplayItems
-     * as well.
-     *
-     * While Property class holds actual properties, PropertyDisplayItem
-     * class is the object that renders them on a scene. Finally, PropertyDisplay
-     * is the class that groups all PropertyDisplayItems to allow selection and
-     * moving of all properties at once.
-     *
-     * \sa Property, PropertyDisplayItem
-     */
-    class PropertyDisplay : public QObject, public QGraphicsItemGroup
+    class PropertyDisplay : public QObject, public QGraphicsSimpleTextItem
     {
         Q_OBJECT
 
     public:
         PropertyDisplay(CGraphicsScene *scene = 0);
 
-        void realignItems();
-        void updateGeometry();
-
-        Component* component() const;
-
+        void updateProperties();
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0 );
+
+        Component* component() const;
 
     protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-    private:
-        //! Internal storage of property items for book keeping.
-        QMap<QString, PropertyDisplayItem*> m_propertyDisplayItemsMap;
     };
 
 } // namespace Caneda

@@ -1,5 +1,4 @@
 /***************************************************************************
- * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
@@ -30,67 +29,97 @@
 
 namespace Caneda
 {
-    //*************************************************************
-    //****************** PropertyDisplayItem **********************
-    //*************************************************************
-
     /*!
-     * \brief Constructor.
+     * Constructor
      *
-     * \param propName The name of property.
+     * \param scene The graphics scene to which this property should belong.
      */
-    PropertyDisplayItem::PropertyDisplayItem(const QString &propName) :
-        m_propertyName(propName)
+    PropertyDisplay::PropertyDisplay(CGraphicsScene *scene)
     {
-        // This is necessary to allow correct position update
-        setTextInteractionFlags(Qt::TextEditorInteraction);
+        if(scene) {
+            scene->addItem(this);
+        }
     }
 
     /*!
-     * \brief Updates visual display of property value.
+     * \brief Updates the visual display of all the properties in a PropertyGroup.
      *
-     * \note This method is key method to alter the visual text of property. Call
-     * it wherever the property changes.
+     * This method is key to alter the visual display text of given properties. It
+     * should be called wherever a property changes.
+     *
+     * To update the visual display, it recreates all individual properties' display
+     * from the group and then adds them to the plaintext property of this item (if
+     * the given property is visible). This method also updates the visible value of
+     * the property.
      */
-    void PropertyDisplayItem::updateValue()
+    void PropertyDisplay::updateProperties()
     {
-        Component* component = static_cast<PropertyDisplay*>(group())->component();
-        if(!component) {
-            qDebug() << "PropertyDisplayItem::updateValue() : Component is null!";
+        if(!component()) {
+            qDebug() << "PropertyDisplay::update() : Component is null!";
             return;
         }
 
-        QString newValue;
+        // If created for the first time (boundingRect == null), set text position
+        if(boundingRect().isNull()) {
+            setPos(parentItem()->boundingRect().bottomLeft());
+        }
 
-        // Add property name
-        if(m_propertyName.startsWith("label", Qt::CaseInsensitive)) {
-            newValue = "";  // Label is displayed without "label" tag
+        QString newValue;  // New value to set
+
+        // Iterate through all properties to add its values
+        foreach(const Property property, component()->propertyMap()) {
+            if(property.isVisible()) {
+
+                QString propertyText = "";  // Current property text
+
+                // Add property name (except for the label property)
+                if(!property.name().startsWith("label", Qt::CaseInsensitive)) {
+                    propertyText = property.name() + " = ";
+                }
+
+                // Add property value
+                propertyText.append(property.value());
+
+                // Add the property to the group
+                if(!newValue.isEmpty()) {
+                    newValue.append("\n");  // If already has properties, add newline
+                }
+                newValue.append(propertyText);
+            }
+        }
+
+        // Set new properties values
+        setText(newValue);
+
+        if(text().isEmpty()) {
+            // Disables moving, selection and focussing of empty PropertyDisplays
+            setFlags(0);
+            setFlag(ItemSendsGeometryChanges, true);
+            setFlag(ItemSendsScenePositionChanges, true);
         }
         else {
-            newValue = m_propertyName + " = ";
+            setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+            setFlag(ItemSendsGeometryChanges, true);
+            setFlag(ItemSendsScenePositionChanges, true);
         }
 
-        // Add property value
-        newValue.append(component->property(m_propertyName));
-
-        setPlainText(newValue);
     }
 
     /*!
-     * \brief Draws the PropertyDisplayItem to painter.
+     * \brief Draws the PropertyDisplay to painter.
      *
-     * This method draws the PropertyDisplayItem on a scene. The pen color changes
-     * according to the selection state, thus giving state feedback to the
-     * user.
+     * This method draws the PropertyDisplay contents on a scene. The pen color
+     * changes according to the selection state, thus giving state feedback to
+     * the user.
      *
-     * The selection rectangle around all PropertyDisplayItems is handled by the
-     * PropertyDisplay::paint() method. An empty method in PropertyDisplay::paint()
-     * will avoid drawing a selection rectangle around property items in the
-     * scene.
-     *
-     * \sa PropertyDisplay::paint()
+     * The selection rectangle around all PropertyDisplay contents is handled by
+     * this method. Currently, no selection rectangle around property items is
+     * drawn, although it could change in the future (acording to user's feedback).
+     * In that case, this class bounding rect should be used. The selection state
+     * is instead handled by changing the properties' pen color according to the
+     * global selection pen.
      */
-    void PropertyDisplayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+    void PropertyDisplay::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
         // Save pen
@@ -108,129 +137,10 @@ namespace Caneda
         }
 
         // Paint the property text
-        painter->drawText(boundingRect(), toPlainText());
+        painter->drawText(boundingRect(), text());
 
         // Restore pen
         painter->setPen(savedPen);
-    }
-
-    //*************************************************************
-    //******************** PropertyDisplay ************************
-    //*************************************************************
-
-    /*!
-     * Constructor
-     *
-     * \param scene The graphics scene to which this property should belong.
-     */
-    PropertyDisplay::PropertyDisplay(CGraphicsScene *scene)
-    {
-        if(scene) {
-            scene->addItem(this);
-        }
-    }
-
-    /*!
-     * \brief Realigns all the child items of this group (and deletes hidden items).
-     *
-     * This is quite expensive. It removes all property items
-     * from the group and then freshly adds them to the group again if it is
-     * visible. If the property is hidden, then the corresponding property items
-     * are removed from group and deleted. This also updates the visible value of
-     * property.
-     */
-    void PropertyDisplay::realignItems()
-    {
-        // Nothing to do if scene doesn't exist.
-        if(!scene()) {
-            return;
-        }
-
-        QPointF savePos;
-        if(boundingRect().isNull()) {
-            savePos = parentItem()->sceneBoundingRect().bottomLeft();
-        }
-        else {
-            savePos = sceneBoundingRect().topLeft();
-        }
-
-        // Remove items from group and make them top level items.
-        foreach(PropertyDisplayItem *item, m_propertyDisplayItemsMap) {
-            item->updateValue();
-            removeFromGroup(item);
-            item->setParentItem(0);
-        }
-
-        int visibleItemsCount = 0;
-
-        foreach(const Property property, component()->propertyMap()) {
-            if(property.isVisible()) {
-
-                bool newlyCreated = false;
-                // Create new property item if it doesn't exist.
-                if(!m_propertyDisplayItemsMap.contains(property.name())) {
-                    PropertyDisplayItem *item = new PropertyDisplayItem(property.name());
-
-                    m_propertyDisplayItemsMap.insert(property.name(), item);
-                    newlyCreated = true;
-                }
-
-                PropertyDisplayItem *item = m_propertyDisplayItemsMap[property.name()];
-                visibleItemsCount++;
-
-                QList<QGraphicsItem*> _children = QGraphicsItemGroup::children();
-                if(!_children.isEmpty()) {
-                    // Place the new item at bottom, properly aligned with group.
-                    QPointF itemPos = mapToScene(boundingRect().bottomLeft());
-                    itemPos.rx() -= item->boundingRect().left();
-                    item->setPos(itemPos);
-                }
-                else {
-                    savePos.rx() -= item->boundingRect().left();
-                    item->setPos(savePos);
-                }
-
-                addToGroup(item);
-                if(newlyCreated) {
-                    item->updateValue();
-                }
-
-            }
-            else {
-                // Delete item if it existed before as it is being hidden now.
-                if(m_propertyDisplayItemsMap.contains(property.name())) {
-                    PropertyDisplayItem *item = m_propertyDisplayItemsMap[property.name()];
-                    m_propertyDisplayItemsMap.remove(property.name());
-                    delete item;
-                }
-            }
-
-        }
-
-        if(visibleItemsCount > 0) {
-            setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-            setFlag(ItemSendsGeometryChanges, true);
-            setFlag(ItemSendsScenePositionChanges, true);
-        }
-        else {
-            // Disables moving, selection and focussing of empty groups.
-            setFlags(0);
-            setFlag(ItemSendsGeometryChanges, true);
-            setFlag(ItemSendsScenePositionChanges, true);
-        }
-
-        updateGeometry();
-    }
-
-    //! \brief Forces the update of the geometry of the property group.
-    void PropertyDisplay::updateGeometry()
-    {
-        // HACK: This adds and removes a dummy item from group to update its geometry
-        static const QLineF line(-5, -5, 5, 5);
-        QGraphicsLineItem *dummy = new QGraphicsLineItem(line);
-        addToGroup(dummy);
-        removeFromGroup(dummy);
-        delete dummy;
     }
 
     //! \brief Returns the associated component.
@@ -239,26 +149,7 @@ namespace Caneda
         return static_cast<Component*>(parentItem());
     }
 
-    /*!
-     * \brief Draws the PropertyDisplay bounding rect to painter.
-     *
-     * This method is empty to avoid drawing a selection rectangle around
-     * property items in the scene. The selection state is instead
-     * handled by PropertyDisplayItem::paint() method, changing the properties'
-     * color according to the global selection pen.
-     *
-     * \sa PropertyDisplayItem::paint()
-     */
-    void PropertyDisplay::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-            QWidget *widget)
-    {
-    }
-
-    /*!
-     * \brief Deselect other items on mouse click.
-     *
-     * Deselects selected items other than this, and also clears focus of children items
-     */
+    //! \brief On mouse click deselect selected items other than this.
     void PropertyDisplay::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         if(scene()) {
@@ -269,13 +160,7 @@ namespace Caneda
             }
         }
 
-        foreach(PropertyDisplayItem *p, m_propertyDisplayItemsMap) {
-            if(p->hasFocus()) {
-                p->clearFocus();
-            }
-        }
-
-        QGraphicsItemGroup::mousePressEvent(event);
+        QGraphicsSimpleTextItem::mousePressEvent(event);
     }
 
     //! \brief Launches property dialog on double click.
