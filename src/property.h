@@ -22,8 +22,7 @@
 #define PROPERTY_H
 
 #include <QSharedData>
-#include <QStringList>
-#include <QVariant>
+#include <QString>
 
 namespace Caneda
 {
@@ -100,12 +99,6 @@ namespace Caneda
         //! Pointer enabling implicit sharing of data.
         QSharedDataPointer<PropertyData> d;
     };
-
-    //! \def PropertyMap This is typedef for map of string and property.
-    typedef QMap<QString, Property> PropertyMap;
-
-    void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& prMap);
-    void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap);
 
 } // namespace Caneda
 

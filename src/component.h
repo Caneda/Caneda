@@ -23,6 +23,7 @@
 
 #include "cgraphicsitem.h"
 #include "property.h"
+#include "propertygroup.h"
 
 namespace Caneda
 {

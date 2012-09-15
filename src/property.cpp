@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -110,54 +111,6 @@ namespace Caneda
         }
 
         return Property(data);
-    }
-
-    //! \brief Helper function to write all properties in \a propMap in xml.
-    void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& propMap)
-    {
-        writer->writeStartElement("properties");
-        foreach(const Property p, propMap) {
-            writer->writeEmptyElement("property");
-            writer->writeAttribute("name", p.name());
-            writer->writeAttribute("value", p.value());
-            writer->writeAttribute("visible", Caneda::boolToString(p.isVisible()));
-        }
-        writer->writeEndElement(); // </properties>
-    }
-
-    //! \brief Helper function to read the saved properties into \a propMap.
-    void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap)
-    {
-        Q_ASSERT(reader->isStartElement() && reader->name() == "properties");
-
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                if(reader->name() == "property") {
-                    QXmlStreamAttributes attribs(reader->attributes());
-                    QString propName = attribs.value("name").toString();
-                    if(!propMap.contains(propName)) {
-                        qWarning() << "readProperties() : " << "Property " << propName
-                                   << "not found in map!";
-                    }
-                    else {
-                        Property &prop = propMap[propName];
-                        prop.setValue(attribs.value("value").toString());
-                        prop.setVisible(attribs.value("visible") == "true");
-                    }
-                    // Read till end element
-                    reader->readUnknownElement();
-                }
-                else {
-                    reader->readUnknownElement();
-                }
-            }
-        }
     }
 
 } // namespace Caneda
