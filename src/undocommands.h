@@ -21,12 +21,11 @@
 #ifndef UNDO_COMMANDS_H
 #define UNDO_COMMANDS_H
 
-#include "component.h"
+#include "propertygroup.h"
 #include "wire.h"
 
 #include <QPair>
 #include <QUndoCommand>
-#include <QVariant>
 
 namespace Caneda
 {
@@ -98,8 +97,7 @@ namespace Caneda
     class WireStateChangeCmd : public QUndoCommand
     {
     public:
-        typedef Wire::Data WireData;
-        WireStateChangeCmd(Wire *wire,WireData initState, WireData finalState,
+        WireStateChangeCmd(Wire *wire, WireData initState, WireData finalState,
                 QUndoCommand *parent = 0);
 
         void undo();
@@ -107,7 +105,7 @@ namespace Caneda
 
     private:
         Wire *m_wire;
-        Wire::Data m_initState, m_finalState;
+        WireData m_initState, m_finalState;
     };
 
     class InsertItemCmd : public QUndoCommand

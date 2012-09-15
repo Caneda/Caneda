@@ -31,17 +31,18 @@ namespace Caneda
     class CGraphicsItem;
     class CGraphicsScene;
 
+    //! Shareable wire's data
+    struct WireData
+    {
+        QPointF port1Pos;
+        QPointF port2Pos;
+    };
+
     //! \brief This class represents a wire on schematic.
     class Wire : public CGraphicsItem
     {
     public:
         enum { Type = CGraphicsItem::WireType };
-
-        //! A struct to store wire's details.
-        struct Data {
-            QPointF port1Pos;
-            QPointF port2Pos;
-        };
 
         Wire(const QPointF &startPos, const QPointF &endPos,
                 CGraphicsScene *scene = 0);
@@ -88,10 +89,10 @@ namespace Caneda
         bool isComponent() const { return false; }
         bool isWire() const { return true; }
 
-        Wire::Data storedState() const;
+        WireData storedState() const;
         void storeState();
-        void setState(Data state);
-        Data currentState() const;
+        void setState(WireData state);
+        WireData currentState() const;
 
         static Wire* loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void saveData(Caneda::XmlWriter *writer, int id=-1) const;
@@ -101,7 +102,7 @@ namespace Caneda
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     private:
-        Wire::Data store; //!< Stores the wire data when needed(undo/redo).
+        WireData store; //!< Stores the wire data when needed(undo/redo).
     };
 
 } // namespace Caneda

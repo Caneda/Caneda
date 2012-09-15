@@ -255,7 +255,7 @@ namespace Caneda
      void Wire::copyDataTo(Wire *wire) const
      {
          CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(wire));
-         Wire::Data _data;
+         WireData _data;
 
          _data.port1Pos = port1()->pos();
          _data.port2Pos = port2()->pos();
@@ -264,7 +264,7 @@ namespace Caneda
      }
 
     //! \brief Returns the wire's stored status. Required for undo/redo.
-    Wire::Data Wire::storedState() const
+    WireData Wire::storedState() const
     {
         return store;
     }
@@ -277,7 +277,7 @@ namespace Caneda
     }
 
     //! \brief Set's the wire status to \a state. Required for undo/redo.
-    void Wire::setState(Wire::Data state)
+    void Wire::setState(WireData state)
     {
         port1()->setPos(state.port1Pos);
         port2()->setPos(state.port2Pos);
@@ -285,9 +285,9 @@ namespace Caneda
     }
 
     //! \brief Returns current wire status. Required for undo/redo.
-    Wire::Data Wire::currentState() const
+    WireData Wire::currentState() const
     {
-        Wire::Data retVal;
+        WireData retVal;
         retVal.port1Pos = port1()->pos();
         retVal.port2Pos = port2()->pos();
         return retVal;

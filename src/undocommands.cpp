@@ -21,6 +21,7 @@
 #include "undocommands.h"
 
 #include "cgraphicsscene.h"
+#include "component.h"
 #include "port.h"
 #include "xmlutilities.h"
 
