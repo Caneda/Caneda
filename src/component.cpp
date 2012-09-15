@@ -35,18 +35,54 @@
 namespace Caneda
 {
     //! \brief Constructs default empty ComponentData.
-    ComponentData::ComponentData()
+    ComponentData::ComponentData(CGraphicsScene *scene)
     {
-        properties = new PropertyGroup();
+        if(scene) {
+            properties = new PropertyGroup(scene);
+        }
+        else {
+            properties = new PropertyGroup();
+        }
+    }
+
+    /*!
+     * \brief Constructs ComponentData from ComponentDataPtr.
+     *
+     * Contructs a new ComponentData object from ComponentDataPtr. Special
+     * care is taken to avoid copying the properties pointer, and copying
+     * properties content (PropertyMap) instead. Otherwise, one would be
+     * copying the reference to the PropertyGroup (properties) and all
+     * components would share only one reference, modifying only one set
+     * of properties data.
+     */
+    ComponentData::ComponentData(const QSharedDataPointer<ComponentData> &other, CGraphicsScene *scene)
+    {
+        // Copy all data from given ComponentDataPtr
+        name = other->name;
+        filename = other->filename;
+        displayText = other->displayText;
+        labelPrefix = other->labelPrefix;
+        description = other->description;
+        library = other->library;
+        ports = other->ports;
+
+        // Recreate PropertyGroup (properties) as it is a pointer
+        // and only internal data must be copied.
+        if(scene) {
+            properties = new PropertyGroup(scene);
+        }
+        else {
+            properties = new PropertyGroup();
+        }
+
+        properties->setPropertyMap(other->properties->propertyMap());
     }
 
     //! \brief Constructs and initializes a default empty component item.
     Component::Component(CGraphicsScene *scene) :
         CGraphicsItem(0, scene)
     {
-        d = new ComponentData();
-        d->properties = new PropertyGroup(cGraphicsScene());
-
+        d = new ComponentData(cGraphicsScene());
         init();
     }
 
@@ -54,10 +90,7 @@ namespace Caneda
     Component::Component(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene) :
         CGraphicsItem(0, scene)
     {
-        d = other;
-        d->properties = new PropertyGroup(cGraphicsScene());
-        d->properties->setPropertyMap(other->properties->propertyMap());
-
+        d = new ComponentData(other, cGraphicsScene());
         init();
     }
 
@@ -297,10 +330,7 @@ namespace Caneda
     void Component::copyDataTo(Component *component) const
     {
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(component));
-        component->d = d;
-        component->d->properties = new PropertyGroup(cGraphicsScene());
-        component->d->properties->setPropertyMap(d->properties->propertyMap());
-
+        component->d = new ComponentData(d, cGraphicsScene());
         component->update();
     }
 

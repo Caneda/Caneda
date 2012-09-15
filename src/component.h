@@ -34,7 +34,8 @@ namespace Caneda
     //! Shareable component's data
     struct ComponentData : public QSharedData
     {
-        ComponentData();
+        ComponentData(CGraphicsScene *scene = 0);
+        ComponentData(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene = 0);
 
         //! Static properties
         QString name;
