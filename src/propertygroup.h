@@ -22,13 +22,15 @@
 
 #include "property.h"
 
+#include <QGraphicsSimpleTextItem>
 #include <QMap>
+#include <QObject>
 #include <QString>
 
 namespace Caneda
 {
     //Forward declarations
-    class PropertyDisplay;
+    class CGraphicsScene;
     class XmlWriter;
     class XmlReader;
 
@@ -36,7 +38,8 @@ namespace Caneda
     typedef QMap<QString, Property> PropertyMap;
 
     /*!
-     * \brief This class groups properties all together.
+     * \brief Class used to group properties all together and render
+     * them on a scene.
      *
      * Gouping all properties of a component into a QMap (m_propertyMap)
      * provides a convenient way of handling them all together. In this
@@ -44,17 +47,18 @@ namespace Caneda
      * all at once.
      *
      * While Property class holds actual properties, PropertyGroup class
-     * groups them all together and PropertyDisplay class is the object
-     * that renders them on a scene, allowing selection and moving of all
-     * properties at once.
+     * groups them all together and renders them on a scene, allowing
+     * selection and moving of all properties at once.
      *
-     * \sa PropertyData, Property, PropertyDisplay
+     * \sa PropertyData, Property
      */
-    class PropertyGroup
+    class PropertyGroup : public QObject, public QGraphicsSimpleTextItem
     {
+        Q_OBJECT
+
     public:
-        PropertyGroup(PropertyMap propertyMap = PropertyMap());
-        ~PropertyGroup();
+        PropertyGroup(CGraphicsScene *scene = 0);
+        ~PropertyGroup() {}
 
         //! Returns selected property from property map.
         QString property(const QString& value) { return m_propertyMap[value].value(); }
@@ -65,19 +69,20 @@ namespace Caneda
         PropertyMap propertyMap() const { return m_propertyMap; }
         void setPropertyMap(const PropertyMap& propMap);
 
-        //! Returns property group of the component.
-        PropertyDisplay* propertyDisplay() const { return m_propertyDisplay; }
         void updatePropertyDisplay();
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                QWidget *widget = 0 );
 
         void writeProperties(Caneda::XmlWriter *writer);
         void readProperties(Caneda::XmlReader *reader);
 
+    protected:
+        void mousePressEvent(QGraphicsSceneMouseEvent *event);
+        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
     private:
         //! \brief QMap holding actual properties.
         PropertyMap m_propertyMap;
-
-        //! \brief Property display of this PropertyGroup
-        PropertyDisplay *m_propertyDisplay;
     };
 
     void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& propMap);

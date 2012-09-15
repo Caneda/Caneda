@@ -36,7 +36,7 @@ SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   propertydisplay.h component.h sidebarmodel.h
   folderbrowser.h project.h actionmanager.h singletonowner.h statehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
-  syntaxhighlighters.h clineedit.h
+  syntaxhighlighters.h clineedit.h propertygroup.h
   schematicdocument.h schematiccontext.h schematicview.h
   simulationdocument.h simulationcontext.h simulationview.h simulationscene.h
   symboldocument.h symbolcontext.h symbolview.h

@@ -19,24 +19,30 @@
 
 #include "propertygroup.h"
 
+#include "cgraphicsscene.h"
+#include "component.h"
 #include "global.h"
-#include "propertydisplay.h"
+#include "settings.h"
 #include "xmlutilities.h"
 
 #include <QDebug>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 namespace Caneda
 {
-    //! \brief Construct PropertyGroup from given QMap.
-    PropertyGroup::PropertyGroup(PropertyMap propertyMap) :
-        m_propertyMap(propertyMap), m_propertyDisplay(0)
+    /*!
+     * \brief Construct PropertyGroup from given scene and PropertyMap.
+     *
+     * \param scene The graphics scene to which this property should belong.
+     */
+    PropertyGroup::PropertyGroup(CGraphicsScene *scene)
     {
-    }
+        m_propertyMap = PropertyMap();
 
-    //! \brief Destructor.
-    PropertyGroup::~PropertyGroup()
-    {
-        delete m_propertyDisplay;
+        if(scene) {
+            scene->addItem(this);
+        }
     }
 
     //! \brief Adds new property to PropertyMap.
@@ -54,18 +60,17 @@ namespace Caneda
     }
 
     /*!
-     * \brief Set the component's properties' values.
+     * \brief Set all properties values through a PropertyMap.
      *
-     * This method sets the properties' values by updating the propertyMap
+     * This method sets the properties values by updating the propertyMap
      * to \a propMap.
      *
      * After setting the propertyMap, this method takes care of updating
-     * the PropertyDisplay (which is the class that displays properties on
-     * a scene).
+     * the properties display on a scene.
      *
      * \param propMap The new property map to be set.
      *
-     * \sa Property, PropertyMap, updatePropertyDisplay(), PropertyDisplay
+     * \sa Property, PropertyMap, updatePropertyDisplay()
      */
     void PropertyGroup::setPropertyMap(const PropertyMap& propMap)
     {
@@ -74,13 +79,15 @@ namespace Caneda
     }
 
     /*!
-     * \brief Updates properties' display on a scene (schematic).
+     * \brief Updates the visual display of all the properties in the PropertyGroup.
      *
-     * This method updates properties' display on a scene. It also takes
-     * care of creating a new PropertyDisplay if it didn't exist before
-     * and deletes it if none of the properties are visible.
+     * This method is key to alter the visual display text of given properties. It
+     * should be called wherever a property changes.
      *
-     * \sa PropertyDisplay, PropertyDisplay::updateProperties()
+     * To update the visual display, it recreates all individual properties display
+     * from the group and then adds them to the plaintext property of this item (if
+     * the given property is visible). This method also updates the visible value of
+     * the property.
      */
     void PropertyGroup::updatePropertyDisplay()
     {
@@ -97,22 +104,98 @@ namespace Caneda
             ++it;
         }
 
-        // Delete the group if none of the properties are visible.
+        // Hide the display if none of the properties are visible.
         if(!itemsVisible) {
-            delete m_propertyDisplay;
-            m_propertyDisplay = 0;
+            hide();
             return;
         }
 
-        // If m_propertyDisplay = 0 create a new PopertyDisplay, else
-        // just update it calling PopertyDisplay::updateProperties()
-        if(!m_propertyDisplay) {
-            m_propertyDisplay = new PropertyDisplay();
-//            m_propertyDisplay->setParentItem(this);
-//            m_propertyDisplay->setTransform(transform().inverted());
+        // Update parent item and transform
+//        setParentItem(this->parent());
+        setTransform(transform().inverted());
+
+        // If created for the first time (boundingRect == null), set text position
+        if(boundingRect().isNull()) {
+            setPos(parentItem()->boundingRect().bottomLeft());
         }
 
-        m_propertyDisplay->updateProperties();
+        QString newValue;  // New value to set
+
+        // Iterate through all properties to add its values
+        foreach(const Property property, m_propertyMap) {
+            if(property.isVisible()) {
+
+                QString propertyText = "";  // Current property text
+
+                // Add property name (except for the label property)
+                if(!property.name().startsWith("label", Qt::CaseInsensitive)) {
+                    propertyText = property.name() + " = ";
+                }
+
+                // Add property value
+                propertyText.append(property.value());
+
+                // Add the property to the group
+                if(!newValue.isEmpty()) {
+                    newValue.append("\n");  // If already has properties, add newline
+                }
+                newValue.append(propertyText);
+            }
+        }
+
+        // Set new properties values
+        setText(newValue);
+
+        if(text().isEmpty()) {
+            // Disables moving, selection and focussing of empty PropertyGroups
+            setFlags(0);
+            setFlag(ItemSendsGeometryChanges, true);
+            setFlag(ItemSendsScenePositionChanges, true);
+        }
+        else {
+            setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+            setFlag(ItemSendsGeometryChanges, true);
+            setFlag(ItemSendsScenePositionChanges, true);
+        }
+
+    }
+
+    /*!
+     * \brief Draws the PropertyGroup to painter.
+     *
+     * This method draws the PropertyGroup contents on a scene. The pen color
+     * changes according to the selection state, thus giving state feedback to
+     * the user.
+     *
+     * The selection rectangle around all PropertyGroup contents is handled by
+     * this method. Currently, no selection rectangle around property items is
+     * drawn, although it could change in the future (acording to user's feedback).
+     * In that case, this class bounding rect should be used. The selection state
+     * is instead handled by changing the properties' pen color according to the
+     * global selection pen.
+     */
+    void PropertyGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+            QWidget *widget)
+    {
+        // Save pen
+        QPen savedPen = painter->pen();
+
+        // Set global pen settings
+        Settings *settings = Settings::instance();
+        if(isSelected()) {
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+        }
+        else {
+            painter->setPen(QPen(settings->currentValue("gui/foregroundColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+        }
+
+        // Paint the property text
+        painter->drawText(boundingRect(), text());
+
+        // Restore pen
+        painter->setPen(savedPen);
     }
 
     //! \brief Helper method to write all properties in \a m_propertyMap to xml.
@@ -161,6 +244,27 @@ namespace Caneda
                 }
             }
         }
+    }
+
+    //! \brief On mouse click deselect selected items other than this.
+    void PropertyGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
+    {
+        if(scene()) {
+            foreach(QGraphicsItem *item, scene()->selectedItems()) {
+                if(item != this) {
+                    item->setSelected(false);
+                }
+            }
+        }
+
+        QGraphicsSimpleTextItem::mousePressEvent(event);
+    }
+
+    //! \brief Launches property dialog on double click.
+    void PropertyGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
+    {
+        Component *comp = static_cast<Component*>(parentItem());
+        comp->launchPropertyDialog(Caneda::PushUndoCmd);
     }
 
     //! \brief Helper function to write all properties in \a propMap in xml.
