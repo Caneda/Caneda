@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -177,10 +178,10 @@ namespace Caneda
     /*!
      * \brief Constructor
      *
-     * \param comp The component to create de properties dialog for.
+     * \param propGroup The PropertyGroup being modified by this dialog.
      */
-    PropertyDialog::PropertyDialog(Component *comp, QWidget *parent) :
-        QDialog(parent), m_component(comp)
+    PropertyDialog::PropertyDialog(PropertyGroup *propGroup, QWidget *parent) :
+        QDialog(parent), m_propertyGroup(propGroup)
     {
         ui.setupUi(this);
 
@@ -189,7 +190,7 @@ namespace Caneda
         ui.m_clearButton->setWhatsThis(
                 tr("Clear Filter Text\n\nClears the filter text thus reshowing all properties"));
 
-        m_model = new PropertyModel(m_component->propertyMap(), this);
+        m_model = new PropertyModel(m_propertyGroup->propertyMap(), this);
 
         m_proxyModel = new QSortFilterProxyModel(this);
         m_proxyModel->setDynamicSortFilter(true);
@@ -207,7 +208,7 @@ namespace Caneda
 
     void PropertyDialog::accept()
     {
-        PropertyMapCmd *cmd = new PropertyMapCmd(m_component, m_component->propertyMap(),
+        PropertyMapCmd *cmd = new PropertyMapCmd(m_propertyGroup, m_propertyGroup->propertyMap(),
                 m_model->propMap);
 
         DocumentViewManager *manager = DocumentViewManager::instance();

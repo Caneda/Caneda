@@ -219,14 +219,14 @@ namespace Caneda
     class PropertyMapCmd : public QUndoCommand
     {
     public:
-        PropertyMapCmd(Component *comp, const PropertyMap& old, const PropertyMap& newMap,
+        PropertyMapCmd(PropertyGroup *propGroup, const PropertyMap& old, const PropertyMap& newMap,
                 QUndoCommand *parent = 0);
 
         void undo();
         void redo();
 
     private:
-        Component *m_component;
+        PropertyGroup *m_propertyGroup;
         PropertyMap m_oldMap;
         PropertyMap m_newMap;
     };

@@ -26,7 +26,7 @@
 #include "documentviewmanager.h"
 #include "iview.h"
 #include "library.h"
-#include "propertydisplay.h"
+#include "propertygroup.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -564,9 +564,7 @@ namespace Caneda
             // Replace by item->prepareForInsertion()
             if(item->isComponent()) {
                 Component *comp = canedaitem_cast<Component*>(item);
-                if(comp->propertyDisplay()) {
-                    comp->propertyDisplay()->hide();
-                }
+                comp->properties()->hide();
             }
         }
     }

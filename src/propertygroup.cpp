@@ -20,10 +20,11 @@
 #include "propertygroup.h"
 
 #include "cgraphicsscene.h"
-#include "component.h"
 #include "global.h"
 #include "settings.h"
 #include "xmlutilities.h"
+
+#include "dialogs/propertydialog.h"
 
 #include <QDebug>
 #include <QPainter>
@@ -35,38 +36,44 @@ namespace Caneda
      * \brief Construct PropertyGroup from given scene and PropertyMap.
      *
      * \param scene The graphics scene to which this property should belong.
+     * \param propMap The PropertyMap to use on initialization.
      */
-    PropertyGroup::PropertyGroup(CGraphicsScene *scene)
+    PropertyGroup::PropertyGroup(CGraphicsScene *scene, const PropertyMap &propMap)
     {
-        m_propertyMap = PropertyMap();
+        m_propertyMap = propMap;
 
         if(scene) {
             scene->addItem(this);
         }
+
+        // Set items flags
+        setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+        setFlag(ItemSendsGeometryChanges, true);
+        setFlag(ItemSendsScenePositionChanges, true);
     }
 
-    //! \brief Adds new property to PropertyMap.
+    //! \brief Adds a new property to the PropertyMap.
     void PropertyGroup::addProperty(const QString& key, const Property &prop)
     {
         m_propertyMap.insert(key, prop);
         updatePropertyDisplay();  // This is neccessary to update the properties display on a scene
     }
 
-    //! \brief Sets \a key property to \a value in the PropertyMap.
-    void PropertyGroup::setProperty(const QString& key, const QString& value)
+    //! \brief Sets property \a key to \a value in the PropertyMap.
+    void PropertyGroup::setPropertyValue(const QString& key, const QString& value)
     {
-        m_propertyMap[key].setValue(value);
-        updatePropertyDisplay();  // This is neccessary to update the properties display on a scene
+        if(m_propertyMap.contains(key)) {
+            m_propertyMap[key].setValue(value);
+            updatePropertyDisplay();  // This is neccessary to update the properties display on a scene
+        }
     }
 
     /*!
-     * \brief Set all properties values through a PropertyMap.
+     * \brief Set all the properties values through a PropertyMap.
      *
      * This method sets the properties values by updating the propertyMap
-     * to \a propMap.
-     *
-     * After setting the propertyMap, this method takes care of updating
-     * the properties display on a scene.
+     * to \a propMap. After setting the propertyMap, this method also takes
+     * care of updating the properties display on the scene.
      *
      * \param propMap The new property map to be set.
      *
@@ -94,14 +101,11 @@ namespace Caneda
         bool itemsVisible = false;
 
         // Determine if any item is visible.
-        PropertyMap::const_iterator it = m_propertyMap.constBegin(),
-            end = m_propertyMap.constEnd();
-        while(it != end) {
-            if(it->isVisible()) {
-                itemsVisible = true;
-                break;
+        foreach(const Property property, m_propertyMap) {
+            if(property.isVisible()) {
+                 itemsVisible = true;
+                 break;
             }
-            ++it;
         }
 
         // Hide the display if none of the properties are visible.
@@ -110,15 +114,7 @@ namespace Caneda
             return;
         }
 
-        // Update parent item and transform
-//        setParentItem(this->parent());
-        setTransform(transform().inverted());
-
-        // If created for the first time (boundingRect == null), set text position
-        if(boundingRect().isNull()) {
-            setPos(parentItem()->boundingRect().bottomLeft());
-        }
-
+        // Else update its value, and make visible (show()).
         QString newValue;  // New value to set
 
         // Iterate through all properties to add its values
@@ -146,18 +142,8 @@ namespace Caneda
         // Set new properties values
         setText(newValue);
 
-        if(text().isEmpty()) {
-            // Disables moving, selection and focussing of empty PropertyGroups
-            setFlags(0);
-            setFlag(ItemSendsGeometryChanges, true);
-            setFlag(ItemSendsScenePositionChanges, true);
-        }
-        else {
-            setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-            setFlag(ItemSendsGeometryChanges, true);
-            setFlag(ItemSendsScenePositionChanges, true);
-        }
-
+        // Make item visible
+        show();
     }
 
     /*!
@@ -244,6 +230,8 @@ namespace Caneda
                 }
             }
         }
+
+        updatePropertyDisplay();
     }
 
     //! \brief On mouse click deselect selected items other than this.
@@ -263,56 +251,9 @@ namespace Caneda
     //! \brief Launches property dialog on double click.
     void PropertyGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
     {
-        Component *comp = static_cast<Component*>(parentItem());
-        comp->launchPropertyDialog(Caneda::PushUndoCmd);
-    }
-
-    //! \brief Helper function to write all properties in \a propMap in xml.
-    void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& propMap)
-    {
-        writer->writeStartElement("properties");
-        foreach(const Property p, propMap) {
-            writer->writeEmptyElement("property");
-            writer->writeAttribute("name", p.name());
-            writer->writeAttribute("value", p.value());
-            writer->writeAttribute("visible", Caneda::boolToString(p.isVisible()));
-        }
-        writer->writeEndElement(); // </properties>
-    }
-
-    //! \brief Helper function to read the saved properties into \a propMap.
-    void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap)
-    {
-        Q_ASSERT(reader->isStartElement() && reader->name() == "properties");
-
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                if(reader->name() == "property") {
-                    QXmlStreamAttributes attribs(reader->attributes());
-                    QString propName = attribs.value("name").toString();
-                    if(!propMap.contains(propName)) {
-                        qWarning() << "readProperties() : " << "Property " << propName
-                                   << "not found in map!";
-                    }
-                    else {
-                        Property &prop = propMap[propName];
-                        prop.setValue(attribs.value("value").toString());
-                        prop.setVisible(attribs.value("visible") == "true");
-                    }
-                    // Read till end element
-                    reader->readUnknownElement();
-                }
-                else {
-                    reader->readUnknownElement();
-                }
-            }
-        }
+        PropertyDialog *dia = new PropertyDialog(this);
+        dia->exec();
+        delete dia;
     }
 
 } // namespace Caneda

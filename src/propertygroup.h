@@ -41,9 +41,9 @@ namespace Caneda
      * \brief Class used to group properties all together and render
      * them on a scene.
      *
-     * Gouping all properties of a component into a QMap (m_propertyMap)
-     * provides a convenient way of handling them all together. In this
-     * way, the properties of a component can be selected and moved
+     * Gouping several properties into a QMap (m_propertyMap) provides
+     * a convenient way of handling them all together. In this way, for
+     * example, the properties of a component can be selected and moved
      * all at once.
      *
      * While Property class holds actual properties, PropertyGroup class
@@ -57,13 +57,13 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PropertyGroup(CGraphicsScene *scene = 0);
+        PropertyGroup(CGraphicsScene* scene = 0, const PropertyMap& propMap = PropertyMap());
         ~PropertyGroup() {}
 
-        //! Returns selected property from property map.
-        QString property(const QString& value) { return m_propertyMap[value].value(); }
         void addProperty(const QString& key, const Property& prop);
-        void setProperty(const QString& key, const QString& value);
+        //! Returns selected property from property map.
+        QString propertyValue(const QString& value) const { return m_propertyMap[value].value(); }
+        void setPropertyValue(const QString& key, const QString& value);
 
         //! Returns the property map (actually a copy of property map).
         PropertyMap propertyMap() const { return m_propertyMap; }
@@ -84,9 +84,6 @@ namespace Caneda
         //! \brief QMap holding actual properties.
         PropertyMap m_propertyMap;
     };
-
-    void writeProperties(Caneda::XmlWriter *writer, const PropertyMap& propMap);
-    void readProperties(Caneda::XmlReader *reader, PropertyMap &propMap);
 
 } // namespace Caneda
 

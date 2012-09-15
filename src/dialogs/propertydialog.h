@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,8 +23,8 @@
 
 #include "ui_propertydialog.h"
 
-#include "component.h"
 #include "property.h"
+#include "propertygroup.h"
 
 #include <QAbstractTableModel>
 #include <QItemDelegate>
@@ -34,9 +35,6 @@ class QSortFilterProxyModel;
 
 namespace Caneda
 {
-    // Forward declarations.
-    class Component;
-
     typedef QModelIndex& IndexRef;
     typedef const QModelIndex& IndexConstRef;
 
@@ -88,18 +86,18 @@ namespace Caneda
      *
      * This dialog presents to the user the properties of the selected
      * component/scene. By default, properties are presented with a
-     * QLineEdit. For better representation it is recommended for
-     * components to have string properties rather than numeric. In
-     * this way, the user can use prefixes, like 'p' for pico, 'u' for
-     * micro, etc. Even parametric properties could be used as string
-     * properties, using for example brackets as in '{R}'.
+     * QLineEdit. For better representation it is recommended to have
+     * string properties rather than numeric. In this way, the user can
+     * use prefixes, like 'p' for pico, 'u' for micro, etc. Even
+     * parametric properties could be used as string properties, using
+     * for example brackets as in '{R}'.
      */
     class PropertyDialog : public QDialog
     {
         Q_OBJECT
 
     public:
-        PropertyDialog(Component *comp, QWidget *parent = 0);
+        PropertyDialog(PropertyGroup *propGroup, QWidget *parent = 0);
 
     public Q_SLOTS:
         void accept();
@@ -111,7 +109,7 @@ namespace Caneda
         PropertyModel *m_model;
         QSortFilterProxyModel *m_proxyModel;
 
-        Component *m_component;
+        PropertyGroup *m_propertyGroup;
 
         Ui::PropertyDialog ui;
     };

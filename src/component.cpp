@@ -23,7 +23,6 @@
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "library.h"
-#include "propertydisplay.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -35,26 +34,36 @@
 
 namespace Caneda
 {
+    //! \brief Constructs default empty ComponentData.
+    ComponentData::ComponentData()
+    {
+        properties = new PropertyGroup();
+    }
+
     //! \brief Constructs and initializes a default empty component item.
     Component::Component(CGraphicsScene *scene) :
-        CGraphicsItem(0, scene),
-        d(new ComponentData()), m_propertyDisplay(0)
+        CGraphicsItem(0, scene)
     {
+        d = new ComponentData();
+        d->properties = new PropertyGroup(cGraphicsScene());
+
         init();
     }
 
     //! \brief Constructs a component from \a other data.
     Component::Component(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene) :
-        CGraphicsItem(0, scene),
-        d(other), m_propertyDisplay(0)
+        CGraphicsItem(0, scene)
     {
+        d = other;
+        d->properties = new PropertyGroup(cGraphicsScene());
+        d->properties->setPropertyMap(other->properties->propertyMap());
+
         init();
     }
 
     //! \brief Destructor.
     Component::~Component()
     {
-        delete m_propertyDisplay;
         qDeleteAll(m_ports);
     }
 
@@ -69,62 +78,28 @@ namespace Caneda
      */
     void Component::init()
     {
+        // Set component flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
+        // Add component label
         Property _label("label", labelPrefix().append('1'), tr("Label"), true);
-        d->propertyMap.insert("label", _label);
+        d->properties->addProperty("label", _label);
 
+        // Add component ports
         const QList<PortData*> portDatas = d.constData()->ports;
         foreach(const PortData *data, portDatas) {
             m_ports << new Port(this, data->pos, data->name);
         }
 
+        // Update component geometry
         updateBoundingRect();
-        updatePropertyDisplay();
-    }
 
-    /*!
-     * \brief Updates properties' display on a scene (schematic).
-     *
-     * This method updates properties' display on a scene. It also takes
-     * care of creating a new PropertyDisplay if it didn't exist before
-     * and deletes it if none of the properties are visible.
-     *
-     * \sa PropertyDisplay, PropertyDisplay::update()
-     */
-    void Component::updatePropertyDisplay()
-    {
-        bool itemsVisible = false;
-
-        // Determine if any item is visible.
-        PropertyMap::const_iterator it = propertyMap().constBegin(),
-            end = propertyMap().constEnd();
-        while(it != end) {
-            if(it->isVisible()) {
-                itemsVisible = true;
-                break;
-            }
-            ++it;
-        }
-
-        // Delete the group if none of the properties are visible.
-        if(!itemsVisible) {
-            delete m_propertyDisplay;
-            m_propertyDisplay = 0;
-            return;
-        }
-
-        // If m_propertyDisplay=0 create a new PopertyDisplay, else
-        // just update it calling PopertyDisplay::updateProperties()
-        if(!m_propertyDisplay) {
-            m_propertyDisplay = new PropertyDisplay(cGraphicsScene());
-            m_propertyDisplay->setParentItem(this);
-            m_propertyDisplay->setTransform(transform().inverted());
-        }
-
-        m_propertyDisplay->updateProperties();
+        // Update properties text position
+        d->properties->setParentItem(this);
+        d->properties->setTransform(transform().inverted());
+        d->properties->setPos(boundingRect().bottomLeft());
     }
 
     /*!
@@ -139,15 +114,11 @@ namespace Caneda
      */
     bool Component::setLabel(const QString& newLabel)
     {
-        Q_ASSERT_X(propertyMap().contains("label"),
-                __FUNCTION__, "label property not found");
-
         if(!newLabel.startsWith(labelPrefix())) {
             return false;
         }
 
-        d->propertyMap["label"].setValue(newLabel);
-        updatePropertyDisplay();
+        d->properties->setPropertyValue("label", newLabel);
         return true;
     }
 
@@ -156,26 +127,6 @@ namespace Caneda
     {
         QString _label = label();
         return _label.mid(labelPrefix().length());
-    }
-
-    /*!
-     * \brief Set the component's properties' values.
-     *
-     * This method sets the component's properties' values by updating
-     * its propertyMap to \a propMap.
-     *
-     * First it sets the propertyMap of this component and then takes
-     * care of updating the PropertyDisplay (which is the class that displays
-     * properties on a scene).
-     *
-     * \param propMap The new property map to be set.
-     *
-     * \sa Property, PropertyMap, updatePropertyDisplay(), PropertyDisplay
-     */
-    void Component::setPropertyMap(const PropertyMap& propMap)
-    {
-        d->propertyMap = propMap;
-        updatePropertyDisplay();  // This is neccessary to update the properties display on a scene
     }
 
     /*!
@@ -241,18 +192,14 @@ namespace Caneda
                 }
                 else if(reader->name() == "propertyPos") {
                     QPointF point = reader->readPoint();
-                    if(m_propertyDisplay) {
-                        m_propertyDisplay->setPos(point);
-                    }
+                    d->properties->setPos(point);
                 }
                 else if(reader->name() == "transform") {
                     setTransform(reader->readTransform());
                 }
                 else if(reader->name() == "properties") {
                     // Note the usage as it expects reference of property map.
-                    readProperties(reader, d->propertyMap);
-                    // This updates the visual representation appropriately.
-                    setPropertyMap(d->propertyMap);
+                    d->properties->readProperties(reader);
                 }
                 else {
                     qWarning() << "Warning: Found unknown element" << reader->name().toString();
@@ -277,12 +224,10 @@ namespace Caneda
         writer->writeAttribute("library", library());
 
         writer->writePoint(pos(), "pos");
-        if(m_propertyDisplay) {
-            writer->writePoint(m_propertyDisplay->pos(), "propertyPos");
-        }
+        writer->writePoint(d->properties->pos(), "propertyPos");
 
         writer->writeTransform(transform());
-        writeProperties(writer, d.constData()->propertyMap);
+        d->properties->writeProperties(writer);
 
         writer->writeEndElement();  //</component>
     }
@@ -345,7 +290,6 @@ namespace Caneda
         Component *retVal = new Component(d, scene);
         // No need for Component::copyDataTo() because data is already copied from d pointer.
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
-        retVal->updatePropertyDisplay();
         return retVal;
     }
 
@@ -354,14 +298,16 @@ namespace Caneda
     {
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(component));
         component->d = d;
-        component->updatePropertyDisplay();
+        component->d->properties = new PropertyGroup(cGraphicsScene());
+        component->d->properties->setPropertyMap(d->properties->propertyMap());
+
         component->update();
     }
 
     //! \copydoc CGraphicsItem::launchPropertyDialog()
     int Component::launchPropertyDialog(Caneda::UndoOption)
     {
-        PropertyDialog *dia = new PropertyDialog(this);
+        PropertyDialog *dia = new PropertyDialog(d->properties);
         int status = dia->exec();
         delete dia;
 
@@ -382,10 +328,10 @@ namespace Caneda
     QVariant Component::itemChange(GraphicsItemChange change,
             const QVariant &value)
     {
-        if(change == ItemTransformHasChanged && m_propertyDisplay) {
-            // Set the inverse of component's matrix to property group so that
-            // it maintains identity when transformed.
-            m_propertyDisplay->setTransform(transform().inverted());
+        if(change == ItemTransformHasChanged) {
+            // Set the inverse of component's matrix to the PropertyGroup
+            // (properties) so that it maintains identity when transformed.
+            d->properties->setTransform(transform().inverted());
         }
         return CGraphicsItem::itemChange(change, value);
     }

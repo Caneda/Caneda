@@ -22,19 +22,19 @@
 #define QCOMPONENT_H
 
 #include "cgraphicsitem.h"
-#include "property.h"
+//#include "property.h"
 #include "propertygroup.h"
 
 namespace Caneda
 {
     // Forward declarations
-    class PropertyDisplay;
+    class PropertyGroup;
     class PortData;
 
     //! Shareable component's data
     struct ComponentData : public QSharedData
     {
-        ComponentData() {}
+        ComponentData();
 
         //! Static properties
         QString name;
@@ -44,11 +44,15 @@ namespace Caneda
         QString description;
         QString library;
 
+        /*!
+         * Dynamic properties modifiable by the user (in the properties dialog).
+         * Special care must be taken to copy the contents of this PropertyGroup
+         * and not the pointer itself.
+         */
+        PropertyGroup *properties;
+
         //! List of component's ports
         QList<PortData*> ports;
-
-        //! Dynamic properties that the user can modify (in the properties dialog)
-        PropertyMap propertyMap;
     };
 
     typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
@@ -95,19 +99,14 @@ namespace Caneda
         QString library() const { return d->library; }
 
         //! Returns the label of the component in the form {label_prefix}{number_suffix}
-        QString label() const { return d->propertyMap["label"].value(); }
+        QString label() const { return d->properties->propertyValue("label"); }
         bool setLabel(const QString& _label);
 
         //! Represents model of component, which is infact a property.
-        QString model() const { return d->propertyMap["model"].value(); }
+        QString model() const { return d->properties->propertyValue("model"); }
 
         //! Returns the property map (actually copy of property map).
-        PropertyMap propertyMap() const { return d->propertyMap; }
-        void setPropertyMap(const PropertyMap& propMap);
-
-        //! Returns property group of the component.
-        PropertyDisplay* propertyDisplay() const { return m_propertyDisplay; }
-        void updatePropertyDisplay();
+        PropertyGroup* properties() const { return d->properties; }
 
         static Component* loadComponent(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);
@@ -135,10 +134,8 @@ namespace Caneda
     private:
         void init();
 
-        //! \brief Component Shared datas
-        QSharedDataPointer<ComponentData> d;
-        //! \brief Property display of this component on schematic
-        PropertyDisplay *m_propertyDisplay;
+        //! \brief Component shared data
+        ComponentDataPtr d;
     };
 
 } // namespace Caneda

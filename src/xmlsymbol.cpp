@@ -388,7 +388,7 @@ namespace Caneda
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
-                    component()->propertyMap.insert(prop.name(), prop);
+                    component()->properties->addProperty(prop.name(), prop);
                 }
 
             }

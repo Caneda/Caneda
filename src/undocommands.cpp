@@ -218,10 +218,6 @@ namespace Caneda
             m_scene->addItem(m_item);
         }
         m_item->setPos(m_pos);
-        Component *comp = canedaitem_cast<Component*>(m_item);
-        if(comp) {
-            comp->updatePropertyDisplay();
-        }
     }
 
     /*
@@ -418,10 +414,10 @@ namespace Caneda
     ##########################################################################
     */
 
-    PropertyMapCmd::PropertyMapCmd(Component *comp, const PropertyMap& old,
+    PropertyMapCmd::PropertyMapCmd(PropertyGroup *propGroup, const PropertyMap& old,
             const PropertyMap& newMap, QUndoCommand *parent) :
         QUndoCommand(parent),
-        m_component(comp),
+        m_propertyGroup(propGroup),
         m_oldMap(old),
         m_newMap(newMap)
     {
@@ -429,12 +425,12 @@ namespace Caneda
 
     void PropertyMapCmd::undo()
     {
-        m_component->setPropertyMap(m_oldMap);
+        m_propertyGroup->setPropertyMap(m_oldMap);
     }
 
     void PropertyMapCmd::redo()
     {
-        m_component->setPropertyMap(m_newMap);
+        m_propertyGroup->setPropertyMap(m_newMap);
     }
 
 } // namespace Caneda
