@@ -36,14 +36,19 @@ namespace Caneda
     {
         ComponentData() {}
 
+        //! Static properties
         QString name;
         QString filename;
         QString displayText;
         QString labelPrefix;
         QString description;
         QString library;
-        QList<PortData*> ports; //! List of component's ports
-        PropertyMap propertyMap; //! Properties the user can modify (in the properties dialog)
+
+        //! List of component's ports
+        QList<PortData*> ports;
+
+        //! Dynamic properties that the user can modify (in the properties dialog)
+        PropertyMap propertyMap;
     };
 
     typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
