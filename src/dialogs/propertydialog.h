@@ -83,13 +83,23 @@ namespace Caneda
                 const QModelIndex &index) const;
     };
 
-
+    /*!
+     * \brief Dialog to modify properties in a PropertyGroup
+     *
+     * This dialog presents to the user the properties of the selected
+     * component/scene. By default, properties are presented with a
+     * QLineEdit. For better representation it is recommended for
+     * components to have string properties rather than numeric. In
+     * this way, the user can use prefixes, like 'p' for pico, 'u' for
+     * micro, etc. Even parametric properties could be used as string
+     * properties, using for example brackets as in '{R}'.
+     */
     class PropertyDialog : public QDialog
     {
         Q_OBJECT
 
     public:
-        PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent = 0);
+        PropertyDialog(Component *comp, QWidget *parent = 0);
 
     public Q_SLOTS:
         void accept();
@@ -102,7 +112,6 @@ namespace Caneda
         QSortFilterProxyModel *m_proxyModel;
 
         Component *m_component;
-        Caneda::UndoOption m_undoOption;
 
         Ui::PropertyDialog ui;
     };

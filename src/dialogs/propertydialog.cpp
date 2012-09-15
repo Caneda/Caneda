@@ -17,9 +17,12 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "cgraphicsscene.h"
-#include "global.h"
 #include "propertydialog.h"
+
+#include "cgraphicsscene.h"
+#include "documentviewmanager.h"
+#include "global.h"
+#include "idocument.h"
 #include "undocommands.h"
 
 #include <QComboBox>
@@ -174,22 +177,10 @@ namespace Caneda
     /*!
      * \brief Constructor
      *
-     * This dialog presents the user, the properties of the selected
-     * component. By default, string properties are presented with a
-     * QLineEdit, while numeric properties (int, double, etc) are
-     * presented with a QSpinBox. For better representation it is
-     * recommended for components to have string properties rather
-     * than numeric. In this way, the user can use prefixes, like 'p'
-     * for pico, 'u' for micro, etc. Even parametric properties could
-     * be used as string properties, using for example brackets as in
-     * '{R}'.
-     *
      * \param comp The component to create de properties dialog for.
      */
-    PropertyDialog::PropertyDialog(Component *comp, Caneda::UndoOption opt, QWidget *parent) :
-        QDialog(parent),
-        m_component(comp),
-        m_undoOption(opt)
+    PropertyDialog::PropertyDialog(Component *comp, QWidget *parent) :
+        QDialog(parent), m_component(comp)
     {
         ui.setupUi(this);
 
@@ -218,13 +209,10 @@ namespace Caneda
     {
         PropertyMapCmd *cmd = new PropertyMapCmd(m_component, m_component->propertyMap(),
                 m_model->propMap);
-        if(m_undoOption == Caneda::PushUndoCmd && m_component->cGraphicsScene()) {
-            m_component->cGraphicsScene()->undoStack()->push(cmd);
-        }
-        else {
-            cmd->redo();
-            delete cmd;
-        }
+
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->currentDocument()->undoStack()->push(cmd);
+
         QDialog::accept();
     }
 

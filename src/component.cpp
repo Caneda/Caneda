@@ -361,7 +361,7 @@ namespace Caneda
     //! \copydoc CGraphicsItem::launchPropertyDialog()
     int Component::launchPropertyDialog(Caneda::UndoOption)
     {
-        PropertyDialog *dia = new PropertyDialog(this, Caneda::PushUndoCmd);
+        PropertyDialog *dia = new PropertyDialog(this);
         int status = dia->exec();
         delete dia;
 
