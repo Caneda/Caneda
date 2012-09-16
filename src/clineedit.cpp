@@ -30,7 +30,7 @@ namespace Caneda
     {
         clearButton = new QToolButton(this);
 
-        clearButton->setIcon(Caneda::icon("clearFilterText"));
+        clearButton->setIcon(Caneda::icon("edit-clear-locationbar-rtl"));
         clearButton->setCursor(Qt::ArrowCursor);
         clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
         clearButton->setWhatsThis(tr("Clear text\n\nClears the filter text"));

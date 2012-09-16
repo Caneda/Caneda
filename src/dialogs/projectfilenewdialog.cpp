@@ -30,9 +30,9 @@ namespace Caneda
             QDialog(parent)
     {
         ui.setupUi(this);
-        ui.rbNewComponent->setIcon(QIcon(Caneda::bitmapDirectory() + "filenew.png"));
-        ui.rbExistingComponent->setIcon(QIcon(Caneda::bitmapDirectory() + "fileopen.png"));
-        ui.rbImportFromProject->setIcon(QIcon(Caneda::bitmapDirectory() + "project-new.png"));
+        ui.rbNewComponent->setIcon(Caneda::icon("document-new"));
+        ui.rbExistingComponent->setIcon(Caneda::icon("document-open"));
+        ui.rbImportFromProject->setIcon(Caneda::icon("project-new"));
 
         connect(ui.rbNewComponent, SIGNAL(toggled(bool)), ui.editName, SLOT(setEnabled(bool)));
 

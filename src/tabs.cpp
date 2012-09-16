@@ -356,7 +356,7 @@ namespace Caneda
     {
         static QIcon modifiedIcon;
         if (modifiedIcon.isNull()) {
-            modifiedIcon = QIcon(Caneda::bitmapDirectory() + "modified.png");
+            modifiedIcon = Caneda::icon("document-save");
         }
         return modifiedIcon;
     }
@@ -365,7 +365,7 @@ namespace Caneda
     {
         static QIcon unmodifiedIcon;
         if (unmodifiedIcon.isNull()) {
-            unmodifiedIcon = QIcon(Caneda::bitmapDirectory() + "unmodified.png");
+            unmodifiedIcon = Caneda::icon("unmodified.png");
         }
         return unmodifiedIcon;
     }

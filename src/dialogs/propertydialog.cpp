@@ -185,7 +185,7 @@ namespace Caneda
     {
         ui.setupUi(this);
 
-        ui.m_clearButton->setIcon(QIcon(Caneda::bitmapDirectory() + "clearFilterText.png"));
+        ui.m_clearButton->setIcon(Caneda::icon("edit-clear-locationbar-rtl"));
         ui.m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
         ui.m_clearButton->setWhatsThis(
                 tr("Clear Filter Text\n\nClears the filter text thus reshowing all properties"));

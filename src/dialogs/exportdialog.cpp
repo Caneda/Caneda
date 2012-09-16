@@ -67,7 +67,7 @@ namespace Caneda
         ui.btnLock->setIcon(Caneda::icon("object-locked"));
         ui.btnLock->setToolTip(QObject::tr("Keep proportions"));
 
-        ui.btnReset->setIcon(Caneda::icon("clearFilterText"));
+        ui.btnReset->setIcon(Caneda::icon("edit-clear-locationbar-rtl"));
         ui.btnReset->setToolTip(QObject::tr("Restore dimensions"));
 
         ui.comboFormat->addItem(tr("PNG (*.png)"), "PNG");
