@@ -216,9 +216,7 @@ namespace Caneda
          */
         QList<CGraphicsItem*> disconnectibles;
 
-        /*!
-         * \brief List of CGraphicsItem which are to be placed/pasted.
-         */
+        //! \brief List of CGraphicsItem which are to be placed/pasted.
         QList<CGraphicsItem*> m_insertibles;
 
         //! \brief The Painting (Ellipse, Rectangle...) being drawn currently
@@ -288,8 +286,18 @@ namespace Caneda
         QRectF m_zoomRect;
         int m_zoomBandClicks;
 
-        //! Undo stack state
+        //! \brief CGraphicsScene undo stack
         QUndoStack *m_undoStack;
+
+        /*! \brief Spice/electric related scene properties
+         *
+         * Properties should be always strings. While more specific types
+         * could be used, string types allow the use of suffixes and parameters
+         * like p for pico, u for micro, and {R} for parameter, for example.
+         *
+         * \sa PropertyData, Property, PropertyGroup
+         */
+        PropertyGroup *m_properties;
     };
 
 } // namespace Caneda

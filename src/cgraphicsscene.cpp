@@ -30,6 +30,8 @@
 #include "settings.h"
 #include "xmlutilities.h"
 
+#include "dialogs/propertydialog.h"
+
 #include "paintings/ellipsearc.h"
 #include "paintings/graphictextdialog.h"
 
@@ -51,6 +53,9 @@ namespace Caneda
     CGraphicsScene::CGraphicsScene(QObject *parent) :
         QGraphicsScene(QRectF(-2500, -2500, 5000, 5000), parent)
     {
+        // Setup spice/electric related scene properties
+        m_properties = new PropertyGroup(this);
+
         // Setup undo stack
         m_undoStack = new QUndoStack(this);
 
@@ -1605,7 +1610,16 @@ namespace Caneda
                 break;
 
             case QEvent::GraphicsSceneMouseDoubleClick:
-                QGraphicsScene::mouseDoubleClickEvent(e);
+                {
+                    if(selectedItems().size() == 0) {
+                        PropertyDialog *dia = new PropertyDialog(m_properties);
+                        dia->exec();
+                        delete dia;
+                    }
+
+                    QGraphicsScene::mouseDoubleClickEvent(e);
+                }
+
                 break;
 
             default:

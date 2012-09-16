@@ -104,6 +104,8 @@ namespace Caneda
 
     private Q_SLOTS:
         void filterTextChanged();
+        void addProperty();
+        void removeProperty();
 
     private:
         PropertyModel *m_model;

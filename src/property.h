@@ -62,11 +62,10 @@ namespace Caneda
      * like p for pico, u for micro, and {R} for parameter, for example.
      *
      * While Property class holds actual properties, PropertyGroup class
-     * groups them all together and PropertyDisplay class is the object
-     * that renders them on a scene, allowing selection and moving of all
-     * properties at once.
+     * groups them all together and renders them on a scene, allowing
+     * selection and moving of all properties at once.
      *
-     * \sa PropertyData, PropertyGroup, PropertyDisplay
+     * \sa PropertyData, PropertyGroup
      */
     class Property
     {
