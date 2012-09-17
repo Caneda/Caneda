@@ -49,8 +49,8 @@ namespace Caneda
 
         PropertyModel(PropertyMap map, QObject *parent = 0);
 
-        int rowCount(IndexConstRef) const { return propMap.size(); }
-        int columnCount(IndexConstRef) const { return 4; }
+        int rowCount(IndexConstRef = QModelIndex() ) const { return propMap.size(); }
+        int columnCount(IndexConstRef = QModelIndex() ) const { return 4; }
 
         QVariant data(IndexConstRef, int role) const;
         QVariant headerData(int section, Qt::Orientation o, int role) const;
@@ -58,6 +58,8 @@ namespace Caneda
         Qt::ItemFlags flags(const QModelIndex &index) const;
         bool setData(const QModelIndex &index, const QVariant &value,
                 int role = Qt::EditRole);
+
+        bool insertRow(int row, IndexConstRef parent = QModelIndex());
 
     private:
         friend class PropertyDialog;

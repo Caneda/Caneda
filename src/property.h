@@ -86,6 +86,8 @@ namespace Caneda
 
         //! Returns the description of property.
         QString description() const { return d->description; }
+        //! Sets the description of property to \a newDescription.
+        void setDescription(const QString &newDescription) { d->description = newDescription; }
 
         //! Returns the visibility of property.
         bool isVisible() const { return d->visible; }

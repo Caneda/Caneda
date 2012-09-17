@@ -86,19 +86,21 @@ namespace Caneda
 
     Qt::ItemFlags PropertyModel::flags(const QModelIndex &index) const
     {
-        Qt::ItemFlags flags;
         if(!index.isValid()) {
-            flags = Qt::ItemIsEnabled;
+            return Qt::ItemIsEnabled;
         }
+
+        Qt::ItemFlags flags = QAbstractTableModel::flags(index);
+
+        // Column 2 is checkable (visibility CheckBox)
+        if(index.column() == 2) {
+                    flags |= Qt::ItemIsUserCheckable;
+        }
+        // Every other column is text editable
         else {
-            flags = QAbstractTableModel::flags(index);
-            if(index.column() == 2) {
-                flags |= Qt::ItemIsUserCheckable;
-            }
-            else if(index.column() == 1) {
-                flags |= Qt::ItemIsEditable;
-            }
+            flags |= Qt::ItemIsEditable;
         }
+
         return flags;
     }
 
@@ -106,12 +108,36 @@ namespace Caneda
             int role)
     {
         if(index.isValid()){
+            // If editing the property name, create a new property
+            // and replace old one.
+            if(role == Qt::EditRole && index.column() == 0) {
+
+                // Property "label" should not change name
+                if (keys[index.row()] == "label") {
+                    return false;
+                }
+
+                Property newProp(value.toString(),
+                                 propMap[keys[index.row()]].value(),
+                                 propMap[keys[index.row()]].description(),
+                                 propMap[keys[index.row()]].isVisible());
+                propMap.remove(keys[index.row()]);
+                propMap.insert(value.toString(), newProp);
+                keys.replace(index.row(), value.toString());
+
+            }
+            // If editing the property value, replace old value
             if(role == Qt::EditRole && index.column() == 1) {
                 propMap[keys[index.row()]].setValue(value.toString());
             }
+            // If editing the property visibility, set new visibility
             else if(role == Qt::CheckStateRole && index.column() == 2) {
                 Property &prop = propMap[keys[index.row()]];
                 prop.setVisible(!prop.isVisible());
+            }
+            // If editing the property description, replace old value
+            if(role == Qt::EditRole && index.column() == 3) {
+                propMap[keys[index.row()]].setDescription(value.toString());
             }
 
             emit dataChanged(index, index);
@@ -121,6 +147,19 @@ namespace Caneda
         return false;
     }
 
+    bool PropertyModel::insertRow(int row, IndexConstRef parent)
+    {
+        beginInsertRows(parent, row, row);
+
+        // TODO: Check if property "Property" exists
+        keys.insert(row, tr("Property"));
+        Property newProp("Property", "Value", tr("User created property"), true);
+        propMap.insert(tr("Property"), newProp);
+
+        endInsertRows();
+
+        return true;
+    }
 
     //*************************************************************
     //***************** PropertyValueDelegate *********************
@@ -171,7 +210,6 @@ namespace Caneda
         model->setData(index, comboBox->currentText());
     }
 
-
     //*************************************************************
     //******************** PropertyDialog *************************
     //*************************************************************
@@ -189,17 +227,17 @@ namespace Caneda
         ui.m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
         ui.m_clearButton->setStatusTip(tr("Clear the filter text"));
         ui.m_clearButton->setWhatsThis(
-                tr("Clear Filter Text\n\nClears the filter text thus reshowing all properties"));
+                    tr("Clear Filter Text\n\nClears the filter text thus reshowing all properties"));
 
         ui.m_addButton->setIcon(Caneda::icon("list-add"));
         ui.m_addButton->setStatusTip(tr("Add a new property to the list"));
         ui.m_addButton->setWhatsThis(
-                tr("Add New Property\n\nAdds a new property to the list"));
+                    tr("Add New Property\n\nAdds a new property to the list"));
 
         ui.m_removeButton->setIcon(Caneda::icon("list-remove"));
         ui.m_removeButton->setStatusTip(tr("Remove selected property from the list"));
         ui.m_removeButton->setWhatsThis(
-                tr("Remove Property\n\nRemoves selected property from the list"));
+                    tr("Remove Property\n\nRemoves selected property from the list"));
 
         m_model = new PropertyModel(m_propertyGroup->propertyMap(), this);
 
@@ -240,7 +278,7 @@ namespace Caneda
 
     void PropertyDialog::addProperty()
     {
-        // TODO: Implement this
+        m_model->insertRow(m_model->rowCount());
     }
 
     void PropertyDialog::removeProperty()
