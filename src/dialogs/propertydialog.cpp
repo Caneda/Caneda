@@ -41,7 +41,7 @@ namespace Caneda
     {
     }
 
-    QVariant PropertyModel::data(IndexConstRef index, int role) const
+    QVariant PropertyModel::data(const QModelIndex& index, int role) const
     {
         if(!index.isValid() || index.row() >= propMap.size()) {
             return QVariant();
@@ -84,7 +84,7 @@ namespace Caneda
         return QVariant();
     }
 
-    Qt::ItemFlags PropertyModel::flags(const QModelIndex &index) const
+    Qt::ItemFlags PropertyModel::flags(const QModelIndex& index) const
     {
         if(!index.isValid()) {
             return Qt::ItemIsEnabled;
@@ -104,7 +104,7 @@ namespace Caneda
         return flags;
     }
 
-    bool PropertyModel::setData(const QModelIndex &index, const QVariant &value,
+    bool PropertyModel::setData(const QModelIndex& index, const QVariant& value,
             int role)
     {
         if(index.isValid()){
@@ -147,16 +147,39 @@ namespace Caneda
         return false;
     }
 
-    bool PropertyModel::insertRow(int row, IndexConstRef parent)
+    bool PropertyModel::insertRow(int row, const QModelIndex& parent)
     {
+        // Find first name available
+        QString nameBase = tr("Property") + " ";
+        int i = 1;
+        QString propertyName = nameBase + QString::number(i);
+
+        while(keys.contains(propertyName)) {
+            i++;
+            propertyName = nameBase + QString::number(i);
+        }
+
+        // Insert new property
         beginInsertRows(parent, row, row);
 
-        // TODO: Check if property "Property" exists
-        keys.insert(row, tr("Property"));
-        Property newProp("Property", "Value", tr("User created property"), true);
-        propMap.insert(tr("Property"), newProp);
+        keys.insert(row, propertyName);
+        Property newProp(propertyName, "Value", tr("User created property"), true);
+        propMap.insert(propertyName, newProp);
 
         endInsertRows();
+
+        return true;
+    }
+
+    bool PropertyModel::removeRow(int row, const QModelIndex& parent)
+    {
+        // Remove property
+        beginRemoveRows(parent, row, row);
+
+        propMap.remove(keys[parent.row()]);
+        keys.removeAt(parent.row());
+
+        endRemoveRows();
 
         return true;
     }
@@ -168,8 +191,8 @@ namespace Caneda
     {
     }
 
-    QWidget *PropertyValueDelegate::createEditor(QWidget *parent,
-            const QStyleOptionViewItem &option, const QModelIndex & index) const
+    QWidget *PropertyValueDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                                                 const QModelIndex& index) const
     {
         QStringList valOptions;
         valOptions = index.model()->data(index, PropertyModel::OptionsRole).toStringList();
@@ -183,8 +206,7 @@ namespace Caneda
         return editor;
     }
 
-    void PropertyValueDelegate::setEditorData(QWidget *editor,
-            const QModelIndex &index) const
+    void PropertyValueDelegate::setEditorData(QWidget *editor, const QModelIndex& index) const
     {
         QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
         if(!comboBox) {
@@ -200,7 +222,7 @@ namespace Caneda
     }
 
     void PropertyValueDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
-            const QModelIndex &index) const
+                                             const QModelIndex& index) const
     {
         QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
         if(!comboBox) {
@@ -279,11 +301,15 @@ namespace Caneda
     void PropertyDialog::addProperty()
     {
         m_model->insertRow(m_model->rowCount());
+        ui.tableView->resizeColumnsToContents();
+        ui.tableView->horizontalHeader()->setStretchLastSection(true);
     }
 
     void PropertyDialog::removeProperty()
     {
-        // TODO: Implement this
+        m_model->removeRow(m_model->rowCount()-1);
+        ui.tableView->resizeColumnsToContents();
+        ui.tableView->horizontalHeader()->setStretchLastSection(true);
     }
 
 } // namespace Caneda

@@ -35,9 +35,6 @@ class QSortFilterProxyModel;
 
 namespace Caneda
 {
-    typedef QModelIndex& IndexRef;
-    typedef const QModelIndex& IndexConstRef;
-
     class PropertyModel : public QAbstractTableModel
     {
         Q_OBJECT
@@ -49,17 +46,17 @@ namespace Caneda
 
         PropertyModel(PropertyMap map, QObject *parent = 0);
 
-        int rowCount(IndexConstRef = QModelIndex() ) const { return propMap.size(); }
-        int columnCount(IndexConstRef = QModelIndex() ) const { return 4; }
-
-        QVariant data(IndexConstRef, int role) const;
+        QVariant data(const QModelIndex&, int role) const;
         QVariant headerData(int section, Qt::Orientation o, int role) const;
 
-        Qt::ItemFlags flags(const QModelIndex &index) const;
-        bool setData(const QModelIndex &index, const QVariant &value,
-                int role = Qt::EditRole);
+        Qt::ItemFlags flags(const QModelIndex& index) const;
+        bool setData(const QModelIndex& index, const QVariant &value, int role = Qt::EditRole);
 
-        bool insertRow(int row, IndexConstRef parent = QModelIndex());
+        int rowCount(const QModelIndex& = QModelIndex() ) const { return propMap.size(); }
+        int columnCount(const QModelIndex& = QModelIndex() ) const { return 4; }
+
+        bool insertRow(int row, const QModelIndex& parent = QModelIndex());
+        bool removeRow(int row, const QModelIndex& parent = QModelIndex());
 
     private:
         friend class PropertyDialog;
@@ -76,11 +73,10 @@ namespace Caneda
         PropertyValueDelegate(QObject *parent = 0);
 
         QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                const QModelIndex &index) const;
+                const QModelIndex& index) const;
 
-        void setEditorData(QWidget *editor, const QModelIndex &index) const;
-        void setModelData(QWidget *editor, QAbstractItemModel *model,
-                const QModelIndex &index) const;
+        void setEditorData(QWidget *editor, const QModelIndex& index) const;
+        void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex& index) const;
     };
 
     /*!
