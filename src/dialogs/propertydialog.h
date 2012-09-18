@@ -46,17 +46,17 @@ namespace Caneda
 
         PropertyModel(PropertyMap map, QObject *parent = 0);
 
-        QVariant data(const QModelIndex&, int role) const;
-        QVariant headerData(int section, Qt::Orientation o, int role) const;
-
-        Qt::ItemFlags flags(const QModelIndex& index) const;
-        bool setData(const QModelIndex& index, const QVariant &value, int role = Qt::EditRole);
-
         int rowCount(const QModelIndex& = QModelIndex() ) const { return propMap.size(); }
         int columnCount(const QModelIndex& = QModelIndex() ) const { return 4; }
 
-        bool insertRow(int row, const QModelIndex& parent = QModelIndex());
-        bool removeRow(int row, const QModelIndex& parent = QModelIndex());
+        QVariant data(const QModelIndex&, int role) const;
+        QVariant headerData(int section, Qt::Orientation o, int role) const;
+
+        Qt::ItemFlags flags(const QModelIndex &index) const;
+        bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+
+        bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
+        bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
 
     private:
         friend class PropertyDialog;

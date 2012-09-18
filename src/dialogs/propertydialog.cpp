@@ -147,40 +147,45 @@ namespace Caneda
         return false;
     }
 
-    bool PropertyModel::insertRow(int row, const QModelIndex& parent)
+    bool PropertyModel::insertRows(int position, int rows, const QModelIndex &index)
     {
-        // Find first name available
-        QString nameBase = tr("Property") + " ";
-        int i = 1;
-        QString propertyName = nameBase + QString::number(i);
+        // Insert new property
+        Q_UNUSED(index);
+        beginInsertRows(QModelIndex(), position, position+rows-1);
 
-        while(keys.contains(propertyName)) {
-            i++;
-            propertyName = nameBase + QString::number(i);
+        for (int row=0; row < rows; row++) {
+            // Find first name available
+            QString nameBase = tr("Property") + " ";
+            int i = 1;
+            QString propertyName = nameBase + QString::number(i);
+
+            while(keys.contains(propertyName)) {
+                i++;
+                propertyName = nameBase + QString::number(i);
+            }
+
+            keys.insert(position, propertyName);
+            Property newProp(propertyName, "Value", tr("User created property"), true);
+            propMap.insert(propertyName, newProp);
         }
 
-        // Insert new property
-        beginInsertRows(parent, row, row);
-
-        keys.insert(row, propertyName);
-        Property newProp(propertyName, "Value", tr("User created property"), true);
-        propMap.insert(propertyName, newProp);
-
         endInsertRows();
-
         return true;
     }
 
-    bool PropertyModel::removeRow(int row, const QModelIndex& parent)
+    bool PropertyModel::removeRows(int position, int rows, const QModelIndex &index)
     {
-        // Remove property
-        beginRemoveRows(parent, row, row);
+        Q_UNUSED(index);
+        beginRemoveRows(QModelIndex(), position, position+rows-1);
 
-        propMap.remove(keys[parent.row()]);
-        keys.removeAt(parent.row());
+        for (int row=0; row < rows; ++row) {
+            // Remove property
+            propMap.remove(keys[position]);
+            keys.removeAt(position);
+
+        }
 
         endRemoveRows();
-
         return true;
     }
 
@@ -300,14 +305,14 @@ namespace Caneda
 
     void PropertyDialog::addProperty()
     {
-        m_model->insertRow(m_model->rowCount());
+        m_model->insertRows(m_model->rowCount(), 1);
         ui.tableView->resizeColumnsToContents();
         ui.tableView->horizontalHeader()->setStretchLastSection(true);
     }
 
     void PropertyDialog::removeProperty()
     {
-        m_model->removeRow(m_model->rowCount()-1);
+        m_model->removeRows(m_model->rowCount()-1, 1);
         ui.tableView->resizeColumnsToContents();
         ui.tableView->horizontalHeader()->setStretchLastSection(true);
     }
