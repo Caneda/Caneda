@@ -112,6 +112,11 @@ namespace Caneda
             // and replace old one.
             if(role == Qt::EditRole && index.column() == 0) {
 
+                // We should not overwrite an existing property
+                if (keys.contains(value.toString())){
+                    return false;
+                }
+
                 // Property "label" should not change name
                 if (keys[index.row()] == "label") {
                     return false;
