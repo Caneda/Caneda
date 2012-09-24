@@ -34,6 +34,14 @@ namespace Caneda
     //*************************************************************
     //******************** PropertyModel **************************
     //*************************************************************
+    /*!
+     * \brief Constructor
+     *
+     * \param map PropertyMap wich contains all properties to be modified.
+     * \param parent This object's parent.
+     *
+     * \sa PropertyMap
+     */
     PropertyModel::PropertyModel(PropertyMap map, QObject *parent) :
         QAbstractTableModel(parent),
         propMap(map),
@@ -41,6 +49,18 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \brief Returns the data stored for the item referred by index.
+     *
+     * This class returns the item data corresponding to index position.
+     * For example, if we are editing an item in the first column, the
+     * data corresponds to the property name, hence the return value is
+     * the property name in the form of a QString.
+     *
+     * \param index Item to return data from
+     * \param role Role of the item (editable, checkable, etc).
+     * \return data stored for given item
+     */
     QVariant PropertyModel::data(const QModelIndex& index, int role) const
     {
         if(!index.isValid() || index.row() >= propMap.size()) {
@@ -64,6 +84,12 @@ namespace Caneda
         return QVariant();
     }
 
+    /*!
+     * \brief Returns header data (text) for the given column
+     *
+     * This method defines column header text to be displayed on the
+     * associated table view.
+     */
     QVariant PropertyModel::headerData(int section, Qt::Orientation o, int role) const
     {
         if(role != Qt::DisplayRole) {
@@ -84,6 +110,13 @@ namespace Caneda
         return QVariant();
     }
 
+    /*!
+     * \brief Returns item flags according to its position. This flags
+     * are responsible for the item editable or checkable state.
+     *
+     * \param index Item for which its flags must be returned.
+     * \return Qt::ItemFlags Item's flags.
+     */
     Qt::ItemFlags PropertyModel::flags(const QModelIndex& index) const
     {
         if(!index.isValid()) {
@@ -94,7 +127,7 @@ namespace Caneda
 
         // Column 2 is checkable (visibility CheckBox)
         if(index.column() == 2) {
-                    flags |= Qt::ItemIsUserCheckable;
+            flags |= Qt::ItemIsUserCheckable;
         }
         // Every other column is text editable
         else {
@@ -104,6 +137,27 @@ namespace Caneda
         return flags;
     }
 
+    /*!
+     * \brief Sets data in a PropertyModel item.
+     *
+     * Sets data in a PropertyModel item. Some special data should not be editable,
+     * for example property label should not change its property "name" (although
+     * its property "value" can be edited). This method takes care of that.
+     *
+     * In the future, we can set a new field inside properties to determine if
+     * some parts of a property cannot be modified. For example default property
+     * "names" in the PropertyMap of a component should not be modifiable as they
+     * are fixed by the spice model, nevertheless new user defined properties should
+     * be modifiable.
+     *
+     * \param index Item to be edited.
+     * \param value New value to be set.
+     * \param role Role of the item. Helps identify what are we editing (editable
+     * item, checkable item, etc).
+     * \return True on success, false otherwise.
+     *
+     * \sa PropertyMap
+     */
     bool PropertyModel::setData(const QModelIndex& index, const QVariant& value,
             int role)
     {
@@ -152,6 +206,14 @@ namespace Caneda
         return false;
     }
 
+    /*!
+     * \brief Inserts a new row (Property) with a default text.
+     *
+     * \param position Position to insert new property.
+     * \param rows Number of rows to insert.
+     * \param index Unused.
+     * \return True on success, false otherwise.
+     */
     bool PropertyModel::insertRows(int position, int rows, const QModelIndex &index)
     {
         // Insert new property
@@ -178,6 +240,14 @@ namespace Caneda
         return true;
     }
 
+    /*!
+     * \brief Deletes a row (Property) from the PropertyMap.
+     *
+     * \param position Position from where to delete rows.
+     * \param rows Number of rows to delete.
+     * \param index Unused.
+     * \return True on success, false otherwise.
+     */
     bool PropertyModel::removeRows(int position, int rows, const QModelIndex &index)
     {
         Q_UNUSED(index);
@@ -187,7 +257,6 @@ namespace Caneda
             // Remove property
             propMap.remove(keys[position]);
             keys.removeAt(position);
-
         }
 
         endRemoveRows();
@@ -253,8 +322,10 @@ namespace Caneda
     PropertyDialog::PropertyDialog(PropertyGroup *propGroup, QWidget *parent) :
         QDialog(parent), m_propertyGroup(propGroup)
     {
+        // Initialize designer dialog
         ui.setupUi(this);
 
+        // Set button properties
         ui.m_clearButton->setIcon(Caneda::icon("edit-clear-locationbar-rtl"));
         ui.m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
         ui.m_clearButton->setStatusTip(tr("Clear the filter text"));
@@ -271,13 +342,16 @@ namespace Caneda
         ui.m_removeButton->setWhatsThis(
                     tr("Remove Property\n\nRemoves selected property from the list"));
 
+        // Create new table model
         m_model = new PropertyModel(m_propertyGroup->propertyMap(), this);
 
+        // Create proxy model and set its properties
         m_proxyModel = new QSortFilterProxyModel(this);
         m_proxyModel->setDynamicSortFilter(true);
         m_proxyModel->setSourceModel(m_model);
         m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
+        // Apply table properties and set proxy model
         ui.tableView->setModel(m_proxyModel);
         ui.tableView->setItemDelegate(new PropertyValueDelegate(this));
         ui.tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -292,6 +366,12 @@ namespace Caneda
         connect(ui.m_removeButton, SIGNAL(clicked()), SLOT(removeProperty()));
     }
 
+    /*!
+     * \brief Accept dialog
+     *
+     * Accept dialog and set new property's values according to
+     * the user input.
+     */
     void PropertyDialog::accept()
     {
         PropertyMapCmd *cmd = new PropertyMapCmd(m_propertyGroup, m_propertyGroup->propertyMap(),
@@ -303,6 +383,7 @@ namespace Caneda
         QDialog::accept();
     }
 
+    //! \brief Filters properties according to user input on a QLineEdit.
     void PropertyDialog::filterTextChanged()
     {
         QString text = ui.m_filterEdit->text();
@@ -311,6 +392,7 @@ namespace Caneda
         m_proxyModel->setFilterRegExp(regExp);
     }
 
+    //! \brief Add a new property to the model.
     void PropertyDialog::addProperty()
     {
         m_model->insertRows(m_model->rowCount(), 1);
@@ -318,6 +400,7 @@ namespace Caneda
         ui.tableView->horizontalHeader()->setStretchLastSection(true);
     }
 
+    //! \brief Remove a property from the model.
     void PropertyDialog::removeProperty()
     {
         QItemSelectionModel *selectionModel = ui.tableView->selectionModel();
