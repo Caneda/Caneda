@@ -320,7 +320,15 @@ namespace Caneda
 
     void PropertyDialog::removeProperty()
     {
-        m_model->removeRows(m_model->rowCount()-1, 1);
+        QItemSelectionModel *selectionModel = ui.tableView->selectionModel();
+        QModelIndexList indexes = selectionModel->selectedRows();
+        QModelIndex index;
+
+        foreach (index, indexes) {
+            int row = m_proxyModel->mapToSource(index).row();
+            m_model->removeRows(row, 1);
+        }
+
         ui.tableView->resizeColumnsToContents();
         ui.tableView->horizontalHeader()->setStretchLastSection(true);
     }
