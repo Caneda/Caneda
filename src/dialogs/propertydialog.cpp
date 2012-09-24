@@ -280,6 +280,9 @@ namespace Caneda
 
         ui.tableView->setModel(m_proxyModel);
         ui.tableView->setItemDelegate(new PropertyValueDelegate(this));
+        ui.tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+        ui.tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+        ui.tableView->setEditTriggers(QAbstractItemView::AnyKeyPressed | QAbstractItemView::DoubleClicked);
         ui.tableView->resizeColumnsToContents();
 
         connect(ui.m_filterEdit, SIGNAL(textChanged(const QString &)),
