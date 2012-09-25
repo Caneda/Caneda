@@ -23,14 +23,11 @@
 
 #include "ui_propertydialog.h"
 
-#include "property.h"
 #include "propertygroup.h"
 
 #include <QAbstractTableModel>
-#include <QItemDelegate>
 
 // Forward declarations.
-class QStandardItemModel;
 class QSortFilterProxyModel;
 
 namespace Caneda
@@ -66,10 +63,6 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        enum {
-            OptionsRole = Qt::UserRole + 1
-        };
-
         PropertyModel(PropertyMap map, QObject *parent = 0);
 
         int rowCount(const QModelIndex& = QModelIndex() ) const { return propMap.size(); }
@@ -89,20 +82,6 @@ namespace Caneda
 
         PropertyMap propMap;
         QList<QString> keys;
-    };
-
-    class PropertyValueDelegate : public QItemDelegate
-    {
-        Q_OBJECT
-
-    public:
-        PropertyValueDelegate(QObject *parent = 0);
-
-        QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                const QModelIndex& index) const;
-
-        void setEditorData(QWidget *editor, const QModelIndex& index) const;
-        void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex& index) const;
     };
 
     /*!

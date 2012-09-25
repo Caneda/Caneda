@@ -20,13 +20,11 @@
 
 #include "propertydialog.h"
 
-#include "cgraphicsscene.h"
 #include "documentviewmanager.h"
 #include "global.h"
 #include "idocument.h"
 #include "undocommands.h"
 
-#include <QComboBox>
 #include <QSortFilterProxyModel>
 
 namespace Caneda
@@ -264,54 +262,6 @@ namespace Caneda
     }
 
     //*************************************************************
-    //***************** PropertyValueDelegate *********************
-    //*************************************************************
-    PropertyValueDelegate::PropertyValueDelegate(QObject *parent) : QItemDelegate(parent)
-    {
-    }
-
-    QWidget *PropertyValueDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                                                 const QModelIndex& index) const
-    {
-        QStringList valOptions;
-        valOptions = index.model()->data(index, PropertyModel::OptionsRole).toStringList();
-
-        if(index.column() != 1 || valOptions.isEmpty()) {
-            return QItemDelegate::createEditor(parent, option, index);
-        }
-
-        QComboBox *editor = new QComboBox(parent);
-        editor->addItems(valOptions);
-        return editor;
-    }
-
-    void PropertyValueDelegate::setEditorData(QWidget *editor, const QModelIndex& index) const
-    {
-        QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
-        if(!comboBox) {
-            QItemDelegate::setEditorData(editor, index);
-            return;
-        }
-
-        QString value = index.model()->data(index, Qt::DisplayRole).toString();
-        QStringList options = index.model()->data(index, PropertyModel::OptionsRole).toStringList();
-        int comboIndex = options.indexOf(value);
-
-        comboBox->setCurrentIndex(comboIndex);
-    }
-
-    void PropertyValueDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
-                                             const QModelIndex& index) const
-    {
-        QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
-        if(!comboBox) {
-            QItemDelegate::setModelData(editor, model, index);
-            return;
-        }
-        model->setData(index, comboBox->currentText());
-    }
-
-    //*************************************************************
     //******************** PropertyDialog *************************
     //*************************************************************
     /*!
@@ -353,7 +303,6 @@ namespace Caneda
 
         // Apply table properties and set proxy model
         ui.tableView->setModel(m_proxyModel);
-        ui.tableView->setItemDelegate(new PropertyValueDelegate(this));
         ui.tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
         ui.tableView->setSelectionMode(QAbstractItemView::SingleSelection);
         ui.tableView->setEditTriggers(QAbstractItemView::AnyKeyPressed | QAbstractItemView::DoubleClicked);
