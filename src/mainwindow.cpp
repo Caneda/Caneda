@@ -256,6 +256,10 @@ namespace Caneda
         action->setWhatsThis(tr("Caneda Settings\n\nSets the properties of the application"));
         connect(action, SIGNAL(triggered()), SLOT(slotAppSettings()));
 
+        action = am->createAction("propertiesDialog", Caneda::icon("document-properties"), tr("Edit parameters..."));
+        action->setWhatsThis(tr("Edit Parameters\n\nLaunches current selection properties dialog"));
+        connect(action, SIGNAL(triggered()), SLOT(slotLaunchPropertiesDialog()));
+
         action = am->createAction("fileQuit", Caneda::icon("application-exit"), tr("E&xit"));
         action->setShortcut(CTRL+Key_Q);
         action->setStatusTip(tr("Quits the application"));
@@ -1545,6 +1549,15 @@ namespace Caneda
         }
 
         setWindowModified(view->document()->isModified());
+    }
+
+    void MainWindow::slotLaunchPropertiesDialog()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->launchPropertiesDialog();
+        }
     }
 
     void MainWindow::slotUpdateSettingsChanges()

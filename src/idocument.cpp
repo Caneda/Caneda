@@ -136,6 +136,22 @@ namespace Caneda
      */
 
     /*!
+     * \fn IDocument::launchPropertiesDialog()
+     *
+     * \brief Launches the properties dialog corresponding to current document.
+     *
+     * The properties dialog should be some kind of settings dialog, but specific
+     * to the current document and context.
+     *
+     * This method should be implemented according to the calling context. For
+     * example, the properties dialog for a schematic scene should be a simple
+     * dialog to add or remove properties. In that case, if a component is selected
+     * the properties dialog should contain the component properties. On the
+     * other hand, when called from a simulation context, simulation options may
+     * be presented for the user.
+     */
+
+    /*!
      * \fn IDocument::documentChanged()
      *
      * \brief This signal is emitted when any of document state changes.

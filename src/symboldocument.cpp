@@ -242,4 +242,22 @@ namespace Caneda
         return new SymbolView(this);
     }
 
+    void SymbolDocument::launchPropertiesDialog()
+    {
+        // Get a list of selected items
+        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
+        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+
+        // If there is any selection, launch corresponding properties dialog,
+        // else launch the properties dialog corresponding to the current scene
+        if(!schItems.isEmpty()) {
+            foreach(CGraphicsItem *item, schItems) {
+                item->launchPropertyDialog(Caneda::PushUndoCmd);
+            }
+        }
+        else {
+            m_cGraphicsScene->launchPropertyDialog();
+        }
+    }
+
 } // namespace Caneda

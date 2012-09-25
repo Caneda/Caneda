@@ -70,19 +70,16 @@ namespace Caneda
 
         virtual bool printSupportsFitInPage() const = 0;
         virtual void print(QPrinter *printer, bool fitInPage) = 0;
+        virtual void exportImage() = 0;
 
         virtual bool load(QString *errorMessage = 0) = 0;
         virtual bool save(QString *errorMessage = 0) = 0;
 
-        virtual void exportImage() = 0;
-
         virtual IView* createView() = 0;
-
-        virtual void updateSettingsChanges() = 0;
-
         QList<IView*> views() const;
 
-        //TODO: Print specific interface methods
+        virtual void launchPropertiesDialog() = 0;
+        virtual void updateSettingsChanges() = 0;
 
     public Q_SLOTS:
         void emitDocumentChanged();

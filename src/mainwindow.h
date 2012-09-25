@@ -113,6 +113,7 @@ namespace Caneda
 
         void setDocumentTitle(const QString& title);
         void updateTitle();
+        void slotLaunchPropertiesDialog();
         void slotUpdateSettingsChanges();
         void slotStatusBarMessage(const QString& newPos);
 

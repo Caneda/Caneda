@@ -119,6 +119,8 @@ namespace Caneda
         QUndoStack* undoStack() { return m_undoStack; }
         bool isModified() const { return m_modified; }
 
+        int launchPropertyDialog();
+
     public Q_SLOTS:
         void setModified(const bool m = true);
         bool sidebarItemClicked(const QString &item, const QString& category);

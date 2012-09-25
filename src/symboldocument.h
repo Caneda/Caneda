@@ -60,14 +60,14 @@ namespace Caneda
 
         virtual bool printSupportsFitInPage() const { return true; }
         virtual void print(QPrinter *printer, bool fitInView);
+        virtual void exportImage();
 
         virtual bool load(QString *errorMessage = 0);
         virtual bool save(QString *errorMessage = 0);
 
-        virtual void exportImage();
-
         virtual IView* createView();
 
+        virtual void launchPropertiesDialog();
         virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 

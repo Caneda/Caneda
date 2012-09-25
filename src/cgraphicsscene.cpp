@@ -574,6 +574,16 @@ namespace Caneda
         }
     }
 
+    //! \copydoc CGraphicsItem::launchPropertyDialog()
+    int CGraphicsScene::launchPropertyDialog()
+    {
+        PropertyDialog *dia = new PropertyDialog(m_properties);
+        int status = dia->exec();
+        delete dia;
+
+        return status;
+    }
+
     /*!
      * \brief Set whether this scene is modified or not
      *
@@ -729,6 +739,7 @@ namespace Caneda
                 _menu->addAction(am->actionForName("symEdit"));
                 _menu->addAction(am->actionForName("intoH"));
                 _menu->addAction(am->actionForName("popH"));
+                _menu->addAction(am->actionForName("propertiesDialog"));
 
                 _menu->exec(event->screenPos());
                 break;
@@ -742,16 +753,13 @@ namespace Caneda
                 //launch a common menu
                 _menu->addAction(am->actionForName("editCut"));
                 _menu->addAction(am->actionForName("editCopy"));
+                _menu->addAction(am->actionForName("editDelete"));
 
                 _menu->addSeparator();
 
                 _menu->addAction(am->actionForName("editRotate"));
                 _menu->addAction(am->actionForName("editMirror"));
                 _menu->addAction(am->actionForName("editMirrorY"));
-
-                _menu->addSeparator();
-
-                _menu->addAction(am->actionForName("editDelete"));
 
                 _menu->addSeparator();
 
@@ -769,6 +777,10 @@ namespace Caneda
 
                 _menu->addAction(am->actionForName("distrHor"));
                 _menu->addAction(am->actionForName("distrVert"));
+
+                _menu->addSeparator();
+
+                _menu->addAction(am->actionForName("propertiesDialog"));
 
                 _menu->exec(event->screenPos());
             }
@@ -1612,9 +1624,7 @@ namespace Caneda
             case QEvent::GraphicsSceneMouseDoubleClick:
                 {
                     if(selectedItems().size() == 0) {
-                        PropertyDialog *dia = new PropertyDialog(m_properties);
-                        dia->exec();
-                        delete dia;
+                        launchPropertyDialog();
                     }
 
                     QGraphicsScene::mouseDoubleClickEvent(e);
