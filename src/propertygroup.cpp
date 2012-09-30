@@ -188,12 +188,15 @@ namespace Caneda
     void PropertyGroup::writeProperties(Caneda::XmlWriter *writer)
     {
         writer->writeStartElement("properties");
+        writer->writePointAttribute(pos(), "pos");
+
         foreach(const Property p, m_propertyMap) {
             writer->writeEmptyElement("property");
             writer->writeAttribute("name", p.name());
             writer->writeAttribute("value", p.value());
             writer->writeAttribute("visible", Caneda::boolToString(p.isVisible()));
         }
+
         writer->writeEndElement(); // </properties>
     }
 
@@ -201,6 +204,7 @@ namespace Caneda
     void PropertyGroup::readProperties(Caneda::XmlReader *reader)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "properties");
+        setPos(reader->readPointAttribute("pos"));
 
         while(!reader->atEnd()) {
             reader->readNext();

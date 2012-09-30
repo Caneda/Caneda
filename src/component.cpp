@@ -223,15 +223,10 @@ namespace Caneda
                 if(reader->name() == "pos") {
                     setPos(reader->readPoint());
                 }
-                else if(reader->name() == "propertyPos") {
-                    QPointF point = reader->readPoint();
-                    d->properties->setPos(point);
-                }
                 else if(reader->name() == "transform") {
                     setTransform(reader->readTransform());
                 }
                 else if(reader->name() == "properties") {
-                    // Note the usage as it expects reference of property map.
                     d->properties->readProperties(reader);
                 }
                 else {
@@ -257,8 +252,6 @@ namespace Caneda
         writer->writeAttribute("library", library());
 
         writer->writePoint(pos(), "pos");
-        writer->writePoint(d->properties->pos(), "propertyPos");
-
         writer->writeTransform(transform());
         d->properties->writeProperties(writer);
 
