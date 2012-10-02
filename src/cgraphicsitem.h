@@ -22,11 +22,9 @@
 
 #include "global.h"
 
-#include <QBrush>
 #include <QDialog>
 #include <QFlags>
 #include <QGraphicsItem>
-#include <QPen>
 
 #include <limits>
 
@@ -63,8 +61,6 @@ namespace Caneda
     Q_DECLARE_FLAGS(ResizeHandles, ResizeHandle)
     Q_DECLARE_OPERATORS_FOR_FLAGS(Caneda::ResizeHandles)
 
-    static const QPen handlePen(Qt::darkRed);
-    static const QBrush handleBrush(Qt::NoBrush);
     static const QRectF handleRect(-5, -5, 10, 10);
 
     void drawResizeHandle(const QPointF &centrePos, QPainter *painter);

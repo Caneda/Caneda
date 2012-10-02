@@ -23,6 +23,7 @@
 #include "cgraphicsscene.h"
 #include "cgraphicsview.h"
 #include "port.h"
+#include "settings.h"
 #include "xmlutilities.h"
 
 #include <QGraphicsSceneEvent>
@@ -44,8 +45,9 @@ namespace Caneda
         QPen savedPen = painter->pen();
         QBrush savedBrush = painter->brush();
 
-        painter->setPen(Caneda::handlePen);
-        painter->setBrush(Caneda::handleBrush);
+        Settings *settings = Settings::instance();
+        painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>()));
+        painter->setBrush(Qt::NoBrush);
 
         // handleRect is defined as QRectF(-w/2, -h/2, w, h)
         painter->drawRect(Caneda::handleRect.translated(centrePos));

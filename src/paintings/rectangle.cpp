@@ -75,6 +75,7 @@ namespace Caneda
        else {
           painter->setPen(pen());
        }
+
        painter->setBrush(brush());
        painter->drawRect(rect());
 
