@@ -20,6 +20,7 @@
 #include "symbolcontext.h"
 
 #include "actionmanager.h"
+#include "cgraphicsscene.h"
 #include "documentviewmanager.h"
 #include "mainwindow.h"
 #include "symboldocument.h"

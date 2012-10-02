@@ -21,6 +21,7 @@
 #include "schematiccontext.h"
 
 #include "actionmanager.h"
+#include "cgraphicsscene.h"
 #include "documentviewmanager.h"
 #include "library.h"
 #include "mainwindow.h"

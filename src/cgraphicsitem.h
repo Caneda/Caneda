@@ -20,6 +20,8 @@
 #ifndef C_GRAPHICS_ITEM_H
 #define C_GRAPHICS_ITEM_H
 
+#include "global.h"
+
 #include <QBrush>
 #include <QDialog>
 #include <QFlags>
@@ -44,17 +46,12 @@ namespace Caneda
     class CGraphicsScene;
     class Port;
 
-    //! This enum determines the rotation direction.
-    enum AngleDirection {
-        Clockwise,
-        AntiClockwise
-    };
-
-    enum UndoOption {
-        DontPushUndoCmd,
-        PushUndoCmd
-    };
-
+    // *************************************************************
+    // Resize handle related methods.
+    // *************************************************************
+    // TODO: This methods should be moved inside CGraphicsItem class
+    // if not used in any class not derived from CGraphicsItem (which
+    // shouldn't make sense).
     enum ResizeHandle {
         NoHandle = 0,
         TopLeftHandle = 1,     //0001
@@ -76,6 +73,7 @@ namespace Caneda
     ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles,
             const QRectF& rect);
 
+    // *************************************************************
 
     //! \brief CGraphicsItem - The base class for components, wires, nodes...
     class CGraphicsItem : public QGraphicsItem
@@ -179,75 +177,28 @@ namespace Caneda
         return result ? static_cast<T>(item)  : 0;
     }
 
-    //! This enum is used in \a filterItems method to determine filtering.
-    enum FilterOption {
-        DontRemoveItems,
-        RemoveItems
-    };
-
     /*!
-     * \brief This function returns a list of canedaitems present in \a items.
+     * \brief Returns a list of Caneda items present in \a items.
+     *
      * \param items  The list from which items are to be filtered.
-     * \param option Indication whether to remove non matching items from items passed
-     *               or not.
      */
     template<typename T>
-    QList<T*> filterItems(QList<QGraphicsItem*> &items, FilterOption option = DontRemoveItems)
+    QList<T*> filterItems(QList<QGraphicsItem*> &items)
     {
         QList<T*> tItems;
-        QList<QGraphicsItem*>::iterator it = items.begin();
-        while(it != items.end()) {
-            QGraphicsItem *item = *it;
+
+        foreach(QGraphicsItem *item, items) {
             T *tItem = canedaitem_cast<T*>(item);
             if(tItem) {
                 tItems << tItem;
-                if(option == RemoveItems) {
-                    it = items.erase(it);
-                }
-                else {
-                    ++it;
-                }
-            }
-            else {
-                ++it;
             }
         }
-        return tItems;
-    }
 
-    /*!
-     * \brief This function returns a list of canedaitems present in \a items.
-     * \param items  The list from which items are to be filtered.
-     * \param option Indication whether to remove non matching items from items passed
-     *               or not.
-     */
-    template<typename T>
-    QList<T*> filterItems(QList<CGraphicsItem*> &items, FilterOption option = DontRemoveItems)
-    {
-        QList<T*> tItems;
-        QList<CGraphicsItem*>::iterator it = items.begin();
-        while(it != items.end()) {
-            CGraphicsItem *item = *it;
-            T *tItem = canedaitem_cast<T*>(item);
-            if(tItem) {
-                tItems << tItem;
-                if(option == RemoveItems) {
-                    it = items.erase(it);
-                }
-                else {
-                    ++it;
-                }
-            }
-            else {
-                ++it;
-            }
-        }
         return tItems;
     }
 
     //! Key used to store the current position of an item in it's data field.
     static const int PointKey = 10;
-
     void storePos(QGraphicsItem *item, const QPointF& pos);
     QPointF storedPos(QGraphicsItem *item);
 

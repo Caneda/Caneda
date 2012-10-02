@@ -121,8 +121,7 @@ namespace Caneda
         return Caneda::NoHandle;
     }
 
-    //! Constructor
-    //! \brief Create a new item and add to scene.
+    //! \brief Constructor: Create a new item and add to scene.
     CGraphicsItem::CGraphicsItem(QGraphicsItem* parent, CGraphicsScene* scene) :
         QGraphicsItem(parent),
         m_boundingRect(0, 0, 0, 0)

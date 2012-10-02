@@ -35,14 +35,11 @@
 #include "paintings/ellipsearc.h"
 #include "paintings/graphictextdialog.h"
 
-#include <QApplication>
 #include <QClipboard>
-#include <QDate>
 #include <QGraphicsSceneEvent>
 #include <QKeySequence>
 #include <QMenu>
 #include <QPainter>
-#include <QScrollBar>
 #include <QShortcutEvent>
 
 #include <cmath>
@@ -216,7 +213,7 @@ namespace Caneda
     bool CGraphicsScene::alignElements(const Qt::Alignment alignment)
     {
         QList<QGraphicsItem*> gItems = selectedItems();
-        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems, DontRemoveItems);
+        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems);
 
         // Could not align less than two elements
         if(items.size() < 2) {
@@ -401,13 +398,13 @@ namespace Caneda
         const QPoint point = pos.toPoint();
 
         int x = qAbs(point.x());
-        x += (Caneda::GRID_SPACE >> 1);
-        x -= x % Caneda::GRID_SPACE;
+        x += (Caneda::DefaultGridSpace >> 1);
+        x -= x % Caneda::DefaultGridSpace;
         x *= sign(point.x());
 
         int y = qAbs(point.y());
-        y += (Caneda::GRID_SPACE >> 1);
-        y -= y % Caneda::GRID_SPACE;
+        y += (Caneda::DefaultGridSpace >> 1);
+        y -= y % Caneda::DefaultGridSpace;
         y *= sign(point.y());
 
         return QPointF(x, y);
@@ -422,7 +419,7 @@ namespace Caneda
      *
      * \param MouseAction: mouse action to set
      */
-    void CGraphicsScene::setMouseAction(const MouseAction action)
+    void CGraphicsScene::setMouseAction(const Caneda::MouseAction action)
     {
         if(m_mouseAction == action) {
             return;
@@ -642,8 +639,8 @@ namespace Caneda
         // Draw grid
         if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {
 
-            int drawingGridWidth = Caneda::GRID_SPACE;
-            int drawingGridHeight = Caneda::GRID_SPACE;
+            int drawingGridWidth = Caneda::DefaultGridSpace;
+            int drawingGridHeight = Caneda::DefaultGridSpace;
 
             //Make grid size display dinamic, depending on zoom level
             DocumentViewManager *manager = DocumentViewManager::instance();
@@ -843,7 +840,7 @@ namespace Caneda
             QString item, category;
             stream >> item >> category;
             CGraphicsItem *qItem = itemForName(item, category);
-            /* XXX: extract and factorize */
+            // XXX: extract and factorize
             if(qItem->type() == GraphicText::Type) {
                 GraphicTextDialog dialog(0, Caneda::DontPushUndoCmd);
                 if(dialog.exec() == QDialog::Accepted) {
@@ -972,7 +969,7 @@ namespace Caneda
     /*!
      * \brief Call the appropriate mouseAction event based on the current mouse action
      */
-    void CGraphicsScene::sendMouseActionEvent(MouseActionEvent *e)
+    void CGraphicsScene::sendMouseActionEvent(QGraphicsSceneMouseEvent *e)
     {
         switch(m_mouseAction) {
             case Wiring:
@@ -1063,7 +1060,7 @@ namespace Caneda
      *
      *********************************************************************/
     //! \brief Wiring event
-    void CGraphicsScene::wiringEvent(MouseActionEvent *event)
+    void CGraphicsScene::wiringEvent(QGraphicsSceneMouseEvent *event)
     {
         QPointF pos = smartNearingGridPoint(event->scenePos());
 
@@ -1083,7 +1080,7 @@ namespace Caneda
      * \param Event: mouse event
      * \param pos: coordinate of mouse action point
      */
-    void CGraphicsScene::wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos)
+    void CGraphicsScene::wiringEventMouseClick(const QGraphicsSceneMouseEvent *event, const QPointF &pos)
     {
         // Left click - Add control point
         if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)  {
@@ -1184,7 +1181,7 @@ namespace Caneda
      *
      * Delete action: left click delete, right click disconnect item
      */
-    void CGraphicsScene::deletingEvent(const MouseActionEvent *event)
+    void CGraphicsScene::deletingEvent(const QGraphicsSceneMouseEvent *event)
     {
         if(event->type() != QEvent::GraphicsSceneMousePress) {
             return;
@@ -1247,7 +1244,7 @@ namespace Caneda
      * \brief Rotate item
      * \note right anticlockwise
      */
-    void CGraphicsScene::rotatingEvent(MouseActionEvent *event)
+    void CGraphicsScene::rotatingEvent(QGraphicsSceneMouseEvent *event)
     {
         Caneda::AngleDirection angle;
 
@@ -1271,7 +1268,7 @@ namespace Caneda
         // Get items
         QList<QGraphicsItem*> _list = items(event->scenePos());
         // Filter item
-        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list, DontRemoveItems);
+        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list);
         if(!qItems.isEmpty()) {
             rotateItems(QList<CGraphicsItem*>() << qItems.first(), angle, Caneda::PushUndoCmd);
         }
@@ -1333,7 +1330,7 @@ namespace Caneda
      * corresponding feedback (zoom band) is shown which indiates area that will
      * be zoomed. On mouse release, the area (rect) selected is zoomed.
      */
-    void CGraphicsScene::zoomingAreaEvent(MouseActionEvent *event)
+    void CGraphicsScene::zoomingAreaEvent(QGraphicsSceneMouseEvent *event)
     {
         QGraphicsView *view = static_cast<QGraphicsView *>(event->widget()->parent());
         CGraphicsView *cView = qobject_cast<CGraphicsView*>(view);
@@ -1375,13 +1372,13 @@ namespace Caneda
      *
      *****************************************************************/
     //! \todo document
-    void CGraphicsScene::markingEvent(MouseActionEvent *event)
+    void CGraphicsScene::markingEvent(QGraphicsSceneMouseEvent *event)
     {
         Q_UNUSED(event);
         //TODO:
     }
 
-    void CGraphicsScene::paintingDrawEvent(MouseActionEvent *event)
+    void CGraphicsScene::paintingDrawEvent(QGraphicsSceneMouseEvent *event)
     {
         if(!m_paintingDrawItem) {
             return;
@@ -1481,7 +1478,7 @@ namespace Caneda
      * On mouse press, these items are placed on the scene and a duplicate is
      * retained to support further placing/insertion/paste.
      */
-    void CGraphicsScene::insertingItemsEvent(MouseActionEvent *event)
+    void CGraphicsScene::insertingItemsEvent(QGraphicsSceneMouseEvent *event)
     {
         if(event->type() == QEvent::GraphicsSceneMousePress) {
 
@@ -1548,7 +1545,7 @@ namespace Caneda
      * placed only if the clicked point is wire or node.
      * \todo Implement
      */
-    void CGraphicsScene::insertingWireLabelEvent(MouseActionEvent *event)
+    void CGraphicsScene::insertingWireLabelEvent(QGraphicsSceneMouseEvent *event)
     {
         Q_UNUSED(event);
         //TODO:
@@ -1582,7 +1579,7 @@ namespace Caneda
      * are created if a connected component is moved away from
      * an unselected component.
      */
-    void CGraphicsScene::normalEvent(MouseActionEvent *e)
+    void CGraphicsScene::normalEvent(QGraphicsSceneMouseEvent *e)
     {
         switch(e->type()) {
             case QEvent::GraphicsSceneMousePress:
@@ -1957,13 +1954,13 @@ namespace Caneda
      * \param event: event
      * \param axis: mirror axis
      */
-    void CGraphicsScene::mirroringEvent(const MouseActionEvent *event,
+    void CGraphicsScene::mirroringEvent(const QGraphicsSceneMouseEvent *event,
             const Qt::Axis axis)
     {
         /* select item */
         QList<QGraphicsItem*> _list = items(event->scenePos());
         /* filters item */
-        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list, DontRemoveItems);
+        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list);
         if(!qItems.isEmpty()) {
             /* mirror */
             mirrorItems(QList<CGraphicsItem*>() << qItems.first(), Caneda::PushUndoCmd, axis);
@@ -1974,7 +1971,7 @@ namespace Caneda
      * \brief Mirror X event
      * \note right button mirror Y
      */
-    void CGraphicsScene::mirroringXEvent(const MouseActionEvent *event)
+    void CGraphicsScene::mirroringXEvent(const QGraphicsSceneMouseEvent *event)
     {
         if(event->type() != QEvent::GraphicsSceneMousePress) {
             return;
@@ -1994,7 +1991,7 @@ namespace Caneda
      * \brief Mirror Y event
      * \note right button mirror X
      */
-    void CGraphicsScene::mirroringYEvent(const MouseActionEvent *event)
+    void CGraphicsScene::mirroringYEvent(const QGraphicsSceneMouseEvent *event)
     {
         if(event->type() != QEvent::GraphicsSceneMousePress) {
             return;

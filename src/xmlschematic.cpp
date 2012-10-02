@@ -124,7 +124,7 @@ namespace Caneda
     {
         CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
-        QList<Component*> components = filterItems<Component>(items, RemoveItems);
+        QList<Component*> components = filterItems<Component>(items);
         if(!components.isEmpty()) {
             writer->writeStartElement("components");
             foreach(Component *c, components) {
@@ -137,7 +137,7 @@ namespace Caneda
     void XmlSchematic::saveWires(Caneda::XmlWriter *writer)
     {
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
-        QList<Wire*> wires = filterItems<Wire>(items, RemoveItems);
+        QList<Wire*> wires = filterItems<Wire>(items);
 
         if(wires.isEmpty()) {
             return;
@@ -175,7 +175,7 @@ namespace Caneda
     {
         CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
-        QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
+        QList<Painting*> paintings = filterItems<Painting>(items);
         if(!paintings.isEmpty()) {
             writer->writeStartElement("paintings");
             foreach(Painting *p, paintings) {

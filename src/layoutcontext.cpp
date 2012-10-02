@@ -20,6 +20,7 @@
 #include "layoutcontext.h"
 
 #include "actionmanager.h"
+#include "cgraphicsscene.h"
 #include "documentviewmanager.h"
 #include "layoutdocument.h"
 #include "mainwindow.h"

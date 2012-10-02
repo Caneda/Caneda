@@ -144,9 +144,9 @@ namespace Caneda
     class RotateItemsCmd : public QUndoCommand
     {
     public:
-        RotateItemsCmd(QList<CGraphicsItem*> items, const  Caneda::AngleDirection=Caneda::Clockwise,
+        RotateItemsCmd(QList<CGraphicsItem*> items, const  Caneda::AngleDirection = Caneda::Clockwise,
                 QUndoCommand *parent = 0);
-        RotateItemsCmd(CGraphicsItem *item, const  Caneda::AngleDirection=Caneda::Clockwise,
+        RotateItemsCmd(CGraphicsItem *item, const  Caneda::AngleDirection = Caneda::Clockwise,
                 QUndoCommand *parent = 0);
 
         void undo();

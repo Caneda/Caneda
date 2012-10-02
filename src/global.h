@@ -26,6 +26,7 @@
 #endif
 
 #include <QDebug>
+#include <QPainter>
 #include <QVariant>
 
 // Forward declarations
@@ -71,8 +72,25 @@ namespace Caneda
         return value >= 0 ? +1 : -1;
     }
 
+    QColor invertcolor(const QColor & color);
+
     QString latexToUnicode(const QString& input);
     QString unicodeToLatex(QString unicode);
+
+    //! \brief Possible mouse actions
+    enum MouseAction {
+        Wiring,             // Wire action
+        Deleting,           // Delete
+        Marking,            // Placing a mark on the graph
+        Rotating,           // Rotate
+        MirroringX,         // Mirror X
+        MirroringY,         // Mirror Y
+        ZoomingAreaEvent,   // Zoom an area
+        PaintingDrawEvent,  // Painting item's drawing (like Ellipse, Rectangle)
+        InsertingItems,     // Inserting an item
+        InsertingWireLabel, // Inserting a wire label
+        Normal              // Normal action (ie select)
+    };
 
     struct ZoomRange
     {
@@ -92,7 +110,22 @@ namespace Caneda
         }
     };
 
-    QColor invertcolor(const QColor & color);
+    //! \brief This enum determines the rotation direction.
+    enum AngleDirection {
+        Clockwise,
+        AntiClockwise
+    };
+
+    //! \brief This enum determines the undo option.
+    enum UndoOption {
+        DontPushUndoCmd,
+        PushUndoCmd
+    };
+
+    //! \brief Default grid spacing
+    static const uint DefaultGridSpace = 10;
+    //! \brief Render hints
+    static const QPainter::RenderHints DefaulRenderHints = QPainter::Antialiasing | QPainter::SmoothPixmapTransform;
 
 } // namespace Caneda
 

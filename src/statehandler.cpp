@@ -42,7 +42,7 @@ namespace Caneda
     struct StateHandlerPrivate
     {
         StateHandlerPrivate() {
-            mouseAction = CGraphicsScene::Normal;
+            mouseAction = Caneda::Normal;
             paintingDrawItem = 0;
 
         }
@@ -68,7 +68,7 @@ namespace Caneda
             insertibles.clear();
         }
 
-        CGraphicsScene::MouseAction mouseAction;
+        Caneda::MouseAction mouseAction;
         QList<CGraphicsItem*> insertibles;
         Painting *paintingDrawItem;
 
@@ -261,7 +261,7 @@ namespace Caneda
 
     void StateHandler::slotRotateInsertibles()
     {
-        if (d->mouseAction != CGraphicsScene::InsertingItems) {
+        if (d->mouseAction != Caneda::InsertingItems) {
             qDebug() << Q_FUNC_INFO << "Wrong mouse action mode!";
             return;
         }
@@ -276,7 +276,7 @@ namespace Caneda
 
     void StateHandler::slotMirrorInsertibles()
     {
-        if (d->mouseAction != CGraphicsScene::InsertingItems) {
+        if (d->mouseAction != Caneda::InsertingItems) {
             qDebug() << Q_FUNC_INFO << "Wrong mouse action mode!";
             return;
         }
@@ -338,7 +338,7 @@ namespace Caneda
         ActionManager *am = ActionManager::instance();
 
         Action *action = am->actionForName(sender);
-        CGraphicsScene::MouseAction ma = am->mouseActionForAction(action);
+        Caneda::MouseAction ma = am->mouseActionForAction(action);
         pActionFunc func = 0;
 
         if (sender == "editDelete") {
@@ -442,35 +442,35 @@ namespace Caneda
         QCursor cursor;
 
         switch (d->mouseAction) {
-            case CGraphicsScene::Wiring:
+            case Caneda::Wiring:
                 cursor.setShape(Qt::CrossCursor);
                 break;
 
-            case CGraphicsScene::Deleting:
+            case Caneda::Deleting:
                 cursor = QCursor(Caneda::icon("draw-eraser").pixmap(20));
                 break;
 
-            case CGraphicsScene::Rotating:
+            case Caneda::Rotating:
                 cursor = QCursor(Caneda::icon("object-rotate-left").pixmap(20));
                 break;
 
-            case CGraphicsScene::MirroringX:
+            case Caneda::MirroringX:
                 cursor.setShape(Qt::SizeVerCursor);
                 break;
 
-            case CGraphicsScene::MirroringY:
+            case Caneda::MirroringY:
                 cursor.setShape(Qt::SizeHorCursor);
                 break;
 
-            case CGraphicsScene::ZoomingAreaEvent:
+            case Caneda::ZoomingAreaEvent:
                 cursor = QCursor(Caneda::icon("zoom-in").pixmap(20));
                 break;
 
-            case CGraphicsScene::PaintingDrawEvent:
+            case Caneda::PaintingDrawEvent:
                 cursor.setShape(Qt::CrossCursor);
                 break;
 
-            case CGraphicsScene::InsertingItems:
+            case Caneda::InsertingItems:
                 cursor.setShape(Qt::ClosedHandCursor);
                 break;
 
@@ -490,7 +490,7 @@ namespace Caneda
         }
 
         scene->setMouseAction(d->mouseAction);
-        if (d->mouseAction == CGraphicsScene::InsertingItems) {
+        if (d->mouseAction == Caneda::InsertingItems) {
             if (!d->insertibles.isEmpty()) {
                 QList<CGraphicsItem*> copy;
                 foreach (CGraphicsItem *it, d->insertibles) {
@@ -498,7 +498,7 @@ namespace Caneda
                 }
                 scene->beginInsertingItems(copy);
             }
-        } else if (d->mouseAction == CGraphicsScene::PaintingDrawEvent) {
+        } else if (d->mouseAction == Caneda::PaintingDrawEvent) {
             if (d->paintingDrawItem) {
                 Painting *copy = d->paintingDrawItem->copy();
                 scene->beginPaintingDraw(copy);

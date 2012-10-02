@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,7 +22,7 @@
 
 #include "cgraphicsscene.h"
 
-#include <QWheelEvent>
+#include <QMouseEvent>
 
 namespace Caneda
 {
@@ -38,7 +39,7 @@ namespace Caneda
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
         setAcceptDrops(true);
-        setRenderHints(Caneda::RENDER_HINTS);
+        setRenderHints(Caneda::DefaulRenderHints);
         setViewportUpdateMode(SmartViewportUpdate);
         setCacheMode(CacheBackground);
         setAlignment(static_cast<Qt::AlignmentFlag>(Qt::AlignLeft | Qt::AlignTop));
@@ -154,7 +155,7 @@ namespace Caneda
 
     void CGraphicsView::onMouseActionChanged()
     {
-        if (cGraphicsScene()->mouseAction() == CGraphicsScene::Normal) {
+        if (cGraphicsScene()->mouseAction() == Caneda::Normal) {
             setDragMode(QGraphicsView::RubberBandDrag);
         } else {
             setDragMode(QGraphicsView::NoDrag);

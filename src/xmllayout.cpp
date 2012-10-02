@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -113,7 +113,7 @@ namespace Caneda
     {
         CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
-        QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
+        QList<Painting*> paintings = filterItems<Painting>(items);
         if(!paintings.isEmpty()) {
             writer->writeStartElement("paintings");
             foreach(Painting *p, paintings) {

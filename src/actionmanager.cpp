@@ -90,7 +90,7 @@ namespace Caneda
     }
 
     Action* ActionManager::createMouseAction(const QString& id,
-            CGraphicsScene::MouseAction mouseAction, const QIcon& icon,
+            Caneda::MouseAction mouseAction, const QIcon& icon,
             const QString& text)
     {
         Action *action = createAction(id, icon, text);
@@ -106,7 +106,7 @@ namespace Caneda
     }
 
     Action* ActionManager::createMouseAction(const QString& id,
-            CGraphicsScene::MouseAction mouseAction, const QString& text)
+            Caneda::MouseAction mouseAction, const QString& text)
     {
         return createMouseAction(id, mouseAction, QIcon(), text);
     }
@@ -116,12 +116,12 @@ namespace Caneda
         return m_actionHash.value(name, static_cast<Action*>(0));
     }
 
-    Action* ActionManager::actionForMouseAction(CGraphicsScene::MouseAction ma) const
+    Action* ActionManager::actionForMouseAction(Caneda::MouseAction ma) const
     {
         return m_mouseActionHash.key(ma);
     }
 
-    CGraphicsScene::MouseAction ActionManager::mouseActionForAction(Action *action) const
+    Caneda::MouseAction ActionManager::mouseActionForAction(Action *action) const
     {
         return m_mouseActionHash.value(action);
     }

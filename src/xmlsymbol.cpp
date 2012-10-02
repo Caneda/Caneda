@@ -157,7 +157,7 @@ namespace Caneda
         writer->writeStartElement("symbol");
 
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
-        QList<Painting*> paintings = filterItems<Painting>(items, RemoveItems);
+        QList<Painting*> paintings = filterItems<Painting>(items);
         if(!paintings.isEmpty()) {
             foreach(Painting *p, paintings) {
                 p->saveData(writer);

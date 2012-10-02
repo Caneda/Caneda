@@ -625,7 +625,7 @@ namespace Caneda
         SymbolContext *sy = SymbolContext::instance();
 
         ActionManager *am = ActionManager::instance();
-        action = am->createMouseAction("editDelete", CGraphicsScene::Deleting,
+        action = am->createMouseAction("editDelete", Caneda::Deleting,
                 Caneda::icon("edit-delete"), tr("&Delete"));
         action->setShortcut(Key_Delete);
         action->setToolTip(tr("Delete") + " (" + action->shortcut().toString() + ")");
@@ -637,7 +637,7 @@ namespace Caneda
         sc->addMouseAction(action);
         sy->addMouseAction(action);
 
-        action = am->createMouseAction("select", CGraphicsScene::Normal,
+        action = am->createMouseAction("select", Caneda::Normal,
                 Caneda::icon("edit-select"), tr("Select"));
         action->setShortcut(Key_Escape);
         action->setToolTip(tr("Select") + " (" + action->shortcut().toString() + ")");
@@ -650,7 +650,7 @@ namespace Caneda
         sc->addMouseAction(action);
         sy->addMouseAction(action);
 
-        action = am->createMouseAction("editRotate", CGraphicsScene::Rotating,
+        action = am->createMouseAction("editRotate", Caneda::Rotating,
                 Caneda::icon("object-rotate-left"), tr("Rotate"));
         action->setShortcut(Key_R);
         action->setToolTip(tr("Rotate") + " (" + action->shortcut().toString() + ")");
@@ -662,7 +662,7 @@ namespace Caneda
         sc->addMouseAction(action);
         sy->addMouseAction(action);
 
-        action = am->createMouseAction("editMirror", CGraphicsScene::MirroringX,
+        action = am->createMouseAction("editMirror", Caneda::MirroringX,
                 Caneda::icon("object-flip-vertical"), tr("Mirror about X Axis"));
         action->setShortcut(Key_V);
         action->setToolTip(tr("Mirror about X Axis") + " (" + action->shortcut().toString() + ")");
@@ -674,7 +674,7 @@ namespace Caneda
         sc->addMouseAction(action);
         sy->addMouseAction(action);
 
-        action = am->createMouseAction("editMirrorY", CGraphicsScene::MirroringY,
+        action = am->createMouseAction("editMirrorY", Caneda::MirroringY,
                 Caneda::icon("object-flip-horizontal"), tr("Mirror about Y Axis"));
         action->setShortcut(Key_H);
         action->setToolTip(tr("Mirror about Y Axis") + " (" + action->shortcut().toString() + ")");
@@ -686,7 +686,7 @@ namespace Caneda
         sc->addMouseAction(action);
         sy->addMouseAction(action);
 
-        action = am->createMouseAction("insWire", CGraphicsScene::Wiring,
+        action = am->createMouseAction("insWire", Caneda::Wiring,
                 Caneda::icon("wire"), tr("Wire"));
         action->setShortcut(Key_W);
         action->setToolTip(tr("Wire") + " (" + action->shortcut().toString() + ")");
@@ -696,7 +696,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("insLabel", CGraphicsScene::InsertingWireLabel,
+        action = am->createMouseAction("insLabel", Caneda::InsertingWireLabel,
                 Caneda::icon("nodename"), tr("Wire Label"));
         action->setShortcut(Key_L);
         action->setToolTip(tr("Wire Label") + " (" + action->shortcut().toString() + ")");
@@ -706,7 +706,7 @@ namespace Caneda
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("zoomArea", CGraphicsScene::ZoomingAreaEvent,
+        action = am->createMouseAction("zoomArea", Caneda::ZoomingAreaEvent,
                 Caneda::icon("transform-scale"), tr("Zoom area"));
         action->setStatusTip(tr("Zooms a selected area in the current view"));
         action->setWhatsThis(tr("Zooms a selected area in the current view"));
@@ -716,13 +716,13 @@ namespace Caneda
         sc->addMouseAction(action);
         sy->addMouseAction(action);
 
-        action = am->createMouseAction("insertItem", CGraphicsScene::InsertingItems,
+        action = am->createMouseAction("insertItem", Caneda::InsertingItems,
                 tr("Insert item action"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
 
-        action = am->createMouseAction("paintingDraw", CGraphicsScene::PaintingDrawEvent,
+        action = am->createMouseAction("paintingDraw", Caneda::PaintingDrawEvent,
                 tr("Painting draw action"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));

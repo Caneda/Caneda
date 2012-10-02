@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -28,9 +29,6 @@ namespace Caneda
 {
     // Forward declarations
     class CGraphicsScene;
-
-    //! \brief Render hints
-    static const QPainter::RenderHints RENDER_HINTS = QPainter::Antialiasing | QPainter::SmoothPixmapTransform;
 
     class CGraphicsView : public QGraphicsView
     {

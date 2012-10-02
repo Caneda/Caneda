@@ -21,6 +21,7 @@
 #ifndef C_GRAPHICS_SCENE_H
 #define C_GRAPHICS_SCENE_H
 
+#include "global.h"
 #include "undocommands.h"
 
 #include <QGraphicsItem>
@@ -28,7 +29,6 @@
 #include <QList>
 
 // Forward declarations
-class QUndoCommand;
 class QUndoStack;
 
 namespace Caneda
@@ -39,35 +39,26 @@ namespace Caneda
     class Painting;
     class Wire;
 
-    typedef QGraphicsSceneMouseEvent MouseActionEvent;
-
-    //! \brief Default grid spacing
-    static const uint GRID_SPACE = 10;
-
     /*!
-     * CGraphicsScene
-     * This class provides a canvas for managing schematic elements
+     * \brief This class provides a canvas for managing graphics elements
+     * common to all Caneda graphics scenes.
+     *
+     * This class provides a canvas for managing graphics elements on all
+     * Caneda graphics scenes (schematics, symbols, layouts, etc). In this
+     * class common item operations are implemented, for example mirror and
+     * rotate items. Nevertheless this class must be subclassed for more
+     * specific operations and handling of the different types of documents.
+     *
+     * \todo Subclass this class for the different types of documents (schematics,
+     * symbols, layouts, etc).
+     *
+     * \sa CGraphicsView, CGraphicsItem
      */
     class CGraphicsScene : public QGraphicsScene
     {
         Q_OBJECT
 
     public:
-        //! \brief Possible mouse actions
-        enum MouseAction {
-            Wiring,             // Wire action
-            Deleting,           // Delete
-            Marking,            // Placing a mark on the graph.
-            Rotating,           // Rotate
-            MirroringX,         // Mirror X
-            MirroringY,         // Mirror Y
-            ZoomingAreaEvent,   // Zoom an area
-            PaintingDrawEvent,  // Painting item's drawing (like Ellipse, Rectangle)
-            InsertingItems,     // Inserting an item
-            InsertingWireLabel, // Inserting a wire label
-            Normal              // Normal action (ie select)
-        };
-
         // Constructor-destructor
         CGraphicsScene(QObject *parent = 0);
         ~CGraphicsScene();
@@ -106,8 +97,8 @@ namespace Caneda
         QPointF smartNearingGridPoint(const QPointF &pos) const;
 
         // Mouse actions
-        MouseAction mouseAction() const { return m_mouseAction; }
-        void setMouseAction(const MouseAction ma);
+        Caneda::MouseAction mouseAction() const { return m_mouseAction; }
+        void setMouseAction(const Caneda::MouseAction ma);
 
         bool eventFilter(QObject *object, QEvent *event);
         void blockShortcuts(bool block);
@@ -153,26 +144,26 @@ namespace Caneda
         void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
         void resetState();
 
-        void wiringEvent(MouseActionEvent *e);
-        void wiringEventMouseClick(const MouseActionEvent *event, const QPointF &pos);
+        void wiringEvent(QGraphicsSceneMouseEvent *e);
+        void wiringEventMouseClick(const QGraphicsSceneMouseEvent *event, const QPointF &pos);
         void wiringEventLeftMouseClick(const QPointF &pos);
         void wiringEventRightMouseClick();
         void wiringEventMouseMove(const QPointF &pos);
 
-        void deletingEvent(const MouseActionEvent *e);
+        void deletingEvent(const QGraphicsSceneMouseEvent *e);
         void deletingEventLeftMouseClick(const QPointF &pos);
         void deletingEventRightMouseClick(const QPointF &pos);
 
-        void rotatingEvent(MouseActionEvent *e);
-        void zoomingAreaEvent(MouseActionEvent *e);
-        void markingEvent(MouseActionEvent *e);
-        void paintingDrawEvent(MouseActionEvent *e);
-        void insertingItemsEvent(MouseActionEvent *e);
-        void insertingWireLabelEvent(MouseActionEvent *event);
+        void rotatingEvent(QGraphicsSceneMouseEvent *e);
+        void zoomingAreaEvent(QGraphicsSceneMouseEvent *e);
+        void markingEvent(QGraphicsSceneMouseEvent *e);
+        void paintingDrawEvent(QGraphicsSceneMouseEvent *e);
+        void insertingItemsEvent(QGraphicsSceneMouseEvent *e);
+        void insertingWireLabelEvent(QGraphicsSceneMouseEvent *event);
 
         void placeAndDuplicatePainting();
 
-        void normalEvent(MouseActionEvent *e);
+        void normalEvent(QGraphicsSceneMouseEvent *e);
         void processForSpecialMove(QList<QGraphicsItem*> _items);
         void disconnectDisconnectibles();
         void specialMove();
@@ -189,9 +180,9 @@ namespace Caneda
         QPointF centerOfItems(const QList<CGraphicsItem*> &items);
 
         // Private edit events
-        void mirroringEvent(const MouseActionEvent *event, const Qt::Axis axis);
-        void mirroringXEvent(const MouseActionEvent *e);
-        void mirroringYEvent(const MouseActionEvent *e);
+        void mirroringEvent(const QGraphicsSceneMouseEvent *event, const Qt::Axis axis);
+        void mirroringXEvent(const QGraphicsSceneMouseEvent *e);
+        void mirroringYEvent(const QGraphicsSceneMouseEvent *e);
 
         void distributeElementsHorizontally(QList<CGraphicsItem*> items);
         void distributeElementsVertically(QList<CGraphicsItem*> items);
@@ -259,7 +250,7 @@ namespace Caneda
         Wire *m_currentWiringWire;
 
         //! Current mouse action
-        MouseAction m_mouseAction;
+        Caneda::MouseAction m_mouseAction;
 
         /*!
          * \brief State holder to know whether shortcut events are blocked or not

@@ -353,7 +353,7 @@ namespace Caneda
             pix.fill(Qt::transparent);
 
             QPainter painter(&pix);
-            painter.setRenderHints(Caneda::RENDER_HINTS);
+            painter.setRenderHints(Caneda::DefaulRenderHints);
 
             Settings *settings = Settings::instance();
             painter.setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
