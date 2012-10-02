@@ -24,7 +24,6 @@
 #include "global.h"
 
 #include <QDialog>
-#include <QFlags>
 #include <QGraphicsItem>
 
 #include <limits>
@@ -44,33 +43,6 @@ namespace Caneda
     class XmlWriter;
     class CGraphicsScene;
     class Port;
-
-    // *************************************************************
-    // Resize handle related methods.
-    // *************************************************************
-    // TODO: This methods should be moved inside CGraphicsItem class
-    // if not used in any class not derived from CGraphicsItem (which
-    // shouldn't make sense).
-    enum ResizeHandle {
-        NoHandle = 0,
-        TopLeftHandle = 1,     //0001
-        TopRightHandle = 2,    //0010
-        BottomRightHandle = 4, //0100
-        BottomLeftHandle = 8   //1000
-    };
-
-    Q_DECLARE_FLAGS(ResizeHandles, ResizeHandle)
-    Q_DECLARE_OPERATORS_FOR_FLAGS(Caneda::ResizeHandles)
-
-    static const QRectF handleRect(-5, -5, 10, 10);
-
-    void drawResizeHandle(const QPointF &centrePos, QPainter *painter);
-    void drawResizeHandles(ResizeHandles handles, const QRectF& rect, QPainter *painter);
-
-    ResizeHandle handleHitTest(const QPointF& point, ResizeHandles handles,
-            const QRectF& rect);
-
-    // *************************************************************
 
     //! \brief CGraphicsItem - The base class for components, wires, nodes...
     class CGraphicsItem : public QGraphicsItem

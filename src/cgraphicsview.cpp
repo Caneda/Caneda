@@ -42,7 +42,7 @@ namespace Caneda
         setRenderHints(Caneda::DefaulRenderHints);
         setViewportUpdateMode(SmartViewportUpdate);
         setCacheMode(CacheBackground);
-        setAlignment(static_cast<Qt::AlignmentFlag>(Qt::AlignLeft | Qt::AlignTop));
+        setAlignment(Qt::AlignmentFlag(Qt::AlignLeft | Qt::AlignTop));
         setTransformationAnchor(QGraphicsView::NoAnchor);
 
         viewport()->setMouseTracking(true);

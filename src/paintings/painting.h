@@ -82,12 +82,7 @@ namespace Caneda
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-        //! Returns an OR representation of used resize handles.
-        Caneda::ResizeHandles resizeHandles() const { return m_resizeHandles; }
         void setResizeHandles(Caneda::ResizeHandles handles);
-
-        //! Returns the active handle i.e the one with mouse focus.
-        Caneda::ResizeHandle activeHandle() const { return m_activeHandle; }
 
         Painting* copy(CGraphicsScene *scene = 0) const;
 
@@ -113,14 +108,21 @@ namespace Caneda
         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
     private:
+        // Resize handle related methods
+        const QRectF handleRect() { return QRect(-5, -5, 10, 10); }
+
+        void drawResizeHandle(const QPointF &centrePos, QPainter *painter);
+        void drawResizeHandles(Caneda::ResizeHandles handles, const QRectF& rect, QPainter *painter);
+
+        Caneda::ResizeHandle handleHitTest(const QPointF& point, Caneda::ResizeHandles handles,
+                                           const QRectF& rect);
+
         /*!
-         * \brief Represents the rectangle withing which painting should be drawn.
+         * \brief Represents the rectangle containing the painting item.
          *
-         * For eg. GraphicLine can use topleft and bottom right of painting
-         * rectangles to represent itself.
-         *
-         * \note paintingRect is not same as bounding rect. The latter also includes
-         * resizehandles.
+         * For example, a line can use its topleft and bottom right to conform a
+         * rectangle to represent itself. This is not the same as the bounding rect,
+         * as the latter also includes resizehandles.
          */
         QRectF m_paintingRect;
         QPen m_pen;

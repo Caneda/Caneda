@@ -127,6 +127,19 @@ namespace Caneda
     //! \brief Render hints
     static const QPainter::RenderHints DefaulRenderHints = QPainter::Antialiasing | QPainter::SmoothPixmapTransform;
 
+    //! \brief Resize handles displayed while selecting a painting item.
+    enum ResizeHandle {
+        NoHandle = 0,
+        TopLeftHandle = 1,     //0001
+        TopRightHandle = 2,    //0010
+        BottomRightHandle = 4, //0100
+        BottomLeftHandle = 8   //1000
+    };
+
+    // Declare resize handles as flags to allow bitwise operations
+    Q_DECLARE_FLAGS(ResizeHandles, ResizeHandle)
+    Q_DECLARE_OPERATORS_FOR_FLAGS(Caneda::ResizeHandles)
+
 } // namespace Caneda
 
 #endif //GLOBAL_H

@@ -129,7 +129,7 @@ namespace Caneda
                          QWidget *)
     {
         if(option->state & QStyle::State_Selected) {
-            Caneda::drawResizeHandles(m_resizeHandles, m_paintingRect, painter);
+            drawResizeHandles(m_resizeHandles, m_paintingRect, painter);
         }
     }
 
@@ -278,26 +278,26 @@ namespace Caneda
 
         // Now determine how to adjust bounding rect based on resize handles being used.
         if(m_resizeHandles.testFlag(Caneda::TopLeftHandle)) {
-            QRectF rect = Caneda::handleRect.translated(m_paintingRect.topLeft());
+            QRectF rect = handleRect().translated(m_paintingRect.topLeft());
             boundRect |= rect;
             _shape.addRect(rect);
         }
 
         if(m_resizeHandles.testFlag(Caneda::TopRightHandle)) {
-            QRectF rect = Caneda::handleRect.translated(m_paintingRect.topRight());
+            QRectF rect = handleRect().translated(m_paintingRect.topRight());
             boundRect |= rect;
             _shape.addRect(rect);
         }
 
         if(m_resizeHandles.testFlag(Caneda::BottomLeftHandle)) {
-            QRectF rect = Caneda::handleRect.translated(m_paintingRect.bottomLeft());
+            QRectF rect = handleRect().translated(m_paintingRect.bottomLeft());
             boundRect |= rect;
             _shape.addRect(rect);
 
         }
 
         if(m_resizeHandles.testFlag(Caneda::BottomRightHandle)) {
-            QRectF rect = Caneda::handleRect.translated(m_paintingRect.bottomRight());
+            QRectF rect = handleRect().translated(m_paintingRect.bottomRight());
             boundRect |= rect;
             _shape.addRect(rect);
         }
@@ -371,6 +371,95 @@ namespace Caneda
                     new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect));
         }
         m_activeHandle = Caneda::NoHandle;
+    }
+
+    /*!
+     * \brief Draw resize handle for painting items.
+     *
+     * \param centrePos The center point of the handle.
+     * \param painter   The painter used to draw the handle.
+     */
+    void Painting::drawResizeHandle(const QPointF &centrePos, QPainter *painter)
+    {
+        QPen savedPen = painter->pen();
+        QBrush savedBrush = painter->brush();
+
+        Settings *settings = Settings::instance();
+        painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>()));
+        painter->setBrush(Qt::NoBrush);
+
+        // handleRect is defined as QRectF(-w/2, -h/2, w, h)
+        painter->drawRect(handleRect().translated(centrePos));
+
+        painter->setPen(savedPen);
+        painter->setBrush(savedBrush);
+    }
+
+    /*!
+     * \brief Draw four resize handles along the corners of the rectangle passed.
+     *
+     * \param handles  The handle areas where handles need to be drawn.
+     * \param rect     The rectangle around which resize handles are to be drawn.
+     * \param painter  The painter used to draw resize handles.
+     */
+    void Painting::drawResizeHandles(Caneda::ResizeHandles handles, const QRectF& rect, QPainter *painter)
+    {
+        if(handles.testFlag(Caneda::TopLeftHandle)) {
+            drawResizeHandle(rect.topLeft(), painter);
+        }
+
+        if(handles.testFlag(Caneda::TopRightHandle)) {
+            drawResizeHandle(rect.topRight(), painter);
+        }
+
+        if(handles.testFlag(Caneda::BottomLeftHandle)) {
+            drawResizeHandle(rect.bottomLeft(), painter);
+        }
+
+        if(handles.testFlag(Caneda::BottomRightHandle)) {
+            drawResizeHandle(rect.bottomRight(), painter);
+        }
+    }
+
+    /*!
+     * \brief Returns the resize handle corresponding to a given point.
+     *
+     * \param point   The point to be tested for collision with handles.
+     * \param handles The mask indicating the handle areas to be tested.
+     * \param rect    The rectangle around which resize handles are to be tested.
+     */
+    Caneda::ResizeHandle Painting::handleHitTest(const QPointF& point, Caneda::ResizeHandles handles,
+            const QRectF& rect)
+    {
+        if(handles == Caneda::NoHandle) {
+            return Caneda::NoHandle;
+        }
+
+        if(handles.testFlag(Caneda::TopLeftHandle)) {
+            if(handleRect().translated(rect.topLeft()).contains(point)) {
+                return Caneda::TopLeftHandle;
+            }
+        }
+
+        if(handles.testFlag(Caneda::TopRightHandle)) {
+            if(handleRect().translated(rect.topRight()).contains(point)) {
+                return Caneda::TopRightHandle;
+            }
+        }
+
+        if(handles.testFlag(Caneda::BottomLeftHandle)){
+            if(handleRect().translated(rect.bottomLeft()).contains(point)) {
+                return Caneda::BottomLeftHandle;
+            }
+        }
+
+        if(handles.testFlag(Caneda::BottomRightHandle)){
+            if(handleRect().translated(rect.bottomRight()).contains(point)) {
+                return Caneda::BottomRightHandle;
+            }
+        }
+
+        return Caneda::NoHandle;
     }
 
 } // namespace Caneda
