@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,15 +22,12 @@
 
 #include "actionmanager.h"
 #include "cgraphicsscene.h"
-#include "cgraphicsview.h"
 #include "port.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
 #include <QGraphicsSceneEvent>
 #include <QMenu>
-#include <QStyleOptionGraphicsItem>
-#include <QXmlStreamWriter>
 
 namespace Caneda
 {
