@@ -21,6 +21,8 @@
 #include "painting.h"
 
 #include "cgraphicsscene.h"
+#include "settings.h"
+#include "xmlutilities.h"
 
 #include "arrow.h"
 #include "ellipse.h"
@@ -30,10 +32,8 @@
 #include "layer.h"
 #include "portsymbol.h"
 #include "rectangle.h"
-#include "xmlutilities.h"
 
 #include <QBrush>
-#include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QPen>
@@ -43,11 +43,13 @@ namespace Caneda
 {
     //! Constructs a painting item with default pen and default brush.
     Painting::Painting(CGraphicsScene *scene) : CGraphicsItem(0, scene),
-    m_pen(defaultPaintingPen),
-    m_brush(defaultPaintingBrush),
+    m_brush(Qt::NoBrush),
     m_resizeHandles(Caneda::NoHandle),
     m_activeHandle(Caneda::NoHandle)
     {
+        Settings *settings = Settings::instance();
+        m_pen = QPen(settings->currentValue("gui/foregroundColor").value<QColor>());
+
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);

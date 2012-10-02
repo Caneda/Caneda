@@ -29,9 +29,6 @@ class QPen;
 
 namespace Caneda
 {
-    static const QPen defaultPaintingPen(Qt::black);
-    static const QBrush defaultPaintingBrush(Qt::NoBrush);
-
     /*!
      * \brief This class is base for painting items like lines, rectangles...
      *
@@ -117,12 +114,13 @@ namespace Caneda
 
     private:
         /*!
-         * Represents the rectangle withing which painting should be drawn.
+         * \brief Represents the rectangle withing which painting should be drawn.
          *
          * For eg. GraphicLine can use topleft and bottom right of painting
          * rectangles to represent itself.
-         * \note paintingRect is not same as bounding rect. The latter includes
-         * resizehandles also.
+         *
+         * \note paintingRect is not same as bounding rect. The latter also includes
+         * resizehandles.
          */
         QRectF m_paintingRect;
         QPen m_pen;

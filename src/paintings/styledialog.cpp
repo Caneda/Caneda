@@ -20,6 +20,7 @@
 #include "styledialog.h"
 
 #include "cgraphicsscene.h"
+#include "settings.h"
 
 #include "arrow.h"
 #include "ellipsearc.h"
@@ -290,13 +291,15 @@ namespace Caneda
     */
     StyleDialog::StyleDialog(Painting *_painting, Caneda::UndoOption option, QWidget *parent) :
         QDialog(parent),
-        lineColor(defaultPaintingPen.color()),
         fillColor(Qt::white),
         lineColorPixmap(32, 32),
         fillColorPixmap(32, 32),
         painting(_painting),
         undoOption(option)
     {
+        Settings *settings = Settings::instance();
+        lineColor = settings->currentValue("gui/foregroundColor").value<QColor>();
+
         lineColorPixmap.fill(lineColor);
         fillColorPixmap.fill(fillColor);
 
