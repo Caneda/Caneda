@@ -34,17 +34,9 @@ namespace Caneda
     class CGraphicsScene;
 
     // Style constants definitions
-    static const QPen connectedPen(Qt::blue, 0);
-    static const QBrush connectedBrush(Qt::blue);
-    static const QPen unconnectedPen(Qt::darkRed, 0);
-    static const QBrush unconnectedBrush(Qt::NoBrush);
     static const qreal portRadius(3.0);
     static const QRectF portEllipse(-portRadius, -portRadius, 2*portRadius,
             2*portRadius);
-    static const qreal portConnectedRadius(2.0);
-    static const QRectF portEllipseConnected(-portConnectedRadius, -portConnectedRadius,
-            2*portConnectedRadius,
-            2*portConnectedRadius);
 
 
     //! Thin class used to abstract owner of port.

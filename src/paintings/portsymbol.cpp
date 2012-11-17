@@ -57,7 +57,6 @@ namespace Caneda
     //! \brief Draw port ellipse and id.
     void PortSymbol::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
     {
-        painter->setPen(unconnectedPen);  // like open node
         painter->drawEllipse(portEllipse);
 
         QPointF textPos = m_mirrored ? portEllipse.bottomLeft() : portEllipse.bottomRight();
@@ -69,9 +68,7 @@ namespace Caneda
             textPos.rx() += portSymbolOffset;
         }
 
-        painter->setPen(pen());
         painter->setFont(font());
-
         painter->drawText(textPos, text());
 
         painter->setPen(Qt::lightGray);

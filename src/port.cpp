@@ -23,11 +23,13 @@
 #include "cgraphicsitem.h"
 #include "cgraphicsscene.h"
 #include "component.h"
+#include "settings.h"
 #include "wire.h"
 
 #include <QDebug>
 #include <QGraphicsItem>
 #include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 namespace Caneda
 {
@@ -402,23 +404,32 @@ namespace Caneda
      */
     void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option)
     {
-        Q_UNUSED(option);
-
-        /* save pen */
+        // Save pen
         QPen savedPen = painter->pen();
 
+        // Set global pen settings
+        Settings *settings = Settings::instance();
         if(m_connections == NULL) {
-            painter->setPen(unconnectedPen);
-            painter->setBrush(unconnectedBrush);
+            painter->setPen(QPen(Qt::darkRed));
+            painter->setBrush(Qt::NoBrush);
             painter->drawEllipse(portEllipse.translated(pos()));
-        } else if(m_connections->size() > 2) {
-            painter->setPen(connectedPen);
-            painter->setBrush(connectedBrush);
-            painter->drawEllipse(portEllipseConnected.translated(pos()));
+        }
+        else if(option->state & QStyle::State_Selected) {
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+            painter->setBrush(QBrush(settings->currentValue("gui/selectionColor").value<QColor>()));
+            painter->drawEllipse(portEllipse.translated(pos()).adjusted(1,1,-1,-1));  // Adjust the ellipse to be just a little smaller than the open port
+        }
+        else if(m_connections->size() > 2) {
+            painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+            painter->setBrush(QBrush(settings->currentValue("gui/lineColor").value<QColor>()));
+            painter->drawEllipse(portEllipse.translated(pos()).adjusted(1,1,-1,-1));  // Adjust the ellipse to be just a little smaller than the open port
         }
 
-        /* restore pen */
+        // Restore pen
         painter->setPen(savedPen);
+
     }
 
 } // namespace Caneda
