@@ -75,8 +75,8 @@
    </symbol>
    
    <ports>
-       <port name="1" x="-20" y="0"/>
-       <port name="2" x="20" y="0"/>
+       <port name="1" pos="-20,0"/>
+       <port name="2" pos="20,0"/>
    </ports>   
 
    <properties>

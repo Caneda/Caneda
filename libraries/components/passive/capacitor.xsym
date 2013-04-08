@@ -59,8 +59,8 @@
    </symbol>
    
    <ports>
-       <port name="+" x="-20" y="0"/>
-       <port name="-" x="20" y="0"/>
+       <port name="+" pos="-20,0"/>
+       <port name="-" pos="20,0"/>
    </ports>   
 
    <properties>

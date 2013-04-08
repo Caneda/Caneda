@@ -64,9 +64,9 @@
    </symbol>
    
    <ports>
-       <port name="d" x="10" y="-10"/>
-       <port name="s" x="10" y="10"/>
-       <port name="g" x="-10" y="0"/>
+       <port name="d" pos="10,-10"/>
+       <port name="s" pos="10,10"/>
+       <port name="g" pos="-10,0"/>
    </ports>   
 
    <properties>

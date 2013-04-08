@@ -341,10 +341,9 @@ namespace Caneda
             }
 
             if(reader->isStartElement() && reader->name() == "port") {
-                QXmlStreamAttributes attribs = reader->attributes();
-                qreal x = attribs.value("x").toString().toDouble();
-                qreal y = attribs.value("y").toString().toDouble();
-                QString portName = attribs.value("name").toString();
+
+                QString portName = reader->attributes().value("name").toString();
+                QPointF pos = reader->readPointAttribute("pos");
 
                 // Check if we are opening the file for edition or to include it in a library
                 if(cGraphicsScene()) {
@@ -354,7 +353,7 @@ namespace Caneda
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
-                    component()->ports << new PortData(QPointF(x, y), portName);
+                    component()->ports << new PortData(pos, portName);
                 }
 
                 // Read until end of element

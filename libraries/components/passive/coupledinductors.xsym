@@ -90,10 +90,10 @@
    </symbol>
    
    <ports>
-       <port name="1+" x="-30" y="-20"/>
-       <port name="2+" x="30" y="-20"/>
-       <port name="2-" x="30" y="20"/>
-       <port name="1-" x="-30" y="20"/>
+       <port name="1+" pos="-30,-20"/>
+       <port name="2+" pos="30,-20"/>
+       <port name="2-" pos="30,20"/>
+       <port name="1-" pos="-30,20"/>
    </ports>   
 
    <properties>
