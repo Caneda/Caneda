@@ -41,12 +41,10 @@ namespace Caneda
 
     /*!
      * \brief This class provides a canvas for managing graphics elements
-     * common to all Caneda graphics scenes.
+     * common to all Caneda graphics scenes (schematics, symbols, layouts, etc).
      *
-     * This class provides a canvas for managing graphics elements on all
-     * Caneda graphics scenes (schematics, symbols, layouts, etc). In this
-     * class common item operations are implemented, for example mirror and
-     * rotate items. Nevertheless this class must be subclassed for more
+     * In this class common item operations are implemented, for example mirror
+     * and rotate items. Nevertheless this class must be subclassed for more
      * specific operations and handling of the different types of documents.
      *
      * \todo Subclass this class for the different types of documents (schematics,
