@@ -21,6 +21,7 @@
 
 #include "global.h"
 #include "port.h"
+#include "settings.h"
 #include "xmlutilities.h"
 
 #include <QFont>
@@ -75,7 +76,10 @@ namespace Caneda
         painter->drawRect(paintingRect());
 
         if(option->state & QStyle::State_Selected) {
-            painter->setPen(Qt::darkGray);
+            Settings *settings = Settings::instance();
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 pen().width()));
+
             painter->drawRoundRect(boundingRect());
         }
     }

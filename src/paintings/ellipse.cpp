@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,6 +20,7 @@
 
 #include "ellipse.h"
 
+#include "settings.h"
 #include "styledialog.h"
 #include "xmlutilities.h"
 
@@ -57,26 +58,20 @@ namespace Caneda
     void Ellipse::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
     {
         if(option->state & QStyle::State_Selected) {
+            Settings *settings = Settings::instance();
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 pen().width()));
+
             painter->setBrush(Qt::NoBrush);
-
-            QPen _pen(pen());
-
-            _pen.setColor(Qt::darkGray);
-            _pen.setWidth(pen().width() + 5);
-
-            painter->setPen(_pen);
-            painter->drawEllipse(ellipse());
-
-            _pen.setColor(Qt::white);
-            _pen.setWidth(pen().width());
-            painter->setPen(_pen);
         }
         else {
             painter->setPen(pen());
+            painter->setBrush(brush());
         }
-        painter->setBrush(brush());
+
         painter->drawEllipse(ellipse());
-        //call base method to draw resize handles.
+
+        // Call base method to draw resize handles.
         Painting::paint(painter, option, w);
     }
 

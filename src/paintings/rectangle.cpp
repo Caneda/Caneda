@@ -20,6 +20,7 @@
 
 #include "rectangle.h"
 
+#include "settings.h"
 #include "styledialog.h"
 #include "xmlutilities.h"
 
@@ -58,25 +59,17 @@ namespace Caneda
     void Rectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
     {
        if(option->state & QStyle::State_Selected) {
-          painter->setBrush(Qt::NoBrush);
+           Settings *settings = Settings::instance();
+           painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                pen().width()));
 
-          QPen _pen(pen());
-
-          _pen.setColor(Qt::darkGray);
-          _pen.setWidth(pen().width() + 5);
-
-          painter->setPen(_pen);
-          painter->drawRect(rect());
-
-          _pen.setColor(Qt::white);
-          _pen.setWidth(pen().width());
-          painter->setPen(_pen);
+           painter->setBrush(Qt::NoBrush);
        }
        else {
           painter->setPen(pen());
+          painter->setBrush(brush());
        }
 
-       painter->setBrush(brush());
        painter->drawRect(rect());
 
        //call base method to draw resize handles.

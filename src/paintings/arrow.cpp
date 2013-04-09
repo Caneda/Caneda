@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,6 +20,7 @@
 
 #include "arrow.h"
 
+#include "settings.h"
 #include "styledialog.h"
 #include "xmlutilities.h"
 
@@ -73,38 +74,29 @@ namespace Caneda
     void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *w)
     {
-        painter->setBrush(Qt::NoBrush);
-
-        QLineF line = lineFromRect(paintingRect());
-
-        // give the double line effect!
         if(option->state & QStyle::State_Selected) {
-            QPen _pen(pen());
-            _pen.setColor(Qt::darkGray);
-            _pen.setWidth(pen().width() + 5);
+            Settings *settings = Settings::instance();
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 pen().width()));
 
-            painter->setPen(_pen);
-
-            painter->drawLine(line);
-            drawHead(painter);
-
-            _pen.setWidth(pen().width());
-            _pen.setColor(Qt::white);
-
-            painter->setPen(_pen);
+            painter->setBrush(Qt::NoBrush);
         }
         else {
             painter->setPen(pen());
+
+            if(headStyle() == FilledArrow) {
+                painter->setBrush(brush());
+            }
+            else {
+                painter->setBrush(Qt::NoBrush);
+            }
         }
 
+        QLineF line = lineFromRect(paintingRect());
         painter->drawLine(line);
-
-        if(headStyle() == FilledArrow) {
-            painter->setBrush(brush());
-        }
-
         drawHead(painter);
 
+        // Call base method to draw resize handles.
         Painting::paint(painter, option, w);
     }
 

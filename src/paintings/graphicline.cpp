@@ -20,6 +20,7 @@
 
 #include "graphicline.h"
 
+#include "settings.h"
 #include "styledialog.h"
 #include "xmlutilities.h"
 
@@ -57,28 +58,17 @@ namespace Caneda
     //! \brief Draws line.
     void GraphicLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
     {
-       painter->setBrush(Qt::NoBrush);
-
-       QLineF line = lineFromRect(paintingRect());
-
        if(option->state & QStyle::State_Selected) {
-          QPen _pen(pen());
-          _pen.setColor(Qt::darkGray);
-          _pen.setWidth(pen().width() + 5);
-
-          painter->setPen(_pen);
-
-          painter->drawLine(line);
-
-          _pen.setWidth(pen().width());
-          _pen.setColor(Qt::white);
-
-          painter->setPen(_pen);
+           Settings *settings = Settings::instance();
+           painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 pen().width()));
        }
        else {
           painter->setPen(pen());
        }
 
+       painter->setBrush(Qt::NoBrush);
+       QLineF line = lineFromRect(paintingRect());
        painter->drawLine(line);
 
        Painting::paint(painter, option, w);
