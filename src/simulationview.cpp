@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -76,11 +76,6 @@ namespace Caneda
     void SimulationView::zoomOriginal()
     {
         m_simulationScene->zoomOriginal();
-    }
-
-    qreal SimulationView::currentZoom()
-    {
-        return m_simulationScene->currentZoom();
     }
 
     IView* SimulationView::duplicate()

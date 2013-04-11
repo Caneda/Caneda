@@ -640,13 +640,11 @@ namespace Caneda
             //Make grid size display dinamic, depending on zoom level
             DocumentViewManager *manager = DocumentViewManager::instance();
             IView *v = manager->currentView();
-            if(!v) {
-                return;
-            }
+            CGraphicsView *sv = qobject_cast<CGraphicsView*>(v->toWidget());
 
-            if(v->currentZoom() < 1) {
+            if(sv->currentZoom() < 1) {
                 // While drawing, choose spacing to be multiple times the actual grid size.
-                if(v->currentZoom() > 0.5) {
+                if(sv->currentZoom() > 0.5) {
                     drawingGridWidth *= 4;
                     drawingGridHeight *= 4;
                 }

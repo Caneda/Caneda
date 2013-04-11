@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -80,11 +80,6 @@ namespace Caneda
     void SymbolView::zoomOriginal()
     {
         m_cGraphicsView->zoomOriginal();
-    }
-
-    qreal SymbolView::currentZoom()
-    {
-        return m_cGraphicsView->currentZoom();
     }
 
     IView* SymbolView::duplicate()

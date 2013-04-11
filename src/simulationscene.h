@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -41,8 +41,6 @@ namespace Caneda
         void zoomOut();
         void zoomFitInBest();
         void zoomOriginal();
-
-        qreal currentZoom() { return m_currentZoom; }
         void zoomFitRect(const QRectF &rect);
 
         //! Return current undo stack
