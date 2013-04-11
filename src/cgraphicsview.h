@@ -54,7 +54,9 @@ namespace Caneda
         void focussedOut(CGraphicsView *view);
 
     protected:
+        void mousePressEvent(QMouseEvent *event);
         void mouseMoveEvent(QMouseEvent *event);
+        void mouseReleaseEvent(QMouseEvent *event);
         void focusInEvent(QFocusEvent *event);
         void focusOutEvent(QFocusEvent *event);
 
@@ -67,6 +69,10 @@ namespace Caneda
         const qreal m_zoomFactor;
         ZoomRange m_zoomRange;
         qreal m_currentZoom;
+
+        //! \brief Auxiliary pan variables
+        bool panMode;
+        QPoint panStartPosition;
     };
 
 } // namespace Caneda

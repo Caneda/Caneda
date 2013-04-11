@@ -31,7 +31,8 @@ namespace Caneda
         QGraphicsView(sv ? sv : 0),
         m_zoomRange(0.30, 10.0),
         m_zoomFactor(0.3),
-        m_currentZoom(1.0)
+        m_currentZoom(1.0),
+        panMode(false)
     {
         centerOn(QPointF(0, 0));
 
@@ -126,14 +127,54 @@ namespace Caneda
         setZoomLevel(minRatio, &center);
     }
 
+    void CGraphicsView::mousePressEvent(QMouseEvent *event)
+    {
+        if (event->button() == Qt::MiddleButton) {
+            panMode = true;
+            panStartPosition = event->pos();
+
+            setCursor(Qt::ClosedHandCursor);
+
+            event->accept();
+            return;
+        }
+
+        QGraphicsView::mousePressEvent(event);
+    }
+
     void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
     {
+        if (panMode) {
+            setTransformationAnchor(QGraphicsView::NoAnchor);  // Remove temporarily the anchor to be able to move
+
+            QPoint d = event->pos() - panStartPosition;
+            translate(d.x(), d.y());
+            panStartPosition = event->pos();
+
+            setTransformationAnchor(QGraphicsView::AnchorViewCenter);  // Restore graphicsview anchor to the center
+        }
+
         QPoint newCursorPos = mapToScene(event->pos()).toPoint();
         QString str = QString("%1 : %2")
             .arg(newCursorPos.x())
             .arg(newCursorPos.y());
         emit cursorPositionChanged(str);
+
         QGraphicsView::mouseMoveEvent(event);
+    }
+
+    void CGraphicsView::mouseReleaseEvent(QMouseEvent *event)
+    {
+        if (event->button() == Qt::MiddleButton) {
+            panMode = false;
+
+            setCursor(Qt::ArrowCursor);
+
+            event->accept();
+            return;
+        }
+
+        QGraphicsView::mouseReleaseEvent(event);
     }
 
     void CGraphicsView::focusInEvent(QFocusEvent *event)
