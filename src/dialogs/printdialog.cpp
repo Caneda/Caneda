@@ -65,7 +65,11 @@ namespace Caneda
         const QString fileName = m_document->fileName();
         if (!fileName.isEmpty()) {
             m_printer->setDocName(fileName);
-            ui.filePathEdit->setText(fileName + ".pdf");
+
+            QFileInfo info(fileName);
+            QString baseName = info.completeBaseName();
+            QString path = info.path();
+            ui.filePathEdit->setText(QDir::toNativeSeparators(path + "/"  + baseName + ".pdf"));
         }
         else {
             ui.filePathEdit->setText(QDir::toNativeSeparators(QDir::homePath()));
