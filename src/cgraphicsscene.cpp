@@ -625,15 +625,10 @@ namespace Caneda
         painter->setPen(QPen(foregroundColor, 0));
         painter->setBrush(Qt::NoBrush);
 
-
-        const QPointF origin(0, 0);
-
-        // Draw origin
-        if(rect.contains(origin)) {
-            painter->drawLine(QLineF(origin.x() - 3.0, origin.y(),
-                        origin.x() + 3.0, origin.y()));
-            painter->drawLine(QLineF(origin.x(), origin.y() - 3.0,
-                        origin.x(), origin.y() + 3.0));
+        // Draw origin (if visible in the view)
+        if(rect.contains(QPointF(0, 0))) {
+            painter->drawLine(QLineF(-3.0, 0.0, 3.0, 0.0));
+            painter->drawLine(QLineF(0.0, -3.0, 0.0, 3.0));
         }
 
         // Draw grid
