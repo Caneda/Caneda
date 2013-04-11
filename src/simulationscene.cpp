@@ -95,29 +95,17 @@ namespace Caneda
 //            return;
 //        }
 
-//        // Find the ideal x / y scaling ratio to fit \a rect in the view.
-//        QRectF viewRect = viewport()->rect();
-//        viewRect = transform().mapRect(viewRect);
-//        if (viewRect.isEmpty()) {
-//            return;
-//        }
-
-//        QRectF sceneRect = transform().mapRect(rect);
-//        if (sceneRect.isEmpty()) {
-//            return;
-//        }
-
-//        const qreal xratio = viewRect.width() / sceneRect.width();
-//        const qreal yratio = viewRect.height() / sceneRect.height();
-
-//        // Qt::KeepAspecRatio
+//        // Find the best scale radio to fit in the view.
+//        const qreal xratio = this->rect().width() / rect.width();
+//        const qreal yratio = this->rect().height() / rect.height();
 //        const qreal minRatio = qMin(xratio, yratio);
 
-//        // Also compute where the the view should be centered
+//        // Save the position to center on after the zoom operation.
 //        QPointF center = rect.center();
 
-//        // Now set that zoom level.
-//        setZoomLevel(minRatio, &center);
+//        // Now set that zoom level and center the result.
+//        setZoomLevel(minRatio);
+//        centerOn(center);
     }
 
     /*!
@@ -169,27 +157,16 @@ namespace Caneda
         }
     }
 
-    void SimulationScene::setZoomLevel(qreal zoomLevel, QPointF *toCenter)
+    void SimulationScene::setZoomLevel(qreal zoomLevel)
     {
         // TODO: Reimplement this
 //        if (!m_zoomRange.contains(zoomLevel)) {
 //            return;
 //        }
 
-//        QPointF currentCenter;
-//        if (toCenter) {
-//            currentCenter = *toCenter;
-//        } else {
-//            currentCenter = mapToScene(viewport()->rect().center());
-//        }
-
+//        // Scale in proportion to current zoom level and set new currentZoom
+//        scale(zoomLevel/m_currentZoom, zoomLevel/m_currentZoom);
 //        m_currentZoom = zoomLevel;
-
-//        QTransform transform;
-//        transform.scale(m_currentZoom, m_currentZoom);
-//        setTransform(transform);
-
-//        centerOn(currentCenter);
     }
 
 } // namespace Caneda

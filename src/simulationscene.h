@@ -65,7 +65,7 @@ namespace Caneda
         void focusOutEvent(QFocusEvent *event);
 
     private:
-        void setZoomLevel(qreal zoomLevel, QPointF *toCenterOn = 0);
+        void setZoomLevel(qreal zoomLevel);
 
         const qreal m_zoomFactor;
         ZoomRange m_zoomRange;
