@@ -43,7 +43,7 @@ namespace Caneda
         setRenderHints(Caneda::DefaulRenderHints);
         setViewportUpdateMode(SmartViewportUpdate);
         setCacheMode(CacheBackground);
-        setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+        setTransformationAnchor(QGraphicsView::NoAnchor);
         setMouseTracking(true);
         setAttribute(Qt::WA_NoSystemBackground);
 
@@ -127,13 +127,9 @@ namespace Caneda
     void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
     {
         if (panMode) {
-            setTransformationAnchor(QGraphicsView::NoAnchor);  // Remove temporarily the anchor to be able to move
-
             QPointF d = mapToScene(event->pos()) - panStartPosition;
             translate(d.x(), d.y());
             panStartPosition = mapToScene(event->pos());
-
-            setTransformationAnchor(QGraphicsView::AnchorViewCenter);  // Restore graphicsview anchor to the center
         }
 
         QPoint newCursorPos = mapToScene(event->pos()).toPoint();
@@ -151,9 +147,6 @@ namespace Caneda
             panMode = false;
 
             setCursor(Qt::ArrowCursor);
-
-            event->accept();
-            return;
         }
 
         QGraphicsView::mouseReleaseEvent(event);
@@ -190,9 +183,17 @@ namespace Caneda
             return;
         }
 
+        // If zoom is perform with any method but the mouse
+        // (QGraphicsView::AnchorUnderMouse), set anchor to the center
+        if (transformationAnchor() != QGraphicsView::AnchorUnderMouse) {
+            setTransformationAnchor(QGraphicsView::AnchorViewCenter);  // Set graphicsview anchor to the center
+        }
+
         // Scale in proportion to current zoom level and set new currentZoom
         scale(zoomLevel/m_currentZoom, zoomLevel/m_currentZoom);
         m_currentZoom = zoomLevel;
+
+        setTransformationAnchor(QGraphicsView::NoAnchor);  // Restore graphicsview anchor to be able to move afterwards
     }
 
 } // namespace Caneda

@@ -927,8 +927,6 @@ namespace Caneda
 
         if(e->modifiers() & Qt::ControlModifier){
 
-            sv->setTransformationAnchor(QGraphicsView::NoAnchor);  // Remove temporarily the anchor to be able to move
-
             if(e->delta() > 0) {
                 sv->translate(0,50);
             }
@@ -938,8 +936,6 @@ namespace Caneda
 
         }
         else if(e->modifiers() & Qt::ShiftModifier){
-
-            sv->setTransformationAnchor(QGraphicsView::NoAnchor);  // Remove temporarily the anchor to be able to move
 
             if(e->delta() > 0) {
                 sv->translate(-50,0);
@@ -960,8 +956,6 @@ namespace Caneda
             }
 
         }
-
-        sv->setTransformationAnchor(QGraphicsView::AnchorViewCenter);  // Restore graphicsview anchor to the center
 
         e->accept();
     }
