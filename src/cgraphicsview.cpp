@@ -43,10 +43,9 @@ namespace Caneda
         setViewportUpdateMode(SmartViewportUpdate);
         setCacheMode(CacheBackground);
         setAlignment(Qt::AlignmentFlag(Qt::AlignLeft | Qt::AlignTop));
-        setTransformationAnchor(QGraphicsView::NoAnchor);
-
-        viewport()->setMouseTracking(true);
-        viewport()->setAttribute(Qt::WA_NoSystemBackground);
+        setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+        setMouseTracking(true);
+        setAttribute(Qt::WA_NoSystemBackground);
 
         connect(cGraphicsScene(), SIGNAL(mouseActionChanged()), this,
                 SLOT(onMouseActionChanged()));
@@ -103,7 +102,7 @@ namespace Caneda
         }
 
         // Find the ideal x / y scaling ratio to fit \a rect in the view.
-        QRectF viewRect = viewport()->rect();
+        QRectF viewRect = this->rect();
         viewRect = transform().mapRect(viewRect);
         if (viewRect.isEmpty()) {
             return;
@@ -168,20 +167,13 @@ namespace Caneda
             return;
         }
 
-        QPointF currentCenter;
-        if (toCenter) {
-            currentCenter = *toCenter;
-        } else {
-            currentCenter = mapToScene(viewport()->rect().center());
-        }
-
+        // Scale in proportion to current zoom level and set new currentZoom
+        scale(zoomLevel/m_currentZoom, zoomLevel/m_currentZoom);
         m_currentZoom = zoomLevel;
 
-        QTransform transform;
-        transform.scale(m_currentZoom, m_currentZoom);
-        setTransform(transform);
-
-        centerOn(currentCenter);
+        if (toCenter) {
+            centerOn(*toCenter);
+        }
     }
 
 } // namespace Caneda

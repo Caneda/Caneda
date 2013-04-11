@@ -789,6 +789,7 @@ namespace Caneda
      *
      * Drag enter events are generated as the cursor enters the item's area.
      * Accept event from sidebar
+     *
      * \param event event to be accepted
      */
     void CGraphicsScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event)
@@ -808,6 +809,7 @@ namespace Caneda
      * Drag move events are generated as the cursor moves around inside the item's area.
      * It is used to indicate that only parts of the item can accept drops.
      * Accept event from sidebar
+     *
      * \param event event to be accepted
      */
     void CGraphicsScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event)
@@ -931,22 +933,20 @@ namespace Caneda
         }
 
         if(e->modifiers() & Qt::ControlModifier){
+
+            sv->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);  // Set transform to zoom into mouse position
+
             if(e->delta() > 0) {
-                QPoint viewPoint = sv->mapFromScene(e->scenePos());
-
                 sv->zoomIn();
-
-                QPointF afterScalePoint(sv->mapFromScene(e->scenePos()));
-                int dx = (afterScalePoint - viewPoint).toPoint().x();
-                int dy = (afterScalePoint - viewPoint).toPoint().y();
-
-                sv->translate(-dx,-dy);
             }
             else {
                 sv->zoomOut();
             }
         }
         else if(e->modifiers() & Qt::ShiftModifier){
+
+            sv->setTransformationAnchor(QGraphicsView::NoAnchor);  // Remove temporarily the anchor to be able to move
+
             if(e->delta() > 0) {
                 sv->translate(-50,0);
             }
@@ -955,6 +955,9 @@ namespace Caneda
             }
         }
         else{
+
+            sv->setTransformationAnchor(QGraphicsView::NoAnchor);  // Remove temporarily the anchor to be able to move
+
             if(e->delta() > 0) {
                 sv->translate(0,50);
             }
@@ -962,6 +965,8 @@ namespace Caneda
                 sv->translate(0,-50);
             }
         }
+
+        sv->setTransformationAnchor(QGraphicsView::AnchorViewCenter);  // Restore graphicsview anchor to the center
 
         e->accept();
     }
