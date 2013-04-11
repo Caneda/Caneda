@@ -54,7 +54,16 @@ namespace Caneda
         ui.labelSchematicName->setText(diagramFilename);
         ui.editFilename->setText(diagramFilename);
 
-        ui.editPath->setText(QDir::toNativeSeparators(QDir::homePath()));
+        // Directory to save into
+        if(document->fileName().isEmpty()) {
+            ui.editPath->setText(QDir::toNativeSeparators(QDir::homePath()));
+        }
+        else {
+            QFileInfo info(document->fileName());
+            QString diagramPath = info.path();
+            ui.editPath->setText(QDir::toNativeSeparators(diagramPath));
+        }
+
         QCompleter *completer = new QCompleter(this);
         completer->setModel(new QDirModel(completer));
         ui.editPath->setCompleter(completer);
