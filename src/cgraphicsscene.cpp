@@ -934,14 +934,15 @@ namespace Caneda
 
         if(e->modifiers() & Qt::ControlModifier){
 
-            sv->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);  // Set transform to zoom into mouse position
+            sv->setTransformationAnchor(QGraphicsView::NoAnchor);  // Remove temporarily the anchor to be able to move
 
             if(e->delta() > 0) {
-                sv->zoomIn();
+                sv->translate(0,50);
             }
             else {
-                sv->zoomOut();
+                sv->translate(0,-50);
             }
+
         }
         else if(e->modifiers() & Qt::ShiftModifier){
 
@@ -956,14 +957,15 @@ namespace Caneda
         }
         else{
 
-            sv->setTransformationAnchor(QGraphicsView::NoAnchor);  // Remove temporarily the anchor to be able to move
+            sv->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);  // Set transform to zoom into mouse position
 
             if(e->delta() > 0) {
-                sv->translate(0,50);
+                sv->zoomIn();
             }
             else {
-                sv->translate(0,-50);
+                sv->zoomOut();
             }
+
         }
 
         sv->setTransformationAnchor(QGraphicsView::AnchorViewCenter);  // Restore graphicsview anchor to the center
