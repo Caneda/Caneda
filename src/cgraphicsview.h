@@ -72,7 +72,7 @@ namespace Caneda
 
         //! \brief Auxiliary pan variables
         bool panMode;
-        QPoint panStartPosition;
+        QPointF panStartPosition;
     };
 
 } // namespace Caneda

@@ -130,7 +130,7 @@ namespace Caneda
     {
         if (event->button() == Qt::MiddleButton) {
             panMode = true;
-            panStartPosition = event->pos();
+            panStartPosition = mapToScene(event->pos());
 
             setCursor(Qt::ClosedHandCursor);
 
@@ -146,9 +146,9 @@ namespace Caneda
         if (panMode) {
             setTransformationAnchor(QGraphicsView::NoAnchor);  // Remove temporarily the anchor to be able to move
 
-            QPoint d = event->pos() - panStartPosition;
+            QPointF d = mapToScene(event->pos()) - panStartPosition;
             translate(d.x(), d.y());
-            panStartPosition = event->pos();
+            panStartPosition = mapToScene(event->pos());
 
             setTransformationAnchor(QGraphicsView::AnchorViewCenter);  // Restore graphicsview anchor to the center
         }
