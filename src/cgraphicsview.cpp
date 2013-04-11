@@ -92,7 +92,8 @@ namespace Caneda
 
     void CGraphicsView::setZoom(int percentage)
     {
-        setZoomLevel((m_zoomRange.max - m_zoomRange.min)*percentage/100 + m_zoomRange.min);
+        qreal newZoom = (m_zoomRange.max - m_zoomRange.min)*percentage/100 + m_zoomRange.min;
+        setZoomLevel(newZoom);
     }
 
     void CGraphicsView::zoomFitRect(const QRectF &rect)
@@ -101,29 +102,17 @@ namespace Caneda
             return;
         }
 
-        // Find the ideal x / y scaling ratio to fit \a rect in the view.
-        QRectF viewRect = this->rect();
-        viewRect = transform().mapRect(viewRect);
-        if (viewRect.isEmpty()) {
-            return;
-        }
-
-        QRectF sceneRect = transform().mapRect(rect);
-        if (sceneRect.isEmpty()) {
-            return;
-        }
-
-        const qreal xratio = viewRect.width() / sceneRect.width();
-        const qreal yratio = viewRect.height() / sceneRect.height();
-
-        // Qt::KeepAspecRatio
+        // Find the best scale radio to fit in the view.
+        const qreal xratio = this->rect().width() / rect.width();
+        const qreal yratio = this->rect().height() / rect.height();
         const qreal minRatio = qMin(xratio, yratio);
 
-        // Also compute where the the view should be centered
+        // Save the position to center on after the zoom operation.
         QPointF center = rect.center();
 
-        // Now set that zoom level.
-        setZoomLevel(minRatio, &center);
+        // Now set that zoom level and center the result.
+        setZoomLevel(minRatio);
+        centerOn(center);
     }
 
     void CGraphicsView::mousePressEvent(QMouseEvent *event)
@@ -201,7 +190,7 @@ namespace Caneda
         }
     }
 
-    void CGraphicsView::setZoomLevel(qreal zoomLevel, QPointF *toCenter)
+    void CGraphicsView::setZoomLevel(qreal zoomLevel)
     {
         if (!m_zoomRange.contains(zoomLevel)) {
             return;
@@ -210,10 +199,6 @@ namespace Caneda
         // Scale in proportion to current zoom level and set new currentZoom
         scale(zoomLevel/m_currentZoom, zoomLevel/m_currentZoom);
         m_currentZoom = zoomLevel;
-
-        if (toCenter) {
-            centerOn(*toCenter);
-        }
     }
 
 } // namespace Caneda
