@@ -88,11 +88,6 @@ namespace Caneda
         return m_cGraphicsView->currentZoom();
     }
 
-    void SchematicView::setZoom(int percentage)
-    {
-        m_cGraphicsView->setZoom(percentage);
-    }
-
     IView* SchematicView::duplicate()
     {
         return document()->createView();

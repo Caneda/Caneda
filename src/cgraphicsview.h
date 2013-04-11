@@ -45,7 +45,6 @@ namespace Caneda
         void zoomOriginal();
 
         qreal currentZoom() { return m_currentZoom; }
-        void setZoom(int percentage);
         void zoomFitRect(const QRectF &rect);
 
     Q_SIGNALS:

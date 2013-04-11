@@ -61,12 +61,6 @@ namespace Caneda
      * \see IContext
      */
 
-    /*!
-     * \fn IView::setZoom(int percentage)
-     *
-     * \brief Zooms the view to the value pointed by percentage argument.
-     */
-
     IView::IView(IDocument *document) : m_document(document)
     {
         Q_ASSERT(document != 0);

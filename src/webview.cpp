@@ -85,11 +85,6 @@ namespace Caneda
         return m_currentZoom;
     }
 
-    void WebView::setZoom(int percentage)
-    {
-        setZoomLevel((m_zoomRange.max - m_zoomRange.min)*percentage/100 + m_zoomRange.min);
-    }
-
     IView* WebView::duplicate()
     {
         return document()->createView();

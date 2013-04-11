@@ -49,7 +49,6 @@ namespace Caneda
         virtual void zoomOriginal();
 
         virtual qreal currentZoom();
-        virtual void setZoom(int percentage);
 
         virtual IView* duplicate();
 

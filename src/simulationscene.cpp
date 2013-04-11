@@ -88,11 +88,6 @@ namespace Caneda
         setZoomLevel(1.0);
     }
 
-    void SimulationScene::setZoom(int percentage)
-    {
-        setZoomLevel((m_zoomRange.max - m_zoomRange.min)*percentage/100 + m_zoomRange.min);
-    }
-
     void SimulationScene::zoomFitRect(const QRectF &rect)
     {
         // TODO: Reimplement this

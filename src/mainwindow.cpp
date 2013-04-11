@@ -943,19 +943,9 @@ namespace Caneda
 
         viewToolbar->setIconSize(QSize(10, 10));
 
-        // Create a slider for the zoom
-        QSlider *zoomSlider = new QSlider(Qt::Horizontal, this);
-        zoomSlider->setMinimum(0);
-        zoomSlider->setMaximum(100);
-        zoomSlider->setValue(10);
-        zoomSlider->setPageStep(10);
-        zoomSlider->setFixedWidth(100);
-        connect(zoomSlider, SIGNAL(valueChanged(int)), SLOT(slotSetZoom(int)));
-
         // Add the widgets to the toolbar
         statusBarWidget->addPermanentWidget(m_statusLabel);
         statusBarWidget->addPermanentWidget(viewToolbar);
-        statusBarWidget->addPermanentWidget(zoomSlider);
 
         statusBarWidget->setVisible(action("viewStatusBar")->isChecked());
     }
@@ -1296,15 +1286,6 @@ namespace Caneda
         IView* view = DocumentViewManager::instance()->currentView();
         if(view) {
             view->zoomOriginal();
-        }
-    }
-
-    void MainWindow::slotSetZoom(int percentage)
-    {
-        setNormalAction();
-        IView* view = DocumentViewManager::instance()->currentView();
-        if(view) {
-            view->setZoom(percentage);
         }
     }
 

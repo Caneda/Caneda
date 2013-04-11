@@ -83,11 +83,6 @@ namespace Caneda
         return m_simulationScene->currentZoom();
     }
 
-    void SimulationView::setZoom(int percentage)
-    {
-        m_simulationScene->setZoom(percentage);
-    }
-
     IView* SimulationView::duplicate()
     {
         return document()->createView();
