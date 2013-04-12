@@ -97,7 +97,7 @@ namespace Caneda
 
         //First we create the folder structure where files are to be placed
         QFileInfo fileInfo = QFileInfo(fileName);
-        QDir filePath = QDir(fileInfo.absolutePath() + "/" + fileInfo.baseName());
+        QDir filePath = QDir(fileInfo.path() + "/" + fileInfo.baseName());
         if(!filePath.exists()) {
             filePath.mkpath(filePath.absolutePath());
         }

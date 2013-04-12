@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -31,42 +31,42 @@ namespace Caneda
     {
         const QString var(BASEDIR);
         QDir CanedaDir = QDir(var);
-        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+        return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
     }
 
     QString binaryDirectory()
     {
         const QString var(BINARYDIR);
         QDir CanedaDir = QDir(var);
-        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+        return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
     }
 
     QString bitmapDirectory()
     {
         const QString var(BITMAPDIR);
         QDir CanedaDir = QDir(var);
-        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+        return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
     }
 
     QString docDirectory()
     {
         const QString var(DOCDIR);
         QDir CanedaDir = QDir(var);
-        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+        return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
     }
 
     QString langDirectory()
     {
         const QString var(LANGUAGEDIR);
         QDir CanedaDir = QDir(var);
-        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+        return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
     }
 
     QString libDirectory()
     {
         const QString var(LIBRARYDIR);
         QDir CanedaDir = QDir(var);
-        return QDir::convertSeparators(CanedaDir.canonicalPath() + "/");
+        return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
     }
 
     QString version()
@@ -92,7 +92,7 @@ namespace Caneda
     QString pathForCanedaFile(const QString& fileName)
     {
         QString retVal = QDir::homePath();
-        retVal += QDir::convertSeparators(QString("/.caneda/") + fileName);
+        retVal += QDir::toNativeSeparators(QString("/.caneda/") + fileName);
         return retVal;
     }
 

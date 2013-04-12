@@ -1041,9 +1041,10 @@ namespace Caneda
             return;
         }
 
-        QString filename = doc->fileName();
-        QFileInfo info(filename);
-        filename = info.path() + "/" + info.completeBaseName() + "." + suffix;
+        QFileInfo info(doc->fileName());
+        QString filename = info.completeBaseName();
+        QString path = info.path();
+        filename = QDir::toNativeSeparators(path + "/" + filename + "." + suffix);
 
         slotFileOpen(filename);
     }

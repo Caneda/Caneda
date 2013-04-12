@@ -22,6 +22,7 @@
 #include "global.h"
 #include "sidebarbrowser.h"
 
+#include <QDir>
 #include <QFileInfo>
 
 namespace Caneda
@@ -57,8 +58,10 @@ namespace Caneda
     void ProjectFileOpenDialog::done(int r)
     {
         if (r == QDialog::Accepted) {
-            if(!m_projectsSidebar->currentComponent().isEmpty()) {
-                m_fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + m_projectsSidebar->currentComponent() + ".xsch";
+            QString baseName = m_projectsSidebar->currentComponent();
+            if(!baseName.isEmpty()) {
+                QString path = QFileInfo(m_libraryFileName).path();
+                m_fileName = QDir::toNativeSeparators(path + "/" + baseName + ".xsch");
             }
             else {
                 return;

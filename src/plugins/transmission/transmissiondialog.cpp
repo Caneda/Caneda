@@ -383,7 +383,7 @@ namespace Caneda
         //
         //
         //
-        //          QFile file(QDir::convertSeparators (fname));
+        //          QFile file(QDir::toNativeSeparators(fname));
         //          if(!file.open(QIODevice::ReadOnly)) return false; // file doesn't exist
         //
         //          QTextStream stream(&file);
@@ -443,7 +443,7 @@ namespace Caneda
         //
         //
         //
-        //          QFile file (QDir::convertSeparators (fname));
+        //          QFile file (QDir::toNativeSeparators(fname));
         //          if(!file.open (QIODevice::WriteOnly)) return false; // file not writable
         //          QTextStream stream (&file);
         //
