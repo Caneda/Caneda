@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -35,9 +36,11 @@ namespace Caneda
     class IContext;
     class IView;
 
+    //! \copydoc IContext
     class IDocument : public QObject
     {
         Q_OBJECT
+
     public:
         IDocument();
         virtual ~IDocument();

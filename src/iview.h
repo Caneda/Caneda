@@ -35,9 +35,11 @@ namespace Caneda
     class IDocument;
     class DocumentViewManager;
 
+    //! \copydoc IContext
     class IView : public QObject
     {
         Q_OBJECT
+
     public:
         IView(IDocument *document);
         virtual ~IView();

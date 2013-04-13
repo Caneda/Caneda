@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -25,18 +26,11 @@
 namespace Caneda
 {
     /*!
-     * \class IDocument
-     *
-     * This class serves as interface for all documents that can be handled by
-     * Caneda.
-     */
-
-    /*!
      * \fn IView::context()
      *
      * \brief Returns the context that handles documents, views of specific type.
      * \note It is enough to create the context object only once per new type.
-     * \see IContext
+     * \sa IContext
      */
 
     /*!

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -38,6 +38,20 @@ namespace Caneda
     class Project;
     class TabWidget;
 
+    /*!
+     * \brief The MainWindow class is one of Caneda's principal classes (along
+     * with the Document-View framework composed by IContext, IDocument and
+     * IView classes). This class initializes the main window of the program
+     * and manages all user interface interactions.
+     *
+     * Ideally, this class should contain as little application-related code as
+     * possible if not at all. In this way, the gui should be able to be
+     * replaced by any form factor or new user interface in the future. This is
+     * accomplished by moving as much code as possible (not related to the gui)
+     * into other classes.
+     *
+     * \sa IContext, IDocument, IView, DocumentViewManager, Tab, TabWidget
+     */
     class MainWindow : public QMainWindow
     {
         Q_OBJECT

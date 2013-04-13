@@ -74,7 +74,7 @@ namespace Caneda
         void alignElements(Qt::Alignment alignment);
         void setNormalAction();
 
-        //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
+        // FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case schematic actions become irrelevant.
         QList<Action*> m_normalActions;
         QList<Action*> m_mouseActions;
