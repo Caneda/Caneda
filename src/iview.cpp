@@ -52,7 +52,8 @@ namespace Caneda
      *
      * \brief Returns the context that handles documents, views of specific type.
      * \note It is enough to create the context object only once per new type.
-     * \see IContext
+     *
+     * \sa IContext
      */
 
     IView::IView(IDocument *document) : m_document(document)

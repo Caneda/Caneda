@@ -44,7 +44,20 @@ namespace Caneda
     class CGraphicsScene;
     class Port;
 
-    //! \brief CGraphicsItem - The base class for components, wires, nodes...
+    /*!
+     * \brief The CGraphicsItem class forms part of the Graphics-View framework,
+     * implementing all the common methods to be used by the items in a
+     * CGraphicsScene. This class is the base class from which components,
+     * wires, nodes, paintings, etc, are inherited.
+     *
+     * Although in theory, a CGraphicsItem could be used directly on a scene,
+     * the idea is to subclass CGraphicsItem to allow for the different items
+     * to have a more specific behaviour. In this way, this class only
+     * implements those methods that are common to all item related classes,
+     * as for example rotating and mirroring.
+     *
+     * \sa CGraphicsScene, Component, Wire, Painting
+     */
     class CGraphicsItem : public QGraphicsItem
     {
     public:
@@ -57,7 +70,7 @@ namespace Caneda
          * is valid or not. The cast function is approximately defined like this
          * cast(a,b) { return (a&b) == a; }
          *
-         * \sa canedaitem_cast and PATTERN.
+         * \sa canedaitem_cast, PATTERN
          */
         enum CGraphicsItemTypes {
             //!Recognizes all classes derived from CGraphicsItem
@@ -72,7 +85,10 @@ namespace Caneda
             PaintingType = PATTERN(CGraphicsItemType, 4)
         };
 
-        //! Item identifier \sa CGraphicsItemTypes
+        /*! \brief Item identifier
+         *
+         *  \sa CGraphicsItemTypes
+         */
         enum {
             Type = CGraphicsItemType
         };
@@ -107,12 +123,12 @@ namespace Caneda
         virtual CGraphicsItem* copy(CGraphicsScene *scene = 0) const;
         virtual void copyDataTo(CGraphicsItem*item) const;
 
-        //! This is convenience method used for rtti.
+        //! This is a convenience method used for rtti.
         virtual bool isComponent() const { return false; }
-        //! This is convenience method used for rtti.
+        //! This is a convenience method used for rtti.
         virtual bool isWire() const { return false; }
 
-        //! Subclasses should implement this to launch its own dialog.
+        //! Subclasses should implement this, to launch its own dialog.
         virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
 
     protected:
@@ -135,6 +151,7 @@ namespace Caneda
      * This function actually works for items following the rules.
      * Firstly, items should use appropriate Type constant.
      * Secondly, type() should return this Type.
+     *
      * \sa CGraphicsItemTypes
      */
     template<typename T> T canedaitem_cast(QGraphicsItem *item)

@@ -38,7 +38,15 @@ namespace Caneda
         QPointF port2Pos;
     };
 
-    //! \brief This class represents a wire on schematic.
+    /*!
+     * \brief The Wire class forms part of one of the CGraphicsItem
+     * derived classes available on Caneda. It represents a wire on schematic,
+     * and connects different components throught the use of ports. One port
+     * can have one or multiple wire connections, allowing multiple components
+     * to be connected together.
+     *
+     * \sa CGraphicsItem, Component, Port
+     */
     class Wire : public CGraphicsItem
     {
     public:

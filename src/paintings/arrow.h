@@ -28,7 +28,9 @@ namespace Caneda
     /*!
      * \brief This class is used to represent resizable arrow item on a graphics scene.
      *
-     * This class supports two different styles of arrow. See \a HeadStyle
+     * This class supports two different styles of arrow.
+     *
+     * \sa HeadStyle
      */
     class Arrow : public Painting
     {

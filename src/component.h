@@ -58,14 +58,20 @@ namespace Caneda
     typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
 
     /*!
-     * \brief Represents the component on schematic.
+     * \brief The Component class forms part of one of the CGraphicsItem
+     * derived classes available on Caneda. It is the base class for all
+     * electronic components available through libraries. These components are
+     * then inserted on a schematic to form a circuit.
      *
-     * This component can either be directly loaded from an xml doc or
-     * manually set data if it requires.
+     * The component can either be directly loaded from an xml file or the data
+     * manually set if required.
      *
-     * This class uses ComponentsCache as a cache to render the component.
-     * To be able to render the symbol registered to ComponentsCache, the
-     * symbol must be previously registered (by the library class).
+     * This class uses LibraryManager::symbolCache() and
+     * LibraryManager::pixmapCache() as a cache to render the component. To be
+     * able to render the symbol, the symbol itself must be previously
+     * registered (by the LibraryManager::registerComponent() method).
+     *
+     * \sa CGraphicsItem, LibraryManager
      */
     class Component : public QObject, public CGraphicsItem
     {

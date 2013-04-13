@@ -30,14 +30,18 @@ class QPen;
 namespace Caneda
 {
     /*!
-     * \brief This class is base for painting items like lines, rectangles...
+     * \brief The Painting class forms part of one of the CGraphicsItem derived
+     * classes available on Caneda. It is the base class for all painting
+     * related items, like lines, rectangles, ellipses, etc.
      *
-     * This class also takes care of resize handles. All the derived classes will be
-     * passed a rectangle and they should use this rectangle as a hint to draw.
-     * For example, a line can use the topleft and bottom right of the rectangle to
-     * represent itself. The rectangle is set using \a setPaintingRect.
-     * The mouse functionalities corresponding to resize handles are also handled
-     * by this class.
+     * This class also takes care of resize handles. All the derived classes
+     * will be passed a rectangle and they should use this rectangle as a hint
+     * to draw. For example, a line can use the topleft and bottom right of the
+     * rectangle to represent itself. The rectangle is set using
+     * \a setPaintingRect(). The mouse functionalities corresponding to resize
+     * handles are also handled by this class.
+     *
+     * \sa CGraphicsItem
      */
     class Painting : public CGraphicsItem
     {
