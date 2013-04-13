@@ -21,27 +21,27 @@
 Description
 ===========
 
-Caneda is a circuit eda softwre with graphical user interface.  The
+Caneda is a circuit eda softwre with graphical user interface. The
 software aims to support all kinds of circuit simulation types,
-e.g. DC, AC, S-parameter and harmonic balance analysis.  For
+e.g. DC, AC, S-parameter and harmonic balance analysis. For
 details see homepage:
 
-http://caneda.tuxfamily.org
+http://caneda.sourceforge.net/
 
 
 Requirements
 ============
 
-Caneda needs Qt(R) by Trolltech(R) <http://www.trolltech.com>.
-This current version is known to work with Qt 4.5 and later.
+Caneda needs Qt(R) and Qwt to cimpile. The current version is known to
+work with Qt 4.7 and later.
 
 
 Installation
 ============
 
-   These are generic installation instructions.
+These are generic installation instructions.
 
-   If you need to do unusual things to compile the package, please try
+If you need to do unusual things to compile the package, please try
 to figure out how `cmake' could check whether to do them, and mail
 diffs or instructions to the authors so they can be considered for the
 next release.
@@ -81,7 +81,7 @@ You can always get the latest Caneda version from our git repository.
 Please use an official release if you want to work with Caneda.  The git
 version might not even compile.
 
-    $ git clone git://git.tuxfamily.org/gitroot/caneda/caneda.git
+    $ git clone git://git.code.sf.net/p/caneda/code caneda
 
 Press 'Enter' when asked for a password.
 
@@ -98,27 +98,25 @@ is an example:
 
      ./cmake CC=c89 CFLAGS=-O2 LIBS=-lposix
 
-   *Note Defining Variables::, for more details.
-
 Installation Names
 ==================
 
-   By default, `make install' will install the package's files in
+By default, `make install' will install the package's files in
 `/usr/local/bin', `/usr/local/man', etc.  You can specify an
 installation prefix other than `/usr/local' by giving `cmake' the
 option `--prefix=PATH'.
 
-   You can specify separate installation prefixes for
-architecture-specific files and architecture-independent files.  If you
-give `cmake' the option `--exec-prefix=PATH', the package will use
-PATH as the prefix for installing programs and libraries.
-Documentation and other data files will still use the regular prefix.
+You can specify separate installation prefixes for architecture-specific
+files and architecture-independent files.  If you give `cmake' the option
+`--exec-prefix=PATH', the package will use PATH as the prefix for installing
+programs and libraries. Documentation and other data files will still use 
+the regular prefix.
 
-   In addition, if you use an unusual directory layout you can give
+In addition, if you use an unusual directory layout you can give
 options like `--bindir=PATH' to specify different values for particular
 kinds of files.  Run `configure --help' for a list of the directories
 you can set and what kinds of files go in them.
 
-   If the package supports it, you can cause programs to be installed
+If the package supports it, you can cause programs to be installed
 with an extra prefix or suffix on their names by giving `configure' the
 option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
