@@ -93,6 +93,9 @@ namespace Caneda
         void openSchematic();
         void openSymbol();
 
+        void slotIntoHierarchy();
+        void slotPopHierarchy();
+
         void slotZoomIn();
         void slotZoomOut();
         void slotZoomBestFit();
@@ -102,6 +105,15 @@ namespace Caneda
         void slotCloseSplit();
         void slotViewToolBar(bool);
         void slotViewStatusBar(bool);
+
+        void slotAlignTop();
+        void slotAlignBottom();
+        void slotAlignLeft();
+        void slotAlignRight();
+        void slotCenterHorizontal();
+        void slotCenterVertical();
+        void slotDistributeHorizontal();
+        void slotDistributeVertical();
 
         void slotNewProject();
         void slotOpenProject(QString fileName = QString());
@@ -116,6 +128,7 @@ namespace Caneda
         void slotCallAtt();
         void slotImportData();
 
+        void slotSimulate();
         void openSimulation();
         void slotShowLastMsg();
         void slotShowLastNetlist();

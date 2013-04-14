@@ -20,6 +20,7 @@
 
 #include "idocument.h"
 #include "documentviewmanager.h"
+#include "mainwindow.h"
 
 #include <QUndoStack>
 
@@ -110,6 +111,105 @@ namespace Caneda
      */
 
     /*!
+     * \fn IDocument::selectAll()
+     *
+     * \brief Select all elements in the document.
+     */
+
+    /*!
+     * \fn IDocument::intoHierarchy()
+     *
+     * \brief Open selected item for edition.
+     *
+     * This is used mainly in graphic elements, where each item can have a
+     * whole new scene to describe it.
+     *
+     * In a schematic scene, for example, where each item is an electronic
+     * element, one could open a selected item to edit its subcircuit. In the
+     * case of a layout circuit using hierarchies serve its purpose to edit
+     * certain circuit (for example a flip-flop or a not gate) and then use it
+     * in read only mode in higher hierarchies. When one needs to edit that
+     * subcircuit, the action intoHierarchy() comes into place.
+     *
+     * \sa popHierarchy()
+     */
+
+    /*!
+     * \fn IDocument::popHierarchy()
+     *
+     * \brief Open parent item for edition.
+     *
+     * This is used mainly in graphic elements, where each item can be included
+     * in a whole new scene to make more complex scenes.
+     *
+     * In a schematic scene, for example, each circuit described can be
+     * included in a new circuit to make bigger or more complex circuits. In
+     * the case of a layout, each circuit topology (for example a flip-flop or
+     * a not gate) can be included in read-only mode in bigger circuits,
+     * allowing for the creation of a bottom-up approach.
+     *
+     * \sa intoHierarchy()
+     */
+
+    /*!
+     * \fn IDocument::alignTop()
+     *
+     * \brief Align elements in a row correponding to top most elements
+     * coordinates.
+     */
+
+    /*!
+     * \fn IDocument::alignBottom()
+     *
+     * \brief Align elements in a row correponding to bottom most elements
+     * coordinates.
+     */
+
+    /*!
+     * \fn IDocument::alignLeft()
+     *
+     * \brief Align elements in a column correponding to left most elements
+     * coordinates.
+     */
+
+    /*!
+     * \fn IDocument::alignRight()
+     *
+     * \brief Align elements in a column correponding to right most elements
+     * coordinates.
+     */
+
+    /*!
+     * \fn IDocument::distributeHorizontal()
+     *
+     * \brief Distribute elements in columns horizontally
+     */
+
+    /*!
+     * \fn IDocument::distributeVertical()
+     *
+     * \brief Distribute elements in rows vertically
+     */
+
+    /*!
+     * \fn IDocument::centerHorizontal()
+     *
+     * \brief Center elements horizontally
+     */
+
+    /*!
+     * \fn IDocument::centerVertical()
+     *
+     * \brief Center elements vertically
+     */
+
+    /*!
+     * \fn IDocument::simulate()
+     *
+     * \brief Simulate current document
+     */
+
+    /*!
      * \fn IDocument::load(QString *errorMessage = 0)
      *
      * \brief Loads the document from file IDocument::fileName()
@@ -162,12 +262,10 @@ namespace Caneda
 
     IDocument::IDocument()
     {
-
     }
 
     IDocument::~IDocument()
     {
-
     }
 
     //! \brief Returns the fileName represented by this document.
@@ -193,6 +291,11 @@ namespace Caneda
     void IDocument::emitDocumentChanged()
     {
         emit documentChanged(this);
+    }
+
+    void IDocument::setNormalAction()
+    {
+        MainWindow::instance()->setNormalAction();
     }
 
 } // namespace Caneda

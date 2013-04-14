@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,6 +29,7 @@
 #include "dialogs/exportdialog.h"
 
 #include <QFileInfo>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPrinter>
 
@@ -127,6 +128,64 @@ namespace Caneda
         QPainterPath path;
         path.addRect(m_cGraphicsScene->sceneRect());
         m_cGraphicsScene->setSelectionArea(path);
+    }
+
+    void SymbolDocument::intoHierarchy()
+    {
+        setNormalAction();
+        //! \todo Implement this. This should return to the schematic document.
+    }
+
+    void SymbolDocument::popHierarchy()
+    {
+        setNormalAction();
+        //! \todo Implement this. This should return to the schematic document.
+    }
+
+    void SymbolDocument::alignTop()
+    {
+        alignElements(Qt::AlignTop);
+    }
+
+    void SymbolDocument::alignBottom()
+    {
+        alignElements(Qt::AlignBottom);
+    }
+
+    void SymbolDocument::alignLeft()
+    {
+        alignElements(Qt::AlignLeft);
+    }
+
+    void SymbolDocument::alignRight()
+    {
+        alignElements(Qt::AlignRight);
+    }
+
+    void SymbolDocument::distributeHorizontal()
+    {
+        if (!m_cGraphicsScene->distributeElements(Qt::Horizontal)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
+        }
+    }
+
+    void SymbolDocument::distributeVertical()
+    {
+        if (!m_cGraphicsScene->distributeElements(Qt::Vertical)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
+        }
+    }
+
+    void SymbolDocument::centerHorizontal()
+    {
+        alignElements(Qt::AlignHCenter);
+    }
+
+    void SymbolDocument::centerVertical()
+    {
+        alignElements(Qt::AlignVCenter);
     }
 
     void SymbolDocument::print(QPrinter *printer, bool fitInView)
@@ -257,6 +316,15 @@ namespace Caneda
         }
         else {
             m_cGraphicsScene->launchPropertyDialog();
+        }
+    }
+
+    //! \brief Align selected elements appropriately based on \a alignment
+    void SymbolDocument::alignElements(Qt::Alignment alignment)
+    {
+        if (!m_cGraphicsScene->alignElements(alignment)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
         }
     }
 

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -61,6 +61,20 @@ namespace Caneda
         virtual void paste();
 
         virtual void selectAll();
+
+        virtual void intoHierarchy();
+        virtual void popHierarchy();
+
+        virtual void alignTop() {}
+        virtual void alignBottom() {}
+        virtual void alignLeft() {}
+        virtual void alignRight() {}
+        virtual void distributeHorizontal() {}
+        virtual void distributeVertical() {}
+        virtual void centerHorizontal() {}
+        virtual void centerVertical() {}
+
+        virtual void simulate();
 
         virtual bool printSupportsFitInPage() const { return false; }
         virtual void print(QPrinter *printer, bool fitInView);

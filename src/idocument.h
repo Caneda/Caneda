@@ -71,6 +71,20 @@ namespace Caneda
 
         virtual void selectAll() = 0;
 
+        virtual void intoHierarchy() = 0;
+        virtual void popHierarchy() = 0;
+
+        virtual void alignTop() = 0;
+        virtual void alignBottom() = 0;
+        virtual void alignLeft() = 0;
+        virtual void alignRight() = 0;
+        virtual void distributeHorizontal() = 0;
+        virtual void distributeVertical() = 0;
+        virtual void centerHorizontal() = 0;
+        virtual void centerVertical() = 0;
+
+        virtual void simulate() = 0;
+
         virtual bool printSupportsFitInPage() const = 0;
         virtual void print(QPrinter *printer, bool fitInPage) = 0;
         virtual void exportImage() = 0;
@@ -95,6 +109,8 @@ namespace Caneda
     protected:
         friend class DocumentViewManager;
         QString m_fileName;
+
+        void setNormalAction();
     };
 
 } // namespace Caneda

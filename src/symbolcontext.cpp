@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,17 +19,12 @@
 
 #include "symbolcontext.h"
 
-#include "actionmanager.h"
-#include "cgraphicsscene.h"
-#include "documentviewmanager.h"
-#include "mainwindow.h"
 #include "symboldocument.h"
 #include "sidebarbrowser.h"
 #include "singletonowner.h"
 #include "statehandler.h"
 
 #include <QFileInfo>
-#include <QMessageBox>
 #include <QStringList>
 
 namespace Caneda
@@ -131,88 +126,6 @@ namespace Caneda
     void SymbolContext::addMouseAction(Action *action)
     {
         m_mouseActions << action;
-    }
-
-    //! \brief Align elements in a row correponding to top most elements coords.
-    void SymbolContext::slotAlignTop()
-    {
-        alignElements(Qt::AlignTop);
-    }
-
-    //! \brief Align elements in a row correponding to bottom most elements coords.
-    void SymbolContext::slotAlignBottom()
-    {
-        alignElements(Qt::AlignBottom);
-    }
-
-    //! \brief Align elements in a column correponding to left most elements coords.
-    void SymbolContext::slotAlignLeft()
-    {
-        alignElements(Qt::AlignLeft);
-    }
-
-    /*!
-     * \brief Align elements in a column correponding to right most elements
-     * coords.
-     */
-    void SymbolContext::slotAlignRight()
-    {
-        alignElements(Qt::AlignRight);
-    }
-
-    void SymbolContext::slotDistributeHorizontal()
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        SymbolDocument *symDoc = qobject_cast<SymbolDocument*>(doc);
-
-        if (symDoc) {
-            if (!symDoc->cGraphicsScene()->distributeElements(Qt::Horizontal)) {
-                QMessageBox::information(0, tr("Info"),
-                        tr("At least two elements must be selected!"));
-            }
-        }
-    }
-
-    void SymbolContext::slotDistributeVertical()
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        SymbolDocument *symDoc = qobject_cast<SymbolDocument*>(doc);
-
-        if (symDoc) {
-            if (!symDoc->cGraphicsScene()->distributeElements(Qt::Vertical)) {
-                QMessageBox::information(0, tr("Info"),
-                        tr("At least two elements must be selected!"));
-            }
-        }
-    }
-
-    void SymbolContext::slotCenterHorizontal()
-    {
-        alignElements(Qt::AlignHCenter);
-    }
-
-    void SymbolContext::slotCenterVertical()
-    {
-        alignElements(Qt::AlignVCenter);
-    }
-
-    //! \brief Align selected elements appropriately based on \a alignment
-    void SymbolContext::alignElements(Qt::Alignment alignment)
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        SymbolDocument *symDoc = qobject_cast<SymbolDocument*>(doc);
-
-        if (symDoc) {
-            if (!symDoc->cGraphicsScene()->alignElements(alignment)) {
-                QMessageBox::information(0, tr("Info"),
-                        tr("At least two elements must be selected!"));
-            }
-        }
-    }
-
-    void SymbolContext::setNormalAction()
-    {
-        MainWindow::instance()->setNormalAction();
     }
 
 } // namespace Caneda

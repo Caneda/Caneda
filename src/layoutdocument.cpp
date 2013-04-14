@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,6 +29,7 @@
 #include "dialogs/exportdialog.h"
 
 #include <QFileInfo>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPrinter>
 
@@ -127,6 +128,70 @@ namespace Caneda
         QPainterPath path;
         path.addRect(m_cGraphicsScene->sceneRect());
         m_cGraphicsScene->setSelectionArea(path);
+    }
+
+    void LayoutDocument::intoHierarchy()
+    {
+        setNormalAction();
+        //! \todo Implement this
+    }
+
+    void LayoutDocument::popHierarchy()
+    {
+        setNormalAction();
+        //! \todo Implement this
+    }
+
+    void LayoutDocument::alignTop()
+    {
+        alignElements(Qt::AlignTop);
+    }
+
+    void LayoutDocument::alignBottom()
+    {
+        alignElements(Qt::AlignBottom);
+    }
+
+    void LayoutDocument::alignLeft()
+    {
+        alignElements(Qt::AlignLeft);
+    }
+
+    void LayoutDocument::alignRight()
+    {
+        alignElements(Qt::AlignRight);
+    }
+
+    void LayoutDocument::distributeHorizontal()
+    {
+        if (!m_cGraphicsScene->distributeElements(Qt::Horizontal)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
+        }
+    }
+
+    void LayoutDocument::distributeVertical()
+    {
+        if (!m_cGraphicsScene->distributeElements(Qt::Vertical)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
+        }
+    }
+
+    void LayoutDocument::centerHorizontal()
+    {
+        alignElements(Qt::AlignHCenter);
+    }
+
+    void LayoutDocument::centerVertical()
+    {
+        alignElements(Qt::AlignVCenter);
+    }
+
+    void LayoutDocument::simulate()
+    {
+        setNormalAction();
+        //! \todo Implement this
     }
 
     void LayoutDocument::print(QPrinter *printer, bool fitInView)
@@ -257,6 +322,15 @@ namespace Caneda
         }
         else {
             m_cGraphicsScene->launchPropertyDialog();
+        }
+    }
+
+    //! \brief Align selected elements appropriately based on \a alignment
+    void LayoutDocument::alignElements(Qt::Alignment alignment)
+    {
+        if (!m_cGraphicsScene->alignElements(alignment)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
         }
     }
 

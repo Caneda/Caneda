@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -30,6 +30,7 @@
 #include "dialogs/exportdialog.h"
 
 #include <QFileInfo>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPrinter>
 
@@ -128,6 +129,70 @@ namespace Caneda
         QPainterPath path;
         path.addRect(m_cGraphicsScene->sceneRect());
         m_cGraphicsScene->setSelectionArea(path);
+    }
+
+    void SchematicDocument::intoHierarchy()
+    {
+        setNormalAction();
+        //! \todo Implement this
+    }
+
+    void SchematicDocument::popHierarchy()
+    {
+        setNormalAction();
+        //! \todo Implement this
+    }
+
+    void SchematicDocument::alignTop()
+    {
+        alignElements(Qt::AlignTop);
+    }
+
+    void SchematicDocument::alignBottom()
+    {
+        alignElements(Qt::AlignBottom);
+    }
+
+    void SchematicDocument::alignLeft()
+    {
+        alignElements(Qt::AlignLeft);
+    }
+
+    void SchematicDocument::alignRight()
+    {
+        alignElements(Qt::AlignRight);
+    }
+
+    void SchematicDocument::distributeHorizontal()
+    {
+        if (!m_cGraphicsScene->distributeElements(Qt::Horizontal)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
+        }
+    }
+
+    void SchematicDocument::distributeVertical()
+    {
+        if (!m_cGraphicsScene->distributeElements(Qt::Vertical)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
+        }
+    }
+
+    void SchematicDocument::centerHorizontal()
+    {
+        alignElements(Qt::AlignHCenter);
+    }
+
+    void SchematicDocument::centerVertical()
+    {
+        alignElements(Qt::AlignVCenter);
+    }
+
+    void SchematicDocument::simulate()
+    {
+        setNormalAction();
+        //! \todo Implement this
     }
 
     void SchematicDocument::print(QPrinter *printer, bool fitInView)
@@ -258,6 +323,15 @@ namespace Caneda
         }
         else {
             m_cGraphicsScene->launchPropertyDialog();
+        }
+    }
+
+    //! \brief Align selected elements appropriately based on \a alignment
+    void SchematicDocument::alignElements(Qt::Alignment alignment)
+    {
+        if (!m_cGraphicsScene->alignElements(alignment)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
         }
     }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -52,24 +52,8 @@ namespace Caneda
         void addNormalAction(Action *action);
         void addMouseAction(Action *action);
 
-    private Q_SLOTS:
-        void slotIntoHierarchy();
-        void slotPopHierarchy();
-
-        void slotAlignTop();
-        void slotAlignBottom();
-        void slotAlignLeft();
-        void slotAlignRight();
-        void slotDistributeHorizontal();
-        void slotDistributeVertical();
-        void slotCenterHorizontal();
-        void slotCenterVertical();
-
     private:
         LayoutContext(QObject *parent = 0);
-
-        void alignElements(Qt::Alignment alignment);
-        void setNormalAction();
 
         //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case schematic actions become irrelevant.

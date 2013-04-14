@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,19 +19,13 @@
 
 #include "layoutcontext.h"
 
-#include "actionmanager.h"
-#include "cgraphicsscene.h"
-#include "documentviewmanager.h"
 #include "layoutdocument.h"
-#include "mainwindow.h"
 #include "settings.h"
 #include "sidebarbrowser.h"
 #include "singletonowner.h"
 #include "statehandler.h"
 
-#include <QDebug>
 #include <QFileInfo>
-#include <QMessageBox>
 #include <QSettings>
 #include <QStringList>
 
@@ -158,100 +152,6 @@ namespace Caneda
     void LayoutContext::addMouseAction(Action *action)
     {
         m_mouseActions << action;
-    }
-
-    void LayoutContext::slotIntoHierarchy()
-    {
-        setNormalAction();
-        //TODO: implement this
-    }
-
-    void LayoutContext::slotPopHierarchy()
-    {
-        setNormalAction();
-        //TODO: implement this
-    }
-
-    //! \brief Align elements in a row correponding to top most elements coords.
-    void LayoutContext::slotAlignTop()
-    {
-        alignElements(Qt::AlignTop);
-    }
-
-    //! \brief Align elements in a row correponding to bottom most elements coords.
-    void LayoutContext::slotAlignBottom()
-    {
-        alignElements(Qt::AlignBottom);
-    }
-
-    //! \brief Align elements in a column correponding to left most elements coords.
-    void LayoutContext::slotAlignLeft()
-    {
-        alignElements(Qt::AlignLeft);
-    }
-
-    /*!
-     * \brief Align elements in a column correponding to right most elements
-     * coords.
-     */
-    void LayoutContext::slotAlignRight()
-    {
-        alignElements(Qt::AlignRight);
-    }
-
-    void LayoutContext::slotDistributeHorizontal()
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        LayoutDocument *layDoc = qobject_cast<LayoutDocument*>(doc);
-
-        if (layDoc) {
-            if (!layDoc->cGraphicsScene()->distributeElements(Qt::Horizontal)) {
-                QMessageBox::information(0, tr("Info"),
-                        tr("At least two elements must be selected!"));
-            }
-        }
-    }
-
-    void LayoutContext::slotDistributeVertical()
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        LayoutDocument *layDoc = qobject_cast<LayoutDocument*>(doc);
-
-        if (layDoc) {
-            if (!layDoc->cGraphicsScene()->distributeElements(Qt::Vertical)) {
-                QMessageBox::information(0, tr("Info"),
-                        tr("At least two elements must be selected!"));
-            }
-        }
-    }
-
-    void LayoutContext::slotCenterHorizontal()
-    {
-        alignElements(Qt::AlignHCenter);
-    }
-
-    void LayoutContext::slotCenterVertical()
-    {
-        alignElements(Qt::AlignVCenter);
-    }
-
-    //! \brief Align selected elements appropriately based on \a alignment
-    void LayoutContext::alignElements(Qt::Alignment alignment)
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        LayoutDocument *layDoc = qobject_cast<LayoutDocument*>(doc);
-
-        if (layDoc) {
-            if (!layDoc->cGraphicsScene()->alignElements(alignment)) {
-                QMessageBox::information(0, tr("Info"),
-                        tr("At least two elements must be selected!"));
-            }
-        }
-    }
-
-    void LayoutContext::setNormalAction()
-    {
-        MainWindow::instance()->setNormalAction();
     }
 
 } // namespace Caneda

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -57,6 +57,20 @@ namespace Caneda
 
         virtual void selectAll();
 
+        virtual void intoHierarchy();
+        virtual void popHierarchy();
+
+        virtual void alignTop();
+        virtual void alignBottom();
+        virtual void alignLeft();
+        virtual void alignRight();
+        virtual void distributeHorizontal();
+        virtual void distributeVertical();
+        virtual void centerHorizontal();
+        virtual void centerVertical();
+
+        virtual void simulate();
+
         virtual bool printSupportsFitInPage() const  { return true; }
         virtual void print(QPrinter *printer, bool fitInView);
         virtual void exportImage();
@@ -74,6 +88,8 @@ namespace Caneda
 
     private:
         CGraphicsScene *m_cGraphicsScene;
+
+        void alignElements(Qt::Alignment alignment);
     };
 
 } // namespace Caneda

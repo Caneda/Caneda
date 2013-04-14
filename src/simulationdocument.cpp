@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -76,6 +76,32 @@ namespace Caneda
     QUndoStack* SimulationDocument::undoStack()
     {
         return m_simulationScene->undoStack();
+    }
+
+    void SimulationDocument::distributeHorizontal()
+    {
+        /*!
+         * \todo Implement this. This method should distribute the available
+         * waveforms into several graphs, distributed horizontally.
+         */
+    }
+
+    void SimulationDocument::distributeVertical()
+    {
+        /*!
+         * \todo Implement this. This method should distribute the available
+         * waveforms into several graphs, distributed vertically.
+         */
+    }
+
+    void SimulationDocument::centerHorizontal()
+    {
+        //! \todo Implement this. Merge horizontally distributed waveforms.
+    }
+
+    void SimulationDocument::centerVertical()
+    {
+        //! \todo Implement this. Merge vertically distributed waveforms.
     }
 
     void SimulationDocument::print(QPrinter *printer, bool fitInView)

@@ -197,10 +197,7 @@ namespace Caneda
         Action *action = 0;
         ActionManager *am = ActionManager::instance();
         StateHandler *handler = StateHandler::instance();
-        LayoutContext *lc = LayoutContext::instance();
-        SchematicContext *sc = SchematicContext::instance();
         SimulationContext *sim = SimulationContext::instance();
-        SymbolContext *sy = SymbolContext::instance();
 
         action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New..."));
         action->setShortcut(CTRL+Key_N);
@@ -331,20 +328,14 @@ namespace Caneda
         action->setToolTip(tr("Go into Subcircuit") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Goes inside the selected subcircuit"));
         action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotIntoHierarchy()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotIntoHierarchy()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotIntoHierarchy()));
 
         action = am->createAction("popH", Caneda::icon("go-top"), tr("Pop out"));
         action->setShortcut(CTRL+SHIFT+Key_I);
         action->setToolTip(tr("Pop Out") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Goes outside the current subcircuit"));
         action->setWhatsThis(tr("Pop Out\n\nGoes up one hierarchy level (leaves the current subcircuit)"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotPopHierarchy()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotPopHierarchy()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotPopHierarchy()));
 
         action = am->createAction("zoomFitInBest", Caneda::icon("zoom-fit-best"), tr("View all"));
         action->setShortcut(Key_0);
@@ -405,82 +396,42 @@ namespace Caneda
         action = am->createAction("alignTop", Caneda::icon("align-vertical-top"), tr("Align top"));
         action->setStatusTip(tr("Align top selected elements"));
         action->setWhatsThis(tr("Align top\n\nAlign selected elements to their upper edge"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotAlignTop()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotAlignTop()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotAlignTop()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
-        sy->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotAlignTop()));
 
         action = am->createAction("alignBottom", Caneda::icon("align-vertical-bottom"), tr("Align bottom"));
         action->setStatusTip(tr("Align bottom selected elements"));
         action->setWhatsThis(tr("Align bottom\n\nAlign selected elements to their lower edge"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotAlignBottom()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotAlignBottom()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotAlignBottom()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
-        sy->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotAlignBottom()));
 
         action = am->createAction("alignLeft", Caneda::icon("align-horizontal-left"), tr("Align left"));
         action->setStatusTip(tr("Align left selected elements"));
         action->setWhatsThis(tr("Align left\n\nAlign selected elements to their left edge"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotAlignLeft()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotAlignLeft()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotAlignLeft()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
-        sy->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotAlignLeft()));
 
         action = am->createAction("alignRight", Caneda::icon("align-horizontal-right"), tr("Align right"));
         action->setStatusTip(tr("Align right selected elements"));
         action->setWhatsThis(tr("Align right\n\nAlign selected elements to their right edge"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotAlignRight()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotAlignRight()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotAlignRight()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
-        sy->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotAlignRight()));
 
         action = am->createAction("centerHor", Caneda::icon("align-horizontal-center"), tr("Center horizontally"));
         action->setStatusTip(tr("Center horizontally selected elements"));
         action->setWhatsThis(tr("Center horizontally\n\nCenter horizontally selected elements"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotCenterHorizontal()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotCenterHorizontal()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotCenterHorizontal()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
-        sy->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotCenterHorizontal()));
 
         action = am->createAction("centerVert", Caneda::icon("align-vertical-center"), tr("Center vertically"));
         action->setStatusTip(tr("Center vertically selected elements"));
         action->setWhatsThis(tr("Center vertically\n\nCenter vertically selected elements"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotCenterVertical()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotCenterVertical()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotCenterVertical()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
-        sy->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotCenterVertical()));
 
         action = am->createAction("distrHor", Caneda::icon("distribute-horizontal-center"), tr("Distribute horizontally"));
         action->setStatusTip(tr("Distribute equally horizontally"));
         action->setWhatsThis(tr("Distribute horizontally\n\n""Distribute horizontally selected elements"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotDistributeHorizontal()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotDistributeHorizontal()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotDistributeHorizontal()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
-        sy->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotDistributeHorizontal()));
 
         action = am->createAction("distrVert", Caneda::icon("distribute-vertical-center"), tr("Distribute vertically"));
         action->setStatusTip(tr("Distribute equally vertically"));
         action->setWhatsThis(tr("Distribute vertically\n\n""Distribute vertically selected elements"));
-        connect(action, SIGNAL(triggered()), lc, SLOT(slotDistributeVertical()));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotDistributeVertical()));
-        connect(action, SIGNAL(triggered()), sy, SLOT(slotDistributeVertical()));
-        lc->addNormalAction(action);
-        sc->addNormalAction(action);
-        sy->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotDistributeVertical()));
 
         action = am->createAction("projNew", Caneda::icon("project-new"), tr("&New project..."));
         action->setShortcut(CTRL+SHIFT+Key_N);
@@ -562,8 +513,7 @@ namespace Caneda
         action->setToolTip(tr("Simulate") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Simulates the current circuit"));
         action->setWhatsThis(tr("Simulate\n\nSimulates the current circuit"));
-        connect(action, SIGNAL(triggered()), sc, SLOT(slotSimulate()));
-        sc->addNormalAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(slotSimulate()));
 
         action = am->createAction("openSym", Caneda::icon("system-switch-user"), tr("View circuit simulation"));
         action->setShortcut(Key_F8);
@@ -571,7 +521,6 @@ namespace Caneda
         action->setStatusTip(tr("Changes to circuit simulation"));
         action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
         connect(action, SIGNAL(triggered()), SLOT(openSimulation()));
-        sc->addNormalAction(action);
 
         action = am->createAction("data2csv",  tr("Export to &CSV..."));
         action->setStatusTip(tr("Export simulation data to CSV file"));
@@ -1218,6 +1167,12 @@ namespace Caneda
         }
     }
 
+    void MainWindow::slotEditFind()
+    {
+        setNormalAction();
+        //TODO: implement this or rather port directly
+    }
+
     void MainWindow::slotSelectAll()
     {
         setNormalAction();
@@ -1227,31 +1182,45 @@ namespace Caneda
         }
     }
 
-    //! \brief Opens the layout corresponding to current file
+    //! \brief Opens the layout corresponding to current file.
     void MainWindow::openLayout()
     {
         LayoutContext *ly = LayoutContext::instance();
         slotFileOpenFormat(ly->defaultSuffix());
     }
 
-    //! \brief Opens the schematic corresponding to current file
+    //! \brief Opens the schematic corresponding to current file.
     void MainWindow::openSchematic()
     {
         SchematicContext *sc = SchematicContext::instance();
         slotFileOpenFormat(sc->defaultSuffix());
     }
 
-    //! \brief Opens the symbol corresponding to current file
+    //! \brief Opens the symbol corresponding to current file.
     void MainWindow::openSymbol()
     {
         SymbolContext *sy = SymbolContext::instance();
         slotFileOpenFormat(sy->defaultSuffix());
     }
 
-    void MainWindow::slotEditFind()
+    //! \brief Open selected item for edition.
+    void MainWindow::slotIntoHierarchy()
     {
         setNormalAction();
-        //TODO: implement this or rather port directly
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->intoHierarchy();
+        }
+    }
+
+    //! \brief Open parent item for edition.
+    void MainWindow::slotPopHierarchy()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->popHierarchy();
+        }
     }
 
     void MainWindow::slotZoomIn()
@@ -1330,6 +1299,98 @@ namespace Caneda
     {
         setNormalAction();
         statusBar()->setVisible(toogle);
+    }
+
+    /*!
+     * \brief Align elements in a row correponding to top most elements
+     * coordinates.
+     */
+    void MainWindow::slotAlignTop()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->alignTop();
+        }
+    }
+
+    /*!
+     * \brief Align elements in a row correponding to bottom most elements
+     * coordinates.
+     */
+    void MainWindow::slotAlignBottom()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->alignBottom();
+        }
+    }
+
+    /*!
+     * \brief Align elements in a column correponding to left most elements
+     * coordinates.
+     */
+    void MainWindow::slotAlignLeft()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->alignLeft();
+        }
+    }
+
+    /*!
+     * \brief Align elements in a column correponding to right most elements
+     * coordinates.
+     */
+    void MainWindow::slotAlignRight()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->alignRight();
+        }
+    }
+
+    //! \brief Center elements horizontally
+    void MainWindow::slotCenterHorizontal()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->centerHorizontal();
+        }
+    }
+
+    //! \brief Center elements vertically
+    void MainWindow::slotCenterVertical()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->centerVertical();
+        }
+    }
+
+    //! \brief Distribute elements in columns horizontally
+    void MainWindow::slotDistributeHorizontal()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->distributeHorizontal();
+        }
+    }
+
+    //! \brief Distribute elements in rows vertically
+    void MainWindow::slotDistributeVertical()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->distributeVertical();
+        }
     }
 
     void MainWindow::slotNewProject()
@@ -1427,9 +1488,20 @@ namespace Caneda
         //TODO: implement this or rather port directly
     }
 
+    //! \brief Simulate current document
+    void MainWindow::slotSimulate()
+    {
+        setNormalAction();
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->simulate();
+        }
+    }
+
     //! \brief Opens the simulation corresponding to current file
     void MainWindow::openSimulation()
     {
+        setNormalAction();
         SimulationContext *si = SimulationContext::instance();
         slotFileOpenFormat(si->defaultSuffix());
     }

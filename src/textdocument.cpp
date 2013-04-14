@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -125,6 +125,26 @@ namespace Caneda
             return;
         }
         te->selectAll();
+    }
+
+    void TextDocument::intoHierarchy()
+    {
+        //! \todo Implement this. This should open currently selected file.
+    }
+
+    void TextDocument::popHierarchy()
+    {
+        //! \todo Implement this. This should return to previously opened file.
+    }
+
+    void TextDocument::simulate()
+    {
+        /*!
+         * \todo Implement this. This should start a simulation, invoking the
+         * correct simulator depending on the file extension, and then open
+         * the waveform viewer (could be internal or external acording to the
+         * settings).
+         */
     }
 
     void TextDocument::print(QPrinter *printer, bool fitInView)

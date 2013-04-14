@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,7 +19,6 @@
 
 #include "simulationcontext.h"
 
-#include "mainwindow.h"
 #include "simulationdocument.h"
 #include "singletonowner.h"
 
@@ -102,13 +101,7 @@ namespace Caneda
 
     void SimulationContext::exportCsv()
     {
-        setNormalAction();
         //TODO: implement this
-    }
-
-    void SimulationContext::setNormalAction()
-    {
-        MainWindow::instance()->setNormalAction();
     }
 
 } // namespace Caneda

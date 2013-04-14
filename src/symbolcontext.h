@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -52,21 +52,8 @@ namespace Caneda
         void addNormalAction(Action *action);
         void addMouseAction(Action *action);
 
-    private Q_SLOTS:
-        void slotAlignTop();
-        void slotAlignBottom();
-        void slotAlignLeft();
-        void slotAlignRight();
-        void slotDistributeHorizontal();
-        void slotDistributeVertical();
-        void slotCenterHorizontal();
-        void slotCenterVertical();
-
     private:
         SymbolContext(QObject *parent = 0);
-
-        void alignElements(Qt::Alignment alignment);
-        void setNormalAction();
 
         //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case symbol actions become irrelevant.

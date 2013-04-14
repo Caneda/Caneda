@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -55,8 +55,6 @@ namespace Caneda
 
     private:
         SimulationContext(QObject *parent = 0);
-
-        void setNormalAction();
 
         //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case simulation actions become irrelevant.
