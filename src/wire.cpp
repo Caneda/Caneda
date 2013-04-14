@@ -80,9 +80,11 @@ namespace Caneda
         updateGeometry();
     }
 
-    // TODO: Implement a list of components and wires connections and
-    // return directly that list, simplifying this procedure and
-    // avoiding the recursion.
+    /*!
+     * \todo Implement a list of components and wires connections and
+     * return directly that list, simplifying this procedure and
+     * avoiding the recursion.
+     */
     void Wire::getConnectedWires(QList<Wire*> &connectedWires)
     {
         if(connectedWires.contains(this)) {

@@ -36,7 +36,19 @@ namespace Caneda
     class IContext;
     class IView;
 
-    //! \copydoc IContext
+    /*!
+     * \brief This class represents the actual document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture,
+     * serving as an interface for all documents that can be handled by
+     * Caneda. This class manages document specific methods like saving,
+     * loading, exporting to different formats, as well as containing the
+     * actual scene. The scene itself may be included as a pointer to
+     * another class that contains all the scene specific methods (for
+     * example a graphics scene). The scene, in its turn, serves as a
+     * container for item objects and handles their manipulation.
+     *
+     * \sa IContext, IView, \ref DocumentViewFramework
+     */
     class IDocument : public QObject
     {
         Q_OBJECT

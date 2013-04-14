@@ -143,14 +143,18 @@ namespace Caneda
 
         writer->writeStartElement("displaytext");
         writer->writeLocaleText("C", "User created component");
-        // TODO: When available use this to save user defined displaytext
-        // writer->writeLocaleText("C", scene->displayText());
+        /*!
+         * \todo When available use this to save user defined displaytext
+         * writer->writeLocaleText("C", scene->displayText());
+         */
         writer->writeEndElement(); //</displaytext>
 
         writer->writeStartElement("description");
         writer->writeLocaleText("C", "User created component based on user symbol");
-        // TODO: When available use this to save user defined description
-        // writer->writeLocaleText("C", scene->description());
+        /*!
+         * \todo When available use this to save user defined description
+         * writer->writeLocaleText("C", scene->description());
+         */
         writer->writeEndElement(); //</description>
 
         // Write symbol geometry (drawing)
@@ -166,11 +170,11 @@ namespace Caneda
 
         writer->writeEndElement(); //</symbol>
 
-        // TODO Write ports
+        //! \todo Write ports
         writer->writeStartElement("ports");
         writer->writeEndElement(); //</ports>
 
-        // TODO Write properties
+        //! \todo Write properties
         writer->writeStartElement("properties");
         writer->writeEndElement(); //</properties>
 
@@ -206,7 +210,7 @@ namespace Caneda
             // Check if we are opening the file for edition or to include it in a library
             if(cGraphicsScene()) {
                 // We are opening the file for symbol edition
-                // TODO: Implement this.
+                //! \todo Implement this.
             }
             else if(component()) {
                 // We are opening the file as a component to include it in a library
@@ -230,7 +234,7 @@ namespace Caneda
                         // Check if we are opening the file for edition or to include it in a library
                         if(cGraphicsScene()) {
                             // We are opening the file for symbol edition
-                            // TODO: Implement this.
+                            //! \todo Implement this.
                             reader->readUnknownElement();
                         }
                         else if(component()) {
@@ -245,7 +249,7 @@ namespace Caneda
                         // Check if we are opening the file for edition or to include it in a library
                         if(cGraphicsScene()) {
                             // We are opening the file for symbol edition
-                            // TODO: Implement this.
+                            //! \todo Implement this.
                             reader->readUnknownElement();
                         }
                         else if(component()) {
@@ -348,7 +352,7 @@ namespace Caneda
                 // Check if we are opening the file for edition or to include it in a library
                 if(cGraphicsScene()) {
                     // We are opening the file for symbol edition
-                    // TODO: Implement this.
+                    //! \todo Implement this.
                     reader->readUnknownElement();
                 }
                 else if(component()) {
@@ -382,7 +386,7 @@ namespace Caneda
                 // Check if we are opening the file for edition or to include it in a library
                 if(cGraphicsScene()) {
                     // We are opening the file for symbol edition
-                    // TODO: Implement this.
+                    //! \todo Implement this.
                     reader->readUnknownElement();
                 }
                 else if(component()) {

@@ -31,6 +31,21 @@ namespace Caneda
     // Forward declarations.
     class TextEdit;
 
+    /*!
+     * \brief This class represents the text document interface
+     * implementation.
+     *
+     * This class represents the actual document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages document specific methods like saving and
+     * loading, as well as containing the actual document. The document
+     * itself is included as a pointer to QTextDocument, that contains all the
+     * document specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa TextContext, TextView
+     */
     class TextDocument : public IDocument
     {
         Q_OBJECT

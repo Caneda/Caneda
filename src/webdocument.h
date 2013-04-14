@@ -30,6 +30,20 @@ namespace Caneda
     // Forward declarations.
     class WebPage;
 
+    /*!
+     * \brief This class represents the web browser document interface
+     * implementation.
+     *
+     * This class represents the actual web document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages web document specific methods like loading, as well
+     * as containing the actual document. The document itself is included as a
+     * pointer to QUrl, that contains all the document specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa WebContext, WebView
+     */
     class WebDocument : public IDocument
     {
         Q_OBJECT

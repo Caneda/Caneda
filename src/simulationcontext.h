@@ -28,6 +28,21 @@ namespace Caneda
     class Action;
     class SidebarBrowser;
 
+    /*!
+     * \brief This class represents the simulation context interface
+     * implementation.
+     *
+     * Only one instance of this class is used during the whole life span of
+     * the program. This class answers the general questions like which file
+     * suffixes it can handle, points to the appropiate methods to create new
+     * documents of its type, etc.
+     *
+     * This class also provides objects like the toolbar, statusbar, etc, which
+     * are specific to this particular context.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa SimulationDocument, SimulationView
+     */
     class SimulationContext : public IContext
     {
         Q_OBJECT

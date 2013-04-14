@@ -27,6 +27,21 @@ namespace Caneda
     // Forward declations
     class SimulationScene;
 
+    /*!
+     * \brief This class represents the simulation document interface
+     * implementation.
+     *
+     * This class represents the actual document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages document specific methods like saving,
+     * loading, exporting to different formats, as well as containing the
+     * actual scene. The scene itself is included as a pointer to
+     * SimulationScene, that contains all the scene specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa SimulationContext, SimulationView
+     */
     class SimulationDocument : public IDocument
     {
         Q_OBJECT

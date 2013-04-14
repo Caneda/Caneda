@@ -441,7 +441,7 @@ namespace Caneda
         emit mouseActionChanged();
 
         resetState();
-        //TODO: Implemement this appropriately for all mouse actions
+        //! \todo Implemement this appropriately for all mouse actions
     }
 
     /*!
@@ -1369,7 +1369,7 @@ namespace Caneda
     void CGraphicsScene::markingEvent(QGraphicsSceneMouseEvent *event)
     {
         Q_UNUSED(event);
-        //TODO:
+        //! \todo Implement this
     }
 
     void CGraphicsScene::paintingDrawEvent(QGraphicsSceneMouseEvent *event)
@@ -1537,12 +1537,11 @@ namespace Caneda
     /*!
      * \brief Here the wireLabel placing is handled. WireLabel should be
      * placed only if the clicked point is wire or node.
-     * \todo Implement
      */
     void CGraphicsScene::insertingWireLabelEvent(QGraphicsSceneMouseEvent *event)
     {
         Q_UNUSED(event);
-        //TODO:
+        //! \todo Implement this
     }
 
     void CGraphicsScene::placeAndDuplicatePainting()

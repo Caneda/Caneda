@@ -105,7 +105,7 @@ namespace Caneda
         writer->writeAttribute("filename", QString(info.baseName()+".raw"));
 
         //Now we copy all the elements and properties in the simulation (axis, waveforms, etc)
-        // TODO: Implement this
+        //! \todo Implement this
 
         //Finally we finish the document
         writer->writeEndElement(); //</data>
@@ -117,7 +117,7 @@ namespace Caneda
 
     bool XmlSimulation::loadFromText(const QString& text)
     {
-        // TODO: Implement this
+        //! \todo Implement this
         // Read all the elements and properties in the simulation (axis, waveforms, etc),
         // along with the data from filename() + ".raw"
         return true;

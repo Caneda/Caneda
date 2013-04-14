@@ -55,8 +55,10 @@ namespace Caneda
 
     void TextEdit::updateCursorPosition()
     {
-        // TODO: Replace current line number calculation
-        // by textcursor.lineNumber() when implemented in Qt.
+        /*!
+         * \todo Replace current line number calculation
+         * by textcursor.lineNumber() when implemented in Qt.
+         */
 
         // Get the current line number
         QTextCursor textcursor = textCursor();

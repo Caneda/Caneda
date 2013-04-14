@@ -302,8 +302,10 @@ namespace Caneda
 
     void Project::importFromProject()
     {
-        //TODO in case of adding a component from another project, we
-        //should copy the component as well as all its dependencies.
+        /*!
+         * \todo In case of adding a component from another project, we
+         * should copy the component as well as all its dependencies.
+         */
     }
 
     /*!

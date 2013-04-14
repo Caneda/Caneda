@@ -311,7 +311,7 @@ namespace Caneda
         const int newMaxUndo = spinUndoNum->value();
         if (currentMaxUndo != newMaxUndo) {
             settings->setCurrentValue("gui/maxUndo", newMaxUndo);
-            //TODO: Also update all undostacks
+            //! \todo Also update all undostacks
         }
 
         QSettings qSettings;
@@ -561,7 +561,7 @@ namespace Caneda
     //! Applies the configuration of this page
     void SimulationConfigurationPage::applyConf()
     {
-        // TODO Implement this
+        //! \todo Implement this
     }
 
     //! @return Icon of this page

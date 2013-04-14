@@ -30,6 +30,21 @@ namespace Caneda
     class TextDocument;
     class TextEdit;
 
+    /*!
+     * \brief This class represents the text view interface
+     * implementation.
+     *
+     * This class represents the view for a document, in a manner
+     * similar to Qt's Graphics View Architecture, and provides the view
+     * widget, which visualizes the contents of the document. The view is
+     * included as a pointer to TextEdit, that contains all the view specific
+     * methods. You can attach several views to the same document, to provide
+     * different viewports into the same data set of the document (for example,
+     * when using split views).
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa TextContext, TextDocument
+     */
     class TextView : public IView
     {
         Q_OBJECT

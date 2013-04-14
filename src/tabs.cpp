@@ -116,7 +116,7 @@ namespace Caneda
     void ViewContainer::onViewFocusChange(IView *view)
     {
         Q_UNUSED(view);
-        //TODO: Uncomment this line after fixing ViewContainer::paintEvent
+        //! \todo Uncomment this line after fixing ViewContainer::paintEvent
         //update();
     }
 
@@ -125,7 +125,7 @@ namespace Caneda
         QWidget::paintEvent(event);
         bool hasFocus = m_view && m_view->toWidget()->hasFocus();
         Q_UNUSED(hasFocus);
-        //TODO: Draw some focus helper.
+        //! \todo Draw some focus helper.
     }
 
     Tab::Tab(IView *view, QWidget *parent) : QWidget(parent)

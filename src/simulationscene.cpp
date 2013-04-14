@@ -79,7 +79,7 @@ namespace Caneda
 
     void SimulationScene::zoomFitInBest()
     {
-        // TODO: Reimplement this
+        //! \todo Reimplement this
         // zoomFitRect(itemsBoundingRect());
     }
 
@@ -90,7 +90,7 @@ namespace Caneda
 
     void SimulationScene::zoomFitRect(const QRectF &rect)
     {
-        // TODO: Reimplement this
+        //! \todo Reimplement this
 //        if (rect.isEmpty()) {
 //            return;
 //        }
@@ -125,13 +125,13 @@ namespace Caneda
 
     void SimulationScene::repaint()
     {
-        // TODO: rapaint each plot via myPlot->replot();
+        //! \todo Rapaint each plot via myPlot->replot();
         QWidget::repaint();
     }
 
     void SimulationScene::mouseMoveEvent(QMouseEvent *event)
     {
-        // TODO: Get cursor position in current plot to display correct coordinates
+        //! \todo Get cursor position in current plot to display correct coordinates
         QPoint newCursorPos = QPoint(0, 0);
 
         QString str = QString("%1 : %2")
@@ -159,7 +159,7 @@ namespace Caneda
 
     void SimulationScene::setZoomLevel(qreal zoomLevel)
     {
-        // TODO: Reimplement this
+        //! \todo Reimplement this
 //        if (!m_zoomRange.contains(zoomLevel)) {
 //            return;
 //        }

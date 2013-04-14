@@ -28,6 +28,21 @@ namespace Caneda
     // Forward declations
     class CGraphicsScene;
 
+    /*!
+     * \brief This class represents the schematic document interface
+     * implementation.
+     *
+     * This class represents the actual document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages document specific methods like saving,
+     * loading, exporting to different formats, as well as containing the
+     * actual scene. The scene itself is included as a pointer to
+     * CGraphicsScene, that contains all the scene specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa SchematicContext, SchematicView
+     */
     class SchematicDocument : public IDocument
     {
         Q_OBJECT

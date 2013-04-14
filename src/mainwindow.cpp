@@ -1170,7 +1170,7 @@ namespace Caneda
     void MainWindow::slotEditFind()
     {
         setNormalAction();
-        //TODO: implement this or rather port directly
+        //! \todo Implement this or rather port directly
     }
 
     void MainWindow::slotSelectAll()
@@ -1470,7 +1470,7 @@ namespace Caneda
     void MainWindow::slotCallMatch()
     {
         setNormalAction();
-        //TODO: implement this or rather port directly
+        //! \todo Implement this or rather port directly
     }
 
     void MainWindow::slotCallAtt()
@@ -1485,7 +1485,7 @@ namespace Caneda
     void MainWindow::slotImportData()
     {
         setNormalAction();
-        //TODO: implement this or rather port directly
+        //! \todo Implement this or rather port directly
     }
 
     //! \brief Simulate current document

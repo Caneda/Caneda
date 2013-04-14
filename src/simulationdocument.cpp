@@ -106,7 +106,7 @@ namespace Caneda
 
     void SimulationDocument::print(QPrinter *printer, bool fitInView)
     {
-        // TODO: Reimplement this
+        //! \todo Reimplement this
     }
 
     bool SimulationDocument::load(QString *errorMessage)
@@ -155,7 +155,7 @@ namespace Caneda
 
     void SimulationDocument::exportImage()
     {
-        // TODO: Reimplement this
+        //! \todo Reimplement this
     }
 
     IView* SimulationDocument::createView()

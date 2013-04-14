@@ -35,7 +35,18 @@ namespace Caneda
     class IDocument;
     class DocumentViewManager;
 
-    //! \copydoc IContext
+    /*!
+     * \brief This class represents the view for a document, in a manner
+     * similar to Qt's Graphics View Architecture. The IView class provides
+     * the view widget, which visualizes the contents of a scene. The view
+     * itself may be included as a pointer to another class that contains
+     * all the view specific methods (for example a graphics view). You can
+     * attach several views to the same scene, to provide different viewports
+     * into the same data set of the document (for example, when using split
+     * views).
+     *
+     * \sa IContext, IDocument, \ref DocumentViewFramework
+     */
     class IView : public QObject
     {
         Q_OBJECT
