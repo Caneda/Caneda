@@ -19,6 +19,7 @@
 
 #include "gitmanager.h"
 
+#include <QProcess>
 #include <QXmlStreamReader>
 
 namespace Caneda
@@ -64,7 +65,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Saves new backup.
+     * \brief Saves a new backup.
      *
      * First we initialize git repository in case it was not created.
      * Then we add all files modified, and finally we commit the
@@ -86,7 +87,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Restores previous backup.
+     * \brief Restores a previous backup.
      *
      * First we discard all current changes. After that we create
      * a new temporal branch and reset it to the user selected point.

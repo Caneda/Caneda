@@ -23,7 +23,9 @@
 #include "ui_gitmanager.h"
 
 #include <QDialog>
-#include <QProcess>
+
+// Forward declarations.
+class QProcess;
 
 namespace Caneda
 {

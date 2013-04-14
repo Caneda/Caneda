@@ -28,6 +28,7 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QProcess>
 #include <QTextCodec>
 #include <QTextDocument>
 #include <QTextStream>
@@ -145,6 +146,30 @@ namespace Caneda
          * the waveform viewer (could be internal or external acording to the
          * settings).
          */
+
+        QProcess *simulationProcess = new QProcess(this);
+
+        QFileInfo info(fileName());
+        QString path = info.path();
+        simulationProcess->setWorkingDirectory(path);
+
+        QString suffix = info.suffix();
+        if (suffix == "net" || suffix == "cir" || suffix == "spc" || suffix == "sp") {
+            // It is a netlist file, we should invoke a spice simulator
+        }
+        else if (suffix == "vhd" || suffix == "vhdl") {
+            // It is a vhdl file, we should invoke ghdl simulator
+        }
+        else if (suffix == "v") {
+            // Is is a verilog file, we should invoke iverilog
+            simulationProcess->start(QString("iverilog ") + fileName());
+            simulationProcess->waitForFinished();
+            simulationProcess->start(QString("./a.out"));
+            simulationProcess->waitForFinished();
+            simulationProcess->start(QString("gtkwave ") + info.completeBaseName() + ".vcd");
+            simulationProcess->waitForFinished();
+        }
+
     }
 
     void TextDocument::print(QPrinter *printer, bool fitInView)
