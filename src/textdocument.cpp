@@ -140,34 +140,51 @@ namespace Caneda
 
     void TextDocument::simulate()
     {
-        /*!
-         * \todo Implement this. This should start a simulation, invoking the
-         * correct simulator depending on the file extension, and then open
-         * the waveform viewer (could be internal or external acording to the
-         * settings).
-         */
+        //! \todo Finish this implementation.
 
+        /*
+         * Start a simulation, invoking the correct simulator depending on the
+         * file extension, and then open the waveform viewer (could be internal
+         * or external acording to the settings).
+         */
         QProcess *simulationProcess = new QProcess(this);
 
         QFileInfo info(fileName());
         QString path = info.path();
         simulationProcess->setWorkingDirectory(path);
 
+        QString baseName = info.completeBaseName();
         QString suffix = info.suffix();
         if (suffix == "net" || suffix == "cir" || suffix == "spc" || suffix == "sp") {
-            // It is a netlist file, we should invoke a spice simulator
+            // It is a netlist file, we should invoke a spice simulator in batch mode
+            // If using ngspice simulator, the command should be:
+            // ngspice -b -r output.raw input.net
+            simulationProcess->start(QString("ngspice -b -r ") + baseName + ".raw "
+                                     + fileName());  // Analize the file
+
+            //! \todo Here we should open the waveform, when raw support is ready.
+
         }
         else if (suffix == "vhd" || suffix == "vhdl") {
             // It is a vhdl file, we should invoke ghdl simulator
+
+            //! \todo Here we should analize (ghdl -a) all included files of the vhdl project
+
+            simulationProcess->start(QString("ghdl -a ") + fileName());  // Analize the files
+            simulationProcess->waitForFinished();
+            simulationProcess->start(QString("ghdl -e ") + baseName);  // Create the simulation
+            simulationProcess->waitForFinished();
+            simulationProcess->start(QString("./") + baseName + " --wave=waveforms.ghw");  // Run the simulation
+            simulationProcess->waitForFinished();
+            simulationProcess->start(QString("gtkwave waveforms.ghw"));  // Open the waveforms
         }
         else if (suffix == "v") {
             // Is is a verilog file, we should invoke iverilog
-            simulationProcess->start(QString("iverilog ") + fileName());
+            simulationProcess->start(QString("iverilog ") + fileName());  // Analize the files
             simulationProcess->waitForFinished();
-            simulationProcess->start(QString("./a.out"));
+            simulationProcess->start(QString("./a.out"));  // Run the simulation
             simulationProcess->waitForFinished();
-            simulationProcess->start(QString("gtkwave ") + info.completeBaseName() + ".vcd");
-            simulationProcess->waitForFinished();
+            simulationProcess->start(QString("gtkwave ") + baseName + ".vcd");  // Open the waveforms
         }
 
     }
