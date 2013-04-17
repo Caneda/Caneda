@@ -37,32 +37,40 @@ namespace Caneda
         // Setup undo stack
         m_undoStack = new QUndoStack(this);
 
-        QwtPlot *waveform = new QwtPlot(this);
-
-        // Add curves
-        // QwtPlotCurve *curve1 = new QwtPlotCurve("Curve 1");
-        // QwtPlotCurve *curve2 = new QwtPlotCurve("Curve 2");
-
-        // Copy the data into the curves
-        // curve1->setData();
-        // curve2->setData();
-
-        // curve1->attach(waveform);
-        // curve2->attach(waveform);
-
-        // Finally, refresh the plot
-        waveform->replot();
+        // Create the new plot
+        m_plot = new QwtPlot(this);
 
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
 
         QVBoxLayout *vlayout = new QVBoxLayout();
-        vlayout->addWidget(waveform);
+        vlayout->addWidget(m_plot);
         setLayout(vlayout);
     }
 
     SimulationScene::~SimulationScene()
     {
         delete m_undoStack;
+    }
+
+    /*!
+     * \brief Adds or moves the item and all its childen to this scene. This
+     * scene takes ownership of the item.
+     */
+    void SimulationScene::addItem(QwtPlotItem *item)
+    {
+        m_items.append(item);
+    }
+
+    //! \brief Displays all items available in the scene, in the plot widget.
+    void SimulationScene::showAll()
+    {
+        // Attach the items to the plot
+        foreach(QwtPlotItem *item, m_items) {
+            item->attach(m_plot);
+        }
+
+        // Refresh the plot
+        m_plot->replot();
     }
 
     void SimulationScene::zoomIn()

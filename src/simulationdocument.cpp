@@ -19,6 +19,7 @@
 
 #include "simulationdocument.h"
 
+#include "formatrawsimulation.h"
 #include "simulationcontext.h"
 #include "simulationscene.h"
 #include "simulationview.h"
@@ -115,6 +116,10 @@ namespace Caneda
 
         if(info.suffix() == "xdat") {
             XmlSimulation *format = new XmlSimulation(this);
+            return format->load();
+        }
+        else if(info.suffix() == "raw") {
+            FormatRawSimulation *format = new FormatRawSimulation(this);
             return format->load();
         }
 

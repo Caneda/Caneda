@@ -52,6 +52,7 @@ namespace Caneda
     {
         QStringList supportedSuffixes;
         supportedSuffixes << "xdat";
+        supportedSuffixes << "raw";
 
         foreach (const QString &suffix, supportedSuffixes) {
             if (suffix == info.suffix()) {
@@ -66,6 +67,7 @@ namespace Caneda
     {
         QStringList nameFilters;
         nameFilters << QObject::tr("Data display (*.xdat)")+" (*.xdat);;";
+        nameFilters << QObject::tr("Raw waveform data (*.raw)")+" (*.raw);;";
 
         return nameFilters;
     }

@@ -25,7 +25,6 @@
 namespace Caneda
 {
     // Forward declrations
-    class SimulationScene;
     class SimulationDocument;
 
     /*!
@@ -70,9 +69,6 @@ namespace Caneda
     private Q_SLOTS:
         void onWidgetFocussedIn();
         void onWidgetFocussedOut();
-
-    private:
-        SimulationScene *m_simulationScene;
     };
 
 } // namespace Caneda

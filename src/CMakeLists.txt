@@ -17,7 +17,7 @@ SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   cgraphicsview.cpp  undocommands.cpp component.cpp
   property.cpp propertygroup.cpp port.cpp node.cpp
   xmlschematic.cpp xmllayout.cpp xmlsymbol.cpp xmlsimulation.cpp
-  folderbrowser.cpp settings.cpp
+  formatrawsimulation.cpp folderbrowser.cpp settings.cpp
   actionmanager.cpp singletonowner.cpp project.cpp
   statehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp

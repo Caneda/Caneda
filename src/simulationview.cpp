@@ -29,7 +29,7 @@ namespace Caneda
     SimulationView::SimulationView(SimulationDocument *document) :
         IView(document)
     {
-        m_simulationScene = new SimulationScene();
+        SimulationScene *m_simulationScene = simulationDocument()->simulationScene();
         connect(m_simulationScene, SIGNAL(focussedIn(SimulationScene*)), this,
                 SLOT(onWidgetFocussedIn()));
         connect(m_simulationScene, SIGNAL(focussedOut(SimulationScene*)), this,
@@ -40,7 +40,6 @@ namespace Caneda
 
     SimulationView::~SimulationView()
     {
-        delete m_simulationScene;
     }
 
     SimulationDocument* SimulationView::simulationDocument() const
@@ -50,7 +49,7 @@ namespace Caneda
 
     QWidget* SimulationView::toWidget() const
     {
-        return m_simulationScene;
+        return simulationDocument()->simulationScene();
     }
 
     IContext* SimulationView::context() const
@@ -60,22 +59,22 @@ namespace Caneda
 
     void SimulationView::zoomIn()
     {
-        m_simulationScene->zoomIn();
+         simulationDocument()->simulationScene()->zoomIn();
     }
 
     void SimulationView::zoomOut()
     {
-        m_simulationScene->zoomOut();
+         simulationDocument()->simulationScene()->zoomOut();
     }
 
     void SimulationView::zoomFitInBest()
     {
-        m_simulationScene->zoomFitInBest();
+        simulationDocument()->simulationScene()->zoomFitInBest();
     }
 
     void SimulationView::zoomOriginal()
     {
-        m_simulationScene->zoomOriginal();
+        simulationDocument()->simulationScene()->zoomOriginal();
     }
 
     IView* SimulationView::duplicate()
@@ -85,7 +84,7 @@ namespace Caneda
 
     void SimulationView::updateSettingsChanges()
     {
-        m_simulationScene->repaint();
+        simulationDocument()->simulationScene()->repaint();
     }
 
     void SimulationView::onWidgetFocussedIn()

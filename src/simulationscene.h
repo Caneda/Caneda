@@ -27,6 +27,9 @@
 // Forward declarations
 class QUndoStack;
 
+class QwtPlot;
+class QwtPlotItem;
+
 namespace Caneda
 {
     class SimulationScene : public QWidget
@@ -36,6 +39,12 @@ namespace Caneda
     public:
         SimulationScene(QWidget *parent = 0);
         ~SimulationScene();
+
+        //! \brief Returns a list of all items in the scene in descending stacking
+        QList<QwtPlotItem*> items() const { return m_items; }
+        void addItem(QwtPlotItem *item);
+
+        void showAll();
 
         void zoomIn();
         void zoomOut();
@@ -63,6 +72,9 @@ namespace Caneda
         void focusOutEvent(QFocusEvent *event);
 
     private:
+        QwtPlot *m_plot;  //! \brief Plot widget. \todo In future this should be a QList, to allow several plots (with several waveforms each) in one widget.
+        QList<QwtPlotItem*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
+
         void setZoomLevel(qreal zoomLevel);
 
         const qreal m_zoomFactor;
@@ -72,6 +84,7 @@ namespace Caneda
         /*!
          * \brief Flag to hold whether a simulation is modified or not
          * i.e to determine whether a file should be saved or not on closing.
+         *
          * \sa setModified
          */
         bool m_modified;
