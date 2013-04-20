@@ -26,6 +26,7 @@
 #include "textedit.h"
 #include "textview.h"
 
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QProcess>
@@ -140,8 +141,7 @@ namespace Caneda
 
     void TextDocument::simulate()
     {
-        //! \todo Finish this implementation.
-
+        //! \todo Create log files, and show them to the user (in case something went wrong).
         /*
          * Start a simulation, invoking the correct simulator depending on the
          * file extension, and then open the waveform viewer (could be internal
@@ -157,18 +157,33 @@ namespace Caneda
         QString suffix = info.suffix();
         if (suffix == "net" || suffix == "cir" || suffix == "spc" || suffix == "sp") {
             // It is a netlist file, we should invoke a spice simulator in batch mode
-            // If using ngspice simulator, the command should be:
+
+            // Set the environment variable to get an ascii raw file instead of a binary one
+            //! \todo Add an option to generate binary raw files to save disk space.
+            QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+            env.insert("SPICE_ASCIIRAWFILE", "1"); // Add an environment variable
+            simulationProcess->setProcessEnvironment(env);
+
+            // If using ngspice simulator, the command to simulate is:
             // ngspice -b -r output.raw input.net
             simulationProcess->start(QString("ngspice -b -r ") + baseName + ".raw "
                                      + fileName());  // Analize the file
+            simulationProcess->waitForFinished();
 
-            //! \todo Here we should open the waveform, when raw support is ready.
-
+            // Open the resulting waveforms
+            //! \todo Check that the result of the simulation was ok, before opening
+            DocumentViewManager *manager = DocumentViewManager::instance();
+            manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
         }
         else if (suffix == "vhd" || suffix == "vhdl") {
             // It is a vhdl file, we should invoke ghdl simulator
-
-            //! \todo Here we should analize (ghdl -a) all included files of the vhdl project
+            /*! \todo Here we should analize (ghdl -a) all included files of the vhdl project.
+             *  This could be done in a recursive way (although that is not optimal). That is,
+             *  try to compile all files in the directory. At least of the files will compile,
+             *  as it does not depend on the others. Then add that file to a list, and compile
+             *  the rest. Again add the files that compile and go on until no file is left to
+             *  compile.
+             */
 
             simulationProcess->start(QString("ghdl -a ") + fileName());  // Analize the files
             simulationProcess->waitForFinished();

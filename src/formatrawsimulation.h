@@ -21,6 +21,7 @@
 #define FORMAT_RAW_SIMULATION_H
 
 // Forward declarations
+class QFile;
 class QString;
 
 namespace Caneda
@@ -42,8 +43,6 @@ namespace Caneda
         QString fileName() const;
 
     private:
-        bool loadFromText(const QString& text);
-
         SimulationDocument *m_simulationDocument;
     };
 
