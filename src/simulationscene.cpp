@@ -24,6 +24,7 @@
 #include <QUndoStack>
 #include <QVBoxLayout>
 
+#include <qwt_legend.h>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
@@ -54,6 +55,11 @@ namespace Caneda
         grid->setMinPen(QPen(foregroundColor, 0 , Qt::DotLine));
         grid->attach(m_plot);
 
+        QwtLegend *legend = new QwtLegend();
+        legend->setItemMode(QwtLegend::ClickableItem);
+        m_plot->insertLegend(legend, QwtPlot::TopLegend);
+
+        // Connect signal-slots
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
 
         QVBoxLayout *vlayout = new QVBoxLayout();
@@ -78,7 +84,6 @@ namespace Caneda
     //! \brief Displays all items available in the scene, in the plot widget.
     void SimulationScene::showAll()
     {
-        QString title = "";
         QColor color = QColor(0, 0, 0);
         int colorIndex= 0;
         int valueIndex = 255;
@@ -106,13 +111,8 @@ namespace Caneda
                     valueIndex = 255;
                 }
             }
-
-            // Set the curve title
-            title = title + " " + item->title().text();
         }
 
-        // Update the plot title
-        m_plot->setTitle(title);
         // Refresh the plot
         m_plot->replot();
     }
