@@ -19,11 +19,14 @@
 
 #include "simulationscene.h"
 
+#include "settings.h"
+
 #include <QUndoStack>
 #include <QVBoxLayout>
 
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
+#include <qwt_plot_grid.h>
 
 namespace Caneda
 {
@@ -37,8 +40,19 @@ namespace Caneda
         // Setup undo stack
         m_undoStack = new QUndoStack(this);
 
+        Settings *settings = Settings::instance();
+        QColor foregroundColor = settings->currentValue("gui/foregroundColor").value<QColor>();
+        QColor backgroundColor = settings->currentValue("gui/backgroundColor").value<QColor>();
+
         // Create the new plot
         m_plot = new QwtPlot(this);
+        m_plot->setCanvasBackground(backgroundColor);
+
+        QwtPlotGrid *grid = new QwtPlotGrid();
+        grid->enableXMin(true);
+        grid->setMajPen(QPen(foregroundColor, 1, Qt::DashLine));
+        grid->setMinPen(QPen(foregroundColor, 0 , Qt::DotLine));
+        grid->attach(m_plot);
 
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
 
@@ -56,7 +70,7 @@ namespace Caneda
      * \brief Adds or moves the item and all its childen to this scene. This
      * scene takes ownership of the item.
      */
-    void SimulationScene::addItem(QwtPlotItem *item)
+    void SimulationScene::addItem(QwtPlotCurve *item)
     {
         m_items.append(item);
     }
@@ -64,11 +78,41 @@ namespace Caneda
     //! \brief Displays all items available in the scene, in the plot widget.
     void SimulationScene::showAll()
     {
+        QString title = "";
+        QColor color = QColor(0, 0, 0);
+        int colorIndex= 0;
+        int valueIndex = 255;
+
         // Attach the items to the plot
-        foreach(QwtPlotItem *item, m_items) {
+        foreach(QwtPlotCurve *item, m_items) {
             item->attach(m_plot);
+            item->setRenderHint(QwtPlotCurve::RenderAntialiased);
+
+            // Select the color of the new curve
+            color.setHsv(colorIndex , 200, valueIndex);
+            item->setPen(QPen(color));
+
+            // Set the next color to be used (to change colors
+            // from curve to curve.
+            if(colorIndex < 300) {  // Avoid 360, as it equals 0
+                colorIndex += 60;
+            }
+            else {
+                colorIndex = 0;
+                if(valueIndex == 255) {
+                    valueIndex = 100;
+                }
+                else {
+                    valueIndex = 255;
+                }
+            }
+
+            // Set the curve title
+            title = title + " " + item->title().text();
         }
 
+        // Update the plot title
+        m_plot->setTitle(title);
         // Refresh the plot
         m_plot->replot();
     }

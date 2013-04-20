@@ -28,7 +28,7 @@
 class QUndoStack;
 
 class QwtPlot;
-class QwtPlotItem;
+class QwtPlotCurve;
 
 namespace Caneda
 {
@@ -41,8 +41,8 @@ namespace Caneda
         ~SimulationScene();
 
         //! \brief Returns a list of all items in the scene in descending stacking
-        QList<QwtPlotItem*> items() const { return m_items; }
-        void addItem(QwtPlotItem *item);
+        QList<QwtPlotCurve*> items() const { return m_items; }
+        void addItem(QwtPlotCurve *item);
 
         void showAll();
 
@@ -73,7 +73,7 @@ namespace Caneda
 
     private:
         QwtPlot *m_plot;  //! \brief Plot widget. \todo In future this should be a QList, to allow several plots (with several waveforms each) in one widget.
-        QList<QwtPlotItem*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
+        QList<QwtPlotCurve*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
 
         void setZoomLevel(qreal zoomLevel);
 
