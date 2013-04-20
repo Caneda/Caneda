@@ -40,6 +40,7 @@ namespace Caneda
     {
         // Setup undo stack
         m_undoStack = new QUndoStack(this);
+        m_modified = false;
 
         Settings *settings = Settings::instance();
         QColor foregroundColor = settings->currentValue("gui/foregroundColor").value<QColor>();
