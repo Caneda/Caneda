@@ -20,14 +20,11 @@
 #ifndef SIMULATION_SCENE_H
 #define SIMULATION_SCENE_H
 
-#include "global.h"
-
 #include <QWidget>
 
 // Forward declarations
 class QUndoStack;
 
-class QwtPlot;
 class QwtPlotCurve;
 
 namespace Caneda
@@ -44,42 +41,18 @@ namespace Caneda
         QList<QwtPlotCurve*> items() const { return m_items; }
         void addItem(QwtPlotCurve *item);
 
-        void showAll();
-
-        void zoomIn();
-        void zoomOut();
-        void zoomFitInBest();
-        void zoomOriginal();
-        void zoomFitRect(const QRectF &rect);
-
         //! Return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
         bool isModified() const { return m_modified; }
 
     public Q_SLOTS:
         void setModified(const bool m = true);
-        void repaint();
 
     Q_SIGNALS:
         void changed();
-        void cursorPositionChanged(const QString& newPos);
-        void focussedIn(SimulationScene *view);
-        void focussedOut(SimulationScene *view);
-
-    protected:
-        void mouseMoveEvent(QMouseEvent *event);
-        void focusInEvent(QFocusEvent *event);
-        void focusOutEvent(QFocusEvent *event);
 
     private:
-        QwtPlot *m_plot;  //! \brief Plot widget. \todo In future this should be a QList, to allow several plots (with several waveforms each) in one widget.
         QList<QwtPlotCurve*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
-
-        void setZoomLevel(qreal zoomLevel);
-
-        const qreal m_zoomFactor;
-        ZoomRange m_zoomRange;
-        qreal m_currentZoom;
 
         /*!
          * \brief Flag to hold whether a simulation is modified or not

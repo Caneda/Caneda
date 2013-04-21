@@ -19,6 +19,7 @@
 
 #include "simulationview.h"
 
+#include "csimulationview.h"
 #include "simulationcontext.h"
 #include "simulationdocument.h"
 #include "simulationscene.h"
@@ -29,13 +30,16 @@ namespace Caneda
     SimulationView::SimulationView(SimulationDocument *document) :
         IView(document)
     {
-        SimulationScene *m_simulationScene = simulationDocument()->simulationScene();
-        connect(m_simulationScene, SIGNAL(focussedIn(SimulationScene*)), this,
-                SLOT(onWidgetFocussedIn()));
-        connect(m_simulationScene, SIGNAL(focussedOut(SimulationScene*)), this,
-                SLOT(onWidgetFocussedOut()));
-        connect(m_simulationScene, SIGNAL(cursorPositionChanged(const QString &)),
-                this, SIGNAL(statusBarMessage(const QString &)));
+        m_simulationView = new CSimulationView(document->simulationScene(), 0);
+        m_simulationView->showAll();
+
+        //! \todo Reimplement this
+//        connect(m_simulationView, SIGNAL(focussedIn(CSimulationView*)), this,
+//                SLOT(onWidgetFocussedIn()));
+//        connect(m_simulationView, SIGNAL(focussedOut(CSimulationView*)), this,
+//                SLOT(onWidgetFocussedOut()));
+//        connect(m_simulationView, SIGNAL(cursorPositionChanged(const QString &)),
+//                this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     SimulationView::~SimulationView()
@@ -49,7 +53,7 @@ namespace Caneda
 
     QWidget* SimulationView::toWidget() const
     {
-        return simulationDocument()->simulationScene();
+        return m_simulationView;
     }
 
     IContext* SimulationView::context() const
@@ -59,22 +63,22 @@ namespace Caneda
 
     void SimulationView::zoomIn()
     {
-         simulationDocument()->simulationScene()->zoomIn();
+        m_simulationView->zoomIn();
     }
 
     void SimulationView::zoomOut()
     {
-         simulationDocument()->simulationScene()->zoomOut();
+        m_simulationView->zoomOut();
     }
 
     void SimulationView::zoomFitInBest()
     {
-        simulationDocument()->simulationScene()->zoomFitInBest();
+        m_simulationView->zoomFitInBest();
     }
 
     void SimulationView::zoomOriginal()
     {
-        simulationDocument()->simulationScene()->zoomOriginal();
+        m_simulationView->zoomOriginal();
     }
 
     IView* SimulationView::duplicate()
@@ -84,7 +88,7 @@ namespace Caneda
 
     void SimulationView::updateSettingsChanges()
     {
-        simulationDocument()->simulationScene()->repaint();
+        m_simulationView->repaint();
     }
 
     void SimulationView::onWidgetFocussedIn()

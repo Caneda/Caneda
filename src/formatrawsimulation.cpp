@@ -258,8 +258,6 @@ namespace Caneda
 
         file.close();
 
-        scene->showAll();  //! \todo This should be removed from here when an interface to add waveforms to the plot is implemented.
-
         return true;
     }
 

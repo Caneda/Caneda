@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,52 +17,35 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "simulationscene.h"
+#ifndef C_SIMULATION_VIEW_H
+#define C_SIMULATION_VIEW_H
 
-#include <QUndoStack>
-
-#include <qwt_plot_curve.h>
+#include <qwt_plot.h>
 
 namespace Caneda
 {
-    SimulationScene::SimulationScene(QWidget *parent) :
-        QWidget(parent)
-    {
-        // Setup undo stack
-        m_undoStack = new QUndoStack(this);
-        m_modified = false;
+    // Forward declations
+    class SimulationScene;
 
-        // Connect signal-slots
-        connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
-    }
-
-    SimulationScene::~SimulationScene()
+    class CSimulationView : public QwtPlot
     {
-        delete m_undoStack;
-    }
+        Q_OBJECT
 
-    /*!
-     * \brief Adds or moves the item and all its childen to this scene. This
-     * scene takes ownership of the item.
-     */
-    void SimulationScene::addItem(QwtPlotCurve *item)
-    {
-        m_items.append(item);
-    }
+    public:
+        CSimulationView(SimulationScene *scene, QWidget *parent = 0);
+        ~CSimulationView();
 
-    /*!
-     * \brief Set whether this scene is modified or not
-     *
-     * This method emits the signal changed(bool)
-     *
-     * \param m True/false to set it to unmodified/modified.
-     */
-    void SimulationScene::setModified(const bool m)
-    {
-        if(m_modified != !m) {
-            m_modified = !m;
-            emit changed();
-        }
-    }
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        void showAll();
+
+    private:
+        SimulationScene *m_simulationScene;
+    };
 
 } // namespace Caneda
+
+#endif //C_SIMULATION_VIEW_H

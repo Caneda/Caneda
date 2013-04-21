@@ -19,6 +19,7 @@
 
 #include "xmlsimulation.h"
 
+#include "global.h"
 #include "simulationdocument.h"
 #include "simulationscene.h"
 #include "xmlutilities.h"
