@@ -20,11 +20,11 @@
 #include "layoutdocument.h"
 
 #include "cgraphicsscene.h"
+#include "formatxmllayout.h"
 #include "layoutcontext.h"
 #include "layoutview.h"
 #include "settings.h"
 #include "statehandler.h"
-#include "xmllayout.h"
 
 #include "dialogs/exportdialog.h"
 
@@ -257,7 +257,7 @@ namespace Caneda
         QFileInfo info(fileName());
 
         if(info.suffix() == "xlay") {
-            XmlLayout *format = new XmlLayout(this);
+            FormatXmlLayout *format = new FormatXmlLayout(this);
             return format->load();
         }
 
@@ -280,7 +280,7 @@ namespace Caneda
         QFileInfo info(fileName());
 
         if(info.suffix() == "xlay") {
-            XmlLayout *format = new XmlLayout(this);
+            FormatXmlLayout *format = new FormatXmlLayout(this);
             if(!format->save()) {
                 return false;
             }

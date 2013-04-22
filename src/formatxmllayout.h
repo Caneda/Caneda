@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef XML_LAYOUT_H
-#define XML_LAYOUT_H
+#ifndef FORMAT_XML_LAYOUT_H
+#define FORMAT_XML_LAYOUT_H
 
 // Forward declarations
 class QString;
@@ -32,11 +32,11 @@ namespace Caneda
     class XmlReader;
     class XmlWriter;
 
-    class XmlLayout
+    class FormatXmlLayout
     {
     public:
-        XmlLayout(LayoutDocument *doc = 0);
-        ~XmlLayout() {}
+        FormatXmlLayout(LayoutDocument *doc = 0);
+        ~FormatXmlLayout() {}
 
         bool save();
         bool load();
@@ -57,4 +57,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //XML_LAYOUT_H
+#endif //FORMAT_XML_LAYOUT_H

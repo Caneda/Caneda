@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "xmlsymbol.h"
+#include "formatxmlsymbol.h"
 
 #include "cgraphicsscene.h"
 #include "global.h"
@@ -36,7 +36,7 @@
 namespace Caneda
 {
     //! Constructor
-    XmlSymbol::XmlSymbol(SymbolDocument *doc) :
+    FormatXmlSymbol::FormatXmlSymbol(SymbolDocument *doc) :
         m_symbolDocument(doc)
     {
         if(m_symbolDocument) {
@@ -49,7 +49,7 @@ namespace Caneda
         m_component = 0;
     }
 
-    XmlSymbol::XmlSymbol(ComponentData *component) :
+    FormatXmlSymbol::FormatXmlSymbol(ComponentData *component) :
         m_component(component)
     {
         if(m_component) {
@@ -62,7 +62,7 @@ namespace Caneda
         m_symbolDocument = 0;
     }
 
-    bool XmlSymbol::save()
+    bool FormatXmlSymbol::save()
     {
         if(!cGraphicsScene()) {
             return false;
@@ -88,7 +88,7 @@ namespace Caneda
     }
 
     //! \brief Parses the component data from file \a path.
-    bool XmlSymbol::load()
+    bool FormatXmlSymbol::load()
     {
         QFile file(fileName());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -104,27 +104,27 @@ namespace Caneda
         return result;
     }
 
-    SymbolDocument* XmlSymbol::symbolDocument() const
+    SymbolDocument* FormatXmlSymbol::symbolDocument() const
     {
         return m_symbolDocument;
     }
 
-    CGraphicsScene* XmlSymbol::cGraphicsScene() const
+    CGraphicsScene* FormatXmlSymbol::cGraphicsScene() const
     {
         return m_symbolDocument ? m_symbolDocument->cGraphicsScene() : 0;
     }
 
-    ComponentData* XmlSymbol::component() const
+    ComponentData* FormatXmlSymbol::component() const
     {
         return m_component;
     }
 
-    QString XmlSymbol::fileName() const
+    QString FormatXmlSymbol::fileName() const
     {
         return m_fileName;
     }
 
-    QString XmlSymbol::saveText()
+    QString FormatXmlSymbol::saveText()
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
@@ -190,7 +190,7 @@ namespace Caneda
      *
      * \param text String containing xml data from component/symbol file.
      */
-    bool XmlSymbol::loadFromText(const QString &text)
+    bool FormatXmlSymbol::loadFromText(const QString &text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
 
@@ -293,7 +293,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void XmlSymbol::readSymbol(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::readSymbol(Caneda::XmlReader *reader)
     {
         QPainterPath data;
 
@@ -335,7 +335,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void XmlSymbol::readPorts(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::readPorts(Caneda::XmlReader *reader)
     {
         while(!reader->atEnd()) {
             reader->readNext();
@@ -371,7 +371,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void XmlSymbol::readProperties(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::readProperties(Caneda::XmlReader *reader)
     {
         while(!reader->atEnd()) {
             reader->readNext();

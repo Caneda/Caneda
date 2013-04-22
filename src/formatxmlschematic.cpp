@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "xmlschematic.h"
+#include "formatxmlschematic.h"
 
 #include "cgraphicsscene.h"
 #include "component.h"
@@ -38,12 +38,12 @@
 namespace Caneda
 {
     //! Constructor
-    XmlSchematic::XmlSchematic(SchematicDocument *doc):
+    FormatXmlSchematic::FormatXmlSchematic(SchematicDocument *doc):
         m_schematicDocument(doc)
     {
     }
 
-    bool XmlSchematic::save()
+    bool FormatXmlSchematic::save()
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
@@ -69,7 +69,7 @@ namespace Caneda
         return true;
     }
 
-    bool XmlSchematic::load()
+    bool FormatXmlSchematic::load()
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
@@ -91,7 +91,7 @@ namespace Caneda
         return result;
     }
 
-    QString XmlSchematic::saveText()
+    QString FormatXmlSchematic::saveText()
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
@@ -113,14 +113,14 @@ namespace Caneda
         return retVal;
     }
 
-    void XmlSchematic::saveSchematics(Caneda::XmlWriter *writer)
+    void FormatXmlSchematic::saveSchematics(Caneda::XmlWriter *writer)
     {
         saveComponents(writer);
         saveWires(writer);
         savePaintings(writer);
     }
 
-    void XmlSchematic::saveComponents(Caneda::XmlWriter *writer)
+    void FormatXmlSchematic::saveComponents(Caneda::XmlWriter *writer)
     {
         CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
@@ -134,7 +134,7 @@ namespace Caneda
         }
     }
 
-    void XmlSchematic::saveWires(Caneda::XmlWriter *writer)
+    void FormatXmlSchematic::saveWires(Caneda::XmlWriter *writer)
     {
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Wire*> wires = filterItems<Wire>(items);
@@ -171,7 +171,7 @@ namespace Caneda
 
     }
 
-    void XmlSchematic::savePaintings(Caneda::XmlWriter *writer)
+    void FormatXmlSchematic::savePaintings(Caneda::XmlWriter *writer)
     {
         CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
@@ -185,7 +185,7 @@ namespace Caneda
         }
     }
 
-    bool XmlSchematic::loadFromText(const QString& text)
+    bool FormatXmlSchematic::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
         while(!reader->atEnd()) {
@@ -220,7 +220,7 @@ namespace Caneda
         return true;
     }
 
-    void XmlSchematic::loadSchematics(Caneda::XmlReader* reader)
+    void FormatXmlSchematic::loadSchematics(Caneda::XmlReader* reader)
     {
         if(reader->isStartElement()) {
             if(reader->name() == "components") {
@@ -238,7 +238,7 @@ namespace Caneda
         }
     }
 
-    void XmlSchematic::loadComponents(Caneda::XmlReader *reader)
+    void FormatXmlSchematic::loadComponents(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "components") {
@@ -266,7 +266,7 @@ namespace Caneda
         }
     }
 
-    void XmlSchematic::loadWires(Caneda::XmlReader* reader)
+    void FormatXmlSchematic::loadWires(Caneda::XmlReader* reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "wires") {
@@ -307,7 +307,7 @@ namespace Caneda
         }
     }
 
-    void XmlSchematic::loadPaintings(Caneda::XmlReader *reader)
+    void FormatXmlSchematic::loadPaintings(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "paintings") {
@@ -336,17 +336,17 @@ namespace Caneda
         }
     }
 
-    SchematicDocument* XmlSchematic::schematicDocument() const
+    SchematicDocument* FormatXmlSchematic::schematicDocument() const
     {
         return m_schematicDocument;
     }
 
-    CGraphicsScene* XmlSchematic::cGraphicsScene() const
+    CGraphicsScene* FormatXmlSchematic::cGraphicsScene() const
     {
         return m_schematicDocument ? m_schematicDocument->cGraphicsScene() : 0;
     }
 
-    QString XmlSchematic::fileName() const
+    QString FormatXmlSchematic::fileName() const
     {
         return m_schematicDocument ? m_schematicDocument->fileName() : QString();
     }

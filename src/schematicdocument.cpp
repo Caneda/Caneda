@@ -21,11 +21,11 @@
 #include "schematicdocument.h"
 
 #include "cgraphicsscene.h"
+#include "formatxmlschematic.h"
 #include "schematiccontext.h"
 #include "schematicview.h"
 #include "settings.h"
 #include "statehandler.h"
-#include "xmlschematic.h"
 
 #include "dialogs/exportdialog.h"
 
@@ -258,7 +258,7 @@ namespace Caneda
         QFileInfo info(fileName());
 
         if(info.suffix() == "xsch") {
-            XmlSchematic *format = new XmlSchematic(this);
+            FormatXmlSchematic *format = new FormatXmlSchematic(this);
             return format->load();
         }
 
@@ -281,7 +281,7 @@ namespace Caneda
         QFileInfo info(fileName());
 
         if(info.suffix() == "xsch") {
-            XmlSchematic *format = new XmlSchematic(this);
+            FormatXmlSchematic *format = new FormatXmlSchematic(this);
             if(!format->save()) {
                 return false;
             }

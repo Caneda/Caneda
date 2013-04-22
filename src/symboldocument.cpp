@@ -20,11 +20,11 @@
 #include "symboldocument.h"
 
 #include "cgraphicsscene.h"
+#include "formatxmlsymbol.h"
 #include "symbolcontext.h"
 #include "symbolview.h"
 #include "settings.h"
 #include "statehandler.h"
-#include "xmlsymbol.h"
 
 #include "dialogs/exportdialog.h"
 
@@ -251,7 +251,7 @@ namespace Caneda
         QFileInfo info(fileName());
 
         if(info.suffix() == "xsym") {
-            XmlSymbol *format = new XmlSymbol(this);
+            FormatXmlSymbol *format = new FormatXmlSymbol(this);
             return format->load();
         }
 
@@ -274,7 +274,7 @@ namespace Caneda
         QFileInfo info(fileName());
 
         if(info.suffix() == "xsym") {
-            XmlSymbol *format = new XmlSymbol(this);
+            FormatXmlSymbol *format = new FormatXmlSymbol(this);
             if(!format->save()) {
                 return false;
             }

@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "xmllayout.h"
+#include "formatxmllayout.h"
 
 #include "cgraphicsscene.h"
 #include "global.h"
@@ -34,12 +34,12 @@
 namespace Caneda
 {
     //! Constructor
-    XmlLayout::XmlLayout(LayoutDocument *doc):
+    FormatXmlLayout::FormatXmlLayout(LayoutDocument *doc):
         m_layoutDocument(doc)
     {
     }
 
-    bool XmlLayout::save()
+    bool FormatXmlLayout::save()
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
@@ -65,7 +65,7 @@ namespace Caneda
         return true;
     }
 
-    bool XmlLayout::load()
+    bool FormatXmlLayout::load()
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!scene) {
@@ -87,7 +87,7 @@ namespace Caneda
         return result;
     }
 
-    QString XmlLayout::saveText()
+    QString FormatXmlLayout::saveText()
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
@@ -109,7 +109,7 @@ namespace Caneda
         return retVal;
     }
 
-    void XmlLayout::savePaintings(Caneda::XmlWriter *writer)
+    void FormatXmlLayout::savePaintings(Caneda::XmlWriter *writer)
     {
         CGraphicsScene *scene = cGraphicsScene();
         QList<QGraphicsItem*> items = scene->items();
@@ -123,7 +123,7 @@ namespace Caneda
         }
     }
 
-    bool XmlLayout::loadFromText(const QString& text)
+    bool FormatXmlLayout::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
         while(!reader->atEnd()) {
@@ -167,7 +167,7 @@ namespace Caneda
         return true;
     }
 
-    void XmlLayout::loadPaintings(Caneda::XmlReader *reader)
+    void FormatXmlLayout::loadPaintings(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
         if(!reader->isStartElement() || reader->name() != "paintings") {
@@ -196,17 +196,17 @@ namespace Caneda
         }
     }
 
-    LayoutDocument* XmlLayout::layoutDocument() const
+    LayoutDocument* FormatXmlLayout::layoutDocument() const
     {
         return m_layoutDocument;
     }
 
-    CGraphicsScene* XmlLayout::cGraphicsScene() const
+    CGraphicsScene* FormatXmlLayout::cGraphicsScene() const
     {
         return m_layoutDocument ? m_layoutDocument->cGraphicsScene() : 0;
     }
 
-    QString XmlLayout::fileName() const
+    QString FormatXmlLayout::fileName() const
     {
         return m_layoutDocument ? m_layoutDocument->fileName() : QString();
     }

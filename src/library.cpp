@@ -22,10 +22,10 @@
 
 #include "cgraphicsscene.h"
 #include "cgraphicsview.h"
+#include "formatxmlsymbol.h"
 #include "global.h"
 #include "singletonowner.h"
 #include "settings.h"
-#include "xmlsymbol.h"
 #include "xmlutilities.h"
 
 #include <QByteArray>
@@ -133,7 +133,7 @@ namespace Caneda
             component->library = libraryName();
             component->filename = componentPath;
 
-            XmlSymbol *format = new XmlSymbol(component);
+            FormatXmlSymbol *format = new FormatXmlSymbol(component);
             readOk = readOk & format->load();
 
             if(!readOk) {

@@ -1,5 +1,4 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
  * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
@@ -18,8 +17,10 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef XML_SCHEMATIC_H
-#define XML_SCHEMATIC_H
+#ifndef FORMAT_XML_SYMBOL_H
+#define FORMAT_XML_SYMBOL_H
+
+#include "component.h"
 
 // Forward declarations
 class QString;
@@ -28,40 +29,38 @@ namespace Caneda
 {
     // Forward declarations
     class CGraphicsScene;
-    class SchematicDocument;
-
+    class SymbolDocument;
     class XmlReader;
-    class XmlWriter;
 
-    class XmlSchematic
+    class FormatXmlSymbol
     {
     public:
-        XmlSchematic(SchematicDocument *doc = 0);
-        ~XmlSchematic() {}
+        FormatXmlSymbol(SymbolDocument *doc = 0);
+        FormatXmlSymbol(ComponentData *component);
+        ~FormatXmlSymbol() {}
 
         bool save();
         bool load();
 
-        SchematicDocument* schematicDocument() const;
+        SymbolDocument* symbolDocument() const;
         CGraphicsScene* cGraphicsScene() const;
+        ComponentData* component() const;
+
         QString fileName() const;
 
     private:
         QString saveText();
-        void saveSchematics(Caneda::XmlWriter *writer);
-        void saveComponents(Caneda::XmlWriter *writer);
-        void saveWires(Caneda::XmlWriter *writer);
-        void savePaintings(Caneda::XmlWriter *writer);
-
         bool loadFromText(const QString& text);
-        void loadSchematics(Caneda::XmlReader *reader);
-        void loadComponents(Caneda::XmlReader *reader);
-        void loadWires(Caneda::XmlReader *reader);
-        void loadPaintings(Caneda::XmlReader *reader);
 
-        SchematicDocument *m_schematicDocument;
+        void readSymbol(Caneda::XmlReader *reader);
+        void readPorts(Caneda::XmlReader *reader);
+        void readProperties(Caneda::XmlReader *reader);
+
+        SymbolDocument *m_symbolDocument;
+        ComponentData *m_component;
+        QString m_fileName;
     };
 
 } // namespace Caneda
 
-#endif //XML_SCHEMATIC_H
+#endif //FORMAT_XML_SYMBOL_H
