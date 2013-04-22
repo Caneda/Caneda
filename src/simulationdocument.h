@@ -92,7 +92,7 @@ namespace Caneda
         virtual void exportImage();
 
         virtual bool load(QString *errorMessage = 0);
-        virtual bool save(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0) {}
 
         virtual IView* createView();
 

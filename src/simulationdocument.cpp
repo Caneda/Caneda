@@ -24,7 +24,6 @@
 #include "simulationscene.h"
 #include "simulationview.h"
 #include "statehandler.h"
-#include "xmlsimulation.h"
 
 #include "dialogs/exportdialog.h"
 
@@ -114,44 +113,12 @@ namespace Caneda
     {
         QFileInfo info(fileName());
 
-        if(info.suffix() == "xdat") {
-            XmlSimulation *format = new XmlSimulation(this);
-            return format->load();
-        }
-        else if(info.suffix() == "raw") {
+        if(info.suffix() == "raw") {
             FormatRawSimulation *format = new FormatRawSimulation(this);
             return format->load();
         }
 
         if (errorMessage) {
-            *errorMessage = tr("Unknown file format!");
-        }
-
-        return false;
-    }
-
-    bool SimulationDocument::save(QString *errorMessage)
-    {
-        if(fileName().isEmpty()) {
-            if (errorMessage) {
-                *errorMessage = tr("Empty file name");
-            }
-            return false;
-        }
-
-        QFileInfo info(fileName());
-
-        if(info.suffix() == "xdat") {
-            XmlSimulation *format = new XmlSimulation(this);
-            if(!format->save()) {
-                return false;
-            }
-
-            m_simulationScene->undoStack()->clear();
-            return true;
-        }
-
-        if(errorMessage) {
             *errorMessage = tr("Unknown file format!");
         }
 

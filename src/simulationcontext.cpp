@@ -51,7 +51,6 @@ namespace Caneda
     bool SimulationContext::canOpen(const QFileInfo &info) const
     {
         QStringList supportedSuffixes;
-        supportedSuffixes << "xdat";
         supportedSuffixes << "raw";
 
         foreach (const QString &suffix, supportedSuffixes) {
@@ -66,7 +65,6 @@ namespace Caneda
     QStringList SimulationContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Data display (*.xdat)")+" (*.xdat);;";
         nameFilters << QObject::tr("Raw waveform data (*.raw)")+" (*.raw);;";
 
         return nameFilters;
