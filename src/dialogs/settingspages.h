@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -68,11 +68,12 @@ namespace Caneda
 
     private Q_SLOTS:
         void slotFontDialog();
-        void slotBGColorDialog();
-        void slotBGSimColorDialog();
-        void slotFGColorDialog();
-        void slotLNColorDialog();
-        void slotSLColorDialog();
+        void slotColorButtonDialog(QPushButton *);
+        void slotBackgroundColorDialog();
+        void slotBackgroundSimulationColorDialog();
+        void slotForegroundColorDialog();
+        void slotLineColorDialog();
+        void slotSelectionColorDialog();
 
     public:
         void applyConf();

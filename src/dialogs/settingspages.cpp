@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -111,30 +111,27 @@ namespace Caneda
         font = settings->currentValue("gui/font").value<QFont>();
         buttonFont->setText(font.family());
 
+        QColor currentColor;
+
         buttonBackground = new QPushButton;
-        const QColor currentBackgroundColor =
-            settings->currentValue("gui/backgroundColor").value<QColor>();
-        setBackgroundColor(buttonBackground, currentBackgroundColor);
+        currentColor = settings->currentValue("gui/backgroundColor").value<QColor>();
+        setBackgroundColor(buttonBackground, currentColor);
 
         buttonSimulationBackground = new QPushButton;
-        const QColor currentSimulationBackgroundColor =
-            settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
-        setBackgroundColor(buttonSimulationBackground, currentSimulationBackgroundColor);
+        currentColor = settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
+        setBackgroundColor(buttonSimulationBackground, currentColor);
 
         buttonForeground = new QPushButton;
-        const QColor currentForegroundColor =
-            settings->currentValue("gui/foregroundColor").value<QColor>();
-        setBackgroundColor(buttonForeground, currentForegroundColor);
+        currentColor = settings->currentValue("gui/foregroundColor").value<QColor>();
+        setBackgroundColor(buttonForeground, currentColor);
 
         buttonLine = new QPushButton;
-        const QColor currentLineColor =
-            settings->currentValue("gui/lineColor").value<QColor>();
-        setBackgroundColor(buttonLine, currentLineColor);
+        currentColor = settings->currentValue("gui/lineColor").value<QColor>();
+        setBackgroundColor(buttonLine, currentColor);
 
         buttonSelection = new QPushButton;
-        const QColor currentSelectionColor =
-            settings->currentValue("gui/selectionColor").value<QColor>();
-        setBackgroundColor(buttonSelection, currentSelectionColor);
+        currentColor = settings->currentValue("gui/selectionColor").value<QColor>();
+        setBackgroundColor(buttonSelection, currentColor);
 
         spinWidth = new QSpinBox;
         spinWidth->setValue(settings->currentValue("gui/lineWidth").toInt());
@@ -147,11 +144,11 @@ namespace Caneda
         spinIcons->setMaximum(48);
 
         connect(buttonFont, SIGNAL(clicked()), SLOT(slotFontDialog()));
-        connect(buttonBackground, SIGNAL(clicked()), SLOT(slotBGColorDialog()));
-        connect(buttonSimulationBackground, SIGNAL(clicked()), SLOT(slotBGSimColorDialog()));
-        connect(buttonForeground, SIGNAL(clicked()), SLOT(slotFGColorDialog()));
-        connect(buttonLine, SIGNAL(clicked()), SLOT(slotLNColorDialog()));
-        connect(buttonSelection, SIGNAL(clicked()), SLOT(slotSLColorDialog()));
+        connect(buttonBackground, SIGNAL(clicked()), SLOT(slotBackgroundColorDialog()));
+        connect(buttonSimulationBackground, SIGNAL(clicked()), SLOT(slotBackgroundSimulationColorDialog()));
+        connect(buttonForeground, SIGNAL(clicked()), SLOT(slotForegroundColorDialog()));
+        connect(buttonLine, SIGNAL(clicked()), SLOT(slotLineColorDialog()));
+        connect(buttonSelection, SIGNAL(clicked()), SLOT(slotSelectionColorDialog()));
 
         QGroupBox *appereance = new QGroupBox(tr("Appereance"), this);
         QFormLayout *appereanceLayout = new QFormLayout(appereance);
@@ -209,49 +206,37 @@ namespace Caneda
         }
     }
 
-    void GeneralConfigurationPage::slotBGColorDialog()
+    void GeneralConfigurationPage::slotColorButtonDialog(QPushButton *button)
     {
-        QColor c = QColorDialog::getColor(
-                getBackgroundColor(buttonBackground), this);
-        if(c.isValid()) {
-            setBackgroundColor(buttonBackground,c);
+        QColor color = QColorDialog::getColor(getBackgroundColor(button), this);
+        if(color.isValid()) {
+            setBackgroundColor(button, color);
         }
     }
 
-    void GeneralConfigurationPage::slotBGSimColorDialog()
+    void GeneralConfigurationPage::slotBackgroundColorDialog()
     {
-        QColor c = QColorDialog::getColor(
-                getBackgroundColor(buttonSimulationBackground), this);
-        if(c.isValid()) {
-            setBackgroundColor(buttonSimulationBackground,c);
-        }
+        slotColorButtonDialog(buttonBackground);
     }
 
-    void GeneralConfigurationPage::slotFGColorDialog()
+    void GeneralConfigurationPage::slotBackgroundSimulationColorDialog()
     {
-        QColor c = QColorDialog::getColor(
-                getBackgroundColor(buttonForeground), this);
-        if(c.isValid()) {
-            setBackgroundColor(buttonForeground,c);
-        }
+        slotColorButtonDialog(buttonSimulationBackground);
     }
 
-    void GeneralConfigurationPage::slotLNColorDialog()
+    void GeneralConfigurationPage::slotForegroundColorDialog()
     {
-        QColor c = QColorDialog::getColor(
-                getBackgroundColor(buttonLine), this);
-        if(c.isValid()) {
-            setBackgroundColor(buttonLine,c);
-        }
+        slotColorButtonDialog(buttonForeground);
     }
 
-    void GeneralConfigurationPage::slotSLColorDialog()
+    void GeneralConfigurationPage::slotLineColorDialog()
     {
-        QColor c = QColorDialog::getColor(
-                getBackgroundColor(buttonSelection), this);
-        if(c.isValid()) {
-            setBackgroundColor(buttonSelection,c);
-        }
+        slotColorButtonDialog(buttonLine);
+    }
+
+    void GeneralConfigurationPage::slotSelectionColorDialog()
+    {
+        slotColorButtonDialog(buttonSelection);
     }
 
     //! Applies the configuration of this page
@@ -269,43 +254,41 @@ namespace Caneda
             changed = true;
         }
 
-        const QColor currentBackgroundColor =
-            settings->currentValue("gui/backgroundColor").value<QColor>();
-        const QColor newBackgroundColor = getBackgroundColor(buttonBackground);
-        if (currentBackgroundColor != newBackgroundColor) {
-            settings->setCurrentValue("gui/backgroundColor", newBackgroundColor);
+        QColor currentColor;
+        QColor newColor;
+
+        currentColor = settings->currentValue("gui/backgroundColor").value<QColor>();
+        newColor = getBackgroundColor(buttonBackground);
+        if (currentColor != newColor) {
+            settings->setCurrentValue("gui/backgroundColor", newColor);
             changed = true;
         }
 
-        const QColor currentSimulationBackgroundColor =
-            settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
-        const QColor newSimulationBackgroundColor = getBackgroundColor(buttonSimulationBackground);
-        if (currentSimulationBackgroundColor != newSimulationBackgroundColor) {
-            settings->setCurrentValue("gui/simulationBackgroundColor", newSimulationBackgroundColor);
+        currentColor = settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
+        newColor = getBackgroundColor(buttonSimulationBackground);
+        if (currentColor != newColor) {
+            settings->setCurrentValue("gui/simulationBackgroundColor", newColor);
             changed = true;
         }
 
-        const QColor currentForegroundColor =
-            settings->currentValue("gui/foregroundColor").value<QColor>();
-        const QColor newForegroundColor = getBackgroundColor(buttonForeground);
-        if (currentForegroundColor != newForegroundColor) {
-            settings->setCurrentValue("gui/foregroundColor", newForegroundColor);
+        currentColor = settings->currentValue("gui/foregroundColor").value<QColor>();
+        newColor = getBackgroundColor(buttonForeground);
+        if (currentColor != newColor) {
+            settings->setCurrentValue("gui/foregroundColor", newColor);
             changed = true;
         }
 
-        const QColor currentLineColor =
-            settings->currentValue("gui/lineColor").value<QColor>();
-        const QColor newLineColor = getBackgroundColor(buttonLine);
-        if (currentLineColor != newLineColor) {
-            settings->setCurrentValue("gui/lineColor", newLineColor);
+        currentColor = settings->currentValue("gui/lineColor").value<QColor>();
+        newColor = getBackgroundColor(buttonLine);
+        if (currentColor != newColor) {
+            settings->setCurrentValue("gui/lineColor", newColor);
             changed = true;
         }
 
-        const QColor currentSelectionColor =
-            settings->currentValue("gui/selectionColor").value<QColor>();
-        const QColor newSelectionColor = getBackgroundColor(buttonSelection);
-        if (currentSelectionColor != newSelectionColor) {
-            settings->setCurrentValue("gui/selectionColor", newSelectionColor);
+        currentColor = settings->currentValue("gui/selectionColor").value<QColor>();
+        newColor = getBackgroundColor(buttonSelection);
+        if (currentColor != newColor) {
+            settings->setCurrentValue("gui/selectionColor", newColor);
             changed = true;
         }
 
