@@ -107,7 +107,7 @@ namespace Caneda
     {
         Settings *settings = Settings::instance();
         QColor foregroundColor = settings->currentValue("gui/foregroundColor").value<QColor>();
-        QColor backgroundColor = settings->currentValue("gui/backgroundColor").value<QColor>();
+        QColor backgroundColor = settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
 
         setCanvasBackground(backgroundColor);
 

@@ -116,6 +116,11 @@ namespace Caneda
             settings->currentValue("gui/backgroundColor").value<QColor>();
         setBackgroundColor(buttonBackground, currentBackgroundColor);
 
+        buttonSimulationBackground = new QPushButton;
+        const QColor currentSimulationBackgroundColor =
+            settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
+        setBackgroundColor(buttonSimulationBackground, currentSimulationBackgroundColor);
+
         buttonForeground = new QPushButton;
         const QColor currentForegroundColor =
             settings->currentValue("gui/foregroundColor").value<QColor>();
@@ -143,6 +148,7 @@ namespace Caneda
 
         connect(buttonFont, SIGNAL(clicked()), SLOT(slotFontDialog()));
         connect(buttonBackground, SIGNAL(clicked()), SLOT(slotBGColorDialog()));
+        connect(buttonSimulationBackground, SIGNAL(clicked()), SLOT(slotBGSimColorDialog()));
         connect(buttonForeground, SIGNAL(clicked()), SLOT(slotFGColorDialog()));
         connect(buttonLine, SIGNAL(clicked()), SLOT(slotLNColorDialog()));
         connect(buttonSelection, SIGNAL(clicked()), SLOT(slotSLColorDialog()));
@@ -152,6 +158,7 @@ namespace Caneda
         appereanceLayout->addRow(tr("Show grid:"), checkShowGrid);
         appereanceLayout->addRow(tr("Fonts:"), buttonFont);
         appereanceLayout->addRow(tr("Background color:"), buttonBackground);
+        appereanceLayout->addRow(tr("Simulation color:"), buttonSimulationBackground);
         appereanceLayout->addRow(tr("Foreground color:"), buttonForeground);
         appereanceLayout->addRow(tr("Line color:"), buttonLine);
         appereanceLayout->addRow(tr("Selection color:"), buttonSelection);
@@ -211,6 +218,15 @@ namespace Caneda
         }
     }
 
+    void GeneralConfigurationPage::slotBGSimColorDialog()
+    {
+        QColor c = QColorDialog::getColor(
+                getBackgroundColor(buttonSimulationBackground), this);
+        if(c.isValid()) {
+            setBackgroundColor(buttonSimulationBackground,c);
+        }
+    }
+
     void GeneralConfigurationPage::slotFGColorDialog()
     {
         QColor c = QColorDialog::getColor(
@@ -258,6 +274,14 @@ namespace Caneda
         const QColor newBackgroundColor = getBackgroundColor(buttonBackground);
         if (currentBackgroundColor != newBackgroundColor) {
             settings->setCurrentValue("gui/backgroundColor", newBackgroundColor);
+            changed = true;
+        }
+
+        const QColor currentSimulationBackgroundColor =
+            settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
+        const QColor newSimulationBackgroundColor = getBackgroundColor(buttonSimulationBackground);
+        if (currentSimulationBackgroundColor != newSimulationBackgroundColor) {
+            settings->setCurrentValue("gui/simulationBackgroundColor", newSimulationBackgroundColor);
             changed = true;
         }
 

@@ -51,6 +51,7 @@ namespace Caneda
         data["gui/gridVisible"] = VariantPair(bool(true));
         data["gui/foregroundColor"] = VariantPair(QColor(Qt::darkGray));
         data["gui/backgroundColor"] = VariantPair(QColor(Qt::white));
+        data["gui/simulationBackgroundColor"] = VariantPair(QColor(Qt::white));
         data["gui/lineColor"] = VariantPair(QColor(Qt::blue));
         data["gui/selectionColor"] = VariantPair(QColor(255, 128, 0)); // Dark orange
         data["gui/lineWidth"] = VariantPair(int(1));
