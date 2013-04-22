@@ -420,8 +420,6 @@ namespace Caneda
             end = m_documentDataList.end();
         for (; it != end; ++it) {
             DocumentData *data = *it;
-            data->document->updateSettingsChanges();
-
             QList<IView*>::iterator jt = data->views.begin(),
                 jend = data->views.end();
             for (; jt != jend; ++jt) {

@@ -108,7 +108,6 @@ namespace Caneda
         QList<IView*> views() const;
 
         virtual void launchPropertiesDialog() = 0;
-        virtual void updateSettingsChanges() = 0;
 
     public Q_SLOTS:
         void emitDocumentChanged();

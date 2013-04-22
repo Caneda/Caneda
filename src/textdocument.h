@@ -101,7 +101,6 @@ namespace Caneda
         virtual IView* createView();
 
         virtual void launchPropertiesDialog() {}
-        virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 
         QTextDocument* textDocument() const { return m_textDocument; }

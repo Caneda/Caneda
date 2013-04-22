@@ -96,7 +96,6 @@ namespace Caneda
         virtual IView* createView();
 
         virtual void launchPropertiesDialog();
-        virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 
         CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }

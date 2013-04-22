@@ -99,7 +99,6 @@ namespace Caneda
         virtual IView* createView();
 
         virtual void launchPropertiesDialog() {}
-        virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 
         QUrl* webUrl() const { return m_webUrl; }

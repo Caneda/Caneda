@@ -97,7 +97,6 @@ namespace Caneda
         virtual IView* createView();
 
         virtual void launchPropertiesDialog() {}
-        virtual void updateSettingsChanges() {}
         // End of IDocument interface methods
 
         SimulationScene* simulationScene() const { return m_simulationScene; }
