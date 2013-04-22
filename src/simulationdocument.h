@@ -53,13 +53,13 @@ namespace Caneda
         // IDocument interface methods
         virtual IContext* context();
 
-        virtual bool isModified() const;
+        virtual bool isModified() const { return false; }
 
-        virtual bool canUndo() const;
-        virtual bool canRedo() const;
+        virtual bool canUndo() const { return false; }
+        virtual bool canRedo() const { return false; }
 
-        virtual void undo();
-        virtual void redo();
+        virtual void undo() {}
+        virtual void redo() {}
 
         virtual QUndoStack* undoStack();
 

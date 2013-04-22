@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,8 +23,6 @@
 #include <QWidget>
 
 // Forward declarations
-class QUndoStack;
-
 class QwtPlotCurve;
 
 namespace Caneda
@@ -41,29 +39,8 @@ namespace Caneda
         QList<QwtPlotCurve*> items() const { return m_items; }
         void addItem(QwtPlotCurve *item);
 
-        //! Return current undo stack
-        QUndoStack* undoStack() { return m_undoStack; }
-        bool isModified() const { return m_modified; }
-
-    public Q_SLOTS:
-        void setModified(const bool m = true);
-
-    Q_SIGNALS:
-        void changed();
-
     private:
         QList<QwtPlotCurve*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
-
-        /*!
-         * \brief Flag to hold whether a simulation is modified or not
-         * i.e to determine whether a file should be saved or not on closing.
-         *
-         * \sa setModified
-         */
-        bool m_modified;
-
-        //! Undo stack state
-        QUndoStack *m_undoStack;
     };
 
 } // namespace Caneda

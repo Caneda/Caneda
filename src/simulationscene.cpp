@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,8 +19,6 @@
 
 #include "simulationscene.h"
 
-#include <QUndoStack>
-
 #include <qwt_plot_curve.h>
 
 namespace Caneda
@@ -28,17 +26,10 @@ namespace Caneda
     SimulationScene::SimulationScene(QWidget *parent) :
         QWidget(parent)
     {
-        // Setup undo stack
-        m_undoStack = new QUndoStack(this);
-        m_modified = false;
-
-        // Connect signal-slots
-        connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
     }
 
     SimulationScene::~SimulationScene()
     {
-        delete m_undoStack;
     }
 
     /*!
@@ -48,21 +39,6 @@ namespace Caneda
     void SimulationScene::addItem(QwtPlotCurve *item)
     {
         m_items.append(item);
-    }
-
-    /*!
-     * \brief Set whether this scene is modified or not
-     *
-     * This method emits the signal changed(bool)
-     *
-     * \param m True/false to set it to unmodified/modified.
-     */
-    void SimulationScene::setModified(const bool m)
-    {
-        if(m_modified != !m) {
-            m_modified = !m;
-            emit changed();
-        }
     }
 
 } // namespace Caneda

@@ -23,16 +23,12 @@
 #include "simulationcontext.h"
 #include "simulationscene.h"
 #include "simulationview.h"
-#include "statehandler.h"
 
 #include "dialogs/exportdialog.h"
 
 #include <QFileInfo>
-#include <QPainter>
 #include <QPrinter>
 #include <QUndoStack>
-
-#include <cmath>
 
 namespace Caneda
 {
@@ -48,34 +44,10 @@ namespace Caneda
         return SimulationContext::instance();
     }
 
-    bool SimulationDocument::isModified() const
-    {
-        return m_simulationScene->isModified();
-    }
-
-    bool SimulationDocument::canUndo() const
-    {
-        return m_simulationScene->undoStack()->canUndo();
-    }
-
-    bool SimulationDocument::canRedo() const
-    {
-        return m_simulationScene->undoStack()->canRedo();
-    }
-
-    void SimulationDocument::undo()
-    {
-        m_simulationScene->undoStack()->undo();
-    }
-
-    void SimulationDocument::redo()
-    {
-        m_simulationScene->undoStack()->redo();
-    }
-
     QUndoStack* SimulationDocument::undoStack()
     {
-        return m_simulationScene->undoStack();
+        QUndoStack *stack = new QUndoStack(this);
+        return stack;
     }
 
     void SimulationDocument::distributeHorizontal()
