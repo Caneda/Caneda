@@ -35,8 +35,6 @@ namespace Caneda
     SimulationDocument::SimulationDocument()
     {
         m_cSimulationScene = new CSimulationScene();
-        connect(m_cSimulationScene, SIGNAL(changed()), this,
-                SLOT(emitDocumentChanged()));
     }
 
     IContext* SimulationDocument::context()
