@@ -42,6 +42,8 @@ namespace Caneda
 
         void showAll();
 
+        void loadUserSettings();
+
     private:
         SimulationScene *m_simulationScene;
     };

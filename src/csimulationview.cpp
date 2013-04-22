@@ -32,21 +32,7 @@ namespace Caneda
         QwtPlot(parent),
         m_simulationScene(scene)
     {
-        Settings *settings = Settings::instance();
-        QColor foregroundColor = settings->currentValue("gui/foregroundColor").value<QColor>();
-        QColor backgroundColor = settings->currentValue("gui/backgroundColor").value<QColor>();
-
-        setCanvasBackground(backgroundColor);
-
-        QwtPlotGrid *grid = new QwtPlotGrid();
-        grid->enableXMin(true);
-        grid->setMajPen(QPen(foregroundColor, 1, Qt::DashLine));
-        grid->setMinPen(QPen(foregroundColor, 0 , Qt::DotLine));
-        grid->attach(this);
-
-        QwtLegend *legend = new QwtLegend();
-        legend->setItemMode(QwtLegend::ClickableItem);
-        this->insertLegend(legend, QwtPlot::TopLegend);
+        loadUserSettings();
     }
 
     CSimulationView::~CSimulationView()
@@ -115,6 +101,25 @@ namespace Caneda
 
         // Refresh the plot
         replot();
+    }
+
+    void CSimulationView::loadUserSettings()
+    {
+        Settings *settings = Settings::instance();
+        QColor foregroundColor = settings->currentValue("gui/foregroundColor").value<QColor>();
+        QColor backgroundColor = settings->currentValue("gui/backgroundColor").value<QColor>();
+
+        setCanvasBackground(backgroundColor);
+
+        QwtPlotGrid *grid = new QwtPlotGrid();
+        grid->enableXMin(true);
+        grid->setMajPen(QPen(foregroundColor, 1, Qt::DashLine));
+        grid->setMinPen(QPen(foregroundColor, 0 , Qt::DotLine));
+        grid->attach(this);
+
+        QwtLegend *legend = new QwtLegend();
+        legend->setItemMode(QwtLegend::ClickableItem);
+        this->insertLegend(legend, QwtPlot::TopLegend);
     }
 
 } // namespace Caneda

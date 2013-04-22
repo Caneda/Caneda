@@ -88,7 +88,8 @@ namespace Caneda
 
     void SimulationView::updateSettingsChanges()
     {
-        m_simulationView->repaint();
+        m_simulationView->loadUserSettings();
+        m_simulationView->replot();
     }
 
     void SimulationView::onWidgetFocussedIn()
