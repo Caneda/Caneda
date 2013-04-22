@@ -20,7 +20,7 @@
 #include "formatrawsimulation.h"
 
 #include "simulationdocument.h"
-#include "simulationscene.h"
+#include "csimulationscene.h"
 #include "xmlutilities.h"
 
 #include <QDebug>
@@ -43,7 +43,7 @@ namespace Caneda
     bool FormatRawSimulation::load()
     {
         // Read all the data from the file "filename() + ".raw"" (waveforms).
-        SimulationScene *scene = simulationScene();
+        CSimulationScene *scene = cSimulationScene();
         if(!scene) {
             return false;
         }
@@ -266,9 +266,9 @@ namespace Caneda
         return m_simulationDocument;
     }
 
-    SimulationScene* FormatRawSimulation::simulationScene() const
+    CSimulationScene* FormatRawSimulation::cSimulationScene() const
     {
-        return m_simulationDocument ? m_simulationDocument->simulationScene() : 0;
+        return m_simulationDocument ? m_simulationDocument->cSimulationScene() : 0;
     }
 
     QString FormatRawSimulation::fileName() const

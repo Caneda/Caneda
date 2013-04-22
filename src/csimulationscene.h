@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIMULATION_SCENE_H
-#define SIMULATION_SCENE_H
+#ifndef C_SIMULATION_SCENE_H
+#define C_SIMULATION_SCENE_H
 
 #include <QWidget>
 
@@ -27,13 +27,13 @@ class QwtPlotCurve;
 
 namespace Caneda
 {
-    class SimulationScene : public QWidget
+    class CSimulationScene : public QWidget
     {
         Q_OBJECT
 
     public:
-        SimulationScene(QWidget *parent = 0);
-        ~SimulationScene();
+        CSimulationScene(QWidget *parent = 0);
+        ~CSimulationScene();
 
         //! \brief Returns a list of all items in the scene in descending stacking
         QList<QwtPlotCurve*> items() const { return m_items; }
@@ -45,4 +45,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif // SIMULATION_SCENE_H
+#endif // C_SIMULATION_SCENE_H

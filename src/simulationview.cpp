@@ -22,7 +22,7 @@
 #include "csimulationview.h"
 #include "simulationcontext.h"
 #include "simulationdocument.h"
-#include "simulationscene.h"
+#include "csimulationscene.h"
 #include "statehandler.h"
 
 namespace Caneda
@@ -30,7 +30,7 @@ namespace Caneda
     SimulationView::SimulationView(SimulationDocument *document) :
         IView(document)
     {
-        m_simulationView = new CSimulationView(document->simulationScene(), 0);
+        m_simulationView = new CSimulationView(document->cSimulationScene(), 0);
         m_simulationView->showAll();
 
         //! \todo Reimplement this

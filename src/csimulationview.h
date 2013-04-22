@@ -25,14 +25,14 @@
 namespace Caneda
 {
     // Forward declations
-    class SimulationScene;
+    class CSimulationScene;
 
     class CSimulationView : public QwtPlot
     {
         Q_OBJECT
 
     public:
-        CSimulationView(SimulationScene *scene, QWidget *parent = 0);
+        CSimulationView(CSimulationScene *scene, QWidget *parent = 0);
         ~CSimulationView();
 
         virtual void zoomIn();
@@ -45,7 +45,7 @@ namespace Caneda
         void loadUserSettings();
 
     private:
-        SimulationScene *m_simulationScene;
+        CSimulationScene *m_csimulationScene;
     };
 
 } // namespace Caneda

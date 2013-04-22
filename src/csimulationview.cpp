@@ -20,7 +20,7 @@
 #include "csimulationview.h"
 
 #include "settings.h"
-#include "simulationscene.h"
+#include "csimulationscene.h"
 
 #include <qwt_legend.h>
 #include <qwt_plot_curve.h>
@@ -28,9 +28,9 @@
 
 namespace Caneda
 {
-    CSimulationView::CSimulationView(SimulationScene *scene, QWidget *parent) :
+    CSimulationView::CSimulationView(CSimulationScene *scene, QWidget *parent) :
         QwtPlot(parent),
-        m_simulationScene(scene)
+        m_csimulationScene(scene)
     {
         loadUserSettings();
     }
@@ -62,7 +62,7 @@ namespace Caneda
     //! \brief Displays all items available in the scene, in the plot widget.
     void CSimulationView::showAll()
     {
-        QList<QwtPlotCurve*> m_items = m_simulationScene->items();
+        QList<QwtPlotCurve*> m_items = m_csimulationScene->items();
 
         QColor color = QColor(0, 0, 0);
         int colorIndex= 0;

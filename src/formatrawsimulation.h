@@ -28,7 +28,7 @@ namespace Caneda
 {
     // Forward declarations
     class SimulationDocument;
-    class SimulationScene;
+    class CSimulationScene;
 
     class FormatRawSimulation
     {
@@ -39,7 +39,7 @@ namespace Caneda
         bool load();
 
         SimulationDocument* simulationDocument() const;
-        SimulationScene* simulationScene() const;
+        CSimulationScene* cSimulationScene() const;
         QString fileName() const;
 
     private:

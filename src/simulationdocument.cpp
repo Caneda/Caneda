@@ -21,7 +21,7 @@
 
 #include "formatrawsimulation.h"
 #include "simulationcontext.h"
-#include "simulationscene.h"
+#include "csimulationscene.h"
 #include "simulationview.h"
 
 #include "dialogs/exportdialog.h"
@@ -34,8 +34,8 @@ namespace Caneda
 {
     SimulationDocument::SimulationDocument()
     {
-        m_simulationScene = new SimulationScene();
-        connect(m_simulationScene, SIGNAL(changed()), this,
+        m_cSimulationScene = new CSimulationScene();
+        connect(m_cSimulationScene, SIGNAL(changed()), this,
                 SLOT(emitDocumentChanged()));
     }
 

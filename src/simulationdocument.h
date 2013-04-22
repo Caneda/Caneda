@@ -25,7 +25,7 @@
 namespace Caneda
 {
     // Forward declations
-    class SimulationScene;
+    class CSimulationScene;
 
     /*!
      * \brief This class represents the simulation document interface
@@ -37,7 +37,7 @@ namespace Caneda
      * This class manages document specific methods like saving,
      * loading, exporting to different formats, as well as containing the
      * actual scene. The scene itself is included as a pointer to
-     * SimulationScene, that contains all the scene specific methods.
+     * CSimulationScene, that contains all the scene specific methods.
      *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa SimulationContext, SimulationView
@@ -99,10 +99,10 @@ namespace Caneda
         virtual void launchPropertiesDialog() {}
         // End of IDocument interface methods
 
-        SimulationScene* simulationScene() const { return m_simulationScene; }
+        CSimulationScene* cSimulationScene() const { return m_cSimulationScene; }
 
     private:
-        SimulationScene *m_simulationScene;
+        CSimulationScene *m_cSimulationScene;
     };
 
 } // namespace Caneda
