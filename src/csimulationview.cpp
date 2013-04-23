@@ -32,6 +32,9 @@ namespace Caneda
         QwtPlot(parent),
         m_csimulationScene(scene)
     {
+        m_grid = new QwtPlotGrid();
+        m_legend = new QwtLegend();
+
         loadUserSettings();
     }
 
@@ -111,15 +114,18 @@ namespace Caneda
 
         setCanvasBackground(backgroundColor);
 
-        QwtPlotGrid *grid = new QwtPlotGrid();
-        grid->enableXMin(true);
-        grid->setMajPen(QPen(foregroundColor, 1, Qt::DashLine));
-        grid->setMinPen(QPen(foregroundColor, 0 , Qt::DotLine));
-        grid->attach(this);
+        if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {
+            m_grid->enableXMin(true);
+            m_grid->setMajPen(QPen(foregroundColor, 1, Qt::DashLine));
+            m_grid->setMinPen(QPen(foregroundColor, 0 , Qt::DotLine));
+            m_grid->attach(this);
+        }
+        else {
+            m_grid->detach();
+        }
 
-        QwtLegend *legend = new QwtLegend();
-        legend->setItemMode(QwtLegend::ClickableItem);
-        this->insertLegend(legend, QwtPlot::TopLegend);
+        m_legend->setItemMode(QwtLegend::ClickableItem);
+        this->insertLegend(m_legend, QwtPlot::TopLegend);
     }
 
 } // namespace Caneda

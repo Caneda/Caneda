@@ -22,6 +22,9 @@
 
 #include <qwt_plot.h>
 
+// Forward declations
+class QwtPlotGrid;
+
 namespace Caneda
 {
     // Forward declations
@@ -46,6 +49,9 @@ namespace Caneda
 
     private:
         CSimulationScene *m_csimulationScene;
+
+        QwtPlotGrid *m_grid;
+        QwtLegend *m_legend;
     };
 
 } // namespace Caneda
