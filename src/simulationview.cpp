@@ -19,10 +19,10 @@
 
 #include "simulationview.h"
 
+#include "csimulationscene.h"
 #include "csimulationview.h"
 #include "simulationcontext.h"
 #include "simulationdocument.h"
-#include "csimulationscene.h"
 #include "statehandler.h"
 
 namespace Caneda

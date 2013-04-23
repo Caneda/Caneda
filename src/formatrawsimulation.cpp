@@ -19,8 +19,8 @@
 
 #include "formatrawsimulation.h"
 
-#include "simulationdocument.h"
 #include "csimulationscene.h"
+#include "simulationdocument.h"
 #include "xmlutilities.h"
 
 #include <QDebug>

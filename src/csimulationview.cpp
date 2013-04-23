@@ -19,8 +19,8 @@
 
 #include "csimulationview.h"
 
-#include "settings.h"
 #include "csimulationscene.h"
+#include "settings.h"
 
 #include <qwt_legend.h>
 #include <qwt_plot_curve.h>
