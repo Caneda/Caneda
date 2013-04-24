@@ -24,17 +24,12 @@
 #include "formatxmlschematic.h"
 #include "schematiccontext.h"
 #include "schematicview.h"
-#include "settings.h"
 #include "statehandler.h"
 
 #include "dialogs/exportdialog.h"
 
 #include <QFileInfo>
 #include <QMessageBox>
-#include <QPainter>
-#include <QPrinter>
-
-#include <cmath>
 
 namespace Caneda
 {
@@ -197,60 +192,7 @@ namespace Caneda
 
     void SchematicDocument::print(QPrinter *printer, bool fitInView)
     {
-        QPainter p(printer);
-        p.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-
-        const bool fullPage = printer->fullPage();
-
-        const bool viewGridStatus = Settings::instance()->currentValue("gui/gridVisible").value<bool>();
-        Settings::instance()->setCurrentValue("gui/gridVisible", false);
-
-        const QRectF diagramRect = m_cGraphicsScene->itemsBoundingRect();
-        if(fitInView) {
-            m_cGraphicsScene->render(&p,
-                    QRectF(), // Dest rect
-                    diagramRect, // Src rect
-                    Qt::KeepAspectRatio);
-        }
-        else {
-            //Printing on one or more pages
-            QRectF printedArea = fullPage ? printer->paperRect() : printer->pageRect();
-
-            const int horizontalPages =
-                int(std::ceil(diagramRect.width() / printedArea.width()));
-            const int verticalPages =
-                int(std::ceil(diagramRect.height() / printedArea.height()));
-
-            QList<QRectF> pagesToPrint;
-
-            //The schematic is printed on a grid of sheets running from top-bottom, left-right.
-            qreal yOffset = 0;
-            for(int y = 0; y < verticalPages; ++y) {
-                //Runs through the sheets of the line
-                qreal xOffset = 0;
-                for(int x = 0; x < horizontalPages; ++x) {
-                    const qreal width = qMin(printedArea.width(), diagramRect.width() - xOffset);
-                    const qreal height = qMin(printedArea.height(), diagramRect.height() - yOffset);
-                    pagesToPrint << QRectF(xOffset, yOffset, width, height);
-                    xOffset += printedArea.width();
-                }
-
-                yOffset += printedArea.height();
-            }
-
-            for (int i = 0; i < pagesToPrint.size(); ++i) {
-                const QRectF rect = pagesToPrint.at(i);
-                m_cGraphicsScene->render(&p,
-                        rect.translated(-rect.topLeft()), // dest - topleft at (0, 0)
-                        rect.translated(diagramRect.topLeft()), // src
-                        Qt::KeepAspectRatio);
-                if(i != (pagesToPrint.size() - 1)) {
-                    printer->newPage();
-                }
-            }
-        }
-
-        Settings::instance()->setCurrentValue("gui/gridVisible", viewGridStatus);
+        m_cGraphicsScene->print(printer, fitInView);
     }
 
     bool SchematicDocument::load(QString *errorMessage)
