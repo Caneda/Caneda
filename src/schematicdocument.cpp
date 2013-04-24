@@ -195,6 +195,12 @@ namespace Caneda
         m_cGraphicsScene->print(printer, fitInView);
     }
 
+    void SchematicDocument::exportImage()
+    {
+        ExportDialog *d = new ExportDialog(this, m_cGraphicsScene);
+        d->exec();
+    }
+
     bool SchematicDocument::load(QString *errorMessage)
     {
         QFileInfo info(fileName());
@@ -237,12 +243,6 @@ namespace Caneda
         }
 
         return false;
-    }
-
-    void SchematicDocument::exportImage()
-    {
-        ExportDialog *d = new ExportDialog(this, m_cGraphicsScene);
-        d->exec();
     }
 
     IView* SchematicDocument::createView()

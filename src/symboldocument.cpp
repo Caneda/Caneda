@@ -188,6 +188,12 @@ namespace Caneda
         m_cGraphicsScene->print(printer, fitInView);
     }
 
+    void SymbolDocument::exportImage()
+    {
+        ExportDialog *d = new ExportDialog(this, m_cGraphicsScene);
+        d->exec();
+    }
+
     bool SymbolDocument::load(QString *errorMessage)
     {
         QFileInfo info(fileName());
@@ -230,12 +236,6 @@ namespace Caneda
         }
 
         return false;
-    }
-
-    void SymbolDocument::exportImage()
-    {
-        ExportDialog *d = new ExportDialog(this, m_cGraphicsScene);
-        d->exec();
     }
 
     IView* SymbolDocument::createView()

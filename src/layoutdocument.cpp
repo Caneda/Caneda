@@ -194,6 +194,12 @@ namespace Caneda
         m_cGraphicsScene->print(printer, fitInView);
     }
 
+    void LayoutDocument::exportImage()
+    {
+        ExportDialog *d = new ExportDialog(this, m_cGraphicsScene);
+        d->exec();
+    }
+
     bool LayoutDocument::load(QString *errorMessage)
     {
         QFileInfo info(fileName());
@@ -236,12 +242,6 @@ namespace Caneda
         }
 
         return false;
-    }
-
-    void LayoutDocument::exportImage()
-    {
-        ExportDialog *d = new ExportDialog(this, m_cGraphicsScene);
-        d->exec();
     }
 
     IView* LayoutDocument::createView()
