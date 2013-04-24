@@ -87,7 +87,7 @@ namespace Caneda
 
         virtual void simulate() {}
 
-        virtual bool printSupportsFitInPage() const { return true; }
+        virtual bool printSupportsFitInPage() const { return false; }
         virtual void print(QPrinter *printer, bool fitInView);
         virtual void exportImage();
 

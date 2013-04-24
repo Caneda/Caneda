@@ -19,9 +19,11 @@
 
 #include "simulationdocument.h"
 
+#include "csimulationscene.h"
+#include "csimulationview.h"
+#include "documentviewmanager.h"
 #include "formatrawsimulation.h"
 #include "simulationcontext.h"
-#include "csimulationscene.h"
 #include "simulationview.h"
 
 #include "dialogs/exportdialog.h"
@@ -29,6 +31,8 @@
 #include <QFileInfo>
 #include <QPrinter>
 #include <QUndoStack>
+
+#include <qwt_plot_renderer.h>
 
 namespace Caneda
 {
@@ -76,7 +80,15 @@ namespace Caneda
 
     void SimulationDocument::print(QPrinter *printer, bool fitInView)
     {
-        //! \todo Reimplement this
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView *v = manager->currentView();
+        CSimulationView *sv = qobject_cast<CSimulationView*>(v->toWidget());
+
+        QwtPlotRenderer renderer;
+        renderer.setDiscardFlag(QwtPlotRenderer::DiscardNone, true);
+        renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, true);
+
+        renderer.renderTo(sv, *printer);
     }
 
     bool SimulationDocument::load(QString *errorMessage)

@@ -114,7 +114,7 @@ namespace Caneda
 
     Q_SIGNALS:
         void documentChanged(IDocument *who);
-        void statusBarMessage(const QString& text);
+        void statusBarMessage(const QString &text);
 
         // Avoid private declarations as subclasses might need direct access.
     protected:
