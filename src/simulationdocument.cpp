@@ -32,8 +32,6 @@
 #include <QPrinter>
 #include <QUndoStack>
 
-#include <qwt_plot_renderer.h>
-
 namespace Caneda
 {
     SimulationDocument::SimulationDocument()
@@ -80,15 +78,22 @@ namespace Caneda
 
     void SimulationDocument::print(QPrinter *printer, bool fitInView)
     {
+        /*!
+         * Get current view, and print it. This method differs from
+         * the other idocument implementations, as the scene has no
+         * way to know the actual curves being displayed on the current
+         * view.
+         */
         DocumentViewManager *manager = DocumentViewManager::instance();
         IView *v = manager->currentView();
         CSimulationView *sv = qobject_cast<CSimulationView*>(v->toWidget());
 
-        QwtPlotRenderer renderer;
-        renderer.setDiscardFlag(QwtPlotRenderer::DiscardNone, true);
-        renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, true);
+        sv->print(printer, fitInView);
+    }
 
-        renderer.renderTo(sv, *printer);
+    void SimulationDocument::exportImage()
+    {
+        //! \todo Reimplement this
     }
 
     bool SimulationDocument::load(QString *errorMessage)
@@ -105,11 +110,6 @@ namespace Caneda
         }
 
         return false;
-    }
-
-    void SimulationDocument::exportImage()
-    {
-        //! \todo Reimplement this
     }
 
     IView* SimulationDocument::createView()

@@ -25,6 +25,7 @@
 #include <qwt_legend.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
+#include <qwt_plot_renderer.h>
 
 namespace Caneda
 {
@@ -126,6 +127,15 @@ namespace Caneda
 
         m_legend->setItemMode(QwtLegend::ClickableItem);
         this->insertLegend(m_legend, QwtPlot::TopLegend);
+    }
+
+    void CSimulationView::print(QPrinter *printer, bool fitInView)
+    {
+        QwtPlotRenderer renderer;
+        renderer.setDiscardFlag(QwtPlotRenderer::DiscardNone, true);
+        renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, true);
+
+        renderer.renderTo(this, *printer);
     }
 
 } // namespace Caneda

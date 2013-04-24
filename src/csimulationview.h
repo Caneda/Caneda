@@ -47,6 +47,8 @@ namespace Caneda
 
         void loadUserSettings();
 
+        void print(QPrinter *printer, bool fitInView);
+
     private:
         CSimulationScene *m_csimulationScene;
 
