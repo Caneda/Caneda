@@ -300,6 +300,7 @@ namespace Caneda
 
         QSvgGenerator svg_engine;
         svg_engine.setOutputDevice(&file);
+        svg_engine.setSize(QSize(width, height));
         m_document->exportImage(svg_engine, width, height,
                 ui.btnLock->isChecked() ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
 
