@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,7 +29,6 @@ class QFile;
 namespace Caneda
 {
     // Forward declations
-    class CGraphicsScene;
     class IDocument;
 
     /*!
@@ -41,7 +40,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        ExportDialog(IDocument *, CGraphicsScene *, QWidget *parent = 0);
+        ExportDialog(IDocument *, QWidget *parent = 0);
         ~ExportDialog();
 
     public Q_SLOTS:
@@ -61,7 +60,7 @@ namespace Caneda
         void generateSvg(QFile &);
         void saveReloadDiagramParameters(bool = true);
 
-        CGraphicsScene *m_scene;
+        IDocument *m_document;
 
         Ui::ExportDialog ui;
     };

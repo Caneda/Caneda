@@ -210,6 +210,29 @@ namespace Caneda
      */
 
     /*!
+     * \fn IDocument::exportImage()
+     *
+     * \brief Export current document to an image.
+     *
+     * This method is called directly by the ExportDialog class,
+     * upon user input. Not all document types can be exported to
+     * images.
+     */
+
+    /*!
+     * \fn IDocument::documentSize()
+     *
+     * \brief Return current document size.
+     *
+     * This method is called from the ExportDialog class, to determine
+     * the image default size to use in the export.
+     *
+     * \return Size of the document.
+     *
+     * \sa exportImage()
+     */
+
+    /*!
      * \fn IDocument::load(QString *errorMessage = 0)
      *
      * \brief Loads the document from file IDocument::fileName()

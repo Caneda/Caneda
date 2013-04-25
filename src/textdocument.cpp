@@ -211,6 +211,11 @@ namespace Caneda
         m_textDocument->print(printer);
     }
 
+    QSizeF TextDocument::documentSize()
+    {
+        return m_textDocument->size();
+    }
+
     bool TextDocument::load(QString *errorMessage)
     {
         if (fileName().isEmpty()) {

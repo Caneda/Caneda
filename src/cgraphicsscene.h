@@ -90,7 +90,7 @@ namespace Caneda
         void setBackgroundVisible(bool vis);
 
         void print(QPrinter *printer, bool fitInView);
-        bool toPaintDevice(QPaintDevice &, qreal = -1, qreal = -1,
+        bool exportImage(QPaintDevice &, qreal = -1, qreal = -1,
                 Qt::AspectRatioMode = Qt::KeepAspectRatio);
 
         QPointF smartNearingGridPoint(const QPointF &pos) const;

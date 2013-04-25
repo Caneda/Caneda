@@ -398,7 +398,7 @@ namespace Caneda
      *
      * @return bool True on success, false otherwise
      */
-    bool CGraphicsScene::toPaintDevice(QPaintDevice &pix, qreal width, qreal height,
+    bool CGraphicsScene::exportImage(QPaintDevice &pix, qreal width, qreal height,
             Qt::AspectRatioMode aspectRatioMode)
     {
         QRectF source_area = itemsBoundingRect();

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,7 +19,6 @@
 
 #include "exportdialog.h"
 
-#include "cgraphicsscene.h"
 #include "global.h"
 #include "idocument.h"
 #include "settings.h"
@@ -28,6 +27,7 @@
 #include <QDialogButtonBox>
 #include <QDirModel>
 #include <QFileDialog>
+#include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMessageBox>
@@ -38,12 +38,11 @@
 namespace Caneda
 {
     //! Constructor
-    ExportDialog::ExportDialog(IDocument *document, CGraphicsScene *scene, QWidget *parent) :
-            QDialog(parent)
+    ExportDialog::ExportDialog(IDocument *document, QWidget *parent) :
+            QDialog(parent),
+            m_document(document)
     {
         ui.setupUi(this);
-
-        m_scene = scene;
 
         // Title and file name of the scene
         QString diagramFilename = document->fileName();
@@ -165,7 +164,7 @@ namespace Caneda
     //! Reset the size of a schematic
     void ExportDialog::slotResetSize()
     {
-        QSizeF size = m_scene->itemsBoundingRect().size();
+        QSizeF size = m_document->documentSize();
 
         ui.spinWidth->blockSignals(true);
         ui.spinHeight->blockSignals(true);
@@ -262,7 +261,7 @@ namespace Caneda
     //! @return the aspect ratio of the schematic
     qreal ExportDialog::diagramRatio()
     {
-        QSizeF size = m_scene->itemsBoundingRect().size();
+        QSizeF size = m_document->documentSize();
         qreal ratio = size.width() / size.height();
         return(ratio);
     }
@@ -280,7 +279,7 @@ namespace Caneda
 
         QImage image(width, height, QImage::Format_RGB32);
         image.fill(qRgb(255, 255, 255));
-        m_scene->toPaintDevice(image, width, height,
+        m_document->exportImage(image, width, height,
                 ui.btnLock->isChecked() ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
 
         saveReloadDiagramParameters(false);
@@ -301,7 +300,7 @@ namespace Caneda
 
         QSvgGenerator svg_engine;
         svg_engine.setOutputDevice(&file);
-        m_scene->toPaintDevice(svg_engine, width, height,
+        m_document->exportImage(svg_engine, width, height,
                 ui.btnLock->isChecked() ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
 
         saveReloadDiagramParameters(false);

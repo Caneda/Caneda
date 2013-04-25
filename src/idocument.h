@@ -99,7 +99,9 @@ namespace Caneda
 
         virtual bool printSupportsFitInPage() const = 0;
         virtual void print(QPrinter *printer, bool fitInPage) = 0;
-        virtual void exportImage() = 0;
+        virtual void exportImage(QPaintDevice &device, qreal width = -1, qreal height = -1,
+                                 Qt::AspectRatioMode aspectRatioMode = Qt::KeepAspectRatio) = 0;
+        virtual QSizeF documentSize() = 0;
 
         virtual bool load(QString *errorMessage = 0) = 0;
         virtual bool save(QString *errorMessage = 0) = 0;

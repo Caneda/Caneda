@@ -25,8 +25,6 @@
 #include "layoutview.h"
 #include "statehandler.h"
 
-#include "dialogs/exportdialog.h"
-
 #include <QFileInfo>
 #include <QMessageBox>
 
@@ -194,10 +192,15 @@ namespace Caneda
         m_cGraphicsScene->print(printer, fitInView);
     }
 
-    void LayoutDocument::exportImage()
+    void LayoutDocument::exportImage(QPaintDevice &device, qreal width, qreal height,
+                                     Qt::AspectRatioMode aspectRatioMode)
     {
-        ExportDialog *d = new ExportDialog(this, m_cGraphicsScene);
-        d->exec();
+        m_cGraphicsScene->exportImage(device, width, height, aspectRatioMode);
+    }
+
+    QSizeF LayoutDocument::documentSize()
+    {
+        return m_cGraphicsScene->itemsBoundingRect().size();
     }
 
     bool LayoutDocument::load(QString *errorMessage)

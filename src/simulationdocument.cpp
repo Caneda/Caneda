@@ -91,9 +91,27 @@ namespace Caneda
         sv->print(printer, fitInView);
     }
 
-    void SimulationDocument::exportImage()
+    void SimulationDocument::exportImage(QPaintDevice &device, qreal width, qreal height,
+                                         Qt::AspectRatioMode aspectRatioMode)
     {
-        //! \todo Reimplement this
+        /*!
+         * Get current view, and print it. This method differs from
+         * the other idocument implementations, as the scene has no
+         * way to know the actual curves being displayed on the current
+         * view.
+         */
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView *v = manager->currentView();
+        CSimulationView *sv = qobject_cast<CSimulationView*>(v->toWidget());
+
+        sv->exportImage(device, width, height, aspectRatioMode);
+    }
+
+    QSizeF SimulationDocument::documentSize()
+    {
+        //! \todo Using fixed size for document export. Should we make this configurable?
+        QSizeF size(297, 210);
+        return size;
     }
 
     bool SimulationDocument::load(QString *errorMessage)

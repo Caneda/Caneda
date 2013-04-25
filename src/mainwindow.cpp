@@ -37,6 +37,7 @@
 #include "textcontext.h"
 
 #include "dialogs/aboutdialog.h"
+#include "dialogs/exportdialog.h"
 #include "dialogs/filenewdialog.h"
 #include "dialogs/projectfileopendialog.h"
 #include "dialogs/printdialog.h"
@@ -1100,7 +1101,9 @@ namespace Caneda
             return;
         }
 
-        document->exportImage();
+        QPointer<ExportDialog> p = new ExportDialog(document, this);
+        p->exec();
+        delete p;
     }
 
     void MainWindow::slotAppSettings()

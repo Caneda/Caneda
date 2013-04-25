@@ -71,6 +71,13 @@ namespace Caneda
         page->print(printer);
     }
 
+    QSizeF WebDocument::documentSize()
+    {
+        // Return 0, as this method is only used for graphic documents.
+        QSizeF size(0, 0);
+        return size;
+    }
+
     bool WebDocument::load(QString *errorMessage)
     {
         if (fileName().isEmpty()) {
