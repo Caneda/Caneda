@@ -394,31 +394,34 @@ namespace Caneda
     }
 
     /*!
-     * \brief Exports the scene to an image
+     * \brief Export the scene to an image.
      *
-     * @return bool True on success, false otherwise
+     * This method exports the scene to a user selected image. This method is
+     * used in the ExportDialog class, to generate the image itself into a
+     * QPaintDevice. The image will be later saved by the ExportImage class.
+     *
+     * The image itself can be a raster image (bmp, png, etc) or a vector image
+     * (svg). The desired size of the destination (final) image must be set in
+     * the QPaintDevice where the image is to be rendered. This size can be a
+     * 1:1 ratio or any other size.
+     *
+     * \param pix QPaintDevice where the image is to be rendered
+     * \return bool True on success, false otherwise
+     * \sa ExportDialog, IDocument::exportImage()
      */
     bool CGraphicsScene::exportImage(QPaintDevice &pix)
     {
+        // Calculate the source area
         QRectF source_area = itemsBoundingRect();
 
-        // Move the origin to fit in the grid
-        QPointF newOrigin = smartNearingGridPoint(source_area.topLeft());
-
-        QPointF delta = source_area.topLeft();
-        delta.setX(source_area.left() - newOrigin.x());
-        delta.setY(source_area.top() - newOrigin.y());
-
-        source_area.setLeft(newOrigin.x());
-        source_area.setTop(newOrigin.y());
-
-        // Calculate the destination area
-        QRectF dest_area;
-        dest_area = QRectF(0, 0, pix.width()+delta.x(), pix.height()+delta.y()); // we add the delta added to fit in grid
-
-        // Hack: we make the source_area a little bit bigger that dest_area to avoid expanding the image
+        // Make the source_area a little bit bigger that dest_area to avoid
+        // expanding the image due to floating point precision (this is useful
+        // in svg images to avoid generating a raster, non-expandable image)
         source_area.setBottom(source_area.bottom()+1);
         source_area.setRight(source_area.right()+1);
+
+        // Calculate the destination area, acording to the user settings
+        QRectF dest_area = QRectF(0, 0, pix.width(), pix.height());
 
         // Prepare the device
         QPainter p;
@@ -432,7 +435,7 @@ namespace Caneda
             qgi->setSelected(false);
         }
 
-        // Perform the rendering itself
+        // Perform the rendering itself (without background for svg images)
         // As the size is specified, there is no need to keep the aspect ratio
         // (it will be kept if the dimensions of the source and destination areas
         // are proportional.

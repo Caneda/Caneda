@@ -133,7 +133,7 @@ namespace Caneda
     {
         QwtPlotRenderer renderer;
         renderer.setDiscardFlag(QwtPlotRenderer::DiscardNone, true);
-        renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, true);
+        renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasBackground, true);
 
         renderer.renderTo(this, *printer);
     }
@@ -142,7 +142,7 @@ namespace Caneda
     {
         QwtPlotRenderer renderer;
         renderer.setDiscardFlag(QwtPlotRenderer::DiscardNone, true);
-        renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, true);
+        renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasBackground, true);
 
         renderer.renderTo(this, device);
     }
