@@ -48,8 +48,7 @@ namespace Caneda
         void loadUserSettings();
 
         void print(QPrinter *printer, bool fitInView);
-        void exportImage(QPaintDevice &device, qreal width = -1, qreal height = -1,
-                         Qt::AspectRatioMode aspectRatioMode = Qt::KeepAspectRatio);
+        void exportImage(QPaintDevice &device);
 
     private:
         CSimulationScene *m_csimulationScene;

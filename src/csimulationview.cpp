@@ -138,8 +138,7 @@ namespace Caneda
         renderer.renderTo(this, *printer);
     }
 
-    void CSimulationView::exportImage(QPaintDevice &device, qreal width, qreal height,
-                                      Qt::AspectRatioMode aspectRatioMode)
+    void CSimulationView::exportImage(QPaintDevice &device)
     {
         QwtPlotRenderer renderer;
         renderer.setDiscardFlag(QwtPlotRenderer::DiscardNone, true);

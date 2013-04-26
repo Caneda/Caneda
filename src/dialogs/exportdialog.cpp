@@ -279,8 +279,7 @@ namespace Caneda
 
         QImage image(width, height, QImage::Format_RGB32);
         image.fill(qRgb(255, 255, 255));
-        m_document->exportImage(image, width, height,
-                ui.btnLock->isChecked() ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
+        m_document->exportImage(image);
 
         saveReloadDiagramParameters(false);
 
@@ -301,8 +300,7 @@ namespace Caneda
         QSvgGenerator svg_engine;
         svg_engine.setOutputDevice(&file);
         svg_engine.setSize(QSize(width, height));
-        m_document->exportImage(svg_engine, width, height,
-                ui.btnLock->isChecked() ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
+        m_document->exportImage(svg_engine);
 
         saveReloadDiagramParameters(false);
     }

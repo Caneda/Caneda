@@ -192,10 +192,9 @@ namespace Caneda
         m_cGraphicsScene->print(printer, fitInView);
     }
 
-    void LayoutDocument::exportImage(QPaintDevice &device, qreal width, qreal height,
-                                     Qt::AspectRatioMode aspectRatioMode)
+    void LayoutDocument::exportImage(QPaintDevice &device)
     {
-        m_cGraphicsScene->exportImage(device, width, height, aspectRatioMode);
+        m_cGraphicsScene->exportImage(device);
     }
 
     QSizeF LayoutDocument::documentSize()

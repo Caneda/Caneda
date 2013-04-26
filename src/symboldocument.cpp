@@ -186,10 +186,9 @@ namespace Caneda
         m_cGraphicsScene->print(printer, fitInView);
     }
 
-    void SymbolDocument::exportImage(QPaintDevice &device, qreal width, qreal height,
-                                     Qt::AspectRatioMode aspectRatioMode)
+    void SymbolDocument::exportImage(QPaintDevice &device)
     {
-        m_cGraphicsScene->exportImage(device, width, height, aspectRatioMode);
+        m_cGraphicsScene->exportImage(device);
     }
 
     QSizeF SymbolDocument::documentSize()

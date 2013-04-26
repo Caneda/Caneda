@@ -398,12 +398,11 @@ namespace Caneda
      *
      * @return bool True on success, false otherwise
      */
-    bool CGraphicsScene::exportImage(QPaintDevice &pix, qreal width, qreal height,
-            Qt::AspectRatioMode aspectRatioMode)
+    bool CGraphicsScene::exportImage(QPaintDevice &pix)
     {
         QRectF source_area = itemsBoundingRect();
 
-        // we move the origin to fit in grid
+        // Move the origin to fit in the grid
         QPointF newOrigin = smartNearingGridPoint(source_area.topLeft());
 
         QPointF delta = source_area.topLeft();
@@ -413,38 +412,36 @@ namespace Caneda
         source_area.setLeft(newOrigin.x());
         source_area.setTop(newOrigin.y());
 
-        // if the dimensions are not specified, the image is exported at 1:1 scale
+        // Calculate the destination area
         QRectF dest_area;
-        if(width == -1 && height == -1) {
-            dest_area = source_area;
-        }
-        else {
-            dest_area = QRectF(0, 0, width+delta.x(), height+delta.y()); // we add the delta added to fit in grid
-        }
+        dest_area = QRectF(0, 0, pix.width()+delta.x(), pix.height()+delta.y()); // we add the delta added to fit in grid
 
-        // hack: we make the source_area a little bit bigger that dest_area to avoid expanding the image
+        // Hack: we make the source_area a little bit bigger that dest_area to avoid expanding the image
         source_area.setBottom(source_area.bottom()+1);
         source_area.setRight(source_area.right()+1);
 
-        // prepare the device
+        // Prepare the device
         QPainter p;
         if(!p.begin(&pix)) {
             return(false);
         }
 
-        // deselect the elements
+        // Deselect the elements
         QList<QGraphicsItem *> selected_elmts = selectedItems();
         foreach(QGraphicsItem *qgi, selected_elmts) {
             qgi->setSelected(false);
         }
 
-        // performs rendering itself
+        // Perform the rendering itself
+        // As the size is specified, there is no need to keep the aspect ratio
+        // (it will be kept if the dimensions of the source and destination areas
+        // are proportional.
         setBackgroundVisible(false);
-        render(&p, dest_area, source_area, aspectRatioMode);
+        render(&p, dest_area, source_area, Qt::IgnoreAspectRatio);
         setBackgroundVisible(true);
         p.end();
 
-        // restores the selected items
+        // Restore the selected items
         foreach(QGraphicsItem *qgi, selected_elmts) {
             qgi->setSelected(true);
         }

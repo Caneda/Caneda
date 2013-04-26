@@ -91,8 +91,7 @@ namespace Caneda
         sv->print(printer, fitInView);
     }
 
-    void SimulationDocument::exportImage(QPaintDevice &device, qreal width, qreal height,
-                                         Qt::AspectRatioMode aspectRatioMode)
+    void SimulationDocument::exportImage(QPaintDevice &device)
     {
         /*!
          * Get current view, and print it. This method differs from
@@ -104,7 +103,7 @@ namespace Caneda
         IView *v = manager->currentView();
         CSimulationView *sv = qobject_cast<CSimulationView*>(v->toWidget());
 
-        sv->exportImage(device, width, height, aspectRatioMode);
+        sv->exportImage(device);
     }
 
     QSizeF SimulationDocument::documentSize()
