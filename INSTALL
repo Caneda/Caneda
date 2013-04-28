@@ -1,30 +1,35 @@
---
--- README
--- 
--- This is free software; you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation; either version 2, or (at your option)
--- any later version.
--- 
--- This software is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
--- 
--- You should have received a copy of the GNU General Public License
--- along with this package; see the file COPYING.  If not, write to
--- the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
--- Boston, MA 02110-1301, USA.  
---
+/***************************************************************************
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
+ ***************************************************************************/
 
 
 Description
 ===========
 
-Caneda is a circuit eda softwre with graphical user interface. The
-software aims to support all kinds of circuit simulation types,
-e.g. DC, AC, S-parameter and harmonic balance analysis. For
-details see homepage:
+Caneda is an open source EDA software focused on easy of use and portability.
+Caneda's goal is the complete design proccess from schematic capture, through
+simulation and into circuit layout and PCB. While in the short term schematic
+capture and simulation is the primary goal, in the long term future, PCB and
+layout edition will be covered. The software aims to support all kinds of
+circuit simulation types, e.g. DC, AC, S-parameter and harmonic balance
+analysis.
+
+For details visit the project's homepage:
 
 http://caneda.sourceforge.net/
 
@@ -32,8 +37,24 @@ http://caneda.sourceforge.net/
 Requirements
 ============
 
-Caneda needs Qt(R) and Qwt to cimpile. The current version is known to
-work with Qt 4.7 and later.
+In order to compile Caneda sources, you will need the following libraries
+installed in your system:
+
+  * Qt
+  * Cmake
+  * Qwtplot
+
+
+Getting the latest git snapshot
+===============================
+
+You can always get the latest Caneda version from our git repository. Please
+use an official release if you want to work with Caneda.  The git version might
+not even compile.
+
+  $ git clone git://git.code.sf.net/p/caneda/code caneda
+
+Press 'Enter' when asked for a password.
 
 
 Installation
@@ -41,82 +62,78 @@ Installation
 
 These are generic installation instructions.
 
-If you need to do unusual things to compile the package, please try
-to figure out how `cmake' could check whether to do them, and mail
-diffs or instructions to the authors so they can be considered for the
-next release.
+If you need to do unusual things to compile the package, please try to figure
+out how `cmake' could check whether to do them, and mail diffs or instructions
+to the authors so they can be considered for the next release.
 
 Unpack the distribution tarball:
 
-    $ tar xvzf caneda-<version>.tar.gz               (using GNU tar)
-    $ gzip -cd caneda-<version>.tar.gz | tar xvf -   (using another tar)
-  
+  $ tar xvzf caneda-<version>.tar.gz
+
 Change into the source directory:
 
-    $ cd caneda-<version>
+  $ cd caneda-<version>
+
+Create a new directory for Cmake to work in:
+
+  $ mkdir compile-output
+
+Change into the recently created directory:
+
+  $ cd compile-output
 
 Configure the source package for your system:
 
-    $ cmake
+  $ cmake ../
 
-Now compile the package:
+Compile the package:
 
-    $ make
+  $ make
 
 Install Caneda:
 
-    $ make install
+  $ make install
 
 You must have root privileges if you want to install the package in the
-standard location (/usr/local) or in any location that is only writable 
-by root.
+standard location (/usr/local) or in any location that is only writable by
+root.
 
-Please note:  Users of the FreeBSD OS may use a GNU make (probably gmake)
-to compile and install the package.
+Please note:  Users of the FreeBSD OS may use a GNU make (probably gmake) to
+compile and install the package.
 
-Getting the latest git snapshot
-===============================
-
-You can always get the latest Caneda version from our git repository.
-Please use an official release if you want to work with Caneda.  The git
-version might not even compile.
-
-    $ git clone git://git.code.sf.net/p/caneda/code caneda
-
-Press 'Enter' when asked for a password.
 
 Compilers and Options
 =====================
 
-   Some systems require unusual options for compilation or linking that
-`cmake' does not know about.  Run `./cmake --help' for details on some
-of the pertinent environment variables.
+Some systems require unusual options for compilation or linking that `cmake'
+does not know about.  Run `./cmake --help' for details on some of the pertinent
+environment variables.
 
-   You can give `cmake' initial values for configuration parameters
-by setting variables in the command line or in the environment.  Here
-is an example:
+You can give `cmake' initial values for configuration parameters by setting
+variables in the command line or in the environment.  Here is an example:
 
-     ./cmake CC=c89 CFLAGS=-O2 LIBS=-lposix
+  $ ./cmake CC=c89 CFLAGS=-O2 LIBS=-lposix
 
-Installation Names
-==================
+
+Installation Directory
+======================
 
 By default, `make install' will install the package's files in
-`/usr/local/bin', `/usr/local/man', etc.  You can specify an
-installation prefix other than `/usr/local' by giving `cmake' the
-option `--prefix=PATH'.
+`/usr/local/bin', `/usr/local/man', etc.  You can specify an installation
+prefix other than `/usr/local' by giving `cmake' the option `--prefix=PATH'.
 
-You can specify separate installation prefixes for architecture-specific
-files and architecture-independent files.  If you give `cmake' the option
+You can specify separate installation prefixes for architecture-specific files
+and architecture-independent files.  If you give `cmake' the option
 `--exec-prefix=PATH', the package will use PATH as the prefix for installing
-programs and libraries. Documentation and other data files will still use 
-the regular prefix.
+programs and libraries. Documentation and other data files will still use the
+regular prefix.
 
-In addition, if you use an unusual directory layout you can give
-options like `--bindir=PATH' to specify different values for particular
-kinds of files.  Run `configure --help' for a list of the directories
-you can set and what kinds of files go in them.
+In addition, if you use an unusual directory layout you can give options like
+`--bindir=PATH' to specify different values for particular kinds of files.
 
-If the package supports it, you can cause programs to be installed
-with an extra prefix or suffix on their names by giving `configure' the
-option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
+
+Doxygen Documentation
+=====================
+
+Caneda uses Doxygen as its developers code documentation. To generate the
+doxygen documentation, use the Doxyfile file provided at the source's root.
