@@ -67,6 +67,9 @@ namespace Caneda
  * inherited to create more specific uses for each file type.
  * \li <b>The CGraphicsScene Class:</b> \copybrief CGraphicsScene
  *
+ * Finally, you can find information on the several file formats used in
+ * \ref DocumentFormats.
+ *
  * \section CodingStyle Caneda Coding Style
  * Caneda uses the same coding style as Qt. Keeping the code consistant is
  * important for readability both for fixing bugs and bringing in new
