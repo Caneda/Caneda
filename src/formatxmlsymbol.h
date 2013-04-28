@@ -32,6 +32,17 @@ namespace Caneda
     class SymbolDocument;
     class XmlReader;
 
+    /*!
+     * \brief This class handles all the access to the symbol documents file
+     * format.
+     *
+     * This class is in charge of saving and loading all symbol related
+     * documents. This is the only class that knows about symbol document
+     * formats, and has the access functions to return a SymbolDocument,
+     * with all of its components.
+     *
+     * \sa \ref DocumentFormats
+     */
     class FormatXmlSymbol
     {
     public:

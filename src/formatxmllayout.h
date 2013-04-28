@@ -32,6 +32,17 @@ namespace Caneda
     class XmlReader;
     class XmlWriter;
 
+    /*!
+     * \brief This class handles all the access to the layout documents file
+     * format.
+     *
+     * This class is in charge of saving and loading all layout related
+     * documents. This is the only class that knows about layout document
+     * formats, and has the access functions to return a LayoutDocument,
+     * with all of its components.
+     *
+     * \sa \ref DocumentFormats
+     */
     class FormatXmlLayout
     {
     public:

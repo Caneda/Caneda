@@ -33,6 +33,17 @@ namespace Caneda
     class XmlReader;
     class XmlWriter;
 
+    /*!
+     * \brief This class handles all the access to the schematic documents file
+     * format.
+     *
+     * This class is in charge of saving and loading all schematic related
+     * documents. This is the only class that knows about schematic document
+     * formats, and has the access functions to return a SchematicDocument,
+     * with all of its components.
+     *
+     * \sa \ref DocumentFormats
+     */
     class FormatXmlSchematic
     {
     public:

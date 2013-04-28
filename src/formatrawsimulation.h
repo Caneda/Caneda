@@ -30,6 +30,21 @@ namespace Caneda
     class SimulationDocument;
     class CSimulationScene;
 
+    /*!
+     * \brief This class handles all the access to the raw spice simulation
+     * documents file format.
+     *
+     * This class is in charge of saving and loading all raw spice simulation
+     * related documents. This is the only class that knows about raw spice
+     * simulation document formats, and has the access functions to return a
+     * SimulationDocument, with all of its components.
+     *
+     * This class does not handle document saving, as waveform data saving will
+     * not be supported at the moment (raw waveform data is only generated and
+     * saved by the simulator).
+     *
+     * \sa \ref DocumentFormats
+     */
     class FormatRawSimulation
     {
     public:

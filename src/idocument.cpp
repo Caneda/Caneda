@@ -240,6 +240,8 @@ namespace Caneda
      * \param errorMessage If load operation fails and errorMessage points to valid
      *                     location, the appropriate message corresponding for failure
      *                     is set.
+     *
+     * \sa \ref DocumentFormats
      */
 
     /*!
@@ -250,6 +252,8 @@ namespace Caneda
      * \param errorMessage If save operation fails and errorMessage points to valid
      *                     location, the appropriate message corresponding for failure
      *                     is set.
+     *
+     * \sa \ref DocumentFormats
      */
 
     /*!

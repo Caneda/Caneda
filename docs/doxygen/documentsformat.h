@@ -48,11 +48,20 @@ namespace Caneda
  * during schematic export to spice netlist (in simulations) and must be
  * somehow indicated in the symbol file.
  *
+ * Caneda's document file format handling is in charge of the following classes:
+ * \li FormatXmlSchematic
+ * \li FormatXmlSymbol
+ * \li FormatXmlLayout
+ * \li FormatRawSimulation. This class does not implement a Caneda's specific
+ * format, rather reads the standard spice simulation raw waveform data.
  *
  * \section Schematics Schematic Format
+ * This file format is implemented by the FormatXmlSchematic class.
+ *
  * \todo To be documented...
  *
  * \section Symbols Symbol Format
+ * This file format is implemented by the FormatXmlSymbol class.
  *
  * \code{.xml}
 <!-- Component tag:
@@ -182,6 +191,8 @@ namespace Caneda
  * \endcode
  *
  * \section Layouts Layout Format
+ * This file format is implemented by the FormatXmlLayout class.
+ *
  * \todo To be documented...
  *
  * \section OldFormat Old Document Format
@@ -350,6 +361,7 @@ namespace Caneda
 
  * \endcode
  *
+ * \sa  FormatXmlSchematic, FormatXmlSymbol, FormatXmlLayout, FormatRawSimulation
  */
 
 } // namespace Caneda
