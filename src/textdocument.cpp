@@ -139,22 +139,30 @@ namespace Caneda
         //! \todo Implement this. This should return to previously opened file.
     }
 
+    /*!
+     * \brief Start a simulation
+     *
+     * Start a simulation, invoking the correct simulator depending on the
+     * file extension, and then open the waveform viewer (could be internal
+     * or external acording to the user settings).
+     */
     void TextDocument::simulate()
     {
-        //! \todo Create log files, and show them to the user (in case something went wrong).
-        /*
-         * Start a simulation, invoking the correct simulator depending on the
-         * file extension, and then open the waveform viewer (could be internal
-         * or external acording to the settings).
-         */
-        QProcess *simulationProcess = new QProcess(this);
+        simulationErrorStatus = false;
 
         QFileInfo info(fileName());
-        QString path = info.path();
-        simulationProcess->setWorkingDirectory(path);
-
         QString baseName = info.completeBaseName();
         QString suffix = info.suffix();
+        QString path = info.path();
+
+        QProcess *simulationProcess = new QProcess(this);
+        simulationProcess->setWorkingDirectory(path);
+        simulationProcess->setProcessChannelMode(QProcess::MergedChannels);  // Output std:error and std:output together into the same file
+        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::Append);  // Create a log file
+
+        connect(simulationProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(simulationLog(int)));
+
+
         if (suffix == "net" || suffix == "cir" || suffix == "spc" || suffix == "sp") {
             // It is a netlist file, we should invoke a spice simulator in batch mode
 
@@ -168,12 +176,6 @@ namespace Caneda
             // ngspice -b -r output.raw input.net
             simulationProcess->start(QString("ngspice -b -r ") + baseName + ".raw "
                                      + fileName());  // Analize the file
-            simulationProcess->waitForFinished();
-
-            // Open the resulting waveforms
-            //! \todo Check that the result of the simulation was ok, before opening
-            DocumentViewManager *manager = DocumentViewManager::instance();
-            manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
         }
         else if (suffix == "vhd" || suffix == "vhdl") {
             // It is a vhdl file, we should invoke ghdl simulator
@@ -190,18 +192,16 @@ namespace Caneda
             simulationProcess->start(QString("ghdl -e ") + baseName);  // Create the simulation
             simulationProcess->waitForFinished();
             simulationProcess->start(QString("./") + baseName + " --wave=waveforms.ghw");  // Run the simulation
-            simulationProcess->waitForFinished();
-            simulationProcess->start(QString("gtkwave waveforms.ghw"));  // Open the waveforms
         }
         else if (suffix == "v") {
             // Is is a verilog file, we should invoke iverilog
             simulationProcess->start(QString("iverilog ") + fileName());  // Analize the files
             simulationProcess->waitForFinished();
             simulationProcess->start(QString("./a.out"));  // Run the simulation
-            simulationProcess->waitForFinished();
-            simulationProcess->start(QString("gtkwave ") + baseName + ".vcd");  // Open the waveforms
         }
 
+        // The simulation results are opened in the simulationReady slot, to achieve non-modal simulations
+        connect(simulationProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(simulationReady(int)));
     }
 
     void TextDocument::print(QPrinter *printer, bool fitInView)
@@ -317,6 +317,71 @@ namespace Caneda
         if (!m_textDocument->isModified()) {
             m_textDocument->setModified(true);
         }
+    }
+
+    /*!
+     * \brief Open simulation results.
+     *
+     * Once a simulation is started, the simulation process is connected to
+     * this slot, to achive non-modal simulations (ie, the gui is responsive
+     * during simulations).
+     *
+     * Once the simulation has finished, this slot is invoked and if no error
+     * ocurred, simulation results are shown to the user. The waveform viewer
+     * can be internal or external acording to the user settings.
+     */
+    void TextDocument::simulationReady(int error)
+    {
+        // If there was any error during the process, do not display the waveforms
+        if(error | simulationErrorStatus) {
+            return;
+        }
+
+        QFileInfo info(fileName());
+        QString path = info.path();
+        QString baseName = info.completeBaseName();
+        QString suffix = info.suffix();
+
+        QProcess *simulationProcess = new QProcess(this);
+        simulationProcess->setWorkingDirectory(path);
+        simulationProcess->setProcessChannelMode(QProcess::MergedChannels);  // Output std:error and std:output together into the same file
+        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::Append);  // Create a log file
+        connect(simulationProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(simulationLog(int)));
+
+        // Open the resulting waveforms
+        if (suffix == "net" || suffix == "cir" || suffix == "spc" || suffix == "sp") {
+            DocumentViewManager *manager = DocumentViewManager::instance();
+            manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
+        }
+        else if (suffix == "vhd" || suffix == "vhdl") {
+            simulationProcess->start(QString("gtkwave waveforms.ghw"));  // Open the waveforms
+        }
+        else if (suffix == "v") {
+            simulationProcess->start(QString("gtkwave ") + baseName + ".vcd");  // Open the waveforms
+        }
+    }
+
+    /*!
+     * \brief Test for errors, and open log file (in case something went
+     * wrong).
+     *
+     * This method is called whenever simulationProcess emits the finished
+     * signal, to keep track of the different logs available.
+     */
+    void TextDocument::simulationLog(int error)
+    {
+        QFileInfo info(fileName());
+        QString path = info.path();
+        QString baseName = info.completeBaseName();
+
+        // If there was any error during the process, open the log
+        if(error) {
+            simulationErrorStatus = true;  // This variable is used in multistep simulations (eg. verilog) to avoid opening previously generated waveforms
+
+            DocumentViewManager *manager = DocumentViewManager::instance();
+            manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".log"));
+        }
+
     }
 
 } // namespace Caneda

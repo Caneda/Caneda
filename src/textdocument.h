@@ -110,8 +110,11 @@ namespace Caneda
 
     private Q_SLOTS:
         void onContentsChanged();
+        void simulationReady(int error);
+        void simulationLog(int error);
 
     private:
+        bool simulationErrorStatus;
         TextEdit* activeTextEdit();
         QTextDocument *m_textDocument;
     };
