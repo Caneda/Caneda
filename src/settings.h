@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -40,6 +40,14 @@ namespace Caneda
 
     typedef QMap<QString, VariantPair> SettingsData;
 
+    /*!
+     * \brief This class handles all of Caneda's settings.
+     *
+     * This is used to provide a unified way of accesing and storing the user
+     * settings, as well as the default values of those settings.
+     *
+     * \sa SettingsDialog
+     */
     struct Settings
     {
         ~Settings();
@@ -53,6 +61,7 @@ namespace Caneda
         bool save(QSettings &settings);
 
         static Settings* instance();
+
     private:
         SettingsData data;
         Settings();

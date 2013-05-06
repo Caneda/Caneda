@@ -33,18 +33,19 @@ namespace Caneda
     class Wire;
 
     /*!
-     * \brief Node class.
+     * \brief The Node class is an electric node graphical representation, that
+     * shows a little circle allowing to plug wires or components into it.
      *
-     * The node class is a graphical node representation, that shows a little
-     * circle allowing to plug wires or components into it. Unlike a component
-     * or wire Port, this class has no item parent and can be moved on its own.
-     * This is specially useful to allow some kinds of wire geometry design.
-     * Another potential use is to allow the user to name special nets, and
-     * then have different wires connected together only by name (otherwise
-     * disconnected).
+     * Unlike a the Port class, the Node class has no item parent and can be
+     * moved on its own. This is specially useful to allow some kinds of wire
+     * geometry design. Another potential use is to allow the user to name
+     * special nets, and then have different wires connected together only by
+     * name (otherwise disconnected).
      *
      * This class is currently not used, however it should be used in the
      * future.
+     *
+     * \sa Port, Wire, Component
      *
      * \todo Currently not used. Finish implementing this class.
      */

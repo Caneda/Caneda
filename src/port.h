@@ -75,6 +75,23 @@ namespace Caneda
         QString name;
     };
 
+    /*!
+     * \brief The Port class is an electric port graphical representation, that
+     * allows components to be connected together through the use of wires.
+     *
+     * This class always has a parent item (CGraphicsItem) and cannot be moved
+     * on its own. The port position on a scene is determined from the parent's
+     * position, moving along with it. A Port class has only one parent, but
+     * can be connected to multiple ports, thus allowing interconnection of
+     * electric components such as wires, pasive and active components, etc.
+     *
+     * A disconnected port (that only has its parent) is represented by a
+     * hollow circle, while a connected port (with only one connection) is not
+     * drawn. When multiple connections are made into one port, a filled circle
+     * with the foreground color is drawn.
+     *
+     * \sa Component, Wire, Node
+     */
     class Port
     {
     public:

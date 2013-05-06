@@ -28,6 +28,23 @@ namespace Caneda
     class SidebarBrowser;
     class Library;
 
+    /*!
+     * \brief The Project class handles all user created libraries.
+     *
+     * This class is implemented and used instead of the Library class, to
+     * allow for a more dynamic handling of the user created libraries. That
+     * is, library modification, adding and modifing components and importing
+     * components from other libraries.
+     *
+     * Once the library is finished, it can be included as a default library by
+     * the user. In that case, the library will not be handled anymore by this
+     * class, but rather by the Library class directly.
+     *
+     * \sa Library, LibraryManager
+     *
+     * \todo Reimplement and fix this class to use the new library scheme,
+     * which uses folders directly.
+     */
     class Project : public QWidget
     {
         Q_OBJECT

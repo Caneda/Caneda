@@ -34,7 +34,7 @@ namespace Caneda
     class XmlWriter;
     class XmlReader;
 
-    //! \def PropertyMap This is typedef for map of string and property.
+    //! \def PropertyMap This is a typedef to map properties with strings.
     typedef QMap<QString, Property> PropertyMap;
 
     /*!
