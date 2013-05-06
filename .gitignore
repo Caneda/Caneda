@@ -4,3 +4,4 @@ CMakeLists.txt.user*
 *.swp
 .my-setup
 tags
+doxygen.log
