@@ -27,6 +27,19 @@ class QToolButton;
 
 namespace Caneda
 {
+    /*!
+     * \brief This class provides a modified QLineEdit, with support for clear
+     * button.
+     *
+     * This is a very small modification to QLineEdit, providing a clear button
+     * in case the user has input any text in the QLineEdit. In the future,
+     * this will implemented directly in Qt (as read in various Qt5 related
+     * articles). If that is the case, when the support for clear buttons has
+     * been added to Qt, this class can be removed.
+     *
+     * \todo Remove this class when support for clear buttons has been added to
+     * Qt's QLineEdit.
+     */
     class CLineEdit : public QLineEdit
     {
         Q_OBJECT
@@ -38,7 +51,7 @@ namespace Caneda
         void resizeEvent(QResizeEvent *);
 
     private slots:
-        void updateCloseButton(const QString &text);
+        void updateClearButton(const QString &text);
 
     private:
         QToolButton *clearButton;

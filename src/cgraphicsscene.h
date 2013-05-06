@@ -41,14 +41,22 @@ namespace Caneda
 
     /*!
      * \brief This class provides a canvas for managing graphics elements
-     * common to all Caneda graphics scenes (schematics, symbols, layouts, etc).
+     * common to all Caneda's graphics scenes (schematics, symbols, layouts,
+     * etc). This is one of Caneda's most important classes, along with
+     * MainWindow class and \ref DocumentViewFramework.
      *
-     * In this class common item operations are implemented, for example mirror
-     * and rotate items. Nevertheless this class must be subclassed for more
-     * specific operations and handling of the different types of documents.
+     * This class implements the scene class of Qt's Graphics View
+     * Architecture, representing the actual document interface (scene). Each
+     * scene must have at least one associated view (CGraphicsView), to display
+     * the contents of the scene. Several views can be attached to the same
+     * scene, providing different viewports into the same data set (for
+     * example, when using split views).
      *
-     * \todo Subclass this class for the different types of documents (schematics,
-     * symbols, layouts, etc).
+     * The scene serves as a container for item objects and handles their
+     * manipulation. In this class common item operations are implemented, for
+     * example mirror and rotate items. Nevertheless this class must be
+     * subclassed for more specific operations and handling of the different
+     * types of documents.
      *
      * \sa CGraphicsView, CGraphicsItem
      */

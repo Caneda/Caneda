@@ -38,7 +38,7 @@ namespace Caneda
         clearButton->hide();
 
         connect(clearButton, SIGNAL(clicked()), this, SLOT(clear()));
-        connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateCloseButton(const QString&)));
+        connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateClearButton(const QString&)));
     }
 
     void CLineEdit::resizeEvent(QResizeEvent *)
@@ -51,7 +51,7 @@ namespace Caneda
                           (rect().bottom() + 3 - sz.height())/2 );
     }
 
-    void CLineEdit::updateCloseButton(const QString& text)
+    void CLineEdit::updateClearButton(const QString& text)
     {
         clearButton->setVisible(!text.isEmpty());
     }

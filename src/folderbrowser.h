@@ -30,6 +30,13 @@ class QToolButton;
 
 namespace Caneda
 {
+    /*!
+     * \brief This class implements a simple folder browser widget to be used
+     * as a toolbar for easy access to the file system.
+     *
+     * This class handles user interaction to allow direct opening of files, as
+     * well basic file operations (as deletion).
+     */
     class FolderBrowser : public QWidget
     {
         Q_OBJECT

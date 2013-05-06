@@ -31,7 +31,13 @@ namespace Caneda
     /*!
      * \brief This class represents an individual library unit.
      *
-     * \sa LibraryManager
+     * Caneda's libraries contain pointers to the different components
+     * available to the user. Each pair (component name, library name) define
+     * a unique component thoughout all Caneda's usage (file saving or loading,
+     * component referencing, etc.). This class also handles the loading of all
+     * components in a library at once.
+     *
+     * \sa LibraryManager, Component
      */
     class Library
     {
@@ -63,19 +69,22 @@ namespace Caneda
     typedef QHash<QString, Library*> LibraryHash;
 
     /*!
-     * \brief This class acts as container and manages libraries.
+     * \brief This class is a container and manager for all Caneda's libraries.
      *
-     * This class acts as container and manages libraries. It also acts as
-     * a container for the different symbols loaded during library loading.
-     * To render a component, the symbol id must be given and a pointer to
-     * the symbol drawing is returned (paths, rectangles, circles, etc).
-     * The component to be rendered should be first registered with the
-     * instance of this class. A cache of components is created an data
-     * needed for painting components is created only once (independently
-     * of the number of components used by the user in the final schematic).
+     * This class handles loading and saving of libraries in a generic way,
+     * calling library specific methods, and saving a pointer for all loaded
+     * libraries.
      *
-     * This class is singleton class and its only static instance returned by
-     * \a instance is to be used.
+     * It also acts as a container for the different symbols loaded during
+     * library loading. To render a component, the symbol id must be given and
+     * a pointer to the symbol drawing is returned (paths, rectangles, circles,
+     * etc). The component to be rendered should be first registered with the
+     * instance of this class. A cache of components is created an data needed
+     * for painting components is created only once (independently of the
+     * number of components used by the user in the final schematic).
+     *
+     * This class is singleton class and its only static instance (returned by
+     * instance()) is to be used.
      *
      * \sa Library
      */

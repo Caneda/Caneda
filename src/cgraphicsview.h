@@ -30,6 +30,23 @@ namespace Caneda
     // Forward declarations
     class CGraphicsScene;
 
+    /*!
+     * \brief This class provides a view for displaying all Caneda graphics
+     * scenes (schematics, symbols, layouts, etc).
+     *
+     * This class implements the view class of Qt's Graphics View Architecture.
+     * The view class provides the view widget, which visualizes the contents
+     * of a scene. You can attach several views to the same scene, to provide
+     * different viewports into the same data set of the document (for example,
+     * when using split views).
+     *
+     * In this class common view operations are implemented, for example
+     * zooming and focus events. In this way, one single scene can have
+     * multiple views associated to it, allowing the user to look at the scene
+     * for example, with multiple zoom levels.
+     *
+     * \sa CGraphicsScene
+     */
     class CGraphicsView : public QGraphicsView
     {
         Q_OBJECT
