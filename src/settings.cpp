@@ -43,40 +43,40 @@ namespace Caneda
         libraries << Caneda::libDirectory() + "components/active";
         libraries << Caneda::libDirectory() + "components/passive";
         libraries << Caneda::libDirectory() + "components/semiconductor";
-        data["libraries/schematic"] = VariantPair(QStringList(libraries));
-        data["libraries/hdl"] = VariantPair(QStringList(Caneda::libDirectory() + "hdl"));
+        settingsData["libraries/schematic"] = VariantPair(QStringList(libraries));
+        settingsData["libraries/hdl"] = VariantPair(QStringList(Caneda::libDirectory() + "hdl"));
 
-        data["gui/geometry"] = VariantPair(QByteArray());
-        data["gui/dockPositions"] = VariantPair(QByteArray());
-        data["gui/gridVisible"] = VariantPair(bool(true));
-        data["gui/foregroundColor"] = VariantPair(QColor(Qt::darkGray));
-        data["gui/backgroundColor"] = VariantPair(QColor(Qt::white));
-        data["gui/simulationBackgroundColor"] = VariantPair(QColor(Qt::white));
-        data["gui/lineColor"] = VariantPair(QColor(Qt::blue));
-        data["gui/selectionColor"] = VariantPair(QColor(255, 128, 0)); // Dark orange
-        data["gui/lineWidth"] = VariantPair(int(1));
-        data["gui/font"] = VariantPair(QFont());
-        data["gui/largeFontSize"] = VariantPair(qreal(16.0));
-        data["gui/iconSize"] = VariantPair(QSize(24, 24));
-        data["gui/maxUndo"] = VariantPair(int(20));
+        settingsData["gui/geometry"] = VariantPair(QByteArray());
+        settingsData["gui/dockPositions"] = VariantPair(QByteArray());
+        settingsData["gui/gridVisible"] = VariantPair(bool(true));
+        settingsData["gui/foregroundColor"] = VariantPair(QColor(Qt::darkGray));
+        settingsData["gui/backgroundColor"] = VariantPair(QColor(Qt::white));
+        settingsData["gui/simulationBackgroundColor"] = VariantPair(QColor(Qt::white));
+        settingsData["gui/lineColor"] = VariantPair(QColor(Qt::blue));
+        settingsData["gui/selectionColor"] = VariantPair(QColor(255, 128, 0)); // Dark orange
+        settingsData["gui/lineWidth"] = VariantPair(int(1));
+        settingsData["gui/font"] = VariantPair(QFont());
+        settingsData["gui/largeFontSize"] = VariantPair(qreal(16.0));
+        settingsData["gui/iconSize"] = VariantPair(QSize(24, 24));
+        settingsData["gui/maxUndo"] = VariantPair(int(20));
 
-        data["gui/hdl/keyword"]= VariantPair(QVariant(QColor(Qt::black)));
-        data["gui/hdl/type"]= VariantPair(QVariant(QColor(Qt::blue)));
-        data["gui/hdl/attribute"]= VariantPair(QVariant(QColor(Qt::darkCyan)));
-        data["gui/hdl/block"] = VariantPair(QColor(Qt::darkBlue));
-        data["gui/hdl/class"] = VariantPair(QColor(Qt::darkMagenta));
-        data["gui/hdl/data"]= VariantPair(QVariant(QColor(Qt::darkGreen)));
-        data["gui/hdl/comment"] = VariantPair(QColor(Qt::red));
-        data["gui/hdl/system"] = VariantPair(QColor(Qt::darkYellow));
+        settingsData["gui/hdl/keyword"]= VariantPair(QVariant(QColor(Qt::black)));
+        settingsData["gui/hdl/type"]= VariantPair(QVariant(QColor(Qt::blue)));
+        settingsData["gui/hdl/attribute"]= VariantPair(QVariant(QColor(Qt::darkCyan)));
+        settingsData["gui/hdl/block"] = VariantPair(QColor(Qt::darkBlue));
+        settingsData["gui/hdl/class"] = VariantPair(QColor(Qt::darkMagenta));
+        settingsData["gui/hdl/data"]= VariantPair(QVariant(QColor(Qt::darkGreen)));
+        settingsData["gui/hdl/comment"] = VariantPair(QColor(Qt::red));
+        settingsData["gui/hdl/system"] = VariantPair(QColor(Qt::darkYellow));
 
-        data["gui/layout/metal1"] = VariantPair(QColor(Qt::blue));
-        data["gui/layout/metal2"] = VariantPair(QColor(Qt::gray));
-        data["gui/layout/poly1"] = VariantPair(QColor(Qt::red));
-        data["gui/layout/poly2"] = VariantPair(QColor(Qt::darkRed));
-        data["gui/layout/active"] = VariantPair(QColor(Qt::green));
-        data["gui/layout/contact"] = VariantPair(QColor(Qt::black));
-        data["gui/layout/nwell"] = VariantPair(QColor(Qt::darkYellow));
-        data["gui/layout/pwell"] = VariantPair(QColor(Qt::darkCyan));
+        settingsData["gui/layout/metal1"] = VariantPair(QColor(Qt::blue));
+        settingsData["gui/layout/metal2"] = VariantPair(QColor(Qt::gray));
+        settingsData["gui/layout/poly1"] = VariantPair(QColor(Qt::red));
+        settingsData["gui/layout/poly2"] = VariantPair(QColor(Qt::darkRed));
+        settingsData["gui/layout/active"] = VariantPair(QColor(Qt::green));
+        settingsData["gui/layout/contact"] = VariantPair(QColor(Qt::black));
+        settingsData["gui/layout/nwell"] = VariantPair(QColor(Qt::darkYellow));
+        settingsData["gui/layout/pwell"] = VariantPair(QColor(Qt::darkCyan));
     }
 
     Settings::~Settings()
@@ -85,25 +85,25 @@ namespace Caneda
 
     QVariant Settings::currentValue(const QString& key) const
     {
-        if (!data[key].currentValue.isValid()) {
-            return data[key].defaultValue;
+        if (!settingsData[key].currentValue.isValid()) {
+            return settingsData[key].defaultValue;
         }
-        return data[key].currentValue;
+        return settingsData[key].currentValue;
     }
 
     QVariant Settings::defaultValue(const QString& key) const
     {
-        return data[key].defaultValue;
+        return settingsData[key].defaultValue;
     }
 
     void Settings::setCurrentValue(const QString& key, const QVariant& value)
     {
-        data[key].currentValue = value.isValid() ? value : data[key].defaultValue;
+        settingsData[key].currentValue = value.isValid() ? value : settingsData[key].defaultValue;
     }
 
     bool Settings::load(QSettings &settings)
     {
-        QStringList childKeys = data.keys();
+        QStringList childKeys = settingsData.keys();
         foreach (const QString& childKey, childKeys) {
             setCurrentValue(childKey, settings.value(childKey));
         }
@@ -113,7 +113,7 @@ namespace Caneda
 
     bool Settings::save(QSettings &settings)
     {
-        QStringList childKeys = data.keys();
+        QStringList childKeys = settingsData.keys();
         foreach (const QString& childKey, childKeys) {
             settings.setValue(childKey, currentValue(childKey));
         }
@@ -123,7 +123,7 @@ namespace Caneda
     {
         static Settings *instance = 0;
         if (!instance) {
-            instance = new Settings;
+            instance = new Settings();
         }
         return instance;
     }

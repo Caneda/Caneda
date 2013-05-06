@@ -38,8 +38,6 @@ namespace Caneda
                     const QVariant& cur = QVariant());
     };
 
-    typedef QMap<QString, VariantPair> SettingsData;
-
     /*!
      * \brief This class handles all of Caneda's settings.
      *
@@ -48,8 +46,9 @@ namespace Caneda
      *
      * \sa SettingsDialog
      */
-    struct Settings
+    class Settings
     {
+    public:
         ~Settings();
 
         QVariant currentValue(const QString& key) const;
@@ -63,8 +62,9 @@ namespace Caneda
         static Settings* instance();
 
     private:
-        SettingsData data;
         Settings();
+
+        QMap<QString, VariantPair> settingsData;
     };
 
 } // namespace Caneda
