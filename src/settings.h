@@ -29,15 +29,6 @@ class QSettings;
 
 namespace Caneda
 {
-    struct VariantPair
-    {
-        QVariant defaultValue;
-        QVariant currentValue;
-
-        VariantPair(const QVariant& def = QVariant(),
-                    const QVariant& cur = QVariant());
-    };
-
     /*!
      * \brief This class handles all of Caneda's settings.
      *
@@ -64,7 +55,8 @@ namespace Caneda
     private:
         Settings();
 
-        QMap<QString, VariantPair> settingsData;
+        QMap<QString, QVariant> defaultSettings;
+        QMap<QString, QVariant> currentSettings;
     };
 
 } // namespace Caneda

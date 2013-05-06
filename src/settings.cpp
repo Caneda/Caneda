@@ -20,63 +20,57 @@
 
 #include "settings.h"
 
-#include "config.h"
 #include "global.h"
 
 #include <QColor>
 #include <QFont>
-#include <QRect>
 #include <QSettings>
 #include <QSize>
 
 namespace Caneda
 {
-    VariantPair::VariantPair(const QVariant& def, const QVariant &cur)
-    {
-        defaultValue = def;
-        currentValue = cur.isValid() ? cur : def;
-    }
-
     Settings::Settings()
     {
         QStringList libraries;
         libraries << Caneda::libDirectory() + "components/active";
         libraries << Caneda::libDirectory() + "components/passive";
         libraries << Caneda::libDirectory() + "components/semiconductor";
-        settingsData["libraries/schematic"] = VariantPair(QStringList(libraries));
-        settingsData["libraries/hdl"] = VariantPair(QStringList(Caneda::libDirectory() + "hdl"));
+        defaultSettings["libraries/schematic"] = QVariant(QStringList(libraries));
+        defaultSettings["libraries/hdl"] = QVariant(QStringList(Caneda::libDirectory() + "hdl"));
 
-        settingsData["gui/geometry"] = VariantPair(QByteArray());
-        settingsData["gui/dockPositions"] = VariantPair(QByteArray());
-        settingsData["gui/gridVisible"] = VariantPair(bool(true));
-        settingsData["gui/foregroundColor"] = VariantPair(QColor(Qt::darkGray));
-        settingsData["gui/backgroundColor"] = VariantPair(QColor(Qt::white));
-        settingsData["gui/simulationBackgroundColor"] = VariantPair(QColor(Qt::white));
-        settingsData["gui/lineColor"] = VariantPair(QColor(Qt::blue));
-        settingsData["gui/selectionColor"] = VariantPair(QColor(255, 128, 0)); // Dark orange
-        settingsData["gui/lineWidth"] = VariantPair(int(1));
-        settingsData["gui/font"] = VariantPair(QFont());
-        settingsData["gui/largeFontSize"] = VariantPair(qreal(16.0));
-        settingsData["gui/iconSize"] = VariantPair(QSize(24, 24));
-        settingsData["gui/maxUndo"] = VariantPair(int(20));
+        defaultSettings["gui/geometry"] = QVariant(QByteArray());
+        defaultSettings["gui/dockPositions"] = QVariant(QByteArray());
+        defaultSettings["gui/gridVisible"] = QVariant(bool(true));
+        defaultSettings["gui/foregroundColor"] = QVariant(QColor(Qt::darkGray));
+        defaultSettings["gui/backgroundColor"] = QVariant(QColor(Qt::white));
+        defaultSettings["gui/simulationBackgroundColor"] = QVariant(QColor(Qt::white));
+        defaultSettings["gui/lineColor"] = QVariant(QColor(Qt::blue));
+        defaultSettings["gui/selectionColor"] = QVariant(QColor(255, 128, 0)); // Dark orange
+        defaultSettings["gui/lineWidth"] = QVariant(int(1));
+        defaultSettings["gui/font"] = QVariant(QFont());
+        defaultSettings["gui/largeFontSize"] = QVariant(qreal(16.0));
+        defaultSettings["gui/iconSize"] = QVariant(QSize(24, 24));
+        defaultSettings["gui/maxUndo"] = QVariant(int(20));
 
-        settingsData["gui/hdl/keyword"]= VariantPair(QVariant(QColor(Qt::black)));
-        settingsData["gui/hdl/type"]= VariantPair(QVariant(QColor(Qt::blue)));
-        settingsData["gui/hdl/attribute"]= VariantPair(QVariant(QColor(Qt::darkCyan)));
-        settingsData["gui/hdl/block"] = VariantPair(QColor(Qt::darkBlue));
-        settingsData["gui/hdl/class"] = VariantPair(QColor(Qt::darkMagenta));
-        settingsData["gui/hdl/data"]= VariantPair(QVariant(QColor(Qt::darkGreen)));
-        settingsData["gui/hdl/comment"] = VariantPair(QColor(Qt::red));
-        settingsData["gui/hdl/system"] = VariantPair(QColor(Qt::darkYellow));
+        defaultSettings["gui/hdl/keyword"]= QVariant(QVariant(QColor(Qt::black)));
+        defaultSettings["gui/hdl/type"]= QVariant(QVariant(QColor(Qt::blue)));
+        defaultSettings["gui/hdl/attribute"]= QVariant(QVariant(QColor(Qt::darkCyan)));
+        defaultSettings["gui/hdl/block"] = QVariant(QColor(Qt::darkBlue));
+        defaultSettings["gui/hdl/class"] = QVariant(QColor(Qt::darkMagenta));
+        defaultSettings["gui/hdl/data"]= QVariant(QVariant(QColor(Qt::darkGreen)));
+        defaultSettings["gui/hdl/comment"] = QVariant(QColor(Qt::red));
+        defaultSettings["gui/hdl/system"] = QVariant(QColor(Qt::darkYellow));
 
-        settingsData["gui/layout/metal1"] = VariantPair(QColor(Qt::blue));
-        settingsData["gui/layout/metal2"] = VariantPair(QColor(Qt::gray));
-        settingsData["gui/layout/poly1"] = VariantPair(QColor(Qt::red));
-        settingsData["gui/layout/poly2"] = VariantPair(QColor(Qt::darkRed));
-        settingsData["gui/layout/active"] = VariantPair(QColor(Qt::green));
-        settingsData["gui/layout/contact"] = VariantPair(QColor(Qt::black));
-        settingsData["gui/layout/nwell"] = VariantPair(QColor(Qt::darkYellow));
-        settingsData["gui/layout/pwell"] = VariantPair(QColor(Qt::darkCyan));
+        defaultSettings["gui/layout/metal1"] = QVariant(QColor(Qt::blue));
+        defaultSettings["gui/layout/metal2"] = QVariant(QColor(Qt::gray));
+        defaultSettings["gui/layout/poly1"] = QVariant(QColor(Qt::red));
+        defaultSettings["gui/layout/poly2"] = QVariant(QColor(Qt::darkRed));
+        defaultSettings["gui/layout/active"] = QVariant(QColor(Qt::green));
+        defaultSettings["gui/layout/contact"] = QVariant(QColor(Qt::black));
+        defaultSettings["gui/layout/nwell"] = QVariant(QColor(Qt::darkYellow));
+        defaultSettings["gui/layout/pwell"] = QVariant(QColor(Qt::darkCyan));
+
+        currentSettings = defaultSettings;
     }
 
     Settings::~Settings()
@@ -85,25 +79,25 @@ namespace Caneda
 
     QVariant Settings::currentValue(const QString& key) const
     {
-        if (!settingsData[key].currentValue.isValid()) {
-            return settingsData[key].defaultValue;
+        if (!currentSettings[key].isValid()) {
+            return defaultSettings[key];
         }
-        return settingsData[key].currentValue;
+        return currentSettings[key];
     }
 
     QVariant Settings::defaultValue(const QString& key) const
     {
-        return settingsData[key].defaultValue;
+        return defaultSettings[key];
     }
 
     void Settings::setCurrentValue(const QString& key, const QVariant& value)
     {
-        settingsData[key].currentValue = value.isValid() ? value : settingsData[key].defaultValue;
+        currentSettings[key] = value.isValid() ? value : defaultSettings[key];
     }
 
     bool Settings::load(QSettings &settings)
     {
-        QStringList childKeys = settingsData.keys();
+        QStringList childKeys = defaultSettings.keys();
         foreach (const QString& childKey, childKeys) {
             setCurrentValue(childKey, settings.value(childKey));
         }
@@ -113,7 +107,7 @@ namespace Caneda
 
     bool Settings::save(QSettings &settings)
     {
-        QStringList childKeys = settingsData.keys();
+        QStringList childKeys = defaultSettings.keys();
         foreach (const QString& childKey, childKeys) {
             settings.setValue(childKey, currentValue(childKey));
         }
