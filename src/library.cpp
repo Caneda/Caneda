@@ -193,29 +193,16 @@ namespace Caneda
      *
      * \param componentName The component's name.
      * \param scene The scene on which component is to be rendered.
-     * \param library The library to which the \a componentName belongs. If this is empty,
-     *  it searches for all libraries for component and returns first match.
+     * \param library The library to which the \a componentName belongs.
      * \return Component on success and null pointer on failure.
      */
     Component* LibraryManager::newComponent(QString componentName, CGraphicsScene *scene,
             QString library)
     {
         ComponentDataPtr data;
-        if(library.isEmpty()) {
-            LibraryHash::const_iterator it = m_libraryHash.constBegin(),
-                    end = m_libraryHash.constEnd();
-            while(it != end) {
-                data = it.value()->component(componentName);
-                if(data.constData()) {
-                    break;
-                }
-                ++it;
-            }
-        }
-        else {
-            if(m_libraryHash.contains(library)) {
-                data = m_libraryHash[library]->component(componentName);
-            }
+
+        if(m_libraryHash.contains(library)) {
+            data = m_libraryHash[library]->component(componentName);
         }
 
         if(data.constData()) {

@@ -66,8 +66,6 @@ namespace Caneda
         QHash<QString, ComponentDataPtr> m_componentHash;
     };
 
-    typedef QHash<QString, Library*> LibraryHash;
-
     /*!
      * \brief This class is a container and manager for all Caneda's libraries.
      *
@@ -97,7 +95,7 @@ namespace Caneda
 
         Component* newComponent(QString componentName,
                                 CGraphicsScene *scene,
-                                QString library = QString());
+                                QString library);
 
         // Library management related methods
         bool newLibrary(const QString& libPath);
@@ -122,7 +120,7 @@ namespace Caneda
         LibraryManager(QObject *parent = 0);
 
         //! Hash table to hold libraries.
-        LibraryHash m_libraryHash;
+        QHash<QString, Library*> m_libraryHash;
 
         //! Symbol cache (hash table) to hold QPainterPaths contents (symbols' cache).
         QHash<QString, QPainterPath> m_dataHash;
