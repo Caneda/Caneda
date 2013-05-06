@@ -115,7 +115,7 @@ namespace Caneda
         QStringList components(libItem->componentsList());
         foreach(const QString component, components) {
             ComponentDataPtr data = libItem->component(component);
-            QPixmap pixmap = manager->pixmapCache(data->name);
+            QPixmap pixmap = manager->pixmapCache(data->name, data->library);
             new CategoryItem(data->name, data->filename, pixmap, false, libRoot);
         }
         reset();

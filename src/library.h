@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -108,10 +108,10 @@ namespace Caneda
         const QList<QString> librariesList() const { return m_libraryHash.uniqueKeys(); }
 
         // Symbol caching related methods
-        void registerComponent(const QString &symbol_id, const QPainterPath& content);
+        void registerComponent(const QString &compName, const QString &libName, const QPainterPath& content);
 
-        QPainterPath symbolCache(const QString &symbol_id);
-        const QPixmap pixmapCache(const QString &symbol_id);
+        QPainterPath symbolCache(const QString &compName, const QString &libName);
+        const QPixmap pixmapCache(const QString &compName, const QString &libName);
 
     Q_SIGNALS:
         void basicLibrariesLoaded();
@@ -122,7 +122,7 @@ namespace Caneda
         //! Hash table to hold libraries.
         QHash<QString, Library*> m_libraryHash;
 
-        //! Symbol cache (hash table) to hold QPainterPaths contents (symbols' cache).
+        //! Symbol cache (hash table) to hold symbol's QPainterPaths.
         QHash<QString, QPainterPath> m_dataHash;
     };
 

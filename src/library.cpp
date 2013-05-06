@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,7 +29,6 @@
 #include "xmlutilities.h"
 
 #include <QByteArray>
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
@@ -302,13 +301,28 @@ namespace Caneda
     }
 
     /*!
-     * \brief Registers a component symbol with symbol_id in this instance.
+     * \brief Registers a component symbol with an associated key in this
+     * instance.
      *
-     * Registering is required for rendering any component with the instance of this
-     * class. If the symbol_id is already registered does nothing.
+     * Registering is required for rendering any component with the instance of
+     * this class. If the symbol key is already registered, this method does
+     * nothing.
+     *
+     * Each component's key is saved in the form "componentName:libraryName" to
+     * allow for different libraries to have components with the same name.
+     * This is specially useful to let the user choose whatever name he wants,
+     * without having to check for existing names.
+     *
+     * \param compName Component name, used as part of the key
+     * \param libName Library name, used as part of the key
+     * \param content QPainterPath containing the symbol to register
+     *
+     * \sa symbolCache(), pixmapCache()
      */
-    void LibraryManager::registerComponent(const QString& symbol_id, const QPainterPath &content)
+    void LibraryManager::registerComponent(const QString &compName, const QString &libName, const QPainterPath& content)
     {
+        QString symbol_id = compName + ":" + libName;
+
         if(m_dataHash.contains(symbol_id)) {
             return;
         }
@@ -316,19 +330,41 @@ namespace Caneda
         m_dataHash[symbol_id] = content;
     }
 
-    //! \brief Returns the symbol of a component corresponding to symbol_id.
-    QPainterPath LibraryManager::symbolCache(const QString &symbol_id)
+    /*!
+     * \brief Returns the symbol (QPainterPath) of a component corresponding to
+     * a key.
+     *
+     * Each component's key is saved in the form "componentName:libraryName" to
+     * allow for different libraries to have components with the same name.
+     *
+     * \param compName Component name, used as part of the key
+     * \param libName Library name, used as part of the key
+     * \return QPainterPath corresponding to the symbol
+     *
+     * \sa registerComponent(), pixmapCache()
+     */
+    QPainterPath LibraryManager::symbolCache(const QString &compName, const QString &libName)
     {
+        QString symbol_id = compName + ":" + libName;
         return m_dataHash[symbol_id];
     }
 
     /*!
-     * \brief Returns the cached pixmap of a component.
+     * \brief Returns the cached pixmap of a component corresponding to
+     * a key.
      *
-     * \param symbol_id Symbol id of the component to be rendered.
+     * Each component's key is saved in the form "componentName:libraryName" to
+     * allow for different libraries to have components with the same name.
+     *
+     * \param compName Component name, used as part of the key
+     * \param libName Library name, used as part of the key
+     * \return QPixmap corresponding to the symbol
+     *
+     * \sa registerComponent(), symbolCache()
      */
-    const QPixmap LibraryManager::pixmapCache(const QString& symbol_id)
+    const QPixmap LibraryManager::pixmapCache(const QString &compName, const QString &libName)
     {
+        QString symbol_id = compName + ":" + libName;
         QPixmap pix;
 
         if(!QPixmapCache::find(symbol_id, pix)) {

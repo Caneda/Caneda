@@ -326,7 +326,7 @@ namespace Caneda
         // If we are opening the file as a component, register the recreated QPainterPath
         if(component()) {
             LibraryManager *libraryManager = LibraryManager::instance();
-            libraryManager->registerComponent(component()->name, data);
+            libraryManager->registerComponent(component()->name, component()->library, data);
         }
     }
 
