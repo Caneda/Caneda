@@ -39,10 +39,10 @@ namespace Caneda
     class TabWidget;
 
     /*!
-     * \brief The MainWindow class is one of Caneda's principal classes (along
-     * with the Document-View framework composed by IContext, IDocument and
-     * IView classes). This class initializes the main window of the program
-     * and manages all user interface interactions.
+     * \brief The MainWindow class is one of Caneda's main classes (along with
+     * the Document-View framework composed by IContext, IDocument and IView
+     * classes). This class initializes the main window of the program and
+     * manages all user interface interactions.
      *
      * Ideally, this class should contain as little application-related code as
      * possible if not at all. In this way, the gui should be able to be

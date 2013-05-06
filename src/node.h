@@ -33,8 +33,20 @@ namespace Caneda
     class Wire;
 
     /*!
-     * \brief Node class
-     * A graphical node is little circle allowing to plug wires or components
+     * \brief Node class.
+     *
+     * The node class is a graphical node representation, that shows a little
+     * circle allowing to plug wires or components into it. Unlike a component
+     * or wire Port, this class has no item parent and can be moved on its own.
+     * This is specially useful to allow some kinds of wire geometry design.
+     * Another potential use is to allow the user to name special nets, and
+     * then have different wires connected together only by name (otherwise
+     * disconnected).
+     *
+     * This class is currently not used, however it should be used in the
+     * future.
+     *
+     * \todo Currently not used. Finish implementing this class.
      */
     class Node : public CGraphicsItem
     {
@@ -77,7 +89,8 @@ namespace Caneda
             return totalConnections() == 1;
         }
         /*!
-         * \brief Test if this node is empty
+         * \brief Test if this node is empty.
+         *
          * This is mostly used to determine if this node can be deleted.
          */
         bool isEmpty() const {
@@ -92,9 +105,11 @@ namespace Caneda
         void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w = 0);
 
         /*!
-         * \brief Test if point is included in node
+         * \brief Test if point is included in node.
+         *
          * \param pt: point to test
          * \return true if this point is in the node; otherwise returns false.
+         *
          * \todo This method should be as fast as possible
          * Therefore try to avoid sqrt
          * do sometthing like pt.x()*pt.x()+pt.y()*pt.y()- Node::Radius*Node::Radius <= 0
@@ -130,6 +145,7 @@ namespace Caneda
          * components. When the components are moved care should be taken
          * not to move the same node again and again. In those cases one
          * of component is chosen as the controller.
+         *
          * \param c This is the component which when moved also moves this node.
          */
         void setController(Component *c) {
@@ -172,6 +188,7 @@ namespace Caneda
 
         /*!
          * \brief Component responsible for controling position of node.
+         *
          * \sa setController()
          */
         Component *m_controller;

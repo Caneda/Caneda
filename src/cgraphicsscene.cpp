@@ -339,7 +339,7 @@ namespace Caneda
     void CGraphicsScene::print(QPrinter *printer, bool fitInView)
     {
         QPainter p(printer);
-        p.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+        p.setRenderHints(Caneda::DefaulRenderHints);
 
         const bool fullPage = printer->fullPage();
 
