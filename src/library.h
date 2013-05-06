@@ -108,7 +108,7 @@ namespace Caneda
         const QList<QString> librariesList() const { return m_libraryHash.uniqueKeys(); }
 
         // Symbol caching related methods
-        void registerComponent(const QString& symbol_id, const QPainterPath& content);
+        void registerComponent(const QString &symbol_id, const QPainterPath& content);
 
         QPainterPath symbolCache(const QString &symbol_id);
         const QPixmap pixmapCache(const QString &symbol_id);

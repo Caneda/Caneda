@@ -242,7 +242,7 @@ namespace Caneda
 
         if(library(info->libraryName())) {
             QMessageBox::critical(0, QObject::tr("Error"),
-                                  QObject::tr("Library %1 currently opened. Please close"
+                                  QObject::tr("Library %1 currently opened. Please close "
                                               "library %1 first.").arg(info->libraryName()));
             delete info;
             return false;
