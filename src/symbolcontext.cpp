@@ -21,7 +21,6 @@
 
 #include "symboldocument.h"
 #include "sidebarbrowser.h"
-#include "singletonowner.h"
 #include "statehandler.h"
 
 #include <QFileInfo>
@@ -60,7 +59,7 @@ namespace Caneda
     {
         static SymbolContext *context = 0;
         if (!context) {
-            context = new SymbolContext(SingletonOwner::instance());
+            context = new SymbolContext();
         }
         return context;
     }

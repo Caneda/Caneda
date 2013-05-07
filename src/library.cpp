@@ -24,7 +24,6 @@
 #include "cgraphicsview.h"
 #include "formatxmlsymbol.h"
 #include "global.h"
-#include "singletonowner.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -177,7 +176,7 @@ namespace Caneda
     {
         static LibraryManager *instance = 0;
         if (!instance) {
-            instance = new LibraryManager(SingletonOwner::instance());
+            instance = new LibraryManager();
         }
         return instance;
     }

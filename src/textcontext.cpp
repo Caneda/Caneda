@@ -21,7 +21,6 @@
 #include "textcontext.h"
 
 #include "sidebartextbrowser.h"
-#include "singletonowner.h"
 #include "textdocument.h"
 
 #include <QFileInfo>
@@ -39,7 +38,7 @@ namespace Caneda
     {
         static TextContext *instance = 0;
         if (!instance) {
-            instance = new TextContext(SingletonOwner::instance());
+            instance = new TextContext();
         }
         return instance;
     }

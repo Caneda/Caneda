@@ -19,7 +19,6 @@
 
 #include "webcontext.h"
 
-#include "singletonowner.h"
 #include "webdocument.h"
 
 #include <QFileInfo>
@@ -36,7 +35,7 @@ namespace Caneda
     {
         static WebContext *instance = 0;
         if (!instance) {
-            instance = new WebContext(SingletonOwner::instance());
+            instance = new WebContext();
         }
         return instance;
     }

@@ -27,7 +27,6 @@
 #include "schematiccontext.h"
 #include "simulationcontext.h"
 #include "symbolcontext.h"
-#include "singletonowner.h"
 #include "tabs.h"
 #include "textcontext.h"
 #include "webcontext.h"
@@ -65,7 +64,7 @@ namespace Caneda
     {
         static DocumentViewManager* instance = 0;
         if (!instance) {
-            instance = new DocumentViewManager(SingletonOwner::instance());
+            instance = new DocumentViewManager();
         }
         return instance;
     }

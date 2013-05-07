@@ -19,8 +19,6 @@
 
 #include "actionmanager.h"
 
-#include "singletonowner.h"
-
 namespace Caneda
 {
 
@@ -66,7 +64,7 @@ namespace Caneda
     {
         static ActionManager *instance = 0;
         if (!instance) {
-            instance = new ActionManager(SingletonOwner::instance());
+            instance = new ActionManager();
         }
         return instance;
     }

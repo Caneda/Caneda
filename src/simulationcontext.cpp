@@ -20,7 +20,6 @@
 #include "simulationcontext.h"
 
 #include "simulationdocument.h"
-#include "singletonowner.h"
 
 #include <QFileInfo>
 #include <QStringList>
@@ -36,7 +35,7 @@ namespace Caneda
     {
         static SimulationContext *context = 0;
         if (!context) {
-            context = new SimulationContext(SingletonOwner::instance());
+            context = new SimulationContext();
         }
         return context;
     }

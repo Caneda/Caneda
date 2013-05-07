@@ -25,7 +25,6 @@
 #include "global.h"
 #include "library.h"
 #include "settings.h"
-#include "singletonowner.h"
 #include "undocommands.h"
 #include "xmlutilities.h"
 
@@ -115,7 +114,7 @@ namespace Caneda
     {
         static StateHandler *instance = 0;
         if (!instance) {
-            instance = new StateHandler(SingletonOwner::instance());
+            instance = new StateHandler();
         }
         return instance;
     }

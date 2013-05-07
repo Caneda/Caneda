@@ -22,7 +22,6 @@
 #include "layoutdocument.h"
 #include "settings.h"
 #include "sidebarbrowser.h"
-#include "singletonowner.h"
 #include "statehandler.h"
 
 #include <QFileInfo>
@@ -83,7 +82,7 @@ namespace Caneda
     {
         static LayoutContext *context = 0;
         if (!context) {
-            context = new LayoutContext(SingletonOwner::instance());
+            context = new LayoutContext();
         }
         return context;
     }

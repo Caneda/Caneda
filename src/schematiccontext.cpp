@@ -23,7 +23,6 @@
 #include "library.h"
 #include "schematicdocument.h"
 #include "sidebarbrowser.h"
-#include "singletonowner.h"
 #include "statehandler.h"
 
 #include <QDebug>
@@ -85,7 +84,7 @@ namespace Caneda
     {
         static SchematicContext *context = 0;
         if (!context) {
-            context = new SchematicContext(SingletonOwner::instance());
+            context = new SchematicContext();
         }
         return context;
     }
