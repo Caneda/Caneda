@@ -39,7 +39,7 @@ namespace Caneda
             2*portRadius);
 
 
-    //! \brief Thin class used to abstract owner of port.
+    //! \brief Thin class used to abstract the owner of a port.
     class PortOwner
     {
     public:

@@ -307,15 +307,15 @@ namespace Caneda
 
     void StateHandler::slotOnObjectDestroyed(QObject *object)
     {
-        //HACK: Using static cast to convert QObject pointers to scene and widget
-        //      respectively. This might result in invalid pointers, but the main
-        //      purpose why we need them is just to remove the same from the lists.
-        //
-        //      Using of these pointers to access any method or variable will result
-        //      in ugly crash!!
+        /*!
+         * \todo HACK: Using static cast to convert QObject pointers to scene
+         * and widget respectively. This might result in invalid pointers, but
+         * the main purpose why we need them is just to remove the same from
+         * the lists. Using of these pointers to access any method or variable
+         * will result in ugly crash!!!
+         */
         CGraphicsScene *scene = static_cast<CGraphicsScene*>(object);
         CGraphicsView *widget = static_cast<CGraphicsView*>(object);
-
 
         d->scenes.remove(scene);
         d->widgets.remove(widget);

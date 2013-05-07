@@ -1567,11 +1567,13 @@ namespace Caneda
             } else if (event->button() == Qt::RightButton) {
 
                 emit rotateInvokedWhileInserting();
-                // HACK: Assuming the above signal is connected to StateHandler
-                // through Qt::DirectConnection, all m_insertibles would have been
-                // updated with rotated items.  However, beginInsertingItems would have
-                // hidden all items, so show them back.
-                // I see no point why we would be not using Qt::DirectConenction though!
+                /*!
+                 * \todo HACK: Assuming the above signal is connected to StateHandler
+                 * through Qt::DirectConnection, all m_insertibles would have been
+                 * updated with rotated items.  However, beginInsertingItems would have
+                 * hidden all items, so show them back.
+                 * I see no point why we would be not using Qt::DirectConenction though!
+                 */
                 QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
                 foreach(CGraphicsItem *item, m_insertibles) {
                     item->show();
@@ -1581,7 +1583,15 @@ namespace Caneda
             } else if (event->button() == Qt::MidButton) {
 
                 emit mirrorInvokedWhileInserting();
-                // HACK: Same as above!
+                /*!
+                 * \todo HACK: Same as above.
+                 *
+                 * Assuming the above signal is connected to StateHandler
+                 * through Qt::DirectConnection, all m_insertibles would have been
+                 * updated with rotated items.  However, beginInsertingItems would have
+                 * hidden all items, so show them back.
+                 * I see no point why we would be not using Qt::DirectConenction though!
+                 */
                 QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
                 foreach(CGraphicsItem *item, m_insertibles) {
                     item->show();

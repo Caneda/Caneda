@@ -26,9 +26,6 @@
 
 namespace Caneda
 {
-    // Forward declarations
-    class LibraryManager;
-
     class CategoryItem
     {
     public:
