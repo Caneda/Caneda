@@ -48,7 +48,7 @@ namespace Caneda
 
     public:
         SimulationDocument();
-        ~SimulationDocument() {}
+        ~SimulationDocument();
 
         // IDocument interface methods
         virtual IContext* context();

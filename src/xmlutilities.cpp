@@ -34,7 +34,10 @@
 
 namespace Caneda
 {
-    //! Just skips through unknown tag by reading and discarding tokens parsed.
+    /*************************************************************************
+     *                                XmlReader                              *
+     *************************************************************************/
+    //! \brief Just skips through unknown tag by reading and discarding tokens parsed.
     void XmlReader::readUnknownElement()
     {
         Q_ASSERT(isStartElement());
@@ -377,6 +380,10 @@ namespace Caneda
         }
     }
 
+
+    /*************************************************************************
+     *                                XmlWriter                              *
+     *************************************************************************/
     void XmlWriter::writeElement(const QString& tag, const QString& value)
     {
         writeTextElement(tag, value);

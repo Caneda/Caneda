@@ -35,7 +35,9 @@ namespace Caneda
      * as a toolbar for easy access to the file system.
      *
      * This class handles user interaction to allow direct opening of files, as
-     * well basic file operations (as deletion).
+     * well as basic file operations (as deletion). This also handles the mouse
+     * and keyboad events, and sends, when appropiate, the file names to be
+     * opened by the parent.
      */
     class FolderBrowser : public QWidget
     {
@@ -43,7 +45,7 @@ namespace Caneda
 
     public:
         FolderBrowser(QWidget *parent = 0);
-        ~FolderBrowser() {}
+        ~FolderBrowser();
 
     signals:
         void itemDoubleClicked(const QString& filename);

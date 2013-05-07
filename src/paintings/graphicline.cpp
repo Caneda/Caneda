@@ -31,6 +31,7 @@ namespace Caneda
 {
     /*!
      * \brief Constructs a line item.
+     *
      * \param line Line in local coords.
      * \param scene CGraphicsScene to which this item should be added.
      */

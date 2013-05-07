@@ -37,6 +37,9 @@
 
 namespace Caneda
 {
+    /*************************************************************************
+     *                      FileBrowserLineEditPrivate                       *
+     *************************************************************************/
     struct FileBrowserLineEditPrivate
     {
         QTreeWidgetItem *item;
@@ -46,6 +49,11 @@ namespace Caneda
         QToolButton *browseButton;
     };
 
+
+    /*************************************************************************
+     *                          FileBrowserLineEdit                          *
+     *************************************************************************/
+    //! \brief Constructor.
     FileBrowserLineEdit::FileBrowserLineEdit(QTreeWidgetItem *item,
             const QFileInfo& fileInfo,
             QWidget *parent) :
@@ -70,6 +78,7 @@ namespace Caneda
                 SLOT(browseButtonClicked()));
     }
 
+    //! \brief Destructor.
     FileBrowserLineEdit::~FileBrowserLineEdit()
     {
         delete d;
@@ -110,6 +119,11 @@ namespace Caneda
         QList<QPair<IDocument*, QString> > newFilePaths;
     };
 
+
+    /*************************************************************************
+     *                          SaveDocumentsDialog                          *
+     *************************************************************************/
+    //! \brief Constructor.
     SaveDocumentsDialog::SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
             QWidget *parent) : QDialog(parent)
     {
@@ -142,6 +156,7 @@ namespace Caneda
                 this, SLOT(slotHandleClick(const QModelIndex&)));
     }
 
+    //! \brief Destructor.
     SaveDocumentsDialog::~SaveDocumentsDialog()
     {
         delete d;

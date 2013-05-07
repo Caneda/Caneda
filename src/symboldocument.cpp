@@ -30,6 +30,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     SymbolDocument::SymbolDocument()
     {
         m_cGraphicsScene = new CGraphicsScene(this);
@@ -41,6 +42,11 @@ namespace Caneda
                 this, SLOT(emitDocumentChanged()));
         connect(m_cGraphicsScene, SIGNAL(selectionChanged()), this,
                 SLOT(emitDocumentChanged()));
+    }
+
+    //! \brief Destructor.
+    SymbolDocument::~SymbolDocument()
+    {
     }
 
     IContext* SymbolDocument::context()

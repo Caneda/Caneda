@@ -37,9 +37,14 @@
 
 namespace Caneda
 {
-    //! Constructor
+    //! \brief Constructor.
     FormatXmlSchematic::FormatXmlSchematic(SchematicDocument *doc):
         m_schematicDocument(doc)
+    {
+    }
+
+    //! \brief Destructor.
+    FormatXmlSchematic::~FormatXmlSchematic()
     {
     }
 

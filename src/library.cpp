@@ -38,19 +38,19 @@
 
 namespace Caneda
 {
-    //*************************************************************
-    //*************************Library*****************************
-    //*************************************************************
-
-    /*!
-     * \brief Constructor
-     *
-     * Constructs library item from reader with file path \a path.
-     */
+    /*************************************************************************
+     *                                Library                                *
+     *************************************************************************/
+    //! \brief Constructs a new library from a file path.
     Library::Library(QString libraryPath)
     {
         m_libraryPath = libraryPath;
         m_libraryName = QFileInfo(libraryPath).baseName();
+    }
+
+    //! \brief Destructor.
+    Library::~Library()
+    {
     }
 
     //! \brief Returns the shared data of component from given name.
@@ -163,10 +163,11 @@ namespace Caneda
         return true;
     }
 
-    //*************************************************************
-    //**********************Library Loader*************************
-    //*************************************************************
-    //! Constructor
+
+    /*************************************************************************
+     *                           Library Manager                             *
+     *************************************************************************/
+    //! \brief Constructor.
     LibraryManager::LibraryManager(QObject *parent) : QObject(parent)
     {
     }
@@ -181,7 +182,7 @@ namespace Caneda
         return instance;
     }
 
-    //! Destructor
+    //! \brief Destructor.
     LibraryManager::~LibraryManager()
     {
     }

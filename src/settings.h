@@ -35,6 +35,9 @@ namespace Caneda
      * This is used to provide a unified way of accesing and storing the user
      * settings, as well as the default values of those settings.
      *
+     * This class is a singleton class and its only static instance (returned
+     * by instance()) is to be used.
+     *
      * \sa SettingsDialog
      */
     class Settings

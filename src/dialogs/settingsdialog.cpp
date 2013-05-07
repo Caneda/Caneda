@@ -30,8 +30,11 @@
 namespace Caneda
 {
     /*!
-     * Constructor
-     * @param QWidget *parent The parent of the dialog.
+     * \brief Constructs a new Settings dialog.
+     *
+     * \param wantedPages List of configuration pages to display.
+     * \param title Window title.
+     * \param parent Parent of the dialog.
      */
     SettingsDialog::SettingsDialog(QList<SettingsPage *> wantedPages, const char *title,
             QWidget *parent) : QDialog(parent)
@@ -75,12 +78,12 @@ namespace Caneda
                 SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
     }
 
-    //! Destructor
+    //! \brief Destructor.
     SettingsDialog::~SettingsDialog()
     {
     }
 
-    //! Changes the page in the configuration dialog
+    //! \brief Changes the page in the configuration dialog.
     void SettingsDialog::changePage(QListWidgetItem *current, QListWidgetItem *previous)
     {
         if(!current) {
@@ -89,7 +92,7 @@ namespace Caneda
         pages_widget->setCurrentIndex(pages_list->row(current));
     }
 
-    //! Builds a list of pages on the left
+    //! \brief Builds a list of pages on the left.
     void SettingsDialog::buildPagesList()
     {
         pages_list->clear();
@@ -104,7 +107,7 @@ namespace Caneda
         }
     }
 
-    //! Applies the configurations of all pages
+    //! \brief Applies the configurations of all pages.
     void SettingsDialog::applyConf()
     {
         foreach(SettingsPage *page, pages) {

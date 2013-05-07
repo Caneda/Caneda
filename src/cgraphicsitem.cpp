@@ -31,7 +31,12 @@
 
 namespace Caneda
 {
-    //! \brief Constructor: Create a new item and add to scene.
+    /*!
+     * \brief Constructs a new graphics item and adds it to a scene.
+     *
+     * \param parent Parent of the item.
+     * \param scene CGraphicsScene where to add the item.
+     */
     CGraphicsItem::CGraphicsItem(QGraphicsItem* parent, CGraphicsScene* scene) :
         QGraphicsItem(parent),
         m_boundingRect(0, 0, 0, 0)
@@ -43,6 +48,11 @@ namespace Caneda
         if(scene) {
             scene->addItem(this);
         }
+    }
+
+    //! \brief Destructor.
+    CGraphicsItem::~CGraphicsItem()
+    {
     }
 
     /*!

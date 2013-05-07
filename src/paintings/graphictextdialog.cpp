@@ -40,6 +40,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     GraphicTextDialog::GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt, QWidget *parent)
     : QDialog(parent), textItem(text), undoOption(opt)
     {
@@ -112,6 +113,7 @@ namespace Caneda
         adjustSize();
     }
 
+    //! \brief Destructor.
     GraphicTextDialog::~GraphicTextDialog()
     {
     }

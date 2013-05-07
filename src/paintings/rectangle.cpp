@@ -31,6 +31,7 @@ namespace Caneda
 {
     /*!
      * \brief Constructs a rectangle painting item.
+     *
      * \param rect Rectangle in local coords.
      * \param scene Scene to which this item should be added.
      */

@@ -41,6 +41,9 @@ namespace Caneda
      * This class also provides objects like the toolbar, statusbar, etc, which
      * are specific to this particular context.
      *
+     * This class is a singleton class and its only static instance (returned
+     * by instance()) is to be used.
+     *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa SchematicDocument, SchematicView
      */

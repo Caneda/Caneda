@@ -34,7 +34,12 @@ namespace Caneda
     /*!
      * \brief Constructs a wire between \a startPos and \a endPos.
      *
-     * Also connects the wire's port's to coinciding ports.
+     * During creation, this class also connects the wire's port's to every
+     * other coinciding ports in the scene.
+     *
+     * \param startPos Starting position of the wire.
+     * \param endPos Ending position of the wire.
+     * \param scene CGraphicsScene where to add this wire.
      */
     Wire::Wire(const QPointF& startPos, const QPointF& endPos,
             CGraphicsScene *scene) : CGraphicsItem(0, scene)
@@ -49,7 +54,7 @@ namespace Caneda
         m_ports << new Port(this, mapFromScene(endPos));
     }
 
-    //! Destructor.
+    //! \brief Destructor.
     Wire::~Wire()
     {
         qDeleteAll(m_ports);

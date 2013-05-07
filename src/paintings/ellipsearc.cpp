@@ -31,6 +31,7 @@ namespace Caneda
 {
     /*!
      * \brief Constructs an elliptic arc item.
+     *
      * \param rect The ellipse rect of arc (local coords).
      * \param startAngle Starting angle of arc.
      * \param spanAngle Span angle of arc.

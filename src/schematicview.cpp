@@ -30,6 +30,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     SchematicView::SchematicView(SchematicDocument *document) :
         IView(document)
     {
@@ -43,6 +44,7 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
+    //! \brief Destructor.
     SchematicView::~SchematicView()
     {
         delete m_cGraphicsView;

@@ -25,13 +25,8 @@
 namespace Caneda
 {
 
-    /*! Constructor
-     * \brief This class implements a git object
-     * This handles the repository initialization, commits, etc. The idea is
-     * to provide the user a very simple backup tool, and not clutter the
-     * interface with too many options. Some basic git options should be
-     * transparent to the user (for example "git init"), as the user does not
-     * need to know about git.
+    /*!
+     * \brief Constructs a git manager dialog.
      *
      * \param parent Parent of the widget.
      */
@@ -60,6 +55,7 @@ namespace Caneda
         slotHistory();
     }
 
+    //! \brief Destructor.
     GitManager::~GitManager()
     {
     }

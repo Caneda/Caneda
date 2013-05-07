@@ -40,6 +40,10 @@
 
 namespace Caneda
 {
+    /*************************************************************************
+     *                             ViewContainer                             *
+     *************************************************************************/
+    //! \brief Constructor.
     ViewContainer::ViewContainer(IView *view, QWidget *parent) :
         QWidget(parent),
         m_view(0),
@@ -53,7 +57,7 @@ namespace Caneda
         setView(view);
     }
 
-
+    //! \brief Destructor.
     ViewContainer::~ViewContainer()
     {
         // Don't let QWidget destructor destroy toolbar as the view might still exist.
@@ -128,6 +132,11 @@ namespace Caneda
         //! \todo Draw some focus helper.
     }
 
+
+    /*************************************************************************
+     *                                 Tab                                   *
+     *************************************************************************/
+    //! \brief Constructor.
     Tab::Tab(IView *view, QWidget *parent) : QWidget(parent)
     {
         addView(view);
@@ -143,6 +152,7 @@ namespace Caneda
         layout->setContentsMargins(0, 0, 0, 0);
     }
 
+    //! \brief Destructor.
     Tab::~Tab()
     {
     }
@@ -370,6 +380,10 @@ namespace Caneda
         return unmodifiedIcon;
     }
 
+
+    /*************************************************************************
+     *                           TabBarPrivate                               *
+     *************************************************************************/
     class TabBarPrivate : public QTabBar
     {
     public:
@@ -398,6 +412,11 @@ namespace Caneda
         }
     };
 
+
+    /*************************************************************************
+     *                             TabWidget                                 *
+     *************************************************************************/
+    //! \brief Constructor.
     TabWidget::TabWidget(QWidget *parent) : QTabWidget(parent)
     {
         setTabBar(new TabBarPrivate(this));

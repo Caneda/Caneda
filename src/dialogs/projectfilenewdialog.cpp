@@ -25,7 +25,7 @@
 
 namespace Caneda
 {
-    //! Constructor
+    //! \brief Constructor.
     ProjectFileNewDialog::ProjectFileNewDialog(QWidget *parent) :
             QDialog(parent)
     {
@@ -39,12 +39,12 @@ namespace Caneda
         m_userchoice = Caneda::NewComponent;
     }
 
-    //! Destructor
+    //! \brief Destructor.
     ProjectFileNewDialog::~ProjectFileNewDialog()
     {
     }
 
-    //! Checks the status of the print type dialog.
+    //! \brief Checks the status of the print type dialog.
     void ProjectFileNewDialog::done(int r)
     {
         if (r == QDialog::Accepted) {

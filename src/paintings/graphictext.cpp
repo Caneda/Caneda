@@ -33,6 +33,7 @@ namespace Caneda
 {
     /*!
      * \brief Constructs a text item.
+     *
      * \param text Item's text.
      * \param scene CGraphicsScene to which this item should be added.
      */

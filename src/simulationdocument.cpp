@@ -34,9 +34,15 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     SimulationDocument::SimulationDocument()
     {
         m_cSimulationScene = new CSimulationScene();
+    }
+
+    //! \brief Destructor.
+    SimulationDocument::~SimulationDocument()
+    {
     }
 
     IContext* SimulationDocument::context()

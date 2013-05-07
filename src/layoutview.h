@@ -46,6 +46,7 @@ namespace Caneda
     class LayoutView : public IView
     {
         Q_OBJECT
+
     public:
         LayoutView(LayoutDocument *document);
         virtual ~LayoutView();

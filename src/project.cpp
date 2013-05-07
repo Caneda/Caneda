@@ -39,11 +39,8 @@
 
 namespace Caneda
 {
-    /*! Constructor
-     * \brief This class implements the project management
-     *
-     * This also handles the mouse and keyboad events, and sends
-     * when appropiate, the file names to be opened by the parent.
+    /*!
+     * \brief Constructs a project manager widget.
      *
      * \param parent Parent of the widget.
      */
@@ -76,6 +73,11 @@ namespace Caneda
         layout->addWidget(m_projectsSidebar);
 
         setWindowTitle(tr("Project View"));
+    }
+
+    //! \brief Destructor.
+    Project::~Project()
+    {
     }
 
     bool Project::isValid()

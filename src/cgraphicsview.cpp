@@ -26,7 +26,11 @@
 
 namespace Caneda
 {
-    //! Constructor
+    /*!
+     * \brief Constructs a new graphics view.
+     *
+     * \param sv Scene to point this view to.
+     */
     CGraphicsView::CGraphicsView(CGraphicsScene *sv) :
         QGraphicsView(sv ? sv : 0),
         m_zoomRange(0.30, 10.0),
@@ -54,7 +58,7 @@ namespace Caneda
         onMouseActionChanged();
     }
 
-    //! Destructor
+    //! \brief Destructor.
     CGraphicsView::~CGraphicsView()
     {
     }

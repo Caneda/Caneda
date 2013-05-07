@@ -27,6 +27,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     SimulationView::SimulationView(SimulationDocument *document) :
         IView(document)
     {
@@ -42,6 +43,7 @@ namespace Caneda
 //                this, SIGNAL(statusBarMessage(const QString &)));
     }
 
+    //! \brief Destructor.
     SimulationView::~SimulationView()
     {
     }

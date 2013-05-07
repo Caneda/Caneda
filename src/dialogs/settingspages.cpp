@@ -45,16 +45,20 @@
 
 namespace Caneda
 {
-
-    //*!**************************************************
-    // General configuration pages
-    //*!**************************************************
-
+    /*************************************************************************
+     *                      Abstract configuration page                      *
+     *************************************************************************/
     /*!
-     * Constructor
-     * @param QWidget *parent The parent of the dialog.
+     * \brief Constructor.
+     *
+     * \param parent The parent of the dialog.
      */
     SettingsPage::SettingsPage(QWidget *parent) : QWidget(parent)
+    {
+    }
+
+    //! \brief Destructor.
+    SettingsPage::~SettingsPage()
     {
     }
 
@@ -84,18 +88,14 @@ namespace Caneda
         return palette.color(b->backgroundRole());
     }
 
-    //! Destructor
-    SettingsPage::~SettingsPage()
-    {
-    }
 
-    //*!**************************************************
-    // General configuration pages
-    //*!**************************************************
-
+    /*************************************************************************
+     *                      General configuration pages                      *
+     *************************************************************************/
     /*!
-     * Constructor
-     * @param QWidget *parent The parent of the dialog.
+     * \brief Constructor.
+     *
+     * \param parent The parent of the dialog.
      */
     GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
         SettingsPage(parent)
@@ -190,7 +190,7 @@ namespace Caneda
         setLayout(vlayout1);
     }
 
-    //! Destructor
+    //! \brief Destructor.
     GeneralConfigurationPage::~GeneralConfigurationPage()
     {
     }
@@ -238,7 +238,7 @@ namespace Caneda
         slotColorButtonDialog(buttonSelection);
     }
 
-    //! Applies the configuration of this page
+    //! \brief Applies the configuration of this page.
     void GeneralConfigurationPage::applyConf()
     {
         bool changed = false;
@@ -328,23 +328,26 @@ namespace Caneda
         }
     }
 
-    //! @return Icon of this page
-    QIcon GeneralConfigurationPage::icon() const {
+    //! \return Icon of this page.
+    QIcon GeneralConfigurationPage::icon() const
+    {
         return(Caneda::icon("preferences-other"));
     }
 
-    //! @return Title of this page
-    QString GeneralConfigurationPage::title() const {
+    //! \return Title of this page.
+    QString GeneralConfigurationPage::title() const
+    {
         return(tr("General", "configuration page title"));
     }
 
-    //*!**************************************************
-    // Libraries configuration pages
-    //*!**************************************************
 
+    /*************************************************************************
+     *                    Libraries configuration pages                      *
+     *************************************************************************/
     /*!
-     * Constructor
-     * @param QWidget *parent The parent of the dialog.
+     * \brief Constructor.
+     *
+     * \param parent The parent of the dialog.
      */
     LibrariesConfigurationPage::LibrariesConfigurationPage(QWidget *parent) :
         SettingsPage(parent)
@@ -416,7 +419,7 @@ namespace Caneda
         setLayout(vlayout1);
     }
 
-    //! Destructor
+    //! \brief Destructor.
     LibrariesConfigurationPage::~LibrariesConfigurationPage()
     {
     }
@@ -453,7 +456,7 @@ namespace Caneda
         qDeleteAll(hdlLibraryList->selectedItems());
     }
 
-    //! Applies the configuration of this page
+    //! \brief Applies the configuration of this page.
     void LibrariesConfigurationPage::applyConf()
     {
         Settings *settings = Settings::instance();
@@ -479,22 +482,26 @@ namespace Caneda
         settings->save();
     }
 
-    //! @return Icon of this page
-    QIcon LibrariesConfigurationPage::icon() const {
+    //! \return Icon of this page.
+    QIcon LibrariesConfigurationPage::icon() const
+    {
         return(Caneda::icon("library"));
     }
 
-    //! @return Title of this page
-    QString LibrariesConfigurationPage::title() const {
+    //! \return Title of this page.
+    QString LibrariesConfigurationPage::title() const
+    {
         return(tr("Libraries", "libraries page title"));
     }
 
-    //*!**************************************************
-    // Simulation configuration pages
-    //*!**************************************************
+
+    /*************************************************************************
+     *                   Simulation configuration pages                      *
+     *************************************************************************/
     /*!
-     * Constructor
-     * @param QWidget *parent The parent of the dialog.
+     * \brief Constructor.
+     *
+     * \param parent The parent of the dialog.
      */
     SimulationConfigurationPage::SimulationConfigurationPage(QWidget *parent) :
         SettingsPage(parent)
@@ -557,39 +564,40 @@ namespace Caneda
         setLayout(vlayout1);
     }
 
-    //! Destructor
+    //! \brief Destructor.
     SimulationConfigurationPage::~SimulationConfigurationPage()
     {
     }
 
-    //! Applies the configuration of this page
+    //! \brief Applies the configuration of this page.
     void SimulationConfigurationPage::applyConf()
     {
         //! \todo Implement this
     }
 
-    //! @return Icon of this page
+    //! \return Icon of this page.
     QIcon SimulationConfigurationPage::icon() const
     {
         return(Caneda::icon("media-playback-start"));
     }
 
-    //! @return Title of this page
+    //! \return Title of this page.
     QString SimulationConfigurationPage::title() const
     {
         return(tr("Simulation", "simulation page title"));
     }
 
 
-    //*!**************************************************
-    // HDL configuration pages
-    //*!**************************************************
+    /*************************************************************************
+     *                        HDL configuration pages                        *
+     *************************************************************************/
     /*!
-     * Constructor
-     * @param QWidget *parent The parent of the dialog.
+     * \brief Constructor.
+     *
+     * \param parent The parent of the dialog.
      */
-    HdlConfigurationPage::HdlConfigurationPage(QWidget *parent) : SettingsPage(parent) {
-
+    HdlConfigurationPage::HdlConfigurationPage(QWidget *parent) : SettingsPage(parent)
+    {
         //First we set the color settings group of options **********************************
         QGroupBox *colorsHighlighting = new QGroupBox(tr("Colors for Syntax Highlighting"),
                 this);
@@ -685,12 +693,14 @@ namespace Caneda
         setLayout(vlayout1);
     }
 
-    //! Destructor
-    HdlConfigurationPage::~HdlConfigurationPage() {
+    //! \brief Destructor.
+    HdlConfigurationPage::~HdlConfigurationPage()
+    {
     }
 
-    //! Applies the configuration of this page
-    void HdlConfigurationPage::applyConf() {
+    //! \brief Applies the configuration of this page.
+    void HdlConfigurationPage::applyConf()
+    {
 
         bool changed = false;
         Settings *settings = Settings::instance();
@@ -766,13 +776,13 @@ namespace Caneda
         }
     }
 
-    //! @return Icon of this page
+    //! \return Icon of this page.
     QIcon HdlConfigurationPage::icon() const
     {
         return(Caneda::icon("code-context"));
     }
 
-    //! @return Title of this page
+    //! \return Title of this page.
     QString HdlConfigurationPage::title() const
     {
         return(tr("HDL", "hdl page title"));
@@ -850,15 +860,17 @@ namespace Caneda
         }
     }
 
-    //*!**************************************************
-    // Layout configuration pages
-    //*!**************************************************
-    /*!
-     * Constructor
-     * @param QWidget *parent The parent of the dialog.
-     */
-    LayoutConfigurationPage::LayoutConfigurationPage(QWidget *parent) : SettingsPage(parent) {
 
+    /*************************************************************************
+     *                      Layout configuration pages                       *
+     *************************************************************************/
+    /*!
+     * \brief Constructor.
+     *
+     * \param parent The parent of the dialog.
+     */
+    LayoutConfigurationPage::LayoutConfigurationPage(QWidget *parent) : SettingsPage(parent)
+    {
         //First we set the color settings group of options **********************************
         QGroupBox *colorsLayers = new QGroupBox(tr("Layer Colors"),
                 this);
@@ -954,12 +966,14 @@ namespace Caneda
         setLayout(vlayout1);
     }
 
-    //! Destructor
-    LayoutConfigurationPage::~LayoutConfigurationPage() {
+    //! \brief Destructor.
+    LayoutConfigurationPage::~LayoutConfigurationPage()
+    {
     }
 
-    //! Applies the configuration of this page
-    void LayoutConfigurationPage::applyConf() {
+    //! \brief Applies the configuration of this page.
+    void LayoutConfigurationPage::applyConf()
+    {
 
         bool changed = false;
         Settings *settings = Settings::instance();
@@ -1035,13 +1049,13 @@ namespace Caneda
         }
     }
 
-    //! @return Icon of this page
+    //! \return Icon of this page.
     QIcon LayoutConfigurationPage::icon() const
     {
         return(Caneda::icon("view-grid"));
     }
 
-    //! @return Title of this page
+    //! \return Title of this page.
     QString LayoutConfigurationPage::title() const
     {
         return(tr("Layout", "layout page title"));

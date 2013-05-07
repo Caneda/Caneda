@@ -41,8 +41,7 @@ namespace Caneda
     {
         PropertyData();
         PropertyData(const PropertyData& p);
-
-        ~PropertyData() { }
+        ~PropertyData();
 
         QString name;
         QString value;

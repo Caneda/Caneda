@@ -32,6 +32,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     PrintDialog::PrintDialog(IDocument *document, QWidget *parent) :
         QDialog(parent),
         m_printer(0),
@@ -77,7 +78,7 @@ namespace Caneda
 
     }
 
-    //! Destructor
+    //! \brief Destructor.
     PrintDialog::~PrintDialog()
     {
         delete m_printer;

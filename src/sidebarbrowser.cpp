@@ -36,11 +36,10 @@
 
 namespace Caneda
 {
-    //*************************************************************
-    //************************** TreeView *************************
-    //*************************************************************
-
-    //! Constructor
+    /*************************************************************************
+     *                                TreeView                               *
+     *************************************************************************/
+    //! \brief Constructor.
     TreeView::TreeView(QWidget *parent) :
         QTreeView(parent),
         invalidPressed(false)
@@ -52,6 +51,11 @@ namespace Caneda
         setAlternatingRowColors(true);
         setAnimated(true);
         setIconSize(QSize(24, 24));
+    }
+
+    //! \brief Destructor.
+    TreeView::~TreeView()
+    {
     }
 
     void TreeView::mousePressEvent(QMouseEvent *event)
@@ -86,10 +90,10 @@ namespace Caneda
         drag->exec(supportedActions);
     }
 
-    //*************************************************************
-    //********************* FilterProxyModel **********************
-    //*************************************************************
 
+    /*************************************************************************
+     *                          FilterProxyModel                             *
+     *************************************************************************/
     //! \brief This helps in filtering sidebar display corresponding to lineedit.
     class FilterProxyModel : public QSortFilterProxyModel
     {
@@ -110,11 +114,11 @@ namespace Caneda
         }
     };
 
-    //*************************************************************
-    //*********************** SidebarBrowser **********************
-    //*************************************************************
 
-    //! Constructor
+    /*************************************************************************
+     *                            SidebarBrowser                             *
+     *************************************************************************/
+    //! \brief Constructor.
     SidebarBrowser::SidebarBrowser(QWidget *parent) : QWidget(parent)
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
@@ -147,6 +151,7 @@ namespace Caneda
         m_currentComponent = "";
     }
 
+    //! \brief Destructor.
     SidebarBrowser::~SidebarBrowser()
     {
         m_treeView->setModel(0);

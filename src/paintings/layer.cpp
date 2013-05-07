@@ -30,6 +30,7 @@ namespace Caneda
 {
     /*!
      * \brief Constructs a rectangle layer painting item.
+     *
      * \param rect Rectangle in local coords.
      * \param layerName Phisical layer to recreate
      * \param scene Scene to which this item should be added.

@@ -35,6 +35,7 @@ namespace Caneda
 
     /*!
      * \brief Constructs a port symbol painting item.
+     *
      * \param nameStr_ Represents the name part of port id.
      * \param numberStr_ Represents the number part of port id.
      * \param scene CGraphicsScene on which this item should be added.
@@ -50,7 +51,7 @@ namespace Caneda
         updateGeometry();
     }
 
-    //! Destructor
+    //! \brief Destructor.
     PortSymbol::~PortSymbol()
     {
     }

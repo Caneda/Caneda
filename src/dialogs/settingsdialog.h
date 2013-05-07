@@ -36,9 +36,11 @@ namespace Caneda
 {
 
     /*!
-     * This class represents the configuration dialog of Caneda.
-     * This is a dialog showing "page setup".
-     * Each configuration page should provide an icon and a title.
+     * \brief This class represents the configuration dialog of Caneda.
+     *
+     * This dialog is a modal dialog showing setup or configuration pages. Each
+     * configuration page should provide an icon and a title, along with a set
+     * of different configuration options.
      */
     class SettingsDialog : public QDialog
     {

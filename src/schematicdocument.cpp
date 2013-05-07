@@ -31,6 +31,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     SchematicDocument::SchematicDocument()
     {
         m_cGraphicsScene = new CGraphicsScene(this);
@@ -42,6 +43,11 @@ namespace Caneda
                 this, SLOT(emitDocumentChanged()));
         connect(m_cGraphicsScene, SIGNAL(selectionChanged()), this,
                 SLOT(emitDocumentChanged()));
+    }
+
+    //! \brief Destructor.
+    SchematicDocument::~SchematicDocument()
+    {
     }
 
     IContext* SchematicDocument::context()

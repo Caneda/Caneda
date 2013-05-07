@@ -22,19 +22,18 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     IContext::IContext(QObject *parent) : QObject(parent)
     {
-
     }
 
+    //! \brief Destructor.
     IContext::~IContext()
     {
-
     }
 
     void IContext::init()
     {
-
     }
 
 } // namespace Caneda

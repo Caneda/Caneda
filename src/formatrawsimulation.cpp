@@ -34,9 +34,14 @@
 
 namespace Caneda
 {
-    //! Constructor
+    //! \brief Constructor.
     FormatRawSimulation::FormatRawSimulation(SimulationDocument *doc) :
         m_simulationDocument(doc)
+    {
+    }
+
+    //! \brief Destructor.
+    FormatRawSimulation::~FormatRawSimulation()
     {
     }
 

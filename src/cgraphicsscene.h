@@ -65,7 +65,6 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        // Constructor-destructor
         CGraphicsScene(QObject *parent = 0);
         ~CGraphicsScene();
 

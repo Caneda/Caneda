@@ -45,9 +45,10 @@ namespace Caneda
     class LayoutDocument : public IDocument
     {
         Q_OBJECT
+
     public:
         LayoutDocument();
-        ~LayoutDocument() {}
+        ~LayoutDocument();
 
         // IDocument interface methods
         virtual IContext* context();

@@ -38,16 +38,16 @@ namespace Caneda
      *  PortOwner
      *
      *************************************************************/
-
-    //! \brief Construct portowner with wire as owner.
+    //! \brief Constructs a PortOwner item with wire as owner.
     PortOwner::PortOwner(CGraphicsItem * item) : m_item(item)
     {
         Q_ASSERT(isWire() || isComponent());
     }
 
     /*!
-     * \brief Return port owner as  QGraphicsItem
-     * \todo check why is it needed
+     * \brief Returns the owner as a QGraphicsItem.
+     *
+     * \todo Check why this is needed
      */
     QGraphicsItem* PortOwner::item() const
     {
@@ -68,7 +68,7 @@ namespace Caneda
         }
     }
 
-    //! \brief Return the wire if stored, or null otherwise.
+    //! \brief Return the component if stored, or null otherwise.
     Component* PortOwner::component() const
     {
         if(m_item->type() == CGraphicsItem::ComponentType) {
@@ -84,9 +84,9 @@ namespace Caneda
      *  Port
      *
      ***************************************************************************/
-
-    /*! Constructor
-     *  \brief Construct port with canedaitem as owner and shared data \data.
+    /*!
+     * \brief Constructs a Port item with a CGraphicsItem as owner and shared
+     * data \a data.
      */
     Port::Port(CGraphicsItem *owner, const QSharedDataPointer<PortData> &data) :
         d(data),
@@ -95,9 +95,10 @@ namespace Caneda
     {
     }
 
-    /*! Constructor
-      \brief Construct port with canedaitem as owner, position \pos and port's name \portName.
-      */
+    /*!
+     * \brief Constructs a Port item with a CGraphicsItem as owner, position
+     * \a pos and port's name \a portName.
+     */
     Port::Port(CGraphicsItem *owner, QPointF _pos, QString portName) :
         d(new PortData(_pos, portName)),
         m_owner(new PortOwner(owner)),
@@ -105,10 +106,7 @@ namespace Caneda
     {
     }
 
-    /*!
-     * \brief Remove all connections from this node before destruction.
-     * \bug GPK: see comment
-     */
+    //! \brief Destroys the port object, removing all connections from the item
     Port::~Port()
     {
         if(m_connections) {
@@ -119,7 +117,7 @@ namespace Caneda
                     break;
                 }
             }
-            /* GPK: this test is strange */
+            //! \bug GPK: this test is strange
             if(other) {
                 disconnectFrom(other);
             }
@@ -128,7 +126,7 @@ namespace Caneda
                 delete m_connections;
             }
         }
-        //deletes the container only, not the actual component or wire.
+        // Deletes the container only, not the actual component or wire.
         delete m_owner;
     }
 

@@ -27,7 +27,7 @@
 
 namespace Caneda
 {
-    //! Constructor
+    //! \brief Constructor.
     ProjectFileOpenDialog::ProjectFileOpenDialog(QString libraryFileName, QWidget *parent) :
         QDialog(parent)
     {
@@ -50,7 +50,7 @@ namespace Caneda
         m_fileName = "";
     }
 
-    //! Destructor
+    //! \brief Destructor.
     ProjectFileOpenDialog::~ProjectFileOpenDialog()
     {
     }

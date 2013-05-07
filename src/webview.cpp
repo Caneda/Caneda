@@ -28,6 +28,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     WebView::WebView(WebDocument *document) :
         IView(document),
         m_zoomRange(0.4, 10.0),
@@ -40,6 +41,7 @@ namespace Caneda
                 SLOT(onFocussed()));
     }
 
+    //! \brief Destructor.
     WebView::~WebView()
     {
         delete m_webPage;;

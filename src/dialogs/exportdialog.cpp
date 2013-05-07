@@ -37,7 +37,7 @@
 
 namespace Caneda
 {
-    //! Constructor
+    //! \brief Constructor.
     ExportDialog::ExportDialog(IDocument *document, QWidget *parent) :
             QDialog(parent),
             m_document(document)
@@ -95,7 +95,7 @@ namespace Caneda
         connect(this, SIGNAL(accepted()), SLOT(slotExport()));
     }
 
-    //! Destructor
+    //! \brief Destructor.
     ExportDialog::~ExportDialog()
     {
     }
@@ -258,7 +258,7 @@ namespace Caneda
         file.close();
     }
 
-    //! @return the aspect ratio of the schematic
+    //! \return The aspect ratio of the schematic
     qreal ExportDialog::diagramRatio()
     {
         QSizeF size = m_document->documentSize();
@@ -267,8 +267,9 @@ namespace Caneda
     }
 
     /*!
-     * Generate an image to export
-     * @return Exported image
+     * \brief Generate an image to export
+     *
+     * \return Exported image
      */
     QImage ExportDialog::generateImage()
     {
@@ -287,8 +288,9 @@ namespace Caneda
     }
 
     /*!
-     * Exports the scene in SVG
-     * @param file File where SVG is being exported
+     * \brief Exports the scene in SVG
+     *
+     * \param file File where SVG is being exported
      */
     void ExportDialog::generateSvg(QFile &file)
     {
@@ -306,8 +308,9 @@ namespace Caneda
     }
 
     /*!
-     * Saves or restores the parameters of the scene
-     * @param save True to save the settings of the scene and apply those
+     * \brief Saves or restores the parameters of the scene
+     *
+     * \param save True to save the settings of the scene and apply those
      * defined by the form, false to restore the settings
      */
     void ExportDialog::saveReloadDiagramParameters(bool save)

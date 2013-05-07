@@ -39,34 +39,32 @@ namespace Caneda
             2*portRadius);
 
 
-    //! Thin class used to abstract owner of port.
+    //! \brief Thin class used to abstract owner of port.
     class PortOwner
     {
     public:
         PortOwner(CGraphicsItem * item);
 
-        //! Return type of owner
+        //! \brief Return type of owner
         int type() const { return m_item->type(); }
 
         Wire* wire() const;
-        //! Return the component if stored, or null otherwise.
         Component* component() const;
-        //! Returns the owner item as graphicsitem.
         QGraphicsItem* item() const;
 
-        //! Return weather item is a wire
+        //! \brief Return weather item is a wire
         bool isWire() const { return m_item->isWire(); }
-        //! Return weather item is a component
+        //! \brief Return weather item is a component
         bool isComponent() const { return m_item->isComponent(); }
 
     private:
-        //! Owner of the port
+        //! \brief Owner of the port
         CGraphicsItem *const m_item;
-        //! Disable copy
+        //! \brief Disable copy
         PortOwner(const PortOwner& other);
     };
 
-    //! Sharable port's data.
+    //! \brief Sharable port's data.
     struct PortData : public QSharedData
     {
         PortData(QPointF _pos, QString _name) : pos(_pos), name(_name) {}
@@ -97,7 +95,6 @@ namespace Caneda
     public:
         Port(CGraphicsItem  *owner, const QSharedDataPointer<PortData> &data);
         Port(CGraphicsItem  *owner, QPointF _pos, QString portName = QString());
-
         ~Port();
 
         //! Returns the position relative to owner - usually constant.

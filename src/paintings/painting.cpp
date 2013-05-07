@@ -41,7 +41,7 @@
 
 namespace Caneda
 {
-    //! Constructs a painting item with default pen and default brush.
+    //! \brief Constructs a painting item with default pen and default brush.
     Painting::Painting(CGraphicsScene *scene) : CGraphicsItem(0, scene),
     m_brush(Qt::NoBrush),
     m_resizeHandles(Caneda::NoHandle),
@@ -55,7 +55,7 @@ namespace Caneda
         setFlag(ItemSendsScenePositionChanges, true);
     }
 
-    //! Destructor
+    //! \brief Destructor.
     Painting::~Painting()
     {
     }

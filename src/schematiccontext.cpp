@@ -31,6 +31,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     SchematicContext::SchematicContext(QObject *parent) : IContext(parent)
     {
         StateHandler *handler = StateHandler::instance();
@@ -89,6 +90,7 @@ namespace Caneda
         return context;
     }
 
+    //! \brief Destructor.
     SchematicContext::~SchematicContext()
     {
     }

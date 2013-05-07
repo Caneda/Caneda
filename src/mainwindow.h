@@ -50,11 +50,15 @@ namespace Caneda
      * accomplished by moving as much code as possible (not related to the gui)
      * into other classes.
      *
+     * This class is a singleton class and its only static instance (returned
+     * by instance()) is to be used.
+     *
      * \sa IContext, IDocument, IView, DocumentViewManager, Tab, TabWidget
      */
     class MainWindow : public QMainWindow
     {
         Q_OBJECT
+
     public:
         static MainWindow* instance();
         ~MainWindow();

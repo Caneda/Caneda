@@ -29,6 +29,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     TextView::TextView(TextDocument *document) :
         IView(document),
         m_zoomRange(6.0, 30.0),
@@ -43,6 +44,7 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
+    //! \brief Destructor.
     TextView::~TextView()
     {
         delete m_textEdit;;

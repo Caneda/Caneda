@@ -21,10 +21,16 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     WebPage::WebPage(QUrl *url)
     {
         setSource(QUrl(url->path()));
         show();
+    }
+
+    //! \brief Destructor.
+    WebPage::~WebPage()
+    {
     }
 
     void WebPage::setPointSize(qreal size)

@@ -31,11 +31,8 @@
 
 namespace Caneda
 {
-    /*! Constructor
-     * \brief This class implements a simple folder browser widget
-     *
-     * This also handles the mouse and keyboad events, and sends
-     * when appropiate, the file names to be opened by the parent.
+    /*!
+     * \brief Constructs a folder browser widget.
      *
      * \param parent Parent of the widget.
      */
@@ -116,6 +113,11 @@ namespace Caneda
         layout->addWidget(m_listView);
 
         setWindowTitle(tr("Folder Browser"));
+    }
+
+    //! \brief Destructor.
+    FolderBrowser::~FolderBrowser()
+    {
     }
 
     void FolderBrowser::slotOnDoubleClicked(const QModelIndex& index)

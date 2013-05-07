@@ -35,7 +35,7 @@ namespace Caneda
 
     public:
         TreeView(QWidget *parent = 0);
-        ~TreeView() {}
+        ~TreeView();
 
         void startDrag(Qt::DropActions supportedActions);
 
@@ -50,7 +50,7 @@ namespace Caneda
         bool invalidPressed;
     };
 
-    //! Represents sidebar which allows components to be selected.
+    //! \brief Represents sidebar which allows components to be selected.
     class SidebarBrowser : public QWidget
     {
         Q_OBJECT

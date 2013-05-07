@@ -287,10 +287,12 @@ namespace Caneda
      *        message in the status bar.
      */
 
+    //! \brief Constructor.
     IDocument::IDocument()
     {
     }
 
+    //! \brief Destructor.
     IDocument::~IDocument()
     {
     }

@@ -28,6 +28,12 @@ namespace Caneda
     class StateHandlerPrivate;
     class CGraphicsView;
 
+    /*!
+     * \todo Document this class.
+     *
+     * This class is a singleton class and its only static instance (returned
+     * by instance()) is to be used.
+     */
     class StateHandler : public QObject
     {
         Q_OBJECT

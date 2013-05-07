@@ -24,6 +24,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     TextEdit::TextEdit(QTextDocument *document)
     {
         QPlainTextDocumentLayout *layout = new QPlainTextDocumentLayout(document);
@@ -36,6 +37,7 @@ namespace Caneda
         highlightCurrentLine();
     }
 
+    //! \brief Destructor.
     TextEdit::~TextEdit()
     {
     }

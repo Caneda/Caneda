@@ -51,11 +51,16 @@ namespace Caneda
      * \fn IView::context()
      *
      * \brief Returns the context that handles documents, views of specific type.
-     * \note It is enough to create the context object only once per new type.
+     *
+     * Each new document type must create only one context object, shared by
+     * all documents of the same type and all document views. This is
+     * implemented by using the context classes as singleton classes, and their
+     * only static instance (returned by instance()) must be used.
      *
      * \sa IContext
      */
 
+    //! \brief Constructor.
     IView::IView(IDocument *document) : m_document(document)
     {
         Q_ASSERT(document != 0);
@@ -89,6 +94,7 @@ namespace Caneda
         onDocumentViewManagerChanged();
     }
 
+    //! \brief Destructor.
     IView::~IView()
     {
         delete m_toolBar;

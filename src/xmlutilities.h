@@ -40,6 +40,7 @@ namespace Caneda
 {
     /*!
      * \brief This class adds a few more helper methods to qt's QXmlStreamReader class.
+     *
      * \warning QXmlStreamReader doesn't have virtual destructor. Don't delete any
      * instance of this class from base pointer.
      */
@@ -77,6 +78,7 @@ namespace Caneda
     /*!
      * \brief This class adds a few more helper methods to qt's
      * QXmlStreamWriter class.
+     *
      * \warning QXmlStreamWriter doesn't have virtual destructor. Don't delete any
      * instance of this class from base pointer.
      */

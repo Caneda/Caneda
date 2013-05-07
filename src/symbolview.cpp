@@ -29,6 +29,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     SymbolView::SymbolView(SymbolDocument *document) :
         IView(document)
     {
@@ -42,6 +43,7 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
+    //! \brief Destructor.
     SymbolView::~SymbolView()
     {
         delete m_cGraphicsView;

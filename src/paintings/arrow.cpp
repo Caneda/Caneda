@@ -52,7 +52,7 @@ namespace Caneda
         setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle);
     }
 
-    //! Destructor
+    //! \brief Destructor.
     Arrow::~Arrow()
     {
     }

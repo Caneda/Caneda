@@ -30,8 +30,8 @@ namespace Caneda
     class SidebarBrowser;
 
     /*!
-     * This class represents the dialog to open a component in
-     * a project.
+     * \brief This class represents the dialog to open a component in a
+     * project.
      */
     class ProjectFileOpenDialog : public QDialog
     {

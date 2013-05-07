@@ -29,6 +29,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     LayoutView::LayoutView(LayoutDocument *document) :
         IView(document)
     {
@@ -42,6 +43,7 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
+    //! \brief Destructor.
     LayoutView::~LayoutView()
     {
         delete m_cGraphicsView;

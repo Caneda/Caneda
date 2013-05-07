@@ -43,7 +43,7 @@ namespace Caneda
     {
     public:
         Library(QString libraryPath);
-        ~Library() {}
+        ~Library();
 
         //! Returns library name.
         QString libraryName() const { return m_libraryName; }
@@ -81,8 +81,8 @@ namespace Caneda
      * for painting components is created only once (independently of the
      * number of components used by the user in the final schematic).
      *
-     * This class is singleton class and its only static instance (returned by
-     * instance()) is to be used.
+     * This class is a singleton class and its only static instance (returned
+     * by instance()) is to be used.
      *
      * \sa Library
      */

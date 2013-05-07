@@ -33,10 +33,10 @@ namespace Caneda
     //******************** PropertyModel **************************
     //*************************************************************
     /*!
-     * \brief Constructor
+     * \brief Constructor.
      *
      * \param map PropertyMap wich contains all properties to be modified.
-     * \param parent This object's parent.
+     * \param parent Parent of this object.
      *
      * \sa PropertyMap
      */
@@ -265,9 +265,10 @@ namespace Caneda
     //******************** PropertyDialog *************************
     //*************************************************************
     /*!
-     * \brief Constructor
+     * \brief Constructor.
      *
      * \param propGroup The PropertyGroup being modified by this dialog.
+     * \param parent Parent of this object.
      */
     PropertyDialog::PropertyDialog(PropertyGroup *propGroup, QWidget *parent) :
         QDialog(parent), m_propertyGroup(propGroup)

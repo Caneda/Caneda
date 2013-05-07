@@ -29,6 +29,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     LayoutContext::LayoutContext(QObject *parent) : IContext(parent)
     {
         // We create the sidebar corresponding to this context
@@ -87,6 +88,7 @@ namespace Caneda
         return context;
     }
 
+    //! \brief Destructor.
     LayoutContext::~LayoutContext()
     {
     }

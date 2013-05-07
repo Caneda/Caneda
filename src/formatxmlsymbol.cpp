@@ -35,7 +35,7 @@
 
 namespace Caneda
 {
-    //! Constructor
+    //! \brief Constructor.
     FormatXmlSymbol::FormatXmlSymbol(SymbolDocument *doc) :
         m_symbolDocument(doc)
     {
@@ -49,6 +49,7 @@ namespace Caneda
         m_component = 0;
     }
 
+    //! \brief Constructor.
     FormatXmlSymbol::FormatXmlSymbol(ComponentData *component) :
         m_component(component)
     {
@@ -60,6 +61,11 @@ namespace Caneda
         }
 
         m_symbolDocument = 0;
+    }
+
+    //! \brief Destructor.
+    FormatXmlSymbol::~FormatXmlSymbol()
+    {
     }
 
     bool FormatXmlSymbol::save()

@@ -26,6 +26,11 @@
 
 namespace Caneda
 {
+    /*!
+     * \brief Constructs a new line edit.
+     *
+     * \param parent Parent of the object.
+     */
     CLineEdit::CLineEdit(QWidget *parent) : QLineEdit(parent)
     {
         clearButton = new QToolButton(this);
@@ -41,6 +46,7 @@ namespace Caneda
         connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateClearButton(const QString&)));
     }
 
+    //! \brief Update line edit geometry upon user window resizing.
     void CLineEdit::resizeEvent(QResizeEvent *)
     {
         QSize sz = clearButton->sizeHint();
@@ -51,6 +57,7 @@ namespace Caneda
                           (rect().bottom() + 3 - sz.height())/2 );
     }
 
+    //! \brief Update clear button visibility depending on text available.
     void CLineEdit::updateClearButton(const QString& text)
     {
         clearButton->setVisible(!text.isEmpty());

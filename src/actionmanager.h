@@ -50,6 +50,12 @@ namespace Caneda
         void init();
     };
 
+    /*!
+     * \todo Document this class.
+     *
+     * This class is a singleton class and its only static instance (returned
+     * by instance()) is to be used.
+     */
     class ActionManager : public QObject
     {
         Q_OBJECT

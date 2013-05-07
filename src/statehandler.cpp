@@ -101,6 +101,7 @@ namespace Caneda
         return false;
     }
 
+    //! \brief Constructor.
     StateHandler::StateHandler(QObject *parent) : QObject(parent)
     {
         d = new StateHandlerPrivate;
@@ -119,6 +120,7 @@ namespace Caneda
         return instance;
     }
 
+    //! \brief Destructor.
     StateHandler::~StateHandler()
     {
         delete d;

@@ -47,6 +47,9 @@ namespace Caneda
      * to the particular context. The context class can also be used to host
      * functionalites shared by all views and documents of same type.
      *
+     * Each inherited class must be a singleton class and thier only static
+     * instance (returned by instance()) must be used.
+     *
      * \sa IDocument, IView, \ref DocumentViewFramework
      */
     class IContext : public QObject

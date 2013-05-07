@@ -29,7 +29,8 @@ namespace Caneda
     class Library;
 
     /*!
-     * \brief The Project class handles all user created libraries.
+     * \brief The Project class handles all user created libraries, emulating
+     * some kind of project management.
      *
      * This class is implemented and used instead of the Library class, to
      * allow for a more dynamic handling of the user created libraries. That
@@ -39,6 +40,9 @@ namespace Caneda
      * Once the library is finished, it can be included as a default library by
      * the user. In that case, the library will not be handled anymore by this
      * class, but rather by the Library class directly.
+     *
+     * This class also handles the mouse and keyboad events, and sends, when
+     * appropiate, the file names to be opened by the parent.
      *
      * \sa Library, LibraryManager
      *
@@ -51,7 +55,7 @@ namespace Caneda
 
     public:
         Project(QWidget *parent = 0);
-        ~Project() {}
+        ~Project();
 
         //! Returns project name.
         QString libraryName() const { return m_libraryName; }

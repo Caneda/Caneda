@@ -29,6 +29,17 @@ class QProcess;
 
 namespace Caneda
 {
+    /*!
+     * \brief This class implements a git manager object
+     *
+     * This handles the repository initialization, commits, etc. The idea is
+     * to provide the user a very simple backup tool, and not clutter the
+     * interface with too many options. Some basic git options should be
+     * transparent to the user (for example "git init"), as the user does not
+     * need to know about git.
+     *
+     * \sa Project
+     */
     class GitManager : public QDialog
     {
         Q_OBJECT

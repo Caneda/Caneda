@@ -33,8 +33,8 @@ namespace Caneda
     };
 
     /*!
-     * This class represents the configuration dialog to add a component to
-     * a project.
+     * \brief This class represents the configuration dialog to add a component
+     * to a project.
      */
     class ProjectFileNewDialog : public QDialog
     {

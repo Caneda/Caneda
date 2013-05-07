@@ -33,9 +33,14 @@
 
 namespace Caneda
 {
-    //! Constructor
+    //! \brief Constructor.
     FormatXmlLayout::FormatXmlLayout(LayoutDocument *doc):
         m_layoutDocument(doc)
+    {
+    }
+
+    //! \brief Destructor.
+    FormatXmlLayout::~FormatXmlLayout()
     {
     }
 

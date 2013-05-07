@@ -29,6 +29,12 @@
 
 namespace Caneda
 {
+    /*!
+     * \brief Constructs a new simulation view.
+     *
+     * \param sv Simulation scene to point this view to.
+     * \param parent Parent of this object.
+     */
     CSimulationView::CSimulationView(CSimulationScene *scene, QWidget *parent) :
         QwtPlot(parent),
         m_csimulationScene(scene)
@@ -39,6 +45,7 @@ namespace Caneda
         loadUserSettings();
     }
 
+    //! \brief Destructor.
     CSimulationView::~CSimulationView()
     {
     }

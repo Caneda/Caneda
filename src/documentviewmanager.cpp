@@ -48,11 +48,13 @@ namespace Caneda
         DocumentData() { document = 0; }
     };
 
+    //! \brief Constructor.
     DocumentViewManager::DocumentViewManager(QObject *parent) : QObject(parent)
     {
         setupContexts();
     }
 
+    //! \brief Destructor.
     DocumentViewManager::~DocumentViewManager()
     {
         qDeleteAll(m_documentDataList);

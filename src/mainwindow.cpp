@@ -52,9 +52,7 @@
 
 namespace Caneda
 {
-    /*!
-     * \brief Construct and setup the mainwindow for caneda.
-     */
+    //! \brief Constructs and setups the mainwindow for Caneda.
     MainWindow::MainWindow(QWidget *w) : QMainWindow(w)
     {
         titleText = QString("Caneda ") + Caneda::version() + QString(" : %1[*]");
@@ -108,7 +106,7 @@ namespace Caneda
         return instance;
     }
 
-    //! Destructor
+    //! \brief Destructor.
     MainWindow::~MainWindow()
     {
     }
@@ -1067,7 +1065,7 @@ namespace Caneda
     /*!
      * \brief Opens a dialog giving the user options to save all modified files.
      *
-     * @return True on success, false on cancel
+     * \return True on success, false on cancel
      */
     bool MainWindow::slotFileSaveAll()
     {

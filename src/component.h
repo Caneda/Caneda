@@ -30,7 +30,7 @@ namespace Caneda
     class PropertyGroup;
     class PortData;
 
-    //! Shareable component's data
+    //! \brief Shareable component's data
     struct ComponentData : public QSharedData
     {
         ComponentData(CGraphicsScene *scene = 0);

@@ -29,7 +29,7 @@
 
 namespace Caneda
 {
-    //! \brief Default constructor.
+    //! \brief Constructor.
     Settings::Settings()
     {
         QStringList libraries;
@@ -74,7 +74,7 @@ namespace Caneda
         currentSettings = defaultSettings;
     }
 
-    //! \brief Default destructor.
+    //! \brief Destructor.
     Settings::~Settings()
     {
     }
@@ -151,18 +151,7 @@ namespace Caneda
         }
     }
 
-    /*!
-     * \brief Returns the default instance of this class.
-     *
-     * This method is used to allow only one object instance of this class
-     * thoughout all Caneda's process execution. In this way, this object is
-     * shared between all objects (classes) of the process avoiding object
-     * duplication. This is specially useful for classes that must be unique,
-     * to avoid, for example, modifying data at the same time. An example of
-     * this is the MainWindow or the document contexts (which must be unique).
-     *
-     * \return Default instance
-     */
+    //! \copydoc MainWindow::instance()
     Settings* Settings::instance()
     {
         static Settings *instance = 0;

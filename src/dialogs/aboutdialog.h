@@ -29,16 +29,15 @@ class QLabel;
 
 namespace Caneda
 {
-    //! This class represents the dialog "About Caneda".
-    class AboutDialog : public QDialog {
+    //! \brief This class represents the dialog "About Caneda".
+    class AboutDialog : public QDialog
+    {
         Q_OBJECT
 
     public:
-        // constructor, destructor
         AboutDialog(QWidget *parent = 0);
         virtual ~AboutDialog();
 
-        // methods
     private:
         QWidget *title() const;
         QWidget *aboutTab() const;

@@ -27,7 +27,7 @@
 
 namespace Caneda
 {
-    //! Default constructor
+    //! \brief Constructor.
     PropertyData::PropertyData()
     {
         name = QString();
@@ -36,13 +36,18 @@ namespace Caneda
         visible = false;
     }
 
-    //! Copy constructor
+    //! \brief Copy constructor
     PropertyData::PropertyData(const PropertyData& p) : QSharedData(p)
     {
         name = p.name;
         value = p.value;
         description = p.description;
         visible = p.visible;
+    }
+
+    //! \brief Destructor.
+    PropertyData::~PropertyData()
+    {
     }
 
     /*!

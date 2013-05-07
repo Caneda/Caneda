@@ -30,6 +30,10 @@
 
 namespace Caneda
 {
+    /*************************************************************************
+     *                             CategoryItem                              *
+     *************************************************************************/
+    //! \brief Constructor.
     CategoryItem::CategoryItem(const QString& name, const QString& filename,
             const QPixmap& pixmap, bool isLibrary, CategoryItem *parent) :
         m_name(name),
@@ -43,6 +47,7 @@ namespace Caneda
         }
     }
 
+    //! \brief Destructor.
     CategoryItem::~CategoryItem()
     {
         qDeleteAll(m_childItems);
@@ -75,7 +80,11 @@ namespace Caneda
         return 0;
     }
 
-    //! Constructor
+
+    /*************************************************************************
+     *                             SidebarModel                              *
+     *************************************************************************/
+    //! \brief Constructor.
     SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
     {
         rootItem = new CategoryItem("Root", "");
@@ -84,8 +93,8 @@ namespace Caneda
     /*!
      * \brief Add a library to the sidebar
      *
-     * @param QString &libraryName     Library name
-     * @param QString &category        Category to place the library
+     * \param libraryName Library name
+     * \param category Category to place the library
      */
     void SidebarModel::plugLibrary(const QString& libraryName, const QString& category)
     {
@@ -124,8 +133,8 @@ namespace Caneda
     /*!
      * \brief Remove a library from the sidebar
      *
-     * @param QString &libraryName     Library name
-     * @param QString &category        Category of the library to be removed
+     * \param libraryName Library name
+     * \param category Category of the library to be removed
      */
     void SidebarModel::unPlugLibrary(const QString& libraryName, const QString& category)
     {

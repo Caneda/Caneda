@@ -50,6 +50,7 @@ namespace Caneda
     class CGraphicsView : public QGraphicsView
     {
         Q_OBJECT
+
     public:
         CGraphicsView(CGraphicsScene *scene = 0);
         ~CGraphicsView();

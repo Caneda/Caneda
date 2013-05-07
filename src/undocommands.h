@@ -43,6 +43,7 @@ namespace Caneda
     public:
         MoveCmd(QGraphicsItem *i,const QPointF& init, const QPointF& final,
                 QUndoCommand *parent = 0);
+
         void undo();
         void redo();
 
@@ -57,6 +58,7 @@ namespace Caneda
     public:
         ConnectCmd(Port *p1, Port *p2,
                 CGraphicsScene *scene, QUndoCommand *parent = 0);
+
         void undo();
         void redo();
 
@@ -71,6 +73,7 @@ namespace Caneda
     {
     public:
         DisconnectCmd(Port *p1, Port *p2, QUndoCommand *parent = 0);
+
         void undo();
         void redo();
 

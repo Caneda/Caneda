@@ -53,11 +53,11 @@ namespace Caneda
     }
 
     /*!
-     * \brief Construct a new node
+     * \brief Constructs a new node item.
      *
-     * Construct a new node named by name. A node does not react to mouse
-     * and is always drawn before wires and components.
-     * Node must be in the foreground of component and wires.
+     * Constructs a new node named by name. A node does not react to mouse and
+     * is always drawn before wires and components. Nodes must be in the
+     * foreground of component and wires.
      */
     Node::Node(const QString& name, CGraphicsScene *scene) : CGraphicsItem(0, scene)
     {
@@ -73,7 +73,7 @@ namespace Caneda
         }
     }
 
-    //! \brief Destructor
+    //! \brief Destructor.
     Node::~Node()
     {
     }

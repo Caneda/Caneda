@@ -37,6 +37,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     TextDocument::TextDocument()
     {
         m_textDocument = new QTextDocument;
@@ -52,6 +53,7 @@ namespace Caneda
                 this, SLOT(onContentsChanged()));
     }
 
+    //! \brief Destructor.
     TextDocument::~TextDocument()
     {
         delete m_textDocument;

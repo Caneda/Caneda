@@ -28,6 +28,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     SymbolContext::SymbolContext(QObject *parent) : IContext(parent)
     {
         StateHandler *handler = StateHandler::instance();
@@ -64,6 +65,7 @@ namespace Caneda
         return context;
     }
 
+    //! \brief Destructor.
     SymbolContext::~SymbolContext()
     {
     }

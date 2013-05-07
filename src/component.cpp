@@ -46,7 +46,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Constructs ComponentData from ComponentDataPtr.
+     * \brief Constructs a ComponentData object from a ComponentDataPtr.
      *
      * Contructs a new ComponentData object from ComponentDataPtr. Special
      * care is taken to avoid copying the properties pointer, and copying
@@ -78,7 +78,11 @@ namespace Caneda
         properties->setPropertyMap(other->properties->propertyMap());
     }
 
-    //! \brief Constructs and initializes a default empty component item.
+    /*!
+     * \brief Constructs and initializes a default empty component item.
+     *
+     * \param scene Scene where this component belong to.
+     */
     Component::Component(CGraphicsScene *scene) :
         CGraphicsItem(0, scene)
     {

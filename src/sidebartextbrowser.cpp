@@ -62,7 +62,7 @@ namespace Caneda
     //******************** SidebarTextBrowser *********************
     //*************************************************************
 
-    //! Constructor
+    //! \brief Constructor.
     SidebarTextBrowser::SidebarTextBrowser(QWidget *parent) : QWidget(parent)
     {
         Settings *settings = Settings::instance();
@@ -111,6 +111,7 @@ namespace Caneda
         setWindowTitle(tr("Text Templates"));
     }
 
+    //! \brief Destructor.
     SidebarTextBrowser::~SidebarTextBrowser()
     {
         m_treeView->setModel(0);

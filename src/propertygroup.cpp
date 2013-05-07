@@ -33,7 +33,7 @@
 namespace Caneda
 {
     /*!
-     * \brief Construct PropertyGroup from given scene and PropertyMap.
+     * \brief Constructs a PropertyGroup from a given scene and PropertyMap.
      *
      * \param scene The graphics scene to which this property should belong.
      * \param propMap The PropertyMap to use on initialization.
@@ -50,6 +50,11 @@ namespace Caneda
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
+    }
+
+    //! \brief Destructor.
+    PropertyGroup::~PropertyGroup()
+    {
     }
 
     //! \brief Adds a new property to the PropertyMap.

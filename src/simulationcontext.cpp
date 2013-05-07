@@ -26,6 +26,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     SimulationContext::SimulationContext(QObject *parent) : IContext(parent)
     {
     }
@@ -40,6 +41,7 @@ namespace Caneda
         return context;
     }
 
+    //! \brief Destructor.
     SimulationContext::~SimulationContext()
     {
     }

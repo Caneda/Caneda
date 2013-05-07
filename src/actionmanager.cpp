@@ -22,6 +22,7 @@
 namespace Caneda
 {
 
+    //! \brief Constructor.
     Action::Action(QObject *parent) : QAction(parent)
     {
         init();
@@ -39,6 +40,7 @@ namespace Caneda
         init();
     }
 
+    //! \brief Destructor.
     Action::~Action()
     {
     }
@@ -59,6 +61,11 @@ namespace Caneda
         emit triggered(objectName(), checked);
     }
 
+    //! \brief Constructor.
+    ActionManager::ActionManager(QObject *parent) : QObject(parent)
+    {
+    }
+
     //! \copydoc MainWindow::instance()
     ActionManager* ActionManager::instance()
     {
@@ -69,10 +76,7 @@ namespace Caneda
         return instance;
     }
 
-    ActionManager::ActionManager(QObject *parent) : QObject(parent)
-    {
-    }
-
+    //! \brief Destructor.
     ActionManager::~ActionManager()
     {
     }

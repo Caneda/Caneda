@@ -26,6 +26,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     WebContext::WebContext(QObject *parent) : IContext(parent)
     {
     }
@@ -40,6 +41,7 @@ namespace Caneda
         return instance;
     }
 
+    //! \brief Destructor.
     WebContext::~WebContext()
     {
     }

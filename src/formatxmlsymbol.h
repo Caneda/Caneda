@@ -48,7 +48,7 @@ namespace Caneda
     public:
         FormatXmlSymbol(SymbolDocument *doc = 0);
         FormatXmlSymbol(ComponentData *component);
-        ~FormatXmlSymbol() {}
+        ~FormatXmlSymbol();
 
         bool save();
         bool load();

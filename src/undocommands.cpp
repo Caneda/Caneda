@@ -31,12 +31,10 @@
 
 namespace Caneda
 {
-    /*
-    ##########################################################################
-    #                                 MoveCmd                                #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                                MoveCmd                                *
+     *************************************************************************/
+    //! \brief Constructor.
     MoveCmd::MoveCmd(QGraphicsItem *i,const QPointF& init,const QPointF& end,
             QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -69,12 +67,10 @@ namespace Caneda
         }
     }
 
-    /*
-    ##########################################################################
-    #                            ConnectCmd                                  #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                            ConnectCmd                                 *
+     *************************************************************************/
+    //! \brief Constructor.
     ConnectCmd::ConnectCmd(Port *p1, Port *p2,
             CGraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -92,12 +88,10 @@ namespace Caneda
         m_port1->connectTo(m_port2);
     }
 
-    /*
-    ##########################################################################
-    #                           DisconnectCmd                                #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                           DisconnectCmd                               *
+     *************************************************************************/
+    //! \brief Constructor.
     DisconnectCmd::DisconnectCmd(Port *p1, Port *p2, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_port1(p1), m_port2(p2)
@@ -124,12 +118,10 @@ namespace Caneda
         m_port1->disconnectFrom(m_port2);
     }
 
-    /*
-    ##########################################################################
-    #                                AddWireCmd                              #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                                AddWireCmd                             *
+     *************************************************************************/
+    //! \brief Constructor.
     AddWireCmd::AddWireCmd(Wire *wire, CGraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_wire(wire),
@@ -138,6 +130,7 @@ namespace Caneda
     {
     }
 
+    //! \brief Destructor.
     AddWireCmd::~AddWireCmd()
     {
         if(!m_wire->scene()) {
@@ -155,12 +148,10 @@ namespace Caneda
         m_scene->addItem(m_wire);
     }
 
-    /*
-    ##########################################################################
-    #                           WireStateChangeCmd                           #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                           WireStateChangeCmd                          *
+     *************************************************************************/
+    //! \brief Constructor.
     WireStateChangeCmd::WireStateChangeCmd(Wire *wire, WireData initState,
             WireData finalState, QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -180,12 +171,10 @@ namespace Caneda
         m_wire->update();
     }
 
-    /*
-    ##########################################################################
-    #                           InsertItemCmd                                #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                           InsertItemCmd                               *
+     *************************************************************************/
+    //! \brief Constructor.
     InsertItemCmd::InsertItemCmd(QGraphicsItem *const item, CGraphicsScene *scene,
             QPointF pos, QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -200,6 +189,7 @@ namespace Caneda
         }
     }
 
+    //! \brief Destructor.
     InsertItemCmd::~InsertItemCmd()
     {
         if(!m_item->scene()) {
@@ -220,12 +210,10 @@ namespace Caneda
         m_item->setPos(m_pos);
     }
 
-    /*
-    ##########################################################################
-    #                           RemoveItemsCmd                               #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                           RemoveItemsCmd                              *
+     *************************************************************************/
+    //! \brief Constructor.
     RemoveItemsCmd::RemoveItemsCmd(const QList<CGraphicsItem*> &items, CGraphicsScene *scene,
             QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -236,6 +224,7 @@ namespace Caneda
         }
     }
 
+    //! \brief Destructor.
     RemoveItemsCmd::~RemoveItemsCmd()
     {
         foreach(ItemPointPair p, m_itemPointPairs) {
@@ -261,12 +250,10 @@ namespace Caneda
     }
 
 
-    /*
-    ##########################################################################
-    #                          RotateItemsCmd                                #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                          RotateItemsCmd                               *
+     *************************************************************************/
+    //! \brief Constructor.
     RotateItemsCmd::RotateItemsCmd(QList<CGraphicsItem*> items, const Caneda::AngleDirection dir, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_items(items)
@@ -295,12 +282,10 @@ namespace Caneda
         }
     }
 
-    /*
-    ##########################################################################
-    #                          MirrorItemsCmd                                #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                          MirrorItemsCmd                               *
+     *************************************************************************/
+    //! \brief Constructor.
     MirrorItemsCmd::MirrorItemsCmd(QList<CGraphicsItem*> items, const Qt::Axis axis, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_items(items),
@@ -329,13 +314,10 @@ namespace Caneda
         }
     }
 
-    /*
-    ##########################################################################
-    #                        PaintingRectChangeCmd                           #
-    ##########################################################################
-    */
-
-
+    /*************************************************************************
+     *                        PaintingRectChangeCmd                          *
+     *************************************************************************/
+    //! \brief Constructor.
     PaintingRectChangeCmd::PaintingRectChangeCmd(Painting *painting, QRectF oldRect,
             QRectF newRect,
             QUndoCommand *parent) :
@@ -356,12 +338,10 @@ namespace Caneda
         m_painting->setPaintingRect(m_newRect);
     }
 
-    /*
-    ##########################################################################
-    #                       PaintingPropertyChangeCmd                        #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                       PaintingPropertyChangeCmd                       *
+     *************************************************************************/
+    //! \brief Constructor.
     PaintingPropertyChangeCmd::PaintingPropertyChangeCmd(Painting *painting, QString oldText,
             QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -382,12 +362,10 @@ namespace Caneda
         m_painting->loadDataFromText(m_newPropertyText);
     }
 
-    /*
-    ##########################################################################
-    #                         GraphicTextChangeCmd                           #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                         GraphicTextChangeCmd                          *
+     *************************************************************************/
+    //! \brief Constructor.
     GraphicTextChangeCmd::GraphicTextChangeCmd(GraphicText *text, QString oldText,
             QString newText,
             QUndoCommand *parent) :
@@ -408,12 +386,10 @@ namespace Caneda
         m_graphicText->setRichText(m_newText);
     }
 
-    /*
-    ##########################################################################
-    #                            PropertyMapCmd                              #
-    ##########################################################################
-    */
-
+    /*************************************************************************
+     *                            PropertyMapCmd                             *
+     *************************************************************************/
+    //! \brief Constructor.
     PropertyMapCmd::PropertyMapCmd(PropertyGroup *propGroup, const PropertyMap& old,
             const PropertyMap& newMap, QUndoCommand *parent) :
         QUndoCommand(parent),

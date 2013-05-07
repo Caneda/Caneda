@@ -35,8 +35,8 @@ namespace Caneda
 {
 
     /*!
-     * This abstract class contains methods that all pages
-     * configuration must implement.
+     * \brief This abstract class contains methods that all pages configuration
+     * must implement.
      */
     class SettingsPage : public QWidget
     {
@@ -57,7 +57,7 @@ namespace Caneda
         QColor getForegroundColor(QPushButton *);
     };
 
-    //! This class represents the general configuration page.
+    //! \brief This class represents the general configuration page.
     class GeneralConfigurationPage : public SettingsPage
     {
         Q_OBJECT
@@ -90,7 +90,7 @@ namespace Caneda
         QSpinBox *spinUndoNum, *spinIcons, *spinWidth;
     };
 
-    //! This class represents the libraries configuration page.
+    //! \brief This class represents the libraries configuration page.
     class LibrariesConfigurationPage : public SettingsPage
     {
         Q_OBJECT
@@ -117,7 +117,7 @@ namespace Caneda
         QPushButton *addLibrary, *removeLibrary, *addHdlLibrary, *removeHdlLibrary;
     };
 
-    //! This class represents the simulation configuration page.
+    //! \brief This class represents the simulation configuration page.
     class SimulationConfigurationPage : public SettingsPage
     {
         Q_OBJECT
@@ -136,7 +136,7 @@ namespace Caneda
         QFrame *horiz_line_;
     };
 
-    //! This class represents the hdl configuration page
+    //! \brief This class represents the hdl configuration page
     class HdlConfigurationPage : public SettingsPage
     {
         Q_OBJECT
@@ -169,7 +169,7 @@ namespace Caneda
                     *commentButton, *systemButton;
     };
 
-    //! This class represents the layout configuration page
+    //! \brief This class represents the layout configuration page
     class LayoutConfigurationPage : public SettingsPage
     {
         Q_OBJECT

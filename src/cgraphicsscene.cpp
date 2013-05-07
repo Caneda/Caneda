@@ -47,7 +47,11 @@
 
 namespace Caneda
 {
-    //! \brief Default Constructor
+    /*!
+     * \brief Constructs a new graphics scene.
+     *
+     * \param parent Parent of the scene.
+     */
     CGraphicsScene::CGraphicsScene(QObject *parent) :
         QGraphicsScene(QRectF(-2500, -2500, 5000, 5000), parent)
     {
@@ -88,7 +92,7 @@ namespace Caneda
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
     }
 
-    //! \brief Default Destructor
+    //! \brief Destructor.
     CGraphicsScene::~CGraphicsScene()
     {
         delete m_undoStack;
@@ -2191,7 +2195,7 @@ namespace Caneda
      *                           Misc
      *
      **********************************************************************/
-    //! @return A string corresponding to alignement
+    //! \return A string corresponding to alignement
     const QString CGraphicsScene::Alignment2QString(const Qt::Alignment alignment)
     {
         switch(alignment) {

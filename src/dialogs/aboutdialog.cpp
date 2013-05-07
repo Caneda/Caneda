@@ -35,8 +35,9 @@
 namespace Caneda
 {
     /*!
-     * Constructor
-     * @param QWidget *parent The parent of the dialog.
+     * \brief Constructor.
+     *
+     * \param parent Parent of the dialog.
      */
     AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent)
     {
@@ -65,12 +66,12 @@ namespace Caneda
         setLayout(vlayout);
     }
 
-    //! Destructor
+    //! \brief Destructor.
     AboutDialog::~AboutDialog()
     {
     }
 
-    //!  @return The title Caneda with its icon
+    //! \return The title "Caneda" with its icon
     QWidget *AboutDialog::title() const
     {
         QWidget *icon_and_title = new QWidget();
@@ -91,7 +92,7 @@ namespace Caneda
         return icon_and_title;
     }
 
-    //! @return The widget contained by the tab "About"
+    //! \return The widget contained by the tab "About"
     QWidget *AboutDialog::aboutTab() const
     {
         QLabel *about = new QLabel(
@@ -110,7 +111,7 @@ namespace Caneda
         return about;
     }
 
-    //! @return The widget contained by the tab "Authors"
+    //! \return The widget contained by the tab "Authors"
     QWidget *AboutDialog::authorsTab() const
     {
         QLabel *authors = new QLabel();
@@ -124,7 +125,7 @@ namespace Caneda
         return authors;
     }
 
-    //! @return The widget contained by the tab "Translators"
+    //! \return The widget contained by the tab "Translators"
     QWidget *AboutDialog::translatorsTab() const
     {
         QLabel *translators = new QLabel();
@@ -138,7 +139,7 @@ namespace Caneda
         return translators;
     }
 
-    //! @return The widget contained by the tab "Contributions"
+    //! \return The widget contained by the tab "Contributions"
     QWidget *AboutDialog::contributorsTab() const
     {
         QLabel *contributors = new QLabel();
@@ -153,7 +154,7 @@ namespace Caneda
         return contributors;
     }
 
-    //! @return The widget contained by the tab "Licence Agreement"
+    //! \return The widget contained by the tab "Licence Agreement"
     QWidget *AboutDialog::licenseTab() const
     {
         QWidget *license = new QWidget();
@@ -192,11 +193,12 @@ namespace Caneda
     }
 
     /*!
-     * Adding someone to the list of authors
-     * @param QLabel *label  Label which will add the person
-     * @param QString &name  Name of the person
-     * @param QString &email Email address of the person
-     * @param QString &work  Function/work done by the person
+     * \brief Adds someone to the list of authors.
+     *
+     * \param label Label which will add the person
+     * \param name Name of the person
+     * \param email Email address of the person
+     * \param work Function/work done by the person
      */
     void AboutDialog::addAuthor(QLabel *label, const QString &name, const QString &email,
                                 const QString &work) const

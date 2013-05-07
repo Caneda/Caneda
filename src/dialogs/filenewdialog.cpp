@@ -28,6 +28,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     FileNewDialog::FileNewDialog(QWidget *parent) :
         QDialog(parent)
     {
@@ -39,7 +40,7 @@ namespace Caneda
         ui.choiceText->setIcon(Caneda::icon("text-plain"));
     }
 
-    //! Destructor
+    //! \brief Destructor.
     FileNewDialog::~FileNewDialog()
     {
     }

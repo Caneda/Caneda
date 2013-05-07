@@ -29,11 +29,13 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     WebDocument::WebDocument()
     {
         m_webUrl = new QUrl;
     }
 
+    //! \brief Destructor.
     WebDocument::~WebDocument()
     {
         delete m_webUrl;

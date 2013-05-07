@@ -31,6 +31,7 @@ namespace Caneda
 {
     /*!
      * \brief Constructs an Ellipse item.
+     *
      * \param rect Ellipse rect
      * \param scene CGraphicsScene to which this item should be added.
      */

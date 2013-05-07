@@ -23,11 +23,17 @@
 
 namespace Caneda
 {
+    /*!
+     * \brief Constructs a new simulation scene.
+     *
+     * \param parent Parent of the scene.
+     */
     CSimulationScene::CSimulationScene(QWidget *parent) :
         QWidget(parent)
     {
     }
 
+    //! \brief Destructor.
     CSimulationScene::~CSimulationScene()
     {
     }

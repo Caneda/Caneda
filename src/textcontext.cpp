@@ -28,6 +28,7 @@
 
 namespace Caneda
 {
+    //! \brief Constructor.
     TextContext::TextContext(QObject *parent) : IContext(parent)
     {
         m_sidebarTextBrowser = new SidebarTextBrowser();
@@ -43,6 +44,7 @@ namespace Caneda
         return instance;
     }
 
+    //! \brief Destructor.
     TextContext::~TextContext()
     {
     }

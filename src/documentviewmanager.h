@@ -30,6 +30,12 @@ namespace Caneda
     class IView;
     class TabWidget;
 
+    /*!
+     * \todo Document this class.
+     *
+     * This class is a singleton class and its only static instance (returned
+     * by instance()) is to be used.
+     */
     class DocumentViewManager : public QObject
     {
         Q_OBJECT
