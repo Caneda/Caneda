@@ -89,6 +89,7 @@ namespace Caneda
     class LibraryManager : public QObject
     {
         Q_OBJECT
+
     public:
         static LibraryManager* instance();
         ~LibraryManager();

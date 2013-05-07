@@ -31,13 +31,13 @@ namespace Caneda
     {
     }
 
+    //! \copydoc MainWindow::instance()
     WebContext* WebContext::instance()
     {
         static WebContext *instance = 0;
         if (!instance) {
             instance = new WebContext(SingletonOwner::instance());
         }
-
         return instance;
     }
 

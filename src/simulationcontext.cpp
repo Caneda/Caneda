@@ -31,6 +31,7 @@ namespace Caneda
     {
     }
 
+    //! \copydoc MainWindow::instance()
     SimulationContext* SimulationContext::instance()
     {
         static SimulationContext *context = 0;

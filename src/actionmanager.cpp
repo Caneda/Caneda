@@ -61,6 +61,7 @@ namespace Caneda
         emit triggered(objectName(), checked);
     }
 
+    //! \copydoc MainWindow::instance()
     ActionManager* ActionManager::instance()
     {
         static ActionManager *instance = 0;
@@ -72,12 +73,10 @@ namespace Caneda
 
     ActionManager::ActionManager(QObject *parent) : QObject(parent)
     {
-
     }
 
     ActionManager::~ActionManager()
     {
-
     }
 
     Action* ActionManager::createAction(const QString& id,

@@ -55,6 +55,7 @@ namespace Caneda
         m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
+    //! \copydoc MainWindow::instance()
     SymbolContext* SymbolContext::instance()
     {
         static SymbolContext *context = 0;

@@ -71,6 +71,7 @@ namespace Caneda
 
     private:
         DocumentViewManager(QObject *parent = 0);
+
         DocumentData* documentDataForFileName(const QString &fileName) const;
         DocumentData* documentDataForDocument(IDocument *document) const;
         bool closeViewHelper(IView *view, bool askForSave, bool closeDocumentIfLastView);

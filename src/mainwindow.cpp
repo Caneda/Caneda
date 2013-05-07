@@ -88,11 +88,17 @@ namespace Caneda
         QTimer::singleShot(100, this, SLOT(initFile()));
     }
 
-    //! Destructor
-    MainWindow::~MainWindow()
-    {
-    }
-
+    /*!
+     * \brief Returns the default instance of this class.
+     *
+     * This method is used to allow only one object instance of this class
+     * thoughout all Caneda's process execution. This is specially useful for
+     * classes that must be unique, to avoid, for example, modifying data at
+     * the same time. Some examples of this are the Settings class, the
+     * MainWindow class, or the document contexts (which must be unique).
+     *
+     * \return Default instance
+     */
     MainWindow* MainWindow::instance()
     {
         static MainWindow* instance = 0;
@@ -100,6 +106,11 @@ namespace Caneda
             instance = new MainWindow();
         }
         return instance;
+    }
+
+    //! Destructor
+    MainWindow::~MainWindow()
+    {
     }
 
     TabWidget* MainWindow::tabWidget() const

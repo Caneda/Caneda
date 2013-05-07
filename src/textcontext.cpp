@@ -34,13 +34,13 @@ namespace Caneda
         m_sidebarTextBrowser = new SidebarTextBrowser();
     }
 
+    //! \copydoc MainWindow::instance()
     TextContext* TextContext::instance()
     {
         static TextContext *instance = 0;
         if (!instance) {
             instance = new TextContext(SingletonOwner::instance());
         }
-
         return instance;
     }
 

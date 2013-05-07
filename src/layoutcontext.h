@@ -49,7 +49,7 @@ namespace Caneda
 
     public:
         static LayoutContext* instance();
-        ~LayoutContext();
+        virtual ~LayoutContext();
 
         // IContext interface methods
         virtual void init();

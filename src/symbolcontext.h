@@ -49,7 +49,7 @@ namespace Caneda
 
     public:
         static SymbolContext* instance();
-        ~SymbolContext();
+        virtual ~SymbolContext();
 
         // IContext interface methods
         virtual void init();

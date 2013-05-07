@@ -56,9 +56,8 @@ namespace Caneda
     {
         Q_OBJECT
     public:
-        ~MainWindow();
-
         static MainWindow* instance();
+        ~MainWindow();
 
         TabWidget* tabWidget() const;
         QDockWidget* sidebarDockWidget() const;

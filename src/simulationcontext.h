@@ -49,7 +49,7 @@ namespace Caneda
 
     public:
         static SimulationContext* instance();
-        ~SimulationContext();
+        virtual ~SimulationContext();
 
         // IContext interface methods
         virtual void init();

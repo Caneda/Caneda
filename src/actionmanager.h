@@ -31,6 +31,7 @@ namespace Caneda
     class Action : public QAction
     {
         Q_OBJECT
+
     public:
         Action(QObject *parent = 0);
         Action(const QString& text, QObject *parent = 0);
@@ -51,7 +52,8 @@ namespace Caneda
 
     class ActionManager : public QObject
     {
-    Q_OBJECT
+        Q_OBJECT
+
     public:
         static ActionManager* instance();
         ~ActionManager();

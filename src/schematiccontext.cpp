@@ -80,6 +80,7 @@ namespace Caneda
         m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
+    //! \copydoc MainWindow::instance()
     SchematicContext* SchematicContext::instance()
     {
         static SchematicContext *context = 0;

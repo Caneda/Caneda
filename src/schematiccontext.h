@@ -50,7 +50,7 @@ namespace Caneda
 
     public:
         static SchematicContext* instance();
-        ~SchematicContext();
+        virtual ~SchematicContext();
 
         // IContext interface methods
         virtual void init();

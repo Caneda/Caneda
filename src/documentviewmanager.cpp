@@ -60,6 +60,7 @@ namespace Caneda
         m_documentDataList.clear();
     }
 
+    //! \copydoc MainWindow::instance()
     DocumentViewManager* DocumentViewManager::instance()
     {
         static DocumentViewManager* instance = 0;

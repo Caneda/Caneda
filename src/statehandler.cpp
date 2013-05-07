@@ -110,6 +110,7 @@ namespace Caneda
         connect(loader, SIGNAL(basicLibrariesLoaded()), this, SLOT(slotUpdateToolbarInsertibles()));
     }
 
+    //! \copydoc MainWindow::instance()
     StateHandler* StateHandler::instance()
     {
         static StateHandler *instance = 0;

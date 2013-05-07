@@ -54,7 +54,6 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        IContext(QObject *parent = 0);
         virtual ~IContext();
 
         virtual void init();
@@ -68,6 +67,9 @@ namespace Caneda
 
         virtual IDocument* newDocument() = 0;
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0) = 0;
+
+    protected:
+        IContext(QObject *parent = 0);
     };
 
 } // namespace Caneda

@@ -172,7 +172,7 @@ namespace Caneda
     {
     }
 
-    //! \brief Returns default instance of library.
+    //! \copydoc MainWindow::instance()
     LibraryManager* LibraryManager::instance()
     {
         static LibraryManager *instance = 0;
