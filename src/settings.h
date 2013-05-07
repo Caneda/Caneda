@@ -47,8 +47,8 @@ namespace Caneda
 
         void setCurrentValue(const QString& key, const QVariant& value);
 
-        bool load(QSettings &settings);
-        bool save(QSettings &settings);
+        bool load();
+        bool save();
 
         static Settings* instance();
 

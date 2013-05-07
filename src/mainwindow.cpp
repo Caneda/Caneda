@@ -1550,10 +1550,8 @@ namespace Caneda
 
     void MainWindow::loadSettings()
     {
-        QSettings qSettings;
-
         Settings *settings = Settings::instance();
-        settings->load(qSettings);
+        settings->load();
 
         // Load geometry and docks positions
         const QByteArray geometryData = settings->currentValue("gui/geometry").toByteArray();
@@ -1575,15 +1573,13 @@ namespace Caneda
 
     void MainWindow::saveSettings()
     {
-        QSettings qSettings;
-
         Settings *settings = Settings::instance();
 
         // Update current geometry and dockPosition values before saving.
         settings->setCurrentValue("gui/geometry", saveGeometry());
         settings->setCurrentValue("gui/dockPositions", saveState());
 
-        settings->save(qSettings);
+        settings->save();
     }
 
     void MainWindow::setDocumentTitle(const QString& filename)

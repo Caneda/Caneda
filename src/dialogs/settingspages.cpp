@@ -41,7 +41,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QSettings>
 #include <QSpinBox>
 
 namespace Caneda
@@ -321,8 +320,7 @@ namespace Caneda
             //! \todo Also update all undostacks
         }
 
-        QSettings qSettings;
-        settings->save(qSettings);
+        settings->save();
 
         if(changed) {
             MainWindow::instance()->slotUpdateSettingsChanges();
@@ -478,8 +476,7 @@ namespace Caneda
             settings->setCurrentValue("libraries/hdl", newHdlLibraries);
         }
 
-        QSettings qSettings;
-        settings->save(qSettings);
+        settings->save();
     }
 
     //! @return Icon of this page
@@ -762,8 +759,7 @@ namespace Caneda
             changed = true;
         }
 
-        QSettings qSettings;
-        settings->save(qSettings);
+        settings->save();
         if(changed) {
             MainWindow::instance()->slotUpdateSettingsChanges();
             MainWindow::instance()->repaint();
@@ -1032,8 +1028,7 @@ namespace Caneda
             changed = true;
         }
 
-        QSettings qSettings;
-        settings->save(qSettings);
+        settings->save();
         if(changed) {
             MainWindow::instance()->slotUpdateSettingsChanges();
             MainWindow::instance()->repaint();

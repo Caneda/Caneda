@@ -29,6 +29,7 @@
 
 namespace Caneda
 {
+    //! \brief Default constructor.
     Settings::Settings()
     {
         QStringList libraries;
@@ -73,10 +74,19 @@ namespace Caneda
         currentSettings = defaultSettings;
     }
 
+    //! \brief Default destructor.
     Settings::~Settings()
     {
     }
 
+    /*!
+     * \brief Get the current value of the selected setting.
+     *
+     * \param key Setting to look for.
+     * \return QVariant value of the setting.
+     *
+     * \sa setCurrentValue
+     */
     QVariant Settings::currentValue(const QString& key) const
     {
         if (!currentSettings[key].isValid()) {
@@ -85,18 +95,39 @@ namespace Caneda
         return currentSettings[key];
     }
 
+    /*!
+     * \brief Get the default value of the selected setting.
+     *
+     * \param key Setting to look for.
+     * \return QVariant default value of the setting.
+     */
     QVariant Settings::defaultValue(const QString& key) const
     {
         return defaultSettings[key];
     }
 
+    /*!
+     * \brief Set a new value for the selected setting.
+     *
+     * \param key Setting to change its value.
+     * \param value New value of the setting.
+     *
+     * \sa currentValue
+     */
     void Settings::setCurrentValue(const QString& key, const QVariant& value)
     {
         currentSettings[key] = value.isValid() ? value : defaultSettings[key];
     }
 
-    bool Settings::load(QSettings &settings)
+    /*!
+     * \brief Load stored settings values.
+     *
+     * \return True on success, false otherwise.
+     */
+    bool Settings::load()
     {
+        QSettings settings;
+
         QStringList childKeys = defaultSettings.keys();
         foreach (const QString& childKey, childKeys) {
             setCurrentValue(childKey, settings.value(childKey));
@@ -105,14 +136,33 @@ namespace Caneda
         return true;
     }
 
-    bool Settings::save(QSettings &settings)
+    /*!
+     * \brief Store settings values.
+     *
+     * \return True on success, false otherwise.
+     */
+    bool Settings::save()
     {
+        QSettings settings;
+
         QStringList childKeys = defaultSettings.keys();
         foreach (const QString& childKey, childKeys) {
             settings.setValue(childKey, currentValue(childKey));
         }
     }
 
+    /*!
+     * \brief Returns the default instance of this class.
+     *
+     * This method is used to allow only one object instance of this class
+     * thoughout all Caneda's process execution. In this way, this object is
+     * shared between all objects (classes) of the process avoiding object
+     * duplication. This is specially useful for classes that must be unique,
+     * to avoid, for example, modifying data at the same time. An example of
+     * this is the MainWindow or the document contexts (which must be unique).
+     *
+     * \return Default instance
+     */
     Settings* Settings::instance()
     {
         static Settings *instance = 0;

@@ -26,7 +26,6 @@
 #include "statehandler.h"
 
 #include <QFileInfo>
-#include <QSettings>
 #include <QStringList>
 
 namespace Caneda
@@ -39,9 +38,7 @@ namespace Caneda
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
-        QSettings qSettings;
         Settings *settings = Settings::instance();
-        settings->load(qSettings);
 
         QPixmap layer(20,20);
 

@@ -27,7 +27,6 @@
 
 #include <QFileSystemModel>
 #include <QDebug>
-#include <QSettings>
 #include <QSortFilterProxyModel>
 #include <QTextCodec>
 #include <QVBoxLayout>
@@ -66,10 +65,7 @@ namespace Caneda
     //! Constructor
     SidebarTextBrowser::SidebarTextBrowser(QWidget *parent) : QWidget(parent)
     {
-        QSettings qSettings;
-
         Settings *settings = Settings::instance();
-        settings->load(qSettings);
 
         // Load library database settings
         QString libpath = settings->currentValue("libraries/hdl").toString();
