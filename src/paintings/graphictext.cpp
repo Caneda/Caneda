@@ -44,11 +44,6 @@ namespace Caneda
         setText(text);
     }
 
-    //! \brief Destructor.
-    GraphicText::~GraphicText()
-    {
-    }
-
     QString GraphicText::plainText() const
     {
         return m_textItem->toPlainText();

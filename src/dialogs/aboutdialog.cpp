@@ -66,11 +66,6 @@ namespace Caneda
         setLayout(vlayout);
     }
 
-    //! \brief Destructor.
-    AboutDialog::~AboutDialog()
-    {
-    }
-
     //! \return The title "Caneda" with its icon
     QWidget *AboutDialog::title() const
     {

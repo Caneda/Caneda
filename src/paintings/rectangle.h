@@ -39,7 +39,6 @@ namespace Caneda
         };
 
         Rectangle(const QRectF &rect, CGraphicsScene *scene = 0);
-        ~Rectangle();
 
         QPainterPath shapeForRect(const QRectF& rect) const;
 

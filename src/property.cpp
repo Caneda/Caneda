@@ -45,11 +45,6 @@ namespace Caneda
         visible = p.visible;
     }
 
-    //! \brief Destructor.
-    PropertyData::~PropertyData()
-    {
-    }
-
     /*!
      * \brief Constructs a property object
      *

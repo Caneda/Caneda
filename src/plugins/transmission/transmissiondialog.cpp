@@ -87,10 +87,6 @@ namespace Caneda
         setupCoupledMicrostrip();
     }
 
-    TransmissionDialog::~TransmissionDialog()
-    {
-    }
-
     void TransmissionDialog::setupMicrostrip()
     {
         transWidgets[0]->subParams->addDoubleProperty("Er",tr("Relative Permittivity"),2.94);

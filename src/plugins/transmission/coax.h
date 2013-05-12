@@ -29,7 +29,6 @@
 class coax : public transline {
  public:
   coax();
-  ~coax();
 
  private:
   double er;               /* dielectric constant */

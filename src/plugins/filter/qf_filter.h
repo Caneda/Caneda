@@ -94,7 +94,6 @@ public:
   qf_filter (qfk, qft);
   qf_filter (int, qfk, qft);
   qf_filter (qfk, qft, qf_double_t, qf_double_t, qf_double_t);
-  virtual ~qf_filter (void);	// Exit
 
   // Common routines to perform extraction of poles and zeros
 

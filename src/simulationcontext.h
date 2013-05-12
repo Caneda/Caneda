@@ -52,7 +52,6 @@ namespace Caneda
 
     public:
         static SimulationContext* instance();
-        virtual ~SimulationContext();
 
         // IContext interface methods
         virtual bool canOpen(const QFileInfo &info) const;

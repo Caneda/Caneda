@@ -34,7 +34,6 @@ namespace Caneda
         };
 
         Ellipse(QRectF rect, CGraphicsScene *scene = 0);
-        ~Ellipse();
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 

@@ -52,7 +52,6 @@ namespace Caneda
 
     public:
         static SymbolContext* instance();
-        virtual ~SymbolContext();
 
         // IContext interface methods
         virtual QWidget* sideBarWidget();

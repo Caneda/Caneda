@@ -50,11 +50,6 @@ namespace Caneda
         m_fileName = "";
     }
 
-    //! \brief Destructor.
-    ProjectFileOpenDialog::~ProjectFileOpenDialog()
-    {
-    }
-
     void ProjectFileOpenDialog::done(int r)
     {
         if (r == QDialog::Accepted) {

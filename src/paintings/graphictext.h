@@ -34,7 +34,6 @@ namespace Caneda
         };
 
         GraphicText(const QString &text = QString(), CGraphicsScene *scene = 0);
-        ~GraphicText();
 
         QString plainText() const;
         void setPlainText(const QString &text);

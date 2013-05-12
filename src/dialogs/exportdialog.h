@@ -41,7 +41,6 @@ namespace Caneda
 
     public:
         ExportDialog(IDocument *, QWidget *parent = 0);
-        ~ExportDialog();
 
     public Q_SLOTS:
         void slotChooseDirectory();

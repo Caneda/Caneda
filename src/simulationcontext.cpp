@@ -41,11 +41,6 @@ namespace Caneda
         return context;
     }
 
-    //! \brief Destructor.
-    SimulationContext::~SimulationContext()
-    {
-    }
-
     bool SimulationContext::canOpen(const QFileInfo &info) const
     {
         QStringList supportedSuffixes;

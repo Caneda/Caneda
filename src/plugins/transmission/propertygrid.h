@@ -61,7 +61,7 @@ Q_OBJECT
 
 public:
   PropertyBox(const QString& title,QWidget *parent=0l );
-  ~PropertyBox(){}
+
   void addDoubleProperty(const QString& name,const QString &tip,double val = 0.0,
                     Caneda::UnitType ut = Caneda::None,int curUnit = Caneda::None,bool isSel = false);
   void addIntProperty(const QString& name,const QString &tip,int value);
@@ -99,7 +99,6 @@ public:
     QComboBox *ocb;//special purpose
     Value val;
     PropertyRow();
-    ~PropertyRow();
   };
 private slots:
   void storeComboValues();

@@ -47,7 +47,6 @@ namespace Caneda
 
     public:
         TransmissionDialog(QWidget *parent = 0);
-        ~TransmissionDialog();
 
     private:
         void setupMicrostrip();

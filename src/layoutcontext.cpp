@@ -88,11 +88,6 @@ namespace Caneda
         return context;
     }
 
-    //! \brief Destructor.
-    LayoutContext::~LayoutContext()
-    {
-    }
-
     QWidget* LayoutContext::sideBarWidget()
     {
         return m_sidebarBrowser;

@@ -292,11 +292,6 @@ namespace Caneda
     {
     }
 
-    //! \brief Destructor.
-    IDocument::~IDocument()
-    {
-    }
-
     //! \brief Returns the fileName represented by this document.
     QString IDocument::fileName() const
     {

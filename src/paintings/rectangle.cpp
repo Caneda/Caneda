@@ -43,11 +43,6 @@ namespace Caneda
                         Caneda::TopRightHandle| Caneda::BottomLeftHandle);
     }
 
-    //! \brief Destructor.
-    Rectangle::~Rectangle()
-    {
-    }
-
     //! \copydoc Painting::shapeForRect()
     QPainterPath Rectangle::shapeForRect(const QRectF& rect) const
     {

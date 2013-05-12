@@ -52,11 +52,6 @@ namespace Caneda
         setFlag(ItemSendsScenePositionChanges, true);
     }
 
-    //! \brief Destructor.
-    PropertyGroup::~PropertyGroup()
-    {
-    }
-
     //! \brief Adds a new property to the PropertyMap.
     void PropertyGroup::addProperty(const QString& key, const Property &prop)
     {

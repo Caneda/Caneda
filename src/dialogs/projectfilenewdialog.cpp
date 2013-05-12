@@ -39,11 +39,6 @@ namespace Caneda
         m_userchoice = Caneda::NewComponent;
     }
 
-    //! \brief Destructor.
-    ProjectFileNewDialog::~ProjectFileNewDialog()
-    {
-    }
-
     //! \brief Checks the status of the print type dialog.
     void ProjectFileNewDialog::done(int r)
     {

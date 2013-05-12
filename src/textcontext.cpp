@@ -44,11 +44,6 @@ namespace Caneda
         return instance;
     }
 
-    //! \brief Destructor.
-    TextContext::~TextContext()
-    {
-    }
-
     QWidget* TextContext::sideBarWidget()
     {
         return m_sidebarTextBrowser;

@@ -73,11 +73,6 @@ namespace Caneda
         }
     }
 
-    //! \brief Destructor.
-    Node::~Node()
-    {
-    }
-
     /*!
      * \brief Add a component to node
      * Add a component and update node

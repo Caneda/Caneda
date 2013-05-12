@@ -107,15 +107,6 @@ PropertyBox::PropertyRow::PropertyRow() : val(-1.0)
   ocb = 0l;
 }
 
-PropertyBox::PropertyRow::~PropertyRow()
-{
-  delete l;
-  delete le;
-  delete cb;
-  delete rb;
-  delete ocb;
-}
-
 PropertyBox::PropertyBox(const QString& title,QWidget *parent) : QGroupBox(title,parent)
 {
   layout = new QGridLayout(this);

@@ -42,11 +42,6 @@ c_microstrip::c_microstrip() : transline()
   description = "CoupledMicrostrip";
 }
 
-c_microstrip::~c_microstrip()
-{
-  if (aux_ms) delete aux_ms;
-}
-
 /*
  * skin_depth - calculate skin depth
  */

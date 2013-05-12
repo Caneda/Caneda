@@ -113,11 +113,6 @@ namespace Caneda
         adjustSize();
     }
 
-    //! \brief Destructor.
-    GraphicTextDialog::~GraphicTextDialog()
-    {
-    }
-
     QString GraphicTextDialog::plainText() const
     {
         return textEdit->toPlainText();

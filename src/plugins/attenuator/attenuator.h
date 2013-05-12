@@ -30,7 +30,6 @@ namespace Caneda
 
     public:
         Attenuator(QWidget *parent = 0);
-        ~Attenuator();
 
     private slots:
         void slotCalculate();

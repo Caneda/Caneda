@@ -44,7 +44,6 @@ namespace Caneda
     public:
         GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt,
                 QWidget *parent = 0);
-        ~GraphicTextDialog();
 
         QString plainText() const;
         QString richText() const;

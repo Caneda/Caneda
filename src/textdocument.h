@@ -52,7 +52,6 @@ namespace Caneda
 
     public:
         TextDocument();
-        virtual ~TextDocument();
 
         // IDocument interface methods
         virtual IContext* context();

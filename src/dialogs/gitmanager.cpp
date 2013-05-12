@@ -55,11 +55,6 @@ namespace Caneda
         slotHistory();
     }
 
-    //! \brief Destructor.
-    GitManager::~GitManager()
-    {
-    }
-
     /*!
      * \brief Saves a new backup.
      *

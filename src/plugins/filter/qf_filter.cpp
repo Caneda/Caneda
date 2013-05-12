@@ -60,12 +60,6 @@ qf_filter::qf_filter (qfk k = UNDEF, qft t = LOWPASS) :
   ncomp (0), Comp (NULL) {
 }
 
-// Destructor of a filter
-qf_filter::~qf_filter (void) {
-  if (Comp != NULL)
-    free (Comp);
-}
-
 // Extraction routines
 
 // Extract finite attenuation pole

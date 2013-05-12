@@ -44,7 +44,6 @@ namespace Caneda
 
     public:
         SettingsPage(QWidget *parent);
-        virtual ~SettingsPage();
 
         /// Applies the configuration input by the user in the configuration page
         virtual void applyConf() = 0;
@@ -64,7 +63,6 @@ namespace Caneda
 
     public:
         GeneralConfigurationPage(QWidget *parent = 0);
-        virtual ~GeneralConfigurationPage();
 
     private Q_SLOTS:
         void slotFontDialog();
@@ -97,7 +95,6 @@ namespace Caneda
 
     public:
         LibrariesConfigurationPage(QWidget *parent = 0);
-        virtual ~LibrariesConfigurationPage();
 
     private Q_SLOTS:
         void slotAddLibrary();
@@ -124,7 +121,6 @@ namespace Caneda
 
     public:
         SimulationConfigurationPage(QWidget *parent = 0);
-        virtual ~SimulationConfigurationPage();
 
     public:
         void applyConf();
@@ -143,7 +139,6 @@ namespace Caneda
 
     public:
         HdlConfigurationPage(QWidget *parent = 0);
-        virtual ~HdlConfigurationPage();
 
     private Q_SLOTS:
         void slotColorKeyword();
@@ -176,7 +171,6 @@ namespace Caneda
 
     public:
         LayoutConfigurationPage(QWidget *parent = 0);
-        virtual ~LayoutConfigurationPage();
 
     private Q_SLOTS:
         void slotColorMetal1();

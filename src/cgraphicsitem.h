@@ -94,7 +94,6 @@ namespace Caneda
         };
 
         CGraphicsItem(QGraphicsItem* parent = 0, CGraphicsScene* scene = 0);
-        virtual ~CGraphicsItem();
 
         //! Returns a list of ports of the item.
         QList<Port*> ports() const { return m_ports; }

@@ -115,11 +115,6 @@ namespace Caneda
         setWindowTitle(tr("Folder Browser"));
     }
 
-    //! \brief Destructor.
-    FolderBrowser::~FolderBrowser()
-    {
-    }
-
     void FolderBrowser::slotOnDoubleClicked(const QModelIndex& index)
     {
         if(m_fileModel->isDir(index)) {

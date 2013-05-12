@@ -41,11 +41,6 @@ namespace Caneda
         return instance;
     }
 
-    //! \brief Destructor.
-    WebContext::~WebContext()
-    {
-    }
-
     bool WebContext::canOpen(const QFileInfo& info) const
     {
         QStringList supportedSuffixes;

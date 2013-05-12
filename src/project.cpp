@@ -75,11 +75,6 @@ namespace Caneda
         setWindowTitle(tr("Project View"));
     }
 
-    //! \brief Destructor.
-    Project::~Project()
-    {
-    }
-
     bool Project::isValid()
     {
         return (projectLibrary == 0 ? false : true);

@@ -49,7 +49,6 @@ namespace Caneda
     {
     public:
         FormatRawSimulation(SimulationDocument *doc = 0);
-        ~FormatRawSimulation();
 
         bool load();
 

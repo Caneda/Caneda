@@ -44,12 +44,6 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    //! \brief Destructor.
-    SchematicView::~SchematicView()
-    {
-        delete m_cGraphicsView;
-    }
-
     SchematicDocument* SchematicView::schematicDocument() const
     {
         return qobject_cast<SchematicDocument*>(document());

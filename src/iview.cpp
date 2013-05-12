@@ -94,12 +94,6 @@ namespace Caneda
         onDocumentViewManagerChanged();
     }
 
-    //! \brief Destructor.
-    IView::~IView()
-    {
-        delete m_toolBar;
-    }
-
     IDocument* IView::document() const
     {
         return m_document;

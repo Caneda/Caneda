@@ -78,12 +78,6 @@ namespace Caneda
 
     }
 
-    //! \brief Destructor.
-    PrintDialog::~PrintDialog()
-    {
-        delete m_printer;
-    }
-
     void PrintDialog::done(int r)
     {
         if (r == QDialog::Accepted) {

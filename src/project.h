@@ -55,7 +55,6 @@ namespace Caneda
 
     public:
         Project(QWidget *parent = 0);
-        ~Project();
 
         //! Returns project name.
         QString libraryName() const { return m_libraryName; }

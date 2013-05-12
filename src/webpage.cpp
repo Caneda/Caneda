@@ -28,11 +28,6 @@ namespace Caneda
         show();
     }
 
-    //! \brief Destructor.
-    WebPage::~WebPage()
-    {
-    }
-
     void WebPage::setPointSize(qreal size)
     {
         QFont fnt = font();

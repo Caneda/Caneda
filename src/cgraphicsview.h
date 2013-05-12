@@ -53,7 +53,6 @@ namespace Caneda
 
     public:
         CGraphicsView(CGraphicsScene *scene = 0);
-        ~CGraphicsView();
 
         CGraphicsScene* cGraphicsScene() const;
 

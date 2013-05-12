@@ -43,7 +43,6 @@ namespace Caneda
     {
     public:
         Library(QString libraryPath);
-        ~Library();
 
         //! Returns library name.
         QString libraryName() const { return m_libraryName; }
@@ -92,7 +91,6 @@ namespace Caneda
 
     public:
         static LibraryManager* instance();
-        ~LibraryManager();
 
         Component* newComponent(QString componentName,
                                 CGraphicsScene *scene,

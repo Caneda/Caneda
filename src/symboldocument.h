@@ -48,7 +48,6 @@ namespace Caneda
 
     public:
         SymbolDocument();
-        ~SymbolDocument();
 
         // IDocument interface methods
         virtual IContext* context();

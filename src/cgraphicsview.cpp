@@ -58,11 +58,6 @@ namespace Caneda
         onMouseActionChanged();
     }
 
-    //! \brief Destructor.
-    CGraphicsView::~CGraphicsView()
-    {
-    }
-
     CGraphicsScene* CGraphicsView::cGraphicsScene() const
     {
         CGraphicsScene* s = qobject_cast<CGraphicsScene*>(scene());

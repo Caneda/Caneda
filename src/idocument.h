@@ -55,7 +55,6 @@ namespace Caneda
 
     public:
         IDocument();
-        virtual ~IDocument();
 
         QString fileName() const;
         void setFileName(const QString &fileName);

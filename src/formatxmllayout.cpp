@@ -39,11 +39,6 @@ namespace Caneda
     {
     }
 
-    //! \brief Destructor.
-    FormatXmlLayout::~FormatXmlLayout()
-    {
-    }
-
     bool FormatXmlLayout::save()
     {
         CGraphicsScene *scene = cGraphicsScene();

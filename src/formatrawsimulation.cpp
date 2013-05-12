@@ -40,11 +40,6 @@ namespace Caneda
     {
     }
 
-    //! \brief Destructor.
-    FormatRawSimulation::~FormatRawSimulation()
-    {
-    }
-
     bool FormatRawSimulation::load()
     {
         // Read all the data from the file "filename() + ".raw"" (waveforms).

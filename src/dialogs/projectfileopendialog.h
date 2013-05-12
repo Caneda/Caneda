@@ -39,7 +39,6 @@ namespace Caneda
 
     public:
         ProjectFileOpenDialog(QString = "", QWidget * = 0);
-        ~ProjectFileOpenDialog();
 
         QString fileName() const { return m_fileName; }
 

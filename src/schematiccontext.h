@@ -53,7 +53,6 @@ namespace Caneda
 
     public:
         static SchematicContext* instance();
-        virtual ~SchematicContext();
 
         // IContext interface methods
         virtual QWidget* sideBarWidget();

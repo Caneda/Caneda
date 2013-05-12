@@ -52,7 +52,6 @@ namespace Caneda
 
     public:
         static TextContext* instance();
-        virtual ~TextContext();
 
         // IContext interface methods
         virtual QWidget* sideBarWidget();

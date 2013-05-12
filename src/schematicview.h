@@ -50,7 +50,6 @@ namespace Caneda
 
     public:
         SchematicView(SchematicDocument *document);
-        virtual ~SchematicView();
 
         SchematicDocument* schematicDocument() const;
 

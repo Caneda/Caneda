@@ -51,7 +51,6 @@ namespace Caneda
 
     public:
         TextView(TextDocument *document);
-        virtual ~TextView();
 
         TextEdit* textEdit() const;
 

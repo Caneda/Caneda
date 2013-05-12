@@ -43,12 +43,6 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    //! \brief Destructor.
-    LayoutView::~LayoutView()
-    {
-        delete m_cGraphicsView;
-    }
-
     LayoutDocument* LayoutView::layoutDocument() const
     {
         return qobject_cast<LayoutDocument*>(document());

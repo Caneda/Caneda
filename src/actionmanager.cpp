@@ -40,11 +40,6 @@ namespace Caneda
         init();
     }
 
-    //! \brief Destructor.
-    Action::~Action()
-    {
-    }
-
     void Action::init()
     {
         connect(this, SIGNAL(toggled(bool)), SLOT(slotToggled(bool)));
@@ -74,11 +69,6 @@ namespace Caneda
             instance = new ActionManager();
         }
         return instance;
-    }
-
-    //! \brief Destructor.
-    ActionManager::~ActionManager()
-    {
     }
 
     Action* ActionManager::createAction(const QString& id,

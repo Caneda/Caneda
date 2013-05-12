@@ -33,11 +33,6 @@ namespace Caneda
     {
     }
 
-    //! \brief Destructor.
-    CSimulationScene::~CSimulationScene()
-    {
-    }
-
     /*!
      * \brief Adds or moves the item and all its childen to this scene. This
      * scene takes ownership of the item.

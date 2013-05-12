@@ -27,9 +27,4 @@ namespace Caneda
     {
     }
 
-    //! \brief Destructor.
-    IContext::~IContext()
-    {
-    }
-
 } // namespace Caneda

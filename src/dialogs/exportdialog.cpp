@@ -95,11 +95,6 @@ namespace Caneda
         connect(this, SIGNAL(accepted()), SLOT(slotExport()));
     }
 
-    //! \brief Destructor.
-    ExportDialog::~ExportDialog()
-    {
-    }
-
     //! Ask the user for a folder destination
     void ExportDialog::slotChooseDirectory()
     {

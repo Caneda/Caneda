@@ -30,7 +30,6 @@
 class c_microstrip : public transline {
  public:
   c_microstrip();
-  ~c_microstrip();
 
  private:
   double er;			/* dielectric constant */

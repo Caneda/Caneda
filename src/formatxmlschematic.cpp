@@ -43,11 +43,6 @@ namespace Caneda
     {
     }
 
-    //! \brief Destructor.
-    FormatXmlSchematic::~FormatXmlSchematic()
-    {
-    }
-
     bool FormatXmlSchematic::save()
     {
         CGraphicsScene *scene = cGraphicsScene();

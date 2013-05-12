@@ -42,11 +42,6 @@ namespace Caneda
        setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle);
     }
 
-    //! \brief Destructor.
-    GraphicLine::~GraphicLine()
-    {
-    }
-
     //! \copydoc Painting::shapeForRect()
     QPainterPath GraphicLine::shapeForRect(const QRectF &rect) const
     {

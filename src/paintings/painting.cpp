@@ -55,11 +55,6 @@ namespace Caneda
         setFlag(ItemSendsScenePositionChanges, true);
     }
 
-    //! \brief Destructor.
-    Painting::~Painting()
-    {
-    }
-
     /*!
      * \brief Sets the painting rect to \a rect.
      *

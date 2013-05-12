@@ -48,7 +48,6 @@ namespace Caneda
 
     public:
         static WebContext* instance();
-        virtual ~WebContext();
 
         // IContext interface methods
         virtual bool canOpen(const QFileInfo& info) const;

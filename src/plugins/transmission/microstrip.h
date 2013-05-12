@@ -29,7 +29,6 @@
 class microstrip : public transline {
  public:
   microstrip();
-  ~microstrip();
 
   friend class c_microstrip;
 

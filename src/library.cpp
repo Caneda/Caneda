@@ -48,11 +48,6 @@ namespace Caneda
         m_libraryName = QFileInfo(libraryPath).baseName();
     }
 
-    //! \brief Destructor.
-    Library::~Library()
-    {
-    }
-
     //! \brief Returns the shared data of component from given name.
     ComponentDataPtr Library::component(const QString& name) const
     {
@@ -182,11 +177,6 @@ namespace Caneda
         return instance;
     }
 
-    //! \brief Destructor.
-    LibraryManager::~LibraryManager()
-    {
-    }
-
     /*!
      * \brief Constructs a new component given its name and library.
      *
@@ -251,11 +241,7 @@ namespace Caneda
         return true;
     }
 
-    /*!
-     * \brief Unloads given library freeing memory pool.
-     *
-     * \sa Library::~Library()
-     */
+    //! \brief Unloads given library freeing memory pool.
     bool LibraryManager::unload(const QString& libName)
     {
         if(m_libraryHash.contains(libName)) {

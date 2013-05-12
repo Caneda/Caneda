@@ -48,11 +48,6 @@ namespace Caneda
                 Caneda::TopRightHandle| Caneda::BottomLeftHandle);
     }
 
-    //! \brief Destructor.
-    EllipseArc::~EllipseArc()
-    {
-    }
-
     //! \copydoc Painting::shapeForRect()
     QPainterPath EllipseArc::shapeForRect(const QRectF &rect) const
     {

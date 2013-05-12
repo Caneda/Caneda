@@ -49,7 +49,6 @@ namespace Caneda
 
     public:
         SchematicDocument();
-        ~SchematicDocument();
 
         // IDocument interface methods
         virtual IContext* context();

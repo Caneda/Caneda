@@ -78,12 +78,6 @@ namespace Caneda
                 SLOT(browseButtonClicked()));
     }
 
-    //! \brief Destructor.
-    FileBrowserLineEdit::~FileBrowserLineEdit()
-    {
-        delete d;
-    }
-
     QFileInfo FileBrowserLineEdit::fileInfo() const
     {
         return d->fileInfo;
@@ -113,12 +107,6 @@ namespace Caneda
         d->item->setText(0, doc);
     }
 
-    struct SaveDocumentsDialogPrivate
-    {
-        QList<IDocument*> modifiedDocuments;
-        QList<QPair<IDocument*, QString> > newFilePaths;
-    };
-
 
     /*************************************************************************
      *                          SaveDocumentsDialog                          *
@@ -127,8 +115,7 @@ namespace Caneda
     SaveDocumentsDialog::SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
             QWidget *parent) : QDialog(parent)
     {
-        d = new SaveDocumentsDialogPrivate;
-        d->modifiedDocuments = modifiedDocuments;
+        m_modifiedDocuments = modifiedDocuments;
 
         ui.setupUi(this);
 
@@ -139,8 +126,8 @@ namespace Caneda
         ui.buttonBox->button(QDialogButtonBox::Save)->setFocus();
 
         // Populate items in tree.
-        for (int i = 0; i < modifiedDocuments.count(); ++i) {
-            IDocument *document = modifiedDocuments[i];
+        for (int i = 0; i < m_modifiedDocuments.count(); ++i) {
+            IDocument *document = m_modifiedDocuments[i];
             QTreeWidgetItem *item = new QTreeWidgetItem(ui.treeWidget);
             item->setCheckState(0, Qt::Checked);
 
@@ -156,15 +143,9 @@ namespace Caneda
                 this, SLOT(slotHandleClick(const QModelIndex&)));
     }
 
-    //! \brief Destructor.
-    SaveDocumentsDialog::~SaveDocumentsDialog()
-    {
-        delete d;
-    }
-
     QList<QPair<IDocument*, QString> > SaveDocumentsDialog::newFilePaths() const
     {
-        return d->newFilePaths;
+        return m_newFilePaths;
     }
 
     void SaveDocumentsDialog::slotButtonClicked(QAbstractButton *button)
@@ -181,11 +162,11 @@ namespace Caneda
                     if (widget->fileInfo().fileName().isEmpty()) {
                         QMessageBox::warning(0, tr("Filename not set"),
                                 tr("Please set file names for untitled documents"));
-                        d->newFilePaths.clear();
+                        m_newFilePaths.clear();
                         return;
                     }
 
-                    d->newFilePaths << qMakePair(d->modifiedDocuments[i],
+                    m_newFilePaths << qMakePair(m_modifiedDocuments[i],
                             widget->fileInfo().absoluteFilePath());
                 }
             }
@@ -196,11 +177,11 @@ namespace Caneda
 
     void SaveDocumentsDialog::slotHandleClick(const QModelIndex& index)
     {
-        if (index.row() < 0 || index.row() >= d->modifiedDocuments.count()) {
+        if (index.row() < 0 || index.row() >= m_modifiedDocuments.count()) {
             return;
         }
         DocumentViewManager *manager = DocumentViewManager::instance();
-        QList<IView*> views = manager->viewsForDocument(d->modifiedDocuments[index.row()]);
+        QList<IView*> views = manager->viewsForDocument(m_modifiedDocuments[index.row()]);
         if (!views.isEmpty()) {
             TabWidget *tabWidget = MainWindow::instance()->tabWidget();
             Tab *tab = tabWidget->tabForView(views.first());

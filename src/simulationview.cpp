@@ -43,11 +43,6 @@ namespace Caneda
 //                this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    //! \brief Destructor.
-    SimulationView::~SimulationView()
-    {
-    }
-
     SimulationDocument* SimulationView::simulationDocument() const
     {
         return qobject_cast<SimulationDocument*>(document());

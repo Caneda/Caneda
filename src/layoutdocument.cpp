@@ -44,11 +44,6 @@ namespace Caneda
                 SLOT(emitDocumentChanged()));
     }
 
-    //! \brief Destructor.
-    LayoutDocument::~LayoutDocument()
-    {
-    }
-
     IContext* LayoutDocument::context()
     {
         return LayoutContext::instance();

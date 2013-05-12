@@ -31,7 +31,6 @@ class QString;
 class transline {
  public:
   transline ();
-  virtual ~transline ();
 
   void   setTransWidgets (TransWidgets *tw);
   void   setProperty (const QString& name, double val);

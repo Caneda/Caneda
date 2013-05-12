@@ -44,11 +44,6 @@ namespace Caneda
                 SLOT(emitDocumentChanged()));
     }
 
-    //! \brief Destructor.
-    SymbolDocument::~SymbolDocument()
-    {
-    }
-
     IContext* SymbolDocument::context()
     {
         return SymbolContext::instance();

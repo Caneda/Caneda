@@ -65,11 +65,6 @@ namespace Caneda
         return context;
     }
 
-    //! \brief Destructor.
-    SymbolContext::~SymbolContext()
-    {
-    }
-
     QWidget* SymbolContext::sideBarWidget()
     {
         return m_sidebarBrowser;

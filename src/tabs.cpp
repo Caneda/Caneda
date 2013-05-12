@@ -152,11 +152,6 @@ namespace Caneda
         layout->setContentsMargins(0, 0, 0, 0);
     }
 
-    //! \brief Destructor.
-    Tab::~Tab()
-    {
-    }
-
     IView* Tab::activeView() const
     {
         return m_views.isEmpty() ? 0 : m_views.first();

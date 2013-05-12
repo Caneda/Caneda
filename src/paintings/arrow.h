@@ -50,7 +50,6 @@ namespace Caneda
         Arrow(const QLineF &line = QLineF(), HeadStyle style = FilledArrow,
                 qreal headWidth = 12, qreal headHeight = 20,
                 CGraphicsScene *scene = 0);
-        ~Arrow();
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 

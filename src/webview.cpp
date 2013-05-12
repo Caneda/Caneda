@@ -41,12 +41,6 @@ namespace Caneda
                 SLOT(onFocussed()));
     }
 
-    //! \brief Destructor.
-    WebView::~WebView()
-    {
-        delete m_webPage;;
-    }
-
     WebPage* WebView::webPage() const
     {
         return m_webPage;

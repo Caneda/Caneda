@@ -35,10 +35,6 @@ LC_Filter::LC_Filter()
 {
 }
 
-LC_Filter::~LC_Filter()
-{
-}
-
 // #########################################################################
 QString LC_Filter::num2str(double Num)
 {

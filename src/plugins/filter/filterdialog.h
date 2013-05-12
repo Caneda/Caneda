@@ -30,7 +30,6 @@ namespace Caneda
 
     public:
         FilterDialog(QWidget *parent = 0);
-        ~FilterDialog();
 
     private slots:
         void slotCalculate();

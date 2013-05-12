@@ -46,7 +46,6 @@ namespace Caneda
 
     public:
         GitManager(const QString& dir, QWidget *parent = 0);
-        ~GitManager();
 
     public:
         const QString& path() const { return m_path; }

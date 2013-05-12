@@ -49,7 +49,6 @@ namespace Caneda
 
     public:
         SimulationView(SimulationDocument *document);
-        virtual ~SimulationView();
 
         SimulationDocument* simulationDocument() const;
 

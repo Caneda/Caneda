@@ -55,7 +55,6 @@ class QString;
 class LC_Filter {
 public:
   LC_Filter();
- ~LC_Filter();
 
   static QString* createSchematic(tFilter*);
 

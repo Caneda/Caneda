@@ -46,10 +46,6 @@ namespace Caneda
         slotClassChanged();
     }
 
-    FilterDialog::~FilterDialog()
-    {
-    }
-
     void FilterDialog::slotCalculate()
     {
         // Get numerical values from input widgets

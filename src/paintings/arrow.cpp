@@ -52,11 +52,6 @@ namespace Caneda
         setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle);
     }
 
-    //! \brief Destructor.
-    Arrow::~Arrow()
-    {
-    }
-
     //! \copydoc Painting::shapeForRect()
     QPainterPath Arrow::shapeForRect(const QRectF &rect) const
     {

@@ -36,7 +36,6 @@ namespace Caneda
 
     public:
         AboutDialog(QWidget *parent = 0);
-        virtual ~AboutDialog();
 
     private:
         QWidget *title() const;

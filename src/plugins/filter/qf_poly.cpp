@@ -67,7 +67,7 @@ qf_poly::qf_poly (qf_double_t a, qf_double_t b, qf_double_t c, unsigned deg) {
     d = 0;
     p = new qf_double_t[1];
     p[0] = a;
-    rts = NULL;			// no root (or an infinite # of them)
+    rts = NULL;			// no root (or an infinite # of them)
     krts = a;
     rep = BOTH;
     break;
@@ -192,12 +192,6 @@ qf_poly & qf_poly::operator = (const qf_poly & P) {
     krts = P.krts;
   }
   return (*this);
-}
-
-// Garbage bin
-qf_poly::~qf_poly () {
-  if (p != NULL) delete[] p;
-  if (rts != NULL) delete[] rts;
 }
 
 // Basic functions.

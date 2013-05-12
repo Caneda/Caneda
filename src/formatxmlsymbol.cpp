@@ -63,11 +63,6 @@ namespace Caneda
         m_symbolDocument = 0;
     }
 
-    //! \brief Destructor.
-    FormatXmlSymbol::~FormatXmlSymbol()
-    {
-    }
-
     bool FormatXmlSymbol::save()
     {
         if(!cGraphicsScene()) {

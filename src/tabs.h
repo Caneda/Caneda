@@ -62,7 +62,6 @@ namespace Caneda
 
     public:
         Tab(IView *view, QWidget *parent = 0);
-        ~Tab();
 
         IView* activeView() const;
 
@@ -103,8 +102,8 @@ namespace Caneda
 
     public:
         TabWidget(QWidget *parent = 0);
-        QList<Tab*> tabs() const;
 
+        QList<Tab*> tabs() const;
         Tab* tabForView(IView *view) const;
 
         void addTab(Tab *tab);

@@ -64,7 +64,6 @@ namespace Caneda
         static QPainterPath Shape;
 
         Node(const QString& name = QString(), CGraphicsScene *scene = 0);
-        ~Node();
 
         void addComponent(Component *comp);
         void removeComponent(Component *comp);

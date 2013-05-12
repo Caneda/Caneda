@@ -53,7 +53,6 @@ namespace Caneda
 
     public:
         IView(IDocument *document);
-        virtual ~IView();
 
         IDocument* document() const;
 

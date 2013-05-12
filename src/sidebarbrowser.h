@@ -35,7 +35,6 @@ namespace Caneda
 
     public:
         TreeView(QWidget *parent = 0);
-        ~TreeView();
 
         void startDrag(Qt::DropActions supportedActions);
 

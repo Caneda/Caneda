@@ -43,7 +43,6 @@ namespace Caneda
     public:
         FileBrowserLineEdit(QTreeWidgetItem *item, const QFileInfo& fileInfo,
                 QWidget *parent = 0);
-        ~FileBrowserLineEdit();
 
         QFileInfo fileInfo() const;
         void updateTexts();
@@ -68,7 +67,6 @@ namespace Caneda
 
         SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
                 QWidget *parent = 0);
-        ~SaveDocumentsDialog();
 
         QList<QPair<IDocument*, QString> > newFilePaths() const;
 
@@ -79,7 +77,9 @@ namespace Caneda
 
     private:
         Ui::SaveDocumentsDialog ui;
-        SaveDocumentsDialogPrivate *d;
+
+        QList<IDocument*> m_modifiedDocuments;
+        QList<QPair<IDocument*, QString> > m_newFilePaths;
     };
 
 } // namespace Caneda

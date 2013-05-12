@@ -43,10 +43,6 @@ microstrip::microstrip() : transline()
   description = "Microstrip";
 }
 
-microstrip::~microstrip()
-{
-}
-
 /*
  * skin_depth - calculate skin depth
  */

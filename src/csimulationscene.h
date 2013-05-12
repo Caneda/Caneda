@@ -33,7 +33,6 @@ namespace Caneda
 
     public:
         CSimulationScene(QWidget *parent = 0);
-        ~CSimulationScene();
 
         //! \brief Returns a list of all items in the scene in descending stacking
         QList<QwtPlotCurve*> items() const { return m_items; }

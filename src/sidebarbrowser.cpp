@@ -53,11 +53,6 @@ namespace Caneda
         setIconSize(QSize(24, 24));
     }
 
-    //! \brief Destructor.
-    TreeView::~TreeView()
-    {
-    }
-
     void TreeView::mousePressEvent(QMouseEvent *event)
     {
         invalidPressed = !indexAt(event->pos()).isValid();

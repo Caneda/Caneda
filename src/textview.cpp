@@ -44,12 +44,6 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    //! \brief Destructor.
-    TextView::~TextView()
-    {
-        delete m_textEdit;;
-    }
-
     TextEdit* TextView::textEdit() const
     {
         return m_textEdit;

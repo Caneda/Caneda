@@ -58,7 +58,6 @@ namespace Caneda
 
     public:
         PropertyGroup(CGraphicsScene* scene = 0, const PropertyMap& propMap = PropertyMap());
-        ~PropertyGroup();
 
         void addProperty(const QString& key, const Property& prop);
         //! Returns selected property from property map.

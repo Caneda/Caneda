@@ -72,11 +72,6 @@ qf_cauer::qf_cauer (qf_double_t amin, qf_double_t amax, qf_double_t fc,
   synth (type);
 }
 
-qf_cauer::~qf_cauer (void) {
-  if (a != NULL)
-    delete[] a;
-}
-
 static qf_double_t FMAX (qf_double_t x, qf_double_t y) {
   return ((x > y) ? x : y);
 }

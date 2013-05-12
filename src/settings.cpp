@@ -74,9 +74,14 @@ namespace Caneda
         currentSettings = defaultSettings;
     }
 
-    //! \brief Destructor.
-    Settings::~Settings()
+    //! \copydoc MainWindow::instance()
+    Settings* Settings::instance()
     {
+        static Settings *instance = 0;
+        if (!instance) {
+            instance = new Settings();
+        }
+        return instance;
     }
 
     /*!
@@ -149,16 +154,6 @@ namespace Caneda
         foreach (const QString& childKey, childKeys) {
             settings.setValue(childKey, currentValue(childKey));
         }
-    }
-
-    //! \copydoc MainWindow::instance()
-    Settings* Settings::instance()
-    {
-        static Settings *instance = 0;
-        if (!instance) {
-            instance = new Settings();
-        }
-        return instance;
     }
 
 } // namespace Caneda

@@ -90,11 +90,6 @@ namespace Caneda
         return context;
     }
 
-    //! \brief Destructor.
-    SchematicContext::~SchematicContext()
-    {
-    }
-
     QWidget* SchematicContext::sideBarWidget()
     {
         return m_sidebarBrowser;

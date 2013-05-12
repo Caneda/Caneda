@@ -50,7 +50,6 @@ namespace Caneda
 
     public:
         WebDocument();
-        virtual ~WebDocument();
 
         // IDocument interface methods
         virtual IContext* context();

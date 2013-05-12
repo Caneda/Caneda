@@ -40,7 +40,6 @@ public:
   qf_cauer (unsigned, qf_double_t, qf_double_t);
   qf_cauer (qf_double_t, qf_double_t, qf_double_t, qf_double_t, qf_double_t,
 	    qf_double_t, qft);
-  virtual ~qf_cauer (void);
 
   // Elliptic functions
   static qf_double_t K (qf_double_t);

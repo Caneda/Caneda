@@ -50,7 +50,6 @@ namespace Caneda
 
     public:
         WebView(WebDocument *document);
-        virtual ~WebView();
 
         WebPage* webPage() const;
 

@@ -29,7 +29,6 @@
 class rectwaveguide : public transline {
  public:
   rectwaveguide();
-  ~rectwaveguide();
 
  private:
   double er;               /* dielectric constant */

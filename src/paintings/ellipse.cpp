@@ -42,11 +42,6 @@ namespace Caneda
                 Caneda::TopRightHandle| Caneda::BottomLeftHandle);
     }
 
-    //! \brief Destructor.
-    Ellipse::~Ellipse()
-    {
-    }
-
     //! \copydoc Painting::shapeForRect()
     QPainterPath Ellipse::shapeForRect(const QRectF &rect) const
     {

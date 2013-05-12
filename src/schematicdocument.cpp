@@ -45,11 +45,6 @@ namespace Caneda
                 SLOT(emitDocumentChanged()));
     }
 
-    //! \brief Destructor.
-    SchematicDocument::~SchematicDocument()
-    {
-    }
-
     IContext* SchematicDocument::context()
     {
         return SchematicContext::instance();

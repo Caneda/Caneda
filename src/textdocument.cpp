@@ -53,12 +53,6 @@ namespace Caneda
                 this, SLOT(onContentsChanged()));
     }
 
-    //! \brief Destructor.
-    TextDocument::~TextDocument()
-    {
-        delete m_textDocument;
-    }
-
     IContext* TextDocument::context()
     {
         return TextContext::instance();

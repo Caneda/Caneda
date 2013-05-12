@@ -32,11 +32,6 @@ class qf_matrix
     n = d;
   }
 
-  // destructor
-  ~qf_matrix () {
-    free (data);
-  }
-
   // accessor operators
   qf_double_t operator () (int r, int c) const {
     return data[r * n + c];
@@ -87,7 +82,6 @@ class qf_poly
   qf_poly (int, const qf_double_t[]);	// Id, with inst.
   qf_poly (int, qf_double_t, const qf_double_t[]);
   qf_poly (const qf_poly &);	// Copy
-  ~qf_poly ();
 
   // access operators
   qf_poly & operator = (const qf_poly &); // P = Q

@@ -51,7 +51,6 @@ namespace Caneda
 
         Layer(const QRectF &rect, LayerName layerName = Metal1, const QString &netLabel = "",
               CGraphicsScene *scene = 0);
-        ~Layer();
 
         QPainterPath shapeForRect(const QRectF& rect) const;
 

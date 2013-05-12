@@ -57,11 +57,6 @@ namespace Caneda
     {
     }
 
-    //! \brief Destructor.
-    SettingsPage::~SettingsPage()
-    {
-    }
-
     void SettingsPage::setForegroundColor(QPushButton *b, QColor col)
     {
         QPalette palette(b->palette());
@@ -188,11 +183,6 @@ namespace Caneda
         vlayout1->addStretch();
 
         setLayout(vlayout1);
-    }
-
-    //! \brief Destructor.
-    GeneralConfigurationPage::~GeneralConfigurationPage()
-    {
     }
 
     void GeneralConfigurationPage::slotFontDialog()
@@ -419,11 +409,6 @@ namespace Caneda
         setLayout(vlayout1);
     }
 
-    //! \brief Destructor.
-    LibrariesConfigurationPage::~LibrariesConfigurationPage()
-    {
-    }
-
     void LibrariesConfigurationPage::slotAddLibrary()
     {
         QString dir = QFileDialog::getExistingDirectory(this, tr("Select Library"),
@@ -564,11 +549,6 @@ namespace Caneda
         setLayout(vlayout1);
     }
 
-    //! \brief Destructor.
-    SimulationConfigurationPage::~SimulationConfigurationPage()
-    {
-    }
-
     //! \brief Applies the configuration of this page.
     void SimulationConfigurationPage::applyConf()
     {
@@ -691,11 +671,6 @@ namespace Caneda
         vlayout1->addStretch();
 
         setLayout(vlayout1);
-    }
-
-    //! \brief Destructor.
-    HdlConfigurationPage::~HdlConfigurationPage()
-    {
     }
 
     //! \brief Applies the configuration of this page.
@@ -964,11 +939,6 @@ namespace Caneda
         vlayout1->addStretch();
 
         setLayout(vlayout1);
-    }
-
-    //! \brief Destructor.
-    LayoutConfigurationPage::~LayoutConfigurationPage()
-    {
     }
 
     //! \brief Applies the configuration of this page.

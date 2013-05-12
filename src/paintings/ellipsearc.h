@@ -35,7 +35,6 @@ namespace Caneda
 
         EllipseArc(QRectF rect = QRectF(), int startAngle = 20, int spanAngle = 180,
                 CGraphicsScene *scene = 0);
-        ~EllipseArc();
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 

@@ -35,10 +35,6 @@ rectwaveguide::rectwaveguide() : transline()
   description = "Rectangular";
 }
 
-rectwaveguide::~rectwaveguide()
-{
-}
-
 /*
  * returns k
  */

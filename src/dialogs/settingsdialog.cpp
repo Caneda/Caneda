@@ -78,11 +78,6 @@ namespace Caneda
                 SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
     }
 
-    //! \brief Destructor.
-    SettingsDialog::~SettingsDialog()
-    {
-    }
-
     //! \brief Changes the page in the configuration dialog.
     void SettingsDialog::changePage(QListWidgetItem *current, QListWidgetItem *previous)
     {

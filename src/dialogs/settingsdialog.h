@@ -49,7 +49,6 @@ namespace Caneda
     public:
         SettingsDialog(QList<SettingsPage *> pages, const char *title,
                 QWidget *parent = 0);
-        virtual ~SettingsDialog();
 
     public Q_SLOTS:
         void changePage(QListWidgetItem *, QListWidgetItem *);

@@ -64,7 +64,6 @@ namespace Caneda
         };
 
         Painting(CGraphicsScene *scene = 0);
-        ~Painting();
 
         //! \copydoc CGraphicsItem::type()
         int type() const { return Type; }

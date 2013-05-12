@@ -48,7 +48,6 @@ namespace Caneda
     {
     public:
         FormatXmlSchematic(SchematicDocument *doc = 0);
-        ~FormatXmlSchematic();
 
         bool save();
         bool load();

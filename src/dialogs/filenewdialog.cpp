@@ -40,11 +40,6 @@ namespace Caneda
         ui.choiceText->setIcon(Caneda::icon("text-plain"));
     }
 
-    //! \brief Destructor.
-    FileNewDialog::~FileNewDialog()
-    {
-    }
-
     void FileNewDialog::done(int r)
     {
         if (r == QDialog::Accepted) {

@@ -43,10 +43,6 @@ coax::coax() : transline()
   description = "Coaxial";
 }
 
-coax::~coax()
-{
-}
-
 /*
  * get_coax_sub() - get and assign coax substrate parameters into coax
  * structure

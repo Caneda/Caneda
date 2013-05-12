@@ -92,12 +92,6 @@ namespace Caneda
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
     }
 
-    //! \brief Destructor.
-    CGraphicsScene::~CGraphicsScene()
-    {
-        delete m_undoStack;
-    }
-
     //! \brief Cut items
     void CGraphicsScene::cutItems(QList<CGraphicsItem*> &_items, const Caneda::UndoOption opt)
     {

@@ -35,12 +35,6 @@ namespace Caneda
         m_webUrl = new QUrl;
     }
 
-    //! \brief Destructor.
-    WebDocument::~WebDocument()
-    {
-        delete m_webUrl;
-    }
-
     IContext* WebDocument::context()
     {
         return WebContext::instance();

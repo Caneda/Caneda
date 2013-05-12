@@ -37,11 +37,6 @@ namespace Caneda
         highlightCurrentLine();
     }
 
-    //! \brief Destructor.
-    TextEdit::~TextEdit()
-    {
-    }
-
     void TextEdit::setPointSize(qreal size)
     {
         QFont fnt = font();

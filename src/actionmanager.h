@@ -36,7 +36,6 @@ namespace Caneda
         Action(QObject *parent = 0);
         Action(const QString& text, QObject *parent = 0);
         Action(const QIcon& icon, const QString& text, QObject *parent = 0);
-        ~Action();
 
     Q_SIGNALS:
         void toggled(const QString& sender, bool checked);
@@ -62,7 +61,6 @@ namespace Caneda
 
     public:
         static ActionManager* instance();
-        ~ActionManager();
 
         Action* createAction(const QString& id, const QIcon& icon, const QString& text);
         Action* createAction(const QString& id, const QString& text);

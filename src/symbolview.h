@@ -49,7 +49,6 @@ namespace Caneda
 
     public:
         SymbolView(SymbolDocument *document);
-        virtual ~SymbolView();
 
         SymbolDocument* symbolDocument() const;
 

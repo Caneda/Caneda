@@ -34,7 +34,6 @@ namespace Caneda
         };
 
         GraphicLine(const QLineF &line, CGraphicsScene *scene = 0);
-        ~GraphicLine();
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 

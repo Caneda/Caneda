@@ -66,7 +66,6 @@ namespace Caneda
 
     public:
         CGraphicsScene(QObject *parent = 0);
-        ~CGraphicsScene();
 
         // Edit actions
         void cutItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);

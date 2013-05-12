@@ -43,7 +43,7 @@ namespace Caneda
     class Settings
     {
     public:
-        ~Settings();
+        static Settings* instance();
 
         QVariant currentValue(const QString& key) const;
         QVariant defaultValue(const QString& key) const;
@@ -52,8 +52,6 @@ namespace Caneda
 
         bool load();
         bool save();
-
-        static Settings* instance();
 
     private:
         Settings();

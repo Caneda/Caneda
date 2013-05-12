@@ -43,12 +43,6 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    //! \brief Destructor.
-    SymbolView::~SymbolView()
-    {
-        delete m_cGraphicsView;
-    }
-
     SymbolDocument* SymbolView::symbolDocument() const
     {
         return qobject_cast<SymbolDocument*>(document());

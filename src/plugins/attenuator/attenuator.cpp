@@ -39,10 +39,6 @@ namespace Caneda
         ui.labelTopologyImage->setPixmap(QPixmap(Caneda::bitmapDirectory() + "att_pi.png"));
     }
 
-    Attenuator::~Attenuator()
-    {
-    }
-
     void Attenuator::slotCalculate()
     {
         double Zin = ui.spinZin->value();

@@ -32,7 +32,6 @@ namespace Caneda
 
     public:
         FileNewDialog(QWidget *parent = 0);
-        ~FileNewDialog();
 
     public Q_SLOTS:
         virtual void done(int r);

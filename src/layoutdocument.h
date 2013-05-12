@@ -48,7 +48,6 @@ namespace Caneda
 
     public:
         LayoutDocument();
-        ~LayoutDocument();
 
         // IDocument interface methods
         virtual IContext* context();

@@ -49,7 +49,6 @@ namespace Caneda
 
     public:
         LayoutView(LayoutDocument *document);
-        virtual ~LayoutView();
 
         LayoutDocument* layoutDocument() const;
 

@@ -36,7 +36,6 @@ namespace Caneda
 
     public:
         CSimulationView(CSimulationScene *scene, QWidget *parent = 0);
-        ~CSimulationView();
 
         virtual void zoomIn();
         virtual void zoomOut();

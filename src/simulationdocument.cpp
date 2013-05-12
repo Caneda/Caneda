@@ -40,11 +40,6 @@ namespace Caneda
         m_cSimulationScene = new CSimulationScene();
     }
 
-    //! \brief Destructor.
-    SimulationDocument::~SimulationDocument()
-    {
-    }
-
     IContext* SimulationDocument::context()
     {
         return SimulationContext::instance();

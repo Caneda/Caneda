@@ -106,11 +106,6 @@ namespace Caneda
         return instance;
     }
 
-    //! \brief Destructor.
-    MainWindow::~MainWindow()
-    {
-    }
-
     TabWidget* MainWindow::tabWidget() const
     {
         return m_tabWidget;

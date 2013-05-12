@@ -47,7 +47,6 @@ namespace Caneda
     {
     public:
         FormatXmlLayout(LayoutDocument *doc = 0);
-        ~FormatXmlLayout();
 
         bool save();
         bool load();

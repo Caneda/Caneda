@@ -48,11 +48,6 @@ namespace Caneda
        updateBrush();
     }
 
-    //! \brief Destructor.
-    Layer::~Layer()
-    {
-    }
-
     //! \copydoc Painting::shapeForRect()
     QPainterPath Layer::shapeForRect(const QRectF& rect) const
     {

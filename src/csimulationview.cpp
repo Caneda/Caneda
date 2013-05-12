@@ -45,11 +45,6 @@ namespace Caneda
         loadUserSettings();
     }
 
-    //! \brief Destructor.
-    CSimulationView::~CSimulationView()
-    {
-    }
-
     void CSimulationView::zoomIn()
     {
         //! \todo Implement this

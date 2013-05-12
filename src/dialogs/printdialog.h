@@ -34,7 +34,6 @@ namespace Caneda
 
     public:
         PrintDialog(IDocument *document, QWidget *parent = 0);
-        ~PrintDialog();
 
     public Q_SLOTS:
         virtual void done(int r);

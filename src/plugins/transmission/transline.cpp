@@ -30,10 +30,6 @@ transline::transline () {
   transWidgets = 0;
 }
 
-/* Destructor destroys a transmission line instance. */
-transline::~transline () {
-}
-
 /* Sets the application instance. */
 void transline::setTransWidgets(TransWidgets *tw)
 {
