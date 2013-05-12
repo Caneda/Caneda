@@ -46,10 +46,6 @@ namespace Caneda
     {
     }
 
-    void SimulationContext::init()
-    {
-    }
-
     bool SimulationContext::canOpen(const QFileInfo &info) const
     {
         QStringList supportedSuffixes;

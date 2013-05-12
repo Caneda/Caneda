@@ -56,8 +56,6 @@ namespace Caneda
         virtual ~SchematicContext();
 
         // IContext interface methods
-        virtual void init();
-
         virtual QWidget* sideBarWidget();
 
         virtual bool canOpen(const QFileInfo &info) const;

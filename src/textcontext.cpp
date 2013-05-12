@@ -49,10 +49,6 @@ namespace Caneda
     {
     }
 
-    void TextContext::init()
-    {
-    }
-
     QWidget* TextContext::sideBarWidget()
     {
         return m_sidebarTextBrowser;

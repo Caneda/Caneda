@@ -59,8 +59,6 @@ namespace Caneda
     public:
         virtual ~IContext();
 
-        virtual void init();
-
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget()  { return 0; }
 

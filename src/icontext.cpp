@@ -32,8 +32,4 @@ namespace Caneda
     {
     }
 
-    void IContext::init()
-    {
-    }
-
 } // namespace Caneda

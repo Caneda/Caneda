@@ -55,8 +55,6 @@ namespace Caneda
         virtual ~TextContext();
 
         // IContext interface methods
-        virtual void init();
-
         virtual QWidget* sideBarWidget();
 
         virtual bool canOpen(const QFileInfo& info) const;

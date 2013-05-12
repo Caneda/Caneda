@@ -55,8 +55,6 @@ namespace Caneda
         virtual ~SimulationContext();
 
         // IContext interface methods
-        virtual void init();
-
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
         virtual QString defaultSuffix() const { return "raw";}

@@ -46,10 +46,6 @@ namespace Caneda
     {
     }
 
-    void WebContext::init()
-    {
-    }
-
     bool WebContext::canOpen(const QFileInfo& info) const
     {
         QStringList supportedSuffixes;

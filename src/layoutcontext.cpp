@@ -93,10 +93,6 @@ namespace Caneda
     {
     }
 
-    void LayoutContext::init()
-    {
-    }
-
     QWidget* LayoutContext::sideBarWidget()
     {
         return m_sidebarBrowser;

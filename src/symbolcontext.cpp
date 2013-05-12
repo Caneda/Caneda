@@ -70,10 +70,6 @@ namespace Caneda
     {
     }
 
-    void SymbolContext::init()
-    {
-    }
-
     QWidget* SymbolContext::sideBarWidget()
     {
         return m_sidebarBrowser;

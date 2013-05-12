@@ -95,10 +95,6 @@ namespace Caneda
     {
     }
 
-    void SchematicContext::init()
-    {
-    }
-
     QWidget* SchematicContext::sideBarWidget()
     {
         return m_sidebarBrowser;
