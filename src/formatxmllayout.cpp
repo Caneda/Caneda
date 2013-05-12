@@ -21,7 +21,7 @@
 
 #include "cgraphicsscene.h"
 #include "global.h"
-#include "layoutdocument.h"
+#include "idocument.h"
 #include "xmlutilities.h"
 
 #include "paintings/painting.h"

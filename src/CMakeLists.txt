@@ -22,13 +22,7 @@ SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   statehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp syntaxhighlighters.cpp
   clineedit.cpp csimulationscene.cpp csimulationview.cpp
-  simulationdocument.cpp simulationcontext.cpp simulationview.cpp
-  schematicdocument.cpp schematiccontext.cpp schematicview.cpp
-  symboldocument.cpp symbolcontext.cpp symbolview.cpp
-  layoutdocument.cpp layoutcontext.cpp layoutview.cpp
-  textdocument.cpp textcontext.cpp textview.cpp textedit.cpp
-  webdocument.cpp webcontext.cpp webview.cpp webpage.cpp
-  xmlutilities.cpp
+  textedit.cpp webpage.cpp xmlutilities.cpp
 )
 
 SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
@@ -37,13 +31,8 @@ SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   folderbrowser.h project.h actionmanager.h statehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
   syntaxhighlighters.h clineedit.h propertygroup.h
-  schematicdocument.h schematiccontext.h schematicview.h
-  simulationdocument.h simulationcontext.h simulationview.h
   csimulationscene.h csimulationview.h
-  symboldocument.h symbolcontext.h symbolview.h
-  layoutdocument.h layoutcontext.h layoutview.h
-  textdocument.h textcontext.h textview.h textedit.h
-  webdocument.h webcontext.h webview.h webpage.h
+  textedit.h webpage.h
 )
 
 QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )

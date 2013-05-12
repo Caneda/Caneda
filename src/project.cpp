@@ -22,9 +22,9 @@
 #include "actionmanager.h"
 #include "formatxmlsymbol.h"
 #include "global.h"
+#include "icontext.h"
+#include "idocument.h"
 #include "library.h"
-#include "schematiccontext.h"
-#include "schematicdocument.h"
 #include "sidebarbrowser.h"
 
 #include "dialogs/projectfilenewdialog.h"

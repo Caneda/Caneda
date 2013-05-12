@@ -23,8 +23,8 @@
 #include "cgraphicsscene.h"
 #include "component.h"
 #include "global.h"
+#include "idocument.h"
 #include "port.h"
-#include "schematicdocument.h"
 #include "wire.h"
 #include "xmlutilities.h"
 

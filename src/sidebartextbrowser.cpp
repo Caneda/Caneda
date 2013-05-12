@@ -22,8 +22,8 @@
 #include "clineedit.h"
 #include "documentviewmanager.h"
 #include "global.h"
+#include "idocument.h"
 #include "settings.h"
-#include "textdocument.h"
 
 #include <QFileSystemModel>
 #include <QDebug>

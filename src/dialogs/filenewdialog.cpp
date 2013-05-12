@@ -21,10 +21,7 @@
 
 #include "documentviewmanager.h"
 #include "global.h"
-#include "layoutcontext.h"
-#include "schematiccontext.h"
-#include "symbolcontext.h"
-#include "textcontext.h"
+#include "icontext.h"
 
 namespace Caneda
 {

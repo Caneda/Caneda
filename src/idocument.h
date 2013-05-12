@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -27,15 +27,24 @@
 // Forward declarations
 class QPaintDevice;
 class QPrinter;
+class QTextDocument;
 class QUndoStack;
+class QUrl;
 
 namespace Caneda
 {
     // Forward declarations
+    class CGraphicsScene;
+    class CSimulationScene;
     class DocumentViewManager;
     class IContext;
     class IView;
+    class TextEdit;
+    class WebPage;
 
+    /*************************************************************************
+     *                    General IDocument Structure                        *
+     *************************************************************************/
     /*!
      * \brief This class represents the actual document interface
      * (scene), in a manner similar to Qt's Graphics View Architecture,
@@ -122,6 +131,493 @@ namespace Caneda
         QString m_fileName;
 
         void setNormalAction();
+    };
+
+
+    /*************************************************************************
+     *                  Specialized IDocument Implementations                *
+     *************************************************************************/
+    /*!
+     * \brief This class represents the layout document interface
+     * implementation.
+     *
+     * This class represents the actual document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages document specific methods like saving,
+     * loading, exporting to different formats, as well as containing the
+     * actual scene. The scene itself is included as a pointer to
+     * CGraphicsScene, that contains all the scene specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa LayoutContext, LayoutView
+     */
+    class LayoutDocument : public IDocument
+    {
+        Q_OBJECT
+
+    public:
+        LayoutDocument();
+
+        // IDocument interface methods
+        virtual IContext* context();
+
+        virtual bool isModified() const;
+
+        virtual bool canUndo() const;
+        virtual bool canRedo() const;
+
+        virtual void undo();
+        virtual void redo();
+
+        virtual QUndoStack* undoStack();
+
+        virtual bool canCut() const;
+        virtual bool canCopy() const;
+        virtual bool canPaste() const { return true; }
+
+        virtual void cut();
+        virtual void copy();
+        virtual void paste();
+
+        virtual void selectAll();
+
+        virtual void intoHierarchy();
+        virtual void popHierarchy();
+
+        virtual void alignTop();
+        virtual void alignBottom();
+        virtual void alignLeft();
+        virtual void alignRight();
+        virtual void distributeHorizontal();
+        virtual void distributeVertical();
+        virtual void centerHorizontal();
+        virtual void centerVertical();
+
+        virtual void simulate();
+
+        virtual bool printSupportsFitInPage() const  { return true; }
+        virtual void print(QPrinter *printer, bool fitInView);
+        virtual void exportImage(QPaintDevice &device);
+        virtual QSizeF documentSize();
+
+        virtual bool load(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0);
+
+        virtual IView* createView();
+
+        virtual void launchPropertiesDialog();
+        // End of IDocument interface methods
+
+        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
+
+    private:
+        CGraphicsScene *m_cGraphicsScene;
+
+        void alignElements(Qt::Alignment alignment);
+    };
+
+    /*!
+     * \brief This class represents the schematic document interface
+     * implementation.
+     *
+     * This class represents the actual document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages document specific methods like saving,
+     * loading, exporting to different formats, as well as containing the
+     * actual scene. The scene itself is included as a pointer to
+     * CGraphicsScene, that contains all the scene specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa SchematicContext, SchematicView
+     */
+    class SchematicDocument : public IDocument
+    {
+        Q_OBJECT
+
+    public:
+        SchematicDocument();
+
+        // IDocument interface methods
+        virtual IContext* context();
+
+        virtual bool isModified() const;
+
+        virtual bool canUndo() const;
+        virtual bool canRedo() const;
+
+        virtual void undo();
+        virtual void redo();
+
+        virtual QUndoStack* undoStack();
+
+        virtual bool canCut() const;
+        virtual bool canCopy() const;
+        virtual bool canPaste() const { return true; }
+
+        virtual void cut();
+        virtual void copy();
+        virtual void paste();
+
+        virtual void selectAll();
+
+        virtual void intoHierarchy();
+        virtual void popHierarchy();
+
+        virtual void alignTop();
+        virtual void alignBottom();
+        virtual void alignLeft();
+        virtual void alignRight();
+        virtual void distributeHorizontal();
+        virtual void distributeVertical();
+        virtual void centerHorizontal();
+        virtual void centerVertical();
+
+        virtual void simulate();
+
+        virtual bool printSupportsFitInPage() const { return true; }
+        virtual void print(QPrinter *printer, bool fitInView);
+        virtual void exportImage(QPaintDevice &device);
+        virtual QSizeF documentSize();
+
+        virtual bool load(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0);
+
+        virtual IView* createView();
+
+        virtual void launchPropertiesDialog();
+        // End of IDocument interface methods
+
+        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
+
+    private:
+        CGraphicsScene *m_cGraphicsScene;
+
+        void alignElements(Qt::Alignment alignment);
+    };
+
+    /*!
+     * \brief This class represents the simulation document interface
+     * implementation.
+     *
+     * This class represents the actual document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages document specific methods like saving,
+     * loading, exporting to different formats, as well as containing the
+     * actual scene. The scene itself is included as a pointer to
+     * CSimulationScene, that contains all the scene specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa SimulationContext, SimulationView
+     */
+    class SimulationDocument : public IDocument
+    {
+        Q_OBJECT
+
+    public:
+        SimulationDocument();
+
+        // IDocument interface methods
+        virtual IContext* context();
+
+        virtual bool isModified() const { return false; }
+
+        virtual bool canUndo() const { return false; }
+        virtual bool canRedo() const { return false; }
+
+        virtual void undo() {}
+        virtual void redo() {}
+
+        virtual QUndoStack* undoStack();
+
+        virtual bool canCut() const { return false; }
+        virtual bool canCopy() const { return false; }
+        virtual bool canPaste() const { return false; }
+
+        virtual void cut() {}
+        virtual void copy() {}
+        virtual void paste() {}
+
+        virtual void selectAll() {}
+
+        virtual void intoHierarchy() {}
+        virtual void popHierarchy() {}
+
+        virtual void alignTop() {}
+        virtual void alignBottom() {}
+        virtual void alignLeft() {}
+        virtual void alignRight() {}
+        virtual void distributeHorizontal();
+        virtual void distributeVertical();
+        virtual void centerHorizontal();
+        virtual void centerVertical();
+
+        virtual void simulate() {}
+
+        virtual bool printSupportsFitInPage() const { return false; }
+        virtual void print(QPrinter *printer, bool fitInView);
+        virtual void exportImage(QPaintDevice &device);
+        virtual QSizeF documentSize();
+
+        virtual bool load(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0) {}
+
+        virtual IView* createView();
+
+        virtual void launchPropertiesDialog() {}
+        // End of IDocument interface methods
+
+        CSimulationScene* cSimulationScene() const { return m_cSimulationScene; }
+
+    private:
+        CSimulationScene *m_cSimulationScene;
+    };
+
+    /*!
+     * \brief This class represents the symbol document interface
+     * implementation.
+     *
+     * This class represents the actual document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages document specific methods like saving,
+     * loading, exporting to different formats, as well as containing the
+     * actual scene. The scene itself is included as a pointer to
+     * CGraphicsScene, that contains all the scene specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa SymbolContext, SymbolView
+     */
+    class SymbolDocument : public IDocument
+    {
+        Q_OBJECT
+
+    public:
+        SymbolDocument();
+
+        // IDocument interface methods
+        virtual IContext* context();
+
+        virtual bool isModified() const;
+
+        virtual bool canUndo() const;
+        virtual bool canRedo() const;
+
+        virtual void undo();
+        virtual void redo();
+
+        virtual QUndoStack* undoStack();
+
+        virtual bool canCut() const;
+        virtual bool canCopy() const;
+        virtual bool canPaste() const { return true; }
+
+        virtual void cut();
+        virtual void copy();
+        virtual void paste();
+
+        virtual void selectAll();
+
+        virtual void intoHierarchy();
+        virtual void popHierarchy();
+
+        virtual void alignTop();
+        virtual void alignBottom();
+        virtual void alignLeft();
+        virtual void alignRight();
+        virtual void distributeHorizontal();
+        virtual void distributeVertical();
+        virtual void centerHorizontal();
+        virtual void centerVertical();
+
+        virtual void simulate() {}
+
+        virtual bool printSupportsFitInPage() const { return true; }
+        virtual void print(QPrinter *printer, bool fitInView);
+        virtual void exportImage(QPaintDevice &device);
+        virtual QSizeF documentSize();
+
+        virtual bool load(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0);
+
+        virtual IView* createView();
+
+        virtual void launchPropertiesDialog();
+        // End of IDocument interface methods
+
+        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
+
+    private:
+        CGraphicsScene *m_cGraphicsScene;
+
+        void alignElements(Qt::Alignment alignment);
+    };
+
+    /*!
+     * \brief This class represents the text document interface
+     * implementation.
+     *
+     * This class represents the actual document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages document specific methods like saving and
+     * loading, as well as containing the actual document. The document
+     * itself is included as a pointer to QTextDocument, that contains all the
+     * document specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa TextContext, TextView
+     */
+    class TextDocument : public IDocument
+    {
+        Q_OBJECT
+
+    public:
+        TextDocument();
+
+        // IDocument interface methods
+        virtual IContext* context();
+
+        virtual bool isModified() const;
+
+        virtual bool canUndo() const;
+        virtual bool canRedo() const;
+
+        virtual void undo();
+        virtual void redo();
+
+        virtual QUndoStack* undoStack();
+
+        virtual bool canCut() const { return true; }
+        virtual bool canCopy() const { return true; }
+        virtual bool canPaste() const { return true; }
+
+        virtual void cut();
+        virtual void copy();
+        virtual void paste();
+
+        virtual void selectAll();
+
+        virtual void intoHierarchy();
+        virtual void popHierarchy();
+
+        virtual void alignTop() {}
+        virtual void alignBottom() {}
+        virtual void alignLeft() {}
+        virtual void alignRight() {}
+        virtual void distributeHorizontal() {}
+        virtual void distributeVertical() {}
+        virtual void centerHorizontal() {}
+        virtual void centerVertical() {}
+
+        virtual void simulate();
+
+        virtual bool printSupportsFitInPage() const { return false; }
+        virtual void print(QPrinter *printer, bool fitInView);
+        virtual void exportImage(QPaintDevice &device) {}
+        virtual QSizeF documentSize();
+
+        virtual bool load(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0);
+
+        virtual IView* createView();
+
+        virtual void launchPropertiesDialog() {}
+        // End of IDocument interface methods
+
+        QTextDocument* textDocument() const { return m_textDocument; }
+
+        void pasteTemplate(const QString& text);
+
+    private Q_SLOTS:
+        void onContentsChanged();
+        void simulationReady(int error);
+        void simulationLog(int error);
+
+    private:
+        bool simulationErrorStatus;
+        TextEdit* activeTextEdit();
+        QTextDocument *m_textDocument;
+    };
+
+    /*!
+     * \brief This class represents the web browser document interface
+     * implementation.
+     *
+     * This class represents the actual web document interface
+     * (scene), in a manner similar to Qt's Graphics View Architecture.
+     *
+     * This class manages web document specific methods like loading, as well
+     * as containing the actual document. The document itself is included as a
+     * pointer to QUrl, that contains all the document specific methods.
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa WebContext, WebView
+     */
+    class WebDocument : public IDocument
+    {
+        Q_OBJECT
+
+    public:
+        WebDocument();
+
+        // IDocument interface methods
+        virtual IContext* context();
+
+        virtual bool isModified() const { return false; }
+
+        virtual bool canUndo() const { return false; }
+        virtual bool canRedo() const { return false; }
+
+        virtual void undo() {}
+        virtual void redo() {}
+
+        virtual QUndoStack* undoStack();
+
+        virtual bool canCut() const { return false; }
+        virtual bool canCopy() const { return false; }
+        virtual bool canPaste() const { return false; }
+
+        virtual void cut() {}
+        virtual void copy();
+        virtual void paste() {}
+
+        virtual void selectAll() {}
+
+        virtual void intoHierarchy() {}
+        virtual void popHierarchy() {}
+
+        virtual void alignTop() {}
+        virtual void alignBottom() {}
+        virtual void alignLeft() {}
+        virtual void alignRight() {}
+        virtual void distributeHorizontal() {}
+        virtual void distributeVertical() {}
+        virtual void centerHorizontal() {}
+        virtual void centerVertical() {}
+
+        virtual void simulate() {}
+
+        virtual bool printSupportsFitInPage() const { return false; }
+        virtual void print(QPrinter *printer, bool fitInView);
+        virtual void exportImage(QPaintDevice &device) {}
+        virtual QSizeF documentSize();
+
+        virtual bool load(QString *errorMessage = 0);
+        virtual bool save(QString *errorMessage = 0) {}
+
+        virtual IView* createView();
+
+        virtual void launchPropertiesDialog() {}
+        // End of IDocument interface methods
+
+        QUrl* webUrl() const { return m_webUrl; }
+
+    private:
+        WebPage* activeWebPage();
+        QUrl *m_webUrl;
     };
 
 } // namespace Caneda

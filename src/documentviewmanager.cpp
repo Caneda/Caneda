@@ -22,14 +22,8 @@
 #include "icontext.h"
 #include "idocument.h"
 #include "iview.h"
-#include "layoutcontext.h"
 #include "mainwindow.h"
-#include "schematiccontext.h"
-#include "simulationcontext.h"
-#include "symbolcontext.h"
 #include "tabs.h"
-#include "textcontext.h"
-#include "webcontext.h"
 
 #include "dialogs/savedocumentsdialog.h"
 

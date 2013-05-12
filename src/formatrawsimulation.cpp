@@ -20,7 +20,7 @@
 #include "formatrawsimulation.h"
 
 #include "csimulationscene.h"
-#include "simulationdocument.h"
+#include "idocument.h"
 #include "xmlutilities.h"
 
 #include <QDebug>

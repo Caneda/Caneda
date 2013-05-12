@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,6 +21,8 @@
 #ifndef CANEDA_IVIEW_H
 #define CANEDA_IVIEW_H
 
+#include "global.h"
+
 #include <QObject>
 
 // Forward declaration
@@ -31,10 +33,23 @@ class QWidget;
 namespace Caneda
 {
     // Forward declarations.
+    class CGraphicsView;
+    class CSimulationView;
+    class DocumentViewManager;
+    class LayoutDocument;
     class IContext;
     class IDocument;
-    class DocumentViewManager;
+    class SchematicDocument;
+    class SimulationDocument;
+    class SymbolDocument;
+    class TextDocument;
+    class TextEdit;
+    class WebDocument;
+    class WebPage;
 
+    /*************************************************************************
+     *                       General IView Structure                         *
+     *************************************************************************/
     /*!
      * \brief This class represents the view for a document, in a manner
      * similar to Qt's Graphics View Architecture. The IView class provides
@@ -89,6 +104,284 @@ namespace Caneda
         QComboBox *m_documentSelector;
 
         friend class DocumentViewManager;
+    };
+
+
+    /*************************************************************************
+     *                  Specialized IView Implementations                    *
+     *************************************************************************/
+    /*!
+     * \brief This class represents the layout view interface
+     * implementation.
+     *
+     * This class represents the view for a document, in a manner
+     * similar to Qt's Graphics View Architecture, and provides the view
+     * widget, which visualizes the contents of a scene. The view is included
+     * as a pointer to CGraphicsView, that contains all the view specific
+     * methods. You can attach several views to the same scene, to provide
+     * different viewports into the same data set of the document (for example,
+     * when using split views).
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa LayoutContext, LayoutDocument
+     */
+    class LayoutView : public IView
+    {
+        Q_OBJECT
+
+    public:
+        LayoutView(LayoutDocument *document);
+
+        // IView interface methods
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
+
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        virtual IView* duplicate();
+
+        virtual void updateSettingsChanges();
+        // End of IView interface methods
+
+    private Q_SLOTS:
+        void onWidgetFocussedIn();
+        void onWidgetFocussedOut();
+
+    private:
+        CGraphicsView *m_cGraphicsView;
+    };
+
+    /*!
+     * \brief This class represents the schematic view interface
+     * implementation.
+     *
+     * This class represents the view for a document, in a manner
+     * similar to Qt's Graphics View Architecture, and provides the view
+     * widget, which visualizes the contents of a scene. The view is included
+     * as a pointer to CGraphicsView, that contains all the view specific
+     * methods. You can attach several views to the same scene, to provide
+     * different viewports into the same data set of the document (for example,
+     * when using split views).
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa SchematicContext, SchematicDocument
+     */
+    class SchematicView : public IView
+    {
+        Q_OBJECT
+
+    public:
+        SchematicView(SchematicDocument *document);
+
+        // IView interface methods
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
+
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        virtual IView* duplicate();
+
+        virtual void updateSettingsChanges();
+        // End of IView interface methods
+
+    private Q_SLOTS:
+        void onWidgetFocussedIn();
+        void onWidgetFocussedOut();
+
+    private:
+        CGraphicsView *m_cGraphicsView;
+    };
+
+    /*!
+     * \brief This class represents the simulation view interface
+     * implementation.
+     *
+     * This class represents the view for a document, in a manner
+     * similar to Qt's Graphics View Architecture, and provides the view
+     * widget, which visualizes the contents of a scene. The view is included
+     * as a pointer to a CSimulationView, that contains all the view specific
+     * methods. You can attach several views to the same scene, to provide
+     * different viewports into the same data set of the document (for example,
+     * when using split views).
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa SimulationContext, SimulationDocument
+     */
+    class SimulationView : public IView
+    {
+        Q_OBJECT
+
+    public:
+        SimulationView(SimulationDocument *document);
+
+        // IView interface methods
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
+
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        virtual IView* duplicate();
+
+        virtual void updateSettingsChanges();
+        // End of IView interface methods
+
+    private Q_SLOTS:
+        void onWidgetFocussedIn();
+        void onWidgetFocussedOut();
+
+    private:
+        CSimulationView *m_simulationView;  //! \brief Plot widget.
+    };
+
+    /*!
+     * \brief This class represents the symbol view interface
+     * implementation.
+     *
+     * This class represents the view for a document, in a manner
+     * similar to Qt's Graphics View Architecture, and provides the view
+     * widget, which visualizes the contents of a scene. The view is included
+     * as a pointer to CGraphicsView, that contains all the view specific
+     * methods. You can attach several views to the same scene, to provide
+     * different viewports into the same data set of the document (for example,
+     * when using split views).
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa SymbolContext, SymbolDocument
+     */
+    class SymbolView : public IView
+    {
+        Q_OBJECT
+
+    public:
+        SymbolView(SymbolDocument *document);
+
+        // IView interface methods
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
+
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        virtual IView* duplicate();
+
+        virtual void updateSettingsChanges();
+        // End of IView interface methods
+
+    private Q_SLOTS:
+        void onWidgetFocussedIn();
+        void onWidgetFocussedOut();
+
+    private:
+        CGraphicsView *m_cGraphicsView;
+    };
+
+    /*!
+     * \brief This class represents the text view interface
+     * implementation.
+     *
+     * This class represents the view for a document, in a manner
+     * similar to Qt's Graphics View Architecture, and provides the view
+     * widget, which visualizes the contents of the document. The view is
+     * included as a pointer to TextEdit, that contains all the view specific
+     * methods. You can attach several views to the same document, to provide
+     * different viewports into the same data set of the document (for example,
+     * when using split views).
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa TextContext, TextDocument
+     */
+    class TextView : public IView
+    {
+        Q_OBJECT
+
+    public:
+        TextView(TextDocument *document);
+
+        // IView interface methods
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
+
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        virtual IView* duplicate();
+
+        virtual void updateSettingsChanges();
+        // End of IView interface methods
+
+    private Q_SLOTS:
+        void onFocussed();
+
+    private:
+        TextEdit *m_textEdit;
+
+        void setZoomLevel(qreal level);
+
+        const qreal m_originalZoom;
+        ZoomRange m_zoomRange;
+        qreal m_currentZoom;
+    };
+
+    /*!
+     * \brief This class represents the web browser view interface
+     * implementation.
+     *
+     * This class represents the view for a web document, in a manner
+     * similar to Qt's Graphics View Architecture, and provides the view
+     * widget, which visualizes the contents of the document. The view is
+     * included as a pointer to WebPage, that contains all the view specific
+     * methods. You can attach several views to the same document, to provide
+     * different viewports into the same data set of the document (for example,
+     * when using split views).
+     *
+     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
+     * \sa WebContext, WebDocument
+     */
+    class WebView : public IView
+    {
+        Q_OBJECT
+
+    public:
+        WebView(WebDocument *document);
+
+        // IView interface methods
+        virtual QWidget* toWidget() const;
+        virtual IContext* context() const;
+
+        virtual void zoomIn();
+        virtual void zoomOut();
+        virtual void zoomFitInBest();
+        virtual void zoomOriginal();
+
+        virtual IView* duplicate();
+
+        virtual void updateSettingsChanges();
+        // End of IView interface methods
+
+    private Q_SLOTS:
+        void onFocussed();
+
+    private:
+        WebPage *m_webPage;
+
+        void setZoomLevel(qreal level);
+
+        const qreal m_originalZoom;
+        ZoomRange m_zoomRange;
+        qreal m_currentZoom;
     };
 
 } // namespace Caneda
