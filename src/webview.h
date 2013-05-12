@@ -51,8 +51,6 @@ namespace Caneda
     public:
         WebView(WebDocument *document);
 
-        WebPage* webPage() const;
-
         // IView interface methods
         virtual QWidget* toWidget() const;
         virtual IContext* context() const;

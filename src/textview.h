@@ -52,8 +52,6 @@ namespace Caneda
     public:
         TextView(TextDocument *document);
 
-        TextEdit* textEdit() const;
-
         // IView interface methods
         virtual QWidget* toWidget() const;
         virtual IContext* context() const;

@@ -44,11 +44,6 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    TextEdit* TextView::textEdit() const
-    {
-        return m_textEdit;
-    }
-
     QWidget* TextView::toWidget() const
     {
         return m_textEdit;

@@ -299,10 +299,11 @@ namespace Caneda
     TextEdit* TextDocument::activeTextEdit()
     {
         IView *view = DocumentViewManager::instance()->currentView();
-        TextView *active = qobject_cast<TextView*>(view);
+        TextView *tv = qobject_cast<TextView*>(view);
+        TextEdit *te = qobject_cast<TextEdit*>(tv->toWidget());
 
-        if (active) {
-            return active->textEdit();
+        if (te) {
+            return te;
         }
 
         return 0;

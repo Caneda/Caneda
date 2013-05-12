@@ -41,11 +41,6 @@ namespace Caneda
                 SLOT(onFocussed()));
     }
 
-    WebPage* WebView::webPage() const
-    {
-        return m_webPage;
-    }
-
     QWidget* WebView::toWidget() const
     {
         return m_webPage;

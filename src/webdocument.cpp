@@ -95,10 +95,12 @@ namespace Caneda
     WebPage* WebDocument::activeWebPage()
     {
         IView *view = DocumentViewManager::instance()->currentView();
-        WebView *active = qobject_cast<WebView*>(view);
+        WebView *wv = qobject_cast<WebView*>(view);
 
-        if (active) {
-            return active->webPage();
+        WebPage *wp = qobject_cast<WebPage*>(wv->toWidget());
+
+        if (wp) {
+            return wp;
         }
 
         return 0;
