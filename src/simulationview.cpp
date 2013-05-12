@@ -43,11 +43,6 @@ namespace Caneda
 //                this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    SimulationDocument* SimulationView::simulationDocument() const
-    {
-        return qobject_cast<SimulationDocument*>(document());
-    }
-
     QWidget* SimulationView::toWidget() const
     {
         return m_simulationView;

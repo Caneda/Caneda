@@ -51,8 +51,6 @@ namespace Caneda
     public:
         SchematicView(SchematicDocument *document);
 
-        SchematicDocument* schematicDocument() const;
-
         // IView interface methods
         virtual QWidget* toWidget() const;
         virtual IContext* context() const;

@@ -44,11 +44,6 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    SchematicDocument* SchematicView::schematicDocument() const
-    {
-        return qobject_cast<SchematicDocument*>(document());
-    }
-
     QWidget* SchematicView::toWidget() const
     {
         return m_cGraphicsView;

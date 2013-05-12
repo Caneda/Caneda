@@ -50,8 +50,6 @@ namespace Caneda
     public:
         SimulationView(SimulationDocument *document);
 
-        SimulationDocument* simulationDocument() const;
-
         // IView interface methods
         virtual QWidget* toWidget() const;
         virtual IContext* context() const;

@@ -50,8 +50,6 @@ namespace Caneda
     public:
         SymbolView(SymbolDocument *document);
 
-        SymbolDocument* symbolDocument() const;
-
         // IView interface methods
         virtual QWidget* toWidget() const;
         virtual IContext* context() const;

@@ -50,8 +50,6 @@ namespace Caneda
     public:
         LayoutView(LayoutDocument *document);
 
-        LayoutDocument* layoutDocument() const;
-
         // IView interface methods
         virtual QWidget* toWidget() const;
         virtual IContext* context() const;

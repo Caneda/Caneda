@@ -43,11 +43,6 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
-    SymbolDocument* SymbolView::symbolDocument() const
-    {
-        return qobject_cast<SymbolDocument*>(document());
-    }
-
     QWidget* SymbolView::toWidget() const
     {
         return m_cGraphicsView;
