@@ -54,7 +54,7 @@ namespace Caneda
         void updateToolbarInsertibles() {
             LibraryManager *loader = LibraryManager::instance();
             toolbarInsertibles.insert("insGround",
-                    loader->newComponent("Ground", 0, "Passive"));
+                    loader->newComponent("Ground", 0, "Miscellaneous"));
         }
 
         void clearInsertibles() {
