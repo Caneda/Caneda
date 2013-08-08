@@ -61,12 +61,15 @@ namespace Caneda
                 this, SLOT(slotStatusBarMessage(QString)));
         setCentralWidget(m_tabWidget);
 
-        setObjectName("MainWindow"); //for debugging purpose
+        setObjectName("MainWindow"); // For debugging purposes
         setDocumentTitle("Untitled");
 
         m_undoGroup = new QUndoGroup();
 
         // Be vary of the order as all the pointers are uninitialized at this moment.
+        Settings *settings = Settings::instance();
+        settings->load();
+
         initActions();
         initMenus();
         initToolBars();
@@ -77,7 +80,7 @@ namespace Caneda
         createFolderView();
         createUndoView();
 
-        loadSettings();
+        loadSettings();  // Load window and docks geometry
 
         QTimer::singleShot(100, this, SLOT(initFile()));
     }
@@ -1551,7 +1554,6 @@ namespace Caneda
     void MainWindow::loadSettings()
     {
         Settings *settings = Settings::instance();
-        settings->load();
 
         // Load geometry and docks positions
         const QByteArray geometryData = settings->currentValue("gui/geometry").toByteArray();
