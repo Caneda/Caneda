@@ -287,8 +287,7 @@ namespace Caneda
     };
 
     /*!
-     * \brief This class represents the text view interface
-     * implementation.
+     * \brief This class represents the text view interface implementation.
      *
      * This class represents the view for a document, in a manner
      * similar to Qt's Graphics View Architecture, and provides the view

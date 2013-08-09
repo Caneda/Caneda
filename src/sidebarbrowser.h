@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -49,7 +50,23 @@ namespace Caneda
         bool invalidPressed;
     };
 
-    //! \brief Represents sidebar which allows components to be selected.
+    /*!
+     * \brief This class implements the sidebar dockwidget with components to
+     * be inserted in graphic documents.
+     *
+     * This class implements the sidebar dockwidget corresponding to the
+     * LayoutContext, SchematicContext, and SymbolContext classes. It allows
+     * previously generated components to be inserted in these type of
+     * documents.
+     *
+     * The components depend on the final context class. In the LayoutContext,
+     * for example, components are layout layers; in the SchematicContext,
+     * components are electronic components; and in the SymbolContext,
+     * components are painting items. All these components are inserted into
+     * the currently opened document upon user double click.
+     *
+     * \sa LayoutContext, SchematicContext, SymbolContext, SidebarTextBrowser
+     */
     class SidebarBrowser : public QWidget
     {
         Q_OBJECT

@@ -283,8 +283,7 @@ namespace Caneda
     };
 
     /*!
-     * \brief This class represents the text context interface
-     * implementation.
+     * \brief This class represents the text context interface implementation.
      *
      * Only one instance of this class is used during the whole life span of
      * the program. This class answers the general questions like which file

@@ -31,7 +31,20 @@ namespace Caneda
     class CLineEdit;
     class FileFilterProxyModel;
 
-    //! Represents sidebar which allows text templates to be inserted
+    /*!
+     * \brief This class implements the sidebar dockwidget with templates to be
+     * inserted in text documents.
+     *
+     * This class implements the sidebar dockwidget corresponding to the
+     * TextContext class. It allows previously generated templates to be
+     * inserted in text documents.
+     *
+     * The templates may correspond to spice, vhdl, verilog, or any other type
+     * of code structures. These structures or templates are inserted into the
+     * currently opened document upon user double click.
+     *
+     * \sa TextContext, SidebarBrowser
+     */
     class SidebarTextBrowser : public QWidget
     {
         Q_OBJECT

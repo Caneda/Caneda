@@ -57,7 +57,10 @@ namespace Caneda
  * Document-View framework and CGraphicsScene which provides a canvas for
  * managing graphics elements.
  *
- * \li <b>The MainWindow Class:</b> \copybrief MainWindow
+ * \li <b>The MainWindow Class:</b> The MainWindow class is one of Caneda's
+ * main classes (along with the Document-View framework composed by IContext,
+ * IDocument and IView classes). This class initializes the main window of the
+ * program and manages all user interface interactions.
  * \li <b>\ref DocumentViewFramework</b>: Caneda's Document-View
  * framework provides a convenient approach to model-view programming, much
  * like Qt's Graphics View Architecture. The main intent is to allow the
@@ -65,7 +68,10 @@ namespace Caneda
  * change the bulk of the existing code. The main classes in Caneda's
  * Document-View framework are IContext, IDocument and IView, which must be
  * inherited to create more specific uses for each file type.
- * \li <b>The CGraphicsScene Class:</b> \copybrief CGraphicsScene
+ * \li <b>The CGraphicsScene Class:</b> This class provides a canvas for
+ * managing graphics elements common to all Caneda's graphics scenes
+ * (schematics, symbols, layouts, etc). This is one of Caneda's most important
+ * classes, along with MainWindow class and \ref DocumentViewFramework.
  *
  * Finally, you can find information on the several file formats used in
  * \ref DocumentFormats.

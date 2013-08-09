@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -28,6 +28,16 @@ class QTextCharFormat;
 
 namespace Caneda
 {
+    /*!
+     * \brief This class implements generic highlighting methods to be used in
+     * common by all the different highlighting classes (spice, vhdl, verilog,
+     * etc).
+     *
+     * To implement a new highlighting class, inherit this class and implement
+     * the specific highlighting rules, corresponding to the new document type.
+     *
+     * \sa VhdlHighlighter, VerilogHighlighter, SpiceHighlighter
+     */
     class Highlighter : public QSyntaxHighlighter
     {
         Q_OBJECT
@@ -59,7 +69,12 @@ namespace Caneda
         QTextCharFormat systemFormat;
     };
 
-
+    /*!
+     * \brief This class inherits the Highlighter class, and implements the
+     * vhdl highlighting rules.
+     *
+     * \sa Highlighter
+     */
     class VhdlHighlighter : public Highlighter
     {
         Q_OBJECT
@@ -67,7 +82,12 @@ namespace Caneda
         VhdlHighlighter(QTextDocument *parent = 0);
     };
 
-
+    /*!
+     * \brief This class inherits the Highlighter class, and implements the
+     * verilog highlighting rules.
+     *
+     * \sa Highlighter
+     */
     class VerilogHighlighter : public Highlighter
     {
         Q_OBJECT
@@ -75,6 +95,12 @@ namespace Caneda
         VerilogHighlighter(QTextDocument *parent = 0);
     };
 
+    /*!
+     * \brief This class inherits the Highlighter class, and implements the
+     * spice highlighting rules.
+     *
+     * \sa Highlighter
+     */
     class SpiceHighlighter : public Highlighter
     {
         Q_OBJECT

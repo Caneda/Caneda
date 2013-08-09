@@ -1551,6 +1551,15 @@ namespace Caneda
         manager->newDocument(SchematicContext::instance());
     }
 
+    /*!
+     * \brief Load window and docks geometry
+     *
+     * Load window and docks geometry, saved in a previous program execution.
+     * This method should be called after the instance Settings::load() method
+     * has been called, thus effectively loading correct settings.
+     *
+     * \sa saveSettings(), Settings::load()
+     */
     void MainWindow::loadSettings()
     {
         Settings *settings = Settings::instance();
@@ -1573,6 +1582,15 @@ namespace Caneda
         setIconSize(iconSize);
     }
 
+    /*!
+     * \brief Save window and docks geometry
+     *
+     * Save window and docks geometry, to be loaded in the next program
+     * execution. This method should be called just before closing the program,
+     * saving the last used position and geometry of the window.
+     *
+     * \sa loadSettings()
+     */
     void MainWindow::saveSettings()
     {
         Settings *settings = Settings::instance();
