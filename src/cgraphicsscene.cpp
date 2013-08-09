@@ -55,6 +55,10 @@ namespace Caneda
     CGraphicsScene::CGraphicsScene(QObject *parent) :
         QGraphicsScene(QRectF(-2500, -2500, 5000, 5000), parent)
     {
+        // Initialize m_mouseAction before anything else to avoid event
+        // comparisions with an uninitialized variable.
+        m_mouseAction = Normal;
+
         // Setup spice/electric related scene properties
         m_properties = new PropertyGroup(this);
 
@@ -86,8 +90,6 @@ namespace Caneda
         addItem(m_zoomBand);
 
         m_zoomBandClicks = 0;
-
-        setMouseAction(Normal);
 
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
     }
@@ -752,7 +754,6 @@ namespace Caneda
      */
     bool CGraphicsScene::event(QEvent *event)
     {
-        static int ii = 0;
         if(m_mouseAction == InsertingItems) {
             if(event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
                 bool visible = (event->type() == QEvent::Enter);
