@@ -69,7 +69,6 @@ namespace Caneda
         void setNormalAction();
         Action* action(const QString &name);
         QMenu* menubarMenu(const QString &name, bool createOnAbsence = true);
-        QUndoGroup *m_undoGroup;
 
     public Q_SLOTS:
         void slotFileNew();
@@ -163,7 +162,6 @@ namespace Caneda
         void initToolBars();
         void initStatusBar();
 
-        void createUndoView();
         void createFolderView();
         void setupSidebar();
         void setupProjectsSidebar();
@@ -175,10 +173,9 @@ namespace Caneda
         QLabel *m_statusLabel;
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
         QDockWidget *m_sidebarDockWidget, *m_projectDockWidget,
-                    *m_browserDockWidget,*m_undoDockWidget;
+                    *m_browserDockWidget;
         Project *m_project;
         FolderBrowser *m_folderBrowser;
-        QUndoView *undoView;
         TabWidget *m_tabWidget;
         QString titleText;
     };

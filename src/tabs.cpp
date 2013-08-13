@@ -446,7 +446,6 @@ namespace Caneda
         connect(tab, SIGNAL(statusBarMessage(Tab*, const QString&)), this,
                 SLOT(onStatusBarMessage(Tab*, const QString&)));
 
-
         IView *view = tab->activeView();
         if (!view) {
             return;
@@ -456,9 +455,6 @@ namespace Caneda
         if (!document) {
             return;
         }
-
-        MainWindow *mw = MainWindow::instance();
-        mw->m_undoGroup->addStack(document->undoStack());
     }
 
     Tab* TabWidget::currentTab() const
@@ -592,7 +588,6 @@ namespace Caneda
         mw->action("editRedo")->setEnabled(document->canRedo());
 
         mw->sidebarDockWidget()->setWidget(view->context()->sideBarWidget());
-        mw->m_undoGroup->setActiveStack(document->undoStack());
     }
 
     void TabWidget::onStatusBarMessage(Tab *tab, const QString &message)

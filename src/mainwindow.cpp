@@ -64,8 +64,6 @@ namespace Caneda
         setObjectName("MainWindow"); // For debugging purposes
         setDocumentTitle("Untitled");
 
-        m_undoGroup = new QUndoGroup();
-
         // Be vary of the order as all the pointers are uninitialized at this moment.
         Settings *settings = Settings::instance();
         settings->load();
@@ -78,7 +76,6 @@ namespace Caneda
         setupSidebar();
         setupProjectsSidebar();
         createFolderView();
-        createUndoView();
 
         loadSettings();  // Load window and docks geometry
 
@@ -144,19 +141,6 @@ namespace Caneda
         m_projectDockWidget->setVisible(false);
         addDockWidget(Qt::LeftDockWidgetArea, m_projectDockWidget);
         docksMenu->addAction(m_projectDockWidget->toggleViewAction());
-    }
-
-    void MainWindow::createUndoView()
-    {
-        undoView = new QUndoView(m_undoGroup);
-        undoView->setWindowTitle(tr("Command List"));
-
-        m_undoDockWidget = new QDockWidget(undoView->windowTitle(), this);
-        m_undoDockWidget->setWidget(undoView);
-        m_undoDockWidget->setObjectName("undoSidebar");
-        m_undoDockWidget->setVisible(false);
-        addDockWidget(Qt::RightDockWidgetArea, m_undoDockWidget);
-        docksMenu->addAction(m_undoDockWidget->toggleViewAction());
     }
 
     void MainWindow::createFolderView()
