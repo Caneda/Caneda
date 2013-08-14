@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -37,23 +37,23 @@ namespace Caneda
      */
     Layer::Layer(const QRectF &rect, LayerName layerName, const QString &netLabel,
                  CGraphicsScene *scene) :
-       Painting(scene),
-       m_layerName(layerName),
-       m_netLabel(netLabel)
+        Painting(scene),
+        m_layerName(layerName),
+        m_netLabel(netLabel)
     {
-       setRect(rect);
-       setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
-                        Caneda::TopRightHandle| Caneda::BottomLeftHandle);
+        setRect(rect);
+        setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
+                         Caneda::TopRightHandle| Caneda::BottomLeftHandle);
 
-       updateBrush();
+        updateBrush();
     }
 
     //! \copydoc Painting::shapeForRect()
     QPainterPath Layer::shapeForRect(const QRectF& rect) const
     {
-       QPainterPath path;
-       path.addRect(rect);
-       return path;
+        QPainterPath path;
+        path.addRect(rect);
+        return path;
     }
 
     //! \brief Updates the brush according to current layer.
@@ -101,94 +101,93 @@ namespace Caneda
     //! \brief Draw the layer item.
     void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
     {
-       if(option->state & QStyle::State_Selected) {
-           Settings *settings = Settings::instance();
-           painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
-                                pen().width()));
+        if(option->state & QStyle::State_Selected) {
+            Settings *settings = Settings::instance();
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 pen().width()));
 
-           painter->setBrush(Qt::NoBrush);
-       }
-       else {
-           painter->setPen(QPen(Qt::NoPen));
-           painter->setOpacity(0.5);
-           painter->setBrush(brush());
-       }
+            painter->setBrush(Qt::NoBrush);
+        }
+        else {
+            painter->setPen(QPen(Qt::NoPen));
+            painter->setOpacity(0.5);
+            painter->setBrush(brush());
+        }
 
-       painter->drawRect(rect());
+        painter->drawRect(rect());
 
-       // Call base method to draw resize handles.
-       Painting::paint(painter, option, w);
+        // Call base method to draw resize handles.
+        Painting::paint(painter, option, w);
     }
 
     //! \copydoc Painting::copy()
     Layer* Layer::copy(CGraphicsScene *scene) const
     {
-       Layer *layerItem = new Layer(rect(), layerName(), netLabel(), scene);
-       Painting::copyDataTo(layerItem);
-       return layerItem;
+        Layer *layerItem = new Layer(rect(), layerName(), netLabel(), scene);
+        Painting::copyDataTo(layerItem);
+        return layerItem;
     }
 
     //! \brief Saves layer data to xml using \a writer.
     void Layer::saveData(Caneda::XmlWriter *writer) const
     {
-       writer->writeStartElement("painting");
-       writer->writeAttribute("name", "layer");
+        writer->writeStartElement("painting");
+        writer->writeAttribute("name", "layer");
 
-       writer->writeEmptyElement("properties");
-       writer->writeRectAttribute(rect(), QLatin1String("rect"));
-       writer->writePointAttribute(pos(), "pos");
-       writer->writeAttribute("layerName", QString::number(int(m_layerName)));
-       writer->writeAttribute("netLabel", netLabel());
-       writer->writeTransform(transform());
+        writer->writeRectAttribute(rect(), QLatin1String("rect"));
+        writer->writePointAttribute(pos(), "pos");
+        writer->writeTransformAttribute(transform());
 
-       writer->writeEndElement(); // </painting>
+        writer->writeEmptyElement("properties");
+        writer->writeAttribute("layerName", QString::number(int(m_layerName)));
+        writer->writeAttribute("netLabel", netLabel());
+
+        writer->writeEndElement(); // </painting>
     }
 
     //! \brief Loads layer data from xml referred by \a reader.
     void Layer::loadData(Caneda::XmlReader *reader)
     {
-       Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-       Q_ASSERT(reader->attributes().value("name") == "layer");
+        Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
+        Q_ASSERT(reader->attributes().value("name") == "layer");
 
-       while(!reader->atEnd()) {
-          reader->readNext();
+        setRect(reader->readRectAttribute(QLatin1String("rect")));
+        setPos(reader->readPointAttribute("pos"));
+        setTransform(reader->readTransformAttribute("transform"));
 
-          if(reader->isEndElement()) {
-             break;
-          }
+        while(!reader->atEnd()) {
+            reader->readNext();
 
-          if(reader->isStartElement()) {
-             if(reader->name() == "properties") {
-                QRectF rect = reader->readRectAttribute(QLatin1String("rect"));
-                setRect(rect);
+            if(reader->isEndElement()) {
+                break;
+            }
 
-                QPointF pos = reader->readPointAttribute("pos");
-                setPos(pos);
+            if(reader->isStartElement()) {
 
-                int layer = reader->attributes().value("layerName").toString().toInt();
-                setLayerName((LayerName)layer);
+                if(reader->name() == "properties") {
+                    int layer = reader->attributes().value("layerName").toString().toInt();
+                    setLayerName((LayerName)layer);
 
-                QString label = reader->attributes().value("netLabel").toString();
-                setNetLabel(label);
+                    QString label = reader->attributes().value("netLabel").toString();
+                    setNetLabel(label);
 
-                reader->readUnknownElement(); //read till end tag
-             }
-             else if(reader->name() == "transform") {
-                setTransform(reader->readTransform());
-             }
-             else {
-                reader->readUnknownElement();
-             }
-          }
-       }
+                    reader->readUnknownElement();  // Read till end tag
+                }
 
-       updateBrush();
+                else {
+                    reader->readUnknownElement();
+                }
+
+            }
+        }
+
+        updateBrush();
     }
 
     int Layer::launchPropertyDialog(Caneda::UndoOption opt)
     {
-       StyleDialog dia(this, opt);
-       return dia.exec();
+        StyleDialog dia(this, opt);
+        return dia.exec();
     }
 
 } // namespace Caneda

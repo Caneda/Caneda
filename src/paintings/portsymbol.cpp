@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -154,14 +155,15 @@ namespace Caneda
         writer->writeStartElement("painting");
         writer->writeAttribute("name", "portSymbol");
 
+        writer->writePointAttribute(pos(), "pos");
+        writer->writeTransformAttribute(transform());
+
         writer->writeEmptyElement("properties");
         writer->writeAttribute("nameString", m_nameString);
         writer->writeAttribute("numberString", m_numberString);
         writer->writeAttribute("mirrored", Caneda::boolToString(m_mirrored));
-        writer->writePointAttribute(pos(), "pos");
 
         writer->writeFont(font());
-        writer->writeTransform(transform());
 
         writer->writeEndElement(); // < /painting>
     }
@@ -172,6 +174,9 @@ namespace Caneda
         Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
         Q_ASSERT(reader->attributes().value("name") == "portSymbol");
 
+        setPos(reader->readPointAttribute("pos"));
+        setTransform(reader->readTransformAttribute("transform"));
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -180,23 +185,20 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
+
                 if(reader->name() == "properties") {
 
                     setNumberString(reader->attributes().value("numberString").toString());
                     setNameString(reader->attributes().value("nameString").toString());
 
-                    setPos(reader->readPointAttribute("pos"));
                     m_mirrored = Caneda::stringToBool(reader->attributes().value("mirrored").toString());
                     updateGeometry();
-                    reader->readUnknownElement(); //read till end tag
+
+                    reader->readUnknownElement();  // Read till end tag
                 }
 
                 else if(reader->name() == "font") {
                     setFont(reader->readFont());
-                }
-
-                else if(reader->name() == "transform") {
-                    setTransform(reader->readTransform());
                 }
 
                 else {

@@ -39,7 +39,7 @@
     <lang lang="ru">Диод</lang>
     <lang lang="sv">Diod</lang>
     <lang lang="tr">Diyot</lang>
-    <lang lang="uk">Діод</lang>       
+    <lang lang="uk">Діод</lang>
   </displaytext>
 
   <description>
@@ -49,31 +49,19 @@
   </description>
 
   <symbol>
-        <painting name="line">
-            <properties line="0,0,10,0" pos="-20,0"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,10,0" pos="10,0"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,0,20" pos="10,-10"/>
-        </painting>
-      
-        <painting name="line">
-            <properties line="0,0,-20,10" pos="10,0"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,0,-20" pos="-10,10"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,20,10" pos="-10,-10"/>
-        </painting>
+        <painting name="line" line="0,0,10,0" pos="-20,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,20" pos="10,-10" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,-20,10" pos="10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-20" pos="-10,10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,20,10" pos="-10,-10" transform="1,0,0,1,0,0"/>
   </symbol>
-  
+
    <ports>
       <port name="+" pos="-20,0"/>
       <port name="-" pos="20,0"/>
-   </ports>  
+   </ports>
 
   <properties>
     <property name="Is" default="10e-12" unit="A" visible="false">

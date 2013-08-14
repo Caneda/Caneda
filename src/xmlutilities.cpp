@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -177,6 +178,43 @@ namespace Caneda
         return QRectF(rectCoords[0], rectCoords[1], rectCoords[2], rectCoords[3]);
     }
 
+    QTransform XmlReader::readTransformAttribute(QString tag)
+    {
+        Q_ASSERT(isStartElement());
+        QString errorString = QObject::tr("Invalid transform matrix");
+        QStringList eleStr = attributes().value(tag).toString().split(',');
+
+        if(eleStr.size() != 6) {
+            raiseError(errorString);
+            return QTransform();
+        }
+
+        bool ok, finalOk = true;
+        qreal ele[6];
+        for(int i = 0; i < 6; ++i) {
+            ele[i] = eleStr[i].toDouble(&ok);
+            finalOk = finalOk && ok;
+        }
+
+        if(!finalOk) {
+            raiseError(errorString);
+            return QTransform();
+        }
+
+        QTransform transformMatrix
+            (ele[0], ele[2], ele[4],
+             ele[1], ele[3], ele[5],
+             0,      0,          1);
+
+        QTransform retVal = transformMatrix.inverted(&ok);
+
+        if(!ok) {
+            qWarning() << Q_FUNC_INFO << "Singular matrix found";
+        }
+
+        return retVal;
+    }
+
     QSize XmlReader::readSize()
     {
         Q_ASSERT(isStartElement());
@@ -221,41 +259,11 @@ namespace Caneda
 
     QTransform XmlReader::readTransform()
     {
-        Q_ASSERT(isStartElement());
-
-        QString matrix = attributes().value("matrix").toString();
-        QStringList eleStr = matrix.split(',');
-
-        if(eleStr.size() != 6) {
-            raiseError(QObject::tr("Invalid transform matrix %1").arg(matrix));
-            return QTransform();
-        }
-
-        bool ok, finalOk = true;
-        qreal ele[6];
-        for(int i = 0; i < 6; ++i) {
-            ele[i] = eleStr[i].toDouble(&ok);
-            finalOk = finalOk && ok;
-        }
-
-        if(!finalOk) {
-            raiseError(QObject::tr("Invalid transform matrix %1").arg(matrix));
-            return QTransform();
-        }
+        QTransform retVal = readTransformAttribute("matrix");
 
         // read till end tag
         readUnknownElement();
 
-        QTransform transformMatrix
-            (ele[0], ele[2], ele[4],
-             ele[1], ele[3], ele[5],
-             0,      0,          1);
-
-        QTransform retVal = transformMatrix.inverted(&ok);
-
-        if(!ok) {
-            qWarning() << Q_FUNC_INFO << "Singular matrix found";
-        }
         return retVal;
     }
 
@@ -416,21 +424,7 @@ namespace Caneda
     void XmlWriter::writeTransform(const QTransform& transform)
     {
         writeEmptyElement("transform");
-        bool ok;
-        QTransform transformMatrix = transform.inverted(&ok);
-        if(!ok) {
-            qWarning() << Q_FUNC_INFO << "Singular matrix found";
-        }
-
-        QStringList transformString;
-        transformString << QString::number(transformMatrix.m11())
-                        << QString::number(transformMatrix.m21())
-                        << QString::number(transformMatrix.m12())
-                        << QString::number(transformMatrix.m22())
-                        << QString::number(transformMatrix.m13())
-                        << QString::number(transformMatrix.m23());
-
-        writeAttribute("matrix", transformString.join(","));
+        writeTransformAttribute(transform, "matrix");
     }
 
     void XmlWriter::writeSize(const QSize& size, QString tag)
@@ -471,6 +465,25 @@ namespace Caneda
             .arg(rect.width())
             .arg(rect.height());
         writeAttribute(tag, rectStr);
+    }
+
+    void XmlWriter::writeTransformAttribute(const QTransform &transform, QString tag)
+    {
+        bool ok;
+        QTransform transformMatrix = transform.inverted(&ok);
+        if(!ok) {
+            qWarning() << Q_FUNC_INFO << "Singular matrix found";
+        }
+
+        QStringList transformString;
+        transformString << QString::number(transformMatrix.m11())
+                        << QString::number(transformMatrix.m21())
+                        << QString::number(transformMatrix.m12())
+                        << QString::number(transformMatrix.m22())
+                        << QString::number(transformMatrix.m13())
+                        << QString::number(transformMatrix.m23());
+
+        writeAttribute(tag, transformString.join(","));
     }
 
     void XmlWriter::writePen(const QPen& pen, QLatin1String tag)

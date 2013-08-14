@@ -31,25 +31,19 @@
    </description>
 
    <symbol>
-        <painting name="line">
-            <properties line="0,0,0,20" pos="0,-10"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,10,0" pos="-10,0"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,-10,5" pos="10,-10"/>
-        </painting>
-        <painting name="arrow">
-            <properties line="0,0,10,5" pos="0,5" headStyle="1" headSize="4,6"/>
+        <painting name="line" line="0,0,0,20" pos="0,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-10,5" pos="10,-10" transform="1,0,0,1,0,0"/>
+        <painting name="arrow" line="0,0,10,5" pos="0,5" transform="1,0,0,1,0,0">
+            <properties headStyle="1" headSize="4,6"/>
         </painting>
    </symbol>
-   
+
    <ports>
        <port name="b" pos="-10,0"/>
        <port name="c" pos="10,-10"/>
        <port name="e" pos="10,10"/>
-   </ports>   
+   </ports>
 
    <properties>
 	 <property name="b" default="100" unit="-" visible="true">

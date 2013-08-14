@@ -32,28 +32,15 @@
     </description>
 
     <symbol>
-        <painting name="ellipse">
-            <properties ellipse="0,0,40,40" pos="-20,-20"/>
-        </painting>
+        <painting name="ellipse" ellipse="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
 
-        <painting name="line">
-            <properties line="0,0,0,10" pos="0,20"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,0,-10" pos="0,-20"/>
-        </painting>
+        <painting name="line" line="0,0,0,10" pos="0,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-10" pos="0,-20" transform="1,0,0,1,0,0"/>
 
-        <painting name="line">
-            <properties line="0,0,10,0" pos="-25,-25"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,0,-10" pos="-20,-20"/>
-        </painting>
+        <painting name="line" line="0,0,10,0" pos="-25,-25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-10" pos="-20,-20" transform="1,0,0,1,0,0"/>
 
-        <painting name="line">
-            <properties line="0,0,10,0" pos="-25,25"/>
-        </painting>
-
+        <painting name="line" line="0,0,10,0" pos="-25,25" transform="1,0,0,1,0,0"/>
     </symbol>
 
     <ports>

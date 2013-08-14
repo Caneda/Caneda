@@ -109,15 +109,16 @@ namespace Caneda
         writer->writeStartElement("painting");
         writer->writeAttribute("name", "arrow");
 
-        writer->writeEmptyElement("properties");
         writer->writeLineAttribute(line());
         writer->writePointAttribute(pos(), "pos");
+        writer->writeTransformAttribute(transform());
+
+        writer->writeEmptyElement("properties");
         writer->writeAttribute("headStyle", QString::number(int(m_headStyle)));
         writer->writePointAttribute(QPointF(m_headWidth, m_headHeight), "headSize");
 
         writer->writePen(pen());
         writer->writeBrush(brush());
-        writer->writeTransform(transform());
 
         writer->writeEndElement(); // </painting>
     }
@@ -128,6 +129,11 @@ namespace Caneda
         Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
         Q_ASSERT(reader->attributes().value("name") == "arrow");
 
+        QLineF line = reader->readLineAttribute("line");
+        setPaintingRect(QRectF(line.p1(), line.p2()));
+        setPos(reader->readPointAttribute("pos"));
+        setTransform(reader->readTransformAttribute("transform"));
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -136,13 +142,8 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
+
                 if(reader->name() == "properties") {
-                    QLineF line = reader->readLineAttribute("line");
-                    setPaintingRect(QRectF(line.p1(), line.p2()));
-
-                    QPointF pos = reader->readPointAttribute("pos");
-                    setPos(pos);
-
                     int style = reader->attributes().value("headStyle").toString().toInt();
                     setHeadStyle((HeadStyle)style);
 
@@ -150,7 +151,7 @@ namespace Caneda
                     setHeadWidth(headSize.x());
                     setHeadHeight(headSize.y());
 
-                    reader->readUnknownElement(); //read till end tag
+                    reader->readUnknownElement();  // Read till end tag
                 }
 
                 else if(reader->name() == "pen") {
@@ -159,10 +160,6 @@ namespace Caneda
 
                 else if(reader->name() == "brush") {
                     setBrush(reader->readBrush());
-                }
-
-                else if(reader->name() == "transform") {
-                    setTransform(reader->readTransform());
                 }
 
                 else {

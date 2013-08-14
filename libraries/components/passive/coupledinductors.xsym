@@ -29,72 +29,60 @@
       <lang lang="fr">Bobines couplées</lang>
       <lang lang="it">Induttori accoppiati</lang>
    </displaytext>
-   
+
    <description>
       <lang lang="C">
-	A device that transfers electrical energy from one circuit to another 
+	A device that transfers electrical energy from one circuit to another
 	through inductively coupling between two coils.
       </lang>
       <lang lang="fr">
-	Un composant qui transfere de l'énergie électrique d'un circuit vers un autre 
+	Un composant qui transfere de l'énergie électrique d'un circuit vers un autre
 	par couplage magnétique par un couplage entre deux bobines.
       </lang>
    </description>
 
    <symbol>
-        <painting name="line">
-            <properties line="0,0,20,0" pos="-30,-20"/>
+        <painting name="line" line="0,0,20,0" pos="-30,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,20,0" pos="-30,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-20,0" pos="30,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-20,0" pos="30,20" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-15,-20" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
         </painting>
-        <painting name="line">
-            <properties line="0,0,20,0" pos="-30,20"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-15,-10" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
         </painting>
-        <painting name="line">
-            <properties line="0,0,-20,0" pos="30,-20"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-15,0" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
         </painting>
-        <painting name="line">
-            <properties line="0,0,-20,0" pos="30,20"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-15,10" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
         </painting>
 
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="-90" spanAngle="180" pos="-15,-20"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="5,-20" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
         </painting>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="-90" spanAngle="180" pos="-15,-10"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="5,-10" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
         </painting>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="-90" spanAngle="180" pos="-15,0"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="5,0" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
         </painting>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="-90" spanAngle="180" pos="-15,10"/>
-        </painting>
-
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="90" spanAngle="180" pos="5,-20"/>
-        </painting>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="90" spanAngle="180" pos="5,-10"/>
-        </painting>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="90" spanAngle="180" pos="5,0"/>
-        </painting>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="90" spanAngle="180" pos="5,10"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="5,10" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
         </painting>
 
-        <painting name="ellipse">
-            <properties ellipse="0,0,2,2" pos="20,-30"/>
-        </painting>
-        <painting name="ellipse">
-            <properties ellipse="0,0,2,2" pos="-20,-30"/>
-        </painting>
+        <painting name="ellipse" ellipse="0,0,2,2" pos="20,-30" transform="1,0,0,1,0,0"/>
+        <painting name="ellipse" ellipse="0,0,2,2" pos="-20,-30" transform="1,0,0,1,0,0"/>
    </symbol>
-   
+
    <ports>
        <port name="1+" pos="-30,-20"/>
        <port name="2+" pos="30,-20"/>
        <port name="2-" pos="30,20"/>
        <port name="1-" pos="-30,20"/>
-   </ports>   
+   </ports>
 
    <properties>
 	 <property name="L1" default="1e-3" unit="L" visible="true">
@@ -131,7 +119,7 @@
 	     <lang lang="uk">Індуктивність обмотки 2</lang>
 	   </description>
 	 </property>
-	 
+
 	 <property name="k" default="0.9" unit="(1)" visible="false">
 	   <description>
 	     <lang lang="C">Coupling factor between coil 1 and 2</lang>

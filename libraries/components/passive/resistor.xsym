@@ -45,39 +45,21 @@
    </description>
 
    <symbol>
-        <painting name="line">
-            <properties line="0,0,8,0" pos="-20,0"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,2,-5" pos="-12,0"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,4,10" pos="-10,-5"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,4,-10" pos="-6,5"/>
-        </painting>       
-        <painting name="line">
-            <properties line="0,0,4,10" pos="-2,-5"/>
-        </painting> 
-        <painting name="line">
-            <properties line="0,0,4,-10" pos="2,5"/>
-        </painting>       
-        <painting name="line">
-            <properties line="0,0,4,10" pos="6,-5"/>
-        </painting> 
-        <painting name="line">
-            <properties line="0,0,2,-5" pos="10,5"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,8,0" pos="12,0"/>
-        </painting>        
+        <painting name="line" line="0,0,8,0" pos="-20,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="-12,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,10" pos="-10,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,-10" pos="-6,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,10" pos="-2,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,-10" pos="2,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,10" pos="6,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="10,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,8,0" pos="12,0" transform="1,0,0,1,0,0"/>
    </symbol>
-   
+
    <ports>
        <port name="1" pos="-20,0"/>
        <port name="2" pos="20,0"/>
-   </ports>   
+   </ports>
 
    <properties>
 	 <property name="R" default="50" unit="Ω" visible="true">

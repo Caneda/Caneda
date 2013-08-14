@@ -31,43 +31,25 @@
    </description>
 
    <symbol>
-        <painting name="line">
-            <properties line="0,0,10,0" pos="-30,10"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,10,0" pos="-30,-10"/>
-        </painting>
-        
-        <painting name="line">
-            <properties line="0,0,10,0" pos="20,0"/>
-        </painting>
-        
-        <painting name="line">
-            <properties line="0,0,0,40" pos="-20,-20"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,40,-20" pos="-20,20"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,-40,-20" pos="20,0"/>
-        </painting>
-        
-        <painting name="line">
-            <properties line="0,0,5,0" pos="-17,-10"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,0,-5" pos="-14.5,-7.5"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,5,0" pos="-17,10"/>
-        </painting>
+        <painting name="line" line="0,0,10,0" pos="-30,10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-30,-10" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,10,0" pos="20,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,40,-20" pos="-20,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-40,-20" pos="20,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,5,0" pos="-17,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-5" pos="-14.5,-7.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,5,0" pos="-17,10" transform="1,0,0,1,0,0"/>
    </symbol>
-   
+
    <ports>
        <port name="in+" pos="-30,-10"/>
        <port name="in-" pos="-30,10"/>
        <port name="out" pos="30,0"/>
-   </ports>   
+   </ports>
 
    <properties>
          <property name="A" default="100000" unit="V/V" visible="true">

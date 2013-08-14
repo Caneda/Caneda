@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -119,9 +119,11 @@ namespace Caneda
         writer->writeStartElement("painting");
         writer->writeAttribute("name", "text");
 
+        writer->writePointAttribute(pos(), "pos");
+        writer->writeTransformAttribute(transform());
+
         writer->writeEmptyElement("properties");
         writer->writeAttribute("text", richText());
-        writer->writePointAttribute(pos(), "pos");
 
         writer->writeEndElement(); // </painting>
     }
@@ -132,6 +134,9 @@ namespace Caneda
         Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
         Q_ASSERT(reader->attributes().value("name") == "text");
 
+        setPos(reader->readPointAttribute("pos"));
+        setTransform(reader->readTransformAttribute("transform"));
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -140,21 +145,18 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
+
                 if(reader->name() == "properties") {
 
                     setText(reader->attributes().value("text").toString());
-                    setPos(reader->readPointAttribute("pos"));
 
                     reader->readUnknownElement(); //read till end tag
-                }
-
-                else if(reader->name() == "transform") {
-                    setTransform(reader->readTransform());
                 }
 
                 else {
                     reader->readUnknownElement();
                 }
+
             }
         }
     }

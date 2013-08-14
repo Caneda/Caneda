@@ -48,24 +48,24 @@
    </description>
 
    <symbol>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="0" spanAngle="180" pos="-20,-5"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-20,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
         </painting>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="0" spanAngle="180" pos="-10,-5"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-10,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
         </painting>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="0" spanAngle="180" pos="0,-5"/>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="0,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
         </painting>
-        <painting name="ellipseArc">
-            <properties ellipse="0,0,10,10" startAngle="0" spanAngle="180" pos="10,-5"/>
-        </painting>         
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="10,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
    </symbol>
-   
+
    <ports>
        <port name="+" pos="-20,0"/>
        <port name="-" pos="20,0"/>
-   </ports>  
+   </ports>
 
    <properties>
 	 <property name="L" default="1e-9" unit="H" visible="true">

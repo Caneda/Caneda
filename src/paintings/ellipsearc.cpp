@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -107,14 +107,15 @@ namespace Caneda
         writer->writeStartElement("painting");
         writer->writeAttribute("name", "ellipseArc");
 
-        writer->writeEmptyElement("properties");
         writer->writeRectAttribute(ellipse(), QLatin1String("ellipse"));
+        writer->writePointAttribute(pos(), "pos");
+        writer->writeTransformAttribute(transform());
+
+        writer->writeEmptyElement("properties");
         writer->writeAttribute("startAngle", QString::number(m_startAngle));
         writer->writeAttribute("spanAngle", QString::number(m_spanAngle));
-        writer->writePointAttribute(pos(), "pos");
 
         writer->writePen(pen());
-        writer->writeTransform(transform());
 
         writer->writeEndElement(); // </painting>
     }
@@ -125,6 +126,10 @@ namespace Caneda
         Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
         Q_ASSERT(reader->attributes().value("name") == "ellipseArc");
 
+        setEllipse(reader->readRectAttribute(QLatin1String("ellipse")));
+        setPos(reader->readPointAttribute("pos"));
+        setTransform(reader->readTransformAttribute("transform"));
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -133,10 +138,8 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
-                if(reader->name() == "properties") {
-                    QRectF ellipse = reader->readRectAttribute(QLatin1String("ellipse"));
-                    setEllipse(ellipse);
 
+                if(reader->name() == "properties") {
                     bool ok1, ok2;
 
                     setStartAngle(reader->attributes().value("startAngle").toString().toInt(&ok1));
@@ -147,18 +150,11 @@ namespace Caneda
                         break;
                     }
 
-                    QPointF pos = reader->readPointAttribute("pos");
-                    setPos(pos);
-
-                    reader->readUnknownElement(); //read till end tag
+                    reader->readUnknownElement();  // Read till end tag
                 }
 
                 else if(reader->name() == "pen") {
                     setPen(reader->readPen());
-                }
-
-                else if(reader->name() == "transform") {
-                    setTransform(reader->readTransform());
                 }
 
                 else {

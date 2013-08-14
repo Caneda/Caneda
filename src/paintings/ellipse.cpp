@@ -85,13 +85,12 @@ namespace Caneda
         writer->writeStartElement("painting");
         writer->writeAttribute("name", "ellipse");
 
-        writer->writeEmptyElement("properties");
         writer->writeRectAttribute(ellipse(), QLatin1String("ellipse"));
         writer->writePointAttribute(pos(), "pos");
+        writer->writeTransformAttribute(transform());
 
         writer->writePen(pen());
         writer->writeBrush(brush());
-        writer->writeTransform(transform());
 
         writer->writeEndElement(); // </painting>
     }
@@ -102,6 +101,10 @@ namespace Caneda
         Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
         Q_ASSERT(reader->attributes().value("name") == "ellipse");
 
+        setEllipse(reader->readRectAttribute(QLatin1String("ellipse")));
+        setPos(reader->readPointAttribute("pos"));
+        setTransform(reader->readTransformAttribute("transform"));
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -110,26 +113,13 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
-                if(reader->name() == "properties") {
-                    QRectF ellipse = reader->readRectAttribute(QLatin1String("ellipse"));
-                    setEllipse(ellipse);
 
-                    QPointF pos = reader->readPointAttribute("pos");
-                    setPos(pos);
-
-                    reader->readUnknownElement(); //read till end tag
-                }
-
-                else if(reader->name() == "pen") {
+                if(reader->name() == "pen") {
                     setPen(reader->readPen());
                 }
 
                 else if(reader->name() == "brush") {
                     setBrush(reader->readBrush());
-                }
-
-                else if(reader->name() == "transform") {
-                    setTransform(reader->readTransform());
                 }
 
                 else {

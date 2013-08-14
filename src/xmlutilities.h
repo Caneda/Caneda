@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -63,8 +63,9 @@ namespace Caneda
         QPointF readPoint();
 
         QPointF readPointAttribute(QString tag = "point");
-        QLineF readLineAttribute(QString tag="line");
+        QLineF readLineAttribute(QString tag = "line");
         QRectF readRectAttribute(QLatin1String tag = QLatin1String("rect"));
+        QTransform readTransformAttribute(QString tag = "transform");
         qreal readDoubleAttribute(QString tag);
 
         QSize readSize();
@@ -119,6 +120,7 @@ namespace Caneda
         void writeLineAttribute(const QLineF& line, QLatin1String tag = QLatin1String("line"));
         void writeRectAttribute(const QRectF& rect, QLatin1String tag = QLatin1String("rect"));
         void writePolygonAttribute(const QPolygonF& polygon, QString tag="polygon");
+        void writeTransformAttribute(const QTransform& transform, QString tag = "transform");
 
         void writePen(const QPen& pen, QLatin1String tag = QLatin1String("pen"));
         void writeBrush(const QBrush& brush, QLatin1String tag = QLatin1String("brush"));

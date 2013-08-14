@@ -31,47 +31,27 @@
    </description>
 
    <symbol>
-        <painting name="line">
-            <properties line="0,0,2.5,0" pos="-10,0"/>
-        </painting>       
-        <painting name="line">
-            <properties line="0,0,0,16" pos="-2.5,-8"/>
-        </painting>       
-        <painting name="line">
-            <properties line="0,0,0,20" pos="1.5,-10"/>
-        </painting>  
-        
-        <painting name="line">
-            <properties line="0,0,8.5,0" pos="1.5,-6"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,0,-4" pos="10,-6"/>
-        </painting>
-        
-        <painting name="line">
-            <properties line="0,0,8.5,0" pos="1.5,6"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,0,4" pos="10,6"/>
-        </painting>  
-     
-        <painting name="line">
-            <properties line="0,0,8.5,0" pos="1.5,0"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,0,-6" pos="10,0"/>
-        </painting>        
-       
-        <painting name="ellipse">
-            <properties ellipse="0,0,5,5" pos="-7.5,-2.5"/>
-        </painting>      
+        <painting name="line" line="0,0,2.5,0" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,16" pos="-2.5,-8" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,20" pos="1.5,-10" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,-6" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-4" pos="10,-6" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,6" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,4" pos="10,6" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-6" pos="10,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipse" ellipse="0,0,5,5" pos="-7.5,-2.5" transform="1,0,0,1,0,0"/>
    </symbol>
-   
+
    <ports>
        <port name="d" pos="10,10"/>
        <port name="s" pos="10,-10"/>
        <port name="g" pos="-10,0"/>
-   </ports>     
+   </ports>
 
    <properties>
 	 <property name="gm" default="100" unit="-" visible="true">

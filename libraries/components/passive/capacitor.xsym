@@ -44,24 +44,16 @@
    </description>
 
    <symbol>
-        <painting name="line">
-            <properties line="0,0,17.5,0" pos="-20,0"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,0,20" pos="-2.5,-10"/>
-        </painting>       
-        <painting name="line">
-            <properties line="0,0,0,20" pos="2.5,-10"/>
-        </painting>       
-        <painting name="line">
-            <properties line="0,0,-17.5,0" pos="20,0"/>
-        </painting>
+        <painting name="line" line="0,0,17.5,0" pos="-20,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,20" pos="-2.5,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,20" pos="2.5,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-17.5,0" pos="20,0" transform="1,0,0,1,0,0"/>
    </symbol>
-   
+
    <ports>
        <port name="+" pos="-20,0"/>
        <port name="-" pos="20,0"/>
-   </ports>   
+   </ports>
 
    <properties>
 	 <property name="C" default="1e-12" unit="F" visible="true">

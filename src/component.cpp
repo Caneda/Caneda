@@ -216,6 +216,9 @@ namespace Caneda
         d->name = reader->attributes().value("name").toString();
         d->library = reader->attributes().value("library").toString();
 
+        setPos(reader->readPointAttribute("pos"));
+        setTransform(reader->readTransformAttribute("transform"));
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -224,19 +227,15 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
-                if(reader->name() == "pos") {
-                    setPos(reader->readPoint());
-                }
-                else if(reader->name() == "transform") {
-                    setTransform(reader->readTransform());
-                }
-                else if(reader->name() == "properties") {
+
+                if(reader->name() == "properties") {
                     d->properties->readProperties(reader);
                 }
                 else {
                     qWarning() << "Warning: Found unknown element" << reader->name().toString();
                     reader->readUnknownElement();
                 }
+
             }
         }
     }
@@ -255,8 +254,9 @@ namespace Caneda
         writer->writeAttribute("name", name());
         writer->writeAttribute("library", library());
 
-        writer->writePoint(pos(), "pos");
-        writer->writeTransform(transform());
+        writer->writePointAttribute(pos(), "pos");
+        writer->writeTransformAttribute(transform());
+
         d->properties->writeProperties(writer);
 
         writer->writeEndElement();  //</component>

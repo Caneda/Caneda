@@ -31,32 +31,20 @@
    </description>
 
    <symbol>
-        <painting name="line">
-            <properties line="0,0,5,0" pos="-30,0"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,5,0" pos="25,0"/>
-        </painting>
-        
-        <painting name="line">
-            <properties line="0,0,0,40" pos="-25,-20"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,40,-20" pos="-25,20"/>
-        </painting>
-        <painting name="line">
-            <properties line="0,0,-40,-20" pos="15,0"/>
-        </painting>       
-        
-        <painting name="ellipse">
-            <properties ellipse="0,0,10,10" pos="15,-5"/>
-        </painting>
+        <painting name="line" line="0,0,5,0" pos="-30,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,5,0" pos="25,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,40" pos="-25,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,40,-20" pos="-25,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-40,-20" pos="15,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipse" ellipse="0,0,10,10" pos="15,-5" transform="1,0,0,1,0,0"/>
    </symbol>
-   
+
    <ports>
        <port name="in" pos="-30,0"/>
        <port name="out" pos="30,0"/>
-   </ports>   
+   </ports>
 
    <properties>
 	 <property name="wn" default="6" unit="-" visible="false">
