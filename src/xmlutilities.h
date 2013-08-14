@@ -39,10 +39,17 @@ class QTransform;
 namespace Caneda
 {
     /*!
-     * \brief This class adds a few more helper methods to qt's QXmlStreamReader class.
+     * \brief This class adds some helper methods to Qt's QXmlStreamReader
+     * class.
      *
-     * \warning QXmlStreamReader doesn't have virtual destructor. Don't delete any
-     * instance of this class from base pointer.
+     * This class contains some methods used to extend the functionality of
+     * Qt's QXmlStreamReader class, for example to read point attributes,
+     * graphic items transforms, double attributes, etc.
+     *
+     * \warning QXmlStreamReader doesn't have virtual destructor. Don't delete
+     * any instance of this class from base pointer.
+     *
+     * \sa XmlWriter
      */
     class XmlReader : public QXmlStreamReader
     {
@@ -76,11 +83,17 @@ namespace Caneda
     };
 
     /*!
-     * \brief This class adds a few more helper methods to qt's
-     * QXmlStreamWriter class.
+     * \brief This class adds some helper methods to Qt's QXmlStreamWriter
+     * class.
      *
-     * \warning QXmlStreamWriter doesn't have virtual destructor. Don't delete any
-     * instance of this class from base pointer.
+     * This class contains some methods used to extend the functionality of
+     * Qt's QXmlStreamWriter class, for example to write point attributes,
+     * graphic items, etc.
+
+     * \warning QXmlStreamWriter doesn't have virtual destructor. Don't delete
+     * any instance of this class from base pointer.
+     *
+     * \sa XmlReader
      */
     class XmlWriter : public QXmlStreamWriter
     {

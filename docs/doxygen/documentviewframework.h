@@ -31,11 +31,34 @@ namespace Caneda
  * The general idea is to have a new document type implement the
  * following three interfaces (technically QObject subclasses):
  *
- *   * IContext - \copybrief IContext
+ *   * IContext - This class provides an interface for a context which is
+ * used by IDocument and IView. Only one instance of this class per
+ * document type is used during the whole life span of the program.
+ * This class answers the general questions about each document type,
+ * like which file suffixes it can handle, points to the appropiate
+ * methods to create new documents of its type, etc. This class also
+ * provides objects like the toolbar, statusbar, etc, which are specific
+ * to the particular context. The context class can also be used to host
+ * functionalites shared by all views and documents of same type.
  *
- *   * IDocument - \copybrief IDocument
+ *   * IDocument - This class represents the actual document interface
+ * (scene), in a manner similar to Qt's Graphics View Architecture,
+ * serving as an interface for all documents that can be handled by
+ * Caneda. This class manages document specific methods like saving,
+ * loading, exporting to different formats, as well as containing the
+ * actual scene. The scene itself may be included as a pointer to
+ * another class that contains all the scene specific methods (for
+ * example a graphics scene). The scene, in its turn, serves as a
+ * container for item objects and handles their manipulation.
  *
- *   * IView - \copybrief IView
+ *   * IView - This class represents the view for a document, in a manner
+ * similar to Qt's Graphics View Architecture. The IView class provides
+ * the view widget, which visualizes the contents of a scene. The view
+ * itself may be included as a pointer to another class that contains
+ * all the view specific methods (for example a graphics view). You can
+ * attach several views to the same scene, to provide different viewports
+ * into the same data set of the document (for example, when using split
+ * views).
  *
  * DocumentViewManager in coordination with MainWindow, Tab and TabWidget
  * classes, handle the bulk of the file open, split and close actions.
