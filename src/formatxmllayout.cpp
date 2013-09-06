@@ -101,6 +101,7 @@ namespace Caneda
 
         //Now we copy all the elements and properties in the schematic
         savePaintings(writer);
+        saveProperties(writer);
 
         //Finally we finish the document
         writer->writeEndDocument(); //</caneda>
@@ -123,6 +124,15 @@ namespace Caneda
         }
     }
 
+    void FormatXmlLayout::saveProperties(Caneda::XmlWriter *writer)
+    {
+        CGraphicsScene *scene = cGraphicsScene();
+
+        writer->writeStartElement("properties");
+        scene->saveProperties(writer);
+        writer->writeEndElement(); //</properties>
+    }
+
     bool FormatXmlLayout::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
@@ -143,6 +153,9 @@ namespace Caneda
                         if(reader->isStartElement()) {
                             if(reader->name() == "paintings") {
                                 loadPaintings(reader);
+                            }
+                            else if(reader->name() == "properties") {
+                                loadProperties(reader);
                             }
                             else {
                                 reader->readUnknownElement();
@@ -189,6 +202,33 @@ namespace Caneda
                 else {
                     qWarning() << "Error: Found unknown painting type" <<
                         reader->name().toString();
+                    reader->readUnknownElement();
+                    reader->raiseError(QObject::tr("Malformatted file"));
+                }
+            }
+        }
+    }
+
+    void FormatXmlLayout::loadProperties(Caneda::XmlReader *reader)
+    {
+        CGraphicsScene *scene = cGraphicsScene();
+
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isEndElement()) {
+                Q_ASSERT(reader->name() == "properties");
+                break;
+            }
+
+            if(reader->isStartElement()) {
+                if(reader->name() == "property") {
+                    Property prop = Property::loadProperty(reader);
+                    scene->addProperty(prop);
+                }
+                else {
+                    qWarning() << "Error: Found unknown property type" <<
+                                  reader->name().toString();
                     reader->readUnknownElement();
                     reader->raiseError(QObject::tr("Malformatted file"));
                 }

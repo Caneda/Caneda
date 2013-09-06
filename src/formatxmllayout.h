@@ -58,9 +58,11 @@ namespace Caneda
     private:
         QString saveText();
         void savePaintings(Caneda::XmlWriter *writer);
+        void saveProperties(Caneda::XmlWriter *writer);
 
         bool loadFromText(const QString& text);
         void loadPaintings(Caneda::XmlReader *reader);
+        void loadProperties(Caneda::XmlReader *reader);
 
         LayoutDocument *m_layoutDocument;
     };
