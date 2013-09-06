@@ -76,6 +76,8 @@ namespace Caneda
 
         //! Returns the property name.
         QString name() const { return d->name; }
+        //! Sets the value of property to \a newValue.
+        void setName(const QString &newName) { d->name = newName; }
 
         //! Returns the value of property.
         QString value() const { return d->value; }
@@ -93,6 +95,7 @@ namespace Caneda
         void setVisible(bool visible) { d->visible = visible; }
 
         static Property loadProperty(Caneda::XmlReader *reader);
+        void saveProperty(Caneda::XmlWriter *writer);
 
     private:
         //! Pointer enabling implicit sharing of data.

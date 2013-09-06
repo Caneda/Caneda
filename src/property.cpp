@@ -113,4 +113,31 @@ namespace Caneda
         return Property(data);
     }
 
+    /*!
+     * \brief Method used to save a property to an xml file.
+     *
+     * \param reader XmlReader which is used for writing.
+     */
+    void Property::saveProperty(Caneda::XmlWriter *writer)
+    {
+        writer->writeStartElement("property");
+
+        writer->writeAttribute("name", name());
+        writer->writeAttribute("default", value());
+        writer->writeAttribute("unit", "-");
+
+        if(isVisible()) {
+            writer->writeAttribute("visible", "true");
+        }
+        else {
+            writer->writeAttribute("visible", "false");
+        }
+
+        writer->writeStartElement("description");
+        writer->writeLocaleText(Caneda::localePrefix(), description());
+        writer->writeEndElement(); // </description>
+
+        writer->writeEndElement(); // </property>
+    }
+
 } // namespace Caneda

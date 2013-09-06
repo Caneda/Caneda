@@ -114,6 +114,9 @@ namespace Caneda
         QUndoStack* undoStack() { return m_undoStack; }
         bool isModified() const { return m_modified; }
 
+        void saveProperties(Caneda::XmlWriter *writer);
+        void addProperty(Property property);
+
         int launchPropertyDialog();
 
     public Q_SLOTS:

@@ -175,8 +175,8 @@ namespace Caneda
         writer->writeStartElement("ports");
         writer->writeEndElement(); //</ports>
 
-        //! \todo Write properties
         writer->writeStartElement("properties");
+        cGraphicsScene()->saveProperties(writer);
         writer->writeEndElement(); //</properties>
 
         // Finally we finish the document
@@ -387,8 +387,7 @@ namespace Caneda
                 // Check if we are opening the file for edition or to include it in a library
                 if(cGraphicsScene()) {
                     // We are opening the file for symbol edition
-                    //! \todo Implement this.
-                    reader->readUnknownElement();
+                    cGraphicsScene()->addProperty(prop);
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
