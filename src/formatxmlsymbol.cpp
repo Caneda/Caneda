@@ -354,7 +354,6 @@ namespace Caneda
                 if(cGraphicsScene()) {
                     // We are opening the file for symbol edition
                     //! \todo Implement this.
-                    reader->readUnknownElement();
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
