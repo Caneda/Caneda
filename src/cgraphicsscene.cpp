@@ -1861,63 +1861,6 @@ namespace Caneda
         disconnectibles.clear();
     }
 
-    /******************************************************************************
-     *
-     *          Sidebar
-     *
-     *****************************************************************************/
-    /*!
-     * \brief This function is called when a side bar item is clicked
-     *
-     * \param itemName: name of item
-     * \param category: categoy name
-     * \todo Add tracing
-     */
-    bool CGraphicsScene::sidebarItemClicked(const QString& itemName, const QString& category)
-    {
-        if(itemName.isEmpty()) {
-            return false;
-        }
-
-        if(category == "Paint Tools" || category == "Layout Tools") {
-            return sidebarItemClickedPaintingsItems(itemName);
-        }
-        else {
-            return sidebarItemClickedNormalItems(itemName, category);
-        }
-    }
-
-    /*!
-     * \brief Action when a painting item is selected
-     *
-     * \param itemName: name of item
-     */
-    bool CGraphicsScene::sidebarItemClickedPaintingsItems(const QString& itemName)
-    {
-        setMouseAction(PaintingDrawEvent);
-        m_paintingDrawItem = Painting::fromName(itemName);
-        if(!m_paintingDrawItem) {
-            setMouseAction(Normal);
-            return false;
-        }
-        m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-        return true;
-    }
-
-    bool CGraphicsScene::sidebarItemClickedNormalItems(const QString& itemName, const QString& category)
-    {
-        CGraphicsItem *item = itemForName(itemName, category);
-        if(!item) {
-            return false;
-        }
-
-        addItem(item);
-        setMouseAction(InsertingItems);
-        beginInsertingItems(QList<CGraphicsItem*>() << item);
-
-        return true;
-    }
-
     /**********************************************************************
      *
      *                           Place item

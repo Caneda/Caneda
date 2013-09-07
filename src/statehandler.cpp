@@ -173,18 +173,27 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief This function is called when a sidebar item is clicked
+     *
+     * \param item: item's name
+     * \param category: item's category name
+     */
     void StateHandler::slotSidebarItemClicked(const QString& item,
             const QString& category)
     {
         if (category == "Paint Tools" || category == "Layout Tools") {
+            // Action when a painting item is selected
+
+            // Clear old item first
             if (d->paintingDrawItem) {
-                // Clear old item first
                 if (d->paintingDrawItem->scene()) {
                     d->paintingDrawItem->scene()->removeItem(d->paintingDrawItem);
                 }
                 delete d->paintingDrawItem;
             }
 
+            // Begin inserting items
             d->paintingDrawItem = Painting::fromName(item);
             if (!d->paintingDrawItem) {
                 slotSetNormalAction();
@@ -192,9 +201,15 @@ namespace Caneda
                 d->paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
                 slotPerformToggleAction("paintingDraw", true);
             }
+
         }
         else {
+            // Action when a standard item is selected
+
+            // Clear old item first
             d->clearInsertibles();
+
+            // Begin inserting items
             LibraryManager *libLoader = LibraryManager::instance();
             CGraphicsItem *qItem = libLoader->newComponent(item, 0, category);
             if (!qItem) {
@@ -203,6 +218,7 @@ namespace Caneda
                 d->insertibles << qItem;
                 slotPerformToggleAction("insertItem", true);
             }
+
         }
     }
 

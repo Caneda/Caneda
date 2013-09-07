@@ -122,7 +122,6 @@ namespace Caneda
 
     public Q_SLOTS:
         void setModified(const bool m = true);
-        bool sidebarItemClicked(const QString &item, const QString& category);
 
     Q_SIGNALS:
         void changed();
@@ -176,10 +175,6 @@ namespace Caneda
         void disconnectDisconnectibles();
         void specialMove();
         void endSpecialMove();
-
-        // Sidebar click
-        bool sidebarItemClickedPaintingsItems(const QString& itemName);
-        bool sidebarItemClickedNormalItems(const QString& itemName, const QString& category);
 
         // Placing items
         void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
