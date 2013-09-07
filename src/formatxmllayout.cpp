@@ -124,12 +124,27 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Save scene properties to an XmlWriter.
+     *
+     * This method saves all scene related propeties to an XmlWriter. To do so,
+     * it takes each property from the PropertyGroup of the scene, and saves
+     * the data using the Property::saveProperty() method.
+     *
+     * \param writer XmlWriter to save properties into.
+     * \sa Property::saveProperty()
+     */
     void FormatXmlLayout::saveProperties(Caneda::XmlWriter *writer)
     {
         CGraphicsScene *scene = cGraphicsScene();
 
         writer->writeStartElement("properties");
-        scene->saveProperties(writer);
+
+        PropertyGroup *properties = scene->properties();
+        foreach(Property property, properties->propertyMap()) {
+            property.saveProperty(writer);
+        }
+
         writer->writeEndElement(); //</properties>
     }
 

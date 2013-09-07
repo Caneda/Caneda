@@ -114,7 +114,8 @@ namespace Caneda
         QUndoStack* undoStack() { return m_undoStack; }
         bool isModified() const { return m_modified; }
 
-        void saveProperties(Caneda::XmlWriter *writer);
+        //! Spice/electric related scene properties
+        PropertyGroup* properties() { return m_properties; }
         void addProperty(Property property);
 
         int launchPropertyDialog();

@@ -161,7 +161,8 @@ namespace Caneda
         // Write symbol geometry (drawing)
         writer->writeStartElement("symbol");
 
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        CGraphicsScene *scene = cGraphicsScene();
+        QList<QGraphicsItem*> items = scene->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
         if(!paintings.isEmpty()) {
             foreach(Painting *p, paintings) {
@@ -176,7 +177,12 @@ namespace Caneda
         writer->writeEndElement(); //</ports>
 
         writer->writeStartElement("properties");
-        cGraphicsScene()->saveProperties(writer);
+
+        PropertyGroup *properties = scene->properties();
+        foreach(Property property, properties->propertyMap()) {
+            property.saveProperty(writer);
+        }
+
         writer->writeEndElement(); //</properties>
 
         // Finally we finish the document
