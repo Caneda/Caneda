@@ -72,6 +72,7 @@ namespace Caneda
         return value >= 0 ? +1 : -1;
     }
 
+    QString Alignment2QString(const Qt::Alignment alignment);
     QColor invertcolor(const QColor & color);
 
     QString latexToUnicode(const QString& input);
@@ -81,7 +82,6 @@ namespace Caneda
     enum MouseAction {
         Wiring,             // Wire action
         Deleting,           // Delete
-        Marking,            // Placing a mark on the graph
         Rotating,           // Rotate
         MirroringX,         // Mirror X
         MirroringY,         // Mirror Y

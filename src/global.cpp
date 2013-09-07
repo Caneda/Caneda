@@ -264,6 +264,29 @@ namespace Caneda
         return Output;
     }
 
+    //! \return A string corresponding to the alignement
+    QString Alignment2QString(const Qt::Alignment alignment)
+    {
+        switch(alignment) {
+            case Qt::AlignLeft :
+                return QObject::tr("Align left");
+            case Qt::AlignRight :
+                return QObject::tr("Align right");
+            case Qt::AlignTop :
+                return QObject::tr("Align top");
+            case Qt::AlignBottom :
+                return QObject::tr("Align bottom");
+            case Qt::AlignHCenter :
+                return QObject::tr("Centers horizontally");
+            case Qt::AlignVCenter :
+                return QObject::tr("Centers vertically");
+            case Qt::AlignCenter:
+                return QObject::tr("Center both vertically and horizontally");
+            default:
+                return "";
+        }
+    }
+
     //! \brief Invert a color
     QColor invertcolor(const QColor & color)
     {

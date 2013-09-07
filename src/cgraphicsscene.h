@@ -162,7 +162,6 @@ namespace Caneda
 
         void rotatingEvent(QGraphicsSceneMouseEvent *e);
         void zoomingAreaEvent(QGraphicsSceneMouseEvent *e);
-        void markingEvent(QGraphicsSceneMouseEvent *e);
         void paintingDrawEvent(QGraphicsSceneMouseEvent *e);
         void insertingItemsEvent(QGraphicsSceneMouseEvent *e);
         void insertingWireLabelEvent(QGraphicsSceneMouseEvent *event);
@@ -175,9 +174,7 @@ namespace Caneda
 
         // Placing items
         void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
-        CGraphicsItem* itemForName(const QString& name, const QString& category);
         int componentLabelSuffix(const QString& labelPrefix) const;
-        QPointF centerOfItems(const QList<CGraphicsItem*> &items);
 
         // Private edit events
         void mirroringEvent(const QGraphicsSceneMouseEvent *event, const Qt::Axis axis);
@@ -187,7 +184,8 @@ namespace Caneda
         void distributeElementsHorizontally(QList<CGraphicsItem*> items);
         void distributeElementsVertically(QList<CGraphicsItem*> items);
 
-        static const QString Alignment2QString(const Qt::Alignment alignment);
+        // Miscellaneous methods
+        QPointF centerOfItems(const QList<CGraphicsItem*> &items);
 
         void connectItems(const QList<CGraphicsItem*> &qItems, const Caneda::UndoOption opt);
         void disconnectItems(const QList<CGraphicsItem*> &qItems,
@@ -239,8 +237,8 @@ namespace Caneda
 
         //! Wiring state machine state enum
         enum wiringStateEnum {
-            NO_WIRE,               /*!< There are no wire segments yet */
-            SINGLETON_WIRE         /*!< Already created wire segments */
+            NO_WIRE,               //! There are no wire segments yet
+            SINGLETON_WIRE         //! Already created wire segments
         };
 
         //! State variable for the wire state machine

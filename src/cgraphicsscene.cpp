@@ -857,12 +857,20 @@ namespace Caneda
     }
 
     /*!
-     * \brief Event handler, for event drag enter event
+     * \brief Drag enter event handler.
      *
-     * Drag enter events are generated as the cursor enters the item's area.
-     * Accept event from sidebar
+     * Receive drag enter events in CGraphicsScene. Drag enter events are
+     * generated as the cursor enters the scene's area. Items can only perform
+     * drop events if the last drag move event was accepted. Accepted events
+     * are filtered and only from the sidebar (application/caneda.sidebarItem
+     * mime data).
+     *
+     * This method in conjunction with dragMoveEvent() and dropEvent(), are
+     * used to allow drag and dropping items from the sidebar, without the need
+     * to enter the insert mode.
      *
      * \param event event to be accepted
+     * \sa dropEvent, dragMoveEvent
      */
     void CGraphicsScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event)
     {
@@ -876,13 +884,20 @@ namespace Caneda
     }
 
     /*!
-     * \brief Event handler, for event drag move event
+     * \brief Drag move event handler.
      *
-     * Drag move events are generated as the cursor moves around inside the item's area.
-     * It is used to indicate that only parts of the item can accept drops.
-     * Accept event from sidebar
+     * Receive drag move events in CGraphicsScene. Drag move events are
+     * generated as the cursor moves around inside the scene's area. Items can
+     * only perform drop events if the last drag move event was accepted. This
+     * is acomplished in with this method. Accepted events are filtered and
+     * only from the sidebar (application/caneda.sidebarItem mime data).
+     *
+     * This method in conjunction with dragEnterEvent() and dropEvent(), are
+     * used to allow drag and dropping items from the sidebar, without the need
+     * to enter the insert mode.
      *
      * \param event event to be accepted
+     * \sa dropEvent, dragEnterEvent
      */
     void CGraphicsScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event)
     {
@@ -895,14 +910,19 @@ namespace Caneda
     }
 
     /*!
-     * \brief Event handler, for event drop event
+     * \brief Drop event handler.
      *
-     * Receive drop events for CGraphicsScene
-     * Items can only receive drop events if the last drag move event was accepted
-     * Accept event only from sidebar
+     * Receive drop events in CGraphicsScene. Items can only perform drop
+     * events if the last drag move event was accepted. Accepted events are
+     * filtered and only from the sidebar (application/caneda.sidebarItem mime
+     * data).
+     *
+     * This method in conjunction with dragEnterEvent() and dragMoveEvent(),
+     * are used to allow drag and dropping items from the sidebar, without the
+     * need to enter the insert mode.
      *
      * \param event event to be accepted
-     * \todo factorize
+     * \sa dragMoveEvent, dragEnterEvent
      */
     void CGraphicsScene::dropEvent(QGraphicsSceneDragDropEvent * event)
     {
@@ -911,10 +931,22 @@ namespace Caneda
 
             QByteArray encodedData = event->mimeData()->data("application/caneda.sidebarItem");
             QDataStream stream(&encodedData, QIODevice::ReadOnly);
-            QString item, category;
-            stream >> item >> category;
-            CGraphicsItem *qItem = itemForName(item, category);
-            // XXX: extract and factorize
+            QString itemName, itemCategory;
+            stream >> itemName >> itemCategory;
+
+            // Get a component or painting based on the name and category.
+            // The painting is processed in a special hardcoded way (with
+            // no libraries involved). On the other hand, components are
+            // loaded from existing libraries.
+            CGraphicsItem *qItem;
+            if(itemCategory == QObject::tr("Paint Tools") || itemCategory == QObject::tr("Layout Tools")) {
+                qItem = Painting::fromName(itemName);
+            }
+            else {
+                qItem = LibraryManager::instance()->newComponent(itemName, 0, itemCategory);
+            }
+
+            // If the item is a GraphicText item, open a dialog to type the text
             if(qItem->type() == GraphicText::Type) {
                 GraphicTextDialog dialog(0, Caneda::DontPushUndoCmd);
                 if(dialog.exec() == QDialog::Accepted) {
@@ -926,6 +958,8 @@ namespace Caneda
                     return;
                 }
             }
+
+            // Place the resulting item in the nearest grid position
             if(qItem) {
                 QPointF dest = smartNearingGridPoint(event->scenePos());
 
@@ -1051,10 +1085,6 @@ namespace Caneda
 
             case Deleting:
                 deletingEvent(e);
-                break;
-
-            case Marking:
-                markingEvent(e);
                 break;
 
             case Rotating:
@@ -1444,13 +1474,6 @@ namespace Caneda
      *                   Other Events
      *
      *****************************************************************/
-    //! \todo document
-    void CGraphicsScene::markingEvent(QGraphicsSceneMouseEvent *event)
-    {
-        Q_UNUSED(event);
-        //! \todo Implement this
-    }
-
     void CGraphicsScene::paintingDrawEvent(QGraphicsSceneMouseEvent *event)
     {
         if(!m_paintingDrawItem) {
@@ -1905,21 +1928,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Return a component or painting based on \a name and \a category.
-     *
-     * The painting is processed in a special hard coded way(no library)
-     * On the other hand components are loaded from the library.
-     */
-    CGraphicsItem* CGraphicsScene::itemForName(const QString& name, const QString& category)
-    {
-        if(category == QObject::tr("Paint Tools") || category == QObject::tr("Layout Tools")) {
-            return Painting::fromName(name);
-        }
-
-        return LibraryManager::instance()->newComponent(name, 0, category);
-    }
-
-    /*!
      * \brief Returns an appropriate label suffix as 1 and 2 in R1, R2
      *
      * This method walks through all the items on the scene matching the
@@ -1942,28 +1950,6 @@ namespace Caneda
         }
 
         return _max;
-    }
-
-    /*!
-     * \brief Calculates the center of the items given as a parameter.
-     *
-     * It actually unites the boundingRect of the items sent as parameters
-     * and then returns the center of the united rectangle. This center is
-     * used as reference point while copy/paste/inserting items on the scene.
-     *
-     * \param items The items which geometrical center has to be calculated.
-     * \return Returns the geometrical center of the items.
-     */
-    QPointF CGraphicsScene::centerOfItems(const QList<CGraphicsItem*> &items)
-    {
-        QRectF rect = items.isEmpty() ? QRectF() :
-            items.first()->sceneBoundingRect();
-
-        foreach(CGraphicsItem *item, items) {
-            rect |= item->sceneBoundingRect();
-        }
-
-        return rect.center();
     }
 
     /**********************************************************************
@@ -2156,27 +2142,27 @@ namespace Caneda
      *                           Misc
      *
      **********************************************************************/
-    //! \return A string corresponding to alignement
-    const QString CGraphicsScene::Alignment2QString(const Qt::Alignment alignment)
+    /*!
+     * \brief Calculates the center of the items given as a parameter.
+     *
+     * It actually unites the boundingRect of the items sent as parameters
+     * and then returns the center of the united rectangle. This center may be
+     * used as a reference point for several actions, for example, rotation,
+     * mirroring, and copy/paste/inserting items on the scene.
+     *
+     * \param items The items which geometric center has to be calculated.
+     * \return The geometric center of the items.
+     */
+    QPointF CGraphicsScene::centerOfItems(const QList<CGraphicsItem*> &items)
     {
-        switch(alignment) {
-            case Qt::AlignLeft :
-                return tr("Align left");
-            case Qt::AlignRight :
-                return tr("Align right");
-            case Qt::AlignTop :
-                return tr("Align top");
-            case Qt::AlignBottom :
-                return tr("Align bottom");
-            case Qt::AlignHCenter :
-                return tr("Centers horizontally");
-            case Qt::AlignVCenter :
-                return tr("Centers vertically");
-            case Qt::AlignCenter:
-                return tr("Center both vertically and horizontally");
-            default:
-                return "";
+        QRectF rect = items.isEmpty() ? QRectF() :
+            items.first()->sceneBoundingRect();
+
+        foreach(CGraphicsItem *item, items) {
+            rect |= item->sceneBoundingRect();
         }
+
+        return rect.center();
     }
 
     /*!
