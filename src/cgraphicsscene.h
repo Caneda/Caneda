@@ -117,7 +117,6 @@ namespace Caneda
         //! Spice/electric related scene properties
         PropertyGroup* properties() { return m_properties; }
         void addProperty(Property property);
-
         int launchPropertyDialog();
 
     public Q_SLOTS:
@@ -167,8 +166,6 @@ namespace Caneda
         void paintingDrawEvent(QGraphicsSceneMouseEvent *e);
         void insertingItemsEvent(QGraphicsSceneMouseEvent *e);
         void insertingWireLabelEvent(QGraphicsSceneMouseEvent *event);
-
-        void placeAndDuplicatePainting();
 
         void normalEvent(QGraphicsSceneMouseEvent *e);
         void processForSpecialMove(QList<QGraphicsItem*> _items);

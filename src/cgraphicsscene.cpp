@@ -1487,6 +1487,7 @@ namespace Caneda
                 else if(m_paintingDrawClicks == 2) {
                     arc->setSpanAngle(180);
                 }
+
                 return;
             }
             else if(text) {
@@ -1494,22 +1495,35 @@ namespace Caneda
                 text->setPos(dest);
                 int result = text->launchPropertyDialog(Caneda::DontPushUndoCmd);
                 if(result == QDialog::Accepted) {
-                    placeAndDuplicatePainting();
+                    // Place the text item
+                    placeItem(m_paintingDrawItem, dest, Caneda::PushUndoCmd);
+
+                    // Make an empty copy of the item for the next item insertion
+                    m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
+                    m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
+                    static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
                 }
 
-                // this means the text is set through the dialog.
+                // This means the text was set through the text dialog
                 m_paintingDrawClicks = 0;
                 return;
             }
 
-            // This is generic case
+            // This is the generic case
             if(m_paintingDrawClicks == 1) {
                 m_paintingDrawItem->setPos(dest);
                 addItem(m_paintingDrawItem);
             }
             else {
                 m_paintingDrawClicks = 0;
-                placeAndDuplicatePainting();
+
+                // Place the painting item
+                dest = m_paintingDrawItem->pos();
+                placeItem(m_paintingDrawItem, dest, Caneda::PushUndoCmd);
+
+                // Make an empty copy of the item for the next item insertion
+                m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
+                m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
             }
         }
 
@@ -1631,22 +1645,6 @@ namespace Caneda
     {
         Q_UNUSED(event);
         //! \todo Implement this
-    }
-
-    void CGraphicsScene::placeAndDuplicatePainting()
-    {
-        if(!m_paintingDrawItem) {
-            return;
-        }
-
-        QPointF dest = m_paintingDrawItem->pos();
-        placeItem(m_paintingDrawItem, dest, Caneda::PushUndoCmd);
-
-        m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
-        m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-        if(m_paintingDrawItem->type() == GraphicText::Type) {
-            static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
-        }
     }
 
     /******************************************************************
