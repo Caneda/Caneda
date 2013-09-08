@@ -27,6 +27,7 @@ namespace Caneda
     // Forward declarations
     class CGraphicsItem;
     class CGraphicsScene;
+    class PropertyGroup;
 
     /*!
      * \brief Represents the port symbol on component symbols and schematics.
@@ -56,10 +57,6 @@ namespace Caneda
         //! Return's the symbol's port
         Port* port() const { return m_ports[0]; }
 
-        //! Returns the full name of the port.
-        QString name() const { return m_name; }
-        void setName(QString name);
-
         void updateGeometry();
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
@@ -70,8 +67,22 @@ namespace Caneda
         PortSymbol* copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(PortSymbol *portSymbol) const;
 
+        int launchPropertyDialog(Caneda::UndoOption opt);
+
     private:
-        QString m_name;
+        /*!
+         * \brief Port properties modifiable by the user.
+         *
+         * Port properties modifiable by the user. At first the only property
+         * used is the port label (or name), but a property group is used to
+         * allow future properties to be added. This also allows the use of
+         * complex property methods like the property dialog used to modify
+         * properties.
+         *
+         * Special care must be taken to copy the contents of this PropertyGroup
+         * and not the pointer itself.
+         */
+        PropertyGroup *properties;
 
         QRectF m_paintingRect;
     };

@@ -61,7 +61,7 @@ namespace Caneda
 
         void addProperty(const QString& key, const Property& prop);
         //! Returns selected property from property map.
-        QString propertyValue(const QString& value) const { return m_propertyMap[value].value(); }
+        QString propertyValue(const QString& key) const { return m_propertyMap[key].value(); }
         void setPropertyValue(const QString& key, const QString& value);
 
         //! Returns the property map (actually a copy of property map).
