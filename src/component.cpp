@@ -334,11 +334,7 @@ namespace Caneda
     //! \copydoc CGraphicsItem::launchPropertyDialog()
     int Component::launchPropertyDialog(Caneda::UndoOption)
     {
-        PropertyDialog *dia = new PropertyDialog(d->properties);
-        int status = dia->exec();
-        delete dia;
-
-        return status;
+        return d->properties->launchPropertyDialog();
     }
 
     //! \brief Returns the rect adjusted to accomodate ports too.

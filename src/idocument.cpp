@@ -589,7 +589,7 @@ namespace Caneda
             }
         }
         else {
-            m_cGraphicsScene->launchPropertyDialog();
+            m_cGraphicsScene->launchPropertyDialog(Caneda::PushUndoCmd);
         }
     }
 
@@ -842,7 +842,7 @@ namespace Caneda
             }
         }
         else {
-            m_cGraphicsScene->launchPropertyDialog();
+            m_cGraphicsScene->launchPropertyDialog(Caneda::PushUndoCmd);
         }
     }
 
@@ -1194,7 +1194,7 @@ namespace Caneda
             }
         }
         else {
-            m_cGraphicsScene->launchPropertyDialog();
+            m_cGraphicsScene->launchPropertyDialog(Caneda::PushUndoCmd);
         }
     }
 

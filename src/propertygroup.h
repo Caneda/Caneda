@@ -68,6 +68,10 @@ namespace Caneda
         PropertyMap propertyMap() const { return m_propertyMap; }
         void setPropertyMap(const PropertyMap& propMap);
 
+        //! Returns if the user is enabled to add or remove properties.
+        bool userPropertiesEnabled() const { return m_userPropertiesEnabled; }
+        void setUserPropertiesEnabled(const bool enable);
+
         void updatePropertyDisplay();
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0 );
@@ -75,13 +79,28 @@ namespace Caneda
         void writeProperties(Caneda::XmlWriter *writer);
         void readProperties(Caneda::XmlReader *reader);
 
+    public Q_SLOTS:
+        int launchPropertyDialog();
+
     protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
     private:
-        //! \brief QMap holding actual properties.
+        //! QMap holding actual properties.
         PropertyMap m_propertyMap;
+
+        /*!
+         * \brief Holds the user created properties enable status.
+         *
+         * This tells the property dialog if the user should be
+         * enabled to add or remove properties, and if the existing
+         * properties should be allowed to change its key (property
+         * name)
+         *
+         * \sa userPropertiesEnabled(), setUserPropertiesEnabled()
+         */
+        bool m_userPropertiesEnabled;
     };
 
 } // namespace Caneda

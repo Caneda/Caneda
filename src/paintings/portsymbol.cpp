@@ -122,11 +122,7 @@ namespace Caneda
     //! \copydoc CGraphicsItem::launchPropertyDialog()
     int PortSymbol::launchPropertyDialog(Caneda::UndoOption)
     {
-        PropertyDialog *dia = new PropertyDialog(properties);
-        int status = dia->exec();
-        delete dia;
-
-        return status;
+        return properties->launchPropertyDialog();
     }
 
     //! \brief Saves data to xml \a writer.

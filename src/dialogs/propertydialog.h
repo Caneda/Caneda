@@ -63,7 +63,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PropertyModel(PropertyMap map, QObject *parent = 0);
+        PropertyModel(PropertyGroup *propGroup, QObject *parent = 0);
 
         int rowCount(const QModelIndex& = QModelIndex() ) const { return propMap.size(); }
         int columnCount(const QModelIndex& = QModelIndex() ) const { return 4; }
@@ -80,6 +80,7 @@ namespace Caneda
     private:
         friend class PropertyDialog;
 
+        PropertyGroup *m_propertyGroup;
         PropertyMap propMap;
         QList<QString> keys;
     };

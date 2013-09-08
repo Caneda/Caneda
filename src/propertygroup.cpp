@@ -41,6 +41,7 @@ namespace Caneda
     PropertyGroup::PropertyGroup(CGraphicsScene *scene, const PropertyMap &propMap)
     {
         m_propertyMap = propMap;
+        m_userPropertiesEnabled = false;
 
         if(scene) {
             scene->addItem(this);
@@ -83,6 +84,21 @@ namespace Caneda
     {
         m_propertyMap = propMap;
         updatePropertyDisplay();  // This is neccessary to update the properties display on a scene
+    }
+
+    /*!
+     * \brief Sets the userPropertiesEnabled status.
+     *
+     * This method sets if the user is enabled to add or remove properties.
+     * This is acomplished by telling the property dialog if the user should be
+     * enabled to add or remove properties, and if the existing properties
+     * should be allowed to change its key (property name)
+     *
+     * \sa m_userPropertiesEnabled, \sa userPropertiesEnabled()
+     */
+    void PropertyGroup::setUserPropertiesEnabled(const bool enable)
+    {
+        m_userPropertiesEnabled = enable;
     }
 
     /*!
@@ -238,6 +254,16 @@ namespace Caneda
         updatePropertyDisplay();
     }
 
+    //! \copydoc CGraphicsItem::launchPropertyDialog()
+    int PropertyGroup::launchPropertyDialog()
+    {
+        PropertyDialog *dia = new PropertyDialog(this);
+        int status = dia->exec();
+        delete dia;
+
+        return status;
+    }
+
     //! \brief On mouse click deselect selected items other than this.
     void PropertyGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
@@ -255,9 +281,7 @@ namespace Caneda
     //! \brief Launches property dialog on double click.
     void PropertyGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
     {
-        PropertyDialog *dia = new PropertyDialog(this);
-        dia->exec();
-        delete dia;
+        launchPropertyDialog();
     }
 
 } // namespace Caneda

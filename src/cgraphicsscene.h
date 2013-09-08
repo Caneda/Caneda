@@ -117,7 +117,7 @@ namespace Caneda
         //! Spice/electric related scene properties
         PropertyGroup* properties() { return m_properties; }
         void addProperty(Property property);
-        int launchPropertyDialog();
+        int launchPropertyDialog(Caneda::UndoOption);
 
     public Q_SLOTS:
         void setModified(const bool m = true);

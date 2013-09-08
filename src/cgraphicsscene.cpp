@@ -62,6 +62,7 @@ namespace Caneda
 
         // Setup spice/electric related scene properties
         m_properties = new PropertyGroup(this);
+        m_properties->setUserPropertiesEnabled(true);
 
         // Setup undo stack
         m_undoStack = new QUndoStack(this);
@@ -653,13 +654,9 @@ namespace Caneda
     }
 
     //! \copydoc CGraphicsItem::launchPropertyDialog()
-    int CGraphicsScene::launchPropertyDialog()
+    int CGraphicsScene::launchPropertyDialog(Caneda::UndoOption)
     {
-        PropertyDialog *dia = new PropertyDialog(m_properties);
-        int status = dia->exec();
-        delete dia;
-
-        return status;
+        return m_properties->launchPropertyDialog();
     }
 
     /*!
@@ -1732,7 +1729,7 @@ namespace Caneda
             case QEvent::GraphicsSceneMouseDoubleClick:
                 {
                     if(selectedItems().size() == 0) {
-                        launchPropertyDialog();
+                        launchPropertyDialog(Caneda::PushUndoCmd);
                     }
 
                     QGraphicsScene::mouseDoubleClickEvent(e);

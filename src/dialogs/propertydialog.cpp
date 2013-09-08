@@ -40,10 +40,11 @@ namespace Caneda
      *
      * \sa PropertyMap
      */
-    PropertyModel::PropertyModel(PropertyMap map, QObject *parent) :
+    PropertyModel::PropertyModel(PropertyGroup *propGroup, QObject *parent) :
         QAbstractTableModel(parent),
-        propMap(map),
-        keys(map.keys())
+        m_propertyGroup(propGroup),
+        propMap(propGroup->propertyMap()),
+        keys(propGroup->propertyMap().keys())
     {
     }
 
@@ -127,9 +128,18 @@ namespace Caneda
         if(index.column() == 2) {
             flags |= Qt::ItemIsUserCheckable;
         }
-        // Every other column is text editable
-        else {
+        // Column 1 is text editable (property value)
+        else if(index.column() == 1) {
             flags |= Qt::ItemIsEditable;
+        }
+        // Every other column is text editable if user properties are enabled
+        else {
+            if(m_propertyGroup->userPropertiesEnabled()) {
+                flags |= Qt::ItemIsEditable;
+            }
+            else {
+                flags |= Qt::ItemIsEnabled;
+            }
         }
 
         return flags;
@@ -138,9 +148,8 @@ namespace Caneda
     /*!
      * \brief Sets data in a PropertyModel item.
      *
-     * Sets data in a PropertyModel item. Some special data should not be editable,
-     * for example property label should not change its property "name" (although
-     * its property "value" can be edited). This method takes care of that.
+     * Sets the data in a PropertyModel item, ie. modifies the user edited
+     * data.
      *
      * In the future, we can set a new field inside properties to determine if
      * some parts of a property cannot be modified. For example default property
@@ -166,11 +175,6 @@ namespace Caneda
 
                 // We should not overwrite an existing property
                 if (keys.contains(value.toString())){
-                    return false;
-                }
-
-                // Property "label" should not change name
-                if (keys[index.row()] == "label") {
                     return false;
                 }
 
@@ -293,8 +297,15 @@ namespace Caneda
         ui.m_removeButton->setWhatsThis(
                     tr("Remove Property\n\nRemoves selected property from the list"));
 
+        // Allow the user to add or remove properties depending on the
+        // propertyGroup preferences.
+        if(!m_propertyGroup->userPropertiesEnabled()) {
+            ui.m_addButton->setVisible(false);
+            ui.m_removeButton->setVisible(false);
+        }
+
         // Create new table model
-        m_model = new PropertyModel(m_propertyGroup->propertyMap(), this);
+        m_model = new PropertyModel(m_propertyGroup, this);
 
         // Create proxy model and set its properties
         m_proxyModel = new QSortFilterProxyModel(this);
