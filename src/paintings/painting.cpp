@@ -170,9 +170,6 @@ namespace Caneda
             else if(name == QObject::tr("Text")) {
                 return new GraphicText;
             }
-            else if(name == QObject::tr("Port Symbol")) {
-                return new PortSymbol;
-            }
 
             else if(name == QObject::tr("Metal 1")) {
                 return new Layer(rect, Layer::Metal1);
@@ -221,9 +218,6 @@ namespace Caneda
             }
             else if(name == QLatin1String("text")) {
                 return new GraphicText;
-            }
-            else if(name == QLatin1String("portSymbol")) {
-                return new PortSymbol;
             }
             else if(name == QLatin1String("layer")) {
                 return new Layer(rect);

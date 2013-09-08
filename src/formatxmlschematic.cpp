@@ -29,6 +29,7 @@
 #include "xmlutilities.h"
 
 #include "paintings/painting.h"
+#include "paintings/portsymbol.h"
 
 #include <QDebug>
 #include <QFile>
@@ -116,6 +117,7 @@ namespace Caneda
     void FormatXmlSchematic::saveSchematics(Caneda::XmlWriter *writer)
     {
         saveComponents(writer);
+        savePorts(writer);
         saveWires(writer);
         savePaintings(writer);
         saveProperties(writer);
@@ -132,6 +134,20 @@ namespace Caneda
                 c->saveData(writer);
             }
             writer->writeEndElement(); //</components>
+        }
+    }
+
+    void FormatXmlSchematic::savePorts(Caneda::XmlWriter *writer)
+    {
+        CGraphicsScene *scene = cGraphicsScene();
+        QList<QGraphicsItem*> items = scene->items();
+        QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
+        if(!portSymbols.isEmpty()) {
+            writer->writeStartElement("ports");
+            foreach(PortSymbol *p, portSymbols) {
+                p->saveData(writer);
+            }
+            writer->writeEndElement(); //</ports>
         }
     }
 
@@ -251,6 +267,9 @@ namespace Caneda
             if(reader->name() == "components") {
                 loadComponents(reader);
             }
+            else if(reader->name() == "ports") {
+                loadPorts(reader);
+            }
             else if(reader->name() == "wires") {
                 loadWires(reader);
             }
@@ -283,13 +302,45 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "component") {
-                    Component::loadComponent(reader,scene);
+                    Component::loadComponent(reader, scene);
                 }
                 else {
                     qWarning() << "Error: Found unknown component type" << reader->name().toString();
                     reader->readUnknownElement();
                     reader->raiseError(QObject::tr("Malformatted file"));
                 }
+            }
+        }
+    }
+
+    void FormatXmlSchematic::loadPorts(Caneda::XmlReader *reader)
+    {
+        CGraphicsScene *scene = cGraphicsScene();
+        if(!reader->isStartElement() || reader->name() != "ports") {
+            reader->raiseError(QObject::tr("Malformatted file"));
+        }
+
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isEndElement()) {
+                Q_ASSERT(reader->name() == "ports");
+                break;
+            }
+
+            if(reader->isStartElement()) {
+                if(reader->name() == "port") {
+                    PortSymbol *portSymbol = new PortSymbol(scene);
+                    portSymbol->loadData(reader);
+                }
+                else {
+                    qWarning() << "Error: Found unknown port type" << reader->name().toString();
+                    reader->readUnknownElement();
+                    reader->raiseError(QObject::tr("Malformatted file"));
+                }
+
+                // Read until end of element
+                reader->readUnknownElement();
             }
         }
     }

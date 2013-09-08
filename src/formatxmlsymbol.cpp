@@ -26,6 +26,7 @@
 #include "xmlutilities.h"
 
 #include "paintings/painting.h"
+#include "paintings/portsymbol.h"
 
 #include <QDebug>
 #include <QFile>
@@ -172,8 +173,15 @@ namespace Caneda
 
         writer->writeEndElement(); //</symbol>
 
-        //! \todo Write ports
         writer->writeStartElement("ports");
+
+        QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
+        if(!portSymbols.isEmpty()) {
+            foreach(PortSymbol *p, portSymbols) {
+                p->saveData(writer);
+            }
+        }
+
         writer->writeEndElement(); //</ports>
 
         writer->writeStartElement("properties");
@@ -352,17 +360,16 @@ namespace Caneda
             }
 
             if(reader->isStartElement() && reader->name() == "port") {
-
-                QString portName = reader->attributes().value("name").toString();
-                QPointF pos = reader->readPointAttribute("pos");
-
                 // Check if we are opening the file for edition or to include it in a library
                 if(cGraphicsScene()) {
                     // We are opening the file for symbol edition
-                    //! \todo Implement this.
+                    PortSymbol *portSymbol = new PortSymbol(cGraphicsScene());
+                    portSymbol->loadData(reader);
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
+                    QPointF pos = reader->readPointAttribute("pos");
+                    QString portName = reader->attributes().value("name").toString();
                     component()->ports << new PortData(pos, portName);
                 }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,64 +20,60 @@
 #ifndef PORTSYMBOL_H
 #define PORTSYMBOL_H
 
-#include "painting.h"
-
-// Forward declarations
-class QFont;
+#include "port.h"
 
 namespace Caneda
 {
+    // Forward declarations
+    class CGraphicsItem;
+    class CGraphicsScene;
+
     /*!
-     * \brief Represents the port ellipse and port id on schematic.
+     * \brief Represents the port symbol on component symbols and schematics.
      *
-     * This item is used mostly only in symbol mode. It represents the
-     * port location in the subcircuit symbol.
+     * This item is used as a "bridge" between symbols and schematics. When
+     * used in a symbol, the symbol's port is used as a connection when
+     * instantiated into larger schematics. The connection bounds the connected
+     * net or wire to the inside circuit (subcircuit in spice terminology) of
+     * the component. The inside circuit is defined by a schematic with the
+     * same name of the symbol.
+     *
+     * For the bridge to work, the must be ports in the schematic with the same
+     * names as the ports in the symbol.
+     *
      */
-    class PortSymbol : public Painting
+    class PortSymbol : public CGraphicsItem
     {
     public:
-        enum {
-            Type = Painting::PortSymbolType
-        };
+        enum { Type = CGraphicsItem::PortSymbolType };
 
-        PortSymbol(const QString& nameStr_= "1",
-                const QString& numberStr_= "",
-                CGraphicsScene *scene = 0);
+        PortSymbol(CGraphicsScene *scene = 0);
+        ~PortSymbol();
 
-        void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
+        //! Used for component identification at runtime.
+        int type() const { return PortSymbol::Type; }
 
-        //! \brief Returns the number part of port id.
-        QString numberString() const { return m_numberString; }
-        void setNumberString(int num) { setNumberString(QString::number(num)); }
-        void setNumberString(QString str);
+        //! Return's the symbol's port
+        Port* port() const { return m_ports[0]; }
 
-        //! \brief Returns the name part of port id.
-        QString nameString() const { return m_nameString; }
-        void setNameString(QString name);
-
-        //! \brief Returns name and number part combined into one string.
-        QString text() const { return m_numberString + m_nameString; }
+        //! Returns the full name of the port.
+        QString name() const { return m_name; }
+        void setName(QString name);
 
         void updateGeometry();
 
-        //! \brief Returns the font used to draw port id.
-        QFont font() const { return m_font; }
-        void setFont(const QFont &font);
-
-        void mirrorAlong(Qt::Axis axis);
-
-        int type() const { return PortSymbol::Type; }
-        PortSymbol* copy(CGraphicsScene *scene = 0) const;
+        void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-    private:
-        bool m_mirrored;
+        PortSymbol* copy(CGraphicsScene *scene = 0) const;
+        void copyDataTo(PortSymbol *portSymbol) const;
 
-        QString m_numberString;
-        QString m_nameString;
-        QFont m_font;
+    private:
+        QString m_name;
+
+        QRectF m_paintingRect;
     };
 
 } // namespace Caneda

@@ -196,6 +196,12 @@ namespace Caneda
             qDebug() << "Please set the appropriate libraries through Application settings and restart the application.";
         }
 
+        QList<QPair<QString, QPixmap> > miscellaneousItems;
+        miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
+                QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
+
+        m_sidebarBrowser->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
+
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
                 QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
@@ -366,6 +372,12 @@ namespace Caneda
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
+        QList<QPair<QString, QPixmap> > miscellaneousItems;
+        miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
+                QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
+
+        m_sidebarBrowser->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
+
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
                 QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
@@ -375,8 +387,6 @@ namespace Caneda
                 QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
         paintingItems << qMakePair(QObject::tr("Line"),
                 QPixmap(Caneda::bitmapDirectory() + "line.svg"));
-        paintingItems << qMakePair(QObject::tr("Port Symbol"),
-                QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
         paintingItems << qMakePair(QObject::tr("Rectangle"),
                 QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
         paintingItems << qMakePair(QObject::tr("Text"),

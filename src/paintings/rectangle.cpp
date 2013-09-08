@@ -68,7 +68,7 @@ namespace Caneda
 
         painter->drawRect(rect());
 
-        //call base method to draw resize handles.
+        // Call base method to draw resize handles.
         Painting::paint(painter, option, w);
     }
 

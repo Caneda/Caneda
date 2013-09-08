@@ -29,6 +29,7 @@
 #include "xmlutilities.h"
 
 #include "paintings/painting.h"
+#include "paintings/portsymbol.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -174,15 +175,21 @@ namespace Caneda
     }
 
     /*!
-     * \brief This function is called when a sidebar item is clicked
+     * \brief Insert a component or painting based on its name and category.
+     *
+     * Get a component or painting based on the name and category. The
+     * painting is processed in a special hardcoded way (with no libraries
+     * involved). Some other "miscellaneous" items are hardcoded too. On the
+     * other hand, components are loaded from existing libraries.
      *
      * \param item: item's name
      * \param category: item's category name
+     * \sa CGraphicsScene::dropEvent()
      */
     void StateHandler::slotSidebarItemClicked(const QString& item,
             const QString& category)
     {
-        if (category == "Paint Tools" || category == "Layout Tools") {
+        if(category == "Paint Tools" || category == "Layout Tools") {
             // Action when a painting item is selected
 
             // Clear old item first
@@ -202,6 +209,22 @@ namespace Caneda
                 slotPerformToggleAction("paintingDraw", true);
             }
 
+        }
+        else if(category == QObject::tr("Miscellaneous")) {
+            // Action when a miscellaneous item is selected (ground, ports, etc)
+
+            // Clear old item first
+            d->clearInsertibles();
+
+            // Begin inserting items
+            CGraphicsItem *qItem;
+            if(item == QObject::tr("Port Symbol")) {
+                qItem = new PortSymbol(0);
+            }
+            //! \todo Repeat this for each type of miscellaneous item, for example ground
+
+            d->insertibles << qItem;
+            slotPerformToggleAction("insertItem", true);
         }
         else {
             // Action when a standard item is selected

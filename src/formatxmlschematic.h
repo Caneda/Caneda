@@ -60,6 +60,7 @@ namespace Caneda
         QString saveText();
         void saveSchematics(Caneda::XmlWriter *writer);
         void saveComponents(Caneda::XmlWriter *writer);
+        void savePorts(Caneda::XmlWriter *writer);
         void saveWires(Caneda::XmlWriter *writer);
         void savePaintings(Caneda::XmlWriter *writer);
         void saveProperties(Caneda::XmlWriter *writer);
@@ -67,6 +68,7 @@ namespace Caneda
         bool loadFromText(const QString& text);
         void loadSchematics(Caneda::XmlReader *reader);
         void loadComponents(Caneda::XmlReader *reader);
+        void loadPorts(Caneda::XmlReader *reader);
         void loadWires(Caneda::XmlReader *reader);
         void loadPaintings(Caneda::XmlReader *reader);
         void loadProperties(Caneda::XmlReader *reader);

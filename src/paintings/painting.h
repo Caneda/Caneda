@@ -57,8 +57,6 @@ namespace Caneda
             EllipseArcType,
             GraphicLineType,
             GraphicTextType,
-            IdTextType,
-            PortSymbolType,
             RectangleType,
             LayerType
         };

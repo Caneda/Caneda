@@ -34,6 +34,7 @@
 
 #include "paintings/ellipsearc.h"
 #include "paintings/graphictextdialog.h"
+#include "paintings/portsymbol.h"
 
 #include <QClipboard>
 #include <QGraphicsSceneEvent>
@@ -922,7 +923,7 @@ namespace Caneda
      * need to enter the insert mode.
      *
      * \param event event to be accepted
-     * \sa dragMoveEvent, dragEnterEvent
+     * \sa dragMoveEvent, dragEnterEvent, StateHandler::slotSidebarItemClicked()
      */
     void CGraphicsScene::dropEvent(QGraphicsSceneDragDropEvent * event)
     {
@@ -936,33 +937,40 @@ namespace Caneda
 
             // Get a component or painting based on the name and category.
             // The painting is processed in a special hardcoded way (with
-            // no libraries involved). On the other hand, components are
+            // no libraries involved). Some other "miscellaneous" items
+            // are hardcoded too. On the other hand, components are
             // loaded from existing libraries.
             CGraphicsItem *qItem;
             if(itemCategory == QObject::tr("Paint Tools") || itemCategory == QObject::tr("Layout Tools")) {
                 qItem = Painting::fromName(itemName);
             }
+            else if(itemCategory == QObject::tr("Miscellaneous")) {
+                if(itemName == QObject::tr("Port Symbol")) {
+                    qItem = new PortSymbol(this);
+                }
+                //! \todo Repeat this for each type of miscellaneous item, for example ground
+            }
             else {
                 qItem = LibraryManager::instance()->newComponent(itemName, 0, itemCategory);
             }
 
-            // If the item is a GraphicText item, open a dialog to type the text
-            if(qItem->type() == GraphicText::Type) {
-                GraphicTextDialog dialog(0, Caneda::DontPushUndoCmd);
-                if(dialog.exec() == QDialog::Accepted) {
-                    GraphicText *textItem = static_cast<GraphicText*>(qItem);
-                    textItem->setRichText(dialog.richText());
-                }
-                else {
-                    delete qItem;
-                    return;
-                }
-            }
-
-            // Place the resulting item in the nearest grid position
+            // Check if the item was successfully created
             if(qItem) {
-                QPointF dest = smartNearingGridPoint(event->scenePos());
+                // If the item is a GraphicText item, open a dialog to type the text
+                if(qItem->type() == GraphicText::Type) {
+                    GraphicTextDialog dialog(0, Caneda::DontPushUndoCmd);
+                    if(dialog.exec() == QDialog::Accepted) {
+                        GraphicText *textItem = static_cast<GraphicText*>(qItem);
+                        textItem->setRichText(dialog.richText());
+                    }
+                    else {
+                        delete qItem;
+                        return;
+                    }
+                }
 
+                // For all item types, place the result in the nearest grid position
+                QPointF dest = smartNearingGridPoint(event->scenePos());
                 placeItem(qItem, dest, Caneda::PushUndoCmd);
                 event->acceptProposedAction();
             }
