@@ -947,11 +947,14 @@ namespace Caneda
                 }
                 //! \todo Repeat this for each type of miscellaneous item, for example ground
             }
-            else {
+
+            // If the item was not found in the fixed libraries, search for the
+            // item in the dinamic loaded libraries ("Components" category).
+            if(!qItem) {
                 qItem = LibraryManager::instance()->newComponent(itemName, 0, itemCategory);
             }
 
-            // Check if the item was successfully created
+            // Check if the item was successfully found and created
             if(qItem) {
                 // If the item is a GraphicText item, open a dialog to type the text
                 if(qItem->type() == GraphicText::Type) {
