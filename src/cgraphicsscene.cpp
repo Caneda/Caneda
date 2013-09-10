@@ -937,7 +937,7 @@ namespace Caneda
             // no libraries involved). Some other "miscellaneous" items
             // are hardcoded too. On the other hand, components are
             // loaded from existing libraries.
-            CGraphicsItem *qItem;
+            CGraphicsItem *qItem = 0;
             if(itemCategory == QObject::tr("Paint Tools") || itemCategory == QObject::tr("Layout Tools")) {
                 qItem = Painting::fromName(itemName);
             }

@@ -217,14 +217,19 @@ namespace Caneda
             d->clearInsertibles();
 
             // Begin inserting items
-            CGraphicsItem *qItem;
+            CGraphicsItem *qItem = 0;
             if(item == QObject::tr("Port Symbol")) {
                 qItem = new PortSymbol(0);
             }
             //! \todo Repeat this for each type of miscellaneous item, for example ground
 
-            d->insertibles << qItem;
-            slotPerformToggleAction("insertItem", true);
+            if(!qItem) {
+                slotSetNormalAction();
+            }
+            else {
+                d->insertibles << qItem;
+                slotPerformToggleAction("insertItem", true);
+            }
         }
         else {
             // Action when a standard item is selected
