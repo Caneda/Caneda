@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -189,42 +190,34 @@ namespace Caneda
     void StateHandler::slotSidebarItemClicked(const QString& item,
             const QString& category)
     {
+        // Clear old item first
+        d->clearInsertibles();
+
+        // Get a component or painting based on the name and category.
+        CGraphicsItem *qItem = 0;
         if(category == "Paint Tools" || category == "Layout Tools") {
-            // Action when a painting item is selected
-
-            // Clear old item first
-            if (d->paintingDrawItem) {
-                if (d->paintingDrawItem->scene()) {
-                    d->paintingDrawItem->scene()->removeItem(d->paintingDrawItem);
-                }
-                delete d->paintingDrawItem;
-            }
-
-            // Begin inserting items
-            d->paintingDrawItem = Painting::fromName(item);
-            if (!d->paintingDrawItem) {
-                slotSetNormalAction();
-            } else {
-                d->paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-                slotPerformToggleAction("paintingDraw", true);
-            }
-
+            qItem = Painting::fromName(item);
         }
         else if(category == QObject::tr("Miscellaneous")) {
-            // Action when a miscellaneous item is selected (ground, ports, etc)
-
-            // Clear old item first
-            d->clearInsertibles();
-
-            // Begin inserting items
-            CGraphicsItem *qItem = 0;
             if(item == QObject::tr("Port Symbol")) {
                 qItem = new PortSymbol(0);
             }
             //! \todo Repeat this for each type of miscellaneous item, for example ground
+        }
 
-            if(!qItem) {
-                slotSetNormalAction();
+        // If the item was not found in the fixed libraries, search for the
+        // item in the dinamic loaded libraries ("Components" category).
+        if(!qItem) {
+            qItem = LibraryManager::instance()->newComponent(item, 0, category);
+        }
+
+
+        // Check if the item was successfully found and created
+        if(qItem) {
+            if(category == "Paint Tools" || category == "Layout Tools") {
+                d->paintingDrawItem = static_cast<Painting*>(qItem);
+                d->paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
+                slotPerformToggleAction("paintingDraw", true);
             }
             else {
                 d->insertibles << qItem;
@@ -232,22 +225,9 @@ namespace Caneda
             }
         }
         else {
-            // Action when a standard item is selected
-
-            // Clear old item first
-            d->clearInsertibles();
-
-            // Begin inserting items
-            LibraryManager *libLoader = LibraryManager::instance();
-            CGraphicsItem *qItem = libLoader->newComponent(item, 0, category);
-            if (!qItem) {
-                slotSetNormalAction();
-            } else {
-                d->insertibles << qItem;
-                slotPerformToggleAction("insertItem", true);
-            }
-
+            slotSetNormalAction();
         }
+
     }
 
     void StateHandler::slotHandlePaste()
