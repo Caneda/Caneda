@@ -100,7 +100,7 @@ namespace Caneda
         //! Returns the position relative to owner - usually constant.
         QPointF pos() const { return d->pos; }
 
-        QPointF scenePos(bool *ok = 0) const;
+        QPointF scenePos() const;
 
         //! Returns the port's name.
         QString name() const { return d->name; }

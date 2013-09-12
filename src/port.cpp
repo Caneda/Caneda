@@ -130,16 +130,9 @@ namespace Caneda
         delete m_owner;
     }
 
-    /*!
-     * \brief Returns position mapped to scene.
-     *
-     * \param ok It is set to success state if non null.
-     */
-    QPointF Port::scenePos(bool *ok) const
+    //! \brief Returns position mapped to scene.
+    QPointF Port::scenePos() const
     {
-        if(ok) {
-            *ok = m_owner->item()->scene() != 0;
-        }
         return m_owner->item()->mapToScene(d->pos);
     }
 
@@ -161,8 +154,6 @@ namespace Caneda
     //! \brief Connect the ports \a port1 and \a port2.
     void Port::connect(Port *port1, Port *port2)
     {
-        bool ok1, ok2;
-
         if(port1 == port2 || !port1 || !port2) {
             return;
         }
@@ -172,39 +163,40 @@ namespace Caneda
             return;
         }
 
-        QPointF p1 = port1->scenePos(&ok1);
-        QPointF p2 = port2->scenePos(&ok2);
-
-        if(!ok1 || !ok2 ||
+        if(!port1->m_owner->item()->scene() ||
+                !port2->m_owner->item()->scene() ||
                 port1->ownerItem()->scene() != port2->ownerItem()->scene()) {
             qWarning() << "Cannot connect nodes across different or null scenes";
             return;
         }
+
+        QPointF p1 = port1->scenePos();
+        QPointF p2 = port2->scenePos();
 
         if(p1 != p2) {
             qWarning() << "Cannot connect nodes as positions mismatch" << p1 << p2;
             return;
         }
 
-        //create new connection list if both the ports are not at all connected.
+        // Create new connection list if both the ports are not at all connected.
         if(!port1->m_connections && !port2->m_connections) {
             port1->m_connections = port2->m_connections = new QList<Port*>;
             *(port1->m_connections) << port1 << port2;
         }
-        //use port2->m_connections if port1->m_connections is null
+        // Use port2->m_connections if port1->m_connections is null
         else if(!port1->m_connections) {
             port1->m_connections = port2->m_connections;
             //Q_ASSERT(!m_connections->contains(m_port1));
             *(port1->m_connections) << port1;
         }
-        //use port1->m_connections if port2->m_connections is null
+        // Use port1->m_connections if port2->m_connections is null
         else if(!port2->m_connections) {
             port2->m_connections = port1->m_connections;
             *(port2->m_connections) << port2;
         }
         // else both the m_connections exist.
         else {
-            // the connections are same indicates they are already connected.
+            // The connections are same indicates they are already connected.
             if(port1->m_connections == port2->m_connections) {
                 Q_ASSERT(port1->m_connections->contains(port1));
                 Q_ASSERT(port1->m_connections->contains(port2));
