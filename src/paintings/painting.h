@@ -86,7 +86,6 @@ namespace Caneda
         void setResizeHandles(Caneda::ResizeHandles handles);
 
         Painting* copy(CGraphicsScene *scene = 0) const;
-
         virtual void copyDataTo(Painting *painting) const;
 
         static Painting* fromName(const QString& name);

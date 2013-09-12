@@ -125,6 +125,26 @@ namespace Caneda
         return properties->launchPropertyDialog();
     }
 
+    /*!
+     * \brief Convenience static method to load a PortSymbol saved as xml.
+     *
+     * This method loads a PortSymbol saved as xml. Once the PortSymbol is
+     * created, its data is filled using the loadData() method.
+     *
+     * \param reader The xmlreader used to read xml data.
+     * \param scene CGraphicsScene to which PortSymbol should be parented to.
+     * \return Returns new PortSymbol pointer on success and null on failure.
+     *
+     * \sa loadData()
+     */
+    PortSymbol* PortSymbol::loadPortSymbol(Caneda::XmlReader *reader, CGraphicsScene *scene)
+    {
+        PortSymbol *retVal = new PortSymbol(scene);
+        retVal->loadData(reader);
+
+        return retVal;
+    }
+
     //! \brief Saves data to xml \a writer.
     void PortSymbol::saveData(Caneda::XmlWriter *writer) const
     {

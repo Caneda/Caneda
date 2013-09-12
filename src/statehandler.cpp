@@ -271,6 +271,9 @@ namespace Caneda
                 else if(reader.name() == "painting")  {
                     readItem = Painting::loadPainting(&reader, 0);
                 }
+                else if(reader.name() == "port")  {
+                    readItem = PortSymbol::loadPortSymbol(&reader, 0);
+                }
 
                 if(readItem) {
                     _items << readItem;

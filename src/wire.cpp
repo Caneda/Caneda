@@ -318,6 +318,18 @@ namespace Caneda
         writer->writeEndElement();
     }
 
+    /*!
+     * \brief Convenience static method to load a wire saved as xml.
+     *
+     * This method loads a wire saved as xml. Once the wire is
+     * created, its data is filled using the loadData() method.
+     *
+     * \param reader The xmlreader used to read xml data.
+     * \param scene CGraphicsScene to which the wire should be parented to.
+     * \return Returns new wire pointer on success and null on failure.
+     *
+     * \sa loadData()
+     */
     Wire* Wire::loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene)
     {
         Wire *retVal = new Wire(QPointF(10, 10), QPointF(50,50), scene);
