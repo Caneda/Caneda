@@ -100,21 +100,11 @@ namespace Caneda
 
     void DisconnectCmd::undo()
     {
-        QString port1Name = m_port1->owner()->component() ?
-            m_port1->owner()->component()->name() : "Wire";
-        QString port2Name = m_port2->owner()->component() ?
-            m_port2->owner()->component()->name() : "Wire";
-
         m_port1->connectTo(m_port2);
     }
 
     void DisconnectCmd::redo()
     {
-        QString port1Name = m_port1->owner()->component() ?
-            m_port1->owner()->component()->name() : "Wire";
-        QString port2Name = m_port2->owner()->component() ?
-            m_port2->owner()->component()->name() : "Wire";
-
         m_port1->disconnectFrom(m_port2);
     }
 

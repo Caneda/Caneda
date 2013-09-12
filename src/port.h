@@ -99,6 +99,7 @@ namespace Caneda
 
         //! Returns the position relative to owner - usually constant.
         QPointF pos() const { return d->pos; }
+        void setPos(const QPointF& newPos);
 
         QPointF scenePos() const;
 
@@ -132,9 +133,6 @@ namespace Caneda
 
     private:
         Port* findCoincidingPort(const QList<Port*> &ports) const;
-
-        friend class Wire;
-        void setPos(const QPointF& newPos); // Only needed for wires
 
         QSharedDataPointer<PortData> d;
         PortOwner *m_owner;

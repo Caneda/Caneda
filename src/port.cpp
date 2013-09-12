@@ -136,10 +136,7 @@ namespace Caneda
         return m_owner->item()->mapToScene(d->pos);
     }
 
-    /*!
-     * \brief This is private method needed only for wires as components do not
-     * change relative port position.
-     */
+    //! \brief Set a new port position
     void Port::setPos(const QPointF& newPos)
     {
         d->pos = newPos;
