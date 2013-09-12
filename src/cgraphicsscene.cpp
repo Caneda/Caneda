@@ -26,6 +26,7 @@
 #include "documentviewmanager.h"
 #include "iview.h"
 #include "library.h"
+#include "portsymbol.h"
 #include "propertygroup.h"
 #include "settings.h"
 #include "xmlutilities.h"
@@ -34,7 +35,6 @@
 
 #include "paintings/ellipsearc.h"
 #include "paintings/graphictextdialog.h"
-#include "paintings/portsymbol.h"
 
 #include <QClipboard>
 #include <QGraphicsSceneEvent>

@@ -25,12 +25,12 @@
 #include "cgraphicsview.h"
 #include "global.h"
 #include "library.h"
+#include "portsymbol.h"
 #include "settings.h"
 #include "undocommands.h"
 #include "xmlutilities.h"
 
 #include "paintings/painting.h"
-#include "paintings/portsymbol.h"
 
 #include <QApplication>
 #include <QClipboard>

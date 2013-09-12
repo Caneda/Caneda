@@ -23,10 +23,10 @@
 #include "global.h"
 #include "idocument.h"
 #include "library.h"
+#include "portsymbol.h"
 #include "xmlutilities.h"
 
 #include "paintings/painting.h"
-#include "paintings/portsymbol.h"
 
 #include <QDebug>
 #include <QFile>
