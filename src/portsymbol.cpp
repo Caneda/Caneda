@@ -107,7 +107,6 @@ namespace Caneda
     {
         //! \todo Check this
         PortSymbol *portSymbol = new PortSymbol(scene);
-        portSymbol->updateGeometry();
         PortSymbol::copyDataTo(portSymbol);
         return portSymbol;
     }

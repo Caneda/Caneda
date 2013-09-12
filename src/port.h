@@ -114,8 +114,6 @@ namespace Caneda
         //! Returns a pointer to list of connected ports (null if unconnected).
         QList<Port*> *connections() const { return m_connections; }
 
-        CGraphicsScene* cGraphicsScene() const;
-
         static void connect(Port* port1, Port *port2);
         static void disconnect(Port *port, Port *from);
         void connectTo(Port *other);

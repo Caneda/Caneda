@@ -23,6 +23,7 @@
 #include "cgraphicsitem.h"
 #include "cgraphicsscene.h"
 #include "component.h"
+#include "portsymbol.h"
 #include "settings.h"
 #include "wire.h"
 
@@ -41,7 +42,6 @@ namespace Caneda
     //! \brief Constructs a PortOwner item with wire as owner.
     PortOwner::PortOwner(CGraphicsItem * item) : m_item(item)
     {
-        Q_ASSERT(isWire() || isComponent());
     }
 
     /*!
@@ -151,17 +151,6 @@ namespace Caneda
     {
         d->pos = newPos;
     }
-
-    CGraphicsScene* Port::cGraphicsScene() const
-    {
-        if(owner()->wire()) {
-            return owner()->wire()->cGraphicsScene();
-        }
-        else {
-            return owner()->component()->cGraphicsScene();
-        }
-    }
-
 
     //! \brief Shorhand for Port::connect(this, other)
     void Port::connectTo(Port *other)
@@ -365,6 +354,9 @@ namespace Caneda
             }
             else if(canedaitem_cast<Wire*>(item)) {
                 ports = canedaitem_cast<Wire*>(item)->ports();
+            }
+            else if(canedaitem_cast<PortSymbol*>(item)) {
+                ports = canedaitem_cast<PortSymbol*>(item)->ports();
             }
             else {
                 continue;
