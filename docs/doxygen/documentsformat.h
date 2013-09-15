@@ -146,6 +146,23 @@ namespace Caneda
         </component>
     </components>
 
+    // Ports tag:
+    // This tag is used to group all ports and special nets relative to this
+    // component. A port is the logical unit used to perform connections between
+    // the symbol and the schematic.
+    <ports>
+        // Port tag:
+        // This tag is used to represent a single port. A port is the logical
+        // unit used to perform connections.
+        //
+        // Attibutes list:
+        //      * name (#required): This string can be used to identify ports.
+        //      * pos (#required): This tuple represents the port location
+        //        inside the schematic coordinate system.
+        <port name="a" pos="-20,0"/>
+        <port name="b" pos="20,0"/>
+    </ports>
+
     <wires>
         // Equipotential tag:
         // Each equipotential tag describes one electric node included in the
