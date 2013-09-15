@@ -182,9 +182,6 @@ namespace Caneda
     //! \brief Destructor.
     InsertItemCmd::~InsertItemCmd()
     {
-        if(!m_item->scene()) {
-            delete m_item;
-        }
     }
 
     void InsertItemCmd::undo()
