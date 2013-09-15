@@ -107,6 +107,7 @@ namespace Caneda
     {
         //! \todo Check this
         PortSymbol *portSymbol = new PortSymbol(scene);
+        portSymbol->properties->setPropertyMap(properties->propertyMap());
         PortSymbol::copyDataTo(portSymbol);
         return portSymbol;
     }
@@ -163,6 +164,9 @@ namespace Caneda
         QString label = reader->attributes().value("name").toString();
         properties->setPropertyValue("label", label);
         setPos(reader->readPointAttribute("pos"));
+
+        // Read until end of element
+        reader->readUnknownElement();
     }
 
 } // namespace Caneda

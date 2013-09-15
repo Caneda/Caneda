@@ -371,10 +371,11 @@ namespace Caneda
                     QPointF pos = reader->readPointAttribute("pos");
                     QString portName = reader->attributes().value("name").toString();
                     component()->ports << new PortData(pos, portName);
+
+                    // Read until end of element
+                    reader->readUnknownElement();
                 }
 
-                // Read until end of element
-                reader->readUnknownElement();
             }
         }
     }

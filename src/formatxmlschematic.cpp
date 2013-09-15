@@ -339,8 +339,6 @@ namespace Caneda
                     reader->raiseError(QObject::tr("Malformatted file"));
                 }
 
-                // Read until end of element
-                reader->readUnknownElement();
             }
         }
     }
