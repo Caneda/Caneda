@@ -103,7 +103,8 @@ namespace Caneda
         WireData currentState() const;
 
         static Wire* loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene);
-        void saveData(Caneda::XmlWriter *writer, int id=-1) const;
+        void saveData(Caneda::XmlWriter *writer) const;
+        void saveData(Caneda::XmlWriter *writer, int id) const;
         void loadData(Caneda::XmlReader *reader);
 
     protected:
