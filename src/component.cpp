@@ -310,7 +310,7 @@ namespace Caneda
 
         // Paint the ports
         foreach(Port *port, m_ports) {
-            port->paint(painter, option);
+            port->paint(painter, option, w);
         }
     }
 

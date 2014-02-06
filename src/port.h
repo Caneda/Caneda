@@ -90,7 +90,7 @@ namespace Caneda
      *
      * \sa Component, Wire, Node
      */
-    class Port
+    class Port : public QGraphicsItem
     {
     public:
         Port(CGraphicsItem  *owner, const QSharedDataPointer<PortData> &data);
@@ -129,7 +129,10 @@ namespace Caneda
         Port* findCoincidingPort() const;
 
         bool areAllOwnersSelected() const;
-        void paint(QPainter *painter, const QStyleOptionGraphicsItem* option);
+
+        //! Return bounding box
+        QRectF boundingRect() const { return portEllipse; }
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem* option, QWidget*);
 
     private:
         Port* findCoincidingPort(const QList<Port*> &ports) const;

@@ -65,9 +65,9 @@ namespace Caneda
     }
 
     //! \brief Draw port symbol
-    void PortSymbol::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
+    void PortSymbol::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
     {
-        port()->paint(painter, option);
+        port()->paint(painter, option, widget);
 
         // Save pen
         QPen savedPen = painter->pen();

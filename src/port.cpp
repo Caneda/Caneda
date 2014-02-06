@@ -381,7 +381,7 @@ namespace Caneda
      *         - port is not connected
      *         - port they are more than two connection to port
      */
-    void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option)
+    void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option, QWidget*)
     {
         // Save pen
         QPen savedPen = painter->pen();

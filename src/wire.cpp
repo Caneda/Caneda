@@ -123,7 +123,7 @@ namespace Caneda
             QWidget *widget)
     {
         foreach(Port *port, m_ports) {
-            port->paint(painter, option);
+            port->paint(painter, option, widget);
         }
 
         // Save pen
