@@ -85,21 +85,11 @@ namespace Caneda
      *
      ***************************************************************************/
     /*!
-     * \brief Constructs a Port item with a CGraphicsItem as owner and shared
-     * data \a data.
-     */
-    Port::Port(CGraphicsItem *owner, const QSharedDataPointer<PortData> &data) :
-        d(data),
-        m_owner(new PortOwner(owner)),
-        m_connections(0)
-    {
-    }
-
-    /*!
      * \brief Constructs a Port item with a CGraphicsItem as owner, position
      * \a pos and port's name \a portName.
      */
     Port::Port(CGraphicsItem *owner, QPointF _pos, QString portName) :
+        QGraphicsItem(owner),
         d(new PortData(_pos, portName)),
         m_owner(new PortOwner(owner)),
         m_connections(0)
@@ -224,7 +214,6 @@ namespace Caneda
         }
     }
 
-
     Port* Port::getAnyConnectedPort()
     {
         if(!m_connections) {
@@ -314,28 +303,16 @@ namespace Caneda
         return retVal;
     }
 
-    //! \brief Finds a coinciding port in a given list of ports.
-    Port* Port::findCoincidingPort(const QList<Port*> &ports) const
-    {
-        foreach(Port *p, ports) {
-            if(p->scenePos() == scenePos() && p->owner() != owner() &&
-                    (!m_connections || !m_connections->contains(p))) {
-                return p;
-            }
-        }
-        return 0;
-    }
-
     //! \brief Finds a coinciding port on schematic.
     Port* Port::findCoincidingPort() const
     {
-        CGraphicsScene *scene =
-            qobject_cast<CGraphicsScene*>(ownerItem()->scene());
-        if(!scene) {
+        if(!scene()) {
             return 0;
         }
+
         QList<QGraphicsItem*> collisions =
             ownerItem()->collidingItems(Qt::IntersectsItemBoundingRect);
+
         QList<Port*> ports;
         foreach(QGraphicsItem *item, collisions) {
             if(canedaitem_cast<Component*>(item)) {
@@ -351,12 +328,15 @@ namespace Caneda
                 continue;
             }
 
-            Port *p = findCoincidingPort(ports);
-            if(p) {
-                return p;
+            foreach(Port *p, ports) {
+                if(p->scenePos() == scenePos() && p->owner() != owner() &&
+                        (!m_connections || !m_connections->contains(p))) {
+                    return p;
+                }
             }
         }
         return 0;
+
     }
 
     //! \brief Returns true only if all the connected components are selected.

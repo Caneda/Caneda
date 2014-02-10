@@ -79,12 +79,14 @@ namespace Caneda
             ComponentType = PATTERN(CGraphicsItemType, 1),
             //!Recognizes classes derived from Wire
             WireType = PATTERN(CGraphicsItemType, 2),
+            //!Recognizes classes derived from Port
+            PortType = PATTERN(CGraphicsItemType, 3),
             //!Recognizes classes derived from Node
-            NodeType = PATTERN(CGraphicsItemType, 3),
+            NodeType = PATTERN(CGraphicsItemType, 4),
             //!Recognizes classes derived from PortSymbol
-            PortSymbolType = PATTERN(CGraphicsItemType, 4),
+            PortSymbolType = PATTERN(CGraphicsItemType, 5),
             //!Recognizes classes derived from Painting
-            PaintingType = PATTERN(CGraphicsItemType, 5)
+            PaintingType = PATTERN(CGraphicsItemType, 6)
         };
 
         /*! \brief Item identifier

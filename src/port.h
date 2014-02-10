@@ -93,9 +93,11 @@ namespace Caneda
     class Port : public QGraphicsItem
     {
     public:
-        Port(CGraphicsItem  *owner, const QSharedDataPointer<PortData> &data);
         Port(CGraphicsItem  *owner, QPointF _pos, QString portName = QString());
         ~Port();
+
+        enum { Type = CGraphicsItem::PortType };
+        int type() const { return Port::Type; }
 
         //! Returns the position relative to owner - usually constant.
         QPointF pos() const { return d->pos; }
