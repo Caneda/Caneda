@@ -21,24 +21,17 @@
 #include "port.h"
 
 #include "cgraphicsitem.h"
-#include "cgraphicsscene.h"
 #include "component.h"
 #include "portsymbol.h"
 #include "settings.h"
 #include "wire.h"
 
-#include <QDebug>
 #include <QGraphicsItem>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
 namespace Caneda
 {
-    /**************************************************************************
-     *
-     *  Port
-     *
-     ***************************************************************************/
     /*!
      * \brief Constructs a Port item with a CGraphicsItem as \a parent, position
      * \a pos and port's name \a portName.
@@ -301,21 +294,6 @@ namespace Caneda
         }
         return 0;
 
-    }
-
-    //! \brief Returns true only if all the connected components are selected.
-    bool Port::areAllOwnersSelected() const
-    {
-        if(!m_connections) {
-            return parentItem()->isSelected();
-        }
-
-        foreach(Port *p, *m_connections) {
-            if(!p->parentItem()->isSelected()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /*!

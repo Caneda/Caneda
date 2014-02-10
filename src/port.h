@@ -28,16 +28,10 @@
 
 namespace Caneda
 {
-    // Forward declarations
-    class Wire;
-    class Component;
-    class CGraphicsScene;
-
     // Style constants definitions
     static const qreal portRadius(3.0);
     static const QRectF portEllipse(-portRadius, -portRadius, 2*portRadius,
             2*portRadius);
-
 
     //! \brief Sharable port's data.
     struct PortData : public QSharedData
@@ -83,7 +77,6 @@ namespace Caneda
         //! Returns the port's name.
         QString name() const { return d->name; }
 
-        //! Returns the owner.
         CGraphicsItem* parentItem() const;
 
         //! Returns a pointer to list of connected ports (null if unconnected).
@@ -102,15 +95,11 @@ namespace Caneda
         Port* getAnyConnectedPort();
         Port* findCoincidingPort() const;
 
-        bool areAllOwnersSelected() const;
-
         //! Return bounding box
         QRectF boundingRect() const { return portEllipse; }
         void paint(QPainter *painter, const QStyleOptionGraphicsItem* option, QWidget*);
 
     private:
-        Port* findCoincidingPort(const QList<Port*> &ports) const;
-
         QSharedDataPointer<PortData> d;
         QList<Port*> *m_connections;
     };
