@@ -1769,15 +1769,14 @@ namespace Caneda
                         foreach(Port *other, *connections) {
 
                             // The item connected is a component
-                            Component *otherComponent = other->owner()->component();
-                            // Determine whether the ports "other" and "port" should
-                            // be disconnected.
+                            Component *otherComponent = canedaitem_cast<Component*>(other->parentItem());
+                            // Determine whether the ports "other" and "port" should be disconnected.
                             if(otherComponent && !otherComponent->isSelected()) {
                                 disconnectibles << _item;
                             }
 
                             // The item connected is a wire
-                            Wire *wire = other->owner()->wire();
+                            Wire *wire = canedaitem_cast<Wire*>(other->parentItem());
                             // Determine whether this wire should be resized or
                             // moved.
                             if(wire && !wire->isSelected()) {
@@ -1811,8 +1810,9 @@ namespace Caneda
                 }
 
                 foreach(Port *other, *port->connections()) {
-                    if(other->owner()->component() && other->owner()->component() != _item &&
-                            !other->owner()->component()->isSelected()) {
+                    if(other->parentItem()->isComponent() &&
+                            other->parentItem() != _item &&
+                            !other->parentItem()->isSelected()) {
 
                         m_undoStack->push(new DisconnectCmd(port, other));
                         ++disconnections;

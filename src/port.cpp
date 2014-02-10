@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2014 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -34,64 +34,18 @@
 
 namespace Caneda
 {
-    /*************************************************************
-     *
-     *  PortOwner
-     *
-     *************************************************************/
-    //! \brief Constructs a PortOwner item with wire as owner.
-    PortOwner::PortOwner(CGraphicsItem * item) : m_item(item)
-    {
-    }
-
-    /*!
-     * \brief Returns the owner as a QGraphicsItem.
-     *
-     * \todo Check why this is needed
-     */
-    QGraphicsItem* PortOwner::item() const
-    {
-        QGraphicsItem *item = static_cast<QGraphicsItem*>(m_item);
-        //Cast should always succeed as both are graphics items.
-        Q_ASSERT(item);
-        return item;
-    }
-
-    //! \brief Return the wire if stored, or null otherwise.
-    Wire* PortOwner::wire() const
-    {
-        if(m_item->type() == CGraphicsItem::WireType) {
-            return static_cast<Wire*>(m_item);
-        }
-        else {
-            return NULL;
-        }
-    }
-
-    //! \brief Return the component if stored, or null otherwise.
-    Component* PortOwner::component() const
-    {
-        if(m_item->type() == CGraphicsItem::ComponentType) {
-            return static_cast<Component*>(m_item);
-        }
-        else {
-            return NULL;
-        }
-    }
-
     /**************************************************************************
      *
      *  Port
      *
      ***************************************************************************/
     /*!
-     * \brief Constructs a Port item with a CGraphicsItem as owner, position
+     * \brief Constructs a Port item with a CGraphicsItem as \a parent, position
      * \a pos and port's name \a portName.
      */
-    Port::Port(CGraphicsItem *owner, QPointF _pos, QString portName) :
-        QGraphicsItem(owner),
-        d(new PortData(_pos, portName)),
-        m_owner(new PortOwner(owner)),
+    Port::Port(CGraphicsItem* parent, QPointF pos, QString portName) :
+        QGraphicsItem(parent),
+        d(new PortData(pos, portName)),
         m_connections(0)
     {
     }
@@ -116,20 +70,31 @@ namespace Caneda
                 delete m_connections;
             }
         }
-        // Deletes the container only, not the actual component or wire.
-        delete m_owner;
     }
 
     //! \brief Returns position mapped to scene.
     QPointF Port::scenePos() const
     {
-        return m_owner->item()->mapToScene(d->pos);
+        return parentItem()->mapToScene(d->pos);
     }
 
     //! \brief Set a new port position
     void Port::setPos(const QPointF& newPos)
     {
         d->pos = newPos;
+    }
+
+    /*!
+     *  \brief Returns a pointer to this item's parent item. If this item does
+     *  not have a parent, 0 is returned.
+     */
+    CGraphicsItem* Port::parentItem() const
+    {
+        CGraphicsItem *item = canedaitem_cast<CGraphicsItem*>(QGraphicsItem::parentItem());
+        if(item) {
+            return item;
+        }
+        return 0;
     }
 
     //! \brief Shorhand for Port::connect(this, other)
@@ -145,14 +110,13 @@ namespace Caneda
             return;
         }
 
-        if(port1->ownerItem() == port2->ownerItem()) {
+        if(port1->parentItem() == port2->parentItem()) {
             qWarning() << "Cannot connect nodes of same component/wire";
             return;
         }
 
-        if(!port1->m_owner->item()->scene() ||
-                !port2->m_owner->item()->scene() ||
-                port1->ownerItem()->scene() != port2->ownerItem()->scene()) {
+        if(!port1->scene() || !port2->scene() ||
+                port1->scene() != port2->scene()) {
             qWarning() << "Cannot connect nodes across different or null scenes";
             return;
         }
@@ -210,7 +174,7 @@ namespace Caneda
 
         // Update all ports owner.
         foreach(Port *p, *(port1->m_connections)) {
-            p->ownerItem()->update();
+            p->parentItem()->update();
         }
     }
 
@@ -270,11 +234,11 @@ namespace Caneda
             delete from->m_connections;
             from->m_connections = 0;
         }
-        port->ownerItem()->update();
-        from->ownerItem()->update();
+        port->parentItem()->update();
+        from->parentItem()->update();
         if(from->m_connections) {
             foreach(Port *p, *(from->m_connections)) {
-                p->ownerItem()->update();
+                p->parentItem()->update();
             }
         }
     }
@@ -311,7 +275,7 @@ namespace Caneda
         }
 
         QList<QGraphicsItem*> collisions =
-            ownerItem()->collidingItems(Qt::IntersectsItemBoundingRect);
+            parentItem()->collidingItems(Qt::IntersectsItemBoundingRect);
 
         QList<Port*> ports;
         foreach(QGraphicsItem *item, collisions) {
@@ -329,7 +293,7 @@ namespace Caneda
             }
 
             foreach(Port *p, ports) {
-                if(p->scenePos() == scenePos() && p->owner() != owner() &&
+                if(p->scenePos() == scenePos() && p->parentItem() != parentItem() &&
                         (!m_connections || !m_connections->contains(p))) {
                     return p;
                 }
@@ -343,11 +307,11 @@ namespace Caneda
     bool Port::areAllOwnersSelected() const
     {
         if(!m_connections) {
-            return ownerItem()->isSelected();
+            return parentItem()->isSelected();
         }
 
         foreach(Port *p, *m_connections) {
-            if(!p->ownerItem()->isSelected()) {
+            if(!p->parentItem()->isSelected()) {
                 return false;
             }
         }

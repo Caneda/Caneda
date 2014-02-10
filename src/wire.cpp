@@ -103,16 +103,18 @@ namespace Caneda
 
         if(port1_connections) {
             foreach(Port *port, *port1_connections) {
-                if(port->owner()->isWire()) {
-                    port->owner()->wire()->getConnectedWires(connectedWires);
+                if(port->parentItem()->isWire()) {
+                    Wire *_wire = static_cast<Wire*>(port->parentItem());
+                    _wire->getConnectedWires(connectedWires);
                 }
             }
         }
 
         if(port2_connections) {
             foreach(Port *port, *port2_connections) {
-                if(port->owner()->isWire()) {
-                    port->owner()->wire()->getConnectedWires(connectedWires);
+                if(port->parentItem()->isWire()) {
+                    Wire *_wire = static_cast<Wire*>(port->parentItem());
+                    _wire->getConnectedWires(connectedWires);
                 }
             }
         }

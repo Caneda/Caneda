@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2014 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -39,31 +39,6 @@ namespace Caneda
             2*portRadius);
 
 
-    //! \brief Thin class used to abstract the owner of a port.
-    class PortOwner
-    {
-    public:
-        PortOwner(CGraphicsItem * item);
-
-        //! \brief Return type of owner
-        int type() const { return m_item->type(); }
-
-        Wire* wire() const;
-        Component* component() const;
-        QGraphicsItem* item() const;
-
-        //! \brief Return weather item is a wire
-        bool isWire() const { return m_item->isWire(); }
-        //! \brief Return weather item is a component
-        bool isComponent() const { return m_item->isComponent(); }
-
-    private:
-        //! \brief Owner of the port
-        CGraphicsItem *const m_item;
-        //! \brief Disable copy
-        PortOwner(const PortOwner& other);
-    };
-
     //! \brief Sharable port's data.
     struct PortData : public QSharedData
     {
@@ -93,7 +68,7 @@ namespace Caneda
     class Port : public QGraphicsItem
     {
     public:
-        Port(CGraphicsItem  *owner, QPointF _pos, QString portName = QString());
+        Port(CGraphicsItem* parent, QPointF pos, QString portName = QString());
         ~Port();
 
         enum { Type = CGraphicsItem::PortType };
@@ -109,10 +84,7 @@ namespace Caneda
         QString name() const { return d->name; }
 
         //! Returns the owner.
-        PortOwner* owner() const { return m_owner; }
-
-        //! Shorthand method for owner->item()
-        QGraphicsItem* ownerItem() const { return m_owner->item(); }
+        CGraphicsItem* parentItem() const;
 
         //! Returns a pointer to list of connected ports (null if unconnected).
         QList<Port*> *connections() const { return m_connections; }
@@ -140,7 +112,6 @@ namespace Caneda
         Port* findCoincidingPort(const QList<Port*> &ports) const;
 
         QSharedDataPointer<PortData> d;
-        PortOwner *m_owner;
         QList<Port*> *m_connections;
     };
 
