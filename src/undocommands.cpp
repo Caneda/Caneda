@@ -80,7 +80,7 @@ namespace Caneda
 
     void ConnectCmd::undo()
     {
-        m_port1->disconnectFrom(m_port2);
+        m_port1->disconnect();
     }
 
     void ConnectCmd::redo()
@@ -105,7 +105,7 @@ namespace Caneda
 
     void DisconnectCmd::redo()
     {
-        m_port1->disconnectFrom(m_port2);
+        m_port1->disconnect();
     }
 
     /*************************************************************************

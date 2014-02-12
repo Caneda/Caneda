@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2014 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -98,11 +98,8 @@ namespace Caneda
 
         connectedWires << this;
 
-        QList<Port*> *port1_connections = port1()->connections();
-        QList<Port*> *port2_connections = port2()->connections();
-
-        if(port1_connections) {
-            foreach(Port *port, *port1_connections) {
+        if(port1()->hasConnection()) {
+            foreach(Port *port, *(port1()->connections())) {
                 if(port->parentItem()->isWire()) {
                     Wire *_wire = static_cast<Wire*>(port->parentItem());
                     _wire->getConnectedWires(connectedWires);
@@ -110,8 +107,8 @@ namespace Caneda
             }
         }
 
-        if(port2_connections) {
-            foreach(Port *port, *port2_connections) {
+        if(port2()->hasConnection()) {
+            foreach(Port *port, *(port2()->connections())) {
                 if(port->parentItem()->isWire()) {
                     Wire *_wire = static_cast<Wire*>(port->parentItem());
                     _wire->getConnectedWires(connectedWires);

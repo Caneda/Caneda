@@ -1,7 +1,7 @@
 /***************************************************************************
  * Copyright (C) 2006 Gopala Krishna A <krishna.ggk@gmail.com>             *
  * Copyright (C) 2008 Bastien Roucaries <roucaries.bastien@gmail.com>      *
- * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2014 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -1763,32 +1763,23 @@ namespace Caneda
                 // Check for disconnections and wire resizing
                 foreach(Port *port, _item->ports()) {
 
-                    QList<Port*> *connections = port->connections();
-                    if(connections) {
-
-                        foreach(Port *other, *connections) {
-
-                            // The item connected is a component
-                            Component *otherComponent = canedaitem_cast<Component*>(other->parentItem());
-                            // Determine whether the ports "other" and "port" should be disconnected.
-                            if(otherComponent && !otherComponent->isSelected()) {
+                    if(port->hasConnection()) {
+                        foreach(Port *other, *(port->connections())) {
+                            // If the item connected is a component, determine whether the ports "other"
+                            // and "port" should be disconnected.
+                            if(other->parentItem()->isComponent() && !other->parentItem()->isSelected()) {
                                 disconnectibles << _item;
                             }
-
-                            // The item connected is a wire
-                            Wire *wire = canedaitem_cast<Wire*>(other->parentItem());
-                            // Determine whether this wire should be resized or
-                            // moved.
-                            if(wire && !wire->isSelected()) {
+                            // If the item connected is a wire, determine whether this wire should be
+                            // resized or moved.
+                            if(other->parentItem()->isWire() && !other->parentItem()->isSelected()) {
+                                Wire *wire = canedaitem_cast<Wire*>(other->parentItem());
                                 movingWires << wire;
                             }
-
                         }
-
                     }
                 }
             }
-
         }
     }
 
@@ -1805,21 +1796,20 @@ namespace Caneda
             int disconnections = 0;
             foreach(Port *port, _item->ports()) {
 
-                if(!port->connections()) {
-                    continue;
-                }
+                if(port->hasConnection()) {
+                    foreach(Port *other, *(port->connections())) {
+                        if(other->parentItem()->isComponent() &&
+                                other->parentItem() != _item &&
+                                !other->parentItem()->isSelected()) {
 
-                foreach(Port *other, *port->connections()) {
-                    if(other->parentItem()->isComponent() &&
-                            other->parentItem() != _item &&
-                            !other->parentItem()->isSelected()) {
+                            m_undoStack->push(new DisconnectCmd(port, other));
+                            ++disconnections;
 
-                        m_undoStack->push(new DisconnectCmd(port, other));
-                        ++disconnections;
-
-                        break;
+                            break;
+                        }
                     }
                 }
+
             }
 
             if(disconnections) {
@@ -1841,7 +1831,7 @@ namespace Caneda
             
             wire->storeState();
 
-            if(wire->port1()->connections()) {
+            if(wire->port1()->hasConnection()) {
                 foreach(Port *other, *(wire->port1()->connections())) {
                     if(other != wire->port1()) {
                         wire->movePort(wire->port1()->connections(), other->scenePos());
@@ -1850,7 +1840,7 @@ namespace Caneda
                 }
             }
 
-            if(wire->port2()->connections()) {
+            if(wire->port2()->hasConnection()) {
                 foreach(Port *other, *(wire->port2()->connections())) {
                     if(other != wire->port2()) {
                         wire->movePort(wire->port2()->connections(), other->scenePos());
@@ -2188,7 +2178,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Disconnect an item from wire or other components
+     * \brief Disconnect an item from any wire or other components
      *
      * \param qItems: item to connect
      * \param opt: undo option
@@ -2202,21 +2192,8 @@ namespace Caneda
 
         foreach(CGraphicsItem *item, qItems) {
             QList<Port*> ports = item->ports();
-
             foreach(Port *p, ports) {
-                Port *other = p->getAnyConnectedPort();
-
-                // Do not register new undo if nothing to do
-                if(other == NULL) {
-                    continue;
-                }
-
-                if(opt == Caneda::PushUndoCmd) {
-                    m_undoStack->push(new DisconnectCmd(p, other));
-                }
-                else {
-                    p->disconnectFrom(other);
-                }
+                p->disconnect();
             }
         }
 

@@ -37,44 +37,28 @@ namespace Caneda
      * \a pos and port's name \a portName.
      */
     Port::Port(CGraphicsItem* parent, QPointF pos, QString portName) :
-        QGraphicsItem(parent),
-        d(new PortData(pos, portName)),
-        m_connections(0)
+        QGraphicsItem(parent)
     {
+        d = new PortData(pos, portName);
+        m_connections.append(this);
     }
 
     //! \brief Destroys the port object, removing all connections from the item
     Port::~Port()
     {
-        if(m_connections) {
-            Port *other = 0;
-            foreach(Port *p, *m_connections) {
-                if(p != this) {
-                    other = p;
-                    break;
-                }
-            }
-            //! \bug GPK: this test is strange
-            if(other) {
-                disconnectFrom(other);
-            }
-            else {
-                Q_ASSERT(m_connections->size() <= 1);
-                delete m_connections;
-            }
-        }
-    }
-
-    //! \brief Returns position mapped to scene.
-    QPointF Port::scenePos() const
-    {
-        return parentItem()->mapToScene(d->pos);
+        disconnect();
     }
 
     //! \brief Set a new port position
     void Port::setPos(const QPointF& newPos)
     {
         d->pos = newPos;
+    }
+
+    //! \brief Returns position mapped to scene.
+    QPointF Port::scenePos() const
+    {
+        return parentItem()->mapToScene(d->pos);
     }
 
     /*!
@@ -90,173 +74,92 @@ namespace Caneda
         return 0;
     }
 
-    //! \brief Shorhand for Port::connect(this, other)
+    //! \brief Connect this port to \a other.
     void Port::connectTo(Port *other)
     {
-        Port::connect(this, other);
-    }
-
-    //! \brief Connect the ports \a port1 and \a port2.
-    void Port::connect(Port *port1, Port *port2)
-    {
-        if(port1 == port2 || !port1 || !port2) {
+        if(this == other || !other) {
+            qWarning() << "Cannot connect to itself or null port";
             return;
         }
 
-        if(port1->parentItem() == port2->parentItem()) {
+        if(parentItem() == other->parentItem()) {
             qWarning() << "Cannot connect nodes of same component/wire";
             return;
         }
 
-        if(!port1->scene() || !port2->scene() ||
-                port1->scene() != port2->scene()) {
+        if(!scene() || !other->scene() || scene() != other->scene()) {
             qWarning() << "Cannot connect nodes across different or null scenes";
             return;
         }
 
-        QPointF p1 = port1->scenePos();
-        QPointF p2 = port2->scenePos();
+        QPointF p1 = scenePos();
+        QPointF p2 = other->scenePos();
 
         if(p1 != p2) {
             qWarning() << "Cannot connect nodes as positions mismatch" << p1 << p2;
             return;
         }
 
-        // Create new connection list if both the ports are not at all connected.
-        if(!port1->m_connections && !port2->m_connections) {
-            port1->m_connections = port2->m_connections = new QList<Port*>;
-            *(port1->m_connections) << port1 << port2;
+        // If the connections are same, they are already connected.
+        if(m_connections == other->m_connections) {
+            qWarning() << "Port::connectTo() : The ports are already connected";
         }
-        // Use port2->m_connections if port1->m_connections is null
-        else if(!port1->m_connections) {
-            port1->m_connections = port2->m_connections;
-            //Q_ASSERT(!m_connections->contains(m_port1));
-            *(port1->m_connections) << port1;
-        }
-        // Use port1->m_connections if port2->m_connections is null
-        else if(!port2->m_connections) {
-            port2->m_connections = port1->m_connections;
-            *(port2->m_connections) << port2;
-        }
-        // else both the m_connections exist.
         else {
-            // The connections are same indicates they are already connected.
-            if(port1->m_connections == port2->m_connections) {
-                Q_ASSERT(port1->m_connections->contains(port1));
-                Q_ASSERT(port1->m_connections->contains(port2));
-                qWarning() << "Port::connect() : The ports are already connected";
+            // Create a list of connections by merging both lists of connections
+            // and replicating the list in all connected ports.
+            m_connections += other->m_connections;
+            foreach(Port *p, other->m_connections) {
+                p->m_connections = m_connections;
             }
-            // else use the biggest list to hold all others..
-            else if(port1->m_connections->size() >= port2->m_connections->size()) {
-                *(port1->m_connections) += *(port2->m_connections);
-                QList<Port*> *save = port2->m_connections;
-                foreach(Port *p, *(port2->m_connections)) {
-                    p->m_connections = port1->m_connections;
-                }
-                delete save;
-            }
-            else {
-                *(port2->m_connections) += *(port1->m_connections);
-                QList<Port*> *save = port1->m_connections;
-                foreach(Port *p, *(port1->m_connections)) {
-                    p->m_connections = port2->m_connections;
-                }
-                delete save;
-            }
+            other->m_connections = m_connections;
         }
 
-        // Update all ports owner.
-        foreach(Port *p, *(port1->m_connections)) {
+        // Update all ports parents.
+        foreach(Port *p, m_connections) {
             p->parentItem()->update();
         }
     }
 
-    Port* Port::getAnyConnectedPort()
-    {
-        if(!m_connections) {
-            return 0;
-        }
-
-        if((*m_connections).size() <= 1) {
-            qDebug() << "Connections size <= 1 detected. Might be a bug";
-            delete m_connections;
-            m_connections = 0;
-            return 0;
-        }
-
-        Port *other = 0;
-        foreach(Port *port, *m_connections) {
-            if(port != this) {
-                other = port;
-                break;
-            }
-        }
-        Q_ASSERT(other);
-        return other;
-    }
-
-    void Port::removeConnections()
-    {
-        Port *other = getAnyConnectedPort();
-        disconnectFrom(other);
-    }
-
     /*!
-     * \brief Disconnect two ports
+     * \brief Disconnect a port
      *
-     * \param port The port to be disconnected.
-     * \param from The port from which \a port will be disconnected.
-     * \note port == from , port == NULL, from == NULL are allowed
+     * A disconnect operation must remove this port from every other port's
+     * list of connections (effectively disconnecting all ports currently
+     * connected), thus avoiding false or erroneous connections to remain as
+     * valid.
      */
-    void Port::disconnect(Port *port, Port *from)
+    void Port::disconnect()
     {
-        if(port == from || !port || !from) {
+        // Check if there is any connection
+        if(m_connections.size() <= 1) {
             return;
         }
-        if(port->m_connections != from->m_connections || !port->m_connections) {
-            qWarning() << "Cannot disconnect already disconnected ports or null list";
-            return;
+
+        // Disconnect this port from every connected port
+        foreach(Port *p, m_connections) {
+            p->m_connections.removeAll(this);
+            p->parentItem()->update();
         }
-        //Initially remove 'port' from the list.
-        port->m_connections->removeAll(port);
-        port->m_connections = 0;
-        if(from->m_connections->size() <= 1) {
-            if(from->m_connections->size() == 1) {
-                Q_ASSERT(from->m_connections->first() == from);
-            }
-            delete from->m_connections;
-            from->m_connections = 0;
-        }
-        port->parentItem()->update();
-        from->parentItem()->update();
-        if(from->m_connections) {
-            foreach(Port *p, *(from->m_connections)) {
-                p->parentItem()->update();
-            }
-        }
+
+        m_connections.clear();
+        m_connections.append(this);
+
+        // Update parent item.
+        parentItem()->update();
     }
 
     //! \brief Check whether two ports are connected or not.
     bool Port::isConnected(Port *port1, Port *port2)
     {
         bool retVal = port1->m_connections == port2->m_connections &&
-            port1->m_connections != 0 && port1->m_connections->contains(port1) &&
-            port1->m_connections->contains(port2);
-        if(retVal) {
-            bool ok1, ok2;
-            Q_ASSERT(port1->scenePos(&ok1) == port2->scenePos(&ok2));
-            Q_ASSERT(ok1 && ok2);
-        }
+            port1->m_connections.contains(port2);
         return retVal;
     }
 
     //! \brief Returns true if this port is connected to any other port
     bool Port::hasConnection() const
     {
-        bool retVal = (m_connections != 0);
-        if(retVal) {
-            Q_ASSERT(m_connections->size() > 1);
-        }
+        bool retVal = (m_connections.size() > 1);
         return retVal;
     }
 
@@ -286,8 +189,9 @@ namespace Caneda
             }
 
             foreach(Port *p, ports) {
-                if(p->scenePos() == scenePos() && p->parentItem() != parentItem() &&
-                        (!m_connections || !m_connections->contains(p))) {
+                if(p->scenePos() == scenePos() &&
+                        p->parentItem() != parentItem() &&
+                        !m_connections.contains(p)) {
                     return p;
                 }
             }
@@ -310,7 +214,7 @@ namespace Caneda
 
         // Set global pen settings
         Settings *settings = Settings::instance();
-        if(m_connections == NULL) {
+        if(m_connections.size() <= 1) {
             painter->setPen(QPen(Qt::darkRed));
             painter->setBrush(Qt::NoBrush);
             painter->drawEllipse(portEllipse.translated(pos()));
@@ -321,7 +225,7 @@ namespace Caneda
             painter->setBrush(QBrush(settings->currentValue("gui/selectionColor").value<QColor>()));
             painter->drawEllipse(portEllipse.translated(pos()).adjusted(1,1,-1,-1));  // Adjust the ellipse to be just a little smaller than the open port
         }
-        else if(m_connections->size() > 2) {
+        else if(m_connections.size() > 2) {
             painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
             painter->setBrush(QBrush(settings->currentValue("gui/lineColor").value<QColor>()));

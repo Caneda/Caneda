@@ -68,31 +68,25 @@ namespace Caneda
         enum { Type = CGraphicsItem::PortType };
         int type() const { return Port::Type; }
 
-        //! Returns the position relative to owner - usually constant.
-        QPointF pos() const { return d->pos; }
-        void setPos(const QPointF& newPos);
-
-        QPointF scenePos() const;
-
         //! Returns the port's name.
         QString name() const { return d->name; }
 
+        //! Returns the position relative to owner - usually constant.
+        QPointF pos() const { return d->pos; }
+        void setPos(const QPointF& newPos);
+        QPointF scenePos() const;
+
         CGraphicsItem* parentItem() const;
 
-        //! Returns a pointer to list of connected ports (null if unconnected).
-        QList<Port*> *connections() const { return m_connections; }
+        //! Returns a pointer to list of connected ports
+        QList<Port*> *connections() { return &(m_connections); }
 
-        static void connect(Port* port1, Port *port2);
-        static void disconnect(Port *port, Port *from);
         void connectTo(Port *other);
-        void disconnectFrom(Port* from) { Port::disconnect(this, from); }
-
-        void removeConnections();
+        void disconnect();
 
         static bool isConnected(Port *port1, Port* port2);
         bool hasConnection() const;
 
-        Port* getAnyConnectedPort();
         Port* findCoincidingPort() const;
 
         //! Return bounding box
@@ -101,7 +95,7 @@ namespace Caneda
 
     private:
         QSharedDataPointer<PortData> d;
-        QList<Port*> *m_connections;
+        QList<Port*> m_connections;
     };
 
 } // namespace Caneda
