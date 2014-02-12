@@ -152,11 +152,11 @@ namespace Caneda
         parentItem()->update();
     }
 
-    //! \brief Check whether two ports are connected or not.
-    bool Port::isConnected(Port *port1, Port *port2)
+    //! \brief Check if port \a other is connected to this port.
+    bool Port::isConnectedTo(Port *other)
     {
-        bool retVal = port1->m_connections == port2->m_connections &&
-            port1->m_connections.contains(port2);
+        bool retVal = m_connections == other->m_connections &&
+            m_connections.contains(other);
         return retVal;
     }
 

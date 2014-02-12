@@ -182,10 +182,10 @@ namespace Caneda
                 if(_collidingItem) {
                     // If wires are connected, the collision is the result of the connection.
                     // Otherwise, there is a potential new node.
-                    bool wiresAreConnected = Port::isConnected(port1(), _collidingItem->port1()) ||
-                                             Port::isConnected(port1(), _collidingItem->port2()) ||
-                                             Port::isConnected(port2(), _collidingItem->port1()) ||
-                                             Port::isConnected(port2(), _collidingItem->port2());
+                    bool wiresAreConnected = port1()->isConnectedTo(_collidingItem->port1()) ||
+                                             port1()->isConnectedTo(_collidingItem->port2()) ||
+                                             port2()->isConnectedTo(_collidingItem->port1()) ||
+                                             port2()->isConnectedTo(_collidingItem->port2());
 
                     if(!wiresAreConnected){
 
