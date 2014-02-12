@@ -1226,7 +1226,7 @@ namespace Caneda
             // Connect ports to any coinciding port in the scene
             m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
 
-            if(m_currentWiringWire->port2()->hasConnection()) {
+            if(m_currentWiringWire->port2()->hasAnyConnection()) {
                 // If a connection was made, detach current wire and finalize
                 m_currentWiringWire = NULL;
                 m_wiringState = NO_WIRE;
@@ -1746,8 +1746,18 @@ namespace Caneda
     }
 
     /*!
-     * \brief Check which items should be moved in a special way
-     *        and where there are possible wirable nodes.
+     * \brief Check which items should be moved in a special way, to allow
+     * proper wire and component movements.
+     *
+     * The action of this function is observed, for example, when moving an
+     * item (a wire, a component, etc) connected to other components. By
+     * processing if the item is a component or a wire and deciding if the
+     * items must remain together (in the case of wires or when moving only
+     * a component connected to wires) or separated from the connections
+     * (when moving a wire away from a component), expected movements are
+     * performed.
+     *
+     * \sa specialMove()
      */
     void CGraphicsScene::processForSpecialMove(QList<QGraphicsItem*> _items)
     {
@@ -1763,21 +1773,20 @@ namespace Caneda
                 // Check for disconnections and wire resizing
                 foreach(Port *port, _item->ports()) {
 
-                    if(port->hasConnection()) {
-                        foreach(Port *other, *(port->connections())) {
-                            // If the item connected is a component, determine whether the ports "other"
-                            // and "port" should be disconnected.
-                            if(other->parentItem()->isComponent() && !other->parentItem()->isSelected()) {
-                                disconnectibles << _item;
-                            }
-                            // If the item connected is a wire, determine whether this wire should be
-                            // resized or moved.
-                            if(other->parentItem()->isWire() && !other->parentItem()->isSelected()) {
-                                Wire *wire = canedaitem_cast<Wire*>(other->parentItem());
-                                movingWires << wire;
-                            }
+                    foreach(Port *other, *(port->connections())) {
+                        // If the item connected is a component, determine whether the ports "other"
+                        // and "port" should be disconnected.
+                        if(other->parentItem()->isComponent() && !other->parentItem()->isSelected()) {
+                            disconnectibles << _item;
+                        }
+                        // If the item connected is a wire, determine whether this wire should be
+                        // resized or moved.
+                        if(other->parentItem()->isWire() && !other->parentItem()->isSelected()) {
+                            Wire *wire = canedaitem_cast<Wire*>(other->parentItem());
+                            movingWires << wire;
                         }
                     }
+
                 }
             }
         }
@@ -1796,17 +1805,15 @@ namespace Caneda
             int disconnections = 0;
             foreach(Port *port, _item->ports()) {
 
-                if(port->hasConnection()) {
-                    foreach(Port *other, *(port->connections())) {
-                        if(other->parentItem()->isComponent() &&
-                                other->parentItem() != _item &&
-                                !other->parentItem()->isSelected()) {
+                foreach(Port *other, *(port->connections())) {
+                    if(other->parentItem()->isComponent() &&
+                            other->parentItem() != _item &&
+                            !other->parentItem()->isSelected()) {
 
-                            m_undoStack->push(new DisconnectCmd(port, other));
-                            ++disconnections;
+                        m_undoStack->push(new DisconnectCmd(port, other));
+                        ++disconnections;
 
-                            break;
-                        }
+                        break;
                     }
                 }
 
@@ -1822,8 +1829,17 @@ namespace Caneda
     }
 
     /*!
-     * \brief Move the selected items in a special way to allow proper wire movements
-     * and as well as checking for possible disconnections.
+     * \brief Move the selected items in a special way to allow proper wire
+     * movements.
+     *
+     * The action of this function is observed, for example, when moving a wire
+     * connected to other wires. Thanks to this function, the connected ports
+     * of all wires stay together. If this function was to be removed, after
+     * a wire movement action, the connected wires would remain untouched, and
+     * a gap would appear between the moved wire and the connected wires (which
+     * would remain in their original place).
+     *
+     * \sa processForSpecialMove()
      */
     void CGraphicsScene::specialMove()
     {
@@ -1831,21 +1847,17 @@ namespace Caneda
             
             wire->storeState();
 
-            if(wire->port1()->hasConnection()) {
-                foreach(Port *other, *(wire->port1()->connections())) {
-                    if(other != wire->port1()) {
-                        wire->movePort(wire->port1()->connections(), other->scenePos());
-                        break;
-                    }
+            foreach(Port *other, *(wire->port1()->connections())) {
+                if(other != wire->port1()) {
+                    wire->movePort(wire->port1()->connections(), other->scenePos());
+                    break;
                 }
             }
 
-            if(wire->port2()->hasConnection()) {
-                foreach(Port *other, *(wire->port2()->connections())) {
-                    if(other != wire->port2()) {
-                        wire->movePort(wire->port2()->connections(), other->scenePos());
-                        break;
-                    }
+            foreach(Port *other, *(wire->port2()->connections())) {
+                if(other != wire->port2()) {
+                    wire->movePort(wire->port2()->connections(), other->scenePos());
+                    break;
                 }
             }
 

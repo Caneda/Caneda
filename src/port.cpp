@@ -161,7 +161,7 @@ namespace Caneda
     }
 
     //! \brief Returns true if this port is connected to any other port
-    bool Port::hasConnection() const
+    bool Port::hasAnyConnection() const
     {
         bool retVal = (m_connections.size() > 1);
         return retVal;

@@ -98,21 +98,17 @@ namespace Caneda
 
         connectedWires << this;
 
-        if(port1()->hasConnection()) {
-            foreach(Port *port, *(port1()->connections())) {
-                if(port->parentItem()->isWire()) {
-                    Wire *_wire = static_cast<Wire*>(port->parentItem());
-                    _wire->getConnectedWires(connectedWires);
-                }
+        foreach(Port *port, *(port1()->connections())) {
+            if(port->parentItem()->isWire()) {
+                Wire *_wire = static_cast<Wire*>(port->parentItem());
+                _wire->getConnectedWires(connectedWires);
             }
         }
 
-        if(port2()->hasConnection()) {
-            foreach(Port *port, *(port2()->connections())) {
-                if(port->parentItem()->isWire()) {
-                    Wire *_wire = static_cast<Wire*>(port->parentItem());
-                    _wire->getConnectedWires(connectedWires);
-                }
+        foreach(Port *port, *(port2()->connections())) {
+            if(port->parentItem()->isWire()) {
+                Wire *_wire = static_cast<Wire*>(port->parentItem());
+                _wire->getConnectedWires(connectedWires);
             }
         }
     }

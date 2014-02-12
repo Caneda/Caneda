@@ -85,7 +85,7 @@ namespace Caneda
         void disconnect();
 
         static bool isConnected(Port *port1, Port* port2);
-        bool hasConnection() const;
+        bool hasAnyConnection() const;
 
         Port* findCoincidingPort() const;
 
