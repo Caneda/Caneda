@@ -121,10 +121,6 @@ namespace Caneda
     void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
     {
-        foreach(Port *port, m_ports) {
-            port->paint(painter, option, widget);
-        }
-
         // Save pen
         QPen savedPen = painter->pen();
 
@@ -144,6 +140,14 @@ namespace Caneda
 
         // Restore pen
         painter->setPen(savedPen);
+
+        /*!
+         * \todo This should not be neccesary; however when removing it, port
+         * are not correctly drawn after a wire move action.
+         */
+        foreach(Port *port, m_ports) {
+            port->paint(painter, option, widget);
+        }
     }
 
     /*!
@@ -403,7 +407,6 @@ namespace Caneda
         scene()->clearSelection();
         scene()->clearFocus();
         CGraphicsItem::mousePressEvent(event);
-        Q_ASSERT(mapFromScene(event->scenePos()) == event->pos());
     }
 
 } // namespace Caneda

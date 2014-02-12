@@ -307,11 +307,6 @@ namespace Caneda
 
         // Restore pen
         painter->setPen(savedPen);
-
-        // Paint the ports
-        foreach(Port *port, m_ports) {
-            port->paint(painter, option, w);
-        }
     }
 
     //! \brief Returns a copy of this component.
