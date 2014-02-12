@@ -39,6 +39,10 @@ namespace Caneda
     Port::Port(CGraphicsItem* parent, QPointF pos, QString portName) :
         QGraphicsItem(parent)
     {
+        // Set component flags
+        setFlag(ItemSendsGeometryChanges, true);
+        setFlag(ItemSendsScenePositionChanges, true);
+
         d = new PortData(pos, portName);
         m_connections.append(this);
     }

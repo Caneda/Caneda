@@ -107,9 +107,6 @@ namespace Caneda
         void saveData(Caneda::XmlWriter *writer, int id) const;
         void loadData(Caneda::XmlReader *reader);
 
-    protected:
-        void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
     private:
         WireData store; //!< Stores the wire data when needed(undo/redo).
     };

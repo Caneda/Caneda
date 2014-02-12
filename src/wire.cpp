@@ -401,12 +401,4 @@ namespace Caneda
         updateGeometry();
     }
 
-    //! \brief Mouse press event. Prepare for grab mode.
-    void Wire::mousePressEvent(QGraphicsSceneMouseEvent *event)
-    {
-        scene()->clearSelection();
-        scene()->clearFocus();
-        CGraphicsItem::mousePressEvent(event);
-    }
-
 } // namespace Caneda
