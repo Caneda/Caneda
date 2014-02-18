@@ -65,9 +65,6 @@ namespace Caneda
         Port(CGraphicsItem* parent, QPointF pos, QString portName = QString());
         ~Port();
 
-        enum { Type = CGraphicsItem::PortType };
-        int type() const { return Port::Type; }
-
         //! Returns the port's name.
         QString name() const { return d->name; }
 

@@ -177,31 +177,22 @@ namespace Caneda
         QList<QGraphicsItem*> collisions =
             parentItem()->collidingItems(Qt::IntersectsItemBoundingRect);
 
-        QList<Port*> ports;
         foreach(QGraphicsItem *item, collisions) {
-            if(canedaitem_cast<Component*>(item)) {
-                ports = canedaitem_cast<Component*>(item)->ports();
-            }
-            else if(canedaitem_cast<Wire*>(item)) {
-                ports = canedaitem_cast<Wire*>(item)->ports();
-            }
-            else if(canedaitem_cast<PortSymbol*>(item)) {
-                ports = canedaitem_cast<PortSymbol*>(item)->ports();
-            }
-            else {
-                continue;
-            }
+            if(canedaitem_cast<CGraphicsItem*>(item)) {
 
-            foreach(Port *p, ports) {
-                if(p->scenePos() == scenePos() &&
-                        p->parentItem() != parentItem() &&
-                        !m_connections.contains(p)) {
-                    return p;
+                QList<Port*> ports = canedaitem_cast<CGraphicsItem*>(item)->ports();
+                foreach(Port *p, ports) {
+                    if(p->scenePos() == scenePos() &&
+                            p->parentItem() != parentItem() &&
+                            !m_connections.contains(p)) {
+                        return p;
+                    }
                 }
+
             }
         }
-        return 0;
 
+        return 0;
     }
 
     /*!
