@@ -170,6 +170,9 @@ namespace Caneda
     {
         bool nodeCreated = false;
 
+        QList<Wire*> markedForDeletion;
+
+        // Detect all colliding items
         QList<QGraphicsItem*> collisions =
                 collidingItems(Qt::IntersectsItemBoundingRect);
 
@@ -203,8 +206,9 @@ namespace Caneda
                             QPointF middlePoint = port->pos();
                             QPointF endPoint =  _collidingItem->port2()->pos();
 
-                            // Delete old wire
-                            delete _collidingItem;
+                            // Mark old wire for deletion. The deletion is performed in a second
+                            // stage to avoid referencing null pointers inside the foreach loop.
+                            markedForDeletion << _collidingItem;
 
                             // Create two new wires
                             Wire *wire1 = new Wire(startPoint, middlePoint, scene);
@@ -226,6 +230,13 @@ namespace Caneda
                     }
                 }
             }
+        }
+
+        // Delete all wires marked for deletion. The deletion is performed
+        // in a second stage to avoid referencing null pointers inside the
+        // foreach loop.
+        foreach(Wire *w, markedForDeletion) {
+            delete w;
         }
 
         return nodeCreated;
