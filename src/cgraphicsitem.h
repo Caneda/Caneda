@@ -62,15 +62,21 @@ namespace Caneda
     {
     public:
         /*!
-         * \brief Graphics View Framework id. This enum helps in polymorphic cast
-         * without using dynamic_cast.
+         * \brief CGraphicsItem identification types.
          *
-         * Represents item type used by graphics view framework's cast
-         * mechanism. Actually a bitpattern is used to determine whether the cast
-         * is valid or not. The cast function is approximately defined like this
-         * cast(a,b) { return (a&b) == a; }
+         * This enum helps in the polymorphic cast \a Caneda::canedaitem_cast()
+         * without the need to use a dynamic_cast.
          *
-         * \sa canedaitem_cast, PATTERN
+         * A type of CGraphicsItemTypes is used in each CGraphicsItem derived
+         * class (at the declaration of the Type enum value), in conjunction
+         * with a reimplementation of the virtual method type() and this allows
+         * during casts to determine the type of CGraphicsItem derived classes.
+         *
+         * Each enum type represents an item type used by the graphics view
+         * framework's cast mechanism. A bitpattern (returned by PATTERN() ) is
+         * used to determine whether the cast is valid or not.
+         *
+         * \sa Caneda::canedaitem_cast(), type(), Type, PATTERN()
          */
         enum CGraphicsItemTypes {
             //!Recognizes all classes derived from CGraphicsItem
@@ -87,22 +93,46 @@ namespace Caneda
             PaintingType = PATTERN(CGraphicsItemType, 5)
         };
 
-        /*! \brief Item identifier
-         *
-         *  \sa CGraphicsItemTypes
-         */
-        enum {
-            Type = CGraphicsItemType
-        };
-
         CGraphicsItem(QGraphicsItem* parent = 0, CGraphicsScene* scene = 0);
+
+        /*!
+         * \brief Item identifier
+         *
+         * This is the type value returned by the virtual type() function, and
+         * used by the "Run-Time Type Identification" (RTTI) cast function to
+         * determine the type of this item.
+         *
+         * This \a Type enum is used in in all standard graphics item classes
+         * in Qt. All such standard graphics item classes are associated with
+         * a unique value for Type, e.g. the value returned by
+         * QGraphicsPathItem::type() is 2.
+         *
+         * \sa type(), CGraphicsItemTypes, Caneda::canedaitem_cast()
+         */
+        enum { Type = CGraphicsItemType };
+
+        /*!
+         * \brief Returns the type of an item as an int.
+         *
+         * All standard graphicsitem classes are associated with a unique value
+         * (one of CGraphicsItemTypes). This type information is used by casts
+         * (e.g. qgraphicsitem_cast() ) to distinguish between types. In the
+         * particular case of Caneda, a special type of cast is implemented in
+         * the method canedaitem_cast(), to recognize any CGraphicsItem derived
+         * classes.
+         *
+         * To enable use of canedaitem_cast() with a custom item, as in this
+         * case, this function must be reimplemented and a Type enum value
+         * declared (equal to the customized item's type).
+         *
+         * \sa Type, CGraphicsItemTypes, canedaitem_cast()
+         */
+        int type() const { return CGraphicsItemType; }
 
         //! Returns a list of ports of the item.
         QList<Port*> ports() const { return m_ports; }
         int checkAndConnect(Caneda::UndoOption opt);
 
-        //! Return type of item
-        int type() const { return CGraphicsItemType; }
         //! Return bounding box
         QRectF boundingRect() const { return m_boundingRect; }
         //! Return the shape of the item.
@@ -147,13 +177,24 @@ namespace Caneda
     };
 
     /*!
-     * \brief rtti cast function with polymorphic support.
+     * \brief Returns the given item cast to type T if item is of type T;
+     * otherwise, 0 is returned.
      *
-     * This function actually works for items following the rules.
-     * Firstly, items should use appropriate Type constant.
-     * Secondly, type() should return this Type.
+     * This is a "Run-Time Type Identification" (RTTI) cast function with
+     * polymorphic support, to recognize any CGraphicsItem derived classes.
      *
-     * \sa CGraphicsItemTypes
+     * This function actually works for items with the following rules:
+     * \li First, items should use an appropriate Type constant.
+     * \li Second, type() should return the previously defined Type.
+     *
+     * The cast function is approximately defined like this:
+     *
+     *   cast(a,b) { return (a&b) == a; }
+     *
+     * thus with the use of the PATTERN method in CGraphicsItemTypes, all
+     * CGraphicsItem derived classed are recognized.
+     *
+     * \sa CGraphicsItemTypes, Type, type()
      */
     template<typename T> T canedaitem_cast(QGraphicsItem *item)
     {

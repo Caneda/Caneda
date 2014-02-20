@@ -46,12 +46,12 @@ namespace Caneda
     class PortSymbol : public CGraphicsItem
     {
     public:
-        enum { Type = CGraphicsItem::PortSymbolType };
-
         PortSymbol(CGraphicsScene *scene = 0);
         ~PortSymbol();
 
-        //! Used for component identification at runtime.
+        //! \copydoc CGraphicsItem::Type
+        enum { Type = CGraphicsItem::PortSymbolType };
+        //! \copydoc CGraphicsItem::type()
         int type() const { return PortSymbol::Type; }
 
         //! Return's the symbol's port

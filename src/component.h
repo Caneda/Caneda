@@ -78,14 +78,14 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        enum { Type = CGraphicsItem::ComponentType };
-
         Component(CGraphicsScene *scene = 0);
         Component(const QSharedDataPointer<ComponentData>& other,
                   CGraphicsScene *scene = 0);
         ~Component();
 
-        //! Used for component identification at runtime.
+        //! \copydoc CGraphicsItem::Type
+        enum { Type = CGraphicsItem::ComponentType };
+        //! \copydoc CGraphicsItem::type()
         int type() const { return Component::Type; }
 
         //! Returns name of the component (without localization).

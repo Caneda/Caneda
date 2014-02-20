@@ -50,13 +50,13 @@ namespace Caneda
     class Wire : public CGraphicsItem
     {
     public:
-        enum { Type = CGraphicsItem::WireType };
-
         Wire(const QPointF &startPos, const QPointF &endPos,
                 CGraphicsScene *scene = 0);
         ~Wire();
 
-        //! Wire identifier.
+        //! \copydoc CGraphicsItem::Type
+        enum { Type = CGraphicsItem::WireType };
+        //! \copydoc CGraphicsItem::type()
         int type() const { return Wire::Type; }
 
         //! Return's the list's first member.
