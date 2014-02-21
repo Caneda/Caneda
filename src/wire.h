@@ -94,9 +94,6 @@ namespace Caneda
         Wire* copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(Wire *wire) const;
 
-        bool isComponent() const { return false; }
-        bool isWire() const { return true; }
-
         WireData storedState() const;
         void storeState();
         void setState(WireData state);

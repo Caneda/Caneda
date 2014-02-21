@@ -89,7 +89,7 @@ namespace Caneda
             return false;
         }
 
-        if (a->isComponent()) {
+        if (a->type() == CGraphicsItem::ComponentType) {
             Component *ac = canedaitem_cast<Component*>(a);
             Component *bc = canedaitem_cast<Component*>(b);
 

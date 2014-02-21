@@ -154,11 +154,6 @@ namespace Caneda
         virtual CGraphicsItem* copy(CGraphicsScene *scene = 0) const;
         virtual void copyDataTo(CGraphicsItem*item) const;
 
-        //! This is a convenience method used for rtti.
-        virtual bool isComponent() const { return false; }
-        //! This is a convenience method used for rtti.
-        virtual bool isWire() const { return false; }
-
         //! Subclasses should implement this, to launch its own dialog.
         virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
 

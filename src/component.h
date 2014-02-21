@@ -123,11 +123,6 @@ namespace Caneda
         Component *copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(Component *comp) const;
 
-        //! \reimp Reimplemented to return rtti info.
-        bool isComponent() const { return true; }
-        //! \reimp Reimplemented to return rtti info.
-        bool isWire() const { return false; }
-
         int launchPropertyDialog(Caneda::UndoOption opt);
 
     protected:

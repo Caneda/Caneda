@@ -99,14 +99,14 @@ namespace Caneda
         connectedWires << this;
 
         foreach(Port *port, *(port1()->connections())) {
-            if(port->parentItem()->isWire()) {
+            if(port->parentItem()->type() == CGraphicsItem::WireType) {
                 Wire *_wire = static_cast<Wire*>(port->parentItem());
                 _wire->getConnectedWires(connectedWires);
             }
         }
 
         foreach(Port *port, *(port2()->connections())) {
-            if(port->parentItem()->isWire()) {
+            if(port->parentItem()->type() == CGraphicsItem::WireType) {
                 Wire *_wire = static_cast<Wire*>(port->parentItem());
                 _wire->getConnectedWires(connectedWires);
             }

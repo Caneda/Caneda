@@ -239,7 +239,7 @@ namespace Caneda
 
         it = items.begin();
         while(it != items.end()) {
-            if((*it)->isWire()) {
+            if((*it)->type() == CGraphicsItem::WireType) {
                 ++it;
                 continue;
             }
@@ -631,7 +631,7 @@ namespace Caneda
             // Hide all items here, they are made visible in ::insertingItemsEvent
             item->hide();
             // Replace by item->prepareForInsertion()
-            if(item->isComponent()) {
+            if(item->type() == CGraphicsItem::ComponentType) {
                 Component *comp = canedaitem_cast<Component*>(item);
                 comp->properties()->hide();
             }
@@ -1776,12 +1776,14 @@ namespace Caneda
                     foreach(Port *other, *(port->connections())) {
                         // If the item connected is a component, determine whether the ports "other"
                         // and "port" should be disconnected.
-                        if(other->parentItem()->isComponent() && !other->parentItem()->isSelected()) {
+                        if(other->parentItem()->type() == CGraphicsItem::ComponentType &&
+                                !other->parentItem()->isSelected()) {
                             disconnectibles << _item;
                         }
                         // If the item connected is a wire, determine whether this wire should be
                         // resized or moved.
-                        if(other->parentItem()->isWire() && !other->parentItem()->isSelected()) {
+                        if(other->parentItem()->type() == CGraphicsItem::WireType &&
+                                !other->parentItem()->isSelected()) {
                             Wire *wire = canedaitem_cast<Wire*>(other->parentItem());
                             movingWires << wire;
                         }
@@ -1806,7 +1808,7 @@ namespace Caneda
             foreach(Port *port, _item->ports()) {
 
                 foreach(Port *other, *(port->connections())) {
-                    if(other->parentItem()->isComponent() &&
+                    if(other->parentItem()->type() == CGraphicsItem::ComponentType &&
                             other->parentItem() != _item &&
                             !other->parentItem()->isSelected()) {
 
@@ -1844,7 +1846,7 @@ namespace Caneda
     void CGraphicsScene::specialMove()
     {
         foreach(Wire *wire, movingWires) {
-            
+
             wire->storeState();
 
             foreach(Port *other, *(wire->port1()->connections())) {
@@ -1911,7 +1913,7 @@ namespace Caneda
             removeItem(item);
         }
 
-        if(item->isComponent()) {
+        if(item->type() == CGraphicsItem::ComponentType) {
             Component *component = canedaitem_cast<Component*>(item);
 
             int labelSuffix = componentLabelSuffix(component->labelPrefix());
@@ -2077,7 +2079,7 @@ namespace Caneda
 
         foreach(CGraphicsItem *item, items) {
             /* why not filter wire ??? */
-            if(item->isWire()) {
+            if(item->type() == CGraphicsItem::WireType) {
                 continue;
             }
 
@@ -2126,7 +2128,7 @@ namespace Caneda
 
         foreach(CGraphicsItem *item, items) {
             /* why not filter wire ??? */
-            if(item->isWire()) {
+            if(item->type() == CGraphicsItem::WireType) {
                 continue;
             }
 
