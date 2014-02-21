@@ -35,15 +35,11 @@ namespace Caneda
     class Arrow : public Painting
     {
     public:
-        enum {
-            Type = Painting::ArrowType
-        };
-
-        //! Represents the arrow head style.
+        //! \brief Represents the arrow head style.
         enum HeadStyle {
-            //! This represents an ordinary head style for arrow.
+            //! This represents an ordinary arrow head style (two lines pointing in one direction)
             TwoLineArrow,
-            //! This represents a filled triangle for arrow head.
+            //! This represents a filled arrow head style (filled triangle pointing in one direction)
             FilledArrow
         };
 
@@ -51,11 +47,15 @@ namespace Caneda
                 qreal headWidth = 12, qreal headHeight = 20,
                 CGraphicsScene *scene = 0);
 
+        //! \copydoc CGraphicsItem::Type
+        enum { Type = Painting::ArrowType };
+        //! \copydoc CGraphicsItem::type()
+        int type() const { return Arrow::Type; }
+
         QPainterPath shapeForRect(const QRectF &rect) const;
 
         void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
-        int type() const { return Arrow::Type; }
         Arrow* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;

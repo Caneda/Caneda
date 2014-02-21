@@ -33,11 +33,7 @@ namespace Caneda
     class Layer : public Painting
     {
     public:
-        enum {
-            Type = Painting::LayerType
-        };
-
-        //! Represents the layer name type.
+        //! \brief Represents the layer name type.
         enum LayerName {
             Metal1,
             Metal2,
@@ -51,6 +47,11 @@ namespace Caneda
 
         Layer(const QRectF &rect, LayerName layerName = Metal1, const QString &netLabel = "",
               CGraphicsScene *scene = 0);
+
+        //! \copydoc CGraphicsItem::Type
+        enum { Type = Painting::LayerType };
+        //! \copydoc CGraphicsItem::type()
+        int type() const { return Layer::Type; }
 
         QPainterPath shapeForRect(const QRectF& rect) const;
 
@@ -67,7 +68,6 @@ namespace Caneda
         QString netLabel() const { return m_netLabel; }
         void setNetLabel(QString netLabel) { m_netLabel = netLabel; }
 
-        int type() const { return Layer::Type; }
         Layer* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;

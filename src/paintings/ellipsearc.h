@@ -29,12 +29,13 @@ namespace Caneda
     class EllipseArc : public Painting
     {
     public:
-        enum {
-            Type = Painting::EllipseArcType
-        };
-
         EllipseArc(QRectF rect = QRectF(), int startAngle = 20, int spanAngle = 180,
                 CGraphicsScene *scene = 0);
+
+        //! \copydoc CGraphicsItem::Type
+        enum { Type = Painting::EllipseArcType };
+        //! \copydoc CGraphicsItem::type()
+        int type() const { return EllipseArc::Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 
@@ -52,7 +53,6 @@ namespace Caneda
         QRectF ellipse() const { return paintingRect(); }
         void setEllipse(const QRectF& ellipse) { setPaintingRect(ellipse); }
 
-        int type() const { return EllipseArc::Type; }
         EllipseArc* copy(CGraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;

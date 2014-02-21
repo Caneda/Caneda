@@ -46,10 +46,7 @@ namespace Caneda
     class Painting : public CGraphicsItem
     {
     public:
-        enum {
-            NoPaintingType = 0,
-            Type = CGraphicsItem::PaintingType
-        };
+        Painting(CGraphicsScene *scene = 0);
 
         enum PaintingType {
             ArrowType = CGraphicsItem::PaintingType + 1,
@@ -61,8 +58,11 @@ namespace Caneda
             LayerType
         };
 
-        Painting(CGraphicsScene *scene = 0);
-
+        //! \copydoc CGraphicsItem::Type
+        enum {
+            NoPaintingType = 0,
+            Type = CGraphicsItem::PaintingType
+        };
         //! \copydoc CGraphicsItem::type()
         int type() const { return Type; }
 

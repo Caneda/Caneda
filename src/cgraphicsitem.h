@@ -61,6 +61,8 @@ namespace Caneda
     class CGraphicsItem : public QGraphicsItem
     {
     public:
+        CGraphicsItem(QGraphicsItem* parent = 0, CGraphicsScene* scene = 0);
+
         /*!
          * \brief CGraphicsItem identification types.
          *
@@ -92,8 +94,6 @@ namespace Caneda
             //!Recognizes classes derived from Painting
             PaintingType = PATTERN(CGraphicsItemType, 5)
         };
-
-        CGraphicsItem(QGraphicsItem* parent = 0, CGraphicsScene* scene = 0);
 
         /*!
          * \brief Item identifier
