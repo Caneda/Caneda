@@ -51,7 +51,7 @@ namespace Caneda
         //! \copydoc CGraphicsItem::Type
         enum { Type = Painting::LayerType };
         //! \copydoc CGraphicsItem::type()
-        int type() const { return Layer::Type; }
+        int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF& rect) const;
 

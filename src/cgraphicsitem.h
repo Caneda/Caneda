@@ -127,7 +127,7 @@ namespace Caneda
          *
          * \sa Type, CGraphicsItemTypes, canedaitem_cast()
          */
-        int type() const { return CGraphicsItemType; }
+        int type() const { return Type; }
 
         //! Returns a list of ports of the item.
         QList<Port*> ports() const { return m_ports; }

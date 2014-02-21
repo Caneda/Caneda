@@ -50,7 +50,7 @@ namespace Caneda
         //! \copydoc CGraphicsItem::Type
         enum { Type = Painting::ArrowType };
         //! \copydoc CGraphicsItem::type()
-        int type() const { return Arrow::Type; }
+        int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 

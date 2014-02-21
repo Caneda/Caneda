@@ -52,7 +52,12 @@ namespace Caneda
     class Node : public CGraphicsItem
     {
     public:
+        Node(const QString& name = QString(), CGraphicsScene *scene = 0);
+
+        //! \copydoc CGraphicsItem::Type
         enum { Type = CGraphicsItem::NodeType };
+        //! \copydoc CGraphicsItem::type()
+        int type() const { return Type; }
 
         //! \brief Represents radius of the node's visual circular representation.
         static const qreal Radius;
@@ -62,8 +67,6 @@ namespace Caneda
         static const QRectF BoundRect;
         //! \brief The shape of every node is const, so cache it too.
         static QPainterPath Shape;
-
-        Node(const QString& name = QString(), CGraphicsScene *scene = 0);
 
         void addComponent(Component *comp);
         void removeComponent(Component *comp);
@@ -158,9 +161,6 @@ namespace Caneda
         Component* controller() const {
             return m_controller;
         }
-
-        //! \brief Returns GraphicsView framwork id.
-        int type() const { return CGraphicsItem::NodeType; }
 
         //! \brief Empty because circle at any rotation is the same.
         virtual void rotate() {}

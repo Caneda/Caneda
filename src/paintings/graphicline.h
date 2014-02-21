@@ -34,7 +34,7 @@ namespace Caneda
         //! \copydoc CGraphicsItem::Type
         enum { Type = Painting::GraphicLineType };
         //! \copydoc CGraphicsItem::type()
-        int type() const { return GraphicLine::Type; }
+        int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 

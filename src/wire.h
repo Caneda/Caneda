@@ -57,7 +57,7 @@ namespace Caneda
         //! \copydoc CGraphicsItem::Type
         enum { Type = CGraphicsItem::WireType };
         //! \copydoc CGraphicsItem::type()
-        int type() const { return Wire::Type; }
+        int type() const { return Type; }
 
         //! Return's the list's first member.
         Port* port1() const { return m_ports[0]; }

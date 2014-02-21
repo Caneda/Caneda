@@ -34,7 +34,7 @@ namespace Caneda
         //! \copydoc CGraphicsItem::Type
         enum { Type = Painting::GraphicTextType };
         //! \copydoc CGraphicsItem::type()
-        int type() const { return GraphicText::Type; }
+        int type() const { return Type; }
 
         QString plainText() const;
         void setPlainText(const QString &text);

@@ -39,7 +39,7 @@ namespace Caneda
         //! \copydoc CGraphicsItem::Type
         enum { Type = Painting::RectangleType };
         //! \copydoc CGraphicsItem::type()
-        int type() const { return Rectangle::Type; }
+        int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF& rect) const;
 

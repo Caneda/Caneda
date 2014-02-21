@@ -52,7 +52,7 @@ namespace Caneda
         //! \copydoc CGraphicsItem::Type
         enum { Type = CGraphicsItem::PortSymbolType };
         //! \copydoc CGraphicsItem::type()
-        int type() const { return PortSymbol::Type; }
+        int type() const { return Type; }
 
         //! Return's the symbol's port
         Port* port() const { return m_ports[0]; }

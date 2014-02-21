@@ -86,7 +86,7 @@ namespace Caneda
         //! \copydoc CGraphicsItem::Type
         enum { Type = CGraphicsItem::ComponentType };
         //! \copydoc CGraphicsItem::type()
-        int type() const { return Component::Type; }
+        int type() const { return Type; }
 
         //! Returns name of the component (without localization).
         QString name() const { return d->name; }

@@ -34,7 +34,7 @@ namespace Caneda
         //! \copydoc CGraphicsItem::Type
         enum { Type = Painting::EllipseType };
         //! \copydoc CGraphicsItem::type()
-        int type() const { return Ellipse::Type; }
+        int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 
