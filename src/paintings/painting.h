@@ -48,6 +48,11 @@ namespace Caneda
     public:
         Painting(CGraphicsScene *scene = 0);
 
+        //! \copydoc CGraphicsItem::Type
+        enum { Type = CGraphicsItem::PaintingType };
+        //! \copydoc CGraphicsItem::type()
+        int type() const { return Type; }
+
         enum PaintingType {
             ArrowType = CGraphicsItem::PaintingType + 1,
             EllipseType,
@@ -57,14 +62,6 @@ namespace Caneda
             RectangleType,
             LayerType
         };
-
-        //! \copydoc CGraphicsItem::Type
-        enum {
-            NoPaintingType = 0,
-            Type = CGraphicsItem::PaintingType
-        };
-        //! \copydoc CGraphicsItem::type()
-        int type() const { return Type; }
 
         //! Returns paintingRect of this painting item.
         QRectF paintingRect() const { return m_paintingRect; }
