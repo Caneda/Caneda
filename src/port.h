@@ -66,7 +66,7 @@ namespace Caneda
         ~Port();
 
         //! Returns the port's name.
-        QString name() const { return d->name; }
+        QString name() const { return m_name; }
 
         CGraphicsItem* parentItem() const;
 
@@ -86,7 +86,7 @@ namespace Caneda
         void paint(QPainter *painter, const QStyleOptionGraphicsItem* option, QWidget*);
 
     private:
-        QSharedDataPointer<PortData> d;
+        QString m_name;
         QList<Port*> m_connections;
     };
 

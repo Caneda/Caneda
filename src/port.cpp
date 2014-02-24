@@ -21,10 +21,7 @@
 #include "port.h"
 
 #include "cgraphicsitem.h"
-#include "component.h"
-#include "portsymbol.h"
 #include "settings.h"
-#include "wire.h"
 
 #include <QGraphicsItem>
 #include <QPainter>
@@ -34,19 +31,19 @@ namespace Caneda
 {
     /*!
      * \brief Constructs a Port item with a CGraphicsItem as \a parent, position
-     * \a pos and port's name \a portName.
+     * \a pos (relative to its parent) and port's name \a portName.
      */
     Port::Port(CGraphicsItem* parent, QPointF pos, QString portName) :
         QGraphicsItem(parent)
     {
-        // Set the port position, relative to its parent
-        setPos(pos);
-
         // Set component flags
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
-        d = new PortData(pos, portName);
+        // Set the port position, relative to its parent
+        setPos(pos);
+
+        m_name = portName;
         m_connections.append(this);
     }
 
