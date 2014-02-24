@@ -100,10 +100,9 @@ namespace Caneda
             // Create a list of connections by merging both lists of connections
             // and replicating the list in all connected ports.
             m_connections += other->m_connections;
-            foreach(Port *p, other->m_connections) {
+            foreach(Port *p, m_connections) {
                 p->m_connections = m_connections;
             }
-            other->m_connections = m_connections;
         }
 
         // Update all ports parents.
