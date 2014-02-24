@@ -133,7 +133,7 @@ namespace Caneda
         QList<Port*> ports() const { return m_ports; }
         int checkAndConnect(Caneda::UndoOption opt);
 
-        //! Return bounding box
+        //! Return bounding box.
         QRectF boundingRect() const { return m_boundingRect; }
         //! Return the shape of the item.
         QPainterPath shape() const { return m_shape; }

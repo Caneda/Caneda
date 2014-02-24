@@ -59,16 +59,16 @@ namespace Caneda
     {
         int num_of_connections = 0;
 
-        // Find existing intersecting ports and connect
         if(opt == Caneda::PushUndoCmd) {
             cGraphicsScene()->undoStack()->beginMacro(QString());
         }
 
+        // Find existing intersecting ports and connect
         foreach(Port *port, m_ports) {
             Port *other = port->findCoincidingPort();
             if(other) {
                 if(opt == Caneda::PushUndoCmd) {
-                    ConnectCmd *cmd = new ConnectCmd(port, other, cGraphicsScene());
+                    ConnectCmd *cmd = new ConnectCmd(port, other);
                     cGraphicsScene()->undoStack()->push(cmd);
                 }
                 else {

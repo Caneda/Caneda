@@ -56,8 +56,7 @@ namespace Caneda
     class ConnectCmd : public QUndoCommand
     {
     public:
-        ConnectCmd(Port *p1, Port *p2,
-                CGraphicsScene *scene, QUndoCommand *parent = 0);
+        ConnectCmd(Port *p1, Port *p2, QUndoCommand *parent = 0);
 
         void undo();
         void redo();
@@ -65,8 +64,6 @@ namespace Caneda
     private:
         Port * const m_port1;
         Port * const m_port2;
-
-        CGraphicsScene *const m_scene;
     };
 
     class DisconnectCmd : public QUndoCommand

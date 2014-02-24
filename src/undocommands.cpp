@@ -71,10 +71,9 @@ namespace Caneda
      *                            ConnectCmd                                 *
      *************************************************************************/
     //! \brief Constructor.
-    ConnectCmd::ConnectCmd(Port *p1, Port *p2,
-            CGraphicsScene *scene, QUndoCommand *parent) :
+    ConnectCmd::ConnectCmd(Port *p1, Port *p2, QUndoCommand *parent) :
         QUndoCommand(parent),
-        m_port1(p1), m_port2(p2), m_scene(scene)
+        m_port1(p1), m_port2(p2)
     {
     }
 
