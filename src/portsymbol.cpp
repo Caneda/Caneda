@@ -86,14 +86,6 @@ namespace Caneda
 
         // Restore pen
         painter->setPen(savedPen);
-
-        /*!
-         * \todo This should not be neccesary; however under certain
-         * conditions, ports are not correctly drawn.
-         */
-        foreach(Port *port, m_ports) {
-            port->paint(painter, option, widget);
-        }
     }
 
     //! \brief Updates the geometry once a font is set or it is mirrored.

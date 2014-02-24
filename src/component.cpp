@@ -307,14 +307,6 @@ namespace Caneda
 
         // Restore pen
         painter->setPen(savedPen);
-
-        /*!
-         * \todo This should not be neccesary; however under certain
-         * conditions, ports are not correctly drawn.
-         */
-        foreach(Port *port, m_ports) {
-            port->paint(painter, option, w);
-        }
     }
 
     //! \brief Returns a copy of this component.

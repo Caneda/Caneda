@@ -136,14 +136,6 @@ namespace Caneda
 
         // Restore pen
         painter->setPen(savedPen);
-
-        /*!
-         * \todo This should not be neccesary; however when removing it, port
-         * are not correctly drawn after a wire move action.
-         */
-        foreach(Port *port, m_ports) {
-            port->paint(painter, option, widget);
-        }
     }
 
     /*!

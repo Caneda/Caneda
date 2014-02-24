@@ -39,6 +39,9 @@ namespace Caneda
     Port::Port(CGraphicsItem* parent, QPointF pos, QString portName) :
         QGraphicsItem(parent)
     {
+        // Set the port position, relative to its parent
+        setPos(pos);
+
         // Set component flags
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
@@ -51,18 +54,6 @@ namespace Caneda
     Port::~Port()
     {
         disconnect();
-    }
-
-    //! \brief Set a new port position
-    void Port::setPos(const QPointF& newPos)
-    {
-        d->pos = newPos;
-    }
-
-    //! \brief Returns position mapped to scene.
-    QPointF Port::scenePos() const
-    {
-        return parentItem()->mapToScene(d->pos);
     }
 
     /*!
@@ -198,9 +189,9 @@ namespace Caneda
     /*!
      * \brief Draws the port based on the current connection status.
      *
-     *  Port are drawn only if:
-     *         - port is not connected
-     *         - port they are more than two connection to port
+     *  Ports are drawn only if:
+     *    \li the port is not connected
+     *    \li there are more than two connections to the port
      */
     void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem* option, QWidget*)
     {
@@ -212,19 +203,19 @@ namespace Caneda
         if(m_connections.size() <= 1) {
             painter->setPen(QPen(Qt::darkRed));
             painter->setBrush(Qt::NoBrush);
-            painter->drawEllipse(portEllipse.translated(pos()));
+            painter->drawEllipse(portEllipse);
         }
         else if(option->state & QStyle::State_Selected) {
             painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
             painter->setBrush(QBrush(settings->currentValue("gui/selectionColor").value<QColor>()));
-            painter->drawEllipse(portEllipse.translated(pos()).adjusted(1,1,-1,-1));  // Adjust the ellipse to be just a little smaller than the open port
+            painter->drawEllipse(portEllipse.adjusted(1,1,-1,-1));  // Adjust the ellipse to be just a little smaller than the open port
         }
         else if(m_connections.size() > 2) {
             painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
             painter->setBrush(QBrush(settings->currentValue("gui/lineColor").value<QColor>()));
-            painter->drawEllipse(portEllipse.translated(pos()).adjusted(1,1,-1,-1));  // Adjust the ellipse to be just a little smaller than the open port
+            painter->drawEllipse(portEllipse.adjusted(1,1,-1,-1));  // Adjust the ellipse to be just a little smaller than the open port
         }
 
         // Restore pen

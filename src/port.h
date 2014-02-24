@@ -68,11 +68,6 @@ namespace Caneda
         //! Returns the port's name.
         QString name() const { return d->name; }
 
-        //! Returns the position relative to owner - usually constant.
-        QPointF pos() const { return d->pos; }
-        void setPos(const QPointF& newPos);
-        QPointF scenePos() const;
-
         CGraphicsItem* parentItem() const;
 
         //! Returns a pointer to list of connected ports
