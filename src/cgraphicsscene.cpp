@@ -1686,9 +1686,12 @@ namespace Caneda
     /*!
      * \brief Handle events other than the specilized mouse actions.
      *
-     * This involves moving items in a special way so that wires
-     * are created if a connected component is moved away from
-     * an unselected component.
+     * This involves moving items in a special way so that wires disconnect
+     * from unselected components, and unselected wires change their geometry
+     * to accomodate item movements.
+     *
+     * \sa disconnectDisconnectibles(), processForSpecialMove(),
+     * specialMove(), endSpecialMove()
      */
     void CGraphicsScene::normalEvent(QGraphicsSceneMouseEvent *e)
     {
@@ -1749,6 +1752,14 @@ namespace Caneda
      * \brief Check which items should be moved in a special way, to allow
      * proper wire and component movements.
      *
+     * This method decides which tipe of movement each item must perform. In
+     * general, moving wires should disconnect from unselected components, and
+     * unselected wires should change their geometry to accomodate item
+     * movements. This is acomplished by generating two lists:
+     *
+     * \li A list of items to disconnect
+     * \li A list of wires whose geometry must be updated
+     *
      * The action of this function is observed, for example, when moving an
      * item (a wire, a component, etc) connected to other components. By
      * processing if the item is a component or a wire and deciding if the
@@ -1757,7 +1768,7 @@ namespace Caneda
      * (when moving a wire away from a component), expected movements are
      * performed.
      *
-     * \sa specialMove()
+     * \sa normalEvent(), specialMove()
      */
     void CGraphicsScene::processForSpecialMove(QList<QGraphicsItem*> _items)
     {
@@ -1795,8 +1806,14 @@ namespace Caneda
     }
 
     /*!
-     * \brief Disconnect the ports in the disconnectibles list. This happens when two
-     * (or more) components are connected and one of them is clicked and dragged.
+     * \brief Disconnect the items in the disconnectibles list.
+     *
+     * This method disconnects the ports in the disconnectibles list, generated
+     * by the processForSpecialMove() method. The disconnection should happen
+     * when two (or more) components are connected and one of them is clicked
+     * and dragged, or when a wire is moved away from a (unselected) component.
+     *
+     * \sa normalEvent(), processForSpecialMove()
      */
     void CGraphicsScene::disconnectDisconnectibles()
     {
@@ -1844,7 +1861,7 @@ namespace Caneda
      * a gap would appear between the moved wire and the connected wires (which
      * would remain in their original place).
      *
-     * \sa processForSpecialMove()
+     * \sa normalEvent(), processForSpecialMove()
      */
     void CGraphicsScene::specialMove()
     {
@@ -1881,8 +1898,13 @@ namespace Caneda
     }
 
     /*!
-     * \brief End the special move by pushing the UndoCommands for position change
-     * of items on scene. Also wire's segements are finalized here.
+     * \brief End the special move and finalize wire's segements.
+     *
+     * This method ends the special move by pushing the neccesary UndoCommands
+     * relative to position changes of items on a scene. Also finalize wire's
+     * segements.
+     *
+     * \sa normalEvent()
      */
     void CGraphicsScene::endSpecialMove()
     {
