@@ -1834,6 +1834,9 @@ namespace Caneda
      * \brief Move the selected items in a special way to allow proper wire
      * movements.
      *
+     * This method accomodates the geometry of all wires which must be resized due
+     * to the current wire movement, but are not selected (and moving) themselves.
+     *
      * The action of this function is observed, for example, when moving a wire
      * connected to other wires. Thanks to this function, the connected ports
      * of all wires stay together. If this function was to be removed, after
@@ -1845,20 +1848,31 @@ namespace Caneda
      */
     void CGraphicsScene::specialMove()
     {
+        // The wires in movingWires are those wires that are not selected
+        // but whose geometry must acommodate to the current moving wire.
         foreach(Wire *wire, movingWires) {
 
             wire->storeState();
 
+            // Check both ports (port1 and port2) of the unselected wire for
+            // possible ports movement.
+
+            // First check port1
             foreach(Port *other, *(wire->port1()->connections())) {
-                if(other != wire->port1()) {
-                    wire->movePort(wire->port1()->connections(), other->scenePos());
+                // If some of the connected ports has moved, we have found the
+                // moving wire and this port must copy that port position.
+                if(other->scenePos() != wire->port1()->scenePos()) {
+                    wire->movePort1(wire->mapFromScene(other->scenePos()));
                     break;
                 }
             }
 
+            // Then check port2
             foreach(Port *other, *(wire->port2()->connections())) {
-                if(other != wire->port2()) {
-                    wire->movePort(wire->port2()->connections(), other->scenePos());
+                // If some of the connected ports has moved, we have found the
+                // moving wire and this port must copy that port position.
+                if(other->scenePos() != wire->port2()->scenePos()) {
+                    wire->movePort2(wire->mapFromScene(other->scenePos()));
                     break;
                 }
             }

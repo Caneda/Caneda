@@ -60,17 +60,6 @@ namespace Caneda
         qDeleteAll(m_ports);
     }
 
-    //! \brief Moves port matching connection \a connections to scene pos \a scenePos.
-    void Wire::movePort(QList<Port*> *connections, const QPointF& scenePos)
-    {
-        if(port1()->connections() == connections) {
-            movePort1(mapFromScene(scenePos));
-        }
-        else if(port2()->connections() == connections) {
-            movePort2(mapFromScene(scenePos));
-        }
-    }
-
     //! \brief Moves port1 to \a newLocalPos.
     void Wire::movePort1(const QPointF& newLocalPos)
     {
