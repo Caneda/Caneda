@@ -48,7 +48,7 @@ namespace Caneda
      * \brief The CGraphicsItem class forms part of the Graphics-View framework,
      * implementing all the common methods to be used by the items in a
      * CGraphicsScene. This class is the base class from which components,
-     * wires, nodes, paintings, etc, are inherited.
+     * wires, paintings, etc, are inherited.
      *
      * Although in theory, a CGraphicsItem could be used directly on a scene,
      * the idea is to subclass CGraphicsItem to allow for the different items
@@ -87,12 +87,10 @@ namespace Caneda
             ComponentType = PATTERN(CGraphicsItemType, 1),
             //!Recognizes classes derived from Wire
             WireType = PATTERN(CGraphicsItemType, 2),
-            //!Recognizes classes derived from Node
-            NodeType = PATTERN(CGraphicsItemType, 3),
             //!Recognizes classes derived from PortSymbol
-            PortSymbolType = PATTERN(CGraphicsItemType, 4),
+            PortSymbolType = PATTERN(CGraphicsItemType, 3),
             //!Recognizes classes derived from Painting
-            PaintingType = PATTERN(CGraphicsItemType, 5)
+            PaintingType = PATTERN(CGraphicsItemType, 4)
         };
 
         /*!

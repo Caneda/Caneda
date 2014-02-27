@@ -57,7 +57,7 @@ namespace Caneda
      * drawn. When multiple connections are made into one port, a filled circle
      * with the foreground color is drawn.
      *
-     * \sa Component, Wire, Node
+     * \sa Component, Wire
      */
     class Port : public QGraphicsItem
     {
