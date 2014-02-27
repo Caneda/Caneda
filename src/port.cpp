@@ -75,12 +75,12 @@ namespace Caneda
         }
 
         if(parentItem() == other->parentItem()) {
-            qWarning() << "Cannot connect nodes of same component/wire";
+            qWarning() << "Cannot connect ports of same component/wire";
             return;
         }
 
         if(!scene() || !other->scene() || scene() != other->scene()) {
-            qWarning() << "Cannot connect nodes across different or null scenes";
+            qWarning() << "Cannot connect ports across different or null scenes";
             return;
         }
 
@@ -88,7 +88,7 @@ namespace Caneda
         QPointF p2 = other->scenePos();
 
         if(p1 != p2) {
-            qWarning() << "Cannot connect nodes as positions mismatch" << p1 << p2;
+            qWarning() << "Cannot connect ports as positions mismatch" << p1 << p2;
             return;
         }
 
