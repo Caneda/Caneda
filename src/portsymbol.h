@@ -47,6 +47,7 @@ namespace Caneda
     {
     public:
         PortSymbol(CGraphicsScene *scene = 0);
+        PortSymbol(const QString &label, CGraphicsScene *scene = 0);
         ~PortSymbol();
 
         //! \copydoc CGraphicsItem::Type
@@ -71,6 +72,8 @@ namespace Caneda
         int launchPropertyDialog(Caneda::UndoOption opt);
 
     private:
+        void init(const QString &label);
+
         /*!
          * \brief Port properties modifiable by the user.
          *

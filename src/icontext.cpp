@@ -197,6 +197,8 @@ namespace Caneda
         }
 
         QList<QPair<QString, QPixmap> > miscellaneousItems;
+        miscellaneousItems << qMakePair(QObject::tr("Ground"),
+                QPixmap(Caneda::bitmapDirectory() + "ground.svg"));
         miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
                 QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
 

@@ -942,10 +942,14 @@ namespace Caneda
                 qItem = Painting::fromName(itemName);
             }
             else if(itemCategory == QObject::tr("Miscellaneous")) {
-                if(itemName == QObject::tr("Port Symbol")) {
+                // This must be repeated for each type of miscellaneous item,
+                // for example ground, port symbols, etc.
+                if(itemName == QObject::tr("Ground")) {
+                    qItem = new PortSymbol("Ground", this);
+                }
+                else if(itemName == QObject::tr("Port Symbol")) {
                     qItem = new PortSymbol(this);
                 }
-                //! \todo Repeat this for each type of miscellaneous item, for example ground
             }
 
             // If the item was not found in the fixed libraries, search for the

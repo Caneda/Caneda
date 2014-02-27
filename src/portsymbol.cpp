@@ -34,8 +34,46 @@ namespace Caneda
      * \brief Constructs a port symbol item.
      *
      * \param scene CGraphicsScene on which the port symbol should be added.
+     *
+     * \sa init()
      */
     PortSymbol::PortSymbol(CGraphicsScene *scene) : CGraphicsItem(0, scene)
+    {
+        // Create a port with the default name
+        init(QString("label"));
+    }
+
+    /*!
+     * \brief Constructs a port symbol item.
+     *
+     * \param label Label of the port. Special ports as GND, should pass the
+     *        corresponding label.
+     * \param scene CGraphicsScene on which the port symbol should be added.
+     *
+     * \sa init()
+     */
+    PortSymbol::PortSymbol(const QString &label, CGraphicsScene *scene) : CGraphicsItem(0, scene)
+    {
+        init(label);
+    }
+
+    //! \brief Destructor.
+    PortSymbol::~PortSymbol()
+    {
+        qDeleteAll(m_ports);
+    }
+
+    /*!
+     * \brief Initialize the ports parameters
+     *
+     * This method initializes the main port parameters. It is done separately
+     * from the contructors methods to allow reutilization of the code in
+     * different existing contructors.
+     *
+     * \param label Label of the port. Special ports as GND, should pass the
+     *        corresponding label.
+     */
+    void PortSymbol::init(const QString &label)
     {
         // Set component flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
@@ -43,7 +81,7 @@ namespace Caneda
         setFlag(ItemSendsScenePositionChanges, true);
 
         // Create port properties and add port label
-        Property _label("label", "Label", QObject::tr("Port Label"), true);
+        Property _label("label", label, QObject::tr("Port Label"), true);
         properties = new PropertyGroup();
         properties->setParentItem(this);
         properties->addProperty("label", _label);
@@ -53,12 +91,6 @@ namespace Caneda
         m_ports << new Port(this, mapFromScene(pos()));
 
         updateGeometry();
-    }
-
-    //! \brief Destructor.
-    PortSymbol::~PortSymbol()
-    {
-        qDeleteAll(m_ports);
     }
 
     //! \brief Draw port symbol
@@ -91,10 +123,8 @@ namespace Caneda
         m_symbol = QPainterPath();
 
         // Define the port symbol acording to its label
-        if(properties->propertyValue("label") == "ground" ||
-                properties->propertyValue("label") == "GROUND" ||
-                properties->propertyValue("label") == "gnd" ||
-                properties->propertyValue("label") == "GND") {
+        if(properties->propertyValue("label").toLower() == "ground" ||
+                properties->propertyValue("label").toLower() == "gnd") {
 
             m_symbol.lineTo(0,10);
             m_symbol.moveTo(-10,10);
