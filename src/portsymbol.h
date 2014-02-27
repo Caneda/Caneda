@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2013-2014 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -85,7 +85,7 @@ namespace Caneda
          */
         PropertyGroup *properties;
 
-        QRectF m_paintingRect;
+        QPainterPath m_symbol;
     };
 
 } // namespace Caneda
