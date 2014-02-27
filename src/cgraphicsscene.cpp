@@ -1773,7 +1773,7 @@ namespace Caneda
     void CGraphicsScene::processForSpecialMove(QList<QGraphicsItem*> _items)
     {
         disconnectibles.clear();
-        movingWires.clear();
+        specialMoveItems.clear();
 
         foreach(QGraphicsItem *item, _items) {
             // Save item's position for later use
@@ -1785,18 +1785,23 @@ namespace Caneda
                 foreach(Port *port, _item->ports()) {
 
                     foreach(Port *other, *(port->connections())) {
-                        // If the item connected is a component, determine whether the ports "other"
-                        // and "port" should be disconnected.
+                        // If the item connected is a component, determine whether it should
+                        // be disconnected or not.
                         if(other->parentItem()->type() == CGraphicsItem::ComponentType &&
                                 !other->parentItem()->isSelected()) {
                             disconnectibles << _item;
                         }
-                        // If the item connected is a wire, determine whether this wire should be
+                        // If the item connected is a wire, determine whether it should be
                         // resized or moved.
                         if(other->parentItem()->type() == CGraphicsItem::WireType &&
                                 !other->parentItem()->isSelected()) {
-                            Wire *wire = canedaitem_cast<Wire*>(other->parentItem());
-                            movingWires << wire;
+                            specialMoveItems << other->parentItem();
+                        }
+                        // If the item connected is a port, determine whether it should be
+                        // moved or not.
+                        if(other->parentItem()->type() == CGraphicsItem::PortSymbolType &&
+                                !other->parentItem()->isSelected()) {
+                            specialMoveItems << other->parentItem();
                         }
                     }
 
@@ -1848,11 +1853,13 @@ namespace Caneda
     }
 
     /*!
-     * \brief Move the selected items in a special way to allow proper wire
+     * \brief Move the unselected items in a special way to allow proper wire
      * movements.
      *
-     * This method accomodates the geometry of all wires which must be resized due
-     * to the current wire movement, but are not selected (and moving) themselves.
+     * This method accomodates the geometry of all wires which must be resized
+     * due to the current wire movement, but are not selected (and moving)
+     * themselves. It also moves some special items which must move along with
+     * the selected wires.
      *
      * The action of this function is observed, for example, when moving a wire
      * connected to other wires. Thanks to this function, the connected ports
@@ -1865,33 +1872,55 @@ namespace Caneda
      */
     void CGraphicsScene::specialMove()
     {
-        // The wires in movingWires are those wires that are not selected
-        // but whose geometry must acommodate to the current moving wire.
-        foreach(Wire *wire, movingWires) {
+        foreach(CGraphicsItem *_item, specialMoveItems) {
 
-            wire->storeState();
+            // The wires in specialMoveItems are those wires that are not selected
+            // but whose geometry must acommodate to the current moving wire.
+            if(_item->type() == CGraphicsItem::WireType) {
 
-            // Check both ports (port1 and port2) of the unselected wire for
-            // possible ports movement.
+                Wire *wire = canedaitem_cast<Wire*>(_item);
+                wire->storeState();
 
-            // First check port1
-            foreach(Port *other, *(wire->port1()->connections())) {
-                // If some of the connected ports has moved, we have found the
-                // moving wire and this port must copy that port position.
-                if(other->scenePos() != wire->port1()->scenePos()) {
-                    wire->movePort1(wire->mapFromScene(other->scenePos()));
-                    break;
+                // Check both ports (port1 and port2) of the unselected wire for
+                // possible ports movement.
+
+                // First check port1
+                foreach(Port *other, *(wire->port1()->connections())) {
+                    // If some of the connected ports has moved, we have found the
+                    // moving wire and this port must copy that port position.
+                    if(other->scenePos() != wire->port1()->scenePos()) {
+                        wire->movePort1(wire->mapFromScene(other->scenePos()));
+                        break;
+                    }
                 }
+
+                // Then check port2
+                foreach(Port *other, *(wire->port2()->connections())) {
+                    // If some of the connected ports has moved, we have found the
+                    // moving wire and this port must copy that port position.
+                    if(other->scenePos() != wire->port2()->scenePos()) {
+                        wire->movePort2(wire->mapFromScene(other->scenePos()));
+                        break;
+                    }
+                }
+
             }
 
-            // Then check port2
-            foreach(Port *other, *(wire->port2()->connections())) {
-                // If some of the connected ports has moved, we have found the
-                // moving wire and this port must copy that port position.
-                if(other->scenePos() != wire->port2()->scenePos()) {
-                    wire->movePort2(wire->mapFromScene(other->scenePos()));
-                    break;
+            // The ports in specialMoveItems must be moved along the selected
+            // (and moving) wires.
+            if(_item->type() == CGraphicsItem::PortSymbolType) {
+
+                PortSymbol *portSymbol = canedaitem_cast<PortSymbol*>(_item);
+
+                foreach(Port *other, *(portSymbol->port()->connections())) {
+                    // If some of the connected ports has moved, we have found the
+                    // moving item and this port must copy that port position.
+                    if(other->scenePos() != portSymbol->scenePos()) {
+                        portSymbol->setPos(other->scenePos());
+                        break;
+                    }
                 }
+
             }
 
         }
@@ -1902,7 +1931,7 @@ namespace Caneda
      *
      * This method ends the special move by pushing the neccesary UndoCommands
      * relative to position changes of items on a scene. Also finalize wire's
-     * segements.
+     * segments.
      *
      * \sa normalEvent()
      */
@@ -1921,12 +1950,26 @@ namespace Caneda
 
         }
 
-        foreach(Wire *wire, movingWires) {
-            m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
-                        wire->currentState()));
+        foreach(CGraphicsItem *_item, specialMoveItems) {
+
+            if(_item->type() == CGraphicsItem::WireType) {
+                Wire *wire = canedaitem_cast<Wire*>(_item);
+                m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
+                                                         wire->currentState()));
+            }
+
         }
 
-        movingWires.clear();
+        foreach(QGraphicsItem *item, specialMoveItems) {
+
+            PortSymbol * m_item = canedaitem_cast<PortSymbol*>(item);
+            if(m_item) {
+                m_item->checkAndConnect(Caneda::PushUndoCmd);
+            }
+
+        }
+
+        specialMoveItems.clear();
         disconnectibles.clear();
     }
 

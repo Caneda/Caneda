@@ -201,12 +201,6 @@ namespace Caneda
          */
         bool m_areItemsMoving;
 
-        /*!
-         * \brief List of components whose port's needs to be disconencted
-         *        due to mouse events
-         */
-        QList<CGraphicsItem*> disconnectibles;
-
         //! \brief List of CGraphicsItem which are to be placed/pasted.
         QList<CGraphicsItem*> m_insertibles;
 
@@ -218,22 +212,40 @@ namespace Caneda
          *
          * This is used to determine what feedback to show while painting.
          * For example:
-         * - One click of arc should determine corresponding elliptical point.
-         * - Second click should fix this ellipse and let select the start
+         * \li One click of arc should determine corresponding elliptical point.
+         * \li Second click should fix this ellipse and let select the start
          * angle of ellipse.
-         * - Third click should finalize by selecing span of the elliptical arc.
+         * \li Third click should finalize by selecing span of the elliptical arc.
          */
         int m_paintingDrawClicks;
 
         /*!
-         * \brief List of wire's requiring segment changes due to mouse event
+         * \brief List of components whose port's needs to be disconencted
+         *        due to mouse events
+         *
+         * When a wire is moved and one of the connected components is
+         * unselected, the component must be disconnected from the moving
+         * wires' ports. The list of components to disconnect is selected in
+         * processForSpecialMove() and the disconnection is performed in the
+         * disconnect() method.
+         */
+        QList<CGraphicsItem*> disconnectibles;
+
+        /*!
+         * \brief List of items requiring special movements due to mouse event
          *
          * When an item is moved (click + drag) and one of the connected wires
-         * aren't selected, its geometry needs to be altered to retain connection
-         * to the wire. Hence these wires are selected in processForSpecialMove
-         * and are resized in specialMove.
+         * is't selected, the latter's geometry needs to be altered to retain
+         * its connection. Hence the last wires must be selected in
+         * processForSpecialMove() and resized in specialMove().
+         *
+         * In a similar manner, some while some items must be disconnected (for
+         * example normal components) others must be moved along with the wire
+         * (for example net labels or port symbols).
+         *
+         * \sa processForSpecialMove(), specialMove()
          */
-        QList<Wire*> movingWires;
+        QList<CGraphicsItem*> specialMoveItems;
 
         //! Wiring state machine state enum
         enum wiringStateEnum {
