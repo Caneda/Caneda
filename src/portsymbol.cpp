@@ -99,20 +99,27 @@ namespace Caneda
         if(option->state & QStyle::State_Selected) {
             painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
+
+            // Set the label font settings
+            m_label->setBrush(QBrush(settings->currentValue("gui/selectionColor").value<QColor>()));
         }
         else {
             painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
+
+            // Set the label font settings
+            m_label->setBrush(QBrush(settings->currentValue("gui/foregroundColor").value<QColor>()));
         }
 
-        // Draw the port symbol
-        painter->drawPath(m_symbol);
+        // Draw the port symbol if it is a termination point or ground
+        if(m_label->text().toLower() == "ground" ||
+                m_label->text().toLower() == "gnd" ||
+                port()->connections()->size() <= 2) {
+            painter->drawPath(m_symbol);
+        }
 
         // Restore pen
         painter->setPen(savedPen);
-
-        // Set the label font settings
-        m_label->setBrush(QBrush(settings->currentValue("gui/foregroundColor").value<QColor>()));
     }
 
     //! \brief Updates the geometry of the port symbol.
