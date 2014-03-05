@@ -140,11 +140,19 @@ namespace Caneda
             m_label->setVisible(true);
         }
 
-        m_label->setPos(m_symbol.boundingRect().bottomLeft());
+        QPointF labelPos = m_symbol.boundingRect().bottomLeft();
+        m_label->setPos(labelPos);
 
-        QRectF boundRect = m_symbol.boundingRect();
-        setShapeAndBoundRect(m_symbol, boundRect);
+        // Set the bounding rect to contain both the m_symbol shape and the
+        // label. Use a rectangular shape (path) in setShapeAndBoundRect
+        // to allow easy selection of the item. Otherwise, the ground symbol
+        // would be very difficult to select (the selection would only work
+        // when picking the lines).
+        QRectF _boundRect = m_symbol.boundingRect() | m_label->boundingRect().translated(labelPos);
+        QPainterPath _path = QPainterPath();
+        _path.addRect(_boundRect);
 
+        setShapeAndBoundRect(_path, _boundRect);
         update();
     }
 
