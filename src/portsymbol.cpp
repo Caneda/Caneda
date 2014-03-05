@@ -20,11 +20,10 @@
 #include "portsymbol.h"
 
 #include "cgraphicsitem.h"
-#include "propertygroup.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
-#include "dialogs/propertydialog.h"
+#include "dialogs/portsymboldialog.h"
 
 #include <QStyleOptionGraphicsItem>
 
@@ -80,12 +79,8 @@ namespace Caneda
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
-        // Create port properties and add port label
-        Property _label("label", label, QObject::tr("Port Label"), true);
-        properties = new PropertyGroup();
-        properties->setParentItem(this);
-        properties->addProperty("label", _label);
-        properties->setTransform(transform().inverted());
+        // Initialize port label
+        m_label = new QGraphicsSimpleTextItem(label, this);
 
         // Create ports
         m_ports << new Port(this, mapFromScene(pos()));
@@ -115,6 +110,9 @@ namespace Caneda
 
         // Restore pen
         painter->setPen(savedPen);
+
+        // Set the label font settings
+        m_label->setBrush(QBrush(settings->currentValue("gui/foregroundColor").value<QColor>()));
     }
 
     //! \brief Updates the geometry of the port symbol.
@@ -123,8 +121,8 @@ namespace Caneda
         m_symbol = QPainterPath();
 
         // Define the port symbol acording to its label
-        if(properties->propertyValue("label").toLower() == "ground" ||
-                properties->propertyValue("label").toLower() == "gnd") {
+        if(m_label->text().toLower() == "ground" ||
+                m_label->text().toLower() == "gnd") {
 
             m_symbol.lineTo(0,10);
             m_symbol.moveTo(-10,10);
@@ -133,12 +131,16 @@ namespace Caneda
             m_symbol.lineTo(5,15);
             m_symbol.moveTo(-2,20);
             m_symbol.lineTo(2,20);
+
+            m_label->setVisible(false);
         }
         else {
             m_symbol.addRoundRect(-10, -10, 20, 20, 25, 25);
+
+            m_label->setVisible(true);
         }
 
-        properties->setPos(m_symbol.boundingRect().bottomLeft());
+        m_label->setPos(m_symbol.boundingRect().bottomLeft());
 
         QRectF boundRect = m_symbol.boundingRect();
         setShapeAndBoundRect(m_symbol, boundRect);
@@ -150,7 +152,7 @@ namespace Caneda
     PortSymbol* PortSymbol::copy(CGraphicsScene *scene) const
     {
         PortSymbol *portSymbol = new PortSymbol(scene);
-        portSymbol->properties->setPropertyMap(properties->propertyMap());
+        portSymbol->m_label->setText(m_label->text());
         PortSymbol::copyDataTo(portSymbol);
         return portSymbol;
     }
@@ -165,10 +167,16 @@ namespace Caneda
     //! \copydoc CGraphicsItem::launchPropertyDialog()
     int PortSymbol::launchPropertyDialog(Caneda::UndoOption)
     {
-        int retVal = properties->launchPropertyDialog();
+        QString newLabel = QString(m_label->text());
+
+        PortSymbolDialog *dia = new PortSymbolDialog(&newLabel);
+        int status = dia->exec();
+        delete dia;
+
+        m_label->setText(newLabel);
         updateGeometry();
 
-        return retVal;
+        return status;
     }
 
     /*!
@@ -196,7 +204,7 @@ namespace Caneda
     {
         writer->writeStartElement("port");
 
-        writer->writeAttribute("name", properties->propertyValue("label"));
+        writer->writeAttribute("name", m_label->text());
         writer->writePointAttribute(pos(), "pos");
 
         writer->writeEndElement(); // < /port>
@@ -207,8 +215,7 @@ namespace Caneda
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "port");
 
-        QString label = reader->attributes().value("name").toString();
-        properties->setPropertyValue("label", label);
+        m_label->setText(reader->attributes().value("name").toString());
         setPos(reader->readPointAttribute("pos"));
         updateGeometry();
 
