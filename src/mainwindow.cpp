@@ -457,15 +457,6 @@ namespace Caneda
         action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
         connect(action, SIGNAL(triggered()), SLOT(slotBackupAndHistory()));
 
-        action = am->createAction("insGround", Caneda::icon("ground"), tr("Insert ground"));
-        action->setCheckable(true);
-        action->setShortcut(Key_G);
-        action->setToolTip(tr("Insert Ground") + " (" + action->shortcut().toString() + ")");
-        action->setStatusTip(tr("Inserts a ground symbol"));
-        action->setWhatsThis(tr("Insert Ground\n\nInserts a ground symbol"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotInsertToolbarComponent(const QString&, bool)));
-
         action = am->createAction("callFilter", Caneda::icon("tools-wizard"), tr("Filter synthesis"));
         action->setShortcut(CTRL+Key_1);
         action->setStatusTip(tr("Starts CanedaFilter"));
@@ -629,16 +620,6 @@ namespace Caneda
         action->setToolTip(tr("Wire") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Inserts a wire"));
         action->setWhatsThis(tr("Wire\n\nInserts a wire"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
-        sc->addNormalAction(action);
-
-        action = am->createMouseAction("insLabel", Caneda::InsertingWireLabel,
-                Caneda::icon("nodename"), tr("Wire Label"));
-        action->setShortcut(Key_L);
-        action->setToolTip(tr("Wire Label") + " (" + action->shortcut().toString() + ")");
-        action->setStatusTip(tr("Inserts a wire or pin label"));
-        action->setWhatsThis(tr("Wire Label\n\nInserts a wire or pin label"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         sc->addNormalAction(action);
@@ -849,8 +830,6 @@ namespace Caneda
         workToolbar->addSeparator();
 
         workToolbar->addAction(action("insWire"));
-        workToolbar->addAction(action("insLabel"));
-        workToolbar->addAction(action("insGround"));
         workToolbar->addAction(action("intoH"));
         workToolbar->addAction(action("popH"));
 

@@ -264,10 +264,6 @@ namespace Caneda
             status = status && load(str);
         }
 
-        if(status) {
-            emit basicLibrariesLoaded();
-        }
-
         return status;
     }
 

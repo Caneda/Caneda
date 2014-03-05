@@ -56,7 +56,6 @@ namespace Caneda
         void slotPerformToggleAction(const QString& sender, bool on);
         void slotSetNormalAction();
         void slotInsertToolbarComponent(const QString& action, bool on);
-        void slotUpdateToolbarInsertibles();
 
     private:
         StateHandler(QObject *parent = 0);

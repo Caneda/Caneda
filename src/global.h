@@ -88,7 +88,6 @@ namespace Caneda
         ZoomingAreaEvent,   // Zoom an area
         PaintingDrawEvent,  // Painting item's drawing (like Ellipse, Rectangle)
         InsertingItems,     // Inserting an item
-        InsertingWireLabel, // Inserting a wire label
         Normal              // Normal action (ie select)
     };
 

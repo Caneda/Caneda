@@ -112,9 +112,6 @@ namespace Caneda
         QPainterPath symbolCache(const QString &compName, const QString &libName);
         const QPixmap pixmapCache(const QString &compName, const QString &libName);
 
-    Q_SIGNALS:
-        void basicLibrariesLoaded();
-
     private:
         LibraryManager(QObject *parent = 0);
 

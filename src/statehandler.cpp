@@ -53,12 +53,6 @@ namespace Caneda
             clearInsertibles();
         }
 
-        void updateToolbarInsertibles() {
-            LibraryManager *loader = LibraryManager::instance();
-            toolbarInsertibles.insert("insGround",
-                    loader->newComponent("Ground", 0, "Miscellaneous"));
-        }
-
         void clearInsertibles() {
             foreach (CGraphicsItem* item, insertibles) {
                 if (item->scene()) {
@@ -107,9 +101,6 @@ namespace Caneda
     StateHandler::StateHandler(QObject *parent) : QObject(parent)
     {
         d = new StateHandlerPrivate;
-
-        LibraryManager *loader = LibraryManager::instance();
-        connect(loader, SIGNAL(basicLibrariesLoaded()), this, SLOT(slotUpdateToolbarInsertibles()));
     }
 
     //! \copydoc MainWindow::instance()
@@ -463,11 +454,6 @@ namespace Caneda
     void StateHandler::slotSetNormalAction()
     {
         slotPerformToggleAction("select", true);
-    }
-
-    void StateHandler::slotUpdateToolbarInsertibles()
-    {
-        d->updateToolbarInsertibles();
     }
 
     void StateHandler::applyCursor(CGraphicsView *widget)
