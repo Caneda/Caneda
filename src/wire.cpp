@@ -226,8 +226,18 @@ namespace Caneda
     //! \brief Updates the wire's geometry and caches it.
     void Wire::updateGeometry()
     {
+        // Create a path for the shape using a QPainterPathStroker to allow for
+        // a thick selection band. Otherwise, if we use only a line, it is very
+        // difficult to make a wire selection. The last alternative is to use a
+        // QRect as a shape, but that would extend far off limits the selection
+        // of diagonal wires.
         QPainterPath path;
-        path.addRect(boundingRect());
+        path.moveTo(port1()->pos());
+        path.lineTo(port2()->pos());
+
+        QPainterPathStroker stroker;
+        stroker.setWidth(2*portRadius);
+        path = stroker.createStroke(path);
 
         CGraphicsItem::setShapeAndBoundRect(path, boundingRect());
     }
