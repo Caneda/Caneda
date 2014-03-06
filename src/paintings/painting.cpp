@@ -262,10 +262,12 @@ namespace Caneda
     //! Adjust geometry of item to accommodate resize handles.
     void Painting::adjustGeometry()
     {
+        // First obtain the shape of the painting item
         QRectF boundRect = m_paintingRect;
         QPainterPath _shape = shapeForRect(m_paintingRect);
 
-        // Now determine how to adjust bounding rect based on resize handles being used.
+        // Now determine how to adjust the bounding rect based on the resize
+        // handles being used.
         if(m_resizeHandles.testFlag(Caneda::TopLeftHandle)) {
             QRectF rect = handleRect().translated(m_paintingRect.topLeft());
             boundRect |= rect;
@@ -290,6 +292,12 @@ namespace Caneda
             boundRect |= rect;
             _shape.addRect(rect);
         }
+
+        // Extend the shape to allow for a thick selection band. This is
+        // specially usefull when trying to select diagonal lines or arrows.
+        QPainterPathStroker stroker;
+        stroker.setWidth(10);
+        _shape = stroker.createStroke(_shape);
 
         setShapeAndBoundRect(_shape, boundRect, m_pen.widthF());
         update();
