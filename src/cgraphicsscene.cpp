@@ -1262,13 +1262,13 @@ namespace Caneda
     /*!
      * \brief Mouse move wire event
      *
-     * \param pos: coordinate of mouse action point
+     * \param newPos: coordinate of mouse action point
      */
-    void CGraphicsScene::wiringEventMouseMove(const QPointF &pos)
+    void CGraphicsScene::wiringEventMouseMove(const QPointF &newPos)
     {
         if(m_wiringState != NO_WIRE) {
-            QPointF newPos = m_currentWiringWire->mapFromScene(pos);
-            QPointF refPos = m_currentWiringWire->port1()->pos();
+
+            QPointF refPos = m_currentWiringWire->port1()->scenePos();
 
             if( abs(refPos.x()-newPos.x()) > abs(refPos.y()-newPos.y()) ) {
                 m_currentWiringWire->movePort2(QPointF(newPos.x(), refPos.y()));
@@ -1877,7 +1877,7 @@ namespace Caneda
                     // If some of the connected ports has moved, we have found the
                     // moving wire and this port must copy that port position.
                     if(other->scenePos() != wire->port1()->scenePos()) {
-                        wire->movePort1(wire->mapFromScene(other->scenePos()));
+                        wire->movePort1(other->scenePos());
                         break;
                     }
                 }
@@ -1887,7 +1887,7 @@ namespace Caneda
                     // If some of the connected ports has moved, we have found the
                     // moving wire and this port must copy that port position.
                     if(other->scenePos() != wire->port2()->scenePos()) {
-                        wire->movePort2(wire->mapFromScene(other->scenePos()));
+                        wire->movePort2(other->scenePos());
                         break;
                     }
                 }

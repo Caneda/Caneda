@@ -64,8 +64,8 @@ namespace Caneda
         //! Returns the list's second member.
         Port* port2() const { return m_ports[1]; }
 
-        void movePort1(const QPointF& newLocalPos);
-        void movePort2(const QPointF& newLocalPos);
+        void movePort1(const QPointF& newScenePos);
+        void movePort2(const QPointF& newScenePos);
 
         //! Returns the list of wires attached to this wire
         void getConnectedWires(QList<Wire*> &connectedWires);

@@ -154,7 +154,7 @@ namespace Caneda
         void wiringEventMouseClick(const QGraphicsSceneMouseEvent *event, const QPointF &pos);
         void wiringEventLeftMouseClick(const QPointF &pos);
         void wiringEventRightMouseClick();
-        void wiringEventMouseMove(const QPointF &pos);
+        void wiringEventMouseMove(const QPointF &newPos);
 
         void deletingEvent(const QGraphicsSceneMouseEvent *e);
         void deletingEventLeftMouseClick(const QPointF &pos);

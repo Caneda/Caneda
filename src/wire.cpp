@@ -63,17 +63,17 @@ namespace Caneda
         qDeleteAll(m_ports);
     }
 
-    //! \brief Moves port1 to \a newLocalPos.
-    void Wire::movePort1(const QPointF& newLocalPos)
+    //! \brief Moves port1 to \a newScenePos.
+    void Wire::movePort1(const QPointF& newScenePos)
     {
-        port1()->setPos(newLocalPos);
+        port1()->setPos(mapFromScene(newScenePos));
         updateGeometry();
     }
 
-    //! \brief Moves port2 to \a newLocalPos.
-    void Wire::movePort2(const QPointF& newLocalPos)
+    //! \brief Moves port2 to \a newScenePos.
+    void Wire::movePort2(const QPointF& newScenePos)
     {
-        port2()->setPos(newLocalPos);
+        port2()->setPos(mapFromScene(newScenePos));
         updateGeometry();
     }
 
@@ -392,9 +392,8 @@ namespace Caneda
 
         QPointF port1Pos = reader->readPointAttribute("start");
         QPointF port2Pos = reader->readPointAttribute("end");
-
-        port1()->setPos(mapFromScene(port1Pos));
-        port2()->setPos(mapFromScene(port2Pos));
+        movePort1(port1Pos);
+        movePort2(port2Pos);
 
         while(!reader->atEnd()) {
             reader->readNext();
