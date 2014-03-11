@@ -243,6 +243,15 @@ namespace Caneda
     //! \brief Returns bounding rectangle arround the wire
     QRectF Wire::boundingRect() const
     {
+        // Check that ports have been previously created
+        // This is used to avoid a crash in the case a wire is created
+        // and its position set before any ports added. That specially
+        // happens during wire loading in a file open operation.
+        if(ports().isEmpty()) {
+            return QRectF(0,0,0,0);
+        }
+
+        // If everything's OK, set the bounding rect of the wire
         QRectF rect;
         rect.setTopLeft(port1()->pos());
         rect.setBottomRight(port2()->pos());
@@ -371,7 +380,7 @@ namespace Caneda
      */
     Wire* Wire::loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene)
     {
-        Wire *retVal = new Wire(QPointF(10, 10), QPointF(50,50), scene);
+        Wire *retVal = new Wire(QPointF(10,10), QPointF(50,50), scene);
         retVal->loadData(reader);
 
         return retVal;
