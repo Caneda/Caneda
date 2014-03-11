@@ -182,9 +182,9 @@ namespace Caneda
                         // Calculate the start, middle and end points. As the ports are mapped in the parent's
                         // coordinate system, we must calculate the positions (via the mapToScene method) in
                         // the global (scene) coordinate system.
-                        QPointF startPoint  = _collidingItem->mapToScene(_collidingItem->port1()->pos());
-                        QPointF middlePoint = mapToScene(port->pos());
-                        QPointF endPoint    = _collidingItem->mapToScene(_collidingItem->port2()->pos());
+                        QPointF startPoint  = _collidingItem->port1()->scenePos();
+                        QPointF middlePoint = port->scenePos();
+                        QPointF endPoint    = _collidingItem->port2()->scenePos();
 
                         // Mark old wire for deletion. The deletion is performed in a second
                         // stage to avoid referencing null pointers inside the foreach loop.
@@ -261,8 +261,8 @@ namespace Caneda
      void Wire::copyDataTo(Wire *wire) const
      {
          CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(wire));
-         WireData _data;
 
+         WireData _data;
          _data.port1Pos = port1()->pos();
          _data.port2Pos = port2()->pos();
 
