@@ -49,6 +49,9 @@ namespace Caneda
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
+        // Set the initial position of the item
+        setPos(startPos);
+
         // Create ports
         m_ports << new Port(this, mapFromScene(startPos));
         m_ports << new Port(this, mapFromScene(endPos));
@@ -176,9 +179,12 @@ namespace Caneda
 
                     if(!wiresAreConnected){
 
-                        QPointF startPoint = _collidingItem->port1()->pos();
-                        QPointF middlePoint = port->pos();
-                        QPointF endPoint =  _collidingItem->port2()->pos();
+                        // Calculate the start, middle and end points. As the ports are mapped in the parent's
+                        // coordinate system, we must calculate the positions (via the mapToScene method) in
+                        // the global (scene) coordinate system.
+                        QPointF startPoint  = _collidingItem->mapToScene(_collidingItem->port1()->pos());
+                        QPointF middlePoint = mapToScene(port->pos());
+                        QPointF endPoint    = _collidingItem->mapToScene(_collidingItem->port2()->pos());
 
                         // Mark old wire for deletion. The deletion is performed in a second
                         // stage to avoid referencing null pointers inside the foreach loop.
