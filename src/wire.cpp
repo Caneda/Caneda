@@ -163,7 +163,6 @@ namespace Caneda
 
             // Detect all colliding items
             QList<QGraphicsItem*> collisions = port->collidingItems(Qt::IntersectsItemBoundingRect);
-            qDebug() << "Number of collisions: " << collisions.size();
 
             // Filter colliding wires only
             foreach(QGraphicsItem *item, collisions) {
