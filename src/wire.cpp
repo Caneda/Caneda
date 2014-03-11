@@ -151,63 +151,55 @@ namespace Caneda
     {
         bool nodeCreated = false;
 
+        // List of wires to delete after collision and creation of new wires
         QList<Wire*> markedForDeletion;
 
-        // Detect all colliding items
-        QList<QGraphicsItem*> collisions =
-                collidingItems(Qt::IntersectsItemBoundingRect);
+        // Check if the collision is in the extremes of the wire (ports). Otherwise,
+        // they intersect, but no node should be created.
+        foreach(Port *port, m_ports) {
 
-        // Filter colliding wires only
-        foreach(QGraphicsItem *item, collisions) {
-            Wire* _collidingItem = canedaitem_cast<Wire*>(item);
-            if(_collidingItem) {
+            // Detect all colliding items
+            QList<QGraphicsItem*> collisions = port->collidingItems(Qt::IntersectsItemBoundingRect);
+            qDebug() << "Number of collisions: " << collisions.size();
 
-                // If wires are connected, the collision is the result of the connection.
-                // Otherwise, there is a potential new node.
-                bool wiresAreConnected = port1()->isConnectedTo(_collidingItem->port1()) ||
-                                         port1()->isConnectedTo(_collidingItem->port2()) ||
-                                         port2()->isConnectedTo(_collidingItem->port1()) ||
-                                         port2()->isConnectedTo(_collidingItem->port2());
+            // Filter colliding wires only
+            foreach(QGraphicsItem *item, collisions) {
+                Wire* _collidingItem = canedaitem_cast<Wire*>(item);
+                if(_collidingItem) {
 
-                if(!wiresAreConnected){
+                    // If wires are connected, the collision is the result of the connection.
+                    // Otherwise, there is a potential new node.
+                    bool wiresAreConnected = port1()->isConnectedTo(_collidingItem->port1()) ||
+                            port1()->isConnectedTo(_collidingItem->port2()) ||
+                            port2()->isConnectedTo(_collidingItem->port1()) ||
+                            port2()->isConnectedTo(_collidingItem->port2());
 
-                    // Check both ends for collisions
-                    foreach(Port *port, m_ports) {
-                        // Check if the collision is in the extremes of the wire (ports). Otherwise,
-                        // they intersect, but no node should be created. Either port1 or port2 can
-                        // be used for collision detection (x coordinate is used for vertical wires
-                        // and y coordinate for horizontal wires).
-                        bool verticalCollision = _collidingItem->isHorizontal() &&
-                                                 port->pos().y() == _collidingItem->port1()->pos().y();
-                        bool horizontalCollision = _collidingItem->isVertical() &&
-                                                   port->pos().x() == _collidingItem->port1()->pos().x();
+                    if(!wiresAreConnected){
 
-                        if( verticalCollision || horizontalCollision ) {
-                            QPointF startPoint = _collidingItem->port1()->pos();
-                            QPointF middlePoint = port->pos();
-                            QPointF endPoint =  _collidingItem->port2()->pos();
+                        QPointF startPoint = _collidingItem->port1()->pos();
+                        QPointF middlePoint = port->pos();
+                        QPointF endPoint =  _collidingItem->port2()->pos();
 
-                            // Mark old wire for deletion. The deletion is performed in a second
-                            // stage to avoid referencing null pointers inside the foreach loop.
-                            markedForDeletion << _collidingItem;
+                        // Mark old wire for deletion. The deletion is performed in a second
+                        // stage to avoid referencing null pointers inside the foreach loop.
+                        markedForDeletion << _collidingItem;
 
-                            // Create two new wires
-                            Wire *wire1 = new Wire(startPoint, middlePoint, scene);
-                            Wire *wire2 = new Wire(middlePoint, endPoint, scene);
+                        // Create two new wires
+                        Wire *wire1 = new Wire(startPoint, middlePoint, scene);
+                        Wire *wire2 = new Wire(middlePoint, endPoint, scene);
 
-                            // Create new node (connections to the colliding wire)
-                            port->connectTo(wire1->port2());
-                            port->connectTo(wire2->port1());
+                        // Create new node (connections to the colliding wire)
+                        port->connectTo(wire1->port2());
+                        port->connectTo(wire2->port1());
 
-                            wire1->updateGeometry();
-                            wire2->updateGeometry();
+                        wire1->updateGeometry();
+                        wire2->updateGeometry();
 
-                            // Restore old wire connections
-                            wire1->checkAndConnect(Caneda::DontPushUndoCmd);
-                            wire2->checkAndConnect(Caneda::DontPushUndoCmd);
+                        // Restore old wire connections
+                        wire1->checkAndConnect(Caneda::DontPushUndoCmd);
+                        wire2->checkAndConnect(Caneda::DontPushUndoCmd);
 
-                            nodeCreated = true;
-                        }
+                        nodeCreated = true;
                     }
                 }
             }
