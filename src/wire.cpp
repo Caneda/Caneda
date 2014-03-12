@@ -157,8 +157,8 @@ namespace Caneda
         // List of wires to delete after collision and creation of new wires
         QList<Wire*> markedForDeletion;
 
-        // Check if the collision is in the extremes of the wire (ports). Otherwise,
-        // they intersect, but no node should be created.
+        // Check for collisions in each port, otherwise the items intersect
+        // but no node should be created.
         foreach(Port *port, m_ports) {
 
             // Detect all colliding items
@@ -169,15 +169,16 @@ namespace Caneda
                 Wire* _collidingItem = canedaitem_cast<Wire*>(item);
                 if(_collidingItem) {
 
-                    // If wires are connected, the collision is the result of the connection.
-                    // Otherwise, there is a potential new node.
-                    bool wiresAreConnected = port1()->isConnectedTo(_collidingItem->port1()) ||
-                            port1()->isConnectedTo(_collidingItem->port2()) ||
-                            port2()->isConnectedTo(_collidingItem->port1()) ||
-                            port2()->isConnectedTo(_collidingItem->port2());
+                    // If already connected, the collision is the result of the connection,
+                    // otherwise there is a potential new node.
+                    bool alreadyConnected = false;
+                    foreach(Port *portIterator, m_ports) {
+                        alreadyConnected |=
+                                portIterator->isConnectedTo(_collidingItem->port1()) ||
+                                portIterator->isConnectedTo(_collidingItem->port2());
+                    }
 
-                    if(!wiresAreConnected){
-
+                    if(!alreadyConnected){
                         // Calculate the start, middle and end points. As the ports are mapped in the parent's
                         // coordinate system, we must calculate the positions (via the mapToScene method) in
                         // the global (scene) coordinate system.
