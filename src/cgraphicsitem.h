@@ -130,6 +130,7 @@ namespace Caneda
         //! Returns a list of ports of the item.
         QList<Port*> ports() const { return m_ports; }
         int checkAndConnect(Caneda::UndoOption opt);
+        bool splitAndCreateNodes(CGraphicsScene *scene = 0);
 
         //! Return bounding box.
         QRectF boundingRect() const { return m_boundingRect; }

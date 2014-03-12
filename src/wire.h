@@ -77,8 +77,6 @@ namespace Caneda
         //! Check if port 1 and 2 overlap
         bool isNull() const { return port1()->scenePos() == port2()->scenePos(); }
 
-        int checkAndConnect(Caneda::UndoOption opt);
-        bool splitAndCreateNodes(CGraphicsScene *scene = 0);
         void updateGeometry();
         QRectF boundingRect () const;
 
