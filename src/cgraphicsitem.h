@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2014 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -130,7 +130,7 @@ namespace Caneda
         //! Returns a list of ports of the item.
         QList<Port*> ports() const { return m_ports; }
         int checkAndConnect(Caneda::UndoOption opt);
-        bool splitAndCreateNodes(CGraphicsScene *scene = 0);
+        bool splitAndCreateNodes();
 
         //! Return bounding box.
         QRectF boundingRect() const { return m_boundingRect; }

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2014 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -82,7 +82,7 @@ namespace Caneda
             cGraphicsScene()->undoStack()->endMacro();
         }
 
-        splitAndCreateNodes(cGraphicsScene());
+        splitAndCreateNodes();
 
         return num_of_connections;
     }
@@ -93,7 +93,7 @@ namespace Caneda
      *
      * \return Returns true if new node was created.
      */
-    bool CGraphicsItem::splitAndCreateNodes(CGraphicsScene *scene)
+    bool CGraphicsItem::splitAndCreateNodes()
     {
         bool nodeCreated = false;
 
@@ -134,8 +134,8 @@ namespace Caneda
                         markedForDeletion << _collidingItem;
 
                         // Create two new wires
-                        Wire *wire1 = new Wire(startPoint, middlePoint, scene);
-                        Wire *wire2 = new Wire(middlePoint, endPoint, scene);
+                        Wire *wire1 = new Wire(startPoint, middlePoint, cGraphicsScene());
+                        Wire *wire2 = new Wire(middlePoint, endPoint, cGraphicsScene());
 
                         // Create new node (connections to the colliding wire)
                         port->connectTo(wire1->port2());
