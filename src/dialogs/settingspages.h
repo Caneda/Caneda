@@ -65,7 +65,6 @@ namespace Caneda
         GeneralConfigurationPage(QWidget *parent = 0);
 
     private Q_SLOTS:
-        void slotFontDialog();
         void slotColorButtonDialog(QPushButton *);
         void slotBackgroundColorDialog();
         void slotBackgroundSimulationColorDialog();
@@ -82,10 +81,9 @@ namespace Caneda
         QFrame *horiz_line_;
 
         QCheckBox *checkShowGrid;
-        QFont font;
-        QPushButton *buttonFont, *buttonForeground, *buttonBackground,
+        QPushButton *buttonForeground, *buttonBackground,
                     *buttonSimulationBackground, *buttonLine, *buttonSelection;
-        QSpinBox *spinUndoNum, *spinIcons, *spinWidth;
+        QSpinBox *spinWidth;
     };
 
     //! \brief This class represents the libraries configuration page.

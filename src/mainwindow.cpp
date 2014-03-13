@@ -1537,12 +1537,6 @@ namespace Caneda
         if (dockData.isEmpty() == false) {
             restoreState(dockData);
         }
-
-        const QFont currentFont = settings->currentValue("gui/font").value<QFont>();
-        qApp->setFont(currentFont);
-
-        const QSize iconSize = settings->currentValue("gui/iconSize").toSize();
-        setIconSize(iconSize);
     }
 
     /*!

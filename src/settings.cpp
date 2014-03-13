@@ -49,10 +49,6 @@ namespace Caneda
         defaultSettings["gui/lineColor"] = QVariant(QColor(Qt::blue));
         defaultSettings["gui/selectionColor"] = QVariant(QColor(255, 128, 0)); // Dark orange
         defaultSettings["gui/lineWidth"] = QVariant(int(1));
-        defaultSettings["gui/font"] = QVariant(QFont());
-        defaultSettings["gui/largeFontSize"] = QVariant(qreal(16.0));
-        defaultSettings["gui/iconSize"] = QVariant(QSize(24, 24));
-        defaultSettings["gui/maxUndo"] = QVariant(int(20));
 
         defaultSettings["gui/hdl/keyword"]= QVariant(QVariant(QColor(Qt::black)));
         defaultSettings["gui/hdl/type"]= QVariant(QVariant(QColor(Qt::blue)));

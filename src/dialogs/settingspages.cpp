@@ -30,7 +30,6 @@
 #include <QDateEdit>
 #include <QDir>
 #include <QFileDialog>
-#include <QFontDialog>
 #include <QFormLayout>
 #include <QFrame>
 #include <QGridLayout>
@@ -101,10 +100,6 @@ namespace Caneda
         checkShowGrid = new QCheckBox();
         checkShowGrid->setChecked(settings->currentValue("gui/gridVisible").value<bool>());
 
-        buttonFont = new QPushButton;
-        font = settings->currentValue("gui/font").value<QFont>();
-        buttonFont->setText(font.family());
-
         QColor currentColor;
 
         buttonBackground = new QPushButton;
@@ -132,12 +127,6 @@ namespace Caneda
         spinWidth->setMinimum(1);
         spinWidth->setMaximum(10);
 
-        spinIcons = new QSpinBox;
-        spinIcons->setValue(settings->currentValue("gui/iconSize").toSize().height());
-        spinIcons->setMinimum(10);
-        spinIcons->setMaximum(48);
-
-        connect(buttonFont, SIGNAL(clicked()), SLOT(slotFontDialog()));
         connect(buttonBackground, SIGNAL(clicked()), SLOT(slotBackgroundColorDialog()));
         connect(buttonSimulationBackground, SIGNAL(clicked()), SLOT(slotBackgroundSimulationColorDialog()));
         connect(buttonForeground, SIGNAL(clicked()), SLOT(slotForegroundColorDialog()));
@@ -147,25 +136,12 @@ namespace Caneda
         QGroupBox *appereance = new QGroupBox(tr("Appereance"), this);
         QFormLayout *appereanceLayout = new QFormLayout(appereance);
         appereanceLayout->addRow(tr("Show grid:"), checkShowGrid);
-        appereanceLayout->addRow(tr("Fonts:"), buttonFont);
         appereanceLayout->addRow(tr("Background color:"), buttonBackground);
         appereanceLayout->addRow(tr("Simulation color:"), buttonSimulationBackground);
         appereanceLayout->addRow(tr("Foreground color:"), buttonForeground);
         appereanceLayout->addRow(tr("Line color:"), buttonLine);
         appereanceLayout->addRow(tr("Selection color:"), buttonSelection);
         appereanceLayout->addRow(tr("Line width:"), spinWidth);
-        appereanceLayout->addRow(tr("Icons size:"), spinIcons);
-
-
-        //Now we set the misc group of options ************************************
-        spinUndoNum = new QSpinBox;
-        spinUndoNum->setValue(settings->currentValue("gui/maxUndo").toInt());
-        spinUndoNum->setMinimum(0);
-        spinUndoNum->setMaximum(200);
-
-        QGroupBox *misc = new QGroupBox(tr("Misc"), this);
-        QFormLayout *miscLayout = new QFormLayout(misc);
-        miscLayout->addRow(tr("Maximum undo operations:"), spinUndoNum);
 
 
         //Finally we set the general layout of all groups *************************
@@ -178,21 +154,10 @@ namespace Caneda
         vlayout1->addWidget(horiz_line_);
 
         vlayout1->addWidget(appereance);
-        vlayout1->addWidget(misc);
 
         vlayout1->addStretch();
 
         setLayout(vlayout1);
-    }
-
-    void GeneralConfigurationPage::slotFontDialog()
-    {
-        bool ok;
-        QFont tmpFont = QFontDialog::getFont(&ok, font, this);
-        if(ok) {
-            font = tmpFont;
-            buttonFont->setText(font.family());
-        }
     }
 
     void GeneralConfigurationPage::slotColorButtonDialog(QPushButton *button)
@@ -281,33 +246,11 @@ namespace Caneda
             changed = true;
         }
 
-        const QFont currentFont = settings->currentValue("gui/font").value<QFont>();
-        const QFont newFont = font;
-        if(currentFont != newFont) {
-            settings->setCurrentValue("gui/font", newFont);
-            qApp->setFont(newFont);
-            changed = true;
-        }
-
         const int currentLineWidth = settings->currentValue("gui/lineWidth").toInt();
         const int newLineWidth = spinWidth->value();
         if (currentLineWidth != newLineWidth) {
             settings->setCurrentValue("gui/lineWidth", newLineWidth);
             changed = true;
-        }
-
-        const QSize currentIconSize = settings->currentValue("gui/iconSize").toSize();
-        const QSize newIconSize(spinIcons->value(), spinIcons->value());
-        if (currentIconSize != newIconSize) {
-            settings->setCurrentValue("gui/iconSize", newIconSize);
-            MainWindow::instance()->setIconSize(newIconSize);
-        }
-
-        const int currentMaxUndo = settings->currentValue("gui/maxUndo").toInt();
-        const int newMaxUndo = spinUndoNum->value();
-        if (currentMaxUndo != newMaxUndo) {
-            settings->setCurrentValue("gui/maxUndo", newMaxUndo);
-            //! \todo Also update all undostacks
         }
 
         settings->save();
@@ -519,18 +462,6 @@ namespace Caneda
         groupSimTabMode->setLayout(simTabModeLayout);
 
 
-        //Now we set the misc group of options **********************************************
-        QCheckBox *checkOpenDataDisplay = new QCheckBox(tr("Open data display after simulation:"));
-        checkOpenDataDisplay->setChecked(true);
-
-        QLineEdit *editDataset = new QLineEdit;
-
-        QGroupBox *misc = new QGroupBox(tr("Misc"), this);
-        QFormLayout *miscLayout = new QFormLayout(misc);
-        miscLayout->addRow(checkOpenDataDisplay);
-        miscLayout->addRow(tr("Dataset:"), editDataset);
-
-
         //Finally we set the general layout of all groups ***********************************
         QVBoxLayout *vlayout1 = new QVBoxLayout();
         QLabel *title_label_ = new QLabel(title());
@@ -542,7 +473,6 @@ namespace Caneda
 
         vlayout1->addWidget(groupSimulator);
         vlayout1->addWidget(groupSimTabMode);
-        vlayout1->addWidget(misc);
 
         vlayout1->addStretch();
 
