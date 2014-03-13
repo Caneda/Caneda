@@ -23,7 +23,7 @@
 
 #include "ui_propertydialog.h"
 
-#include "propertygroup.h"
+#include "property.h"
 
 #include <QAbstractTableModel>
 

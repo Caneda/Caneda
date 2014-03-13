@@ -15,7 +15,7 @@ SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   cgraphicsitem.cpp cgraphicsscene.cpp sidebarmodel.cpp
   global.cpp units.cpp main.cpp mainwindow.cpp library.cpp
   cgraphicsview.cpp  undocommands.cpp component.cpp
-  property.cpp propertygroup.cpp port.cpp
+  property.cpp port.cpp
   formatxmlschematic.cpp formatxmllayout.cpp formatxmlsymbol.cpp
   formatrawsimulation.cpp folderbrowser.cpp settings.cpp
   actionmanager.cpp project.cpp portsymbol.cpp
@@ -27,10 +27,10 @@ SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
 
 SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   mainwindow.h sidebarbrowser.h sidebartextbrowser.h library.h
-  component.h sidebarmodel.h portsymbol.h
+  component.h sidebarmodel.h portsymbol.h property.h
   folderbrowser.h project.h actionmanager.h statehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
-  syntaxhighlighters.h clineedit.h propertygroup.h
+  syntaxhighlighters.h clineedit.h
   csimulationscene.h csimulationview.h
   textedit.h webpage.h
 )

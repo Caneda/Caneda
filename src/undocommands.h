@@ -21,7 +21,7 @@
 #ifndef UNDO_COMMANDS_H
 #define UNDO_COMMANDS_H
 
-#include "propertygroup.h"
+#include "property.h"
 #include "wire.h"
 
 #include <QPair>

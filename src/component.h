@@ -22,12 +22,11 @@
 #define QCOMPONENT_H
 
 #include "cgraphicsitem.h"
-#include "propertygroup.h"
+#include "property.h"
 
 namespace Caneda
 {
     // Forward declarations
-    class PropertyGroup;
     class PortData;
 
     //! \brief Shareable component's data

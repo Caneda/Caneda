@@ -27,7 +27,7 @@
 #include "iview.h"
 #include "library.h"
 #include "portsymbol.h"
-#include "propertygroup.h"
+#include "property.h"
 #include "settings.h"
 #include "xmlutilities.h"
 

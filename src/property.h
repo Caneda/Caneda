@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2014 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,17 +21,21 @@
 #ifndef PROPERTY_H
 #define PROPERTY_H
 
+#include <QGraphicsSimpleTextItem>
+#include <QMap>
+#include <QObject>
 #include <QSharedData>
 #include <QString>
 
 namespace Caneda
 {
     //Forward declarations
+    class CGraphicsScene;
     class XmlWriter;
     class XmlReader;
 
     /*!
-     * \brief This struct hold data to be shared implicitly of a property.
+     * \brief This struct holds data of a property to be shared implicitly.
      *
      * This inherits QSharedData which takes care of reference counting.
      *
@@ -100,6 +104,76 @@ namespace Caneda
     private:
         //! Pointer enabling implicit sharing of data.
         QSharedDataPointer<PropertyData> d;
+    };
+
+
+    //! \def PropertyMap This is a typedef to map properties with strings.
+    typedef QMap<QString, Property> PropertyMap;
+
+    /*!
+     * \brief Class used to group properties all together and render
+     * them on a scene.
+     *
+     * Gouping several properties into a QMap (m_propertyMap) provides
+     * a convenient way of handling them all together. In this way, for
+     * example, the properties of a component can be selected and moved
+     * all at once.
+     *
+     * While Property class holds actual properties, PropertyGroup class
+     * groups them all together and renders them on a scene, allowing
+     * selection and moving of all properties at once.
+     *
+     * \sa PropertyData, Property
+     */
+    class PropertyGroup : public QObject, public QGraphicsSimpleTextItem
+    {
+        Q_OBJECT
+
+    public:
+        PropertyGroup(CGraphicsScene* scene = 0, const PropertyMap& propMap = PropertyMap());
+
+        void addProperty(const QString& key, const Property& prop);
+        //! Returns selected property from property map.
+        QString propertyValue(const QString& key) const { return m_propertyMap[key].value(); }
+        void setPropertyValue(const QString& key, const QString& value);
+
+        //! Returns the property map (actually a copy of property map).
+        PropertyMap propertyMap() const { return m_propertyMap; }
+        void setPropertyMap(const PropertyMap& propMap);
+
+        //! Returns if the user is enabled to add or remove properties.
+        bool userPropertiesEnabled() const { return m_userPropertiesEnabled; }
+        void setUserPropertiesEnabled(const bool enable);
+
+        void updatePropertyDisplay();
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                QWidget *widget = 0 );
+
+        void writeProperties(Caneda::XmlWriter *writer);
+        void readProperties(Caneda::XmlReader *reader);
+
+    public Q_SLOTS:
+        int launchPropertyDialog();
+
+    protected:
+        void mousePressEvent(QGraphicsSceneMouseEvent *event);
+        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+    private:
+        //! QMap holding actual properties.
+        PropertyMap m_propertyMap;
+
+        /*!
+         * \brief Holds the user created properties enable status.
+         *
+         * This tells the property dialog if the user should be
+         * enabled to add or remove properties, and if the existing
+         * properties should be allowed to change its key (property
+         * name)
+         *
+         * \sa userPropertiesEnabled(), setUserPropertiesEnabled()
+         */
+        bool m_userPropertiesEnabled;
     };
 
 } // namespace Caneda
