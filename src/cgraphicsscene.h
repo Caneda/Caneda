@@ -39,6 +39,9 @@ namespace Caneda
     class Painting;
     class Wire;
 
+    //! \brief Default grid spacing
+    static const uint DefaultGridSpace = 10;
+
     /*!
      * \brief This class provides a canvas for managing graphics elements
      * common to all Caneda's graphics scenes (schematics, symbols, layouts,

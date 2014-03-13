@@ -28,8 +28,9 @@
 
 namespace Caneda
 {
-    // Style constants definitions
+    //! \brief Style constants definitions
     static const qreal portRadius(3.0);
+    //! \brief Style constants definitions
     static const QRectF portEllipse(-portRadius, -portRadius, 2*portRadius,
             2*portRadius);
 
