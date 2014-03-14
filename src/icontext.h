@@ -38,6 +38,7 @@ namespace Caneda
     class IView;
     class SidebarBrowser;
     class SidebarTextBrowser;
+    class SidebarWebBrowser;
 
     /*************************************************************************
      *                     General IContext Structure                        *
@@ -349,6 +350,9 @@ namespace Caneda
          static WebContext* instance();
 
          // IContext interface methods
+         virtual QWidget* sideBarWidget();
+
+         // IContext interface methods
          virtual bool canOpen(const QFileInfo& info) const;
          virtual QStringList fileNameFilters() const;
          virtual QString defaultSuffix() const { return "html";}
@@ -359,6 +363,8 @@ namespace Caneda
 
      private:
          WebContext(QObject *parent = 0);
+
+         SidebarWebBrowser *m_sidebarWebBrowser;
      };
 
 } // namespace Caneda

@@ -25,6 +25,7 @@
 #include "settings.h"
 #include "sidebarbrowser.h"
 #include "sidebartextbrowser.h"
+#include "sidebarwebbrowser.h"
 #include "statehandler.h"
 
 #include <QDebug>
@@ -546,6 +547,7 @@ namespace Caneda
     //! \brief Constructor.
     WebContext::WebContext(QObject *parent) : IContext(parent)
     {
+        m_sidebarWebBrowser = new SidebarWebBrowser();
     }
 
     //! \copydoc MainWindow::instance()
@@ -556,6 +558,11 @@ namespace Caneda
             instance = new WebContext();
         }
         return instance;
+    }
+
+    QWidget* WebContext::sideBarWidget()
+    {
+        return m_sidebarWebBrowser;
     }
 
     bool WebContext::canOpen(const QFileInfo& info) const

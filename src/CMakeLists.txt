@@ -12,7 +12,7 @@ ADD_SUBDIRECTORY( paintings )
 ADD_SUBDIRECTORY( plugins )
 
 SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
-  cgraphicsitem.cpp cgraphicsscene.cpp
+  cgraphicsitem.cpp cgraphicsscene.cpp sidebarwebbrowser.cpp
   global.cpp units.cpp main.cpp mainwindow.cpp library.cpp
   cgraphicsview.cpp  undocommands.cpp component.cpp
   property.cpp port.cpp fileformatxml.cpp fileformatraw.cpp
@@ -26,7 +26,7 @@ SET(CANEDA_SRCS wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
 
 SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   mainwindow.h sidebarbrowser.h sidebartextbrowser.h library.h
-  component.h portsymbol.h property.h
+  component.h portsymbol.h property.h sidebarwebbrowser.h
   folderbrowser.h project.h actionmanager.h statehandler.h
   documentviewmanager.h icontext.h idocument.h iview.h tabs.h
   syntaxhighlighters.h clineedit.h
