@@ -33,6 +33,18 @@ namespace Caneda
     class FilterProxyModel;
     class SidebarModel;
 
+    /*!
+     * \brief The CategoryItem class implements the items to be used by the
+     * SidebarModel class.
+     *
+     * This class implements a custom type of items to be inserted in a
+     * QAbstractItemModel. It is used in Caneda by the SidebarModel class,
+     * to insert items and have the ability to use QPixmaps associated with
+     * each item inserted. Items can also correspond to categories
+     * (or libraries), in which case the QPixmap is not necessary.
+     *
+     * \sa SidebarModel
+     */
     class CategoryItem
     {
     public:
@@ -67,6 +79,30 @@ namespace Caneda
     };
 
 
+    /*!
+     * \brief The SidebarModel class implements a custom QAbstractItemModel,
+     * and provides the actual interface for item model classes.
+     *
+     * The QAbstractItemModel class defines the standard interface that item
+     * models must use to be able to interoperate with other components in the
+     * model/view architecture. It is not supposed to be instantiated directly,
+     * and must be subclassed to create new models. The SidebarModel class is
+     * the subclass implemented by Caneda.
+     *
+     * The SidebarModel class is one of the Model/View Classes and implements
+     * the model part of Qt's model/view framework.
+     *
+     * The underlying data model is exposed to views and delegates as a
+     * hierarchy of tables. Each item has a unique index specified by a
+     * QModelIndex. Every item of data that can be accessed via a model has an
+     * associated model index. You can obtain this model index using the
+     * index() function. Each index may have a sibling() index; child items
+     * have a parent() index. Each item has a number of data elements
+     * associated with it and they can be retrieved by specifying a role (see
+     * Qt::ItemDataRole) to the model's data() function.
+     *
+     * \sa TreeView, CategoryItem
+     */
     class SidebarModel : public QAbstractItemModel
     {
         Q_OBJECT
@@ -110,7 +146,25 @@ namespace Caneda
         CategoryItem *rootItem;
     };
 
-
+    /*!
+     * \brief The TreeView class implements a custom QTreeView, and provides a
+     *  model/view implementation of a tree view.
+     *
+     * The TreeView class implements a tree representation of items from a
+     * model. This class is used to provide standard hierarchical lists, using
+     * the flexible approach provided by Qt's model/view architecture.
+     *
+     * The TreeView class, derived from QTreeView is one of the Model/View
+     * Classes defined by Qt, and is part of the model/view framework. TreeView
+     * implements the interfaces defined by the QAbstractItemView class to
+     * allow it to display data provided by models derived from the
+     * QAbstractItemModel class.
+     *
+     * The model/view architecture ensures that the contents of the tree view
+     * are updated as the model changes.
+     *
+     *  \sa SidebarModel
+     */
     class TreeView : public QTreeView
     {
         Q_OBJECT
@@ -147,6 +201,7 @@ namespace Caneda
      * the currently opened document upon user double click.
      *
      * \sa LayoutContext, SchematicContext, SymbolContext, SidebarTextBrowser
+     * \sa TreeView, SidebarModel
      */
     class SidebarBrowser : public QWidget
     {
