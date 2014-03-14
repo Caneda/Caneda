@@ -26,7 +26,6 @@
 
 #include <QFileSystemModel>
 #include <QDebug>
-#include <QSortFilterProxyModel>
 #include <QTextCodec>
 #include <QVBoxLayout>
 
@@ -35,26 +34,22 @@ namespace Caneda
     /*************************************************************************
      *                         FileFilterProxyModel                          *
      *************************************************************************/
-    //! \brief This helps in filtering sidebar display corresponding to lineedit.
-    class FileFilterProxyModel : public QSortFilterProxyModel
+    //! \brief Constructor.
+    FileFilterProxyModel::FileFilterProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
     {
-    public:
-        FileFilterProxyModel(QObject *parent = 0) : QSortFilterProxyModel(parent)
-        {
+    }
+
+    bool FileFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+    {
+        QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
+        QFileSystemModel *fileModel = static_cast<QFileSystemModel*>(sourceModel());
+
+        if(fileModel != NULL && fileModel->isDir(index0)) {
+            return true;
         }
 
-        bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
-        {
-            QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
-            QFileSystemModel *fileModel = static_cast<QFileSystemModel*>(sourceModel());
-
-            if(fileModel != NULL && fileModel->isDir(index0)) {
-                return true;
-            }
-
-            return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
-        }
-    };
+        return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+    }
 
 
     /*************************************************************************
