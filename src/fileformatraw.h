@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,56 +17,49 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FORMAT_XML_LAYOUT_H
-#define FORMAT_XML_LAYOUT_H
+#ifndef FILE_FORMAT_RAW_H
+#define FILE_FORMAT_RAW_H
 
 // Forward declarations
+class QFile;
 class QString;
 
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsScene;
-    class LayoutDocument;
-
-    class XmlReader;
-    class XmlWriter;
+    class SimulationDocument;
+    class CSimulationScene;
 
     /*!
-     * \brief This class handles all the access to the layout documents file
-     * format.
+     * \brief This class handles all the access to the raw spice simulation
+     * documents file format.
      *
-     * This class is in charge of saving and loading all layout related
-     * documents. This is the only class that knows about layout document
-     * formats, and has the access functions to return a LayoutDocument,
-     * with all of its components.
+     * This class is in charge of saving and loading all raw spice simulation
+     * related documents. This is the only class that knows about raw spice
+     * simulation document formats, and has the access functions to return a
+     * SimulationDocument, with all of its components.
+     *
+     * This class does not handle document saving, as waveform data saving will
+     * not be supported at the moment (raw waveform data is only generated and
+     * saved by the simulator).
      *
      * \sa \ref DocumentFormats
      */
-    class FormatXmlLayout
+    class FormatRawSimulation
     {
     public:
-        FormatXmlLayout(LayoutDocument *doc = 0);
+        FormatRawSimulation(SimulationDocument *doc = 0);
 
-        bool save();
         bool load();
 
-        LayoutDocument* layoutDocument() const;
-        CGraphicsScene* cGraphicsScene() const;
+        SimulationDocument* simulationDocument() const;
+        CSimulationScene* cSimulationScene() const;
         QString fileName() const;
 
     private:
-        QString saveText();
-        void savePaintings(Caneda::XmlWriter *writer);
-        void saveProperties(Caneda::XmlWriter *writer);
-
-        bool loadFromText(const QString& text);
-        void loadPaintings(Caneda::XmlReader *reader);
-        void loadProperties(Caneda::XmlReader *reader);
-
-        LayoutDocument *m_layoutDocument;
+        SimulationDocument *m_simulationDocument;
     };
 
 } // namespace Caneda
 
-#endif //FORMAT_XML_LAYOUT_H
+#endif //FILE_FORMAT_RAW_H
