@@ -24,6 +24,7 @@
 #include <QAbstractItemModel>
 #include <QPair>
 #include <QPixmap>
+#include <QSortFilterProxyModel>
 #include <QTreeView>
 
 namespace Caneda
@@ -144,6 +145,18 @@ namespace Caneda
 
     private:
         CategoryItem *rootItem;
+    };
+
+    /*!
+     * \brief The FilterProxyModel class helps in filtering sidebar display
+     * corresponding to a QLineEdit.
+     */
+    class FilterProxyModel : public QSortFilterProxyModel
+    {
+    public:
+        FilterProxyModel(QObject *parent = 0);
+
+        bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
     };
 
     /*!

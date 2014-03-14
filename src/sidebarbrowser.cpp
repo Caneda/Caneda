@@ -34,7 +34,6 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QPainter>
-#include <QSortFilterProxyModel>
 #include <QVariant>
 #include <QVBoxLayout>
 
@@ -372,6 +371,26 @@ namespace Caneda
 
 
     /*************************************************************************
+     *                          FilterProxyModel                             *
+     *************************************************************************/
+    //! \brief Constructor.
+    FilterProxyModel::FilterProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
+    {
+    }
+
+    bool FilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+    {
+        QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
+        SidebarModel *sm = static_cast<SidebarModel*>(sourceModel());
+
+        if(sm->isLeaf(index0) == false) {
+            return true;
+        }
+        return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+    }
+
+
+    /*************************************************************************
      *                                TreeView                               *
      *************************************************************************/
     //! \brief Constructor.
@@ -419,30 +438,6 @@ namespace Caneda
         drag->setHotSpot(QPoint(pix.width()/2, pix.height()/2));
         drag->exec(supportedActions);
     }
-
-
-    /*************************************************************************
-     *                          FilterProxyModel                             *
-     *************************************************************************/
-    //! \brief This helps in filtering sidebar display corresponding to lineedit.
-    class FilterProxyModel : public QSortFilterProxyModel
-    {
-    public:
-        FilterProxyModel(QObject *parent = 0) : QSortFilterProxyModel(parent)
-        {
-        }
-
-        bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
-        {
-            QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
-            SidebarModel *sm = static_cast<SidebarModel*>(sourceModel());
-
-            if(sm->isLeaf(index0) == false) {
-                return true;
-            }
-            return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
-        }
-    };
 
 
     /*************************************************************************
