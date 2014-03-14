@@ -182,7 +182,7 @@ namespace Caneda
     void PropertyGroup::addProperty(const QString& key, const Property &prop)
     {
         m_propertyMap.insert(key, prop);
-        updatePropertyDisplay();  // This is neccessary to update the properties display on a scene
+        updatePropertyDisplay();  // This is necessary to update the properties display on a scene
     }
 
     //! \brief Sets property \a key to \a value in the PropertyMap.
@@ -190,7 +190,7 @@ namespace Caneda
     {
         if(m_propertyMap.contains(key)) {
             m_propertyMap[key].setValue(value);
-            updatePropertyDisplay();  // This is neccessary to update the properties display on a scene
+            updatePropertyDisplay();  // This is necessary to update the properties display on a scene
         }
     }
 
@@ -208,7 +208,7 @@ namespace Caneda
     void PropertyGroup::setPropertyMap(const PropertyMap& propMap)
     {
         m_propertyMap = propMap;
-        updatePropertyDisplay();  // This is neccessary to update the properties display on a scene
+        updatePropertyDisplay();  // This is necessary to update the properties display on a scene
     }
 
     /*!

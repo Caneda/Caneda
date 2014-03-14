@@ -1917,7 +1917,7 @@ namespace Caneda
     /*!
      * \brief End the special move and finalize wire's segements.
      *
-     * This method ends the special move by pushing the neccesary UndoCommands
+     * This method ends the special move by pushing the necessary UndoCommands
      * relative to position changes of items on a scene. Also finalize wire's
      * segments.
      *
