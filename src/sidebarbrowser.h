@@ -31,8 +31,6 @@ namespace Caneda
 {
     // Forward declarations
     class CLineEdit;
-    class FilterProxyModel;
-    class SidebarModel;
 
     /*!
      * \brief The CategoryItem class implements the items to be used by the
