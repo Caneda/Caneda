@@ -2,7 +2,7 @@
 <!DOCTYPE caneda>
 <!--
  ***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,15 +21,15 @@
  ***************************************************************************
 -->
 
-<component name="Current Source" version="0.1.0" label="I">
+<component name="Current Source Sinusoidal" version="0.1.0" label="I">
 
     <displaytext>
-        <lang lang="C">Current Source</lang>
-        <lang lang="es">Fuente de Corriente</lang>
+        <lang lang="C">Sinusoidal Current Source</lang>
+        <lang lang="es">Fuente de Corriente Senoidal</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">A current source device</lang>
+        <lang lang="C">A sinudoidal current source device</lang>
     </description>
 
     <symbol>
@@ -41,6 +41,13 @@
         <painting name="line" line="0,0,0,-20" pos="0,10" transform="1,0,0,1,0,0"/>
         <painting name="line" line="0,0,5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
         <painting name="line" line="0,0,-5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="30,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="40,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="180" spanAngle="180"/>
+        </painting>
     </symbol>
 
     <ports>
@@ -49,24 +56,29 @@
     </ports>
 
    <properties>
-         <property name="Type" default="DC" unit="" visible="false">
+         <property name="Ia" default="5m" unit="A" visible="false">
            <description>
-             <lang lang="C">Source type. Can be either DC or AC for a DC/transient analisis or an AC analisis respectively.</lang>
+             <lang lang="C">Amplitude Value</lang>
            </description>
          </property>
-         <property name="Idc" default="5m" unit="A" visible="false">
+         <property name="Io" default="0" unit="A" visible="false">
            <description>
-             <lang lang="C">DC Value</lang>
+             <lang lang="C">Offset Current</lang>
            </description>
          </property>
-         <property name="Iac" default="1m" unit="A" visible="false">
+         <property name="Freq" default="1k" unit="Hz" visible="false">
            <description>
-             <lang lang="C">AC Magnitude</lang>
+             <lang lang="C">Frequency</lang>
            </description>
          </property>
-         <property name="Phase" default="0" unit="º" visible="false">
+         <property name="Td" default="0.0" unit="s" visible="false">
            <description>
-             <lang lang="C">AC Phase</lang>
+             <lang lang="C">Delay</lang>
+           </description>
+         </property>
+         <property name="Theta" default="0.0" unit="1/s" visible="false">
+           <description>
+             <lang lang="C">Damping factor</lang>
            </description>
          </property>
    </properties>

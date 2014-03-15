@@ -2,7 +2,7 @@
 <!DOCTYPE caneda>
 <!--
  ***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,15 +21,14 @@
  ***************************************************************************
 -->
 
-<component name="Current Source" version="0.1.0" label="I">
-
+<component name="Voltage Source Pulse" version="0.1.0" label="V">
     <displaytext>
-        <lang lang="C">Current Source</lang>
-        <lang lang="es">Fuente de Corriente</lang>
+        <lang lang="C">Pulsed Voltage Source</lang>
+        <lang lang="es">Fuente de Tensión Pulsante</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">A current source device</lang>
+        <lang lang="C">A pulsed voltage source device</lang>
     </description>
 
     <symbol>
@@ -38,9 +37,16 @@
         <painting name="line" line="0,0,0,10" pos="0,20" transform="1,0,0,1,0,0"/>
         <painting name="line" line="0,0,0,-10" pos="0,-20" transform="1,0,0,1,0,0"/>
 
-        <painting name="line" line="0,0,0,-20" pos="0,10" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,-5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-25,-25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-10" pos="-20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,10,0" pos="-25,25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,-10" pos="-8,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,8,0" pos="-8,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,10" pos="0,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,8,0" pos="0,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-10" pos="8,5" transform="1,0,0,1,0,0"/>
     </symbol>
 
     <ports>
@@ -49,24 +55,39 @@
     </ports>
 
    <properties>
-         <property name="Type" default="DC" unit="" visible="false">
+         <property name="V1" default="0" unit="V" visible="false">
            <description>
-             <lang lang="C">Source type. Can be either DC or AC for a DC/transient analisis or an AC analisis respectively.</lang>
+             <lang lang="C">Initial Value</lang>
            </description>
          </property>
-         <property name="Idc" default="5m" unit="A" visible="false">
+         <property name="V2" default="5" unit="V" visible="false">
            <description>
-             <lang lang="C">DC Value</lang>
+             <lang lang="C">Pulsed Value</lang>
            </description>
          </property>
-         <property name="Iac" default="1m" unit="A" visible="false">
+         <property name="Td" default="0.0" unit="s" visible="false">
            <description>
-             <lang lang="C">AC Magnitude</lang>
+             <lang lang="C">Delay</lang>
            </description>
          </property>
-         <property name="Phase" default="0" unit="º" visible="false">
+         <property name="Tr" default="0.0" unit="s" visible="false">
            <description>
-             <lang lang="C">AC Phase</lang>
+             <lang lang="C">Rise Time</lang>
+           </description>
+         </property>
+         <property name="Tf" default="0.0" unit="s" visible="false">
+           <description>
+             <lang lang="C">Fall Time</lang>
+           </description>
+         </property>
+         <property name="PW" default="0.0" unit="s" visible="false">
+           <description>
+             <lang lang="C">Pulse Width</lang>
+           </description>
+         </property>
+         <property name="Per" default="0.0" unit="s" visible="false">
+           <description>
+             <lang lang="C">Period</lang>
            </description>
          </property>
    </properties>

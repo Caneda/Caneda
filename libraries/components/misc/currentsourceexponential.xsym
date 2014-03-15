@@ -2,7 +2,7 @@
 <!DOCTYPE caneda>
 <!--
  ***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,15 +21,15 @@
  ***************************************************************************
 -->
 
-<component name="Current Source" version="0.1.0" label="I">
+<component name="Current Source Exponential" version="0.1.0" label="I">
 
     <displaytext>
-        <lang lang="C">Current Source</lang>
-        <lang lang="es">Fuente de Corriente</lang>
+        <lang lang="C">Exponential Current Source</lang>
+        <lang lang="es">Fuente de Corriente Exponencial</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">A current source device</lang>
+        <lang lang="C">An exponencial current source device</lang>
     </description>
 
     <symbol>
@@ -41,6 +41,13 @@
         <painting name="line" line="0,0,0,-20" pos="0,10" transform="1,0,0,1,0,0"/>
         <painting name="line" line="0,0,5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
         <painting name="line" line="0,0,-5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipseArc" ellipse="0,0,20,20" pos="30,-7" transform="1,0,0,1,0,0">
+            <properties startAngle="180" spanAngle="-90"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,20,20" pos="40,-17" transform="1,0,0,1,0,0">
+            <properties startAngle="180" spanAngle="90"/>
+        </painting>
     </symbol>
 
     <ports>
@@ -49,24 +56,34 @@
     </ports>
 
    <properties>
-         <property name="Type" default="DC" unit="" visible="false">
+         <property name="I1" default="0" unit="A" visible="false">
            <description>
-             <lang lang="C">Source type. Can be either DC or AC for a DC/transient analisis or an AC analisis respectively.</lang>
+             <lang lang="C">Initial Value</lang>
            </description>
          </property>
-         <property name="Idc" default="5m" unit="A" visible="false">
+         <property name="I2" default="5m" unit="A" visible="false">
            <description>
-             <lang lang="C">DC Value</lang>
+             <lang lang="C">Pulsed Value</lang>
            </description>
          </property>
-         <property name="Iac" default="1m" unit="A" visible="false">
+         <property name="Td1" default="0.0" unit="s" visible="false">
            <description>
-             <lang lang="C">AC Magnitude</lang>
+             <lang lang="C">Rise Delay Time</lang>
            </description>
          </property>
-         <property name="Phase" default="0" unit="º" visible="false">
+         <property name="Tau1" default="0.0" unit="s" visible="false">
            <description>
-             <lang lang="C">AC Phase</lang>
+             <lang lang="C">Rise Time Constant</lang>
+           </description>
+         </property>
+         <property name="Td2" default="0.0" unit="s" visible="false">
+           <description>
+             <lang lang="C">Fall Delay Time</lang>
+           </description>
+         </property>
+         <property name="Tau2" default="0.0" unit="s" visible="false">
+           <description>
+             <lang lang="C">Fall Time Constant</lang>
            </description>
          </property>
    </properties>

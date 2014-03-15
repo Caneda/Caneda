@@ -2,7 +2,7 @@
 <!DOCTYPE caneda>
 <!--
  ***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,15 +21,15 @@
  ***************************************************************************
 -->
 
-<component name="Current Source" version="0.1.0" label="I">
+<component name="Current Source Piece Wise Linear" version="0.1.0" label="I">
 
     <displaytext>
-        <lang lang="C">Current Source</lang>
-        <lang lang="es">Fuente de Corriente</lang>
+        <lang lang="C">Piece Wise Linear Current Source</lang>
+        <lang lang="es">Fuente de Corriente Lineal a Tramos</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">A current source device</lang>
+        <lang lang="C">A piece wise linear current source device</lang>
     </description>
 
     <symbol>
@@ -41,6 +41,12 @@
         <painting name="line" line="0,0,0,-20" pos="0,10" transform="1,0,0,1,0,0"/>
         <painting name="line" line="0,0,5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
         <painting name="line" line="0,0,-5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,3,-10" pos="30,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,7,-5" pos="33,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,10" pos="40,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,5" pos="40,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-10" pos="50,5" transform="1,0,0,1,0,0"/>
     </symbol>
 
     <ports>
@@ -49,24 +55,44 @@
     </ports>
 
    <properties>
-         <property name="Type" default="DC" unit="" visible="false">
+         <property name="T1" default="0" unit="s" visible="false">
            <description>
-             <lang lang="C">Source type. Can be either DC or AC for a DC/transient analisis or an AC analisis respectively.</lang>
+             <lang lang="C">Time Point</lang>
            </description>
          </property>
-         <property name="Idc" default="5m" unit="A" visible="false">
+         <property name="I1" default="0" unit="A" visible="false">
            <description>
-             <lang lang="C">DC Value</lang>
+             <lang lang="C">Point Value</lang>
            </description>
          </property>
-         <property name="Iac" default="1m" unit="A" visible="false">
+         <property name="T2" default="0" unit="s" visible="false">
            <description>
-             <lang lang="C">AC Magnitude</lang>
+             <lang lang="C">Time Point</lang>
            </description>
          </property>
-         <property name="Phase" default="0" unit="º" visible="false">
+         <property name="I2" default="0" unit="A" visible="false">
            <description>
-             <lang lang="C">AC Phase</lang>
+             <lang lang="C">Point Value</lang>
+           </description>
+         </property>
+         <property name="T3" default="0" unit="s" visible="false">
+           <description>
+             <lang lang="C">Time Point</lang>
+           </description>
+         </property>
+         <property name="I3" default="0" unit="A" visible="false">
+           <description>
+             <lang lang="C">Point Value</lang>
+           </description>
+         </property>
+         <property name="Ti" default="0" unit="s" visible="false">
+           <description>
+             <lang lang="C">Extra Time Points. Specify extra time points here, separated by spaces.</lang>
+           </description>
+         </property>
+         <property name="Ii" default="0" unit="A" visible="false">
+           <description>
+             <lang lang="C">Extra Point Values. Specify extra point values here, separated by spaces.</lang>
            </description>
          </property>
    </properties>
