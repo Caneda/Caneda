@@ -34,9 +34,9 @@ namespace Caneda
     {
         QStringList libraries;
         libraries << Caneda::libDirectory() + "components/active";
-        libraries << Caneda::libDirectory() + "components/misc";
         libraries << Caneda::libDirectory() + "components/passive";
         libraries << Caneda::libDirectory() + "components/semiconductor";
+        libraries << Caneda::libDirectory() + "components/sources";
         defaultSettings["libraries/schematic"] = QVariant(QStringList(libraries));
         defaultSettings["libraries/hdl"] = QVariant(QStringList(Caneda::libDirectory() + "hdl"));
 
