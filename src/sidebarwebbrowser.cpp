@@ -110,14 +110,8 @@ namespace Caneda
         // It is a file so we must open it in the help browser
         QString fileName = m_fileModel->fileInfo(sourceIndex).absoluteFilePath();
 
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-        WebDocument *webDoc = qobject_cast<WebDocument*>(doc);
-
-        if (webDoc) {
-            webDoc->setFileName(fileName);
-            webDoc->load();
-            //! \todo Update view with the new document
-        }
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->openFile(fileName);
     }
 
 } // namespace Caneda
