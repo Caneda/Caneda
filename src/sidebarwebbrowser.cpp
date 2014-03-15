@@ -22,19 +22,13 @@
 #include "clineedit.h"
 #include "documentviewmanager.h"
 #include "global.h"
-#include "idocument.h"
 #include "sidebartextbrowser.h"
 
 #include <QFileSystemModel>
-#include <QDebug>
-#include <QTextCodec>
 #include <QVBoxLayout>
 
 namespace Caneda
 {
-    /*************************************************************************
-     *                           SidebarWebBrowser                           *
-     *************************************************************************/
     //! \brief Constructor.
     SidebarWebBrowser::SidebarWebBrowser(QWidget *parent) : QWidget(parent)
     {

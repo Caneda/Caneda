@@ -20,7 +20,6 @@
 #ifndef SIDEBAR_WEB_BROWSER_H
 #define SIDEBAR_WEB_BROWSER_H
 
-#include <QSortFilterProxyModel>
 #include <QTreeView>
 
 // Forward declarations
