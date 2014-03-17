@@ -223,7 +223,11 @@ namespace Caneda
 
         writer->writeStartElement("properties");
 
+        // Save the properties position in the scene
         PropertyGroup *properties = scene->properties();
+        writer->writePointAttribute(properties->pos(), "pos");
+
+        // Save every individual property of the scene
         foreach(Property property, properties->propertyMap()) {
             property.saveProperty(writer);
         }
@@ -422,6 +426,11 @@ namespace Caneda
     {
         CGraphicsScene *scene = cGraphicsScene();
 
+        // Read and set the properties position in the scene
+        PropertyGroup *properties = scene->properties();
+        properties->setPos(reader->readPointAttribute("pos"));
+
+        // Read every individual property and add it to the scene
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -615,6 +624,7 @@ namespace Caneda
         writer->writeStartElement("properties");
 
         PropertyGroup *properties = scene->properties();
+        writer->writePointAttribute(properties->pos(), "pos");
         foreach(Property property, properties->propertyMap()) {
             property.saveProperty(writer);
         }
@@ -815,10 +825,21 @@ namespace Caneda
      */
     void FormatXmlSymbol::readProperties(Caneda::XmlReader *reader)
     {
+        CGraphicsScene *scene = cGraphicsScene();
+
+        // If we are opening the file for symbol edition, read and set the
+        // properties position in the scene
+        if(scene) {
+            PropertyGroup *properties = scene->properties();
+            properties->setPos(reader->readPointAttribute("pos"));
+        }
+
+        // Read every individual property
         while(!reader->atEnd()) {
             reader->readNext();
 
             if(reader->isEndElement()) {
+                Q_ASSERT(reader->name() == "properties");
                 break;
             }
 
@@ -826,9 +847,9 @@ namespace Caneda
                 Property prop = Property::loadProperty(reader);
 
                 // Check if we are opening the file for edition or to include it in a library
-                if(cGraphicsScene()) {
+                if(scene) {
                     // We are opening the file for symbol edition
-                    cGraphicsScene()->addProperty(prop);
+                    scene->addProperty(prop);
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
@@ -837,6 +858,7 @@ namespace Caneda
 
             }
         }
+
     }
 
 
@@ -950,7 +972,11 @@ namespace Caneda
 
         writer->writeStartElement("properties");
 
+        // Save the properties position in the scene
         PropertyGroup *properties = scene->properties();
+        writer->writePointAttribute(properties->pos(), "pos");
+
+        // Read every individual property and add it to the scene
         foreach(Property property, properties->propertyMap()) {
             property.saveProperty(writer);
         }
@@ -1038,6 +1064,11 @@ namespace Caneda
     {
         CGraphicsScene *scene = cGraphicsScene();
 
+        // Read and set the properties position in the scene
+        PropertyGroup *properties = scene->properties();
+        properties->setPos(reader->readPointAttribute("pos"));
+
+        // Read every individual property and add it to the scene
         while(!reader->atEnd()) {
             reader->readNext();
 
