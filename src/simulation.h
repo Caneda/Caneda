@@ -130,8 +130,6 @@ namespace Caneda
         bool simulationGroupEnabled() const { return m_simulationGroupEnabled; }
         void setSimulationGroupEnabled(const bool enable);
 
-        QString text() const { return m_text; }
-        void setText(const QString newText) { m_text = newText; }
         void updateSimulationDisplay();
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -158,7 +156,7 @@ namespace Caneda
         bool m_simulationGroupEnabled;
 
         //! String which holds the text to display on the scene
-        QString m_text;
+        QGraphicsSimpleTextItem *m_text;
     };
 
 } // namespace Caneda

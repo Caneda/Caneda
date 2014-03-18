@@ -124,6 +124,7 @@ namespace Caneda
 
         m_simulationMap = simMap;
         m_simulationGroupEnabled = true;
+        m_text = new QGraphicsSimpleTextItem("", this);
     }
 
     //! \brief Destructor.
@@ -192,7 +193,7 @@ namespace Caneda
      */
     void SimulationGroup::updateSimulationDisplay()
     {
-        QString newValue;  // New value to set
+        QString newValue = "Simulation Profile";  // New value to set
 
         // Iterate through all simulations to add its values
         foreach(const Simulation simulation, m_simulationMap) {
@@ -214,10 +215,17 @@ namespace Caneda
         }
 
         // Set new simulations values
-        setText(newValue);
+        m_text->setText(newValue);
 
-        // Make item visible
-        show();
+        // Set the bounding rect to contain the simulation text. Use a
+        // rectangular shape (path) in setShapeAndBoundRect to allow easy
+        // selection of the item.
+        QRectF _boundRect = m_text->boundingRect();
+        QPainterPath _path = QPainterPath();
+        _path.addRect(_boundRect);
+
+        setShapeAndBoundRect(_path, _boundRect);
+        update();
     }
 
     /*!
@@ -245,18 +253,21 @@ namespace Caneda
         if(isSelected()) {
             painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
+
+            m_text->setBrush(QBrush(settings->currentValue("gui/selectionColor").value<QColor>()));
         }
         else if(simulationGroupEnabled()) {
             painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
+
+            m_text->setBrush(QBrush(settings->currentValue("gui/lineColor").value<QColor>()));
         }
         else {
             painter->setPen(QPen(settings->currentValue("gui/foregroundColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
-        }
 
-        // Paint the simulation text
-        painter->drawText(boundingRect(), text());
+            m_text->setBrush(QBrush(settings->currentValue("gui/foregroundColor").value<QColor>()));
+        }
 
         // Restore pen
         painter->setPen(savedPen);
