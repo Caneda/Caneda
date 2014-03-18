@@ -115,19 +115,21 @@ namespace Caneda
      * \param scene The graphics scene to which this simulation should belong.
      * \param simMap The SimulationMap to use on initialization.
      */
-    SimulationGroup::SimulationGroup(CGraphicsScene *scene, const SimulationMap &simMap)
+    SimulationGroup::SimulationGroup(CGraphicsScene *scene, const SimulationMap &simMap) : CGraphicsItem(0, scene)
     {
-        m_simulationMap = simMap;
-        m_simulationGroupEnabled = true;
-
-        if(scene) {
-            scene->addItem(this);
-        }
-
         // Set items flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
+
+        m_simulationMap = simMap;
+        m_simulationGroupEnabled = true;
+    }
+
+    //! \brief Destructor.
+    SimulationGroup::~SimulationGroup()
+    {
+        qDeleteAll(m_ports);
     }
 
     //! \brief Adds a new simulation to the SimulationMap.
@@ -260,23 +262,44 @@ namespace Caneda
         painter->setPen(savedPen);
     }
 
-    //! \brief Helper method to write all simulations in \a m_simulationMap to xml.
-    void SimulationGroup::saveSimulationGroup(Caneda::XmlWriter *writer)
+    /*!
+     * \brief Convenience static method to load a SimulationGroup saved as xml.
+     *
+     * This method loads a SimulationGroup saved as xml. Once the
+     * SimulationGroup is created, its data is filled using the loadData()
+     * method.
+     *
+     * \param reader The xmlreader used to read xml data.
+     * \param scene CGraphicsScene to which SimulationGroup should be parented to.
+     * \return Returns new SimulationGroup pointer on success and null on failure.
+     *
+     * \sa loadData()
+     */
+    SimulationGroup* SimulationGroup::loadSimulationGroup(Caneda::XmlReader *reader, CGraphicsScene *scene)
     {
-        writer->writeStartElement("simulations");
+        SimulationGroup *retVal = new SimulationGroup(scene);
+        retVal->loadData(reader);
+
+        return retVal;
+    }
+
+    //! \brief Helper method to write all simulations in \a m_simulationMap to xml.
+    void SimulationGroup::saveData(Caneda::XmlWriter *writer) const
+    {
+        writer->writeStartElement("simulationsGroup");
         writer->writePointAttribute(pos(), "pos");
 
         foreach(Simulation p, m_simulationMap) {
             p.saveSimulation(writer);
         }
 
-        writer->writeEndElement(); // </simulations>
+        writer->writeEndElement(); // </simulationsGroup>
     }
 
     //! \brief Helper method to read xml saved simulations into \a m_simulationMap.
-    void SimulationGroup::loadSimulationGroup(Caneda::XmlReader *reader)
+    void SimulationGroup::loadData(Caneda::XmlReader *reader)
     {
-        Q_ASSERT(reader->isStartElement() && reader->name() == "simulations");
+        Q_ASSERT(reader->isStartElement() && reader->name() == "simulationsGroup");
         setPos(reader->readPointAttribute("pos"));
 
         while(!reader->atEnd()) {
@@ -305,34 +328,31 @@ namespace Caneda
         updateSimulationDisplay();
     }
 
+    //! \brief Returns a copy of a simulationGroup item parented to scene \a scene.
+    SimulationGroup* SimulationGroup::copy(CGraphicsScene *scene) const
+    {
+        SimulationGroup *simulationGroup = new SimulationGroup(scene);
+        simulationGroup->setSimulationMap(simulationMap());
+        simulationGroup->setSimulationGroupEnabled(m_simulationGroupEnabled);
+        SimulationGroup::copyDataTo(simulationGroup);
+        return simulationGroup;
+    }
+
+    void SimulationGroup::copyDataTo(SimulationGroup *simulationGroup) const
+    {
+        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(simulationGroup));
+        simulationGroup->updateSimulationDisplay();
+        simulationGroup->update();
+    }
+
     //! \copydoc CGraphicsItem::launchPropertyDialog()
-    int SimulationGroup::launchSimulationDialog()
+    int SimulationGroup::launchPropertyDialog(Caneda::UndoOption opt)
     {
         SimulationDialog *dia = new SimulationDialog();
         int status = dia->exec();
         delete dia;
 
         return status;
-    }
-
-    //! \brief On mouse click deselect selected items other than this.
-    void SimulationGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
-    {
-        if(scene()) {
-            foreach(QGraphicsItem *item, scene()->selectedItems()) {
-                if(item != this) {
-                    item->setSelected(false);
-                }
-            }
-        }
-
-        QGraphicsSimpleTextItem::mousePressEvent(event);
-    }
-
-    //! \brief Launches simulation dialog on double click.
-    void SimulationGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
-    {
-        launchSimulationDialog();
     }
 
 } // namespace Caneda

@@ -89,8 +89,10 @@ namespace Caneda
             WireType = PATTERN(CGraphicsItemType, 2),
             //!Recognizes classes derived from PortSymbol
             PortSymbolType = PATTERN(CGraphicsItemType, 3),
+            //!Recognizes classes derived from PortSymbol
+            SimulationType = PATTERN(CGraphicsItemType, 4),
             //!Recognizes classes derived from Painting
-            PaintingType = PATTERN(CGraphicsItemType, 4)
+            PaintingType = PATTERN(CGraphicsItemType, 5)
         };
 
         /*!

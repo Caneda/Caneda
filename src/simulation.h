@@ -20,9 +20,9 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
-#include <QGraphicsSimpleTextItem>
+#include "cgraphicsitem.h"
+
 #include <QMap>
-#include <QObject>
 #include <QSharedData>
 #include <QString>
 
@@ -106,12 +106,16 @@ namespace Caneda
      *
      * \sa SimulationData, Simulation
      */
-    class SimulationGroup : public QObject, public QGraphicsSimpleTextItem
+    class SimulationGroup : public CGraphicsItem
     {
-        Q_OBJECT
-
     public:
         SimulationGroup(CGraphicsScene* scene = 0, const SimulationMap& simMap = SimulationMap());
+        ~SimulationGroup();
+
+        //! \copydoc CGraphicsItem::Type
+        enum { Type = CGraphicsItem::SimulationType };
+        //! \copydoc CGraphicsItem::type()
+        int type() const { return Type; }
 
         void addSimulation(const Simulation& sim);
         //! Returns selected simulation from simulation map.
@@ -126,19 +130,21 @@ namespace Caneda
         bool simulationGroupEnabled() const { return m_simulationGroupEnabled; }
         void setSimulationGroupEnabled(const bool enable);
 
+        QString text() const { return m_text; }
+        void setText(const QString newText) { m_text = newText; }
         void updateSimulationDisplay();
+
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0 );
 
-        void saveSimulationGroup(Caneda::XmlWriter *writer);
-        void loadSimulationGroup(Caneda::XmlReader *reader);
+        static SimulationGroup* loadSimulationGroup(Caneda::XmlReader *reader, CGraphicsScene *scene);
+        void saveData(Caneda::XmlWriter *writer) const;
+        void loadData(Caneda::XmlReader *reader);
 
-    public Q_SLOTS:
-        int launchSimulationDialog();
+        SimulationGroup* copy(CGraphicsScene *scene = 0) const;
+        void copyDataTo(SimulationGroup *simulationGroup) const;
 
-    protected:
-        void mousePressEvent(QGraphicsSceneMouseEvent *event);
-        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+        int launchPropertyDialog(Caneda::UndoOption opt);
 
     private:
         //! QMap holding actual simulations.
@@ -150,6 +156,9 @@ namespace Caneda
          * \sa simulationGroupEnabled(), setSimulationGroupEnabled()
          */
         bool m_simulationGroupEnabled;
+
+        //! String which holds the text to display on the scene
+        QString m_text;
     };
 
 } // namespace Caneda

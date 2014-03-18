@@ -29,6 +29,7 @@
 #include "portsymbol.h"
 #include "property.h"
 #include "settings.h"
+#include "simulation.h"
 #include "xmlutilities.h"
 
 #include "dialogs/propertydialog.h"
@@ -947,6 +948,9 @@ namespace Caneda
                 }
                 else if(itemName == QObject::tr("Port Symbol")) {
                     qItem = new PortSymbol(this);
+                }
+                else if(itemName == QObject::tr("Simulation Profile")) {
+                    qItem = new SimulationGroup(this);
                 }
             }
 
