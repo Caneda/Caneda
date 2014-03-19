@@ -30,12 +30,6 @@ font-family="DejaVu Sans" font-size="9" font-weight="400" font-style="normal"
 >
 </g>
 
-<g fill="none" stroke="#800000" stroke-opacity="1" stroke-width="1" stroke-linecap="square" stroke-linejoin="bevel" transform="matrix(0.979167,0,0,0.973684,10.7708,2.92105)"
-font-family="DejaVu Sans" font-size="9" font-weight="400" font-style="normal" 
->
-<path vector-effect="non-scaling-stroke" fill-rule="evenodd" d="M3,0 C3,1.65685 1.65685,3 0,3 C-1.65685,3 -3,1.65685 -3,0 C-3,-1.65685 -1.65685,-3 0,-3 C1.65685,-3 3,-1.65685 3,0 "/>
-</g>
-
 <g fill="none" stroke="#000000" stroke-opacity="1" stroke-width="1" stroke-linecap="square" stroke-linejoin="bevel" transform="matrix(0.979167,0,0,0.973684,10.7708,2.92105)"
 font-family="DejaVu Sans" font-size="9" font-weight="400" font-style="normal" 
 >
