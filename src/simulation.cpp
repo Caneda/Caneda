@@ -193,6 +193,17 @@ namespace Caneda
      */
     void SimulationGroup::updateSimulationDisplay()
     {
+        // Define the simulation symbol
+        m_symbol = QPainterPath();
+        m_symbol.addRoundRect(0, 0, 40, 40, 25);
+        m_symbol.addRoundRect(5, 5, 30, 20, 25);
+        m_symbol.moveTo(10,15);
+        m_symbol.lineTo(30,15);
+        m_symbol.moveTo(10,15);
+        m_symbol.arcTo(10,10,10,10,180,-180);
+        m_symbol.arcTo(20,10,10,10,180,180);
+
+        // Define the simulation text
         QString newValue = "Simulation Profile";  // New value to set
 
         // Iterate through all simulations to add its values
@@ -217,10 +228,14 @@ namespace Caneda
         // Set new simulations values
         m_text->setText(newValue);
 
-        // Set the bounding rect to contain the simulation text. Use a
-        // rectangular shape (path) in setShapeAndBoundRect to allow easy
-        // selection of the item.
-        QRectF _boundRect = m_text->boundingRect();
+        // Set the text position
+        QPointF labelPos = m_symbol.boundingRect().topRight() + QPointF(5,0);
+        m_text->setPos(labelPos);
+
+        // Set the bounding rect to contain both the m_symbol shape and the
+        // simulation text. Use a rectangular shape (path) in
+        // setShapeAndBoundRect to allow easy selection of the item.
+        QRectF _boundRect = m_symbol.boundingRect() | m_text->boundingRect().translated(labelPos);
         QPainterPath _path = QPainterPath();
         _path.addRect(_boundRect);
 
@@ -268,6 +283,9 @@ namespace Caneda
 
             m_text->setBrush(QBrush(settings->currentValue("gui/foregroundColor").value<QColor>()));
         }
+
+        // Draw the simulation symbol
+        painter->drawPath(m_symbol);
 
         // Restore pen
         painter->setPen(savedPen);

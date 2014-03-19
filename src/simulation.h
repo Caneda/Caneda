@@ -157,6 +157,8 @@ namespace Caneda
 
         //! String which holds the text to display on the scene
         QGraphicsSimpleTextItem *m_text;
+        //! QPainterPath which holds the symbol to display on the scene
+        QPainterPath m_symbol;
     };
 
 } // namespace Caneda
