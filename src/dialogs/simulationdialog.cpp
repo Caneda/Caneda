@@ -19,6 +19,8 @@
 
 #include "simulationdialog.h"
 
+#include "global.h"
+
 namespace Caneda
 {
     /*!
@@ -32,7 +34,16 @@ namespace Caneda
         // Initialize designer dialog
         ui.setupUi(this);
 
-        ui.editName->setText(tr("Empty simulation profile"));
+        // Set button properties
+        ui.m_addButton->setIcon(Caneda::icon("list-add"));
+        ui.m_addButton->setStatusTip(tr("Add a new simulation to the list"));
+        ui.m_addButton->setWhatsThis(
+                    tr("Add New Simulation\n\nAdds a new simulation to the list"));
+
+        ui.m_removeButton->setIcon(Caneda::icon("list-remove"));
+        ui.m_removeButton->setStatusTip(tr("Remove selected simulation from the list"));
+        ui.m_removeButton->setWhatsThis(
+                    tr("Remove Simulation\n\nRemoves selected simulation from the list"));
     }
 
     /*!
