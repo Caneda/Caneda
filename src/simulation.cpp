@@ -110,19 +110,19 @@ namespace Caneda
      *                          SimulationGroup                              *
      *************************************************************************/
     /*!
-     * \brief Constructs a SimulationGroup from a given scene and SimulationMap.
+     * \brief Constructs a SimulationGroup from a given scene and SimulationList.
      *
      * \param scene The graphics scene to which this simulation should belong.
-     * \param simMap The SimulationMap to use on initialization.
+     * \param simList The SimulationList to use on initialization.
      */
-    SimulationGroup::SimulationGroup(CGraphicsScene *scene, const SimulationMap &simMap) : CGraphicsItem(0, scene)
+    SimulationGroup::SimulationGroup(CGraphicsScene *scene, const SimulationList &simList) : CGraphicsItem(0, scene)
     {
         // Set items flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
-        m_simulationMap = simMap;
+        m_simulationList = simList;
         m_simulationGroupEnabled = true;
         m_text = new QGraphicsSimpleTextItem("", this);
     }
@@ -133,27 +133,27 @@ namespace Caneda
         qDeleteAll(m_ports);
     }
 
-    //! \brief Adds a new simulation to the SimulationMap.
+    //! \brief Adds a new simulation to the SimulationList.
     void SimulationGroup::addSimulation(const Simulation &sim)
     {
-        m_simulationMap.insert(sim.type(), sim);
+        m_simulationList.append(sim);
         updateSimulationDisplay();  // This is necessary to update the simulations display on a scene
     }
 
     /*!
-     * \brief Set all the simulations values through a SimulationMap.
+     * \brief Set all the simulations values through a SimulationList.
      *
-     * This method sets the simulations values by updating the simulationMap
-     * to \a simMap. After setting the simulationMap, this method also takes
+     * This method sets the simulations values by updating m_simulationList
+     * to \a simList. After setting the simulation list, this method also takes
      * care of updating the simulations display on the scene.
      *
-     * \param simMap The new simulation map to be set.
+     * \param simList The new simulation list to be set.
      *
-     * \sa Simulation, SimulationMap, updateSimulationDisplay()
+     * \sa Simulation, SimulationList, updateSimulationDisplay()
      */
-    void SimulationGroup::setSimulationMap(const SimulationMap& simMap)
+    void SimulationGroup::setSimulationList(const SimulationList& simList)
     {
-        m_simulationMap = simMap;
+        m_simulationList = simList;
         updateSimulationDisplay();  // This is necessary to update the simulations display on a scene
     }
 
@@ -198,7 +198,7 @@ namespace Caneda
         QString newValue = "Simulation Profile";  // New value to set
 
         // Iterate through all simulations to add its values
-        foreach(const Simulation simulation, m_simulationMap) {
+        foreach(const Simulation simulation, m_simulationList) {
 
             // Current simulation text
             QString simulationText = "";
@@ -303,20 +303,20 @@ namespace Caneda
         return retVal;
     }
 
-    //! \brief Helper method to write all simulations in \a m_simulationMap to xml.
+    //! \brief Helper method to write all simulations in \a m_simulationList to xml.
     void SimulationGroup::saveData(Caneda::XmlWriter *writer) const
     {
         writer->writeStartElement("simulationsGroup");
         writer->writePointAttribute(pos(), "pos");
 
-        foreach(Simulation p, m_simulationMap) {
+        foreach(Simulation p, m_simulationList) {
             p.saveSimulation(writer);
         }
 
         writer->writeEndElement(); // </simulationsGroup>
     }
 
-    //! \brief Helper method to read xml saved simulations into \a m_simulationMap.
+    //! \brief Helper method to read xml saved simulations into \a m_simulationList.
     void SimulationGroup::loadData(Caneda::XmlReader *reader)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "simulationsGroup");
@@ -352,7 +352,7 @@ namespace Caneda
     SimulationGroup* SimulationGroup::copy(CGraphicsScene *scene) const
     {
         SimulationGroup *simulationGroup = new SimulationGroup(scene);
-        simulationGroup->setSimulationMap(simulationMap());
+        simulationGroup->setSimulationList(simulationList());
         simulationGroup->setSimulationGroupEnabled(m_simulationGroupEnabled);
         SimulationGroup::copyDataTo(simulationGroup);
         return simulationGroup;

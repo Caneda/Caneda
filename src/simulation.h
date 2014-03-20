@@ -22,9 +22,7 @@
 
 #include "cgraphicsitem.h"
 
-#include <QMap>
 #include <QSharedData>
-#include <QString>
 
 namespace Caneda
 {
@@ -91,14 +89,14 @@ namespace Caneda
     };
 
 
-    //! \def SimulationMap This is a typedef to map simulations with strings.
-    typedef QMap<QString, Simulation> SimulationMap;
+    //! \def SimulationList This is a typedef to list simulations.
+    typedef QList<Simulation> SimulationList;
 
     /*!
      * \brief Class used to group simulations all together and render
      * them on a scene.
      *
-     * Gouping several simulations into a QMap (m_simulationMap) provides
+     * Gouping several simulations into a QList (m_simulationList) provides
      * a convenient way of handling them all together. In this way, for
      * example, a simulation group (or profile) can be selected and moved
      * all at once.
@@ -112,7 +110,7 @@ namespace Caneda
     class SimulationGroup : public CGraphicsItem
     {
     public:
-        SimulationGroup(CGraphicsScene* scene = 0, const SimulationMap& simMap = SimulationMap());
+        SimulationGroup(CGraphicsScene* scene = 0, const SimulationList& simList = SimulationList());
         ~SimulationGroup();
 
         //! \copydoc CGraphicsItem::Type
@@ -122,9 +120,9 @@ namespace Caneda
 
         void addSimulation(const Simulation& sim);
 
-        //! Returns the simulation map (actually a copy of simulation map).
-        SimulationMap simulationMap() const { return m_simulationMap; }
-        void setSimulationMap(const SimulationMap& simMap);
+        //! Returns the simulation list (actually a copy of m_simulationList).
+        SimulationList simulationList() const { return m_simulationList; }
+        void setSimulationList(const SimulationList& simList);
 
         //! Returns if the simulation group is enabled for the next simulation.
         bool simulationGroupEnabled() const { return m_simulationGroupEnabled; }
@@ -145,8 +143,8 @@ namespace Caneda
         int launchPropertyDialog(Caneda::UndoOption opt);
 
     private:
-        //! QMap holding actual simulations.
-        SimulationMap m_simulationMap;
+        //! QList holding actual simulations.
+        SimulationList m_simulationList;
 
         /*!
          * \brief Holds simulationGroup enable status.
