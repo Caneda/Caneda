@@ -45,8 +45,8 @@ namespace Caneda
         SimulationData();
         SimulationData(const SimulationData& p);
 
-        QString name;
-        QString value;
+        QString type;
+        QString properties;
     };
 
     /*!
@@ -65,19 +65,22 @@ namespace Caneda
     class Simulation
     {
     public:
-        Simulation(const QString &_name = QString(),
-                   const QString &_defaultValue = QString());
+        Simulation(const QString &_type = QString(),
+                   const QString &_properties = QString());
         Simulation(QSharedDataPointer<SimulationData> data);
 
-        //! Returns the simulation name.
-        QString name() const { return d->name; }
-        //! Sets the value of simulation to \a newValue.
-        void setName(const QString &newName) { d->name = newName; }
+        //! Returns the simulation type. Can be trans, ac, op, etc.
+        QString type() const { return d->type; }
+        //! Sets the type of simulation to \a newType. Can be trans, ac, op, etc.
+        void setType(const QString &newType) { d->type = newType; }
 
-        //! Returns the value of simulation.
-        QString value() const { return d->value; }
-        //! Sets the value of simulation to \a newValue.
-        void setValue(const QString &newValue) { d->value = newValue; }
+        //! Returns the properties of the simulation.
+        QString properties() const { return d->properties; }
+        //! Sets the properties of the simulation to \a newValue.
+        void setProperties(const QString &newValue) { d->properties = newValue; }
+
+        //! Returns the (spice) model of the simulation.
+        QString model() const { return type() + " " + properties(); }
 
         void saveSimulation(Caneda::XmlWriter *writer);
         static Simulation loadSimulation(Caneda::XmlReader *reader);
@@ -118,9 +121,6 @@ namespace Caneda
         int type() const { return Type; }
 
         void addSimulation(const Simulation& sim);
-        //! Returns selected simulation from simulation map.
-        QString simulationValue(const QString& key) const { return m_simulationMap[key].value(); }
-        void setSimulationValue(const QString& key, const QString& value);
 
         //! Returns the simulation map (actually a copy of simulation map).
         SimulationMap simulationMap() const { return m_simulationMap; }

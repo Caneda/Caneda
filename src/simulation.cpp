@@ -38,15 +38,15 @@ namespace Caneda
     //! \brief Constructor.
     SimulationData::SimulationData()
     {
-        name = QString();
-        value = QString();
+        type = QString();
+        properties = QString();
     }
 
     //! \brief Copy constructor
     SimulationData::SimulationData(const SimulationData& p) : QSharedData(p)
     {
-        name = p.name;
-        value = p.value;
+        type = p.type;
+        properties = p.properties;
     }
 
 
@@ -59,12 +59,12 @@ namespace Caneda
      * \param _name Name of simulation object.
      * \param _value The default value of simulation.
      */
-    Simulation::Simulation(const QString& _name,
-                       const QString& _value)
+    Simulation::Simulation(const QString& _type,
+                       const QString& _properties)
     {
         d = new SimulationData;
-        d->name = _name;
-        d->value = _value;
+        d->type = _type;
+        d->properties = _properties;
     }
 
     //! \brief Construct simulation from shared data.
@@ -81,8 +81,8 @@ namespace Caneda
     {
         writer->writeStartElement("simulation");
 
-        writer->writeAttribute("name", name());
-        writer->writeAttribute("value", value());
+        writer->writeAttribute("type", type());
+        writer->writeAttribute("properties", properties());
 
         writer->writeEndElement(); // </simulation>
     }
@@ -99,8 +99,8 @@ namespace Caneda
         QSharedDataPointer<SimulationData> data(new SimulationData);
         QXmlStreamAttributes attributes = reader->attributes();
 
-        data->name = attributes.value("name").toString();
-        data->value = attributes.value("value").toString();
+        data->type = attributes.value("type").toString();
+        data->properties = attributes.value("properties").toString();
 
         return Simulation(data);
     }
@@ -136,17 +136,8 @@ namespace Caneda
     //! \brief Adds a new simulation to the SimulationMap.
     void SimulationGroup::addSimulation(const Simulation &sim)
     {
-        m_simulationMap.insert(sim.name(), sim);
+        m_simulationMap.insert(sim.type(), sim);
         updateSimulationDisplay();  // This is necessary to update the simulations display on a scene
-    }
-
-    //! \brief Sets simulation \a key to \a value in the SimulationMap.
-    void SimulationGroup::setSimulationValue(const QString& key, const QString& value)
-    {
-        if(m_simulationMap.contains(key)) {
-            m_simulationMap[key].setValue(value);
-            updateSimulationDisplay();  // This is necessary to update the simulations display on a scene
-        }
     }
 
     /*!
@@ -213,10 +204,10 @@ namespace Caneda
             QString simulationText = "";
 
             // Add simulation name
-            simulationText = simulation.name() + " = ";
+            simulationText = simulation.type() + " = ";
 
             // Add simulation value
-            simulationText.append(simulation.value());
+            simulationText.append(simulation.model());
 
             // Add the simulation to the group
             if(!newValue.isEmpty()) {
