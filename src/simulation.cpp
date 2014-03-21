@@ -368,7 +368,7 @@ namespace Caneda
     //! \copydoc CGraphicsItem::launchPropertyDialog()
     int SimulationGroup::launchPropertyDialog(Caneda::UndoOption opt)
     {
-        SimulationDialog *dia = new SimulationDialog();
+        SimulationDialog *dia = new SimulationDialog(this);
         int status = dia->exec();
         delete dia;
 

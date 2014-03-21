@@ -23,13 +23,119 @@
 
 namespace Caneda
 {
+    //*************************************************************
+    //******************** SimulationModel ************************
+    //*************************************************************
+    /*!
+     * \brief Constructor.
+     *
+     * \param simGroup SimulationGroup wich contains the simulation profile to
+     * be modified.
+     * \param parent Parent of this object.
+     *
+     * \sa SimulationGroup
+     */
+    SimulationModel::SimulationModel(SimulationGroup *simGroup, QObject *parent) :
+        QAbstractListModel(parent),
+        m_simulationList(simGroup->simulationList())
+    {
+    }
+
+    /*!
+     * \brief Returns the data stored for the item referred by index.
+     *
+     * This class returns the item data corresponding to index position.
+     *
+     * \param index Item to return data from
+     * \param role Role of the item (editable, checkable, etc).
+     * \return data stored for given item
+     */
+    QVariant SimulationModel::data(const QModelIndex& index, int role) const
+    {
+        if(!index.isValid() || index.row() >= rowCount()) {
+            return QVariant();
+        }
+
+        // Return the simulation type
+        return m_simulationList.at(index.row()).type();
+    }
+
+    /*!
+     * \brief Returns header data (text) for the given column
+     *
+     * This method defines column header text to be displayed on the
+     * associated list view.
+     */
+    QVariant SimulationModel::headerData(int section, Qt::Orientation o, int role) const
+    {
+        if(role != Qt::DisplayRole) {
+            return QVariant();
+        }
+
+        if(o == Qt::Vertical) {
+            return QAbstractListModel::headerData(section, o, role);
+        }
+        else {
+            switch(section) {
+                case 0: return tr("Type");
+            }
+        }
+        return QVariant();
+    }
+
+    /*!
+     * \brief Inserts a new row (Simulation) with a default text.
+     *
+     * \param position Position to insert new simulation.
+     * \param rows Number of rows to insert.
+     * \param index Unused.
+     * \return True on success, false otherwise.
+     */
+    bool SimulationModel::insertRows(int position, int rows, const QModelIndex &index)
+    {
+        // Insert new simulation
+        beginInsertRows(QModelIndex(), position, position+rows-1);
+
+        for(int row=0; row < rows; row++) {
+            Simulation newSim("transient","t1=5 t2=10 t3=15");
+            m_simulationList.append(newSim);
+        }
+
+        endInsertRows();
+        return true;
+    }
+
+    /*!
+     * \brief Deletes a row (Simulation) from the SimulationList.
+     *
+     * \param position Position from where to delete rows.
+     * \param rows Number of rows to delete.
+     * \param index Unused.
+     * \return True on success, false otherwise.
+     */
+    bool SimulationModel::removeRows(int position, int rows, const QModelIndex &index)
+    {
+        beginRemoveRows(QModelIndex(), position, position+rows-1);
+
+        for (int row=0; row < rows; ++row) {
+            // Remove simulation
+            m_simulationList.removeAt(position);
+        }
+
+        endRemoveRows();
+        return true;
+    }
+
+    //*************************************************************
+    //******************** SimulationDialog ***********************
+    //*************************************************************
     /*!
      * \brief Constructor.
      *
      * \param parent Parent of this object.
      */
-    SimulationDialog::SimulationDialog(QWidget *parent) :
-        QDialog(parent)
+    SimulationDialog::SimulationDialog(SimulationGroup *simGroup, QWidget *parent) :
+        QDialog(parent), m_simulationGroup(simGroup)
     {
         // Initialize designer dialog
         ui.setupUi(this);
@@ -44,6 +150,17 @@ namespace Caneda
         ui.m_removeButton->setStatusTip(tr("Remove selected simulation from the list"));
         ui.m_removeButton->setWhatsThis(
                     tr("Remove Simulation\n\nRemoves selected simulation from the list"));
+
+        // Create new list model
+        m_model = new SimulationModel(m_simulationGroup, this);
+
+        // Apply table properties and set proxy model
+        ui.listViewSimulations->setModel(m_model);
+        ui.listViewSimulations->setSelectionBehavior(QAbstractItemView::SelectRows);
+        ui.listViewSimulations->setSelectionMode(QAbstractItemView::SingleSelection);
+
+        connect(ui.m_addButton, SIGNAL(clicked()), SLOT(addSimulation()));
+        connect(ui.m_removeButton, SIGNAL(clicked()), SLOT(removeSimulation()));
     }
 
     /*!
@@ -54,6 +171,18 @@ namespace Caneda
     void SimulationDialog::accept()
     {
         QDialog::accept();
+    }
+
+    //! \brief Add a new simulation to the model.
+    void SimulationDialog::addSimulation()
+    {
+        m_model->insertRows(m_model->rowCount(), 1);
+    }
+
+    //! \brief Remove a simulation from the model.
+    void SimulationDialog::removeSimulation()
+    {
+
     }
 
 } // namespace Caneda

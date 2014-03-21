@@ -22,8 +22,33 @@
 
 #include "ui_simulationdialog.h"
 
+#include "simulation.h"
+
+#include <QAbstractListModel>
+
 namespace Caneda
 {
+    class SimulationModel : public QAbstractListModel
+    {
+        Q_OBJECT
+
+    public:
+        SimulationModel(SimulationGroup *simGroup, QObject *parent = 0);
+
+        int rowCount(const QModelIndex& = QModelIndex()) const { return m_simulationList.size(); }
+
+        QVariant data(const QModelIndex&, int role) const;
+        QVariant headerData(int section, Qt::Orientation o, int role) const;
+
+        bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex());
+        bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex());
+
+    private:
+        friend class SimulationDialog;
+
+        SimulationList m_simulationList;
+    };
+
     /*!
      * \brief Dialog to modify Simulation profiles
      *
@@ -37,12 +62,19 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SimulationDialog(QWidget *parent = 0);
+        SimulationDialog(SimulationGroup *simGroup, QWidget *parent = 0);
 
     public Q_SLOTS:
         void accept();
 
+    private Q_SLOTS:
+        void addSimulation();
+        void removeSimulation();
+
     private:
+        SimulationModel *m_model;
+        SimulationGroup *m_simulationGroup;
+
         Ui::SimulationDialog ui;
     };
 
