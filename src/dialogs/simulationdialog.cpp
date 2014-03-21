@@ -161,7 +161,7 @@ namespace Caneda
     //! \brief Remove a simulation from the model.
     void SimulationDialog::removeSimulation()
     {
-
+        m_model->removeRows(ui.listViewSimulations->currentIndex().row(), 1);
     }
 
 } // namespace Caneda
