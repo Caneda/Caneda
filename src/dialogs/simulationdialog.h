@@ -36,9 +36,7 @@ namespace Caneda
         SimulationModel(SimulationGroup *simGroup, QObject *parent = 0);
 
         int rowCount(const QModelIndex& = QModelIndex()) const { return m_simulationList.size(); }
-
-        QVariant data(const QModelIndex&, int role) const;
-        QVariant headerData(int section, Qt::Orientation o, int role) const;
+        QVariant data(const QModelIndex&, int role = Qt::DisplayRole) const;
 
         bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex());
         bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex());

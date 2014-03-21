@@ -57,29 +57,10 @@ namespace Caneda
         }
 
         // Return the simulation type
-        return m_simulationList.at(index.row()).type();
-    }
-
-    /*!
-     * \brief Returns header data (text) for the given column
-     *
-     * This method defines column header text to be displayed on the
-     * associated list view.
-     */
-    QVariant SimulationModel::headerData(int section, Qt::Orientation o, int role) const
-    {
-        if(role != Qt::DisplayRole) {
-            return QVariant();
+        if(role == Qt::DisplayRole) {
+            return m_simulationList.at(index.row()).type();
         }
 
-        if(o == Qt::Vertical) {
-            return QAbstractListModel::headerData(section, o, role);
-        }
-        else {
-            switch(section) {
-                case 0: return tr("Type");
-            }
-        }
         return QVariant();
     }
 
@@ -156,8 +137,6 @@ namespace Caneda
 
         // Apply table properties and set proxy model
         ui.listViewSimulations->setModel(m_model);
-        ui.listViewSimulations->setSelectionBehavior(QAbstractItemView::SelectRows);
-        ui.listViewSimulations->setSelectionMode(QAbstractItemView::SingleSelection);
 
         connect(ui.m_addButton, SIGNAL(clicked()), SLOT(addSimulation()));
         connect(ui.m_removeButton, SIGNAL(clicked()), SLOT(removeSimulation()));
