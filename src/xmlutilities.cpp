@@ -112,14 +112,11 @@ namespace Caneda
         Q_ASSERT(isStartElement());
         QString pointStr = attributes().value(tag).toString();
         int commaPos = pointStr.indexOf(',');
-        Q_ASSERT(commaPos != -1);
 
         QPointF point;
         bool ok;
         point.setX(pointStr.left(commaPos).toDouble(&ok));
-        Q_ASSERT(ok);
         point.setY(pointStr.mid(commaPos+1).toDouble(&ok));
-        Q_ASSERT(ok);
 
         return point;
     }
