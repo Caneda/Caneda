@@ -49,6 +49,9 @@ namespace Caneda
         void print(QPrinter *printer, bool fitInView);
         void exportImage(QPaintDevice &device);
 
+    public Q_SLOTS:
+        virtual void legendClicked(QwtPlotItem *plotItem);
+
     private:
         CSimulationScene *m_csimulationScene;
 

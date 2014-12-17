@@ -43,6 +43,8 @@ namespace Caneda
         m_legend = new QwtLegend();
 
         loadUserSettings();
+
+        connect(this, SIGNAL(legendClicked(QwtPlotItem *)), this, SLOT(legendClicked(QwtPlotItem *)));
     }
 
     void CSimulationView::zoomIn()
@@ -63,6 +65,21 @@ namespace Caneda
     void CSimulationView::zoomOriginal()
     {
         //! \todo Implement this
+    }
+
+    //! \brief Shows or hides selected plot, upon clicking the respective legend.
+    void CSimulationView:: legendClicked(QwtPlotItem *plotItem)
+    {
+        // Perform show/hide action
+        if(plotItem->isVisible()){
+            plotItem->hide();
+        }
+        else{
+            plotItem->show();
+        }
+
+        // Refresh the plot
+        replot();
     }
 
     //! \brief Displays all items available in the scene, in the plot widget.
