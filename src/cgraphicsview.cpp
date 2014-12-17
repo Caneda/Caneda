@@ -61,7 +61,6 @@ namespace Caneda
     CGraphicsScene* CGraphicsView::cGraphicsScene() const
     {
         CGraphicsScene* s = qobject_cast<CGraphicsScene*>(scene());
-        Q_ASSERT(s);// This should never fail!
         return s;
     }
 

@@ -41,8 +41,6 @@ namespace Caneda
     //! \brief Just skips through unknown tag by reading and discarding tokens parsed.
     void XmlReader::readUnknownElement()
     {
-        Q_ASSERT(isStartElement());
-
         QString startName = name().toString();
         int depth = 1;
 
@@ -57,8 +55,6 @@ namespace Caneda
                 ++depth;
             }
         }
-
-        Q_ASSERT(depth == 0);
     }
 
     int XmlReader::readInt()

@@ -577,7 +577,7 @@ namespace Caneda
      */
     void CGraphicsScene::beginPaintingDraw(Painting *item)
     {
-        Q_ASSERT(m_mouseAction == CGraphicsScene::PaintingDrawEvent);
+        Q_ASSERT(m_mouseAction == Caneda::PaintingDrawEvent);
         m_paintingDrawClicks = 0;
         delete m_paintingDrawItem;
         m_paintingDrawItem = item->copy();
@@ -619,7 +619,7 @@ namespace Caneda
      */
     void CGraphicsScene::beginInsertingItems(const QList<CGraphicsItem*> &items)
     {
-        Q_ASSERT(m_mouseAction == CGraphicsScene::InsertingItems);
+        Q_ASSERT(m_mouseAction == Caneda::InsertingItems);
 
         // Delete all previous insertibles
         qDeleteAll(m_insertibles);
