@@ -27,7 +27,6 @@
 #include "library.h"
 #include "portsymbol.h"
 #include "settings.h"
-#include "simulation.h"
 #include "undocommands.h"
 #include "xmlutilities.h"
 
@@ -199,9 +198,6 @@ namespace Caneda
             if(item == QObject::tr("Port Symbol")) {
                 qItem = new PortSymbol(0);
             }
-            if(item == QObject::tr("Simulation Profile")) {
-                qItem = new SimulationGroup(0);
-            }
         }
 
         // If the item was not found in the fixed libraries, search for the
@@ -272,9 +268,6 @@ namespace Caneda
                 }
                 else if(reader.name() == "port")  {
                     readItem = PortSymbol::loadPortSymbol(&reader, 0);
-                }
-                else if(reader.name() == "simulationGroup")  {
-                    readItem = SimulationGroup::loadSimulationGroup(&reader, 0);
                 }
 
                 if(readItem) {

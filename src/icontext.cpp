@@ -202,8 +202,6 @@ namespace Caneda
                 QPixmap(Caneda::bitmapDirectory() + "ground.svg"));
         miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
                 QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
-        miscellaneousItems << qMakePair(QObject::tr("Simulation Profile"),
-                QPixmap(Caneda::bitmapDirectory() + "simulation.svg"));
 
         m_sidebarBrowser->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
 

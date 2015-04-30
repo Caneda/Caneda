@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+ ***************************************************************************
+ * Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+ *                                                                         *
+ * This is free software; you can redistribute it and/or modify            *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation; either version 2, or (at your option)     *
+ * any later version.                                                      *
+ *                                                                         *
+ * This software is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with this package; see the file COPYING.  If not, write to        *
+ * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+ * Boston, MA 02110-1301, USA.                                             *
+ ***************************************************************************
+-->
+
+<component name="Transient Simulation" version="0.1.0" label="Sim">
+    <displaytext>
+        <lang lang="C">Transient Simulation</lang>
+        <lang lang="es">Simulación Transitoria</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">Transient simulation configuration module</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+        <painting name="rectangle" rectangle="0,0,30,20" pos="-15,-15" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,20,0" pos="-10,-5" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-10,-10" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="0,-10" transform="1,0,0,1,0,0">
+            <properties startAngle="180" spanAngle="180"/>
+        </painting>
+    </symbol>
+
+    <ports/>
+
+    <properties>
+        <property name="tend" default="1" unit="s" visible="true">
+            <description>
+                <lang lang="C">Total simulation time</lang>
+            </description>
+        </property>
+        <property name="to" default="0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Time to start saving data</lang>
+            </description>
+        </property>
+        <property name="tstep" default="0" unit="s" visible="true">
+            <description>
+                <lang lang="C">Maximum timestep</lang>
+            </description>
+        </property>
+    </properties>
+</component>
