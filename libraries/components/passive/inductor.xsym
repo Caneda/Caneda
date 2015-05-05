@@ -1,53 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE caneda>
 <!--
- ***************************************************************************
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
- *                                                                         *
- * This is free software; you can redistribute it and/or modify            *
- * it under the terms of the GNU General Public License as published by    *
- * the Free Software Foundation; either version 2, or (at your option)     *
- * any later version.                                                      *
- *                                                                         *
- * This software is distributed in the hope that it will be useful,        *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- * GNU General Public License for more details.                            *
- *                                                                         *
- * You should have received a copy of the GNU General Public License       *
- * along with this package; see the file COPYING.  If not, write to        *
- * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
- * Boston, MA 02110-1301, USA.                                             *
- ***************************************************************************
+***************************************************************************
+* Copyright (C) 2012-2015 by Pablo Daniel Pareja Obregon                  *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
 -->
 
 <component name="Inductor" version="0.1.0" label="L">
-   <displaytext>
-      <lang lang="C">Inductor</lang>
-      <lang lang="ca">Bobina</lang>
-      <lang lang="cs">Cívka</lang>
-      <lang lang="de">Spule</lang>
-      <lang lang="es">Bobina</lang>
-      <lang lang="fr">Inductance</lang>
-      <lang lang="he">סליל</lang>
-      <lang lang="hu">Tekercs</lang>
-      <lang lang="it">Induttore</lang>
-      <lang lang="jp">インダクタ</lang>
-      <lang lang="pl">Cewka</lang>
-      <lang lang="pt">Indutor</lang>
-      <lang lang="ro">Inductor</lang>
-      <lang lang="ru">Катушка индуктивности</lang>
-      <lang lang="sv">Ledare</lang>
-      <lang lang="tr">Sargı</lang>
-      <lang lang="uk">Катушка індуктивності</lang>
-   </displaytext>
+    <displaytext>
+        <lang lang="C">Inductor</lang>
+        <lang lang="ca">Bobina</lang>
+        <lang lang="cs">Cívka</lang>
+        <lang lang="de">Spule</lang>
+        <lang lang="es">Bobina</lang>
+        <lang lang="fr">Inductance</lang>
+        <lang lang="he">סליל</lang>
+        <lang lang="hu">Tekercs</lang>
+        <lang lang="it">Induttore</lang>
+        <lang lang="jp">インダクタ</lang>
+        <lang lang="pl">Cewka</lang>
+        <lang lang="pt">Indutor</lang>
+        <lang lang="ro">Inductor</lang>
+        <lang lang="ru">Катушка индуктивности</lang>
+        <lang lang="sv">Ledare</lang>
+        <lang lang="tr">Sargı</lang>
+        <lang lang="uk">Катушка індуктивності</lang>
+    </displaytext>
 
-   <description>
-      <lang lang="C">A magnetic energy storage device</lang>
-      <lang lang="fr">Un composant de stockage de l'énergie magnétique</lang>
-   </description>
+    <description>
+        <lang lang="C">A magnetic energy storage device</lang>
+        <lang lang="fr">Un composant de stockage de l'énergie magnétique</lang>
+    </description>
 
-   <symbol>
+    <symbol>
         <painting name="ellipseArc" ellipse="0,0,10,10" pos="-20,-5" transform="1,0,0,1,0,0">
             <properties startAngle="0" spanAngle="180"/>
         </painting>
@@ -60,37 +60,41 @@
         <painting name="ellipseArc" ellipse="0,0,10,10" pos="10,-5" transform="1,0,0,1,0,0">
             <properties startAngle="0" spanAngle="180"/>
         </painting>
-   </symbol>
+    </symbol>
 
-   <ports>
-       <port name="+" pos="-20,0"/>
-       <port name="-" pos="20,0"/>
-   </ports>
+    <ports>
+        <port name="+" pos="-20,0"/>
+        <port name="-" pos="20,0"/>
+    </ports>
 
-   <properties>
-	 <property name="L" default="1e-9" unit="H" visible="true">
-	   <description>
-	     <lang lang="C">Inductance</lang>
-	     <lang lang="ca">Inductancia</lang>
-	     <lang lang="cs">Induktivita</lang>
-	     <lang lang="de">Induktivität</lang>
-	     <lang lang="fr">Inductance</lang>
-	     <lang lang="es">Inductancia</lang>
-	     <lang lang="hu">Induktivitás</lang>
-	     <lang lang="it">Induttanza</lang>
-	     <lang lang="jp">インダクタンス</lang>
-	     <lang lang="pl">Indukczjność</lang>
-	     <lang lang="ro">Inductanţa</lang>
-	     <lang lang="ru">Индуктивность</lang>
-	     <lang lang="sv">Induktans </lang>
-	     <lang lang="uk">Індуктивність</lang>
-	   </description>
-	 </property>
-	 <property name="I" default="0" unit="A" visible="false">
-	   <description>
-	     <lang lang="C">Initial current (t=0)</lang>
-	     <lang lang="fr">Courant initial (t=0)</lang>
-	   </description>
-	 </property>
-   </properties>
+    <properties>
+        <property name="L" default="1e-9" unit="H" visible="true">
+            <description>
+                <lang lang="C">Inductance</lang>
+                <lang lang="ca">Inductancia</lang>
+                <lang lang="cs">Induktivita</lang>
+                <lang lang="de">Induktivität</lang>
+                <lang lang="fr">Inductance</lang>
+                <lang lang="es">Inductancia</lang>
+                <lang lang="hu">Induktivitás</lang>
+                <lang lang="it">Induttanza</lang>
+                <lang lang="jp">インダクタンス</lang>
+                <lang lang="pl">Indukczjność</lang>
+                <lang lang="ro">Inductanţa</lang>
+                <lang lang="ru">Индуктивность</lang>
+                <lang lang="sv">Induktans </lang>
+                <lang lang="uk">Індуктивність</lang>
+            </description>
+        </property>
+        <property name="I" default="0" unit="A" visible="false">
+            <description>
+                <lang lang="C">Initial current (t=0)</lang>
+                <lang lang="fr">Courant initial (t=0)</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" line="L%label %port=1 %port=2 %property=C"/>
+    </models>
 </component>
