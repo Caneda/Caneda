@@ -34,11 +34,20 @@ SET(CANEDA_MOC_HDRS cgraphicsscene.h cgraphicsview.h
   textedit.h webpage.h
 )
 
-QT4_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )
+QT5_WRAP_CPP( CANEDA_MOC_SRCS ${CANEDA_MOC_HDRS} )
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} ${CANEDA_MOC_SRCS} )
 
-TARGET_LINK_LIBRARIES( caneda ${QT_LIBRARIES} ${QWT_LIBRARIES}
-                       dialogs paintings attenuator filter transmission )
+TARGET_LINK_LIBRARIES( caneda
+    ${Qt5Widgets_LIBRARIES}
+    ${Qt5Svg_LIBRARIES}
+    ${Qt5PrintSupport_LIBRARIES}
+#    ${QWT_LIBRARIES}
+    dialogs
+    paintings
+    attenuator
+    filter
+    transmission
+)
 
 INSTALL(TARGETS caneda DESTINATION ${BINARYDIR})

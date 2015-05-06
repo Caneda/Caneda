@@ -40,8 +40,9 @@
 #include <QGraphicsSceneEvent>
 #include <QKeySequence>
 #include <QMenu>
+#include <QMimeData>
+#include <QMimeType>
 #include <QPainter>
-#include <QPrinter>
 #include <QShortcutEvent>
 
 #include <cmath>

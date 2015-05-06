@@ -6,22 +6,17 @@ SET( PACKAGE_VERSION "0.1.0" )
 SET( PACKAGE_STRING "caneda 0.1.0" )
 
 # ==================================================================================
-# Configure QT options
-
-SET( QT_USE_QTSVG TRUE )
-
-# ==================================================================================
 # Minimum libraries required
 
-CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )
+CMAKE_MINIMUM_REQUIRED( VERSION 2.8.11 )
 
-SET( QT_MIN_VERSION "4.7.0" )
-FIND_PACKAGE( Qt4 REQUIRED )
-INCLUDE( ${QT_USE_FILE} )
+FIND_PACKAGE( Qt5Widgets REQUIRED )
+FIND_PACKAGE( Qt5Svg REQUIRED )
+FIND_PACKAGE( Qt5PrintSupport REQUIRED )
 
 # For Qwt
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-FIND_PACKAGE( Qwt REQUIRED )
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+#FIND_PACKAGE( Qwt REQUIRED )
 
 # ==================================================================================
 # Configure runtime directories
@@ -37,6 +32,7 @@ SET( LIBRARYDIR  "share/caneda/libraries/" )
 # ==================================================================================
 # Configure files and compilation options
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 CONFIGURE_FILE( ${Caneda_SOURCE_DIR}/config.h.cmake ${Caneda_BINARY_DIR}/config.h )
 SET( CMAKE_BUILD_TYPE Debug )
 ADD_DEFINITIONS( -DHAVE_CONFIG_H )
@@ -48,7 +44,9 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_BINARY_DIR}
     ${CMAKE_SOURCE_DIR}/src
-    ${QWT_INCLUDE_DIR}
+    ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt5Svg_INCLUDE_DIRS}
+#    ${QWT_INCLUDE_DIR}
 )
 
 ADD_SUBDIRECTORY( src )

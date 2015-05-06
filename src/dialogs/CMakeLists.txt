@@ -14,8 +14,8 @@ SET(DIALOGS_UIS savedocumentsdialog.ui gitmanager.ui printdialog.ui
     exportdialog.ui filenewdialog.ui portsymboldialog.ui
 )
 
-QT4_WRAP_UI( DIALOGS_UI_HDRS ${DIALOGS_UIS})
+QT5_WRAP_UI( DIALOGS_UI_HDRS ${DIALOGS_UIS})
 
-QT4_WRAP_CPP( DIALOGS_MOC_SRCS ${DIALOGS_MOC_HDRS} )
+QT5_WRAP_CPP( DIALOGS_MOC_SRCS ${DIALOGS_MOC_HDRS} )
 
 ADD_LIBRARY(dialogs ${DIALOGS_SRCS} ${DIALOGS_MOC_SRCS} ${DIALOGS_UI_HDRS})

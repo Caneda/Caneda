@@ -282,17 +282,22 @@ namespace Caneda
 
         Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
         if(axis == Qt::XAxis) {
-            scale(1.0, -1.0);
+            setTransform(QTransform::fromScale(1.0, -1.0), true);
         }
         else /*axis = Qt::YAxis*/ {
-            scale(-1.0, 1.0);
+            setTransform(QTransform::fromScale(-1.0, 1.0), true);
         }
     }
 
     //! \brief Rotate item by -90 degrees
     void CGraphicsItem::rotate90(Caneda::AngleDirection dir)
     {
-        rotate(dir == Caneda::AntiClockwise ? -90.0 : 90.0);
+        if(dir == Caneda::AntiClockwise) {
+            setRotation(rotation() - 90.0);
+        }
+        else {
+            setRotation(rotation() + 90.0);
+        }
     }
 
     /*!

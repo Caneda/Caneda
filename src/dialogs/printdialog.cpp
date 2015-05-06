@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2009-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -27,8 +27,8 @@
 #include <QDirModel>
 #include <QFileDialog>
 #include <QPointer>
-#include <QPrintDialog>
-#include <QPrinter>
+
+#include <QtPrintSupport/QPrintDialog>
 
 namespace Caneda
 {
@@ -42,7 +42,6 @@ namespace Caneda
         ui.widget->setEnabled(false);
         ui.printerChoice->setIcon(Caneda::icon("printer"));
         ui.pdfChoice->setIcon(Caneda::icon("pdf"));
-        ui.psChoice->setIcon(Caneda::icon("eps"));
         ui.fitInPageButton->setIcon(Caneda::icon("zoom-fit-best"));
         ui.browseButton->setIcon(Caneda::icon("document-open"));
 
@@ -53,7 +52,6 @@ namespace Caneda
 
         connect(ui.printerChoice, SIGNAL(toggled(bool)), this, SLOT(onChoiceToggled()));
         connect(ui.pdfChoice, SIGNAL(toggled(bool)), this, SLOT(onChoiceToggled()));
-        connect(ui.psChoice, SIGNAL(toggled(bool)), this, SLOT(onChoiceToggled()));
         connect(ui.browseButton, SIGNAL(clicked()), this, SLOT(onBrowseButtonClicked()));
 
         m_printer = new QPrinter;
@@ -98,10 +96,6 @@ namespace Caneda
                 m_printer->setOutputFormat(QPrinter::PdfFormat);
                 m_printer->setOutputFileName(ui.filePathEdit->text());
             }
-            else if (ui.psChoice->isChecked()) {
-                m_printer->setOutputFormat(QPrinter::PostScriptFormat);
-                m_printer->setOutputFileName(ui.filePathEdit->text());
-            }
 
             m_document->print(m_printer, ui.fitInPageButton->isChecked());
         }
@@ -115,17 +109,6 @@ namespace Caneda
             ui.widget->setEnabled(false);
         } else {
             QString path = ui.filePathEdit->text();
-            if (ui.pdfChoice->isChecked()) {
-                if (path.endsWith(".ps")) {
-                    path.replace(path.length() - 3, 3, ".pdf");
-                }
-            }
-            /* ui.psChoice->isChecked() */
-            else {
-                if (path.endsWith(".pdf")) {
-                    path.replace(path.length() - 4, 4, ".ps");
-                }
-            }
             ui.filePathEdit->setText(path);
             ui.widget->setEnabled(true);
         }
@@ -143,10 +126,6 @@ namespace Caneda
         else if(ui.pdfChoice->isChecked()) {
             extension = ".pdf";
             filter    = tr("PDF Files (*.pdf)", "file filter");
-        }
-        else if(ui.psChoice->isChecked()) {
-            extension = ".ps";
-            filter    = tr("PostScript Files (*.ps)", "file filter");
         }
 
         QString filepath = QFileDialog::getSaveFileName(this,

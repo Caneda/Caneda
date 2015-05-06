@@ -28,6 +28,8 @@
 #include <QGraphicsScene>
 #include <QList>
 
+#include <QtPrintSupport/QPrinter>
+
 // Forward declarations
 class QUndoStack;
 

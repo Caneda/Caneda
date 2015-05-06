@@ -121,7 +121,7 @@ namespace Caneda
     //! \brief A function which returns corresponding variant type from given \a atring.
     QVariant::Type stringToType(const QString& _string)
     {
-        char first = _string.at(0).toAscii();
+        char first = _string.at(0).toLatin1();
         QString remain = _string.right(_string.size() - 1);
         QVariant::Type retVal = QVariant::Invalid;
         switch(first) {

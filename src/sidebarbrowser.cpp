@@ -136,7 +136,9 @@ namespace Caneda
             QPixmap pixmap = manager->pixmapCache(data->name, data->library);
             new CategoryItem(data->name, data->filename, pixmap, false, libRoot);
         }
-        reset();
+
+        beginResetModel();
+        endResetModel();
     }
 
     /*!
@@ -174,7 +176,8 @@ namespace Caneda
             }
         }
 
-        reset();
+        beginResetModel();
+        endResetModel();
     }
 
     /*!
@@ -228,7 +231,9 @@ namespace Caneda
             }
 
             new CategoryItem(itemName, category, itemPixmap, false, catItem);
-            reset();
+
+            beginResetModel();
+            endResetModel();
         }
     }
 
@@ -255,7 +260,9 @@ namespace Caneda
             new CategoryItem(it->first, category, it->second, false, catItem);
             ++it;
         }
-        reset();
+
+        beginResetModel();
+        endResetModel();
     }
 
     QModelIndex SidebarModel::index(int row, int column, const QModelIndex & parent) const
@@ -429,7 +436,7 @@ namespace Caneda
     void TreeView::startDrag(Qt::DropActions supportedActions)
     {
         QModelIndex index = selectedIndexes().first();
-        QPixmap pix = qVariantValue<QPixmap>(model()->data(index, SidebarModel::DragPixmapRole));
+        QPixmap pix = model()->data(index, SidebarModel::DragPixmapRole).value<QPixmap>();
 
         QDrag *drag = new QDrag(this);
 

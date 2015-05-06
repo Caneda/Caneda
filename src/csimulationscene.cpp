@@ -19,7 +19,7 @@
 
 #include "csimulationscene.h"
 
-#include <qwt_plot_curve.h>
+//#include <qwt_plot_curve.h>
 
 namespace Caneda
 {
@@ -33,13 +33,13 @@ namespace Caneda
     {
     }
 
-    /*!
-     * \brief Adds or moves the item and all its childen to this scene. This
-     * scene takes ownership of the item.
-     */
-    void CSimulationScene::addItem(QwtPlotCurve *item)
-    {
-        m_items.append(item);
-    }
+//    /*!
+//     * \brief Adds or moves the item and all its childen to this scene. This
+//     * scene takes ownership of the item.
+//     */
+//    void CSimulationScene::addItem(QwtPlotCurve *item)
+//    {
+//        m_items.append(item);
+//    }
 
 } // namespace Caneda

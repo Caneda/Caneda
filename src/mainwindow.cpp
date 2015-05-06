@@ -44,7 +44,7 @@
 #include "plugins/filter/filterdialog.h"
 #include "plugins/transmission/transmissiondialog.h"
 
-#include <QtGui>
+#include <QtWidgets>
 
 namespace Caneda
 {

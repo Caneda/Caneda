@@ -24,6 +24,8 @@
 
 #include <QDialog>
 
+#include <QtPrintSupport/QPrinter>
+
 namespace Caneda
 {
     class IDocument;
