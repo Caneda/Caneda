@@ -280,13 +280,10 @@ namespace Caneda
         // Initialize designer dialog
         ui.setupUi(this);
 
-        // Set button properties
-        ui.m_clearButton->setIcon(Caneda::icon("edit-clear-locationbar-rtl"));
-        ui.m_clearButton->setShortcut(Qt::ALT + Qt::Key_C);
-        ui.m_clearButton->setStatusTip(tr("Clear the filter text"));
-        ui.m_clearButton->setWhatsThis(
-                    tr("Clear Filter Text\n\nClears the filter text thus reshowing all properties"));
+        // Set lineedit properties
+        ui.m_filterEdit->setClearButtonEnabled(true);
 
+        // Set button properties
         ui.m_addButton->setIcon(Caneda::icon("list-add"));
         ui.m_addButton->setStatusTip(tr("Add a new property to the list"));
         ui.m_addButton->setWhatsThis(
@@ -322,7 +319,6 @@ namespace Caneda
 
         connect(ui.m_filterEdit, SIGNAL(textChanged(const QString &)),
                 this, SLOT(filterTextChanged()));
-        connect(ui.m_clearButton, SIGNAL(clicked()), ui.m_filterEdit, SLOT(clear()));
         connect(ui.m_addButton, SIGNAL(clicked()), SLOT(addProperty()));
         connect(ui.m_removeButton, SIGNAL(clicked()), SLOT(removeProperty()));
     }
@@ -348,7 +344,6 @@ namespace Caneda
     void PropertyDialog::filterTextChanged()
     {
         QString text = ui.m_filterEdit->text();
-        ui.m_clearButton->setEnabled(!text.isEmpty());
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
     }

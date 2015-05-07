@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2013-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,7 +20,6 @@
 
 #include "sidebarbrowser.h"
 
-#include "clineedit.h"
 #include "component.h"
 #include "global.h"
 #include "library.h"
@@ -31,6 +30,7 @@
 #include <QHeaderView>
 #include <QIcon>
 #include <QList>
+#include <QLineEdit>
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QPainter>
@@ -455,7 +455,8 @@ namespace Caneda
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
 
-        m_filterEdit = new CLineEdit(this);
+        m_filterEdit = new QLineEdit(this);
+        m_filterEdit->setClearButtonEnabled(true);
         layout->addWidget(m_filterEdit);
 
         m_treeView = new TreeView();

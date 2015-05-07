@@ -28,9 +28,6 @@ class QFileSystemModel;
 
 namespace Caneda
 {
-    // Forward declarations
-    class CLineEdit;
-
     /*!
      * \brief The FileFilterProxyModel class helps in filtering sidebar display
      * corresponding to a QLineEdit.
@@ -74,7 +71,7 @@ namespace Caneda
         FileFilterProxyModel *m_proxyModel;
         QTreeView *m_treeView;
 
-        CLineEdit *m_filterEdit;
+        QLineEdit *m_filterEdit;
     };
 
 } // namespace Caneda

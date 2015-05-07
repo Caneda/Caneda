@@ -349,6 +349,7 @@ namespace Caneda
             Layer *layer = canedaitem_cast<Layer*>(painting);
             ui.layerComboBox->setCurrentIndex(layer->layerName());
             ui.layerLabelLineEdit->setText(layer->netLabel());
+            ui.layerLabelLineEdit->setClearButtonEnabled(true);
             ui.layerWidthSpinBox->setValue(qRound(layer->rect().width()));
             ui.layerHeightSpinBox->setValue(qRound(layer->rect().height()));
 

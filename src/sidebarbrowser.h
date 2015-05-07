@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2013-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,9 +29,6 @@
 
 namespace Caneda
 {
-    // Forward declarations
-    class CLineEdit;
-
     /*!
      * \brief The CategoryItem class implements the items to be used by the
      * SidebarModel class.
@@ -244,7 +241,7 @@ namespace Caneda
         FilterProxyModel *m_proxyModel;
         TreeView *m_treeView;
 
-        CLineEdit *m_filterEdit;
+        QLineEdit *m_filterEdit;
 
         QString m_currentComponent;
     };

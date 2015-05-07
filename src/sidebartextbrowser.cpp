@@ -19,13 +19,13 @@
 
 #include "sidebartextbrowser.h"
 
-#include "clineedit.h"
 #include "documentviewmanager.h"
 #include "idocument.h"
 #include "settings.h"
 
 #include <QFileSystemModel>
 #include <QDebug>
+#include <QLineEdit>
 #include <QTextCodec>
 #include <QVBoxLayout>
 
@@ -70,7 +70,8 @@ namespace Caneda
         // Fill the treeview and proxy models
         QVBoxLayout *layout = new QVBoxLayout(this);
 
-        m_filterEdit = new CLineEdit();
+        m_filterEdit = new QLineEdit();
+        m_filterEdit->setClearButtonEnabled(true);
         layout->addWidget(m_filterEdit);
 
         m_fileModel = new QFileSystemModel;

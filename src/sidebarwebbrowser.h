@@ -28,7 +28,6 @@ class QFileSystemModel;
 namespace Caneda
 {
     // Forward declarations
-    class CLineEdit;
     class FileFilterProxyModel;
 
     /*!
@@ -62,7 +61,7 @@ namespace Caneda
         FileFilterProxyModel *m_proxyModel;
         QTreeView *m_treeView;
 
-        CLineEdit *m_filterEdit;
+        QLineEdit *m_filterEdit;
     };
 
 } // namespace Caneda
