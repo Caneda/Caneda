@@ -46,22 +46,21 @@ namespace Caneda
         // List of pages
         pages_list = new QListWidget();
         pages_list->setViewMode(QListView::ListMode);
-        pages_list->setIconSize(QSize(32, 32));
         pages_list->setMovement(QListView::Static);
         pages_list->setMaximumWidth(150);
         pages_list->setSpacing(4);
 
-        // pages
+        // Pages
         pages_widget = new QStackedWidget();
         foreach(SettingsPage *page, pages) {
             pages_widget->addWidget(page);
         }
         buildPagesList();
 
-        // buttons
+        // Buttons
         buttons = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
 
-        // layouts
+        // Layouts
         QHBoxLayout *hlayout1 = new QHBoxLayout();
         hlayout1->addWidget(pages_list);
         hlayout1->addWidget(pages_widget);
@@ -71,7 +70,7 @@ namespace Caneda
         vlayout1->addWidget(buttons);
         setLayout(vlayout1);
 
-        // signals/slots
+        // Signals/slots
         connect(buttons, SIGNAL(accepted()), SLOT(applyConf()));
         connect(buttons, SIGNAL(rejected()), SLOT(reject()));
         connect(pages_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),

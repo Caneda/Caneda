@@ -111,7 +111,6 @@ namespace Caneda
         m_toolBar = toolbar;
 
         if (m_toolBar) {
-            m_toolBar->setIconSize(QSize(16, 16));
             m_toolBar->setParent(this);
             lay->insertWidget(0, m_toolBar);
         }

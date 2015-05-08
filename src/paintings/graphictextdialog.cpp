@@ -45,16 +45,12 @@ namespace Caneda
     : QDialog(parent), textItem(text), undoOption(opt)
     {
         mainLayout = new QVBoxLayout(this);
-
-        mainLayout->setSpacing(-1);
         toolBarLayout = new QHBoxLayout;
-        mainLayout->addItem(toolBarLayout);
+
         toolBar = new QToolBar(this);
 
-        toolBar->setIconSize(QSize(16, 16));
         toolBarLayout->addWidget(toolBar);
-        toolBarLayout->setSpacing(-1);
-        toolBarLayout->setContentsMargins(0,0,0,0);
+        mainLayout->addItem(toolBarLayout);
 
         setupEditActions();
         setupTextActions();
@@ -237,7 +233,6 @@ namespace Caneda
         tb->addAction(actionTextColor);
 
         tb = new QToolBar(this);
-        tb->setIconSize(QSize(16, 16));
         mainLayout->insertWidget(2, tb);
         comboStyle = new QComboBox(tb);
         tb->addWidget(comboStyle);

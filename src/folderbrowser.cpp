@@ -41,7 +41,6 @@ namespace Caneda
         QVBoxLayout *layout = new QVBoxLayout(this);
 
         QToolBar *toolbar = new QToolBar;
-        toolbar->setIconSize(QSize(15, 15));
 
         QToolButton *buttonUp = new QToolButton();
         buttonUp->setIcon(Caneda::icon("go-up"));
