@@ -95,7 +95,7 @@ namespace Caneda
                 "<br>" +
                 tr("An application for eletric schematics editing and simulation.") +
                 "<br><br>" +
-                tr("\251 2008-2012 Caneda developer team") +
+                tr("© 2008-2012 Caneda developer team") +
                 "<br><br>"
                 "<a href=\"http://caneda.sourceforge.net/\">"
                 "http://caneda.sourceforge.net/</a>"
