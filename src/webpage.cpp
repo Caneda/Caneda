@@ -19,11 +19,14 @@
 
 #include "webpage.h"
 
+#include "global.h"
+
 namespace Caneda
 {
     //! \brief Constructor.
     WebPage::WebPage(QUrl *url)
     {
+        setSearchPaths(QStringList(docDirectory() + "/en/"));
         setSource(QUrl(url->path()));
         show();
     }

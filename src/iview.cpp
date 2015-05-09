@@ -40,6 +40,7 @@
 #include <QHBoxLayout>
 #include <QToolBar>
 #include <QToolButton>
+#include <QUrl>
 
 namespace Caneda
 {
@@ -542,8 +543,8 @@ namespace Caneda
         m_currentZoom = m_originalZoom;
         m_webPage = new WebPage(document->webUrl());
 
-        connect(m_webPage, SIGNAL(focussed()), this,
-                SLOT(onFocussed()));
+        connect(m_webPage, SIGNAL(focussed()), this, SLOT(onFocussed()));
+        connect(m_webPage, SIGNAL(anchorClicked(QUrl)), this, SLOT(updateUrl(QUrl)));
     }
 
     QWidget* WebView::toWidget() const
@@ -588,6 +589,12 @@ namespace Caneda
     void WebView::onFocussed()
     {
         emit focussedIn(static_cast<IView*>(this));
+    }
+
+    void WebView::updateUrl(const QUrl& link)
+    {
+        document()->setFileName(link.toString());
+
     }
 
     void WebView::setZoomLevel(qreal zoomLevel)

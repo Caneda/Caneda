@@ -1490,7 +1490,7 @@ namespace Caneda
     void MainWindow::slotHelpIndex()
     {
         setNormalAction();
-        slotFileOpen(QString(docDirectory() + "/en/index.html"));
+        slotFileOpen(QString("index.html"));
     }
 
     void MainWindow::slotHelpAbout()

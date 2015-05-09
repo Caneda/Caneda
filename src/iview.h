@@ -372,6 +372,7 @@ namespace Caneda
 
     private Q_SLOTS:
         void onFocussed();
+        void updateUrl(const QUrl& link);
 
     private:
         WebPage *m_webPage;
