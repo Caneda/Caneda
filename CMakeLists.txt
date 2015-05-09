@@ -32,7 +32,11 @@ SET( LIBRARYDIR  "share/caneda/libraries/" )
 # ==================================================================================
 # Configure files and compilation options
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+SET( CMAKE_AUTOMOC ON )
+SET( CMAKE_AUTOUIC ON )
+SET( CMAKE_INCLUDE_CURRENT_DIR ON )
+
+SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 CONFIGURE_FILE( ${Caneda_SOURCE_DIR}/config.h.cmake ${Caneda_BINARY_DIR}/config.h )
 SET( CMAKE_BUILD_TYPE Debug )
 ADD_DEFINITIONS( -DHAVE_CONFIG_H )
@@ -41,12 +45,12 @@ ADD_DEFINITIONS( -DHAVE_CONFIG_H )
 # Include sources directories
 
 INCLUDE_DIRECTORIES(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_SOURCE_DIR}/src
-    ${Qt5Widgets_INCLUDE_DIRS}
-    ${Qt5Svg_INCLUDE_DIRS}
-#    ${QWT_INCLUDE_DIR}
+  ${CMAKE_SOURCE_DIR}
+  ${CMAKE_BINARY_DIR}
+  ${CMAKE_SOURCE_DIR}/src
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${Qt5Svg_INCLUDE_DIRS}
+#  ${QWT_INCLUDE_DIR}
 )
 
 ADD_SUBDIRECTORY( src )
