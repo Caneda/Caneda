@@ -4,8 +4,7 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_BINARY_DIR}/src/plugins/attenuator
   ${CMAKE_BINARY_DIR}/src/plugins/filter
   ${CMAKE_BINARY_DIR}/src/plugins/transmission
-  ${CMAKE_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR} )
+)
 
 ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( paintings )
