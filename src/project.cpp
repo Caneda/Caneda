@@ -20,7 +20,7 @@
 #include "project.h"
 
 #include "actionmanager.h"
-#include "fileformatxml.h"
+#include "fileformats.h"
 #include "global.h"
 #include "icontext.h"
 #include "idocument.h"

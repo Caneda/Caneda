@@ -22,7 +22,7 @@
 
 #include "cgraphicsscene.h"
 #include "cgraphicsview.h"
-#include "fileformatxml.h"
+#include "fileformats.h"
 #include "global.h"
 #include "settings.h"
 #include "xmlutilities.h"

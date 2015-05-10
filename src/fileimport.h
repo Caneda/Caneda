@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILE_FORMAT_RAW_H
-#define FILE_FORMAT_RAW_H
+#ifndef FILE_IMPORT_H
+#define FILE_IMPORT_H
 
 // Forward declarations
 class QFile;
@@ -62,4 +62,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //FILE_FORMAT_RAW_H
+#endif //FILE_IMPORT_H

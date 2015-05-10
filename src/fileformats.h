@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef FILE_FORMAT_XML_H
-#define FILE_FORMAT_XML_H
+#ifndef FILE_FORMATS_H
+#define FILE_FORMATS_H
 
 #include "component.h"
 
@@ -156,4 +156,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //FILE_FORMAT_XML_H
+#endif //FILE_FORMATS_H

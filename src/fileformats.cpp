@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "fileformatxml.h"
+#include "fileformats.h"
 
 #include "cgraphicsscene.h"
 #include "component.h"

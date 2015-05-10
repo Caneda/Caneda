@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "fileformatraw.h"
+#include "fileimport.h"
 
 #include "csimulationscene.h"
 #include "idocument.h"
