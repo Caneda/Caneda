@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,13 +29,13 @@ namespace Caneda
     // Forward declarations
     class PortData;
 
-    //! \brief Shareable component's data
+    //! \brief Shareable component's data.
     struct ComponentData : public QSharedData
     {
         ComponentData(CGraphicsScene *scene = 0);
         ComponentData(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene = 0);
 
-        //! Static properties
+        //! Static properties.
         QString name;
         QString filename;
         QString displayText;
@@ -50,8 +50,11 @@ namespace Caneda
          */
         PropertyGroup *properties;
 
-        //! List of component's ports
+        //! List of component's ports.
         QList<PortData*> ports;
+
+        //! QMap with all the models available to the component.
+        QMap<QString, QString> models;
     };
 
     typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
@@ -107,11 +110,10 @@ namespace Caneda
         QString label() const { return d->properties->propertyValue("label"); }
         bool setLabel(const QString& _label);
 
-        //! Represents model of component, which is infact a property.
-        QString model() const { return d->properties->propertyValue("model"); }
-
         //! Returns the property map (actually copy of property map).
         PropertyGroup* properties() const { return d->properties; }
+
+        QString model(const QString& type) const;
 
         static Component* loadComponent(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);

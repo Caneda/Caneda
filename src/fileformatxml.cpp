@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -631,6 +631,14 @@ namespace Caneda
 
         writer->writeEndElement(); //</properties>
 
+        writer->writeStartElement("models");
+
+        writer->writeEmptyElement("model");
+        writer->writeAttribute("type", "spice");
+        writer->writeAttribute("syntax", "%subcircuit");
+
+        writer->writeEndElement(); // </models>
+
         // Finally we finish the document
         writer->writeEndDocument(); //</component>
 
@@ -724,6 +732,11 @@ namespace Caneda
                     // Read properties
                     else if(reader->name() == "properties") {
                         readProperties(reader);
+                    }
+
+                    // Read models
+                    else if(reader->name() == "models") {
+                        readModels(reader);
                     }
                 }
 
@@ -856,6 +869,36 @@ namespace Caneda
                     component()->properties->addProperty(prop.name(), prop);
                 }
 
+            }
+        }
+
+    }
+
+    /*!
+     * \brief Reads the models data from component description xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
+    void FormatXmlSymbol::readModels(Caneda::XmlReader *reader)
+    {
+        Q_ASSERT(reader->isStartElement() && reader->name() == "models");
+
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isEndElement()) {
+                break;
+            }
+
+            if(reader->isStartElement() && reader->name() == "model") {
+                    QXmlStreamAttributes attribs(reader->attributes());
+                    QString modelType = attribs.value("type").toString();
+                    QString modelSyntax = attribs.value("syntax").toString();
+
+                    component()->models.insert(modelType, modelSyntax);
+
+                    // Read till end element
+                    reader->readUnknownElement();
             }
         }
 

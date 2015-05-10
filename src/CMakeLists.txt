@@ -16,7 +16,7 @@ SET( CANEDA_SRCS
   global.cpp units.cpp main.cpp mainwindow.cpp library.cpp
   cgraphicsview.cpp  undocommands.cpp component.cpp
   property.cpp port.cpp fileformatxml.cpp fileformatraw.cpp
-  folderbrowser.cpp settings.cpp model.cpp
+  folderbrowser.cpp settings.cpp
   actionmanager.cpp project.cpp portsymbol.cpp
   statehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp syntaxhighlighters.cpp

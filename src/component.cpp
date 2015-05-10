@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -76,6 +76,8 @@ namespace Caneda
         }
 
         properties->setPropertyMap(other->properties->propertyMap());
+
+        models = other->models;
     }
 
     /*!
@@ -164,6 +166,28 @@ namespace Caneda
     {
         QString _label = label();
         return _label.mid(labelPrefix().length());
+    }
+
+    /*!
+     * \brief Returns the specified model of a component.
+     *
+     * Models are the representation of a component in different scenarios.
+     * For example, a component can have certain syntax to be used in a spice
+     * circuit, and a different one in a kicad schematic. Having a way to
+     * extract information from our schematic and interpret it in different
+     * ways allow us to export the circuit to other softwares and simulator
+     * engines.
+     *
+     * Models should be always strings. Gouping several models into a QMap
+     * provides a convenient way of handling them all together, and filter
+     * them according to the export operation being used.
+     *
+     * \param type The type of model to return (for example, spice).
+     * \return QString with the component's model.
+     */
+    QString Component::model(const QString& type) const
+    {
+        return d->models[type];
     }
 
     /*!

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -112,6 +112,7 @@ namespace Caneda
         void readSymbol(Caneda::XmlReader *reader);
         void readPorts(Caneda::XmlReader *reader);
         void readProperties(Caneda::XmlReader *reader);
+        void readModels(Caneda::XmlReader *reader);
 
         SymbolDocument *m_symbolDocument;
         ComponentData *m_component;
