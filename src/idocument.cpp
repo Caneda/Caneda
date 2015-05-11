@@ -25,6 +25,7 @@
 #include "csimulationview.h"
 #include "documentviewmanager.h"
 #include "fileformats.h"
+#include "fileexport.h"
 #include "fileimport.h"
 #include "icontext.h"
 #include "iview.h"
@@ -759,7 +760,16 @@ namespace Caneda
     void SchematicDocument::simulate()
     {
         setNormalAction();
-        //! \todo Implement this
+
+        if(fileName().isEmpty()) {
+            return;
+        }
+
+        QFileInfo info(fileName());
+        if(info.suffix() == "xsch") {
+            FormatSpice *format = new FormatSpice(this);
+            format->save();
+        }
     }
 
     void SchematicDocument::print(QPrinter *printer, bool fitInView)
