@@ -107,7 +107,34 @@ namespace Caneda
         QList<Component*> components = filterItems<Component>(items);
         if(!components.isEmpty()) {
             foreach(Component *c, components) {
-                writer->append(c->model("spice") + "\n");
+
+                QString model = c->model("spice");
+                QStringList modelBlocks = model.split(" ", QString::SkipEmptyParts);
+
+                for(int i=0; i<modelBlocks.size(); i++){
+
+                    QStringList modelSubBlocks = modelBlocks.at(i).split("%", QString::SkipEmptyParts);
+                    for(int j=0; j<modelSubBlocks.size(); j++){
+
+                        QStringList modelCommands = modelSubBlocks.at(j).split("=", QString::SkipEmptyParts);
+                        if(modelCommands.at(0) == "label"){
+                            writer->append(c->label());
+                        }
+                        else if(modelCommands.at(0) == "port"){
+                            writer->append(modelCommands.at(1));
+                        }
+                        else if(modelCommands.at(0) == "property"){
+                            writer->append(c->properties()->propertyValue(modelCommands.at(1)));
+                        }
+                        else{
+                            writer->append(modelSubBlocks.at(j));
+                        }
+
+                    }
+                    writer->append(" ");
+
+                }
+                writer->append("\n");
             }
         }
     }
