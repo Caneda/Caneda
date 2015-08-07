@@ -179,12 +179,17 @@ namespace Caneda
             QList<Wire*> equi;
             w->getConnectedWires(equi);
 
+            /*! \todo Is it really necessary to save equipotentials ids in the
+             *  schematic file format??? Those are only used during export to
+             *  netlist, so they can be removed from here. In that case, remove
+             *  the following two lines, and the line "writer->writeEndElement();".
+             */
             writer->writeStartElement("equipotential");
             writer->writeAttribute("id", QString::number(equiId++));
             foreach(Wire *wire, equi) {
                 wire->saveData(writer, wireId++);
             }
-            writer->writeEndElement();
+            writer->writeEndElement();  // This line must be removed if the previous "todo" is completed.
 
             parsedWires += equi;
         }

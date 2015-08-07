@@ -20,6 +20,9 @@
 #ifndef FILE_EXPORT_H
 #define FILE_EXPORT_H
 
+#include <QList>
+#include <QPair>
+
 // Forward declarations
 class QFile;
 class QString;
@@ -29,6 +32,7 @@ namespace Caneda
     // Forward declarations
     class SchematicDocument;
     class CGraphicsScene;
+    class Wire;
 
     /*!
      * \brief This class handles all the access to the raw spice simulation
@@ -60,7 +64,7 @@ namespace Caneda
         QString saveText();
         void saveComponents(QString *writer);
         void savePorts(QString *writer);
-        void saveWires(QString *writer);
+        QList<QPair<Wire *, int> > generateNetlistTopology();
 
         SchematicDocument *m_schematicDocument;
     };
