@@ -80,6 +80,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="C%label %port=1 %port=2 %property=C"/>
+        <model type="spice" syntax="C%label %port=+ %port=- %property=C"/>
     </models>
 </component>
