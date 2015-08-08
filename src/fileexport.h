@@ -32,7 +32,7 @@ namespace Caneda
     // Forward declarations
     class SchematicDocument;
     class CGraphicsScene;
-    class Wire;
+    class Port;
 
     /*!
      * \brief This class handles all the access to the raw spice simulation
@@ -64,7 +64,7 @@ namespace Caneda
         QString saveText();
         void saveComponents(QString *writer);
         void savePorts(QString *writer);
-        QList<QPair<Wire *, int> > generateNetlistTopology();
+        QList<QPair<Caneda::Port *, int> > generateNetlistTopology();
 
         SchematicDocument *m_schematicDocument;
     };

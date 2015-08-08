@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -73,6 +73,7 @@ namespace Caneda
 
         //! Returns a pointer to list of connected ports
         QList<Port*> *connections() { return &(m_connections); }
+        void getEquipotentialPorts(QList<Caneda::Port *> &connectedPorts);
 
         void connectTo(Port *other);
         void disconnect();

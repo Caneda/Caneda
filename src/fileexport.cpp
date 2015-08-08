@@ -156,36 +156,40 @@ namespace Caneda
     /*!
      *  \brief Generate netlist net numbers
      *
-     *  Iterate over all wires, to group all connected wires under
+     *  Iterate over all ports, to group all connected ports under
      *  the same name (name = equiId). This name or net number must
      *  be used afterwads by all component ports during netlist
      *  generation.
      *
      *  \sa saveComponents()
      */
-    QList<QPair<Wire *, int> > FormatSpice::generateNetlistTopology()
+    QList<QPair<Port *, int> > FormatSpice::generateNetlistTopology()
     {
-        //! \todo Generate a type for QList<QPair<Wire*, int> > and use that instead
+        //! \todo Generate a type for QList<QPair<Port*, int> > and use that instead
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
-        QList<Wire*> wires = filterItems<Wire>(items);
+        QList<CGraphicsItem*> canedaItems = filterItems<CGraphicsItem>(items);
+        QList<Port*> ports;
+        foreach(CGraphicsItem *i, canedaItems) {
+            ports << i->ports();
+        }
 
-        int equiId = 0;
-        QList<QPair<Wire*, int> > netlist;
-        QList<Wire*> parsedWires;
+        int equiId = 1;
+        QList<QPair<Port*, int> > netlist;
+        QList<Port*> parsedPorts;
 
-        foreach(Wire *w, wires) {
-            if(parsedWires.contains(w)) {
+        foreach(Port *p, ports) {
+            if(parsedPorts.contains(p)) {
                 continue;
             }
 
-            QList<Wire*> equi;
-            w->getConnectedWires(equi);
-            foreach(Wire *net, equi) {
-                netlist.append(qMakePair(net, equiId));
+            QList<Port*> equi;
+            p->getEquipotentialPorts(equi);
+            foreach(Port *_port, equi) {
+                netlist.append(qMakePair(_port, equiId));
             }
 
             equiId++;
-            parsedWires += equi;
+            parsedPorts += equi;
         }
 
         return netlist;

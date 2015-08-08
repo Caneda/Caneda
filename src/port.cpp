@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,6 +22,7 @@
 
 #include "cgraphicsitem.h"
 #include "settings.h"
+#include "wire.h"
 
 #include <QGraphicsItem>
 #include <QPainter>
@@ -64,6 +65,41 @@ namespace Caneda
             return item;
         }
         return 0;
+    }
+
+    /*!
+     *  \brief Returns the list of connected ports including those connected by
+     *  wires
+     *
+     *  Returns the list of equipotential connected ports, that is all
+     *  connected ports including those connected by wires. This conforms the
+     *  net or node in the electrical sense. This method is to be used during
+     *  netlist creation to determine each unique net and group all components
+     *  connected ports under only one name.
+     *
+     *  This method works in a recursive way, filling a list with the port
+     *  direct connections (contained in m_connections) and searching for
+     *  the connections of those ports connected to this one by a wire.
+     *
+     *  \param connectedPorts List to fill with the connections of this port.
+     *
+     *  \sa connections()
+     */
+    void Port::getEquipotentialPorts(QList<Port*> &connectedPorts)
+    {
+        if(connectedPorts.contains(this)) {
+            return;
+        }
+
+        connectedPorts << m_connections;
+
+        foreach(Port *port, connectedPorts) {
+            if(port->parentItem()->type() == CGraphicsItem::WireType) {
+                Wire *_wire = static_cast<Wire*>(port->parentItem());
+                _wire->port1()->getEquipotentialPorts(connectedPorts);
+                _wire->port2()->getEquipotentialPorts(connectedPorts);
+            }
+        }
     }
 
     //! \brief Connect this port to \a other.
