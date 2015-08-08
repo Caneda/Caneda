@@ -161,11 +161,20 @@ namespace Caneda
      *  be used afterwads by all component ports during netlist
      *  generation.
      *
-     *  \sa saveComponents()
+     *  We use all connected ports (including those connected by wires),
+     *  instead of connected wires during netlist generation. This allows
+     *  to create a netlist node even on those places not connected by
+     *  wires (for example when connecting two components together).
+     *
+     *  \sa saveComponents(), Port::getEquipotentialPorts()
      */
     QList<QPair<Port *, int> > FormatSpice::generateNetlistTopology()
     {
         //! \todo Generate a type for QList<QPair<Port*, int> > and use that instead
+        /*! \todo Investigate: If we use QList<CGraphicsItem*> canedaItems = filterItems<Ports>(items);
+         *  some phantom ports appear, and seem to be uninitialized, generating an ugly crash. Hence
+         *  we filter generic items and use an iteration over their ports as a workaround.
+         */
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<CGraphicsItem*> canedaItems = filterItems<CGraphicsItem>(items);
         QList<Port*> ports;
