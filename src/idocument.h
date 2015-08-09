@@ -291,6 +291,10 @@ namespace Caneda
 
         CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
 
+    private Q_SLOTS:
+        void simulationReady(int error);
+        void simulationLog(int error);
+
     private:
         CGraphicsScene *m_cGraphicsScene;
 
@@ -537,7 +541,7 @@ namespace Caneda
         void simulationLog(int error);
 
     private:
-        bool simulationErrorStatus;
+        bool simulationErrorStatus; //! This variable is used in multistep simulations (eg. verilog) to avoid opening previously generated waveforms
         TextEdit* activeTextEdit();
         QTextDocument *m_textDocument;
     };

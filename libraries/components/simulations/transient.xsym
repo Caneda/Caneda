@@ -64,4 +64,8 @@
             </description>
         </property>
     </properties>
+
+    <models>
+        <model type="spice" syntax=".tran %property=tstep %property=tend"/>
+    </models>
 </component>

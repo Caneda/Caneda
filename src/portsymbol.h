@@ -56,6 +56,8 @@ namespace Caneda
 
         //! Return's the symbol's port
         Port* port() const { return m_ports[0]; }
+        //! Return's the symbol's label
+        QString label() const { return m_label->text();}
 
         void updateGeometry();
 

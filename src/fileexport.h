@@ -61,10 +61,9 @@ namespace Caneda
         QString fileName() const;
 
     private:
-        QString saveText();
-        void saveComponents(QString *writer);
-        void savePorts(QString *writer);
+        QString generateNetlist();
         QList<QPair<Caneda::Port *, int> > generateNetlistTopology();
+        void replacePortNames(QList<QPair<Port *, int> > *netlist);
 
         SchematicDocument *m_schematicDocument;
     };
