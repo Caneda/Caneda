@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,25 +22,23 @@
 
 #include <QPrinter>
 
-//#include <qwt_plot.h>
+#include <qwt_plot.h>
 
 // Forward declations
-//class QwtPlotGrid;  // FIXME: Hack for QT5 compilation.
-#include <QGraphicsView>  // FIXME: Hack for QT5 compilation.
+class QwtLegend;
+class QwtPlotGrid;
 
 namespace Caneda
 {
     // Forward declations
     class CSimulationScene;
 
-//    class CSimulationView : public QwtPlot  // FIXME: Hack for QT5 compilation.
-    class CSimulationView : public QGraphicsView  // FIXME: Hack for QT5 compilation.
+    class CSimulationView : public QwtPlot
     {
         Q_OBJECT
 
     public:
-//        CSimulationView(CSimulationScene *scene, QWidget *parent = 0);  // FIXME: Hack for QT5 compilation.
-        CSimulationView(CSimulationScene *scene = 0);  // FIXME: Hack for QT5 compilation.
+        CSimulationView(CSimulationScene *scene, QWidget *parent = 0);
 
         virtual void zoomIn();
         virtual void zoomOut();
@@ -54,14 +52,14 @@ namespace Caneda
         void print(QPrinter *printer, bool fitInView);
         void exportImage(QPaintDevice &device);
 
-//    public Q_SLOTS:
-//        virtual void legendClicked(QwtPlotItem *plotItem);
+    public Q_SLOTS:
+        virtual void legendClicked(QwtPlotItem *plotItem);
 
     private:
         CSimulationScene *m_csimulationScene;
 
-//        QwtPlotGrid *m_grid;
-//        QwtLegend *m_legend;
+        QwtPlotGrid *m_grid;
+        QwtLegend *m_legend;
     };
 
 } // namespace Caneda

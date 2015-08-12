@@ -915,8 +915,7 @@ namespace Caneda
 
         // Open the resulting waveforms
         DocumentViewManager *manager = DocumentViewManager::instance();
-        //! \todo Re-enable once waveform opening is fixed.
-        // manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
+        manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
     }
 
     /*!
@@ -1622,8 +1621,7 @@ namespace Caneda
         // Open the resulting waveforms
         if (suffix == "net" || suffix == "cir" || suffix == "spc" || suffix == "sp") {
             DocumentViewManager *manager = DocumentViewManager::instance();
-            //! \todo Re-enable once waveform opening is fixed.
-            // manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
+            manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
         }
         else if (suffix == "vhd" || suffix == "vhdl") {
             simulationProcess->start(QString("gtkwave waveforms.ghw"));  // Open the waveforms

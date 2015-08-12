@@ -10,7 +10,7 @@
 # QWT_LIBRARY - Qwt library directory
 #
 # ==================================================================================
-# Copyright (C) 2012 by Pablo Daniel Pareja Obregon
+# Copyright (C) 2012-2015 by Pablo Daniel Pareja Obregon
 #
 # This is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,20 +28,22 @@
 # Boston, MA 02110-1301, USA.
 # ==================================================================================
 
+FILE(GLOB QWT_SEARCH_PATHS "/opt/qwt-*" "/usr/local/qwt-*")
+
 FIND_PATH(QWT_INCLUDE_DIR
     NAMES qwt.h
-    PATHS /usr/local/include/qwt /usr/include/qwt
+    PATHS /usr/local/include/qwt /usr/include/qwt ${QWT_SEARCH_PATHS}/include
     )
 
 FIND_LIBRARY(QWT_LIBRARY
     NAMES qwt libqwt
-    PATHS /usr/local/lib /usr/lib
+    PATHS /usr/local/lib /usr/lib ${QWT_SEARCH_PATHS}/lib
     )
-    
+
 SET(QWT_INCLUDE_DIRS ${QWT_INCLUDE_DIR})
 SET(QWT_LIBRARIES ${QWT_LIBRARY})
 
-# handle the QUIETLY and REQUIRED arguments and set QWT_FOUND to TRUE
+# Handle the QUIETLY and REQUIRED arguments and set QWT_FOUND to TRUE
 # if all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(Qwt DEFAULT_MSG

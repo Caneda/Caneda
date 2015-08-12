@@ -320,8 +320,8 @@ namespace Caneda
     SimulationView::SimulationView(SimulationDocument *document) :
         IView(document)
     {
-//        m_simulationView = new CSimulationView(document->cSimulationScene(), 0);
-//        m_simulationView->showAll();
+        m_simulationView = new CSimulationView(document->cSimulationScene(), 0);
+        m_simulationView->showAll();
 
         //! \todo Reimplement this
 //        connect(m_simulationView, SIGNAL(focussedIn(CSimulationView*)), this,
@@ -370,7 +370,7 @@ namespace Caneda
     void SimulationView::updateSettingsChanges()
     {
         m_simulationView->loadUserSettings();
-//        m_simulationView->replot();
+        m_simulationView->replot();
     }
 
     void SimulationView::onWidgetFocussedIn()

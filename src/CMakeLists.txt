@@ -30,7 +30,7 @@ TARGET_LINK_LIBRARIES( caneda
   ${Qt5Widgets_LIBRARIES}
   ${Qt5Svg_LIBRARIES}
   ${Qt5PrintSupport_LIBRARIES}
-#  ${QWT_LIBRARIES}
+  ${QWT_LIBRARIES}
   dialogs
   paintings
   attenuator

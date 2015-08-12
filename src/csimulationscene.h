@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,7 +23,7 @@
 #include <QWidget>
 
 // Forward declarations
-//class QwtPlotCurve;
+class QwtPlotCurve;
 
 namespace Caneda
 {
@@ -35,11 +35,11 @@ namespace Caneda
         CSimulationScene(QWidget *parent = 0);
 
         //! \brief Returns a list of all items in the scene in descending stacking
-//        QList<QwtPlotCurve*> items() const { return m_items; }
-//        void addItem(QwtPlotCurve *item);
+        QList<QwtPlotCurve*> items() const { return m_items; }
+        void addItem(QwtPlotCurve *item);
 
     private:
-//        QList<QwtPlotCurve*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
+        QList<QwtPlotCurve*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
     };
 
 } // namespace Caneda

@@ -15,8 +15,8 @@ FIND_PACKAGE( Qt5Svg REQUIRED )
 FIND_PACKAGE( Qt5PrintSupport REQUIRED )
 
 # For Qwt
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-#FIND_PACKAGE( Qwt REQUIRED )
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+FIND_PACKAGE( Qwt REQUIRED )
 
 # ==================================================================================
 # Configure runtime directories
@@ -50,7 +50,7 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_SOURCE_DIR}/src
   ${Qt5Widgets_INCLUDE_DIRS}
   ${Qt5Svg_INCLUDE_DIRS}
-#  ${QWT_INCLUDE_DIR}
+  ${QWT_INCLUDE_DIR}
 )
 
 ADD_SUBDIRECTORY( src )

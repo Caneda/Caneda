@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -30,7 +30,7 @@
 #include <QString>
 
 #include <math.h>
-//#include <qwt_plot_curve.h>
+#include <qwt_plot_curve.h>
 
 namespace Caneda
 {
@@ -66,7 +66,7 @@ namespace Caneda
 
         QTextStream in(&file);
         QString line = in.readLine();
-//        QList<QwtPlotCurve*> plotCurves;  // List of curves
+        QList<QwtPlotCurve*> plotCurves;  // List of curves
         QList<double*> dataSamples;  // List of curve's data. Once filled, used to set data in plotCurves
 
         while(!line.isNull()) {
@@ -112,8 +112,8 @@ namespace Caneda
                          */
 
                         // Create a new curve, and add it to the list
-//                        QwtPlotCurve *curve = new QwtPlotCurve(tok.at(1));  // tok.at(1) = name
-//                        plotCurves.append(curve);  // Append new curve to the list
+                        QwtPlotCurve *curve = new QwtPlotCurve(tok.at(1));  // tok.at(1) = name
+                        plotCurves.append(curve);  // Append new curve to the list
 
                         double *data = new double[npoints];  // Create new dataset
                         dataSamples.append(data);  // Append new data set to the list
@@ -121,8 +121,8 @@ namespace Caneda
 
                         // If dealing with complex numbers, create an array for the imaginary part
                         if(!real) {
-//                            QwtPlotCurve *curveImaginary = new QwtPlotCurve(tok.at(1));  // tok.at(1) = name
-//                            plotCurves.append(curveImaginary);  // Append new curve to the list
+                            QwtPlotCurve *curveImaginary = new QwtPlotCurve(tok.at(1));  // tok.at(1) = name
+                            plotCurves.append(curveImaginary);  // Append new curve to the list
 
                             double *dataImaginary = new double[npoints];  // Create new dataset
                             dataSamples.append(dataImaginary);  // Append new data set to the list
@@ -156,9 +156,9 @@ namespace Caneda
                     // for the rest of the curves.
                     for(int i = 1; i < nvars; i++){
                         // Copy the data into the curves
-//                        plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
+                        plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
                         // Add the curve to the scene
-//                        scene->addItem(plotCurves[i]);
+                        scene->addItem(plotCurves[i]);
                     }
                 }
                 else {
@@ -185,11 +185,11 @@ namespace Caneda
                     // for the rest of the curves.
                     for(int i = 1; i < nvars; i++){
                         // Copy the data into the curves
-//                        plotCurves[2*i-1]->setSamples(dataSamples[0], dataSamples[2*i], npoints);
-//                        plotCurves[2*i]->setSamples(dataSamples[0], dataSamples[2*i+1], npoints);
+                        plotCurves[2*i-1]->setSamples(dataSamples[0], dataSamples[2*i], npoints);
+                        plotCurves[2*i]->setSamples(dataSamples[0], dataSamples[2*i+1], npoints);
                         // Add the curve to the scene
-//                        scene->addItem(plotCurves[2*i-1]);
-//                        scene->addItem(plotCurves[2*i]);
+                        scene->addItem(plotCurves[2*i-1]);
+                        scene->addItem(plotCurves[2*i]);
                     }
                 }
             }
@@ -213,9 +213,9 @@ namespace Caneda
                     // for the rest of the curves.
                     for(int i = 1; i < nvars; i++){
                         // Copy the data into the curves
-//                        plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
+                        plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
                         // Add the curve to the scene
-//                        scene->addItem(plotCurves[i]);
+                        scene->addItem(plotCurves[i]);
                     }
                 }
                 else {
@@ -240,11 +240,11 @@ namespace Caneda
                     // for the rest of the curves.
                     for(int i = 1; i < nvars; i++){
                         // Copy the data into the curves
-//                        plotCurves[2*i-1]->setSamples(dataSamples[0], dataSamples[2*i], npoints);
-//                        plotCurves[2*i]->setSamples(dataSamples[0], dataSamples[2*i+1], npoints);
+                        plotCurves[2*i-1]->setSamples(dataSamples[0], dataSamples[2*i], npoints);
+                        plotCurves[2*i]->setSamples(dataSamples[0], dataSamples[2*i+1], npoints);
                         // Add the curve to the scene
-//                        scene->addItem(plotCurves[2*i-1]);
-//                        scene->addItem(plotCurves[2*i]);
+                        scene->addItem(plotCurves[2*i-1]);
+                        scene->addItem(plotCurves[2*i]);
                     }
                 }
             }
