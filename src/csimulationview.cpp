@@ -23,8 +23,11 @@
 #include "settings.h"
 
 #include <qwt_legend.h>
+#include <qwt_plot_canvas.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
+#include <qwt_plot_panner.h>
+#include <qwt_plot_magnifier.h>
 #include <qwt_plot_renderer.h>
 
 namespace Caneda
@@ -132,8 +135,16 @@ namespace Caneda
         QColor foregroundColor = settings->currentValue("gui/foregroundColor").value<QColor>();
         QColor backgroundColor = settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
 
-        setCanvasBackground(backgroundColor);
+        // Canvas
+        QwtPlotCanvas *canvas = new QwtPlotCanvas();
+        canvas->setFrameStyle( QFrame::StyledPanel | QFrame::Plain );
 
+        QPalette canvasPalette( backgroundColor );
+        canvas->setPalette( canvasPalette );
+
+        setCanvas(canvas);
+
+        // Grid
         if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {
             m_grid->enableXMin(true);
             m_grid->setMajorPen(QPen(foregroundColor, 1, Qt::DashLine));
@@ -144,8 +155,19 @@ namespace Caneda
             m_grid->detach();
         }
 
-//        m_legend->setItemMode(QwtLegend::ClickableItem);
-        this->insertLegend(m_legend, QwtPlot::TopLegend);
+        // Axes
+        setAxisTitle(xBottom, QwtText(tr("Time [s]")));
+        setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
+
+        // Panning with the left mouse button
+        (void) new QwtPlotPanner(canvas);
+
+        // Zoom in/out with the wheel
+        (void) new QwtPlotMagnifier(canvas);
+
+        // Legend
+        // m_legend->setItemMode(QwtLegend::ClickableItem);
+        insertLegend(m_legend, QwtPlot::TopLegend);
     }
 
     void CSimulationView::print(QPrinter *printer, bool fitInView)
