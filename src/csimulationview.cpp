@@ -29,6 +29,7 @@
 #include <qwt_plot_panner.h>
 #include <qwt_plot_magnifier.h>
 #include <qwt_plot_renderer.h>
+#include <qwt_plot_zoomer.h>
 
 namespace Caneda
 {
@@ -159,11 +160,19 @@ namespace Caneda
         setAxisTitle(xBottom, QwtText(tr("Time [s]")));
         setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
 
-        // Panning with the left mouse button
-        (void) new QwtPlotPanner(canvas);
+        // Panning with the middle mouse button
+        QwtPlotPanner *panner = new QwtPlotPanner(canvas);
+        panner->setMouseButton(Qt::MidButton);
 
         // Zoom in/out with the wheel
-        (void) new QwtPlotMagnifier(canvas);
+        QwtPlotMagnifier *magnifier = new QwtPlotMagnifier(canvas);
+        magnifier->setMouseButton(Qt::NoButton);  // Disable default left button action
+
+        // Box zoom with left button and position label
+        QwtPlotZoomer *zoomer = new QwtPlotZoomer(canvas);
+        zoomer->setTrackerMode(QwtPicker::AlwaysOn);
+        zoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::NoButton); // Disable default right button action
+        zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::NoButton); // Disable default middle button action
 
         // Legend
         // m_legend->setItemMode(QwtLegend::ClickableItem);
