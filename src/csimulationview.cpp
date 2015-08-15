@@ -43,12 +43,39 @@ namespace Caneda
         QwtPlot(parent),
         m_csimulationScene(scene)
     {
+        // Canvas
+        m_canvas = new QwtPlotCanvas();
+        m_canvas->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
+        setCanvas(m_canvas);
+
+        // Axes
+        setAxisTitle(xBottom, QwtText(tr("Time [s]")));
+        setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
+
+        // Panning with the middle mouse button
+        QwtPlotPanner *panner = new QwtPlotPanner(m_canvas);
+        panner->setMouseButton(Qt::MidButton);
+
+        // Zoom in/out with the wheel
+        QwtPlotMagnifier *magnifier = new QwtPlotMagnifier(m_canvas);
+        magnifier->setMouseButton(Qt::NoButton);  // Disable default left button action
+
+        // Box zoom with left button and position label
+        QwtPlotZoomer *zoomer = new QwtPlotZoomer(m_canvas);
+        zoomer->setTrackerMode(QwtPicker::AlwaysOn);
+        zoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::NoButton); // Disable default right button action
+        zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::NoButton); // Disable default middle button action
+
+        // Grid
         m_grid = new QwtPlotGrid();
+        m_grid->enableXMin(true);
+
+        // Legend
         m_legend = new QwtLegend();
+        insertLegend(m_legend, QwtPlot::TopLegend);
 
+        // Load user settings, for example canvas color
         loadUserSettings();
-
-//        connect(this, SIGNAL(legendClicked(QwtPlotItem *)), this, SLOT(legendClicked(QwtPlotItem *)));
     }
 
     void CSimulationView::zoomIn()
@@ -69,21 +96,6 @@ namespace Caneda
     void CSimulationView::zoomOriginal()
     {
         //! \todo Implement this
-    }
-
-    //! \brief Shows or hides selected plot, upon clicking the respective legend.
-    void CSimulationView:: legendClicked(QwtPlotItem *plotItem)
-    {
-        // Perform show/hide action
-        if(plotItem->isVisible()){
-            plotItem->hide();
-        }
-        else{
-            plotItem->show();
-        }
-
-        // Refresh the plot
-        replot();
     }
 
     //! \brief Displays all items available in the scene, in the plot widget.
@@ -130,24 +142,20 @@ namespace Caneda
         replot();
     }
 
+    //! \brief Loads the saved user settings, updating the values on the canvas.
     void CSimulationView::loadUserSettings()
     {
+        // Load settings
         Settings *settings = Settings::instance();
         QColor foregroundColor = settings->currentValue("gui/foregroundColor").value<QColor>();
         QColor backgroundColor = settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
 
         // Canvas
-        QwtPlotCanvas *canvas = new QwtPlotCanvas();
-        canvas->setFrameStyle( QFrame::StyledPanel | QFrame::Plain );
-
-        QPalette canvasPalette( backgroundColor );
-        canvas->setPalette( canvasPalette );
-
-        setCanvas(canvas);
+        QPalette canvasPalette(backgroundColor);
+        m_canvas->setPalette(canvasPalette);
 
         // Grid
         if(Settings::instance()->currentValue("gui/gridVisible").value<bool>()) {
-            m_grid->enableXMin(true);
             m_grid->setMajorPen(QPen(foregroundColor, 1, Qt::DashLine));
             m_grid->setMinorPen(QPen(foregroundColor, 0 , Qt::DotLine));
             m_grid->attach(this);
@@ -155,28 +163,6 @@ namespace Caneda
         else {
             m_grid->detach();
         }
-
-        // Axes
-        setAxisTitle(xBottom, QwtText(tr("Time [s]")));
-        setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
-
-        // Panning with the middle mouse button
-        QwtPlotPanner *panner = new QwtPlotPanner(canvas);
-        panner->setMouseButton(Qt::MidButton);
-
-        // Zoom in/out with the wheel
-        QwtPlotMagnifier *magnifier = new QwtPlotMagnifier(canvas);
-        magnifier->setMouseButton(Qt::NoButton);  // Disable default left button action
-
-        // Box zoom with left button and position label
-        QwtPlotZoomer *zoomer = new QwtPlotZoomer(canvas);
-        zoomer->setTrackerMode(QwtPicker::AlwaysOn);
-        zoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::NoButton); // Disable default right button action
-        zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::NoButton); // Disable default middle button action
-
-        // Legend
-        // m_legend->setItemMode(QwtLegend::ClickableItem);
-        insertLegend(m_legend, QwtPlot::TopLegend);
     }
 
     void CSimulationView::print(QPrinter *printer, bool fitInView)
@@ -195,6 +181,21 @@ namespace Caneda
         renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasBackground, true);
 
         renderer.renderTo(this, device);
+    }
+
+    //! \brief Shows or hides selected plot.
+    void CSimulationView::setPlotVisible(QwtPlotItem *plotItem, bool visible)
+    {
+        // Perform show/hide action
+        if(visible){
+            plotItem->show();
+        }
+        else{
+            plotItem->hide();
+        }
+
+        // Refresh the plot
+        replot();
     }
 
 } // namespace Caneda

@@ -26,6 +26,7 @@
 
 // Forward declations
 class QwtLegend;
+class QwtPlotCanvas;
 class QwtPlotGrid;
 
 namespace Caneda
@@ -53,11 +54,12 @@ namespace Caneda
         void exportImage(QPaintDevice &device);
 
     public Q_SLOTS:
-        virtual void legendClicked(QwtPlotItem *plotItem);
+        void setPlotVisible(QwtPlotItem *plotItem, bool visible);
 
     private:
         CSimulationScene *m_csimulationScene;
 
+        QwtPlotCanvas *m_canvas;
         QwtPlotGrid *m_grid;
         QwtLegend *m_legend;
     };
