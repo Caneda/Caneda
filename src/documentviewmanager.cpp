@@ -134,7 +134,23 @@ namespace Caneda
 
         DocumentData *data = documentDataForFileName(fileName);
 
-        // Try opening file which will create corresponding DocumentData
+        // If the file is already opened, first close it to refresh the file
+        // contents. This allows external programs to modify the data, and
+        // refresh the data upon next opening. This is used, for example,
+        // during simulations, when the simulation engine changes the waveform
+        // file contents.
+        if (data) {
+            // Grab the first view of the document
+            IView *view = 0;
+            if (!data->views.isEmpty()) {
+                view = viewsForDocument(data->document).first();
+            }
+            closeViewHelper(view, true, true);
+
+            data = documentDataForFileName(fileName);
+        }
+
+        // Open the file which will create corresponding DocumentData
         if (!data) {
             QFileInfo fileInfo(fileName);
             foreach (IContext *context, m_contexts) {
@@ -155,6 +171,7 @@ namespace Caneda
             }
         }
 
+        // Once the document is loaded, go to the corresponding view
         if (data) {
             highlightViewForDocument(data->document);
         }
