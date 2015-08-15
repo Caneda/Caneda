@@ -1015,6 +1015,9 @@ namespace Caneda
                     tr("%1 : File save error").arg(document->fileName()), errorMessage);
             document->setFileName(oldFileName);
         }
+        else {
+            slotFileOpen(fileName); // The document was saved ok, now reopen the document to load text highlighting
+        }
 
         //FIXME: Probably update/close other open document having same name as the above saved one.
     }
