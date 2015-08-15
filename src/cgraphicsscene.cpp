@@ -721,15 +721,17 @@ namespace Caneda
             IView *v = manager->currentView();
             CGraphicsView *sv = qobject_cast<CGraphicsView*>(v->toWidget());
 
-            if(sv->currentZoom() < 1) {
-                // While drawing, choose spacing to be multiple times the actual grid size.
-                if(sv->currentZoom() > 0.5) {
-                    drawingGridWidth *= 4;
-                    drawingGridHeight *= 4;
-                }
-                else {
-                    drawingGridWidth *= 16;
-                    drawingGridHeight *= 16;
+            if(sv) {
+                if(sv->currentZoom() < 1) {
+                    // While drawing, choose spacing to be multiple times the actual grid size.
+                    if(sv->currentZoom() > 0.5) {
+                        drawingGridWidth *= 4;
+                        drawingGridHeight *= 4;
+                    }
+                    else {
+                        drawingGridWidth *= 16;
+                        drawingGridHeight *= 16;
+                    }
                 }
             }
 
