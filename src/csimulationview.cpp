@@ -132,12 +132,12 @@ namespace Caneda
 
     void CSimulationView::zoomFitInBest()
     {
-        //! \todo Implement this
+        m_zoomer->zoom(0);
     }
 
     void CSimulationView::zoomOriginal()
     {
-        //! \todo Implement this
+        m_zoomer->zoom(0);
     }
 
     //! \brief Adds all items available in the scene to the plot widget.
@@ -186,6 +186,11 @@ namespace Caneda
 
         // Refresh the plot
         replot();
+
+        // Set the zoom base to the current (autoscale) value.
+        // This value is later used to be able to return to the base zoom,
+        // displaying all waveforms contents.
+        m_zoomer->setZoomBase();
     }
 
     //! \brief Loads the saved user settings, updating the values on the canvas.
