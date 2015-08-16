@@ -328,8 +328,8 @@ namespace Caneda
 //                SLOT(onWidgetFocussedIn()));
 //        connect(m_simulationView, SIGNAL(focussedOut(CSimulationView*)), this,
 //                SLOT(onWidgetFocussedOut()));
-//        connect(m_simulationView, SIGNAL(cursorPositionChanged(const QString &)),
-//                this, SIGNAL(statusBarMessage(const QString &)));
+        connect(m_simulationView, SIGNAL(cursorPositionChanged(const QString &)),
+                this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     QWidget* SimulationView::toWidget() const

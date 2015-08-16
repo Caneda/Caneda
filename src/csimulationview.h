@@ -28,6 +28,7 @@
 class QwtLegend;
 class QwtPlotCanvas;
 class QwtPlotGrid;
+class QwtPlotZoomer;
 
 namespace Caneda
 {
@@ -56,12 +57,19 @@ namespace Caneda
     public Q_SLOTS:
         void setPlotVisible(QwtPlotItem *plotItem, bool visible);
 
+    Q_SIGNALS:
+        void cursorPositionChanged(const QString& newPos);
+
+    protected:
+        void mouseMoveEvent(QMouseEvent *event);
+
     private:
         CSimulationScene *m_csimulationScene;
 
         QwtPlotCanvas *m_canvas;
         QwtPlotGrid *m_grid;
         QwtLegend *m_legend;
+        QwtPlotZoomer *m_zoomer;
     };
 
 } // namespace Caneda

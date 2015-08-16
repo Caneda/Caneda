@@ -22,6 +22,8 @@
 #include "csimulationscene.h"
 #include "settings.h"
 
+#include <QMouseEvent>
+
 #include <qwt_legend.h>
 #include <qwt_plot_canvas.h>
 #include <qwt_plot_curve.h>
@@ -55,12 +57,13 @@ namespace Caneda
         // Zoom in/out with the wheel
         QwtPlotMagnifier *magnifier = new QwtPlotMagnifier(m_canvas);
         magnifier->setMouseButton(Qt::NoButton);  // Disable default left button action
+        magnifier->setWheelFactor(1/magnifier->wheelFactor());  // Invert the wheel direction
 
         // Box zoom with left button and position label
-        QwtPlotZoomer *zoomer = new QwtPlotZoomer(m_canvas);
-        zoomer->setTrackerMode(QwtPicker::AlwaysOn);
-        zoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::NoButton); // Disable default right button action
-        zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::NoButton); // Disable default middle button action
+        m_zoomer = new QwtPlotZoomer(m_canvas);
+        m_zoomer->setTrackerMode(QwtPicker::AlwaysOn);
+        m_zoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::NoButton); // Disable default right button action
+        m_zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::NoButton); // Disable default middle button action
 
         // Grid
         m_grid = new QwtPlotGrid();
@@ -69,6 +72,9 @@ namespace Caneda
         // Legend
         m_legend = new QwtLegend();
         insertLegend(m_legend, QwtPlot::TopLegend);
+
+        // Enable mouse tracking for status bar position display
+        setMouseTracking(true);
 
         // Load user settings, for example canvas color
         loadUserSettings();
@@ -196,6 +202,18 @@ namespace Caneda
 
         // Refresh the plot
         replot();
+    }
+
+    void CSimulationView::mouseMoveEvent(QMouseEvent *event)
+    {
+        //! \todo Adjust newCursorPos position to display plot position in the statusbar (instead of widget position)
+        QPoint newCursorPos = m_zoomer->trackerPosition();
+        QString str = QString("%1 : %2")
+            .arg(newCursorPos.x())
+            .arg(newCursorPos.y());
+        emit cursorPositionChanged(str);
+
+        QwtPlot::mouseMoveEvent(event);
     }
 
 } // namespace Caneda
