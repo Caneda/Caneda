@@ -900,7 +900,17 @@ namespace Caneda
                     QString modelType = attribs.value("type").toString();
                     QString modelSyntax = attribs.value("syntax").toString();
 
-                    component()->models.insert(modelType, modelSyntax);
+                    // Check if we are opening the file for edition or to include it in a library
+                    CGraphicsScene *scene = cGraphicsScene();
+                    if(scene) {
+                        // We are opening the file for symbol edition
+                        //! \todo We must add the model as a special property, or allow some form of editing the model
+                        // scene->addProperty(prop);
+                    }
+                    else if(component()) {
+                        // We are opening the file as a component to include it in a library
+                        component()->models.insert(modelType, modelSyntax);
+                    }
 
                     // Read till end element
                     reader->readUnknownElement();
