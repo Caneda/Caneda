@@ -29,12 +29,36 @@
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_panner.h>
-#include <qwt_plot_magnifier.h>
 #include <qwt_plot_renderer.h>
 #include <qwt_plot_zoomer.h>
 
 namespace Caneda
 {
+    /*************************************************************************
+     *                           CPlotMagnifier                              *
+     *************************************************************************/
+    //! \brief Constructor
+    CPlotMagnifier::CPlotMagnifier(QWidget *canvas): QwtPlotMagnifier(canvas)
+    {
+        m_zoomFactor = 1.1;
+    }
+
+    //! \brief Zoom in the plot
+    void CPlotMagnifier::zoomIn()
+    {
+        rescale(1.0 / m_zoomFactor);
+    }
+
+    //! \brief Zoom out the plot
+    void CPlotMagnifier::zoomOut()
+    {
+        rescale(m_zoomFactor);
+    }
+
+
+    /*************************************************************************
+     *                          CSimulationView                              *
+     *************************************************************************/
     /*!
      * \brief Constructs a new simulation view.
      *
@@ -55,9 +79,9 @@ namespace Caneda
         panner->setMouseButton(Qt::MidButton);
 
         // Zoom in/out with the wheel
-        QwtPlotMagnifier *magnifier = new QwtPlotMagnifier(m_canvas);
-        magnifier->setMouseButton(Qt::NoButton);  // Disable default left button action
-        magnifier->setWheelFactor(1/magnifier->wheelFactor());  // Invert the wheel direction
+        m_magnifier = new CPlotMagnifier(m_canvas);
+        m_magnifier->setMouseButton(Qt::NoButton);  // Disable default left button action
+        m_magnifier->setWheelFactor(1/m_magnifier->wheelFactor());  // Invert the wheel direction
 
         // Box zoom with left button and position label
         m_zoomer = new QwtPlotZoomer(m_canvas);
@@ -82,12 +106,12 @@ namespace Caneda
 
     void CSimulationView::zoomIn()
     {
-        //! \todo Implement this
+        m_magnifier->zoomIn();
     }
 
     void CSimulationView::zoomOut()
     {
-        //! \todo Implement this
+        m_magnifier->zoomOut();
     }
 
     void CSimulationView::zoomFitInBest()

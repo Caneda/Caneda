@@ -23,6 +23,7 @@
 #include <QPrinter>
 
 #include <qwt_plot.h>
+#include <qwt_plot_magnifier.h>
 
 // Forward declations
 class QwtLegend;
@@ -35,6 +36,43 @@ namespace Caneda
     // Forward declations
     class CSimulationScene;
 
+    /*!
+     * \brief Reimplementation of the QwtPlotMagnifier class to allow for the
+     * implementation zoom in/zoom out actions.
+     *
+     * \sa QwtPlotMagnifier
+     */
+    class CPlotMagnifier: public QwtPlotMagnifier
+    {
+        Q_OBJECT
+
+    public:
+        CPlotMagnifier(QWidget *);
+
+        void zoomIn();
+        void zoomOut();
+
+    private:
+        double m_zoomFactor;
+    };
+
+    /*!
+     * \brief This class provides a view for displaying simulations scenes
+     * (several grouped simulation waveforms).
+     *
+     * This class implements the view class of Qt's Graphics View Architecture.
+     * The view class provides the view widget, which visualizes the contents
+     * of a scene (individual waveforms). You can attach several views to the
+     * same scene, to provide different viewports into the same data set of the
+     * document (for example, when using split views).
+     *
+     * In this class common view operations are implemented, for example
+     * zooming and focus events. In this way, one single scene can have
+     * multiple views associated to it, allowing the user to look at the scene
+     * for example, with multiple zoom levels.
+     *
+     * \sa CSimulationScene
+     */
     class CSimulationView : public QwtPlot
     {
         Q_OBJECT
@@ -70,6 +108,7 @@ namespace Caneda
         QwtPlotGrid *m_grid;
         QwtLegend *m_legend;
         QwtPlotZoomer *m_zoomer;
+        CPlotMagnifier *m_magnifier;
     };
 
 } // namespace Caneda
