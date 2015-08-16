@@ -246,11 +246,11 @@ namespace Caneda
 
     void CSimulationView::mouseMoveEvent(QMouseEvent *event)
     {
-        //! \todo Adjust newCursorPos position to display plot position in the statusbar (instead of widget position)
         QPoint newCursorPos = m_zoomer->trackerPosition();
-        QString str = QString("%1 : %2")
-            .arg(newCursorPos.x())
-            .arg(newCursorPos.y());
+        double x = invTransform(xBottom, newCursorPos.x());
+        double y = invTransform(yLeft, newCursorPos.y());
+
+        QString str = QString("%1 : %2").arg(x).arg(y);
         emit cursorPositionChanged(str);
 
         QwtPlot::mouseMoveEvent(event);
