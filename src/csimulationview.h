@@ -23,17 +23,28 @@
 #include <QPrinter>
 
 #include <qwt_plot.h>
+#include <qwt_plot_zoomer.h>
 
 // Forward declations
 class QwtLegend;
 class QwtPlotCanvas;
 class QwtPlotGrid;
-class QwtPlotZoomer;
 
 namespace Caneda
 {
     // Forward declations
     class CSimulationScene;
+
+    class CPlotZoomer : public QwtPlotZoomer
+    {
+        Q_OBJECT
+
+    public:
+        CPlotZoomer(QWidget *canvas, bool doReplot=true);
+
+    protected:
+        virtual QSizeF minZoomSize() const;
+    };
 
     class CSimulationView : public QwtPlot
     {
@@ -69,7 +80,7 @@ namespace Caneda
         QwtPlotCanvas *m_canvas;
         QwtPlotGrid *m_grid;
         QwtLegend *m_legend;
-        QwtPlotZoomer *m_zoomer;
+        CPlotZoomer *m_zoomer;
     };
 
 } // namespace Caneda
