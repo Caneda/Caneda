@@ -279,7 +279,7 @@ namespace Caneda
         writer->writeAttribute("library", library());
 
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         d->properties->writeProperties(writer);
 
