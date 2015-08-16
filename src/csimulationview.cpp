@@ -36,46 +36,6 @@
 namespace Caneda
 {
     /*!
-     * \brief Default constructor
-     *
-     * Reimplementation of the QwtPlotZoomer class to allow for special use
-     * cases. This allow us for example to define the minimun zoom size and
-     * zoom in/zoom out actions.
-     *
-     * \param canvas
-     * \param doReplot
-     *
-     * \sa QwtPlotZoomer::QwtPlotZoomer()
-     */
-    CPlotZoomer::CPlotZoomer(QWidget *canvas, bool doReplot) :
-        QwtPlotZoomer(canvas, doReplot)
-    {
-    }
-
-    /*!
-     * \brief Change the default zooming limit
-     *
-     * Change the default zooming limit of the QwtPlotZoomer, as originally
-     * the limit is zoomBase()/1e4 which is a value too big in electronics.
-     * The commonly used values may start from the picoseconds, picoVolts,
-     * picoAmperes, etc (1e-12).
-     *
-     * This method is internat to the QwtPlotZoomer class, but without
-     * overriding its values, problems arise when trying to change the zoom
-     * values.
-     *
-     * \return zoomBase().width() / 10e12, zoomBase().height() / 10e12
-     *
-     * \sa QwtPlotZoomer::minZoomSize()
-     */
-    QSizeF CPlotZoomer::minZoomSize() const
-    {
-        return QSizeF( zoomBase().width() / 10e12,
-            zoomBase().height() / 10e12 );
-    }
-
-
-    /*!
      * \brief Constructs a new simulation view.
      *
      * \param sv Simulation scene to point this view to.
@@ -100,7 +60,7 @@ namespace Caneda
         magnifier->setWheelFactor(1/magnifier->wheelFactor());  // Invert the wheel direction
 
         // Box zoom with left button and position label
-        m_zoomer = new CPlotZoomer(m_canvas);
+        m_zoomer = new QwtPlotZoomer(m_canvas);
         m_zoomer->setTrackerMode(QwtPicker::AlwaysOn);
         m_zoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::NoButton); // Disable default right button action
         m_zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::NoButton); // Disable default middle button action
