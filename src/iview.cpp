@@ -321,7 +321,7 @@ namespace Caneda
         IView(document)
     {
         m_simulationView = new CSimulationView(document->cSimulationScene(), 0);
-        m_simulationView->showAll();
+        m_simulationView->populate();
 
         //! \todo Reimplement this
 //        connect(m_simulationView, SIGNAL(focussedIn(CSimulationView*)), this,

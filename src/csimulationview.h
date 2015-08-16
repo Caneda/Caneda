@@ -46,7 +46,7 @@ namespace Caneda
         virtual void zoomFitInBest();
         virtual void zoomOriginal();
 
-        void showAll();
+        void populate();
 
         void loadUserSettings();
 

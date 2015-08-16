@@ -48,10 +48,6 @@ namespace Caneda
         m_canvas->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
         setCanvas(m_canvas);
 
-        // Axes
-        setAxisTitle(xBottom, QwtText(tr("Time [s]")));
-        setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
-
         // Panning with the middle mouse button
         QwtPlotPanner *panner = new QwtPlotPanner(m_canvas);
         panner->setMouseButton(Qt::MidButton);
@@ -98,8 +94,8 @@ namespace Caneda
         //! \todo Implement this
     }
 
-    //! \brief Displays all items available in the scene, in the plot widget.
-    void CSimulationView::showAll()
+    //! \brief Adds all items available in the scene to the plot widget.
+    void CSimulationView::populate()
     {
         QList<QwtPlotCurve*> m_items = m_csimulationScene->items();
 
@@ -113,12 +109,11 @@ namespace Caneda
             // the same curve to different views
             QwtPlotCurve *newCurve = new QwtPlotCurve();
             newCurve->setData(item->data());
-            newCurve->attach(this);
             newCurve->setTitle(item->title());
+            newCurve->attach(this);
 
+            // Select the style and color of the new curve
             newCurve->setRenderHint(QwtPlotCurve::RenderAntialiased);
-
-            // Select the color of the new curve
             color.setHsv(colorIndex , 200, valueIndex);
             newCurve->setPen(QPen(color));
 
@@ -137,6 +132,11 @@ namespace Caneda
                 }
             }
         }
+
+        // Axes
+        //! \todo Set different axis titles depending on the type of simulation, ie. time for transient; frequency for ac simulation
+        setAxisTitle(xBottom, QwtText(tr("Time [s]")));
+        setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
 
         // Refresh the plot
         replot();
