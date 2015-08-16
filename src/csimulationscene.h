@@ -27,6 +27,18 @@ class QwtPlotCurve;
 
 namespace Caneda
 {
+    /*!
+     * \brief This class implements the scene class of Qt's Graphics View
+     * Architecture, representing the actual document interface (scene),
+     * containing the simulation waveform data.
+     *
+     * Each scene must have at least one associated view (CSimulationView), to
+     * display the contents of the scene (waveforms). Several views can be
+     * attached to the same scene, providing different viewports into the same
+     * data set (for example, when using split views).
+     *
+     * \sa CSimulationView
+     */
     class CSimulationScene : public QWidget
     {
         Q_OBJECT
