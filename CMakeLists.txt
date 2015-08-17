@@ -10,14 +10,15 @@ SET( PACKAGE_STRING "caneda 0.1.0" )
 
 CMAKE_MINIMUM_REQUIRED( VERSION 2.8.11 )
 
-SET(QT_MIN_VERSION 5.3.2)
+SET( QT_MIN_VERSION 5.3.2 )
 FIND_PACKAGE( Qt5Widgets ${QT_MIN_VERSION} REQUIRED )
 FIND_PACKAGE( Qt5Svg ${QT_MIN_VERSION} REQUIRED )
 FIND_PACKAGE( Qt5PrintSupport ${QT_MIN_VERSION} REQUIRED )
 
 # For Qwt
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-FIND_PACKAGE( Qwt REQUIRED )
+SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/" )
+SET( QWT_MIN_VERSION 6.1.2 )
+FIND_PACKAGE( Qwt ${QWT_MIN_VERSION} REQUIRED )
 
 # ==================================================================================
 # Configure runtime directories
