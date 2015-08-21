@@ -167,9 +167,7 @@ namespace Caneda
         return nodeCreated;
     }
 
-    /*!
-     * \brief Context menu
-     */
+    //! \brief Context menu.
     void CGraphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         ActionManager* am = ActionManager::instance();

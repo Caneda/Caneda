@@ -236,9 +236,7 @@ namespace Caneda
         return status;
     }
 
-    /*!
-     * \brief Context menu
-     */
+    //! \brief Context menu.
     void CSimulationView::contextMenuEvent(const QPoint &pos)
     {
         ActionManager* am = ActionManager::instance();
