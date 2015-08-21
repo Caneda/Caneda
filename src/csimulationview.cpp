@@ -19,9 +19,13 @@
 
 #include "csimulationview.h"
 
+#include "actionmanager.h"
 #include "csimulationscene.h"
 #include "settings.h"
 
+#include "dialogs/simulationdialog.h"
+
+#include <QMenu>
 #include <QMouseEvent>
 
 #include <qwt_legend.h>
@@ -102,6 +106,10 @@ namespace Caneda
 
         // Load user settings, for example canvas color
         loadUserSettings();
+
+        // Context menu event
+        setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenuEvent(const QPoint &)));
     }
 
     void CSimulationView::zoomIn()
@@ -216,6 +224,38 @@ namespace Caneda
         renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasBackground, true);
 
         renderer.renderTo(this, device);
+    }
+
+    //! \copydoc CGraphicsItem::launchPropertyDialog()
+    int CSimulationView::launchPropertyDialog()
+    {
+        SimulationDialog *dia = new SimulationDialog(this);
+        int status = dia->exec();
+        delete dia;
+
+        return status;
+    }
+
+    /*!
+     * \brief Context menu
+     */
+    void CSimulationView::contextMenuEvent(const QPoint &pos)
+    {
+        ActionManager* am = ActionManager::instance();
+        QMenu *_menu = new QMenu();
+
+        //launch context menu of item
+        _menu->addAction(am->actionForName("zoomFitInBest"));
+        _menu->addAction(am->actionForName("zoomOriginal"));
+        _menu->addAction(am->actionForName("zoomIn"));
+        _menu->addAction(am->actionForName("zoomOut"));
+
+        _menu->addSeparator();
+
+        //! \todo Create a new action "simulationDialog" in mainwindow.cpp, calling CGraphicsItem::launchPropertyDialog()
+        _menu->addAction(am->actionForName("simulationDialog"));
+
+        _menu->exec(QCursor::pos());
     }
 
     //! \brief Shows or hides selected plot.

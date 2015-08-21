@@ -20,7 +20,7 @@
 #ifndef C_SIMULATION_VIEW_H
 #define C_SIMULATION_VIEW_H
 
-#include <QPrinter>
+#include <QtPrintSupport/QPrinter>
 
 #include <qwt_plot.h>
 #include <qwt_plot_magnifier.h>
@@ -93,6 +93,8 @@ namespace Caneda
         void exportImage(QPaintDevice &device);
 
     public Q_SLOTS:
+        int launchPropertyDialog();
+        void contextMenuEvent(const QPoint &pos);
         void setPlotVisible(QwtPlotItem *plotItem, bool visible);
 
     Q_SIGNALS:
