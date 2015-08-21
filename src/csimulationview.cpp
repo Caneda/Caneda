@@ -270,6 +270,7 @@ namespace Caneda
         replot();
     }
 
+    //! \brief Update the status bar with the plot coordinates on move event.
     void CSimulationView::mouseMoveEvent(QMouseEvent *event)
     {
         QPoint newCursorPos = m_zoomer->trackerPosition();
