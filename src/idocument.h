@@ -370,7 +370,7 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void launchPropertiesDialog() {}
+        virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
         CSimulationScene* cSimulationScene() const { return m_cSimulationScene; }

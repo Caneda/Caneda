@@ -252,8 +252,7 @@ namespace Caneda
 
         _menu->addSeparator();
 
-        //! \todo Create a new action "simulationDialog" in mainwindow.cpp, calling CGraphicsItem::launchPropertyDialog()
-        _menu->addAction(am->actionForName("simulationDialog"));
+        _menu->addAction(am->actionForName("propertiesDialog"));
 
         _menu->exec(QCursor::pos());
     }

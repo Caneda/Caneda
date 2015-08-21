@@ -1055,6 +1055,17 @@ namespace Caneda
         return new SimulationView(this);
     }
 
+    void SimulationDocument::launchPropertiesDialog()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView *v = manager->currentView();
+        CSimulationView *sv = qobject_cast<CSimulationView*>(v->toWidget());
+
+        if(sv) {
+            sv->launchPropertyDialog();
+        }
+    }
+
 
     /*************************************************************************
      *                           SymbolDocument                              *
