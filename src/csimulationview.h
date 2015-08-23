@@ -95,7 +95,6 @@ namespace Caneda
     public Q_SLOTS:
         int launchPropertyDialog();
         void contextMenuEvent(const QPoint &pos);
-        void setPlotVisible(QwtPlotItem *plotItem, bool visible);
 
     Q_SIGNALS:
         void cursorPositionChanged(const QString& newPos);

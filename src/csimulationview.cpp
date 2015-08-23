@@ -255,16 +255,6 @@ namespace Caneda
         _menu->exec(QCursor::pos());
     }
 
-    //! \brief Shows or hides selected plot.
-    void CSimulationView::setPlotVisible(QwtPlotItem *plotItem, bool visible)
-    {
-        // Perform show/hide action
-        plotItem->setVisible(visible);
-
-        // Refresh the plot
-        replot();
-    }
-
     //! \brief Update the status bar with the plot coordinates on move event.
     void CSimulationView::mouseMoveEvent(QMouseEvent *event)
     {

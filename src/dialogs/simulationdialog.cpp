@@ -26,6 +26,8 @@
 
 #include <QSortFilterProxyModel>
 
+#include <qwt_plot_curve.h>
+
 namespace Caneda
 {
     //*************************************************************
@@ -182,10 +184,14 @@ namespace Caneda
         ui.m_filterEdit->setClearButtonEnabled(true);
 
         // Create new table model
+        QwtPlotItemList list = parent->itemList(QwtPlotItem::Rtti_PlotCurve);
         WaveformsMap m_simulationList;
-        m_simulationList.insert("Prueba 1", true);
-        m_simulationList.insert("Prueba 2", true);
-        m_simulationList.insert("Prueba 3", false);
+
+        for(int i=0; i<list.size(); ++i) {
+            m_simulationList.insert(list.at(i)->title().text(),
+                                    list.at(i)->isVisible());
+        }
+
         m_model = new SimulationModel(m_simulationList, this);
 
         // Create proxy model and set its properties
@@ -213,7 +219,13 @@ namespace Caneda
      */
     void SimulationDialog::accept()
     {
-        //! \todo Show selected waveforms and hide unselected ones.
+        CSimulationView *parent = static_cast<CSimulationView*>(this->parent());
+        QwtPlotItemList list = parent->itemList(QwtPlotItem::Rtti_PlotCurve);
+        for(int i=0; i<list.size(); ++i) {
+            list.at(i)->setVisible(m_model->m_simMap[list.at(i)->title().text()]);
+        }
+        parent->replot();
+
         QDialog::accept();
     }
 
