@@ -268,4 +268,10 @@ namespace Caneda
         QwtPlot::mouseMoveEvent(event);
     }
 
+    //! \brief Show plot properties dialog upon mouse double click.
+    void CSimulationView::mouseDoubleClickEvent(QMouseEvent *event)
+    {
+        launchPropertyDialog();
+    }
+
 } // namespace Caneda

@@ -101,6 +101,7 @@ namespace Caneda
 
     protected:
         void mouseMoveEvent(QMouseEvent *event);
+        void mouseDoubleClickEvent(QMouseEvent * event);
 
     private:
         CSimulationScene *m_csimulationScene;
