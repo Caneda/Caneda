@@ -175,6 +175,10 @@ namespace Caneda
         // Initialize designer dialog
         ui.setupUi(this);
 
+        // Set log axis checkboxes state
+        ui.checkBoxXscale->setChecked(parent->isLogAxis(QwtPlot::xBottom));
+        ui.checkBoxYscale->setChecked(parent->isLogAxis(QwtPlot::yLeft));
+
         // Set lineedit properties
         ui.m_filterEdit->setClearButtonEnabled(true);
 
@@ -209,18 +213,25 @@ namespace Caneda
     /*!
      * \brief Accept dialog
      *
-     * Accept dialog and set new waveforms' visibility values according to the
-     * user input.
+     * Accept dialog and set new plot properties and waveforms' visibility
+     * values according to the user input.
      */
     void SimulationDialog::accept()
     {
         CSimulationView *parent = static_cast<CSimulationView*>(this->parent());
+
+        // Set log axis checkboxes state
+        parent->setLogAxis(QwtPlot::xBottom, ui.checkBoxXscale->isChecked());
+        parent->setLogAxis(QwtPlot::yLeft, ui.checkBoxYscale->isChecked());
+
+        // Set waveforms visibility
         QwtPlotItemList list = parent->itemList(QwtPlotItem::Rtti_PlotCurve);
         for(int i=0; i<list.size(); ++i) {
             list.at(i)->setVisible(m_model->m_simMap[list.at(i)->title().text()]);
         }
-        parent->replot();
 
+        // Accept dialog
+        parent->replot();
         QDialog::accept();
     }
 

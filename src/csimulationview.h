@@ -86,6 +86,8 @@ namespace Caneda
         virtual void zoomOriginal();
 
         void populate();
+        void setLogAxis(QwtPlot::Axis axis, bool logarithmic);
+        bool isLogAxis(QwtPlot::Axis axis);
 
         void loadUserSettings();
 
@@ -111,6 +113,8 @@ namespace Caneda
         QwtLegend *m_legend;
         QwtPlotZoomer *m_zoomer;
         CPlotMagnifier *m_magnifier;
+
+        bool m_logXaxis, m_logYaxis;
     };
 
 } // namespace Caneda

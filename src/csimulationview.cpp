@@ -35,6 +35,7 @@
 #include <qwt_plot_panner.h>
 #include <qwt_plot_renderer.h>
 #include <qwt_plot_zoomer.h>
+#include <qwt_scale_engine.h>
 
 namespace Caneda
 {
@@ -71,7 +72,9 @@ namespace Caneda
      */
     CSimulationView::CSimulationView(CSimulationScene *scene, QWidget *parent) :
         QwtPlot(parent),
-        m_csimulationScene(scene)
+        m_csimulationScene(scene),
+        m_logXaxis(false),
+        m_logYaxis(false)
     {
         // Canvas
         m_canvas = new QwtPlotCanvas();
@@ -183,6 +186,60 @@ namespace Caneda
         // This value is later used to be able to return to the base zoom,
         // displaying all waveforms contents.
         m_zoomer->setZoomBase();
+    }
+
+    /*!
+     * \brief Set axis scale logarithmic state.
+     *
+     * \param axis Axis to set the logarithmic scale state.
+     * \param logarithmic True if logaritmich scale is wanted, false otherwise.
+     *
+     * \sa isLogAxis()
+     */
+    void CSimulationView::setLogAxis(QwtPlot::Axis axis, bool logarithmic)
+    {
+        if(axis == QwtPlot::xBottom || axis == QwtPlot::xTop) {
+            if(logarithmic) {
+                setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine);
+                setAxisScaleEngine(QwtPlot::xTop, new QwtLogScaleEngine);
+                m_logXaxis = true;
+            }
+            else {
+                setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
+                setAxisScaleEngine(QwtPlot::xTop, new QwtLinearScaleEngine);
+                m_logXaxis = false;
+            }
+        }
+        else {
+            if(logarithmic) {
+                setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine);
+                setAxisScaleEngine(QwtPlot::yRight, new QwtLogScaleEngine);
+                m_logYaxis = true;
+            }
+            else {
+                setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
+                setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
+                m_logYaxis = false;
+            }
+        }
+    }
+
+    /*!
+     * \brief Get axis scale logarithmic state.
+     *
+     * \param axis Axis which logarithmic scale state is checked.
+     * \return true if axis scale is logarithmic, false otherwise.
+     *
+     * \sa setLogAxis()
+     */
+    bool CSimulationView::isLogAxis(QwtPlot::Axis axis)
+    {
+        if(axis == QwtPlot::xBottom || axis == QwtPlot::xTop) {
+            return m_logXaxis;
+        }
+        else {
+            return m_logYaxis;
+        }
     }
 
     //! \brief Loads the saved user settings, updating the values on the canvas.
