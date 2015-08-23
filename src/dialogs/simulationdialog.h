@@ -36,13 +36,13 @@ namespace Caneda
     typedef QMap<QString, bool> WaveformsMap;
 
     /*!
-     * \brief Model to provide the abstract interface for property items
+     * \brief Model to provide the abstract interface for waveform items
      * in a table.
      *
      * This class derives from QAbstractTableModel and provides the abstract
-     * interface for property items in a table model class. While PropertyDialog
-     * implements the user interface, this class interacts with the data
-     * itself.
+     * interface for waveform items in a table model class. While the
+     * SimulationDialog class implements the user interface, this class
+     * interacts with the data itself.
      *
      * This class defines a standard interface that must used to be able to
      * interoperate with other components in Qt's model/view framework. The
@@ -55,9 +55,6 @@ namespace Caneda
      * Qt::ItemDataRole. Data for individual roles are set individually with
      * setData(). Items can be queried with flags() (see Qt::ItemFlag) to see
      * if they can be selected, dragged, or manipulated in other ways.
-     *
-     * The model has a rowCount() and a columnCount(). Rows can be inserted and
-     * removed with insertRows(), and removeRows().
      *
      * \sa QAbstractTableModel, SimulationDialog
      */
@@ -85,21 +82,17 @@ namespace Caneda
     };
 
     /*!
-     * \brief Dialog to modify properties in a PropertyGroup
+     * \brief Dialog to select waveforms and set properties in a
+     * CSimulationView plot.
      *
      * This dialog presents to the user the properties of the selected
-     * component/scene. By default, properties are presented with a
-     * QLineEdit. For better representation it is recommended to have
-     * string properties rather than numeric. In this way, the user can
-     * use prefixes, like 'p' for pico, 'u' for micro, etc. Even
-     * parametric properties could be used as string properties, using
-     * for example brackets as in '{R}'.
+     * simulation plot (CSimulationView) and the visible waveforms.
      *
      * This class handles the user interface part of the dialog, and
-     * presentation part to the user, while PropertyModel class handles
+     * presentation part to the user, while SimulationModel class handles
      * the data interaction itself.
      *
-     * \sa PropertyGroup, PropertyModel, QSortFilterProxyModel
+     * \sa CSimulationView, WaveformsMap, SimulationModel, QSortFilterProxyModel
      */
     class SimulationDialog : public QDialog
     {

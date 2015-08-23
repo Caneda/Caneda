@@ -36,10 +36,11 @@ namespace Caneda
     /*!
      * \brief Constructor.
      *
-     * \param map PropertyMap wich contains all properties to be modified.
+     * \param simulationList WaveformsMap wich contains waveforms to be set
+     * visible/not-visible.
      * \param parent Parent of this object.
      *
-     * \sa PropertyMap
+     * \sa WaveformsMap
      */
     SimulationModel::SimulationModel(WaveformsMap simulationList, QObject *parent) :
         QAbstractTableModel(parent),
@@ -53,8 +54,8 @@ namespace Caneda
      *
      * This class returns the item data corresponding to index position.
      * For example, if we are editing an item in the first column, the
-     * data corresponds to the property name, hence the return value is
-     * the property name in the form of a QString.
+     * data corresponds to the waveform name, hence the return value is
+     * the key of the waveform map in the form of a QString.
      *
      * \param index Item to return data from
      * \param role Role of the item (editable, checkable, etc).
@@ -130,16 +131,10 @@ namespace Caneda
     }
 
     /*!
-     * \brief Sets data in a PropertyModel item.
+     * \brief Sets data in a SimulationModel item.
      *
-     * Sets the data in a PropertyModel item, ie. modifies the user edited
+     * Sets the data in a SimulationModel item, ie. modifies the user edited
      * data.
-     *
-     * In the future, we can set a new field inside properties to determine if
-     * some parts of a property cannot be modified. For example default property
-     * "names" in the PropertyMap of a component should not be modifiable as they
-     * are fixed by the spice model, nevertheless new user defined properties should
-     * be modifiable.
      *
      * \param index Item to be edited.
      * \param value New value to be set.
@@ -147,7 +142,7 @@ namespace Caneda
      * item, checkable item, etc).
      * \return True on success, false otherwise.
      *
-     * \sa PropertyMap
+     * \sa WaveformsMap
      */
     bool SimulationModel::setData(const QModelIndex& index, const QVariant& value,
             int role)
@@ -214,8 +209,8 @@ namespace Caneda
     /*!
      * \brief Accept dialog
      *
-     * Accept dialog and set new property's values according to
-     * the user input.
+     * Accept dialog and set new waveforms' visibility values according to the
+     * user input.
      */
     void SimulationDialog::accept()
     {
