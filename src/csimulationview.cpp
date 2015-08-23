@@ -259,12 +259,7 @@ namespace Caneda
     void CSimulationView::setPlotVisible(QwtPlotItem *plotItem, bool visible)
     {
         // Perform show/hide action
-        if(visible){
-            plotItem->show();
-        }
-        else{
-            plotItem->hide();
-        }
+        plotItem->setVisible(visible);
 
         // Refresh the plot
         replot();
