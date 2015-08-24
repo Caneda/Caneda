@@ -29,30 +29,23 @@
       <item>
        <layout class="QFormLayout" name="formLayout">
         <item row="0" column="0">
-         <widget class="QLabel" name="labelXscale">
+         <widget class="QLabel" name="labelLogScale">
           <property name="text">
-           <string>Set x axis logarithmic</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="labelYscale">
-          <property name="text">
-           <string>Set y axis logarithmic</string>
+           <string>Logarithmic scale:</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
          <widget class="QCheckBox" name="checkBoxXscale">
           <property name="text">
-           <string/>
+           <string>x axis</string>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
          <widget class="QCheckBox" name="checkBoxYscale">
           <property name="text">
-           <string/>
+           <string>y axis</string>
           </property>
          </widget>
         </item>
