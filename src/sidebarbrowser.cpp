@@ -457,6 +457,7 @@ namespace Caneda
 
         m_filterEdit = new QLineEdit(this);
         m_filterEdit->setClearButtonEnabled(true);
+        m_filterEdit->setPlaceholderText(tr("Search..."));
         layout->addWidget(m_filterEdit);
 
         m_treeView = new TreeView();

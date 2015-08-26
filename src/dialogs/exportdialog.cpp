@@ -51,6 +51,7 @@ namespace Caneda
         }
 
         ui.labelSchematicName->setText(diagramFilename);
+        ui.editFilename->setClearButtonEnabled(true);
         ui.editFilename->setText(diagramFilename);
 
         // Directory to save into

@@ -35,6 +35,9 @@ namespace Caneda
     {
         ui.setupUi(this);
 
+        // Set lineedit properties
+        ui.editDescription->setClearButtonEnabled(true);
+
         // Check if directory exists
         m_path = ( dir.isEmpty() ? QString(".") : dir );
 

@@ -33,6 +33,7 @@ namespace Caneda
         // Initialize designer dialog
         ui.setupUi(this);
 
+        ui.editName->setClearButtonEnabled(true);
         ui.editName->setText(*m_label);
     }
 

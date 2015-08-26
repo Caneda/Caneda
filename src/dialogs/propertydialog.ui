@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
+    <width>406</width>
     <height>311</height>
    </rect>
   </property>
@@ -21,7 +21,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLineEdit" name="m_filterEdit"/>
+    <widget class="QLineEdit" name="m_filterEdit">
+     <property name="placeholderText">
+      <string>Search...</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QTableView" name="tableView">

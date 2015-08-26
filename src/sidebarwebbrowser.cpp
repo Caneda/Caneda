@@ -44,6 +44,7 @@ namespace Caneda
 
         m_filterEdit = new QLineEdit();
         m_filterEdit->setClearButtonEnabled(true);
+        m_filterEdit->setPlaceholderText(tr("Search..."));
         layout->addWidget(m_filterEdit);
 
         m_fileModel = new QFileSystemModel;

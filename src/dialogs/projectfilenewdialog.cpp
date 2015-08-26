@@ -30,6 +30,9 @@ namespace Caneda
             QDialog(parent)
     {
         ui.setupUi(this);
+
+        ui.editName->setClearButtonEnabled(true);
+
         ui.rbNewComponent->setIcon(Caneda::icon("document-new"));
         ui.rbExistingComponent->setIcon(Caneda::icon("document-open"));
         ui.rbImportFromProject->setIcon(Caneda::icon("project-new"));

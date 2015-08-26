@@ -61,7 +61,11 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QLineEdit" name="m_filterEdit"/>
+       <widget class="QLineEdit" name="m_filterEdit">
+        <property name="placeholderText">
+         <string>Search...</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QTableView" name="tableView">
