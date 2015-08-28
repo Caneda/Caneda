@@ -106,6 +106,8 @@ namespace Caneda
 
     private Q_SLOTS:
         void filterTextChanged();
+        void selectAll();
+        void selectNone();
 
     private:
         SimulationModel *m_model;

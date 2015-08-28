@@ -208,6 +208,8 @@ namespace Caneda
 
         connect(ui.m_filterEdit, SIGNAL(textChanged(const QString &)),
                 this, SLOT(filterTextChanged()));
+        connect(ui.buttonAll, SIGNAL(clicked()), this, SLOT(selectAll()));
+        connect(ui.buttonNone, SIGNAL(clicked()), this, SLOT(selectNone()));
     }
 
     /*!
@@ -241,6 +243,38 @@ namespace Caneda
         QString text = ui.m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
+    }
+
+    //! \brief Select all available waveforms
+    void SimulationDialog::selectAll()
+    {
+        m_model->beginResetModel();
+
+        WaveformsMap::const_iterator it = m_model->m_simMap.begin(),
+            end = m_model->m_simMap.end();
+
+        while(it != end) {
+            m_model->m_simMap[it.key()] = true;
+            ++it;
+        }
+
+        m_model->endResetModel();
+    }
+
+    //! \brief Deselect all waveforms
+    void SimulationDialog::selectNone()
+    {
+        m_model->beginResetModel();
+
+        WaveformsMap::const_iterator it = m_model->m_simMap.begin(),
+            end = m_model->m_simMap.end();
+
+        while(it != end) {
+            m_model->m_simMap[it.key()] = false;
+            ++it;
+        }
+
+        m_model->endResetModel();
     }
 
 } // namespace Caneda
