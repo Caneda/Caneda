@@ -388,11 +388,16 @@ namespace Caneda
     bool FilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
     {
         QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
-        SidebarModel *sm = static_cast<SidebarModel*>(sourceModel());
 
-        if(sm->isLeaf(index0) == false) {
-            return true;
+        // Do bottom to top filtering
+        if(sourceModel()->hasChildren(index0)) {
+            for(int i=0; i < sourceModel()->rowCount(index0); ++i) {
+                if(filterAcceptsRow(i, index0)) {
+                    return true;
+                }
+            }
         }
+
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
     }
 
@@ -523,6 +528,7 @@ namespace Caneda
         QString text = m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
+        m_treeView->expandAll();
     }
 
     void SidebarBrowser::slotOnClicked(const QModelIndex& index)

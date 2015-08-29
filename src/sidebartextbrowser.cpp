@@ -117,6 +117,13 @@ namespace Caneda
         QString text = m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
+
+        if(!text.isEmpty()) {
+            m_treeView->expandAll();
+        }
+        else {
+            m_treeView->collapseAll();
+        }
     }
 
     void SidebarTextBrowser::slotOnDoubleClicked(const QModelIndex& index)
