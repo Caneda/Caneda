@@ -48,17 +48,17 @@
     <ports/>
 
     <properties>
-        <property name="tend" default="1" unit="s" visible="true">
+        <property name="tstop" default="1m" unit="s" visible="true">
             <description>
                 <lang lang="C">Total simulation time</lang>
             </description>
         </property>
-        <property name="to" default="0" unit="s" visible="false">
+        <property name="tstart" default="0" unit="s" visible="false">
             <description>
                 <lang lang="C">Time to start saving data</lang>
             </description>
         </property>
-        <property name="tstep" default="0" unit="s" visible="true">
+        <property name="tstep" default="1u" unit="s" visible="true">
             <description>
                 <lang lang="C">Maximum timestep</lang>
             </description>
@@ -66,6 +66,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".tran %property=tstep %property=tend"/>
+        <model type="spice" syntax=".tran %property=tstep %property=tstop %property=tstart"/>
     </models>
 </component>

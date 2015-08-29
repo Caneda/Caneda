@@ -41,4 +41,8 @@
     <ports/>
 
     <properties/>
+
+    <models>
+        <model type="spice" syntax=".op"/>
+    </models>
 </component>

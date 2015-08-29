@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="Inductive coupler" version="0.1.0" label="Lc">
+    <displaytext>
+        <lang lang="C">Inductive coupler</lang>
+        <lang lang="es">Acoplador inductivo</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">
+            A device that transfers electrical energy from one inductance to another
+            through inductively coupling the two coils.
+        </lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,5,0" pos="-10,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,5,0" pos="-10,10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-5,0" pos="10,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-5,0" pos="10,10" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipseArc" ellipse="0,0,5,5" pos="-7.5,-10" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,5,5" pos="-7.5,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,5,5" pos="-7.5,0" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,5,5" pos="-7.5,5" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
+        </painting>
+
+        <painting name="ellipseArc" ellipse="0,0,5,5" pos="2.5,-10" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,5,5" pos="2.5,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,5,5" pos="2.5,0" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,5,5" pos="2.5,5" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
+        </painting>
+
+        <painting name="ellipse" ellipse="0,0,2,2" pos="7.5,-15" transform="1,0,0,1,0,0"/>
+        <painting name="ellipse" ellipse="0,0,2,2" pos="-7.5,-15" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <properties>
+        <property name="L1" default="L1" unit="" visible="true">
+            <description>
+                <lang lang="C">Coil #1</lang>
+                <lang lang="ca">Bobina 1</lang>
+                <lang lang="es">Bobina 1</lang>
+            </description>
+        </property>
+
+        <property name="L2" default="L2" unit="" visible="true">
+            <description>
+                <lang lang="C">Coil #2</lang>
+                <lang lang="ca">Bobina 2</lang>
+                <lang lang="es">Bobina 2</lang>
+            </description>
+        </property>
+
+        <property name="k" default="0.9" unit="(1)" visible="true">
+            <description>
+                <lang lang="C">Coupling factor between coil 1 and 2</lang>
+                <lang lang="ca">Inductancia mutua entre la bobina 1 y 2</lang>
+                <lang lang="cs">Faktor svázání mezi cívkou 1 a 2</lang>
+                <lang lang="de">Koppelfaktor zwischen Spule 1 und 2</lang>
+                <lang lang="es">Inductancia mutua entre la bobina 1 y 2</lang>
+                <lang lang="fr">Couplage entre la 1ère et 2ème bobine</lang>
+                <lang lang="hu">1-2 tekercs közötti csatolási tényező</lang>
+                <lang lang="it">Coefficiente di accoppiamento tra gli induttori 1 e 2</lang>
+                <lang lang="jp">コイル1とコイル2間の結合係数</lang>
+                <lang lang="pl">Współczynnik sprzężenie między 1 i 2</lang>
+                <lang lang="ru">Коэффициент связи между обмоткой 1 и 2</lang>
+                <lang lang="sv">Kopplingsfaktor mellan spole 1 och 2</lang>
+                <lang lang="tr">Sargı 1 ve 2 arasındaki çiftlenim çarpanı</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="K%label L%property=L1 L%property=L2 %property=k"/>
+    </models>
+</component>

@@ -21,7 +21,7 @@
  ***************************************************************************
 -->
 
-<component name="Current Source Piece Wise Linear" version="0.1.0" label="I">
+<component name="Current Source Piece Wise Linear (PWL)" version="0.1.0" label="I">
 
     <displaytext>
         <lang lang="C">Piece Wise Linear Current Source</lang>
@@ -55,45 +55,14 @@
     </ports>
 
    <properties>
-         <property name="T1" default="0" unit="s" visible="false">
+         <property name="TiIi" default="0 0 1m 3 2m 5 2.1m 1 4m 0" unit="" visible="true">
            <description>
-             <lang lang="C">Time Point</lang>
-           </description>
-         </property>
-         <property name="I1" default="0" unit="A" visible="false">
-           <description>
-             <lang lang="C">Point Value</lang>
-           </description>
-         </property>
-         <property name="T2" default="0" unit="s" visible="false">
-           <description>
-             <lang lang="C">Time Point</lang>
-           </description>
-         </property>
-         <property name="I2" default="0" unit="A" visible="false">
-           <description>
-             <lang lang="C">Point Value</lang>
-           </description>
-         </property>
-         <property name="T3" default="0" unit="s" visible="false">
-           <description>
-             <lang lang="C">Time Point</lang>
-           </description>
-         </property>
-         <property name="I3" default="0" unit="A" visible="false">
-           <description>
-             <lang lang="C">Point Value</lang>
-           </description>
-         </property>
-         <property name="Ti" default="0" unit="s" visible="false">
-           <description>
-             <lang lang="C">Extra Time Points. Specify extra time points here, separated by spaces.</lang>
-           </description>
-         </property>
-         <property name="Ii" default="0" unit="A" visible="false">
-           <description>
-             <lang lang="C">Extra Point Values. Specify extra point values here, separated by spaces.</lang>
+             <lang lang="C">Time Current Tuples (Ti Ii). Specify values here, separated by spaces (for example: 1u 1m 3u 0.5m).</lang>
            </description>
          </property>
    </properties>
+
+    <models>
+        <model type="spice" syntax="I%label %port=+ %port=- PWL( %property=TiIi )"/>
+    </models>
 </component>

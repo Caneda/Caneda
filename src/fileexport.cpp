@@ -148,6 +148,12 @@ namespace Caneda
                     else if(modelCommands.at(0) == "property"){
                         retVal.append(c->properties()->propertyValue(modelCommands.at(1)));
                     }
+                    else if(modelCommands.at(0) == "string"){
+                        retVal.append(modelCommands.at(1));
+                    }
+                    else if(modelCommands.at(0) == "n"){
+                        retVal.append("\n");
+                    }
                     else{
                         retVal.append(modelSubBlocks.at(j));
                     }

@@ -56,7 +56,7 @@
     </ports>
 
    <properties>
-         <property name="Ia" default="5m" unit="A" visible="false">
+         <property name="Ia" default="5m" unit="A" visible="true">
            <description>
              <lang lang="C">Amplitude Value</lang>
            </description>
@@ -66,7 +66,7 @@
              <lang lang="C">Offset Current</lang>
            </description>
          </property>
-         <property name="Freq" default="1k" unit="Hz" visible="false">
+         <property name="Freq" default="1k" unit="Hz" visible="true">
            <description>
              <lang lang="C">Frequency</lang>
            </description>
@@ -82,4 +82,8 @@
            </description>
          </property>
    </properties>
+
+    <models>
+        <model type="spice" syntax="I%label %port=+ %port=- SIN( %property=Io %property=Ia %property=Freq %property=Td %property=Theta )"/>
+    </models>
 </component>

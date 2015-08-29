@@ -49,15 +49,24 @@
                 <lang lang="C">Start frequency</lang>
             </description>
         </property>
-        <property name="fend" default="1000" unit="Hz" visible="true">
+        <property name="fstop" default="10k" unit="Hz" visible="true">
             <description>
                 <lang lang="C">End frequency</lang>
             </description>
         </property>
-        <property name="N" default="10" unit="" visible="false">
+        <property name="n" default="10" unit="" visible="false">
             <description>
                 <lang lang="C">Number of points per decade</lang>
             </description>
         </property>
+        <property name="type" default="dec" unit="" visible="false">
+            <description>
+                <lang lang="C">Type of simulation. Possible values are: dec, oct, lin.</lang>
+            </description>
+        </property>
     </properties>
+
+    <models>
+        <model type="spice" syntax=".ac %property=type %property=n %property=fstart %property=fstop"/>
+    </models>
 </component>

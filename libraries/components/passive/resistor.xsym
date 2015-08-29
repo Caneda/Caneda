@@ -57,8 +57,8 @@
     </symbol>
 
     <ports>
-        <port name="1" pos="-20,0"/>
-        <port name="2" pos="20,0"/>
+        <port name="+" pos="-20,0"/>
+        <port name="-" pos="20,0"/>
     </ports>
 
     <properties>
@@ -104,6 +104,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="R%label %port=1 %port=2 %property=R"/>
+        <model type="spice" syntax="R%label %port=+ %port=- %property=R"/>
     </models>
 </component>

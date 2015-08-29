@@ -61,30 +61,34 @@
              <lang lang="C">Initial Value</lang>
            </description>
          </property>
-         <property name="I2" default="5m" unit="A" visible="false">
+         <property name="I2" default="1m" unit="A" visible="true">
            <description>
              <lang lang="C">Pulsed Value</lang>
            </description>
          </property>
-         <property name="Td1" default="0.0" unit="s" visible="false">
+         <property name="Td1" default="0" unit="s" visible="false">
            <description>
              <lang lang="C">Rise Delay Time</lang>
            </description>
          </property>
-         <property name="Tau1" default="0.0" unit="s" visible="false">
+         <property name="Tau1" default="1m" unit="s" visible="true">
            <description>
              <lang lang="C">Rise Time Constant</lang>
            </description>
          </property>
-         <property name="Td2" default="0.0" unit="s" visible="false">
+         <property name="Td2" default="4m" unit="s" visible="true">
            <description>
              <lang lang="C">Fall Delay Time</lang>
            </description>
          </property>
-         <property name="Tau2" default="0.0" unit="s" visible="false">
+         <property name="Tau2" default="2m" unit="s" visible="true">
            <description>
              <lang lang="C">Fall Time Constant</lang>
            </description>
          </property>
    </properties>
+
+    <models>
+        <model type="spice" syntax="I%label %port=+ %port=- EXP( %property=I1 %property=I2 %property=Td1 %property=Tau1 %property=Td2 %property=Tau2 )"/>
+    </models>
 </component>

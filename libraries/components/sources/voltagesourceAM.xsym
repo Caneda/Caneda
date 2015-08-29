@@ -2,7 +2,7 @@
 <!DOCTYPE caneda>
 <!--
  ***************************************************************************
- * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,14 +21,14 @@
  ***************************************************************************
 -->
 
-<component name="Voltage Source Single Frequency FM" version="0.1.0" label="V">
+<component name="Voltage Source Amplitude Modulated (AM)" version="0.1.0" label="V">
     <displaytext>
-        <lang lang="C">Single Frequency FM Voltage Source</lang>
-        <lang lang="es">Fuente de Tensión FM de frecuencia única</lang>
+        <lang lang="C">Amplitude Modulated Voltage Source</lang>
+        <lang lang="es">Fuente de Tensión de Amplitud Modulada</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">A single frequency FM voltage source device</lang>
+        <lang lang="C">An amplitude modulated voltage source device</lang>
     </description>
 
     <symbol>
@@ -42,16 +42,28 @@
 
         <painting name="line" line="0,0,10,0" pos="-25,25" transform="1,0,0,1,0,0"/>
 
-        <painting name="ellipseArc" ellipse="0,0,5,10" pos="-10,-5" transform="1,0,0,1,0,0">
+        <painting name="ellipseArc" ellipse="0,0,1.5,10" pos="-9,-5" transform="1,0,0,1,0,0">
             <properties startAngle="0" spanAngle="180"/>
         </painting>
-        <painting name="ellipseArc" ellipse="0,0,5,10" pos="-5,-5" transform="1,0,0,1,0,0">
+        <painting name="ellipseArc" ellipse="0,0,1.5,10" pos="-7.5,-5" transform="1,0,0,1,0,0">
             <properties startAngle="180" spanAngle="180"/>
         </painting>
-        <painting name="ellipseArc" ellipse="0,0,1.5,10" pos="0,-5" transform="1,0,0,1,0,0">
+        <painting name="ellipseArc" ellipse="0,0,1.5,10" pos="-6,-5" transform="1,0,0,1,0,0">
             <properties startAngle="0" spanAngle="180"/>
         </painting>
-        <painting name="ellipseArc" ellipse="0,0,1.5,10" pos="1.5,-5" transform="1,0,0,1,0,0">
+        <painting name="ellipseArc" ellipse="0,0,1.5,10" pos="-4.5,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="180" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,1.5,5" pos="-3,-2.5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,1.5,5" pos="-1.5,-2.5" transform="1,0,0,1,0,0">
+            <properties startAngle="180" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,1.5,5" pos="0,-2.5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,1.5,5" pos="1.5,-2.5" transform="1,0,0,1,0,0">
             <properties startAngle="180" spanAngle="180"/>
         </painting>
         <painting name="ellipseArc" ellipse="0,0,1.5,10" pos="3,-5" transform="1,0,0,1,0,0">
@@ -84,24 +96,24 @@
              <lang lang="C">Offset Voltage</lang>
            </description>
          </property>
+         <property name="MF" default="1k" unit="Hz" visible="true">
+           <description>
+             <lang lang="C">Modulating Frequency</lang>
+           </description>
+         </property>
          <property name="FC" default="10k" unit="Hz" visible="true">
            <description>
              <lang lang="C">Carrier Frequency</lang>
            </description>
          </property>
-         <property name="MDI" default="5" unit="" visible="true">
+         <property name="TD" default="0" unit="s" visible="false">
            <description>
-             <lang lang="C">Modulation Index</lang>
-           </description>
-         </property>
-         <property name="FS" default="1k" unit="Hz" visible="true">
-           <description>
-             <lang lang="C">Signal Frequency</lang>
+             <lang lang="C">Signal Delay</lang>
            </description>
          </property>
    </properties>
 
     <models>
-        <model type="spice" syntax="V%label %port=+ %port=- SFFM( %property=Vo %property=Va %property=FC %property=MDI %property=FS )"/>
+        <model type="spice" syntax="V%label %port=+ %port=- AM( %property=Va %property=Vo %property=MF %property=FC %property=TD )"/>
     </models>
 </component>
