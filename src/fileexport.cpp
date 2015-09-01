@@ -121,48 +121,49 @@ namespace Caneda
             // Get the spice model (multiple models may be available)
             QString model = c->model("spice");
 
-            QStringList modelBlocks = model.split(" ", QString::SkipEmptyParts);
-            for(int i=0; i<modelBlocks.size(); i++){
+            // Replace the simple commands
+            model.replace("%label", c->label());
+            model.replace("%n", "\n");
 
-                QStringList modelSubBlocks = modelBlocks.at(i).split("%", QString::SkipEmptyParts);
-                for(int j=0; j<modelSubBlocks.size(); j++){
+            // Parse the commands with parameters
+            QRegExp rx("(%(port|property|string)=[A-Za-z0-9_+-]*)");
+            QStringList commandBlocks;
+            int pos = 0;
+            while ((pos = rx.indexIn(model, pos)) != -1) {
+                commandBlocks << rx.cap(1);
+                pos += rx.matchedLength();
+            }
 
-                    QStringList modelCommands = modelSubBlocks.at(j).split("=", QString::SkipEmptyParts);
-                    if(modelCommands.at(0) == "label"){
-                        retVal.append(c->label());
-                    }
-                    else if(modelCommands.at(0) == "port"){
+            // For each command replace the parameter with the correct value
+            for(int i=0; i<commandBlocks.size(); i++){
 
-                        foreach(Port *_port, c->ports()) {
-                            if(_port->name() == modelCommands.at(1)) {
-                                // Found the port, now look for its netlist number
-                                for(int i = 0; i < netlist.size(); ++i) {
-                                    if(netlist.at(i).first == _port) {
-                                        retVal.append(QString::number(netlist.at(i).second));
-                                    }
+                QStringList command = commandBlocks.at(i).split("=", QString::SkipEmptyParts);
+                if(command.at(0) == "%port"){
+                    foreach(Port *_port, c->ports()) {
+                        if(_port->name() == command.at(1)) {
+                            // Found the port, now look for its netlist number
+                            for(int j = 0; j < netlist.size(); ++j) {
+                                if(netlist.at(j).first == _port) {
+                                    model.replace(commandBlocks.at(i), QString::number(netlist.at(j).second));
                                 }
                             }
                         }
-
                     }
-                    else if(modelCommands.at(0) == "property"){
-                        retVal.append(c->properties()->propertyValue(modelCommands.at(1)));
-                    }
-                    else if(modelCommands.at(0) == "string"){
-                        retVal.append(modelCommands.at(1));
-                    }
-                    else if(modelCommands.at(0) == "n"){
-                        retVal.append("\n");
-                    }
-                    else{
-                        retVal.append(modelSubBlocks.at(j));
-                    }
-
                 }
-                retVal.append(" ");
+                else if(command.at(0) == "%property"){
+                    model.replace(commandBlocks.at(i), c->properties()->propertyValue(command.at(1)));
+                }
+                else if(command.at(0) == "%string"){
+                    model.replace(commandBlocks.at(i), command.at(1));
+                }
 
             }
-            retVal.append("\n");
+
+            //! \todo Remove multiple white spaces
+//            rx.setPattern("[\\s*]");
+//            model.replace(rx, " ");
+
+            retVal.append(model + "\n");
         }
 
         return retVal;
