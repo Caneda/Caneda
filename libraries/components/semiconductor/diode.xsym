@@ -64,398 +64,41 @@
     </ports>
 
     <properties>
-        <property name="Is" default="10e-12" unit="A" visible="false">
+        <property name="model" default="DIODE" unit="" visible="false">
             <description>
-                <lang lang="C">Saturation current</lang>
-                <lang lang="ca">Corriente de saturación</lang>
-                <lang lang="cs">Saturační proud</lang>
-                <lang lang="de">Sättigungsstrom</lang>
-                <lang lang="es">Corriente de saturación</lang>
-                <lang lang="fr">Courant de saturation</lang>
-                <lang lang="he">זרם רוויה</lang>
-                <lang lang="hu">Szaturációs áram</lang>
-                <lang lang="it">Corrente di saturazione</lang>
-                <lang lang="jp">飽和電流</lang>
-                <lang lang="pl">Prąd nasycenia</lang>
-                <lang lang="pt">Corrente de saturação</lang>
-                <lang lang="ro">Curent de saturaţie</lang>
-                <lang lang="ru">Ток насыщения</lang>
-                <lang lang="sv">Mättnadsström</lang>
-                <lang lang="tr">Doyum akımı</lang>
-                <lang lang="uk">Струм насичення</lang>
+                <lang lang="C">Device model</lang>
+                <lang lang="es">Modelo del dispositivo</lang>
             </description>
         </property>
-        <property name="Xti" default="3.0" unit="-" visible="false">
+        <property name="area" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">Saturation current (Is) temperature exponent</lang>
-                <lang lang="fr">Exposant thermique du courant de saturation (Is)</lang>
+                <lang lang="C">Area scale factor</lang>
             </description>
         </property>
-        <property name="N" default="1" unit="V" visible="false">
+        <property name="m" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">Emission coefficient</lang>
-                <lang lang="ca">Coeficiente de emisión</lang>
-                <lang lang="cs">Koeficient ideality</lang>
-                <lang lang="de">Idealiätsfaktor</lang>
-                <lang lang="es">Coeficiente de emisión</lang>
-                <lang lang="fr">Coeffcient d'émission</lang>
-                <lang lang="he">מקדם טיב</lang>
-                <lang lang="hu">Emissziós együttható</lang>
-                <lang lang="it">Coefficiente di emissione</lang>
-                <lang lang="jp">放射係数</lang>
-                <lang lang="pl">Współczynnik emisji</lang>
-                <lang lang="ro">Coeficient de emisie</lang>
-                <lang lang="ru">Коэффициент эмиссии</lang>
-                <lang lang="sv">Emissionskoefficient</lang>
-                <lang lang="tr">Yayım katsayısı</lang>
-                <lang lang="uk">Коефіцієнт емісії</lang>
+                <lang lang="C">Multiplier factor (affects both area and perimeter)</lang>
             </description>
         </property>
-        <property name="Cj0" default="10e-15" unit="F" visible="false">
+        <property name="pj" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">Emission coefficient</lang>
-                <lang lang="ca">Coeficiente de emisión</lang>
-                <lang lang="cs">Koeficient ideality</lang>
-                <lang lang="de">Idealiätsfaktor</lang>
-                <lang lang="es">Coeficiente de emisión</lang>
-                <lang lang="fr">Coeffcient d'émission</lang>
-                <lang lang="he">מקדם טיב</lang>
-                <lang lang="hu">Emissziós együttható</lang>
-                <lang lang="it">Coefficiente di emissione</lang>
-                <lang lang="jp">放射係数</lang>
-                <lang lang="pl">Współczynnik emisji</lang>
-                <lang lang="ro">Coeficient de emisie</lang>
-                <lang lang="ru">Коэффициент эмиссии</lang>
-                <lang lang="sv">Emissionskoefficient</lang>
-                <lang lang="tr">Yayım katsayısı</lang>
-                <lang lang="uk">Коефіцієнт емісії</lang>
+                <lang lang="C">Perimeter scale factor</lang>
             </description>
         </property>
-        <property name="M" default="0.5" unit="-" visible="false">
+        <property name="ic" default="0" unit="V" visible="false">
             <description>
-                <lang lang="C">Grading coefficient</lang>
-                <lang lang="ca">Coeficiente de graduación</lang>
-                <lang lang="cs">Koeficient gradace</lang>
-                <lang lang="de">Gradationskoeffizient</lang>
-                <lang lang="es">Coeficiente de graduación</lang>
-                <lang lang="fr">Coefficient de gradation</lang>
-                <lang lang="he">מקדם מדורג</lang>
-                <lang lang="it">Coefficiente di gradualità</lang>
-                <lang lang="jp">等級係数</lang>
-                <lang lang="ro">Coeficient de gradare</lang>
-                <lang lang="ru">Коэффициент неидеальности</lang>
-                <lang lang="tr">Değişim katsayısı</lang>
-                <lang lang="uk">Коефіцієнт неідеальності</lang>
+                <lang lang="C">Initial Vd condition</lang>
             </description>
         </property>
-        <property name="Tm1" default="0" visible="false" unit="-">
-            <description>
-                <lang lang="C">Grading coefficient (M) linear temperature coefficient</lang>
-                <lang lang="fr">Coefficient linéaire en température du coefficient de gradation (M)</lang>
-            </description>
-        </property>
-        <property name="Tm2" default="0" visible="false" unit="-">
-            <description>
-                <lang lang="C">Grading coefficient (M) quadratic temperature coefficient</lang>
-                <lang lang="fr">Coefficient quadratique en température du coefficient de gradation (M)</lang>
-            </description>
-        </property>
-        <property name="Vj" default="0.7" unit="V" visible="false">
-            <description>
-                <lang lang="C">Junction potential</lang>
-                <lang lang="ca">Potencial de la unión</lang>
-                <lang lang="cs">Potenciál v závěrném směru</lang>
-                <lang lang="de">Sperrschichtpotential</lang>
-                <lang lang="es">Potencial de la unión</lang>
-                <lang lang="fr">Tension de jonction</lang>
-                <lang lang="he">פוטנציאל צומת</lang>
-                <lang lang="it">Potenziale giunzione</lang>
-                <lang lang="jp">ジャンクション電位</lang>
-                <lang lang="pl">Potencjał złączowy</lang>
-                <lang lang="pt">Potencial de junção</lang>
-                <lang lang="ro">Potenţial de joncţiune</lang>
-                <lang lang="ru">Потенциал перехода</lang>
-                <lang lang="sv">Övergångspotential</lang>
-                <lang lang="tr">Eklem gerilimi</lang>
-                <lang lang="uk">Потенціал переходу</lang>
-            </description>
-        </property>
-        <property name="Fc" default="0.5" unit="-" visible="false">
-            <description>
-                <lang lang="C">Forward-bias depletion capacitance coefficient</lang>
-                <lang lang="ca">Coeficiente de pérdida de capacidad en polarización directa</lang>
-                <lang lang="cs">Linearizační koeficient kapacity v závěrném směru</lang>
-                <lang lang="de">Sperrschichtkapazitäts-Linearisierungskoeffizient</lang>
-                <lang lang="es">Coeficiente de pérdida de capacidad en polarización directa</lang>
-                <lang lang="fr">Facteur de la capacité de déplétion directe</lang>
-                <lang lang="he">מקדם ריקון קיבוליות של מתח שיחוד קדמי</lang>
-                <lang lang="it">Coefficiente capacità di svuotamento con polarizzazione diretta</lang>
-                <lang lang="jp">順バイアス空乏層容量係数</lang>
-                <lang lang="ro">Coeficientul capacităţii de depleţie pentru bias spre înainte</lang>
-                <lang lang="ru">Коэффициент аппроксимации барьерной емкости при прямом смещении</lang>
-                <lang lang="tr">Düz-kutuplanma tüketim bölgesi sığa sabiti</lang>
-                <lang lang="uk">Коефіцієнт апроксимації бар&apos;єрній ємності з прямою зміщення</lang>
-            </description>
-        </property>
-        <property name="Cp" default="0" unit="F" visible="false">
-            <description>
-                <lang lang="C">Linear capacitance</lang>
-                <lang lang="ca">Capacidad lineal</lang>
-                <lang lang="cs">Konstantní paralelní kapacita</lang>
-                <lang lang="de">Konstante Parallelkapazität</lang>
-                <lang lang="es">Capacidad lineal</lang>
-                <lang lang="fr">Capacité linéaire</lang>
-                <lang lang="he">קיבוליות לינארית</lang>
-                <lang lang="hu">Lineáris kapacitás</lang>
-                <lang lang="it">Capacità lineare</lang>
-                <lang lang="jp">線形容量</lang>
-                <lang lang="pl">Pojemność liniowa</lang>
-                <lang lang="pt">Capacitância linear</lang>
-                <lang lang="ro">Capacitatea liniară</lang>
-                <lang lang="ru">Линейная емкость</lang>
-                <lang lang="sv">Linjär kapacitans</lang>
-                <lang lang="tr">Doğrusal sığa</lang>
-                <lang lang="uk">Лінійна ємність</lang>
-            </description>
-        </property>
-        <property name="Isr" default="0" unit="-" visible="false">
-            <description>
-                <lang lang="C">Recombination current parameter</lang>
-                <lang lang="ca">Parámetro de recombinación de la corriente</lang>
-                <lang lang="cs">Rekombinační proudový parametr</lang>
-                <lang lang="de">Rekombinationsstromparameter</lang>
-                <lang lang="es">Parámetro de recombinación de la corriente</lang>
-                <lang lang="fr">Paramètre de recombinaison en courant</lang>
-                <lang lang="he">פרמטר זרם ריקומבינציה</lang>
-                <lang lang="it">Parametro della corrente di ricombinazione</lang>
-                <lang lang="pl">Współczynnik prądu rekombinacji</lang>
-                <lang lang="pt">Parametro de corrente de recombinação</lang>
-                <lang lang="ro">Parametrul curentului de recombinare</lang>
-                <lang lang="ru">Рекомбинационный ток</lang>
-                <lang lang="sv">Rekombinationsströmsparametar</lang>
-                <lang lang="tr">Tekrar birleşim akımı değişkeni</lang>
-                <lang lang="uk">Рекомбінаційний струм</lang>
-            </description>
-        </property>
-        <property name="Nr" default="2.0" unit="-" visible="false">
-            <description>
-                <lang lang="C">Emission coefficient for Isr</lang>
-                <lang lang="ca">Parámetro de recombinación de la corriente</lang>
-                <lang lang="cs">Rekombinační proudový parametr</lang>
-                <lang lang="de">Rekombinationsstromparameter</lang>
-                <lang lang="es">Parámetro de recombinación de la corriente</lang>
-                <lang lang="fr">Paramètre de recombinaison en courant</lang>
-                <lang lang="he">פרמטר זרם ריקומבינציה</lang>
-                <lang lang="it">Parametro della corrente di ricombinazione</lang>
-                <lang lang="pl">Współczynnik prądu rekombinacji</lang>
-                <lang lang="pt">Parametro de corrente de recombinação</lang>
-                <lang lang="ro">Parametrul curentului de recombinare</lang>
-                <lang lang="ru">Рекомбинационный ток</lang>
-                <lang lang="sv">Rekombinationsströmsparametar</lang>
-                <lang lang="tr">Tekrar birleşim akımı değişkeni</lang>
-                <lang lang="uk">Рекомбінаційний струм</lang>
-            </description>
-        </property>
-        <property name="Rs" default="0" unit="Ω" visible="false">
-            <description>
-                <lang lang="C">Ohmic series resistance</lang>
-                <lang lang="ca">Resistencia serie en óhmios</lang>
-                <lang lang="cs">Ohmický sériový odpor</lang>
-                <lang lang="de">Phmscher Serienwiderstand</lang>
-                <lang lang="es">Resistencia serie en óhmios</lang>
-                <lang lang="fr">Résistance série</lang>
-                <lang lang="he">התנגדות סדרה אוהמית</lang>
-                <lang lang="hu">Ohmikus soros ellenállás</lang>
-                <lang lang="it">Resistenza ohmica serie</lang>
-                <lang lang="jp">直列抵抗</lang>
-                <lang lang="pl">Reyzstancja szeregowa w Ohmach</lang>
-                <lang lang="pt">Resistência ôhmica série</lang>
-                <lang lang="ro">Rezistenţa ohmica serială</lang>
-                <lang lang="ru">Омическое последовательное сопротивление</lang>
-                <lang lang="sv">Ohmsk serieresistans</lang>
-                <lang lang="tr">Omik (Shotky etkisi yok) seri direnç</lang>
-                <lang lang="uk">Омічний послідовний опір</lang>
-            </description>
-        </property>
-        <property name="Trs" default="0" unit="-" visible="false">
-            <description>
-                <lang lang="C">Ohmic series resistance (Rs) linear temperature coefficient</lang>
-                <lang lang="fr">Coefficient linéaire en température de la résistance série (Rs)</lang>
-            </description>
-        </property>
-        <property name="Tt" default="0" unit="s" visible="false">
-            <description>
-                <lang lang="C">Transit time</lang>
-                <lang lang="ca">Temps de tránsito</lang>
-                <lang lang="cs">Přechodová doba</lang>
-                <lang lang="de">Transitzeit</lang>
-                <lang lang="es">Tiempo de tránsito</lang>
-                <lang lang="fr">Temps de transit</lang>
-                <lang lang="he">זמן מעבר</lang>
-                <lang lang="hu">Átviteli idő</lang>
-                <lang lang="it">Tempo di transito</lang>
-                <lang lang="jp">推移時間</lang>
-                <lang lang="pl">Czas przelotu</lang>
-                <lang lang="pt">Tempo de transiente</lang>
-                <lang lang="ro">Timpul de tranziţie</lang>
-                <lang lang="ru">Время перехода</lang>
-                <lang lang="sv">Löptid</lang>
-                <lang lang="tr">Geçis süresi</lang>
-                <lang lang="uk">Час переходу</lang>
-            </description>
-        </property>
-        <property name="Ttt1" default="0" unit="-" visible="false">
-            <description>
-                <lang lang="C">Transit time (Tt) linear temperature coefficient</lang>
-                <lang lang="fr">Coefficient linéaire en température du temps de transit (Tt)</lang>
-            </description>
-        </property>
-        <property name="Ttt2" default="0" unit="-" visible="false">
-            <description>
-                <lang lang="C">Transit time (Tt) quadratic temperature coefficient</lang>
-                <lang lang="fr">Coefficient quadratique en température du temps de transit (Tt)</lang>
-            </description>
-        </property>
-        <property name="Ikf" default="0" unit="A" visible="false">
-            <description>
-                <lang lang="C">High-injection knee current (0=infinity)</lang>
-                <lang lang="de">Knickstrom bei Hochinjektion (0=unendlich)</lang>
-                <lang lang="fr">Courant de seuil de forte injection (0 = infini)</lang>
-                <lang lang="ru">Граничный ток при большом уровне инжекции (0=бесконечность)</lang>
-                <lang lang="tr">Yüksek-enjeksiyon bükülme akımı (0=sonsuz)</lang>
-                <lang lang="uk">Граничний струм виводу інжекції (0=бесконечность)</lang>
-            </description>
-        </property>
-        <property name="Bv" default="0" unit="V" visible="false">
-            <description>
-                <lang lang="C">Reverse breakdown voltage</lang>
-                <lang lang="ca">Tensión de ruptura inversa</lang>
-                <lang lang="cs">Závěrné průrazné napětí</lang>
-                <lang lang="de">Durchbruchspannung rückwärts</lang>
-                <lang lang="es">Tensión de ruptura inversa</lang>
-                <lang lang="fr">Tension de claquage inverse</lang>
-                <lang lang="it">Tensione di rottura inversa</lang>
-                <lang lang="jp">逆ブレークダウン電圧</lang>
-                <lang lang="pl">Wsteczne napięcie przebicia</lang>
-                <lang lang="ru">Обратное напряжение пробоя</lang>
-                <lang lang="sv">Omvänd överslagsspänning</lang>
-                <lang lang="tr">Ters kırılma gerilimi</lang>
-                <lang lang="uk">Зворотня напруга пробою</lang>
-            </description>
-        </property>
-        <property name="IBv" default="1e-3" unit="A" visible="false">
-            <description>
-                <lang lang="C">Current at reverse breakdown voltage</lang>
-                <lang lang="ca">Corriente en la tensión de ruptura inversa</lang>
-                <lang lang="cs">Proud při průrazu v závěrném směru</lang>
-                <lang lang="de">Strom bei der Durchbruchspannung im Rückwärtsbetrieb</lang>
-                <lang lang="es">Corriente en la tensión de ruptura inversa</lang>
-                <lang lang="fr">Courant à la tension de claquage inverse</lang>
-                <lang lang="it">Corrente alla tensione di rottura inversa</lang>
-                <lang lang="jp">逆ブレークダウン電圧時の電流</lang>
-                <lang lang="pl">Prąd dla wstecznego napięcie przebicia</lang>
-                <lang lang="ru">Ток при обратном напряжении пробоя</lang>
-                <lang lang="sv">Ström vid omvänd överslagsspänning</lang>
-                <lang lang="tr">Ters kırılma geriliminde akım</lang>
-                <lang lang="uk">Струм при зворотній напрузі пробою</lang>
-            </description>
-        </property>
-        <property name="TBv" default="0" unit="-" visible="false">
-            <description>
-                <lang lang="C">Breakdown voltage (Bv) linear temperature coefficient</lang>
-                <lang lang="fr">Coefficient linéaire en température de la tension de claquage (Bv)</lang>
-            </description>
-        </property>
-        <property name="Eg" default="1.11" unit="eV" visible="false">
-            <description>
-                <lang lang="C">Energy band gap</lang>
-                <lang lang="ca">Amplada del salto de energía</lang>
-                <lang lang="cs">Energie valenčního odstupu</lang>
-                <lang lang="de">Bandabstand</lang>
-                <lang lang="es">Ancho del salto de energía</lang>
-                <lang lang="fr">Gap d'énergie</lang>
-                <lang lang="jp">バンド幅電圧</lang>
-                <lang lang="pl">Przerwa energetyczna</lang>
-                <lang lang="ru">Ширина запрещенной зоны</lang>
-                <lang lang="sv">Energibandgap i eV</lang>
-                <lang lang="uk">Ширина забороненої зони</lang>
-            </description>
-        </property>
-        <property name="Area" default="1.11" unit="-" visible="false">
-            <description>
-                <lang lang="C">Area factor</lang>
-                <lang lang="fr">Facteur d'aire</lang>
-            </description>
-        </property>
-        <property name="Kf" default="0" unit="-" visible="false">
-            <description>
-                <lang lang="C">Flicker noise coefficient</lang>
-                <lang lang="cs">Koeficient 1/f rušení</lang>
-                <lang lang="de">1/f-Rauschkoeffizient</lang>
-                <lang lang="fr">Coefficient de bruit de scintillation</lang>
-                <lang lang="he">מקדם רעש ריצוד</lang>
-                <lang lang="it">Coefficiente rumore flicker</lang>
-                <lang lang="jp">フリッカーノイズ係数</lang>
-                <lang lang="pl">Cspółczynnik szumów migotania</lang>
-                <lang lang="ro">Coeficientul de zgomot 1/f</lang>
-                <lang lang="ru">Коэффициент 1/f-шума</lang>
-                <lang lang="sv">Flicker-bruskoefficient</lang>
-                <lang lang="tr">Flicker gürültü sabiti</lang>
-                <lang lang="uk">Коефіцієнт 1/f-шуму</lang>
-            </description>
-        </property>
-        <property name="Af" default="0" unit="-" visible="false">
-            <description>
-                <lang lang="C">Flicker noise exponent</lang>
-                <lang lang="cs">Exponent 1/f rušení</lang>
-                <lang lang="de">1/f-Rauschexponent</lang>
-                <lang lang="fr">Exposant du bruit de scintillation</lang>
-                <lang lang="he">מעריך רעש ריצוד</lang>
-                <lang lang="it">Esponente rumore flicker</lang>
-                <lang lang="jp">フリッカーノイズ指数</lang>
-                <lang lang="pl">Flicker noise exponent</lang>
-                <lang lang="ro">Exponentul zgomotului 1/f</lang>
-                <lang lang="ru">Показатель степени 1/f-шума</lang>
-                <lang lang="sv">Flicker-brusexponent</lang>
-                <lang lang="tr">Flicker gürültü üsteli</lang>
-                <lang lang="tr">Flicker gürültüsü üstel çarpanı</lang>
-                <lang lang="uk">Показник ступеня 1/f-шуму</lang>
-            </description>
-        </property>
-        <property name="Ffe" default="0" unit="-" visible="false">
-            <description>
-                <lang lang="C">Flicker noise frequency exponent</lang>
-                <lang lang="cs">Frekvenční exponent 1/f rušení</lang>
-                <lang lang="de">Frequenzexponent für 1/f-Rauschen</lang>
-                <lang lang="es">Exponente de frecuencia de ruido térmico</lang>
-                <lang lang="fr">Dépendance fréquentielle du bruit en 1/f</lang>
-                <lang lang="he">מעריך תדר רעש ריצוד</lang>
-                <lang lang="it">Esponente frequenziale rumore flicker</lang>
-                <lang lang="jp">フリッカーノイズ指数</lang>
-                <lang lang="pl">Flicker noise frequency exponent</lang>
-                <lang lang="ro">Exponentul de frecvenţă a zgomotului 1/f</lang>
-                <lang lang="ru">Частотная зависимость 1/f-шума</lang>
-                <lang lang="sv">Flicker-brus frekvensexponet</lang>
-                <lang lang="tr">Flicker gürültü sıklık üsteli</lang>
-                <lang lang="uk">Частотна залежність 1/f-шуму</lang>
-            </description>
-        </property>
-        <property name="Temp" default="26.5" unit="°C" visible="false">
+        <property name="temp" default="26.5" unit="°C" visible="false">
             <description>
                 <lang lang="C">Temperature</lang>
                 <lang lang="fr">Température</lang>
             </description>
         </property>
-        <property name="Tnom" default="26.5" unit="°C" visible="false">
+        <property name="dtemp" default="1.0" unit="°C" visible="false">
             <description>
-                <lang lang="C">Temperature at which parameters were extracted</lang>
-                <lang lang="fr">Température à laquelle les paramètres ont été mesurés</lang>
-            </description>
-        </property>
-        <property name="model" default="DIODE" unit="" visible="false">
-            <description>
-                <lang lang="C">Device model</lang>
-                <lang lang="es">Modelo del dispositivo</lang>
+                <lang lang="C">Temperature offset of each instance</lang>
             </description>
         </property>
     </properties>
