@@ -67,6 +67,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".ac %property=type %property=n %property=fstart %property=fstop"/>
+        <model type="spice" syntax=".ac %property{type} %property{n} %property{fstart} %property{fstop}"/>
     </models>
 </component>

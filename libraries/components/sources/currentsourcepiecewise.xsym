@@ -63,6 +63,6 @@
    </properties>
 
     <models>
-        <model type="spice" syntax="I%label %port=+ %port=- PWL( %property=TiIi )"/>
+        <model type="spice" syntax="I%label %port{+} %port{-} PWL( %property{TiIi} )"/>
     </models>
 </component>

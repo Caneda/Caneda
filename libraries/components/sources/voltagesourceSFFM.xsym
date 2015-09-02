@@ -102,6 +102,6 @@
    </properties>
 
     <models>
-        <model type="spice" syntax="V%label %port=+ %port=- SFFM( %property=Vo %property=Va %property=FC %property=MDI %property=FS )"/>
+        <model type="spice" syntax="V%label %port{+} %port{-} SFFM( %property{Vo} %property{Va} %property{FC} %property{MDI} %property{FS} )"/>
     </models>
 </component>

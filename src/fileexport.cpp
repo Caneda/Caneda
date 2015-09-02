@@ -127,36 +127,37 @@ namespace Caneda
             model.replace("%n", "\n");
 
             // Parse the commands with parameters
-            QStringList commandBlocks;
+            QStringList commands;
 
-            QRegularExpression re("(%(port|property|string)=[A-Za-z0-9_+-]*)");
+            QRegularExpression re("(%\\w+\{([\\w =+-]+)})");
             QRegularExpressionMatchIterator i = re.globalMatch(model);
             while (i.hasNext()) {
                 QRegularExpressionMatch match = i.next();
-                commandBlocks << match.captured(0);
+                commands << match.captured(0);
             }
 
             // For each command replace the parameter with the correct value
-            for(int i=0; i<commandBlocks.size(); i++){
+            for(int i=0; i<commands.size(); i++){
 
-                QStringList command = commandBlocks.at(i).split("=", QString::SkipEmptyParts);
-                if(command.at(0) == "%port"){
+                // Extract the parameters, removing the comand (including the
+                // "{" and the last character "}")
+                QString parameter = commands.at(i);
+                parameter.remove(QRegularExpression("(%\\w+\{)")).chop(1);
+
+                if(commands.at(i).startsWith("%port")){
                     foreach(Port *_port, c->ports()) {
-                        if(_port->name() == command.at(1)) {
+                        if(_port->name() == parameter) {
                             // Found the port, now look for its netlist number
                             for(int j = 0; j < netlist.size(); ++j) {
                                 if(netlist.at(j).first == _port) {
-                                    model.replace(commandBlocks.at(i), QString::number(netlist.at(j).second));
+                                    model.replace(commands.at(i), QString::number(netlist.at(j).second));
                                 }
                             }
                         }
                     }
                 }
-                else if(command.at(0) == "%property"){
-                    model.replace(commandBlocks.at(i), c->properties()->propertyValue(command.at(1)));
-                }
-                else if(command.at(0) == "%string"){
-                    model.replace(commandBlocks.at(i), command.at(1));
+                else if(commands.at(i).startsWith("%property")){
+                    model.replace(commands.at(i), c->properties()->propertyValue(parameter));
                 }
 
             }

@@ -101,6 +101,6 @@
    </properties>
 
     <models>
-        <model type="spice" syntax="I%label %port=+ %port=- SFFM( %property=Io %property=Ia %property=FC %property=MDI %property=FS )"/>
+        <model type="spice" syntax="I%label %port{+} %port{-} SFFM( %property{Io} %property{Ia} %property{FC} %property{MDI} %property{FS} )"/>
     </models>
 </component>

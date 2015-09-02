@@ -113,6 +113,6 @@
    </properties>
 
     <models>
-        <model type="spice" syntax="V%label %port=+ %port=- AM( %property=Ia %property=Io %property=MF %property=FC %property=TD )"/>
+        <model type="spice" syntax="V%label %port{+} %port{-} AM( %property{Ia} %property{Io} %property{MF} %property{FC} %property{TD} )"/>
     </models>
 </component>

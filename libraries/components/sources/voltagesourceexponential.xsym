@@ -89,6 +89,6 @@
    </properties>
 
     <models>
-        <model type="spice" syntax="V%label %port=+ %port=- EXP( %property=V1 %property=V2 %property=Td1 %property=Tau1 %property=Td2 %property=Tau2 )"/>
+        <model type="spice" syntax="V%label %port{+} %port{-} EXP( %property{V1} %property{V2} %property{Td1} %property{Tau1} %property{Td2} %property{Tau2} )"/>
     </models>
 </component>

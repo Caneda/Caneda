@@ -67,6 +67,6 @@
    </properties>
 
     <models>
-        <model type="spice" syntax="V%label %port=+ %port=- DC %property=Vdc AC %property=Vac %property=Phase"/>
+        <model type="spice" syntax="V%label %port{+} %port{-} DC %property{Vdc} AC %property{Vac} %property{Phase}"/>
     </models>
 </component>

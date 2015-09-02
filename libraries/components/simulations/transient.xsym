@@ -66,6 +66,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".tran %property=tstep %property=tstop %property=tstart"/>
+        <model type="spice" syntax=".tran %property{tstep} %property{tstop} %property{tstart}"/>
     </models>
 </component>

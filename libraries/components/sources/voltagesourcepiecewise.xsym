@@ -73,6 +73,6 @@
    </properties>
 
     <models>
-        <model type="spice" syntax="V%label %port=+ %port=- PWL( %property=TiVi ) r=%property=r td=%property=td"/>
+        <model type="spice" syntax="V%label %port{+} %port{-} PWL( %property{TiVi} ) r=%property{r} td=%property{td}"/>
     </models>
 </component>

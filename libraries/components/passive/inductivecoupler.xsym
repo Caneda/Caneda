@@ -109,6 +109,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="K%label L%property=L1 L%property=L2 %property=k"/>
+        <model type="spice" syntax="K%label L%property{L1} L%property{L2} %property{k}"/>
     </models>
 </component>

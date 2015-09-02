@@ -95,6 +95,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="L%label %port=+ %port=- %property=L"/>
+        <model type="spice" syntax="L%label %port{+} %port{-} %property{L}"/>
     </models>
 </component>

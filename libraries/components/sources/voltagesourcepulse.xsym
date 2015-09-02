@@ -93,6 +93,6 @@
    </properties>
 
     <models>
-        <model type="spice" syntax="V%label %port=+ %port=- PULSE( %property=V1 %property=V2 %property=Td %property=Tr %property=Tf %property=PW %property=Per )"/>
+        <model type="spice" syntax="V%label %port{+} %port{-} PULSE( %property{V1} %property{V2} %property{Td} %property{Tr} %property{Tf} %property{PW} %property{Per} )"/>
     </models>
 </component>

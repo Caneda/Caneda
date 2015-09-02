@@ -140,8 +140,8 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="K%label L%label%string=1 L%label%string=2 %property=k %n
-                                    L%label%string=1 %port=1+ %port=1- %property=L1 %n
-                                    L%label%string=2 %port=2+ %port=2- %property=L2"/>
+        <model type="spice" syntax="K%label L%label1 L%label2 %property{k} %n
+                                    L%label1 %port{1+} %port{1-} %property{L1} %n
+                                    L%label2 %port{2+} %port{2-} %property{L2}"/>
     </models>
 </component>
