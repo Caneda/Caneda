@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QRegularExpression>
 
 namespace Caneda
 {
@@ -159,12 +160,13 @@ namespace Caneda
 
             }
 
-            //! \todo Remove multiple white spaces
-//            rx.setPattern("[\\s*]");
-//            model.replace(rx, " ");
-
+            // Add the model and a newline to the file
             retVal.append(model + "\n");
         }
+
+        // Remove multiple white spaces to clean up the file
+        QRegularExpression re(" {2,}");
+        retVal.replace(re, " ");
 
         return retVal;
     }
