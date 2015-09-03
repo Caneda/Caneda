@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="PJFET Transistor" version="0.1.0" label="M">
+    <displaytext>
+        <lang lang="C">PJFET Transistor</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">P-channel JFET transistor.</lang>
+    </description>
+
+    <symbol>
+        <painting name="arrow" line="0,0,-11.5,0" pos="1.5,0" transform="1,0,0,1,0,0">
+            <properties headStyle="1" headSize="4,6"/>
+        </painting>
+        <painting name="line" line="0,0,0,20" pos="1.5,-10" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,-6" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-4" pos="10,-6" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,6" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,4" pos="10,6" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <ports>
+        <port name="d" pos="10,-10"/>
+        <port name="s" pos="10,10"/>
+        <port name="g" pos="-10,0"/>
+    </ports>
+
+    <properties>
+        <property name="gm" default="100" unit="-" visible="false">
+            <description>
+                <lang lang="C">Small signal gain</lang>
+            </description>
+        </property>
+        <property name="model" default="PJF" unit="" visible="false">
+            <description>
+                <lang lang="C">Device model</lang>
+                <lang lang="es">Modelo del dispositivo</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="J%label %port{d} %port{g} %port{s} %property{model}
+                                    %model{PJF PJF}"/>
+    </models>
+</component>
