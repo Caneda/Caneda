@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="Current Source Noise" version="0.1.0" label="V">
+    <displaytext>
+        <lang lang="C">Noise Current Source</lang>
+        <lang lang="es">Fuente de Corriente de Ruido</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">A noise current source device</lang>
+    </description>
+
+    <symbol>
+        <painting name="ellipse" ellipse="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,10" pos="0,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-10" pos="0,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,-20" pos="0,10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-5,-5" pos="0,10" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,20,0" pos="30,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,-10" pos="30,4" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-3" pos="32,2" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-7" pos="34,4" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-5" pos="36,3" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-3" pos="38,2" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-9" pos="40,4" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-7" pos="42,4" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-5" pos="44,3" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-7" pos="46,4" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-5" pos="48,3" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-9" pos="50,4" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <ports>
+        <port name="+" pos="0,-30"/>
+        <port name="-" pos="0,30"/>
+    </ports>
+
+    <properties>
+        <property name="na" default="1m" unit="A" visible="false">
+            <description>
+                <lang lang="C">Gaussian noise RMS current amplitude.</lang>
+            </description>
+        </property>
+        <property name="nt" default="1u" unit="s" visible="false">
+            <description>
+                <lang lang="C">Time step.</lang>
+            </description>
+        </property>
+        <property name="nalpha" default="1.0" unit="" visible="false">
+            <description>
+                <lang lang="C">Exponent to the frequency dependency (1/f exponent).</lang>
+            </description>
+        </property>
+        <property name="namp" default="1m" unit="A" visible="false">
+            <description>
+                <lang lang="C">Current amplitude (1/f).</lang>
+            </description>
+        </property>
+        <property name="rtsam" default="0" unit="A" visible="false">
+            <description>
+                <lang lang="C">Random telegraph signal amplitude.</lang>
+            </description>
+        </property>
+        <property name="rtscapt" default="0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Mean of the exponential distribution (trap capture time).</lang>
+            </description>
+        </property>
+        <property name="rtsemt" default="0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Emission time mean (trap emission time).</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="I%label %port{+} %port{-} TRNOISE( %property{na} %property{nt} %property{nalpha} %property{namp} %property{rtsam} %property{rtscapt} %property{rtsemt} )"/>
+    </models>
+</component>
