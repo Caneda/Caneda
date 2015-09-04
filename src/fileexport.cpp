@@ -111,6 +111,7 @@ namespace Caneda
         QList<Component*> components = filterItems<Component>(items);
         QList<QPair<Port *, int> > netlist = generateNetlistTopology();
         QStringList modelsList;
+        QStringList subcircuitsList;
 
         // Start the document and write the header
         QString retVal;
@@ -131,7 +132,7 @@ namespace Caneda
             // Parse the commands with parameters
             QStringList commands;
 
-            QRegularExpression re("(%\\w+\{([\\w =+-\\\\(\\\\)]+)})");
+            QRegularExpression re("(%\\w+\{([\\w =+-\\\\(\\\\)\\n\\*]+)})");
             QRegularExpressionMatchIterator it = re.globalMatch(model);
             while (it.hasNext()) {
                 QRegularExpressionMatch match = it.next();
@@ -172,6 +173,17 @@ namespace Caneda
                     model.remove(commands.at(i));
 
                 }
+                else if(commands.at(i).startsWith("%subcircuit")){
+
+                    // Subcircuits should be added to a temporal list to be included
+                    // only once at the end of the spice file.
+                    if(!subcircuitsList.contains(parameter)) {
+                        subcircuitsList << parameter;
+                    }
+
+                    model.remove(commands.at(i));
+
+                }
 
             }
 
@@ -184,6 +196,15 @@ namespace Caneda
             retVal.append("\n* Device models.\n");
             for(int i=0; i<modelsList.size(); i++){
                 retVal.append(".model " + modelsList.at(i) + "\n");
+            }
+        }
+
+        // Append the spice subcircuits in subcircuitsList
+        if(!subcircuitsList.isEmpty()) {
+            retVal.append("\n* Subcircuits models.\n");
+            for(int i=0; i<subcircuitsList.size(); i++){
+                retVal.append(".subckt " + subcircuitsList.at(i) + "\n"
+                              + ".ends" + "\n");
             }
         }
 
