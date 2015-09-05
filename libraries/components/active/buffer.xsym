@@ -21,39 +21,22 @@
 ***************************************************************************
 -->
 
-<component name="Amplifier" version="0.1.0" label="X">
+<component name="Buffer" version="0.1.0" label="X">
     <displaytext>
-        <lang lang="C">Ideal amplifier</lang>
-        <lang lang="ca">Amplificador ideal</lang>
-        <lang lang="cs">Ideální zesilovač</lang>
-        <lang lang="de">Idealer Verstärker</lang>
-        <lang lang="es">Amplificador ideal</lang>
-        <lang lang="fr">Amplificateur idéal</lang>
-        <lang lang="he">מגבר אידאלי</lang>
-        <lang lang="hu">Ideális erősítő</lang>
-        <lang lang="it">Amplificatore ideale</lang>
-        <lang lang="jp">理想アンプ</lang>
-        <lang lang="pl">Idealny wzmacniacz</lang>
-        <lang lang="ru">Идеальный усилитель</lang>
-        <lang lang="sv">Ideal förstärkare</lang>
-        <lang lang="tr">Fikirsel yükselteç</lang>
-        <lang lang="uk">Ідеальний підсилювач</lang>
+        <lang lang="C">Buffer</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">A device that amplify the signal.</lang>
-        <lang lang="fr">Un composant qui amplifie le signal</lang>
+        <lang lang="C">An ideal voltage buffer.</lang>
     </description>
 
     <symbol>
         <painting name="line" line="0,0,10,0" pos="-30,0" transform="1,0,0,1,0,0"/>
         <painting name="line" line="0,0,10,0" pos="20,0" transform="1,0,0,1,0,0"/>
 
-        <painting name="line" line="0,0,0,20" pos="-10,-10" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,20,-10" pos="-10,10" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,-20,-10" pos="10,0" transform="1,0,0,1,0,0"/>
-
-        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,40,-20" pos="-20,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-40,-20" pos="20,0" transform="1,0,0,1,0,0"/>
     </symbol>
 
     <ports>
@@ -62,26 +45,7 @@
     </ports>
 
     <properties>
-        <property name="G" default="100k" unit="V/V" visible="true">
-            <description>
-                <lang lang="C">Voltage gain</lang>
-                <lang lang="ca">Ganancia de tensión</lang>
-                <lang lang="cs">Napěťové zesílení</lang>
-                <lang lang="de">Spannungsverstärkung</lang>
-                <lang lang="es">Ganancia de tensión</lang>
-                <lang lang="fr">Gain en tension</lang>
-                <lang lang="he">הגבר מתח</lang>
-                <lang lang="hu">Feszültség erősítés</lang>
-                <lang lang="it">Guadagno di tensione</lang>
-                <lang lang="jp">電圧ゲイン</lang>
-                <lang lang="pl">Wzmocnienie napięciowe</lang>
-                <lang lang="ru">Усиление напряжения</lang>
-                <lang lang="sv">Spänningsförstärkning</lang>
-                <lang lang="tr">Gerilim kazancı</lang>
-                <lang lang="uk">Підсилення напруги</lang>
-            </description>
-        </property>
-        <property name="Zin" default="100k" unit="Ω" visible="false">
+        <property name="Zin" default="100Meg" unit="Ω" visible="false">
             <description>
                 <lang lang="C">Reference impedance of input port</lang>
                 <lang lang="ca">Impedancia de referencia del conector de entrada</lang>
@@ -102,7 +66,7 @@
                 <lang lang="uk">Опорний повний опір вхідного виводу</lang>
             </description>
         </property>
-        <property name="Zout" default="10" unit="Ω" visible="false">
+        <property name="Zout" default="0" unit="Ω" visible="false">
             <description>
                 <lang lang="C">Reference impedance of output port</lang>
                 <lang lang="ca">Impedancia de referencia del conector de salida</lang>
@@ -123,7 +87,7 @@
                 <lang lang="uk">Опорний повний опір вивідного виводу</lang>
             </description>
         </property>
-        <property name="model" default="Amplifier" unit="" visible="false">
+        <property name="model" default="Buffer" unit="" visible="false">
             <description>
                 <lang lang="C">Device model</lang>
                 <lang lang="es">Modelo del dispositivo</lang>
@@ -133,12 +97,12 @@
 
     <models>
         <model type="spice" syntax="X%label %port{in} %port{out} %property{model} %n
-               %subcircuit{Amplifier 1 3
+               %subcircuit{Buffer 1 3
                %n* Input Impedance
-               %nRin 1 0 100k
-               %n* DC Gain=100k
-               %nEg  2 0 1 0 100k
-               %nRout 2 3 10
+               %nRin 1 0 100Meg
+               %n* DC Gain=1
+               %nEg  2 0 1 0 1
+               %nRout 2 3 0
                }"/>
     </models>
 </component>

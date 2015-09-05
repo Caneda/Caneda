@@ -21,7 +21,7 @@
 ***************************************************************************
 -->
 
-<component name="Opamp" version="0.1.0" label="U">
+<component name="Opamp" version="0.1.0" label="X">
     <displaytext>
         <lang lang="C">Opamp</lang>
     </displaytext>
