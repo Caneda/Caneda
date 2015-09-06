@@ -62,7 +62,7 @@
     </ports>
 
     <properties>
-        <property name="G" default="100k" unit="V/V" visible="true">
+        <property name="Av" default="100k" unit="V/V" visible="true">
             <description>
                 <lang lang="C">Voltage gain</lang>
                 <lang lang="ca">Ganancia de tensión</lang>
@@ -81,13 +81,13 @@
                 <lang lang="uk">Підсилення напруги</lang>
             </description>
         </property>
-        <property name="Zin" default="100k" unit="Ω" visible="false">
+        <property name="Rin" default="100Meg" unit="Ω" visible="false">
             <description>
-                <lang lang="C">Reference impedance of input port</lang>
-                <lang lang="ca">Impedancia de referencia del conector de entrada</lang>
+                <lang lang="C">Impedance of input port</lang>
+                <lang lang="ca">Impedancia del conector de entrada</lang>
                 <lang lang="cs">Referenční impedance vstupního portu</lang>
                 <lang lang="de">Referenzimpedanz des Eingangstors</lang>
-                <lang lang="es">Impedancia de referencia del conector de entrada</lang>
+                <lang lang="es">Impedancia del conector de entrada</lang>
                 <lang lang="fr">Impédance de référence du port d&apos;entrée</lang>
                 <lang lang="he">עכבת יחוס של ממשק הקלט</lang>
                 <lang lang="hu">Névleges impedancia a bemeneten</lang>
@@ -102,13 +102,13 @@
                 <lang lang="uk">Опорний повний опір вхідного виводу</lang>
             </description>
         </property>
-        <property name="Zout" default="10" unit="Ω" visible="false">
+        <property name="Rout" default="0" unit="Ω" visible="false">
             <description>
-                <lang lang="C">Reference impedance of output port</lang>
-                <lang lang="ca">Impedancia de referencia del conector de salida</lang>
+                <lang lang="C">Impedance of output port</lang>
+                <lang lang="ca">Impedancia del conector de salida</lang>
                 <lang lang="cs">Referenční impedance výstupního portu</lang>
                 <lang lang="de">Referenzimpedanz des Ausgangstors</lang>
-                <lang lang="es">Impedancia de referencia del conector de salida</lang>
+                <lang lang="es">Impedancia del conector de salida</lang>
                 <lang lang="fr">Impédance de référence du port de sortie</lang>
                 <lang lang="he">עכבת יחוס של ממשק הפלט</lang>
                 <lang lang="hu">Névleges impedancia a kimeneten</lang>
@@ -123,7 +123,7 @@
                 <lang lang="uk">Опорний повний опір вивідного виводу</lang>
             </description>
         </property>
-        <property name="model" default="Amplifier" unit="" visible="false">
+        <property name="model" default="AMPLIFIER" unit="" visible="false">
             <description>
                 <lang lang="C">Device model</lang>
                 <lang lang="es">Modelo del dispositivo</lang>
@@ -132,13 +132,11 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="X%label %port{in} %port{out} %property{model} %n
-               %subcircuit{Amplifier 1 3
-               %n* Input Impedance
-               %nRin 1 0 100k
-               %n* DC Gain=100k
-               %nEg  2 0 1 0 100k
-               %nRout 2 3 10
+        <model type="spice" syntax="X%label %port{in} %port{out} %property{model} av=%property{Av} rin=%property{Rin} rout=%property{Rout}
+               %subcircuit{AMPLIFIER in out av=100k rin=100Meg rout=0
+               %nRin in 0 {rin}
+               %nEg  1 0 in 0 {av}
+               %nRout 1 out {rout}
                }"/>
     </models>
 </component>

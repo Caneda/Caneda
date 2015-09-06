@@ -132,7 +132,7 @@ namespace Caneda
             // Parse the commands with parameters
             QStringList commands;
 
-            QRegularExpression re("(%\\w+\{([\\w =+-\\\\(\\\\)\\n\\*]+)})");
+            QRegularExpression re("(%\\w+\{([\\w =+-\\\\(\\\\)\\n\\*\{}]+)})");
             QRegularExpressionMatchIterator it = re.globalMatch(model);
             while (it.hasNext()) {
                 QRegularExpressionMatch match = it.next();
