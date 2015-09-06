@@ -45,13 +45,13 @@
     </ports>
 
     <properties>
-        <property name="Zin" default="100Meg" unit="Ω" visible="false">
+        <property name="Rin" default="100Meg" unit="Ω" visible="false">
             <description>
-                <lang lang="C">Reference impedance of input port</lang>
-                <lang lang="ca">Impedancia de referencia del conector de entrada</lang>
+                <lang lang="C">Impedance of input port</lang>
+                <lang lang="ca">Impedancia del conector de entrada</lang>
                 <lang lang="cs">Referenční impedance vstupního portu</lang>
                 <lang lang="de">Referenzimpedanz des Eingangstors</lang>
-                <lang lang="es">Impedancia de referencia del conector de entrada</lang>
+                <lang lang="es">Impedancia del conector de entrada</lang>
                 <lang lang="fr">Impédance de référence du port d&apos;entrée</lang>
                 <lang lang="he">עכבת יחוס של ממשק הקלט</lang>
                 <lang lang="hu">Névleges impedancia a bemeneten</lang>
@@ -66,13 +66,13 @@
                 <lang lang="uk">Опорний повний опір вхідного виводу</lang>
             </description>
         </property>
-        <property name="Zout" default="0" unit="Ω" visible="false">
+        <property name="Rout" default="0" unit="Ω" visible="false">
             <description>
-                <lang lang="C">Reference impedance of output port</lang>
-                <lang lang="ca">Impedancia de referencia del conector de salida</lang>
+                <lang lang="C">Impedance of output port</lang>
+                <lang lang="ca">Impedancia del conector de salida</lang>
                 <lang lang="cs">Referenční impedance výstupního portu</lang>
                 <lang lang="de">Referenzimpedanz des Ausgangstors</lang>
-                <lang lang="es">Impedancia de referencia del conector de salida</lang>
+                <lang lang="es">Impedancia del conector de salida</lang>
                 <lang lang="fr">Impédance de référence du port de sortie</lang>
                 <lang lang="he">עכבת יחוס של ממשק הפלט</lang>
                 <lang lang="hu">Névleges impedancia a kimeneten</lang>
@@ -87,7 +87,7 @@
                 <lang lang="uk">Опорний повний опір вивідного виводу</lang>
             </description>
         </property>
-        <property name="model" default="Buffer" unit="" visible="false">
+        <property name="model" default="BUFFER" unit="" visible="false">
             <description>
                 <lang lang="C">Device model</lang>
                 <lang lang="es">Modelo del dispositivo</lang>
@@ -96,13 +96,11 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="X%label %port{in} %port{out} %property{model} %n
-               %subcircuit{Buffer 1 3
-               %n* Input Impedance
-               %nRin 1 0 100Meg
-               %n* DC Gain=1
-               %nEg  2 0 1 0 1
-               %nRout 2 3 0
+        <model type="spice" syntax="X%label %port{in} %port{out} %property{model} rin=%property{Rin} rout=%property{Rout}
+               %subcircuit{BUFFER in out rin=100Meg rout=0
+               %nRin in 0 {rin}
+               %nEg  1 0 in 0 1
+               %nRout 1 out {rout}
                }"/>
     </models>
 </component>

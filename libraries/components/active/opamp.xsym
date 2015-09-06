@@ -52,9 +52,43 @@
     </ports>
 
     <properties>
-        <property name="A" default="100000" unit="V/V" visible="true">
+        <property name="Av" default="100k" unit="V/V" visible="true">
             <description>
-                <lang lang="C">Open loop gain</lang>
+                <lang lang="C">Voltage gain</lang>
+                <lang lang="ca">Ganancia de tensión</lang>
+                <lang lang="cs">Napěťové zesílení</lang>
+                <lang lang="de">Spannungsverstärkung</lang>
+                <lang lang="es">Ganancia de tensión</lang>
+                <lang lang="fr">Gain en tension</lang>
+                <lang lang="he">הגבר מתח</lang>
+                <lang lang="hu">Feszültség erősítés</lang>
+                <lang lang="it">Guadagno di tensione</lang>
+                <lang lang="jp">電圧ゲイン</lang>
+                <lang lang="pl">Wzmocnienie napięciowe</lang>
+                <lang lang="ru">Усиление напряжения</lang>
+                <lang lang="sv">Spänningsförstärkning</lang>
+                <lang lang="tr">Gerilim kazancı</lang>
+                <lang lang="uk">Підсилення напруги</lang>
+            </description>
+        </property>
+        <property name="Rin" default="100Meg" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Input impedance</lang>
+                <lang lang="ca">Impedancia de entrada</lang>
+                <lang lang="es">Impedancia de entrada</lang>
+            </description>
+        </property>
+        <property name="Rout" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Output impedance</lang>
+                <lang lang="ca">Impedancia de salida</lang>
+                <lang lang="es">Impedancia de salida</lang>
+            </description>
+        </property>
+        <property name="GBW" default="10Meg" unit="Hz" visible="false">
+            <description>
+                <lang lang="C">Gain-bandwith product</lang>
+                <lang lang="es">Producto ganancia por ancho de banda</lang>
             </description>
         </property>
         <property name="model" default="OPAMP" unit="" visible="false">
@@ -66,17 +100,14 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="X%label %port{in+} %port{in-} %port{out} %property{model} %n
-               %subcircuit{OPAMP 1 2 6
-                        %n* Input Impedance
-                        %nRin 1 2 10Meg
-                        %n* DC Gain=100k, Pole=100 HZ
-                        %nEg  3 0 1 2 100k
-                        %nRp 3 4 1k
-                        %nCp 4 0 1.6u
-                        %n* Buffer and output impedance
-                        %nEout 5 0 4 0 1
-                        %nRout 5 6 10
+        <model type="spice" syntax="X%label %port{in+} %port{in-} %port{out} %property{model} av=%property{Av} rin=%property{Rin} rout=%property{Rout} gbw=%property{GBW}
+               %subcircuit{OPAMP in+ in- out av=100k rin=100Meg rout=0 gbw=10Meg
+                        %nRin in+ in- {rin}
+                        %nEg  1 0 in+ in- {av}
+                        %nRp 1 2 10k
+                        %nCp 2 0 {av/(2*3.14159*10k*gbw)}
+                        %nEout 3 0 2 0 1
+                        %nRout 3 out {rout}
                         }"/>
     </models>
 </component>
