@@ -507,17 +507,17 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), sim, SLOT(exportCsv()));
         sim->addNormalAction(action);
 
-        action = am->createAction("showMsg", Caneda::icon("document-preview"), tr("Show last messages"));
+        action = am->createAction("showLog", Caneda::icon("document-preview"), tr("Show simulation log"));
         action->setShortcut(Key_F10);
-        action->setStatusTip(tr("Shows last simulation messages"));
-        action->setWhatsThis(tr("Show Last Messages\n\nShows the messages of the last simulation"));
-        connect(action, SIGNAL(triggered()), SLOT(slotShowLastMsg()));
+        action->setStatusTip(tr("Shows simulation log"));
+        action->setWhatsThis(tr("Show Log\n\nShows the log of the current simulation"));
+        connect(action, SIGNAL(triggered()), SLOT(slotShowLog()));
 
-        action = am->createAction("showNet", Caneda::icon("document-preview"), tr("Show last netlist"));
+        action = am->createAction("showNetlist", Caneda::icon("document-preview"), tr("Show circuit netlist"));
         action->setShortcut(Key_F11);
-        action->setStatusTip(tr("Shows last simulation netlist"));
-        action->setWhatsThis(tr("Show Last Netlist\n\nShows the netlist of the last simulation"));
-        connect(action, SIGNAL(triggered()), SLOT(slotShowLastNetlist()));
+        action->setStatusTip(tr("Shows the circuit netlist"));
+        action->setWhatsThis(tr("Show Netlist\n\nShows the netlist of the current circuit"));
+        connect(action, SIGNAL(triggered()), SLOT(slotShowNetlist()));
 
         action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("Help index..."));
         action->setShortcut(Key_F1);
@@ -783,8 +783,8 @@ namespace Caneda
 
         simMenu->addSeparator();
 
-        simMenu->addAction(action("showMsg"));
-        simMenu->addAction(action("showNet"));
+        simMenu->addAction(action("showLog"));
+        simMenu->addAction(action("showNetlist"));
 
         helpMenu = menuBar()->addMenu(tr("&Help"));
 
@@ -1478,16 +1478,30 @@ namespace Caneda
         slotFileOpenFormat(si->defaultSuffix());
     }
 
-    void MainWindow::slotShowLastMsg()
+    void MainWindow::slotShowLog()
     {
         setNormalAction();
-        slotFileOpen(Caneda::pathForCanedaFile("output.log"));
+
+        DocumentViewManager *manager = DocumentViewManager::instance();
+
+        QFileInfo info(manager->currentDocument()->fileName());
+        QString path = info.path();
+        QString baseName = info.completeBaseName();
+
+        manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".log"));
     }
 
-    void MainWindow::slotShowLastNetlist()
+    void MainWindow::slotShowNetlist()
     {
         setNormalAction();
-        slotFileOpen(Caneda::pathForCanedaFile("spice.net"));
+
+        DocumentViewManager *manager = DocumentViewManager::instance();
+
+        QFileInfo info(manager->currentDocument()->fileName());
+        QString path = info.path();
+        QString baseName = info.completeBaseName();
+
+        manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".net"));
     }
 
     void MainWindow::slotHelpIndex()

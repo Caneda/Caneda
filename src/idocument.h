@@ -293,7 +293,6 @@ namespace Caneda
 
     private Q_SLOTS:
         void simulationReady(int error);
-        void simulationLog();
 
     private:
         CGraphicsScene *m_cGraphicsScene;

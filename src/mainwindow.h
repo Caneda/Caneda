@@ -131,8 +131,8 @@ namespace Caneda
 
         void slotSimulate();
         void openSimulation();
-        void slotShowLastMsg();
-        void slotShowLastNetlist();
+        void slotShowLog();
+        void slotShowNetlist();
 
         void slotHelpIndex();
         void slotHelpAbout();

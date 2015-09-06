@@ -20,6 +20,7 @@
 
 #include "idocument.h"
 
+#include "actionmanager.h"
 #include "cgraphicsscene.h"
 #include "csimulationscene.h"
 #include "csimulationview.h"
@@ -909,11 +910,19 @@ namespace Caneda
 
             DocumentViewManager *manager = DocumentViewManager::instance();
             IView *view = manager->currentView();
+
             MessageWidget *dialog = new MessageWidget("There was an error during the simulation...", view->toWidget());
             dialog->setMessageType(MessageWidget::Error);
+
+            ActionManager* am = ActionManager::instance();
+            Action* act = am->actionForName("showLog");
+            dialog->addAction(act);
+
+            act = am->actionForName("showNetlist");
+            dialog->addAction(act);
+
             dialog->show();
 
-            simulationLog();
             return;
         }
 
@@ -925,22 +934,6 @@ namespace Caneda
         QString baseName = info.completeBaseName();
 
         manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
-    }
-
-    /*!
-     * \brief Open the log file
-     *
-     * \sa simulate(), simulationReady()
-     */
-    void SchematicDocument::simulationLog()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-
-        QFileInfo info(fileName());
-        QString path = info.path();
-        QString baseName = info.completeBaseName();
-
-        manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".log"));
     }
 
     //! \brief Align selected elements appropriately based on \a alignment
