@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="Library" version="0.1.0" label="Spice">
+    <displaytext>
+        <lang lang="C">Spice Library</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">Spice library directive.</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,20,25" pos="0,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,7,7" pos="13,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,7,0" pos="13,7" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,7" pos="13,0" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <properties>
+        <property name="Filename" default="file" unit="" visible="true">
+            <description>
+                <lang lang="C">Filename.</lang>
+                <lang lang="es">Nombre del archivo.</lang>
+            </description>
+        </property>
+        <property name="Library" default="name" unit="" visible="true">
+            <description>
+                <lang lang="C">Library name.</lang>
+                <lang lang="es">Nombre de la liberia.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax=".lib %property{Filename} %property{Library}"/>
+    </models>
+</component>

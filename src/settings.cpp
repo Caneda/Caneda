@@ -34,6 +34,7 @@ namespace Caneda
     {
         QStringList libraries;
         libraries << Caneda::libDirectory() + "components/active";
+        libraries << Caneda::libDirectory() + "components/miscellaneous";
         libraries << Caneda::libDirectory() + "components/passive";
         libraries << Caneda::libDirectory() + "components/semiconductor";
         libraries << Caneda::libDirectory() + "components/simulations";

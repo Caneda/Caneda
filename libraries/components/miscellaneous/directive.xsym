@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="Spice Directive" version="0.1.0" label="Spice">
+    <displaytext>
+        <lang lang="C">Spice Directive</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">Spice directive.</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,20,25" pos="0,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,7,7" pos="13,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,7,0" pos="13,7" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,7" pos="13,0" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <properties>
+        <property name="Directive" default="value" unit="" visible="true">
+            <description>
+                <lang lang="C">Spice directive.</lang>
+                <lang lang="es">Directiva de spice.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="%property{Directive}"/>
+    </models>
+</component>
