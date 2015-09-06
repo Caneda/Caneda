@@ -49,7 +49,7 @@
                 <lang lang="C">Voltage source controlling current</lang>
             </description>
         </property>
-        <property name="model" default="SW" unit="" visible="false">
+        <property name="model" default="CSW" unit="" visible="false">
             <description>
                 <lang lang="C">Device model</lang>
                 <lang lang="es">Modelo del dispositivo</lang>
@@ -63,7 +63,7 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="W%label %port{+} %port{-} %property{Vnam} %property{model} %property{S0}
-               %model{SW SW}"/>
+        <model type="spice" syntax="W%label %port{+} %port{-} V%property{Vnam} %property{model} %property{S0}
+               %model{CSW CSW}"/>
     </models>
 </component>
