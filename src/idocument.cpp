@@ -30,6 +30,7 @@
 #include "icontext.h"
 #include "iview.h"
 #include "mainwindow.h"
+#include "messagewidget.h"
 #include "statehandler.h"
 #include "syntaxhighlighters.h"
 #include "textedit.h"
@@ -790,8 +791,6 @@ namespace Caneda
         simulationProcess->setProcessChannelMode(QProcess::MergedChannels);  // Output std:error and std:output together into the same file
         simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::Append);  // Create a log file
 
-        connect(simulationProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(simulationLog(int)));
-
         // Set the environment variable to get an ascii raw file instead of a binary one
         //! \todo Add an option to generate binary raw files to save disk space.
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -803,7 +802,7 @@ namespace Caneda
         simulationProcess->start(QString("ngspice -b -r ") + baseName + ".raw "
                                  + baseName + ".net");  // Analize the file
 
-        // The simulation results are opened in the simulationReady slot, to achieve non-modal simulations
+        // The simulation results are opened in the simulationReady slot, to avoid blocking the interface while simulating
         connect(simulationProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(simulationReady(int)));
     }
 
@@ -904,41 +903,44 @@ namespace Caneda
      */
     void SchematicDocument::simulationReady(int error)
     {
-        // If there was any error during the process, do not display the waveforms
+        // Test for errors, and open log file (in case something went wrong).
+        // If there was an error, do not display the waveforms
         if(error) {
+
+            DocumentViewManager *manager = DocumentViewManager::instance();
+            IView *view = manager->currentView();
+            MessageWidget *dialog = new MessageWidget("There was an error during the simulation...", view->toWidget());
+            dialog->setMessageType(MessageWidget::Error);
+            dialog->show();
+
+            simulationLog();
             return;
         }
+
+        // Open the resulting waveforms
+        DocumentViewManager *manager = DocumentViewManager::instance();
 
         QFileInfo info(fileName());
         QString path = info.path();
         QString baseName = info.completeBaseName();
 
-        // Open the resulting waveforms
-        DocumentViewManager *manager = DocumentViewManager::instance();
         manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
     }
 
     /*!
-     * \brief Test for errors, and open log file (in case something went
-     * wrong).
-     *
-     * This method is called whenever simulationProcess emits the finished
-     * signal, to keep track of the different logs available.
+     * \brief Open the log file
      *
      * \sa simulate(), simulationReady()
      */
-    void SchematicDocument::simulationLog(int error)
+    void SchematicDocument::simulationLog()
     {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+
         QFileInfo info(fileName());
         QString path = info.path();
         QString baseName = info.completeBaseName();
 
-        // If there was any error during the process, open the log
-        if(error) {
-            DocumentViewManager *manager = DocumentViewManager::instance();
-            manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".log"));
-        }
-
+        manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".log"));
     }
 
     //! \brief Align selected elements appropriately based on \a alignment
