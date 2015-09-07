@@ -64,7 +64,7 @@
     </ports>
 
     <properties>
-        <property name="model" default="DIODE" unit="" visible="false">
+        <property name="model" default="D" unit="" visible="false">
             <description>
                 <lang lang="C">Device model</lang>
                 <lang lang="es">Modelo del dispositivo</lang>
@@ -104,7 +104,8 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="D%label %port{+} %port{-} %property{model}
-                                    %model{DIODE D}"/>
+        <model type="spice" syntax="D%label %port{+} %port{-} %property{model} area=%property{area} m=%property{m} pj=%property{pj} ic=%property{ic}
+                                    temp=%property{temp} dtemp=%property{dtemp}
+                                    %model{D D}"/>
     </models>
 </component>

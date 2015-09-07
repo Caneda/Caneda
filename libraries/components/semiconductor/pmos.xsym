@@ -27,7 +27,7 @@
     </displaytext>
 
     <description>
-        <lang lang="C">A semiconductor amplifier device.</lang>
+        <lang lang="C">P-channel MOSFET transistor.</lang>
     </description>
 
     <symbol>
@@ -60,10 +60,78 @@
                 <lang lang="es">Modelo del dispositivo</lang>
             </description>
         </property>
+        <property name="m" default="1.0" unit="" visible="false">
+            <description>
+                <lang lang="C">Device multiplier. Equivalent number of devices in parallel.</lang>
+            </description>
+        </property>
+        <property name="l" default="100u" unit="m" visible="false">
+            <description>
+                <lang lang="C">Channel lenght.</lang>
+            </description>
+        </property>
+        <property name="w" default="100u" unit="m" visible="false">
+            <description>
+                <lang lang="C">Channel width.</lang>
+            </description>
+        </property>
+        <property name="ad" default="0.0" unit="m²" visible="false">
+            <description>
+                <lang lang="C">Drain diffusion area.</lang>
+            </description>
+        </property>
+        <property name="as" default="0.0" unit="m²" visible="false">
+            <description>
+                <lang lang="C">Source diffusion area.</lang>
+            </description>
+        </property>
+        <property name="pd" default="0.0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Drain junction perimeter.</lang>
+            </description>
+        </property>
+        <property name="ps" default="0.0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Source junction perimeter.</lang>
+            </description>
+        </property>
+        <property name="nrd" default="1.0" unit="" visible="false">
+            <description>
+                <lang lang="C">Equivalent number of squares of the drain diffusion.</lang>
+            </description>
+        </property>
+        <property name="nrs" default="1.0" unit="" visible="false">
+            <description>
+                <lang lang="C">Equivalent number of squares of the source diffusion.</lang>
+            </description>
+        </property>
+        <property name="ic_vds" default="0" unit="V" visible="false">
+            <description>
+                <lang lang="C">Initial Vds condition.</lang>
+            </description>
+        </property>
+        <property name="ic_vgs" default="0" unit="V" visible="false">
+            <description>
+                <lang lang="C">Initial Vgs condition.</lang>
+            </description>
+        </property>
+        <property name="ic_vbs" default="0" unit="V" visible="false">
+            <description>
+                <lang lang="C">Initial Vbs condition.</lang>
+            </description>
+        </property>
+        <property name="temp" default="26.5" unit="°C" visible="false">
+            <description>
+                <lang lang="C">Temperature.</lang>
+                <lang lang="fr">Température.</lang>
+            </description>
+        </property>
     </properties>
 
     <models>
-        <model type="spice" syntax="M%label %port{d} %port{g} %port{s} %port{s} %property{model}
-               %model{PMOS PMOS}"/>
+        <model type="spice" syntax="M%label %port{d} %port{g} %port{s} %port{s} %property{model} m=%property{m} l=%property{l} w=%property{w}
+                                    ad=%property{ad} as=%property{as} pd=%property{pd} ps=%property{ps} nrd=%property{nrd} nrs=%property{nrs}
+                                    ic=%property{ic_vds},%property{ic_vgs},%property{ic_vbs} temp=%property{temp}
+                                    %model{PMOS PMOS}"/>
     </models>
 </component>
