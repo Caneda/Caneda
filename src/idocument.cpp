@@ -913,6 +913,7 @@ namespace Caneda
 
             MessageWidget *dialog = new MessageWidget("There was an error during the simulation...", view->toWidget());
             dialog->setMessageType(MessageWidget::Error);
+            dialog->setIcon(Caneda::icon("dialog-error"));
 
             ActionManager* am = ActionManager::instance();
             Action* act = am->actionForName("showLog");
