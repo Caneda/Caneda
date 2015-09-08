@@ -46,7 +46,7 @@
     <properties>
         <property name="Vnam" default="name" unit="" visible="true">
             <description>
-                <lang lang="C">Voltage source controlling current</lang>
+                <lang lang="C">Voltage source with the controlling current</lang>
             </description>
         </property>
         <property name="model" default="CSW" unit="" visible="false">
@@ -57,7 +57,7 @@
         </property>
         <property name="S0" default="OFF" unit="" visible="false">
             <description>
-                <lang lang="C">Initial state when control voltage inside hysteresis range. Possible values: ON, OFF.</lang>
+                <lang lang="C">Initial state when control current inside hysteresis range. Possible values: ON, OFF.</lang>
             </description>
         </property>
     </properties>

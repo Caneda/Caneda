@@ -2,7 +2,7 @@
 <!DOCTYPE caneda>
 <!--
 ***************************************************************************
-* Copyright (C) 2012-2015 by Pablo Daniel Pareja Obregon                  *
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
 *                                                                         *
 * This is free software; you can redistribute it and/or modify            *
 * it under the terms of the GNU General Public License as published by    *
@@ -21,38 +21,32 @@
 ***************************************************************************
 -->
 
-<component name="Resistor" version="0.1.0" label="R">
+<component name="Semiconductor Resistor" version="0.1.0" label="R_">
     <displaytext>
-        <lang lang="C">Resistor</lang>
-        <lang lang="ca">Resistencia</lang>
-        <lang lang="cs">Odpor</lang>
-        <lang lang="de">Widerstand</lang>
-        <lang lang="es">Resistencia</lang>
-        <lang lang="fr">Résistance</lang>
-        <lang lang="hu">Ellenállás</lang>
-        <lang lang="it">Resistore</lang>
-        <lang lang="jp">抵抗</lang>
-        <lang lang="ro">Rezistor</lang>
-        <lang lang="ru">Резистор</lang>
-        <lang lang="sv">Motstånd</lang>
-        <lang lang="tr">Direnç</lang>
-        <lang lang="uk">Резистор</lang>
+        <lang lang="C">Semiconductor Resistor</lang>
+        <lang lang="ca">Resistencia Semiconductora</lang>
+        <lang lang="es">Resistencia Semiconductora</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">A dissipative device.</lang>
-        <lang lang="fr">Un composent dissipatif.</lang>
+        <lang lang="C">A semiconductor dissipative device.</lang>
     </description>
 
     <symbol>
         <painting name="line" line="0,0,8,0" pos="-20,0" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,2,-5" pos="-12,0" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,4,10" pos="-10,-5" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,4,-10" pos="-6,5" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,4,10" pos="-2,-5" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,4,-10" pos="2,5" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,4,10" pos="6,-5" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,2,-5" pos="10,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-5" pos="-12,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="-12,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,10" pos="-8,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="-8,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-10" pos="-4,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="-4,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,10" pos="0,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="0,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-10" pos="4,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="4,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,10" pos="8,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="8,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-5" pos="12,5" transform="1,0,0,1,0,0"/>
         <painting name="line" line="0,0,8,0" pos="12,0" transform="1,0,0,1,0,0"/>
     </symbol>
 
@@ -62,19 +56,19 @@
     </ports>
 
     <properties>
-        <property name="R" default="50" unit="Ω" visible="true">
+        <property name="R" default="" unit="Ω" visible="false">
             <description>
-                <lang lang="C">Resistance value.</lang>
+                <lang lang="C">Resistance value. If given, it overrides the geometric information.</lang>
             </description>
         </property>
-        <property name="m" default="1.0" unit="" visible="false">
+        <property name="l" default="100u" unit="m" visible="false">
             <description>
-                <lang lang="C">Device multiplier. Equivalent number of devices in parallel.</lang>
+                <lang lang="C">Resistor lenght.</lang>
             </description>
         </property>
-        <property name="scale" default="1.0" unit="" visible="false">
+        <property name="w" default="100u" unit="m" visible="false">
             <description>
-                <lang lang="C">Device scale. Equivalent number of devices in series.</lang>
+                <lang lang="C">Resistor width.</lang>
             </description>
         </property>
         <property name="temp" default="26.5" unit="°C" visible="false">
@@ -88,16 +82,14 @@
                 <lang lang="C">Temperature offset of each instance.</lang>
             </description>
         </property>
-        <property name="tc1" default="0.0" unit="Ω/°C" visible="false">
+        <property name="m" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">First order temperature coefficient.</lang>
-                <lang lang="fr">Coefficient de température au premier ordre.</lang>
+                <lang lang="C">Device multiplier. Equivalent number of devices in parallel.</lang>
             </description>
         </property>
-        <property name="tc2" default="0.0" unit="Ω/°C²" visible="false">
+        <property name="scale" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">Second order temperature coefficient.</lang>
-                <lang lang="fr">Coefficient de température au second ordre.</lang>
+                <lang lang="C">Device scale. Equivalent number of devices in series.</lang>
             </description>
         </property>
         <property name="noisy" default="0" unit="" visible="false">
@@ -105,10 +97,17 @@
                 <lang lang="C">Simulate thermal noise. Possible values: 0, 1.</lang>
             </description>
         </property>
+        <property name="model" default="R" unit="" visible="false">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
     </properties>
 
     <models>
-        <model type="spice" syntax="R%label %port{+} %port{-} %property{R} m=%property{m} scale=%property{scale} temp=%property{temp}
-                                    dtemp=%property{dtemp} tc1=%property{tc1} tc2=%property{tc2} noisy=%property{noisy}"/>
+        <model type="spice" syntax="R%label %port{+} %port{-} %property{R} %property{model} l=%property{l} w=%property{w} temp=%property{temp}
+               dtemp=%property{dtemp} m=%property{m} scale=%property{scale} noisy=%property{noisy}
+               %model{R R}"/>
     </models>
 </component>

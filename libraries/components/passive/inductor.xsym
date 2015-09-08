@@ -70,12 +70,12 @@
     <properties>
         <property name="L" default="1e-9" unit="H" visible="true">
             <description>
-                <lang lang="C">Inductance</lang>
-                <lang lang="ca">Inductancia</lang>
+                <lang lang="C">Inductance value</lang>
+                <lang lang="ca">Valor de Inductancia</lang>
                 <lang lang="cs">Induktivita</lang>
                 <lang lang="de">Induktivität</lang>
                 <lang lang="fr">Inductance</lang>
-                <lang lang="es">Inductancia</lang>
+                <lang lang="es">Valor de Inductancia</lang>
                 <lang lang="hu">Induktivitás</lang>
                 <lang lang="it">Induttanza</lang>
                 <lang lang="jp">インダクタンス</lang>
@@ -86,15 +86,60 @@
                 <lang lang="uk">Індуктивність</lang>
             </description>
         </property>
-        <property name="I" default="0" unit="A" visible="false">
+        <property name="nt" default="1" unit="" visible="false">
             <description>
-                <lang lang="C">Initial current (t=0)</lang>
-                <lang lang="fr">Courant initial (t=0)</lang>
+                <lang lang="C">Number of turns of the inductor.</lang>
+            </description>
+        </property>
+        <property name="m" default="1.0" unit="" visible="false">
+            <description>
+                <lang lang="C">Device multiplier. Equivalent number of devices in parallel.</lang>
+            </description>
+        </property>
+        <property name="scale" default="1.0" unit="" visible="false">
+            <description>
+                <lang lang="C">Device scale.</lang>
+            </description>
+        </property>
+        <property name="temp" default="26.5" unit="°C" visible="false">
+            <description>
+                <lang lang="C">Temperature.</lang>
+                <lang lang="fr">Température.</lang>
+            </description>
+        </property>
+        <property name="dtemp" default="1.0" unit="°C" visible="false">
+            <description>
+                <lang lang="C">Temperature offset of each instance.</lang>
+            </description>
+        </property>
+        <property name="tc1" default="0.0" unit="Ω/°C" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient.</lang>
+                <lang lang="fr">Coefficient de température au premier ordre.</lang>
+            </description>
+        </property>
+        <property name="tc2" default="0.0" unit="Ω/°C²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient.</lang>
+                <lang lang="fr">Coefficient de température au second ordre.</lang>
+            </description>
+        </property>
+        <property name="ic" default="0" unit="A" visible="false">
+            <description>
+                <lang lang="C">Initial inductor current.</lang>
+            </description>
+        </property>
+        <property name="model" default="L" unit="" visible="false">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
             </description>
         </property>
     </properties>
 
     <models>
-        <model type="spice" syntax="L%label %port{+} %port{-} %property{L}"/>
+        <model type="spice" syntax="L%label %port{+} %port{-} %property{L} %property{model} nt=%property{nt} m=%property{m} scale=%property{scale} temp=%property{temp}
+                                    dtemp=%property{dtemp} tc1=%property{tc1} tc2=%property{tc2} ic=%property{ic}
+                                    %model{L L}"/>
     </models>
 </component>
