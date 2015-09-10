@@ -72,6 +72,11 @@
                 <lang lang="C">Multiplier factor (affects both area and perimeter)</lang>
             </description>
         </property>
+        <property name="off" default="" unit="" visible="false">
+            <description>
+                <lang lang="C">Set device voltages to zero (off) as start condition. Helps in convergence calculations. Possible values: OFF or empty.</lang>
+            </description>
+        </property>
         <property name="ic_vbe" default="0" unit="V" visible="false">
             <description>
                 <lang lang="C">Initial Vbe condition</lang>
@@ -97,7 +102,7 @@
 
     <models>
         <model type="spice" syntax="Q%label %port{c} %port{b} %port{e} %property{model} area=%property{area} areab=%property{areab} areac=%property{areac}
-                                    m=%property{m} ic=%property{ic_vbe},%property{ic_vce} temp=%property{temp} dtemp=%property{dtemp}
+                                    m=%property{m} %property{off} ic=%property{ic_vbe},%property{ic_vce} temp=%property{temp} dtemp=%property{dtemp}
                                     %model{PNP PNP}"/>
     </models>
 </component>

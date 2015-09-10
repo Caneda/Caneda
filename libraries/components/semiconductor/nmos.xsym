@@ -103,6 +103,11 @@
                 <lang lang="C">Equivalent number of squares of the source diffusion.</lang>
             </description>
         </property>
+        <property name="off" default="" unit="" visible="false">
+            <description>
+                <lang lang="C">Set device voltages to zero (off) as start condition. Helps in convergence calculations. Possible values: OFF or empty.</lang>
+            </description>
+        </property>
         <property name="ic_vds" default="0" unit="V" visible="false">
             <description>
                 <lang lang="C">Initial Vds condition.</lang>
@@ -129,7 +134,7 @@
     <models>
         <model type="spice" syntax="M%label %port{d} %port{g} %port{s} %port{s} %property{model} m=%property{m} l=%property{l} w=%property{w}
                                     ad=%property{ad} as=%property{as} pd=%property{pd} ps=%property{ps} nrd=%property{nrd} nrs=%property{nrs}
-                                    ic=%property{ic_vds},%property{ic_vgs},%property{ic_vbs} temp=%property{temp}
+                                    %property{off} ic=%property{ic_vds},%property{ic_vgs},%property{ic_vbs} temp=%property{temp}
                                     %model{NMOS NMOS}"/>
     </models>
 </component>

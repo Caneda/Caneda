@@ -61,6 +61,11 @@
                 <lang lang="C">Area scale factor.</lang>
             </description>
         </property>
+        <property name="off" default="" unit="" visible="false">
+            <description>
+                <lang lang="C">Set device voltages to zero (off) as start condition. Helps in convergence calculations. Possible values: OFF or empty.</lang>
+            </description>
+        </property>
         <property name="ic_vds" default="0" unit="V" visible="false">
             <description>
                 <lang lang="C">Initial Vds condition.</lang>
@@ -74,7 +79,7 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="Z%label %port{d} %port{g} %port{s} %property{model} %property{area} ic=%property{ic_vds},%property{ic_vgs}
+        <model type="spice" syntax="Z%label %port{d} %port{g} %port{s} %property{model} %property{area} %property{off} ic=%property{ic_vds},%property{ic_vgs}
                                     %model{NMF NMF}"/>
     </models>
 </component>
