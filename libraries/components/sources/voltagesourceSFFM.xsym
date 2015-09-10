@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE caneda>
 <!--
- ***************************************************************************
- * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
- *                                                                         *
- * This is free software; you can redistribute it and/or modify            *
- * it under the terms of the GNU General Public License as published by    *
- * the Free Software Foundation; either version 2, or (at your option)     *
- * any later version.                                                      *
- *                                                                         *
- * This software is distributed in the hope that it will be useful,        *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- * GNU General Public License for more details.                            *
- *                                                                         *
- * You should have received a copy of the GNU General Public License       *
- * along with this package; see the file COPYING.  If not, write to        *
- * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
- * Boston, MA 02110-1301, USA.                                             *
- ***************************************************************************
+***************************************************************************
+* Copyright (C) 2014-2015 by Pablo Daniel Pareja Obregon                  *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
 -->
 
 <component name="Voltage Source Single Frequency FM" version="0.1.0" label="V">
@@ -73,35 +73,35 @@
         <port name="-" pos="0,30"/>
     </ports>
 
-   <properties>
-         <property name="Va" default="1" unit="V" visible="true">
-           <description>
-             <lang lang="C">Amplitude Value</lang>
-           </description>
-         </property>
-         <property name="Vo" default="0" unit="V" visible="false">
-           <description>
-             <lang lang="C">Offset Voltage</lang>
-           </description>
-         </property>
-         <property name="FC" default="10k" unit="Hz" visible="true">
-           <description>
-             <lang lang="C">Carrier Frequency</lang>
-           </description>
-         </property>
-         <property name="MDI" default="5" unit="" visible="true">
-           <description>
-             <lang lang="C">Modulation Index</lang>
-           </description>
-         </property>
-         <property name="FS" default="1k" unit="Hz" visible="true">
-           <description>
-             <lang lang="C">Signal Frequency</lang>
-           </description>
-         </property>
-   </properties>
+    <properties>
+        <property name="Va" default="1" unit="V" visible="true">
+            <description>
+                <lang lang="C">Amplitude voltage value.</lang>
+            </description>
+        </property>
+        <property name="Voff" default="0" unit="V" visible="false">
+            <description>
+                <lang lang="C">Offset voltage.</lang>
+            </description>
+        </property>
+        <property name="fc" default="10k" unit="Hz" visible="true">
+            <description>
+                <lang lang="C">Carrier frequency.</lang>
+            </description>
+        </property>
+        <property name="mdi" default="5" unit="" visible="true">
+            <description>
+                <lang lang="C">Modulation index.</lang>
+            </description>
+        </property>
+        <property name="fs" default="1k" unit="Hz" visible="true">
+            <description>
+                <lang lang="C">Signal frequency.</lang>
+            </description>
+        </property>
+    </properties>
 
     <models>
-        <model type="spice" syntax="V%label %port{+} %port{-} SFFM( %property{Vo} %property{Va} %property{FC} %property{MDI} %property{FS} )"/>
+        <model type="spice" syntax="V%label %port{+} %port{-} SFFM( %property{Voff} %property{Va} %property{fc} %property{mdi} %property{fs} )"/>
     </models>
 </component>

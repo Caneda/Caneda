@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE caneda>
 <!--
- ***************************************************************************
- * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
- *                                                                         *
- * This is free software; you can redistribute it and/or modify            *
- * it under the terms of the GNU General Public License as published by    *
- * the Free Software Foundation; either version 2, or (at your option)     *
- * any later version.                                                      *
- *                                                                         *
- * This software is distributed in the hope that it will be useful,        *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- * GNU General Public License for more details.                            *
- *                                                                         *
- * You should have received a copy of the GNU General Public License       *
- * along with this package; see the file COPYING.  If not, write to        *
- * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
- * Boston, MA 02110-1301, USA.                                             *
- ***************************************************************************
+***************************************************************************
+* Copyright (C) 2014-2015 by Pablo Daniel Pareja Obregon                  *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
 -->
 
 <component name="Voltage Source Pulse" version="0.1.0" label="V">
@@ -54,45 +54,46 @@
         <port name="-" pos="0,30"/>
     </ports>
 
-   <properties>
-         <property name="V1" default="0" unit="V" visible="true">
-           <description>
-             <lang lang="C">Initial Value</lang>
-           </description>
-         </property>
-         <property name="V2" default="5" unit="V" visible="true">
-           <description>
-             <lang lang="C">Pulsed Value</lang>
-           </description>
-         </property>
-         <property name="Td" default="0.0" unit="s" visible="false">
-           <description>
-             <lang lang="C">Delay</lang>
-           </description>
-         </property>
-         <property name="Tr" default="0.0" unit="s" visible="false">
-           <description>
-             <lang lang="C">Rise Time</lang>
-           </description>
-         </property>
-         <property name="Tf" default="0.0" unit="s" visible="false">
-           <description>
-             <lang lang="C">Fall Time</lang>
-           </description>
-         </property>
-         <property name="PW" default="0.5m" unit="s" visible="true">
-           <description>
-             <lang lang="C">Pulse Width</lang>
-           </description>
-         </property>
-         <property name="Per" default="1m" unit="s" visible="true">
-           <description>
-             <lang lang="C">Period</lang>
-           </description>
-         </property>
-   </properties>
+    <properties>
+        <property name="V1" default="0" unit="V" visible="true">
+            <description>
+                <lang lang="C">Initial voltage value.</lang>
+            </description>
+        </property>
+        <property name="V2" default="5" unit="V" visible="true">
+            <description>
+                <lang lang="C">Pulsed voltage value.</lang>
+            </description>
+        </property>
+        <property name="td" default="0.0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Time delay.</lang>
+            </description>
+        </property>
+        <property name="tr" default="0.0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Rise time.</lang>
+            </description>
+        </property>
+        <property name="tf" default="0.0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Fall time.</lang>
+            </description>
+        </property>
+        <property name="PW" default="0.5m" unit="s" visible="true">
+            <description>
+                <lang lang="C">Pulse width.</lang>
+            </description>
+        </property>
+        <property name="per" default="1m" unit="s" visible="true">
+            <description>
+                <lang lang="C">Period.</lang>
+            </description>
+        </property>
+    </properties>
 
     <models>
-        <model type="spice" syntax="V%label %port{+} %port{-} PULSE( %property{V1} %property{V2} %property{Td} %property{Tr} %property{Tf} %property{PW} %property{Per} )"/>
+        <model type="spice" syntax="V%label %port{+} %port{-} DC %property{V2} AC %property{V2} 0
+                                    PULSE( %property{V1} %property{V2} %property{td} %property{tr} %property{tf} %property{PW} %property{per} )"/>
     </models>
 </component>

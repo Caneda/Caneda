@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE caneda>
 <!--
- ***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
- *                                                                         *
- * This is free software; you can redistribute it and/or modify            *
- * it under the terms of the GNU General Public License as published by    *
- * the Free Software Foundation; either version 2, or (at your option)     *
- * any later version.                                                      *
- *                                                                         *
- * This software is distributed in the hope that it will be useful,        *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- * GNU General Public License for more details.                            *
- *                                                                         *
- * You should have received a copy of the GNU General Public License       *
- * along with this package; see the file COPYING.  If not, write to        *
- * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
- * Boston, MA 02110-1301, USA.                                             *
- ***************************************************************************
+***************************************************************************
+* Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
 -->
 
 <component name="Current Source" version="0.1.0" label="I">
@@ -48,25 +48,46 @@
         <port name="-" pos="0,30"/>
     </ports>
 
-   <properties>
-         <property name="Idc" default="5m" unit="A" visible="true">
-           <description>
-             <lang lang="C">DC Value</lang>
-           </description>
-         </property>
-         <property name="Iac" default="1" unit="A" visible="false">
-           <description>
-             <lang lang="C">AC Magnitude</lang>
-           </description>
-         </property>
-         <property name="Phase" default="0" unit="º" visible="false">
-           <description>
-             <lang lang="C">AC Phase</lang>
-           </description>
-         </property>
-   </properties>
+    <properties>
+        <property name="Idc" default="5m" unit="A" visible="true">
+            <description>
+                <lang lang="C">Source DC value.</lang>
+            </description>
+        </property>
+        <property name="Iac" default="1" unit="A" visible="false">
+            <description>
+                <lang lang="C">Source AC magnitude (value used in AC simulations).</lang>
+            </description>
+        </property>
+        <property name="phase" default="0" unit="º" visible="false">
+            <description>
+                <lang lang="C">Source AC phase (value used in AC simulations).</lang>
+            </description>
+        </property>
+        <property name="f1mag" default="1.0" unit="V" visible="false">
+            <description>
+                <lang lang="C">Distorsion input magnitude at first frequency.</lang>
+            </description>
+        </property>
+        <property name="f1phase" default="0" unit="º" visible="false">
+            <description>
+                <lang lang="C">Distorsion input phase at first frequency.</lang>
+            </description>
+        </property>
+        <property name="f2mag" default="1.0" unit="V" visible="false">
+            <description>
+                <lang lang="C">Distorsion input magnitude at second frequency.</lang>
+            </description>
+        </property>
+        <property name="f2phase" default="0" unit="º" visible="false">
+            <description>
+                <lang lang="C">Distorsion input phase at second frequency.</lang>
+            </description>
+        </property>
+    </properties>
 
     <models>
-        <model type="spice" syntax="I%label %port{+} %port{-} DC %property{Idc} AC %property{Iac} %property{Phase}"/>
+        <model type="spice" syntax="I%label %port{+} %port{-} DC %property{Idc} AC %property{Iac} %property{phase}
+                                    DISTOF1 %property{f1mag} %property{f1phase} DISTOF2 %property{f2mag} %property{f2phase}"/>
     </models>
 </component>

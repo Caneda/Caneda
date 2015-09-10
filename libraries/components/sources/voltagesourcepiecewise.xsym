@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE caneda>
 <!--
- ***************************************************************************
- * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
- *                                                                         *
- * This is free software; you can redistribute it and/or modify            *
- * it under the terms of the GNU General Public License as published by    *
- * the Free Software Foundation; either version 2, or (at your option)     *
- * any later version.                                                      *
- *                                                                         *
- * This software is distributed in the hope that it will be useful,        *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- * GNU General Public License for more details.                            *
- *                                                                         *
- * You should have received a copy of the GNU General Public License       *
- * along with this package; see the file COPYING.  If not, write to        *
- * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
- * Boston, MA 02110-1301, USA.                                             *
- ***************************************************************************
+***************************************************************************
+* Copyright (C) 2014-2015 by Pablo Daniel Pareja Obregon                  *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
 -->
 
 <component name="Voltage Source Piece Wise Linear (PWL)" version="0.1.0" label="V">
@@ -54,23 +54,23 @@
         <port name="-" pos="0,30"/>
     </ports>
 
-   <properties>
-         <property name="TiVi" default="0 0 1m 3 2m 5 2.1m 1 4m 0" unit="" visible="true">
-           <description>
-             <lang lang="C">Time Voltage Tuples (Ti Vi). Specify values here, separated by spaces (for example: 1u 1m 3u 0.5m).</lang>
-           </description>
-         </property>
-         <property name="r" default="0" unit="s" visible="false">
-           <description>
-             <lang lang="C">Repeat time point.</lang>
-           </description>
-         </property>
-         <property name="td" default="0" unit="s" visible="false">
-           <description>
-             <lang lang="C">Delay Time.</lang>
-           </description>
-         </property>
-   </properties>
+    <properties>
+        <property name="TiVi" default="0 0 1m 3 2m 5 2.1m 1 4m 0" unit="" visible="true">
+            <description>
+                <lang lang="C">Time voltage tuples (Ti Vi). Specify values here, separated by spaces (for example: 1u 1m 3u 0.5m).</lang>
+            </description>
+        </property>
+        <property name="r" default="0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Repeat time point.</lang>
+            </description>
+        </property>
+        <property name="td" default="0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Delay time.</lang>
+            </description>
+        </property>
+    </properties>
 
     <models>
         <model type="spice" syntax="V%label %port{+} %port{-} PWL( %property{TiVi} ) r=%property{r} td=%property{td}"/>

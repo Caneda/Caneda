@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE caneda>
 <!--
- ***************************************************************************
- * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
- *                                                                         *
- * This is free software; you can redistribute it and/or modify            *
- * it under the terms of the GNU General Public License as published by    *
- * the Free Software Foundation; either version 2, or (at your option)     *
- * any later version.                                                      *
- *                                                                         *
- * This software is distributed in the hope that it will be useful,        *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- * GNU General Public License for more details.                            *
- *                                                                         *
- * You should have received a copy of the GNU General Public License       *
- * along with this package; see the file COPYING.  If not, write to        *
- * the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
- * Boston, MA 02110-1301, USA.                                             *
- ***************************************************************************
+***************************************************************************
+* Copyright (C) 2014-2015 by Pablo Daniel Pareja Obregon                  *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
 -->
 
 <component name="Current Source Single Frequency FM" version="0.1.0" label="I">
@@ -72,35 +72,35 @@
         <port name="-" pos="0,30"/>
     </ports>
 
-   <properties>
-         <property name="Ia" default="1m" unit="A" visible="true">
-           <description>
-             <lang lang="C">Amplitude Value</lang>
-           </description>
-         </property>
-         <property name="Io" default="0" unit="A" visible="false">
-           <description>
-             <lang lang="C">Offset Current</lang>
-           </description>
-         </property>
-         <property name="FC" default="10k" unit="Hz" visible="true">
-           <description>
-             <lang lang="C">Carrier Frequency</lang>
-           </description>
-         </property>
-         <property name="MDI" default="5" unit="" visible="true">
-           <description>
-             <lang lang="C">Modulation Index</lang>
-           </description>
-         </property>
-         <property name="FS" default="1k" unit="Hz" visible="true">
-           <description>
-             <lang lang="C">Signal Frequency</lang>
-           </description>
-         </property>
-   </properties>
+    <properties>
+        <property name="Ia" default="1m" unit="A" visible="true">
+            <description>
+                <lang lang="C">Amplitude current value.</lang>
+            </description>
+        </property>
+        <property name="Ioff" default="0" unit="A" visible="false">
+            <description>
+                <lang lang="C">Offset current.</lang>
+            </description>
+        </property>
+        <property name="fc" default="10k" unit="Hz" visible="true">
+            <description>
+                <lang lang="C">Carrier frequency.</lang>
+            </description>
+        </property>
+        <property name="mdi" default="5" unit="" visible="true">
+            <description>
+                <lang lang="C">Modulation index.</lang>
+            </description>
+        </property>
+        <property name="fs" default="1k" unit="Hz" visible="true">
+            <description>
+                <lang lang="C">Signal frequency.</lang>
+            </description>
+        </property>
+    </properties>
 
     <models>
-        <model type="spice" syntax="I%label %port{+} %port{-} SFFM( %property{Io} %property{Ia} %property{FC} %property{MDI} %property{FS} )"/>
+        <model type="spice" syntax="I%label %port{+} %port{-} SFFM( %property{Ioff} %property{Ia} %property{fc} %property{mdi} %property{fs} )"/>
     </models>
 </component>
