@@ -109,7 +109,7 @@ namespace Caneda
     {
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Component*> components = filterItems<Component>(items);
-        QList<QPair<Port *, int> > netlist = generateNetlistTopology();
+        PortsNetlist netlist = generateNetlistTopology();
         QStringList modelsList;
         QStringList subcircuitsList;
 
@@ -150,10 +150,10 @@ namespace Caneda
                 if(commands.at(i).startsWith("%port")){
                     foreach(Port *_port, c->ports()) {
                         if(_port->name() == parameter) {
-                            // Found the port, now look for its netlist number
+                            // Found the port, now look for its netlist name
                             for(int j = 0; j < netlist.size(); ++j) {
                                 if(netlist.at(j).first == _port) {
-                                    model.replace(commands.at(i), QString::number(netlist.at(j).second));
+                                    model.replace(commands.at(i), netlist.at(j).second);
                                 }
                             }
                         }
@@ -230,9 +230,8 @@ namespace Caneda
      *
      *  \sa saveComponents(), Port::getEquipotentialPorts()
      */
-    QList<QPair<Port *, int> > FormatSpice::generateNetlistTopology()
+    PortsNetlist FormatSpice::generateNetlistTopology()
     {
-        //! \todo Generate a type for QList<QPair<Port*, int> > and use that instead
         /*! \todo Investigate: If we use QList<CGraphicsItem*> canedaItems = filterItems<Ports>(items);
          *  some phantom ports appear, and seem to be uninitialized, generating an ugly crash. Hence
          *  we filter generic items and use an iteration over their ports as a workaround.
@@ -245,7 +244,7 @@ namespace Caneda
         }
 
         int equiId = 1;
-        QList<QPair<Port*, int> > netlist;
+        PortsNetlist netlist;
         QList<Port*> parsedPorts;
 
         foreach(Port *p, ports) {
@@ -256,7 +255,7 @@ namespace Caneda
             QList<Port*> equi;
             p->getEquipotentialPorts(equi);
             foreach(Port *_port, equi) {
-                netlist.append(qMakePair(_port, equiId));
+                netlist.append(qMakePair(_port, QString::number(equiId)));
             }
 
             equiId++;
@@ -282,7 +281,7 @@ namespace Caneda
      *
      * \sa PortSymbol, generateNetlistTopology()
      */
-    void FormatSpice::replacePortNames(QList<QPair<Port *, int> > *netlist)
+    void FormatSpice::replacePortNames(PortsNetlist *netlist)
     {
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
@@ -290,23 +289,22 @@ namespace Caneda
         // Iterate over all PortSymbols
         foreach(PortSymbol *p, portSymbols) {
 
-            // Given the port, look for its netlist number
-            int netName;
+            // Given the port, look for its netlist name
+            QString netName;
             for(int i = 0; i < netlist->size(); ++i) {
                 if(netlist->at(i).first == p->port()) {
                     netName = netlist->at(i).second;
                 }
             }
 
-            // Given the netlist number, rename all occurencies with the new name
+            // Given the netlist name, rename all occurencies with the new name
             for(int i = 0; i < netlist->size(); ++i) {
                 if(netlist->at(i).second == netName) {
                     if(p->label().toLower() == "ground" || p->label().toLower() == "gnd") {
-                        netlist->replace(i, qMakePair(netlist->at(i).first, 0));
+                        netlist->replace(i, qMakePair(netlist->at(i).first, QString::number(0)));
                     }
                     else {
-                        //! \todo Replace int by QString to be able to use generic labels.
-                        // netlist.at(i).second = p->label();
+                        netlist->replace(i, qMakePair(netlist->at(i).first, p->label()));
                     }
                 }
             }

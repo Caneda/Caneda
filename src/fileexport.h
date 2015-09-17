@@ -34,6 +34,8 @@ namespace Caneda
     class CGraphicsScene;
     class Port;
 
+    typedef QList<QPair<Port *, QString> > PortsNetlist;
+
     /*!
      * \brief This class handles all the access to the raw spice simulation
      * documents file format.
@@ -62,8 +64,8 @@ namespace Caneda
 
     private:
         QString generateNetlist();
-        QList<QPair<Caneda::Port *, int> > generateNetlistTopology();
-        void replacePortNames(QList<QPair<Port *, int> > *netlist);
+        PortsNetlist generateNetlistTopology();
+        void replacePortNames(PortsNetlist *netlist);
 
         SchematicDocument *m_schematicDocument;
     };
