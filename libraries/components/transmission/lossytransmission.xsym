@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="Lossy Transmission Line" version="0.1.0" label="O">
+    <displaytext>
+        <lang lang="C">Lossy Transmission Line</lang>
+        <lang lang="es">Línea de Transmisión con Pérdidas</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">Lossy transmission line.</lang>
+    </description>
+
+    <symbol>
+        <painting name="line" line="0,0,8,0" pos="-50,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="40,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,78,0" pos="-38,7" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,78,0" pos="-38,-7" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipse" ellipse="0,0,7,14" pos="36.5,-7" transform="1,0,0,1,0,0"/>
+        <painting name="ellipseArc" ellipse="0,0,7,14" pos="-42,-7" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
+        </painting>
+
+        <painting name="line" line="0,0,8,0" pos="-20,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="-12,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,10" pos="-10,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,-10" pos="-6,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,10" pos="-2,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,-10" pos="2,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,10" pos="6,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="10,5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,8,0" pos="12,0" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <ports>
+        <port name="in+" pos="-50,0"/>
+        <port name="out+" pos="50,0"/>
+    </ports>
+
+    <properties>
+        <property name="model" default="LTRA" unit="" visible="false">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="O%label %port{in+} %port{out+} 0 0 %property{model}
+                                    %model{LTRA LTRA}"/>
+    </models>
+</component>

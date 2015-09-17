@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="Uniform Distributed RC Line" version="0.1.0" label="U">
+    <displaytext>
+        <lang lang="C">Uniform Distributed RC Line</lang>
+        <lang lang="es">Línea RC Distribuida</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">Uniform distributed RC line.</lang>
+    </description>
+
+    <symbol>
+        <painting name="line" line="0,0,4,0" pos="-50,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="-46,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-45,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="-43,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-41,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="-39,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-37,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="-35,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="-34,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="-30,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-35,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-35,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="-30,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,4,0" pos="-30,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="-26,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-25,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="-23,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-21,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="-19,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-17,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="-15,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="-14,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-15,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-15,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="-10,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,4,0" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="-6,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-5,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="-3,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-1,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="1,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="3,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="5,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="6,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="5,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="5,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="10,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,4,0" pos="10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="14,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="15,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="17,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="19,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="21,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="23,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="25,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="26,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="30,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="25,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="25,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="30,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,4,0" pos="30,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="34,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="35,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="37,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="39,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="41,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="43,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="45,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="46,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,60,0" pos="-30,20" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <ports>
+        <port name="in" pos="-50,0"/>
+        <port name="out" pos="50,0"/>
+        <port name="ref" pos="0,20"/>
+    </ports>
+
+    <properties>
+        <property name="model" default="URC" unit="" visible="false">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+        <property name="len" default="0.1" unit="m" visible="false">
+            <description>
+                <lang lang="C">Length of the RC line.</lang>
+            </description>
+        </property>
+        <property name="lumps" default="1" unit="" visible="false">
+            <description>
+                <lang lang="C">Number of lumped segments to use in modeling the RC line.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="U%label %port{in} %port{out} %port{ref} %property{model} l=%property{len} n=%property{lumps}
+                                    %model{URC URC}"/>
+    </models>
+</component>

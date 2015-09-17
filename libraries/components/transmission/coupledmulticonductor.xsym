@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="Coupled Multiconductor Line" version="0.1.0" label="P">
+    <displaytext>
+        <lang lang="C">Coupled Multiconductor Line</lang>
+        <lang lang="es">Línea de múltiples conductores acoplados</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">Coupled multiconductor line.</lang>
+    </description>
+
+    <symbol>
+        <painting name="line" line="0,0,100,0" pos="-50,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="-30,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-35,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-35,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="-30,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-15,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-15,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="-10,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="5,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="5,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="10,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="30,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="25,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="25,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="30,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,100,0" pos="-50,20" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <ports>
+        <port name="in1" pos="-50,0"/>
+        <port name="in2" pos="-50,20"/>
+        <port name="out1" pos="50,0"/>
+        <port name="out2" pos="50,20"/>
+    </ports>
+
+    <properties>
+        <property name="model" default="CPL" unit="" visible="false">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+        <property name="len" default="0.1" unit="m" visible="false">
+            <description>
+                <lang lang="C">Length of the line.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="P%label %port{in1} %port{in2} 0 %port{out1} %port{out2} 0 %property{model} len=%property{len}
+                                    %model{CPL CPL}"/>
+    </models>
+</component>
