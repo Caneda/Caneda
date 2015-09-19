@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="Linear Current-Controlled Voltage Source (CCVS)" version="0.1.0" label="H">
+
+    <displaytext>
+        <lang lang="C">Linear Current-Controlled Voltage Source (CCVS)</lang>
+        <lang lang="es">Fuente de Tensión Lineal Controlada por Corriente (CCVS)</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">A voltage source device.</lang>
+    </description>
+
+    <symbol>
+        <painting name="ellipse" ellipse="0,0,26,26" pos="10,-13" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,7" pos="23,13" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-7" pos="23,-13" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,37,0" pos="23,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,37,0" pos="23,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,40" pos="-3,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-27,0" pos="-3,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-27,0" pos="-3,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,3,-3" pos="-3,1.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-3,-3" pos="-3,1.5" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipseArc" ellipse="0,0,7,7" pos="16,-3.5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,7,7" pos="23,-3.5" transform="1,0,0,1,0,0">
+            <properties startAngle="180" spanAngle="180"/>
+        </painting>
+
+        <painting name="rectangle" rectangle="0,0,80,60" pos="-30,-30" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <ports>
+        <port name="n+" pos="60,-20"/>
+        <port name="n-" pos="60,20"/>
+    </ports>
+
+    <properties>
+        <property name="Vnam" default="name" unit="" visible="true">
+            <description>
+                <lang lang="C">Voltage source with the controlling current</lang>
+            </description>
+        </property>
+        <property name="R" default="1.0" unit="Ω" visible="true">
+            <description>
+                <lang lang="C">Transresistance value.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="H%label %port{n+} %port{n-} V%property{Vnam} %property{R}"/>
+    </models>
+</component>
