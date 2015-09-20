@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -296,14 +296,9 @@ namespace Caneda
             // specific options as attributes of the properties tag, and style
             // properties such as pen and brush attibutes as succesive tags.
             <properties headStyle="1" headSize="12,20"/>
-            <pen width="0" color="#000000" style="1"/>
-            <brush color="#000000" style="1"/>
         </painting>
 
-        <painting name="ellipse" ellipse="0,0,200,180" pos="-130,-50" transform="1,0,0,1,0,0">
-            <pen width="0" color="#000000" style="1"/>
-            <brush color="#000000" style="0"/>
-        </painting>
+        <painting name="ellipse" ellipse="0,0,200,180" pos="-130,-50" transform="1,0,0,1,0,0"/>
     </symbol>
 
     // Ports tag:
@@ -351,8 +346,33 @@ namespace Caneda
             </description>
         </property>
     </properties>
+
+    // Models tag:
+    // This tag is used to group all available models relative to this component.
+    //
+    // Models are the representation of a component in different scenarios.
+    // For example, a component can have certain syntax to be used in a spice
+    // circuit, and a different one in a kicad schematic. Having a way to
+    // extract information from our schematic and interpret it in different
+    // ways allow us to export the circuit to other softwares and simulator
+    // engines. Models should be always strings.
+    <models>
+        // Model tag:
+        // This tag is used to represent a particular model of the component
+        // relative to one output language/format/etc.
+        //
+        // Attibutes:
+        //      * type (#required): Represents the name of the output format.
+        //      * syntax (#required): Represents the syntax value to use during
+        //        file export.
+        <model type="spice" syntax="I%label %port{+} %port{-} DC %property{Ia} AC %property{Ia} 0
+                                    SIN( %property{Ioff} %property{Ia} %property{freq} %property{td} %property{theta} )"/>
+    </models>
 </component>
 \endcode
+ *
+ * For more information on how to use models inside the symbol documents, see
+ * the \ref ModelsFormat page.
  *
  * \section Layouts Layout Format
  * This file format is implemented by the FormatXmlLayout class. This format
@@ -583,7 +603,7 @@ namespace Caneda
 
  * \endcode
  *
- * \sa  FormatXmlSchematic, FormatXmlSymbol, FormatXmlLayout, FormatRawSimulation
+ * \sa  FormatXmlSchematic, FormatXmlSymbol, FormatXmlLayout, FormatRawSimulation, \ref ModelsFormat
  */
 
 } // namespace Caneda

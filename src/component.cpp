@@ -184,6 +184,8 @@ namespace Caneda
      *
      * \param type The type of model to return (for example, spice).
      * \return QString with the component's model.
+     *
+     * \sa \ref ModelsFormat.
      */
     QString Component::model(const QString& type) const
     {

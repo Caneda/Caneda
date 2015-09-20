@@ -94,16 +94,10 @@ namespace Caneda
      *  according to the model provided as a set of rules. In order to do so,
      *  the netlist topology must also be created, that is the connections
      *  between the multiple components must be determined and numbered to be
-     *  used for the spice netlist.
+     *  used for the spice netlist. The set of rules used for generating the
+     *  netlist from the model is specified in \ref ModelsFormat.
      *
-     *  Each "part" or "block" of a spice model is separated by spaces. Each
-     *  block begins with a "%", which is a command indicating what goes next,
-     *  followed optionaly by a "=" indicating an item or name of a group. For
-     *  example, a block may be %port=A indicating that a port must be added,
-     *  and in particular of all ports, the port A must be written. If not "%"
-     *  is given, the text must be copied "as is".
-     *
-     *  \sa generateNetlistTopology()
+     *  \sa generateNetlistTopology(), \ref ModelsFormat
      */
     QString FormatSpice::generateNetlist()
     {
