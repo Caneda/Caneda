@@ -21,14 +21,14 @@
 ***************************************************************************
 -->
 
-<component name="AC Simulation" version="0.1.0" label="Sim">
+<component name="Operation Point Simulation" version="0.1.0" label="Sim">
     <displaytext>
-        <lang lang="C">AC Simulation</lang>
-        <lang lang="es">Simulación AC</lang>
+        <lang lang="C">DC Operation Point Simulation</lang>
+        <lang lang="es">Simulación del Punto de Operación de DC</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">AC simulation configuration module</lang>
+        <lang lang="C">DC operation point simulation configuration module</lang>
     </description>
 
     <symbol>
@@ -36,37 +36,13 @@
         <painting name="rectangle" rectangle="0,0,30,20" pos="-15,-15" transform="1,0,0,1,0,0"/>
 
         <painting name="line" line="0,0,20,0" pos="-10,-5" transform="1,0,0,1,0,0"/>
-
-        <painting name="line" line="0,0,10,0" pos="-10,-10" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,10,10" pos="0,-10" transform="1,0,0,1,0,0"/>
     </symbol>
 
     <ports/>
 
-    <properties>
-        <property name="type" default="dec" unit="" visible="false">
-            <description>
-                <lang lang="C">Type of frequency increment. Possible values are: dec, oct, lin.</lang>
-            </description>
-        </property>
-        <property name="n" default="10" unit="" visible="false">
-            <description>
-                <lang lang="C">Number of points per decade/octave/total.</lang>
-            </description>
-        </property>
-        <property name="fstart" default="1" unit="Hz" visible="true">
-            <description>
-                <lang lang="C">Start frequency.</lang>
-            </description>
-        </property>
-        <property name="fstop" default="10k" unit="Hz" visible="true">
-            <description>
-                <lang lang="C">Final frequency.</lang>
-            </description>
-        </property>
-    </properties>
+    <properties/>
 
     <models>
-        <model type="spice" syntax=".ac %property{type} %property{n} %property{fstart} %property{fstop}"/>
+        <model type="spice" syntax=".op"/>
     </models>
 </component>

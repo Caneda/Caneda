@@ -21,61 +21,39 @@
 ***************************************************************************
 -->
 
-<component name="Transient Simulation" version="0.1.0" label="Sim">
+<component name="Transfer Function Analysis Simulation" version="0.1.0" label="Sim">
     <displaytext>
-        <lang lang="C">Transient Simulation</lang>
-        <lang lang="es">Simulación Transitoria</lang>
+        <lang lang="C">Transfer Function Analysis Simulation</lang>
+        <lang lang="es">Simulación de Análisis de Función Transferencia</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">Transient simulation configuration module</lang>
+        <lang lang="C">Transfer function analysis simulation configuration module</lang>
     </description>
 
     <symbol>
         <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
         <painting name="rectangle" rectangle="0,0,30,20" pos="-15,-15" transform="1,0,0,1,0,0"/>
 
-        <painting name="line" line="0,0,20,0" pos="-10,-5" transform="1,0,0,1,0,0"/>
-
-        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-10,-10" transform="1,0,0,1,0,0">
-            <properties startAngle="0" spanAngle="180"/>
-        </painting>
-        <painting name="ellipseArc" ellipse="0,0,10,10" pos="0,-10" transform="1,0,0,1,0,0">
-            <properties startAngle="180" spanAngle="180"/>
-        </painting>
+        <painting name="line" line="0,0,20,-10" pos="-10,0" transform="1,0,0,1,0,0"/>
     </symbol>
 
     <ports/>
 
     <properties>
-        <property name="tstep" default="1u" unit="s" visible="true">
+        <property name="outvar" default="varName" unit="" visible="true">
             <description>
-                <lang lang="C">Maximum time step increment.</lang>
+                <lang lang="C">Small signal output variable name.</lang>
             </description>
         </property>
-        <property name="tstop" default="1m" unit="s" visible="true">
+        <property name="source" default="sourceName" unit="" visible="true">
             <description>
-                <lang lang="C">Total simulation time.</lang>
-            </description>
-        </property>
-        <property name="tstart" default="0" unit="s" visible="false">
-            <description>
-                <lang lang="C">Initial time to start saving simulation data.</lang>
-            </description>
-        </property>
-        <property name="tmax" default="" unit="s" visible="false">
-            <description>
-                <lang lang="C">Internal maximum time step increment (useful to guarantee a computing interval smaller than the display increment).</lang>
-            </description>
-        </property>
-        <property name="uic" default="" unit="" visible="false">
-            <description>
-                <lang lang="C">Use the components' initial conditions. Posible values: uic, empty.</lang>
+                <lang lang="C">Small signal input source name.</lang>
             </description>
         </property>
     </properties>
 
     <models>
-        <model type="spice" syntax=".tran %property{tstep} %property{tstop} %property{tstart} %property{tmax} %property{uic}"/>
+        <model type="spice" syntax=".tf %property{outvar} %property{source}"/>
     </models>
 </component>

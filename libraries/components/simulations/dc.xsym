@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="DC Transfer Function" version="0.1.0" label="Sim">
+    <displaytext>
+        <lang lang="C">DC Transfer Function Simulation</lang>
+        <lang lang="es">Simulación de la Función Transferencia en DC</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">DC transfer function simulation configuration module</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+        <painting name="rectangle" rectangle="0,0,30,20" pos="-15,-15" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,20,0" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,20,-3" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,20,-6" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,20,-9" pos="-10,0" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <ports/>
+
+    <properties>
+        <property name="source" default="name" unit="" visible="true">
+            <description>
+                <lang lang="C">Name of the independent voltage or current source, resistor or circuit temperature.</lang>
+            </description>
+        </property>
+        <property name="start" default="0" unit="" visible="true">
+            <description>
+                <lang lang="C">Start value.</lang>
+            </description>
+        </property>
+        <property name="stop" default="5" unit="" visible="true">
+            <description>
+                <lang lang="C">Stop value.</lang>
+            </description>
+        </property>
+        <property name="increment" default="0.25" unit="" visible="false">
+            <description>
+                <lang lang="C">Increment value.</lang>
+            </description>
+        </property>
+        <property name="source2" default="" unit="" visible="false">
+            <description>
+                <lang lang="C">Name of the second independent voltage or current source, resistor or circuit temperature (optional).</lang>
+            </description>
+        </property>
+        <property name="start2" default="" unit="" visible="false">
+            <description>
+                <lang lang="C">Start value of the second source.</lang>
+            </description>
+        </property>
+        <property name="stop2" default="" unit="" visible="false">
+            <description>
+                <lang lang="C">Stop value of the second source.</lang>
+            </description>
+        </property>
+        <property name="increment2" default="" unit="" visible="false">
+            <description>
+                <lang lang="C">Increment value of the second source.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax=".dc %property{source} %property{start} %property{stop} %property{increment}
+                                    %property{source2} %property{start2} %property{stop2} %property{increment2}"/>
+    </models>
+</component>

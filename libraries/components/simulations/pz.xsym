@@ -21,14 +21,14 @@
 ***************************************************************************
 -->
 
-<component name="Transient Simulation" version="0.1.0" label="Sim">
+<component name="Pole-Zero Analysis Simulation" version="0.1.0" label="Sim">
     <displaytext>
-        <lang lang="C">Transient Simulation</lang>
-        <lang lang="es">Simulación Transitoria</lang>
+        <lang lang="C">Pole-Zero Analysis Simulation</lang>
+        <lang lang="es">Simulación de Análisis de Polos y Ceros</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">Transient simulation configuration module</lang>
+        <lang lang="C">Pole-Zero analysis simulation configuration module</lang>
     </description>
 
     <symbol>
@@ -36,46 +36,53 @@
         <painting name="rectangle" rectangle="0,0,30,20" pos="-15,-15" transform="1,0,0,1,0,0"/>
 
         <painting name="line" line="0,0,20,0" pos="-10,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,10" pos="0,-10" transform="1,0,0,1,0,0"/>
 
-        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-10,-10" transform="1,0,0,1,0,0">
-            <properties startAngle="0" spanAngle="180"/>
-        </painting>
-        <painting name="ellipseArc" ellipse="0,0,10,10" pos="0,-10" transform="1,0,0,1,0,0">
-            <properties startAngle="180" spanAngle="180"/>
-        </painting>
+        <painting name="line" line="0,0,2,2" pos="-10,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-2,2" pos="-8,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,2" pos="-10,-2" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-2,2" pos="-8,-2" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipse" ellipse="0,0,2,2" pos="8,-10" transform="1,0,0,1,0,0"/>
+        <painting name="ellipse" ellipse="0,0,2,2" pos="8,-2" transform="1,0,0,1,0,0"/>
     </symbol>
 
     <ports/>
 
     <properties>
-        <property name="tstep" default="1u" unit="s" visible="true">
+        <property name="node1" default="name" unit="" visible="true">
             <description>
-                <lang lang="C">Maximum time step increment.</lang>
+                <lang lang="C">First input net or node name.</lang>
             </description>
         </property>
-        <property name="tstop" default="1m" unit="s" visible="true">
+        <property name="node2" default="name" unit="" visible="true">
             <description>
-                <lang lang="C">Total simulation time.</lang>
+                <lang lang="C">Second input net or node name.</lang>
             </description>
         </property>
-        <property name="tstart" default="0" unit="s" visible="false">
+        <property name="node3" default="name" unit="" visible="true">
             <description>
-                <lang lang="C">Initial time to start saving simulation data.</lang>
+                <lang lang="C">First output net or node name.</lang>
             </description>
         </property>
-        <property name="tmax" default="" unit="s" visible="false">
+        <property name="node4" default="name" unit="" visible="true">
             <description>
-                <lang lang="C">Internal maximum time step increment (useful to guarantee a computing interval smaller than the display increment).</lang>
+                <lang lang="C">Second output net or node name.</lang>
             </description>
         </property>
-        <property name="uic" default="" unit="" visible="false">
+        <property name="tf" default="vol" unit="" visible="false">
             <description>
-                <lang lang="C">Use the components' initial conditions. Posible values: uic, empty.</lang>
+                <lang lang="C">Transfer function type. Possible values are: cur, vol (cur = Vout/Iin ; vol = Vout/Vin).</lang>
+            </description>
+        </property>
+        <property name="type" default="pz" unit="" visible="false">
+            <description>
+                <lang lang="C">Type of analysis. Possible values are: pol, zer, pz (pole analysis, zero analysis, both).</lang>
             </description>
         </property>
     </properties>
 
     <models>
-        <model type="spice" syntax=".tran %property{tstep} %property{tstop} %property{tstart} %property{tmax} %property{uic}"/>
+        <model type="spice" syntax=".pz %property{node1} %property{node2} %property{node3} %property{node4} %property{tf} %property{type}"/>
     </models>
 </component>
