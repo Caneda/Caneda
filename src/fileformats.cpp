@@ -284,7 +284,8 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "component") {
-                    Component::loadComponent(reader, scene);
+                    Component *c = Component::loadComponent(reader, scene);
+                    c->checkAndConnect(Caneda::DontPushUndoCmd);
                 }
                 else {
                     qWarning() << "Error: Found unknown component type" << reader->name().toString();
