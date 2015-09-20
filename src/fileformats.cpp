@@ -130,8 +130,7 @@ namespace Caneda
 
     void FormatXmlSchematic::saveComponents(Caneda::XmlWriter *writer)
     {
-        CGraphicsScene *scene = cGraphicsScene();
-        QList<QGraphicsItem*> items = scene->items();
+        QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Component*> components = filterItems<Component>(items);
         if(!components.isEmpty()) {
             writer->writeStartElement("components");
@@ -144,8 +143,7 @@ namespace Caneda
 
     void FormatXmlSchematic::savePorts(Caneda::XmlWriter *writer)
     {
-        CGraphicsScene *scene = cGraphicsScene();
-        QList<QGraphicsItem*> items = scene->items();
+        QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
         if(!portSymbols.isEmpty()) {
             writer->writeStartElement("ports");
@@ -160,48 +158,18 @@ namespace Caneda
     {
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Wire*> wires = filterItems<Wire>(items);
-
-        if(wires.isEmpty()) {
-            return;
-        }
-
-        int wireId = 0;
-        int equiId = 0;
-        QList<Wire*> parsedWires;
-
-        writer->writeStartElement("wires");
-
-        foreach(Wire *w, wires) {
-            if(parsedWires.contains(w)) {
-                continue;
+        if(!wires.isEmpty()) {
+            writer->writeStartElement("wires");
+            foreach(Wire *w, wires) {
+                w->saveData(writer);
             }
-
-            QList<Wire*> equi;
-            w->getConnectedWires(equi);
-
-            /*! \todo Is it really necessary to save equipotentials ids in the
-             *  schematic file format??? Those are only used during export to
-             *  netlist, so they can be removed from here. In that case, remove
-             *  the following two lines, and the line "writer->writeEndElement();".
-             */
-            writer->writeStartElement("equipotential");
-            writer->writeAttribute("id", QString::number(equiId++));
-            foreach(Wire *wire, equi) {
-                wire->saveData(writer, wireId++);
-            }
-            writer->writeEndElement();  // This line must be removed if the previous "todo" is completed.
-
-            parsedWires += equi;
+            writer->writeEndElement(); //</wires>
         }
-
-        writer->writeEndElement(); //</wires>
-
     }
 
     void FormatXmlSchematic::savePaintings(Caneda::XmlWriter *writer)
     {
-        CGraphicsScene *scene = cGraphicsScene();
-        QList<QGraphicsItem*> items = scene->items();
+        QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
         if(!paintings.isEmpty()) {
             writer->writeStartElement("paintings");
@@ -352,7 +320,6 @@ namespace Caneda
                     reader->readUnknownElement();
                     reader->raiseError(QObject::tr("Malformatted file"));
                 }
-
             }
         }
     }
@@ -365,34 +332,22 @@ namespace Caneda
         }
 
         while(!reader->atEnd()) {
-            reader->readFurther();
+            reader->readNext();
 
             if(reader->isEndElement()) {
                 Q_ASSERT(reader->name() == "wires");
                 break;
             }
 
-            if(!reader->isStartElement() || reader->name() != "equipotential") {
-                reader->raiseError(QObject::tr("Malformatted file")+reader->name().toString());
-            }
-
-            while(!reader->atEnd()){
-                reader->readNext();
-
-                if(reader->isEndElement()) {
-                    Q_ASSERT(reader->name() == "equipotential");
-                    break;
+            if(reader->isStartElement()) {
+                if(reader->name() == "wire") {
+                    Wire *w = Wire::loadWire(reader,scene);
+                    w->checkAndConnect(Caneda::DontPushUndoCmd);
                 }
-
-                if(reader->isStartElement()) {
-                    if(reader->name() == "wire") {
-                        Wire *w = Wire::loadWire(reader,scene);
-                        w->checkAndConnect(Caneda::DontPushUndoCmd);
-                    }
-                    else {
-                        reader->readUnknownElement();
-                        reader->raiseError(QObject::tr("Malformatted file"));
-                    }
+                else {
+                    qWarning() << "Error: Found unknown wire type" << reader->name().toString();
+                    reader->readUnknownElement();
+                    reader->raiseError(QObject::tr("Malformatted file"));
                 }
             }
         }
@@ -418,8 +373,7 @@ namespace Caneda
                     Painting::loadPainting(reader,scene);
                 }
                 else {
-                    qWarning() << "Error: Found unknown painting type" <<
-                        reader->name().toString();
+                    qWarning() << "Error: Found unknown painting type" << reader->name().toString();
                     reader->readUnknownElement();
                     reader->raiseError(QObject::tr("Malformatted file"));
                 }
@@ -450,8 +404,7 @@ namespace Caneda
                     scene->addProperty(prop);
                 }
                 else {
-                    qWarning() << "Error: Found unknown property type" <<
-                                  reader->name().toString();
+                    qWarning() << "Error: Found unknown property type" << reader->name().toString();
                     reader->readUnknownElement();
                     reader->raiseError(QObject::tr("Malformatted file"));
                 }

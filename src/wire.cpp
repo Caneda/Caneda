@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -222,46 +222,17 @@ namespace Caneda
      *
      * Saves current wire data to \a Caneda::XmlWriter. This method is the
      * virtual implementation of CGraphicsItem::saveData(), to allow for
-     * wire copy/pasting. Do not confuse with
-     * saveData(Caneda::XmlWriter *writer, int id) const which is used by
-     * this method with a constant id, and is used during
-     * FormatXmlSchematic::saveWires() to save wires with different ids.
-     *
-     * \warning Do not delete this method (replacing it by
-     * saveData(Caneda::XmlWriter *writer, int id) const), otherwise
-     * copy/pasting of wires will stop functioning.
+     * wire copy/pasting. It is also used during
+     * FormatXmlSchematic::saveWires() to save wires into a schematic file.
      *
      * \param writer The xmlwriter used to write xml data.
      *
-     * \sa saveData(Caneda::XmlWriter *writer, int id) const,
-     * CGraphicsItem::saveData(), loadData()
+     * \sa FormatXmlSchematic::saveWires(), CGraphicsItem::saveData(),
+     * loadData()
      */
     void Wire::saveData(Caneda::XmlWriter *writer) const
     {
-        saveData(writer, -1);
-    }
-
-    /*!
-     * \brief Saves current wire data to \a Caneda::XmlWriter.
-     *
-     * Saves current wire data to \a Caneda::XmlWriter. Do not confuse this
-     * method with saveData(Caneda::XmlWriter *writer) const which is the
-     * virtual implementation of CGraphicsItem::saveData().
-     *
-     * This method is used during FormatXmlSchematic::saveWires() to save wires
-     * with different ids.
-     *
-     * \param writer The xmlwriter used to write xml data.
-     * \param id The wire id inside the schematic.
-     *
-     * \sa saveData(Caneda::XmlWriter *writer) const,
-     * FormatXmlSchematic::saveWires(), loadData()
-     */
-    void Wire::saveData(Caneda::XmlWriter *writer, int id) const
-    {
         writer->writeStartElement("wire");
-
-        writer->writeAttribute("id", QString::number(id));
 
         QPointF p1 = port1()->scenePos();
         QPointF p2 = port2()->scenePos();

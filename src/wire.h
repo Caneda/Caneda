@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2015 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -98,7 +98,6 @@ namespace Caneda
 
         static Wire* loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void saveData(Caneda::XmlWriter *writer) const;
-        void saveData(Caneda::XmlWriter *writer, int id) const;
         void loadData(Caneda::XmlReader *reader);
 
     private:
