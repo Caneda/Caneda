@@ -164,43 +164,24 @@ namespace Caneda
     </ports>
 
     <wires>
-        // Equipotential tag:
-        // Each equipotential tag describes one electric node included in the
-        // schematic. Every node (equipotential) may or may not have more than
-        // one wire segment.  A node is the logical unit used to perform
-        // electric connections.
+        // Wire tag:
+        // This element is used to store each wire segment representation
+        // in the schematic. Each succesive item will be a different segment.
+        // A typical connection will have one or more wire segments connected
+        // together to form a wire connection between the two ports or
+        // components involved.
         //
         // Attibutes list:
-        //      * id (#required): Represents the name of the node. This
-        //        string is unique and is used to identify this node in the
-        //        netlist.
-        <equipotential id="0">
-
-            // Wire tag:
-            // This element is used to store each wire segment representation
-            // in the schematic. Each succesive item will be a different segment.
-            // A typical connection will have one or more wire segments connected
-            // together to form a wire connection between the two ports or
-            // components involved.
-            //
-            // Attibutes list:
-            //      * id (#required): Represents the name of the wire. This
-            //        string is unique and is used to identify this wire in the
-            //        schematic.
-            //      * start (#required): This tuple represents the start port
-            //        location of the wire inside the schematic coordinate
-            //        system.
-            //      * end (#required): This tuple represents the end port
-            //        location of the wire inside the schematic coordinate
-            //        system.
-            <wire id="0" start="100,-70" end="200,-70"/>
-        </equipotential>
-
-        <equipotential id="1">
-            <wire id="1" start="60,-70" end="-70,-70"/>
-            <wire id="2" start="-70,210" end="-70,-70"/>
-            <wire id="3" start="50,210" end="-70,210"/>
-        </equipotential>
+        //      * start (#required): This tuple represents the start port
+        //        location of the wire inside the schematic coordinate
+        //        system.
+        //      * end (#required): This tuple represents the end port
+        //        location of the wire inside the schematic coordinate
+        //        system.
+        <wire start="100,-70" end="200,-70"/>
+        <wire start="60,-70" end="-70,-70"/>
+        <wire start="-70,210" end="-70,-70"/>
+        <wire start="50,210" end="-70,210"/>
     </wires>
 
     <paintings>
