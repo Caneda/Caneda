@@ -26,11 +26,10 @@ namespace Caneda
  *
  * This document describes Caneda's models format specification. While Caneda
  * uses a custom xml format for all its document types, there is the need to
- * interpret the different objects and properties available and to know the
- * way to export those objects and properties to other languages. In this way,
- * we are able to use our schematics in other softwares or generate complex
- * documents, for example to export a schematic circuit to LaTeX for later
- * publication.
+ * interpret the different objects and properties available and know the way to
+ * export those objects and properties to other languages. In this way, we are
+ * able to use our schematics in other softwares or generate complex documents,
+ * for example to export a schematic circuit to LaTeX for later publication.
  *
  * In the same way as is the case for the document formats, the idea behind the
  * models format specification is to mantain as much simplicity as possible,
@@ -38,18 +37,18 @@ namespace Caneda
  *
  * In this sense, models are the representation of a component in different
  * scenarios. For example, a component can have certain syntax to be used in a
- * spice circuit, and a different one in a kicad schematic or a LaTeX diagram.
+ * SPICE circuit, and a different one in a kicad schematic or a LaTeX diagram.
  * Having a way to extract information from our schematic and interpret it in
- * different ways allow us to export the circuit to other softwares and
+ * different ways allow us to export the circuit to other software and
  * simulator engines.
  *
  * An example for a model tag, with several kind of models could be:
  *
 \code
 <models>
-    <model type="spice" line="L%label %port=1 %port=2 %property=C"/>
-    <model type="kicad" line="L%label %port=1 %port=2 %property=C"/>
-    <model type="vhdl" line="L%label %port=1 %port=2 %property=C"/>
+    <model type="spice" syntax="L%label %port{1} %port{2} %property{C}"/>
+    <model type="kicad" syntax="L%label %port{1} %port{2} %property{C}"/>
+    <model type="vhdl" syntax="L%label %port{1} %port{2} %property{C}"/>
 </models>
 \endcode
  *
@@ -60,23 +59,23 @@ namespace Caneda
  * schematic for the circuit description, the models tag may be directly used
  * by following a set of rules.
  *
- * Additionally, all the symbol's properties must have an equal named property
- * in the schematic, allowing for the user to modify the component's attributes
- * though properties modification.
+ * All symbol's properties must have an equally named property in the
+ * schematic, allowing the user to modify the component's attributes though
+ * properties modification.
  *
  * \section Syntax Models Syntax Rules
  * The general syntax rules follow. The parser implementation, for the case of
  * the SPICE output format is FormatSpice::generateNetlist(). In fact, these
- * rules are specifically designed to avoid conflicts with the SPICE syntax, so
- * in the future the rules may be changed for other formats, or a better syntax
- * may be developed.
+ * rules are specifically designed to avoid conflicts with the SPICE syntax so,
+ * in the future, the rules may be changed for other formats, or a better
+ * syntax may be developed.
  *
- * Each "part" or "block" of a spice model is separated by spaces. Parts of
+ * Each "part" or "block" of a SPICE model is separated by spaces. Parts of
  * each block may include a parameter or value of the component that has to be
  * used. To retrieve those parameters or values, we use escape sequences. Each
  * escape sequence begins with a "%" and a special keyword, which is a command
  * indicating what goes next, followed by optional arguments. For example, an
- * escape sequence may be \%port=A indicating that a port must be added, and in
+ * escape sequence may be \%port{A} indicating that a port must be added, and in
  * particular of all ports, the port A must be written. If not "%" is given,
  * the text must be copied "as is".
  *
@@ -96,34 +95,34 @@ namespace Caneda
  * upon the escape sequence used.
  *
  * Currently, the escape sequences implemented are:
- * \li \%label : This escape sequence indicates that the label of the component
+ * \li <b>\%label</b> : This escape sequence indicates that the label of the component
  * must be used.
- * \li \%port{args} : This escape sequence indicates that the port provided as
+ * \li <b>\%port{args}</b> : This escape sequence indicates that the port provided as
  * an argument must be searched in the netlist and the resulting net number (or
- * name) must be used. For example, %port{in}.
- * \li \%property{args} : This escape sequence indicates that the property name
+ * name) must be used. For example, \%port{in}.
+ * \li <b>\%property{args}</b> : This escape sequence indicates that the property name
  * provided as an argument must be searched in among the properties of the
- * component and the resulting value must be used. For example, %property{R}.
- * \li \%model{args} : This escape sequence indicates that the model provided as
+ * component and the resulting value must be used. For example, \%property{R}.
+ * \li <b>\%model{args}</b> : This escape sequence indicates that the model provided as
  * an argument must be saved to a list of models and included only once in the
  * output file (typically at the end of file). For example, if we are providing
  * a PNP transistor model named PNP_CUSTOM, we don't want the model definition
  * included more than once in the SPICE netlist output file. The usage of the
  * model itself (in the component line) may be repeated several times across
  * different components, but it is included each time by using a
- * %property{model} escape sequence (where model indicates the model name).
- * \li \%subcircuit{args} : This escape sequence indicates that the subcircuit
+ * \%property{model} escape sequence (where model indicates the model name).
+ * \li <b>\%subcircuit{args}</b> : This escape sequence indicates that the subcircuit
  * provided as an argument must be saved to a list of subcircuits and included
  * only once in the output file (typically at the end of file). For example, if
  * we are providing an OPAMP subcircuit named OP741, we don't want the
  * subcircuit definition included more than once in the SPICE netlist output
  * file. The usage of the subcircuit itself (in the component line) may be
  * repeated several times across different instances, but it is included each
- * time by using a %property{model} escape sequence (where model indicates the
+ * time by using a \%property{model} escape sequence (where model indicates the
  * subcircuit name). This is very similar to the models escape sequence.
  * Although theoretically a model escape sequence could be used, the inclusion
  * of a separate escape sequence allows for more flexibility.
- * \li \%n : This escape sequence indicates that a new line must be used.
+ * \li <b>\%n</b> : This escape sequence indicates that a new line must be used.
  *
  * \section Symbols Symbol Format
  * This file format is implemented by the FormatXmlSymbol class, and described
