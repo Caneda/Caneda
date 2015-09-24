@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+********************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                            *
+*                                                                              *
+* This is free software; you can redistribute it and/or modify                 *
+* it under the terms of the GNU General Public License as published by         *
+* the Free Software Foundation; either version 2, or (at your option)          *
+* any later version.                                                           *
+*                                                                              *
+* This software is distributed in the hope that it will be useful,             *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+* GNU General Public License for more details.                                 *
+*                                                                              *
+* You should have received a copy of the GNU General Public License            *
+* along with this package; see the file COPYING.  If not, write to             *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,        *
+* Boston, MA 02110-1301, USA.                                                  *
+********************************************************************************
+-->
+
+<component name="Semiconductor Capacitor Model" version="0.1.0" label="C">
+    <displaytext>
+        <lang lang="C">Semiconductor Capacitor Model</lang>
+        <lang lang="es">Modelo de Capacitor Semiconductor</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">A semiconductor dissipative device.</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,10,0" pos="-20,0" transform="1,0,0,1,0,0"/>
+        <painting name="rectangle" rectangle="0,0,15,20" pos="-10,-12.5" transform="1,0,0,1,0,0"/>
+        <painting name="rectangle" rectangle="0,0,15,20" pos="-5,-7.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-10,0" pos="20,0" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <properties>
+        <property name="CJ" default="1u" unit="F/m²" visible="false">
+            <description>
+                <lang lang="C">Junction bottom capacitance.</lang>
+            </description>
+        </property>
+        <property name="CJSW" default="1u" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Junction sidewall capacitance.</lang>
+            </description>
+        </property>
+        <property name="DEFW" default="1e-6" unit="m" visible="false">
+            <description>
+                <lang lang="C">Default device width.</lang>
+            </description>
+        </property>
+        <property name="DEFL" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Default device length.</lang>
+            </description>
+        </property>
+        <property name="NARROW" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Narrowing due to side etching.</lang>
+            </description>
+        </property>
+        <property name="SHORT" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Shortening due to side etching.</lang>
+            </description>
+        </property>
+        <property name="TC1" default="0" unit="Ω/°C" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient.</lang>
+            </description>
+        </property>
+        <property name="TC2" default="0" unit="Ω/°C²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient.</lang>
+            </description>
+        </property>
+        <property name="TNOM" default="27" unit="°C" visible="false">
+            <description>
+                <lang lang="C">Temperature at which parameters were extracted.</lang>
+                <lang lang="fr">Température à laquelle les paramètres ont été mesurés.</lang>
+            </description>
+        </property>
+        <property name="DI" default="34.5p" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Relative dielectric constant.</lang>
+            </description>
+        </property>
+        <property name="THICK" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Insulator thickness.</lang>
+            </description>
+        </property>
+        <property name="model" default="CapacitorModel" unit="" visible="true">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax=".model %property{model} C ( CJ=%property{CJ} CJSW=%property{CJSW} DEFW=%property{DEFW} DEFL=%property{DEFL} NARROW=%property{NARROW} SHORT=%property{SHORT} TC1=%property{TC1} TC2=%property{TC2} TNOM=%property{TNOM} DI=%property{DI} THICK=%property{THICK} )"/>
+    </models>
+</component>

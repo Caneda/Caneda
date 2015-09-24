@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+********************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                            *
+*                                                                              *
+* This is free software; you can redistribute it and/or modify                 *
+* it under the terms of the GNU General Public License as published by         *
+* the Free Software Foundation; either version 2, or (at your option)          *
+* any later version.                                                           *
+*                                                                              *
+* This software is distributed in the hope that it will be useful,             *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+* GNU General Public License for more details.                                 *
+*                                                                              *
+* You should have received a copy of the GNU General Public License            *
+* along with this package; see the file COPYING.  If not, write to             *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,        *
+* Boston, MA 02110-1301, USA.                                                  *
+********************************************************************************
+-->
+
+<component name="Inductor Model" version="0.1.0" label="L">
+    <displaytext>
+        <lang lang="C">Inductor Model</lang>
+        <lang lang="es">Modelo de Inductancia</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">A magnetic energy storage device.</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-20,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="-10,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="0,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,10,10" pos="10,-5" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="180"/>
+        </painting>
+    </symbol>
+
+    <properties>
+        <property name="CSECT" default="0" unit="m²" visible="false">
+            <description>
+                <lang lang="C">Cross section value.</lang>
+            </description>
+        </property>
+        <property name="LENGTH" default="1" unit="m" visible="false">
+            <description>
+                <lang lang="C">Length value.</lang>
+            </description>
+        </property>
+        <property name="TC1" default="0" unit="H/°C" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient.</lang>
+            </description>
+        </property>
+        <property name="TC2" default="0" unit="H/°C²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient.</lang>
+            </description>
+        </property>
+        <property name="TNOM" default="27" unit="°C" visible="false">
+            <description>
+                <lang lang="C">Temperature at which parameters were extracted.</lang>
+                <lang lang="fr">Température à laquelle les paramètres ont été mesurés.</lang>
+            </description>
+        </property>
+        <property name="NT" default="10" unit="-" visible="false">
+            <description>
+                <lang lang="C">Number of turns.</lang>
+            </description>
+        </property>
+        <property name="MU" default="0" unit="H/m" visible="false">
+            <description>
+                <lang lang="C">Relative magnetic permeability.</lang>
+            </description>
+        </property>
+        <property name="model" default="InductorModel" unit="" visible="true">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax=".model %property{model} L ( CSECT=%property{CSECT} LENGTH=%property{LENGTH} TC1=%property{TC1} TC2=%property{TC2} TNOM=%property{TNOM} NT=%property{NT} MU=%property{MU} )"/>
+    </models>
+</component>
