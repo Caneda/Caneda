@@ -56,8 +56,8 @@
     <properties>
         <property name="model" default="PMOS" unit="" visible="false">
             <description>
-                <lang lang="C">Device model</lang>
-                <lang lang="es">Modelo del dispositivo</lang>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
             </description>
         </property>
         <property name="m" default="1.0" unit="" visible="false">

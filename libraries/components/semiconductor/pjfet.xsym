@@ -52,13 +52,13 @@
     <properties>
         <property name="model" default="PJF" unit="" visible="false">
             <description>
-                <lang lang="C">Device model</lang>
-                <lang lang="es">Modelo del dispositivo</lang>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
             </description>
         </property>
         <property name="area" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">Area scale factor</lang>
+                <lang lang="C">Area scale factor.</lang>
             </description>
         </property>
         <property name="off" default="" unit="" visible="false">
@@ -68,18 +68,18 @@
         </property>
         <property name="ic_vds" default="0" unit="V" visible="false">
             <description>
-                <lang lang="C">Initial Vds condition</lang>
+                <lang lang="C">Initial Vds condition.</lang>
             </description>
         </property>
         <property name="ic_vgs" default="0" unit="V" visible="false">
             <description>
-                <lang lang="C">Initial Vgs condition</lang>
+                <lang lang="C">Initial Vgs condition.</lang>
             </description>
         </property>
         <property name="temp" default="26.5" unit="°C" visible="false">
             <description>
-                <lang lang="C">Temperature</lang>
-                <lang lang="fr">Température</lang>
+                <lang lang="C">Temperature.</lang>
+                <lang lang="fr">Température.</lang>
             </description>
         </property>
     </properties>

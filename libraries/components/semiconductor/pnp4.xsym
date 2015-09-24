@@ -49,28 +49,28 @@
     <properties>
         <property name="model" default="PNP" unit="" visible="false">
             <description>
-                <lang lang="C">Device model</lang>
-                <lang lang="es">Modelo del dispositivo</lang>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
             </description>
         </property>
         <property name="area" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">Emmiter area scale factor</lang>
+                <lang lang="C">Emmiter area scale factor.</lang>
             </description>
         </property>
         <property name="areab" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">Base area scale factor</lang>
+                <lang lang="C">Base area scale factor.</lang>
             </description>
         </property>
         <property name="areac" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">Collector area scale factor</lang>
+                <lang lang="C">Collector area scale factor.</lang>
             </description>
         </property>
         <property name="m" default="1.0" unit="" visible="false">
             <description>
-                <lang lang="C">Multiplier factor (affects both area and perimeter)</lang>
+                <lang lang="C">Multiplier factor (affects both area and perimeter).</lang>
             </description>
         </property>
         <property name="off" default="" unit="" visible="false">
@@ -80,23 +80,23 @@
         </property>
         <property name="ic_vbe" default="0" unit="V" visible="false">
             <description>
-                <lang lang="C">Initial Vbe condition</lang>
+                <lang lang="C">Initial Vbe condition.</lang>
             </description>
         </property>
         <property name="ic_vce" default="0" unit="V" visible="false">
             <description>
-                <lang lang="C">Initial Vce condition</lang>
+                <lang lang="C">Initial Vce condition.</lang>
             </description>
         </property>
         <property name="temp" default="26.5" unit="°C" visible="false">
             <description>
-                <lang lang="C">Temperature</lang>
-                <lang lang="fr">Température</lang>
+                <lang lang="C">Temperature.</lang>
+                <lang lang="fr">Température.</lang>
             </description>
         </property>
         <property name="dtemp" default="1.0" unit="°C" visible="false">
             <description>
-                <lang lang="C">Temperature offset of each instance</lang>
+                <lang lang="C">Temperature offset of each instance.</lang>
             </description>
         </property>
     </properties>
