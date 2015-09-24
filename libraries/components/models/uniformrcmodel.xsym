@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+********************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                            *
+*                                                                              *
+* This is free software; you can redistribute it and/or modify                 *
+* it under the terms of the GNU General Public License as published by         *
+* the Free Software Foundation; either version 2, or (at your option)          *
+* any later version.                                                           *
+*                                                                              *
+* This software is distributed in the hope that it will be useful,             *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+* GNU General Public License for more details.                                 *
+*                                                                              *
+* You should have received a copy of the GNU General Public License            *
+* along with this package; see the file COPYING.  If not, write to             *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,        *
+* Boston, MA 02110-1301, USA.                                                  *
+********************************************************************************
+-->
+
+<component name="Uniform Distributed RC Line Model" version="0.1.0" label="U">
+    <displaytext>
+        <lang lang="C">Uniform Distributed RC Line Model</lang>
+        <lang lang="es">Modelo de Línea RC Distribuida</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">Uniform distributed RC line.</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-10" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,5,0" pos="-15,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,5,0" pos="10,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-15,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-15,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="-10,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,4,0" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="-6,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-5,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="-3,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-1,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="1,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="3,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="5,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,4,0" pos="6,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,8.75" pos="10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="5,8.75" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="5,11.25" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,8.75" pos="10,11.25" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,30,0" pos="-15,20" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <properties>
+        <property name="K" default="2" unit="-" visible="false">
+            <description>
+                <lang lang="C">Propagation constant.</lang>
+            </description>
+        </property>
+        <property name="FMAX" default="1G" unit="Hz" visible="false">
+            <description>
+                <lang lang="C">Maximum frequency of interest.</lang>
+            </description>
+        </property>
+        <property name="RPERL" default="1000" unit="Ω/m" visible="false">
+            <description>
+                <lang lang="C">Resistance per unit length.</lang>
+            </description>
+        </property>
+        <property name="CPERL" default="10e-15" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Capacitance per unit length.</lang>
+            </description>
+        </property>
+        <property name="ISPERL" default="0" unit="A/m" visible="false">
+            <description>
+                <lang lang="C">Saturation current per unit length.</lang>
+            </description>
+        </property>
+        <property name="RSPERL" default="0" unit="Ω/m" visible="false">
+            <description>
+                <lang lang="C">Diode resistance per unit length.</lang>
+            </description>
+        </property>
+        <property name="model" default="URCModel" unit="" visible="true">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax=".model %property{model} URC ( K=%property{K} FMAX=%property{FMAX} RPERL=%property{RPERL} CPERL=%property{CPERL} ISPERL=%property{ISPERL} RSPERL=%property{RSPERL} )"/>
+    </models>
+</component>

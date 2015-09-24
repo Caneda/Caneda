@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+********************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                            *
+*                                                                              *
+* This is free software; you can redistribute it and/or modify                 *
+* it under the terms of the GNU General Public License as published by         *
+* the Free Software Foundation; either version 2, or (at your option)          *
+* any later version.                                                           *
+*                                                                              *
+* This software is distributed in the hope that it will be useful,             *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+* GNU General Public License for more details.                                 *
+*                                                                              *
+* You should have received a copy of the GNU General Public License            *
+* along with this package; see the file COPYING.  If not, write to             *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,        *
+* Boston, MA 02110-1301, USA.                                                  *
+********************************************************************************
+-->
+
+<component name="Single Lossy Transmission Line Model" version="0.1.0" label="Y">
+    <displaytext>
+        <lang lang="C">Single Lossy Transmission Line Model</lang>
+        <lang lang="es">Modelo de Línea Simple de Transmisión con Pérdidas</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">Kspice single lossy transmission line.</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,30,0" pos="-15,7" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,30,0" pos="-15,-7" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipse" ellipse="0,0,7,14" pos="11.5,-7" transform="1,0,0,1,0,0"/>
+        <painting name="ellipseArc" ellipse="0,0,7,14" pos="-17,-7" transform="1,0,0,1,0,0">
+            <properties startAngle="90" spanAngle="180"/>
+        </painting>
+
+        <painting name="line" line="0,0,14,0" pos="-20,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="-6,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-5,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="-3,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="-1,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,-5" pos="1,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,2,5" pos="3,-2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,1,-2.5" pos="5,2.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,14,0" pos="6,0" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <properties>
+        <property name="R" default="0" unit="Ω/unit" visible="false">
+            <description>
+                <lang lang="C">Resistance/length value.</lang>
+            </description>
+        </property>
+        <property name="L" default="0" unit="H/unit" visible="false">
+            <description>
+                <lang lang="C">Inductance/length value.</lang>
+            </description>
+        </property>
+        <property name="G" default="0" unit="mhos/unit" visible="false">
+            <description>
+                <lang lang="C">Conductance/length value.</lang>
+            </description>
+        </property>
+        <property name="C" default="0" unit="F/unit" visible="false">
+            <description>
+                <lang lang="C">Capacitance/length value.</lang>
+            </description>
+        </property>
+        <property name="LENGTH" default="1" unit="units" visible="false">
+            <description>
+                <lang lang="C">Length of the line in units.</lang>
+            </description>
+        </property>
+        <property name="model" default="TXLModel" unit="" visible="true">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax=".model %property{model} TXL ( R=%property{R} L=%property{L} G=%property{G} C=%property{C} LENGTH=%property{LENGTH} )"/>
+    </models>
+</component>

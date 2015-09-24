@@ -24,11 +24,11 @@
 <component name="Coupled Multiconductor Line" version="0.1.0" label="P">
     <displaytext>
         <lang lang="C">Coupled Multiconductor Line</lang>
-        <lang lang="es">Línea de múltiples conductores acoplados</lang>
+        <lang lang="es">Línea de Múltiples Conductores Acoplados</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">Coupled multiconductor line.</lang>
+        <lang lang="C">Kspice coupled multiconductor line.</lang>
     </description>
 
     <symbol>
