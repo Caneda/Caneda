@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+********************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                            *
+*                                                                              *
+* This is free software; you can redistribute it and/or modify                 *
+* it under the terms of the GNU General Public License as published by         *
+* the Free Software Foundation; either version 2, or (at your option)          *
+* any later version.                                                           *
+*                                                                              *
+* This software is distributed in the hope that it will be useful,             *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+* GNU General Public License for more details.                                 *
+*                                                                              *
+* You should have received a copy of the GNU General Public License            *
+* along with this package; see the file COPYING.  If not, write to             *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,        *
+* Boston, MA 02110-1301, USA.                                                  *
+********************************************************************************
+-->
+
+<component name="PJFET Transistor Model" version="0.1.0" label="J">
+    <displaytext>
+        <lang lang="C">PJFET Transistor Model</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">P-channel JFET transistor.</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="arrow" line="0,0,-11.5,0" pos="1.5,0" transform="1,0,0,1,0,0">
+            <properties headStyle="1" headSize="4,6"/>
+        </painting>
+        <painting name="line" line="0,0,0,20" pos="1.5,-10" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,-6" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-4" pos="10,-6" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,6" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,4" pos="10,6" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <properties>
+        <!-- Model level -->
+        <property name="LEVEL" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Model to be used. Possible values: 1, 2.</lang>
+            </description>
+        </property>
+        <!-- Junction DC parameters -->
+        <property name="VTO" default="-2" unit="V" visible="false">
+            <description>
+                <lang lang="C">Threshold voltage.</lang>
+            </description>
+        </property>
+        <property name="BETA" default="1e-4" unit="A/V²" visible="false">
+            <description>
+                <lang lang="C">Transconductance parameter.</lang>
+            </description>
+        </property>
+        <property name="LAMBDA" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Channel-length modulation parameter.</lang>
+            </description>
+        </property>
+        <property name="RD" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Drain ohmic resistance.</lang>
+            </description>
+        </property>
+        <property name="RS" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Source ohmic resistance.</lang>
+            </description>
+        </property>
+        <property name="CGS" default="0" unit="F" visible="false">
+            <description>
+                <lang lang="C">Zero-bias G-S junction capacitance.</lang>
+            </description>
+        </property>
+        <property name="CGD" default="0" unit="F" visible="false">
+            <description>
+                <lang lang="C">Zero-bias G-D junction capacitance.</lang>
+            </description>
+        </property>
+        <property name="PB" default="1" unit="V" visible="false">
+            <description>
+                <lang lang="C">Gate junction potential.</lang>
+            </description>
+        </property>
+        <property name="IS" default="1e-14" unit="A" visible="false">
+            <description>
+                <lang lang="C">Gate saturation current.</lang>
+            </description>
+        </property>
+        <property name="B" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Doping tail parameter.</lang>
+            </description>
+        </property>
+        <!-- Noise modelling -->
+        <property name="KF" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Flicker noise coefficient.</lang>
+                <lang lang="cs">Koeficient 1/f rušení.</lang>
+                <lang lang="de">1/f-Rauschkoeffizient.</lang>
+                <lang lang="es">Coeficiente de ruido flicker.</lang>
+                <lang lang="fr">Coefficient de bruit de scintillation.</lang>
+                <lang lang="he">מקדם רעש ריצוד</lang>
+                <lang lang="it">Coefficiente rumore flicker.</lang>
+                <lang lang="jp">フリッカーノイズ係数</lang>
+                <lang lang="pl">Cspółczynnik szumów migotania.</lang>
+                <lang lang="ro">Coeficientul de zgomot 1/f.</lang>
+                <lang lang="ru">Коэффициент 1/f-шума.</lang>
+                <lang lang="sv">Flicker-bruskoefficient.</lang>
+                <lang lang="tr">Flicker gürültü sabiti.</lang>
+                <lang lang="uk">Коефіцієнт 1/f-шуму</lang>
+            </description>
+        </property>
+        <property name="AF" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Flicker noise exponent.</lang>
+                <lang lang="cs">Exponent 1/f rušení.</lang>
+                <lang lang="de">1/f-Rauschexponent.</lang>
+                <lang lang="es">Exponente de ruido flicker.</lang>
+                <lang lang="fr">Exposant du bruit de scintillation.</lang>
+                <lang lang="he">מעריך רעש ריצוד</lang>
+                <lang lang="it">Esponente rumore flicker.</lang>
+                <lang lang="jp">フリッカーノイズ指数</lang>
+                <lang lang="pl">Flicker noise exponent.</lang>
+                <lang lang="ro">Exponentul zgomotului 1/f.</lang>
+                <lang lang="ru">Показатель степени 1/f-шума</lang>
+                <lang lang="sv">Flicker-brusexponent.</lang>
+                <lang lang="tr">Flicker gürültü üsteli.</lang>
+                <lang lang="tr">Flicker gürültüsü üstel çarpanı</lang>
+                <lang lang="uk">Показник ступеня 1/f-шуму</lang>
+            </description>
+        </property>
+         <property name="NLEV" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Noise equation selector.</lang>
+            </description>
+        </property>
+         <property name="GDSNOI" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Channel noise coefficient for NLEV=3.</lang>
+            </description>
+        </property>
+        <property name="FC" default="0.5" unit="-" visible="false">
+            <description>
+                <lang lang="C">Coefficient for forward-bias depletion capacitance formula.</lang>
+            </description>
+        </property>
+        <!-- Temperature effects -->
+        <property name="TNOM" default="27" unit="°C" visible="false">
+            <description>
+                <lang lang="C">Temperature at which parameters were extracted.</lang>
+                <lang lang="fr">Température à laquelle les paramètres ont été mesurés.</lang>
+            </description>
+        </property>
+        <property name="TCV" default="0" unit="1/°C" visible="false">
+            <description>
+                <lang lang="C">Threshold voltage temperature coefficient.</lang>
+            </description>
+        </property>
+        <property name="BEX" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Mobility temperature exponent.</lang>
+            </description>
+        </property>
+        <!-- Level 2 parameters -->
+        <property name="ID" default="PF1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Device ID text.</lang>
+            </description>
+        </property>
+        <property name="ACGAM" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Capacitance modulation.</lang>
+            </description>
+        </property>
+        <property name="DELTA" default="0" unit="W" visible="false">
+            <description>
+                <lang lang="C">Thermal reduction coefficient.</lang>
+            </description>
+        </property>
+        <property name="HFETA" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">High-frequency VGS feedback parameter.</lang>
+            </description>
+        </property>
+        <property name="HFE1" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">HFGAM modulation by VGD.</lang>
+            </description>
+        </property>
+        <property name="HFE2" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">HFGAM modulation by VGS.</lang>
+            </description>
+        </property>
+        <property name="HFGAM" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">High-frequency VGD feedback parameter.</lang>
+            </description>
+        </property>
+        <property name="HFG1" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">HFGAM modulation by VSG.</lang>
+            </description>
+        </property>
+        <property name="HFG2" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">HFGAM modulation by VDG.</lang>
+            </description>
+        </property>
+        <property name="IBD" default="0" unit="A" visible="false">
+            <description>
+                <lang lang="C">Gate-junction breakdown current.</lang>
+            </description>
+        </property>
+        <property name="LFGAM" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Low-frequency feedback parameter.</lang>
+            </description>
+        </property>
+        <property name="LFG1" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">LFGAM modulation by VSG.</lang>
+            </description>
+        </property>
+        <property name="LFG2" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">LFGAM modulation by VDG.</lang>
+            </description>
+        </property>
+        <property name="MVST" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Subthreshold modulation.</lang>
+            </description>
+        </property>
+        <property name="N" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Gate-junction ideality factor.</lang>
+            </description>
+        </property>
+        <property name="P" default="2" unit="-" visible="false">
+            <description>
+                <lang lang="C">Linear-region power-law exponent.</lang>
+            </description>
+        </property>
+        <property name="Q" default="2" unit="-" visible="false">
+            <description>
+                <lang lang="C">Saturated-region power-law exponent.</lang>
+            </description>
+        </property>
+        <property name="TAUD" default="0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Relaxation time for thermal reduction.</lang>
+            </description>
+        </property>
+        <property name="TAUG" default="0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Relaxation time for gamma feedback.</lang>
+            </description>
+        </property>
+        <property name="VBD" default="1" unit="V" visible="false">
+            <description>
+                <lang lang="C">Gate-junction breakdown potential.</lang>
+            </description>
+        </property>
+        <property name="VBI" default="1" unit="V" visible="false">
+            <description>
+                <lang lang="C">Gate-junction potential.</lang>
+            </description>
+        </property>
+        <property name="VST" default="0" unit="V" visible="false">
+            <description>
+                <lang lang="C">Subthreshold potential.</lang>
+            </description>
+        </property>
+        <property name="XC" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Capacitance pinch-off reduction factor.</lang>
+            </description>
+        </property>
+        <property name="XI" default="1000" unit="-" visible="false">
+            <description>
+                <lang lang="C">Saturation-knee potential factor.</lang>
+            </description>
+        </property>
+        <property name="Z" default="0.5" unit="-" visible="false">
+            <description>
+                <lang lang="C">Knee transition parameter.</lang>
+            </description>
+        </property>
+        <property name="RG" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Gate ohmic resistance.</lang>
+            </description>
+        </property>
+        <property name="LG" default="0" unit="H" visible="false">
+            <description>
+                <lang lang="C">Gate inductance.</lang>
+            </description>
+        </property>
+        <property name="LS" default="0" unit="H" visible="false">
+            <description>
+                <lang lang="C">Source inductance.</lang>
+            </description>
+        </property>
+        <property name="LD" default="0" unit="H" visible="false">
+            <description>
+                <lang lang="C">Drain inductance.</lang>
+            </description>
+        </property>
+        <property name="CDSS" default="0" unit="F" visible="false">
+            <description>
+                <lang lang="C">Fixed drain-source capacitance.</lang>
+            </description>
+        </property>
+        <property name="AFAC" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Gate width scale factor.</lang>
+            </description>
+        </property>
+        <property name="NFING" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Number of gate fingers scale factor.</lang>
+            </description>
+        </property>
+        <!-- Model name -->
+        <property name="model" default="PJFETModel" unit="" visible="true">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax=".model %property{model} PJF ( LEVEL=%property{LEVEL} VTO=%property{VTO} BETA=%property{BETA} LAMBDA=%property{LAMBDA} RD=%property{RD} RS=%property{RS} CGS=%property{CGS} CGD=%property{CGD} PB=%property{PB} IS=%property{IS} B=%property{B} KF=%property{KF} AF=%property{AF} NLEV=%property{NLEV} GDSNOI=%property{GDSNOI} FC=%property{FC} TNOM=%property{TNOM} TCV=%property{TCV} BEX=%property{BEX} ID=%property{ID} ACGAM=%property{ACGAM} DELTA=%property{DELTA} HFETA=%property{HFETA} HFE1=%property{HFE1} HFE2=%property{HFE2} HFGAM=%property{HFGAM} HFG1=%property{HFG1} HFG2=%property{HFG2} IBD=%property{IBD} LFGAM=%property{LFGAM} LFG1=%property{LFG1} LFG2=%property{LFG2} MVST=%property{MVST} N=%property{N} P=%property{P} Q=%property{Q} TAUD=%property{TAUD} TAUG=%property{TAUG} VBD=%property{VBD} VBI=%property{VBI} VST=%property{VST} XC=%property{XC} XI=%property{XI} Z=%property{Z} RG=%property{RG} LG=%property{LG} LS=%property{LS} LD=%property{LD} CDSS=%property{CDSS} AFAC=%property{AFAC} NFING=%property{NFING} )"/>
+    </models>
+</component>
