@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+********************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                            *
+*                                                                              *
+* This is free software; you can redistribute it and/or modify                 *
+* it under the terms of the GNU General Public License as published by         *
+* the Free Software Foundation; either version 2, or (at your option)          *
+* any later version.                                                           *
+*                                                                              *
+* This software is distributed in the hope that it will be useful,             *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+* GNU General Public License for more details.                                 *
+*                                                                              *
+* You should have received a copy of the GNU General Public License            *
+* along with this package; see the file COPYING.  If not, write to             *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,        *
+* Boston, MA 02110-1301, USA.                                                  *
+********************************************************************************
+-->
+
+<component name="NPN Transistor Model" version="0.1.0" label="Q">
+    <displaytext>
+        <lang lang="C">NPN Transistor Model</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">NPN BJT transistor.</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,20" pos="0,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-10,5" pos="10,-10" transform="1,0,0,1,0,0"/>
+        <painting name="arrow" line="0,0,10,5" pos="0,5" transform="1,0,0,1,0,0">
+            <properties headStyle="1" headSize="4,6"/>
+        </painting>
+    </symbol>
+
+    <properties>
+        <!-- Model level -->
+        <property name="LEVEL" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Model to be used. Possible values: 1, 2, 4.</lang>
+            </description>
+        </property>
+        <!-- Junction DC parameters -->
+        <property name="SUBS" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Substrate connection: 1 for vertical geometry, -1 for lateral geometry (level 2 only).</lang>
+            </description>
+        </property>
+        <property name="IS" default="1e-16" unit="A" visible="false">
+            <description>
+                <lang lang="C">Transport saturation current.</lang>
+            </description>
+        </property>
+        <property name="ISS" default="1e-16" unit="A" visible="false">
+            <description>
+                <lang lang="C">Reverse saturation current.</lang>
+            </description>
+        </property>
+        <property name="BF" default="100" unit="-" visible="false">
+            <description>
+                <lang lang="C">Ideal maximum forward beta.</lang>
+            </description>
+        </property>
+        <property name="NF" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Forward current emission coefficient.</lang>
+            </description>
+        </property>
+        <property name="VAF" default="100G" unit="V" visible="false">
+            <description>
+                <lang lang="C">Forward early voltage.</lang>
+            </description>
+        </property>
+        <property name="IKF" default="100G" unit="A" visible="false">
+            <description>
+                <lang lang="C">Corner for forward beta current roll-off.</lang>
+            </description>
+        </property>
+        <property name="NKF" default="0.5" unit="-" visible="false">
+            <description>
+                <lang lang="C">High current beta roll-off exponent.</lang>
+            </description>
+        </property>
+        <property name="ISE" default="0" unit="A" visible="false">
+            <description>
+                <lang lang="C">B-E leakage saturation current.</lang>
+            </description>
+        </property>
+        <property name="NE" default="1.5" unit="-" visible="false">
+            <description>
+                <lang lang="C">B-E leakage emission coefficient.</lang>
+            </description>
+        </property>
+        <property name="BR" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Ideal maximum reverse beta.</lang>
+            </description>
+        </property>
+        <property name="NR" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Reverse current emission coefficient.</lang>
+            </description>
+        </property>
+        <property name="VAR" default="100G" unit="V" visible="false">
+            <description>
+                <lang lang="C">Reverse early voltage.</lang>
+            </description>
+        </property>
+        <property name="IKR" default="100G" unit="A" visible="false">
+            <description>
+                <lang lang="C">Corner for reverse beta high current roll-off.</lang>
+            </description>
+        </property>
+        <property name="ISC" default="0" unit="A" visible="false">
+            <description>
+                <lang lang="C">B-C leakage saturation current.</lang>
+            </description>
+        </property>
+        <property name="NC" default="2" unit="-" visible="false">
+            <description>
+                <lang lang="C">B-C leakage emission coefficient.</lang>
+            </description>
+        </property>
+        <property name="RB" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Zero bias base resistance.</lang>
+            </description>
+        </property>
+        <property name="IRB" default="100G" unit="A" visible="false">
+            <description>
+                <lang lang="C">Current where base resistance falls halfway to its minimum value.</lang>
+            </description>
+        </property>
+        <property name="RBM" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Minimum base resistance at high currents.</lang>
+            </description>
+        </property>
+        <property name="RE" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Emitter resistance.</lang>
+            </description>
+        </property>
+        <property name="RC" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Collector resistance.</lang>
+            </description>
+        </property>
+        <property name="CJE" default="0" unit="F" visible="false">
+            <description>
+                <lang lang="C">B-E zero-bias depletion capacitance.</lang>
+            </description>
+        </property>
+        <property name="VJE" default="0.75" unit="V" visible="false">
+            <description>
+                <lang lang="C">B-E built-in potential.</lang>
+            </description>
+        </property>
+        <property name="MJE" default="0.33" unit="-" visible="false">
+            <description>
+                <lang lang="C">B-E junction exponential factor.</lang>
+            </description>
+        </property>
+        <property name="TF" default="0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Ideal forward transit time.</lang>
+            </description>
+        </property>
+        <property name="XTF" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Coefficient for bias dependence of TF.</lang>
+            </description>
+        </property>
+        <property name="VTF" default="100G" unit="V" visible="false">
+            <description>
+                <lang lang="C">Voltage describing VBC dependence of TF.</lang>
+            </description>
+        </property>
+        <property name="ITF" default="0" unit="A" visible="false">
+            <description>
+                <lang lang="C">High-current parameter for effect on TF.</lang>
+            </description>
+        </property>
+        <property name="PTF" default="0" unit="º" visible="false">
+            <description>
+                <lang lang="C">Excess phase at freq = 1/(2*π*TF) Hz.</lang>
+            </description>
+        </property>
+        <property name="CJC" default="0" unit="F" visible="false">
+            <description>
+                <lang lang="C">B-C zero-bias depletion capacitance.</lang>
+            </description>
+        </property>
+        <property name="VJC" default="0.75" unit="V" visible="false">
+            <description>
+                <lang lang="C">B-C built-in potential.</lang>
+            </description>
+        </property>
+        <property name="MJC" default="0.33" unit="-" visible="false">
+            <description>
+                <lang lang="C">B-C junction exponential factor.</lang>
+            </description>
+        </property>
+        <property name="XCJC" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Fraction of B-C depletion capacitance connected to internal base node.</lang>
+            </description>
+        </property>
+        <property name="TR" default="0" unit="s" visible="false">
+            <description>
+                <lang lang="C">Ideal reverse transit time.</lang>
+            </description>
+        </property>
+        <property name="CJS" default="0" unit="F" visible="false">
+            <description>
+                <lang lang="C">Zero-bias collector-substrate capacitance.</lang>
+            </description>
+        </property>
+        <property name="VJS" default="0.75" unit="V" visible="false">
+            <description>
+                <lang lang="C">Substrate junction built-in potential.</lang>
+            </description>
+        </property>
+        <property name="MJS" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Substrate junction exponential factor.</lang>
+            </description>
+        </property>
+        <property name="XTB" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Forward and reverse beta temperature exponent.</lang>
+            </description>
+        </property>
+        <property name="EG" default="1.11" unit="eV" visible="false">
+            <description>
+                <lang lang="C">Energy gap for temperature effect on IS.</lang>
+            </description>
+        </property>
+        <property name="XTI" default="3" unit="-" visible="false">
+            <description>
+                <lang lang="C">Temperature exponent for effect on IS.</lang>
+            </description>
+        </property>
+        <!-- Noise modelling -->
+        <property name="KF" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Flicker noise coefficient.</lang>
+                <lang lang="cs">Koeficient 1/f rušení.</lang>
+                <lang lang="de">1/f-Rauschkoeffizient.</lang>
+                <lang lang="es">Coeficiente de ruido flicker.</lang>
+                <lang lang="fr">Coefficient de bruit de scintillation.</lang>
+                <lang lang="he">מקדם רעש ריצוד</lang>
+                <lang lang="it">Coefficiente rumore flicker.</lang>
+                <lang lang="jp">フリッカーノイズ係数</lang>
+                <lang lang="pl">Cspółczynnik szumów migotania.</lang>
+                <lang lang="ro">Coeficientul de zgomot 1/f.</lang>
+                <lang lang="ru">Коэффициент 1/f-шума.</lang>
+                <lang lang="sv">Flicker-bruskoefficient.</lang>
+                <lang lang="tr">Flicker gürültü sabiti.</lang>
+                <lang lang="uk">Коефіцієнт 1/f-шуму</lang>
+            </description>
+        </property>
+        <property name="AF" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Flicker noise exponent.</lang>
+                <lang lang="cs">Exponent 1/f rušení.</lang>
+                <lang lang="de">1/f-Rauschexponent.</lang>
+                <lang lang="es">Exponente de ruido flicker.</lang>
+                <lang lang="fr">Exposant du bruit de scintillation.</lang>
+                <lang lang="he">מעריך רעש ריצוד</lang>
+                <lang lang="it">Esponente rumore flicker.</lang>
+                <lang lang="jp">フリッカーノイズ指数</lang>
+                <lang lang="pl">Flicker noise exponent.</lang>
+                <lang lang="ro">Exponentul zgomotului 1/f.</lang>
+                <lang lang="ru">Показатель степени 1/f-шума</lang>
+                <lang lang="sv">Flicker-brusexponent.</lang>
+                <lang lang="tr">Flicker gürültü üsteli.</lang>
+                <lang lang="tr">Flicker gürültüsü üstel çarpanı</lang>
+                <lang lang="uk">Показник ступеня 1/f-шуму</lang>
+            </description>
+        </property>
+        <property name="FC" default="0.5" unit="-" visible="false">
+            <description>
+                <lang lang="C">Coefficient for forward-bias depletion capacitance formula.</lang>
+            </description>
+        </property>
+        <!-- Temperature effects -->
+        <property name="TNOM" default="27" unit="°C" visible="false">
+            <description>
+                <lang lang="C">Temperature at which parameters were extracted.</lang>
+                <lang lang="fr">Température à laquelle les paramètres ont été mesurés.</lang>
+            </description>
+        </property>
+        <property name="TLEV" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">BJT temperature equation selector.</lang>
+            </description>
+        </property>
+        <property name="TLEVC" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">BJT capacitance temperature equation selector.</lang>
+            </description>
+        </property>
+        <property name="TRE1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for RE.</lang>
+            </description>
+        </property>
+        <property name="TRE2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for RE.</lang>
+            </description>
+        </property>
+        <property name="TRC1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for RC.</lang>
+            </description>
+        </property>
+        <property name="TRC2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for RC.</lang>
+            </description>
+        </property>
+        <property name="TRB1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for RB.</lang>
+            </description>
+        </property>
+        <property name="TRB2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for RB.</lang>
+            </description>
+        </property>
+        <property name="TRBM1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for RBM.</lang>
+            </description>
+        </property>
+        <property name="TRBM2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for RBM.</lang>
+            </description>
+        </property>
+        <property name="TBF1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for BF.</lang>
+            </description>
+        </property>
+        <property name="TBF2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for BF.</lang>
+            </description>
+        </property>
+        <property name="TBR1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for BR.</lang>
+            </description>
+        </property>
+        <property name="TBR2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for BR.</lang>
+            </description>
+        </property>
+        <property name="TIKF1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for IKF.</lang>
+            </description>
+        </property>
+        <property name="TIKF2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for IKF.</lang>
+            </description>
+        </property>
+        <property name="TIKR1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for IKR.</lang>
+            </description>
+        </property>
+        <property name="TIKR2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for IKR.</lang>
+            </description>
+        </property>
+        <property name="TIRB1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for IRB.</lang>
+            </description>
+        </property>
+        <property name="TIRB2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for IRB.</lang>
+            </description>
+        </property>
+        <property name="TNC1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for NC.</lang>
+            </description>
+        </property>
+        <property name="TNC2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for NC.</lang>
+            </description>
+        </property>
+        <property name="TNE1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for NE.</lang>
+            </description>
+        </property>
+        <property name="TNE2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for NE.</lang>
+            </description>
+        </property>
+        <property name="TNF1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for NF.</lang>
+            </description>
+        </property>
+        <property name="TNF2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for NF.</lang>
+            </description>
+        </property>
+        <property name="TNR1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for NR.</lang>
+            </description>
+        </property>
+        <property name="TNR2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for NR.</lang>
+            </description>
+        </property>
+        <property name="TVAF1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for VAF.</lang>
+            </description>
+        </property>
+        <property name="TVAF2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for VAF.</lang>
+            </description>
+        </property>
+        <property name="TVAR1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for VAR.</lang>
+            </description>
+        </property>
+        <property name="TVAR2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for VAR.</lang>
+            </description>
+        </property>
+        <property name="CTC" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for CJC.</lang>
+            </description>
+        </property>
+        <property name="CTE" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for CJE.</lang>
+            </description>
+        </property>
+        <property name="CTS" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for CJS.</lang>
+            </description>
+        </property>
+        <property name="TVJC" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for VJC.</lang>
+            </description>
+        </property>
+        <property name="TVJE" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for VJE.</lang>
+            </description>
+        </property>
+        <property name="TITF1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for ITF.</lang>
+            </description>
+        </property>
+        <property name="TITF2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for ITF.</lang>
+            </description>
+        </property>
+        <property name="TTF1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for TF.</lang>
+            </description>
+        </property>
+        <property name="TTF2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for TF.</lang>
+            </description>
+        </property>
+        <property name="TTR1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for TR.</lang>
+            </description>
+        </property>
+        <property name="TTR2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for TR.</lang>
+            </description>
+        </property>
+        <property name="TMJE1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for MJE.</lang>
+            </description>
+        </property>
+        <property name="TMJE2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for MJE.</lang>
+            </description>
+        </property>
+        <property name="TMJC1" default="0" unit="°C⁻¹" visible="false">
+            <description>
+                <lang lang="C">First order temperature coefficient for MJC.</lang>
+            </description>
+        </property>
+        <property name="TMJC2" default="0" unit="°C⁻²" visible="false">
+            <description>
+                <lang lang="C">Second order temperature coefficient for MJC.</lang>
+            </description>
+        </property>
+        <!-- Model name -->
+        <property name="model" default="NPNModel" unit="" visible="true">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax=".model %property{model} NPN ( LEVEL=%property{LEVEL} SUBS=%property{SUBS} IS=%property{IS} ISS=%property{ISS} BF=%property{BF} NF=%property{NF} VAF=%property{VAF} IKF=%property{IKF} NKF=%property{NKF} ISE=%property{ISE} NE=%property{NE} BR=%property{BR} NR=%property{NR} VAR=%property{VAR} IKR=%property{IKR} ISC=%property{ISC} NC=%property{NC} RB=%property{RB} IRB=%property{IRB} RBM=%property{RBM} RE=%property{RE} RC=%property{RC} CJE=%property{CJE} VJE=%property{VJE} MJE=%property{MJE} TF=%property{TF} XTF=%property{XTF} VTF=%property{VTF} ITF=%property{ITF} PTF=%property{PTF} CJC=%property{CJC} VJC=%property{VJC} MJC=%property{MJC} XCJC=%property{XCJC} TR=%property{TR} CJS=%property{CJS} VJS=%property{VJS} MJS=%property{MJS} XTB=%property{XTB} EG=%property{EG} XTI=%property{XTI} KF=%property{KF} AF=%property{AF} FC=%property{FC} TNOM=%property{TNOM} TLEV=%property{TLEV} TLEVC=%property{TLEVC} TRE1=%property{TRE1} TRE2=%property{TRE2} TRC1=%property{TRC1} TRC2=%property{TRC2} TRB1=%property{TRB1} TRB2=%property{TRB2} TRBM1=%property{TRBM1} TRBM2=%property{TRBM2} TBF1=%property{TBF1} TBF2=%property{TBF2} TBR1=%property{TBR1} TBR2=%property{TBR2} TIKF1=%property{TIKF1} TIKF2=%property{TIKF2} TIKR1=%property{TIKR1} TIKR2=%property{TIKR2} TIRB1=%property{TIRB1} TIRB2=%property{TIRB2} TNC1=%property{TNC1} TNC2=%property{TNC2} TNE1=%property{TNE1} TNE2=%property{TNE2} TNF1=%property{TNF1} TNF2=%property{TNF2} TNR1=%property{TNR1} TNR2=%property{TNR2} TVAF1=%property{TVAF1} TVAF2=%property{TVAF2} TVAR1=%property{TVAR1} TVAR2=%property{TVAR2} CTC=%property{CTC} CTE=%property{CTE} CTS=%property{CTS} TVJC=%property{TVJC} TVJE=%property{TVJE} TITF1=%property{TITF1} TITF2=%property{TITF2} TTF1=%property{TTF1} TTF2=%property{TTF2} TTR1=%property{TTR1} TTR2=%property{TTR2} TMJE1=%property{TMJE1} TMJE2=%property{TMJE2} TMJC1=%property{TMJC1} TMJC2=%property{TMJC2} )"/>
+    </models>
+</component>
