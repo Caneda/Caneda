@@ -239,16 +239,6 @@
         <property name="EG" default="1.11" unit="eV" visible="false">
             <description>
                 <lang lang="C">Energy band gap.</lang>
-                <lang lang="ca">Amplada del salto de energía.</lang>
-                <lang lang="cs">Energie valenčního odstupu.</lang>
-                <lang lang="de">Bandabstand.</lang>
-                <lang lang="es">Ancho del salto de energía.</lang>
-                <lang lang="fr">Gap d'énergie.</lang>
-                <lang lang="jp">バンド幅電圧</lang>
-                <lang lang="pl">Przerwa energetyczna</lang>
-                <lang lang="ru">Ширина запрещенной зоны</lang>
-                <lang lang="sv">Energibandgap i eV</lang>
-                <lang lang="uk">Ширина забороненої зони</lang>
             </description>
         </property>
         <property name="TM1" default="0" unit="°C⁻¹" visible="false">
