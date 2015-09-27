@@ -21,7 +21,7 @@
 ********************************************************************************
 -->
 
-<component name="PMESFET Transistor Model" version="0.1.0" label="Q">
+<component name="PMESFET Transistor Model" version="0.1.0" label="M">
     <displaytext>
         <lang lang="C">PMESFET Transistor Model</lang>
     </displaytext>
