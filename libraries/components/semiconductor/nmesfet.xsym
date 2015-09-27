@@ -27,7 +27,7 @@
     </displaytext>
 
     <description>
-        <lang lang="C">P-channel MESFET transistor</lang>
+        <lang lang="C">N-channel MESFET transistor</lang>
     </description>
 
     <symbol>
