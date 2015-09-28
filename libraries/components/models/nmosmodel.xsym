@@ -1,0 +1,943 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+********************************************************************************
+* Copyright (C) 2015 by Pablo Daniel Pareja Obregon                            *
+*                                                                              *
+* This is free software; you can redistribute it and/or modify                 *
+* it under the terms of the GNU General Public License as published by         *
+* the Free Software Foundation; either version 2, or (at your option)          *
+* any later version.                                                           *
+*                                                                              *
+* This software is distributed in the hope that it will be useful,             *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+* GNU General Public License for more details.                                 *
+*                                                                              *
+* You should have received a copy of the GNU General Public License            *
+* along with this package; see the file COPYING.  If not, write to             *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,        *
+* Boston, MA 02110-1301, USA.                                                  *
+********************************************************************************
+-->
+
+<component name="NMOS Transistor Model" version="0.1.0" label="M">
+    <displaytext>
+        <lang lang="C">NMOS Transistor Model</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">N-channel MOSFET transistor.</lang>
+    </description>
+
+    <symbol>
+        <painting name="rectangle" rectangle="0,0,40,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,7.5,0" pos="-10,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,16" pos="-2.5,-8" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,20" pos="1.5,-10" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,-6" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-4" pos="10,-6" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,6" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,4" pos="10,6" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,8.5,0" pos="1.5,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,6" pos="10,0" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <properties>
+        <!-- Model level -->
+        <property name="LEVEL" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Model to be used. See the help for possible values.</lang>
+            </description>
+        </property>
+        <property name="VERSION" default="3.3" unit="-" visible="false">
+            <description>
+                <lang lang="C">Model version to be used. See the help for possible values.</lang>
+            </description>
+        </property>
+        <!-- Junction DC parameters -->
+        <property name="VTO" default="0" unit="V" visible="false">
+            <description>
+                <lang lang="C">Zero bias threshold voltage.</lang>
+            </description>
+        </property>
+        <property name="KP" default="20u" unit="A/V²" visible="false">
+            <description>
+                <lang lang="C">Transconductance parameter.</lang>
+            </description>
+        </property>
+        <property name="GAMMA" default="0" unit="√(V)" visible="false">
+            <description>
+                <lang lang="C">Bulk threshold parameter.</lang>
+            </description>
+        </property>
+        <property name="PHI" default="0.6" unit="V" visible="false">
+            <description>
+                <lang lang="C">Surface potential.</lang>
+            </description>
+        </property>
+        <property name="LAMBDA" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Channel length modulation.</lang>
+            </description>
+        </property>
+        <property name="RD" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Drain ohmic resistance.</lang>
+            </description>
+        </property>
+        <property name="RS" default="0" unit="Ω" visible="false">
+            <description>
+                <lang lang="C">Source ohmic resistance.</lang>
+            </description>
+        </property>
+        <property name="CBD" default="0" unit="F" visible="false">
+            <description>
+                <lang lang="C">Zero-bias B-D junction capacitance.</lang>
+            </description>
+        </property>
+        <property name="CBS" default="0" unit="F" visible="false">
+            <description>
+                <lang lang="C">Zero-bias B-S junction capacitance.</lang>
+            </description>
+        </property>
+        <property name="IS" default="1e-14" unit="A" visible="false">
+            <description>
+                <lang lang="C">Bulk junction saturation current.</lang>
+            </description>
+        </property>
+        <property name="PB" default="0.8" unit="V" visible="false">
+            <description>
+                <lang lang="C">Built in potential of source-drain junction.</lang>
+            </description>
+        </property>
+        <property name="CGSO" default="0" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Gate-source overlap capacitance per meter channel width.</lang>
+            </description>
+        </property>
+        <property name="CGDO" default="0" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Gate-drain overlap capacitance per meter channel width.</lang>
+            </description>
+        </property>
+        <property name="CGBO" default="0" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Gate-bulk overlap capacitance per meter channel width.</lang>
+            </description>
+        </property>
+        <property name="RSH" default="0" unit="Ω/□" visible="false">
+            <description>
+                <lang lang="C">Drain-source diffusion sheet resistance.</lang>
+            </description>
+        </property>
+        <property name="CJ" default="500u" unit="F/m²" visible="false">
+            <description>
+                <lang lang="C">Source-drain junction capacitance per unit area.</lang>
+            </description>
+        </property>
+        <property name="MJ" default="0.5" unit="-" visible="false">
+            <description>
+                <lang lang="C">Grading coefficient of source-drain junction.</lang>
+            </description>
+        </property>
+        <property name="CJSW" default="0.5n" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Source-drain junction sidewall capacitance per unit length.</lang>
+            </description>
+        </property>
+        <property name="MJSW" default="0.33" unit="-" visible="false">
+            <description>
+                <lang lang="C">Grading coefficient of source-drain junction sidewall.</lang>
+            </description>
+        </property>
+        <property name="JS" default="1e-4" unit="A/m²" visible="false">
+            <description>
+                <lang lang="C">Source-drain junction current density.</lang>
+            </description>
+        </property>
+        <property name="TOX" default="15n" unit="m" visible="false">
+            <description>
+                <lang lang="C">Oxide thickness.</lang>
+            </description>
+        </property>
+        <property name="NSUB" default="6e16" unit="cm⁻³" visible="false">
+            <description>
+                <lang lang="C">Substrate doping concentration.</lang>
+            </description>
+        </property>
+        <property name="NSS" default="0" unit="cm⁻²" visible="false">
+            <description>
+                <lang lang="C">Surface state density.</lang>
+            </description>
+        </property>
+        <property name="NFS" default="0" unit="cm⁻²" visible="false">
+            <description>
+                <lang lang="C">Fast surface state density.</lang>
+            </description>
+        </property>
+        <property name="TPG" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Type of gate material: +1 opposite to substrate, -1 same as substrate, 0 Al gate.</lang>
+            </description>
+        </property>
+        <property name="XJ" default="150n" unit="m" visible="false">
+            <description>
+                <lang lang="C">Junction depth.</lang>
+            </description>
+        </property>
+        <property name="LD" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Lateral diffusion.</lang>
+            </description>
+        </property>
+        <property name="UO" default="600" unit="cm²/(V*s)" visible="false">
+            <description>
+                <lang lang="C">Surface mobility.</lang>
+            </description>
+        </property>
+        <property name="UCRIT" default="1e4" unit="V/cm" visible="false">
+            <description>
+                <lang lang="C">Critical field for mobility degradation.</lang>
+            </description>
+        </property>
+        <property name="UEXP" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Critical field exponent in mobility degradation.</lang>
+            </description>
+        </property>
+        <property name="UTRA" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Transverse field coefficient (mobility).</lang>
+            </description>
+        </property>
+        <property name="VMAX" default="0" unit="m/s" visible="false">
+            <description>
+                <lang lang="C">Maximum drift velocity of carriers.</lang>
+            </description>
+        </property>
+        <property name="NEFF" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Total channel-charge (fixed and mobile) coefficient.</lang>
+            </description>
+        </property>
+        <!-- Noise modelling -->
+        <property name="KF" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Flicker noise coefficient.</lang>
+                <lang lang="cs">Koeficient 1/f rušení.</lang>
+                <lang lang="de">1/f-Rauschkoeffizient.</lang>
+                <lang lang="es">Coeficiente de ruido flicker.</lang>
+                <lang lang="fr">Coefficient de bruit de scintillation.</lang>
+                <lang lang="he">מקדם רעש ריצוד</lang>
+                <lang lang="it">Coefficiente rumore flicker.</lang>
+                <lang lang="jp">フリッカーノイズ係数</lang>
+                <lang lang="pl">Cspółczynnik szumów migotania.</lang>
+                <lang lang="ro">Coeficientul de zgomot 1/f.</lang>
+                <lang lang="ru">Коэффициент 1/f-шума.</lang>
+                <lang lang="sv">Flicker-bruskoefficient.</lang>
+                <lang lang="tr">Flicker gürültü sabiti.</lang>
+                <lang lang="uk">Коефіцієнт 1/f-шуму</lang>
+            </description>
+        </property>
+        <property name="AF" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Flicker noise exponent.</lang>
+                <lang lang="cs">Exponent 1/f rušení.</lang>
+                <lang lang="de">1/f-Rauschexponent.</lang>
+                <lang lang="es">Exponente de ruido flicker.</lang>
+                <lang lang="fr">Exposant du bruit de scintillation.</lang>
+                <lang lang="he">מעריך רעש ריצוד</lang>
+                <lang lang="it">Esponente rumore flicker.</lang>
+                <lang lang="jp">フリッカーノイズ指数</lang>
+                <lang lang="pl">Flicker noise exponent.</lang>
+                <lang lang="ro">Exponentul zgomotului 1/f.</lang>
+                <lang lang="ru">Показатель степени 1/f-шума</lang>
+                <lang lang="sv">Flicker-brusexponent.</lang>
+                <lang lang="tr">Flicker gürültü üsteli.</lang>
+                <lang lang="tr">Flicker gürültüsü üstel çarpanı</lang>
+                <lang lang="uk">Показник ступеня 1/f-шуму</lang>
+            </description>
+        </property>
+        <property name="FC" default="0.5" unit="-" visible="false">
+            <description>
+                <lang lang="C">Coefficient for forward-bias depletion capacitance formula.</lang>
+            </description>
+        </property>
+        <!-- Other -->
+        <property name="DELTA" default="0.01" unit="V" visible="false">
+            <description>
+                <lang lang="C">Effective Vds parameter.</lang>
+            </description>
+        </property>
+        <property name="THETA" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Mobility modulation.</lang>
+            </description>
+        </property>
+        <property name="ETA" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Static feedback/Zero-bias drain-induced barrier-lowering coefficient (BSIM).</lang>
+            </description>
+        </property>
+        <property name="KAPPA" default="0.2" unit="-" visible="false">
+            <description>
+                <lang lang="C">Saturation field factor.</lang>
+            </description>
+        </property>
+        <property name="TNOM" default="27" unit="°C" visible="false">
+            <description>
+                <lang lang="C">Temperature at which parameters were extracted.</lang>
+                <lang lang="fr">Température à laquelle les paramètres ont été mesurés.</lang>
+            </description>
+        </property>
+        <!-- BSIM1 and BSIM2 Parameters -->
+        <property name="VFB" default="-1" unit="V" visible="false">
+            <description>
+                <lang lang="C">Flat-band voltage.</lang>
+            </description>
+        </property>
+        <property name="K1" default="0.5" unit="√(V)" visible="false">
+            <description>
+                <lang lang="C">Body effect coefficient.</lang>
+            </description>
+        </property>
+        <property name="K2" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Second order body effect coefficient.</lang>
+            </description>
+        </property>
+        <property name="MUZ" default="0" unit="cm²/(V*s)" visible="false">
+            <description>
+                <lang lang="C">Zero bias mobility.</lang>
+            </description>
+        </property>
+        <property name="DL" default="0" unit="μm" visible="false">
+            <description>
+                <lang lang="C">Shortening of channel.</lang>
+            </description>
+        </property>
+        <property name="DW" default="0" unit="μm" visible="false">
+            <description>
+                <lang lang="C">Shortening of channel.</lang>
+            </description>
+        </property>
+        <property name="U0" default="0.067" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Zero bias transverse-field mobility degradation coefficient.</lang>
+            </description>
+        </property>
+        <property name="U1" default="0" unit="μm/V" visible="false">
+            <description>
+                <lang lang="C">Zero bias velocity saturation coefficient.</lang>
+            </description>
+        </property>
+        <property name="X2MZ" default="0" unit="cm²/(V²*s)" visible="false">
+            <description>
+                <lang lang="C">Sensibility of mobility to substrate bias at Vds=0.</lang>
+            </description>
+        </property>
+        <property name="X2E" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Sensibility of drain induced barrier lowering effect to substrate bias.</lang>
+            </description>
+        </property>
+        <property name="X3E" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Sensibility of drain induced barrier lowering effect to drain bias at Vds=Vdd.</lang>
+            </description>
+        </property>
+        <property name="X2U0" default="0" unit="1/V²" visible="false">
+            <description>
+                <lang lang="C">Sensibility of transverse field mobility degradation effect to substrate bias.</lang>
+            </description>
+        </property>
+        <property name="X2U1" default="0" unit="μm/V²" visible="false">
+            <description>
+                <lang lang="C">Sensibility of velocity saturation effect to substrate bias.</lang>
+            </description>
+        </property>
+        <property name="MUS" default="0" unit="cm²/(V²*s)" visible="false">
+            <description>
+                <lang lang="C">Mobility at zero substrate bias and at Vds=Vdd.</lang>
+            </description>
+        </property>
+        <property name="X2MS" default="0" unit="cm²/(V²*s)" visible="false">
+            <description>
+                <lang lang="C">Sensibility of mobility to substrate bias at Vds=Vdd.</lang>
+            </description>
+        </property>
+        <property name="X3MS" default="0" unit="cm²/(V²*s)" visible="false">
+            <description>
+                <lang lang="C">Sensibility of mobility to drain bias at Vds=Vdd.</lang>
+            </description>
+        </property>
+        <property name="X3U1" default="0" unit="μm/V²" visible="false">
+            <description>
+                <lang lang="C">Sensibility of velocity saturation effect on drain bias at Vds=Vdd.</lang>
+            </description>
+        </property>
+        <property name="TEMP" default="27" unit="°C" visible="false">
+            <description>
+                <lang lang="C">Temperature at which parameters were extracted.</lang>
+                <lang lang="fr">Température à laquelle les paramètres ont été mesurés.</lang>
+            </description>
+        </property>
+        <property name="VDD" default="5" unit="V" visible="false">
+            <description>
+                <lang lang="C">Measurement bias range.</lang>
+            </description>
+        </property>
+        <property name="XPART" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Gate-oxide capacitance charge model flag.</lang>
+            </description>
+        </property>
+        <property name="N0" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Zero bias subthreshold slope coefficient.</lang>
+            </description>
+        </property>
+        <property name="NB" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Sensibility of subthreshold slope to substrate bias.</lang>
+            </description>
+        </property>
+        <property name="ND" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Sensibility of subthreshold slope to drain bias.</lang>
+            </description>
+        </property>
+        <property name="PBSW" default="1" unit="V" visible="false">
+            <description>
+                <lang lang="C">Built in potential of source-drain junction sidewall.</lang>
+            </description>
+        </property>
+        <property name="WDF" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Source-drain junction default width.</lang>
+            </description>
+        </property>
+        <property name="DELL" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Source-drain junction length reduction.</lang>
+            </description>
+        </property>
+        <!-- BSIM3 Parameters -->
+        <property name="MOBMOD" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Mobility model selector.</lang>
+            </description>
+        </property>
+        <property name="CAPMOD" default="2" unit="-" visible="false">
+            <description>
+                <lang lang="C">Flag for the short channel capacitance model.</lang>
+            </description>
+        </property>
+        <property name="NQSMOD" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Flag for NQS model.</lang>
+            </description>
+        </property>
+        <property name="NOIMOD" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Flag for noise model.</lang>
+            </description>
+        </property>
+        <property name="VTH0" default="0.7" unit="V" visible="false">
+            <description>
+                <lang lang="C">Threshold voltage (at Vbs=0) for Large L.</lang>
+            </description>
+        </property>
+        <property name="K3" default="80" unit="-" visible="false">
+            <description>
+                <lang lang="C">Narrow width coefficient.</lang>
+            </description>
+        </property>
+        <property name="K3B" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Body effect coefficient of K3.</lang>
+            </description>
+        </property>
+        <property name="W0" default="2.5u" unit="m" visible="false">
+            <description>
+                <lang lang="C">Narrow width parameter.</lang>
+            </description>
+        </property>
+        <property name="NLX" default="174n" unit="m" visible="false">
+            <description>
+                <lang lang="C">Lateral non-uniform doping parameter.</lang>
+            </description>
+        </property>
+        <property name="VBM" default="-3" unit="V" visible="false">
+            <description>
+                <lang lang="C">Maximum applied body bias in Vth calculation.</lang>
+            </description>
+        </property>
+        <property name="DVT0" default="2.2" unit="-" visible="false">
+            <description>
+                <lang lang="C">First coefficient of short-channel effect on Vth.</lang>
+            </description>
+        </property>
+        <property name="DVT1" default="0.53" unit="-" visible="false">
+            <description>
+                <lang lang="C">Second coefficient of short-channel effect on Vth.</lang>
+            </description>
+        </property>
+        <property name="DVT2" default="-0.032" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Body-bias coefficient of short-channel effect on Vth.</lang>
+            </description>
+        </property>
+        <property name="DVT0W" default="0" unit="1/m" visible="false">
+            <description>
+                <lang lang="C">First coefficient of narrow width effect on Vth for small channel length.</lang>
+            </description>
+        </property>
+        <property name="DVT1W" default="5.3u" unit="1/m" visible="false">
+            <description>
+                <lang lang="C">Second coefficient of narrow width effect on Vth for small channel length.</lang>
+            </description>
+        </property>
+        <property name="DVT2W" default="-0.032" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Body-bias coefficient of narrow width effect for small channel length.</lang>
+            </description>
+        </property>
+        <property name="UA" default="2.25n" unit="m/V" visible="false">
+            <description>
+                <lang lang="C">First-order mobility degradation coefficient.</lang>
+            </description>
+        </property>
+        <property name="UB" default="5.87e-19" unit="(m/V)²" visible="false">
+            <description>
+                <lang lang="C">Second-order mobility degradation coefficient.</lang>
+            </description>
+        </property>
+        <property name="UC" default="-4.65e-11" unit="(m/V)²" visible="false">
+            <description>
+                <lang lang="C">Body effect of mobility degradation coefficient.</lang>
+            </description>
+        </property>
+        <property name="VSAT" default="80m" unit="m/s" visible="false">
+            <description>
+                <lang lang="C">Saturation velocity at TEMP=TNOM.</lang>
+            </description>
+        </property>
+        <property name="A0" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Bulk charge effect coefficient for channel length.</lang>
+            </description>
+        </property>
+        <property name="AGS" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Gate bias coefficient of the bulk.</lang>
+            </description>
+        </property>
+        <property name="B0" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Bulk charge effect coefficient for channel width.</lang>
+            </description>
+        </property>
+        <property name="B1" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Bulk charge effect width offset.</lang>
+            </description>
+        </property>
+        <property name="KETA" default="-0.047" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Body bias coefficient of bulk charge effect.</lang>
+            </description>
+        </property>
+        <property name="A1" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">First non-saturation effect parameter.</lang>
+            </description>
+        </property>
+        <property name="A2" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Second non-saturation factor.</lang>
+            </description>
+        </property>
+        <property name="RDSW" default="0" unit="Ω/μm" visible="false">
+            <description>
+                <lang lang="C">Parisitic resistance per unit width.</lang>
+            </description>
+        </property>
+        <property name="PRWB" default="0" unit="√(V)" visible="false">
+            <description>
+                <lang lang="C">Body effect coefficient of RDSW.</lang>
+            </description>
+        </property>
+        <property name="PRWG" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Gate bias effect coefficient of RDSW.</lang>
+            </description>
+        </property>
+        <property name="WR" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Width offset from Weff for RDS calculation.</lang>
+            </description>
+        </property>
+        <property name="WINT" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Width offset fitting parameter from I-V without bias.</lang>
+            </description>
+        </property>
+        <property name="LINT" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Length offset fitting parameter from I-V without bias.</lang>
+            </description>
+        </property>
+        <property name="DWG" default="0" unit="m/V" visible="false">
+            <description>
+                <lang lang="C">Coefficient of Weff's gate dependence.</lang>
+            </description>
+        </property>
+        <property name="DWB" default="0" unit="√(m/V)" visible="false">
+            <description>
+                <lang lang="C">Coefficient of Weff's substrate body-bias dependence.</lang>
+            </description>
+        </property>
+        <property name="VOFF" default="-0.08" unit="V" visible="false">
+            <description>
+                <lang lang="C">Offset voltage in the subthreshold region at large W and L.</lang>
+            </description>
+        </property>
+        <property name="NFACTOR" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Subthreshold swing factor.</lang>
+            </description>
+        </property>
+        <property name="ETA0" default="0.08" unit="-" visible="false">
+            <description>
+                <lang lang="C">DIBL coefficient in subthreshold region.</lang>
+            </description>
+        </property>
+        <property name="ETAB" default="-0.07" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Body bias coefficient for the subthreshold DIBL effect.</lang>
+            </description>
+        </property>
+        <property name="DSUB" default="0.56" unit="-" visible="false">
+            <description>
+                <lang lang="C">DIBL coefficient exponent in subthreshold region.</lang>
+            </description>
+        </property>
+        <property name="CIT" default="0" unit="(F/m)²" visible="false">
+            <description>
+                <lang lang="C">Interface trap capacitance.</lang>
+            </description>
+        </property>
+        <property name="CDSC" default="2.4e-4" unit="(F/m)²" visible="false">
+            <description>
+                <lang lang="C">Drain-source to channel coupling capacitance.</lang>
+            </description>
+        </property>
+        <property name="CDSCB" default="0" unit="(F/(V*m))²" visible="false">
+            <description>
+                <lang lang="C">Body bias sensitivity of CDSC.</lang>
+            </description>
+        </property>
+        <property name="CDSCD" default="0" unit="(F/(V*m))²" visible="false">
+            <description>
+                <lang lang="C">Drain bias sensitivity of CDSC.</lang>
+            </description>
+        </property>
+        <property name="PCLM" default="1.3" unit="-" visible="false">
+            <description>
+                <lang lang="C">Channel length modulation parameter.</lang>
+            </description>
+        </property>
+        <property name="PDIBLC1" default="0.39" unit="-" visible="false">
+            <description>
+                <lang lang="C">First output resistance DIBL effect correction parameter.</lang>
+            </description>
+        </property>
+        <property name="PDIBLC2" default="0.0086" unit="-" visible="false">
+            <description>
+                <lang lang="C">Second output resistance DIBL effect correction parameter.</lang>
+            </description>
+        </property>
+        <property name="PDIBLCB" default="0" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Body effect coefficient of DIBL correction parameters.</lang>
+            </description>
+        </property>
+        <property name="DROUT" default="0.56" unit="-" visible="false">
+            <description>
+                <lang lang="C">L dependence coefficient of the DIBL correction parameter in Rout.</lang>
+            </description>
+        </property>
+        <property name="PSCBE1" default="424u" unit="V/m" visible="false">
+            <description>
+                <lang lang="C">First substrate current body effect parameter.</lang>
+            </description>
+        </property>
+        <property name="PSCBE2" default="10u" unit="V/m" visible="false">
+            <description>
+                <lang lang="C">Second substrate current body-effect parameter.</lang>
+            </description>
+        </property>
+        <property name="PVAG" default="0" unit="-" visible="false">
+            <description>
+                <lang lang="C">Gate dependence on early voltage.</lang>
+            </description>
+        </property>
+        <property name="NGATE" default="0" unit="cm⁻³" visible="false">
+            <description>
+                <lang lang="C">Poly gate doping concentration.</lang>
+            </description>
+        </property>
+        <property name="ALPHA0" default="0" unit="m/V" visible="false">
+            <description>
+                <lang lang="C">First parameter of impact ionization current.</lang>
+            </description>
+        </property>
+        <property name="BETA0" default="30" unit="V" visible="false">
+            <description>
+                <lang lang="C">Second parameter of impact ionization current.</lang>
+            </description>
+        </property>
+        <property name="CJSWG" default="0.5n" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Source-drain gate sidewall junction capacitance grading coefficient.</lang>
+            </description>
+        </property>
+        <property name="MJSWG" default="0.33" unit="-" visible="false">
+            <description>
+                <lang lang="C">Source-drain gate sidewall junction capacitance coefficient.</lang>
+            </description>
+        </property>
+        <property name="PBSWG" default="1" unit="V" visible="false">
+            <description>
+                <lang lang="C">Source-drain gate sidewall junction built-in potential.</lang>
+            </description>
+        </property>
+        <property name="CKAPPA" default="0.6" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Coefficient for lightly doped region overlap capacitance.</lang>
+            </description>
+        </property>
+        <property name="CF" default="0" unit="F/m" visible="false">
+            <description>
+                <lang lang="C">Fringing field capacitance.</lang>
+            </description>
+        </property>
+        <property name="CLC" default="0.1u" unit="m" visible="false">
+            <description>
+                <lang lang="C">Constant term for the short channel model.</lang>
+            </description>
+        </property>
+        <property name="CLE" default="0.6" unit="-" visible="false">
+            <description>
+                <lang lang="C">Exponential term for the short channel model.</lang>
+            </description>
+        </property>
+        <property name="DLC" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Length offset fitting parameter from C-V.</lang>
+            </description>
+        </property>
+        <property name="DWC" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Width offset fitting parameter from C-V.</lang>
+            </description>
+        </property>
+        <property name="ELM" default="5" unit="-" visible="false">
+            <description>
+                <lang lang="C">Elmore constant of the channel.</lang>
+            </description>
+        </property>
+        <property name="WL" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Coefficient of length dependence for width offset.</lang>
+            </description>
+        </property>
+        <property name="WLN" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Power of length dependence for width offset.</lang>
+            </description>
+        </property>
+        <property name="WW" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Coefficient of width dependence for width offset.</lang>
+            </description>
+        </property>
+        <property name="WWN" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Power of width dependence for width offset.</lang>
+            </description>
+        </property>
+        <property name="WWL" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Coefficient of length and width cross term for width offset.</lang>
+            </description>
+        </property>
+        <property name="LL" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Coefficient of length dependence for length offset.</lang>
+            </description>
+        </property>
+        <property name="LLN" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Power of length dependence for length offset.</lang>
+            </description>
+        </property>
+        <property name="LW" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Coefficient of width dependence for length offset.</lang>
+            </description>
+        </property>
+        <property name="LWN" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Power of width dependence for length offset.</lang>
+            </description>
+        </property>
+        <property name="LWL" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Coefficient of length and width cross term for length offset.</lang>
+            </description>
+        </property>
+        <property name="UTE" default="-1.5" unit="-" visible="false">
+            <description>
+                <lang lang="C">Mobility temperature exponent.</lang>
+            </description>
+        </property>
+        <property name="KT1" default="-0.11" unit="V" visible="false">
+            <description>
+                <lang lang="C">Temperature coefficient for threshold voltage.</lang>
+            </description>
+        </property>
+        <property name="KT1L" default="0" unit="V*m" visible="false">
+            <description>
+                <lang lang="C">Channel length dependence of the temperature coefficient for threshold voltage.</lang>
+            </description>
+        </property>
+        <property name="KT2" default="0.022" unit="-" visible="false">
+            <description>
+                <lang lang="C">Body bias coefficient of Vth temperature effect.</lang>
+            </description>
+        </property>
+        <property name="UA1" default="4.31n" unit="m/V" visible="false">
+            <description>
+                <lang lang="C">Temperature coefficient for UA.</lang>
+            </description>
+        </property>
+        <property name="UB1" default="-7.61e-18" unit="(m/V)²" visible="false">
+            <description>
+                <lang lang="C">Temperature coefficient for UB.</lang>
+            </description>
+        </property>
+        <property name="UC1" default="-0.056" unit="1/V" visible="false">
+            <description>
+                <lang lang="C">Temperature coefficient for UC.</lang>
+            </description>
+        </property>
+        <property name="AT" default="33m" unit="m/s" visible="false">
+            <description>
+                <lang lang="C">Temperature coefficient for saturation velocity.</lang>
+            </description>
+        </property>
+        <property name="PRT" default="0" unit="Ω/μm" visible="false">
+            <description>
+                <lang lang="C">Temperature coefficient for RDSW.</lang>
+            </description>
+        </property>
+        <property name="NJ" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Emission coefficient of the junction.</lang>
+            </description>
+        </property>
+        <property name="XTI" default="3" unit="-" visible="false">
+            <description>
+                <lang lang="C">Junction current temperature exponent coefficient.</lang>
+            </description>
+        </property>
+        <property name="NOIA" default="1e20" unit="-" visible="false">
+            <description>
+                <lang lang="C">Noise parameter A.</lang>
+            </description>
+        </property>
+        <property name="NOIB" default="5e4" unit="-" visible="false">
+            <description>
+                <lang lang="C">Noise parameter B.</lang>
+            </description>
+        </property>
+        <property name="NOIC" default="-1.4e-12" unit="-" visible="false">
+            <description>
+                <lang lang="C">Noise parameter C.</lang>
+            </description>
+        </property>
+        <property name="EM" default="41u" unit="V/m" visible="false">
+            <description>
+                <lang lang="C">Saturation field.</lang>
+            </description>
+        </property>
+        <property name="GAMMA1" default="0" unit="√(V)" visible="false">
+            <description>
+                <lang lang="C">Body effect coefficient near the surface.</lang>
+            </description>
+        </property>
+        <property name="GAMMA2" default="0" unit="√(V)" visible="false">
+            <description>
+                <lang lang="C">Body-effect coefficient in the bulk.</lang>
+            </description>
+        </property>
+        <property name="NCH" default="1.7e17" unit="cm⁻³" visible="false">
+            <description>
+                <lang lang="C">Channel doping concentration.</lang>
+            </description>
+        </property>
+        <property name="VBX" default="0" unit="V" visible="false">
+            <description>
+                <lang lang="C">Vbs at which the depletion region width equals XT.</lang>
+            </description>
+        </property>
+        <property name="XT" default="1.55e-7" unit="m" visible="false">
+            <description>
+                <lang lang="C">Doping depth.</lang>
+            </description>
+        </property>
+        <property name="LMIN" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Minimum channel length.</lang>
+            </description>
+        </property>
+        <property name="LMAX" default="1" unit="m" visible="false">
+            <description>
+                <lang lang="C">Maximum channel length.</lang>
+            </description>
+        </property>
+        <property name="WMIN" default="0" unit="m" visible="false">
+            <description>
+                <lang lang="C">Minimum channel width.</lang>
+            </description>
+        </property>
+        <property name="WMAX" default="1" unit="m" visible="false">
+            <description>
+                <lang lang="C">Maximum channel width.</lang>
+            </description>
+        </property>
+        <property name="BINUNIT" default="1" unit="-" visible="false">
+            <description>
+                <lang lang="C">Bin unit scale selector.</lang>
+            </description>
+        </property>
+        <!-- Model name -->
+        <property name="model" default="NMOSModel" unit="" visible="true">
+            <description>
+                <lang lang="C">Device model.</lang>
+                <lang lang="es">Modelo del dispositivo.</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax=".model %property{model} NMOS ( LEVEL=%property{LEVEL} VERSION=%property{VERSION} VTO=%property{VTO} KP=%property{KP} GAMMA=%property{GAMMA} PHI=%property{PHI} LAMBDA=%property{LAMBDA} RD=%property{RD} RS=%property{RS} CBD=%property{CBD} CBS=%property{CBS} IS=%property{IS} PB=%property{PB} CGSO=%property{CGSO} CGDO=%property{CGDO} CGBO=%property{CGBO} RSH=%property{RSH} CJ=%property{CJ} MJ=%property{MJ} CJSW=%property{CJSW} MJSW=%property{MJSW} JS=%property{JS} TOX=%property{TOX} NSUB=%property{NSUB} NSS=%property{NSS} NFS=%property{NFS} TPG=%property{TPG} XJ=%property{XJ} LD=%property{LD} UO=%property{UO} UCRIT=%property{UCRIT} UEXP=%property{UEXP} UTRA=%property{UTRA} VMAX=%property{VMAX} NEFF=%property{NEFF} KF=%property{KF} AF=%property{AF} FC=%property{FC} DELTA=%property{DELTA} THETA=%property{THETA} ETA=%property{ETA} KAPPA=%property{KAPPA} TNOM=%property{TNOM} VFB=%property{VFB} K1=%property{K1} K2=%property{K2} MUZ=%property{MUZ} DL=%property{DL} DW=%property{DW} U0=%property{U0} U1=%property{U1} X2MZ=%property{X2MZ} X2E=%property{X2E} X3E=%property{X3E} X2U0=%property{X2U0} X2U1=%property{X2U1} MUS=%property{MUS} X2MS=%property{X2MS} X3MS=%property{X3MS} X3U1=%property{X3U1} TEMP=%property{TEMP} VDD=%property{VDD} XPART=%property{XPART} N0=%property{N0} NB=%property{NB} ND=%property{ND} PBSW=%property{PBSW} WDF=%property{WDF} DELL=%property{DELL} MOBMOD=%property{MOBMOD} CAPMOD=%property{CAPMOD} NQSMOD=%property{NQSMOD} NOIMOD=%property{NOIMOD} VTH0=%property{VTH0} K3=%property{K3} K3B=%property{K3B} W0=%property{W0} NLX=%property{NLX} VBM=%property{VBM} DVT0=%property{DVT0} DVT1=%property{DVT1} DVT2=%property{DVT2} DVT0W=%property{DVT0W} DVT1W=%property{DVT1W} DVT2W=%property{DVT2W} UA=%property{UA} UB=%property{UB} UC=%property{UC} VSAT=%property{VSAT} A0=%property{A0} AGS=%property{AGS} B0=%property{B0} B1=%property{B1} KETA=%property{KETA} A1=%property{A1} A2=%property{A2} RDSW=%property{RDSW} PRWB=%property{PRWB} PRWG=%property{PRWG} WR=%property{WR} WINT=%property{WINT} LINT=%property{LINT} DWG=%property{DWG} DWB=%property{DWB} VOFF=%property{VOFF} NFACTOR=%property{NFACTOR} ETA0=%property{ETA0} ETAB=%property{ETAB} DSUB=%property{DSUB} CIT=%property{CIT} CDSC=%property{CDSC} CDSCB=%property{CDSCB} CDSCD=%property{CDSCD} PCLM=%property{PCLM} PDIBLC1=%property{PDIBLC1} PDIBLC2=%property{PDIBLC2} PDIBLCB=%property{PDIBLCB} DROUT=%property{DROUT} PSCBE1=%property{PSCBE1} PSCBE2=%property{PSCBE2} PVAG=%property{PVAG} NGATE=%property{NGATE} ALPHA0=%property{ALPHA0} BETA0=%property{BETA0} CJSWG=%property{CJSWG} MJSWG=%property{MJSWG} PBSWG=%property{PBSWG} CKAPPA=%property{CKAPPA} CF=%property{CF} CLC=%property{CLC} CLE=%property{CLE} DLC=%property{DLC} DWC=%property{DWC} ELM=%property{ELM} WL=%property{WL} WLN=%property{WLN} WW=%property{WW} WWN=%property{WWN} WWL=%property{WWL} LL=%property{LL} LLN=%property{LLN} LW=%property{LW} LWN=%property{LWN} LWL=%property{LWL} UTE=%property{UTE} KT1=%property{KT1} KT1L=%property{KT1L} KT2=%property{KT2} UA1=%property{UA1} UB1=%property{UB1} UC1=%property{UC1} AT=%property{AT} PRT=%property{PRT} NJ=%property{NJ} XTI=%property{XTI} NOIA=%property{NOIA} NOIB=%property{NOIB} NOIC=%property{NOIC} EM=%property{EM} GAMMA1=%property{GAMMA1} GAMMA2=%property{GAMMA2} NCH=%property{NCH} VBX=%property{VBX} XT=%property{XT} LMIN=%property{LMIN} LMAX=%property{LMAX} WMIN=%property{WMIN} WMAX=%property{WMAX} BINUNIT=%property{BINUNIT} )"/>
+    </models>
+</component>
