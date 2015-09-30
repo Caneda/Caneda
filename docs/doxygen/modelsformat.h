@@ -122,6 +122,23 @@ namespace Caneda
  * subcircuit name). This is very similar to the models escape sequence.
  * Although theoretically a model escape sequence could be used, the inclusion
  * of a separate escape sequence allows for more flexibility.
+ * \li <b>\%directive{args}</b> : This escape sequence indicates that the string
+ * or sentence provided as an argument must be saved to a list of strings and
+ * included only once in the output file (typically at the end of file). For example,
+ * if we are providing an include directive, we typically want the include string
+ * only once in the SPICE netlist output file. This is similar to the use of
+ * \%model{args} and \%property{model} escape sequences, but the parser does not
+ * append any text to the output and the string is copied "as is". This escape
+ * sequence is normally used for the remaining spice directives that do not classify
+ * into one of the previous escape sequences.
+ * \li <b>\%librarypath</b> : This escape sequence indicates that the library path
+ * directory of the component must be used.
+ * \li <b>\%filepath</b> : This escape sequence indicates that the file path
+ * directory of the component must be used. This is different from the library path
+ * in the sense that the schematic typically resides in a different location from
+ * the component library. For example, in an include spice directive the file with
+ * the definitions to be included may reside in the library folder (\%librarypath)
+ * or in the schematic folder (\%filepath) to allow the user for modifications.
  * \li <b>\%n</b> : This escape sequence indicates that a new line must be used.
  *
  * \section Symbols Symbol Format

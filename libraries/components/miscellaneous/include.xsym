@@ -47,6 +47,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".include %property{Filename}"/>
+        <model type="spice" syntax=".include %filepath/%property{Filename}"/>
     </models>
 </component>

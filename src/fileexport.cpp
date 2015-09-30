@@ -22,6 +22,7 @@
 #include "cgraphicsscene.h"
 #include "component.h"
 #include "idocument.h"
+#include "library.h"
 #include "portsymbol.h"
 
 #include <QDebug>
@@ -101,11 +102,13 @@ namespace Caneda
      */
     QString FormatSpice::generateNetlist()
     {
+        LibraryManager *libraryManager = LibraryManager::instance();
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Component*> components = filterItems<Component>(items);
         PortsNetlist netlist = generateNetlistTopology();
         QStringList modelsList;
         QStringList subcircuitsList;
+        QStringList directivesList;
 
         // Start the document and write the header
         QString retVal;
@@ -122,6 +125,13 @@ namespace Caneda
             // Replace the simple commands
             model.replace("%label", c->label());
             model.replace("%n", "\n");
+
+            QString path = libraryManager->library(c->library())->libraryPath();
+            model.replace("%librarypath", path);
+
+            path = QFileInfo(m_schematicDocument->fileName()).absolutePath();
+            model.replace("%filepath", path);
+
 
             // Parse the commands with parameters
             QStringList commands;
@@ -178,7 +188,17 @@ namespace Caneda
                     model.remove(commands.at(i));
 
                 }
+                else if(commands.at(i).startsWith("%directive")){
 
+                    // Directives should be added to a temporal list to be included
+                    // only once at the end of the spice file.
+                    if(!directivesList.contains(parameter)) {
+                        directivesList << parameter;
+                    }
+
+                    model.remove(commands.at(i));
+
+                }
             }
 
             // Add the model and a newline to the file
@@ -199,6 +219,14 @@ namespace Caneda
             for(int i=0; i<subcircuitsList.size(); i++){
                 retVal.append(".subckt " + subcircuitsList.at(i) + "\n"
                               + ".ends" + "\n");
+            }
+        }
+
+        // Append the spice directives in directivesList
+        if(!directivesList.isEmpty()) {
+            retVal.append("\n* Spice directives.\n");
+            for(int i=0; i<directivesList.size(); i++){
+                retVal.append(directivesList.at(i) + "\n");
             }
         }
 
