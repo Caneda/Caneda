@@ -335,7 +335,7 @@ namespace Caneda
         m_oldPropertyText(oldText),
         m_newPropertyText(m_painting->saveDataText())
     {
-        qDebug(m_newPropertyText.toLatin1().constData());
+        qDebug() << m_newPropertyText.toLatin1().constData();
     }
 
     void PaintingPropertyChangeCmd::undo()
