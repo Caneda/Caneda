@@ -1735,7 +1735,7 @@ namespace Caneda
                 break;
 
             default:
-                qDebug("CGraphicsScene::normalEvent() :  Unknown event type");
+                qDebug() << "CGraphicsScene::normalEvent() :  Unknown event type";
         };
     }
 

@@ -59,7 +59,7 @@ namespace Caneda
         QString text = saveText();
 
         if(text.isEmpty()) {
-            qDebug("Looks buggy! Null data to save! Was this expected?");
+            qDebug() << "Looks buggy! Null data to save! Was this expected?";
         }
 
         QFile file(fileName());
@@ -468,7 +468,7 @@ namespace Caneda
 
         QString text = saveText();
         if(text.isEmpty()) {
-            qDebug("Looks buggy! Null data to save! Was this expected?");
+            qDebug() << "Looks buggy! Null data to save! Was this expected?";
         }
 
         QFile file(fileName());
@@ -893,7 +893,7 @@ namespace Caneda
         QString text = saveText();
 
         if(text.isEmpty()) {
-            qDebug("Looks buggy! Null data to save! Was this expected?");
+            qDebug() << "Looks buggy! Null data to save! Was this expected?";
         }
 
         QFile file(fileName());

@@ -55,7 +55,7 @@ namespace Caneda
 
         QString text = generateNetlist();
         if(text.isEmpty()) {
-            qDebug("Looks buggy! Null data to save! Was this expected?");
+            qDebug() << "Looks buggy! Null data to save! Was this expected?";
         }
 
         QTextStream stream(&file);
