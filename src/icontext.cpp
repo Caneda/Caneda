@@ -189,7 +189,7 @@ namespace Caneda
                 qDebug() << "Loaded " + library + " library";
             }
 
-            qDebug() << "Succesfully loaded libraries!";
+            qDebug() << "Successfully loaded libraries!";
         }
         else {
             // Invalidate entry

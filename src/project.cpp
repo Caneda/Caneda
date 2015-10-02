@@ -105,7 +105,7 @@ namespace Caneda
             slotCloseProject();
             setCurrentLibrary(fileName);
             projectLibrary = library->library(m_libraryName);
-            qDebug() << "Succesfully created library!";
+            qDebug() << "Successfully created library!";
             m_projectsSidebar->plugLibrary(m_libraryName, "root");
         }
     }
@@ -127,7 +127,7 @@ namespace Caneda
             slotCloseProject();
             setCurrentLibrary(fileName);
             projectLibrary = library->library(m_libraryName);
-            qDebug() << "Succesfully loaded library!";
+            qDebug() << "Successfully loaded library!";
             m_projectsSidebar->plugLibrary(m_libraryName, "root");
         }
     }
