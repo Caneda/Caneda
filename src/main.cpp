@@ -25,12 +25,18 @@
 #include <QApplication>
 #include <QSplashScreen>
 #include <QTimer>
+#include <QTranslator>
 
 int main(int argc,char *argv[])
 {
    QApplication app(argc,argv);
    app.setOrganizationName("Caneda");
    app.setApplicationName("Caneda");
+
+   // Load the translations
+   QTranslator translator;
+   translator.load(QLocale::system(), "caneda", "_", Caneda::langDirectory(), ".qm");
+   app.installTranslator(&translator);
 
    // We create a splash screen
    QPixmap pixmap(Caneda::bitmapDirectory() + "splash.jpg");
