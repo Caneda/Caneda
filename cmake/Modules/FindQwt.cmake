@@ -47,7 +47,7 @@ FIND_PATH( QWT_INCLUDE_DIR NAMES qwt.h PATHS
     ${QWT_SEARCH_PATHS}/include
 )
 
-FIND_LIBRARY( QWT_LIBRARY NAMES qwt libqwt PATHS
+FIND_LIBRARY( QWT_LIBRARY NAMES qwt libqwt qwt-qt5 libqwt-qt5 PATHS
     /usr/lib
     /usr/local/lib
     "$ENV{LIB_DIR}/lib"
