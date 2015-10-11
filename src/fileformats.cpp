@@ -555,7 +555,21 @@ namespace Caneda
          */
         writer->writeEndElement(); //</description>
 
-        // Write symbol geometry (drawing)
+        // Write symbol geometry (drawing), ports, properties and models
+        saveSymbol(writer);
+        savePorts(writer);
+        saveProperties(writer);
+        saveModels(writer);
+
+        // Finally we finish the document
+        writer->writeEndDocument(); //</component>
+
+        delete writer;
+        return retVal;
+    }
+
+    void FormatXmlSymbol::saveSymbol(XmlWriter *writer)
+    {
         writer->writeStartElement("symbol");
 
         CGraphicsScene *scene = cGraphicsScene();
@@ -568,9 +582,14 @@ namespace Caneda
         }
 
         writer->writeEndElement(); //</symbol>
+    }
 
+    void FormatXmlSymbol::savePorts(XmlWriter *writer)
+    {
         writer->writeStartElement("ports");
 
+        CGraphicsScene *scene = cGraphicsScene();
+        QList<QGraphicsItem*> items = scene->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
         if(!portSymbols.isEmpty()) {
             foreach(PortSymbol *p, portSymbols) {
@@ -579,9 +598,13 @@ namespace Caneda
         }
 
         writer->writeEndElement(); //</ports>
+    }
 
+    void FormatXmlSymbol::saveProperties(XmlWriter *writer)
+    {
         writer->writeStartElement("properties");
 
+        CGraphicsScene *scene = cGraphicsScene();
         PropertyGroup *properties = scene->properties();
         writer->writePointAttribute(properties->pos(), "pos");
         foreach(Property property, properties->propertyMap()) {
@@ -589,14 +612,6 @@ namespace Caneda
         }
 
         writer->writeEndElement(); //</properties>
-
-        saveModels(writer);
-
-        // Finally we finish the document
-        writer->writeEndDocument(); //</component>
-
-        delete writer;
-        return retVal;
     }
 
     /*!

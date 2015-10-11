@@ -107,6 +107,9 @@ namespace Caneda
 
     private:
         QString saveText();
+        void saveSymbol(Caneda::XmlWriter *writer);
+        void savePorts(Caneda::XmlWriter *writer);
+        void saveProperties(Caneda::XmlWriter *writer);
         void saveModels(Caneda::XmlWriter *writer);
 
         bool loadFromText(const QString& text);
