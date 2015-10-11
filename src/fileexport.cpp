@@ -106,6 +106,7 @@ namespace Caneda
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Component*> components = filterItems<Component>(items);
         PortsNetlist netlist = generateNetlistTopology();
+
         QStringList modelsList;
         QStringList subcircuitsList;
         QStringList directivesList;
@@ -122,7 +123,9 @@ namespace Caneda
             // Get the spice model (multiple models may be available)
             QString model = c->model("spice");
 
-            // Replace the simple commands
+            // ************************************************************
+            // Parse and replace the simple commands (e.g. label)
+            // ************************************************************
             model.replace("%label", c->label());
             model.replace("%n", "\n");
 
@@ -132,12 +135,18 @@ namespace Caneda
             path = QFileInfo(m_schematicDocument->fileName()).absolutePath();
             model.replace("%filepath", path);
 
-
-            // Parse the commands with parameters
+            // ************************************************************
+            // Parse and replace the commands with parameters
+            // ************************************************************
             QStringList commands;
-
             QRegularExpression re("(%\\w+\{([\\w =+-\\\\(\\\\)\\n\\*\{}]+)})");
-            QRegularExpressionMatchIterator it = re.globalMatch(model);
+            QRegularExpressionMatchIterator it;
+
+            // ************************************************************
+            // First parse the non-cascadable commands (e.g. properties)
+            // ************************************************************
+            commands.clear();
+            it = re.globalMatch(model);
             while (it.hasNext()) {
                 QRegularExpressionMatch match = it.next();
                 commands << match.captured(0);
@@ -166,7 +175,28 @@ namespace Caneda
                 else if(commands.at(i).startsWith("%property")){
                     model.replace(commands.at(i), c->properties()->propertyValue(parameter));
                 }
-                else if(commands.at(i).startsWith("%model")){
+            }
+
+            // ************************************************************
+            // Now parse the cascadable commands (e.g. models), which may
+            // have inside a non-cascadable command (e.g. properties).
+            // ************************************************************
+            commands.clear();
+            it = re.globalMatch(model);
+            while (it.hasNext()) {
+                QRegularExpressionMatch match = it.next();
+                commands << match.captured(0);
+            }
+
+            // For each command replace the parameter with the correct value
+            for(int i=0; i<commands.size(); i++){
+
+                // Extract the parameters, removing the comand (including the
+                // "{" and the last character "}")
+                QString parameter = commands.at(i);
+                parameter.remove(QRegularExpression("(%\\w+\{)")).chop(1);
+
+                if(commands.at(i).startsWith("%model")){
 
                     // Models should be added to a temporal list to be included
                     // only once at the end of the spice file.
@@ -205,6 +235,10 @@ namespace Caneda
             retVal.append(model + "\n");
         }
 
+        // ************************************************************
+        // Write the QStringLists that should be in the end of the
+        // file (e.g. device models).
+        // ************************************************************
         // Append the spice models in modelsList
         if(!modelsList.isEmpty()) {
             retVal.append("\n* Device models.\n");
