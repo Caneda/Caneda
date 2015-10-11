@@ -117,7 +117,9 @@ namespace Caneda
         retVal.append("\n* Spice netlist.\n");
 
         // Copy all the elements and properties in the schematic by
-        // iterating over all schematic components
+        // iterating over all schematic components.
+        // *Note*: the parsing order is important to allow, for example
+        // cascadable commands and if control statements correct extraction.
         foreach(Component *c, components) {
 
             // Get the spice model (multiple models may be available)
@@ -139,13 +141,14 @@ namespace Caneda
             // Parse and replace the commands with parameters
             // ************************************************************
             QStringList commands;
-            QRegularExpression re("(%\\w+\{([\\w =+-\\\\(\\\\)\\n\\*\{}]+)})");
+            QRegularExpression re;
             QRegularExpressionMatchIterator it;
 
             // ************************************************************
             // First parse the non-cascadable commands (e.g. properties)
             // ************************************************************
             commands.clear();
+            re.setPattern("(%\\w+\{([\\w+-]+)})");
             it = re.globalMatch(model);
             while (it.hasNext()) {
                 QRegularExpressionMatch match = it.next();
@@ -178,10 +181,41 @@ namespace Caneda
             }
 
             // ************************************************************
+            // Parse if control statements
+            // ************************************************************
+            commands.clear();
+            re.setPattern("(%\\w+\{([\\w =+-,]*)})");
+            it = re.globalMatch(model);
+            while (it.hasNext()) {
+                QRegularExpressionMatch match = it.next();
+                commands << match.captured(0);
+            }
+
+            // For each command replace the parameter with the correct value
+            for(int i=0; i<commands.size(); i++){
+
+                // Extract the parameters, removing the comand (including the
+                // "{" and the last character "}")
+                QString parameter = commands.at(i);
+                parameter.remove(QRegularExpression("(%\\w+\{)")).chop(1);
+                QStringList controlStrings = parameter.split(",");
+
+                if(commands.at(i).startsWith("%if")){
+                    if(!controlStrings.at(0).isEmpty() && controlStrings.size() > 1) {
+                        model.replace(commands.at(i), controlStrings.at(1));
+                    }
+                    else {
+                        model.remove(commands.at(i));
+                    }
+                }
+            }
+
+            // ************************************************************
             // Now parse the cascadable commands (e.g. models), which may
             // have inside a non-cascadable command (e.g. properties).
             // ************************************************************
             commands.clear();
+            re.setPattern("(%\\w+\{([\\w =+-\\\\(\\\\)\\n\\*\{}]+)})");
             it = re.globalMatch(model);
             while (it.hasNext()) {
                 QRegularExpressionMatch match = it.next();
