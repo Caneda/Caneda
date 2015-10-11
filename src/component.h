@@ -92,6 +92,8 @@ namespace Caneda
 
         //! Returns name of the component (without localization).
         QString name() const { return d->name; }
+        //! Returns the filename of the component.
+        QString filename() const { return d->filename; }
 
         //! Returns string to be displayed in sidebar (with localization).
         QString displayText() const { return d->displayText; }

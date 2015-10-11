@@ -537,7 +537,7 @@ namespace Caneda
         QFileInfo info(fileName());
         writer->writeAttribute("name", info.baseName());
         writer->writeAttribute("version", Caneda::version());
-        writer->writeAttribute("label", "comp");
+        writer->writeAttribute("label", "X");
 
         writer->writeStartElement("displaytext");
         writer->writeLocaleText("C", "User created component");
@@ -590,19 +590,80 @@ namespace Caneda
 
         writer->writeEndElement(); //</properties>
 
-        writer->writeStartElement("models");
-
-        writer->writeEmptyElement("model");
-        writer->writeAttribute("type", "spice");
-        writer->writeAttribute("syntax", "%subcircuit");
-
-        writer->writeEndElement(); // </models>
+        saveModels(writer);
 
         // Finally we finish the document
         writer->writeEndDocument(); //</component>
 
         delete writer;
         return retVal;
+    }
+
+    /*!
+     * \brief Saves spice model data to xml file text.
+     *
+     * When editing a schematic's symbol, the spice model should be
+     * automatically generated from the symbol properties. Generally
+     * speaking, the model should have the following syntax:
+     *
+     * \code
+     * X%label %port{1} %port{2} ... %port{n} modelname property_1=%property{property_1} property_2=%property{property_2} ... property_m=%property{property_m}
+     * %subcircuit{modelname  %port{1} %port{2} ... %port{n} property_1=0 property_2=0 ... property_m=0
+     * %n.include %librarypath/modelname.net}
+     * %generateNetlist
+     * \endcode
+     *
+     * XmlWriter doesn't allow including new lines, so the resulting
+     * syntax will be appended to the writer in only one line. This,
+     * however, doesn't affect the results.
+     *
+     * \param reader XmlWriter responsible for writing xml data.
+     */
+    void FormatXmlSymbol::saveModels(XmlWriter *writer)
+    {
+        CGraphicsScene *scene = cGraphicsScene();
+        QList<QGraphicsItem*> items = scene->items();
+        PropertyGroup *properties = scene->properties();
+        QFileInfo info(fileName());
+
+        // Generate the spice model syntax
+        QString syntax = "X%label";
+
+        QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
+        if(!portSymbols.isEmpty()) {
+            foreach(PortSymbol *p, portSymbols) {
+                syntax.append(" %port{" + p->label() + "}");
+            }
+        }
+
+        syntax.append(" " + info.baseName());
+
+        foreach(Property property, properties->propertyMap()) {
+            syntax.append(" " + property.name() + "=%property{" + property.name() + "}");
+        }
+
+        syntax.append(" %subcircuit{" + info.baseName());
+        if(!portSymbols.isEmpty()) {
+            foreach(PortSymbol *p, portSymbols) {
+                syntax.append(" " + p->label());
+            }
+        }
+
+        foreach(Property property, properties->propertyMap()) {
+            syntax.append(" " + property.name() + "=0");
+        }
+
+        syntax.append(" %n.include %librarypath/" + info.baseName() + ".net}");
+        syntax.append(" %generateNetlist");
+
+        // Write the result to the XmlWriter
+        writer->writeStartElement("models");
+
+        writer->writeEmptyElement("model");
+        writer->writeAttribute("type", "spice");
+        writer->writeAttribute("syntax", syntax);
+
+        writer->writeEndElement(); // </models>
     }
 
     /*!

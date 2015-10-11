@@ -110,6 +110,7 @@ namespace Caneda
         QStringList modelsList;
         QStringList subcircuitsList;
         QStringList directivesList;
+        QStringList schematicsList;
 
         // Start the document and write the header
         QString retVal;
@@ -265,6 +266,25 @@ namespace Caneda
                 }
             }
 
+            // ************************************************************
+            // Now parse the generateNetlist command, which creates a
+            // temporal list of schematics needed for recursive netlists
+            // generation (for recursive simulations).
+            // ************************************************************
+            if(model.contains("%generateNetlist")){
+
+                QFileInfo info(c->filename());
+                QString baseName = info.completeBaseName();
+                QString path = libraryManager->library(c->library())->libraryPath();
+                QString schematic = path + "/" + baseName + ".xsch";
+
+                if(!schematicsList.contains(schematic)) {
+                    schematicsList << schematic;
+                }
+
+                model.remove("%generateNetlist");
+            }
+
             // Add the model and a newline to the file
             retVal.append(model + "\n");
         }
@@ -295,6 +315,25 @@ namespace Caneda
             retVal.append("\n* Spice directives.\n");
             for(int i=0; i<directivesList.size(); i++){
                 retVal.append(directivesList.at(i) + "\n");
+            }
+        }
+
+        // ************************************************************
+        // Create the needed recursive netlist documents
+        // ************************************************************
+        if(!schematicsList.isEmpty()) {
+            for(int i=0; i<schematicsList.size(); i++){
+
+                SchematicDocument *document = new SchematicDocument();
+                document->setFileName(schematicsList.at(i));
+
+                if(document->load()) {
+                    // Export the schematic to a spice netlist
+                    FormatSpice *format = new FormatSpice(document);
+                    format->save();
+                }
+
+                delete document;
             }
         }
 
