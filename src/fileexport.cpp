@@ -146,7 +146,7 @@ namespace Caneda
             QRegularExpressionMatchIterator it;
 
             // ************************************************************
-            // First parse the non-cascadable commands (e.g. properties)
+            // First parse the cascadable commands (e.g. properties)
             // ************************************************************
             commands.clear();
             re.setPattern("(%\\w+\{([\\w+-]+)})");
@@ -212,8 +212,8 @@ namespace Caneda
             }
 
             // ************************************************************
-            // Now parse the cascadable commands (e.g. models), which may
-            // have inside a non-cascadable command (e.g. properties).
+            // Now parse the non-cascadable commands (e.g. models), which may
+            // have a cascadable command as an argument (e.g. properties).
             // ************************************************************
             commands.clear();
             re.setPattern("(%\\w+\{([\\w =+-\\\\(\\\\)\\n\\*\{}]+)})");
