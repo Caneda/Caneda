@@ -156,6 +156,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} PMF ( LEVEL=%property{LEVEL} VTO=%property{VTO} BETA=%property{BETA} B=%property{B} ALPHA=%property{ALPHA} LAMBDA=%property{LAMBDA} RD=%property{RD} RS=%property{RS} CGS=%property{CGS} CGD=%property{CGD} PB=%property{PB} KF=%property{KF} AF=%property{AF} FC=%property{FC} )"/>
+        <model type="spice" syntax="%model{%property{model} PMF ( LEVEL=%property{LEVEL} VTO=%property{VTO} BETA=%property{BETA} B=%property{B} ALPHA=%property{ALPHA} LAMBDA=%property{LAMBDA} RD=%property{RD} RS=%property{RS} CGS=%property{CGS} CGD=%property{CGD} PB=%property{PB} KF=%property{KF} AF=%property{AF} FC=%property{FC} )}"/>
     </models>
 </component>

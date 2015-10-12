@@ -94,6 +94,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} L ( CSECT=%property{CSECT} LENGTH=%property{LENGTH} TC1=%property{TC1} TC2=%property{TC2} TNOM=%property{TNOM} NT=%property{NT} MU=%property{MU} )"/>
+        <model type="spice" syntax="%model{%property{model} L ( CSECT=%property{CSECT} LENGTH=%property{LENGTH} TC1=%property{TC1} TC2=%property{TC2} TNOM=%property{TNOM} NT=%property{NT} MU=%property{MU} )}"/>
     </models>
 </component>

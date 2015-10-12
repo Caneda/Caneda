@@ -84,6 +84,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} CPL ( R=%property{R} L=%property{L} G=%property{G} C=%property{C} LENGTH=%property{LENGTH} )"/>
+        <model type="spice" syntax="%model{%property{model} CPL ( R=%property{R} L=%property{L} G=%property{G} C=%property{C} LENGTH=%property{LENGTH} )}"/>
     </models>
 </component>

@@ -134,6 +134,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} R ( TC1=%property{TC1} TC2=%property{TC2} RSH=%property{RSH} DEFW=%property{DEFW} NARROW=%property{NARROW} SHORT=%property{SHORT} TNOM=%property{TNOM} KF=%property{KF} AF=%property{AF} )"/>
+        <model type="spice" syntax="%model{%property{model} R ( TC1=%property{TC1} TC2=%property{TC2} RSH=%property{RSH} DEFW=%property{DEFW} NARROW=%property{NARROW} SHORT=%property{SHORT} TNOM=%property{TNOM} KF=%property{KF} AF=%property{AF} )}"/>
     </models>
 </component>

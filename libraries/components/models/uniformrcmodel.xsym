@@ -100,6 +100,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} URC ( K=%property{K} FMAX=%property{FMAX} RPERL=%property{RPERL} CPERL=%property{CPERL} ISPERL=%property{ISPERL} RSPERL=%property{RSPERL} )"/>
+        <model type="spice" syntax="%model{%property{model} URC ( K=%property{K} FMAX=%property{FMAX} RPERL=%property{RPERL} CPERL=%property{CPERL} ISPERL=%property{ISPERL} RSPERL=%property{RSPERL} )}"/>
     </models>
 </component>

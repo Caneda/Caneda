@@ -106,6 +106,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} C ( CJ=%property{CJ} CJSW=%property{CJSW} DEFW=%property{DEFW} DEFL=%property{DEFL} NARROW=%property{NARROW} SHORT=%property{SHORT} TC1=%property{TC1} TC2=%property{TC2} TNOM=%property{TNOM} DI=%property{DI} THICK=%property{THICK} )"/>
+        <model type="spice" syntax="%model{%property{model} C ( CJ=%property{CJ} CJSW=%property{CJSW} DEFW=%property{DEFW} DEFL=%property{DEFL} NARROW=%property{NARROW} SHORT=%property{SHORT} TC1=%property{TC1} TC2=%property{TC2} TNOM=%property{TNOM} DI=%property{DI} THICK=%property{THICK} )}"/>
     </models>
 </component>

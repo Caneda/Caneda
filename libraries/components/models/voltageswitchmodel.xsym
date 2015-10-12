@@ -69,6 +69,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} SW ( VT=%property{VT} VH=%property{VH} RON=%property{RON} ROFF=%property{ROFF} )"/>
+        <model type="spice" syntax="%model{%property{model} SW ( VT=%property{VT} VH=%property{VH} RON=%property{RON} ROFF=%property{ROFF} )}"/>
     </models>
 </component>

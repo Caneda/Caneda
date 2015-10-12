@@ -57,6 +57,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{Model} %property{Type} ( %property{Parameters} )"/>
+        <model type="spice" syntax="%model{%property{Model} %property{Type} ( %property{Parameters} )}"/>
     </models>
 </component>

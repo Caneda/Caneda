@@ -356,6 +356,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} D ( BV=%property{BV} IBV=%property{IBV} IKF=%property{IKF} IKR=%property{IKR} IS=%property{IS} JSW=%property{JSW} N=%property{N} RS=%property{RS} CJ0=%property{CJ0} CJP=%property{CJP} FC=%property{FC} FCS=%property{FCS} MJ=%property{MJ} MJSW=%property{MJSW} VJ=%property{VJ} PHP=%property{PHP} TT=%property{TT} EG=%property{EG} TM1=%property{TM1} TM2=%property{TM2} TNOM=%property{TNOM} TRS1=%property{TRS1} TRS2=%property{TRS2} TTT1=%property{TTT1} TTT2=%property{TTT2} XTI=%property{XTI} TLEV=%property{TLEV} TLEVC=%property{TLEVC} CTA=%property{CTA} CTP=%property{CTP} TCV=%property{TCV} KF=%property{KF} AF=%property{AF} )"/>
+        <model type="spice" syntax="%model{%property{model} D ( BV=%property{BV} IBV=%property{IBV} IKF=%property{IKF} IKR=%property{IKR} IS=%property{IS} JSW=%property{JSW} N=%property{N} RS=%property{RS} CJ0=%property{CJ0} CJP=%property{CJP} FC=%property{FC} FCS=%property{FCS} MJ=%property{MJ} MJSW=%property{MJSW} VJ=%property{VJ} PHP=%property{PHP} TT=%property{TT} EG=%property{EG} TM1=%property{TM1} TM2=%property{TM2} TNOM=%property{TNOM} TRS1=%property{TRS1} TRS2=%property{TRS2} TTT1=%property{TTT1} TTT2=%property{TTT2} XTI=%property{XTI} TLEV=%property{TLEV} TLEVC=%property{TLEVC} CTA=%property{CTA} CTP=%property{CTP} TCV=%property{TCV} KF=%property{KF} AF=%property{AF} )}"/>
     </models>
 </component>

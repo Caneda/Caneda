@@ -69,6 +69,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} CSW ( IT=%property{IT} IH=%property{IH} RON=%property{RON} ROFF=%property{ROFF} )"/>
+        <model type="spice" syntax="%model{%property{model} CSW ( IT=%property{IT} IH=%property{IH} RON=%property{RON} ROFF=%property{ROFF} )}"/>
     </models>
 </component>

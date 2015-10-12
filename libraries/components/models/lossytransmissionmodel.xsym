@@ -138,6 +138,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".model %property{model} LTRA ( R=%property{R} L=%property{L} G=%property{G} C=%property{C} LEN=%property{LEN} REL=%property{REL} ABS=%property{ABS} NOSTEPLIMIT=%property{NOSTEPLIMIT} NOCONTROL=%property{NOCONTROL} LININTERP=%property{LININTERP} MIXEDINTERP=%property{MIXEDINTERP} COMPACTREL=%property{COMPACTREL} COMPACTABS=%property{COMPACTABS} TRUNCNR=%property{TRUNCNR} TRUNCDONTCUT=%property{TRUNCDONTCUT} )"/>
+        <model type="spice" syntax="%model{%property{model} LTRA ( R=%property{R} L=%property{L} G=%property{G} C=%property{C} LEN=%property{LEN} REL=%property{REL} ABS=%property{ABS} NOSTEPLIMIT=%property{NOSTEPLIMIT} NOCONTROL=%property{NOCONTROL} LININTERP=%property{LININTERP} MIXEDINTERP=%property{MIXEDINTERP} COMPACTREL=%property{COMPACTREL} COMPACTABS=%property{COMPACTABS} TRUNCNR=%property{TRUNCNR} TRUNCDONTCUT=%property{TRUNCDONTCUT} )}"/>
     </models>
 </component>
