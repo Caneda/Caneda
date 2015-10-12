@@ -113,6 +113,8 @@ private slots:
 
 class ResultBox : public QGroupBox
 {
+Q_OBJECT
+
  public:
   ResultBox( QWidget *par);
   void addResultItem(const QString& name, const QString& val = QString());
