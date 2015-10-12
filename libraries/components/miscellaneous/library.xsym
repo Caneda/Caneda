@@ -53,6 +53,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".lib %filepath/%property{Filename} %property{Library}"/>
+        <model type="spice" syntax="%directive{.lib %filepath/%property{Filename} %property{Library}}"/>
     </models>
 </component>

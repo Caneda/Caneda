@@ -53,6 +53,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".param %property{Parameter}=%property{Value}"/>
+        <model type="spice" syntax="%directive{.param %property{Parameter}=%property{Value}}"/>
     </models>
 </component>

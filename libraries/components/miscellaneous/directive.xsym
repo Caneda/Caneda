@@ -47,6 +47,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax="%property{Directive}"/>
+        <model type="spice" syntax="%directive{%property{Directive}}"/>
     </models>
 </component>
