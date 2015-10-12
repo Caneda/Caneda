@@ -49,6 +49,15 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \brief Saves current scene data to an xml file.
+     *
+     * This method checks the file to be written is accessible and that the
+     * user has the correct permissions to write it, and then calls the
+     * saveText() method to generate the xml data to save.
+     *
+     * \sa saveText(), load()
+     */
     bool FormatXmlSchematic::save()
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -75,6 +84,15 @@ namespace Caneda
         return true;
     }
 
+    /*!
+     * \brief Loads current scene data to an xml file.
+     *
+     * This method checks the file to be read is accessible and that the
+     * user has the correct permissions to read it, and then calls the
+     * loadFromText() method to read the xml data into the scene.
+     *
+     * \sa loadFromText(), save()
+     */
     bool FormatXmlSchematic::load()
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -97,41 +115,63 @@ namespace Caneda
         return result;
     }
 
+    /*!
+     * \brief Saves an xml file description into a QString, obtaining the data
+     * from a scene and associated objects (componts, paintings, etc).
+     *
+     * This method is used to generate an xml file into a QString to be saved
+     * by the save() method. Not only scene sections are created (components,
+     * paintings, etc) but also file header information, for example document
+     * version and name. Each section is created, in its turn, by calling an
+     * appropiated method an thus improving source code readability by
+     * splitting the different actions.
+     *
+     * \return QString containing xml data to be saved.
+     *
+     * \sa save()
+     */
     QString FormatXmlSchematic::saveText()
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
         writer->setAutoFormatting(true);
 
-        //Fist we start the document and write current version
+        // Fist we start the document and write current version
         writer->writeStartDocument();
         writer->writeDTD(QString("<!DOCTYPE caneda>"));
         writer->writeStartElement("caneda");
         writer->writeAttribute("version", Caneda::version());
 
-        //Now we copy all the elements and properties in the schematic
-        saveSchematics(writer);
+        // Now we copy all the elements and properties in the schematic
+        saveComponents(writer);
+        savePorts(writer);
+        saveWires(writer);
+        savePaintings(writer);
+        saveProperties(writer);
 
-        //Finally we finish the document
+        // Finally we finish the document
         writer->writeEndDocument(); //</caneda>
 
         delete writer;
         return retVal;
     }
 
-    void FormatXmlSchematic::saveSchematics(Caneda::XmlWriter *writer)
-    {
-        saveComponents(writer);
-        savePorts(writer);
-        saveWires(writer);
-        savePaintings(writer);
-        saveProperties(writer);
-    }
-
+    /*!
+     * \brief Saves the scene components to an XmlWriter.
+     *
+     * This method saves all scene components to an XmlWriter. To do so, it
+     * takes each Component from the scene, and saves the data using the
+     * Component::saveData() method.
+     *
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
+     * \sa Component::saveData()
+     */
     void FormatXmlSchematic::saveComponents(Caneda::XmlWriter *writer)
     {
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Component*> components = filterItems<Component>(items);
+
         if(!components.isEmpty()) {
             writer->writeStartElement("components");
             foreach(Component *c, components) {
@@ -141,10 +181,22 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Saves the scene ports to an XmlWriter.
+     *
+     * This method saves all scene ports to an XmlWriter. To do so, it takes
+     * each PortSymbol from the scene, and saves the data using the
+     * PortSymbol::saveData() method.
+     *
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
+     * \sa PortSymbol::saveData()
+     */
     void FormatXmlSchematic::savePorts(Caneda::XmlWriter *writer)
     {
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
+
         if(!portSymbols.isEmpty()) {
             writer->writeStartElement("ports");
             foreach(PortSymbol *p, portSymbols) {
@@ -154,10 +206,22 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Saves the scene wires to an XmlWriter.
+     *
+     * This method saves all scene wires to an XmlWriter. To do so, it takes
+     * each Wire from the scene, and saves the data using the Wire::saveData()
+     * method.
+     *
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
+     * \sa Wire::saveData()
+     */
     void FormatXmlSchematic::saveWires(Caneda::XmlWriter *writer)
     {
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Wire*> wires = filterItems<Wire>(items);
+
         if(!wires.isEmpty()) {
             writer->writeStartElement("wires");
             foreach(Wire *w, wires) {
@@ -167,10 +231,22 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Saves the scene paintings to an XmlWriter.
+     *
+     * This method saves all scene paintings to an XmlWriter. To do so, it
+     * takes each Painting from the scene, and saves the data using the
+     * CGraphicsItem::saveData() method.
+     *
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
+     * \sa CGraphicsItem::saveData()
+     */
     void FormatXmlSchematic::savePaintings(Caneda::XmlWriter *writer)
     {
         QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
+
         if(!paintings.isEmpty()) {
             writer->writeStartElement("paintings");
             foreach(Painting *p, paintings) {
@@ -181,33 +257,36 @@ namespace Caneda
     }
 
     /*!
-     * \brief Save scene properties to an XmlWriter.
+     * \brief Saves the scene properties to an XmlWriter.
      *
      * This method saves all scene related propeties to an XmlWriter. To do so,
      * it takes each property from the PropertyGroup of the scene, and saves
      * the data using the Property::saveProperty() method.
      *
-     * \param writer XmlWriter to save properties into.
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
      * \sa Property::saveProperty()
      */
     void FormatXmlSchematic::saveProperties(Caneda::XmlWriter *writer)
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        PropertyGroup *properties = cGraphicsScene()->properties();
 
-        writer->writeStartElement("properties");
-
-        // Save the properties position in the scene
-        PropertyGroup *properties = scene->properties();
-        writer->writePointAttribute(properties->pos(), "pos");
-
-        // Save every individual property of the scene
-        foreach(Property property, properties->propertyMap()) {
-            property.saveProperty(writer);
+        if(!properties->propertyMap().isEmpty()) {
+            writer->writeStartElement("properties");
+            writer->writePointAttribute(properties->pos(), "pos");
+            foreach(Property property, properties->propertyMap()) {
+                property.saveProperty(writer);
+            }
+            writer->writeEndElement(); //</properties>
         }
-
-        writer->writeEndElement(); //</properties>
     }
 
+    /*!
+     * \brief Reads an xml file and constructs a scene and associated
+     * objects (componts, paintings, etc) from the data read.
+     *
+     * \param text String containing xml data to be read.
+     */
     bool FormatXmlSchematic::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
@@ -224,7 +303,7 @@ namespace Caneda
                             Q_ASSERT(reader->name() == "caneda");
                             break;
                         }
-                        loadSchematics(reader);
+                        loadSchematic(reader);
                     }
                 }
                 else {
@@ -243,7 +322,13 @@ namespace Caneda
         return true;
     }
 
-    void FormatXmlSchematic::loadSchematics(Caneda::XmlReader* reader)
+    /*!
+     * \brief Reads the schematic, by calling an appropiate method
+     * depending on the xml section to be read.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
+    void FormatXmlSchematic::loadSchematic(Caneda::XmlReader* reader)
     {
         if(reader->isStartElement()) {
             if(reader->name() == "components") {
@@ -267,6 +352,11 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Reads the components section of an xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
     void FormatXmlSchematic::loadComponents(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -296,6 +386,11 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Reads the ports section of an xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
     void FormatXmlSchematic::loadPorts(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -325,6 +420,11 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Reads the wires section of an xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
     void FormatXmlSchematic::loadWires(Caneda::XmlReader* reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -354,6 +454,11 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Reads the paintings section of an xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
     void FormatXmlSchematic::loadPaintings(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -382,6 +487,11 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Reads the properties section of an xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
     void FormatXmlSchematic::loadProperties(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -460,6 +570,15 @@ namespace Caneda
         m_symbolDocument = 0;
     }
 
+    /*!
+     * \brief Saves current scene data to an xml file.
+     *
+     * This method checks the file to be written is accessible and that the
+     * user has the correct permissions to write it, and then calls the
+     * saveText() method to generate the xml data to save.
+     *
+     * \sa saveText(), load()
+     */
     bool FormatXmlSymbol::save()
     {
         if(!cGraphicsScene()) {
@@ -485,7 +604,15 @@ namespace Caneda
         return true;
     }
 
-    //! \brief Parses the component data from file \a path.
+    /*!
+     * \brief Loads current scene data to an xml file.
+     *
+     * This method checks the file to be read is accessible and that the
+     * user has the correct permissions to read it, and then calls the
+     * loadFromText() method to read the xml data into the scene.
+     *
+     * \sa loadFromText(), save()
+     */
     bool FormatXmlSymbol::load()
     {
         QFile file(fileName());
@@ -522,6 +649,21 @@ namespace Caneda
         return m_fileName;
     }
 
+    /*!
+     * \brief Saves an xml file description into a QString, obtaining the data
+     * from a scene and associated objects (componts, paintings, etc).
+     *
+     * This method is used to generate an xml file into a QString to be saved
+     * by the save() method. Not only scene sections are created (components,
+     * paintings, etc) but also file header information, for example document
+     * version and name. Each section is created, in its turn, by calling an
+     * appropiated method an thus improving source code readability by
+     * splitting the different actions.
+     *
+     * \return QString containing xml data to be saved.
+     *
+     * \sa save()
+     */
     QString FormatXmlSymbol::saveText()
     {
         QString retVal;
@@ -568,50 +710,79 @@ namespace Caneda
         return retVal;
     }
 
+    /*!
+     * \brief Saves the scene paintings to an XmlWriter.
+     *
+     * This method saves all scene paintings to an XmlWriter. To do so, it
+     * takes each Painting from the scene, and saves the data using the
+     * CGraphicsItem::saveData() method.
+     *
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
+     * \sa CGraphicsItem::saveData()
+     */
     void FormatXmlSymbol::saveSymbol(XmlWriter *writer)
     {
-        writer->writeStartElement("symbol");
-
-        CGraphicsScene *scene = cGraphicsScene();
-        QList<QGraphicsItem*> items = scene->items();
+        QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
+
         if(!paintings.isEmpty()) {
+            writer->writeStartElement("symbol");
             foreach(Painting *p, paintings) {
                 p->saveData(writer);
             }
+            writer->writeEndElement(); //</symbol>
         }
-
-        writer->writeEndElement(); //</symbol>
     }
 
+    /*!
+     * \brief Saves the scene ports to an XmlWriter.
+     *
+     * This method saves all scene ports to an XmlWriter. To do so, it takes
+     * each PortSymbol from the scene, and saves the data using the
+     * PortSymbol::saveData() method.
+     *
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
+     * \sa PortSymbol::saveData()
+     */
     void FormatXmlSymbol::savePorts(XmlWriter *writer)
     {
-        writer->writeStartElement("ports");
-
-        CGraphicsScene *scene = cGraphicsScene();
-        QList<QGraphicsItem*> items = scene->items();
+        QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
+
         if(!portSymbols.isEmpty()) {
+            writer->writeStartElement("ports");
             foreach(PortSymbol *p, portSymbols) {
                 p->saveData(writer);
             }
+            writer->writeEndElement(); //</ports>
         }
-
-        writer->writeEndElement(); //</ports>
     }
 
+    /*!
+     * \brief Saves the scene properties to an XmlWriter.
+     *
+     * This method saves all scene related propeties to an XmlWriter. To do so,
+     * it takes each property from the PropertyGroup of the scene, and saves
+     * the data using the Property::saveProperty() method.
+     *
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
+     * \sa Property::saveProperty()
+     */
     void FormatXmlSymbol::saveProperties(XmlWriter *writer)
     {
-        writer->writeStartElement("properties");
+        PropertyGroup *properties = cGraphicsScene()->properties();
 
-        CGraphicsScene *scene = cGraphicsScene();
-        PropertyGroup *properties = scene->properties();
-        writer->writePointAttribute(properties->pos(), "pos");
-        foreach(Property property, properties->propertyMap()) {
-            property.saveProperty(writer);
+        if(!properties->propertyMap().isEmpty()) {
+            writer->writeStartElement("properties");
+            writer->writePointAttribute(properties->pos(), "pos");
+            foreach(Property property, properties->propertyMap()) {
+                property.saveProperty(writer);
+            }
+            writer->writeEndElement(); //</properties>
         }
-
-        writer->writeEndElement(); //</properties>
     }
 
     /*!
@@ -682,9 +853,10 @@ namespace Caneda
     }
 
     /*!
-     * \brief Reads symbol data from xml file text.
+     * \brief Reads an xml file and constructs a scene and associated
+     * objects (componts, paintings, etc) from the data read.
      *
-     * \param text String containing xml data from component/symbol file.
+     * \param text String containing xml data to be read.
      */
     bool FormatXmlSymbol::loadFromText(const QString &text)
     {
@@ -756,22 +928,22 @@ namespace Caneda
 
                     // Read symbol
                     else if(reader->name() == "symbol") {
-                        readSymbol(reader);
+                        loadSymbol(reader);
                     }
 
                     // Read ports
                     else if(reader->name() == "ports") {
-                        readPorts(reader);
+                        loadPorts(reader);
                     }
 
                     // Read properties
                     else if(reader->name() == "properties") {
-                        readProperties(reader);
+                        loadProperties(reader);
                     }
 
                     // Read models
                     else if(reader->name() == "models") {
-                        readModels(reader);
+                        loadModels(reader);
                     }
                 }
 
@@ -790,11 +962,11 @@ namespace Caneda
     }
 
     /*!
-     * \brief Read symbol section of component description xml file
+     * \brief Reads the symbol section of an xml file
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSymbol::readSymbol(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::loadSymbol(Caneda::XmlReader *reader)
     {
         QPainterPath data;
 
@@ -832,11 +1004,11 @@ namespace Caneda
     }
 
     /*!
-     * \brief Reads the ports data from component description xml file.
+     * \brief Reads the ports section of an xml file.
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSymbol::readPorts(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::loadPorts(Caneda::XmlReader *reader)
     {
         while(!reader->atEnd()) {
             reader->readNext();
@@ -867,11 +1039,11 @@ namespace Caneda
     }
 
     /*!
-     * \brief Reads component properties data from component description xml file.
+     * \brief Reads the properties section of an xml file.
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSymbol::readProperties(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::loadProperties(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
 
@@ -910,11 +1082,11 @@ namespace Caneda
     }
 
     /*!
-     * \brief Reads the models data from component description xml file.
+     * \brief Reads the models section of an xml file.
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSymbol::readModels(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::loadModels(Caneda::XmlReader *reader)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "models");
 
@@ -959,6 +1131,15 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \brief Saves current scene data to an xml file.
+     *
+     * This method checks the file to be written is accessible and that the
+     * user has the correct permissions to write it, and then calls the
+     * saveText() method to generate the xml data to save.
+     *
+     * \sa saveText(), load()
+     */
     bool FormatXmlLayout::save()
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -985,6 +1166,15 @@ namespace Caneda
         return true;
     }
 
+    /*!
+     * \brief Loads current scene data to an xml file.
+     *
+     * This method checks the file to be read is accessible and that the
+     * user has the correct permissions to read it, and then calls the
+     * loadFromText() method to read the xml data into the scene.
+     *
+     * \sa loadFromText(), save()
+     */
     bool FormatXmlLayout::load()
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -1007,34 +1197,60 @@ namespace Caneda
         return result;
     }
 
+    /*!
+     * \brief Saves an xml file description into a QString, obtaining the data
+     * from a scene and associated objects (componts, paintings, etc).
+     *
+     * This method is used to generate an xml file into a QString to be saved
+     * by the save() method. Not only scene sections are created (components,
+     * paintings, etc) but also file header information, for example document
+     * version and name. Each section is created, in its turn, by calling an
+     * appropiated method an thus improving source code readability by
+     * splitting the different actions.
+     *
+     * \return QString containing xml data to be saved.
+     *
+     * \sa save()
+     */
     QString FormatXmlLayout::saveText()
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
         writer->setAutoFormatting(true);
 
-        //Fist we start the document and write current version
+        // Fist we start the document and write current version
         writer->writeStartDocument();
         writer->writeDTD(QString("<!DOCTYPE caneda>"));
         writer->writeStartElement("caneda");
         writer->writeAttribute("version", Caneda::version());
 
-        //Now we copy all the elements and properties in the schematic
+        // Now we copy all the elements and properties in the schematic
         savePaintings(writer);
         saveProperties(writer);
 
-        //Finally we finish the document
+        // Finally we finish the document
         writer->writeEndDocument(); //</caneda>
 
         delete writer;
         return retVal;
     }
 
+    /*!
+     * \brief Saves the scene paintings to an XmlWriter.
+     *
+     * This method saves all scene paintings to an XmlWriter. To do so, it
+     * takes each Painting from the scene, and saves the data using the
+     * CGraphicsItem::saveData() method.
+     *
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
+     * \sa CGraphicsItem::saveData()
+     */
     void FormatXmlLayout::savePaintings(Caneda::XmlWriter *writer)
     {
-        CGraphicsScene *scene = cGraphicsScene();
-        QList<QGraphicsItem*> items = scene->items();
+        QList<QGraphicsItem*> items = cGraphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
+
         if(!paintings.isEmpty()) {
             writer->writeStartElement("paintings");
             foreach(Painting *p, paintings) {
@@ -1045,33 +1261,36 @@ namespace Caneda
     }
 
     /*!
-     * \brief Save scene properties to an XmlWriter.
+     * \brief Saves the scene properties to an XmlWriter.
      *
      * This method saves all scene related propeties to an XmlWriter. To do so,
      * it takes each property from the PropertyGroup of the scene, and saves
      * the data using the Property::saveProperty() method.
      *
-     * \param writer XmlWriter to save properties into.
+     * \param writer XmlWriter responsible for writing the xml data.
+     *
      * \sa Property::saveProperty()
      */
     void FormatXmlLayout::saveProperties(Caneda::XmlWriter *writer)
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        PropertyGroup *properties = cGraphicsScene()->properties();
 
-        writer->writeStartElement("properties");
-
-        // Save the properties position in the scene
-        PropertyGroup *properties = scene->properties();
-        writer->writePointAttribute(properties->pos(), "pos");
-
-        // Read every individual property and add it to the scene
-        foreach(Property property, properties->propertyMap()) {
-            property.saveProperty(writer);
+        if(!properties->propertyMap().isEmpty()) {
+            writer->writeStartElement("properties");
+            writer->writePointAttribute(properties->pos(), "pos");
+            foreach(Property property, properties->propertyMap()) {
+                property.saveProperty(writer);
+            }
+            writer->writeEndElement(); //</properties>
         }
-
-        writer->writeEndElement(); //</properties>
     }
 
+    /*!
+     * \brief Reads an xml file and constructs a scene and associated
+     * objects (componts, paintings, etc) from the data read.
+     *
+     * \param text String containing xml data to be read.
+     */
     bool FormatXmlLayout::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
@@ -1119,6 +1338,11 @@ namespace Caneda
         return true;
     }
 
+    /*!
+     * \brief Reads the paintings section of an xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
     void FormatXmlLayout::loadPaintings(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();
@@ -1148,6 +1372,11 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Reads the properties section of an xml file.
+     *
+     * \param reader XmlReader responsible for reading xml data.
+     */
     void FormatXmlLayout::loadProperties(Caneda::XmlReader *reader)
     {
         CGraphicsScene *scene = cGraphicsScene();

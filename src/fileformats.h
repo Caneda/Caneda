@@ -57,11 +57,11 @@ namespace Caneda
 
         SchematicDocument* schematicDocument() const;
         CGraphicsScene* cGraphicsScene() const;
+
         QString fileName() const;
 
     private:
         QString saveText();
-        void saveSchematics(Caneda::XmlWriter *writer);
         void saveComponents(Caneda::XmlWriter *writer);
         void savePorts(Caneda::XmlWriter *writer);
         void saveWires(Caneda::XmlWriter *writer);
@@ -69,7 +69,7 @@ namespace Caneda
         void saveProperties(Caneda::XmlWriter *writer);
 
         bool loadFromText(const QString& text);
-        void loadSchematics(Caneda::XmlReader *reader);
+        void loadSchematic(Caneda::XmlReader *reader);
         void loadComponents(Caneda::XmlReader *reader);
         void loadPorts(Caneda::XmlReader *reader);
         void loadWires(Caneda::XmlReader *reader);
@@ -113,10 +113,10 @@ namespace Caneda
         void saveModels(Caneda::XmlWriter *writer);
 
         bool loadFromText(const QString& text);
-        void readSymbol(Caneda::XmlReader *reader);
-        void readPorts(Caneda::XmlReader *reader);
-        void readProperties(Caneda::XmlReader *reader);
-        void readModels(Caneda::XmlReader *reader);
+        void loadSymbol(Caneda::XmlReader *reader);
+        void loadPorts(Caneda::XmlReader *reader);
+        void loadProperties(Caneda::XmlReader *reader);
+        void loadModels(Caneda::XmlReader *reader);
 
         SymbolDocument *m_symbolDocument;
         ComponentData *m_component;
@@ -144,6 +144,7 @@ namespace Caneda
 
         LayoutDocument* layoutDocument() const;
         CGraphicsScene* cGraphicsScene() const;
+
         QString fileName() const;
 
     private:
