@@ -54,6 +54,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".tf %property{outvar} %property{source}"/>
+        <model type="spice" syntax="%directive{.tf %property{outvar} %property{source}}"/>
     </models>
 </component>

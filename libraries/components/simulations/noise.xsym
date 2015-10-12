@@ -95,6 +95,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".noise v( %property{output} ,  %property{ref} ) %property{source} %property{type} %property{n} %property{fstart} %property{fstop} %property{nps}"/>
+        <model type="spice" syntax="%directive{.noise v( %property{output} ,  %property{ref} ) %property{source} %property{type} %property{n} %property{fstart} %property{fstop} %property{nps}}"/>
     </models>
 </component>

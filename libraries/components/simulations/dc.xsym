@@ -87,7 +87,7 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".dc %property{source} %property{start} %property{stop} %property{increment}
-                                    %property{source2} %property{start2} %property{stop2} %property{increment2}"/>
+        <model type="spice" syntax="%directive{.dc %property{source} %property{start} %property{stop} %property{increment}
+                                    %property{source2} %property{start2} %property{stop2} %property{increment2}}"/>
     </models>
 </component>

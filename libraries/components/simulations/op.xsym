@@ -43,6 +43,6 @@
     <properties/>
 
     <models>
-        <model type="spice" syntax=".op"/>
+        <model type="spice" syntax="%directive{.op}"/>
     </models>
 </component>

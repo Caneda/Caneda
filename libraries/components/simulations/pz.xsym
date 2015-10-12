@@ -83,6 +83,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".pz %property{node1} %property{node2} %property{node3} %property{node4} %property{tf} %property{type}"/>
+        <model type="spice" syntax="%directive{.pz %property{node1} %property{node2} %property{node3} %property{node4} %property{tf} %property{type}}"/>
     </models>
 </component>

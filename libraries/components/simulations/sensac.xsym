@@ -72,6 +72,6 @@
     </properties>
 
     <models>
-        <model type="spice" syntax=".sens %property{outvar} AC %property{type} %property{n} %property{fstart} %property{fstop}"/>
+        <model type="spice" syntax="%directive{.sens %property{outvar} AC %property{type} %property{n} %property{fstart} %property{fstop}}"/>
     </models>
 </component>
