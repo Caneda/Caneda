@@ -93,6 +93,15 @@ namespace Caneda
  * \li After an escape sequence one or more arguments may follow, enclosed by
  * brackets "{}". The interpretation and processing of the arguments depends
  * upon the escape sequence used.
+ * \li There are two kinds of escape sequences: cascadable and non-cascadable.
+ * Cascadable escape sequences are those that can be used as arguments in
+ * non-cascadable escape sequences. Non-cascadable escape sequences are those
+ * that cannot be used as arguments in any escape sequence but accept cascadable
+ * escape sequences as arguments (or any other string for the matter). Examples
+ * of cascadable escape sequences are: \%label, \%port, \%property, \%librarypath,
+ * \%filepath. Examples of non-cascadable escape sequences are: \%model, \%subcircuit,
+ * \%directive, \%if. A special case is the \%generateNetlist escape sequence, that
+ * will be removed by the parser, and no text will be output.
  *
  * Currently, the escape sequences implemented are:
  * \li <b>\%label</b> : This escape sequence indicates that the label of the component
@@ -129,14 +138,42 @@ namespace Caneda
  * only once in the SPICE netlist output file. This is similar to the use of
  * \%model{args} and \%property{model} escape sequences, but the parser does not
  * append any text to the output and the string is copied "as is". This escape
- * sequence is normally used for the remaining spice directives that do not classify
+ * sequence is normally used for the remaining SPICE directives that do not classify
  * into one of the previous escape sequences.
+ * \li <b>\%if{condition,true_value}</b> : This escape sequence is similar to the \a if
+ * control statement available in programming languages, although its use is more
+ * limited and doesn't perform logic or math operations on the arguments. The idea
+ * behind this escape sequence is to allow the generation of strings upon the existance
+ * of properties or other variables. For example, in SPICE models some parameters are
+ * optional and, in case of inclusion, the syntax is formed by the name of the parameter
+ * followed by its value in the form name=value. However, in the case the value is
+ * empty, no string should be added (removing the "name=" part). In this case,
+ * the if control statement allow us to check for the existance of the parameter value,
+ * and the escape sequence should be constructed as follows (note the cascading of
+ * the \%if and \%property escape sequences): \%if{\%property{name}, name=\%property{name}}
+ * The condition argument is not a bool result as in the traditional sense of control
+ * statements, but rather an argument which presence is checked upon. If the condition
+ * argument result is not an empty string, the second argument (true_value) is output
+ * as a string to the parser. More than one condition may be used at the same time
+ * for example \%if{\%property{name}\%port{1}, "*Property or port found..."}
+ * resulting in a form of \a "or" operator.
+ * \li <b>\%generateNetlist</b> : This escape sequence indicates to the parser that it
+ * must add this component to a list of components whose netlists must, in their turn,
+ * be generated from a schematic description. When the parser finishes generating the
+ * current netlist, it will take one component at the time from the list and generate
+ * its corresponding netlist. This escape sequence is tipically used when creating
+ * user defined libraries or components, or some form of hierarchy must be used. In
+ * that case, the user creates a schematic and a symbol with the same same, and the
+ * two are associated by a \%generateNetlist escape sequence autommatically inserted
+ * when the symbol is saved. When the component is used in another schematic, the
+ * parser will detect the escape sequence and will generate a separate netlist of the
+ * component to be included in the netlist generation.
  * \li <b>\%librarypath</b> : This escape sequence indicates that the library path
  * directory of the component must be used.
  * \li <b>\%filepath</b> : This escape sequence indicates that the file path
  * directory of the component must be used. This is different from the library path
  * in the sense that the schematic typically resides in a different location from
- * the component library. For example, in an include spice directive the file with
+ * the component library. For example, in an include SPICE directive the file with
  * the definitions to be included may reside in the library folder (\%librarypath)
  * or in the schematic folder (\%filepath) to allow the user for modifications.
  * \li <b>\%n</b> : This escape sequence indicates that a new line must be used.
