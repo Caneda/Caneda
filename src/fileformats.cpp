@@ -60,8 +60,7 @@ namespace Caneda
      */
     bool FormatXmlSchematic::save()
     {
-        CGraphicsScene *scene = cGraphicsScene();
-        if(!scene) {
+        if(!cGraphicsScene()) {
             return false;
         }
 
@@ -77,6 +76,7 @@ namespace Caneda
                     QObject::tr("Cannot save document!"));
             return false;
         }
+
         QTextStream stream(&file);
         stream << text;
         file.close();
@@ -108,10 +108,9 @@ namespace Caneda
         }
 
         QTextStream stream(&file);
-
         bool result = loadFromText(stream.readAll());
-
         file.close();
+
         return result;
     }
 
@@ -290,6 +289,7 @@ namespace Caneda
     bool FormatXmlSchematic::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -303,7 +303,27 @@ namespace Caneda
                             Q_ASSERT(reader->name() == "caneda");
                             break;
                         }
-                        loadSchematic(reader);
+
+                        if(reader->isStartElement()) {
+                            if(reader->name() == "components") {
+                                loadComponents(reader);
+                            }
+                            else if(reader->name() == "ports") {
+                                loadPorts(reader);
+                            }
+                            else if(reader->name() == "wires") {
+                                loadWires(reader);
+                            }
+                            else if(reader->name() == "paintings") {
+                                loadPaintings(reader);
+                            }
+                            else if(reader->name() == "properties") {
+                                loadProperties(reader);
+                            }
+                            else {
+                                reader->readUnknownElement();
+                            }
+                        }
                     }
                 }
                 else {
@@ -320,36 +340,6 @@ namespace Caneda
 
         delete reader;
         return true;
-    }
-
-    /*!
-     * \brief Reads the schematic, by calling an appropiate method
-     * depending on the xml section to be read.
-     *
-     * \param reader XmlReader responsible for reading xml data.
-     */
-    void FormatXmlSchematic::loadSchematic(Caneda::XmlReader* reader)
-    {
-        if(reader->isStartElement()) {
-            if(reader->name() == "components") {
-                loadComponents(reader);
-            }
-            else if(reader->name() == "ports") {
-                loadPorts(reader);
-            }
-            else if(reader->name() == "wires") {
-                loadWires(reader);
-            }
-            else if(reader->name() == "paintings") {
-                loadPaintings(reader);
-            }
-            else if(reader->name() == "properties") {
-                loadProperties(reader);
-            }
-            else {
-                reader->readUnknownElement();
-            }
-        }
     }
 
     /*!
@@ -586,6 +576,7 @@ namespace Caneda
         }
 
         QString text = saveText();
+
         if(text.isEmpty()) {
             qDebug() << "Looks buggy! Null data to save! Was this expected?";
         }
@@ -1142,8 +1133,7 @@ namespace Caneda
      */
     bool FormatXmlLayout::save()
     {
-        CGraphicsScene *scene = cGraphicsScene();
-        if(!scene) {
+        if(!cGraphicsScene()) {
             return false;
         }
 
@@ -1159,6 +1149,7 @@ namespace Caneda
                     QObject::tr("Cannot save document!"));
             return false;
         }
+
         QTextStream stream(&file);
         stream << text;
         file.close();
@@ -1190,10 +1181,9 @@ namespace Caneda
         }
 
         QTextStream stream(&file);
-
         bool result = loadFromText(stream.readAll());
-
         file.close();
+
         return result;
     }
 
@@ -1294,6 +1284,7 @@ namespace Caneda
     bool FormatXmlLayout::loadFromText(const QString& text)
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -1319,7 +1310,6 @@ namespace Caneda
                                 reader->readUnknownElement();
                             }
                         }
-
                     }
                 }
                 else {
