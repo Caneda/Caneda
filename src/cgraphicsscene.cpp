@@ -805,8 +805,9 @@ namespace Caneda
                 _menu->addSeparator();
 
                 _menu->addAction(am->actionForName("symEdit"));
-                _menu->addAction(am->actionForName("intoH"));
-                _menu->addAction(am->actionForName("popH"));
+                //! \todo Reenable these options once implemented
+                //                _menu->addAction(am->actionForName("intoH"));
+                //                _menu->addAction(am->actionForName("popH"));
                 _menu->addAction(am->actionForName("propertiesDialog"));
 
                 _menu->exec(event->screenPos());

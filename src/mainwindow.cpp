@@ -140,7 +140,8 @@ namespace Caneda
         m_projectDockWidget->setObjectName("projectsSidebar");
         m_projectDockWidget->setVisible(false);
         addDockWidget(Qt::LeftDockWidgetArea, m_projectDockWidget);
-        docksMenu->addAction(m_projectDockWidget->toggleViewAction());
+        //! \todo Uncomment once project is reimplemented.
+        //        docksMenu->addAction(m_projectDockWidget->toggleViewAction());
     }
 
     void MainWindow::createFolderView()
@@ -689,7 +690,8 @@ namespace Caneda
 
         editMenu->addAction(action("select"));
         editMenu->addAction(action("selectAll"));
-        editMenu->addAction(action("editFind"));
+        //! \todo Reenable this option once implemented
+        //        editMenu->addAction(action("editFind"));
         editMenu->addAction(action("editRotate"));
         editMenu->addAction(action("editMirror"));
         editMenu->addAction(action("editMirrorY"));
@@ -700,10 +702,11 @@ namespace Caneda
         editMenu->addAction(action("symEdit"));
         editMenu->addAction(action("layEdit"));
 
-        editMenu->addSeparator();
+        //! \todo Reenable these options once implemented
+        //        editMenu->addSeparator();
 
-        editMenu->addAction(action("intoH"));
-        editMenu->addAction(action("popH"));
+        //        editMenu->addAction(action("intoH"));
+        //        editMenu->addAction(action("popH"));
 
         viewMenu = menuBar()->addMenu(tr("&View"));
 
@@ -747,39 +750,41 @@ namespace Caneda
         alignMenu->addAction(action("distrHor"));
         alignMenu->addAction(action("distrVert"));
 
-        projMenu = menuBar()->addMenu(tr("&Project"));
+        //! \todo Reenable these menus once project and tools reimplemented.
+        //        projMenu = menuBar()->addMenu(tr("&Project"));
 
-        projMenu->addAction(action("projNew"));
-        projMenu->addAction(action("projOpen"));
-        projMenu->addAction(action("addToProj"));
-        projMenu->addAction(action("projDel"));
-        projMenu->addAction(action("projClose"));
+        //        projMenu->addAction(action("projNew"));
+        //        projMenu->addAction(action("projOpen"));
+        //        projMenu->addAction(action("addToProj"));
+        //        projMenu->addAction(action("projDel"));
+        //        projMenu->addAction(action("projClose"));
 
-        projMenu->addSeparator();
+        //        projMenu->addSeparator();
 
-        projMenu->addAction(action("backupAndHistory"));
+        //        projMenu->addAction(action("backupAndHistory"));
 
-        toolMenu = menuBar()->addMenu(tr("&Tools"));
+        //        toolMenu = menuBar()->addMenu(tr("&Tools"));
 
-        toolMenu->addAction(action("callFilter"));
-        toolMenu->addAction(action("callLine"));
-        toolMenu->addAction(action("callMatch"));
-        toolMenu->addAction(action("callAtt"));
+        //        toolMenu->addAction(action("callFilter"));
+        //        toolMenu->addAction(action("callLine"));
+        //        toolMenu->addAction(action("callMatch"));
+        //        toolMenu->addAction(action("callAtt"));
 
-        toolMenu->addSeparator();
+        //        toolMenu->addSeparator();
 
-        toolMenu->addAction(action("importData"));
+        //        toolMenu->addAction(action("importData"));
 
-        toolMenu->addSeparator();
+        //        toolMenu->addSeparator();
 
         simMenu = menuBar()->addMenu(tr("&Simulation"));
 
         simMenu->addAction(action("simulate"));
         simMenu->addAction(action("openSym"));
 
-        simMenu->addSeparator();
+        //! \todo Reenable this option once implemented
+        //        simMenu->addSeparator();
 
-        simMenu->addAction(action("data2csv"));
+        //        simMenu->addAction(action("data2csv"));
 
         simMenu->addSeparator();
 
