@@ -61,7 +61,7 @@ namespace Caneda
     /*!
      * \brief Saves a new backup.
      *
-     * First we initialize git repository in case it was not created.
+     * First we initialize a git repository in case it was not created.
      * Then we add all files modified, and finally we commit the
      * result, with an optional message from the user.
      */
