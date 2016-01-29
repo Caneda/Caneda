@@ -434,33 +434,32 @@ namespace Caneda
     SimulationConfigurationPage::SimulationConfigurationPage(QWidget *parent) :
         SettingsPage(parent)
     {
-        //First we set the simulator group of options ***************************************
-        QGroupBox *groupSimulator = new QGroupBox(tr("Simulator Engine"), this);
-        QRadioButton *qucsatorMode = new QRadioButton(tr("Use qucs engine"), groupSimulator);
-        QRadioButton *ngspiceMode = new QRadioButton(tr("Use ngspice engine"), groupSimulator);
+        Settings *settings = Settings::instance();
 
-        qucsatorMode->setChecked(true);
+        //First we set the simulation group of options ***************************************
+        QGroupBox *groupSimulator = new QGroupBox(tr("Simulation Engine"), this);
 
-        QVBoxLayout *simulatorLayout = new QVBoxLayout();
-        simulatorLayout->addWidget(qucsatorMode);
-        simulatorLayout->addWidget(ngspiceMode);
-        groupSimulator->setLayout(simulatorLayout);
+        lineSimulationCommand = new QLineEdit;
+        lineSimulationCommand->setText(settings->currentValue("sim/simulationCommand").toString());
 
+        ngspiceMode = new QRadioButton(tr("Ngspice"), groupSimulator);
+        customMode = new QRadioButton(tr("Custom"), groupSimulator);
 
-        //Now we set the simulation tab group of options ************************************
-        QGroupBox *groupSimTabMode = new QGroupBox(tr("Simulation Display Mode"), this);
-        QRadioButton *specialTabMode = new QRadioButton(tr("Use a special tab"),
-                groupSimTabMode);
-        QRadioButton *sameTabMode = new QRadioButton(tr("Use same tab as schematic"),
-                groupSimTabMode);
+        if(settings->currentValue("sim/simulationEngine").toString() == "ngspice") {
+            ngspiceMode->setChecked(true);
+            lineSimulationCommand->setEnabled(false);
+        }
+        else if(settings->currentValue("sim/simulationEngine").toString() == "custom") {
+            customMode->setChecked(true);
+        }
 
-        specialTabMode->setChecked(true);
+        QFormLayout *simulatorLayout = new QFormLayout(groupSimulator);
+        simulatorLayout->addRow(tr("Engine:"), ngspiceMode);
+        simulatorLayout->addRow("", customMode);
+        simulatorLayout->addRow(tr("Command:"), lineSimulationCommand);
 
-        QVBoxLayout *simTabModeLayout = new QVBoxLayout();
-        simTabModeLayout->addWidget(specialTabMode);
-        simTabModeLayout->addWidget(sameTabMode);
-        groupSimTabMode->setLayout(simTabModeLayout);
-
+        connect(ngspiceMode, SIGNAL(clicked()), SLOT(slotSimulationEngineSelected()));
+        connect(customMode, SIGNAL(clicked()), SLOT(slotSimulationEngineSelected()));
 
         //Finally we set the general layout of all groups ***********************************
         QVBoxLayout *vlayout1 = new QVBoxLayout();
@@ -472,17 +471,54 @@ namespace Caneda
         vlayout1->addWidget(horiz_line_);
 
         vlayout1->addWidget(groupSimulator);
-        vlayout1->addWidget(groupSimTabMode);
 
         vlayout1->addStretch();
 
         setLayout(vlayout1);
     }
 
+    //! \brief Updates the lineSimulationCommand enabled status.
+    void SimulationConfigurationPage::slotSimulationEngineSelected()
+    {
+        if(customMode->isChecked()) {
+            lineSimulationCommand->setEnabled(true);
+        }
+        else {
+            lineSimulationCommand->setEnabled(false);
+        }
+    }
+
     //! \brief Applies the configuration of this page.
     void SimulationConfigurationPage::applyConf()
     {
-        //! \todo Implement this
+        Settings *settings = Settings::instance();
+
+        QString newSimulationEngine;
+        QString newSimulationCommand;
+        if(ngspiceMode->isChecked()) {
+            // If using ngspice simulator, the command to simulate is:
+            // ngspice -b -r output.raw input.net
+            newSimulationEngine = QString("ngspice");
+            newSimulationCommand = QString("ngspice -b -r %filename.raw %filename.net");
+        }
+        else if(customMode->isChecked()) {
+            // If using the custom simulator, take the user provided command
+            newSimulationEngine = QString("custom");
+            newSimulationCommand = lineSimulationCommand->text();
+        }
+
+        const QString currentSimulationEngine = settings->currentValue("sim/simulationEngine").toString();
+        const QString currentSimulationCommand = settings->currentValue("sim/simulationCommand").toString();
+
+        if(currentSimulationEngine != newSimulationEngine) {
+            settings->setCurrentValue("sim/simulationEngine", newSimulationEngine);
+        }
+
+        if(currentSimulationCommand != newSimulationCommand) {
+            settings->setCurrentValue("sim/simulationCommand", newSimulationCommand);
+        }
+
+        settings->save();
     }
 
     //! \return Icon of this page.

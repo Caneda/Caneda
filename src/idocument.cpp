@@ -32,6 +32,7 @@
 #include "iview.h"
 #include "mainwindow.h"
 #include "messagewidget.h"
+#include "settings.h"
 #include "statehandler.h"
 #include "syntaxhighlighters.h"
 #include "textedit.h"
@@ -787,6 +788,10 @@ namespace Caneda
         }
 
         // Invoke a spice simulator in batch mode
+        Settings *settings = Settings::instance();
+        QString simulationCommand = settings->currentValue("sim/simulationCommand").toString();
+        simulationCommand.replace("%filename", baseName);  // Replace all ocurrencies of %filename by the actual filename
+
         QProcess *simulationProcess = new QProcess(this);
         simulationProcess->setWorkingDirectory(path);
         simulationProcess->setProcessChannelMode(QProcess::MergedChannels);  // Output std:error and std:output together into the same file
@@ -797,11 +802,7 @@ namespace Caneda
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         env.insert("SPICE_ASCIIRAWFILE", "1"); // Add an environment variable
         simulationProcess->setProcessEnvironment(env);
-
-        // If using ngspice simulator, the command to simulate is:
-        // ngspice -b -r output.raw input.net
-        simulationProcess->start(QString("ngspice -b -r ") + baseName + ".raw "
-                                 + baseName + ".net");  // Analize the file
+        simulationProcess->start(simulationCommand);
 
         // The simulation results are opened in the simulationReady slot, to avoid blocking the interface while simulating
         connect(simulationProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(simulationReady(int)));
@@ -1439,17 +1440,16 @@ namespace Caneda
 
         if (suffix == "net" || suffix == "cir" || suffix == "spc" || suffix == "sp") {
             // It is a netlist file, we should invoke a spice simulator in batch mode
+            Settings *settings = Settings::instance();
+            QString simulationCommand = settings->currentValue("sim/simulationCommand").toString();
+            simulationCommand.replace("%filename", baseName);  // Replace all ocurrencies of %filename by the actual filename
 
             // Set the environment variable to get an ascii raw file instead of a binary one
             //! \todo Add an option to generate binary raw files to save disk space.
             QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
             env.insert("SPICE_ASCIIRAWFILE", "1"); // Add an environment variable
             simulationProcess->setProcessEnvironment(env);
-
-            // If using ngspice simulator, the command to simulate is:
-            // ngspice -b -r output.raw input.net
-            simulationProcess->start(QString("ngspice -b -r ") + baseName + ".raw "
-                                     + fileName());  // Analize the file
+            simulationProcess->start(simulationCommand);
         }
         else if (suffix == "vhd" || suffix == "vhdl") {
             // It is a vhdl file, we should invoke ghdl simulator

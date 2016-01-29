@@ -29,6 +29,7 @@ class QFrame;
 class QLabel;
 class QLineEdit;
 class QListWidget;
+class QRadioButton;
 class QSpinBox;
 
 namespace Caneda
@@ -120,14 +121,19 @@ namespace Caneda
     public:
         SimulationConfigurationPage(QWidget *parent = 0);
 
+    private Q_SLOTS:
+        void slotSimulationEngineSelected();
+
     public:
         void applyConf();
         QString title() const;
         QIcon icon() const;
 
-    public:
         QLabel *title_label_;
         QFrame *horiz_line_;
+
+        QRadioButton *ngspiceMode, *customMode;
+        QLineEdit *lineSimulationCommand;
     };
 
     //! \brief This class represents the hdl configuration page
@@ -153,7 +159,6 @@ namespace Caneda
         QString title() const;
         QIcon icon() const;
 
-    public:
         QLabel *title_label_;
         QFrame *horiz_line_;
 
@@ -185,7 +190,6 @@ namespace Caneda
         QString title() const;
         QIcon icon() const;
 
-    public:
         QLabel *title_label_;
         QFrame *horiz_line_;
 

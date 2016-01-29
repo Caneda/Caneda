@@ -72,6 +72,9 @@ namespace Caneda
         defaultSettings["gui/layout/nwell"] = QVariant(QColor(Qt::darkYellow));
         defaultSettings["gui/layout/pwell"] = QVariant(QColor(Qt::darkCyan));
 
+        defaultSettings["sim/simulationEngine"] = QVariant(QString("ngspice"));  //! \todo In the future this could be replaced by an enum, to avoid problems
+        defaultSettings["sim/simulationCommand"] = QVariant(QString("ngspice -b -r %filename.raw %filename.net"));
+
         currentSettings = defaultSettings;
     }
 
