@@ -835,8 +835,9 @@ namespace Caneda
         workToolbar->addSeparator();
 
         workToolbar->addAction(action("insWire"));
-        workToolbar->addAction(action("intoH"));
-        workToolbar->addAction(action("popH"));
+        //! \todo Reenable this option once implemented
+        //        workToolbar->addAction(action("intoH"));
+        //        workToolbar->addAction(action("popH"));
 
         workToolbar->addSeparator();
 
