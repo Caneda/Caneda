@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -138,23 +138,28 @@ namespace Caneda
     //! \brief Adds all items available in the scene to the plot widget.
     void CSimulationView::populate()
     {
-        QList<QwtPlotCurve*> m_items = m_csimulationScene->items();
+        QList<CSimulationPlot*> m_items = m_csimulationScene->items();
 
         QColor color = QColor(0, 0, 0);
         int colorIndex= 0;
         int valueIndex = 255;
 
         // Attach the items to the plot
-        foreach(QwtPlotCurve *item, m_items) {
+        foreach(CSimulationPlot *item, m_items) {
             // Recreate the curve to be able to attach
             // the same curve to different views
-            QwtPlotCurve *newCurve = new QwtPlotCurve();
+            CSimulationPlot *newCurve = new CSimulationPlot();
             newCurve->setData(item->data());
             newCurve->setTitle(item->title());
             newCurve->attach(this);
 
+            // Set the correct axis depending on the curve magnitude
+            if(item->type() == "current" || item->type() == "phase") {
+                newCurve->setYAxis(yRight);
+            }
+
             // Select the style and color of the new curve
-            newCurve->setRenderHint(QwtPlotCurve::RenderAntialiased);
+            newCurve->setRenderHint(CSimulationPlot::RenderAntialiased);
             color.setHsv(colorIndex , 200, valueIndex);
             newCurve->setPen(QPen(color));
 
@@ -174,10 +179,20 @@ namespace Caneda
             }
         }
 
-        // Axes
-        //! \todo Set different axis titles depending on the type of simulation, ie. time for transient; frequency for ac simulation
-        setAxisTitle(xBottom, QwtText(tr("Time [s]")));
-        setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
+        // Set different axis titles depending on the type of simulation,
+        // ie. time for transient; frequency for ac simulation
+        if(m_items.first()->type() == "voltage" || m_items.first()->type() == "current") {
+            setAxisTitle(xBottom, QwtText(tr("Time [s]")));
+            setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
+            setAxisTitle(yRight, QwtText(tr("Current [A]")));
+        }
+        else {
+            setAxisTitle(xBottom, QwtText(tr("Frequency [Hz]")));
+            setAxisTitle(yLeft, QwtText(tr("Magnitude [dB]")));
+            setAxisTitle(yRight, QwtText(tr("Phase [º]")));
+        }
+
+        enableAxis(yRight);  // Always enable the y axis
 
         // Refresh the plot
         replot();

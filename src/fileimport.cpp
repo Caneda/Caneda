@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,6 +19,7 @@
 
 #include "fileimport.h"
 
+#include "csimulationplot.h"
 #include "csimulationscene.h"
 #include "idocument.h"
 #include "xmlutilities.h"
@@ -30,7 +31,6 @@
 #include <QString>
 
 #include <math.h>
-#include <qwt_plot_curve.h>
 
 namespace Caneda
 {
@@ -66,7 +66,7 @@ namespace Caneda
 
         QTextStream in(&file);
         QString line = in.readLine();
-        QList<QwtPlotCurve*> plotCurves;  // List of curves
+        QList<CSimulationPlot*> plotCurves;  // List of curves
         QList<double*> dataSamples;  // List of curve's data. Once filled, used to set data in plotCurves
 
         while(!line.isNull()) {
@@ -105,14 +105,9 @@ namespace Caneda
                     if(tok.size() >= 3){
                         // Number property not used: number = tok.at(0)
 
-                        /*! \todo Save tok.at(2) (the type of curve, ie. voltage or current, into
-                         *  the list to be able to have separate axis (one for voltage waveforms
-                         *  and another for current waveforms. For this, create a new class derived
-                         *  from QwtPlotCurve.
-                         */
-
                         // Create a new curve, and add it to the list
-                        QwtPlotCurve *curve = new QwtPlotCurve(tok.at(1));  // tok.at(1) = name
+                        CSimulationPlot *curve = new CSimulationPlot(tok.at(1));  // tok.at(1) = name
+                        curve->setType(tok.at(2));  // tok.at(2) = type of curve (voltage, current, etc)
                         plotCurves.append(curve);  // Append new curve to the list
 
                         double *data = new double[npoints];  // Create new dataset
@@ -121,7 +116,7 @@ namespace Caneda
 
                         // If dealing with complex numbers, create an array for the imaginary part
                         if(!real) {
-                            QwtPlotCurve *curveImaginary = new QwtPlotCurve(tok.at(1));  // tok.at(1) = name
+                            CSimulationPlot *curveImaginary = new CSimulationPlot(tok.at(1));  // tok.at(1) = name
                             plotCurves.append(curveImaginary);  // Append new curve to the list
 
                             double *dataImaginary = new double[npoints];  // Create new dataset

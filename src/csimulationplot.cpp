@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,42 +17,28 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef C_SIMULATION_SCENE_H
-#define C_SIMULATION_SCENE_H
-
-#include <csimulationplot.h>
-
-#include <QWidget>
+#include "csimulationplot.h"
 
 namespace Caneda
 {
     /*!
-     * \brief This class implements the scene class of Qt's Graphics View
-     * Architecture, representing the actual document interface (scene),
-     * containing the simulation waveform data.
+     * \brief Constructor
      *
-     * Each scene must have at least one associated view (CSimulationView), to
-     * display the contents of the scene (waveforms). Several views can be
-     * attached to the same scene, providing different viewports into the same
-     * data set (for example, when using split views).
-     *
-     * \sa CSimulationView
+     * \param title Title of the curve
      */
-    class CSimulationScene : public QWidget
+    CSimulationPlot::CSimulationPlot(const QString &title) :
+        QwtPlotCurve(title)
     {
-        Q_OBJECT
+    }
 
-    public:
-        CSimulationScene(QWidget *parent = 0);
-
-        //! \brief Returns a list of all items in the scene in descending stacking
-        QList<CSimulationPlot*> items() const { return m_items; }
-        void addItem(CSimulationPlot *item);
-
-    private:
-        QList<CSimulationPlot*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
-    };
+    /*!
+     * \brief Constructor
+     *
+     * \param title Title of the curve
+     */
+    CSimulationPlot::CSimulationPlot(const QwtText &title) :
+        QwtPlotCurve(title)
+    {
+    }
 
 } // namespace Caneda
-
-#endif // C_SIMULATION_SCENE_H

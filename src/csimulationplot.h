@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,42 +17,34 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef C_SIMULATION_SCENE_H
-#define C_SIMULATION_SCENE_H
+#ifndef C_SIMULATION_PLOT_H
+#define C_SIMULATION_PLOT_H
 
-#include <csimulationplot.h>
+#include <QString>
 
-#include <QWidget>
+#include <qwt_plot_curve.h>
 
 namespace Caneda
 {
     /*!
-     * \brief This class implements the scene class of Qt's Graphics View
-     * Architecture, representing the actual document interface (scene),
-     * containing the simulation waveform data.
+     * \brief This class extends the QwtPlotCurve class, providing some
+     * special properties needed for Caneda.
      *
-     * Each scene must have at least one associated view (CSimulationView), to
-     * display the contents of the scene (waveforms). Several views can be
-     * attached to the same scene, providing different viewports into the same
-     * data set (for example, when using split views).
-     *
-     * \sa CSimulationView
+     * \sa QwtPlotCurve
      */
-    class CSimulationScene : public QWidget
+    class CSimulationPlot : public QwtPlotCurve
     {
-        Q_OBJECT
-
     public:
-        CSimulationScene(QWidget *parent = 0);
+        CSimulationPlot(const QString &title = QString::null);
+        CSimulationPlot(const QwtText &title);
 
-        //! \brief Returns a list of all items in the scene in descending stacking
-        QList<CSimulationPlot*> items() const { return m_items; }
-        void addItem(CSimulationPlot *item);
+        QString type() const { return m_type; }  //! \brief Returns the type of curve
+        void setType(const QString type) { m_type = type; }    //! \brief Sets the type of curve
 
     private:
-        QList<CSimulationPlot*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
+        QString m_type;  //! \brief Type of curve (voltage, current, etc)
     };
 
 } // namespace Caneda
 
-#endif // C_SIMULATION_SCENE_H
+#endif // C_SIMULATION_PLOT_H
