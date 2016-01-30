@@ -164,6 +164,18 @@ namespace Caneda
             color.setHsv(colorIndex , 200, valueIndex);
             newCurve->setPen(QPen(color));
 
+            // If the curve is of type magnitude, avoid updating the color
+            // for the next curve (that should be the phase).
+            // If the curve is of type phase, use a dashed line.
+            if(item->type() == "magnitude") {
+                continue;
+            }
+            else if(item->type() == "phase") {
+                QPen m_pen = QPen(color);
+                m_pen.setStyle(Qt::DashLine);
+                newCurve->setPen(m_pen);
+            }
+
             // Set the next color to be used (to change colors
             // from curve to curve.
             if(colorIndex < 300) {  // Avoid 360, as it equals 0
