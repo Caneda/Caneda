@@ -46,11 +46,11 @@ namespace Caneda
         CSimulationScene(QWidget *parent = 0);
 
         //! \brief Returns a list of all items in the scene in descending stacking
-        QList<CSimulationPlot*> items() const { return m_items; }
-        void addItem(CSimulationPlot *item);
+        QList<CSimulationPlotCurve*> items() const { return m_items; }
+        void addItem(CSimulationPlotCurve *item);
 
     private:
-        QList<CSimulationPlot*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
+        QList<CSimulationPlotCurve*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
     };
 
 } // namespace Caneda

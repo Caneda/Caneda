@@ -32,11 +32,11 @@ namespace Caneda
      *
      * \sa QwtPlotCurve
      */
-    class CSimulationPlot : public QwtPlotCurve
+    class CSimulationPlotCurve : public QwtPlotCurve
     {
     public:
-        CSimulationPlot(const QString &title = QString::null);
-        CSimulationPlot(const QwtText &title);
+        CSimulationPlotCurve(const QString &title = QString::null);
+        CSimulationPlotCurve(const QwtText &title);
 
         QString type() const { return m_type; }  //! \brief Returns the type of curve
         void setType(const QString type) { m_type = type; }    //! \brief Sets the type of curve

@@ -35,7 +35,7 @@ namespace Caneda
      * \brief Adds or moves the item and all its childen to this scene. This
      * scene takes ownership of the item.
      */
-    void CSimulationScene::addItem(CSimulationPlot *item)
+    void CSimulationScene::addItem(CSimulationPlotCurve *item)
     {
         m_items.append(item);
     }

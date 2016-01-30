@@ -26,7 +26,7 @@ namespace Caneda
      *
      * \param title Title of the curve
      */
-    CSimulationPlot::CSimulationPlot(const QString &title) :
+    CSimulationPlotCurve::CSimulationPlotCurve(const QString &title) :
         QwtPlotCurve(title)
     {
     }
@@ -36,7 +36,7 @@ namespace Caneda
      *
      * \param title Title of the curve
      */
-    CSimulationPlot::CSimulationPlot(const QwtText &title) :
+    CSimulationPlotCurve::CSimulationPlotCurve(const QwtText &title) :
         QwtPlotCurve(title)
     {
     }

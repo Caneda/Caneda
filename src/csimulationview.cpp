@@ -138,17 +138,17 @@ namespace Caneda
     //! \brief Adds all items available in the scene to the plot widget.
     void CSimulationView::populate()
     {
-        QList<CSimulationPlot*> m_items = m_csimulationScene->items();
+        QList<CSimulationPlotCurve*> m_items = m_csimulationScene->items();
 
         QColor color = QColor(0, 0, 0);
         int colorIndex= 0;
         int valueIndex = 255;
 
         // Attach the items to the plot
-        foreach(CSimulationPlot *item, m_items) {
+        foreach(CSimulationPlotCurve *item, m_items) {
             // Recreate the curve to be able to attach
             // the same curve to different views
-            CSimulationPlot *newCurve = new CSimulationPlot();
+            CSimulationPlotCurve *newCurve = new CSimulationPlotCurve();
             newCurve->setData(item->data());
             newCurve->setTitle(item->title());
             newCurve->attach(this);
@@ -159,7 +159,7 @@ namespace Caneda
             }
 
             // Select the style and color of the new curve
-            newCurve->setRenderHint(CSimulationPlot::RenderAntialiased);
+            newCurve->setRenderHint(CSimulationPlotCurve::RenderAntialiased);
             color.setHsv(colorIndex , 200, valueIndex);
             newCurve->setPen(QPen(color));
 
@@ -185,11 +185,13 @@ namespace Caneda
             setAxisTitle(xBottom, QwtText(tr("Time [s]")));
             setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
             setAxisTitle(yRight, QwtText(tr("Current [A]")));
+            setLogAxis(QwtPlot::xBottom, false);
         }
         else {
             setAxisTitle(xBottom, QwtText(tr("Frequency [Hz]")));
             setAxisTitle(yLeft, QwtText(tr("Magnitude [dB]")));
             setAxisTitle(yRight, QwtText(tr("Phase [º]")));
+            setLogAxis(QwtPlot::xBottom, true);
         }
 
         enableAxis(yRight);  // Always enable the y axis
