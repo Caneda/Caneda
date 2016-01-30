@@ -332,9 +332,10 @@ namespace Caneda
     {
         QPoint newCursorPos = m_zoomer->trackerPosition();
         double x = invTransform(xBottom, newCursorPos.x());
-        double y = invTransform(yLeft, newCursorPos.y());
+        double y1 = invTransform(yLeft, newCursorPos.y());
+        double y2 = invTransform(yRight, newCursorPos.y());
 
-        QString str = QString("%1 : %2").arg(x).arg(y);
+        QString str = QString("%1 : %2 : %3").arg(x).arg(y1).arg(y2);
         emit cursorPositionChanged(str);
 
         QwtPlot::mouseMoveEvent(event);
