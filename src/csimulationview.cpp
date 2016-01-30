@@ -100,6 +100,7 @@ namespace Caneda
         // Grid
         m_grid = new QwtPlotGrid();
         m_grid->enableXMin(true);
+        m_grid->enableYMin(true);
 
         // Legend
         m_legend = new QwtLegend();
