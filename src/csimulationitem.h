@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef C_SIMULATION_PLOT_H
-#define C_SIMULATION_PLOT_H
+#ifndef C_SIMULATION_ITEM_H
+#define C_SIMULATION_ITEM_H
 
 #include <QString>
 
@@ -47,4 +47,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif // C_SIMULATION_PLOT_H
+#endif // C_SIMULATION_ITEM_H

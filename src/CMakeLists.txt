@@ -20,7 +20,7 @@ SET( CANEDA_SRCS
   actionmanager.cpp project.cpp portsymbol.cpp
   statehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp syntaxhighlighters.cpp
-  csimulationscene.cpp csimulationview.cpp csimulationplot.cpp
+  csimulationscene.cpp csimulationview.cpp csimulationitem.cpp
   textedit.cpp webpage.cpp xmlutilities.cpp messagewidget.cpp
 )
 

@@ -20,7 +20,7 @@
 #ifndef C_SIMULATION_SCENE_H
 #define C_SIMULATION_SCENE_H
 
-#include <csimulationplot.h>
+#include <csimulationitem.h>
 
 #include <QWidget>
 

@@ -19,7 +19,7 @@
 
 #include "fileimport.h"
 
-#include "csimulationplot.h"
+#include "csimulationitem.h"
 #include "csimulationscene.h"
 #include "idocument.h"
 #include "xmlutilities.h"
