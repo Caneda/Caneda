@@ -114,7 +114,7 @@ namespace Caneda
         QwtPlotZoomer *m_zoomer;
         CPlotMagnifier *m_magnifier;
 
-        bool m_logXaxis, m_logYaxis;
+        bool m_logXaxis, m_logYleftAxis, m_logYrightAxis;
     };
 
 } // namespace Caneda

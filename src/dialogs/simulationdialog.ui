@@ -43,9 +43,16 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QCheckBox" name="checkBoxYscale">
+         <widget class="QCheckBox" name="checkBoxYleftScale">
           <property name="text">
-           <string>y axis</string>
+           <string>y left axis</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QCheckBox" name="checkBoxYrightScale">
+          <property name="text">
+           <string>y right axis</string>
           </property>
          </widget>
         </item>

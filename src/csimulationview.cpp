@@ -74,7 +74,8 @@ namespace Caneda
         QwtPlot(parent),
         m_csimulationScene(scene),
         m_logXaxis(false),
-        m_logYaxis(false)
+        m_logYleftAxis(false),
+        m_logYrightAxis(false)
     {
         // Canvas
         m_canvas = new QwtPlotCanvas();
@@ -185,13 +186,13 @@ namespace Caneda
             setAxisTitle(xBottom, QwtText(tr("Time [s]")));
             setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
             setAxisTitle(yRight, QwtText(tr("Current [A]")));
-            setLogAxis(QwtPlot::xBottom, false);
         }
         else {
             setAxisTitle(xBottom, QwtText(tr("Frequency [Hz]")));
             setAxisTitle(yLeft, QwtText(tr("Magnitude [dB]")));
             setAxisTitle(yRight, QwtText(tr("Phase [º]")));
             setLogAxis(QwtPlot::xBottom, true);
+            setLogAxis(QwtPlot::yLeft, true);
         }
 
         enableAxis(yRight);  // Always enable the y axis
@@ -215,29 +216,23 @@ namespace Caneda
      */
     void CSimulationView::setLogAxis(QwtPlot::Axis axis, bool logarithmic)
     {
-        if(axis == QwtPlot::xBottom || axis == QwtPlot::xTop) {
-            if(logarithmic) {
-                setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine);
-                setAxisScaleEngine(QwtPlot::xTop, new QwtLogScaleEngine);
-                m_logXaxis = true;
-            }
-            else {
-                setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
-                setAxisScaleEngine(QwtPlot::xTop, new QwtLinearScaleEngine);
-                m_logXaxis = false;
-            }
+        // Set logarithmic the corresponding axis
+        if(logarithmic) {
+            setAxisScaleEngine(axis, new QwtLogScaleEngine);
         }
         else {
-            if(logarithmic) {
-                setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine);
-                setAxisScaleEngine(QwtPlot::yRight, new QwtLogScaleEngine);
-                m_logYaxis = true;
-            }
-            else {
-                setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
-                setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
-                m_logYaxis = false;
-            }
+            setAxisScaleEngine(axis, new QwtLinearScaleEngine);
+        }
+
+        // Set m_logXaxis/m_logYaxis logarithmic to track the state
+        if(axis == QwtPlot::xBottom || axis == QwtPlot::xTop) {
+            m_logXaxis = logarithmic;
+        }
+        else if(axis == QwtPlot::yLeft) {
+            m_logYleftAxis = logarithmic;
+        }
+        else {
+            m_logYrightAxis = logarithmic;
         }
     }
 
@@ -254,8 +249,11 @@ namespace Caneda
         if(axis == QwtPlot::xBottom || axis == QwtPlot::xTop) {
             return m_logXaxis;
         }
+        else if(axis == QwtPlot::yLeft) {
+            return m_logYleftAxis;
+        }
         else {
-            return m_logYaxis;
+            return m_logYrightAxis;
         }
     }
 

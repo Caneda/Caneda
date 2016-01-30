@@ -19,6 +19,7 @@
 
 #include "simulationdialog.h"
 
+#include "csimulationitem.h"
 #include "csimulationview.h"
 #include "documentviewmanager.h"
 #include "global.h"
@@ -177,7 +178,8 @@ namespace Caneda
 
         // Set log axis checkboxes state
         ui.checkBoxXscale->setChecked(parent->isLogAxis(QwtPlot::xBottom));
-        ui.checkBoxYscale->setChecked(parent->isLogAxis(QwtPlot::yLeft));
+        ui.checkBoxYleftScale->setChecked(parent->isLogAxis(QwtPlot::yLeft));
+        ui.checkBoxYrightScale->setChecked(parent->isLogAxis(QwtPlot::yRight));
 
         // Set lineedit properties
         ui.m_filterEdit->setClearButtonEnabled(true);
@@ -222,15 +224,16 @@ namespace Caneda
     {
         CSimulationView *parent = static_cast<CSimulationView*>(this->parent());
 
-        // Set log axis checkboxes state
-        parent->setLogAxis(QwtPlot::xBottom, ui.checkBoxXscale->isChecked());
-        parent->setLogAxis(QwtPlot::yLeft, ui.checkBoxYscale->isChecked());
-
         // Set waveforms visibility
         QwtPlotItemList list = parent->itemList(QwtPlotItem::Rtti_PlotCurve);
         for(int i=0; i<list.size(); ++i) {
             list.at(i)->setVisible(m_model->m_simMap[list.at(i)->title().text()]);
         }
+
+        // Set log axis checkboxes state
+        parent->setLogAxis(QwtPlot::xBottom, ui.checkBoxXscale->isChecked());
+        parent->setLogAxis(QwtPlot::yLeft, ui.checkBoxYleftScale->isChecked());
+        parent->setLogAxis(QwtPlot::yRight, ui.checkBoxYrightScale->isChecked());
 
         // Accept dialog
         parent->replot();
