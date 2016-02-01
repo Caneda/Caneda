@@ -65,5 +65,5 @@ ADD_SUBDIRECTORY( libraries )
 # ==================================================================================
 # Licence and other files
 
-SET( MISC INSTALL COPYING )
+SET( MISC README COPYING )
 INSTALL( FILES ${MISC} DESTINATION ${BASEDIR} )

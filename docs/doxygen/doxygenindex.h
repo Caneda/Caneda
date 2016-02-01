@@ -96,8 +96,7 @@ namespace Caneda
  * recommendations.
  *
  * \li <b>Maintainer:</b> Pablo Daniel Pareja Obregón <parejaobregon(at)gmail.com>
- * \li <b>Feature Requests:</b> http://sourceforge.net/p/caneda/feature-requests/
- * \li <b>Bugs Discovered:</b> http://sourceforge.net/p/caneda/bugs/
+ * \li <b>Bug tracker:</b> https://github.com/Caneda/Caneda/issues
  *
  * \section License License
  * Caneda is released under the GPLv2. You can see a copy of the license in

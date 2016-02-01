@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -31,7 +31,7 @@ analysis.
 
 For details visit the project's homepage:
 
-http://caneda.sourceforge.net/
+https://github.com/Caneda/Caneda
 
 
 Requirements
@@ -52,9 +52,7 @@ You can always get the latest Caneda version from our git repository. Please
 use an official release if you want to work with Caneda.  The git version might
 not even compile.
 
-  $ git clone git://git.code.sf.net/p/caneda/code caneda
-
-Press 'Enter' when asked for a password.
+  $ git clone https://github.com/Caneda/Caneda
 
 
 Installation
@@ -76,11 +74,11 @@ Change into the source directory:
 
 Create a new directory for Cmake to work in:
 
-  $ mkdir compile-output
+  $ mkdir build
 
 Change into the recently created directory:
 
-  $ cd compile-output
+  $ cd build
 
 Configure the source package for your system:
 
