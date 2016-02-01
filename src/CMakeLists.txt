@@ -1,14 +1,10 @@
 INCLUDE_DIRECTORIES(
   ${CMAKE_BINARY_DIR}/src/dialogs
   ${CMAKE_BINARY_DIR}/src/paintings
-  ${CMAKE_BINARY_DIR}/src/plugins/attenuator
-  ${CMAKE_BINARY_DIR}/src/plugins/filter
-  ${CMAKE_BINARY_DIR}/src/plugins/transmission
 )
 
 ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( paintings )
-ADD_SUBDIRECTORY( plugins )
 
 SET( CANEDA_SRCS
   wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
@@ -33,9 +29,6 @@ TARGET_LINK_LIBRARIES( caneda
   ${QWT_LIBRARIES}
   dialogs
   paintings
-  attenuator
-  filter
-  transmission
 )
 
 INSTALL( TARGETS caneda DESTINATION ${BINARYDIR} )

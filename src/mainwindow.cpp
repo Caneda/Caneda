@@ -40,10 +40,6 @@
 #include "dialogs/savedocumentsdialog.h"
 #include "dialogs/settingsdialog.h"
 
-#include "plugins/attenuator/attenuator.h"
-#include "plugins/filter/filterdialog.h"
-#include "plugins/transmission/transmissiondialog.h"
-
 #include <QtWidgets>
 
 namespace Caneda
@@ -458,36 +454,6 @@ namespace Caneda
         action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
         connect(action, SIGNAL(triggered()), SLOT(slotBackupAndHistory()));
 
-        action = am->createAction("callFilter", Caneda::icon("tools-wizard"), tr("Filter synthesis"));
-        action->setShortcut(CTRL+Key_1);
-        action->setStatusTip(tr("Starts CanedaFilter"));
-        action->setWhatsThis(tr("Filter synthesis\n\nStarts CanedaFilter"));
-        connect(action, SIGNAL(triggered()), SLOT(slotCallFilter()));
-
-        action = am->createAction("callLine", Caneda::icon("tools-wizard"), tr("Transmission line"));
-        action->setShortcut(CTRL+Key_2);
-        action->setStatusTip(tr("Starts transmission line calculator"));
-        action->setWhatsThis(tr("Transmission line\n\nStarts transmission line calculator"));
-        connect(action, SIGNAL(triggered()), SLOT(slotCallLine()));
-
-        action = am->createAction("callMatch", Caneda::icon("tools-wizard"), tr("Matching circuit"));
-        action->setShortcut(CTRL+Key_3);
-        action->setStatusTip(tr("Creates Matching Circuit"));
-        action->setWhatsThis(tr("Matching Circuit\n\nDialog for Creating Matching Circuit"));
-        connect(action, SIGNAL(triggered()), SLOT(slotCallMatch()));
-
-        action = am->createAction("callAtt", Caneda::icon("tools-wizard"), tr("Attenuator synthesis"));
-        action->setShortcut(CTRL+Key_4);
-        action->setStatusTip(tr("Starts CanedaAttenuator"));
-        action->setWhatsThis(tr("Attenuator synthesis\n\nStarts attenuator calculation program"));
-        connect(action, SIGNAL(triggered()), SLOT(slotCallAtt()));
-
-        action = am->createAction("importData",  tr("&Import Data..."));
-        action->setShortcut(CTRL+Key_5);
-        action->setStatusTip(tr("Convert file to Caneda data file"));
-        action->setWhatsThis(tr("Import Data\n\nConvert data file to Caneda data file"));
-        connect(action, SIGNAL(triggered()), SLOT(slotImportData()));
-
         action = am->createAction("simulate", Caneda::icon("media-playback-start"), tr("Simulate"));
         action->setShortcut(Key_F9);
         action->setToolTip(tr("Simulate") + " (" + action->shortcut().toString() + ")");
@@ -502,7 +468,7 @@ namespace Caneda
         action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
         connect(action, SIGNAL(triggered()), SLOT(openSimulation()));
 
-        action = am->createAction("data2csv",  tr("Export to &CSV..."));
+        action = am->createAction("data2csv", tr("Export to &CSV..."));
         action->setStatusTip(tr("Export simulation data to CSV file"));
         action->setWhatsThis(tr("Export to CSV\n\nExport simulation data to CSV file"));
         connect(action, SIGNAL(triggered()), sim, SLOT(exportCsv()));
@@ -763,18 +729,8 @@ namespace Caneda
 
         //        projMenu->addAction(action("backupAndHistory"));
 
+        //! \todo Implement tools menu with a plugins' infrastructure.
         //        toolMenu = menuBar()->addMenu(tr("&Tools"));
-
-        //        toolMenu->addAction(action("callFilter"));
-        //        toolMenu->addAction(action("callLine"));
-        //        toolMenu->addAction(action("callMatch"));
-        //        toolMenu->addAction(action("callAtt"));
-
-        //        toolMenu->addSeparator();
-
-        //        toolMenu->addAction(action("importData"));
-
-        //        toolMenu->addSeparator();
 
         simMenu = menuBar()->addMenu(tr("&Simulation"));
 
@@ -1425,45 +1381,6 @@ namespace Caneda
     {
         setNormalAction();
         m_project->slotBackupAndHistory();
-    }
-
-    void MainWindow::slotCallFilter()
-    {
-        setNormalAction();
-
-        QPointer<FilterDialog> p = new FilterDialog(this);
-        p->exec();
-        delete p;
-    }
-
-    void MainWindow::slotCallLine()
-    {
-        setNormalAction();
-
-        QPointer<TransmissionDialog> p = new TransmissionDialog(this);
-        p->exec();
-        delete p;
-    }
-
-    void MainWindow::slotCallMatch()
-    {
-        setNormalAction();
-        //! \todo Implement this or rather port directly
-    }
-
-    void MainWindow::slotCallAtt()
-    {
-        setNormalAction();
-
-        QPointer<Attenuator> p = new Attenuator(this);
-        p->exec();
-        delete p;
-    }
-
-    void MainWindow::slotImportData()
-    {
-        setNormalAction();
-        //! \todo Implement this or rather port directly
     }
 
     //! \brief Simulate current document

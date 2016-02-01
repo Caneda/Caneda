@@ -123,12 +123,6 @@ namespace Caneda
         void slotCloseProject();
         void slotBackupAndHistory();
 
-        void slotCallFilter();
-        void slotCallLine();
-        void slotCallMatch();
-        void slotCallAtt();
-        void slotImportData();
-
         void slotSimulate();
         void openSimulation();
         void slotShowLog();
