@@ -66,14 +66,12 @@ namespace Caneda
         void savePorts(Caneda::XmlWriter *writer);
         void saveWires(Caneda::XmlWriter *writer);
         void savePaintings(Caneda::XmlWriter *writer);
-        void saveProperties(Caneda::XmlWriter *writer);
 
         bool loadFromText(const QString& text);
         void loadComponents(Caneda::XmlReader *reader);
         void loadPorts(Caneda::XmlReader *reader);
         void loadWires(Caneda::XmlReader *reader);
         void loadPaintings(Caneda::XmlReader *reader);
-        void loadProperties(Caneda::XmlReader *reader);
 
         SchematicDocument *m_schematicDocument;
     };
@@ -149,11 +147,9 @@ namespace Caneda
     private:
         QString saveText();
         void savePaintings(Caneda::XmlWriter *writer);
-        void saveProperties(Caneda::XmlWriter *writer);
 
         bool loadFromText(const QString& text);
         void loadPaintings(Caneda::XmlReader *reader);
-        void loadProperties(Caneda::XmlReader *reader);
 
         LayoutDocument *m_layoutDocument;
     };

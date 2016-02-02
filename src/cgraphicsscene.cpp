@@ -24,6 +24,7 @@
 #include "actionmanager.h"
 #include "cgraphicsview.h"
 #include "documentviewmanager.h"
+#include "idocument.h"
 #include "iview.h"
 #include "library.h"
 #include "portsymbol.h"
@@ -654,12 +655,6 @@ namespace Caneda
         m_properties->addProperty(property.name(), property);
     }
 
-    //! \copydoc CGraphicsItem::launchPropertyDialog()
-    int CGraphicsScene::launchPropertyDialog(Caneda::UndoOption)
-    {
-        return m_properties->launchPropertyDialog();
-    }
-
     /*!
      * \brief Set whether this scene is modified or not
      *
@@ -793,7 +788,7 @@ namespace Caneda
 
             switch(selectedItems().size()) {
             case 0:
-                //launch a general menu
+                // Launch a general menu
                 _menu->addAction(am->actionForName("select"));
                 _menu->addAction(am->actionForName("insWire"));
                 _menu->addAction(am->actionForName("editDelete"));
@@ -814,12 +809,12 @@ namespace Caneda
                 break;
 
             case 1:
-                //launch context menu of item.
+                // Launch context menu of item.
                 QGraphicsScene::contextMenuEvent(event);
                 break;
 
             default:
-                //launch a common menu
+                // Launch a common menu
                 _menu->addAction(am->actionForName("editCut"));
                 _menu->addAction(am->actionForName("editCopy"));
                 _menu->addAction(am->actionForName("editDelete"));
@@ -1727,7 +1722,12 @@ namespace Caneda
             case QEvent::GraphicsSceneMouseDoubleClick:
                 {
                     if(selectedItems().size() == 0) {
-                        launchPropertyDialog(Caneda::PushUndoCmd);
+
+                        IDocument *document = DocumentViewManager::instance()->currentDocument();
+                        if (document) {
+                            document->launchPropertiesDialog();
+                        }
+
                     }
 
                     QGraphicsScene::mouseDoubleClickEvent(e);

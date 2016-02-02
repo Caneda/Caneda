@@ -583,15 +583,11 @@ namespace Caneda
         QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
         QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
 
-        // If there is any selection, launch corresponding properties dialog,
-        // else launch the properties dialog corresponding to the current scene
+        // If there is any selection, launch corresponding properties dialog.
         if(!schItems.isEmpty()) {
             foreach(CGraphicsItem *item, schItems) {
                 item->launchPropertyDialog(Caneda::PushUndoCmd);
             }
-        }
-        else {
-            m_cGraphicsScene->launchPropertyDialog(Caneda::PushUndoCmd);
         }
     }
 
@@ -878,15 +874,11 @@ namespace Caneda
         QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
         QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
 
-        // If there is any selection, launch corresponding properties dialog,
-        // else launch the properties dialog corresponding to the current scene
+        // If there is any selection, launch corresponding properties dialog.
         if(!schItems.isEmpty()) {
             foreach(CGraphicsItem *item, schItems) {
                 item->launchPropertyDialog(Caneda::PushUndoCmd);
             }
-        }
-        else {
-            m_cGraphicsScene->launchPropertyDialog(Caneda::PushUndoCmd);
         }
     }
 
@@ -1297,7 +1289,7 @@ namespace Caneda
             }
         }
         else {
-            m_cGraphicsScene->launchPropertyDialog(Caneda::PushUndoCmd);
+            m_cGraphicsScene->properties()->launchPropertyDialog();
         }
     }
 

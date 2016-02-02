@@ -146,7 +146,6 @@ namespace Caneda
         savePorts(writer);
         saveWires(writer);
         savePaintings(writer);
-        saveProperties(writer);
 
         // Finally we finish the document
         writer->writeEndDocument(); //</caneda>
@@ -256,31 +255,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Saves the scene properties to an XmlWriter.
-     *
-     * This method saves all scene related propeties to an XmlWriter. To do so,
-     * it takes each property from the PropertyGroup of the scene, and saves
-     * the data using the Property::saveProperty() method.
-     *
-     * \param writer XmlWriter responsible for writing the xml data.
-     *
-     * \sa Property::saveProperty()
-     */
-    void FormatXmlSchematic::saveProperties(Caneda::XmlWriter *writer)
-    {
-        PropertyGroup *properties = cGraphicsScene()->properties();
-
-        if(!properties->propertyMap().isEmpty()) {
-            writer->writeStartElement("properties");
-            writer->writePointAttribute(properties->pos(), "pos");
-            foreach(Property property, properties->propertyMap()) {
-                property.saveProperty(writer);
-            }
-            writer->writeEndElement(); //</properties>
-        }
-    }
-
-    /*!
      * \brief Reads an xml file and constructs a scene and associated
      * objects (componts, paintings, etc) from the data read.
      *
@@ -316,9 +290,6 @@ namespace Caneda
                             }
                             else if(reader->name() == "paintings") {
                                 loadPaintings(reader);
-                            }
-                            else if(reader->name() == "properties") {
-                                loadProperties(reader);
                             }
                             else {
                                 reader->readUnknownElement();
@@ -472,42 +443,6 @@ namespace Caneda
                 }
                 else {
                     qWarning() << "Error: Found unknown painting type" << reader->name().toString();
-                    reader->readUnknownElement();
-                    reader->raiseError(QObject::tr("Malformatted file"));
-                }
-            }
-        }
-    }
-
-    /*!
-     * \brief Reads the properties section of an xml file.
-     *
-     * \param reader XmlReader responsible for reading xml data.
-     */
-    void FormatXmlSchematic::loadProperties(Caneda::XmlReader *reader)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-
-        // Read and set the properties position in the scene
-        PropertyGroup *properties = scene->properties();
-        properties->setPos(reader->readPointAttribute("pos"));
-
-        // Read every individual property and add it to the scene
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                Q_ASSERT(reader->name() == "properties");
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                if(reader->name() == "property") {
-                    Property prop = Property::loadProperty(reader);
-                    scene->addProperty(prop);
-                }
-                else {
-                    qWarning() << "Error: Found unknown property type" << reader->name().toString();
                     reader->readUnknownElement();
                     reader->raiseError(QObject::tr("Malformatted file"));
                 }
@@ -1218,7 +1153,6 @@ namespace Caneda
 
         // Now we copy all the elements and properties in the schematic
         savePaintings(writer);
-        saveProperties(writer);
 
         // Finally we finish the document
         writer->writeEndDocument(); //</caneda>
@@ -1253,31 +1187,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Saves the scene properties to an XmlWriter.
-     *
-     * This method saves all scene related propeties to an XmlWriter. To do so,
-     * it takes each property from the PropertyGroup of the scene, and saves
-     * the data using the Property::saveProperty() method.
-     *
-     * \param writer XmlWriter responsible for writing the xml data.
-     *
-     * \sa Property::saveProperty()
-     */
-    void FormatXmlLayout::saveProperties(Caneda::XmlWriter *writer)
-    {
-        PropertyGroup *properties = cGraphicsScene()->properties();
-
-        if(!properties->propertyMap().isEmpty()) {
-            writer->writeStartElement("properties");
-            writer->writePointAttribute(properties->pos(), "pos");
-            foreach(Property property, properties->propertyMap()) {
-                property.saveProperty(writer);
-            }
-            writer->writeEndElement(); //</properties>
-        }
-    }
-
-    /*!
      * \brief Reads an xml file and constructs a scene and associated
      * objects (componts, paintings, etc) from the data read.
      *
@@ -1304,9 +1213,6 @@ namespace Caneda
                         if(reader->isStartElement()) {
                             if(reader->name() == "paintings") {
                                 loadPaintings(reader);
-                            }
-                            else if(reader->name() == "properties") {
-                                loadProperties(reader);
                             }
                             else {
                                 reader->readUnknownElement();
@@ -1357,43 +1263,6 @@ namespace Caneda
                 else {
                     qWarning() << "Error: Found unknown painting type" <<
                         reader->name().toString();
-                    reader->readUnknownElement();
-                    reader->raiseError(QObject::tr("Malformatted file"));
-                }
-            }
-        }
-    }
-
-    /*!
-     * \brief Reads the properties section of an xml file.
-     *
-     * \param reader XmlReader responsible for reading xml data.
-     */
-    void FormatXmlLayout::loadProperties(Caneda::XmlReader *reader)
-    {
-        CGraphicsScene *scene = cGraphicsScene();
-
-        // Read and set the properties position in the scene
-        PropertyGroup *properties = scene->properties();
-        properties->setPos(reader->readPointAttribute("pos"));
-
-        // Read every individual property and add it to the scene
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                Q_ASSERT(reader->name() == "properties");
-                break;
-            }
-
-            if(reader->isStartElement()) {
-                if(reader->name() == "property") {
-                    Property prop = Property::loadProperty(reader);
-                    scene->addProperty(prop);
-                }
-                else {
-                    qWarning() << "Error: Found unknown property type" <<
-                                  reader->name().toString();
                     reader->readUnknownElement();
                     reader->raiseError(QObject::tr("Malformatted file"));
                 }
