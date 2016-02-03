@@ -2,77 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>Attenuator</name>
-    <message>
-        <source>Attenuator Synthesis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Topology</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pi</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tee</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridged Tee</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Attenuation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Ohm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zout</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Calculate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>R1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>--</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>R2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>R3</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>Caneda::AboutDialog</name>
     <message>
         <source>About Caneda</source>
@@ -113,10 +42,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>© 2008-2012 Caneda developer team</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Current maintainer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -132,15 +57,8 @@
         <source>This program is licensed under the GNU/GPL v2.</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>Caneda::Attenuator</name>
     <message>
-        <source>Result: Success!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error: Set Attenuation more than %1 dB</source>
+        <source>© 2008-2016 Caneda developer team</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -152,6 +70,22 @@
     </message>
     <message>
         <source>Voltage [V]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current [A]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Frequency [Hz]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Magnitude [dB]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phase [º]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -230,24 +164,8 @@
 <context>
     <name>Caneda::FilterDialog</name>
     <message>
-        <source>Error: Stop frequency must be greater than start frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Filter order must not be less than two</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Bessel filter order must not be greater than 19</source>
-        <translation type="unfinished">Порядок фильтра Бесселя должен быть не больше 19. {19?}</translation>
-    </message>
-    <message>
-        <source>Result: Couldn&apos;t calculate filter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Result: Successful</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Порядок фильтра Бесселя должен быть не больше 19. {19?}</translation>
     </message>
 </context>
 <context>
@@ -1268,75 +1186,19 @@ Opens backup and history dialog</source>
     </message>
     <message>
         <source>Filter synthesis</source>
-        <translation type="unfinished">Синтез фильтров</translation>
-    </message>
-    <message>
-        <source>Starts CanedaFilter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Filter synthesis
-
-Starts CanedaFilter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starts transmission line calculator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission line
-
-Starts transmission line calculator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Matching circuit</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Синтез фильтров</translation>
     </message>
     <message>
         <source>Creates Matching Circuit</source>
-        <translation type="unfinished">Создает согласованную сеть</translation>
+        <translation type="obsolete">Создает согласованную сеть</translation>
     </message>
     <message>
         <source>Matching Circuit
 
 Dialog for Creating Matching Circuit</source>
-        <translation type="unfinished">Согласованная цепь
+        <translation type="obsolete">Согласованная цепь
 
 Диалог создания согласованной цепи</translation>
-    </message>
-    <message>
-        <source>Attenuator synthesis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starts CanedaAttenuator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Attenuator synthesis
-
-Starts attenuator calculation program</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Import Data...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Convert file to Caneda data file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Import Data
-
-Convert data file to Caneda data file</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Simulate</source>
@@ -1592,11 +1454,11 @@ Inserts a wire</source>
     </message>
     <message>
         <source>&amp;Project</source>
-        <translation type="unfinished">&amp;Проект</translation>
+        <translation type="obsolete">&amp;Проект</translation>
     </message>
     <message>
         <source>&amp;Tools</source>
-        <translation type="unfinished">&amp;Инструменты</translation>
+        <translation type="obsolete">&amp;Инструменты</translation>
     </message>
     <message>
         <source>&amp;Simulation</source>
@@ -1870,33 +1732,29 @@ Removes selected property from the list</source>
 <context>
     <name>Caneda::SimulationConfigurationPage</name>
     <message>
-        <source>Simulator Engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use qucs engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use ngspice engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Simulation Display Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use a special tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use same tab as schematic</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Simulation</source>
         <comment>simulation page title</comment>
         <translation type="unfinished">Моделирование</translation>
+    </message>
+    <message>
+        <source>Simulation Engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ngspice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Engine:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1969,175 +1827,167 @@ Removes selected property from the list</source>
     <name>Caneda::TransmissionDialog</name>
     <message>
         <source>Substrate Parameters</source>
-        <translation type="unfinished">Параметры подложки</translation>
+        <translation type="obsolete">Параметры подложки</translation>
     </message>
     <message>
         <source>Physical Parameters</source>
-        <translation type="unfinished">Физические параметры</translation>
+        <translation type="obsolete">Физические параметры</translation>
     </message>
     <message>
         <source>Electrical Parameters</source>
-        <translation type="unfinished">Электрические параметры</translation>
+        <translation type="obsolete">Электрические параметры</translation>
     </message>
     <message>
         <source>Component Parameters</source>
-        <translation type="unfinished">Параметры компонента</translation>
+        <translation type="obsolete">Параметры компонента</translation>
     </message>
     <message>
         <source>Relative Permittivity</source>
-        <translation type="unfinished">Относительная диэлектрическая проницаемость</translation>
+        <translation type="obsolete">Относительная диэлектрическая проницаемость</translation>
     </message>
     <message>
         <source>Relative Permeability</source>
-        <translation type="unfinished">Относительная проницаемость</translation>
+        <translation type="obsolete">Относительная проницаемость</translation>
     </message>
     <message>
         <source>Height of Substrate</source>
-        <translation type="unfinished">Высота подложки</translation>
+        <translation type="obsolete">Высота подложки</translation>
     </message>
     <message>
         <source>Height of Box Top</source>
-        <translation type="unfinished">Высота крышки</translation>
+        <translation type="obsolete">Высота крышки</translation>
     </message>
     <message>
         <source>Strip Thickness</source>
-        <translation type="unfinished">Толщина полоски</translation>
+        <translation type="obsolete">Толщина полоски</translation>
     </message>
     <message>
         <source>Strip Conductivity</source>
-        <translation type="unfinished">Проводимость полоски</translation>
+        <translation type="obsolete">Проводимость полоски</translation>
     </message>
     <message>
         <source>Dielectric Loss Tangent</source>
-        <translation type="unfinished">Тангенс угла диэлектрических потерь</translation>
+        <translation type="obsolete">Тангенс угла диэлектрических потерь</translation>
     </message>
     <message>
         <source>Conductor Roughness</source>
-        <translation type="unfinished">Шероховатость проводника</translation>
+        <translation type="obsolete">Шероховатость проводника</translation>
     </message>
     <message>
         <source>Frequency</source>
-        <translation type="unfinished">Частота</translation>
+        <translation type="obsolete">Частота</translation>
     </message>
     <message>
         <source>Line Width</source>
-        <translation type="unfinished">Ширина линии</translation>
+        <translation type="obsolete">Ширина линии</translation>
     </message>
     <message>
         <source>Line Length</source>
-        <translation type="unfinished">Длина линии</translation>
+        <translation type="obsolete">Длина линии</translation>
     </message>
     <message>
         <source>Characteristic Impedance</source>
-        <translation type="unfinished">Характеристическое полное сопротивление</translation>
+        <translation type="obsolete">Характеристическое полное сопротивление</translation>
     </message>
     <message>
         <source>Electrical Length</source>
-        <translation type="unfinished">Электрическая длина</translation>
+        <translation type="obsolete">Электрическая длина</translation>
     </message>
     <message>
         <source>ErEff</source>
-        <translation type="unfinished">Эффективная Er</translation>
+        <translation type="obsolete">Эффективная Er</translation>
     </message>
     <message>
         <source>Conductor Losses</source>
-        <translation type="unfinished">Потери в проводнике</translation>
+        <translation type="obsolete">Потери в проводнике</translation>
     </message>
     <message>
         <source>Dielectric Losses</source>
-        <translation type="unfinished">Потери в диэлектрике</translation>
+        <translation type="obsolete">Потери в диэлектрике</translation>
     </message>
     <message>
         <source>Skin Depth</source>
-        <translation type="unfinished">Толщина скин-слоя</translation>
+        <translation type="obsolete">Толщина скин-слоя</translation>
     </message>
     <message>
         <source>Conductivity of Metal</source>
-        <translation type="unfinished">Проводимость металла</translation>
+        <translation type="obsolete">Проводимость металла</translation>
     </message>
     <message>
         <source>Magnetic Loss Tangent</source>
-        <translation type="unfinished">Тангенс угла магнитных потерь</translation>
+        <translation type="obsolete">Тангенс угла магнитных потерь</translation>
     </message>
     <message>
         <source>Width of Waveguide</source>
-        <translation type="unfinished">Ширина волновода</translation>
+        <translation type="obsolete">Ширина волновода</translation>
     </message>
     <message>
         <source>Height of Waveguide</source>
-        <translation type="unfinished">Высота волновода</translation>
+        <translation type="obsolete">Высота волновода</translation>
     </message>
     <message>
         <source>Waveguide Length</source>
-        <translation type="unfinished">Длина волновода</translation>
+        <translation type="obsolete">Длина волновода</translation>
     </message>
     <message>
         <source>TE-Modes</source>
-        <translation type="unfinished">Поперечно-электрические моды</translation>
+        <translation type="obsolete">Поперечно-электрические моды</translation>
     </message>
     <message>
         <source>TM-Modes</source>
-        <translation type="unfinished">Поперечно-магнитные моды</translation>
+        <translation type="obsolete">Поперечно-магнитные моды</translation>
     </message>
     <message>
         <source>Inner Diameter</source>
-        <translation type="unfinished">Внутренний диаметр</translation>
+        <translation type="obsolete">Внутренний диаметр</translation>
     </message>
     <message>
         <source>Outer Diameter</source>
-        <translation type="unfinished">Наружный диаметр</translation>
+        <translation type="obsolete">Наружный диаметр</translation>
     </message>
     <message>
         <source>Length</source>
-        <translation type="unfinished">Длина</translation>
+        <translation type="obsolete">Длина</translation>
     </message>
     <message>
         <source>Gap Width</source>
-        <translation type="unfinished">Ширина зазора</translation>
+        <translation type="obsolete">Ширина зазора</translation>
     </message>
     <message>
         <source>Even-Mode Impedance</source>
-        <translation type="unfinished">Полное сопротивление для четной моды</translation>
+        <translation type="obsolete">Полное сопротивление для четной моды</translation>
     </message>
     <message>
         <source>Odd-Mode Impedance</source>
-        <translation type="unfinished">Полное сопротивление для нечетной моды</translation>
+        <translation type="obsolete">Полное сопротивление для нечетной моды</translation>
     </message>
     <message>
         <source>ErEff Even</source>
-        <translation type="unfinished">Эффективная Er для четной моду</translation>
+        <translation type="obsolete">Эффективная Er для четной моду</translation>
     </message>
     <message>
         <source>ErEff Odd</source>
-        <translation type="unfinished">Эффективная Er для нечетной моды</translation>
+        <translation type="obsolete">Эффективная Er для нечетной моды</translation>
     </message>
     <message>
         <source>Conductor Losses Even</source>
-        <translation type="unfinished">Омические потери для четной моды</translation>
+        <translation type="obsolete">Омические потери для четной моды</translation>
     </message>
     <message>
         <source>Conductor Losses Odd</source>
-        <translation type="unfinished">Омические потери для нечетной моды</translation>
+        <translation type="obsolete">Омические потери для нечетной моды</translation>
     </message>
     <message>
         <source>Dielectric Losses Even</source>
-        <translation type="unfinished">Диэлектрические потери для четной моды</translation>
+        <translation type="obsolete">Диэлектрические потери для четной моды</translation>
     </message>
     <message>
         <source>Dielectric Losses Odd</source>
-        <translation type="unfinished">Диэлектрические потери для нечетной моды</translation>
+        <translation type="obsolete">Диэлектрические потери для нечетной моды</translation>
     </message>
     <message>
         <source>Values are consistent.</source>
-        <translation type="unfinished">Значения согласуются.</translation>
-    </message>
-    <message>
-        <source>Schematic copied into clipboard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission line type not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Значения согласуются.</translation>
     </message>
 </context>
 <context>
@@ -2237,107 +2087,23 @@ Removes selected property from the list</source>
     <name>FilterDialog</name>
     <message>
         <source>Filter synthesis</source>
-        <translation type="unfinished">Синтез фильтров</translation>
-    </message>
-    <message>
-        <source>Filter type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Filter class</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Corner frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop band frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pass band ripple</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop band attenuation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Impedance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bessel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Butterworth</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chebyshev</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cauer</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Синтез фильтров</translation>
     </message>
     <message>
         <source>Low pass</source>
-        <translation type="unfinished">Низкочастотный</translation>
+        <translation type="obsolete">Низкочастотный</translation>
     </message>
     <message>
         <source>High pass</source>
-        <translation type="unfinished">Высокочастотный</translation>
+        <translation type="obsolete">Высокочастотный</translation>
     </message>
     <message>
         <source>Band pass</source>
-        <translation type="unfinished">Полосовой</translation>
+        <translation type="obsolete">Полосовой</translation>
     </message>
     <message>
         <source>Band stop</source>
-        <translation type="unfinished">Режекторный</translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> db</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Ohm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>kHz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MHz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>GHz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Calculate</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Режекторный</translation>
     </message>
 </context>
 <context>
@@ -2654,51 +2420,51 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>ErEff Even</source>
-        <translation type="unfinished">Эффективная Er для четной моду</translation>
+        <translation type="obsolete">Эффективная Er для четной моду</translation>
     </message>
     <message>
         <source>ErEff Odd</source>
-        <translation type="unfinished">Эффективная Er для нечетной моды</translation>
+        <translation type="obsolete">Эффективная Er для нечетной моды</translation>
     </message>
     <message>
         <source>Conductor Losses Even</source>
-        <translation type="unfinished">Омические потери для четной моды</translation>
+        <translation type="obsolete">Омические потери для четной моды</translation>
     </message>
     <message>
         <source>Conductor Losses Odd</source>
-        <translation type="unfinished">Омические потери для нечетной моды</translation>
+        <translation type="obsolete">Омические потери для нечетной моды</translation>
     </message>
     <message>
         <source>Dielectric Losses Even</source>
-        <translation type="unfinished">Диэлектрические потери для четной моды</translation>
+        <translation type="obsolete">Диэлектрические потери для четной моды</translation>
     </message>
     <message>
         <source>Dielectric Losses Odd</source>
-        <translation type="unfinished">Диэлектрические потери для нечетной моды</translation>
+        <translation type="obsolete">Диэлектрические потери для нечетной моды</translation>
     </message>
     <message>
         <source>Skin Depth</source>
-        <translation type="unfinished">Толщина скин-слоя</translation>
+        <translation type="obsolete">Толщина скин-слоя</translation>
     </message>
     <message>
         <source>Conductor Losses</source>
-        <translation type="unfinished">Потери в проводнике</translation>
+        <translation type="obsolete">Потери в проводнике</translation>
     </message>
     <message>
         <source>Dielectric Losses</source>
-        <translation type="unfinished">Потери в диэлектрике</translation>
+        <translation type="obsolete">Потери в диэлектрике</translation>
     </message>
     <message>
         <source>TE-Modes</source>
-        <translation type="unfinished">Поперечно-электрические моды</translation>
+        <translation type="obsolete">Поперечно-электрические моды</translation>
     </message>
     <message>
         <source>TM-Modes</source>
-        <translation type="unfinished">Поперечно-магнитные моды</translation>
+        <translation type="obsolete">Поперечно-магнитные моды</translation>
     </message>
     <message>
         <source>ErEff</source>
-        <translation type="unfinished">Эффективная Er</translation>
+        <translation type="obsolete">Эффективная Er</translation>
     </message>
     <message>
         <source>Expected int but found %1</source>
@@ -2745,7 +2511,7 @@ Removes selected property from the list</source>
     <name>ResultBox</name>
     <message>
         <source>Calculated Results</source>
-        <translation type="unfinished">Результаты расчетов</translation>
+        <translation type="obsolete">Результаты расчетов</translation>
     </message>
 </context>
 <context>
@@ -2786,10 +2552,6 @@ Removes selected property from the list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>y axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Displayed waveforms</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2807,6 +2569,14 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>y left axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>y right axis</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3016,144 +2786,16 @@ Removes selected property from the list</source>
 <context>
     <name>TransmissionDialog</name>
     <message>
-        <source>Transmission Line Calculation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission line type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Microstrip</source>
-        <translation type="unfinished">Микрополосковая линия</translation>
-    </message>
-    <message>
-        <source>Rectangular waveguide</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Coaxial line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Coupled microstrip</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Substrate parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mur</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Er</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>H</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>H_t</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>T</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cond</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tand</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rough</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Physical parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>W</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>L</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Component parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Freq</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Electrical parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ang_l</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TanM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>a</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>b</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sigma</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>din</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>dout</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>S</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z0e</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z0o</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Calculate results</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Микрополосковая линия</translation>
     </message>
     <message>
         <source>Analyze</source>
-        <translation type="unfinished">Анализ</translation>
+        <translation type="obsolete">Анализ</translation>
     </message>
     <message>
         <source>Synthesize</source>
-        <translation type="unfinished">Синтез</translation>
+        <translation type="obsolete">Синтез</translation>
     </message>
 </context>
 </TS>

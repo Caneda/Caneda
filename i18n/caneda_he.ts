@@ -2,77 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>Attenuator</name>
-    <message>
-        <source>Attenuator Synthesis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Topology</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pi</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tee</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridged Tee</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Attenuation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Ohm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zout</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Calculate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>R1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>--</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>R2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>R3</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>Caneda::AboutDialog</name>
     <message>
         <source>About Caneda</source>
@@ -113,10 +42,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>© 2008-2012 Caneda developer team</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Current maintainer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -132,15 +57,8 @@
         <source>This program is licensed under the GNU/GPL v2.</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>Caneda::Attenuator</name>
     <message>
-        <source>Result: Success!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error: Set Attenuation more than %1 dB</source>
+        <source>© 2008-2016 Caneda developer team</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -152,6 +70,22 @@
     </message>
     <message>
         <source>Voltage [V]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current [A]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Frequency [Hz]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Magnitude [dB]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phase [º]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -224,29 +158,6 @@
     </message>
     <message>
         <source>Untitled</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Caneda::FilterDialog</name>
-    <message>
-        <source>Error: Stop frequency must be greater than start frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Filter order must not be less than two</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bessel filter order must not be greater than 19</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Result: Couldn&apos;t calculate filter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Result: Successful</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1271,76 +1182,6 @@ Opens backup and history dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Filter synthesis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starts CanedaFilter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Filter synthesis
-
-Starts CanedaFilter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starts transmission line calculator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission line
-
-Starts transmission line calculator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Matching circuit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Creates Matching Circuit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Matching Circuit
-
-Dialog for Creating Matching Circuit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Attenuator synthesis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starts CanedaAttenuator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Attenuator synthesis
-
-Starts attenuator calculation program</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Import Data...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Convert file to Caneda data file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Import Data
-
-Convert data file to Caneda data file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Simulate</source>
         <translation type="unfinished">התחל סימולציה</translation>
     </message>
@@ -1592,11 +1433,7 @@ Inserts a wire</source>
     </message>
     <message>
         <source>&amp;Project</source>
-        <translation type="unfinished">&amp;פרוייקט</translation>
-    </message>
-    <message>
-        <source>&amp;Tools</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;פרוייקט</translation>
     </message>
     <message>
         <source>&amp;Simulation</source>
@@ -1870,33 +1707,29 @@ Removes selected property from the list</source>
 <context>
     <name>Caneda::SimulationConfigurationPage</name>
     <message>
-        <source>Simulator Engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use qucs engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use ngspice engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Simulation Display Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use a special tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use same tab as schematic</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Simulation</source>
         <comment>simulation page title</comment>
         <translation type="unfinished">סימולציה</translation>
+    </message>
+    <message>
+        <source>Simulation Engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ngspice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Engine:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1962,181 +1795,6 @@ Removes selected property from the list</source>
     <name>Caneda::TextEdit</name>
     <message>
         <source>Line: %1 Col: %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Caneda::TransmissionDialog</name>
-    <message>
-        <source>Substrate Parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Physical Parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Electrical Parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Component Parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Relative Permittivity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Relative Permeability</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Height of Substrate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Height of Box Top</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Strip Thickness</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Strip Conductivity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dielectric Loss Tangent</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conductor Roughness</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line Length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Characteristic Impedance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Electrical Length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ErEff</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conductor Losses</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dielectric Losses</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Skin Depth</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conductivity of Metal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Magnetic Loss Tangent</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Width of Waveguide</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Height of Waveguide</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waveguide Length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TE-Modes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TM-Modes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Inner Diameter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Outer Diameter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Gap Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Even-Mode Impedance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Odd-Mode Impedance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ErEff Even</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ErEff Odd</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conductor Losses Even</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conductor Losses Odd</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dielectric Losses Even</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dielectric Losses Odd</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Values are consistent.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Schematic copied into clipboard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission line type not available</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2230,113 +1888,6 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>Text file</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>FilterDialog</name>
-    <message>
-        <source>Filter synthesis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Filter type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Filter class</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Corner frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop band frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pass band ripple</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop band attenuation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Impedance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bessel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Butterworth</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chebyshev</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cauer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low pass</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High pass</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Band pass</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Band stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> db</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Ohm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>kHz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MHz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>GHz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Calculate</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2653,54 +2204,6 @@ Removes selected property from the list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ErEff Even</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ErEff Odd</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conductor Losses Even</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conductor Losses Odd</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dielectric Losses Even</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dielectric Losses Odd</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Skin Depth</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conductor Losses</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dielectric Losses</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TE-Modes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TM-Modes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ErEff</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Expected int but found %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2742,13 +2245,6 @@ Removes selected property from the list</source>
     </message>
 </context>
 <context>
-    <name>ResultBox</name>
-    <message>
-        <source>Calculated Results</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>SaveDocumentsDialog</name>
     <message>
         <source>Save Documents</source>
@@ -2786,10 +2282,6 @@ Removes selected property from the list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>y axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Displayed waveforms</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2807,6 +2299,14 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>y left axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>y right axis</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3010,149 +2510,6 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>Height</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TransmissionDialog</name>
-    <message>
-        <source>Transmission Line Calculation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission line type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Microstrip</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rectangular waveguide</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Coaxial line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Coupled microstrip</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Substrate parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mur</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Er</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>H</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>H_t</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>T</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cond</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tand</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rough</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Physical parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>W</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>L</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Component parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Freq</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Electrical parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ang_l</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TanM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>a</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>b</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sigma</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>din</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>dout</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>S</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z0e</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z0o</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Calculate results</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Analyze</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Synthesize</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
