@@ -264,7 +264,7 @@ namespace Caneda
     void RotateItemsCmd::redo()
     {
         foreach(CGraphicsItem *item, m_items) {
-            item->rotate90(Caneda::AntiClockwise);
+            item->rotate90(m_angleDirection);
         }
     }
 

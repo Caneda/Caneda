@@ -1349,11 +1349,11 @@ namespace Caneda
         }
 
         // left == clock wise
-        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
+        if(event->buttons() == Qt::LeftButton) {
             angle = Caneda::Clockwise;
         }
         // right == anticlock wise
-        else if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
+        else if(event->buttons() == Qt::RightButton) {
             angle = Caneda::AntiClockwise;
         }
         // Avoid angle unitialized
