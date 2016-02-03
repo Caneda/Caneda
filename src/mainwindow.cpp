@@ -546,7 +546,7 @@ namespace Caneda
         sy->addMouseAction(action);
 
         action = am->createMouseAction("editRotate", Caneda::Rotating,
-                Caneda::icon("object-rotate-left"), tr("Rotate"));
+                Caneda::icon("object-rotate-right"), tr("Rotate"));
         action->setShortcut(Key_R);
         action->setToolTip(tr("Rotate") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Rotates the selected component"));

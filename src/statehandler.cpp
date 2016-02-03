@@ -470,7 +470,7 @@ namespace Caneda
                 break;
 
             case Caneda::Rotating:
-                cursor = QCursor(Caneda::icon("object-rotate-left").pixmap(20));
+                cursor = QCursor(Caneda::icon("object-rotate-right").pixmap(20));
                 break;
 
             case Caneda::MirroringX:
