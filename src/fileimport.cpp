@@ -156,8 +156,8 @@ namespace Caneda
                         }
                     }
 
-                    // Avoid the first var, as it is the time/frequency base
-                    // for the rest of the curves.
+                    // Avoid the first var, as it is the time base for the rest
+                    // of the curves.
                     for(int i = 1; i < nvars; i++){
                         // Copy the data into the curves
                         plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
@@ -172,6 +172,8 @@ namespace Caneda
                     double magnitude = 0;
                     double phase = 0;
 
+                    // Read the data values, converting the complex data into
+                    // magnitude and phase data.
                     for(int i = 0; i < npoints; i++){
                         for(int j = 0; j < nvars; j++){
                             line = in.readLine();
@@ -182,16 +184,25 @@ namespace Caneda
                             real = tok.first().toDouble();  // Get the real part
                             imaginary = tok.last().toDouble();  // Get the imaginary part
 
-                            magnitude = sqrt(real*real + imaginary*imaginary);
-                            phase = atan(imaginary/real) * 180/M_PI;
+                            magnitude = sqrt(real*real + imaginary*imaginary);  // Calculate the magnitude part
+                            phase = atan(imaginary/real) * 180/M_PI;  // Calculate the phase part
 
                             dataSamples[j][i] = magnitude;
                             dataSamplesPhase[j][i] = phase;
                         }
                     }
 
-                    // Avoid the first var, as it is the time/frequency base
+                    // Convert the magnitude values into dB ( dB = 20*log10(V) ).
+                    // Avoid the first var (var=0), as it is the frequency base
                     // for the rest of the curves.
+                    for(int i = 0; i < npoints; i++){
+                        for(int j = 1; j < nvars; j++){
+                            dataSamples[j][i] = 20*log10(dataSamples[j][i]);
+                        }
+                    }
+
+                    // Avoid the first var, as it is the frequency base for the
+                    // rest of the curves.
                     for(int i = 1; i < nvars; i++){
                         // Copy the data into the curves
                         plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);

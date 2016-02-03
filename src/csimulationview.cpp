@@ -205,7 +205,6 @@ namespace Caneda
             setAxisTitle(yLeft, QwtText(tr("Magnitude [dB]")));
             setAxisTitle(yRight, QwtText(tr("Phase [º]")));
             setLogAxis(QwtPlot::xBottom, true);
-            setLogAxis(QwtPlot::yLeft, true);
         }
 
         enableAxis(yRight);  // Always enable the y axis
