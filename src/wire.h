@@ -24,6 +24,7 @@
 #include "port.h"
 
 #include <QList>
+#include <QMenu>
 
 namespace Caneda
 {
@@ -96,6 +97,9 @@ namespace Caneda
         static Wire* loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
+
+    protected:
+        void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
     private:
         WireData store; //!< Stores the wire data when needed(undo/redo).

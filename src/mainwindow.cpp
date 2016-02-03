@@ -181,7 +181,6 @@ namespace Caneda
         using namespace Qt;
         Action *action = 0;
         ActionManager *am = ActionManager::instance();
-        StateHandler *handler = StateHandler::instance();
         SimulationContext *sim = SimulationContext::instance();
 
         action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New..."));

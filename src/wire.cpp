@@ -20,6 +20,7 @@
 
 #include "wire.h"
 
+#include "actionmanager.h"
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "settings.h"
@@ -255,6 +256,20 @@ namespace Caneda
         }
 
         updateGeometry();
+    }
+
+    //! \copydoc CGraphicsItem::contextMenuEvent()
+    void Wire::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+    {
+        ActionManager* am = ActionManager::instance();
+        QMenu *_menu = new QMenu();
+
+        // Launch context menu of item
+        _menu->addAction(am->actionForName("editCut"));
+        _menu->addAction(am->actionForName("editCopy"));
+        _menu->addAction(am->actionForName("editDelete"));
+
+        _menu->exec(event->screenPos());
     }
 
 } // namespace Caneda

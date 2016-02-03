@@ -176,7 +176,7 @@ namespace Caneda
         ActionManager* am = ActionManager::instance();
         QMenu *_menu = new QMenu();
 
-        //launch context menu of item
+        // Launch context menu of item
         _menu->addAction(am->actionForName("editCut"));
         _menu->addAction(am->actionForName("editCopy"));
         _menu->addAction(am->actionForName("editDelete"));

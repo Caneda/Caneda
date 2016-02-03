@@ -913,6 +913,7 @@ namespace Caneda
 
         _menu->addAction(am->actionForName("symEdit"));
         _menu->addAction(am->actionForName("layEdit"));
+        _menu->addAction(am->actionForName("openSym"));
 
         //! \todo Reenable these options once implemented
         //                _menu->addAction(am->actionForName("intoH"));
