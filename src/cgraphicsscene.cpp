@@ -778,43 +778,31 @@ namespace Caneda
     }
 
     /*!
-     * \brief Constructs and returns a menu with default actions inserted.
+     * \brief Constructs and returns a context menu with the actions
+     * corresponding to the selected object.
      */
     void CGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         if(m_mouseAction == Normal) {
             ActionManager* am = ActionManager::instance();
             QMenu *_menu = new QMenu();
+            IDocument *document = DocumentViewManager::instance()->currentDocument();
 
             switch(selectedItems().size()) {
             case 0:
-                // Launch a general menu
-                _menu->addAction(am->actionForName("select"));
-                _menu->addAction(am->actionForName("insWire"));
-                _menu->addAction(am->actionForName("editDelete"));
-
-                _menu->addSeparator();
-
-                _menu->addAction(am->actionForName("editPaste"));
-
-                _menu->addSeparator();
-
-                _menu->addAction(am->actionForName("symEdit"));
-                //! \todo Reenable these options once implemented
-                //                _menu->addAction(am->actionForName("intoH"));
-                //                _menu->addAction(am->actionForName("popH"));
-                _menu->addAction(am->actionForName("propertiesDialog"));
-
-                _menu->exec(event->screenPos());
+                // Launch the context of the current document
+                if (document) {
+                    document->contextMenuEvent(event);
+                }
                 break;
 
             case 1:
-                // Launch context menu of item.
+                // Launch the context menu of an item.
                 QGraphicsScene::contextMenuEvent(event);
                 break;
 
             default:
-                // Launch a common menu
+                // Launch the context menu of multiple items selected.
                 _menu->addAction(am->actionForName("editCut"));
                 _menu->addAction(am->actionForName("editCopy"));
                 _menu->addAction(am->actionForName("editDelete"));

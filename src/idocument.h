@@ -22,6 +22,7 @@
 #define CANEDA_IDOCUMENT_H
 
 #include <QObject>
+#include <QGraphicsSceneEvent>
 #include <QVariant>
 
 // Forward declarations
@@ -116,6 +117,7 @@ namespace Caneda
         virtual IView* createView() = 0;
         QList<IView*> views() const;
 
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) = 0;
         virtual void launchPropertiesDialog() = 0;
 
     public Q_SLOTS:
@@ -206,6 +208,7 @@ namespace Caneda
 
         virtual IView* createView();
 
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
@@ -286,6 +289,7 @@ namespace Caneda
 
         virtual IView* createView();
 
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
@@ -369,6 +373,7 @@ namespace Caneda
 
         virtual IView* createView();
 
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) {}
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
@@ -447,6 +452,7 @@ namespace Caneda
 
         virtual IView* createView();
 
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
@@ -527,6 +533,7 @@ namespace Caneda
 
         virtual IView* createView();
 
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) {}
         virtual void launchPropertiesDialog() {}
         // End of IDocument interface methods
 
@@ -613,6 +620,7 @@ namespace Caneda
 
         virtual IView* createView();
 
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) {}
         virtual void launchPropertiesDialog() {}
         // End of IDocument interface methods
 

@@ -41,6 +41,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPrinter>
 #include <QProcess>
@@ -283,6 +284,13 @@ namespace Caneda
      *                     is set.
      *
      * \sa \ref DocumentFormats
+     */
+
+    /*!
+     * \fn IDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *e)
+     *
+     * \brief Constructs and returns a context menu with the actions
+     * corresponding to the selected object.
      */
 
     /*!
@@ -577,6 +585,26 @@ namespace Caneda
         return new LayoutView(this);
     }
 
+    void LayoutDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *e)
+    {
+        // Launch the context of the current document
+        ActionManager* am = ActionManager::instance();
+        QMenu *_menu = new QMenu();
+        _menu->addAction(am->actionForName("select"));
+        _menu->addAction(am->actionForName("editDelete"));
+
+        _menu->addSeparator();
+
+        _menu->addAction(am->actionForName("editPaste"));
+
+        _menu->addSeparator();
+
+        _menu->addAction(am->actionForName("schEdit"));
+        _menu->addAction(am->actionForName("symEdit"));
+
+        _menu->exec(e->screenPos());
+    }
+
     void LayoutDocument::launchPropertiesDialog()
     {
         // Get a list of selected items
@@ -866,6 +894,31 @@ namespace Caneda
     IView* SchematicDocument::createView()
     {
         return new SchematicView(this);
+    }
+
+    void SchematicDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *e)
+    {
+        // Launch the context of the current document
+        ActionManager* am = ActionManager::instance();
+        QMenu *_menu = new QMenu();
+        _menu->addAction(am->actionForName("select"));
+        _menu->addAction(am->actionForName("insWire"));
+        _menu->addAction(am->actionForName("editDelete"));
+
+        _menu->addSeparator();
+
+        _menu->addAction(am->actionForName("editPaste"));
+
+        _menu->addSeparator();
+
+        _menu->addAction(am->actionForName("symEdit"));
+        _menu->addAction(am->actionForName("layEdit"));
+
+        //! \todo Reenable these options once implemented
+        //                _menu->addAction(am->actionForName("intoH"));
+        //                _menu->addAction(am->actionForName("popH"));
+
+        _menu->exec(e->screenPos());
     }
 
     void SchematicDocument::launchPropertiesDialog()
@@ -1273,6 +1326,27 @@ namespace Caneda
     IView* SymbolDocument::createView()
     {
         return new SymbolView(this);
+    }
+
+    void SymbolDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *e)
+    {
+        // Launch the context of the current document
+        ActionManager* am = ActionManager::instance();
+        QMenu *_menu = new QMenu();
+        _menu->addAction(am->actionForName("select"));
+        _menu->addAction(am->actionForName("editDelete"));
+
+        _menu->addSeparator();
+
+        _menu->addAction(am->actionForName("editPaste"));
+
+        _menu->addSeparator();
+
+        _menu->addAction(am->actionForName("schEdit"));
+        _menu->addAction(am->actionForName("layEdit"));
+        _menu->addAction(am->actionForName("propertiesDialog"));
+
+        _menu->exec(e->screenPos());
     }
 
     void SymbolDocument::launchPropertiesDialog()

@@ -167,7 +167,10 @@ namespace Caneda
         return nodeCreated;
     }
 
-    //! \brief Context menu.
+    /*!
+     * \brief Constructs and returns a context menu with the actions
+     * corresponding to the selected object.
+     */
     void CGraphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         ActionManager* am = ActionManager::instance();
