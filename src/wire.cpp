@@ -143,22 +143,22 @@ namespace Caneda
     }
 
     Wire* Wire::copy(CGraphicsScene *scene) const
-     {
-         Wire *wire = new Wire(QPointF(1,1), QPointF(5,5), scene);
-         Wire::copyDataTo(wire);
-         return wire;
-     }
+    {
+        Wire *wire = new Wire(QPointF(1,1), QPointF(5,5), scene);
+        Wire::copyDataTo(wire);
+        return wire;
+    }
 
-     void Wire::copyDataTo(Wire *wire) const
-     {
-         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(wire));
+    void Wire::copyDataTo(Wire *wire) const
+    {
+        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(wire));
 
-         WireData _data;
-         _data.port1Pos = port1()->pos();
-         _data.port2Pos = port2()->pos();
+        WireData _data;
+        _data.port1Pos = port1()->pos();
+        _data.port2Pos = port2()->pos();
 
-         wire->setState(_data);
-     }
+        wire->setState(_data);
+    }
 
     //! \brief Returns the wire's stored status. Required for undo/redo.
     WireData Wire::storedState() const
