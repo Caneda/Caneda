@@ -302,15 +302,13 @@ namespace Caneda
     }
 
     /*!
-     * \brief This returns a copy of the current item parented to \a scene.
+     * \fn CGraphicsItem::copy()
      *
-     * Now it returns null but subclasses should reimplement this to return the
-     * appropriate copy of that reimplemented item.
+     * \brief Returns a copy of the current item parented to \a scene.
+     *
+     * Subclasses should reimplement this method to return the appropriate
+     * copy of the reimplemented item.
      */
-    CGraphicsItem* CGraphicsItem::copy(CGraphicsScene *) const
-    {
-        return 0;
-    }
 
     /*!
      * \brief Copies data of current-item to \a item.
@@ -324,6 +322,7 @@ namespace Caneda
         item->m_boundingRect = m_boundingRect;
         item->m_shape = m_shape;
         item->setPos(pos());
+        item->setRotation(rotation());
     }
 
     /*!

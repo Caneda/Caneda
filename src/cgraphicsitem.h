@@ -150,10 +150,10 @@ namespace Caneda
         virtual void mirrorAlong(Qt::Axis axis);
         virtual void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise);
 
-        virtual CGraphicsItem* copy(CGraphicsScene *scene = 0) const;
+        virtual CGraphicsItem* copy(CGraphicsScene *scene = 0) const = 0;
         virtual void copyDataTo(CGraphicsItem*item) const;
 
-        //! Subclasses should implement this, to launch its own dialog.
+        //! \brief Subclasses should implement this, to launch its own dialog.
         virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
 
     protected:

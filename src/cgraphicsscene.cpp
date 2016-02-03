@@ -1585,13 +1585,21 @@ namespace Caneda
     {
         if(event->type() == QEvent::GraphicsSceneMousePress) {
 
-            if (event->button() == Qt::LeftButton) {
+            if(event->button() == Qt::LeftButton) {
 
+                // First temporarily remove the item from the scene. This item
+                // is the one the user is grabbing with the mouse and about to
+                // insert into the scene. If this "moving" item is not removed
+                // there is a collision, and a temporal connection between its
+                // ports is made (as the ports of the inserting items collides
+                // with the ports of the new item created.
                 clearSelection();
                 foreach(CGraphicsItem *item, m_insertibles) {
                     removeItem(item);
                 }
 
+                // Create a new item and copy the properties of the inserting
+                // item.
                 m_undoStack->beginMacro(QString("Insert items"));
                 foreach(CGraphicsItem *item, m_insertibles) {
                     CGraphicsItem *copied = item->copy(0);
@@ -1599,42 +1607,20 @@ namespace Caneda
                 }
                 m_undoStack->endMacro();
 
+                // Re-add the inserting items into the scene, to be able to
+                // insert more items of the same kind.
                 foreach(CGraphicsItem *item, m_insertibles) {
                     addItem(item);
                     item->setSelected(true);
                 }
 
-            } else if (event->button() == Qt::RightButton) {
+            }
+            else if(event->button() == Qt::RightButton) {
 
-                emit rotateInvokedWhileInserting();
-                /*!
-                 * \todo HACK: Assuming the above signal is connected to StateHandler
-                 * through Qt::DirectConnection, all m_insertibles would have been
-                 * updated with rotated items.  However, beginInsertingItems would have
-                 * hidden all items, so show them back.
-                 * I see no point why we would be not using Qt::DirectConenction though!
-                 */
                 QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
-                foreach(CGraphicsItem *item, m_insertibles) {
-                    item->show();
-                    item->setPos(smartNearingGridPoint(item->pos() + delta));
-                }
 
-            } else if (event->button() == Qt::MidButton) {
-
-                emit mirrorInvokedWhileInserting();
-                /*!
-                 * \todo HACK: Same as above.
-                 *
-                 * Assuming the above signal is connected to StateHandler
-                 * through Qt::DirectConnection, all m_insertibles would have been
-                 * updated with rotated items.  However, beginInsertingItems would have
-                 * hidden all items, so show them back.
-                 * I see no point why we would be not using Qt::DirectConenction though!
-                 */
-                QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
                 foreach(CGraphicsItem *item, m_insertibles) {
-                    item->show();
+                    item->rotate90(Caneda::AntiClockwise);
                     item->setPos(smartNearingGridPoint(item->pos() + delta));
                 }
 

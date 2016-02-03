@@ -49,8 +49,6 @@ namespace Caneda
     public Q_SLOTS:
         void slotSidebarItemClicked(const QString& item, const QString& category);
         void slotHandlePaste();
-        void slotRotateInsertibles();
-        void slotMirrorInsertibles();
         void slotOnObjectDestroyed(QObject *sender);
         void slotUpdateFocussedWidget(CGraphicsView *widget);
         void slotPerformToggleAction(const QString& sender, bool on);

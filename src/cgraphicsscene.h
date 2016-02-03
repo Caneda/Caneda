@@ -129,8 +129,6 @@ namespace Caneda
     Q_SIGNALS:
         void changed();
         void mouseActionChanged();
-        void rotateInvokedWhileInserting();
-        void mirrorInvokedWhileInserting();
 
     protected:
         void drawBackground(QPainter *p, const QRectF& r);
