@@ -2033,44 +2033,28 @@ namespace Caneda
         }
     }
 
-    /*!
-     * \brief Mirror X event
-     * \note right button mirror Y
-     */
+    //! \brief Mirror X event
     void CGraphicsScene::mirroringXEvent(const QGraphicsSceneMouseEvent *event)
     {
         if(event->type() != QEvent::GraphicsSceneMousePress) {
             return;
         }
 
-        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
-            return mirroringEvent(event, Qt::XAxis);
+        if(event->buttons() == Qt::LeftButton) {
+            mirroringEvent(event, Qt::XAxis);
         }
-        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
-            return mirroringEvent(event, Qt::YAxis);
-        }
-
-        return;
     }
 
-    /*!
-     * \brief Mirror Y event
-     * \note right button mirror X
-     */
+    //! \brief Mirror Y event
     void CGraphicsScene::mirroringYEvent(const QGraphicsSceneMouseEvent *event)
     {
         if(event->type() != QEvent::GraphicsSceneMousePress) {
             return;
         }
 
-        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
-            return mirroringEvent(event, Qt::YAxis);
+        if(event->buttons() == Qt::LeftButton) {
+            mirroringEvent(event, Qt::YAxis);
         }
-        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
-            return mirroringEvent(event, Qt::XAxis);
-        }
-
-        return;
     }
 
     /**********************************************************************
