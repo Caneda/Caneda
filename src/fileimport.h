@@ -58,8 +58,8 @@ namespace Caneda
 
     private:
         void parseFile(QTextStream *file);
-        bool parseAsciiData(QTextStream *file);
-        bool parseBinaryData(QTextStream *file);
+        void parseAsciiData(QTextStream *file, int nvars, int npoints, bool real);
+        void parseBinaryData(QTextStream *file, int nvars, int npoints, bool real);
 
         CSimulationScene* cSimulationScene() const;
         QString fileName() const;
