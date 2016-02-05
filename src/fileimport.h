@@ -20,14 +20,18 @@
 #ifndef FILE_IMPORT_H
 #define FILE_IMPORT_H
 
+#include <QList>
+
 // Forward declarations
 class QFile;
 class QString;
+class QTextStream;
 
 namespace Caneda
 {
     // Forward declarations
     class SimulationDocument;
+    class CSimulationPlotCurve;
     class CSimulationScene;
 
     /*!
@@ -53,10 +57,17 @@ namespace Caneda
         bool load();
 
     private:
+        void parseFile(QTextStream *file);
+        bool parseAsciiData(QTextStream *file);
+        bool parseBinaryData(QTextStream *file);
+
         CSimulationScene* cSimulationScene() const;
         QString fileName() const;
 
         SimulationDocument *m_simulationDocument;
+
+        QList<CSimulationPlotCurve*> plotCurves;       // List of magnitude curves.
+        QList<CSimulationPlotCurve*> plotCurvesPhase;  // List of phase curves.
     };
 
 } // namespace Caneda

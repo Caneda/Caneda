@@ -43,33 +43,37 @@ namespace Caneda
     bool FormatRawSimulation::load()
     {
         // Read all the data from the file "filename() + ".raw"" (waveforms).
-        CSimulationScene *scene = cSimulationScene();
-        if(!scene) {
-            return false;
-        }
-
         QFile file(fileName());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
-                    QObject::tr("Cannot load document ")+fileName());
+                    QObject::tr("Cannot load document ") + fileName());
             return false;
         }
 
-        // ************************************************
-        // Parse the raw file
-        // ************************************************
-        //! \todo There can be more than one plot set. This should be considered.
+        QTextStream in(&file);
+        parseFile(&in);  // Parse the raw file
+        file.close();
 
-        int nvars = 0;  // Number of variables
-        int npoints = 0;  // Number of points in the simulation
+        return true;
+    }
+
+    /*!
+     * \brief Parse the raw file
+     *
+     * \todo There can be more than one plot set. This should be considered.
+     */
+    void FormatRawSimulation::parseFile(QTextStream *file)
+    {
+        CSimulationScene *scene = cSimulationScene();
+        if(!scene) {
+            return;
+        }
+
+        int nvars = 0;     // Number of variables
+        int npoints = 0;   // Number of points in the simulation
         bool real = true;  // Transient/AC simulation: real = transient / false = ac (complex numbers)
 
-        QTextStream in(&file);
-        QString line = in.readLine();
-        QList<CSimulationPlotCurve*> plotCurves;       // List of magnitude curves.
-        QList<CSimulationPlotCurve*> plotCurvesPhase;  // List of phase curves.
-        QList<double*> dataSamples;               // List of curve's magnitude data. Once filled, used to set data in plotCurves.
-        QList<double*> dataSamplesPhase;          // List of curve's phase data. Used for complex numbers. Once filled, used to set data in plotCurves.
+        QString line = file->readLine();
 
         while(!line.isNull()) {
 
@@ -101,7 +105,7 @@ namespace Caneda
             else if( keyword == "variables") {
 
                 for(int i = 0; i < nvars; i++) {
-                    line = in.readLine();
+                    line = file->readLine();
 
                     tok = line.split("\t", QString::SkipEmptyParts);
                     if(tok.size() >= 3){
@@ -113,9 +117,6 @@ namespace Caneda
                             CSimulationPlotCurve *curve = new CSimulationPlotCurve(tok.at(1));  // tok.at(1) = name
                             curve->setType(tok.at(2));  // tok.at(2) = type of curve (voltage, current, etc)
                             plotCurves.append(curve);   // Append new curve to the list
-
-                            double *data = new double[npoints];  // Create new dataset
-                            dataSamples.append(data);  // Append new data set to the list
                         }
                         else {
                             // If dealing with complex numbers, create an array for the magnitude and another one for the phase
@@ -125,11 +126,6 @@ namespace Caneda
                             curvePhase->setType("phase");        // type of curve (magnitude, phase, etc)
                             plotCurves.append(curve);            // Append new curve to the list
                             plotCurvesPhase.append(curvePhase);  // Append new curve to the list
-
-                            double *data = new double[npoints];  // Create new dataset
-                            double *dataPhase = new double[npoints];  // Create new dataset
-                            dataSamples.append(data);  // Append new data set to the list
-                            dataSamplesPhase.append(dataPhase);  // Append new data set to the list
                         }
 
                     }
@@ -146,11 +142,32 @@ namespace Caneda
             // Ascii format implementation
             // ************************************************
             else if( keyword == "values") {
+
+                // Create the arrays to deal with the data
+                QList<double*> dataSamples;               // List of curve's magnitude data. Once filled, used to set data in plotCurves.
+                QList<double*> dataSamplesPhase;          // List of curve's phase data. Used for complex numbers. Once filled, used to set data in plotCurves.
+
+                for(int i = 0; i < nvars; i++) {
+                    if(real) {
+                        // If dealing with real numbers, create an array only for the magnitude and use the provided curve types
+                        double *data = new double[npoints];  // Create new dataset
+                        dataSamples.append(data);  // Append new data set to the list
+                    }
+                    else {
+                        // If dealing with complex numbers, create an array for the magnitude and another one for the phase
+                        double *data = new double[npoints];  // Create new dataset
+                        double *dataPhase = new double[npoints];  // Create new dataset
+                        dataSamples.append(data);  // Append new data set to the list
+                        dataSamplesPhase.append(dataPhase);  // Append new data set to the list
+                    }
+                }
+
+                // Read the data
                 if(real) {
                     // The data is of type real
                     for(int i = 0; i < npoints; i++){
                         for(int j = 0; j < nvars; j++){
-                            line = in.readLine();
+                            line = file->readLine();
                             tok = line.split("\t");
                             dataSamples[j][i] = tok.last().toDouble();
                         }
@@ -176,7 +193,7 @@ namespace Caneda
                     // magnitude and phase data.
                     for(int i = 0; i < npoints; i++){
                         for(int j = 0; j < nvars; j++){
-                            line = in.readLine();
+                            line = file->readLine();
                             tok = line.split("\t");
                             line = tok.last();  // Get the complex numeric data
                             tok = line.split(",");  // Split real and imaginary part
@@ -218,9 +235,30 @@ namespace Caneda
             // ************************************************
             //! \todo Fix the binary raw file read implementation
             else if( keyword == "binary") {
+
+                // Create the arrays to deal with the data
+                QList<double*> dataSamples;               // List of curve's magnitude data. Once filled, used to set data in plotCurves.
+                QList<double*> dataSamplesPhase;          // List of curve's phase data. Used for complex numbers. Once filled, used to set data in plotCurves.
+
+                // Read the data
+                for(int i = 0; i < nvars; i++) {
+                    if(real) {
+                        // If dealing with real numbers, create an array only for the magnitude and use the provided curve types
+                        double *data = new double[npoints];  // Create new dataset
+                        dataSamples.append(data);  // Append new data set to the list
+                    }
+                    else {
+                        // If dealing with complex numbers, create an array for the magnitude and another one for the phase
+                        double *data = new double[npoints];  // Create new dataset
+                        double *dataPhase = new double[npoints];  // Create new dataset
+                        dataSamples.append(data);  // Append new data set to the list
+                        dataSamplesPhase.append(dataPhase);  // Append new data set to the list
+                    }
+                }
+
                 if(real) {
                     // The data is of type real
-                    QDataStream out(&file);
+                    QDataStream out(file->device());
                     out.setByteOrder(QDataStream::LittleEndian);
 
                     for(int i = 0; i < npoints; i++){
@@ -240,7 +278,7 @@ namespace Caneda
                 }
                 else {
                     // The data is of type complex
-                    QDataStream out(&file);
+                    QDataStream out(file->device());
                     out.setByteOrder(QDataStream::LittleEndian);
 
                     double real = 0;
@@ -270,15 +308,11 @@ namespace Caneda
             }
 
             // Read the next line
-            line = in.readLine();
+            line = file->readLine();
         }
         // ************************************************
         // Finished parsing the raw file
         // ************************************************
-
-        file.close();
-
-        return true;
     }
 
     CSimulationScene* FormatRawSimulation::cSimulationScene() const
