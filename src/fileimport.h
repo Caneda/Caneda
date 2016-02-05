@@ -54,15 +54,14 @@ namespace Caneda
     public:
         FormatRawSimulation(SimulationDocument *doc = 0);
 
-        bool load();
+        bool load(const QString filename);
 
     private:
         void parseFile(QTextStream *file);
-        void parseAsciiData(QTextStream *file, int nvars, int npoints, bool real);
-        void parseBinaryData(QTextStream *file, int nvars, int npoints, bool real);
+        void parseAsciiData(QTextStream *file, const int nvars, const int npoints, const bool real);
+        void parseBinaryData(QTextStream *file, const int nvars, const int npoints, const bool real);
 
         CSimulationScene* cSimulationScene() const;
-        QString fileName() const;
 
         SimulationDocument *m_simulationDocument;
 

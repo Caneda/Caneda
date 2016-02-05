@@ -40,18 +40,18 @@ namespace Caneda
     {
     }
 
-    bool FormatRawSimulation::load()
+    //! \brief Load the waveform file indicated by \a filename.
+    bool FormatRawSimulation::load(const QString filename)
     {
         CSimulationScene *scene = cSimulationScene();
         if(!scene) {
             return false;
         }
 
-        // Read all the data from the file "filename() + ".raw"" (waveforms).
-        QFile file(fileName());
+        QFile file(filename);
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
-                    QObject::tr("Cannot load document ") + fileName());
+                    QObject::tr("Cannot load document ") + filename);
             return false;
         }
 
@@ -148,7 +148,7 @@ namespace Caneda
     }
 
     //! \brief Read the data in Ascii format implementation
-    void FormatRawSimulation::parseAsciiData(QTextStream *file, int nvars, int npoints, bool real)
+    void FormatRawSimulation::parseAsciiData(QTextStream *file, const int nvars, const int npoints, const bool real)
     {
         // Create the arrays to deal with the data
         QList<double*> dataSamples;               // List of curve's magnitude data. Once filled, used to set data in plotCurves.
@@ -318,11 +318,6 @@ namespace Caneda
     CSimulationScene* FormatRawSimulation::cSimulationScene() const
     {
         return m_simulationDocument ? m_simulationDocument->cSimulationScene() : 0;
-    }
-
-    QString FormatRawSimulation::fileName() const
-    {
-        return m_simulationDocument ? m_simulationDocument->fileName() : QString();
     }
 
 } // namespace Caneda

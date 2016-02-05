@@ -1083,7 +1083,7 @@ namespace Caneda
 
         if(info.suffix() == "raw") {
             FormatRawSimulation *format = new FormatRawSimulation(this);
-            return format->load();
+            return format->load(fileName());
         }
 
         if (errorMessage) {
