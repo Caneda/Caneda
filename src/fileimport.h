@@ -54,7 +54,7 @@ namespace Caneda
     public:
         FormatRawSimulation(SimulationDocument *doc = 0);
 
-        bool load(const QString filename);
+        bool load();
 
     private:
         void parseFile(QTextStream *file);

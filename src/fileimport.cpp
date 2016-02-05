@@ -41,13 +41,14 @@ namespace Caneda
     }
 
     //! \brief Load the waveform file indicated by \a filename.
-    bool FormatRawSimulation::load(const QString filename)
+    bool FormatRawSimulation::load()
     {
         CSimulationScene *scene = cSimulationScene();
         if(!scene) {
             return false;
         }
 
+        QString filename = m_simulationDocument->fileName();
         QFile file(filename);
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(0, QObject::tr("Error"),
