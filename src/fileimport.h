@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -52,11 +52,10 @@ namespace Caneda
 
         bool load();
 
-        SimulationDocument* simulationDocument() const;
+    private:
         CSimulationScene* cSimulationScene() const;
         QString fileName() const;
 
-    private:
         SimulationDocument *m_simulationDocument;
     };
 

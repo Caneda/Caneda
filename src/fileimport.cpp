@@ -281,11 +281,6 @@ namespace Caneda
         return true;
     }
 
-    SimulationDocument* FormatRawSimulation::simulationDocument() const
-    {
-        return m_simulationDocument;
-    }
-
     CSimulationScene* FormatRawSimulation::cSimulationScene() const
     {
         return m_simulationDocument ? m_simulationDocument->cSimulationScene() : 0;
