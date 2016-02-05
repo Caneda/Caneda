@@ -170,15 +170,12 @@ namespace Caneda
         }
 
         // Read the data
-        QString line;
-
         if(real) {
             // The data is of type real
             for(int i = 0; i < npoints; i++){
                 for(int j = 0; j < nvars; j++){
-                    line = file->readLine();
-                    QStringList tok = line.split("\t");
-                    dataSamples[j][i] = tok.last().toDouble();
+                    QString line = file->readLine();
+                    dataSamples[j][i] = line.split("\t").last().toDouble();
                 }
             }
 
@@ -202,7 +199,7 @@ namespace Caneda
             // magnitude and phase data.
             for(int i = 0; i < npoints; i++){
                 for(int j = 0; j < nvars; j++){
-                    line = file->readLine();
+                    QString line = file->readLine();
                     QStringList tok = line.split("\t");
                     line = tok.last();  // Get the complex numeric data
                     tok = line.split(",");  // Split real and imaginary part
