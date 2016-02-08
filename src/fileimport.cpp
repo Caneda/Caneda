@@ -22,13 +22,10 @@
 #include "csimulationitem.h"
 #include "csimulationscene.h"
 #include "idocument.h"
-#include "xmlutilities.h"
 
 #include <QDebug>
 #include <QFile>
-#include <QFileInfo>
 #include <QMessageBox>
-#include <QString>
 
 #include <math.h>
 

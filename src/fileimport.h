@@ -23,8 +23,6 @@
 #include <QList>
 
 // Forward declarations
-class QFile;
-class QString;
 class QTextStream;
 
 namespace Caneda
