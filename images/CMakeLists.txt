@@ -24,7 +24,7 @@ SET(PNGS align-horizontal-center.png c_microstrip.png document-save-as.png
          zoom-out.png list-remove.png list-add.png edit-clear-locationbar-rtl.png
 )
 
-SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg portsymbol.svg rectangle.svg text.svg ground.svg splash.jpg)
+SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg portsymbol.svg rectangle.svg text.svg ground.svg)
 
 # application pictures
 SET(ICONS big.button.caneda.xpm big.caneda.xpm tiny.button.caneda.xpm tiny.caneda.xpm )

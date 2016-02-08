@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,8 +23,6 @@
 #include "global.h"
 
 #include <QApplication>
-#include <QSplashScreen>
-#include <QTimer>
 #include <QTranslator>
 
 int main(int argc,char *argv[])
@@ -38,15 +36,8 @@ int main(int argc,char *argv[])
    translator.load(QLocale::system(), "caneda", "_", Caneda::langDirectory(), ".qm");
    app.installTranslator(&translator);
 
-   // We create a splash screen
-   QPixmap pixmap(Caneda::bitmapDirectory() + "splash.jpg");
-   QSplashScreen splash(pixmap);
-   splash.show();
-   app.processEvents();
-
    Caneda::MainWindow *mw = Caneda::MainWindow::instance();
-   QTimer::singleShot(100, mw, SLOT(show()));
+   mw->show();
 
-   splash.finish(mw);
    return app.exec();
 }
