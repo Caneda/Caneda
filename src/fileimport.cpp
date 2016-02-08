@@ -50,7 +50,7 @@ namespace Caneda
 
         QString filename = m_simulationDocument->fileName();
         QFile file(filename);
-        if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        if(!file.open(QIODevice::ReadOnly)) {
             QMessageBox::critical(0, QObject::tr("Error"),
                     QObject::tr("Cannot load document ") + filename);
             return false;
@@ -273,13 +273,17 @@ namespace Caneda
             }
         }
 
-        // Read the data
+        // Construct a QDataStream object to serially read raw data.
+        // We cannot use QTextStream as it is locale aware, and will
+        // automatically decode the input using a codec.
         QIODevice *device = file->device();
         device->seek(file->pos());  // Seek the previous file position (where the QTextStream left off).
-        QDataStream out(device);
+
+        QDataStream out(device);  // Construct a QDataStream object to serially read raw data
         out.setByteOrder(QDataStream::LittleEndian);  // Use little endian format.
         out.setFloatingPointPrecision(QDataStream::DoublePrecision);  // Use 64 bit precision (this shouldn't be neccessary as it is the default).
 
+        // Read the data
         if(real) {
             // The data is of type real
             for(int i = 0; i < npoints; i++){
