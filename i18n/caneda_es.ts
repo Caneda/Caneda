@@ -1820,6 +1820,22 @@ Removes selected property from the list</source>
         <source>Command:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Output Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Binary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ascii</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output format:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Caneda::SimulationDocument</name>
