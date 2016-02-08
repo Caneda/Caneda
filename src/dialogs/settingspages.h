@@ -132,7 +132,7 @@ namespace Caneda
         QLabel *title_label_;
         QFrame *horiz_line_;
 
-        QRadioButton *ngspiceMode, *customMode;
+        QRadioButton *ngspiceMode, *customMode, *binaryMode, *asciiMode;
         QLineEdit *lineSimulationCommand;
     };
 

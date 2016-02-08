@@ -438,12 +438,15 @@ namespace Caneda
 
         //First we set the simulation group of options ***************************************
         QGroupBox *groupSimulator = new QGroupBox(tr("Simulation Engine"), this);
+        QGroupBox *groupOutput = new QGroupBox(tr("Output Data"), this);
 
         lineSimulationCommand = new QLineEdit;
         lineSimulationCommand->setText(settings->currentValue("sim/simulationCommand").toString());
 
         ngspiceMode = new QRadioButton(tr("Ngspice"), groupSimulator);
         customMode = new QRadioButton(tr("Custom"), groupSimulator);
+        binaryMode = new QRadioButton(tr("Binary"), groupOutput);
+        asciiMode = new QRadioButton(tr("Ascii"), groupOutput);
 
         if(settings->currentValue("sim/simulationEngine").toString() == "ngspice") {
             ngspiceMode->setChecked(true);
@@ -453,10 +456,21 @@ namespace Caneda
             customMode->setChecked(true);
         }
 
+        if(settings->currentValue("sim/outputFormat").toString() == "binary") {
+            binaryMode->setChecked(true);
+        }
+        else if(settings->currentValue("sim/outputFormat").toString() == "ascii") {
+            asciiMode->setChecked(true);
+        }
+
         QFormLayout *simulatorLayout = new QFormLayout(groupSimulator);
         simulatorLayout->addRow(tr("Engine:"), ngspiceMode);
         simulatorLayout->addRow("", customMode);
         simulatorLayout->addRow(tr("Command:"), lineSimulationCommand);
+
+        QFormLayout *outputLayout = new QFormLayout(groupOutput);
+        outputLayout->addRow(tr("Output format:"), binaryMode);
+        outputLayout->addRow("", asciiMode);
 
         connect(ngspiceMode, SIGNAL(clicked()), SLOT(slotSimulationEngineSelected()));
         connect(customMode, SIGNAL(clicked()), SLOT(slotSimulationEngineSelected()));
@@ -471,6 +485,7 @@ namespace Caneda
         vlayout1->addWidget(horiz_line_);
 
         vlayout1->addWidget(groupSimulator);
+        vlayout1->addWidget(groupOutput);
 
         vlayout1->addStretch();
 
@@ -493,6 +508,7 @@ namespace Caneda
     {
         Settings *settings = Settings::instance();
 
+        // Simulation engine
         QString newSimulationEngine;
         QString newSimulationCommand;
         if(ngspiceMode->isChecked()) {
@@ -518,6 +534,22 @@ namespace Caneda
             settings->setCurrentValue("sim/simulationCommand", newSimulationCommand);
         }
 
+        // Output format
+        QString newOutputFormat;
+        if(binaryMode->isChecked()) {
+            newOutputFormat = QString("binary");
+        }
+        else if(asciiMode->isChecked()) {
+            newOutputFormat = QString("ascii");
+        }
+
+        const QString currentOutputFormat = settings->currentValue("sim/outputFormat").toString();
+
+        if(currentOutputFormat != newOutputFormat) {
+            settings->setCurrentValue("sim/outputFormat", newOutputFormat);
+        }
+
+        // Save previous settings
         settings->save();
     }
 

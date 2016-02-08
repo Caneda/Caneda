@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -821,11 +821,17 @@ namespace Caneda
         simulationProcess->setProcessChannelMode(QProcess::MergedChannels);  // Output std:error and std:output together into the same file
         simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::Append);  // Create a log file
 
-        // Set the environment variable to get an ascii raw file instead of a binary one
-        //! \todo Add an option to generate binary raw files to save disk space.
+        // Set the environment variable to get a binary or an ascii raw file.
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        env.insert("SPICE_ASCIIRAWFILE", "1"); // Add an environment variable
+        if(settings->currentValue("sim/outputFormat").toString() == "binary") {
+            env.insert("SPICE_ASCIIRAWFILE", "0"); // Add an environment variable
+        }
+        else if(settings->currentValue("sim/outputFormat").toString() == "ascii") {
+            env.insert("SPICE_ASCIIRAWFILE", "1"); // Add an environment variable
+        }
         simulationProcess->setProcessEnvironment(env);
+
+        // Start the simulation
         simulationProcess->start(simulationCommand);
 
         // The simulation results are opened in the simulationReady slot, to avoid blocking the interface while simulating
@@ -1511,11 +1517,17 @@ namespace Caneda
             QString simulationCommand = settings->currentValue("sim/simulationCommand").toString();
             simulationCommand.replace("%filename", baseName);  // Replace all ocurrencies of %filename by the actual filename
 
-            // Set the environment variable to get an ascii raw file instead of a binary one
-            //! \todo Add an option to generate binary raw files to save disk space.
+            // Set the environment variable to get a binary or an ascii raw file.
             QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-            env.insert("SPICE_ASCIIRAWFILE", "1"); // Add an environment variable
+            if(settings->currentValue("sim/outputFormat").toString() == "binary") {
+                env.insert("SPICE_ASCIIRAWFILE", "0"); // Add an environment variable
+            }
+            else if(settings->currentValue("sim/outputFormat").toString() == "ascii") {
+                env.insert("SPICE_ASCIIRAWFILE", "1"); // Add an environment variable
+            }
             simulationProcess->setProcessEnvironment(env);
+
+            // Start the simulation
             simulationProcess->start(simulationCommand);
         }
         else if (suffix == "vhd" || suffix == "vhdl") {

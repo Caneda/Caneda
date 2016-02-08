@@ -74,6 +74,7 @@ namespace Caneda
 
         defaultSettings["sim/simulationEngine"] = QVariant(QString("ngspice"));  //! \todo In the future this could be replaced by an enum, to avoid problems
         defaultSettings["sim/simulationCommand"] = QVariant(QString("ngspice -b -r %filename.raw %filename.net"));
+        defaultSettings["sim/outputFormat"] = QVariant(QString("binary"));  //! \todo In the future this could be replaced by an enum, to avoid problems
 
         currentSettings = defaultSettings;
     }
