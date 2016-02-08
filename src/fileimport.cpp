@@ -140,7 +140,7 @@ namespace Caneda
                 parseAsciiData(file, nvars, npoints, real);  // Read the data itself
             }
             else if( keyword == "binary") {
-                parseAsciiData(file, nvars, npoints, real);  // Read the data itself
+                parseBinaryData(file, nvars, npoints, real);  // Read the data itself
             }
 
             // Read the next line
@@ -241,9 +241,18 @@ namespace Caneda
     /*!
      * \brief Read the data in Binary format implementation
      *
-     * \todo Fix the binary raw file read implementation
+     * Read the data in Binary format implementation. Here we must use a
+     * QDataStream object to serially read raw data from the file. We cannot
+     * use a QTextStream object as it assumes text data and "translates it"
+     * to text using the default codec (utf-8, iso-8859-1, etc). The data to
+     * be read from the file is composed by float numbers of 64 bit precision,
+     * little endian format.
+     *
+     * \todo Fix the binary raw file read implementation. It begins a read
+     * operation ok, but every couple of numbers read (of 64 bits each) it
+     * desynchronizes.
      */
-    void FormatRawSimulation::parseBinaryData(QTextStream *file, int nvars, int npoints, bool real)
+    void FormatRawSimulation::parseBinaryData(QTextStream *file, const int nvars, const int npoints, const bool real)
     {
         // Create the arrays to deal with the data
         QList<double*> dataSamples;               // List of curve's magnitude data. Once filled, used to set data in plotCurves.
@@ -265,11 +274,14 @@ namespace Caneda
         }
 
         // Read the data
+        QIODevice *device = file->device();
+        device->seek(file->pos());  // Seek the previous file position (where the QTextStream left off).
+        QDataStream out(device);
+        out.setByteOrder(QDataStream::LittleEndian);  // Use little endian format.
+        out.setFloatingPointPrecision(QDataStream::DoublePrecision);  // Use 64 bit precision (this shouldn't be neccessary as it is the default).
+
         if(real) {
             // The data is of type real
-            QDataStream out(file->device());
-            out.setByteOrder(QDataStream::LittleEndian);
-
             for(int i = 0; i < npoints; i++){
                 for(int j = 0; j < nvars; j++){
                     out >> dataSamples[j][i];
@@ -287,9 +299,6 @@ namespace Caneda
         }
         else {
             // The data is of type complex
-            QDataStream out(file->device());
-            out.setByteOrder(QDataStream::LittleEndian);
-
             double real = 0;
             double imaginary = 0;
 
