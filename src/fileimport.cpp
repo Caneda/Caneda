@@ -70,6 +70,8 @@ namespace Caneda
      * the parseAsciiData() or parseBinaryData() method depending on the
      * type of file.
      *
+     * \sa parseAsciiData(), parseBinaryData()
+     *
      * \todo There can be more than one plot set. This should be considered.
      */
     void FormatRawSimulation::parseFile(QTextStream *file)
@@ -148,7 +150,17 @@ namespace Caneda
         }
     }
 
-    //! \brief Read the data in Ascii format implementation
+    /*!
+     * \brief Read the data in Ascii format implementation
+     *
+     * Read the data in Ascii format implementation. Here we use a QTextStream
+     * object to serially read text data from the file. QTextStream assumes
+     * text data and "translates it" to text using the default codec (utf-8,
+     * iso-8859-1, etc), and interpreting special characters as for example
+     * newlines.
+     *
+     * \sa parseBinaryData(), parseFile()
+     */
     void FormatRawSimulation::parseAsciiData(QTextStream *file, const int nvars, const int npoints, const bool real)
     {
         // Create the arrays to deal with the data
@@ -248,9 +260,7 @@ namespace Caneda
      * be read from the file is composed by float numbers of 64 bit precision,
      * little endian format.
      *
-     * \todo Fix the binary raw file read implementation. It begins a read
-     * operation ok, but every couple of numbers read (of 64 bits each) it
-     * desynchronizes.
+     * \sa parseAsciiData(), parseFile()
      */
     void FormatRawSimulation::parseBinaryData(QTextStream *file, const int nvars, const int npoints, const bool real)
     {
