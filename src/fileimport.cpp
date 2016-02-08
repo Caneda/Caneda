@@ -305,14 +305,30 @@ namespace Caneda
             // The data is of type complex
             double real = 0;
             double imaginary = 0;
+            double magnitude = 0;
+            double phase = 0;
 
+            // Read the data values, converting the complex data into
+            // magnitude and phase data.
             for(int i = 0; i < npoints; i++){
                 for(int j = 0; j < nvars; j++){
                     out >> real;  // Get the real part
                     out >> imaginary;  // Get the imaginary part
 
-                    dataSamples[2*j][i] = sqrt(real*real + imaginary*imaginary);
-                    dataSamples[2*j+1][i] = atan(imaginary/real) * 180/M_PI;
+                    magnitude = sqrt(real*real + imaginary*imaginary);  // Calculate the magnitude part
+                    phase = atan(imaginary/real) * 180/M_PI;  // Calculate the phase part
+
+                    dataSamples[j][i] = magnitude;
+                    dataSamplesPhase[j][i] = phase;
+                }
+            }
+
+            // Convert the magnitude values into dB ( dB = 20*log10(V) ).
+            // Avoid the first var (var=0), as it is the frequency base
+            // for the rest of the curves.
+            for(int i = 0; i < npoints; i++){
+                for(int j = 1; j < nvars; j++){
+                    dataSamples[j][i] = 20*log10(dataSamples[j][i]);
                 }
             }
 
@@ -320,11 +336,11 @@ namespace Caneda
             // for the rest of the curves.
             for(int i = 1; i < nvars; i++){
                 // Copy the data into the curves
-                plotCurves[2*i-1]->setSamples(dataSamples[0], dataSamples[2*i], npoints);
-                plotCurves[2*i]->setSamples(dataSamples[0], dataSamples[2*i+1], npoints);
+                plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
+                plotCurvesPhase[i]->setSamples(dataSamples[0], dataSamplesPhase[i], npoints);
                 // Add the curve to the scene
-                cSimulationScene()->addItem(plotCurves[2*i-1]);
-                cSimulationScene()->addItem(plotCurves[2*i]);
+                cSimulationScene()->addItem(plotCurves[i]);
+                cSimulationScene()->addItem(plotCurvesPhase[i]);
             }
         }
     }
