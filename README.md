@@ -11,7 +11,7 @@ analysis.
 
 For details visit the project's homepage:
 
-https://github.com/Caneda/Caneda
+http://caneda.github.io
 
 
 Requirements

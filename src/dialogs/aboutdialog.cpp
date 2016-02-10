@@ -97,8 +97,8 @@ namespace Caneda
                 "<br><br>" +
                 tr("© 2008-2016 Caneda developer team") +
                 "<br><br>"
-                "<a href=\"https://github.com/Caneda/Caneda\">"
-                "https://github.com/Caneda/Caneda</a>"
+                "<a href=\"http://caneda.github.io\">"
+                "http://caneda.github.io</a>"
                 );
         about->setAlignment(Qt::AlignCenter);
         about->setOpenExternalLinks(true);
