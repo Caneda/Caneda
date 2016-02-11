@@ -79,9 +79,9 @@
         <item>
          <layout class="QFormLayout" name="formLayout_3">
           <item row="1" column="0">
-           <widget class="QLabel" name="labelHeigth">
+           <widget class="QLabel" name="labelHeight">
             <property name="text">
-             <string>Heigth:</string>
+             <string>Height:</string>
             </property>
            </widget>
           </item>

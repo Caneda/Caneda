@@ -2038,10 +2038,6 @@ Removes selected property from the list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Heigth:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2063,6 +2059,10 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>Draw Grid:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
