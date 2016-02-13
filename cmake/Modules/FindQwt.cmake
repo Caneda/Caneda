@@ -35,7 +35,7 @@
 ###########################################
 # Find Qwt include and library directories
 ###########################################
-FILE( GLOB QWT_SEARCH_PATHS "/opt/qwt-*" "/usr/local/qwt-*" )
+FILE( GLOB QWT_SEARCH_PATHS "/opt/qwt-*" "/usr/local/qwt-*" "C:/Qwt-*" )
 
 FIND_PATH( QWT_INCLUDE_DIR NAMES qwt.h PATHS
     /usr/include

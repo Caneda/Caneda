@@ -20,10 +20,9 @@
 #include "portsymbol.h"
 
 #include "cgraphicsitem.h"
+#include "portsymboldialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
-
-#include "dialogs/portsymboldialog.h"
 
 #include <QStyleOptionGraphicsItem>
 

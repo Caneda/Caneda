@@ -22,10 +22,9 @@
 
 #include "cgraphicsscene.h"
 #include "global.h"
+#include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
-
-#include "dialogs/propertydialog.h"
 
 #include <QDebug>
 #include <QPainter>

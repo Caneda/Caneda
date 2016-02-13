@@ -1,6 +1,14 @@
 INCLUDE_DIRECTORIES(
+  ${CMAKE_BINARY_DIR}
+
+  ${CMAKE_SOURCE_DIR}/src
+  ${CMAKE_SOURCE_DIR}/src/dialogs
+  ${CMAKE_SOURCE_DIR}/src/paintings
+
   ${CMAKE_BINARY_DIR}/src/dialogs
   ${CMAKE_BINARY_DIR}/src/paintings
+
+  ${QWT_INCLUDE_DIR}
 )
 
 ADD_SUBDIRECTORY( dialogs )
@@ -23,9 +31,9 @@ SET( CANEDA_SRCS
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} )
 
 TARGET_LINK_LIBRARIES( caneda
-  ${Qt5Widgets_LIBRARIES}
-  ${Qt5Svg_LIBRARIES}
-  ${Qt5PrintSupport_LIBRARIES}
+  Qt5::Widgets
+  Qt5::Svg
+  Qt5::PrintSupport
   ${QWT_LIBRARIES}
   dialogs
   paintings

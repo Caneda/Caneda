@@ -23,10 +23,9 @@
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "library.h"
+#include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
-
-#include "dialogs/propertydialog.h"
 
 #include <QDebug>
 #include <QFile>

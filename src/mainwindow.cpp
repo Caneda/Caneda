@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,25 +20,24 @@
 
 #include "mainwindow.h"
 
+#include "aboutdialog.h"
 #include "actionmanager.h"
 #include "documentviewmanager.h"
+#include "exportdialog.h"
+#include "filenewdialog.h"
 #include "folderbrowser.h"
 #include "global.h"
 #include "icontext.h"
 #include "idocument.h"
 #include "iview.h"
 #include "project.h"
+#include "projectfileopendialog.h"
+#include "printdialog.h"
+#include "savedocumentsdialog.h"
 #include "settings.h"
+#include "settingsdialog.h"
 #include "statehandler.h"
 #include "tabs.h"
-
-#include "dialogs/aboutdialog.h"
-#include "dialogs/exportdialog.h"
-#include "dialogs/filenewdialog.h"
-#include "dialogs/projectfileopendialog.h"
-#include "dialogs/printdialog.h"
-#include "dialogs/savedocumentsdialog.h"
-#include "dialogs/settingsdialog.h"
 
 #include <QtWidgets>
 

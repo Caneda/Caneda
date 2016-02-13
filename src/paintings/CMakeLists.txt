@@ -4,3 +4,7 @@ SET( PAINTINGS_SRCS
 )
 
 ADD_LIBRARY( paintings ${PAINTINGS_SRCS} )
+
+TARGET_LINK_LIBRARIES( paintings
+  Qt5::Widgets
+)

@@ -25,12 +25,11 @@
 #include "global.h"
 #include "idocument.h"
 #include "library.h"
+#include "painting.h"
 #include "port.h"
 #include "portsymbol.h"
 #include "wire.h"
 #include "xmlutilities.h"
-
-#include "paintings/painting.h"
 
 #include <QDebug>
 #include <QFile>

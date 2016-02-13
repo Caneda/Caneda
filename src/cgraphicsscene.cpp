@@ -24,18 +24,16 @@
 #include "actionmanager.h"
 #include "cgraphicsview.h"
 #include "documentviewmanager.h"
+#include "ellipsearc.h"
+#include "graphictextdialog.h"
 #include "idocument.h"
 #include "iview.h"
 #include "library.h"
 #include "portsymbol.h"
 #include "property.h"
+#include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
-
-#include "dialogs/propertydialog.h"
-
-#include "paintings/ellipsearc.h"
-#include "paintings/graphictextdialog.h"
 
 #include <QClipboard>
 #include <QGraphicsSceneEvent>

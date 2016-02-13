@@ -23,9 +23,8 @@
 #include "idocument.h"
 #include "iview.h"
 #include "mainwindow.h"
+#include "savedocumentsdialog.h"
 #include "tabs.h"
-
-#include "dialogs/savedocumentsdialog.h"
 
 #include <QDebug>
 #include <QFileInfo>
