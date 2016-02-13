@@ -27,7 +27,7 @@ SET(PNGS align-horizontal-center.png c_microstrip.png document-save-as.png
 SET(SVGS arrow.svg ellipsearc.svg ellipse.svg line.svg portsymbol.svg rectangle.svg text.svg ground.svg)
 
 # application pictures
-SET(ICONS big.button.caneda.xpm big.caneda.xpm tiny.button.caneda.xpm tiny.caneda.xpm )
+SET(ICONS big.button.caneda.xpm big.caneda.xpm tiny.button.caneda.xpm tiny.caneda.xpm canedaicon.ico )
 
 INSTALL(FILES ${PNGS} DESTINATION ${BITMAPDIR})
 INSTALL(FILES ${SVGS} DESTINATION ${BITMAPDIR})
