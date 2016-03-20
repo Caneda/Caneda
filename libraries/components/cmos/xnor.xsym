@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="XNOR" version="0.1.0" label="X">
+    <displaytext>
+        <lang lang="C">XNOR</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">CMOS XNOR gate.</lang>
+    </description>
+
+    <symbol>
+        <painting name="line" line="0,0,13,0" pos="-40,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,13,0" pos="-40,10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,5,0" pos="25,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipseArc" ellipse="0,0,15,40" pos="-40,-20" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,15,40" pos="-35,-20" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
+        </painting>
+
+        <painting name="ellipseArc" ellipse="0,0,80,40" pos="-65,-20" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="90"/>
+        </painting>
+        <painting name="ellipseArc" ellipse="0,0,80,40" pos="-65,-20" transform="1,0,0,1,0,0">
+            <properties startAngle="0" spanAngle="90"/>
+        </painting>
+
+        <painting name="ellipse" ellipse="0,0,10,10" pos="15,-5" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <ports>
+        <port name="vss" pos="-10,20"/>
+        <port name="vdd" pos="-10,-20"/>
+        <port name="A" pos="-40,-10"/>
+        <port name="B" pos="-40,10"/>
+        <port name="out" pos="30,0"/>
+    </ports>
+
+    <properties pos="0,0">
+        <property name="Wn" default="9u" unit="m" visible="false">
+            <description>
+                <lang lang="C">NMOS transistor width</lang>
+            </description>
+        </property>
+        <property name="Ln" default="3u" unit="m" visible="false">
+            <description>
+                <lang lang="C">NMOS transistor length</lang>
+            </description>
+        </property>
+        <property name="Wp" default="15u" unit="m" visible="false">
+            <description>
+                <lang lang="C">PMOS transistor width</lang>
+            </description>
+        </property>
+        <property name="Lp" default="3u" unit="m" visible="false">
+            <description>
+                <lang lang="C">PMOS transistor length</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="X%label %port{vss} %port{vdd} %port{A} %port{B} %port{out} CMOS_XNOR lp=%property{Lp} wp=%property{Wp} l_n=%property{Ln} wn=%property{Wn}
+                %subcircuit{CMOS_XNOR vss vdd A B out wn=9u l_n=3u wp=15u lp=3u
+                %nM1 notA A vdd vdd PMOS l={lp} w={wp}
+                %nM2 notA A vss vss NMOS l={l_n} w={wn}
+                %nM3 notB B vdd vdd PMOS l={lp} w={wp}
+                %nM4 notB B vss vss NMOS l={l_n} w={wn}
+                %nM5 1 B vss vss NMOS l={l_n} w={wn}
+                %nM6 5 A 1 vss NMOS l={l_n} w={wn}
+                %nM7 2 notB vss vss NMOS l={l_n} w={wn}
+                %nM8 5 notA 2 vss NMOS l={l_n} w={wn}
+                %nM9 3 notA vdd vdd PMOS l={lp} w={wp}
+                %nM10 5 B 3 vdd PMOS l={lp} w={wp}
+                %nM11 4 A vdd vdd PMOS l={lp} w={wp}
+                %nM12 5 notB 4 vdd PMOS l={lp} w={wp}
+                %nM13 out 5 vdd vdd PMOS l={lp} w={wp}
+                %nM14 out 5 vss vss NMOS l={l_n} w={wn}
+                %n.model PMOS PMOS
+                %n.model NMOS NMOS
+                }"/>
+    </models>
+</component>
