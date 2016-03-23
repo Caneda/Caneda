@@ -28,6 +28,7 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QDateEdit>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
 #include <QFormLayout>
@@ -333,6 +334,8 @@ namespace Caneda
         currentHdlLibrariesLayout->addLayout(hdlLibraryButtons);
 
         //Finally we set the general layout of all groups *************************
+        getNewLibraries = new QPushButton(tr("Get new libraries..."));
+        connect(getNewLibraries, SIGNAL(clicked()), SLOT(slotGetNewLibraries()));
         QLabel *warningLabel = new QLabel(tr("Warning: libraries will be set upon program restart"));
 
         QVBoxLayout *vlayout1 = new QVBoxLayout();
@@ -345,6 +348,7 @@ namespace Caneda
 
         vlayout1->addWidget(currentLibraries);
         vlayout1->addWidget(currentHdlLibraries);
+        vlayout1->addWidget(getNewLibraries);
         vlayout1->addWidget(warningLabel);
 
         vlayout1->addStretch();
@@ -382,6 +386,11 @@ namespace Caneda
     void LibrariesConfigurationPage::slotRemoveHdlLibrary()
     {
         qDeleteAll(hdlLibraryList->selectedItems());
+    }
+
+    void LibrariesConfigurationPage::slotGetNewLibraries()
+    {
+        QDesktopServices::openUrl(QUrl("https://github.com/Caneda/Libraries"));
     }
 
     //! \brief Applies the configuration of this page.
