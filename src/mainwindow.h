@@ -129,6 +129,7 @@ namespace Caneda
         void slotShowNetlist();
 
         void slotHelpIndex();
+        void slotHelpExamples();
         void slotHelpAbout();
         void slotHelpAboutQt();
 

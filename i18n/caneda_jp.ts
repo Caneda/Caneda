@@ -1267,10 +1267,6 @@ Shows the netlist of the current circuit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Help index...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Index of Caneda Help</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1298,7 +1294,7 @@ About the application</source>
     </message>
     <message>
         <source>About Qt...</source>
-        <translation type="unfinished">Qtについて...</translation>
+        <translation type="obsolete">Qtについて...</translation>
     </message>
     <message>
         <source>About Qt by Nokia</source>
@@ -1495,6 +1491,28 @@ Inserts a wire</source>
     <message>
         <source>Save File</source>
         <translation type="unfinished">ファイルを保存</translation>
+    </message>
+    <message>
+        <source>&amp;Help index...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Example circuits...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Example circuits
+
+Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About &amp;Qt...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -1279,10 +1279,6 @@ Shows the netlist of the current circuit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Help index...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Index of Caneda Help</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1310,7 +1306,7 @@ Informations sur Qucs</translation>
     </message>
     <message>
         <source>About Qt...</source>
-        <translation type="unfinished">À propos de Qt…</translation>
+        <translation type="obsolete">À propos de Qt…</translation>
     </message>
     <message>
         <source>About Qt by Nokia</source>
@@ -1505,6 +1501,28 @@ Ajoute une équipotentielle</translation>
     <message>
         <source>Save File</source>
         <translation type="unfinished">Enregistrer</translation>
+    </message>
+    <message>
+        <source>&amp;Help index...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Example circuits...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Example circuits
+
+Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About &amp;Qt...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

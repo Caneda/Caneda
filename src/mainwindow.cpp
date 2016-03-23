@@ -484,26 +484,31 @@ namespace Caneda
         action->setWhatsThis(tr("Show Netlist\n\nShows the netlist of the current circuit"));
         connect(action, SIGNAL(triggered()), SLOT(slotShowNetlist()));
 
-        action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("Help index..."));
+        action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("&Help index..."));
         action->setShortcut(Key_F1);
         action->setStatusTip(tr("Index of Caneda Help"));
         action->setWhatsThis(tr("Help Index\n\nIndex of intern Caneda help"));
         connect(action, SIGNAL(triggered()), SLOT(slotHelpIndex()));
+
+        action = am->createAction("helpExamples", Caneda::icon("draw-freehand"), tr("&Example circuits..."));
+        action->setStatusTip(tr("Open Caneda example circuits"));
+        action->setWhatsThis(tr("Example circuits\n\nOpen Caneda example circuits"));
+        connect(action, SIGNAL(triggered()), SLOT(slotHelpExamples()));
+
+        QAction *qAction = QWhatsThis::createAction(this);
+        action = am->createAction("whatsThis", qAction->icon(), qAction->text());
+        connect(action, SIGNAL(triggered()), qAction, SLOT(trigger()));
+        connect(action, SIGNAL(hovered()), qAction, SLOT(hover()));
 
         action = am->createAction("helpAboutApp", Caneda::icon("caneda"), tr("&About Caneda..."));
         action->setStatusTip(tr("About the application"));
         action->setWhatsThis(tr("About\n\nAbout the application"));
         connect(action, SIGNAL(triggered()), SLOT(slotHelpAbout()));
 
-        action = am->createAction("helpAboutQt", Caneda::icon("qt"), tr("About Qt..."));
+        action = am->createAction("helpAboutQt", Caneda::icon("qt"), tr("About &Qt..."));
         action->setStatusTip(tr("About Qt by Nokia"));
         action->setWhatsThis(tr("About Qt\n\nAbout Qt by Nokia"));
         connect(action, SIGNAL(triggered()), SLOT(slotHelpAboutQt()));
-
-        QAction *qAction = QWhatsThis::createAction(this);
-        action = am->createAction("whatsThis", qAction->icon(), qAction->text());
-        connect(action, SIGNAL(triggered()), qAction, SLOT(trigger()));
-        connect(action, SIGNAL(hovered()), qAction, SLOT(hover()));
 
         initMouseActions();
     }
@@ -748,6 +753,7 @@ namespace Caneda
         helpMenu = menuBar()->addMenu(tr("&Help"));
 
         helpMenu->addAction(action("helpIndex"));
+        helpMenu->addAction(action("helpExamples"));
         helpMenu->addAction(action("whatsThis"));
 
         helpMenu->addSeparator();
@@ -1429,6 +1435,12 @@ namespace Caneda
     {
         setNormalAction();
         slotFileOpen(QString("index.html"));
+    }
+
+    void MainWindow::slotHelpExamples()
+    {
+        setNormalAction();
+        QDesktopServices::openUrl(QUrl("https://github.com/Caneda/Examples"));
     }
 
     void MainWindow::slotHelpAbout()
