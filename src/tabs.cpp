@@ -557,6 +557,9 @@ namespace Caneda
 
     void TabWidget::updateTabContext()
     {
+        MainWindow *mw = MainWindow::instance();
+        mw->updateWindowTitle();
+
         int index = currentIndex();
         if (index < 0 || index >= count()) {
             return;
@@ -566,9 +569,6 @@ namespace Caneda
 
         setTabIcon(index, tab->tabIcon());
         setTabText(index, tab->tabText());
-
-        MainWindow *mw = MainWindow::instance();
-        mw->updateTitle();
 
         IView *view = tab->activeView();
         if (!view) {

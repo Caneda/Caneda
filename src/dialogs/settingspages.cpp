@@ -257,7 +257,7 @@ namespace Caneda
         settings->save();
 
         if(changed) {
-            MainWindow::instance()->slotUpdateSettingsChanges();
+            MainWindow::instance()->updateSettingsChanges();
             MainWindow::instance()->repaint();
         }
     }
@@ -753,7 +753,7 @@ namespace Caneda
 
         settings->save();
         if(changed) {
-            MainWindow::instance()->slotUpdateSettingsChanges();
+            MainWindow::instance()->updateSettingsChanges();
             MainWindow::instance()->repaint();
         }
     }
@@ -1021,7 +1021,7 @@ namespace Caneda
 
         settings->save();
         if(changed) {
-            MainWindow::instance()->slotUpdateSettingsChanges();
+            MainWindow::instance()->updateSettingsChanges();
             MainWindow::instance()->repaint();
         }
     }
