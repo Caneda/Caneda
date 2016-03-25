@@ -484,6 +484,10 @@ Do you want to continue?</source>
         <comment>libraries page title</comment>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Get new libraries...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Caneda::MainWindow</name>
