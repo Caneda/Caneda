@@ -197,8 +197,6 @@ namespace Caneda
     //! \brief Applies the configuration of this page.
     void GeneralConfigurationPage::applyConf()
     {
-        bool changed = false;
-
         Settings *settings = Settings::instance();
 
         const bool currentGridVisible =
@@ -206,7 +204,6 @@ namespace Caneda
         const bool newGridVisible = checkShowGrid->isChecked();
         if (currentGridVisible != newGridVisible) {
             settings->setCurrentValue("gui/gridVisible", newGridVisible);
-            changed = true;
         }
 
         QColor currentColor;
@@ -216,49 +213,39 @@ namespace Caneda
         newColor = getBackgroundColor(buttonBackground);
         if (currentColor != newColor) {
             settings->setCurrentValue("gui/backgroundColor", newColor);
-            changed = true;
         }
 
         currentColor = settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
         newColor = getBackgroundColor(buttonSimulationBackground);
         if (currentColor != newColor) {
             settings->setCurrentValue("gui/simulationBackgroundColor", newColor);
-            changed = true;
         }
 
         currentColor = settings->currentValue("gui/foregroundColor").value<QColor>();
         newColor = getBackgroundColor(buttonForeground);
         if (currentColor != newColor) {
             settings->setCurrentValue("gui/foregroundColor", newColor);
-            changed = true;
         }
 
         currentColor = settings->currentValue("gui/lineColor").value<QColor>();
         newColor = getBackgroundColor(buttonLine);
         if (currentColor != newColor) {
             settings->setCurrentValue("gui/lineColor", newColor);
-            changed = true;
         }
 
         currentColor = settings->currentValue("gui/selectionColor").value<QColor>();
         newColor = getBackgroundColor(buttonSelection);
         if (currentColor != newColor) {
             settings->setCurrentValue("gui/selectionColor", newColor);
-            changed = true;
         }
 
         const int currentLineWidth = settings->currentValue("gui/lineWidth").toInt();
         const int newLineWidth = spinWidth->value();
         if (currentLineWidth != newLineWidth) {
             settings->setCurrentValue("gui/lineWidth", newLineWidth);
-            changed = true;
         }
 
         settings->save();
-
-        if(changed) {
-            MainWindow::instance()->updateSettingsChanges();
-        }
     }
 
     //! \return Icon of this page.
@@ -682,8 +669,6 @@ namespace Caneda
     //! \brief Applies the configuration of this page.
     void HdlConfigurationPage::applyConf()
     {
-
-        bool changed = false;
         Settings *settings = Settings::instance();
 
         const QColor currentKeywordColor =
@@ -691,7 +676,6 @@ namespace Caneda
         const QColor newKeywordColor = getForegroundColor(keywordButton);
         if (newKeywordColor != currentKeywordColor) {
             settings->setCurrentValue("gui/hdl/keyword", newKeywordColor);
-            changed = true;
         }
 
         const QColor currentTypeColor =
@@ -699,7 +683,6 @@ namespace Caneda
         const QColor newTypeColor = getForegroundColor(typeButton);
         if (newTypeColor != currentTypeColor) {
             settings->setCurrentValue("gui/hdl/type", newTypeColor);
-            changed = true;
         }
 
         const QColor currentAttributeColor =
@@ -707,7 +690,6 @@ namespace Caneda
         const QColor newAttributeColor = getForegroundColor(attributeButton);
         if (newAttributeColor != currentAttributeColor) {
             settings->setCurrentValue("gui/hdl/attribute", newAttributeColor);
-            changed = true;
         }
 
         const QColor currentBlockColor =
@@ -715,7 +697,6 @@ namespace Caneda
         const QColor newBlockColor = getForegroundColor(blockButton);
         if (newBlockColor != currentBlockColor) {
             settings->setCurrentValue("gui/hdl/block", newBlockColor);
-            changed = true;
         }
 
         const QColor currentClassColor =
@@ -723,7 +704,6 @@ namespace Caneda
         const QColor newClassColor = getForegroundColor(classButton);
         if (newClassColor != currentClassColor) {
             settings->setCurrentValue("gui/hdl/class", newClassColor);
-            changed = true;
         }
 
         const QColor currentDataColor =
@@ -731,7 +711,6 @@ namespace Caneda
         const QColor newDataColor = getForegroundColor(dataButton);
         if (newDataColor != currentDataColor) {
             settings->setCurrentValue("gui/hdl/data", newDataColor);
-            changed = true;
         }
 
         const QColor currentCommentColor =
@@ -739,7 +718,6 @@ namespace Caneda
         const QColor newCommentColor = getForegroundColor(commentButton);
         if (newCommentColor != currentCommentColor) {
             settings->setCurrentValue("gui/hdl/comment", newCommentColor);
-            changed = true;
         }
 
         const QColor currentSystemColor =
@@ -747,13 +725,9 @@ namespace Caneda
         const QColor newSystemColor = getForegroundColor(systemButton);
         if (newSystemColor != currentSystemColor) {
             settings->setCurrentValue("gui/hdl/system", newSystemColor);
-            changed = true;
         }
 
         settings->save();
-        if(changed) {
-            MainWindow::instance()->updateSettingsChanges();
-        }
     }
 
     //! \return Icon of this page.
@@ -949,8 +923,6 @@ namespace Caneda
     //! \brief Applies the configuration of this page.
     void LayoutConfigurationPage::applyConf()
     {
-
-        bool changed = false;
         Settings *settings = Settings::instance();
 
         const QColor currentMetal1Color =
@@ -958,7 +930,6 @@ namespace Caneda
         const QColor newMetal1Color = getBackgroundColor(metal1Button);
         if (newMetal1Color != currentMetal1Color) {
             settings->setCurrentValue("gui/layout/metal1", newMetal1Color);
-            changed = true;
         }
 
         const QColor currentMeta2Color =
@@ -966,7 +937,6 @@ namespace Caneda
         const QColor newMeta2Color = getBackgroundColor(metal2Button);
         if (newMeta2Color != currentMeta2Color) {
             settings->setCurrentValue("gui/layout/metal2", newMeta2Color);
-            changed = true;
         }
 
         const QColor currentPoly1Color =
@@ -974,7 +944,6 @@ namespace Caneda
         const QColor newPoly1Color = getBackgroundColor(poly1Button);
         if (newPoly1Color != currentPoly1Color) {
             settings->setCurrentValue("gui/layout/poly1", newPoly1Color);
-            changed = true;
         }
 
         const QColor currentPoly2Color =
@@ -982,7 +951,6 @@ namespace Caneda
         const QColor newPoly2Color = getBackgroundColor(poly2Button);
         if (newPoly2Color != currentPoly2Color) {
             settings->setCurrentValue("gui/layout/poly2", newPoly2Color);
-            changed = true;
         }
 
         const QColor currentActiveColor =
@@ -990,7 +958,6 @@ namespace Caneda
         const QColor newActiveColor = getBackgroundColor(activeButton);
         if (newActiveColor != currentActiveColor) {
             settings->setCurrentValue("gui/layout/active", newActiveColor);
-            changed = true;
         }
 
         const QColor currentContactColor =
@@ -998,7 +965,6 @@ namespace Caneda
         const QColor newContactColor = getBackgroundColor(contactButton);
         if (newContactColor != currentContactColor) {
             settings->setCurrentValue("gui/layout/contact", newContactColor);
-            changed = true;
         }
 
         const QColor currentNwellColor =
@@ -1006,7 +972,6 @@ namespace Caneda
         const QColor newNwellColor = getBackgroundColor(nwellButton);
         if (newNwellColor != currentNwellColor) {
             settings->setCurrentValue("gui/layout/nwell", newNwellColor);
-            changed = true;
         }
 
         const QColor currentPwellColor =
@@ -1014,13 +979,9 @@ namespace Caneda
         const QColor newPwellColor = getBackgroundColor(pwellButton);
         if (newPwellColor != currentPwellColor) {
             settings->setCurrentValue("gui/layout/pwell", newPwellColor);
-            changed = true;
         }
 
         settings->save();
-        if(changed) {
-            MainWindow::instance()->updateSettingsChanges();
-        }
     }
 
     //! \return Icon of this page.

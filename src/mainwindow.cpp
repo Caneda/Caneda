@@ -1038,7 +1038,13 @@ namespace Caneda
         wantedPages << page;
 
         SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Caneda", this);
-        d->exec();
+        int result = d->exec();
+
+        // Update all document views to reflect the current settings.
+        if(result == QDialog::Accepted) {
+            DocumentViewManager::instance()->updateSettingsChanges();
+            repaint();
+        }
     }
 
     //! \brief Calls the current document undo action.
@@ -1555,13 +1561,6 @@ namespace Caneda
 
         setWindowTitle(tab->tabText() + QString("[*] - Caneda"));
         setWindowModified(view->document()->isModified());
-    }
-
-    //! \brief Updates all document views to reflect the current settings.
-    void MainWindow::updateSettingsChanges()
-    {
-        DocumentViewManager::instance()->updateSettingsChanges();
-        repaint();
     }
 
     //! \brief Sets a new statusbar message.

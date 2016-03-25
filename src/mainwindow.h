@@ -61,7 +61,6 @@ namespace Caneda
         QDockWidget* sidebarDockWidget() const;
 
         void updateWindowTitle();
-        void updateSettingsChanges();
 
     private Q_SLOTS:
         void newFile();
