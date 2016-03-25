@@ -137,7 +137,7 @@ namespace Caneda
     //! \brief Initializes the FolderBrowser sidebar.
     void MainWindow::setupFolderBrowserSidebar()
     {
-        m_folderBrowser = new FolderBrowser(this);
+        FolderBrowser *m_folderBrowser = new FolderBrowser(this);
 
         connect(m_folderBrowser, SIGNAL(itemDoubleClicked(QString)), this,
                 SLOT(open(QString)));
@@ -598,146 +598,152 @@ namespace Caneda
     void MainWindow::initMenus()
     {
         ActionManager* am = ActionManager::instance();
+        QMenu *menu = 0;
 
-        fileMenu = menuBar()->addMenu(tr("&File"));
+        // File menu
+        menu = menuBar()->addMenu(tr("&File"));
 
-        fileMenu->addAction(am->actionForName("fileNew"));
-        fileMenu->addAction(am->actionForName("fileOpen"));
-        fileMenu->addAction(am->actionForName("fileClose"));
+        menu->addAction(am->actionForName("fileNew"));
+        menu->addAction(am->actionForName("fileOpen"));
+        menu->addAction(am->actionForName("fileClose"));
 
-        fileMenu->addSeparator();
+        menu->addSeparator();
 
-        fileMenu->addAction(am->actionForName("fileSave"));
-        fileMenu->addAction(am->actionForName("fileSaveAll"));
-        fileMenu->addAction(am->actionForName("fileSaveAs"));
-        fileMenu->addAction(am->actionForName("filePrint"));
-        fileMenu->addAction(am->actionForName("fileExportImage"));
+        menu->addAction(am->actionForName("fileSave"));
+        menu->addAction(am->actionForName("fileSaveAll"));
+        menu->addAction(am->actionForName("fileSaveAs"));
+        menu->addAction(am->actionForName("filePrint"));
+        menu->addAction(am->actionForName("fileExportImage"));
 
-        fileMenu->addSeparator();
+        menu->addSeparator();
 
-        fileMenu->addAction(am->actionForName("appSettings"));
+        menu->addAction(am->actionForName("appSettings"));
 
-        fileMenu->addSeparator();
+        menu->addSeparator();
 
-        fileMenu->addAction(am->actionForName("fileQuit"));
+        menu->addAction(am->actionForName("fileQuit"));
 
-        editMenu = menuBar()->addMenu(tr("&Edit"));
+        // Edit menu
+        menu = menuBar()->addMenu(tr("&Edit"));
 
-        editMenu->addAction(am->actionForName("editUndo"));
-        editMenu->addAction(am->actionForName("editRedo"));
+        menu->addAction(am->actionForName("editUndo"));
+        menu->addAction(am->actionForName("editRedo"));
 
-        editMenu->addSeparator();
+        menu->addSeparator();
 
-        editMenu->addAction(am->actionForName("editCut"));
-        editMenu->addAction(am->actionForName("editCopy"));
-        editMenu->addAction(am->actionForName("editPaste"));
+        menu->addAction(am->actionForName("editCut"));
+        menu->addAction(am->actionForName("editCopy"));
+        menu->addAction(am->actionForName("editPaste"));
 
-        editMenu->addSeparator();
+        menu->addSeparator();
 
-        editMenu->addAction(am->actionForName("select"));
-        editMenu->addAction(am->actionForName("selectAll"));
+        menu->addAction(am->actionForName("select"));
+        menu->addAction(am->actionForName("selectAll"));
         //! \todo Reenable this option once implemented
-        //        editMenu->addAction(am->actionForName("editFind"));
-        editMenu->addAction(am->actionForName("editRotate"));
-        editMenu->addAction(am->actionForName("editMirror"));
-        editMenu->addAction(am->actionForName("editMirrorY"));
+        //        menu->addAction(am->actionForName("editFind"));
+        menu->addAction(am->actionForName("editRotate"));
+        menu->addAction(am->actionForName("editMirror"));
+        menu->addAction(am->actionForName("editMirrorY"));
 
-        editMenu->addSeparator();
+        menu->addSeparator();
 
-        editMenu->addAction(am->actionForName("schEdit"));
-        editMenu->addAction(am->actionForName("symEdit"));
-        editMenu->addAction(am->actionForName("layEdit"));
+        menu->addAction(am->actionForName("schEdit"));
+        menu->addAction(am->actionForName("symEdit"));
+        menu->addAction(am->actionForName("layEdit"));
 
         //! \todo Reenable these options once implemented
-        //        editMenu->addSeparator();
+        //        menu->addSeparator();
 
-        //        editMenu->addAction(am->actionForName("intoH"));
-        //        editMenu->addAction(am->actionForName("popH"));
+        //        menu->addAction(am->actionForName("intoH"));
+        //        menu->addAction(am->actionForName("popH"));
 
-        viewMenu = menuBar()->addMenu(tr("&View"));
+        // View menu
+        menu = menuBar()->addMenu(tr("&View"));
 
-        viewMenu->addAction(am->actionForName("zoomFitInBest"));
-        viewMenu->addAction(am->actionForName("zoomOriginal"));
-        viewMenu->addAction(am->actionForName("zoomIn"));
-        viewMenu->addAction(am->actionForName("zoomOut"));
-        viewMenu->addAction(am->actionForName("zoomArea"));
+        menu->addAction(am->actionForName("zoomFitInBest"));
+        menu->addAction(am->actionForName("zoomOriginal"));
+        menu->addAction(am->actionForName("zoomIn"));
+        menu->addAction(am->actionForName("zoomOut"));
+        menu->addAction(am->actionForName("zoomArea"));
 
-        viewMenu->addSeparator();
+        menu->addSeparator();
 
-        viewMenu->addAction(am->actionForName("splitHorizontal"));
-        viewMenu->addAction(am->actionForName("splitVertical"));
-        viewMenu->addAction(am->actionForName("splitClose"));
+        menu->addAction(am->actionForName("splitHorizontal"));
+        menu->addAction(am->actionForName("splitVertical"));
+        menu->addAction(am->actionForName("splitClose"));
 
-        viewMenu->addSeparator();
+        menu->addSeparator();
 
-        docksMenu = viewMenu->addMenu(tr("&Docks and Toolbars"));
+        docksMenu = menu->addMenu(tr("&Docks and Toolbars"));
 
         docksMenu->addAction(am->actionForName("viewToolBar"));
         docksMenu->addAction(am->actionForName("viewStatusBar"));
 
         docksMenu->addSeparator();
 
-        viewMenu->addSeparator();
+        // Align menu
+        menu = menuBar()->addMenu(tr("P&ositioning"));
 
-        alignMenu = menuBar()->addMenu(tr("P&ositioning"));
+        menu->addAction(am->actionForName("centerHor"));
+        menu->addAction(am->actionForName("centerVert"));
 
-        alignMenu->addAction(am->actionForName("centerHor"));
-        alignMenu->addAction(am->actionForName("centerVert"));
+        menu->addSeparator();
 
-        alignMenu->addSeparator();
+        menu->addAction(am->actionForName("alignTop"));
+        menu->addAction(am->actionForName("alignBottom"));
+        menu->addAction(am->actionForName("alignLeft"));
+        menu->addAction(am->actionForName("alignRight"));
 
-        alignMenu->addAction(am->actionForName("alignTop"));
-        alignMenu->addAction(am->actionForName("alignBottom"));
-        alignMenu->addAction(am->actionForName("alignLeft"));
-        alignMenu->addAction(am->actionForName("alignRight"));
+        menu->addSeparator();
 
-        alignMenu->addSeparator();
+        menu->addAction(am->actionForName("distrHor"));
+        menu->addAction(am->actionForName("distrVert"));
 
-        alignMenu->addAction(am->actionForName("distrHor"));
-        alignMenu->addAction(am->actionForName("distrVert"));
-
+        // Project menu
         //! \todo Reenable these menus once project and tools reimplemented.
-        //        projMenu = menuBar()->addMenu(tr("&Project"));
+        //        menu = menuBar()->addMenu(tr("&Project"));
 
-        //        projMenu->addAction(am->actionForName("projNew"));
-        //        projMenu->addAction(am->actionForName("projOpen"));
-        //        projMenu->addAction(am->actionForName("addToProj"));
-        //        projMenu->addAction(am->actionForName("projDel"));
-        //        projMenu->addAction(am->actionForName("projClose"));
+        //        menu->addAction(am->actionForName("projNew"));
+        //        menu->addAction(am->actionForName("projOpen"));
+        //        menu->addAction(am->actionForName("addToProj"));
+        //        menu->addAction(am->actionForName("projDel"));
+        //        menu->addAction(am->actionForName("projClose"));
 
-        //        projMenu->addSeparator();
+        //        menu->addSeparator();
 
-        //        projMenu->addAction(am->actionForName("backupAndHistory"));
+        //        menu->addAction(am->actionForName("backupAndHistory"));
 
+        // Tools menu
         //! \todo Implement tools menu with a plugins' infrastructure.
-        //        toolMenu = menuBar()->addMenu(tr("&Tools"));
+        //        menu = menuBar()->addMenu(tr("&Tools"));
 
-        simMenu = menuBar()->addMenu(tr("&Simulation"));
+        // Simulation menu
+        menu = menuBar()->addMenu(tr("&Simulation"));
 
-        simMenu->addAction(am->actionForName("simulate"));
-        simMenu->addAction(am->actionForName("openSym"));
+        menu->addAction(am->actionForName("simulate"));
+        menu->addAction(am->actionForName("openSym"));
 
         //! \todo Reenable this option once implemented
-        //        simMenu->addSeparator();
+        //        menu->addSeparator();
 
-        //        simMenu->addAction(am->actionForName("data2csv"));
+        //        menu->addAction(am->actionForName("data2csv"));
 
-        simMenu->addSeparator();
+        menu->addSeparator();
 
-        simMenu->addAction(am->actionForName("showLog"));
-        simMenu->addAction(am->actionForName("showNetlist"));
+        menu->addAction(am->actionForName("showLog"));
+        menu->addAction(am->actionForName("showNetlist"));
 
-        helpMenu = menuBar()->addMenu(tr("&Help"));
+        // Help menu
+        menu = menuBar()->addMenu(tr("&Help"));
 
-        helpMenu->addAction(am->actionForName("helpIndex"));
-        helpMenu->addAction(am->actionForName("helpExamples"));
-        helpMenu->addAction(am->actionForName("whatsThis"));
+        menu->addAction(am->actionForName("helpIndex"));
+        menu->addAction(am->actionForName("helpExamples"));
+        menu->addAction(am->actionForName("whatsThis"));
 
-        helpMenu->addSeparator();
+        menu->addSeparator();
 
-        helpMenu->addAction(am->actionForName("helpAboutApp"));
-        helpMenu->addAction(am->actionForName("helpAboutQt"));
-
+        menu->addAction(am->actionForName("helpAboutApp"));
+        menu->addAction(am->actionForName("helpAboutQt"));
     }
 
     //! \brief Creates and intializes the toolbars.

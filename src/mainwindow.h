@@ -26,15 +26,10 @@
 
 // Forward declarations
 class QLabel;
-class QUndoGroup;
-class QUndoView;
 
 namespace Caneda
 {
     // Forward declarations
-    class Action;
-    class SidebarBrowser;
-    class FolderBrowser;
     class Project;
     class TabWidget;
 
@@ -157,15 +152,13 @@ namespace Caneda
 
         void setNormalAction();
 
-        QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
-              *docksMenu, *helpMenu, *alignMenu, *toolMenu;
+        TabWidget *m_tabWidget;
+        Project *m_project;
+
+        QMenu *docksMenu;
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
         QDockWidget *m_sidebarDockWidget, *m_projectDockWidget,
                     *m_browserDockWidget;
-
-        Project *m_project;
-        FolderBrowser *m_folderBrowser;
-        TabWidget *m_tabWidget;
         QLabel *m_statusLabel;
     };
 
