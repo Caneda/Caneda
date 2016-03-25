@@ -1561,6 +1561,7 @@ namespace Caneda
     void MainWindow::updateSettingsChanges()
     {
         DocumentViewManager::instance()->updateSettingsChanges();
+        repaint();
     }
 
     //! \brief Sets a new statusbar message.

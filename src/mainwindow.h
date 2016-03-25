@@ -60,7 +60,10 @@ namespace Caneda
         TabWidget* tabWidget() const;
         QDockWidget* sidebarDockWidget() const;
 
-    public Q_SLOTS:
+        void updateWindowTitle();
+        void updateSettingsChanges();
+
+    private Q_SLOTS:
         void newFile();
         void open(QString fileName = QString());
         void openFileFormat(const QString &suffix);
@@ -123,16 +126,12 @@ namespace Caneda
         void about();
         void aboutQt();
 
+        void initFile();
         void launchPropertiesDialog();
-        void updateWindowTitle();
-        void updateSettingsChanges();
         void statusBarMessage(const QString& newPos);
 
     protected:
         void closeEvent(QCloseEvent *closeEvent);
-
-    private Q_SLOTS:
-        void initFile();
 
     private:
         MainWindow(QWidget *w=0);

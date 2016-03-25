@@ -258,7 +258,6 @@ namespace Caneda
 
         if(changed) {
             MainWindow::instance()->updateSettingsChanges();
-            MainWindow::instance()->repaint();
         }
     }
 
@@ -754,7 +753,6 @@ namespace Caneda
         settings->save();
         if(changed) {
             MainWindow::instance()->updateSettingsChanges();
-            MainWindow::instance()->repaint();
         }
     }
 
@@ -1022,7 +1020,6 @@ namespace Caneda
         settings->save();
         if(changed) {
             MainWindow::instance()->updateSettingsChanges();
-            MainWindow::instance()->repaint();
         }
     }
 
