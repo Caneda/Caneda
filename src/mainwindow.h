@@ -62,11 +62,10 @@ namespace Caneda
     public:
         static MainWindow* instance();
 
+        void setNormalAction();
+
         TabWidget* tabWidget() const;
         QDockWidget* sidebarDockWidget() const;
-
-        void setNormalAction();
-        Action* action(const QString &name);
 
     public Q_SLOTS:
         void newFile();
