@@ -412,6 +412,7 @@ namespace Caneda
         applyStateToAllWidgets();
     }
 
+    //! \brief Toggles the normal select action on.
     void StateHandler::slotSetNormalAction()
     {
         slotPerformToggleAction("select", true);

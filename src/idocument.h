@@ -131,8 +131,6 @@ namespace Caneda
     protected:
         friend class DocumentViewManager;
         QString m_fileName;
-
-        void setNormalAction();
     };
 
 

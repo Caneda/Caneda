@@ -62,8 +62,6 @@ namespace Caneda
     public:
         static MainWindow* instance();
 
-        void setNormalAction();
-
         TabWidget* tabWidget() const;
         QDockWidget* sidebarDockWidget() const;
 
@@ -157,17 +155,18 @@ namespace Caneda
         void loadSettings();
         void saveSettings();
 
-        // Menus contain the items of their menubar
+        void setNormalAction();
+
         QMenu *fileMenu, *editMenu, *insMenu, *projMenu, *simMenu, *viewMenu,
               *docksMenu, *helpMenu, *alignMenu, *toolMenu;
-
-        QLabel *m_statusLabel;
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
         QDockWidget *m_sidebarDockWidget, *m_projectDockWidget,
                     *m_browserDockWidget;
+
         Project *m_project;
         FolderBrowser *m_folderBrowser;
         TabWidget *m_tabWidget;
+        QLabel *m_statusLabel;
     };
 
 } // namespace Caneda

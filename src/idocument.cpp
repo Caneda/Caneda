@@ -354,11 +354,6 @@ namespace Caneda
         emit documentChanged(this);
     }
 
-    void IDocument::setNormalAction()
-    {
-        MainWindow::instance()->setNormalAction();
-    }
-
 
     /*************************************************************************
      *                           LayoutDocument                              *
@@ -459,13 +454,11 @@ namespace Caneda
 
     void LayoutDocument::intoHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
     void LayoutDocument::popHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
@@ -517,7 +510,6 @@ namespace Caneda
 
     void LayoutDocument::simulate()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
@@ -728,13 +720,11 @@ namespace Caneda
 
     void SchematicDocument::intoHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
     void SchematicDocument::popHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
@@ -795,8 +785,6 @@ namespace Caneda
      */
     void SchematicDocument::simulate()
     {
-        setNormalAction();
-
         if(fileName().isEmpty()) {
             return;
         }
@@ -1215,13 +1203,11 @@ namespace Caneda
 
     void SymbolDocument::intoHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this. This should return to the schematic document.
     }
 
     void SymbolDocument::popHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this. This should return to the schematic document.
     }
 
