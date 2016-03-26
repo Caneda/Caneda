@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,6 +30,9 @@ namespace Caneda
     class IDocument;
     class IView;
     class TabWidget;
+
+    //! \brief Maximum number of files that can be held in the recentFilesMenu
+    static const uint maxRecentFiles = 10;
 
     /*!
      * \todo Document this class.
@@ -68,6 +72,8 @@ namespace Caneda
         QList<IDocument*> documents() const;
 
         void updateSettingsChanges();
+        void addFileToRecentFiles(const QString &filePath);
+        void updateRecentFilesActionList();
 
     Q_SIGNALS:
         void changed();

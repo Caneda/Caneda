@@ -169,6 +169,12 @@ namespace Caneda
         action->setWhatsThis(tr("Open File\n\nOpens an existing document"));
         connect(action, SIGNAL(triggered()), SLOT(open()));
 
+        for(int i=0; i<maxRecentFiles; i++) {
+            action = am->createRecentFilesAction();
+            action->setVisible(false);
+            connect(action, SIGNAL(triggered()), SLOT(openRecent()));
+        }
+
         action = am->createAction("fileSave", Caneda::icon("document-save"), tr("&Save"));
         action->setShortcut(Qt::CTRL+Qt::Key_S);
         action->setStatusTip(tr("Saves the current document"));
@@ -605,6 +611,13 @@ namespace Caneda
 
         menu->addAction(am->actionForName("fileNew"));
         menu->addAction(am->actionForName("fileOpen"));
+
+        QMenu *recentFilesMenu = menu->addMenu(Caneda::icon("document-open-recent"), tr("Open &Recent"));
+        for(int i=0; i<maxRecentFiles; i++) {
+            recentFilesMenu->addAction(am->recentFilesActions().at(i));
+        }
+        DocumentViewManager::instance()->updateRecentFilesActionList();  // Update the list from the previosly saved configuration file
+
         menu->addAction(am->actionForName("fileClose"));
 
         menu->addSeparator();
@@ -866,7 +879,7 @@ namespace Caneda
         setNormalAction();
         DocumentViewManager *manager = DocumentViewManager::instance();
 
-        if (fileName.isEmpty()) {
+        if(fileName.isEmpty()) {
             if(!m_project->isValid()) {
                 fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
                         manager->fileNameFilters().join(""));
@@ -891,6 +904,23 @@ namespace Caneda
             else {
                 manager->openFile(fileName);
             }
+        }
+    }
+
+    /*!
+     * \brief Open recently opened file.
+     *
+     * First identify the Action that called the slot and then load the
+     * corresponding file. The entire file path is stored in action->data()
+     * and the name of the file without the path is stored in action->text().
+     *
+     * \sa open(), DocumentViewManager::updateRecentFilesActionList()
+     */
+    void MainWindow::openRecent()
+    {
+        QAction *action = qobject_cast<QAction *>(sender());
+        if(action) {
+            open(action->data().toString());
         }
     }
 
@@ -941,7 +971,7 @@ namespace Caneda
     {
         DocumentViewManager *manager = DocumentViewManager::instance();
         IDocument *document = manager->currentDocument();
-        if (!document) {
+        if(!document) {
             return;
         }
 
@@ -955,7 +985,7 @@ namespace Caneda
         document->setFileName(fileName);
 
         QString errorMessage;
-        if (!document->save(&errorMessage)) {
+        if(!document->save(&errorMessage)) {
             QMessageBox::critical(this,
                     tr("%1 : File save error").arg(document->fileName()), errorMessage);
             document->setFileName(oldFileName);

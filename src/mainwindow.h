@@ -65,6 +65,7 @@ namespace Caneda
     private Q_SLOTS:
         void newFile();
         void open(QString fileName = QString());
+        void openRecent();
         void openFileFormat(const QString &suffix);
         void save();
         void saveAs();

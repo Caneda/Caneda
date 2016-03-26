@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -70,17 +71,21 @@ namespace Caneda
         Action* createMouseAction(const QString& id, Caneda::MouseAction action,
                 const QString& text);
 
+        Action* createRecentFilesAction();
+
         Action* actionForName(const QString& name) const;
         Action* actionForMouseAction(Caneda::MouseAction ma) const;
         Caneda::MouseAction mouseActionForAction(Action *action) const;
 
         QList<Action*> mouseActions() const;
+        QList<Action*> recentFilesActions() const;
 
     private:
         ActionManager(QObject *parent = 0);
 
         QHash<QString, Action*> m_actionHash;
         QHash<Action*, Caneda::MouseAction> m_mouseActionHash;
+        QList<Action*> m_recentFileActionList;
     };
 
 } // namespace Caneda
