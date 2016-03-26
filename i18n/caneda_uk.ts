@@ -1248,6 +1248,48 @@ About Qt by Nokia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>&amp;Help index...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Example circuits...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Example circuits
+
+Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About &amp;Qt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+E</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launches current selection properties dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&amp;Delete</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1352,7 +1394,63 @@ Inserts a wire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Ctrl+I</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+I</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+L</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F7</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open &amp;Recent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1416,29 +1514,19 @@ Inserts a wire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Help index...</source>
+        <source>V</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Example circuits...</source>
+        <source>H</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open Caneda example circuits</source>
+        <source>W</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Example circuits
-
-Open Caneda example circuits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About &amp;Qt...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open &amp;Recent</source>
+        <source>Esc</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

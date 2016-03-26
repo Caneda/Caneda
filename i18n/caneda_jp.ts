@@ -2,6 +2,121 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>Caneda</name>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="obsolete">削除(&amp;D)</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="obsolete">削除</translation>
+    </message>
+    <message>
+        <source>Deletes the selected components</source>
+        <translation type="obsolete">選択された部品を削除します</translation>
+    </message>
+    <message>
+        <source>Delete
+
+Deletes the selected components</source>
+        <translation type="obsolete">削除
+
+選択された部品を削除します</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="obsolete">選択</translation>
+    </message>
+    <message>
+        <source>Activate select mode</source>
+        <translation type="obsolete">選択モードを有効にする</translation>
+    </message>
+    <message>
+        <source>Select
+
+Activates select mode</source>
+        <translation type="obsolete">選択
+
+選択モードを有効にします</translation>
+    </message>
+    <message>
+        <source>Rotate</source>
+        <translation type="obsolete">回転</translation>
+    </message>
+    <message>
+        <source>Mirror about X Axis</source>
+        <translation type="obsolete">X軸で反転</translation>
+    </message>
+    <message>
+        <source>Mirror about X Axis
+
+Mirrors the selected item about X Axis</source>
+        <translation type="obsolete">X軸で反転
+
+選択されたアイテムをX軸で反転</translation>
+    </message>
+    <message>
+        <source>Mirror about Y Axis</source>
+        <translation type="obsolete">Y軸で反転</translation>
+    </message>
+    <message>
+        <source>Mirror about Y Axis
+
+Mirrors the selected item about Y Axis</source>
+        <translation type="obsolete">Y軸で反転
+
+選択されたアイテムをY軸で反転</translation>
+    </message>
+    <message>
+        <source>Wire</source>
+        <translation type="obsolete">ワイア</translation>
+    </message>
+    <message>
+        <source>Inserts a wire</source>
+        <translation type="obsolete">ワイアを挿入</translation>
+    </message>
+    <message>
+        <source>Wire
+
+Inserts a wire</source>
+        <translation type="obsolete">ワイア
+
+ワイアを挿入</translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="obsolete">ファイル(&amp;F)</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="obsolete">編集(&amp;E)</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="obsolete">ビュー(&amp;V)</translation>
+    </message>
+    <message>
+        <source>&amp;Simulation</source>
+        <translation type="obsolete">シミュレーション(&amp;S)</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="obsolete">ヘルプ(&amp;H)</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="obsolete">編集</translation>
+    </message>
+    <message>
+        <source>Open File</source>
+        <translation type="obsolete">ファイルを開く</translation>
+    </message>
+    <message>
+        <source>Save File</source>
+        <translation type="obsolete">ファイルを保存</translation>
+    </message>
+</context>
+<context>
     <name>Caneda::AboutDialog</name>
     <message>
         <source>About Caneda</source>
@@ -1351,22 +1466,8 @@ Activates select mode</source>
         <translation type="unfinished">回転</translation>
     </message>
     <message>
-        <source>Rotates the selected component</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rotate
-
-Rotates the selected component counter-clockwise</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mirror about X Axis</source>
         <translation type="unfinished">X軸で反転</translation>
-    </message>
-    <message>
-        <source>Mirrors the selected component about X axis</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Mirror about X Axis
@@ -1379,10 +1480,6 @@ Mirrors the selected item about X Axis</source>
     <message>
         <source>Mirror about Y Axis</source>
         <translation type="unfinished">Y軸で反転</translation>
-    </message>
-    <message>
-        <source>Mirrors the selected component about Y axis</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Mirror about Y Axis
@@ -1409,22 +1506,6 @@ Inserts a wire</source>
 ワイアを挿入</translation>
     </message>
     <message>
-        <source>Zoom area</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zooms a selected area in the current view</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Insert item action</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Painting draw action</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;File</source>
         <translation type="unfinished">ファイル(&amp;F)</translation>
     </message>
@@ -1435,14 +1516,6 @@ Inserts a wire</source>
     <message>
         <source>&amp;View</source>
         <translation type="unfinished">ビュー(&amp;V)</translation>
-    </message>
-    <message>
-        <source>&amp;Docks and Toolbars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>P&amp;ositioning</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;Project</source>
@@ -1461,36 +1534,12 @@ Inserts a wire</source>
         <translation type="unfinished">ヘルプ(&amp;H)</translation>
     </message>
     <message>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit</source>
         <translation type="unfinished">編集</translation>
     </message>
     <message>
-        <source>Work</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Open File</source>
         <translation type="unfinished">ファイルを開く</translation>
-    </message>
-    <message>
-        <source>Critical</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Please, save current file first!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1 : File save error</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Save File</source>
@@ -1519,7 +1568,161 @@ Open Caneda example circuits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Ctrl+E</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launches current selection properties dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotates the selected component</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotate
+
+Rotates the selected component counter-clockwise</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected component about X axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected component about Y axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom area</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zooms a selected area in the current view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert item action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Painting draw action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+I</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+I</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+L</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F7</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Open &amp;Recent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Docks and Toolbars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>P&amp;ositioning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Critical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please, save current file first!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 : File save error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>H</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>W</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Esc</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

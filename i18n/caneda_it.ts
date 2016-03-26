@@ -2,6 +2,105 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>Caneda</name>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="obsolete">&amp;Cancella</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="obsolete">Cancella</translation>
+    </message>
+    <message>
+        <source>Deletes the selected components</source>
+        <translation type="obsolete">Cancella i componenti selezionati</translation>
+    </message>
+    <message>
+        <source>Delete
+
+Deletes the selected components</source>
+        <translation type="obsolete">Cancella
+
+Cancella i componenti selezionati</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="obsolete">Seleziona</translation>
+    </message>
+    <message>
+        <source>Activate select mode</source>
+        <translation type="obsolete">Attiva il modo selezione</translation>
+    </message>
+    <message>
+        <source>Select
+
+Activates select mode</source>
+        <translation type="obsolete">Seleziona
+
+Attiva il modo selezione</translation>
+    </message>
+    <message>
+        <source>Rotate</source>
+        <translation type="obsolete">Ruota</translation>
+    </message>
+    <message>
+        <source>Mirror about X Axis</source>
+        <translation type="obsolete">Ribalta sull&apos;asse X</translation>
+    </message>
+    <message>
+        <source>Mirror about X Axis
+
+Mirrors the selected item about X Axis</source>
+        <translation type="obsolete">Ribalta sull&apos;asse X
+
+Ribalta l&apos;oggetto selezionato sull&apos;asse X</translation>
+    </message>
+    <message>
+        <source>Mirror about Y Axis</source>
+        <translation type="obsolete">Ribalta sull&apos;asse Y</translation>
+    </message>
+    <message>
+        <source>Mirror about Y Axis
+
+Mirrors the selected item about Y Axis</source>
+        <translation type="obsolete">Ribalta sull&apos;asse Y
+
+Ribalta l&apos;oggetto selezionato sull&apos;asse Y</translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="obsolete">&amp;File</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="obsolete">&amp;Modifica</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="obsolete">&amp;Visualizza</translation>
+    </message>
+    <message>
+        <source>&amp;Simulation</source>
+        <translation type="obsolete">&amp;Simulazione</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="obsolete">&amp;Aiuto</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="obsolete">Modifica</translation>
+    </message>
+    <message>
+        <source>Open File</source>
+        <translation type="obsolete">Apri File</translation>
+    </message>
+    <message>
+        <source>Save File</source>
+        <translation type="obsolete">Salva File</translation>
+    </message>
+</context>
+<context>
     <name>Caneda::AboutDialog</name>
     <message>
         <source>About Caneda</source>
@@ -1345,22 +1444,8 @@ Attiva il modo selezione</translation>
         <translation type="unfinished">Ruota</translation>
     </message>
     <message>
-        <source>Rotates the selected component</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rotate
-
-Rotates the selected component counter-clockwise</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mirror about X Axis</source>
         <translation type="unfinished">Ribalta sull&apos;asse X</translation>
-    </message>
-    <message>
-        <source>Mirrors the selected component about X axis</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Mirror about X Axis
@@ -1375,16 +1460,112 @@ Ribalta l&apos;oggetto selezionato sull&apos;asse X</translation>
         <translation type="unfinished">Ribalta sull&apos;asse Y</translation>
     </message>
     <message>
-        <source>Mirrors the selected component about Y axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mirror about Y Axis
 
 Mirrors the selected item about Y Axis</source>
         <translation type="unfinished">Ribalta sull&apos;asse Y
 
 Ribalta l&apos;oggetto selezionato sull&apos;asse Y</translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="unfinished">&amp;File</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished">&amp;Modifica</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="unfinished">&amp;Visualizza</translation>
+    </message>
+    <message>
+        <source>&amp;Project</source>
+        <translation type="obsolete">&amp;Progetto</translation>
+    </message>
+    <message>
+        <source>&amp;Tools</source>
+        <translation type="obsolete">Strumen&amp;ti</translation>
+    </message>
+    <message>
+        <source>&amp;Simulation</source>
+        <translation type="unfinished">&amp;Simulazione</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="unfinished">&amp;Aiuto</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished">Modifica</translation>
+    </message>
+    <message>
+        <source>Open File</source>
+        <translation type="unfinished">Apri File</translation>
+    </message>
+    <message>
+        <source>Save File</source>
+        <translation type="unfinished">Salva File</translation>
+    </message>
+    <message>
+        <source>&amp;Help index...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Example circuits...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Example circuits
+
+Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About &amp;Qt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+E</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launches current selection properties dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotates the selected component</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotate
+
+Rotates the selected component counter-clockwise</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected component about X axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected component about Y axis</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Wire</source>
@@ -1417,16 +1598,60 @@ Inserts a wire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;File</source>
-        <translation type="unfinished">&amp;File</translation>
+        <source>Ctrl+I</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished">&amp;Modifica</translation>
+        <source>Ctrl+Shift+I</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;View</source>
-        <translation type="unfinished">&amp;Visualizza</translation>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+L</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F7</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open &amp;Recent</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;Docks and Toolbars</source>
@@ -1437,28 +1662,8 @@ Inserts a wire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Project</source>
-        <translation type="obsolete">&amp;Progetto</translation>
-    </message>
-    <message>
-        <source>&amp;Tools</source>
-        <translation type="obsolete">Strumen&amp;ti</translation>
-    </message>
-    <message>
-        <source>&amp;Simulation</source>
-        <translation type="unfinished">&amp;Simulazione</translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Aiuto</translation>
-    </message>
-    <message>
         <source>File</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished">Modifica</translation>
     </message>
     <message>
         <source>Work</source>
@@ -1467,10 +1672,6 @@ Inserts a wire</source>
     <message>
         <source>View</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open File</source>
-        <translation type="unfinished">Apri File</translation>
     </message>
     <message>
         <source>Critical</source>
@@ -1485,33 +1686,19 @@ Inserts a wire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Save File</source>
-        <translation type="unfinished">Salva File</translation>
-    </message>
-    <message>
-        <source>&amp;Help index...</source>
+        <source>V</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Example circuits...</source>
+        <source>H</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open Caneda example circuits</source>
+        <source>W</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Example circuits
-
-Open Caneda example circuits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About &amp;Qt...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open &amp;Recent</source>
+        <source>Esc</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

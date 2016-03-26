@@ -33,6 +33,97 @@
     </message>
 </context>
 <context>
+    <name>Caneda</name>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="obsolete">&amp;Törlés</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="obsolete">Törlés</translation>
+    </message>
+    <message>
+        <source>Deletes the selected components</source>
+        <translation type="obsolete">Törli a kijelölt részeket</translation>
+    </message>
+    <message>
+        <source>Delete
+
+Deletes the selected components</source>
+        <translation type="obsolete">Törlés
+
+Törli a kijelölt részeket</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="obsolete">Kijelölés</translation>
+    </message>
+    <message>
+        <source>Activate select mode</source>
+        <translation type="obsolete">Kiválasztás aktiválása</translation>
+    </message>
+    <message>
+        <source>Select
+
+Activates select mode</source>
+        <translation type="obsolete">Kiválasztás
+
+Kiválasztás aktiválása</translation>
+    </message>
+    <message>
+        <source>Rotate</source>
+        <translation type="obsolete">Forgatás</translation>
+    </message>
+    <message>
+        <source>Wire</source>
+        <translation type="obsolete">Vezeték</translation>
+    </message>
+    <message>
+        <source>Inserts a wire</source>
+        <translation type="obsolete">Beszúr egy vezetéket</translation>
+    </message>
+    <message>
+        <source>Wire
+
+Inserts a wire</source>
+        <translation type="obsolete">Vezeték
+
+Vezeték beszúrása</translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="obsolete">&amp;Fájl</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="obsolete">&amp;Szerkesztés</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="obsolete">&amp;Megjelenítés</translation>
+    </message>
+    <message>
+        <source>&amp;Simulation</source>
+        <translation type="obsolete">Sz&amp;imuláció</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="obsolete">&amp;Súgó</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="obsolete">Szerkesztés</translation>
+    </message>
+    <message>
+        <source>Open File</source>
+        <translation type="obsolete">Fájl megnyitása</translation>
+    </message>
+    <message>
+        <source>Save File</source>
+        <translation type="obsolete">Fájl mentés</translation>
+    </message>
+</context>
+<context>
     <name>Caneda::AboutDialog</name>
     <message>
         <source>About Caneda</source>
@@ -1421,6 +1512,104 @@ Kiválasztás aktiválása</translation>
         <translation type="unfinished">Forgatás</translation>
     </message>
     <message>
+        <source>Wire</source>
+        <translation type="unfinished">Vezeték</translation>
+    </message>
+    <message>
+        <source>Inserts a wire</source>
+        <translation type="unfinished">Beszúr egy vezetéket</translation>
+    </message>
+    <message>
+        <source>Wire
+
+Inserts a wire</source>
+        <translation type="unfinished">Vezeték
+
+Vezeték beszúrása</translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="unfinished">&amp;Fájl</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished">&amp;Szerkesztés</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="unfinished">&amp;Megjelenítés</translation>
+    </message>
+    <message>
+        <source>&amp;Project</source>
+        <translation type="obsolete">&amp;Projekt</translation>
+    </message>
+    <message>
+        <source>&amp;Tools</source>
+        <translation type="obsolete">&amp;Eszközök</translation>
+    </message>
+    <message>
+        <source>&amp;Simulation</source>
+        <translation type="unfinished">Sz&amp;imuláció</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="unfinished">&amp;Súgó</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished">Szerkesztés</translation>
+    </message>
+    <message>
+        <source>Open File</source>
+        <translation type="unfinished">Fájl megnyitása</translation>
+    </message>
+    <message>
+        <source>Save File</source>
+        <translation type="unfinished">Fájl mentés</translation>
+    </message>
+    <message>
+        <source>&amp;Help index...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Example circuits...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Example circuits
+
+Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About &amp;Qt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+E</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launches current selection properties dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Rotates the selected component</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1459,22 +1648,6 @@ Mirrors the selected item about Y Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Wire</source>
-        <translation type="unfinished">Vezeték</translation>
-    </message>
-    <message>
-        <source>Inserts a wire</source>
-        <translation type="unfinished">Beszúr egy vezetéket</translation>
-    </message>
-    <message>
-        <source>Wire
-
-Inserts a wire</source>
-        <translation type="unfinished">Vezeték
-
-Vezeték beszúrása</translation>
-    </message>
-    <message>
         <source>Zoom area</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1491,16 +1664,60 @@ Vezeték beszúrása</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;File</source>
-        <translation type="unfinished">&amp;Fájl</translation>
+        <source>Ctrl+I</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished">&amp;Szerkesztés</translation>
+        <source>Ctrl+Shift+I</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;View</source>
-        <translation type="unfinished">&amp;Megjelenítés</translation>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+L</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F7</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open &amp;Recent</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;Docks and Toolbars</source>
@@ -1511,28 +1728,8 @@ Vezeték beszúrása</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Project</source>
-        <translation type="obsolete">&amp;Projekt</translation>
-    </message>
-    <message>
-        <source>&amp;Tools</source>
-        <translation type="obsolete">&amp;Eszközök</translation>
-    </message>
-    <message>
-        <source>&amp;Simulation</source>
-        <translation type="unfinished">Sz&amp;imuláció</translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Súgó</translation>
-    </message>
-    <message>
         <source>File</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished">Szerkesztés</translation>
     </message>
     <message>
         <source>Work</source>
@@ -1541,10 +1738,6 @@ Vezeték beszúrása</translation>
     <message>
         <source>View</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open File</source>
-        <translation type="unfinished">Fájl megnyitása</translation>
     </message>
     <message>
         <source>Critical</source>
@@ -1559,33 +1752,19 @@ Vezeték beszúrása</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Save File</source>
-        <translation type="unfinished">Fájl mentés</translation>
-    </message>
-    <message>
-        <source>&amp;Help index...</source>
+        <source>V</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Example circuits...</source>
+        <source>H</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open Caneda example circuits</source>
+        <source>W</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Example circuits
-
-Open Caneda example circuits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About &amp;Qt...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open &amp;Recent</source>
+        <source>Esc</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

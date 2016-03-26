@@ -33,6 +33,117 @@
     </message>
 </context>
 <context>
+    <name>Caneda</name>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="obsolete">&amp;Eliminar</translation>
+    </message>
+    <message>
+        <source>Deletes the selected components</source>
+        <translation type="obsolete">Elimina los componentes seleccionados</translation>
+    </message>
+    <message>
+        <source>Delete
+
+Deletes the selected components</source>
+        <translation type="obsolete">Eliminar
+
+Elimina los componentes seleccionados</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="obsolete">Seleccionar</translation>
+    </message>
+    <message>
+        <source>Activate select mode</source>
+        <translation type="obsolete">Activa el modo selección</translation>
+    </message>
+    <message>
+        <source>Select
+
+Activates select mode</source>
+        <translation type="obsolete">Seleccionar
+
+Activa el modo selección</translation>
+    </message>
+    <message>
+        <source>Rotate</source>
+        <translation type="obsolete">Rotar</translation>
+    </message>
+    <message>
+        <source>Mirror about X Axis</source>
+        <translation type="obsolete">Reflejar sobre el eje x</translation>
+    </message>
+    <message>
+        <source>Mirror about X Axis
+
+Mirrors the selected item about X Axis</source>
+        <translation type="obsolete">Reflejar sobre el eje x
+
+Refleja el elemento seleccionado sobre el eje x</translation>
+    </message>
+    <message>
+        <source>Mirror about Y Axis</source>
+        <translation type="obsolete">Reflejar sobre el eje y</translation>
+    </message>
+    <message>
+        <source>Mirror about Y Axis
+
+Mirrors the selected item about Y Axis</source>
+        <translation type="obsolete">Reflejar sobre el eje y
+
+Refleja el elemento seleccionado sobre el eje y</translation>
+    </message>
+    <message>
+        <source>Wire</source>
+        <translation type="obsolete">Cable</translation>
+    </message>
+    <message>
+        <source>Inserts a wire</source>
+        <translation type="obsolete">Inserta un cable</translation>
+    </message>
+    <message>
+        <source>Wire
+
+Inserts a wire</source>
+        <translation type="obsolete">Cable
+
+Inserta un cable</translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="obsolete">&amp;Archivo</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="obsolete">&amp;Edición</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="obsolete">&amp;Ver</translation>
+    </message>
+    <message>
+        <source>&amp;Simulation</source>
+        <translation type="obsolete">&amp;Simulación</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="obsolete">&amp;Ayuda</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="obsolete">Editar</translation>
+    </message>
+    <message>
+        <source>Open File</source>
+        <translation type="obsolete">Abrir Archivo</translation>
+    </message>
+    <message>
+        <source>Save File</source>
+        <translation type="obsolete">Guardar Archivo</translation>
+    </message>
+</context>
+<context>
     <name>Caneda::AboutDialog</name>
     <message>
         <source>About Caneda</source>
@@ -1387,10 +1498,6 @@ About Qt by Nokia</source>
         <translation type="unfinished">&amp;Eliminar</translation>
     </message>
     <message>
-        <source>Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Deletes the selected components</source>
         <translation type="unfinished">Elimina los componentes seleccionados</translation>
     </message>
@@ -1423,22 +1530,8 @@ Activa el modo selección</translation>
         <translation type="unfinished">Rotar</translation>
     </message>
     <message>
-        <source>Rotates the selected component</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rotate
-
-Rotates the selected component counter-clockwise</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mirror about X Axis</source>
         <translation type="unfinished">Reflejar sobre el eje x</translation>
-    </message>
-    <message>
-        <source>Mirrors the selected component about X axis</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Mirror about X Axis
@@ -1451,10 +1544,6 @@ Refleja el elemento seleccionado sobre el eje x</translation>
     <message>
         <source>Mirror about Y Axis</source>
         <translation type="unfinished">Reflejar sobre el eje y</translation>
-    </message>
-    <message>
-        <source>Mirrors the selected component about Y axis</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Mirror about Y Axis
@@ -1481,22 +1570,6 @@ Inserts a wire</source>
 Inserta un cable</translation>
     </message>
     <message>
-        <source>Zoom area</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zooms a selected area in the current view</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Insert item action</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Painting draw action</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;File</source>
         <translation type="unfinished">&amp;Archivo</translation>
     </message>
@@ -1507,14 +1580,6 @@ Inserta un cable</translation>
     <message>
         <source>&amp;View</source>
         <translation type="unfinished">&amp;Ver</translation>
-    </message>
-    <message>
-        <source>&amp;Docks and Toolbars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>P&amp;ositioning</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;Project</source>
@@ -1533,36 +1598,12 @@ Inserta un cable</translation>
         <translation type="unfinished">&amp;Ayuda</translation>
     </message>
     <message>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit</source>
         <translation type="unfinished">Editar</translation>
     </message>
     <message>
-        <source>Work</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Open File</source>
         <translation type="unfinished">Abrir Archivo</translation>
-    </message>
-    <message>
-        <source>Critical</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Please, save current file first!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1 : File save error</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Save File</source>
@@ -1591,7 +1632,165 @@ Open Caneda example circuits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Ctrl+E</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launches current selection properties dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotates the selected component</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotate
+
+Rotates the selected component counter-clockwise</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected component about X axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected component about Y axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom area</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zooms a selected area in the current view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert item action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Painting draw action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+I</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+I</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+L</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F7</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Open &amp;Recent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Docks and Toolbars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>P&amp;ositioning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Critical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please, save current file first!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 : File save error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>H</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>W</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Esc</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

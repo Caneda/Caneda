@@ -158,13 +158,13 @@ namespace Caneda
         SimulationContext *sim = SimulationContext::instance();
 
         action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New..."));
-        action->setShortcut(Qt::CTRL+Qt::Key_N);
+        action->setShortcut(QKeySequence(QKeySequence::New));
         action->setStatusTip(tr("Creates a new file document"));
         action->setWhatsThis(tr("New file\n\nCreates a new file document"));
         connect(action, SIGNAL(triggered()), SLOT(newFile()));
 
         action = am->createAction("fileOpen", Caneda::icon("document-open"), tr("&Open..."));
-        action->setShortcut(Qt::CTRL+Qt::Key_O);
+        action->setShortcut(QKeySequence(QKeySequence::Open));
         action->setStatusTip(tr("Opens an existing document"));
         action->setWhatsThis(tr("Open File\n\nOpens an existing document"));
         connect(action, SIGNAL(triggered()), SLOT(open()));
@@ -176,169 +176,169 @@ namespace Caneda
         }
 
         action = am->createAction("fileSave", Caneda::icon("document-save"), tr("&Save"));
-        action->setShortcut(Qt::CTRL+Qt::Key_S);
+        action->setShortcut(QKeySequence(QKeySequence::Save));
         action->setStatusTip(tr("Saves the current document"));
         action->setWhatsThis(tr("Save File\n\nSaves the current document"));
         connect(action, SIGNAL(triggered()), SLOT(save()));
 
         action = am->createAction("fileSaveAs", Caneda::icon("document-save-as"), tr("Save as..."));
-        action->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_S);
+        action->setShortcut(QKeySequence(QKeySequence::SaveAs));
         action->setStatusTip(tr("Saves the current document under a new filename"));
         action->setWhatsThis(tr("Save As\n\nSaves the current document under a new filename"));
         connect(action, SIGNAL(triggered()), SLOT(saveAs()));
 
         action = am->createAction("fileSaveAll", Caneda::icon("document-save-all"), tr("Save &all"));
-        action->setShortcut(Qt::CTRL+Qt::Key_Plus);
         action->setStatusTip(tr("Saves all open documents"));
         action->setWhatsThis(tr("Save All Files\n\nSaves all open documents"));
         connect(action, SIGNAL(triggered()), SLOT(saveAll()));
 
         action = am->createAction("fileClose", Caneda::icon("document-close"), tr("&Close"));
-        action->setShortcut(Qt::CTRL+Qt::Key_W);
+        action->setShortcut(QKeySequence(QKeySequence::Close));
         action->setStatusTip(tr("Closes the current document"));
         action->setWhatsThis(tr("Close File\n\nCloses the current document"));
         connect(action, SIGNAL(triggered()), SLOT(closeFile()));
 
         action = am->createAction("filePrint", Caneda::icon("document-print"), tr("&Print..."));
-        action->setShortcut(Qt::CTRL+Qt::Key_P);
+        action->setShortcut(QKeySequence(QKeySequence::Print));
         action->setStatusTip(tr("Prints the current document"));
         action->setWhatsThis(tr("Print File\n\nPrints the current document"));
         connect(action, SIGNAL(triggered()), SLOT(print()));
 
         action = am->createAction("fileExportImage", Caneda::icon("image-x-generic"), tr("&Export image..."));
-        action->setShortcut(Qt::CTRL+Qt::Key_E);
+        action->setShortcut(QKeySequence(tr("Ctrl+E")));
         action->setStatusTip(tr("Exports the current view to an image file"));
         action->setWhatsThis(tr("Export Image\n\n""Exports the current view to an image file"));
         connect(action, SIGNAL(triggered()), SLOT(exportImage()));
 
         action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("Application settings..."));
-        action->setShortcut(Qt::CTRL+Qt::Key_Comma);
+        action->setShortcut(QKeySequence(QKeySequence::Preferences));
         action->setStatusTip(tr("Sets the properties of the application"));
         action->setWhatsThis(tr("Caneda Settings\n\nSets the properties of the application"));
         connect(action, SIGNAL(triggered()), SLOT(applicationSettings()));
 
         action = am->createAction("propertiesDialog", Caneda::icon("document-properties"), tr("Edit parameters..."));
+        action->setStatusTip(tr("Launches current selection properties dialog"));
         action->setWhatsThis(tr("Edit Parameters\n\nLaunches current selection properties dialog"));
         connect(action, SIGNAL(triggered()), SLOT(launchPropertiesDialog()));
 
         action = am->createAction("fileQuit", Caneda::icon("application-exit"), tr("E&xit"));
-        action->setShortcut(Qt::CTRL+Qt::Key_Q);
+        action->setShortcut(QKeySequence(QKeySequence::Quit));
         action->setStatusTip(tr("Quits the application"));
         action->setWhatsThis(tr("Exit\n\nQuits the application"));
         connect(action, SIGNAL(triggered()), SLOT(close()));
 
         action = am->createAction("editUndo", Caneda::icon("edit-undo"), tr("&Undo"));
-        action->setShortcut(Qt::CTRL+Qt::Key_Z);
+        action->setShortcut(QKeySequence(QKeySequence::Undo));
         action->setStatusTip(tr("Undoes the last command"));
         action->setWhatsThis(tr("Undo\n\nMakes the last action undone"));
         connect(action, SIGNAL(triggered()), SLOT(undo()));
 
         action = am->createAction("editRedo", Caneda::icon("edit-redo"), tr("&Redo"));
-        action->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_Z);
+        action->setShortcut(QKeySequence(QKeySequence::Redo));
         action->setStatusTip(tr("Redoes the last command"));
         action->setWhatsThis(tr("Redo\n\nRepeats the last action once more"));
         connect(action, SIGNAL(triggered()), SLOT(redo()));
 
         action = am->createAction("editCut", Caneda::icon("edit-cut"), tr("Cu&t"));
-        action->setShortcut(Qt::CTRL+Qt::Key_X);
+        action->setShortcut(QKeySequence(QKeySequence::Cut));
         action->setStatusTip(tr("Cuts out the selection and puts it into the clipboard"));
         action->setWhatsThis(tr("Cut\n\nCuts out the selection and puts it into the clipboard"));
         connect(action, SIGNAL(triggered()), SLOT(cut()));
 
         action = am->createAction("editCopy", Caneda::icon("edit-copy"), tr("&Copy"));
-        action->setShortcut(Qt::CTRL+Qt::Key_C);
+        action->setShortcut(QKeySequence(QKeySequence::Copy));
         action->setStatusTip(tr("Copies the selection into the clipboard"));
         action->setWhatsThis(tr("Copy\n\nCopies the selection into the clipboard"));
         connect(action, SIGNAL(triggered()), SLOT(copy()));
 
         action = am->createAction("editPaste", Caneda::icon("edit-paste"), tr("&Paste"));
-        action->setShortcut(Qt::CTRL+Qt::Key_V);
+        action->setShortcut(QKeySequence(QKeySequence::Paste));
         action->setStatusTip(tr("Pastes the clipboard contents to the cursor position"));
         action->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to the cursor position"));
         connect(action, SIGNAL(triggered()), SLOT(paste()));
 
         action = am->createAction("selectAll", Caneda::icon("select-rectangular"), tr("Select all"));
-        action->setShortcut(Qt::CTRL+Qt::Key_A);
+        action->setShortcut(QKeySequence(QKeySequence::SelectAll));
         action->setStatusTip(tr("Selects all elements"));
         action->setWhatsThis(tr("Select All\n\nSelects all elements of the document"));
         connect(action, SIGNAL(triggered()), SLOT(selectAll()));
 
         action = am->createAction("editFind", Caneda::icon("edit-find"), tr("Find..."));
-        action->setShortcut(Qt::CTRL+Qt::Key_F);
+        action->setShortcut(QKeySequence(QKeySequence::Find));
         action->setStatusTip(tr("Find a piece of text"));
         action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
         connect(action, SIGNAL(triggered()), SLOT(find()));
 
         action = am->createAction("schEdit", Caneda::icon("draw-freehand"), tr("&Edit circuit schematic"));
-        action->setShortcut(Qt::Key_F5);
+        action->setShortcut(QKeySequence(tr("F2")));
         action->setStatusTip(tr("Switches to schematic edit"));
         action->setWhatsThis(tr("Edit Circuit Schematic\n\nSwitches to schematic edit"));
         connect(action, SIGNAL(triggered()), SLOT(openSchematic()));
 
         action = am->createAction("symEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &symbol"));
-        action->setShortcut(Qt::Key_F6);
+        action->setShortcut(QKeySequence(tr("F3")));
         action->setStatusTip(tr("Switches to symbol edit"));
         action->setWhatsThis(tr("Edit Circuit Symbol\n\nSwitches to symbol edit"));
         connect(action, SIGNAL(triggered()), SLOT(openSymbol()));
 
         action = am->createAction("layEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &layout"));
-        action->setShortcut(Qt::Key_F7);
+        action->setShortcut(QKeySequence(tr("F4")));
         action->setStatusTip(tr("Switches to layout edit"));
         action->setWhatsThis(tr("Edit Circuit Layout\n\nSwitches to layout edit"));
         connect(action, SIGNAL(triggered()), SLOT(openLayout()));
 
         action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into subcircuit"));
-        action->setShortcut(Qt::CTRL+Qt::Key_I);
+        action->setShortcut(QKeySequence(tr("Ctrl+I")));
         action->setToolTip(tr("Go into Subcircuit") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Goes inside the selected subcircuit"));
         action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
         connect(action, SIGNAL(triggered()), SLOT(intoHierarchy()));
 
         action = am->createAction("popH", Caneda::icon("go-top"), tr("Pop out"));
-        action->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_I);
+        action->setShortcut(QKeySequence(tr("Ctrl+Shift+I")));
         action->setToolTip(tr("Pop Out") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Goes outside the current subcircuit"));
         action->setWhatsThis(tr("Pop Out\n\nGoes up one hierarchy level (leaves the current subcircuit)"));
         connect(action, SIGNAL(triggered()), SLOT(popHierarchy()));
 
         action = am->createAction("zoomFitInBest", Caneda::icon("zoom-fit-best"), tr("View all"));
-        action->setShortcut(Qt::Key_0);
+        action->setShortcut(QKeySequence(tr("0")));
         action->setStatusTip(tr("Show the whole contents"));
         action->setWhatsThis(tr("View all\n\nShows the whole page content"));
         connect(action, SIGNAL(triggered()), SLOT(zoomBestFit()));
 
         action = am->createAction("zoomOriginal", Caneda::icon("zoom-original"), tr("View 1:1"));
-        action->setShortcut(Qt::Key_1);
+        action->setShortcut(QKeySequence(tr("1")));
         action->setStatusTip(tr("View without magnification"));
         action->setWhatsThis(tr("Zoom 1:1\n\nShows the page content without magnification"));
         connect(action, SIGNAL(triggered()), SLOT(zoomOriginal()));
 
         action = am->createAction("zoomIn", Caneda::icon("zoom-in"), tr("Zoom in"));
-        action->setShortcut(Qt::Key_Plus);
+        action->setShortcut(QKeySequence(tr("+")));
         action->setStatusTip(tr("Zooms in the content"));
         action->setWhatsThis(tr("Zoom In \n\nZooms in the content"));
         connect(action, SIGNAL(triggered()), SLOT(zoomIn()));
 
         action = am->createAction("zoomOut", Caneda::icon("zoom-out"), tr("Zoom out"));
-        action->setShortcut(Qt::Key_Minus);
+        action->setShortcut(QKeySequence(tr("-")));
         action->setStatusTip(tr("Zooms out the content"));
         action->setWhatsThis(tr("Zoom Out \n\nZooms out the content"));
         connect(action, SIGNAL(triggered()), SLOT(zoomOut()));
 
         action = am->createAction("splitHorizontal", Caneda::icon("view-split-left-right"), tr("Split &horizontal"));
-        action->setShortcut(Qt::ALT+Qt::Key_1);
+        action->setShortcut(QKeySequence(tr("Ctrl+Shift+L")));
         action->setStatusTip(tr("Splits the current view in horizontal orientation"));
         action->setWhatsThis(tr("Split Horizontal\n\nSplits the current view in horizontal orientation"));
         connect(action, SIGNAL(triggered()), SLOT(splitHorizontal()));
 
         action = am->createAction("splitVertical", Caneda::icon("view-split-top-bottom"), tr("Split &vertical"));
-        action->setShortcut(Qt::ALT+Qt::Key_2);
+        action->setShortcut(QKeySequence(tr("Ctrl+Shift+T")));
         action->setStatusTip(tr("Splits the current view in vertical orientation"));
         action->setWhatsThis(tr("Split Vertical\n\nSplits the current view in vertical orientation"));
         connect(action, SIGNAL(triggered()), SLOT(splitVertical()));
 
         action = am->createAction("splitClose", Caneda::icon("view-left-close"), tr("&Close split"));
-        action->setShortcut(Qt::ALT+Qt::Key_3);
+        action->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
         action->setStatusTip(tr("Closes the current split"));
         action->setWhatsThis(tr("Close Split\n\nCloses the current split"));
         connect(action, SIGNAL(triggered()), SLOT(closeSplit()));
@@ -398,50 +398,44 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(distributeVertical()));
 
         action = am->createAction("projNew", Caneda::icon("project-new"), tr("&New project..."));
-        action->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_N);
         action->setStatusTip(tr("Creates a new project"));
         action->setWhatsThis(tr("New Project\n\nCreates a new project"));
         connect(action, SIGNAL(triggered()), SLOT(newProject()));
 
         action = am->createAction("projOpen", Caneda::icon("document-open"), tr("&Open project..."));
-        action->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_O);
         action->setStatusTip(tr("Opens an existing project"));
         action->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
         connect(action, SIGNAL(triggered()), SLOT(openProject()));
 
         action = am->createAction("addToProj", Caneda::icon("document-new"), tr("&Add file to project..."));
-        action->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_A);
         action->setStatusTip(tr("Adds a file to current project"));
         action->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
         connect(action, SIGNAL(triggered()), SLOT(addToProject()));
 
         action = am->createAction("projDel", Caneda::icon("document-close"), tr("&Remove from project"));
-        action->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_R);
         action->setStatusTip(tr("Removes a file from current project"));
         action->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
         connect(action, SIGNAL(triggered()), SLOT(removeFromProject()));
 
         action = am->createAction("projClose", Caneda::icon("dialog-close"), tr("&Close project"));
-        action->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_W);
         action->setStatusTip(tr("Closes the current project"));
         action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
         connect(action, SIGNAL(triggered()), SLOT(closeProject()));
 
         action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and history..."));
-        action->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_B);
         action->setStatusTip(tr("Opens backup and history dialog"));
         action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
         connect(action, SIGNAL(triggered()), SLOT(backupAndHistory()));
 
         action = am->createAction("simulate", Caneda::icon("media-playback-start"), tr("Simulate"));
-        action->setShortcut(Qt::Key_F9);
+        action->setShortcut(QKeySequence(QKeySequence::Refresh));
         action->setToolTip(tr("Simulate") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Simulates the current circuit"));
         action->setWhatsThis(tr("Simulate\n\nSimulates the current circuit"));
         connect(action, SIGNAL(triggered()), SLOT(simulate()));
 
         action = am->createAction("openSym", Caneda::icon("system-switch-user"), tr("View circuit simulation"));
-        action->setShortcut(Qt::Key_F8);
+        action->setShortcut(tr("F6"));
         action->setToolTip(tr("View Circuit Simulation") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Changes to circuit simulation"));
         action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
@@ -454,19 +448,19 @@ namespace Caneda
         sim->addNormalAction(action);
 
         action = am->createAction("showLog", Caneda::icon("document-preview"), tr("Show simulation log"));
-        action->setShortcut(Qt::Key_F10);
+        action->setShortcut(tr("F7"));
         action->setStatusTip(tr("Shows simulation log"));
         action->setWhatsThis(tr("Show Log\n\nShows the log of the current simulation"));
         connect(action, SIGNAL(triggered()), SLOT(showLog()));
 
         action = am->createAction("showNetlist", Caneda::icon("document-preview"), tr("Show circuit netlist"));
-        action->setShortcut(Qt::Key_F11);
+        action->setShortcut(tr("F8"));
         action->setStatusTip(tr("Shows the circuit netlist"));
         action->setWhatsThis(tr("Show Netlist\n\nShows the netlist of the current circuit"));
         connect(action, SIGNAL(triggered()), SLOT(showNetlist()));
 
         action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("&Help index..."));
-        action->setShortcut(Qt::Key_F1);
+        action->setShortcut(QKeySequence(QKeySequence::HelpContents));
         action->setStatusTip(tr("Index of Caneda Help"));
         action->setWhatsThis(tr("Help Index\n\nIndex of intern Caneda help"));
         connect(action, SIGNAL(triggered()), SLOT(helpIndex()));
@@ -477,6 +471,7 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(helpExamples()));
 
         QAction *qAction = QWhatsThis::createAction(this);
+        action->setShortcut(QKeySequence(QKeySequence::WhatsThis));
         action = am->createAction("whatsThis", qAction->icon(), qAction->text());
         connect(action, SIGNAL(triggered()), qAction, SLOT(trigger()));
         connect(action, SIGNAL(hovered()), qAction, SLOT(hover()));
@@ -498,27 +493,17 @@ namespace Caneda
     void MainWindow::initMouseActions()
     {
         Action *action = 0;
+        ActionManager *am = ActionManager::instance();
+
         StateHandler *handler = StateHandler::instance();
+
         LayoutContext *lc = LayoutContext::instance();
         SchematicContext *sc = SchematicContext::instance();
         SymbolContext *sy = SymbolContext::instance();
 
-        ActionManager *am = ActionManager::instance();
-        action = am->createMouseAction("editDelete", Caneda::Deleting,
-                Caneda::icon("edit-delete"), tr("&Delete"));
-        action->setShortcut(Qt::Key_Delete);
-        action->setToolTip(tr("Delete") + " (" + action->shortcut().toString() + ")");
-        action->setStatusTip(tr("Deletes the selected components"));
-        action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
-        lc->addMouseAction(action);
-        sc->addMouseAction(action);
-        sy->addMouseAction(action);
-
         action = am->createMouseAction("select", Caneda::Normal,
                 Caneda::icon("edit-select"), tr("Select"));
-        action->setShortcut(Qt::Key_Escape);
+        action->setShortcut(QKeySequence(tr("Esc")));
         action->setToolTip(tr("Select") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Activate select mode"));
         action->setWhatsThis(tr("Select\n\nActivates select mode"));
@@ -529,9 +514,21 @@ namespace Caneda
         sc->addMouseAction(action);
         sy->addMouseAction(action);
 
+        action = am->createMouseAction("editDelete", Caneda::Deleting,
+                Caneda::icon("edit-delete"), tr("&Delete"));
+        action->setShortcut(QKeySequence(QKeySequence::Delete));
+        action->setToolTip(tr("Delete") + " (" + action->shortcut().toString() + ")");
+        action->setStatusTip(tr("Deletes the selected components"));
+        action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
+        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
+                SLOT(slotPerformToggleAction(const QString&, bool)));
+        lc->addMouseAction(action);
+        sc->addMouseAction(action);
+        sy->addMouseAction(action);
+
         action = am->createMouseAction("editRotate", Caneda::Rotating,
                 Caneda::icon("object-rotate-right"), tr("Rotate"));
-        action->setShortcut(Qt::Key_R);
+        action->setShortcut(QKeySequence(tr("R")));
         action->setToolTip(tr("Rotate") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Rotates the selected component"));
         action->setWhatsThis(tr("Rotate\n\nRotates the selected component counter-clockwise"));
@@ -543,7 +540,7 @@ namespace Caneda
 
         action = am->createMouseAction("editMirror", Caneda::MirroringX,
                 Caneda::icon("object-flip-vertical"), tr("Mirror about X Axis"));
-        action->setShortcut(Qt::Key_V);
+        action->setShortcut(QKeySequence(tr("V")));
         action->setToolTip(tr("Mirror about X Axis") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Mirrors the selected component about X axis"));
         action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
@@ -555,7 +552,7 @@ namespace Caneda
 
         action = am->createMouseAction("editMirrorY", Caneda::MirroringY,
                 Caneda::icon("object-flip-horizontal"), tr("Mirror about Y Axis"));
-        action->setShortcut(Qt::Key_H);
+        action->setShortcut(QKeySequence(tr("H")));
         action->setToolTip(tr("Mirror about Y Axis") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Mirrors the selected component about Y axis"));
         action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
@@ -567,7 +564,7 @@ namespace Caneda
 
         action = am->createMouseAction("insWire", Caneda::Wiring,
                 Caneda::icon("wire"), tr("Wire"));
-        action->setShortcut(Qt::Key_W);
+        action->setShortcut(QKeySequence(tr("W")));
         action->setToolTip(tr("Wire") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Inserts a wire"));
         action->setWhatsThis(tr("Wire\n\nInserts a wire"));
@@ -605,6 +602,7 @@ namespace Caneda
     {
         ActionManager* am = ActionManager::instance();
         QMenu *menu = 0;
+        QMenu *recentFilesMenu = 0;
 
         // File menu
         menu = menuBar()->addMenu(tr("&File"));
@@ -612,7 +610,7 @@ namespace Caneda
         menu->addAction(am->actionForName("fileNew"));
         menu->addAction(am->actionForName("fileOpen"));
 
-        QMenu *recentFilesMenu = menu->addMenu(Caneda::icon("document-open-recent"), tr("Open &Recent"));
+        recentFilesMenu = menu->addMenu(Caneda::icon("document-open-recent"), tr("Open &Recent"));
         for(int i=0; i<maxRecentFiles; i++) {
             recentFilesMenu->addAction(am->recentFilesActions().at(i));
         }
@@ -652,11 +650,13 @@ namespace Caneda
 
         menu->addAction(am->actionForName("select"));
         menu->addAction(am->actionForName("selectAll"));
-        //! \todo Reenable this option once implemented
-        //        menu->addAction(am->actionForName("editFind"));
-        menu->addAction(am->actionForName("editRotate"));
+        menu->addAction(am->actionForName("editDelete"));
         menu->addAction(am->actionForName("editMirror"));
         menu->addAction(am->actionForName("editMirrorY"));
+        menu->addAction(am->actionForName("editRotate"));
+
+        //! \todo Reenable this option once implemented
+        //        menu->addAction(am->actionForName("editFind"));
 
         menu->addSeparator();
 
