@@ -1723,6 +1723,11 @@ Removes selected property from the list</source>
         <source>Schematic Items</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>C</source>
+        <comment>Insert component shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Caneda::SidebarTextBrowser</name>
