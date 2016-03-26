@@ -151,12 +151,12 @@ namespace Caneda
         return document;
     }
 
-    void LayoutContext::addNormalAction(Action *action)
+    void LayoutContext::addNormalAction(QAction *action)
     {
         m_normalActions << action;
     }
 
-    void LayoutContext::addMouseAction(Action *action)
+    void LayoutContext::addMouseAction(QAction *action)
     {
         m_mouseActions << action;
     }
@@ -278,12 +278,12 @@ namespace Caneda
         return document;
     }
 
-    void SchematicContext::addNormalAction(Action *action)
+    void SchematicContext::addNormalAction(QAction *action)
     {
         m_normalActions << action;
     }
 
-    void SchematicContext::addMouseAction(Action *action)
+    void SchematicContext::addMouseAction(QAction *action)
     {
         m_mouseActions << action;
     }
@@ -348,12 +348,12 @@ namespace Caneda
         return document;
     }
 
-    void SimulationContext::addNormalAction(Action *action)
+    void SimulationContext::addNormalAction(QAction *action)
     {
         m_normalActions << action;
     }
 
-    void SimulationContext::addMouseAction(Action *action)
+    void SimulationContext::addMouseAction(QAction *action)
     {
         m_mouseActions << action;
     }
@@ -454,12 +454,12 @@ namespace Caneda
         return document;
     }
 
-    void SymbolContext::addNormalAction(Action *action)
+    void SymbolContext::addNormalAction(QAction *action)
     {
         m_normalActions << action;
     }
 
-    void SymbolContext::addMouseAction(Action *action)
+    void SymbolContext::addMouseAction(QAction *action)
     {
         m_mouseActions << action;
     }

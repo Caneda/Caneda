@@ -26,6 +26,7 @@
 #include <QObject>
 
 // Forward declaration
+class QAction;
 class QFileInfo;
 class QToolBar;
 class QWidget;
@@ -33,7 +34,6 @@ class QWidget;
 namespace Caneda
 {
     // Forward declarations.
-    class Action;
     class IDocument;
     class IView;
     class SidebarBrowser;
@@ -118,16 +118,16 @@ namespace Caneda
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
         // End of IContext interface methods
 
-        void addNormalAction(Action *action);
-        void addMouseAction(Action *action);
+        void addNormalAction(QAction *action);
+        void addMouseAction(QAction *action);
 
     private:
         LayoutContext(QObject *parent = 0);
 
         //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case schematic actions become irrelevant.
-        QList<Action*> m_normalActions;
-        QList<Action*> m_mouseActions;
+        QList<QAction*> m_normalActions;
+        QList<QAction*> m_mouseActions;
 
         SidebarBrowser *m_sidebarBrowser;
     };
@@ -168,16 +168,16 @@ namespace Caneda
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
         // End of IContext interface methods
 
-        void addNormalAction(Action *action);
-        void addMouseAction(Action *action);
+        void addNormalAction(QAction *action);
+        void addMouseAction(QAction *action);
 
     private:
         SchematicContext(QObject *parent = 0);
 
         // FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case schematic actions become irrelevant.
-        QList<Action*> m_normalActions;
-        QList<Action*> m_mouseActions;
+        QList<QAction*> m_normalActions;
+        QList<QAction*> m_mouseActions;
 
         SidebarBrowser *m_sidebarBrowser;
     };
@@ -216,8 +216,8 @@ namespace Caneda
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
         // End of IContext interface methods
 
-        void addNormalAction(Action *action);
-        void addMouseAction(Action *action);
+        void addNormalAction(QAction *action);
+        void addMouseAction(QAction *action);
 
     private Q_SLOTS:
         void exportCsv();
@@ -227,8 +227,8 @@ namespace Caneda
 
         //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case simulation actions become irrelevant.
-        QList<Action*> m_normalActions;
-        QList<Action*> m_mouseActions;
+        QList<QAction*> m_normalActions;
+        QList<QAction*> m_mouseActions;
 
         SidebarBrowser *m_sidebarBrowser;
     };
@@ -269,16 +269,16 @@ namespace Caneda
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
         // End of IContext interface methods
 
-        void addNormalAction(Action *action);
-        void addMouseAction(Action *action);
+        void addNormalAction(QAction *action);
+        void addMouseAction(QAction *action);
 
     private:
         SymbolContext(QObject *parent = 0);
 
         //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
         // was focussed in which case symbol actions become irrelevant.
-        QList<Action*> m_normalActions;
-        QList<Action*> m_mouseActions;
+        QList<QAction*> m_normalActions;
+        QList<QAction*> m_mouseActions;
 
         SidebarBrowser *m_sidebarBrowser;
     };

@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -49,9 +50,10 @@ namespace Caneda
     public Q_SLOTS:
         void slotSidebarItemClicked(const QString& item, const QString& category);
         void slotHandlePaste();
-        void slotOnObjectDestroyed(QObject *sender);
+        void slotOnObjectDestroyed(QObject *object);
         void slotUpdateFocussedWidget(CGraphicsView *widget);
-        void slotPerformToggleAction(const QString& sender, bool on);
+        void slotPerformToggleAction(bool on);
+        void slotPerformToggleAction(const QString& actionName, bool on);
         void slotSetNormalAction();
         void slotInsertToolbarComponent(const QString& action, bool on);
 

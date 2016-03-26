@@ -957,7 +957,7 @@ namespace Caneda
             dialog->setIcon(Caneda::icon("dialog-error"));
 
             ActionManager* am = ActionManager::instance();
-            Action* act = am->actionForName("showLog");
+            QAction* act = am->actionForName("showLog");
             dialog->addAction(act);
 
             act = am->actionForName("showNetlist");

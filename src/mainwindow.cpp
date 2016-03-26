@@ -153,7 +153,7 @@ namespace Caneda
     //! \brief Creates and intializes all the actions used.
     void MainWindow::initActions()
     {
-        Action *action = 0;
+        QAction *action = 0;
         ActionManager *am = ActionManager::instance();
         SimulationContext *sim = SimulationContext::instance();
 
@@ -492,7 +492,7 @@ namespace Caneda
     //! \brief Creates and intializes the mouse actions.
     void MainWindow::initMouseActions()
     {
-        Action *action = 0;
+        QAction *action = 0;
         ActionManager *am = ActionManager::instance();
 
         StateHandler *handler = StateHandler::instance();
@@ -508,8 +508,7 @@ namespace Caneda
         action->setStatusTip(tr("Activate select mode"));
         action->setWhatsThis(tr("Select\n\nActivates select mode"));
         action->setChecked(true);
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
         lc->addMouseAction(action);
         sc->addMouseAction(action);
         sy->addMouseAction(action);
@@ -520,8 +519,7 @@ namespace Caneda
         action->setToolTip(tr("Delete") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Deletes the selected components"));
         action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
         lc->addMouseAction(action);
         sc->addMouseAction(action);
         sy->addMouseAction(action);
@@ -532,8 +530,7 @@ namespace Caneda
         action->setToolTip(tr("Rotate") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Rotates the selected component"));
         action->setWhatsThis(tr("Rotate\n\nRotates the selected component counter-clockwise"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
         lc->addMouseAction(action);
         sc->addMouseAction(action);
         sy->addMouseAction(action);
@@ -544,8 +541,7 @@ namespace Caneda
         action->setToolTip(tr("Mirror vertically") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Mirrors the selected components vertically"));
         action->setWhatsThis(tr("Mirror vertically Axis\n\nMirrors the selected components vertically"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
         lc->addMouseAction(action);
         sc->addMouseAction(action);
         sy->addMouseAction(action);
@@ -556,8 +552,7 @@ namespace Caneda
         action->setToolTip(tr("Mirror horizontally") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Mirrors the selected components horizontally"));
         action->setWhatsThis(tr("Mirror horizontally\n\nMirrors the selected components horizontally"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
         lc->addMouseAction(action);
         sc->addMouseAction(action);
         sy->addMouseAction(action);
@@ -568,30 +563,26 @@ namespace Caneda
         action->setToolTip(tr("Wire") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Inserts a wire"));
         action->setWhatsThis(tr("Wire\n\nInserts a wire"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
         sc->addNormalAction(action);
 
         action = am->createMouseAction("zoomArea", Caneda::ZoomingAreaEvent,
                 Caneda::icon("transform-scale"), tr("Zoom area"));
         action->setStatusTip(tr("Zooms a selected area in the current view"));
         action->setWhatsThis(tr("Zooms a selected area in the current view"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
         lc->addMouseAction(action);
         sc->addMouseAction(action);
         sy->addMouseAction(action);
 
         action = am->createMouseAction("insertItem", Caneda::InsertingItems,
                 tr("Insert item action"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
         sc->addNormalAction(action);
 
         action = am->createMouseAction("paintingDraw", Caneda::PaintingDrawEvent,
                 tr("Painting draw action"));
-        connect(action, SIGNAL(toggled(const QString&, bool)), handler,
-                SLOT(slotPerformToggleAction(const QString&, bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
         lc->addMouseAction(action);
         sc->addMouseAction(action);
         sy->addMouseAction(action);

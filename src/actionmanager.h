@@ -28,33 +28,17 @@
 
 namespace Caneda
 {
-
-    class Action : public QAction
-    {
-        Q_OBJECT
-
-    public:
-        Action(QObject *parent = 0);
-        Action(const QString& text, QObject *parent = 0);
-        Action(const QIcon& icon, const QString& text, QObject *parent = 0);
-
-    Q_SIGNALS:
-        void toggled(const QString& sender, bool checked);
-        void triggered(const QString& sender, bool checked = false);
-
-    private Q_SLOTS:
-        void slotToggled(bool checked);
-        void slotTriggered(bool checked);
-
-    private:
-        void init();
-    };
-
     /*!
-     * \todo Document this class.
+     * \brief Singleton class to manage all of Caneda's actions in a single place.
      *
-     * This class is a singleton class and its only static instance (returned
-     * by instance()) is to be used.
+     * This object is a singleton class to manage all of Caneda's actions in a
+     * single place. This allows to access and create any number of actions
+     * from any place throughout the code, without risking of having duplicates
+     * and allowing the access of actions created somewhere else by other class.
+     *
+     * By using a singleton, only one object instance of this class is allowed
+     * and created at any time thoughout all Caneda's process execution. Its
+     * only static instance (returned by instance()) is to be used.
      */
     class ActionManager : public QObject
     {
@@ -63,29 +47,29 @@ namespace Caneda
     public:
         static ActionManager* instance();
 
-        Action* createAction(const QString& id, const QIcon& icon, const QString& text);
-        Action* createAction(const QString& id, const QString& text);
+        QAction* createAction(const QString& id, const QIcon& icon, const QString& text);
+        QAction* createAction(const QString& id, const QString& text);
 
-        Action* createMouseAction(const QString& id, Caneda::MouseAction action,
+        QAction* createMouseAction(const QString& id, Caneda::MouseAction action,
                 const QIcon& icon, const QString& text);
-        Action* createMouseAction(const QString& id, Caneda::MouseAction action,
+        QAction* createMouseAction(const QString& id, Caneda::MouseAction action,
                 const QString& text);
 
-        Action* createRecentFilesAction();
+        QAction* createRecentFilesAction();
 
-        Action* actionForName(const QString& name) const;
-        Action* actionForMouseAction(Caneda::MouseAction ma) const;
-        Caneda::MouseAction mouseActionForAction(Action *action) const;
+        QAction *actionForName(const QString& name) const;
+        QAction *actionForMouseAction(Caneda::MouseAction ma) const;
+        Caneda::MouseAction mouseActionForAction(QAction *action) const;
 
-        QList<Action*> mouseActions() const;
-        QList<Action*> recentFilesActions() const;
+        QList<QAction *> mouseActions() const;
+        QList<QAction*> recentFilesActions() const;
 
     private:
         ActionManager(QObject *parent = 0);
 
-        QHash<QString, Action*> m_actionHash;
-        QHash<Action*, Caneda::MouseAction> m_mouseActionHash;
-        QList<Action*> m_recentFileActionList;
+        QHash<QString, QAction*> m_actionHash;
+        QHash<QAction*, Caneda::MouseAction> m_mouseActionHash;
+        QList<QAction*> m_recentFileActionList;
     };
 
 } // namespace Caneda
