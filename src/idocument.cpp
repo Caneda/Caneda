@@ -807,7 +807,7 @@ namespace Caneda
         QProcess *simulationProcess = new QProcess(this);
         simulationProcess->setWorkingDirectory(path);
         simulationProcess->setProcessChannelMode(QProcess::MergedChannels);  // Output std:error and std:output together into the same file
-        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::Append);  // Create a log file
+        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::WriteOnly);  // Create a log file
 
         // Set the environment variable to get a binary or an ascii raw file.
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -1492,7 +1492,7 @@ namespace Caneda
         QProcess *simulationProcess = new QProcess(this);
         simulationProcess->setWorkingDirectory(path);
         simulationProcess->setProcessChannelMode(QProcess::MergedChannels);  // Output std:error and std:output together into the same file
-        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::Append);  // Create a log file
+        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::WriteOnly);  // Create a log file
 
         connect(simulationProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(simulationLog(int)));
 
