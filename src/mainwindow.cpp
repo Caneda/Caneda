@@ -171,7 +171,6 @@ namespace Caneda
 
         for(int i=0; i<maxRecentFiles; i++) {
             action = am->createRecentFilesAction();
-            action->setVisible(false);
             connect(action, SIGNAL(triggered()), SLOT(openRecent()));
         }
 

@@ -104,6 +104,7 @@ namespace Caneda
     QAction *ActionManager::createRecentFilesAction()
     {
         QAction *action = new QAction(this);
+        action->setVisible(false);
         m_recentFileActionList.append(action);
         return action;
     }
@@ -112,12 +113,6 @@ namespace Caneda
     QAction* ActionManager::actionForName(const QString& name) const
     {
         return m_actionHash.value(name, static_cast<QAction*>(0));
-    }
-
-    //! \brief Return the mouse action \a ma from the hash
-    QAction* ActionManager::actionForMouseAction(Caneda::MouseAction ma) const
-    {
-        return m_mouseActionHash.key(ma);
     }
 
     //! \brief Return the mouse action \a ma from the hash

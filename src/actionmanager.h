@@ -57,11 +57,10 @@ namespace Caneda
 
         QAction* createRecentFilesAction();
 
-        QAction *actionForName(const QString& name) const;
-        QAction *actionForMouseAction(Caneda::MouseAction ma) const;
+        QAction* actionForName(const QString& name) const;
         Caneda::MouseAction mouseActionForAction(QAction *action) const;
 
-        QList<QAction *> mouseActions() const;
+        QList<QAction*> mouseActions() const;
         QList<QAction*> recentFilesActions() const;
 
     private:
