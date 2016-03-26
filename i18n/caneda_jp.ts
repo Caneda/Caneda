@@ -1518,6 +1518,10 @@ Open Caneda example circuits</source>
         <source>About &amp;Qt...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Open &amp;Recent</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Caneda::MessageWidget</name>
