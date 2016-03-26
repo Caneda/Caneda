@@ -1531,25 +1531,25 @@ Activa el modo selección</translation>
     </message>
     <message>
         <source>Mirror about X Axis</source>
-        <translation type="unfinished">Reflejar sobre el eje x</translation>
+        <translation type="obsolete">Reflejar sobre el eje x</translation>
     </message>
     <message>
         <source>Mirror about X Axis
 
 Mirrors the selected item about X Axis</source>
-        <translation type="unfinished">Reflejar sobre el eje x
+        <translation type="obsolete">Reflejar sobre el eje x
 
 Refleja el elemento seleccionado sobre el eje x</translation>
     </message>
     <message>
         <source>Mirror about Y Axis</source>
-        <translation type="unfinished">Reflejar sobre el eje y</translation>
+        <translation type="obsolete">Reflejar sobre el eje y</translation>
     </message>
     <message>
         <source>Mirror about Y Axis
 
 Mirrors the selected item about Y Axis</source>
-        <translation type="unfinished">Reflejar sobre el eje y
+        <translation type="obsolete">Reflejar sobre el eje y
 
 Refleja el elemento seleccionado sobre el eje y</translation>
     </message>
@@ -1663,14 +1663,6 @@ Open Caneda example circuits</source>
         <source>Rotate
 
 Rotates the selected component counter-clockwise</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mirrors the selected component about X axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mirrors the selected component about Y axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1791,6 +1783,34 @@ Rotates the selected component counter-clockwise</source>
     </message>
     <message>
         <source>Esc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirror vertically</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected components vertically</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirror vertically Axis
+
+Mirrors the selected components vertically</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirror horizontally</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected components horizontally</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirror horizontally
+
+Mirrors the selected components horizontally</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

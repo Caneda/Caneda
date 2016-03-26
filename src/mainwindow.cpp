@@ -539,11 +539,11 @@ namespace Caneda
         sy->addMouseAction(action);
 
         action = am->createMouseAction("editMirror", Caneda::MirroringX,
-                Caneda::icon("object-flip-vertical"), tr("Mirror about X Axis"));
+                Caneda::icon("object-flip-vertical"), tr("Mirror vertically"));
         action->setShortcut(QKeySequence(tr("V")));
-        action->setToolTip(tr("Mirror about X Axis") + " (" + action->shortcut().toString() + ")");
-        action->setStatusTip(tr("Mirrors the selected component about X axis"));
-        action->setWhatsThis(tr("Mirror about X Axis\n\nMirrors the selected item about X Axis"));
+        action->setToolTip(tr("Mirror vertically") + " (" + action->shortcut().toString() + ")");
+        action->setStatusTip(tr("Mirrors the selected components vertically"));
+        action->setWhatsThis(tr("Mirror vertically Axis\n\nMirrors the selected components vertically"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         lc->addMouseAction(action);
@@ -551,11 +551,11 @@ namespace Caneda
         sy->addMouseAction(action);
 
         action = am->createMouseAction("editMirrorY", Caneda::MirroringY,
-                Caneda::icon("object-flip-horizontal"), tr("Mirror about Y Axis"));
+                Caneda::icon("object-flip-horizontal"), tr("Mirror horizontally"));
         action->setShortcut(QKeySequence(tr("H")));
-        action->setToolTip(tr("Mirror about Y Axis") + " (" + action->shortcut().toString() + ")");
-        action->setStatusTip(tr("Mirrors the selected component about Y axis"));
-        action->setWhatsThis(tr("Mirror about Y Axis\n\nMirrors the selected item about Y Axis"));
+        action->setToolTip(tr("Mirror horizontally") + " (" + action->shortcut().toString() + ")");
+        action->setStatusTip(tr("Mirrors the selected components horizontally"));
+        action->setWhatsThis(tr("Mirror horizontally\n\nMirrors the selected components horizontally"));
         connect(action, SIGNAL(toggled(const QString&, bool)), handler,
                 SLOT(slotPerformToggleAction(const QString&, bool)));
         lc->addMouseAction(action);
