@@ -22,7 +22,6 @@
 #define CANEDA_MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QMap>
 
 // Forward declarations
 class QLabel;

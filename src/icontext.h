@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -26,7 +26,6 @@
 #include <QObject>
 
 // Forward declaration
-class QAction;
 class QFileInfo;
 class QToolBar;
 class QWidget;
@@ -35,7 +34,6 @@ namespace Caneda
 {
     // Forward declarations.
     class IDocument;
-    class IView;
     class SidebarBrowser;
     class SidebarTextBrowser;
     class SidebarWebBrowser;
@@ -64,8 +62,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget()  { return 0; }
+        virtual QToolBar* toolBar() = 0;
+        virtual QWidget* sideBarWidget() = 0;
 
         virtual bool canOpen(const QFileInfo& info) const = 0;
         virtual QStringList fileNameFilters() const = 0;
@@ -108,26 +106,19 @@ namespace Caneda
         static LayoutContext* instance();
 
         // IContext interface methods
+        virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
 
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "xlay";}
+        virtual QString defaultSuffix() const { return "xlay"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
         // End of IContext interface methods
 
-        void addNormalAction(QAction *action);
-        void addMouseAction(QAction *action);
-
     private:
         LayoutContext(QObject *parent = 0);
-
-        //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
-        // was focussed in which case schematic actions become irrelevant.
-        QList<QAction*> m_normalActions;
-        QList<QAction*> m_mouseActions;
 
         SidebarBrowser *m_sidebarBrowser;
     };
@@ -158,26 +149,19 @@ namespace Caneda
         static SchematicContext* instance();
 
         // IContext interface methods
+        virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
 
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "xsch";}
+        virtual QString defaultSuffix() const { return "xsch"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
         // End of IContext interface methods
 
-        void addNormalAction(QAction *action);
-        void addMouseAction(QAction *action);
-
     private:
         SchematicContext(QObject *parent = 0);
-
-        // FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
-        // was focussed in which case schematic actions become irrelevant.
-        QList<QAction*> m_normalActions;
-        QList<QAction*> m_mouseActions;
 
         SidebarBrowser *m_sidebarBrowser;
     };
@@ -208,27 +192,19 @@ namespace Caneda
         static SimulationContext* instance();
 
         // IContext interface methods
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "raw";}
+        virtual QString defaultSuffix() const { return "raw"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
         // End of IContext interface methods
 
-        void addNormalAction(QAction *action);
-        void addMouseAction(QAction *action);
-
-    private Q_SLOTS:
-        void exportCsv();
-
     private:
         SimulationContext(QObject *parent = 0);
-
-        //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
-        // was focussed in which case simulation actions become irrelevant.
-        QList<QAction*> m_normalActions;
-        QList<QAction*> m_mouseActions;
 
         SidebarBrowser *m_sidebarBrowser;
     };
@@ -259,26 +235,19 @@ namespace Caneda
         static SymbolContext* instance();
 
         // IContext interface methods
+        virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
 
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "xsym";}
+        virtual QString defaultSuffix() const { return "xsym"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
         // End of IContext interface methods
 
-        void addNormalAction(QAction *action);
-        void addMouseAction(QAction *action);
-
     private:
         SymbolContext(QObject *parent = 0);
-
-        //FIXME: In future disable/hide actions when context goes out of scope i.e say a Text view
-        // was focussed in which case symbol actions become irrelevant.
-        QList<QAction*> m_normalActions;
-        QList<QAction*> m_mouseActions;
 
         SidebarBrowser *m_sidebarBrowser;
     };
@@ -308,11 +277,12 @@ namespace Caneda
         static TextContext* instance();
 
         // IContext interface methods
+        virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
 
         virtual bool canOpen(const QFileInfo& info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "txt";}
+        virtual QString defaultSuffix() const { return "txt"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
@@ -350,12 +320,12 @@ namespace Caneda
          static WebContext* instance();
 
          // IContext interface methods
+         virtual QToolBar* toolBar() { return 0; }
          virtual QWidget* sideBarWidget();
 
-         // IContext interface methods
          virtual bool canOpen(const QFileInfo& info) const;
          virtual QStringList fileNameFilters() const;
-         virtual QString defaultSuffix() const { return "html";}
+         virtual QString defaultSuffix() const { return "html"; }
 
          virtual IDocument* newDocument();
          virtual IDocument* open(const QString& filename, QString *errorMessage = 0);

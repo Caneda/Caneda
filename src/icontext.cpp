@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -41,7 +41,6 @@ namespace Caneda
     IContext::IContext(QObject *parent) : QObject(parent)
     {
     }
-
 
     /*************************************************************************
      *                          Layout Context                               *
@@ -150,17 +149,6 @@ namespace Caneda
 
         return document;
     }
-
-    void LayoutContext::addNormalAction(QAction *action)
-    {
-        m_normalActions << action;
-    }
-
-    void LayoutContext::addMouseAction(QAction *action)
-    {
-        m_mouseActions << action;
-    }
-
 
     /*************************************************************************
      *                         Schematic Context                             *
@@ -278,23 +266,13 @@ namespace Caneda
         return document;
     }
 
-    void SchematicContext::addNormalAction(QAction *action)
-    {
-        m_normalActions << action;
-    }
-
-    void SchematicContext::addMouseAction(QAction *action)
-    {
-        m_mouseActions << action;
-    }
-
-
     /*************************************************************************
      *                        Simulation Context                             *
      *************************************************************************/
     //! \brief Constructor.
     SimulationContext::SimulationContext(QObject *parent) : IContext(parent)
     {
+        m_sidebarBrowser = new SidebarBrowser();
     }
 
     //! \copydoc MainWindow::instance()
@@ -305,6 +283,11 @@ namespace Caneda
             context = new SimulationContext();
         }
         return context;
+    }
+
+    QWidget *SimulationContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
     }
 
     bool SimulationContext::canOpen(const QFileInfo &info) const
@@ -347,22 +330,6 @@ namespace Caneda
 
         return document;
     }
-
-    void SimulationContext::addNormalAction(QAction *action)
-    {
-        m_normalActions << action;
-    }
-
-    void SimulationContext::addMouseAction(QAction *action)
-    {
-        m_mouseActions << action;
-    }
-
-    void SimulationContext::exportCsv()
-    {
-        //! \todo Implement this
-    }
-
 
     /*************************************************************************
      *                          Symbol Context                               *
@@ -454,17 +421,6 @@ namespace Caneda
         return document;
     }
 
-    void SymbolContext::addNormalAction(QAction *action)
-    {
-        m_normalActions << action;
-    }
-
-    void SymbolContext::addMouseAction(QAction *action)
-    {
-        m_mouseActions << action;
-    }
-
-
     /*************************************************************************
      *                           Text Context                                *
      *************************************************************************/
@@ -539,7 +495,6 @@ namespace Caneda
 
         return document;
     }
-
 
     /*************************************************************************
      *                           Web Context                                 *

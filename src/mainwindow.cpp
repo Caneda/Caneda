@@ -155,7 +155,6 @@ namespace Caneda
     {
         QAction *action = 0;
         ActionManager *am = ActionManager::instance();
-        SimulationContext *sim = SimulationContext::instance();
 
         action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New..."));
         action->setShortcut(QKeySequence(QKeySequence::New));
@@ -440,12 +439,6 @@ namespace Caneda
         action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
         connect(action, SIGNAL(triggered()), SLOT(openSimulation()));
 
-        action = am->createAction("data2csv", tr("Export to &CSV..."));
-        action->setStatusTip(tr("Export simulation data to CSV file"));
-        action->setWhatsThis(tr("Export to CSV\n\nExport simulation data to CSV file"));
-        connect(action, SIGNAL(triggered()), sim, SLOT(exportCsv()));
-        sim->addNormalAction(action);
-
         action = am->createAction("showLog", Caneda::icon("document-preview"), tr("Show simulation log"));
         action->setShortcut(tr("F7"));
         action->setStatusTip(tr("Shows simulation log"));
@@ -496,10 +489,6 @@ namespace Caneda
 
         StateHandler *handler = StateHandler::instance();
 
-        LayoutContext *lc = LayoutContext::instance();
-        SchematicContext *sc = SchematicContext::instance();
-        SymbolContext *sy = SymbolContext::instance();
-
         action = am->createMouseAction("select", Caneda::Normal,
                 Caneda::icon("edit-select"), tr("Select"));
         action->setShortcut(QKeySequence(tr("Esc")));
@@ -508,9 +497,6 @@ namespace Caneda
         action->setWhatsThis(tr("Select\n\nActivates select mode"));
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
-        lc->addMouseAction(action);
-        sc->addMouseAction(action);
-        sy->addMouseAction(action);
 
         action = am->createMouseAction("editDelete", Caneda::Deleting,
                 Caneda::icon("edit-delete"), tr("&Delete"));
@@ -519,9 +505,6 @@ namespace Caneda
         action->setStatusTip(tr("Deletes the selected components"));
         action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
-        lc->addMouseAction(action);
-        sc->addMouseAction(action);
-        sy->addMouseAction(action);
 
         action = am->createMouseAction("editRotate", Caneda::Rotating,
                 Caneda::icon("object-rotate-right"), tr("Rotate"));
@@ -530,9 +513,6 @@ namespace Caneda
         action->setStatusTip(tr("Rotates the selected component"));
         action->setWhatsThis(tr("Rotate\n\nRotates the selected component counter-clockwise"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
-        lc->addMouseAction(action);
-        sc->addMouseAction(action);
-        sy->addMouseAction(action);
 
         action = am->createMouseAction("editMirror", Caneda::MirroringX,
                 Caneda::icon("object-flip-vertical"), tr("Mirror vertically"));
@@ -541,9 +521,6 @@ namespace Caneda
         action->setStatusTip(tr("Mirrors the selected components vertically"));
         action->setWhatsThis(tr("Mirror vertically Axis\n\nMirrors the selected components vertically"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
-        lc->addMouseAction(action);
-        sc->addMouseAction(action);
-        sy->addMouseAction(action);
 
         action = am->createMouseAction("editMirrorY", Caneda::MirroringY,
                 Caneda::icon("object-flip-horizontal"), tr("Mirror horizontally"));
@@ -552,9 +529,6 @@ namespace Caneda
         action->setStatusTip(tr("Mirrors the selected components horizontally"));
         action->setWhatsThis(tr("Mirror horizontally\n\nMirrors the selected components horizontally"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
-        lc->addMouseAction(action);
-        sc->addMouseAction(action);
-        sy->addMouseAction(action);
 
         action = am->createMouseAction("insWire", Caneda::Wiring,
                 Caneda::icon("wire"), tr("Wire"));
@@ -563,28 +537,20 @@ namespace Caneda
         action->setStatusTip(tr("Inserts a wire"));
         action->setWhatsThis(tr("Wire\n\nInserts a wire"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
-        sc->addNormalAction(action);
 
         action = am->createMouseAction("zoomArea", Caneda::ZoomingAreaEvent,
                 Caneda::icon("transform-scale"), tr("Zoom area"));
         action->setStatusTip(tr("Zooms a selected area in the current view"));
         action->setWhatsThis(tr("Zooms a selected area in the current view"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
-        lc->addMouseAction(action);
-        sc->addMouseAction(action);
-        sy->addMouseAction(action);
 
         action = am->createMouseAction("insertItem", Caneda::InsertingItems,
                 tr("Insert item action"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
-        sc->addNormalAction(action);
 
         action = am->createMouseAction("paintingDraw", Caneda::PaintingDrawEvent,
                 tr("Painting draw action"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
-        lc->addMouseAction(action);
-        sc->addMouseAction(action);
-        sy->addMouseAction(action);
     }
 
     //! \brief Creates and initializes the menus.
@@ -725,11 +691,6 @@ namespace Caneda
 
         menu->addAction(am->actionForName("simulate"));
         menu->addAction(am->actionForName("openSym"));
-
-        //! \todo Reenable this option once implemented
-        //        menu->addSeparator();
-
-        //        menu->addAction(am->actionForName("data2csv"));
 
         menu->addSeparator();
 
