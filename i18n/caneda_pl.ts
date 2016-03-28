@@ -1333,20 +1333,6 @@ Simulates the current circuit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Export to &amp;CSV...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Export simulation data to CSV file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Export to CSV
-
-Export simulation data to CSV file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Show simulation log</source>
         <translation type="unfinished"></translation>
     </message>

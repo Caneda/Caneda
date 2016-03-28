@@ -1391,17 +1391,7 @@ Simulates the current circuit</source>
     </message>
     <message>
         <source>Export to &amp;CSV...</source>
-        <translation type="unfinished">Exportálás &amp;CVS-be...</translation>
-    </message>
-    <message>
-        <source>Export simulation data to CSV file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Export to CSV
-
-Export simulation data to CSV file</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Exportálás &amp;CVS-be...</translation>
     </message>
     <message>
         <source>Show simulation log</source>
