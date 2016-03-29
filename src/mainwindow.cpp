@@ -100,7 +100,14 @@ namespace Caneda
         return m_tabWidget;
     }
 
-    //! \brief Returns a pointer to the window sidebar.
+    /*!
+     * \brief Returns a pointer to the window sidebar.
+     *
+     * This method is called to be able to have context sensitive sidebars. In
+     * this way, every time the context is changed the correspoding tools and
+     * items from the IContext::sideBarWidget() method are used to populate the
+     * MainWindow sidebar.
+     */
     QDockWidget* MainWindow::sidebarDockWidget() const
     {
         return m_sidebarDockWidget;
