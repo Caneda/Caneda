@@ -61,9 +61,11 @@ namespace Caneda
 
         void updateWindowTitle();
 
+    public Q_SLOTS:
+        void open(QString fileName = QString());
+
     private Q_SLOTS:
         void newFile();
-        void open(QString fileName = QString());
         void openRecent();
         void openFileFormat(const QString &suffix);
         void save();
