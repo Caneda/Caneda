@@ -794,12 +794,11 @@ namespace Caneda
     void MainWindow::closeEvent(QCloseEvent *e)
     {
         if(saveAll()) {
-            e->accept();
             saveSettings();
+            e->accept();
         }
         else {
             e->ignore();
-            return;
         }
     }
 
