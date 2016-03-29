@@ -60,12 +60,11 @@ namespace Caneda
         QDockWidget* sidebarDockWidget() const;
 
         void updateWindowTitle();
-
-    public Q_SLOTS:
-        void open(QString fileName = QString());
+        void initFiles(QStringList files = QStringList());
 
     private Q_SLOTS:
         void newFile();
+        void open(QString fileName = QString());
         void openRecent();
         void openFileFormat(const QString &suffix);
         void save();
@@ -127,7 +126,6 @@ namespace Caneda
         void about();
         void aboutQt();
 
-        void initFile();
         void launchPropertiesDialog();
         void statusBarMessage(const QString& newPos);
 

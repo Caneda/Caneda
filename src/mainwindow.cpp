@@ -70,8 +70,6 @@ namespace Caneda
         setupFolderBrowserSidebar();
 
         loadSettings();  // Load window and docks geometry
-
-        QTimer::singleShot(100, this, SLOT(initFile()));
     }
 
     /*!
@@ -1396,11 +1394,24 @@ namespace Caneda
         QApplication::aboutQt();
     }
 
-    //! \brief Creates a new file used for the program initial state.
-    void MainWindow::initFile()
+    /*!
+     * \brief Creates or opens a new file used for the program initial state.
+     *
+     * This method creates or opens a new file used for the program initial
+     * state. If an argument with filenames is present, tries to open all files
+     * in the argument, otherwise creates a new empty file.
+     */
+    void MainWindow::initFiles(QStringList files)
     {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        manager->newDocument(SchematicContext::instance());
+        if(!files.isEmpty()) {
+            foreach(const QString &str, files) {
+                open(str);
+            }
+        }
+        else {
+            DocumentViewManager *manager = DocumentViewManager::instance();
+            manager->newDocument(SchematicContext::instance());
+        }
     }
 
     /*!

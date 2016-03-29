@@ -52,11 +52,7 @@ int main(int argc,char *argv[])
     window->show();
 
     // Open the files parsed in the command line
-    if(!parser.positionalArguments().isEmpty()) {
-        foreach(const QString &str, parser.positionalArguments()) {
-            window->open(str);
-        }
-    }
+    window->initFiles(parser.positionalArguments());
 
     return app.exec();
 }
