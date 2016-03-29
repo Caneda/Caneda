@@ -79,7 +79,7 @@ namespace Caneda
         void changed();
 
     private Q_SLOTS:
-        void onViewFocussedIn(IView *who);
+        void onViewFocussedIn(IView *view);
 
     private:
         DocumentViewManager(QObject *parent = 0);

@@ -21,8 +21,6 @@
 #ifndef CANEDA_ICONTEXT_H
 #define CANEDA_ICONTEXT_H
 
-#include "global.h"
-
 #include <QObject>
 
 // Forward declaration

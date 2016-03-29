@@ -86,9 +86,9 @@ namespace Caneda
         QToolBar* toolBar() const;
 
     Q_SIGNALS:
-        void focussedIn(IView *who);
-        void focussedOut(IView *who);
-        void closed(IView *who);
+        void focussedIn(IView *view);
+        void focussedOut(IView *view);
+        void closed(IView *view);
         void statusBarMessage(const QString &text);
 
     private Q_SLOTS:

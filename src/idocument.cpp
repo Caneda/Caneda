@@ -70,7 +70,6 @@ namespace Caneda
      * \brief Returns modification status of this document.
      */
 
-
     /*!
      * \fn IDocument::canUndo()
      *
@@ -97,7 +96,6 @@ namespace Caneda
      *
      * \brief Invokes redo action i.e redoes the last undo change.
      */
-
 
     /*!
      * \fn IDocument::canCut()

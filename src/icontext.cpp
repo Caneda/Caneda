@@ -42,6 +42,84 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \fn IContext::toolBar()
+     *
+     * \brief Returns the toolbar corresponding to this context.
+     *
+     * There are two type of toolbars:
+     * \li Main toolbars, containing common actions as copy, cut, paste, undo,
+     * etc.
+     * \li Context sensitive toolbars, containing only those actions relative
+     * to the current context as insert wire, rotate, etc.
+     *
+     * While the main toolbars are displayed in the main window for every
+     * context, context sensitive toolbars are displayed inside each tab when
+     * a specific type of context is opened. This method returns a pointer to
+     * the current context toolbar.
+     *
+     * \todo Implement context sensitive toolbars and attach them inside each
+     * tab.
+     *
+     * \sa sideBarWidget()
+     */
+
+    /*!
+     * \fn IContext::sideBarWidget()
+     *
+     * \brief Returns the sideBarWidget corresponding to this context.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. In this sense, context sensitive sidebars are
+     * changed every time a specific type of context is opened or changed to.
+     * This method returns a pointer to the current context sideBarWidget.
+     *
+     * \sa toolBar()
+     */
+
+    /*!
+     * \fn IContext::canOpen()
+     *
+     * \brief Indicates if a particular file extension is managed by this
+     * context.
+     *
+     * This method indicates if a particular file extension is managed by this
+     * context. This allows to find what context is in charge of a particular
+     * file type.
+     */
+
+    /*!
+     * \fn IContext::fileNameFilters()
+     *
+     * \brief Returns the filename extensions or filters available for this
+     * context.
+     *
+     * Filename filters are used in open/save dialogs to allow the user to
+     * filter the files displayed and ease the selection of the wanted file. In
+     * this way, for example, if opening a schematic document the dialog should
+     * display only schematic files. The method fileNameFilters() is used to
+     * know what extensions correspond to that particular type of context.
+     */
+
+    /*!
+     * \fn IContext::defaultSuffix()
+     *
+     * \brief Returns the default suffix of the current content type.
+     */
+
+    /*!
+     * \fn IContext::newDocument()
+     *
+     * \brief Create a new document of the current context type.
+     */
+
+    /*!
+     * \fn IContext::open()
+     *
+     * \brief Open a document of the current context type.
+     */
+
     /*************************************************************************
      *                          Layout Context                               *
      *************************************************************************/
