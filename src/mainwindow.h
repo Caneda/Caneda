@@ -148,8 +148,6 @@ namespace Caneda
         void loadSettings();
         void saveSettings();
 
-        void setNormalAction();
-
         TabWidget *m_tabWidget;
         Project *m_project;
 

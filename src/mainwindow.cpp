@@ -783,13 +783,6 @@ namespace Caneda
         statusBarWidget->setVisible(am->actionForName("viewStatusBar")->isChecked());
     }
 
-    //! \brief Toggles the normal select action on.
-    void MainWindow::setNormalAction()
-    {
-        StateHandler *handler = StateHandler::instance();
-        handler->slotSetNormalAction();
-    }
-
     //! \brief Syncs the settings to the configuration file and closes the window.
     void MainWindow::closeEvent(QCloseEvent *e)
     {
@@ -806,8 +799,6 @@ namespace Caneda
     //! \brief Opens the file new dialog.
     void MainWindow::newFile()
     {
-        setNormalAction();
-
         if(m_project->isValid()) {
             addToProject();
         }
@@ -827,7 +818,6 @@ namespace Caneda
      */
     void MainWindow::open(QString fileName)
     {
-        setNormalAction();
         DocumentViewManager *manager = DocumentViewManager::instance();
 
         if(fileName.isEmpty()) {
@@ -1031,7 +1021,6 @@ namespace Caneda
     //! \brief Calls the current document undo action.
     void MainWindow::undo()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->undo();
@@ -1042,7 +1031,6 @@ namespace Caneda
     //! \brief Calls the current document redo action.
     void MainWindow::redo()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->redo();
@@ -1052,7 +1040,6 @@ namespace Caneda
     //! \brief Calls the current document cut action.
     void MainWindow::cut()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->cut();
@@ -1062,7 +1049,6 @@ namespace Caneda
     //! \brief Calls the current document copy action.
     void MainWindow::copy()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->copy();
@@ -1072,7 +1058,6 @@ namespace Caneda
     //! \brief Calls the current document paste action.
     void MainWindow::paste()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->paste();
@@ -1082,14 +1067,12 @@ namespace Caneda
     //! \brief Calls the current document find action.
     void MainWindow::find()
     {
-        setNormalAction();
         //! \todo Implement this or rather port directly
     }
 
     //! \brief Calls the current document select all action.
     void MainWindow::selectAll()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->selectAll();
@@ -1120,7 +1103,6 @@ namespace Caneda
     //! \brief Opens the selected item file description for edition.
     void MainWindow::intoHierarchy()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->intoHierarchy();
@@ -1130,7 +1112,6 @@ namespace Caneda
     //! \brief Opens the parent document from where this item was opened.
     void MainWindow::popHierarchy()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->popHierarchy();
@@ -1140,7 +1121,6 @@ namespace Caneda
     //! \brief Calls the current view zoom in action.
     void MainWindow::zoomIn()
     {
-        setNormalAction();
         IView* view = DocumentViewManager::instance()->currentView();
         if (view) {
             view->zoomIn();
@@ -1150,7 +1130,6 @@ namespace Caneda
     //! \brief Calls the current view zoom out action.
     void MainWindow::zoomOut()
     {
-        setNormalAction();
         IView* view = DocumentViewManager::instance()->currentView();
         if (view) {
             view->zoomOut();
@@ -1160,7 +1139,6 @@ namespace Caneda
     //! \brief Calls the current view zoom best fit action.
     void MainWindow::zoomBestFit()
     {
-        setNormalAction();
         IView* view = DocumentViewManager::instance()->currentView();
         if (view) {
             view->zoomFitInBest();
@@ -1170,7 +1148,6 @@ namespace Caneda
     //! \brief Calls the current view zoom original action.
     void MainWindow::zoomOriginal()
     {
-        setNormalAction();
         IView* view = DocumentViewManager::instance()->currentView();
         if(view) {
             view->zoomOriginal();
@@ -1210,7 +1187,6 @@ namespace Caneda
     //! \brief Toogles the visibility of the toolbars.
     void MainWindow::viewToolBar(bool toogle)
     {
-        setNormalAction();
         fileToolbar->setVisible(toogle);
         editToolbar->setVisible(toogle);
         viewToolbar->setVisible(toogle);
@@ -1220,14 +1196,12 @@ namespace Caneda
     //! \brief Toogles the visibility of the statusbar.
     void MainWindow::viewStatusBar(bool toogle)
     {
-        setNormalAction();
         statusBar()->setVisible(toogle);
     }
 
     //! \brief Aligns the selected elements to the top
     void MainWindow::alignTop()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->alignTop();
@@ -1237,7 +1211,6 @@ namespace Caneda
     //! \brief Aligns the selected elements to the bottom
     void MainWindow::alignBottom()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->alignBottom();
@@ -1247,7 +1220,6 @@ namespace Caneda
     //! \brief Aligns the selected elements to the left
     void MainWindow::alignLeft()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->alignLeft();
@@ -1257,7 +1229,6 @@ namespace Caneda
     //! \brief Aligns the selected elements to the right
     void MainWindow::alignRight()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->alignRight();
@@ -1267,7 +1238,6 @@ namespace Caneda
     //! \brief Centers the selected elements horizontally.
     void MainWindow::centerHorizontal()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->centerHorizontal();
@@ -1277,7 +1247,6 @@ namespace Caneda
     //! \brief Centers the selected elements vertically.
     void MainWindow::centerVertical()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->centerVertical();
@@ -1287,7 +1256,6 @@ namespace Caneda
     //! \brief Distributes the selected elements horizontally.
     void MainWindow::distributeHorizontal()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->distributeHorizontal();
@@ -1297,7 +1265,6 @@ namespace Caneda
     //! \brief Distributes the selected elements vertically.
     void MainWindow::distributeVertical()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->distributeVertical();
@@ -1307,8 +1274,6 @@ namespace Caneda
     //! \brief Prepares the window and created a new project.
     void MainWindow::newProject()
     {
-        setNormalAction();
-
         if(saveAll()) {
             m_tabWidget->closeAllTabs();
             m_projectDockWidget->setVisible(true);
@@ -1320,8 +1285,6 @@ namespace Caneda
     //! \brief Prepares the window and opens a new project.
     void MainWindow::openProject(QString fileName)
     {
-        setNormalAction();
-
         if(saveAll()) {
             m_tabWidget->closeAllTabs();
             m_projectDockWidget->setVisible(true);
@@ -1333,7 +1296,6 @@ namespace Caneda
     //! \brief Adds a file to the current project.
     void MainWindow::addToProject()
     {
-        setNormalAction();
         m_projectDockWidget->setVisible(true);
         m_projectDockWidget->raise();
         m_project->slotAddToProject();
@@ -1342,7 +1304,6 @@ namespace Caneda
     //! \brief Removes a file from the current project.
     void MainWindow::removeFromProject()
     {
-        setNormalAction();
         m_projectDockWidget->setVisible(true);
         m_projectDockWidget->raise();
         m_project->slotRemoveFromProject();
@@ -1351,8 +1312,6 @@ namespace Caneda
     //! \brief Closes the current project.
     void MainWindow::closeProject()
     {
-        setNormalAction();
-
         if(saveAll()) {
             m_project->slotCloseProject();
             m_tabWidget->closeAllTabs();
@@ -1362,14 +1321,12 @@ namespace Caneda
     //! \brief Opens the backup and history file dialog.
     void MainWindow::backupAndHistory()
     {
-        setNormalAction();
         m_project->slotBackupAndHistory();
     }
 
     //! \brief Simulates the current document.
     void MainWindow::simulate()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->simulate();
@@ -1379,7 +1336,6 @@ namespace Caneda
     //! \brief Opens the simulation corresponding to the current file.
     void MainWindow::openSimulation()
     {
-        setNormalAction();
         SimulationContext *si = SimulationContext::instance();
         openFileFormat(si->defaultSuffix());
     }
@@ -1387,8 +1343,6 @@ namespace Caneda
     //! \brief Opens the log corresponding to the current file.
     void MainWindow::showLog()
     {
-        setNormalAction();
-
         DocumentViewManager *manager = DocumentViewManager::instance();
 
         QFileInfo info(manager->currentDocument()->fileName());
@@ -1401,8 +1355,6 @@ namespace Caneda
     //! \brief Opens the netlist corresponding to the current file.
     void MainWindow::showNetlist()
     {
-        setNormalAction();
-
         DocumentViewManager *manager = DocumentViewManager::instance();
 
         QFileInfo info(manager->currentDocument()->fileName());
@@ -1415,22 +1367,18 @@ namespace Caneda
     //! \brief Opens the help index.
     void MainWindow::helpIndex()
     {
-        setNormalAction();
         open(QString("index.html"));
     }
 
     //! \brief Opens the examples repository in an external window.
     void MainWindow::helpExamples()
     {
-        setNormalAction();
         QDesktopServices::openUrl(QUrl("https://github.com/Caneda/Examples"));
     }
 
     //! \brief Opens the about dialog.
     void MainWindow::about()
     {
-        setNormalAction();
-
         QPointer<AboutDialog> p = new AboutDialog(this);
         p->exec();
         delete p;
@@ -1439,7 +1387,6 @@ namespace Caneda
     //! \brief Opens the about Qt dialog.
     void MainWindow::aboutQt()
     {
-        setNormalAction();
         QApplication::aboutQt();
     }
 
@@ -1513,7 +1460,6 @@ namespace Caneda
     */
     void MainWindow::launchPropertiesDialog()
     {
-        setNormalAction();
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->launchPropertiesDialog();

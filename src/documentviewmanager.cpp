@@ -27,6 +27,7 @@
 #include "mainwindow.h"
 #include "savedocumentsdialog.h"
 #include "settings.h"
+#include "statehandler.h"
 #include "tabs.h"
 
 #include <QDebug>
@@ -114,6 +115,9 @@ namespace Caneda
 
     void DocumentViewManager::newDocument(IContext *context)
     {
+        StateHandler *handler = StateHandler::instance();
+        handler->slotSetNormalAction();
+
         IDocument *document = context->newDocument();
         if (!document) {
             return;
@@ -130,6 +134,9 @@ namespace Caneda
 
     bool DocumentViewManager::openFile(const QString &fileName)
     {
+        StateHandler *handler = StateHandler::instance();
+        handler->slotSetNormalAction();
+
         if(fileName.isEmpty()) {
             return false;
         }
