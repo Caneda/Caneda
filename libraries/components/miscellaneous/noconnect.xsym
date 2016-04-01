@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="No connect" version="0.1.0" label="NC">
+    <displaytext>
+        <lang lang="C">No connect</lang>
+        <lang lang="es">Sin conexión</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">No connect component. This is not a real component but rather an aesthetic component to place into unconnected ports.</lang>
+    </description>
+
+    <symbol>
+        <painting name="line" line="0,0,10,10" pos="-5,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,-10" pos="-5,5" transform="1,0,0,1,0,0"/>
+    </symbol>
+
+    <ports>
+        <port name="port" pos="0,0"/>
+    </ports>
+
+    <properties/>
+
+    <models/>
+</component>
