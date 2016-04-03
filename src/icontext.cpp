@@ -24,6 +24,7 @@
 #include "library.h"
 #include "settings.h"
 #include "sidebarbrowser.h"
+#include "sidebarsimulationbrowser.h"
 #include "sidebartextbrowser.h"
 #include "sidebarwebbrowser.h"
 #include "statehandler.h"
@@ -75,7 +76,21 @@ namespace Caneda
      * changed every time a specific type of context is opened or changed to.
      * This method returns a pointer to the current context sideBarWidget.
      *
-     * \sa toolBar()
+     * \sa toolBar(), updateSideBar()
+     */
+
+    /*!
+     * \fn IContext::updateSideBar()
+     *
+     * \brief Updates sidebar contents.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. Upon certain conditions, sidebars may need updating,
+     * for example when inserting or removing libraries. This method allows for
+     * an external event to request the update of the sidebar.
+     *
+     * \sa sideBarWidget()
      */
 
     /*!
@@ -350,7 +365,7 @@ namespace Caneda
     //! \brief Constructor.
     SimulationContext::SimulationContext(QObject *parent) : IContext(parent)
     {
-        m_sidebarBrowser = new SidebarBrowser();
+        m_sidebarBrowser = new SidebarSimulationBrowser();
     }
 
     //! \copydoc MainWindow::instance()
@@ -366,6 +381,13 @@ namespace Caneda
     QWidget *SimulationContext::sideBarWidget()
     {
         return m_sidebarBrowser;
+    }
+
+    void SimulationContext::updateSideBar()
+    {
+        if(m_sidebarBrowser) {
+            m_sidebarBrowser->updateWaveformsList();
+        }
     }
 
     bool SimulationContext::canOpen(const QFileInfo &info) const

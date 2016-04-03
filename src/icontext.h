@@ -33,6 +33,7 @@ namespace Caneda
     // Forward declarations.
     class IDocument;
     class SidebarBrowser;
+    class SidebarSimulationBrowser;
     class SidebarTextBrowser;
     class SidebarWebBrowser;
 
@@ -62,6 +63,7 @@ namespace Caneda
     public:
         virtual QToolBar* toolBar() = 0;
         virtual QWidget* sideBarWidget() = 0;
+        virtual void updateSideBar() = 0;
 
         virtual bool canOpen(const QFileInfo& info) const = 0;
         virtual QStringList fileNameFilters() const = 0;
@@ -106,6 +108,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual void updateSideBar() { return; }
 
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
@@ -149,6 +152,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual void updateSideBar() { return; }
 
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
@@ -192,6 +196,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual void updateSideBar();
 
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
@@ -204,7 +209,7 @@ namespace Caneda
     private:
         SimulationContext(QObject *parent = 0);
 
-        SidebarBrowser *m_sidebarBrowser;
+        SidebarSimulationBrowser *m_sidebarBrowser;
     };
 
     /*!
@@ -235,6 +240,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual void updateSideBar() { return; }
 
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
@@ -277,6 +283,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual void updateSideBar() { return; }
 
         virtual bool canOpen(const QFileInfo& info) const;
         virtual QStringList fileNameFilters() const;
@@ -320,6 +327,7 @@ namespace Caneda
          // IContext interface methods
          virtual QToolBar* toolBar() { return 0; }
          virtual QWidget* sideBarWidget();
+         virtual void updateSideBar() { return; }
 
          virtual bool canOpen(const QFileInfo& info) const;
          virtual QStringList fileNameFilters() const;

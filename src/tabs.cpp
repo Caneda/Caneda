@@ -575,6 +575,7 @@ namespace Caneda
         }
 
         mw->sidebarDockWidget()->setWidget(view->context()->sideBarWidget());
+        view->context()->updateSideBar();
 
         IDocument *document = view->document();
         if (!document) {

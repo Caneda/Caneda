@@ -26,6 +26,7 @@ SET( CANEDA_SRCS
   idocument.cpp iview.cpp tabs.cpp syntaxhighlighters.cpp
   csimulationscene.cpp csimulationview.cpp csimulationitem.cpp
   textedit.cpp webpage.cpp xmlutilities.cpp messagewidget.cpp
+  sidebarsimulationbrowser.cpp
 )
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} )
