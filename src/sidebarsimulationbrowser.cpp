@@ -23,6 +23,7 @@
 #include "documentviewmanager.h"
 #include "iview.h"
 
+#include <QHeaderView>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QShortcut>
@@ -201,6 +202,7 @@ namespace Caneda
         m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
         m_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
         m_tableView->setEditTriggers(QAbstractItemView::AnyKeyPressed | QAbstractItemView::DoubleClicked);
+        m_tableView->verticalHeader()->setVisible(false);
         m_tableView->resizeColumnsToContents();
 
         // Add selection buttons
