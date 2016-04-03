@@ -557,6 +557,13 @@ Do you want to continue?</source>
     </message>
 </context>
 <context>
+    <name>Caneda::LayoutContext</name>
+    <message>
+        <source>Components Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Caneda::LayoutDocument</name>
     <message>
         <source>Info</source>
@@ -1917,6 +1924,13 @@ Removes selected property from the list</source>
     </message>
 </context>
 <context>
+    <name>Caneda::SchematicContext</name>
+    <message>
+        <source>Components Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Caneda::SchematicDocument</name>
     <message>
         <source>Info</source>
@@ -1948,6 +1962,33 @@ Removes selected property from the list</source>
     <message>
         <source>C</source>
         <comment>Insert component shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Caneda::SidebarSimulationBrowser</name>
+    <message>
+        <source>Search...</source>
+        <translation type="unfinished">Sök...</translation>
+    </message>
+    <message>
+        <source>C</source>
+        <comment>Insert component shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Caneda::SidebarSimulationModel</name>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Namn</translation>
+    </message>
+    <message>
+        <source>Visible</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2022,6 +2063,13 @@ Removes selected property from the list</source>
     </message>
 </context>
 <context>
+    <name>Caneda::SimulationContext</name>
+    <message>
+        <source>Displayed Waveforms</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Caneda::SimulationDocument</name>
     <message>
         <source>Unknown file format!</source>
@@ -2036,6 +2084,13 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>Visible</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Caneda::SymbolContext</name>
+    <message>
+        <source>Components Browser</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2062,6 +2117,13 @@ Removes selected property from the list</source>
     <name>Caneda::Tab</name>
     <message>
         <source>Untitled</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Caneda::TextContext</name>
+    <message>
+        <source>Text Templates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2252,6 +2314,13 @@ Removes selected property from the list</source>
     <message>
         <source>Values are consistent.</source>
         <translation type="obsolete">Värdena är konsistenta.</translation>
+    </message>
+</context>
+<context>
+    <name>Caneda::WebContext</name>
+    <message>
+        <source>Help Browser</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
