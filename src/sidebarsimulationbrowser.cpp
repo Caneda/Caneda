@@ -301,6 +301,12 @@ namespace Caneda
         // Create a new table model
         m_model = new SidebarSimulationModel(m_simulationList, this);  //! \todo What happens with the old pointer??? Should we destroy it first?
         m_proxyModel->setSourceModel(m_model);
+
+        // Resize the table columns to fit the contents. This must be done
+        // here instead of the constructor because the columns are created
+        // here when filling the model (in the constructor the columns do
+        // not yet exist, resulting in a crash if resized there).
+        m_tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     }
 
     /*!
