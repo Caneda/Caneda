@@ -23,7 +23,9 @@
 #include "documentviewmanager.h"
 #include "iview.h"
 
+#include <QHBoxLayout>
 #include <QHeaderView>
+#include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QShortcut>
@@ -177,13 +179,15 @@ namespace Caneda
     SidebarSimulationBrowser::SidebarSimulationBrowser(CSimulationView *parent) :
         QWidget(parent)
     {
-        QVBoxLayout *layout = new QVBoxLayout(this);
+        QVBoxLayout *layoutTop = new QVBoxLayout(this);
+        QHBoxLayout *layoutHorizontal = new QHBoxLayout();
+        QVBoxLayout *layoutButtons = new QVBoxLayout();
 
         // Set lineedit properties
         m_filterEdit = new QLineEdit(this);
         m_filterEdit->setClearButtonEnabled(true);
         m_filterEdit->setPlaceholderText(tr("Search..."));
-        layout->addWidget(m_filterEdit);
+        layoutTop->addWidget(m_filterEdit);
 
         QShortcut *filterEditShortcut = new QShortcut(
                     QKeySequence(tr("C", "Insert component shortcut")), this);
@@ -196,20 +200,26 @@ namespace Caneda
 
         // Apply table properties and set proxy model
         m_tableView = new QTableView();
-        layout->addWidget(m_tableView);
+        layoutHorizontal->addWidget(m_tableView);
 
         m_tableView->setModel(m_proxyModel);
         m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
         m_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
         m_tableView->setEditTriggers(QAbstractItemView::AnyKeyPressed | QAbstractItemView::DoubleClicked);
         m_tableView->verticalHeader()->setVisible(false);
-        m_tableView->resizeColumnsToContents();
 
         // Add selection buttons
+        QLabel *labelButtons = new QLabel(tr("Select:"));
         buttonAll = new QPushButton("All");
         buttonNone = new QPushButton("None");
-        layout->addWidget(buttonAll);
-        layout->addWidget(buttonNone);
+        layoutButtons->addWidget(labelButtons);
+        layoutButtons->addWidget(buttonAll);
+        layoutButtons->addWidget(buttonNone);
+        layoutButtons->addStretch();
+
+        // Complete the layout of elements
+        layoutHorizontal->addLayout(layoutButtons);
+        layoutTop->addLayout(layoutHorizontal);
 
         // Signals and slots connections
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
