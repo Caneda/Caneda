@@ -114,7 +114,7 @@ namespace Caneda
     //! \brief Initializes the Components sidebar.
     void MainWindow::setupSidebar()
     {
-        m_sidebarDockWidget = new QDockWidget("Components Browser",this);
+        m_sidebarDockWidget = new QDockWidget(this);
         m_sidebarDockWidget->setObjectName("componentsSidebar");
         m_sidebarDockWidget->setMinimumWidth(260);
         addDockWidget(Qt::LeftDockWidgetArea, m_sidebarDockWidget);

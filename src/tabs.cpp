@@ -574,6 +574,7 @@ namespace Caneda
             return;
         }
 
+        mw->sidebarDockWidget()->setWindowTitle(view->context()->sideBarTitle());
         mw->sidebarDockWidget()->setWidget(view->context()->sideBarWidget());
         view->context()->updateSideBar();
 

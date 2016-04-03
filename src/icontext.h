@@ -63,6 +63,7 @@ namespace Caneda
     public:
         virtual QToolBar* toolBar() = 0;
         virtual QWidget* sideBarWidget() = 0;
+        virtual QString sideBarTitle() = 0;
         virtual void updateSideBar() = 0;
 
         virtual bool canOpen(const QFileInfo& info) const = 0;
@@ -108,6 +109,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual QString sideBarTitle() { return QString(tr("Components Browser")); }
         virtual void updateSideBar() { return; }
 
         virtual bool canOpen(const QFileInfo &info) const;
@@ -152,6 +154,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual QString sideBarTitle() { return QString(tr("Components Browser")); }
         virtual void updateSideBar() { return; }
 
         virtual bool canOpen(const QFileInfo &info) const;
@@ -196,6 +199,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual QString sideBarTitle() { return QString(tr("Displayed Waveforms")); }
         virtual void updateSideBar();
 
         virtual bool canOpen(const QFileInfo &info) const;
@@ -240,6 +244,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual QString sideBarTitle() { return QString(tr("Components Browser")); }
         virtual void updateSideBar() { return; }
 
         virtual bool canOpen(const QFileInfo &info) const;
@@ -283,6 +288,7 @@ namespace Caneda
         // IContext interface methods
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
+        virtual QString sideBarTitle() { return QString(tr("Text Templates")); }
         virtual void updateSideBar() { return; }
 
         virtual bool canOpen(const QFileInfo& info) const;
@@ -327,6 +333,7 @@ namespace Caneda
          // IContext interface methods
          virtual QToolBar* toolBar() { return 0; }
          virtual QWidget* sideBarWidget();
+         virtual QString sideBarTitle() { return QString(tr("Help Browser")); }
          virtual void updateSideBar() { return; }
 
          virtual bool canOpen(const QFileInfo& info) const;

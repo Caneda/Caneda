@@ -80,6 +80,19 @@ namespace Caneda
      */
 
     /*!
+     * \fn IContext::sideBarTitle()
+     *
+     * \brief Returns the sideBarWidget title to this context.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. This method returns the sideBar title corresponding
+     * to this context, allowing to update the title of the sidebarDockWidget.
+     *
+     * \sa sideBarWidget(), TabWidget::updateTabContext()
+     */
+
+    /*!
      * \fn IContext::updateSideBar()
      *
      * \brief Updates sidebar contents.
