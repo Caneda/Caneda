@@ -110,6 +110,8 @@ namespace Caneda
         void filterTextChanged();
         void selectAll();
         void selectNone();
+        void selectVoltages();
+        void selectCurrents();
 
         void updateSimulationView();
 
@@ -120,7 +122,7 @@ namespace Caneda
         WaveformsMap m_simulationList;
 
         QLineEdit *m_filterEdit;
-        QPushButton *buttonAll, *buttonNone;
+        QPushButton *buttonAll, *buttonNone, *buttonVoltages, *buttonCurrents;
     };
 
 } // namespace Caneda

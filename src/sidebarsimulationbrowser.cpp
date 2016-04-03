@@ -212,9 +212,14 @@ namespace Caneda
         QLabel *labelButtons = new QLabel(tr("Select:"));
         buttonAll = new QPushButton("All");
         buttonNone = new QPushButton("None");
+        buttonVoltages = new QPushButton("Voltages");
+        buttonCurrents = new QPushButton("Currents");
         layoutButtons->addWidget(labelButtons);
         layoutButtons->addWidget(buttonAll);
         layoutButtons->addWidget(buttonNone);
+        layoutButtons->addSpacing(20);
+        layoutButtons->addWidget(buttonVoltages);
+        layoutButtons->addWidget(buttonCurrents);
         layoutButtons->addStretch();
 
         // Complete the layout of elements
@@ -229,6 +234,8 @@ namespace Caneda
 
         connect(buttonAll, SIGNAL(clicked()), this, SLOT(selectAll()));
         connect(buttonNone, SIGNAL(clicked()), this, SLOT(selectNone()));
+        connect(buttonVoltages, SIGNAL(clicked()), this, SLOT(selectVoltages()));
+        connect(buttonCurrents, SIGNAL(clicked()), this, SLOT(selectCurrents()));
 
         connect(m_tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(updateSimulationView()));
     }
@@ -269,6 +276,54 @@ namespace Caneda
 
         while(it != end) {
             m_model->m_simMap[it.key()] = false;
+            ++it;
+        }
+
+        m_model->endResetModel();
+
+        updateSimulationView();
+    }
+
+    //! \brief Select all available voltage waveforms
+    void SidebarSimulationBrowser::selectVoltages()
+    {
+        m_model->beginResetModel();
+
+        WaveformsMap::const_iterator it = m_model->m_simMap.begin(),
+            end = m_model->m_simMap.end();
+
+        while(it != end) {
+            if(it.key().startsWith("v")) {
+                m_model->m_simMap[it.key()] = true;
+            }
+            else {
+                m_model->m_simMap[it.key()] = false;
+            }
+
+            ++it;
+        }
+
+        m_model->endResetModel();
+
+        updateSimulationView();
+    }
+
+    //! \brief Select all available current waveforms
+    void SidebarSimulationBrowser::selectCurrents()
+    {
+        m_model->beginResetModel();
+
+        WaveformsMap::const_iterator it = m_model->m_simMap.begin(),
+            end = m_model->m_simMap.end();
+
+        while(it != end) {
+            if(it.key().startsWith("i")) {
+                m_model->m_simMap[it.key()] = true;
+            }
+            else {
+                m_model->m_simMap[it.key()] = false;
+            }
+
             ++it;
         }
 
