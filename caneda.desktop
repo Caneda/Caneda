@@ -6,4 +6,4 @@ Comment=Schematic capture, circuit design and simulation
 Exec=caneda %U
 Icon=caneda
 Categories=Development;Electronics;
-MimeType=application/x-caneda;
+MimeType=application/x-caneda-schematic;application/x-caneda-symbol;application/x-caneda-layout;application/x-circuit-simulation-raw;application/x-circuit-netlist;

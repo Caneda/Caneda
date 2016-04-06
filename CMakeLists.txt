@@ -31,6 +31,7 @@ SET( DESKTOPDIR  "share/applications/" )
 SET( DOCDIR      "share/caneda/docs/" )
 SET( ICONDIR     "share/icons/" )
 SET( MANDIR      "share/man/man1/" )
+SET( MIMEDIR     "share/mime/packages/" )
 SET( LANGUAGEDIR "share/caneda/i18n/" )
 SET( LIBRARYDIR  "share/caneda/libraries/" )
 
@@ -61,3 +62,6 @@ INSTALL( FILES ${MISC} DESTINATION ${BASEDIR} )
 
 SET( DESKTOPFILES caneda.desktop )
 INSTALL( FILES ${DESKTOPFILES} DESTINATION ${DESKTOPDIR} )
+
+SET( MIMEFILES caneda.xml )
+INSTALL( FILES ${MIMEFILES} DESTINATION ${MIMEDIR} )  # After installing mime packages, "update-mime-database /usr/share/mime" must be run
