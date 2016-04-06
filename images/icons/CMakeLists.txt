@@ -1,0 +1,4 @@
+# Application icons
+SET(ICONS hicolor)
+
+INSTALL(DIRECTORY ${ICONS} DESTINATION ${ICONDIR})
