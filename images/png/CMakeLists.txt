@@ -22,7 +22,7 @@ SET(PNGS align-horizontal-center.png c_microstrip.png document-save-as.png
          go-next.png object-flip-horizontal.png stop.png zoom-original.png document-save-all.png
          folder-new.png go-previous.png object-flip-vertical.png system-switch-user.png
          zoom-out.png list-remove.png list-add.png edit-clear-locationbar-rtl.png
-         document-open-recent.png caneda.png
+         document-open-recent.png
 )
 
 INSTALL(FILES ${PNGS} DESTINATION ${BITMAPDIR})

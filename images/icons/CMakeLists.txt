@@ -1,4 +1,8 @@
 # Application icons
 SET(ICONS hicolor)
 
+# Main logo
+SET(LOGO caneda.png)
+
 INSTALL(DIRECTORY ${ICONS} DESTINATION ${ICONDIR})
+INSTALL(FILES ${LOGO} DESTINATION ${BITMAPDIR})
