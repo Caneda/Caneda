@@ -2,8 +2,8 @@
 # Caneda project
 PROJECT( Caneda )
 
-SET( PACKAGE_VERSION "0.1.0" )
-SET( PACKAGE_STRING "caneda 0.1.0" )
+SET( PACKAGE_VERSION "0.2.0" )
+SET( PACKAGE_STRING "caneda 0.2.0" )
 
 # ==================================================================================
 # Minimum libraries required
@@ -64,4 +64,4 @@ SET( DESKTOPFILES caneda.desktop )
 INSTALL( FILES ${DESKTOPFILES} DESTINATION ${DESKTOPDIR} )
 
 SET( MIMEFILES caneda.xml )
-INSTALL( FILES ${MIMEFILES} DESTINATION ${MIMEDIR} )  # After installing mime packages, "update-mime-database /usr/share/mime" must be run
+INSTALL( FILES ${MIMEFILES} DESTINATION ${MIMEDIR} )
