@@ -2090,11 +2090,7 @@ Removes selected property from the list</source>
     <name>Caneda::SimulationModel</name>
     <message>
         <source>Name</source>
-        <translation type="unfinished">Név</translation>
-    </message>
-    <message>
-        <source>Visible</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Név</translation>
     </message>
 </context>
 <context>
@@ -2811,24 +2807,8 @@ Removes selected property from the list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Displayed waveforms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Search...</source>
-        <translation type="unfinished">Keresés...</translation>
-    </message>
-    <message>
-        <source>Select:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Keresés...</translation>
     </message>
     <message>
         <source>y left axis</source>

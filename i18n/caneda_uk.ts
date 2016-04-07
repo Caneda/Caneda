@@ -1845,17 +1845,6 @@ Removes selected property from the list</source>
     </message>
 </context>
 <context>
-    <name>Caneda::SimulationModel</name>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Visible</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>Caneda::SymbolContext</name>
     <message>
         <source>Components Browser</source>
@@ -2405,26 +2394,6 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>x axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Displayed waveforms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
