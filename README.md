@@ -76,9 +76,6 @@ You must have root privileges if you want to install the package in the
 standard location (`/usr/local`) or in any location that is only writable by
 root.
 
-Please note:  Users of the FreeBSD OS may use a GNU make (probably gmake) to
-compile and install the package.
-
 
 Compilers and Options
 =====================
@@ -108,6 +105,13 @@ regular prefix.
 
 In addition, if you use an unusual directory layout you can give options like
 `--bindir=PATH` to specify different values for particular kinds of files.
+
+MIME Types and Files Association
+================================
+Optionally you may want to get Caneda's file types associated with the application
+itself. In order to do so, run the following command as root:
+
+`$ update-mime-database /usr/local/share/mime`
 
 
 Doxygen Documentation
