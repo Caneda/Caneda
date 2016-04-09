@@ -335,9 +335,7 @@ namespace Caneda
             if(reader->isStartElement()) {
                 if(reader->name() == "component") {
                     Component *comp = Component::loadComponent(reader, scene);
-                    if(comp) {
-                        scene->checkAndConnect(comp, Caneda::DontPushUndoCmd);
-                    }
+                    scene->checkAndConnect(comp, Caneda::DontPushUndoCmd);
                 }
                 else {
                     qWarning() << "Error: Found unknown component type" << reader->name().toString();
@@ -370,8 +368,7 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "port") {
-                    PortSymbol *portSymbol = new PortSymbol(scene);
-                    portSymbol->loadData(reader);
+                    PortSymbol *portSymbol = PortSymbol::loadPortSymbol(reader, scene);
                     scene->checkAndConnect(portSymbol, Caneda::DontPushUndoCmd);
                 }
                 else {
@@ -405,8 +402,8 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "wire") {
-                    Wire *w = Wire::loadWire(reader,scene);
-                    scene->checkAndConnect(w, Caneda::DontPushUndoCmd);
+                    Wire *wire = Wire::loadWire(reader, scene);
+                    scene->checkAndConnect(wire, Caneda::DontPushUndoCmd);
                 }
                 else {
                     qWarning() << "Error: Found unknown wire type" << reader->name().toString();
@@ -439,7 +436,7 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "painting") {
-                    Painting::loadPainting(reader,scene);
+                    Painting::loadPainting(reader, scene);
                 }
                 else {
                     qWarning() << "Error: Found unknown painting type" << reader->name().toString();
