@@ -81,11 +81,6 @@ namespace Caneda
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0);
 
-        //! \todo Implement this
-        void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise) { Q_UNUSED(dir); }
-        //! \todo Implement this
-        void mirrorAlong(Qt::Axis) {}
-
         Wire* copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(Wire *wire) const;
 
