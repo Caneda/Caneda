@@ -372,6 +372,7 @@ namespace Caneda
                 if(reader->name() == "port") {
                     PortSymbol *portSymbol = new PortSymbol(scene);
                     portSymbol->loadData(reader);
+                    scene->checkAndConnect(portSymbol, Caneda::DontPushUndoCmd);
                 }
                 else {
                     qWarning() << "Error: Found unknown port type" << reader->name().toString();
