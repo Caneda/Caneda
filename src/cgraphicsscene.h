@@ -124,7 +124,7 @@ namespace Caneda
         void addProperty(Property property);
 
         // Miscellaneous methods
-        void checkAndConnect(CGraphicsItem *item, Caneda::UndoOption opt);
+        void connectItems(CGraphicsItem *item, Caneda::UndoOption opt);
 
     public Q_SLOTS:
         void setModified(const bool m = true);
@@ -191,11 +191,8 @@ namespace Caneda
         // Miscellaneous methods
         QPointF centerOfItems(const QList<CGraphicsItem*> &items);
 
-        void connectItems(QList<CGraphicsItem *> &qItems, const Caneda::UndoOption opt);
-        void disconnectItems(QList<CGraphicsItem *> &qItems,
-                const Caneda::UndoOption opt = Caneda::PushUndoCmd);
-
-        void checkAndConnect(QList<CGraphicsItem *> &items, Caneda::UndoOption opt);
+        void connectItems(QList<CGraphicsItem *> &items, Caneda::UndoOption opt);
+        void disconnectItems(QList<CGraphicsItem *> &items, Caneda::UndoOption opt);
         void splitAndCreateNodes(CGraphicsItem *item);
 
         // Helper variables (aka state holders)

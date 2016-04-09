@@ -1207,7 +1207,7 @@ namespace Caneda
             }
 
             // Connect ports to any coinciding port in the scene
-            checkAndConnect(m_currentWiringWire, Caneda::PushUndoCmd);
+            connectItems(m_currentWiringWire, Caneda::PushUndoCmd);
 
             if(m_currentWiringWire->port2()->hasAnyConnection()) {
                 // If a connection was made, detach current wire and finalize
@@ -1234,7 +1234,7 @@ namespace Caneda
                 return;
             }
 
-            checkAndConnect(m_currentWiringWire, Caneda::PushUndoCmd);
+            connectItems(m_currentWiringWire, Caneda::PushUndoCmd);
 
             // Detach current wire and finalize
             m_currentWiringWire = NULL;
@@ -1909,7 +1909,7 @@ namespace Caneda
 
             CGraphicsItem * m_item = canedaitem_cast<CGraphicsItem*>(item);
             if(m_item) {
-                checkAndConnect(m_item, Caneda::PushUndoCmd);
+                connectItems(m_item, Caneda::PushUndoCmd);
             }
 
         }
@@ -1928,7 +1928,7 @@ namespace Caneda
 
             PortSymbol * m_item = canedaitem_cast<PortSymbol*>(item);
             if(m_item) {
-                checkAndConnect(m_item, Caneda::PushUndoCmd);
+                connectItems(m_item, Caneda::PushUndoCmd);
             }
 
         }
@@ -1977,7 +1977,7 @@ namespace Caneda
             m_undoStack->endMacro();
         }
 
-        checkAndConnect(item, opt);
+        connectItems(item, opt);
     }
 
     /*!
@@ -2202,45 +2202,8 @@ namespace Caneda
         return rect.center();
     }
 
-    /*!
-     * \brief Automatically connect items if port or wire overlap
-     *
-     * \param qItems: item to connect
-     * \param opt: undo option
-     */
-    void CGraphicsScene::connectItems(QList<CGraphicsItem*> &qItems,
-            const Caneda::UndoOption opt)
-    {
-        checkAndConnect(qItems, opt);
-    }
-
-    /*!
-     * \brief Disconnect an item from any wire or other components
-     *
-     * \param qItems: item to connect
-     * \param opt: undo option
-     */
-    void CGraphicsScene::disconnectItems(QList<CGraphicsItem*> &qItems,
-            const Caneda::UndoOption opt)
-    {
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(QString("Disconnect items"));
-        }
-
-        foreach(CGraphicsItem *item, qItems) {
-            QList<Port*> ports = item->ports();
-            foreach(Port *p, ports) {
-                p->disconnect();
-            }
-        }
-
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
-    }
-
-    //! \copydoc checkAndConnect(CGraphicsItem *item, Caneda::UndoOption opt)
-    void CGraphicsScene::checkAndConnect(QList<CGraphicsItem*> &items, Caneda::UndoOption opt)
+    //! \copydoc connectItems(CGraphicsItem *item, Caneda::UndoOption opt)
+    void CGraphicsScene::connectItems(QList<CGraphicsItem*> &items, Caneda::UndoOption opt)
     {
         if(opt == Caneda::PushUndoCmd) {
             undoStack()->beginMacro(QString());
@@ -2248,7 +2211,7 @@ namespace Caneda
 
         // Check and connect each item
         foreach (CGraphicsItem *item, items) {
-            checkAndConnect(item, opt);
+            connectItems(item, opt);
         }
 
         if(opt == Caneda::PushUndoCmd) {
@@ -2266,9 +2229,12 @@ namespace Caneda
      * flexibility and to avoid infinite recursions when calling this method
      * from inside a newly created or deleted item.
      *
+     * \param item: items to connect
+     * \param opt: undo option
+     *
      * \sa splitAndCreateNodes()
      */
-    void CGraphicsScene::checkAndConnect(CGraphicsItem *item, Caneda::UndoOption opt)
+    void CGraphicsScene::connectItems(CGraphicsItem *item, Caneda::UndoOption opt)
     {
         // Find existing intersecting ports and connect
         foreach(Port *port, item->ports()) {
@@ -2288,6 +2254,30 @@ namespace Caneda
     }
 
     /*!
+     * \brief Disconnect an item from any wire or other components
+     *
+     * \param qItems: item to connect
+     * \param opt: undo option
+     */
+    void CGraphicsScene::disconnectItems(QList<CGraphicsItem*> &items, UndoOption opt)
+    {
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->beginMacro(QString("Disconnect items"));
+        }
+
+        foreach(CGraphicsItem *item, items) {
+            QList<Port*> ports = item->ports();
+            foreach(Port *p, ports) {
+                p->disconnect();
+            }
+        }
+
+        if(opt == Caneda::PushUndoCmd) {
+            m_undoStack->endMacro();
+        }
+    }
+
+    /*!
      * \brief Search wire collisions and if found split the wire.
      *
      * This method searches for wire collisions, and if a collision is present,
@@ -2298,7 +2288,7 @@ namespace Caneda
      *
      * \return Returns true if new node was created.
      *
-     * \sa checkAndConnect()
+     * \sa connectItems()
      */
     void CGraphicsScene::splitAndCreateNodes(CGraphicsItem *item)
     {
@@ -2350,8 +2340,8 @@ namespace Caneda
                         wire2->updateGeometry();
 
                         // Restore old wire connections
-                        checkAndConnect(wire1, Caneda::DontPushUndoCmd);
-                        checkAndConnect(wire2, Caneda::DontPushUndoCmd);
+                        connectItems(wire1, Caneda::DontPushUndoCmd);
+                        connectItems(wire2, Caneda::DontPushUndoCmd);
                     }
                 }
             }
