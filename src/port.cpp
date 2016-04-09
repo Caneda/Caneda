@@ -237,7 +237,7 @@ namespace Caneda
             painter->setBrush(Qt::NoBrush);
             painter->drawEllipse(portEllipse);
         }
-        else if(option->state & QStyle::State_Selected) {
+        else if(m_connections.size() > 2 && parentItem()->isSelected()) {
             painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
                                  settings->currentValue("gui/lineWidth").toInt()));
             painter->setBrush(QBrush(settings->currentValue("gui/selectionColor").value<QColor>()));
