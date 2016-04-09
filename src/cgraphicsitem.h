@@ -129,15 +129,11 @@ namespace Caneda
 
         //! Returns a list of ports of the item.
         QList<Port*> ports() const { return m_ports; }
-        int checkAndConnect(Caneda::UndoOption opt);
-        bool splitAndCreateNodes();
 
         //! Return bounding box.
         QRectF boundingRect() const { return m_boundingRect; }
         //! Return the shape of the item.
         QPainterPath shape() const { return m_shape; }
-
-        CGraphicsScene* cGraphicsScene() const;
 
         //! Virtual method to write item's properties to writer.
         virtual void saveData(Caneda::XmlWriter *) const {}

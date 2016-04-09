@@ -115,13 +115,16 @@ namespace Caneda
         void beginPaintingDraw(Painting *item);
         void beginInsertingItems(const QList<CGraphicsItem*> &items);
 
-        //! Return current undo stack
+        //! \brief Return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
         bool isModified() const { return m_modified; }
 
-        //! Spice/electric related scene properties
+        // Spice/electric related scene properties
         PropertyGroup* properties() { return m_properties; }
         void addProperty(Property property);
+
+        // Miscellaneous methods
+        void checkAndConnect(CGraphicsItem *item, Caneda::UndoOption opt);
 
     public Q_SLOTS:
         void setModified(const bool m = true);
@@ -188,9 +191,12 @@ namespace Caneda
         // Miscellaneous methods
         QPointF centerOfItems(const QList<CGraphicsItem*> &items);
 
-        void connectItems(const QList<CGraphicsItem*> &qItems, const Caneda::UndoOption opt);
-        void disconnectItems(const QList<CGraphicsItem*> &qItems,
+        void connectItems(QList<CGraphicsItem *> &qItems, const Caneda::UndoOption opt);
+        void disconnectItems(QList<CGraphicsItem *> &qItems,
                 const Caneda::UndoOption opt = Caneda::PushUndoCmd);
+
+        void checkAndConnect(QList<CGraphicsItem *> &items, Caneda::UndoOption opt);
+        void splitAndCreateNodes(CGraphicsItem *item);
 
         // Helper variables (aka state holders)
         //! \brief Last grid position of mouse cursor

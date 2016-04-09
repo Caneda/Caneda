@@ -1207,7 +1207,7 @@ namespace Caneda
             }
 
             // Connect ports to any coinciding port in the scene
-            m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
+            checkAndConnect(m_currentWiringWire, Caneda::PushUndoCmd);
 
             if(m_currentWiringWire->port2()->hasAnyConnection()) {
                 // If a connection was made, detach current wire and finalize
@@ -1234,7 +1234,7 @@ namespace Caneda
                 return;
             }
 
-            m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
+            checkAndConnect(m_currentWiringWire, Caneda::PushUndoCmd);
 
             // Detach current wire and finalize
             m_currentWiringWire = NULL;
@@ -1909,7 +1909,7 @@ namespace Caneda
 
             CGraphicsItem * m_item = canedaitem_cast<CGraphicsItem*>(item);
             if(m_item) {
-                m_item->checkAndConnect(Caneda::PushUndoCmd);
+                checkAndConnect(m_item, Caneda::PushUndoCmd);
             }
 
         }
@@ -1928,7 +1928,7 @@ namespace Caneda
 
             PortSymbol * m_item = canedaitem_cast<PortSymbol*>(item);
             if(m_item) {
-                m_item->checkAndConnect(Caneda::PushUndoCmd);
+                checkAndConnect(m_item, Caneda::PushUndoCmd);
             }
 
         }
@@ -1970,16 +1970,14 @@ namespace Caneda
         if(opt == Caneda::DontPushUndoCmd) {
             addItem(item);
             item->setPos(pos);
-            item->checkAndConnect(opt);
         }
         else {
             m_undoStack->beginMacro(QString("Place item"));
             m_undoStack->push(new InsertItemCmd(item, this, pos));
-
-            item->checkAndConnect(opt);
-
             m_undoStack->endMacro();
         }
+
+        checkAndConnect(item, opt);
     }
 
     /*!
@@ -2210,12 +2208,10 @@ namespace Caneda
      * \param qItems: item to connect
      * \param opt: undo option
      */
-    void CGraphicsScene::connectItems(const QList<CGraphicsItem*> &qItems,
+    void CGraphicsScene::connectItems(QList<CGraphicsItem*> &qItems,
             const Caneda::UndoOption opt)
     {
-        foreach(CGraphicsItem *qItem, qItems) {
-            qItem->checkAndConnect(opt);
-        }
+        checkAndConnect(qItems, opt);
     }
 
     /*!
@@ -2224,7 +2220,7 @@ namespace Caneda
      * \param qItems: item to connect
      * \param opt: undo option
      */
-    void CGraphicsScene::disconnectItems(const QList<CGraphicsItem*> &qItems,
+    void CGraphicsScene::disconnectItems(QList<CGraphicsItem*> &qItems,
             const Caneda::UndoOption opt)
     {
         if(opt == Caneda::PushUndoCmd) {
@@ -2240,6 +2236,128 @@ namespace Caneda
 
         if(opt == Caneda::PushUndoCmd) {
             m_undoStack->endMacro();
+        }
+    }
+
+    /*!
+     * \brief Check for overlapping ports around the scene, and connect the
+     * coinciding ports.
+     */
+    void CGraphicsScene::checkAndConnect(QList<CGraphicsItem*> &items, Caneda::UndoOption opt)
+    {
+        if(opt == Caneda::PushUndoCmd) {
+            undoStack()->beginMacro(QString());
+        }
+
+        // Check and connect each item
+        foreach (CGraphicsItem *item, items) {
+            checkAndConnect(item, opt);
+        }
+
+        if(opt == Caneda::PushUndoCmd) {
+            undoStack()->endMacro();
+        }
+    }
+
+    /*!
+     * \brief Check for overlapping ports around the scene, and connect the
+     * coinciding ports.
+     */
+    void CGraphicsScene::checkAndConnect(CGraphicsItem *item, Caneda::UndoOption opt)
+    {
+        // Find existing intersecting ports and connect
+        foreach(Port *port, item->ports()) {
+            Port *other = port->findCoincidingPort();
+            if(other) {
+                if(opt == Caneda::PushUndoCmd) {
+                    ConnectCmd *cmd = new ConnectCmd(port, other);
+                    undoStack()->push(cmd);
+                }
+                else {
+                    port->connectTo(other);
+                }
+            }
+        }
+
+        splitAndCreateNodes(item);
+    }
+
+    /*!
+     * \brief Search wire collisions and if found split the wire.
+     *
+     * This method searches for wire collisions, and if a collision is present,
+     * splits the wire in two, creating a new node. This is done, for example,
+     * when wiring the schematic and a wire ends in the middle of another wire.
+     * In that case, a connection must be made, thus the need to split the
+     * colliding wire.
+     *
+     * \return Returns true if new node was created.
+     */
+    void CGraphicsScene::splitAndCreateNodes(CGraphicsItem *item)
+    {
+        // Check for collisions in each port, otherwise the items intersect
+        // but no node should be created.
+        foreach(Port *port, item->ports()) {
+
+            // List of wires to delete after collision and creation of new wires
+            QList<Wire*> markedForDeletion;
+
+            // Detect all colliding items
+            QList<QGraphicsItem*> collisions = port->collidingItems(Qt::IntersectsItemBoundingRect);
+
+            // Filter colliding wires only
+            foreach(QGraphicsItem *collidingItem, collisions) {
+                Wire* collidingWire = canedaitem_cast<Wire*>(collidingItem);
+                if(collidingWire) {
+
+                    // If already connected, the collision is the result of the connection,
+                    // otherwise there is a potential new node.
+                    bool alreadyConnected = false;
+                    foreach(Port *portIterator, item->ports()) {
+                        alreadyConnected |=
+                                portIterator->isConnectedTo(collidingWire->port1()) ||
+                                portIterator->isConnectedTo(collidingWire->port2());
+                    }
+
+                    if(!alreadyConnected){
+                        // Calculate the start, middle and end points. As the ports are mapped in the parent's
+                        // coordinate system, we must calculate the positions (via the mapToScene method) in
+                        // the global (scene) coordinate system.
+                        QPointF startPoint  = collidingWire->port1()->scenePos();
+                        QPointF middlePoint = port->scenePos();
+                        QPointF endPoint    = collidingWire->port2()->scenePos();
+
+                        // Mark old wire for deletion. The deletion is performed in a second
+                        // stage to avoid referencing null pointers inside the foreach loop.
+                        markedForDeletion << collidingWire;
+
+                        // Create two new wires
+                        Wire *wire1 = new Wire(startPoint, middlePoint, this);
+                        Wire *wire2 = new Wire(middlePoint, endPoint, this);
+
+                        // Create new node (connections to the colliding wire)
+                        port->connectTo(wire1->port2());
+                        port->connectTo(wire2->port1());
+
+                        wire1->updateGeometry();
+                        wire2->updateGeometry();
+
+                        // Restore old wire connections
+                        checkAndConnect(wire1, Caneda::DontPushUndoCmd);
+                        checkAndConnect(wire2, Caneda::DontPushUndoCmd);
+                    }
+                }
+            }
+
+            // Delete all wires marked for deletion. The deletion is performed
+            // in a second stage to avoid referencing null pointers inside the
+            // foreach loop.
+            foreach(Wire *w, markedForDeletion) {
+                delete w;
+            }
+
+            // Clear the list to avoid dereferencing deleted wires
+            markedForDeletion.clear();
         }
     }
 
