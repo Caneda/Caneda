@@ -123,11 +123,6 @@ Ribalta l&apos;oggetto selezionato sull&apos;asse Y</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Contributions</source>
-        <comment>tab title</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Licence Agreement</source>
         <comment>tab title</comment>
         <translation type="unfinished"></translation>
@@ -141,15 +136,7 @@ Ribalta l&apos;oggetto selezionato sull&apos;asse Y</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Current maintainer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Spanish translation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Programming</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -158,6 +145,10 @@ Ribalta l&apos;oggetto selezionato sull&apos;asse Y</translation>
     </message>
     <message>
         <source>© 2008-2016 Caneda developer team</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Developer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
