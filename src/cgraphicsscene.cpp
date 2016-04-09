@@ -198,6 +198,7 @@ namespace Caneda
 
         // Try to reconnect
         connectItems(items, opt);
+        splitAndCreateNodes(items);
 
         // End undo
         if(opt == Caneda::PushUndoCmd) {
@@ -282,6 +283,7 @@ namespace Caneda
 
         // Reconnect items
         connectItems(items, Caneda::PushUndoCmd);
+        splitAndCreateNodes(items);
 
         // Finish undo
         m_undoStack->endMacro();
@@ -1208,6 +1210,7 @@ namespace Caneda
 
             // Connect ports to any coinciding port in the scene
             connectItems(m_currentWiringWire, Caneda::PushUndoCmd);
+            splitAndCreateNodes(m_currentWiringWire);
 
             if(m_currentWiringWire->port2()->hasAnyConnection()) {
                 // If a connection was made, detach current wire and finalize
@@ -1235,6 +1238,7 @@ namespace Caneda
             }
 
             connectItems(m_currentWiringWire, Caneda::PushUndoCmd);
+            splitAndCreateNodes(m_currentWiringWire);
 
             // Detach current wire and finalize
             m_currentWiringWire = NULL;
@@ -1402,6 +1406,7 @@ namespace Caneda
 
         // Reconnect
         connectItems(items, opt);
+        splitAndCreateNodes(items);
 
         // Finish undo
         if(opt == Caneda::PushUndoCmd) {
@@ -1910,6 +1915,7 @@ namespace Caneda
             CGraphicsItem * m_item = canedaitem_cast<CGraphicsItem*>(item);
             if(m_item) {
                 connectItems(m_item, Caneda::PushUndoCmd);
+                splitAndCreateNodes(m_item);
             }
 
         }
@@ -1929,6 +1935,7 @@ namespace Caneda
             PortSymbol * m_item = canedaitem_cast<PortSymbol*>(item);
             if(m_item) {
                 connectItems(m_item, Caneda::PushUndoCmd);
+                splitAndCreateNodes(m_item);
             }
 
         }
@@ -1978,6 +1985,7 @@ namespace Caneda
         }
 
         connectItems(item, opt);
+        splitAndCreateNodes(item);
     }
 
     /*!
@@ -2119,6 +2127,7 @@ namespace Caneda
 
         /* try to reconnect */
         connectItems(items, Caneda::PushUndoCmd);
+        splitAndCreateNodes(items);
 
         /* end command */
         m_undoStack->endMacro();
@@ -2168,6 +2177,7 @@ namespace Caneda
 
         /* try to reconnect */
         connectItems(items, Caneda::PushUndoCmd);
+        splitAndCreateNodes(items);
 
         /* end command */
         m_undoStack->endMacro();
@@ -2249,8 +2259,6 @@ namespace Caneda
                 }
             }
         }
-
-        splitAndCreateNodes(item);
     }
 
     /*!
@@ -2261,19 +2269,19 @@ namespace Caneda
      */
     void CGraphicsScene::disconnectItems(QList<CGraphicsItem*> &items, UndoOption opt)
     {
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(QString("Disconnect items"));
-        }
-
         foreach(CGraphicsItem *item, items) {
             QList<Port*> ports = item->ports();
             foreach(Port *p, ports) {
                 p->disconnect();
             }
         }
+    }
 
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
+    //! \copydoc splitAndCreateNodes(CGraphicsItem *item)
+    void CGraphicsScene::splitAndCreateNodes(QList<CGraphicsItem *> &items)
+    {
+        foreach (CGraphicsItem *item, items) {
+            splitAndCreateNodes(item);
         }
     }
 

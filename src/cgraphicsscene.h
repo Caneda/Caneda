@@ -193,6 +193,7 @@ namespace Caneda
 
         void connectItems(QList<CGraphicsItem *> &items, Caneda::UndoOption opt);
         void disconnectItems(QList<CGraphicsItem *> &items, Caneda::UndoOption opt);
+        void splitAndCreateNodes(QList<CGraphicsItem *> &items);
         void splitAndCreateNodes(CGraphicsItem *item);
 
         // Helper variables (aka state holders)
