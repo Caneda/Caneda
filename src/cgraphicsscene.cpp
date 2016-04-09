@@ -2239,10 +2239,7 @@ namespace Caneda
         }
     }
 
-    /*!
-     * \brief Check for overlapping ports around the scene, and connect the
-     * coinciding ports.
-     */
+    //! \copydoc checkAndConnect(CGraphicsItem *item, Caneda::UndoOption opt)
     void CGraphicsScene::checkAndConnect(QList<CGraphicsItem*> &items, Caneda::UndoOption opt)
     {
         if(opt == Caneda::PushUndoCmd) {
@@ -2262,6 +2259,14 @@ namespace Caneda
     /*!
      * \brief Check for overlapping ports around the scene, and connect the
      * coinciding ports.
+     *
+     * This method checks for overlapping ports around the scene, and connects
+     * the coinciding ports. Although previously this method was included in
+     * the CGraphicsItem class, later was moved to CGraphicsScene to give more
+     * flexibility and to avoid infinite recursions when calling this method
+     * from inside a newly created or deleted item.
+     *
+     * \sa splitAndCreateNodes()
      */
     void CGraphicsScene::checkAndConnect(CGraphicsItem *item, Caneda::UndoOption opt)
     {
@@ -2292,6 +2297,8 @@ namespace Caneda
      * colliding wire.
      *
      * \return Returns true if new node was created.
+     *
+     * \sa checkAndConnect()
      */
     void CGraphicsScene::splitAndCreateNodes(CGraphicsItem *item)
     {
