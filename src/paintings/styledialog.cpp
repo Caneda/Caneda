@@ -466,9 +466,10 @@ namespace Caneda
             layer->setPaintingRect(newRect);
         }
 
-        if(painting->cGraphicsScene()) {
+        CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(painting->scene());
+        if(scene) {
             QUndoCommand *cmd = new PaintingPropertyChangeCmd(painting, saveData);
-            painting->cGraphicsScene()->undoStack()->push(cmd);
+            scene->undoStack()->push(cmd);
         }
     }
 
