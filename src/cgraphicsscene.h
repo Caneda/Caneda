@@ -107,8 +107,15 @@ namespace Caneda
         void beginInsertingItems(const QList<CGraphicsItem*> &items);
 
         // Connect/disconnect methods
+        QPointF centerOfItems(const QList<CGraphicsItem*> &items);
+
         void connectItems(CGraphicsItem *item);
+        void connectItems(QList<CGraphicsItem *> &items);
         void disconnectItems(CGraphicsItem *item);
+        void disconnectItems(QList<CGraphicsItem *> &items);
+
+        void splitAndCreateNodes(CGraphicsItem *item);
+        void splitAndCreateNodes(QList<CGraphicsItem *> &items);
 
         //! \brief Return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
@@ -179,14 +186,6 @@ namespace Caneda
 
         void distributeElementsHorizontally(QList<CGraphicsItem*> items);
         void distributeElementsVertically(QList<CGraphicsItem*> items);
-
-        // Miscellaneous methods
-        QPointF centerOfItems(const QList<CGraphicsItem*> &items);
-
-        void connectItems(QList<CGraphicsItem *> &items);
-        void disconnectItems(QList<CGraphicsItem *> &items);
-        void splitAndCreateNodes(QList<CGraphicsItem *> &items);
-        void splitAndCreateNodes(CGraphicsItem *item);
 
         // Helper variables (aka state holders)
         //! \brief Last grid position of mouse cursor

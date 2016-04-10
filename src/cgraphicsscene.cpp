@@ -1349,26 +1349,9 @@ namespace Caneda
      */
     void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir)
     {
-        // Disconnect
-        disconnectItems(items);
-
-        // Rotate
-        QPointF targetPosition = CGraphicsScene::centerOfItems(items);
-
-        foreach(CGraphicsItem *item, items) {
-            item->setTransformOriginPoint(-item->pos());
-            item->rotate90(dir);
-        }
-
-        QPointF currentPosition = CGraphicsScene::centerOfItems(items);
-
-        foreach(CGraphicsItem *item, items) {
-            item->setPos(item->pos()+(targetPosition-currentPosition));
-        }
-
-        // Reconnect
-        connectItems(items);
-        splitAndCreateNodes(items);
+        m_undoStack->beginMacro(QString("Rotate items"));
+        m_undoStack->push(new RotateItemsCmd(items, dir, this));
+        m_undoStack->endMacro();
     }
 
     /******************************************************************

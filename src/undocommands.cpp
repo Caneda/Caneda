@@ -191,32 +191,59 @@ namespace Caneda
      *                          RotateItemsCmd                               *
      *************************************************************************/
     //! \brief Constructor.
-    RotateItemsCmd::RotateItemsCmd(QList<CGraphicsItem*> items, const Caneda::AngleDirection dir, QUndoCommand *parent) :
+    RotateItemsCmd::RotateItemsCmd(const QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir,
+                                   CGraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
-        m_items(items)
+        m_items(items),
+        m_dir(dir),
+        m_scene(scene)
     {
-        m_angleDirection = dir;
-    }
-
-    RotateItemsCmd::RotateItemsCmd(CGraphicsItem *item, const Caneda::AngleDirection dir, QUndoCommand *parent) :
-        QUndoCommand(parent)
-    {
-        m_items << item;
-        m_angleDirection = dir;
     }
 
     void RotateItemsCmd::undo()
     {
+        // Disconnect
+        m_scene->disconnectItems(m_items);
+
+        // Rotate
+        QPointF targetPosition = m_scene->centerOfItems(m_items);
+
         foreach(CGraphicsItem *item, m_items) {
-            item->rotate90(m_angleDirection == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise);
+            item->setTransformOriginPoint(-item->pos());
+            item->rotate90(m_dir == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise);
         }
+
+        QPointF currentPosition = m_scene->centerOfItems(m_items);
+
+        foreach(CGraphicsItem *item, m_items) {
+            item->setPos(item->pos()+(targetPosition-currentPosition));
+        }
+
+        // Reconnect
+        m_scene->connectItems(m_items);
     }
 
     void RotateItemsCmd::redo()
     {
+        // Disconnect
+        m_scene->disconnectItems(m_items);
+
+        // Rotate
+        QPointF targetPosition = m_scene->centerOfItems(m_items);
+
         foreach(CGraphicsItem *item, m_items) {
-            item->rotate90(m_angleDirection);
+            item->setTransformOriginPoint(-item->pos());
+            item->rotate90(m_dir);
         }
+
+        QPointF currentPosition = m_scene->centerOfItems(m_items);
+
+        foreach(CGraphicsItem *item, m_items) {
+            item->setPos(item->pos()+(targetPosition-currentPosition));
+        }
+
+        // Reconnect
+        m_scene->connectItems(m_items);
     }
 
     /*************************************************************************

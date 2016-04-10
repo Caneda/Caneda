@@ -126,17 +126,16 @@ namespace Caneda
     class RotateItemsCmd : public QUndoCommand
     {
     public:
-        RotateItemsCmd(QList<CGraphicsItem*> items, const  Caneda::AngleDirection = Caneda::Clockwise,
-                QUndoCommand *parent = 0);
-        RotateItemsCmd(CGraphicsItem *item, const  Caneda::AngleDirection = Caneda::Clockwise,
-                QUndoCommand *parent = 0);
+        RotateItemsCmd(const QList<CGraphicsItem*> &items, const  Caneda::AngleDirection,
+                       CGraphicsScene *scene, QUndoCommand *parent = 0);
 
         void undo();
         void redo();
 
     protected:
         QList<CGraphicsItem*> m_items;
-        Caneda::AngleDirection m_angleDirection;
+        Caneda::AngleDirection m_dir;
+        CGraphicsScene *const m_scene;
     };
 
     class MirrorItemsCmd : public QUndoCommand
