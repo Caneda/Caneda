@@ -100,6 +100,7 @@ namespace Caneda
         void slotRemoveLibrary();
         void slotAddHdlLibrary();
         void slotRemoveHdlLibrary();
+        void slotGetNewLibraries();
 
     public:
         void applyConf();
@@ -110,7 +111,7 @@ namespace Caneda
         QFrame *horiz_line_;
 
         QListWidget *libraryList, *hdlLibraryList;
-        QPushButton *addLibrary, *removeLibrary, *addHdlLibrary, *removeHdlLibrary;
+        QPushButton *addLibrary, *removeLibrary, *addHdlLibrary, *removeHdlLibrary, *getNewLibraries;
     };
 
     //! \brief This class represents the simulation configuration page.

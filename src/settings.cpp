@@ -34,6 +34,7 @@ namespace Caneda
     {
         QStringList libraries;
         libraries << Caneda::libDirectory() + "components/active";
+        libraries << Caneda::libDirectory() + "components/cmos";
         libraries << Caneda::libDirectory() + "components/miscellaneous";
         libraries << Caneda::libDirectory() + "components/models";
         libraries << Caneda::libDirectory() + "components/passive";
@@ -53,6 +54,7 @@ namespace Caneda
         defaultSettings["gui/lineColor"] = QVariant(QColor(Qt::blue));
         defaultSettings["gui/selectionColor"] = QVariant(QColor(255, 128, 0)); // Dark orange
         defaultSettings["gui/lineWidth"] = QVariant(int(1));
+        defaultSettings["gui/recentFiles"] = QVariant(QStringList());
 
         defaultSettings["gui/hdl/keyword"]= QVariant(QVariant(QColor(Qt::black)));
         defaultSettings["gui/hdl/type"]= QVariant(QVariant(QColor(Qt::blue)));

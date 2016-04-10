@@ -2,8 +2,8 @@
 # Caneda project
 PROJECT( Caneda )
 
-SET( PACKAGE_VERSION "0.1.0" )
-SET( PACKAGE_STRING "caneda 0.1.0" )
+SET( PACKAGE_VERSION "0.2.0" )
+SET( PACKAGE_STRING "caneda 0.2.0" )
 
 # ==================================================================================
 # Minimum libraries required
@@ -27,8 +27,11 @@ FIND_PACKAGE( Qwt ${QWT_MIN_VERSION} REQUIRED )
 SET( BASEDIR     "share/caneda/" )
 SET( BITMAPDIR   "share/caneda/images/" )
 SET( BINARYDIR   "bin/" )
+SET( DESKTOPDIR  "share/applications/" )
 SET( DOCDIR      "share/caneda/docs/" )
+SET( ICONDIR     "share/icons/" )
 SET( MANDIR      "share/man/man1/" )
+SET( MIMEDIR     "share/mime/packages/" )
 SET( LANGUAGEDIR "share/caneda/i18n/" )
 SET( LIBRARYDIR  "share/caneda/libraries/" )
 
@@ -38,23 +41,12 @@ SET( LIBRARYDIR  "share/caneda/libraries/" )
 SET( CMAKE_AUTOMOC ON )
 SET( CMAKE_AUTOUIC ON )
 SET( CMAKE_INCLUDE_CURRENT_DIR ON )
-
-SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
-CONFIGURE_FILE( ${Caneda_SOURCE_DIR}/config.h.cmake ${Caneda_BINARY_DIR}/config.h )
 SET( CMAKE_BUILD_TYPE Debug )
-ADD_DEFINITIONS( -DHAVE_CONFIG_H )
+
+CONFIGURE_FILE( ${Caneda_SOURCE_DIR}/config.h.cmake ${Caneda_BINARY_DIR}/config.h )
 
 # ==================================================================================
 # Include sources directories
-
-INCLUDE_DIRECTORIES(
-  ${CMAKE_SOURCE_DIR}
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_SOURCE_DIR}/src
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${Qt5Svg_INCLUDE_DIRS}
-  ${QWT_INCLUDE_DIR}
-)
 
 ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( docs )
@@ -65,5 +57,11 @@ ADD_SUBDIRECTORY( libraries )
 # ==================================================================================
 # Licence and other files
 
-SET( MISC README COPYING )
+SET( MISC README.md COPYING )
 INSTALL( FILES ${MISC} DESTINATION ${BASEDIR} )
+
+SET( DESKTOPFILES caneda.desktop )
+INSTALL( FILES ${DESKTOPFILES} DESTINATION ${DESKTOPDIR} )
+
+SET( MIMEFILES caneda.xml )
+INSTALL( FILES ${MIMEFILES} DESTINATION ${MIMEDIR} )

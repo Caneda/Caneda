@@ -23,10 +23,9 @@
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "library.h"
+#include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
-
-#include "dialogs/propertydialog.h"
 
 #include <QDebug>
 #include <QFile>
@@ -37,12 +36,7 @@ namespace Caneda
     //! \brief Constructs default empty ComponentData.
     ComponentData::ComponentData(CGraphicsScene *scene)
     {
-        if(scene) {
-            properties = new PropertyGroup(scene);
-        }
-        else {
-            properties = new PropertyGroup();
-        }
+        properties = new PropertyGroup(scene);
     }
 
     /*!
@@ -68,13 +62,7 @@ namespace Caneda
 
         // Recreate PropertyGroup (properties) as it is a pointer
         // and only internal data must be copied.
-        if(scene) {
-            properties = new PropertyGroup(scene);
-        }
-        else {
-            properties = new PropertyGroup();
-        }
-
+        properties = new PropertyGroup(scene);
         properties->setPropertyMap(other->properties->propertyMap());
 
         models = other->models;
@@ -88,7 +76,7 @@ namespace Caneda
     Component::Component(CGraphicsScene *scene) :
         CGraphicsItem(0, scene)
     {
-        d = new ComponentData(cGraphicsScene());
+        d = new ComponentData(scene);
         init();
     }
 
@@ -96,7 +84,7 @@ namespace Caneda
     Component::Component(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene) :
         CGraphicsItem(0, scene)
     {
-        d = new ComponentData(other, cGraphicsScene());
+        d = new ComponentData(other, scene);
         init();
     }
 
@@ -348,7 +336,7 @@ namespace Caneda
     void Component::copyDataTo(Component *component) const
     {
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(component));
-        component->d = new ComponentData(d, cGraphicsScene());
+        component->d = new ComponentData(d, qobject_cast<CGraphicsScene*>(scene()));
         component->update();
     }
 

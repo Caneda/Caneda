@@ -124,15 +124,13 @@ namespace Caneda
         void emitDocumentChanged();
 
     Q_SIGNALS:
-        void documentChanged(IDocument *who);
+        void documentChanged(IDocument *document);
         void statusBarMessage(const QString &text);
 
         // Avoid private declarations as subclasses might need direct access.
     protected:
         friend class DocumentViewManager;
         QString m_fileName;
-
-        void setNormalAction();
     };
 
 

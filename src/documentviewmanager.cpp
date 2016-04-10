@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,13 +20,15 @@
 
 #include "documentviewmanager.h"
 
+#include "actionmanager.h"
 #include "icontext.h"
 #include "idocument.h"
 #include "iview.h"
 #include "mainwindow.h"
+#include "savedocumentsdialog.h"
+#include "settings.h"
+#include "statehandler.h"
 #include "tabs.h"
-
-#include "dialogs/savedocumentsdialog.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -112,6 +115,9 @@ namespace Caneda
 
     void DocumentViewManager::newDocument(IContext *context)
     {
+        StateHandler *handler = StateHandler::instance();
+        handler->slotSetNormalAction();
+
         IDocument *document = context->newDocument();
         if (!document) {
             return;
@@ -128,7 +134,10 @@ namespace Caneda
 
     bool DocumentViewManager::openFile(const QString &fileName)
     {
-        if (fileName.isEmpty()) {
+        StateHandler *handler = StateHandler::instance();
+        handler->slotSetNormalAction();
+
+        if(fileName.isEmpty()) {
             return false;
         }
 
@@ -139,7 +148,7 @@ namespace Caneda
         // refresh the data upon next opening. This is used, for example,
         // during simulations, when the simulation engine changes the waveform
         // file contents.
-        if (data) {
+        if(data) {
             // Grab the first view of the document
             IView *view = 0;
             if (!data->views.isEmpty()) {
@@ -151,7 +160,7 @@ namespace Caneda
         }
 
         // Open the file which will create corresponding DocumentData
-        if (!data) {
+        if(!data) {
             QFileInfo fileInfo(fileName);
             foreach (IContext *context, m_contexts) {
                 if (context->canOpen(fileInfo)) {
@@ -171,8 +180,10 @@ namespace Caneda
             }
         }
 
-        // Once the document is loaded, go to the corresponding view
-        if (data) {
+        // Once the document is loaded, update the recent files list and go to
+        // the view of the recently opened document.
+        if(data) {
+            addFileToRecentFiles(fileName);
             highlightViewForDocument(data->document);
         }
 
@@ -438,6 +449,95 @@ namespace Caneda
             for (; jt != jend; ++jt) {
                 (*jt)->updateSettingsChanges();
             }
+        }
+    }
+
+    /*!
+     * \brief Adds a file to the list of recently opened files.
+     *
+     * This method is called to:
+     * \li Update the list of recently opened files in the configuration file.
+     * \li Call updateRecentFilesActionList() which changes the text, data and
+     * visibility of the Actions in the recentFilesActions list.
+     *
+     * Notice that before adding the newly opened file to the top of the
+     * recentFilePaths list in the configuration file, we have to first remove
+     * all its previous occurrences with removeAll().
+     *
+     * \param filePath
+     *
+     * \sa updateRecentFilesActionList()
+     */
+    void DocumentViewManager::addFileToRecentFiles(const QString &filePath)
+    {
+        Settings *settings = Settings::instance();
+        QStringList recentFilesPaths =
+                settings->currentValue("gui/recentFiles").toStringList();
+
+        recentFilesPaths.removeAll(filePath);
+        recentFilesPaths.prepend(filePath);
+
+        while(recentFilesPaths.size() > maxRecentFiles) {
+            recentFilesPaths.removeLast();
+        }
+
+        settings->setCurrentValue("gui/recentFiles", recentFilesPaths);
+
+        updateRecentFilesActionList();
+    }
+
+    /*!
+     * \brief Updates recent files list
+     *
+     * The recently opened files are represented by a list of Actions. The
+     * number of actions in the menu remains constant (i.e. 10 in our case). We
+     * do not create actions everytime there is a change in the recently opened
+     * files. We create a constant number of Actions at the beginning and then
+     * update their text, data and visibility whenever the user opens another
+     * file. At the start, all actions are invisible.
+     *
+     * The names and paths of the recently opened files are stored in the
+     * configuration file that can be accessed via Settings. They are not
+     * stored as member variables of the MainWindow, as they must be recovered
+     * every time the program starts. This enables other instances of the
+     * program to access recently opened files, as well.
+     *
+     * This method is called whenever we need to update the recent files list,
+     * for example when loading (or saving) a file. The method updates the
+     * recentFilesActionList in ActionManager according to configuration file,
+     * which is updated in addFileToRecentFiles(). If the list of recently
+     * opened files contains less files than the maximum allowed number, we
+     * make the remaining actions invisible. Notice that we have to change both
+     * the text and the data of the Actions to account for the name and the
+     * path of the newly opened file.
+     *
+     * \sa addFileToRecentFiles()
+     */
+    void DocumentViewManager::updateRecentFilesActionList()
+    {
+        Settings *settings = Settings::instance();
+        QStringList recentFilesPaths =
+                settings->currentValue("gui/recentFiles").toStringList();
+
+        int itEnd = 0;
+        if(recentFilesPaths.size() <= maxRecentFiles) {
+            itEnd = recentFilesPaths.size();
+        }
+        else {
+            itEnd = maxRecentFiles;
+        }
+
+        ActionManager* am = ActionManager::instance();
+
+        for(int i=0; i<itEnd; i++) {
+            QString strippedName = QFileInfo(recentFilesPaths.at(i)).fileName();
+            am->recentFilesActions().at(i)->setText(strippedName);
+            am->recentFilesActions().at(i)->setData(recentFilesPaths.at(i));
+            am->recentFilesActions().at(i)->setVisible(true);
+        }
+
+        for(int i=itEnd; i<maxRecentFiles; i++) {
+            am->recentFilesActions().at(i)->setVisible(false);
         }
     }
 

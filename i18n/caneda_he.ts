@@ -2,6 +2,109 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>Caneda</name>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="obsolete">מ&amp;חק</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="obsolete">מחק</translation>
+    </message>
+    <message>
+        <source>Deletes the selected components</source>
+        <translation type="obsolete">מוחק את הבחירה</translation>
+    </message>
+    <message>
+        <source>Delete
+
+Deletes the selected components</source>
+        <translation type="obsolete">מחק
+
+מוחק את הבחירה</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="obsolete">בחר</translation>
+    </message>
+    <message>
+        <source>Rotate</source>
+        <translation type="obsolete">סובב</translation>
+    </message>
+    <message>
+        <source>Mirror about X Axis</source>
+        <translation type="obsolete">העתק דמוי-מראה על ציר הX</translation>
+    </message>
+    <message>
+        <source>Mirror about X Axis
+
+Mirrors the selected item about X Axis</source>
+        <translation type="obsolete">העתק דמוי-מראה על ציר הX
+
+מעתיק את הפריט דמוי-מראה על ציר X</translation>
+    </message>
+    <message>
+        <source>Mirror about Y Axis</source>
+        <translation type="obsolete">העתק דמוי-מראה על ציר הY</translation>
+    </message>
+    <message>
+        <source>Mirror about Y Axis
+
+Mirrors the selected item about Y Axis</source>
+        <translation type="obsolete">העתק דמוי-מראה על ציר הY
+
+מעתיק את הפריט דמוי-מראה על ציר Y</translation>
+    </message>
+    <message>
+        <source>Wire</source>
+        <translation type="obsolete">חוט</translation>
+    </message>
+    <message>
+        <source>Inserts a wire</source>
+        <translation type="obsolete">מכניס חוט</translation>
+    </message>
+    <message>
+        <source>Wire
+
+Inserts a wire</source>
+        <translation type="obsolete">חוט
+
+מכניס חוט</translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="obsolete">&amp;קובץ</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="obsolete">&amp;ערוך</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="obsolete">&amp;צפה</translation>
+    </message>
+    <message>
+        <source>&amp;Simulation</source>
+        <translation type="obsolete">&amp;סימולציה</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="obsolete">&amp;עזרה</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="obsolete">ערוך</translation>
+    </message>
+    <message>
+        <source>Open File</source>
+        <translation type="obsolete">פתח קובץ</translation>
+    </message>
+    <message>
+        <source>Save File</source>
+        <translation type="obsolete">שמור קובץ</translation>
+    </message>
+</context>
+<context>
     <name>Caneda::AboutDialog</name>
     <message>
         <source>About Caneda</source>
@@ -24,11 +127,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Contributions</source>
-        <comment>tab title</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Licence Agreement</source>
         <comment>tab title</comment>
         <translation type="unfinished"></translation>
@@ -42,15 +140,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Current maintainer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Spanish translation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Programming</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -59,6 +149,10 @@
     </message>
     <message>
         <source>© 2008-2016 Caneda developer team</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Developer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -435,6 +529,13 @@ Do you want to continue?</source>
     </message>
 </context>
 <context>
+    <name>Caneda::LayoutContext</name>
+    <message>
+        <source>Components Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Caneda::LayoutDocument</name>
     <message>
         <source>Info</source>
@@ -482,6 +583,10 @@ Do you want to continue?</source>
     <message>
         <source>Libraries</source>
         <comment>libraries page title</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Get new libraries...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1214,20 +1319,6 @@ Simulates the current circuit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Export to &amp;CSV...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Export simulation data to CSV file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Export to CSV
-
-Export simulation data to CSV file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Show simulation log</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1256,10 +1347,6 @@ Shows the netlist of the current circuit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Help index...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Index of Caneda Help</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1284,10 +1371,6 @@ About the application</source>
         <translation type="unfinished">אודות
 
 אודות האפליקציה</translation>
-    </message>
-    <message>
-        <source>About Qt...</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>About Qt by Nokia</source>
@@ -1324,58 +1407,30 @@ Deletes the selected components</source>
         <translation type="unfinished">בחר</translation>
     </message>
     <message>
-        <source>Activate select mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select
-
-Activates select mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Rotate</source>
         <translation type="unfinished">סובב</translation>
     </message>
     <message>
-        <source>Rotates the selected component</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rotate
-
-Rotates the selected component counter-clockwise</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mirror about X Axis</source>
-        <translation type="unfinished">העתק דמוי-מראה על ציר הX</translation>
-    </message>
-    <message>
-        <source>Mirrors the selected component about X axis</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">העתק דמוי-מראה על ציר הX</translation>
     </message>
     <message>
         <source>Mirror about X Axis
 
 Mirrors the selected item about X Axis</source>
-        <translation type="unfinished">העתק דמוי-מראה על ציר הX
+        <translation type="obsolete">העתק דמוי-מראה על ציר הX
 
 מעתיק את הפריט דמוי-מראה על ציר X</translation>
     </message>
     <message>
         <source>Mirror about Y Axis</source>
-        <translation type="unfinished">העתק דמוי-מראה על ציר הY</translation>
-    </message>
-    <message>
-        <source>Mirrors the selected component about Y axis</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">העתק דמוי-מראה על ציר הY</translation>
     </message>
     <message>
         <source>Mirror about Y Axis
 
 Mirrors the selected item about Y Axis</source>
-        <translation type="unfinished">העתק דמוי-מראה על ציר הY
+        <translation type="obsolete">העתק דמוי-מראה על ציר הY
 
 מעתיק את הפריט דמוי-מראה על ציר Y</translation>
     </message>
@@ -1396,6 +1451,104 @@ Inserts a wire</source>
 מכניס חוט</translation>
     </message>
     <message>
+        <source>&amp;File</source>
+        <translation type="unfinished">&amp;קובץ</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished">&amp;ערוך</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="unfinished">&amp;צפה</translation>
+    </message>
+    <message>
+        <source>&amp;Project</source>
+        <translation type="obsolete">&amp;פרוייקט</translation>
+    </message>
+    <message>
+        <source>&amp;Simulation</source>
+        <translation type="unfinished">&amp;סימולציה</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="unfinished">&amp;עזרה</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished">ערוך</translation>
+    </message>
+    <message>
+        <source>Open File</source>
+        <translation type="unfinished">פתח קובץ</translation>
+    </message>
+    <message>
+        <source>Save File</source>
+        <translation type="unfinished">שמור קובץ</translation>
+    </message>
+    <message>
+        <source>&amp;Help index...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Example circuits...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Example circuits
+
+Open Caneda example circuits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About &amp;Qt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+E</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launches current selection properties dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate select mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select
+
+Activates select mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotates the selected component</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotate
+
+Rotates the selected component counter-clockwise</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Zoom area</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1412,16 +1565,60 @@ Inserts a wire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;File</source>
-        <translation type="unfinished">&amp;קובץ</translation>
+        <source>Ctrl+I</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished">&amp;ערוך</translation>
+        <source>Ctrl+Shift+I</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;View</source>
-        <translation type="unfinished">&amp;צפה</translation>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+L</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F7</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open &amp;Recent</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;Docks and Toolbars</source>
@@ -1432,24 +1629,8 @@ Inserts a wire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Project</source>
-        <translation type="obsolete">&amp;פרוייקט</translation>
-    </message>
-    <message>
-        <source>&amp;Simulation</source>
-        <translation type="unfinished">&amp;סימולציה</translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
-        <translation type="unfinished">&amp;עזרה</translation>
-    </message>
-    <message>
         <source>File</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished">ערוך</translation>
     </message>
     <message>
         <source>Work</source>
@@ -1458,10 +1639,6 @@ Inserts a wire</source>
     <message>
         <source>View</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open File</source>
-        <translation type="unfinished">פתח קובץ</translation>
     </message>
     <message>
         <source>Critical</source>
@@ -1476,8 +1653,48 @@ Inserts a wire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Save File</source>
-        <translation type="unfinished">שמור קובץ</translation>
+        <source>V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>H</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>W</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Esc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirror vertically</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected components vertically</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirror vertically Axis
+
+Mirrors the selected components vertically</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirror horizontally</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirrors the selected components horizontally</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mirror horizontally
+
+Mirrors the selected components horizontally</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1649,6 +1866,13 @@ Removes selected property from the list</source>
     </message>
 </context>
 <context>
+    <name>Caneda::SchematicContext</name>
+    <message>
+        <source>Components Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Caneda::SchematicDocument</name>
     <message>
         <source>Info</source>
@@ -1675,6 +1899,38 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>Schematic Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C</source>
+        <comment>Insert component shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Caneda::SidebarSimulationBrowser</name>
+    <message>
+        <source>Search...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C</source>
+        <comment>Insert component shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Caneda::SidebarSimulationModel</name>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Visible</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1749,6 +2005,13 @@ Removes selected property from the list</source>
     </message>
 </context>
 <context>
+    <name>Caneda::SimulationContext</name>
+    <message>
+        <source>Displayed Waveforms</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Caneda::SimulationDocument</name>
     <message>
         <source>Unknown file format!</source>
@@ -1756,13 +2019,9 @@ Removes selected property from the list</source>
     </message>
 </context>
 <context>
-    <name>Caneda::SimulationModel</name>
+    <name>Caneda::SymbolContext</name>
     <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Visible</source>
+        <source>Components Browser</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1793,6 +2052,13 @@ Removes selected property from the list</source>
     </message>
 </context>
 <context>
+    <name>Caneda::TextContext</name>
+    <message>
+        <source>Text Templates</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Caneda::TextDocument</name>
     <message>
         <source>Empty filename</source>
@@ -1811,6 +2077,13 @@ Removes selected property from the list</source>
     <name>Caneda::TextEdit</name>
     <message>
         <source>Line: %1 Col: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Caneda::WebContext</name>
+    <message>
+        <source>Help Browser</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1852,10 +2125,6 @@ Removes selected property from the list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Heigth:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1877,6 +2146,10 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>Draw Grid:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2295,26 +2568,6 @@ Removes selected property from the list</source>
     </message>
     <message>
         <source>x axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Displayed waveforms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

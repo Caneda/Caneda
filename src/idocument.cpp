@@ -70,7 +70,6 @@ namespace Caneda
      * \brief Returns modification status of this document.
      */
 
-
     /*!
      * \fn IDocument::canUndo()
      *
@@ -97,7 +96,6 @@ namespace Caneda
      *
      * \brief Invokes redo action i.e redoes the last undo change.
      */
-
 
     /*!
      * \fn IDocument::canCut()
@@ -354,11 +352,6 @@ namespace Caneda
         emit documentChanged(this);
     }
 
-    void IDocument::setNormalAction()
-    {
-        MainWindow::instance()->setNormalAction();
-    }
-
 
     /*************************************************************************
      *                           LayoutDocument                              *
@@ -459,13 +452,11 @@ namespace Caneda
 
     void LayoutDocument::intoHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
     void LayoutDocument::popHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
@@ -517,7 +508,6 @@ namespace Caneda
 
     void LayoutDocument::simulate()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
@@ -728,13 +718,11 @@ namespace Caneda
 
     void SchematicDocument::intoHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
     void SchematicDocument::popHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this
     }
 
@@ -795,8 +783,6 @@ namespace Caneda
      */
     void SchematicDocument::simulate()
     {
-        setNormalAction();
-
         if(fileName().isEmpty()) {
             return;
         }
@@ -819,7 +805,7 @@ namespace Caneda
         QProcess *simulationProcess = new QProcess(this);
         simulationProcess->setWorkingDirectory(path);
         simulationProcess->setProcessChannelMode(QProcess::MergedChannels);  // Output std:error and std:output together into the same file
-        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::Append);  // Create a log file
+        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::WriteOnly);  // Create a log file
 
         // Set the environment variable to get a binary or an ascii raw file.
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -969,7 +955,7 @@ namespace Caneda
             dialog->setIcon(Caneda::icon("dialog-error"));
 
             ActionManager* am = ActionManager::instance();
-            Action* act = am->actionForName("showLog");
+            QAction* act = am->actionForName("showLog");
             dialog->addAction(act);
 
             act = am->actionForName("showNetlist");
@@ -1215,13 +1201,11 @@ namespace Caneda
 
     void SymbolDocument::intoHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this. This should return to the schematic document.
     }
 
     void SymbolDocument::popHierarchy()
     {
-        setNormalAction();
         //! \todo Implement this. This should return to the schematic document.
     }
 
@@ -1506,7 +1490,7 @@ namespace Caneda
         QProcess *simulationProcess = new QProcess(this);
         simulationProcess->setWorkingDirectory(path);
         simulationProcess->setProcessChannelMode(QProcess::MergedChannels);  // Output std:error and std:output together into the same file
-        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::Append);  // Create a log file
+        simulationProcess->setStandardOutputFile(path + "/" + baseName + ".log", QIODevice::WriteOnly);  // Create a log file
 
         connect(simulationProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(simulationLog(int)));
 

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -24,6 +24,7 @@
 #include "library.h"
 #include "settings.h"
 #include "sidebarbrowser.h"
+#include "sidebarsimulationbrowser.h"
 #include "sidebartextbrowser.h"
 #include "sidebarwebbrowser.h"
 #include "statehandler.h"
@@ -42,6 +43,110 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \fn IContext::toolBar()
+     *
+     * \brief Returns the toolbar corresponding to this context.
+     *
+     * There are two type of toolbars:
+     * \li Main toolbars, containing common actions as copy, cut, paste, undo,
+     * etc.
+     * \li Context sensitive toolbars, containing only those actions relative
+     * to the current context as insert wire, rotate, etc.
+     *
+     * While the main toolbars are displayed in the main window for every
+     * context, context sensitive toolbars are displayed inside each tab when
+     * a specific type of context is opened. This method returns a pointer to
+     * the current context toolbar.
+     *
+     * \todo Implement context sensitive toolbars and attach them inside each
+     * tab.
+     *
+     * \sa sideBarWidget()
+     */
+
+    /*!
+     * \fn IContext::sideBarWidget()
+     *
+     * \brief Returns the sideBarWidget corresponding to this context.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. In this sense, context sensitive sidebars are
+     * changed every time a specific type of context is opened or changed to.
+     * This method returns a pointer to the current context sideBarWidget.
+     *
+     * \sa toolBar(), updateSideBar()
+     */
+
+    /*!
+     * \fn IContext::sideBarTitle()
+     *
+     * \brief Returns the sideBarWidget title to this context.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. This method returns the sideBar title corresponding
+     * to this context, allowing to update the title of the sidebarDockWidget.
+     *
+     * \sa sideBarWidget(), TabWidget::updateTabContext()
+     */
+
+    /*!
+     * \fn IContext::updateSideBar()
+     *
+     * \brief Updates sidebar contents.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. Upon certain conditions, sidebars may need updating,
+     * for example when inserting or removing libraries. This method allows for
+     * an external event to request the update of the sidebar.
+     *
+     * \sa sideBarWidget()
+     */
+
+    /*!
+     * \fn IContext::canOpen()
+     *
+     * \brief Indicates if a particular file extension is managed by this
+     * context.
+     *
+     * This method indicates if a particular file extension is managed by this
+     * context. This allows to find what context is in charge of a particular
+     * file type.
+     */
+
+    /*!
+     * \fn IContext::fileNameFilters()
+     *
+     * \brief Returns the filename extensions or filters available for this
+     * context.
+     *
+     * Filename filters are used in open/save dialogs to allow the user to
+     * filter the files displayed and ease the selection of the wanted file. In
+     * this way, for example, if opening a schematic document the dialog should
+     * display only schematic files. The method fileNameFilters() is used to
+     * know what extensions correspond to that particular type of context.
+     */
+
+    /*!
+     * \fn IContext::defaultSuffix()
+     *
+     * \brief Returns the default suffix of the current content type.
+     */
+
+    /*!
+     * \fn IContext::newDocument()
+     *
+     * \brief Create a new document of the current context type.
+     */
+
+    /*!
+     * \fn IContext::open()
+     *
+     * \brief Open a document of the current context type.
+     */
 
     /*************************************************************************
      *                          Layout Context                               *
@@ -150,17 +255,6 @@ namespace Caneda
 
         return document;
     }
-
-    void LayoutContext::addNormalAction(Action *action)
-    {
-        m_normalActions << action;
-    }
-
-    void LayoutContext::addMouseAction(Action *action)
-    {
-        m_mouseActions << action;
-    }
-
 
     /*************************************************************************
      *                         Schematic Context                             *
@@ -278,23 +372,13 @@ namespace Caneda
         return document;
     }
 
-    void SchematicContext::addNormalAction(Action *action)
-    {
-        m_normalActions << action;
-    }
-
-    void SchematicContext::addMouseAction(Action *action)
-    {
-        m_mouseActions << action;
-    }
-
-
     /*************************************************************************
      *                        Simulation Context                             *
      *************************************************************************/
     //! \brief Constructor.
     SimulationContext::SimulationContext(QObject *parent) : IContext(parent)
     {
+        m_sidebarBrowser = new SidebarSimulationBrowser();
     }
 
     //! \copydoc MainWindow::instance()
@@ -305,6 +389,18 @@ namespace Caneda
             context = new SimulationContext();
         }
         return context;
+    }
+
+    QWidget *SimulationContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
+    }
+
+    void SimulationContext::updateSideBar()
+    {
+        if(m_sidebarBrowser) {
+            m_sidebarBrowser->updateWaveformsList();
+        }
     }
 
     bool SimulationContext::canOpen(const QFileInfo &info) const
@@ -347,22 +443,6 @@ namespace Caneda
 
         return document;
     }
-
-    void SimulationContext::addNormalAction(Action *action)
-    {
-        m_normalActions << action;
-    }
-
-    void SimulationContext::addMouseAction(Action *action)
-    {
-        m_mouseActions << action;
-    }
-
-    void SimulationContext::exportCsv()
-    {
-        //! \todo Implement this
-    }
-
 
     /*************************************************************************
      *                          Symbol Context                               *
@@ -454,17 +534,6 @@ namespace Caneda
         return document;
     }
 
-    void SymbolContext::addNormalAction(Action *action)
-    {
-        m_normalActions << action;
-    }
-
-    void SymbolContext::addMouseAction(Action *action)
-    {
-        m_mouseActions << action;
-    }
-
-
     /*************************************************************************
      *                           Text Context                                *
      *************************************************************************/
@@ -539,7 +608,6 @@ namespace Caneda
 
         return document;
     }
-
 
     /*************************************************************************
      *                           Web Context                                 *

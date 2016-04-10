@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -48,123 +48,6 @@ namespace Caneda
         if(scene) {
             scene->addItem(this);
         }
-    }
-
-    /*!
-     * \brief Check for connections and connect the coinciding ports.
-     *
-     * \return Returns the number of connections made.
-     */
-    int CGraphicsItem::checkAndConnect(Caneda::UndoOption opt)
-    {
-        int num_of_connections = 0;
-
-        if(opt == Caneda::PushUndoCmd) {
-            cGraphicsScene()->undoStack()->beginMacro(QString());
-        }
-
-        // Find existing intersecting ports and connect
-        foreach(Port *port, m_ports) {
-            Port *other = port->findCoincidingPort();
-            if(other) {
-                if(opt == Caneda::PushUndoCmd) {
-                    ConnectCmd *cmd = new ConnectCmd(port, other);
-                    cGraphicsScene()->undoStack()->push(cmd);
-                }
-                else {
-                    port->connectTo(other);
-                }
-                ++num_of_connections;
-            }
-        }
-
-        if(opt == Caneda::PushUndoCmd) {
-            cGraphicsScene()->undoStack()->endMacro();
-        }
-
-        splitAndCreateNodes();
-
-        return num_of_connections;
-    }
-
-    /*!
-     * \brief If a collision with a wire is present, splits the wire in two and
-     * creates a new node.
-     *
-     * \return Returns true if new node was created.
-     */
-    bool CGraphicsItem::splitAndCreateNodes()
-    {
-        bool nodeCreated = false;
-
-        // List of wires to delete after collision and creation of new wires
-        QList<Wire*> markedForDeletion;
-
-        // Check for collisions in each port, otherwise the items intersect
-        // but no node should be created.
-        foreach(Port *port, m_ports) {
-
-            // Detect all colliding items
-            QList<QGraphicsItem*> collisions = port->collidingItems(Qt::IntersectsItemBoundingRect);
-
-            // Filter colliding wires only
-            foreach(QGraphicsItem *item, collisions) {
-                Wire* _collidingItem = canedaitem_cast<Wire*>(item);
-                if(_collidingItem) {
-
-                    // If already connected, the collision is the result of the connection,
-                    // otherwise there is a potential new node.
-                    bool alreadyConnected = false;
-                    foreach(Port *portIterator, m_ports) {
-                        alreadyConnected |=
-                                portIterator->isConnectedTo(_collidingItem->port1()) ||
-                                portIterator->isConnectedTo(_collidingItem->port2());
-                    }
-
-                    if(!alreadyConnected){
-                        // Calculate the start, middle and end points. As the ports are mapped in the parent's
-                        // coordinate system, we must calculate the positions (via the mapToScene method) in
-                        // the global (scene) coordinate system.
-                        QPointF startPoint  = _collidingItem->port1()->scenePos();
-                        QPointF middlePoint = port->scenePos();
-                        QPointF endPoint    = _collidingItem->port2()->scenePos();
-
-                        // Mark old wire for deletion. The deletion is performed in a second
-                        // stage to avoid referencing null pointers inside the foreach loop.
-                        markedForDeletion << _collidingItem;
-
-                        // Create two new wires
-                        Wire *wire1 = new Wire(startPoint, middlePoint, cGraphicsScene());
-                        Wire *wire2 = new Wire(middlePoint, endPoint, cGraphicsScene());
-
-                        // Create new node (connections to the colliding wire)
-                        port->connectTo(wire1->port2());
-                        port->connectTo(wire2->port1());
-
-                        wire1->updateGeometry();
-                        wire2->updateGeometry();
-
-                        // Restore old wire connections
-                        wire1->checkAndConnect(Caneda::DontPushUndoCmd);
-                        wire2->checkAndConnect(Caneda::DontPushUndoCmd);
-
-                        nodeCreated = true;
-                    }
-                }
-            }
-
-            // Delete all wires marked for deletion. The deletion is performed
-            // in a second stage to avoid referencing null pointers inside the
-            // foreach loop.
-            foreach(Wire *w, markedForDeletion) {
-                delete w;
-            }
-
-            // Clear the list to avoid dereferencing deleted wires
-            markedForDeletion.clear();
-        }
-
-        return nodeCreated;
     }
 
     /*!
@@ -228,12 +111,6 @@ namespace Caneda
         }
     }
 
-    //! \brief returns a pointer to the graphics scene to which the item belongs.
-    CGraphicsScene* CGraphicsItem::cGraphicsScene() const
-    {
-        return qobject_cast<CGraphicsScene*>(scene());
-    }
-
     /*!
      * \brief Convenience method to get the saved text as string.
      *
@@ -281,11 +158,10 @@ namespace Caneda
     {
         update();
 
-        Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
         if(axis == Qt::XAxis) {
             setTransform(QTransform::fromScale(1.0, -1.0), true);
         }
-        else /*axis = Qt::YAxis*/ {
+        else {
             setTransform(QTransform::fromScale(-1.0, 1.0), true);
         }
     }

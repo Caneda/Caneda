@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -28,6 +28,7 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QDateEdit>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
 #include <QFormLayout>
@@ -196,69 +197,19 @@ namespace Caneda
     //! \brief Applies the configuration of this page.
     void GeneralConfigurationPage::applyConf()
     {
-        bool changed = false;
-
         Settings *settings = Settings::instance();
 
-        const bool currentGridVisible =
-            settings->currentValue("gui/gridVisible").value<bool>();
-        const bool newGridVisible = checkShowGrid->isChecked();
-        if (currentGridVisible != newGridVisible) {
-            settings->setCurrentValue("gui/gridVisible", newGridVisible);
-            changed = true;
-        }
+        settings->setCurrentValue("gui/gridVisible", checkShowGrid->isChecked());
 
-        QColor currentColor;
-        QColor newColor;
+        settings->setCurrentValue("gui/backgroundColor", getBackgroundColor(buttonBackground));
+        settings->setCurrentValue("gui/simulationBackgroundColor", getBackgroundColor(buttonSimulationBackground));
+        settings->setCurrentValue("gui/foregroundColor", getBackgroundColor(buttonForeground));
+        settings->setCurrentValue("gui/lineColor", getBackgroundColor(buttonLine));
+        settings->setCurrentValue("gui/selectionColor", getBackgroundColor(buttonSelection));
 
-        currentColor = settings->currentValue("gui/backgroundColor").value<QColor>();
-        newColor = getBackgroundColor(buttonBackground);
-        if (currentColor != newColor) {
-            settings->setCurrentValue("gui/backgroundColor", newColor);
-            changed = true;
-        }
-
-        currentColor = settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
-        newColor = getBackgroundColor(buttonSimulationBackground);
-        if (currentColor != newColor) {
-            settings->setCurrentValue("gui/simulationBackgroundColor", newColor);
-            changed = true;
-        }
-
-        currentColor = settings->currentValue("gui/foregroundColor").value<QColor>();
-        newColor = getBackgroundColor(buttonForeground);
-        if (currentColor != newColor) {
-            settings->setCurrentValue("gui/foregroundColor", newColor);
-            changed = true;
-        }
-
-        currentColor = settings->currentValue("gui/lineColor").value<QColor>();
-        newColor = getBackgroundColor(buttonLine);
-        if (currentColor != newColor) {
-            settings->setCurrentValue("gui/lineColor", newColor);
-            changed = true;
-        }
-
-        currentColor = settings->currentValue("gui/selectionColor").value<QColor>();
-        newColor = getBackgroundColor(buttonSelection);
-        if (currentColor != newColor) {
-            settings->setCurrentValue("gui/selectionColor", newColor);
-            changed = true;
-        }
-
-        const int currentLineWidth = settings->currentValue("gui/lineWidth").toInt();
-        const int newLineWidth = spinWidth->value();
-        if (currentLineWidth != newLineWidth) {
-            settings->setCurrentValue("gui/lineWidth", newLineWidth);
-            changed = true;
-        }
+        settings->setCurrentValue("gui/lineWidth", spinWidth->value());
 
         settings->save();
-
-        if(changed) {
-            MainWindow::instance()->slotUpdateSettingsChanges();
-            MainWindow::instance()->repaint();
-        }
     }
 
     //! \return Icon of this page.
@@ -333,6 +284,8 @@ namespace Caneda
         currentHdlLibrariesLayout->addLayout(hdlLibraryButtons);
 
         //Finally we set the general layout of all groups *************************
+        getNewLibraries = new QPushButton(tr("Get new libraries..."));
+        connect(getNewLibraries, SIGNAL(clicked()), SLOT(slotGetNewLibraries()));
         QLabel *warningLabel = new QLabel(tr("Warning: libraries will be set upon program restart"));
 
         QVBoxLayout *vlayout1 = new QVBoxLayout();
@@ -345,6 +298,7 @@ namespace Caneda
 
         vlayout1->addWidget(currentLibraries);
         vlayout1->addWidget(currentHdlLibraries);
+        vlayout1->addWidget(getNewLibraries);
         vlayout1->addWidget(warningLabel);
 
         vlayout1->addStretch();
@@ -384,6 +338,11 @@ namespace Caneda
         qDeleteAll(hdlLibraryList->selectedItems());
     }
 
+    void LibrariesConfigurationPage::slotGetNewLibraries()
+    {
+        QDesktopServices::openUrl(QUrl("https://github.com/Caneda/Libraries"));
+    }
+
     //! \brief Applies the configuration of this page.
     void LibrariesConfigurationPage::applyConf()
     {
@@ -393,19 +352,13 @@ namespace Caneda
         for(int i=0; i<libraryList->count(); i++) {
             newLibraries << libraryList->item(i)->text();
         }
-        const QStringList currentLibraries = settings->currentValue("libraries/schematic").toStringList();
-        if (currentLibraries != newLibraries) {
-            settings->setCurrentValue("libraries/schematic", newLibraries);
-        }
+        settings->setCurrentValue("libraries/schematic", newLibraries);
 
         QStringList newHdlLibraries;
         for(int i=0; i<hdlLibraryList->count(); i++) {
             newHdlLibraries << hdlLibraryList->item(i)->text();
         }
-        const QStringList currentHdlLibraries = settings->currentValue("libraries/hdl").toStringList();
-        if (currentHdlLibraries != newHdlLibraries) {
-            settings->setCurrentValue("libraries/hdl", newHdlLibraries);
-        }
+        settings->setCurrentValue("libraries/hdl", newHdlLibraries);
 
         settings->save();
     }
@@ -509,44 +462,24 @@ namespace Caneda
         Settings *settings = Settings::instance();
 
         // Simulation engine
-        QString newSimulationEngine;
-        QString newSimulationCommand;
         if(ngspiceMode->isChecked()) {
             // If using ngspice simulator, the command to simulate is:
             // ngspice -b -r output.raw input.net
-            newSimulationEngine = QString("ngspice");
-            newSimulationCommand = QString("ngspice -b -r %filename.raw %filename.net");
+            settings->setCurrentValue("sim/simulationEngine", QString("ngspice"));
+            settings->setCurrentValue("sim/simulationCommand", QString("ngspice -b -r %filename.raw %filename.net"));
         }
         else if(customMode->isChecked()) {
             // If using the custom simulator, take the user provided command
-            newSimulationEngine = QString("custom");
-            newSimulationCommand = lineSimulationCommand->text();
-        }
-
-        const QString currentSimulationEngine = settings->currentValue("sim/simulationEngine").toString();
-        const QString currentSimulationCommand = settings->currentValue("sim/simulationCommand").toString();
-
-        if(currentSimulationEngine != newSimulationEngine) {
-            settings->setCurrentValue("sim/simulationEngine", newSimulationEngine);
-        }
-
-        if(currentSimulationCommand != newSimulationCommand) {
-            settings->setCurrentValue("sim/simulationCommand", newSimulationCommand);
+            settings->setCurrentValue("sim/simulationEngine", QString("custom"));
+            settings->setCurrentValue("sim/simulationCommand", lineSimulationCommand->text());
         }
 
         // Output format
-        QString newOutputFormat;
         if(binaryMode->isChecked()) {
-            newOutputFormat = QString("binary");
+            settings->setCurrentValue("sim/outputFormat", QString("binary"));
         }
         else if(asciiMode->isChecked()) {
-            newOutputFormat = QString("ascii");
-        }
-
-        const QString currentOutputFormat = settings->currentValue("sim/outputFormat").toString();
-
-        if(currentOutputFormat != newOutputFormat) {
-            settings->setCurrentValue("sim/outputFormat", newOutputFormat);
+            settings->setCurrentValue("sim/outputFormat", QString("ascii"));
         }
 
         // Save previous settings
@@ -674,79 +607,18 @@ namespace Caneda
     //! \brief Applies the configuration of this page.
     void HdlConfigurationPage::applyConf()
     {
-
-        bool changed = false;
         Settings *settings = Settings::instance();
 
-        const QColor currentKeywordColor =
-            settings->currentValue("gui/hdl/keyword").value<QColor>();
-        const QColor newKeywordColor = getForegroundColor(keywordButton);
-        if (newKeywordColor != currentKeywordColor) {
-            settings->setCurrentValue("gui/hdl/keyword", newKeywordColor);
-            changed = true;
-        }
-
-        const QColor currentTypeColor =
-            settings->currentValue("gui/hdl/type").value<QColor>();
-        const QColor newTypeColor = getForegroundColor(typeButton);
-        if (newTypeColor != currentTypeColor) {
-            settings->setCurrentValue("gui/hdl/type", newTypeColor);
-            changed = true;
-        }
-
-        const QColor currentAttributeColor =
-            settings->currentValue("gui/hdl/attribute").value<QColor>();
-        const QColor newAttributeColor = getForegroundColor(attributeButton);
-        if (newAttributeColor != currentAttributeColor) {
-            settings->setCurrentValue("gui/hdl/attribute", newAttributeColor);
-            changed = true;
-        }
-
-        const QColor currentBlockColor =
-            settings->currentValue("gui/hdl/block").value<QColor>();
-        const QColor newBlockColor = getForegroundColor(blockButton);
-        if (newBlockColor != currentBlockColor) {
-            settings->setCurrentValue("gui/hdl/block", newBlockColor);
-            changed = true;
-        }
-
-        const QColor currentClassColor =
-            settings->currentValue("gui/hdl/class").value<QColor>();
-        const QColor newClassColor = getForegroundColor(classButton);
-        if (newClassColor != currentClassColor) {
-            settings->setCurrentValue("gui/hdl/class", newClassColor);
-            changed = true;
-        }
-
-        const QColor currentDataColor =
-            settings->currentValue("gui/hdl/data").value<QColor>();
-        const QColor newDataColor = getForegroundColor(dataButton);
-        if (newDataColor != currentDataColor) {
-            settings->setCurrentValue("gui/hdl/data", newDataColor);
-            changed = true;
-        }
-
-        const QColor currentCommentColor =
-            settings->currentValue("gui/hdl/comment").value<QColor>();
-        const QColor newCommentColor = getForegroundColor(commentButton);
-        if (newCommentColor != currentCommentColor) {
-            settings->setCurrentValue("gui/hdl/comment", newCommentColor);
-            changed = true;
-        }
-
-        const QColor currentSystemColor =
-            settings->currentValue("gui/hdl/system").value<QColor>();
-        const QColor newSystemColor = getForegroundColor(systemButton);
-        if (newSystemColor != currentSystemColor) {
-            settings->setCurrentValue("gui/hdl/system", newSystemColor);
-            changed = true;
-        }
+        settings->setCurrentValue("gui/hdl/keyword", getForegroundColor(keywordButton));
+        settings->setCurrentValue("gui/hdl/type", getForegroundColor(typeButton));
+        settings->setCurrentValue("gui/hdl/attribute", getForegroundColor(attributeButton));
+        settings->setCurrentValue("gui/hdl/block", getForegroundColor(blockButton));
+        settings->setCurrentValue("gui/hdl/class", getForegroundColor(classButton));
+        settings->setCurrentValue("gui/hdl/data", getForegroundColor(dataButton));
+        settings->setCurrentValue("gui/hdl/comment", getForegroundColor(commentButton));
+        settings->setCurrentValue("gui/hdl/system", getForegroundColor(systemButton));
 
         settings->save();
-        if(changed) {
-            MainWindow::instance()->slotUpdateSettingsChanges();
-            MainWindow::instance()->repaint();
-        }
     }
 
     //! \return Icon of this page.
@@ -942,79 +814,18 @@ namespace Caneda
     //! \brief Applies the configuration of this page.
     void LayoutConfigurationPage::applyConf()
     {
-
-        bool changed = false;
         Settings *settings = Settings::instance();
 
-        const QColor currentMetal1Color =
-            settings->currentValue("gui/layout/metal1").value<QColor>();
-        const QColor newMetal1Color = getBackgroundColor(metal1Button);
-        if (newMetal1Color != currentMetal1Color) {
-            settings->setCurrentValue("gui/layout/metal1", newMetal1Color);
-            changed = true;
-        }
-
-        const QColor currentMeta2Color =
-            settings->currentValue("gui/layout/metal2").value<QColor>();
-        const QColor newMeta2Color = getBackgroundColor(metal2Button);
-        if (newMeta2Color != currentMeta2Color) {
-            settings->setCurrentValue("gui/layout/metal2", newMeta2Color);
-            changed = true;
-        }
-
-        const QColor currentPoly1Color =
-            settings->currentValue("gui/layout/poly1").value<QColor>();
-        const QColor newPoly1Color = getBackgroundColor(poly1Button);
-        if (newPoly1Color != currentPoly1Color) {
-            settings->setCurrentValue("gui/layout/poly1", newPoly1Color);
-            changed = true;
-        }
-
-        const QColor currentPoly2Color =
-            settings->currentValue("gui/layout/poly2").value<QColor>();
-        const QColor newPoly2Color = getBackgroundColor(poly2Button);
-        if (newPoly2Color != currentPoly2Color) {
-            settings->setCurrentValue("gui/layout/poly2", newPoly2Color);
-            changed = true;
-        }
-
-        const QColor currentActiveColor =
-            settings->currentValue("gui/layout/active").value<QColor>();
-        const QColor newActiveColor = getBackgroundColor(activeButton);
-        if (newActiveColor != currentActiveColor) {
-            settings->setCurrentValue("gui/layout/active", newActiveColor);
-            changed = true;
-        }
-
-        const QColor currentContactColor =
-            settings->currentValue("gui/layout/contact").value<QColor>();
-        const QColor newContactColor = getBackgroundColor(contactButton);
-        if (newContactColor != currentContactColor) {
-            settings->setCurrentValue("gui/layout/contact", newContactColor);
-            changed = true;
-        }
-
-        const QColor currentNwellColor =
-            settings->currentValue("gui/layout/nwell").value<QColor>();
-        const QColor newNwellColor = getBackgroundColor(nwellButton);
-        if (newNwellColor != currentNwellColor) {
-            settings->setCurrentValue("gui/layout/nwell", newNwellColor);
-            changed = true;
-        }
-
-        const QColor currentPwellColor =
-            settings->currentValue("gui/layout/pwell").value<QColor>();
-        const QColor newPwellColor = getBackgroundColor(pwellButton);
-        if (newPwellColor != currentPwellColor) {
-            settings->setCurrentValue("gui/layout/pwell", newPwellColor);
-            changed = true;
-        }
+        settings->setCurrentValue("gui/layout/metal1", getBackgroundColor(metal1Button));
+        settings->setCurrentValue("gui/layout/metal2", getBackgroundColor(metal2Button));
+        settings->setCurrentValue("gui/layout/poly1", getBackgroundColor(poly1Button));
+        settings->setCurrentValue("gui/layout/poly2", getBackgroundColor(poly2Button));
+        settings->setCurrentValue("gui/layout/active", getBackgroundColor(activeButton));
+        settings->setCurrentValue("gui/layout/contact", getBackgroundColor(contactButton));
+        settings->setCurrentValue("gui/layout/nwell", getBackgroundColor(nwellButton));
+        settings->setCurrentValue("gui/layout/pwell", getBackgroundColor(pwellButton));
 
         settings->save();
-        if(changed) {
-            MainWindow::instance()->slotUpdateSettingsChanges();
-            MainWindow::instance()->repaint();
-        }
     }
 
     //! \return Icon of this page.

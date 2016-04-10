@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -129,15 +129,11 @@ namespace Caneda
 
         //! Returns a list of ports of the item.
         QList<Port*> ports() const { return m_ports; }
-        int checkAndConnect(Caneda::UndoOption opt);
-        bool splitAndCreateNodes();
 
         //! Return bounding box.
         QRectF boundingRect() const { return m_boundingRect; }
         //! Return the shape of the item.
         QPainterPath shape() const { return m_shape; }
-
-        CGraphicsScene* cGraphicsScene() const;
 
         //! Virtual method to write item's properties to writer.
         virtual void saveData(Caneda::XmlWriter *) const {}

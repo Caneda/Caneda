@@ -1,7 +1,7 @@
 /***************************************************************************
  * Copyright (C) 2006 Gopala Krishna A <krishna.ggk@gmail.com>             *
  * Copyright (C) 2008 Bastien Roucaries <roucaries.bastien@gmail.com>      *
- * Copyright (C) 2009-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -24,18 +24,16 @@
 #include "actionmanager.h"
 #include "cgraphicsview.h"
 #include "documentviewmanager.h"
+#include "ellipsearc.h"
+#include "graphictextdialog.h"
 #include "idocument.h"
 #include "iview.h"
 #include "library.h"
 #include "portsymbol.h"
 #include "property.h"
+#include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
-
-#include "dialogs/propertydialog.h"
-
-#include "paintings/ellipsearc.h"
-#include "paintings/graphictextdialog.h"
 
 #include <QClipboard>
 #include <QGraphicsSceneEvent>
@@ -99,18 +97,19 @@ namespace Caneda
     }
 
     //! \brief Cut items
-    void CGraphicsScene::cutItems(QList<CGraphicsItem*> &_items, const Caneda::UndoOption opt)
+    void CGraphicsScene::cutItems(QList<CGraphicsItem*> &items)
     {
-        copyItems(_items);
-        deleteItems(_items, opt);
+        copyItems(items);
+        deleteItems(items);
     }
 
     /*!
      * \brief Copy item
+     *
      * \todo Document format
      * \todo Use own mime type
      */
-    void CGraphicsScene::copyItems(QList<CGraphicsItem*> &_items) const
+    void CGraphicsScene::copyItems(QList<CGraphicsItem*> &_items)
     {
         if(_items.isEmpty()) {
             return;
@@ -138,73 +137,25 @@ namespace Caneda
      * \brief Delete an item list
      *
      * \param items: item list
-     * \param opt: undo option
      */
-    void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items,
-            const Caneda::UndoOption opt)
+    void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items)
     {
-        if(opt == Caneda::DontPushUndoCmd) {
-            foreach(CGraphicsItem* item, items) {
-                delete item;
-            }
-        }
-        else {
-            // Configure undo
-            m_undoStack->beginMacro(QString("Delete items"));
-
-            // Diconnect then remove
-            disconnectItems(items, opt);
-            m_undoStack->push(new RemoveItemsCmd(items, this));
-
-            m_undoStack->endMacro();
-        }
+        m_undoStack->beginMacro(QString("Delete items"));
+        m_undoStack->push(new RemoveItemsCmd(items, this));
+        m_undoStack->endMacro();
     }
 
     /*!
      * \brief Mirror an item list
      *
      * \param items: item to mirror
-     * \param opt: undo option
      * \param axis: mirror axis
-     * \todo Create a custom undo class for avoiding if
-     * \note assert X or Y axis
      */
-    void CGraphicsScene::mirrorItems(QList<CGraphicsItem*> &items,
-            const Caneda::UndoOption opt,
-            const Qt::Axis axis)
+    void CGraphicsScene::mirrorItems(QList<CGraphicsItem*> &items, const Qt::Axis axis)
     {
-        Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
-
-        // Prepare undo stack
-        if(opt == Caneda::PushUndoCmd) {
-            if(axis == Qt::XAxis) {
-                m_undoStack->beginMacro(QString("Mirror X"));
-            }
-            else {
-                m_undoStack->beginMacro(QString("Mirror Y"));
-            }
-        }
-
-        // Disconnect item before mirroring
-        disconnectItems(items, opt);
-
-        // Mirror
-        MirrorItemsCmd *cmd = new MirrorItemsCmd(items, axis);
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->push(cmd);
-        }
-        else {
-            cmd->redo();
-            delete cmd;
-        }
-
-        // Try to reconnect
-        connectItems(items, opt);
-
-        // End undo
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
+        m_undoStack->beginMacro(QString("Mirror items"));
+        m_undoStack->push(new MirrorItemsCmd(items, axis, this));
+        m_undoStack->endMacro();
     }
 
     /*!
@@ -229,7 +180,7 @@ namespace Caneda
         m_undoStack->beginMacro(Alignment2QString(alignment));
 
         // Disconnect
-        disconnectItems(items, Caneda::PushUndoCmd);
+        disconnectItems(items);
 
         // Compute bounding rectangle
         QRectF rect = items.first()->sceneBoundingRect();
@@ -283,7 +234,8 @@ namespace Caneda
         }
 
         // Reconnect items
-        connectItems(items, Caneda::PushUndoCmd);
+        connectItems(items);
+        splitAndCreateNodes(items);
 
         // Finish undo
         m_undoStack->endMacro();
@@ -960,7 +912,7 @@ namespace Caneda
 
                 // For all item types, place the result in the nearest grid position
                 QPointF dest = smartNearingGridPoint(event->scenePos());
-                placeItem(qItem, dest, Caneda::PushUndoCmd);
+                placeItem(qItem, dest);
                 event->acceptProposedAction();
             }
         }
@@ -1209,7 +1161,8 @@ namespace Caneda
             }
 
             // Connect ports to any coinciding port in the scene
-            m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
+            connectItems(m_currentWiringWire);
+            splitAndCreateNodes(m_currentWiringWire);
 
             if(m_currentWiringWire->port2()->hasAnyConnection()) {
                 // If a connection was made, detach current wire and finalize
@@ -1236,7 +1189,8 @@ namespace Caneda
                 return;
             }
 
-            m_currentWiringWire->checkAndConnect(Caneda::PushUndoCmd);
+            connectItems(m_currentWiringWire);
+            splitAndCreateNodes(m_currentWiringWire);
 
             // Detach current wire and finalize
             m_currentWiringWire = NULL;
@@ -1308,7 +1262,7 @@ namespace Caneda
             QList<CGraphicsItem*> _items = filterItems<CGraphicsItem>(_list);
 
             if(!_items.isEmpty()) {
-                deleteItems(QList<CGraphicsItem*>() << _items.first(), Caneda::PushUndoCmd);
+                deleteItems(QList<CGraphicsItem*>() << _items.first());
             }
         }
     }
@@ -1326,7 +1280,7 @@ namespace Caneda
             QList<CGraphicsItem*> _items = filterItems<CGraphicsItem>(_list);
 
             if(!_items.isEmpty()) {
-                disconnectItems(QList<CGraphicsItem*>() << _items.first(), Caneda::PushUndoCmd);
+                disconnectItems(QList<CGraphicsItem*>() << _items.first());
             }
         }
     }
@@ -1366,7 +1320,7 @@ namespace Caneda
         // Filter item
         QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list);
         if(!qItems.isEmpty()) {
-            rotateItems(QList<CGraphicsItem*>() << qItems.first(), angle, Caneda::PushUndoCmd);
+            rotateItems(QList<CGraphicsItem*>() << qItems.first(), angle);
         }
     }
 
@@ -1374,41 +1328,13 @@ namespace Caneda
      * \brief Rotate an item list
      *
      * \param items: item list
-     * \param opt: undo option
-     * \param diect: is rotation in trigonometric sense
-     * \todo Create a custom undo class for avoiding if
+     * \param dir: rotation direction
      */
-    void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items,
-            const Caneda::AngleDirection dir,
-            const Caneda::UndoOption opt)
+    void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir)
     {
-        // Setup undo
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(dir == Caneda::Clockwise ?
-                    QString("Rotate Clockwise") :
-                    QString("Rotate Anti-Clockwise"));
-        }
-
-        // Disconnect
-        disconnectItems(items, opt);
-
-        // Rotate
-        RotateItemsCmd *cmd = new RotateItemsCmd(items, dir);
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->push(cmd);
-        }
-        else {
-            cmd->redo();
-            delete cmd;
-        }
-
-        // Reconnect
-        connectItems(items, opt);
-
-        // Finish undo
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
+        m_undoStack->beginMacro(QString("Rotate items"));
+        m_undoStack->push(new RotateItemsCmd(items, dir, this));
+        m_undoStack->endMacro();
     }
 
     /******************************************************************
@@ -1512,7 +1438,7 @@ namespace Caneda
                 int result = text->launchPropertyDialog(Caneda::DontPushUndoCmd);
                 if(result == QDialog::Accepted) {
                     // Place the text item
-                    placeItem(m_paintingDrawItem, dest, Caneda::PushUndoCmd);
+                    placeItem(m_paintingDrawItem, dest);
 
                     // Make an empty copy of the item for the next item insertion
                     m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
@@ -1535,7 +1461,7 @@ namespace Caneda
 
                 // Place the painting item
                 dest = m_paintingDrawItem->pos();
-                placeItem(m_paintingDrawItem, dest, Caneda::PushUndoCmd);
+                placeItem(m_paintingDrawItem, dest);
 
                 // Make an empty copy of the item for the next item insertion
                 m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
@@ -1603,7 +1529,7 @@ namespace Caneda
                 m_undoStack->beginMacro(QString("Insert items"));
                 foreach(CGraphicsItem *item, m_insertibles) {
                     CGraphicsItem *copied = item->copy(0);
-                    placeItem(copied, smartNearingGridPoint(item->pos()), Caneda::PushUndoCmd);
+                    placeItem(copied, smartNearingGridPoint(item->pos()));
                 }
                 m_undoStack->endMacro();
 
@@ -1911,7 +1837,8 @@ namespace Caneda
 
             CGraphicsItem * m_item = canedaitem_cast<CGraphicsItem*>(item);
             if(m_item) {
-                m_item->checkAndConnect(Caneda::PushUndoCmd);
+                connectItems(m_item);
+                splitAndCreateNodes(m_item);
             }
 
         }
@@ -1930,7 +1857,8 @@ namespace Caneda
 
             PortSymbol * m_item = canedaitem_cast<PortSymbol*>(item);
             if(m_item) {
-                m_item->checkAndConnect(Caneda::PushUndoCmd);
+                connectItems(m_item);
+                splitAndCreateNodes(m_item);
             }
 
         }
@@ -1947,17 +1875,12 @@ namespace Caneda
     /*!
      * \brief Place an item on the scene
      *
-     * \param item: item to place
-     * \param: pos position of the item
-     * \param opt: undo option
-     * \warning: pos is not rounded (grid snapping)
+     * \param item item to place
+     * \param pos position of the item
+     * \warning pos is not rounded (grid snapping)
      */
-    void CGraphicsScene::placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt)
+    void CGraphicsScene::placeItem(CGraphicsItem *item, const QPointF &pos)
     {
-        if(item->scene() == this) {
-            removeItem(item);
-        }
-
         if(item->type() == CGraphicsItem::ComponentType) {
             Component *component = canedaitem_cast<Component*>(item);
 
@@ -1969,19 +1892,9 @@ namespace Caneda
             component->setLabel(label);
         }
 
-        if(opt == Caneda::DontPushUndoCmd) {
-            addItem(item);
-            item->setPos(pos);
-            item->checkAndConnect(opt);
-        }
-        else {
-            m_undoStack->beginMacro(QString("Place item"));
-            m_undoStack->push(new InsertItemCmd(item, this, pos));
-
-            item->checkAndConnect(opt);
-
-            m_undoStack->endMacro();
-        }
+        m_undoStack->beginMacro(QString("Place item"));
+        m_undoStack->push(new InsertItemCmd(item, this, pos));
+        m_undoStack->endMacro();
     }
 
     /*!
@@ -2023,13 +1936,12 @@ namespace Caneda
     void CGraphicsScene::mirroringEvent(const QGraphicsSceneMouseEvent *event,
             const Qt::Axis axis)
     {
-        /* select item */
+        // Select item and filter items
         QList<QGraphicsItem*> _list = items(event->scenePos());
-        /* filters item */
         QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list);
+
         if(!qItems.isEmpty()) {
-            /* mirror */
-            mirrorItems(QList<CGraphicsItem*>() << qItems.first(), Caneda::PushUndoCmd, axis);
+            mirrorItems(QList<CGraphicsItem*>() << qItems.first(), axis);
         }
     }
 
@@ -2095,7 +2007,7 @@ namespace Caneda
         m_undoStack->beginMacro("Distribute horizontally");
 
         /* disconnect */
-        disconnectItems(items, Caneda::PushUndoCmd);
+        disconnectItems(items);
 
         /*sort item */
         qSort(items.begin(), items.end(), pointCmpFunction_X);
@@ -2122,7 +2034,8 @@ namespace Caneda
         }
 
         /* try to reconnect */
-        connectItems(items, Caneda::PushUndoCmd);
+        connectItems(items);
+        splitAndCreateNodes(items);
 
         /* end command */
         m_undoStack->endMacro();
@@ -2144,7 +2057,7 @@ namespace Caneda
         m_undoStack->beginMacro("Distribute vertically");
 
         /* disconnect */
-        disconnectItems(items, Caneda::PushUndoCmd);
+        disconnectItems(items);
 
         /*sort item */
         qSort(items.begin(), items.end(), pointCmpFunction_Y);
@@ -2171,7 +2084,8 @@ namespace Caneda
         }
 
         /* try to reconnect */
-        connectItems(items, Caneda::PushUndoCmd);
+        connectItems(items);
+        splitAndCreateNodes(items);
 
         /* end command */
         m_undoStack->endMacro();
@@ -2206,42 +2120,147 @@ namespace Caneda
         return rect.center();
     }
 
-    /*!
-     * \brief Automatically connect items if port or wire overlap
-     *
-     * \param qItems: item to connect
-     * \param opt: undo option
-     */
-    void CGraphicsScene::connectItems(const QList<CGraphicsItem*> &qItems,
-            const Caneda::UndoOption opt)
+    //! \copydoc connectItems(CGraphicsItem *item)
+    void CGraphicsScene::connectItems(QList<CGraphicsItem*> &items)
     {
-        foreach(CGraphicsItem *qItem, qItems) {
-            qItem->checkAndConnect(opt);
+        // Check and connect each item
+        foreach (CGraphicsItem *item, items) {
+            connectItems(item);
+        }
+    }
+
+    /*!
+     * \brief Check for overlapping ports around the scene, and connect the
+     * coinciding ports.
+     *
+     * This method checks for overlapping ports around the scene, and connects
+     * the coinciding ports. Although previously this method was included in
+     * the CGraphicsItem class, later was moved to CGraphicsScene to give more
+     * flexibility and to avoid infinite recursions when calling this method
+     * from inside a newly created or deleted item.
+     *
+     * \param item: items to connect
+     *
+     * \sa splitAndCreateNodes()
+     */
+    void CGraphicsScene::connectItems(CGraphicsItem *item)
+    {
+        // Find existing intersecting ports and connect
+        foreach(Port *port, item->ports()) {
+            Port *other = port->findCoincidingPort();
+            if(other) {
+                port->connectTo(other);
+            }
+        }
+    }
+
+    //! \copydoc disconnectItems(CGraphicsItem *item)
+    void CGraphicsScene::disconnectItems(QList<CGraphicsItem*> &items)
+    {
+        foreach(CGraphicsItem *item, items) {
+            disconnectItems(item);
         }
     }
 
     /*!
      * \brief Disconnect an item from any wire or other components
      *
-     * \param qItems: item to connect
-     * \param opt: undo option
+     * \param item: item to disconnect
      */
-    void CGraphicsScene::disconnectItems(const QList<CGraphicsItem*> &qItems,
-            const Caneda::UndoOption opt)
+    void CGraphicsScene::disconnectItems(CGraphicsItem *item)
     {
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(QString("Disconnect items"));
+        QList<Port*> ports = item->ports();
+        foreach(Port *p, ports) {
+            p->disconnect();
         }
+    }
 
-        foreach(CGraphicsItem *item, qItems) {
-            QList<Port*> ports = item->ports();
-            foreach(Port *p, ports) {
-                p->disconnect();
+    //! \copydoc splitAndCreateNodes(CGraphicsItem *item)
+    void CGraphicsScene::splitAndCreateNodes(QList<CGraphicsItem *> &items)
+    {
+        foreach (CGraphicsItem *item, items) {
+            splitAndCreateNodes(item);
+        }
+    }
+
+    /*!
+     * \brief Search wire collisions and if found split the wire.
+     *
+     * This method searches for wire collisions, and if a collision is present,
+     * splits the wire in two, creating a new node. This is done, for example,
+     * when wiring the schematic and a wire ends in the middle of another wire.
+     * In that case, a connection must be made, thus the need to split the
+     * colliding wire.
+     *
+     * \return Returns true if new node was created.
+     *
+     * \sa connectItems()
+     */
+    void CGraphicsScene::splitAndCreateNodes(CGraphicsItem *item)
+    {
+        // Check for collisions in each port, otherwise the items intersect
+        // but no node should be created.
+        foreach(Port *port, item->ports()) {
+
+            // List of wires to delete after collision and creation of new wires
+            QList<Wire*> markedForDeletion;
+
+            // Detect all colliding items
+            QList<QGraphicsItem*> collisions = port->collidingItems(Qt::IntersectsItemBoundingRect);
+
+            // Filter colliding wires only
+            foreach(QGraphicsItem *collidingItem, collisions) {
+                Wire* collidingWire = canedaitem_cast<Wire*>(collidingItem);
+                if(collidingWire) {
+
+                    // If already connected, the collision is the result of the connection,
+                    // otherwise there is a potential new node.
+                    bool alreadyConnected = false;
+                    foreach(Port *portIterator, item->ports()) {
+                        alreadyConnected |=
+                                portIterator->isConnectedTo(collidingWire->port1()) ||
+                                portIterator->isConnectedTo(collidingWire->port2());
+                    }
+
+                    if(!alreadyConnected){
+                        // Calculate the start, middle and end points. As the ports are mapped in the parent's
+                        // coordinate system, we must calculate the positions (via the mapToScene method) in
+                        // the global (scene) coordinate system.
+                        QPointF startPoint  = collidingWire->port1()->scenePos();
+                        QPointF middlePoint = port->scenePos();
+                        QPointF endPoint    = collidingWire->port2()->scenePos();
+
+                        // Mark old wire for deletion. The deletion is performed in a second
+                        // stage to avoid referencing null pointers inside the foreach loop.
+                        markedForDeletion << collidingWire;
+
+                        // Create two new wires
+                        Wire *wire1 = new Wire(startPoint, middlePoint, this);
+                        Wire *wire2 = new Wire(middlePoint, endPoint, this);
+
+                        // Create new node (connections to the colliding wire)
+                        port->connectTo(wire1->port2());
+                        port->connectTo(wire2->port1());
+
+                        wire1->updateGeometry();
+                        wire2->updateGeometry();
+
+                        // Restore old wire connections
+                        connectItems(wire1);
+                        connectItems(wire2);
+                    }
+                }
             }
-        }
 
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
+            // Delete all wires marked for deletion. The deletion is performed
+            // in a second stage to avoid referencing null pointers inside the
+            // foreach loop.
+            foreach(Wire *w, markedForDeletion) {
+                delete w;
+            }
+
+            // Clear the list to avoid dereferencing deleted wires
+            markedForDeletion.clear();
         }
     }
 

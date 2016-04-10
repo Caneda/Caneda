@@ -557,36 +557,38 @@ namespace Caneda
 
     void TabWidget::updateTabContext()
     {
+        MainWindow *mw = MainWindow::instance();
+        mw->updateWindowTitle();
+
         int index = currentIndex();
         if (index < 0 || index >= count()) {
             return;
         }
 
         Tab *tab = currentTab();
-
         setTabIcon(index, tab->tabIcon());
         setTabText(index, tab->tabText());
-
-        MainWindow *mw = MainWindow::instance();
-        mw->updateTitle();
 
         IView *view = tab->activeView();
         if (!view) {
             return;
         }
 
+        mw->sidebarDockWidget()->setWindowTitle(view->context()->sideBarTitle());
+        mw->sidebarDockWidget()->setWidget(view->context()->sideBarWidget());
+        view->context()->updateSideBar();
+
         IDocument *document = view->document();
         if (!document) {
             return;
         }
 
-        mw->action("editCut")->setEnabled(document->canCut());
-        mw->action("editCopy")->setEnabled(document->canCopy());
-        mw->action("editPaste")->setEnabled(document->canPaste());
-        mw->action("editUndo")->setEnabled(document->canUndo());
-        mw->action("editRedo")->setEnabled(document->canRedo());
-
-        mw->sidebarDockWidget()->setWidget(view->context()->sideBarWidget());
+        ActionManager* am = ActionManager::instance();
+        am->actionForName("editCut")->setEnabled(document->canCut());
+        am->actionForName("editCopy")->setEnabled(document->canCopy());
+        am->actionForName("editPaste")->setEnabled(document->canPaste());
+        am->actionForName("editUndo")->setEnabled(document->canUndo());
+        am->actionForName("editRedo")->setEnabled(document->canRedo());
     }
 
     void TabWidget::onStatusBarMessage(Tab *tab, const QString &message)

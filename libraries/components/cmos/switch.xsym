@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <!DOCTYPE caneda>
 <!--
 ***************************************************************************
-* Copyright (C) 2012-2015 by Pablo Daniel Pareja Obregon                  *
+* Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
 *                                                                         *
 * This is free software; you can redistribute it and/or modify            *
 * it under the terms of the GNU General Public License as published by    *
@@ -21,34 +21,43 @@
 ***************************************************************************
 -->
 
-<component name="CMOS Inverter" version="0.1.0" label="X">
+<component name="Switch" version="0.1.0" label="X">
     <displaytext>
-        <lang lang="C">CMOS Inverter</lang>
-        <lang lang="es">Inversor CMOS</lang>
+        <lang lang="C">Switch</lang>
     </displaytext>
 
     <description>
-        <lang lang="C">CMOS inverter.</lang>
-        <lang lang="es">Inversor CMOS.</lang>
+        <lang lang="C">CMOS switch or transmission gate.</lang>
     </description>
 
     <symbol>
-        <painting name="line" line="0,0,5,0" pos="-30,0" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,5,0" pos="25,0" transform="1,0,0,1,0,0"/>
+        <painting name="ellipse" ellipse="0,0,10,10" pos="-5,-25" transform="1,0,0,1,0,0"/>
 
-        <painting name="line" line="0,0,0,40" pos="-25,-20" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,40,-20" pos="-25,20" transform="1,0,0,1,0,0"/>
-        <painting name="line" line="0,0,-40,-20" pos="15,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-40,-20" pos="20,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,40,-20" pos="-20,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,40" pos="-20,-20" transform="1,0,0,1,0,0"/>
 
-        <painting name="ellipse" ellipse="0,0,10,10" pos="15,-5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,40,-20" pos="-20,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,-40,-20" pos="20,20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,40" pos="20,-20" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,10,0" pos="20,0" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,10,0" pos="-30,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,5,0" pos="-15,10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,0,-5" pos="-12.5,12.5" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,5,0" pos="10,10" transform="1,0,0,1,0,0"/>
     </symbol>
 
     <ports>
-        <port name="in" pos="-30,0"/>
-        <port name="out" pos="30,0"/>
+        <port name="vss" pos="10,20"/>
+        <port name="vdd" pos="-10,20"/>
+        <port name="A" pos="-30,0"/>
+        <port name="B" pos="30,0"/>
+        <port name="C" pos="0,-20"/>
     </ports>
 
-    <properties>
+    <properties pos="0,0">
         <property name="Wn" default="9u" unit="m" visible="false">
             <description>
                 <lang lang="C">NMOS transistor width</lang>
@@ -69,33 +78,17 @@
                 <lang lang="C">PMOS transistor length</lang>
             </description>
         </property>
-        <property name="Vdd" default="3.3" unit="V" visible="false">
-            <description>
-                <lang lang="C">Power supply</lang>
-            </description>
-        </property>
-        <property name="Vss" default="0" unit="V" visible="false">
-            <description>
-                <lang lang="C">Ground supply reference</lang>
-            </description>
-        </property>
-        <property name="model" default="INVERTER" unit="" visible="false">
-            <description>
-                <lang lang="C">Device model</lang>
-                <lang lang="es">Modelo del dispositivo</lang>
-            </description>
-        </property>
     </properties>
 
     <models>
-        <model type="spice" syntax="X%label %port{in} %port{out} %property{model} vdd=%property{Vdd} vss=%property{Vss} lp=%property{Lp} wp=%property{Wp} l_n=%property{Ln} wn=%property{Wn}
-               %subcircuit{INVERTER in out vdd=3.3 vss=0 wn=9u l_n=3u wp=15u lp=3u
-                        %nV1 vdd 0 {vdd}
-                        %nV2 vss 0 {vss}
-                        %nMp1 vdd in out vdd PMOS l={lp} w={wp}
-                        %nMn1 vss in out vss NMOS l={l_n} w={wn}
-                        %n.model NMOS NMOS
-                        %n.model PMOS PMOS
-                        }"/>
+        <model type="spice" syntax="X%label %port{vss} %port{vdd} %port{A} %port{B} %port{C} CMOS_SWITCH lp=%property{Lp} wp=%property{Wp} l_n=%property{Ln} wn=%property{Wn}
+                %subcircuit{CMOS_SWITCH vss vdd A B C wn=9u l_n=3u wp=15u lp=3u
+                %nM1 notC C vdd vdd PMOS l={lp} w={wp}
+                %nM2 notC C vss vss NMOS l={l_n} w={wn}
+                %nM3 A C B vss NMOS l={l_n} w={wn}
+                %nM4 A notC B vdd PMOS l={lp} w={wp}
+                %n.model NMOS NMOS
+                %n.model PMOS PMOS
+                }"/>
     </models>
 </component>

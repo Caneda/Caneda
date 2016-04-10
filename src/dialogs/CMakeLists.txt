@@ -6,3 +6,9 @@ SET( DIALOGS_SRCS
 )
 
 ADD_LIBRARY( dialogs ${DIALOGS_SRCS} )
+
+TARGET_LINK_LIBRARIES( dialogs
+  Qt5::PrintSupport
+  Qt5::Svg
+  ${QWT_LIBRARIES}
+)

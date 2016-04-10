@@ -23,21 +23,36 @@
 #include "global.h"
 
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QTranslator>
 
 int main(int argc,char *argv[])
 {
-   QApplication app(argc,argv);
-   app.setOrganizationName("Caneda");
-   app.setApplicationName("Caneda");
+    // Configure the application
+    QApplication app(argc,argv);
+    app.setOrganizationName("Caneda");
+    app.setApplicationName("Caneda");
+    app.setApplicationVersion(Caneda::version());
 
-   // Load the translations
-   QTranslator translator;
-   translator.load(QLocale::system(), "caneda", "_", Caneda::langDirectory(), ".qm");
-   app.installTranslator(&translator);
+    // Load the translations
+    QTranslator translator;
+    translator.load(QLocale::system(), "caneda", "_", Caneda::langDirectory(), ".qm");
+    app.installTranslator(&translator);
 
-   Caneda::MainWindow *mw = Caneda::MainWindow::instance();
-   mw->show();
+    // Parse the command line options
+    QCommandLineParser parser;
+    parser.setApplicationDescription(app.applicationName());
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("[files]", "Files to open.");
+    parser.process(app);
 
-   return app.exec();
+    // Create the MainWindow
+    Caneda::MainWindow *window = Caneda::MainWindow::instance();
+    window->show();
+
+    // Open the files parsed in the command line
+    window->initFiles(parser.positionalArguments());
+
+    return app.exec();
 }

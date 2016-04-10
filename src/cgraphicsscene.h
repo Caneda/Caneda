@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -73,25 +73,16 @@ namespace Caneda
         CGraphicsScene(QObject *parent = 0);
 
         // Edit actions
-        void cutItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
-        void copyItems(QList<CGraphicsItem*> &items) const;
-        void deleteItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption);
+        void cutItems(QList<CGraphicsItem*> &items);
+        void copyItems(QList<CGraphicsItem*> &items);
+        void deleteItems(QList<CGraphicsItem*> &items);
 
-        void mirrorItems(QList<CGraphicsItem*> &itemsenum,
-                const Caneda::UndoOption opt,
-                const Qt::Axis axis);
-        void mirrorXItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption opt) {
-            mirrorItems(items, opt, Qt::XAxis);
-        }
-        void mirrorYItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption opt) {
-            mirrorItems(items, opt, Qt::YAxis);
-        }
+        void mirrorItems(QList<CGraphicsItem*> &items, const Qt::Axis axis);
+        void mirrorXItems(QList<CGraphicsItem*> &items) { mirrorItems(items, Qt::XAxis); }
+        void mirrorYItems(QList<CGraphicsItem*> &items) { mirrorItems(items, Qt::YAxis); }
 
-        void rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir,
-                const Caneda::UndoOption);
-        void rotateItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption undo) {
-            rotateItems(items, Caneda::Clockwise, undo);
-        }
+        void rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir);
+        void rotateItems(QList<CGraphicsItem*> &items) { rotateItems(items, Caneda::Clockwise); }
 
         bool alignElements(const Qt::Alignment alignment);
         bool distributeElements(const Qt::Orientation orientation);
@@ -115,11 +106,22 @@ namespace Caneda
         void beginPaintingDraw(Painting *item);
         void beginInsertingItems(const QList<CGraphicsItem*> &items);
 
-        //! Return current undo stack
+        // Connect/disconnect methods
+        QPointF centerOfItems(const QList<CGraphicsItem*> &items);
+
+        void connectItems(CGraphicsItem *item);
+        void connectItems(QList<CGraphicsItem *> &items);
+        void disconnectItems(CGraphicsItem *item);
+        void disconnectItems(QList<CGraphicsItem *> &items);
+
+        void splitAndCreateNodes(CGraphicsItem *item);
+        void splitAndCreateNodes(QList<CGraphicsItem *> &items);
+
+        //! \brief Return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
         bool isModified() const { return m_modified; }
 
-        //! Spice/electric related scene properties
+        // Spice/electric related scene properties
         PropertyGroup* properties() { return m_properties; }
         void addProperty(Property property);
 
@@ -174,7 +176,7 @@ namespace Caneda
         void endSpecialMove();
 
         // Placing items
-        void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
+        void placeItem(CGraphicsItem *item, const QPointF &pos);
         int componentLabelSuffix(const QString& labelPrefix) const;
 
         // Private edit events
@@ -184,13 +186,6 @@ namespace Caneda
 
         void distributeElementsHorizontally(QList<CGraphicsItem*> items);
         void distributeElementsVertically(QList<CGraphicsItem*> items);
-
-        // Miscellaneous methods
-        QPointF centerOfItems(const QList<CGraphicsItem*> &items);
-
-        void connectItems(const QList<CGraphicsItem*> &qItems, const Caneda::UndoOption opt);
-        void disconnectItems(const QList<CGraphicsItem*> &qItems,
-                const Caneda::UndoOption opt = Caneda::PushUndoCmd);
 
         // Helper variables (aka state holders)
         //! \brief Last grid position of mouse cursor

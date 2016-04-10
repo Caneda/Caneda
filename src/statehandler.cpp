@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2013 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -25,12 +25,11 @@
 #include "cgraphicsview.h"
 #include "global.h"
 #include "library.h"
+#include "painting.h"
 #include "portsymbol.h"
 #include "settings.h"
 #include "undocommands.h"
 #include "xmlutilities.h"
-
-#include "paintings/painting.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -313,31 +312,50 @@ namespace Caneda
     /*!
      * \brief Toogles the action perfomed.
      *
+     * This method toggles the action corresponding to the sender, invoking the
+     * slotPerformToggleAction(const QString&, bool) method, to takes care of
+     * preserving the mutual exclusiveness off the checkable actions.
+     *
+     * While slotPerformToggleAction(const QString&, bool) is a general method
+     * this method allows the direct connection to the toggled(bool) signal of
+     * a QAction object.
+     */
+    void StateHandler::slotPerformToggleAction(bool on)
+    {
+        QAction *action = qobject_cast<QAction *>(sender());
+        if(action) {
+            slotPerformToggleAction(action->objectName(), on);
+        }
+    }
+
+    /*!
+     * \brief Toogles the action perfomed.
+     *
      * This method toggles the action and calls the function pointed by
      * \a func if on is true. This method takes care to preserve the mutual
      * exclusiveness off the checkable actions.
      */
-    void StateHandler::slotPerformToggleAction(const QString& sender, bool on)
+    void StateHandler::slotPerformToggleAction(const QString& actionName, bool on)
     {
-        typedef void (CGraphicsScene::*pActionFunc) (QList<CGraphicsItem*>&, const Caneda::UndoOption);
+        typedef void (CGraphicsScene::*pActionFunc) (QList<CGraphicsItem*>&);
 
         ActionManager *am = ActionManager::instance();
 
-        Action *action = am->actionForName(sender);
+        QAction *action = am->actionForName(actionName);
         Caneda::MouseAction ma = am->mouseActionForAction(action);
         pActionFunc func = 0;
 
-        if (sender == "editDelete") {
+        if (actionName == "editDelete") {
             func = &CGraphicsScene::deleteItems;
-        } else if (sender == "editRotate") {
+        } else if (actionName == "editRotate") {
             func = &CGraphicsScene::rotateItems;
-        } else if (sender == "editMirror") {
+        } else if (actionName == "editMirror") {
             func = &CGraphicsScene::mirrorXItems;
-        } else if (sender == "editMirrorY") {
+        } else if (actionName == "editMirrorY") {
             func = &CGraphicsScene::mirrorYItems;
         }
 
-        QList<Action*> mouseActions = ActionManager::instance()->mouseActions();
+        QList<QAction*> mouseActions = ActionManager::instance()->mouseActions();
 
         //toggling off any action switches normal select action "on"
         if(!on) {
@@ -365,7 +383,7 @@ namespace Caneda
                     break;
                 }
 
-                (scene->*func)(funcable, Caneda::PushUndoCmd);
+                (scene->*func)(funcable);
 
                 // Turn off this action
                 slotPerformToggleAction(action->objectName(), false);
@@ -374,7 +392,7 @@ namespace Caneda
         } while(false); //For break
 
         // Just ensure all other action's are off.
-        foreach(Action *act, mouseActions) {
+        foreach(QAction *act, mouseActions) {
             if(act != action) {
                 act->blockSignals(true);
                 act->setChecked(false);
@@ -385,18 +403,18 @@ namespace Caneda
         QHash<QString, CGraphicsItem*>::const_iterator it =
             d->toolbarInsertibles.begin();
         while (it != d->toolbarInsertibles.end()) {
-            Action *act = am->actionForName(it.key());
+            QAction *act = am->actionForName(it.key());
             act->blockSignals(true);
             act->setChecked(false);
             act->blockSignals(false);
             ++it;
         }
 
-        if (sender == "insertItem" && d->insertibles.size() == 1) {
+        if (actionName == "insertItem" && d->insertibles.size() == 1) {
             for (it = d->toolbarInsertibles.begin();
                     it != d->toolbarInsertibles.end(); ++it) {
                 if (areItemsEquivalent(it.value(), d->insertibles.first())) {
-                    Action *act = am->actionForName(it.key());
+                    QAction *act = am->actionForName(it.key());
                     act->blockSignals(true);
                     act->setChecked(true);
                     act->blockSignals(false);
@@ -413,6 +431,7 @@ namespace Caneda
         applyStateToAllWidgets();
     }
 
+    //! \brief Toggles the normal select action on.
     void StateHandler::slotSetNormalAction()
     {
         slotPerformToggleAction("select", true);

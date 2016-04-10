@@ -43,15 +43,12 @@ namespace Caneda
     {
         // Title, size, behavior...
         setWindowTitle(tr("About Caneda", "window title"));
-        setMinimumWidth(680);
-        setMinimumHeight(350);
         setModal(true);
 
         QTabWidget *tabs = new QTabWidget(this);
         tabs->addTab(aboutTab(),        tr("A&bout",             "tab title"));
         tabs->addTab(authorsTab(),      tr("A&uthors",           "tab title"));
         tabs->addTab(translatorsTab(),  tr("&Translators",       "tab title"));
-        tabs->addTab(contributorsTab(), tr("&Contributions",     "tab title"));
         tabs->addTab(licenseTab(),      tr("&Licence Agreement", "tab title"));
 
         // Button to close the dialog box
@@ -74,7 +71,7 @@ namespace Caneda
         QLabel *icon = new QLabel();
         icon->setPixmap(QPixmap(Caneda::bitmapDirectory() + "caneda.png"));
         // label "Caneda"
-        QLabel *title = new QLabel("<span style=\"font-weight:0;font-size:16pt;\">Caneda v"
+        QLabel *title = new QLabel("<span style=\"font-weight:0;font-size:16pt;\">Caneda "
                                    + Caneda::version() + "</span>");
         title->setTextFormat(Qt::RichText);
         // All in a grid
@@ -97,8 +94,8 @@ namespace Caneda
                 "<br><br>" +
                 tr("© 2008-2016 Caneda developer team") +
                 "<br><br>"
-                "<a href=\"https://github.com/Caneda/Caneda\">"
-                "https://github.com/Caneda/Caneda</a>"
+                "<a href=\"http://caneda.github.io\">"
+                "http://caneda.github.io</a>"
                 );
         about->setAlignment(Qt::AlignCenter);
         about->setOpenExternalLinks(true);
@@ -112,7 +109,7 @@ namespace Caneda
         QLabel *authors = new QLabel();
 
         addAuthor(authors, "Pablo Daniel Pareja Obregon", "parejaobregon@gmail.com",
-                  tr("Current maintainer"));
+                  tr("Developer"));
 
         authors->setAlignment(Qt::AlignCenter);
         authors->setOpenExternalLinks(true);
@@ -132,21 +129,6 @@ namespace Caneda
         translators->setOpenExternalLinks(true);
         translators->setTextFormat(Qt::RichText);
         return translators;
-    }
-
-    //! \return The widget contained by the tab "Contributions"
-    QWidget *AboutDialog::contributorsTab() const
-    {
-        QLabel *contributors = new QLabel();
-
-        addAuthor(contributors, "Bastien Roucaries", "roucaries.bastien@gmail.com",
-                  tr("Programming"));
-        addAuthor(contributors, "Gopala Krishna", "krishna.ggk@gmail.com", tr("Programming"));
-
-        contributors->setAlignment(Qt::AlignCenter);
-        contributors->setOpenExternalLinks(true);
-        contributors->setTextFormat(Qt::RichText);
-        return contributors;
     }
 
     //! \return The widget contained by the tab "Licence Agreement"

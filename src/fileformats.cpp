@@ -25,12 +25,11 @@
 #include "global.h"
 #include "idocument.h"
 #include "library.h"
+#include "painting.h"
 #include "port.h"
 #include "portsymbol.h"
 #include "wire.h"
 #include "xmlutilities.h"
-
-#include "paintings/painting.h"
 
 #include <QDebug>
 #include <QFile>
@@ -336,9 +335,7 @@ namespace Caneda
             if(reader->isStartElement()) {
                 if(reader->name() == "component") {
                     Component *comp = Component::loadComponent(reader, scene);
-                    if(comp) {
-                        comp->checkAndConnect(Caneda::DontPushUndoCmd);
-                    }
+                    scene->connectItems(comp);
                 }
                 else {
                     qWarning() << "Error: Found unknown component type" << reader->name().toString();
@@ -371,8 +368,8 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "port") {
-                    PortSymbol *portSymbol = new PortSymbol(scene);
-                    portSymbol->loadData(reader);
+                    PortSymbol *portSymbol = PortSymbol::loadPortSymbol(reader, scene);
+                    scene->connectItems(portSymbol);
                 }
                 else {
                     qWarning() << "Error: Found unknown port type" << reader->name().toString();
@@ -405,8 +402,8 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "wire") {
-                    Wire *w = Wire::loadWire(reader,scene);
-                    w->checkAndConnect(Caneda::DontPushUndoCmd);
+                    Wire *wire = Wire::loadWire(reader, scene);
+                    scene->connectItems(wire);
                 }
                 else {
                     qWarning() << "Error: Found unknown wire type" << reader->name().toString();
@@ -439,7 +436,7 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "painting") {
-                    Painting::loadPainting(reader,scene);
+                    Painting::loadPainting(reader, scene);
                 }
                 else {
                     qWarning() << "Error: Found unknown painting type" << reader->name().toString();

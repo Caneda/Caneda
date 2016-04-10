@@ -21,14 +21,13 @@
 
 #include "actionmanager.h"
 #include "fileformats.h"
+#include "gitmanager.h"
 #include "global.h"
 #include "icontext.h"
 #include "idocument.h"
 #include "library.h"
+#include "projectfilenewdialog.h"
 #include "sidebarbrowser.h"
-
-#include "dialogs/projectfilenewdialog.h"
-#include "dialogs/gitmanager.h"
 
 #include <QDebug>
 #include <QDir>

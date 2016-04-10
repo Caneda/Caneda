@@ -22,8 +22,7 @@
 #include "actionmanager.h"
 #include "csimulationscene.h"
 #include "settings.h"
-
-#include "dialogs/simulationdialog.h"
+#include "simulationdialog.h"
 
 #include <QMenu>
 #include <QMouseEvent>

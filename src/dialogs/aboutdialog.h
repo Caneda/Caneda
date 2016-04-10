@@ -42,7 +42,6 @@ namespace Caneda
         QWidget *aboutTab() const;
         QWidget *authorsTab() const;
         QWidget *translatorsTab() const;
-        QWidget *contributorsTab() const;
         QWidget *licenseTab() const;
         void addAuthor(QLabel *, const QString &, const QString &, const QString &) const;
     };

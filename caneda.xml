@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+	<mime-type type="application/x-caneda-schematic">
+		<comment>Caneda schematic file</comment>
+		<glob pattern="*.xsch"/>
+	</mime-type>
+	<mime-type type="application/x-caneda-symbol">
+		<comment>Caneda symbol file</comment>
+		<glob pattern="*.xsym"/>
+	</mime-type>
+	<mime-type type="application/x-caneda-layout">
+		<comment>Caneda layout file</comment>
+		<glob pattern="*.xlay"/>
+	</mime-type>
+	<mime-type type="application/x-spice-simulation-raw">
+		<comment>Circuit simulation raw file</comment>
+		<sub-class-of type="text/plain"/>
+		<glob pattern="*.raw"/>
+	</mime-type>
+	<mime-type type="application/x-spice-netlist">
+		<sub-class-of type="text/plain"/>
+		<comment>Circuit netlist file</comment>
+		<glob pattern="*.net"/>
+	</mime-type>
+</mime-info>

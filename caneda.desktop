@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Caneda
+GenericName=EDA Suite
+Comment=Schematic capture, circuit design and simulation
+Exec=caneda %U
+Icon=caneda
+Categories=Development;Electronics;
+MimeType=application/x-caneda-schematic;application/x-caneda-symbol;application/x-caneda-layout;application/x-spice-simulation-raw;application/x-spice-netlist;

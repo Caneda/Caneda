@@ -359,13 +359,21 @@ namespace Caneda
         }
     }
 
-    //! Takes care of handle resizing on mouse release event.
+    /*!
+     * \brief Takes care of resizing upon mouse release event.
+     *
+     * This method takes care of creating the necessary undo commands
+     * upon mouse release event. In this way, when resizing this item
+     * (painting) the undo commands are passed to the undostack making
+     * them available should an undo/redo command be issued.
+     */
     void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
         CGraphicsItem::mouseReleaseEvent(event);
         if(m_activeHandle != Caneda::NoHandle && m_paintingRect != m_store) {
-            cGraphicsScene()->undoStack()->push(
-                    new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect));
+            PaintingRectChangeCmd *cmd = new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect);
+            CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(this->scene());
+            scene->undoStack()->push(cmd);
         }
         m_activeHandle = Caneda::NoHandle;
     }

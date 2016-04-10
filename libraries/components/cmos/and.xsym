@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!DOCTYPE caneda>
+<!--
+***************************************************************************
+* Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
+*                                                                         *
+* This is free software; you can redistribute it and/or modify            *
+* it under the terms of the GNU General Public License as published by    *
+* the Free Software Foundation; either version 2, or (at your option)     *
+* any later version.                                                      *
+*                                                                         *
+* This software is distributed in the hope that it will be useful,        *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+* GNU General Public License for more details.                            *
+*                                                                         *
+* You should have received a copy of the GNU General Public License       *
+* along with this package; see the file COPYING.  If not, write to        *
+* the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,   *
+* Boston, MA 02110-1301, USA.                                             *
+***************************************************************************
+-->
+
+<component name="AND" version="0.1.0" label="X">
+    <displaytext>
+        <lang lang="C">AND</lang>
+    </displaytext>
+
+    <description>
+        <lang lang="C">CMOS AND gate.</lang>
+    </description>
+
+    <symbol>
+        <painting name="line" line="0,0,5,0" pos="-30,-10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,5,0" pos="-30,10" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,5,0" pos="15,0" transform="1,0,0,1,0,0"/>
+
+        <painting name="line" line="0,0,0,40" pos="-25,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,20,0" pos="-25,-20" transform="1,0,0,1,0,0"/>
+        <painting name="line" line="0,0,20,0" pos="-25,20" transform="1,0,0,1,0,0"/>
+
+        <painting name="ellipseArc" ellipse="0,0,40,40" pos="-25,-20" transform="1,0,0,1,0,0">
+            <properties startAngle="-90" spanAngle="180"/>
+        </painting>
+    </symbol>
+
+    <ports>
+        <port name="vss" pos="-10,20"/>
+        <port name="vdd" pos="-10,-20"/>
+        <port name="A" pos="-30,-10"/>
+        <port name="B" pos="-30,10"/>
+        <port name="out" pos="20,0"/>
+    </ports>
+
+    <properties pos="0,0">
+        <property name="Wn" default="9u" unit="m" visible="false">
+            <description>
+                <lang lang="C">NMOS transistor width</lang>
+            </description>
+        </property>
+        <property name="Ln" default="3u" unit="m" visible="false">
+            <description>
+                <lang lang="C">NMOS transistor length</lang>
+            </description>
+        </property>
+        <property name="Wp" default="15u" unit="m" visible="false">
+            <description>
+                <lang lang="C">PMOS transistor width</lang>
+            </description>
+        </property>
+        <property name="Lp" default="3u" unit="m" visible="false">
+            <description>
+                <lang lang="C">PMOS transistor length</lang>
+            </description>
+        </property>
+    </properties>
+
+    <models>
+        <model type="spice" syntax="X%label %port{vss} %port{vdd} %port{A} %port{B} %port{out} CMOS_AND lp=%property{Lp} wp=%property{Wp} l_n=%property{Ln} wn=%property{Wn}
+                %subcircuit{CMOS_AND vss vdd A B out wn=9u l_n=3u wp=15u lp=3u
+                %nM1 2 B vss vss NMOS l={l_n} w={wn}
+                %nM2 1 A 2 vss NMOS l={l_n} w={wn}
+                %nM3 1 A vdd vdd PMOS l={lp} w={wp}
+                %nM4 1 B vdd vdd PMOS l={lp} w={wp}
+                %nM5 out 1 vss vss NMOS l={l_n} w={wn}
+                %nM6 out 1 vdd vdd PMOS l={lp} w={wp}
+                %n.model NMOS NMOS
+                %n.model PMOS PMOS
+                }"/>
+    </models>
+</component>

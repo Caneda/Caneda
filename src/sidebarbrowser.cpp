@@ -34,6 +34,7 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QShortcut>
 #include <QVariant>
 #include <QVBoxLayout>
 
@@ -475,8 +476,13 @@ namespace Caneda
         m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
         m_treeView->setModel(m_proxyModel);
 
+        QShortcut *filterEditShortcut = new QShortcut(
+                    QKeySequence(tr("C", "Insert component shortcut")), this);
+
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
                 this, SLOT(filterTextChanged()));
+        connect(filterEditShortcut, SIGNAL(activated()), m_filterEdit, SLOT(setFocus()));
+        connect(filterEditShortcut, SIGNAL(activated()), m_filterEdit, SLOT(clear()));
 
         connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
         connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this,

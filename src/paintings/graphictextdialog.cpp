@@ -126,7 +126,7 @@ namespace Caneda
         }
         else {
             if(textItem) {
-                CGraphicsScene *scene = textItem->cGraphicsScene();
+                CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(textItem->scene());
 
                 QString oldText = textItem->richText();
                 QString newText = richText();
