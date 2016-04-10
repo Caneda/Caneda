@@ -153,26 +153,9 @@ namespace Caneda
      */
     void CGraphicsScene::mirrorItems(QList<CGraphicsItem*> &items, const Qt::Axis axis)
     {
-        // Disconnect item before mirroring
-        disconnectItems(items);
-
-        // Mirror
-        QPointF targetPosition = CGraphicsScene::centerOfItems(items);
-
-        foreach(CGraphicsItem *item, items) {
-            item->setTransformOriginPoint(-item->pos());
-            item->mirrorAlong(axis);
-        }
-
-        QPointF currentPosition = CGraphicsScene::centerOfItems(items);
-
-        foreach(CGraphicsItem *item, items) {
-            item->setPos(item->pos()+(targetPosition-currentPosition));
-        }
-
-        // Reconnect
-        connectItems(items);
-        splitAndCreateNodes(items);
+        m_undoStack->beginMacro(QString("Mirror items"));
+        m_undoStack->push(new MirrorItemsCmd(items, axis, this));
+        m_undoStack->endMacro();
     }
 
     /*!

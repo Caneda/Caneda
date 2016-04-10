@@ -250,32 +250,59 @@ namespace Caneda
      *                          MirrorItemsCmd                               *
      *************************************************************************/
     //! \brief Constructor.
-    MirrorItemsCmd::MirrorItemsCmd(QList<CGraphicsItem*> items, const Qt::Axis axis, QUndoCommand *parent) :
+    MirrorItemsCmd::MirrorItemsCmd(QList<CGraphicsItem*> items, const Qt::Axis axis,
+                                   CGraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_items(items),
-        m_axis(axis)
+        m_axis(axis),
+        m_scene(scene)
     {
-    }
-
-    MirrorItemsCmd::MirrorItemsCmd(CGraphicsItem *item, const Qt::Axis axis, QUndoCommand *parent) :
-        QUndoCommand(parent),
-        m_axis(axis)
-    {
-        m_items << item;
     }
 
     void MirrorItemsCmd::undo()
     {
+        // Disconnect item before mirroring
+        m_scene->disconnectItems(m_items);
+
+        // Mirror
+        QPointF targetPosition = m_scene->centerOfItems(m_items);
+
         foreach(CGraphicsItem *item, m_items) {
+            item->setTransformOriginPoint(-item->pos());
             item->mirrorAlong(m_axis);
         }
+
+        QPointF currentPosition = m_scene->centerOfItems(m_items);
+
+        foreach(CGraphicsItem *item, m_items) {
+            item->setPos(item->pos()+(targetPosition-currentPosition));
+        }
+
+        // Reconnect
+        m_scene->connectItems(m_items);
     }
 
     void MirrorItemsCmd::redo()
     {
+        // Disconnect item before mirroring
+        m_scene->disconnectItems(m_items);
+
+        // Mirror
+        QPointF targetPosition = m_scene->centerOfItems(m_items);
+
         foreach(CGraphicsItem *item, m_items) {
+            item->setTransformOriginPoint(-item->pos());
             item->mirrorAlong(m_axis);
         }
+
+        QPointF currentPosition = m_scene->centerOfItems(m_items);
+
+        foreach(CGraphicsItem *item, m_items) {
+            item->setPos(item->pos()+(targetPosition-currentPosition));
+        }
+
+        // Reconnect
+        m_scene->connectItems(m_items);
     }
 
     /*************************************************************************

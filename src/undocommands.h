@@ -141,8 +141,8 @@ namespace Caneda
     class MirrorItemsCmd : public QUndoCommand
     {
     public:
-        MirrorItemsCmd(QList<CGraphicsItem*> items, const Qt::Axis axis, QUndoCommand *parent = 0);
-        MirrorItemsCmd(CGraphicsItem *item, const Qt::Axis axis, QUndoCommand *parent = 0);
+        MirrorItemsCmd(const QList<CGraphicsItem*> items, const Qt::Axis axis,
+                       CGraphicsScene *scene, QUndoCommand *parent = 0);
 
         void undo();
         void redo();
@@ -150,6 +150,7 @@ namespace Caneda
     protected:
         QList<CGraphicsItem*> m_items;
         Qt::Axis m_axis;
+        CGraphicsScene *const m_scene;
     };
 
     class PaintingRectChangeCmd : public QUndoCommand
