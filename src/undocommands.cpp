@@ -206,18 +206,18 @@ namespace Caneda
         m_scene->disconnectItems(m_items);
 
         // Rotate
-        QPointF targetPosition = m_scene->centerOfItems(m_items);
+//        QPointF targetPosition = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-            item->setTransformOriginPoint(-item->pos());
+//            item->setTransformOriginPoint(-item->pos());
             item->rotate90(m_dir == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise);
         }
 
-        QPointF currentPosition = m_scene->centerOfItems(m_items);
+//        QPointF currentPosition = m_scene->centerOfItems(m_items);
 
-        foreach(CGraphicsItem *item, m_items) {
-            item->setPos(item->pos()+(targetPosition-currentPosition));
-        }
+//        foreach(CGraphicsItem *item, m_items) {
+//            item->setPos(item->pos()+(targetPosition-currentPosition));
+//        }
 
         // Reconnect
         m_scene->connectItems(m_items);
@@ -229,18 +229,18 @@ namespace Caneda
         m_scene->disconnectItems(m_items);
 
         // Rotate
-        QPointF targetPosition = m_scene->centerOfItems(m_items);
+//        QPointF targetPosition = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-            item->setTransformOriginPoint(-item->pos());
+//            item->setTransformOriginPoint(-item->pos());
             item->rotate90(m_dir);
         }
 
-        QPointF currentPosition = m_scene->centerOfItems(m_items);
+//        QPointF currentPosition = m_scene->centerOfItems(m_items);
 
-        foreach(CGraphicsItem *item, m_items) {
-            item->setPos(item->pos()+(targetPosition-currentPosition));
-        }
+//        foreach(CGraphicsItem *item, m_items) {
+//            item->setPos(item->pos()+(targetPosition-currentPosition));
+//        }
 
         // Reconnect
         m_scene->connectItems(m_items);
