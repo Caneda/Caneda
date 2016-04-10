@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -124,7 +124,8 @@ namespace Caneda
         void addProperty(Property property);
 
         // Miscellaneous methods
-        void connectItems(CGraphicsItem *item, Caneda::UndoOption opt);
+        void connectItems(CGraphicsItem *item);
+        void disconnectItems(CGraphicsItem *item);
 
     public Q_SLOTS:
         void setModified(const bool m = true);
@@ -191,8 +192,8 @@ namespace Caneda
         // Miscellaneous methods
         QPointF centerOfItems(const QList<CGraphicsItem*> &items);
 
-        void connectItems(QList<CGraphicsItem *> &items, Caneda::UndoOption opt);
-        void disconnectItems(QList<CGraphicsItem *> &items, Caneda::UndoOption opt);
+        void connectItems(QList<CGraphicsItem *> &items);
+        void disconnectItems(QList<CGraphicsItem *> &items);
         void splitAndCreateNodes(QList<CGraphicsItem *> &items);
         void splitAndCreateNodes(CGraphicsItem *item);
 

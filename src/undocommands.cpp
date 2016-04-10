@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -67,26 +67,6 @@ namespace Caneda
     }
 
     /*************************************************************************
-     *                            ConnectCmd                                 *
-     *************************************************************************/
-    //! \brief Constructor.
-    ConnectCmd::ConnectCmd(Port *p1, Port *p2, QUndoCommand *parent) :
-        QUndoCommand(parent),
-        m_port1(p1), m_port2(p2)
-    {
-    }
-
-    void ConnectCmd::undo()
-    {
-        m_port1->disconnect();
-    }
-
-    void ConnectCmd::redo()
-    {
-        m_port1->connectTo(m_port2);
-    }
-
-    /*************************************************************************
      *                           DisconnectCmd                               *
      *************************************************************************/
     //! \brief Constructor.
@@ -116,14 +96,6 @@ namespace Caneda
         m_scene(scene),
         m_pos(m_wire->pos())
     {
-    }
-
-    //! \brief Destructor.
-    AddWireCmd::~AddWireCmd()
-    {
-        if(!m_wire->scene()) {
-            delete m_wire;
-        }
     }
 
     void AddWireCmd::undo()
@@ -163,36 +135,24 @@ namespace Caneda
      *                           InsertItemCmd                               *
      *************************************************************************/
     //! \brief Constructor.
-    InsertItemCmd::InsertItemCmd(QGraphicsItem *const item, CGraphicsScene *scene,
+    InsertItemCmd::InsertItemCmd(CGraphicsItem *const item, CGraphicsScene *scene,
             QPointF pos, QUndoCommand *parent) :
         QUndoCommand(parent),
-        m_item(item), m_scene(scene)
-    {
-        Q_ASSERT(scene);
-        if(pos == InvalidPoint) {
-            m_pos = m_item->scenePos();
-        }
-        else {
-            m_pos = pos;
-        }
-    }
-
-    //! \brief Destructor.
-    InsertItemCmd::~InsertItemCmd()
+        m_item(item), m_scene(scene), m_pos(pos)
     {
     }
 
     void InsertItemCmd::undo()
     {
+        m_scene->disconnectItems(m_item);
         m_scene->removeItem(m_item);
     }
 
     void InsertItemCmd::redo()
     {
-        if(m_scene != m_item->scene()) {
-            m_scene->addItem(m_item);
-        }
+        m_scene->addItem(m_item);
         m_item->setPos(m_pos);
+        m_scene->connectItems(m_item);
     }
 
     /*************************************************************************
@@ -209,27 +169,19 @@ namespace Caneda
         }
     }
 
-    //! \brief Destructor.
-    RemoveItemsCmd::~RemoveItemsCmd()
-    {
-        foreach(ItemPointPair p, m_itemPointPairs) {
-            if(p.first->scene() != m_scene) {
-                delete p.first;
-            }
-        }
-    }
-
     void RemoveItemsCmd::undo()
     {
         foreach(ItemPointPair p, m_itemPointPairs) {
             m_scene->addItem(p.first);
             p.first->setPos(p.second);
+            m_scene->connectItems(p.first);
         }
     }
 
     void RemoveItemsCmd::redo()
     {
         foreach(ItemPointPair p, m_itemPointPairs) {
+            m_scene->disconnectItems(p.first);
             m_scene->removeItem(p.first);
         }
     }
