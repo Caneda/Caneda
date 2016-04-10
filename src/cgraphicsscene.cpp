@@ -173,37 +173,26 @@ namespace Caneda
     {
         Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
 
-        // Prepare undo stack
-        if(opt == Caneda::PushUndoCmd) {
-            if(axis == Qt::XAxis) {
-                m_undoStack->beginMacro(QString("Mirror X"));
-            }
-            else {
-                m_undoStack->beginMacro(QString("Mirror Y"));
-            }
-        }
-
         // Disconnect item before mirroring
         disconnectItems(items, opt);
 
         // Mirror
-        MirrorItemsCmd *cmd = new MirrorItemsCmd(items, axis);
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->push(cmd);
-        }
-        else {
-            cmd->redo();
-            delete cmd;
+        QPointF targetPosition = CGraphicsScene::centerOfItems(items);
+
+        foreach(CGraphicsItem *item, items) {
+            item->setTransformOriginPoint(-item->pos());
+            item->mirrorAlong(axis);
         }
 
-        // Try to reconnect
+        QPointF currentPosition = CGraphicsScene::centerOfItems(items);
+
+        foreach(CGraphicsItem *item, items) {
+            item->setPos(item->pos()+(targetPosition-currentPosition));
+        }
+
+        // Reconnect
         connectItems(items, opt);
         splitAndCreateNodes(items);
-
-        // End undo
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
     }
 
     /*!
