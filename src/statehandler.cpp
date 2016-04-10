@@ -337,7 +337,7 @@ namespace Caneda
      */
     void StateHandler::slotPerformToggleAction(const QString& actionName, bool on)
     {
-        typedef void (CGraphicsScene::*pActionFunc) (QList<CGraphicsItem*>&, const Caneda::UndoOption);
+        typedef void (CGraphicsScene::*pActionFunc) (QList<CGraphicsItem*>&);
 
         ActionManager *am = ActionManager::instance();
 
@@ -383,7 +383,7 @@ namespace Caneda
                     break;
                 }
 
-                (scene->*func)(funcable, Caneda::PushUndoCmd);
+                (scene->*func)(funcable);
 
                 // Turn off this action
                 slotPerformToggleAction(action->objectName(), false);

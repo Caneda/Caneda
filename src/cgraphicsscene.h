@@ -73,25 +73,16 @@ namespace Caneda
         CGraphicsScene(QObject *parent = 0);
 
         // Edit actions
-        void cutItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption = Caneda::PushUndoCmd);
-        void copyItems(QList<CGraphicsItem*> &items) const;
-        void deleteItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption);
+        void cutItems(QList<CGraphicsItem*> &items);
+        void copyItems(QList<CGraphicsItem*> &items);
+        void deleteItems(QList<CGraphicsItem*> &items);
 
-        void mirrorItems(QList<CGraphicsItem*> &itemsenum,
-                const Caneda::UndoOption opt,
-                const Qt::Axis axis);
-        void mirrorXItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption opt) {
-            mirrorItems(items, opt, Qt::XAxis);
-        }
-        void mirrorYItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption opt) {
-            mirrorItems(items, opt, Qt::YAxis);
-        }
+        void mirrorItems(QList<CGraphicsItem*> &items, const Qt::Axis axis);
+        void mirrorXItems(QList<CGraphicsItem*> &items) { mirrorItems(items, Qt::XAxis); }
+        void mirrorYItems(QList<CGraphicsItem*> &items) { mirrorItems(items, Qt::YAxis); }
 
-        void rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir,
-                const Caneda::UndoOption);
-        void rotateItems(QList<CGraphicsItem*> &items, const Caneda::UndoOption undo) {
-            rotateItems(items, Caneda::Clockwise, undo);
-        }
+        void rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir);
+        void rotateItems(QList<CGraphicsItem*> &items) { rotateItems(items, Caneda::Clockwise); }
 
         bool alignElements(const Qt::Alignment alignment);
         bool distributeElements(const Qt::Orientation orientation);
@@ -115,6 +106,10 @@ namespace Caneda
         void beginPaintingDraw(Painting *item);
         void beginInsertingItems(const QList<CGraphicsItem*> &items);
 
+        // Connect/disconnect methods
+        void connectItems(CGraphicsItem *item);
+        void disconnectItems(CGraphicsItem *item);
+
         //! \brief Return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
         bool isModified() const { return m_modified; }
@@ -122,10 +117,6 @@ namespace Caneda
         // Spice/electric related scene properties
         PropertyGroup* properties() { return m_properties; }
         void addProperty(Property property);
-
-        // Miscellaneous methods
-        void connectItems(CGraphicsItem *item);
-        void disconnectItems(CGraphicsItem *item);
 
     public Q_SLOTS:
         void setModified(const bool m = true);
@@ -178,7 +169,7 @@ namespace Caneda
         void endSpecialMove();
 
         // Placing items
-        void placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt);
+        void placeItem(CGraphicsItem *item, const QPointF &pos);
         int componentLabelSuffix(const QString& labelPrefix) const;
 
         // Private edit events

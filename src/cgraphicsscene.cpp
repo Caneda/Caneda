@@ -97,18 +97,19 @@ namespace Caneda
     }
 
     //! \brief Cut items
-    void CGraphicsScene::cutItems(QList<CGraphicsItem*> &_items, const Caneda::UndoOption opt)
+    void CGraphicsScene::cutItems(QList<CGraphicsItem*> &items)
     {
-        copyItems(_items);
-        deleteItems(_items, opt);
+        copyItems(items);
+        deleteItems(items);
     }
 
     /*!
      * \brief Copy item
+     *
      * \todo Document format
      * \todo Use own mime type
      */
-    void CGraphicsScene::copyItems(QList<CGraphicsItem*> &_items) const
+    void CGraphicsScene::copyItems(QList<CGraphicsItem*> &_items)
     {
         if(_items.isEmpty()) {
             return;
@@ -136,39 +137,22 @@ namespace Caneda
      * \brief Delete an item list
      *
      * \param items: item list
-     * \param opt: undo option
      */
-    void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items,
-            const Caneda::UndoOption opt)
+    void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items)
     {
-        if(opt == Caneda::DontPushUndoCmd) {
-            foreach(CGraphicsItem* item, items) {
-                delete item;
-            }
-        }
-        else {
-            // Configure undo
-            m_undoStack->beginMacro(QString("Delete items"));
-            m_undoStack->push(new RemoveItemsCmd(items, this));
-            m_undoStack->endMacro();
-        }
+        m_undoStack->beginMacro(QString("Delete items"));
+        m_undoStack->push(new RemoveItemsCmd(items, this));
+        m_undoStack->endMacro();
     }
 
     /*!
      * \brief Mirror an item list
      *
      * \param items: item to mirror
-     * \param opt: undo option
      * \param axis: mirror axis
-     * \todo Create a custom undo class for avoiding if
-     * \note assert X or Y axis
      */
-    void CGraphicsScene::mirrorItems(QList<CGraphicsItem*> &items,
-            const Caneda::UndoOption opt,
-            const Qt::Axis axis)
+    void CGraphicsScene::mirrorItems(QList<CGraphicsItem*> &items, const Qt::Axis axis)
     {
-        Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
-
         // Disconnect item before mirroring
         disconnectItems(items);
 
@@ -945,7 +929,7 @@ namespace Caneda
 
                 // For all item types, place the result in the nearest grid position
                 QPointF dest = smartNearingGridPoint(event->scenePos());
-                placeItem(qItem, dest, Caneda::PushUndoCmd);
+                placeItem(qItem, dest);
                 event->acceptProposedAction();
             }
         }
@@ -1295,7 +1279,7 @@ namespace Caneda
             QList<CGraphicsItem*> _items = filterItems<CGraphicsItem>(_list);
 
             if(!_items.isEmpty()) {
-                deleteItems(QList<CGraphicsItem*>() << _items.first(), Caneda::PushUndoCmd);
+                deleteItems(QList<CGraphicsItem*>() << _items.first());
             }
         }
     }
@@ -1353,7 +1337,7 @@ namespace Caneda
         // Filter item
         QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list);
         if(!qItems.isEmpty()) {
-            rotateItems(QList<CGraphicsItem*>() << qItems.first(), angle, Caneda::PushUndoCmd);
+            rotateItems(QList<CGraphicsItem*>() << qItems.first(), angle);
         }
     }
 
@@ -1361,13 +1345,9 @@ namespace Caneda
      * \brief Rotate an item list
      *
      * \param items: item list
-     * \param opt: undo option
-     * \param diect: is rotation in trigonometric sense
-     * \todo Create a custom undo class for avoiding if
+     * \param dir: rotation direction
      */
-    void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items,
-            const Caneda::AngleDirection dir,
-            const Caneda::UndoOption opt)
+    void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir)
     {
         // Disconnect
         disconnectItems(items);
@@ -1492,7 +1472,7 @@ namespace Caneda
                 int result = text->launchPropertyDialog(Caneda::DontPushUndoCmd);
                 if(result == QDialog::Accepted) {
                     // Place the text item
-                    placeItem(m_paintingDrawItem, dest, Caneda::PushUndoCmd);
+                    placeItem(m_paintingDrawItem, dest);
 
                     // Make an empty copy of the item for the next item insertion
                     m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
@@ -1515,7 +1495,7 @@ namespace Caneda
 
                 // Place the painting item
                 dest = m_paintingDrawItem->pos();
-                placeItem(m_paintingDrawItem, dest, Caneda::PushUndoCmd);
+                placeItem(m_paintingDrawItem, dest);
 
                 // Make an empty copy of the item for the next item insertion
                 m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
@@ -1583,7 +1563,7 @@ namespace Caneda
                 m_undoStack->beginMacro(QString("Insert items"));
                 foreach(CGraphicsItem *item, m_insertibles) {
                     CGraphicsItem *copied = item->copy(0);
-                    placeItem(copied, smartNearingGridPoint(item->pos()), Caneda::PushUndoCmd);
+                    placeItem(copied, smartNearingGridPoint(item->pos()));
                 }
                 m_undoStack->endMacro();
 
@@ -1929,17 +1909,12 @@ namespace Caneda
     /*!
      * \brief Place an item on the scene
      *
-     * \param item: item to place
-     * \param: pos position of the item
-     * \param opt: undo option
-     * \warning: pos is not rounded (grid snapping)
+     * \param item item to place
+     * \param pos position of the item
+     * \warning pos is not rounded (grid snapping)
      */
-    void CGraphicsScene::placeItem(CGraphicsItem *item, const QPointF &pos, const Caneda::UndoOption opt)
+    void CGraphicsScene::placeItem(CGraphicsItem *item, const QPointF &pos)
     {
-        if(item->scene() == this) {
-            removeItem(item);
-        }
-
         if(item->type() == CGraphicsItem::ComponentType) {
             Component *component = canedaitem_cast<Component*>(item);
 
@@ -1951,17 +1926,9 @@ namespace Caneda
             component->setLabel(label);
         }
 
-        if(opt == Caneda::DontPushUndoCmd) {
-            addItem(item);
-            item->setPos(pos);
-            connectItems(item);
-            splitAndCreateNodes(item);
-        }
-        else {
-            m_undoStack->beginMacro(QString("Place item"));
-            m_undoStack->push(new InsertItemCmd(item, this, pos));
-            m_undoStack->endMacro();
-        }
+        m_undoStack->beginMacro(QString("Place item"));
+        m_undoStack->push(new InsertItemCmd(item, this, pos));
+        m_undoStack->endMacro();
     }
 
     /*!
@@ -2003,13 +1970,12 @@ namespace Caneda
     void CGraphicsScene::mirroringEvent(const QGraphicsSceneMouseEvent *event,
             const Qt::Axis axis)
     {
-        /* select item */
+        // Select item and filter items
         QList<QGraphicsItem*> _list = items(event->scenePos());
-        /* filters item */
         QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list);
+
         if(!qItems.isEmpty()) {
-            /* mirror */
-            mirrorItems(QList<CGraphicsItem*>() << qItems.first(), Caneda::PushUndoCmd, axis);
+            mirrorItems(QList<CGraphicsItem*>() << qItems.first(), axis);
         }
     }
 
@@ -2208,7 +2174,6 @@ namespace Caneda
      * from inside a newly created or deleted item.
      *
      * \param item: items to connect
-     * \param opt: undo option
      *
      * \sa splitAndCreateNodes()
      */

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -158,11 +158,10 @@ namespace Caneda
     {
         update();
 
-        Q_ASSERT(axis == Qt::XAxis || axis == Qt::YAxis);
         if(axis == Qt::XAxis) {
             setTransform(QTransform::fromScale(1.0, -1.0), true);
         }
-        else /*axis = Qt::YAxis*/ {
+        else {
             setTransform(QTransform::fromScale(-1.0, 1.0), true);
         }
     }
