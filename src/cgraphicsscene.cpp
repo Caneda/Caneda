@@ -1384,34 +1384,26 @@ namespace Caneda
             const Caneda::AngleDirection dir,
             const Caneda::UndoOption opt)
     {
-        // Setup undo
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->beginMacro(dir == Caneda::Clockwise ?
-                    QString("Rotate Clockwise") :
-                    QString("Rotate Anti-Clockwise"));
-        }
-
         // Disconnect
         disconnectItems(items, opt);
 
         // Rotate
-        RotateItemsCmd *cmd = new RotateItemsCmd(items, dir);
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->push(cmd);
+        QPointF targetPosition = CGraphicsScene::centerOfItems(items);
+
+        foreach(CGraphicsItem *item, items) {
+            item->setTransformOriginPoint(-item->pos());
+            item->rotate90(dir);
         }
-        else {
-            cmd->redo();
-            delete cmd;
+
+        QPointF currentPosition = CGraphicsScene::centerOfItems(items);
+
+        foreach(CGraphicsItem *item, items) {
+            item->setPos(item->pos()+(targetPosition-currentPosition));
         }
 
         // Reconnect
         connectItems(items, opt);
         splitAndCreateNodes(items);
-
-        // Finish undo
-        if(opt == Caneda::PushUndoCmd) {
-            m_undoStack->endMacro();
-        }
     }
 
     /******************************************************************
