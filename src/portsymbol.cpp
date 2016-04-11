@@ -82,7 +82,7 @@ namespace Caneda
         m_label = new QGraphicsSimpleTextItem(label, this);
 
         // Create ports
-        m_ports << new Port(this, mapFromScene(pos()));
+        m_ports << new Port(this);
 
         updateGeometry();
     }

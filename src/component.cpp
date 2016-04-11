@@ -117,7 +117,9 @@ namespace Caneda
         // Add component ports
         const QList<PortData*> portDatas = d.constData()->ports;
         foreach(const PortData *data, portDatas) {
-            m_ports << new Port(this, data->pos, data->name);
+            Port *port = new Port(this, data->name);
+            port->setPos(data->pos);
+            m_ports << port;
         }
 
         // Update component geometry

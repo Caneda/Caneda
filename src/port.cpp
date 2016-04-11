@@ -31,18 +31,15 @@
 namespace Caneda
 {
     /*!
-     * \brief Constructs a Port item with a CGraphicsItem as \a parent, position
-     * \a pos (relative to its parent) and port's name \a portName.
+     * \brief Constructs a Port item with a CGraphicsItem as \a parent and
+     * port's name \a portName.
      */
-    Port::Port(CGraphicsItem* parent, QPointF pos, QString portName) :
+    Port::Port(CGraphicsItem* parent, QString portName) :
         QGraphicsItem(parent)
     {
         // Set component flags
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
-
-        // Set the port position, relative to its parent
-        setPos(pos);
 
         m_name = portName;
         m_connections.append(this);

@@ -50,12 +50,11 @@ namespace Caneda
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
-        // Set the initial position of the item
-        setPos(startPos);
-
         // Create ports
-        m_ports << new Port(this, mapFromScene(startPos));
-        m_ports << new Port(this, mapFromScene(endPos));
+        m_ports << new Port(this);
+        m_ports << new Port(this);
+        movePort1(startPos);
+        movePort2(endPos);
     }
 
     //! \brief Destructor.
