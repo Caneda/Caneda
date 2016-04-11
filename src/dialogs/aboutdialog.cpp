@@ -90,7 +90,7 @@ namespace Caneda
         QLabel *about = new QLabel(
                 tr("Caneda - Circuits and Networks EDA") +
                 "<br>" +
-                tr("An application for eletric schematics editing and simulation.") +
+                tr("An application for schematic capture and simulation.") +
                 "<br><br>" +
                 tr("© 2008-2016 Caneda developer team") +
                 "<br><br>"
