@@ -409,29 +409,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Get nearest grid point (grid snapping)
-     *
-     * \param pos: current position to be rounded
-     * \return rounded position
-     */
-    QPointF CGraphicsScene::smartNearingGridPoint(const QPointF &pos) const
-    {
-        const QPoint point = pos.toPoint();
-
-        int x = qAbs(point.x());
-        x += (Caneda::DefaultGridSpace >> 1);
-        x -= x % Caneda::DefaultGridSpace;
-        x *= sign(point.x());
-
-        int y = qAbs(point.y());
-        y += (Caneda::DefaultGridSpace >> 1);
-        y -= y % Caneda::DefaultGridSpace;
-        y *= sign(point.y());
-
-        return QPointF(x, y);
-    }
-
-    /*!
      * \brief Set mouse action
      * This method takes care to disable the shortcuts while items are being added
      * to the scene thus preventing side effects. It also sets the appropriate

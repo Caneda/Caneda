@@ -70,7 +70,10 @@ namespace Caneda
         return value >= 0 ? +1 : -1;
     }
 
+    //! \brief Default grid spacing
+    static const uint DefaultGridSpace = 10;
     QString Alignment2QString(const Qt::Alignment alignment);
+    QPointF smartNearingGridPoint(const QPointF &pos);
     QColor invertcolor(const QColor & color);
 
     QString latexToUnicode(const QString& input);

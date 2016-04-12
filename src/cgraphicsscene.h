@@ -41,9 +41,6 @@ namespace Caneda
     class Painting;
     class Wire;
 
-    //! \brief Default grid spacing
-    static const uint DefaultGridSpace = 10;
-
     /*!
      * \brief This class provides a canvas for managing graphics elements
      * common to all Caneda's graphics scenes (schematics, symbols, layouts,
@@ -93,8 +90,6 @@ namespace Caneda
 
         void print(QPrinter *printer, bool fitInView);
         bool exportImage(QPaintDevice &);
-
-        QPointF smartNearingGridPoint(const QPointF &pos) const;
 
         // Mouse actions
         Caneda::MouseAction mouseAction() const { return m_mouseAction; }
