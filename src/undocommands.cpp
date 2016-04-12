@@ -206,18 +206,26 @@ namespace Caneda
         m_scene->disconnectItems(m_items);
 
         // Rotate
-//        QPointF targetPosition = m_scene->centerOfItems(m_items);
+        QTransform transform;
+        transform.rotate(m_dir == Caneda::Clockwise ? -90 : 90);
+
+        QPointF targetPosition = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-//            item->setTransformOriginPoint(-item->pos());
+            QPointF point = item->pos();
+            point = transform.map(point);
+
             item->rotate90(m_dir == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise);
+            item->setPos(point);
         }
 
-//        QPointF currentPosition = m_scene->centerOfItems(m_items);
+        QPointF currentPosition = m_scene->centerOfItems(m_items);
 
-//        foreach(CGraphicsItem *item, m_items) {
-//            item->setPos(item->pos()+(targetPosition-currentPosition));
-//        }
+        foreach(CGraphicsItem *item, m_items) {
+            QPointF newPos = item->pos()+(targetPosition-currentPosition);
+            newPos = smartNearingGridPoint(newPos);
+            item->setPos(newPos);
+        }
 
         // Reconnect
         m_scene->connectItems(m_items);
@@ -229,18 +237,26 @@ namespace Caneda
         m_scene->disconnectItems(m_items);
 
         // Rotate
-//        QPointF targetPosition = m_scene->centerOfItems(m_items);
+        QTransform transform;
+        transform.rotate(m_dir == Caneda::Clockwise ? 90 : -90);
+
+        QPointF targetPosition = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-//            item->setTransformOriginPoint(-item->pos());
+            QPointF point = item->pos();
+            point = transform.map(point);
+
             item->rotate90(m_dir);
+            item->setPos(point);
         }
 
-//        QPointF currentPosition = m_scene->centerOfItems(m_items);
+        QPointF currentPosition = m_scene->centerOfItems(m_items);
 
-//        foreach(CGraphicsItem *item, m_items) {
-//            item->setPos(item->pos()+(targetPosition-currentPosition));
-//        }
+        foreach(CGraphicsItem *item, m_items) {
+            QPointF newPos = item->pos()+(targetPosition-currentPosition);
+            newPos = smartNearingGridPoint(newPos);
+            item->setPos(newPos);
+        }
 
         // Reconnect
         m_scene->connectItems(m_items);
