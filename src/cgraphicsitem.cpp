@@ -51,6 +51,181 @@ namespace Caneda
     }
 
     /*!
+     * \brief Rotate item by 90 degrees
+     *
+     * This method rotates an item by 90 degrees. The direction of the rotation
+     * is passed as a parameter.
+     *
+     * \param dir Direction of rotation
+     *
+     * \sa rotate(AngleDirection dir, QPointF pivotPoint)
+     */
+    void CGraphicsItem::rotate(Caneda::AngleDirection dir)
+    {
+        if(dir == Caneda::AntiClockwise) {
+            setRotation(rotation() - 90.0);
+        }
+        else {
+            setRotation(rotation() + 90.0);
+        }
+    }
+
+    /*!
+     * \brief Rotate item by 90 degrees around a pivot point
+     *
+     * This method rotates an item around a pivot point, allowing for complex
+     * rotations for example when having multiple items selected and the
+     * rotation should be around the selection center.
+     *
+     * To achieve the rotation, first the item is rotated around its center
+     * by using the rotate(Caneda::AngleDirection dir) method. Afterwards,
+     * its new position is calculated using an exploration point. This point
+     * is rotated around the pivot point using a transformation, and its final
+     * position is used as the destination position of the original item.
+     *
+     * Although the transformation could be applied directly to the original
+     * item, that led to strange behaviour, for example while moving the item
+     * after the rotation, the item would change its position when dropped. As
+     * a solution, the temporal exploration point is used to calculate its
+     * final position as explained above.
+     *
+     * \param dir Direction of rotation
+     * \param pivotPoint Point around which the rotation is performed
+     *
+     * \sa rotate(Caneda::AngleDirection dir)
+     */
+    void CGraphicsItem::rotate(AngleDirection dir, QPointF pivotPoint)
+    {
+        // Rotate item
+        rotate(dir);
+
+        // Move to the rotated position around the pivot point
+        QTransform transform;
+        transform.rotate(dir == Caneda::Clockwise ? 90 : -90);
+
+        QPointF newPos = pos() - pivotPoint;
+        newPos = transform.map(newPos);
+        newPos = newPos + pivotPoint;
+
+        newPos = smartNearingGridPoint(newPos);
+        setPos(newPos);
+    }
+
+    /*!
+     * \brief Mirror item according to an axis
+     *
+     * This method mirrors an item around an axis. The axis of the mirror
+     * is passed as a parameter.
+     *
+     * \param axis Mirror axis
+     *
+     * \sa mirror(Qt::Axis axis, QPointF pivotPoint)
+     */
+    void CGraphicsItem::mirror(Qt::Axis axis)
+    {
+        if(axis == Qt::XAxis) {
+            setTransform(QTransform::fromScale(1.0, -1.0), true);
+        }
+        else {
+            setTransform(QTransform::fromScale(-1.0, 1.0), true);
+        }
+    }
+
+    /*!
+     * \brief Mirror item according to an axis around a pivot point
+     *
+     * This method mirrors an item around a pivot point, allowing for complex
+     * mirrors for example when having multiple items selected and the
+     * mirroring should be around the selection center.
+     *
+     * \param axis Mirror axis
+     * \param pivotPoint Point around which the mirror is performed
+     *
+     * \sa mirror(Qt::Axis axis)
+     */
+    void CGraphicsItem::mirror(Qt::Axis axis, QPointF pivotPoint)
+    {
+        // Mirror item
+        mirror(axis);
+
+        // Move to the mirrored position around the pivot point
+        QPointF newPos = pos();
+
+        if(axis == Qt::XAxis) {
+            newPos.setY(2*pivotPoint.y()-newPos.y()); // pivotPoint.y() - (pos().y() - pivotPoint.y())
+        }
+        else {
+            newPos.setX(2*pivotPoint.x()-newPos.x()); // pivotPoint.x() - (pos().x() - pivotPoint.x())
+        }
+
+        newPos = smartNearingGridPoint(newPos);
+        setPos(newPos);
+    }
+
+    /*!
+     * \brief Convenience method to get the saved text as string.
+     *
+     * Though this is simple, this method shouldn't be used in too many places as
+     * there will be unnecessary creation of xml writer and reader instances which
+     * will render the program inefficient.
+     */
+    QString CGraphicsItem::saveDataText() const
+    {
+        QString retVal;
+        Caneda::XmlWriter writer(&retVal);
+        saveData(&writer);
+        return retVal;
+    }
+
+    /*!
+     * \brief Convenience method to just load data from string.
+     *
+     * Though this is simple, this method shouldn't be used in too many places as
+     * there will be unnecessary creation of xml writer and reader instances which
+     * will render the program inefficient.
+     */
+    void CGraphicsItem::loadDataFromText(const QString &text)
+    {
+        Caneda::XmlReader reader(text.toUtf8());
+        while(!reader.atEnd()) {
+            // skip until end element is found.
+            reader.readNext();
+
+            if(reader.isEndElement()) {
+                break;
+            }
+
+            if(reader.isStartElement()) {
+                loadData(&reader);
+            }
+        }
+    }
+
+    /*!
+     * \fn CGraphicsItem::copy()
+     *
+     * \brief Returns a copy of the current item parented to \a scene.
+     *
+     * Subclasses should reimplement this method to return the appropriate
+     * copy of the reimplemented item.
+     */
+
+    /*!
+     * \brief Copies data of current-item to \a item.
+     *
+     * Sublasses should reimplement it to copy their data.
+     */
+    void CGraphicsItem::copyDataTo(CGraphicsItem *item) const
+    {
+        item->setTransform(transform());
+        item->prepareGeometryChange();
+        item->m_boundingRect = m_boundingRect;
+        item->m_shape = m_shape;
+        item->setPos(pos());
+        item->setRotation(rotation());
+    }
+
+    /*!
      * \brief Constructs and returns a context menu with the actions
      * corresponding to the selected object.
      */
@@ -109,96 +284,6 @@ namespace Caneda
             // If path is empty just add the bounding rect to the path.
             m_shape.addRect(m_boundingRect);
         }
-    }
-
-    /*!
-     * \brief Convenience method to get the saved text as string.
-     *
-     * Though this is simple, this method shouldn't be used in too many places as
-     * there will be unnecessary creation of xml writer and reader instances which
-     * will render the program inefficient.
-     */
-    QString CGraphicsItem::saveDataText() const
-    {
-        QString retVal;
-        Caneda::XmlWriter writer(&retVal);
-        saveData(&writer);
-        return retVal;
-    }
-
-    /*!
-     * \brief Convenience method to just load data from string.
-     *
-     * Though this is simple, this method shouldn't be used in too many places as
-     * there will be unnecessary creation of xml writer and reader instances which
-     * will render the program inefficient.
-     */
-    void CGraphicsItem::loadDataFromText(const QString &text)
-    {
-        Caneda::XmlReader reader(text.toUtf8());
-        while(!reader.atEnd()) {
-            // skip until end element is found.
-            reader.readNext();
-
-            if(reader.isEndElement()) {
-                break;
-            }
-
-            if(reader.isStartElement()) {
-                loadData(&reader);
-            }
-        }
-    }
-
-    /*!
-     * \brief Graphically mirror item according to x axis
-     * \note Items can be mirrored only along x and y axis.
-     */
-    void CGraphicsItem::mirrorAlong(Qt::Axis axis)
-    {
-        update();
-
-        if(axis == Qt::XAxis) {
-            setTransform(QTransform::fromScale(1.0, -1.0), true);
-        }
-        else {
-            setTransform(QTransform::fromScale(-1.0, 1.0), true);
-        }
-    }
-
-    //! \brief Rotate item by -90 degrees
-    void CGraphicsItem::rotate90(Caneda::AngleDirection dir)
-    {
-        if(dir == Caneda::AntiClockwise) {
-            setRotation(rotation() - 90.0);
-        }
-        else {
-            setRotation(rotation() + 90.0);
-        }
-    }
-
-    /*!
-     * \fn CGraphicsItem::copy()
-     *
-     * \brief Returns a copy of the current item parented to \a scene.
-     *
-     * Subclasses should reimplement this method to return the appropriate
-     * copy of the reimplemented item.
-     */
-
-    /*!
-     * \brief Copies data of current-item to \a item.
-     *
-     * Sublasses should reimplement it to copy their data.
-     */
-    void CGraphicsItem::copyDataTo(CGraphicsItem *item) const
-    {
-        item->setTransform(transform());
-        item->prepareGeometryChange();
-        item->m_boundingRect = m_boundingRect;
-        item->m_shape = m_shape;
-        item->setPos(pos());
-        item->setRotation(rotation());
     }
 
     /*!

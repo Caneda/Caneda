@@ -1454,7 +1454,7 @@ namespace Caneda
                 QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
 
                 foreach(CGraphicsItem *item, m_insertibles) {
-                    item->rotate90(Caneda::AntiClockwise);
+                    item->rotate(Caneda::AntiClockwise);
                     item->setPos(smartNearingGridPoint(item->pos() + delta));
                 }
 

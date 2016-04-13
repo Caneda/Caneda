@@ -130,6 +130,11 @@ namespace Caneda
         //! Returns a list of ports of the item.
         QList<Port*> ports() const { return m_ports; }
 
+        void rotate(Caneda::AngleDirection dir);
+        void rotate(Caneda::AngleDirection dir, QPointF pivotPoint);
+        void mirror(Qt::Axis axis);
+        void mirror(Qt::Axis axis, QPointF pivotPoint);
+
         //! Return bounding box.
         QRectF boundingRect() const { return m_boundingRect; }
         //! Return the shape of the item.
@@ -142,9 +147,6 @@ namespace Caneda
 
         QString saveDataText() const;
         void loadDataFromText(const QString &str);
-
-        virtual void mirrorAlong(Qt::Axis axis);
-        virtual void rotate90(Caneda::AngleDirection dir = Caneda::AntiClockwise);
 
         virtual CGraphicsItem* copy(CGraphicsScene *scene = 0) const = 0;
         virtual void copyDataTo(CGraphicsItem*item) const;

@@ -206,22 +206,10 @@ namespace Caneda
         m_scene->disconnectItems(m_items);
 
         // Rotate
-        QPointF targetPosition = m_scene->centerOfItems(m_items);
-
-        QTransform transform;
-        transform.rotate(m_dir == Caneda::Clockwise ? -90 : 90);
+        QPointF rotationCenter = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-            // Rotate item
-            item->rotate90(m_dir == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise);
-
-            // Move to the rotated position
-            QPointF newPos = item->pos() - targetPosition;
-            newPos = transform.map(newPos);
-            newPos = newPos + targetPosition;
-
-            newPos = smartNearingGridPoint(newPos);
-            item->setPos(newPos);
+            item->rotate(m_dir == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise, rotationCenter);
         }
 
         // Reconnect
@@ -234,22 +222,10 @@ namespace Caneda
         m_scene->disconnectItems(m_items);
 
         // Rotate
-        QPointF targetPosition = m_scene->centerOfItems(m_items);
-
-        QTransform transform;
-        transform.rotate(m_dir == Caneda::Clockwise ? 90 : -90);
+        QPointF rotationCenter = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-            // Rotate item
-            item->rotate90(m_dir);
-
-            // Move to the rotated position
-            QPointF newPos = item->pos() - targetPosition;
-            newPos = transform.map(newPos);
-            newPos = newPos + targetPosition;
-
-            newPos = smartNearingGridPoint(newPos);
-            item->setPos(newPos);
+            item->rotate(m_dir, rotationCenter);
         }
 
         // Reconnect
@@ -283,20 +259,7 @@ namespace Caneda
         QPointF mirrorCenter = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-            // Mirror item
-            item->mirrorAlong(m_axis);
-
-            // Move to the mirrored position
-            QPointF newPos = item->pos();
-            if(m_axis == Qt::XAxis) {
-                newPos.setY(2*mirrorCenter.y()-newPos.y()); // mirrorCenter.y() - (item->pos().y() - mirrorCenter.y())
-            }
-            else {
-                newPos.setX(2*mirrorCenter.x()-newPos.x()); // mirrorCenter.x() - (item->pos().x() - mirrorCenter.x())
-            }
-
-            newPos = smartNearingGridPoint(newPos);
-            item->setPos(newPos);
+            item->mirror(m_axis, mirrorCenter);
         }
 
         // Reconnect
