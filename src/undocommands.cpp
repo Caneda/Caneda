@@ -277,25 +277,7 @@ namespace Caneda
 
     void MirrorItemsCmd::undo()
     {
-        // Disconnect item before mirroring
-        m_scene->disconnectItems(m_items);
-
-        // Mirror
-        QPointF targetPosition = m_scene->centerOfItems(m_items);
-
-        foreach(CGraphicsItem *item, m_items) {
-            item->setTransformOriginPoint(-item->pos());
-            item->mirrorAlong(m_axis);
-        }
-
-        QPointF currentPosition = m_scene->centerOfItems(m_items);
-
-        foreach(CGraphicsItem *item, m_items) {
-            item->setPos(item->pos()+(targetPosition-currentPosition));
-        }
-
-        // Reconnect
-        m_scene->connectItems(m_items);
+        redo();
     }
 
     void MirrorItemsCmd::redo()
@@ -304,17 +286,30 @@ namespace Caneda
         m_scene->disconnectItems(m_items);
 
         // Mirror
+        QTransform transform;
+        if(m_axis == Qt::XAxis) {
+            transform.scale(1.0, -1.0);
+        }
+        else {
+            transform.scale(-1.0, 1.0);
+        }
+
         QPointF targetPosition = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-            item->setTransformOriginPoint(-item->pos());
+            QPointF point = item->pos();
+            point = transform.map(point);
+
             item->mirrorAlong(m_axis);
+            item->setPos(point);
         }
 
         QPointF currentPosition = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-            item->setPos(item->pos()+(targetPosition-currentPosition));
+            QPointF newPos = item->pos()+(targetPosition-currentPosition);
+            newPos = smartNearingGridPoint(newPos);
+            item->setPos(newPos);
         }
 
         // Reconnect
