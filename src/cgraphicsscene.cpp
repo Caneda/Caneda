@@ -2128,14 +2128,6 @@ namespace Caneda
             }
         }
 
-        foreach(QGraphicsItem *item, specialMoveItems) {
-            PortSymbol *portSymbol = canedaitem_cast<PortSymbol*>(item);
-            if(portSymbol) {
-                connectItems(portSymbol);
-                splitAndCreateNodes(portSymbol);
-            }
-        }
-
         specialMoveItems.clear();
         disconnectibles.clear();
     }
