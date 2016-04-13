@@ -96,6 +96,11 @@ namespace Caneda
         connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
     }
 
+    /**********************************************************************
+     *
+     *                             Edit actions
+     *
+     **********************************************************************/
     //! \brief Cut items
     void CGraphicsScene::cutItems(QList<CGraphicsItem*> &items)
     {
@@ -283,122 +288,103 @@ namespace Caneda
     }
 
     /*!
-     * \brief Distribute horizontally
+     * \brief Distribute elements horizontally
+     *
+     * This method distributes elements horizontally. While all elements are
+     * distributed, wires are filtered because they need special care, wires
+     * do not have a single x and y coordinate (think of several segments of
+     * wires which form single path between two components), therefore their
+     * distribution would need a separate check for these kind of segments.
      *
      * \param items: items to distribute
-     * \todo Why not filter wire ??
-     * +     * Ans: Because wires need special treatment. Wire's don't have single
-     * +     * x and y coord (think of several segments of wires which form single
-     * +     * Wire object)
-     * +     * Therefore distribution needs separate check for segments which make it
-     * +     * hard now. We should come out with some good solution for this.
-     * +     * Bastein: Do you have any solution ?
      */
     void CGraphicsScene::distributeElementsHorizontally(QList<CGraphicsItem*> items)
     {
-        qreal x1, x2, x, dx;
-        QPointF newPos;
+        m_undoStack->beginMacro("Distribute elements horizontally");
 
-        /* undo */
-        m_undoStack->beginMacro("Distribute horizontally");
-
-        /* disconnect */
         disconnectItems(items);
 
-        /*sort item */
+        // Sort items
         qSort(items.begin(), items.end(), pointCmpFunction_X);
-        x1 = items.first()->pos().x();
-        x2 = items.last()->pos().x();
+        qreal x1 = items.first()->pos().x();
+        qreal x2 = items.last()->pos().x();
 
-        /* compute step */
-        dx = (x2 - x1) / (items.size() - 1);
-        x = x1;
+        // Compute steps
+        qreal dx = (x2 - x1) / (items.size() - 1);
+        qreal x = x1;
 
         foreach(CGraphicsItem *item, items) {
-            /* why not filter wire ??? */
             if(item->type() == CGraphicsItem::WireType) {
                 continue;
             }
 
-            /* compute new position */
-            newPos = item->pos();
+            // Compute the new item position
+            QPointF newPos = item->pos();
             newPos.setX(x);
             x += dx;
 
-            /* move to new pos */
+            // Move the item to the new position
             m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
         }
 
-        /* try to reconnect */
         connectItems(items);
         splitAndCreateNodes(items);
 
-        /* end command */
         m_undoStack->endMacro();
-
     }
 
     /*!
-     * \brief Distribute vertically
+     * \brief Distribute elements vertically
      *
-     * \param items: items to distribute
-     * \todo Why not filter wire ??
+     * \copydoc distributeElementsHorizontally()
      */
     void CGraphicsScene::distributeElementsVertically(QList<CGraphicsItem*> items)
     {
-        qreal y1, y2, y, dy;
-        QPointF newPos;
+        m_undoStack->beginMacro("Distribute elements vertically");
 
-        /* undo */
-        m_undoStack->beginMacro("Distribute vertically");
-
-        /* disconnect */
         disconnectItems(items);
 
-        /*sort item */
+        // Sort items
         qSort(items.begin(), items.end(), pointCmpFunction_Y);
-        y1 = items.first()->pos().y();
-        y2 = items.last()->pos().y();
+        qreal y1 = items.first()->pos().y();
+        qreal y2 = items.last()->pos().y();
 
-        /* compute step */
-        dy = (y2 - y1) / (items.size() - 1);
-        y = y1;
+        // Compute steps
+        qreal dy = (y2 - y1) / (items.size() - 1);
+        qreal y = y1;
 
         foreach(CGraphicsItem *item, items) {
-            /* why not filter wire ??? */
             if(item->type() == CGraphicsItem::WireType) {
                 continue;
             }
 
-            /* compute new position */
-            newPos = item->pos();
+            // Compute the new item position
+            QPointF newPos = item->pos();
             newPos.setY(y);
             y += dy;
 
-            /* move to new pos */
+            // Move the item to the new position
             m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
         }
 
-        /* try to reconnect */
         connectItems(items);
         splitAndCreateNodes(items);
 
-        /* end command */
         m_undoStack->endMacro();
     }
 
+    /**********************************************************************
+     *
+     *                      Document properties
+     *
+     **********************************************************************/
     /*!
-     * \brief Makes the background color visible.
+     * \brief Change the background color visibility.
      *
      * \param visible Set true of false to show or hide the background color.
      */
     void CGraphicsScene::setBackgroundVisible(bool visible)
     {
-        /* avoid updating */
-        if(m_backgroundVisible == visible) {
-            return;
-        }
-
         m_backgroundVisible = visible;
         update();
     }
@@ -1609,15 +1595,14 @@ namespace Caneda
             return;
         }
 
-        QPointF pos = event->scenePos();
-        /* left click */
         if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
-            return deletingEventLeftMouseClick(pos);
+            return deletingEventLeftMouseClick(event->scenePos());
         }
-        /* right click */
+
         if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
-            return deletingEventRightMouseClick(pos);
+            return deletingEventRightMouseClick(event->scenePos());
         }
+
         return;
     }
 
@@ -1628,8 +1613,9 @@ namespace Caneda
      */
     void CGraphicsScene::deletingEventLeftMouseClick(const QPointF &pos)
     {
-        /* create a list of items */
+        // Create a list of items
         QList<QGraphicsItem*> list = items(pos);
+
         if(!list.isEmpty()) {
             QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
 
@@ -1646,8 +1632,9 @@ namespace Caneda
      */
     void CGraphicsScene::deletingEventRightMouseClick(const QPointF &pos)
     {
-        /* create a list of items */
+        // Create a list of items
         QList<QGraphicsItem*> list = items(pos);
+
         if(!list.isEmpty()) {
             QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
 
