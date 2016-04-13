@@ -286,28 +286,20 @@ namespace Caneda
         m_scene->disconnectItems(m_items);
 
         // Mirror
-        QTransform transform;
-        if(m_axis == Qt::XAxis) {
-            transform.scale(1.0, -1.0);
-        }
-        else {
-            transform.scale(-1.0, 1.0);
-        }
-
-        QPointF targetPosition = m_scene->centerOfItems(m_items);
+        QPointF mirrorCenter = m_scene->centerOfItems(m_items);
 
         foreach(CGraphicsItem *item, m_items) {
-            QPointF point = item->pos();
-            point = transform.map(point);
-
+            // Mirror item
             item->mirrorAlong(m_axis);
-            item->setPos(point);
-        }
 
-        QPointF currentPosition = m_scene->centerOfItems(m_items);
-
-        foreach(CGraphicsItem *item, m_items) {
-            QPointF newPos = item->pos()+(targetPosition-currentPosition);
+            // Move to the mirrored position
+            QPointF newPos = item->pos();
+            if(m_axis == Qt::XAxis) {
+                newPos.setY(2*mirrorCenter.y()-newPos.y()); // mirrorCenter.y() - (item->pos().y() - mirrorCenter.y())
+            }
+            else {
+                newPos.setX(2*mirrorCenter.x()-newPos.x()); // mirrorCenter.x() - (item->pos().x() - mirrorCenter.x())
+            }
             newPos = smartNearingGridPoint(newPos);
             item->setPos(newPos);
         }
