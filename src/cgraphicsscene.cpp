@@ -109,9 +109,9 @@ namespace Caneda
      * \todo Document format
      * \todo Use own mime type
      */
-    void CGraphicsScene::copyItems(QList<CGraphicsItem*> &_items)
+    void CGraphicsScene::copyItems(QList<CGraphicsItem*> &items)
     {
-        if(_items.isEmpty()) {
+        if(items.isEmpty()) {
             return;
         }
 
@@ -123,8 +123,8 @@ namespace Caneda
         writer->writeStartElement("caneda");
         writer->writeAttribute("version", Caneda::version());
 
-        foreach(CGraphicsItem *_item, _items) {
-            _item->saveData(writer);
+        foreach(CGraphicsItem *item, items) {
+            item->saveData(writer);
         }
 
         writer->writeEndDocument();
@@ -155,6 +155,19 @@ namespace Caneda
     {
         m_undoStack->beginMacro(QString("Mirror items"));
         m_undoStack->push(new MirrorItemsCmd(items, axis, this));
+        m_undoStack->endMacro();
+    }
+
+    /*!
+     * \brief Rotate an item list
+     *
+     * \param items: item list
+     * \param dir: rotation direction
+     */
+    void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir)
+    {
+        m_undoStack->beginMacro(QString("Rotate items"));
+        m_undoStack->push(new RotateItemsCmd(items, dir, this));
         m_undoStack->endMacro();
     }
 
@@ -255,7 +268,7 @@ namespace Caneda
         QList<QGraphicsItem*> gItems = selectedItems();
         QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems);
 
-        /* could not distribute single items */
+        // Could not distribute single items
         if(items.size() < 2) {
             return false;
         }
@@ -270,18 +283,123 @@ namespace Caneda
     }
 
     /*!
+     * \brief Distribute horizontally
+     *
+     * \param items: items to distribute
+     * \todo Why not filter wire ??
+     * +     * Ans: Because wires need special treatment. Wire's don't have single
+     * +     * x and y coord (think of several segments of wires which form single
+     * +     * Wire object)
+     * +     * Therefore distribution needs separate check for segments which make it
+     * +     * hard now. We should come out with some good solution for this.
+     * +     * Bastein: Do you have any solution ?
+     */
+    void CGraphicsScene::distributeElementsHorizontally(QList<CGraphicsItem*> items)
+    {
+        qreal x1, x2, x, dx;
+        QPointF newPos;
+
+        /* undo */
+        m_undoStack->beginMacro("Distribute horizontally");
+
+        /* disconnect */
+        disconnectItems(items);
+
+        /*sort item */
+        qSort(items.begin(), items.end(), pointCmpFunction_X);
+        x1 = items.first()->pos().x();
+        x2 = items.last()->pos().x();
+
+        /* compute step */
+        dx = (x2 - x1) / (items.size() - 1);
+        x = x1;
+
+        foreach(CGraphicsItem *item, items) {
+            /* why not filter wire ??? */
+            if(item->type() == CGraphicsItem::WireType) {
+                continue;
+            }
+
+            /* compute new position */
+            newPos = item->pos();
+            newPos.setX(x);
+            x += dx;
+
+            /* move to new pos */
+            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+        }
+
+        /* try to reconnect */
+        connectItems(items);
+        splitAndCreateNodes(items);
+
+        /* end command */
+        m_undoStack->endMacro();
+
+    }
+
+    /*!
+     * \brief Distribute vertically
+     *
+     * \param items: items to distribute
+     * \todo Why not filter wire ??
+     */
+    void CGraphicsScene::distributeElementsVertically(QList<CGraphicsItem*> items)
+    {
+        qreal y1, y2, y, dy;
+        QPointF newPos;
+
+        /* undo */
+        m_undoStack->beginMacro("Distribute vertically");
+
+        /* disconnect */
+        disconnectItems(items);
+
+        /*sort item */
+        qSort(items.begin(), items.end(), pointCmpFunction_Y);
+        y1 = items.first()->pos().y();
+        y2 = items.last()->pos().y();
+
+        /* compute step */
+        dy = (y2 - y1) / (items.size() - 1);
+        y = y1;
+
+        foreach(CGraphicsItem *item, items) {
+            /* why not filter wire ??? */
+            if(item->type() == CGraphicsItem::WireType) {
+                continue;
+            }
+
+            /* compute new position */
+            newPos = item->pos();
+            newPos.setY(y);
+            y += dy;
+
+            /* move to new pos */
+            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+        }
+
+        /* try to reconnect */
+        connectItems(items);
+        splitAndCreateNodes(items);
+
+        /* end command */
+        m_undoStack->endMacro();
+    }
+
+    /*!
      * \brief Makes the background color visible.
      *
-     * \param visibility Set true of false to show or hide the background color.
+     * \param visible Set true of false to show or hide the background color.
      */
-    void CGraphicsScene::setBackgroundVisible(const bool visibility)
+    void CGraphicsScene::setBackgroundVisible(bool visible)
     {
         /* avoid updating */
-        if(m_backgroundVisible == visibility) {
+        if(m_backgroundVisible == visible) {
             return;
         }
 
-        m_backgroundVisible = visibility;
+        m_backgroundVisible = visible;
         update();
     }
 
@@ -408,6 +526,11 @@ namespace Caneda
         return(true);
     }
 
+    /**********************************************************************
+     *
+     *                             Mouse actions
+     *
+     **********************************************************************/
     /*!
      * \brief Set mouse action
      * This method takes care to disable the shortcuts while items are being added
@@ -439,7 +562,8 @@ namespace Caneda
         emit mouseActionChanged();
 
         resetState();
-        //! \todo Implemement this appropriately for all mouse actions
+
+        //! \todo Implemement this for all mouse actions
     }
 
     /*!
@@ -484,7 +608,7 @@ namespace Caneda
      * \param block True blocks while false unblocks the shortcuts.
      * \sa CGraphicsScene::eventFilter
      */
-    void CGraphicsScene::blockShortcuts(const bool block)
+    void CGraphicsScene::blockShortcuts(bool block)
     {
         if(block) {
             if(!m_shortcutsBlocked) {
@@ -498,19 +622,6 @@ namespace Caneda
                 m_shortcutsBlocked = false;
             }
         }
-    }
-
-    /*!
-     * \brief Starts beginPaintingDraw mode.
-     *
-     * This is the mode which is used while inserting painting items.
-     */
-    void CGraphicsScene::beginPaintingDraw(Painting *item)
-    {
-        Q_ASSERT(m_mouseAction == Caneda::PaintingDrawEvent);
-        m_paintingDrawClicks = 0;
-        delete m_paintingDrawItem;
-        m_paintingDrawItem = item->copy();
     }
 
     /*!
@@ -569,6 +680,196 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Starts beginPaintingDraw mode.
+     *
+     * This is the mode which is used while inserting painting items.
+     */
+    void CGraphicsScene::beginPaintingDraw(Painting *item)
+    {
+        Q_ASSERT(m_mouseAction == Caneda::PaintingDrawEvent);
+        m_paintingDrawClicks = 0;
+        delete m_paintingDrawItem;
+        m_paintingDrawItem = item->copy();
+    }
+
+    /**********************************************************************
+     *
+     *                    Connect/disconnect methods
+     *
+     **********************************************************************/
+    /*!
+     * \brief Calculates the center of the items given as a parameter.
+     *
+     * It actually unites the boundingRect of the items sent as parameters
+     * and then returns the center of the united rectangle. This center may be
+     * used as a reference point for several actions, for example, rotation,
+     * mirroring, and copy/paste/inserting items on the scene.
+     *
+     * \param items The items which geometric center has to be calculated.
+     * \return The geometric center of the items.
+     */
+    QPointF CGraphicsScene::centerOfItems(const QList<CGraphicsItem*> &items)
+    {
+        QRectF rect = items.isEmpty() ? QRectF() :
+            items.first()->sceneBoundingRect();
+
+        foreach(CGraphicsItem *item, items) {
+            rect |= item->sceneBoundingRect();
+        }
+
+        return rect.center();
+    }
+
+    /*!
+     * \brief Check for overlapping ports around the scene, and connect the
+     * coinciding ports.
+     *
+     * This method checks for overlapping ports around the scene, and connects
+     * the coinciding ports. Although previously this method was included in
+     * the CGraphicsItem class, later was moved to CGraphicsScene to give more
+     * flexibility and to avoid infinite recursions when calling this method
+     * from inside a newly created or deleted item.
+     *
+     * \param item: items to connect
+     *
+     * \sa splitAndCreateNodes()
+     */
+    void CGraphicsScene::connectItems(CGraphicsItem *item)
+    {
+        // Find existing intersecting ports and connect
+        foreach(Port *port, item->ports()) {
+            Port *other = port->findCoincidingPort();
+            if(other) {
+                port->connectTo(other);
+            }
+        }
+    }
+
+    //! \copydoc connectItems(CGraphicsItem *item)
+    void CGraphicsScene::connectItems(QList<CGraphicsItem*> &items)
+    {
+        // Check and connect each item
+        foreach (CGraphicsItem *item, items) {
+            connectItems(item);
+        }
+    }
+
+    /*!
+     * \brief Disconnect an item from any wire or other components
+     *
+     * \param item: item to disconnect
+     */
+    void CGraphicsScene::disconnectItems(CGraphicsItem *item)
+    {
+        QList<Port*> ports = item->ports();
+        foreach(Port *p, ports) {
+            p->disconnect();
+        }
+    }
+
+    //! \copydoc disconnectItems(CGraphicsItem *item)
+    void CGraphicsScene::disconnectItems(QList<CGraphicsItem*> &items)
+    {
+        foreach(CGraphicsItem *item, items) {
+            disconnectItems(item);
+        }
+    }
+
+    /*!
+     * \brief Search wire collisions and if found split the wire.
+     *
+     * This method searches for wire collisions, and if a collision is present,
+     * splits the wire in two, creating a new node. This is done, for example,
+     * when wiring the schematic and a wire ends in the middle of another wire.
+     * In that case, a connection must be made, thus the need to split the
+     * colliding wire.
+     *
+     * \return Returns true if new node was created.
+     *
+     * \sa connectItems()
+     */
+    void CGraphicsScene::splitAndCreateNodes(CGraphicsItem *item)
+    {
+        // Check for collisions in each port, otherwise the items intersect
+        // but no node should be created.
+        foreach(Port *port, item->ports()) {
+
+            // List of wires to delete after collision and creation of new wires
+            QList<Wire*> markedForDeletion;
+
+            // Detect all colliding items
+            QList<QGraphicsItem*> collisions = port->collidingItems(Qt::IntersectsItemBoundingRect);
+
+            // Filter colliding wires only
+            foreach(QGraphicsItem *collidingItem, collisions) {
+                Wire* collidingWire = canedaitem_cast<Wire*>(collidingItem);
+                if(collidingWire) {
+
+                    // If already connected, the collision is the result of the connection,
+                    // otherwise there is a potential new node.
+                    bool alreadyConnected = false;
+                    foreach(Port *portIterator, item->ports()) {
+                        alreadyConnected |=
+                                portIterator->isConnectedTo(collidingWire->port1()) ||
+                                portIterator->isConnectedTo(collidingWire->port2());
+                    }
+
+                    if(!alreadyConnected){
+                        // Calculate the start, middle and end points. As the ports are mapped in the parent's
+                        // coordinate system, we must calculate the positions (via the mapToScene method) in
+                        // the global (scene) coordinate system.
+                        QPointF startPoint  = collidingWire->port1()->scenePos();
+                        QPointF middlePoint = port->scenePos();
+                        QPointF endPoint    = collidingWire->port2()->scenePos();
+
+                        // Mark old wire for deletion. The deletion is performed in a second
+                        // stage to avoid referencing null pointers inside the foreach loop.
+                        markedForDeletion << collidingWire;
+
+                        // Create two new wires
+                        Wire *wire1 = new Wire(startPoint, middlePoint, this);
+                        Wire *wire2 = new Wire(middlePoint, endPoint, this);
+
+                        // Create new node (connections to the colliding wire)
+                        port->connectTo(wire1->port2());
+                        port->connectTo(wire2->port1());
+
+                        wire1->updateGeometry();
+                        wire2->updateGeometry();
+
+                        // Restore old wire connections
+                        connectItems(wire1);
+                        connectItems(wire2);
+                    }
+                }
+            }
+
+            // Delete all wires marked for deletion. The deletion is performed
+            // in a second stage to avoid referencing null pointers inside the
+            // foreach loop.
+            foreach(Wire *w, markedForDeletion) {
+                delete w;
+            }
+
+            // Clear the list to avoid dereferencing deleted wires
+            markedForDeletion.clear();
+        }
+    }
+
+    //! \copydoc splitAndCreateNodes(CGraphicsItem *item)
+    void CGraphicsScene::splitAndCreateNodes(QList<CGraphicsItem *> &items)
+    {
+        foreach (CGraphicsItem *item, items) {
+            splitAndCreateNodes(item);
+        }
+    }
+
+    /**********************************************************************
+     *
+     *               Spice/electric related scene properties
+     *
+     **********************************************************************/
     /*!
      * \brief Adds a new property to the scene.
      *
@@ -680,6 +981,11 @@ namespace Caneda
         painter->setPen(savedpen);
     }
 
+    /**********************************************************************
+     *
+     *                       Custom event handlers
+     *
+     **********************************************************************/
     /*!
      * Handle some events at lower level. This callback is called before the
      * specialized event handler methods (like mousePressEvent) are called.
@@ -707,65 +1013,59 @@ namespace Caneda
     }
 
     /*!
-     * \brief Constructs and returns a context menu with the actions
-     * corresponding to the selected object.
+     * \brief Event called when mouse is pressed
      */
-    void CGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+    void CGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
-        if(m_mouseAction == Normal) {
-            ActionManager* am = ActionManager::instance();
-            QMenu *_menu = new QMenu();
-            IDocument *document = DocumentViewManager::instance()->currentDocument();
+        lastPos = smartNearingGridPoint(event->scenePos());
 
-            switch(selectedItems().size()) {
-            case 0:
-                // Launch the context of the current document
-                if (document) {
-                    document->contextMenuEvent(event);
-                }
-                break;
+        // This is not to lose grid snaping when moving objects
+        event->setScenePos(lastPos);
+        event->setPos(lastPos);
 
-            case 1:
-                // Launch the context menu of an item.
-                QGraphicsScene::contextMenuEvent(event);
-                break;
+        sendMouseActionEvent(event);
+    }
 
-            default:
-                // Launch the context menu of multiple items selected.
-                _menu->addAction(am->actionForName("editCut"));
-                _menu->addAction(am->actionForName("editCopy"));
-                _menu->addAction(am->actionForName("editDelete"));
-
-                _menu->addSeparator();
-
-                _menu->addAction(am->actionForName("editRotate"));
-                _menu->addAction(am->actionForName("editMirror"));
-                _menu->addAction(am->actionForName("editMirrorY"));
-
-                _menu->addSeparator();
-
-                _menu->addAction(am->actionForName("centerHor"));
-                _menu->addAction(am->actionForName("centerVert"));
-
-                _menu->addSeparator();
-
-                _menu->addAction(am->actionForName("alignTop"));
-                _menu->addAction(am->actionForName("alignBottom"));
-                _menu->addAction(am->actionForName("alignLeft"));
-                _menu->addAction(am->actionForName("alignRight"));
-
-                _menu->addSeparator();
-
-                _menu->addAction(am->actionForName("distrHor"));
-                _menu->addAction(am->actionForName("distrVert"));
-
-                _menu->addSeparator();
-
-                _menu->addAction(am->actionForName("propertiesDialog"));
-
-                _menu->exec(event->screenPos());
-            }
+    /*!
+     * \brief Mouse move event
+     */
+    void CGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+    {
+        QPointF point = smartNearingGridPoint(event->scenePos());
+        if(point == lastPos) {
+            event->accept();
+            return;
         }
+
+        // Implement grid snap by changing event parameters with new grid position
+        event->setScenePos(point);
+        event->setPos(point);
+        event->setLastScenePos(lastPos);
+        event->setLastPos(lastPos);
+
+        // Now cache this point for next move
+        lastPos = point;
+
+        sendMouseActionEvent(event);
+    }
+
+    /*!
+     * \brief Release mouse event
+     */
+    void CGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+    {
+        sendMouseActionEvent(event);
+    }
+
+    /*!
+     * \brief Mouse double click event
+     *
+     * Encapsulates the mouseDoubleClickEvent as one of MouseAction and calls
+     * corresponding callback.
+     */
+    void CGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+    {
+        sendMouseActionEvent(event);
     }
 
     /*!
@@ -784,7 +1084,7 @@ namespace Caneda
      * \param event event to be accepted
      * \sa dropEvent, dragMoveEvent
      */
-    void CGraphicsScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event)
+    void CGraphicsScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
     {
         if(event->mimeData()->formats().contains("application/caneda.sidebarItem")) {
             event->acceptProposedAction();
@@ -811,7 +1111,7 @@ namespace Caneda
      * \param event event to be accepted
      * \sa dropEvent, dragEnterEvent
      */
-    void CGraphicsScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event)
+    void CGraphicsScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
     {
         if(event->mimeData()->formats().contains("application/caneda.sidebarItem")) {
             event->acceptProposedAction();
@@ -836,7 +1136,7 @@ namespace Caneda
      * \param event event to be accepted
      * \sa dragMoveEvent, dragEnterEvent, StateHandler::slotSidebarItemClicked()
      */
-    void CGraphicsScene::dropEvent(QGraphicsSceneDragDropEvent * event)
+    void CGraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
     {
         if(event->mimeData()->formats().contains("application/caneda.sidebarItem")) {
             event->accept();
@@ -900,73 +1200,17 @@ namespace Caneda
         blockShortcuts(false);
     }
 
-    /*!
-     * \brief Event called when mouse is pressed
-     */
-    void CGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
+    void CGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
     {
-        lastPos = smartNearingGridPoint(e->scenePos());
-
-        // This is not to lose grid snaping when moving objects
-        e->setScenePos(lastPos);
-        e->setPos(lastPos);
-
-        sendMouseActionEvent(e);
-    }
-
-    /*!
-     * \brief Mouse move event
-     */
-    void CGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
-    {
-        QPointF point = smartNearingGridPoint(e->scenePos());
-        if(point == lastPos) {
-            e->accept();
-            return;
-        }
-
-        // Implement grid snap by changing event parameters with new grid position
-        e->setScenePos(point);
-        e->setPos(point);
-        e->setLastScenePos(lastPos);
-        e->setLastPos(lastPos);
-
-        // Now cache this point for next move
-        lastPos = point;
-
-        sendMouseActionEvent(e);
-    }
-
-    /*!
-     * \brief Release mouse event
-     */
-    void CGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
-    {
-        sendMouseActionEvent(e);
-    }
-
-    /*!
-     * \brief Mouse double click event
-     *
-     * Encapsulates the mouseDoubleClickEvent as one of MouseAction and calls
-     * corresponding callback.
-     */
-    void CGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
-    {
-        sendMouseActionEvent(e);
-    }
-
-    void CGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *e)
-    {
-        QGraphicsView *v = static_cast<QGraphicsView *>(e->widget()->parent());
+        QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
         CGraphicsView *sv = qobject_cast<CGraphicsView*>(v);
         if(!sv) {
             return;
         }
 
-        if(e->modifiers() & Qt::ControlModifier){
+        if(event->modifiers() & Qt::ControlModifier){
 
-            if(e->delta() > 0) {
+            if(event->delta() > 0) {
                 sv->translate(0,50);
             }
             else {
@@ -974,9 +1218,9 @@ namespace Caneda
             }
 
         }
-        else if(e->modifiers() & Qt::ShiftModifier){
+        else if(event->modifiers() & Qt::ShiftModifier){
 
-            if(e->delta() > 0) {
+            if(event->delta() > 0) {
                 sv->translate(-50,0);
             }
             else {
@@ -987,7 +1231,7 @@ namespace Caneda
 
             sv->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);  // Set transform to zoom into mouse position
 
-            if(e->delta() > 0) {
+            if(event->delta() > 0) {
                 sv->zoomIn();
             }
             else {
@@ -996,49 +1240,111 @@ namespace Caneda
 
         }
 
-        e->accept();
+        event->accept();
+    }
+
+    /*!
+     * \brief Constructs and returns a context menu with the actions
+     * corresponding to the selected object.
+     */
+    void CGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+    {
+        if(m_mouseAction == Normal) {
+            ActionManager* am = ActionManager::instance();
+            QMenu *menu = new QMenu();
+            IDocument *document = DocumentViewManager::instance()->currentDocument();
+
+            switch(selectedItems().size()) {
+            case 0:
+                // Launch the context of the current document
+                if (document) {
+                    document->contextMenuEvent(event);
+                }
+                break;
+
+            case 1:
+                // Launch the context menu of an item.
+                QGraphicsScene::contextMenuEvent(event);
+                break;
+
+            default:
+                // Launch the context menu of multiple items selected.
+                menu->addAction(am->actionForName("editCut"));
+                menu->addAction(am->actionForName("editCopy"));
+                menu->addAction(am->actionForName("editDelete"));
+
+                menu->addSeparator();
+
+                menu->addAction(am->actionForName("editRotate"));
+                menu->addAction(am->actionForName("editMirror"));
+                menu->addAction(am->actionForName("editMirrorY"));
+
+                menu->addSeparator();
+
+                menu->addAction(am->actionForName("centerHor"));
+                menu->addAction(am->actionForName("centerVert"));
+
+                menu->addSeparator();
+
+                menu->addAction(am->actionForName("alignTop"));
+                menu->addAction(am->actionForName("alignBottom"));
+                menu->addAction(am->actionForName("alignLeft"));
+                menu->addAction(am->actionForName("alignRight"));
+
+                menu->addSeparator();
+
+                menu->addAction(am->actionForName("distrHor"));
+                menu->addAction(am->actionForName("distrVert"));
+
+                menu->addSeparator();
+
+                menu->addAction(am->actionForName("propertiesDialog"));
+
+                menu->exec(event->screenPos());
+            }
+        }
     }
 
     /*!
      * \brief Call the appropriate mouseAction event based on the current mouse action
      */
-    void CGraphicsScene::sendMouseActionEvent(QGraphicsSceneMouseEvent *e)
+    void CGraphicsScene::sendMouseActionEvent(QGraphicsSceneMouseEvent *event)
     {
         switch(m_mouseAction) {
             case Wiring:
-                wiringEvent(e);
+                wiringEvent(event);
                 break;
 
             case Deleting:
-                deletingEvent(e);
+                deletingEvent(event);
                 break;
 
             case Rotating:
-                rotatingEvent(e);
+                rotatingEvent(event);
                 break;
 
             case MirroringX:
-                mirroringXEvent(e);
+                mirroringXEvent(event);
                 break;
 
             case MirroringY:
-                mirroringYEvent(e);
+                mirroringYEvent(event);
                 break;
 
             case ZoomingAreaEvent:
-                zoomingAreaEvent(e);
+                zoomingAreaEvent(event);
                 break;
 
             case PaintingDrawEvent:
-                paintingDrawEvent(e);
+                paintingDrawEvent(event);
                 break;
 
             case InsertingItems:
-                insertingItemsEvent(e);
+                insertingItemsEvent(event);
                 break;
 
             case Normal:
-                normalEvent(e);
+                normalEvent(event);
                 break;
 
             default:;
@@ -1046,37 +1352,309 @@ namespace Caneda
     }
 
     /*!
-     * \brief Reset the state
+     * \brief Handle events other than the specilized mouse actions.
      *
-     * This callback is called when for instance you press esc key
+     * This involves moving items in a special way so that wires disconnect
+     * from unselected components, and unselected wires change their geometry
+     * to accomodate item movements.
+     *
+     * \sa disconnectDisconnectibles(), processForSpecialMove(),
+     * specialMove(), endSpecialMove()
      */
-    void CGraphicsScene::resetState()
+    void CGraphicsScene::normalEvent(QGraphicsSceneMouseEvent *event)
     {
-        // Clear focus on any item on this scene.
-        setFocusItem(0);
-        // Clear selection.
-        clearSelection();
+        switch(event->type()) {
+            case QEvent::GraphicsSceneMousePress:
+                {
+                    QGraphicsScene::mousePressEvent(event);
+                    processForSpecialMove();
+                }
+                break;
 
-        // Clear the list holding items to be pasted/placed on graphics scene.
-        qDeleteAll(m_insertibles);
-        m_insertibles.clear();
+            case QEvent::GraphicsSceneMouseMove:
+                {
+                    if(!m_areItemsMoving) {
+                        if(event->buttons() & Qt::LeftButton && !selectedItems().isEmpty()) {
+                            m_areItemsMoving = true;
+                            m_undoStack->beginMacro(QString("Move items"));
+                        }
+                        else {
+                            return;
+                        }
+                    }
 
-        // If current state is wiring, delete last attempt
-        if(m_wiringState == SINGLETON_WIRE){
-            Q_ASSERT(m_currentWiringWire != NULL);
-            delete m_currentWiringWire;
-            m_wiringState = NO_WIRE;
+                    disconnectDisconnectibles();
+                    QGraphicsScene::mouseMoveEvent(event);
+                    specialMove();
+                }
+                break;
+
+            case QEvent::GraphicsSceneMouseRelease:
+                {
+                    if(m_areItemsMoving) {
+                        m_areItemsMoving = false;
+                        endSpecialMove();
+                        m_undoStack->endMacro();
+                    }
+                    QGraphicsScene::mouseReleaseEvent(event);
+                }
+                break;
+
+            case QEvent::GraphicsSceneMouseDoubleClick:
+                {
+                    if(selectedItems().size() == 0) {
+
+                        IDocument *document = DocumentViewManager::instance()->currentDocument();
+                        if (document) {
+                            document->launchPropertiesDialog();
+                        }
+
+                    }
+
+                    QGraphicsScene::mouseDoubleClickEvent(event);
+                }
+
+                break;
+
+            default:
+                qDebug() << "CGraphicsScene::normalEvent() :  Unknown event type";
+        };
+    }
+
+    /*!
+     * \brief This event corresponds to placing/pasting items on scene.
+     *
+     * When the mouse is moved without pressing, then feed back of all
+     * m_insertibles items moving is done here.
+     * On mouse press, these items are placed on the scene and a duplicate is
+     * retained to support further placing/insertion/paste.
+     */
+    void CGraphicsScene::insertingItemsEvent(QGraphicsSceneMouseEvent *event)
+    {
+        if(event->type() == QEvent::GraphicsSceneMousePress) {
+
+            if(event->button() == Qt::LeftButton) {
+
+                // First temporarily remove the item from the scene. This item
+                // is the one the user is grabbing with the mouse and about to
+                // insert into the scene. If this "moving" item is not removed
+                // there is a collision, and a temporal connection between its
+                // ports is made (as the ports of the inserting items collides
+                // with the ports of the new item created.
+                clearSelection();
+                foreach(CGraphicsItem *item, m_insertibles) {
+                    removeItem(item);
+                }
+
+                // Create a new item and copy the properties of the inserting
+                // item.
+                m_undoStack->beginMacro(QString("Insert items"));
+                foreach(CGraphicsItem *item, m_insertibles) {
+                    CGraphicsItem *copied = item->copy(0);
+                    placeItem(copied, smartNearingGridPoint(item->pos()));
+                }
+                m_undoStack->endMacro();
+
+                // Re-add the inserting items into the scene, to be able to
+                // insert more items of the same kind.
+                foreach(CGraphicsItem *item, m_insertibles) {
+                    addItem(item);
+                    item->setSelected(true);
+                }
+
+            }
+            else if(event->button() == Qt::RightButton) {
+
+                QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
+
+                foreach(CGraphicsItem *item, m_insertibles) {
+                    item->rotate90(Caneda::AntiClockwise);
+                    item->setPos(smartNearingGridPoint(item->pos() + delta));
+                }
+
+            }
+
+        }
+        else if(event->type() == QEvent::GraphicsSceneMouseMove) {
+
+            QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
+
+            foreach(CGraphicsItem *item, m_insertibles) {
+                item->show();
+                item->setPos(smartNearingGridPoint(item->pos() + delta));
+            }
+
+        }
+    }
+
+    void CGraphicsScene::paintingDrawEvent(QGraphicsSceneMouseEvent *event)
+    {
+        if(!m_paintingDrawItem) {
+            return;
         }
 
-        // Reset drawing item
-        delete m_paintingDrawItem;
-        m_paintingDrawItem = 0;
-        m_paintingDrawClicks = 0;
+        EllipseArc *arc = 0;
+        GraphicText *text = 0;
+        QPointF dest = event->scenePos();
+        dest += m_paintingDrawItem->paintingRect().topLeft();
+        dest = smartNearingGridPoint(dest);
 
-        // Clear zoom
-        m_zoomRect = QRectF();
-        m_zoomBand->hide();
-        m_zoomBandClicks = 0;
+        if(m_paintingDrawItem->type() == EllipseArc::Type) {
+            arc = static_cast<EllipseArc*>(m_paintingDrawItem);
+        }
+
+        if(m_paintingDrawItem->type() == GraphicText::Type) {
+            text = static_cast<GraphicText*>(m_paintingDrawItem);
+        }
+
+
+        if(event->type() == QEvent::GraphicsSceneMousePress) {
+            clearSelection();
+            ++m_paintingDrawClicks;
+
+            // First handle special painting items
+            if(arc && m_paintingDrawClicks < 4) {
+                if(m_paintingDrawClicks == 1) {
+                    arc->setStartAngle(0);
+                    arc->setSpanAngle(360);
+                    arc->setPos(dest);
+                    addItem(arc);
+                }
+                else if(m_paintingDrawClicks == 2) {
+                    arc->setSpanAngle(180);
+                }
+
+                return;
+            }
+            else if(text) {
+                Q_ASSERT(m_paintingDrawClicks == 1);
+                text->setPos(dest);
+                int result = text->launchPropertyDialog(Caneda::DontPushUndoCmd);
+                if(result == QDialog::Accepted) {
+                    // Place the text item
+                    placeItem(m_paintingDrawItem, dest);
+
+                    // Make an empty copy of the item for the next item insertion
+                    m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
+                    m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
+                    static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
+                }
+
+                // This means the text was set through the text dialog
+                m_paintingDrawClicks = 0;
+                return;
+            }
+
+            // This is the generic case
+            if(m_paintingDrawClicks == 1) {
+                m_paintingDrawItem->setPos(dest);
+                addItem(m_paintingDrawItem);
+            }
+            else {
+                m_paintingDrawClicks = 0;
+
+                // Place the painting item
+                dest = m_paintingDrawItem->pos();
+                placeItem(m_paintingDrawItem, dest);
+
+                // Make an empty copy of the item for the next item insertion
+                m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
+                m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
+            }
+        }
+
+        else if(event->type() == QEvent::GraphicsSceneMouseMove) {
+            if(arc && m_paintingDrawClicks > 1) {
+                QPointF delta = event->scenePos() - arc->scenePos();
+                int angle = int(180/M_PI * std::atan2(-delta.y(), delta.x()));
+
+                if(m_paintingDrawClicks == 2) {
+                    while(angle < 0) {
+                        angle += 360;
+                    }
+                    arc->setStartAngle(int(angle));
+                }
+
+                else if(m_paintingDrawClicks == 3) {
+                    int span = angle - arc->startAngle();
+                    while(span < 0) {
+                        span += 360;
+                    }
+                    arc->setSpanAngle(span);
+                }
+            }
+
+            else if(m_paintingDrawClicks == 1) {
+                QRectF rect = m_paintingDrawItem->paintingRect();
+                const QPointF gridifiedPos = smartNearingGridPoint(event->scenePos());
+                rect.setBottomRight(m_paintingDrawItem->mapFromScene(gridifiedPos));
+                m_paintingDrawItem->setPaintingRect(rect);
+            }
+        }
+    }
+
+    /*************************************************************
+     *
+     *          DELETING
+     *
+     *************************************************************/
+    /*!
+     * \brief Delete action
+     *
+     * Delete action: left click delete, right click disconnect item
+     */
+    void CGraphicsScene::deletingEvent(const QGraphicsSceneMouseEvent *event)
+    {
+        if(event->type() != QEvent::GraphicsSceneMousePress) {
+            return;
+        }
+
+        QPointF pos = event->scenePos();
+        /* left click */
+        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
+            return deletingEventLeftMouseClick(pos);
+        }
+        /* right click */
+        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
+            return deletingEventRightMouseClick(pos);
+        }
+        return;
+    }
+
+    /*!
+     * \brief Left button deleting event: delete items
+     *
+     * \param pos: pos clicked
+     */
+    void CGraphicsScene::deletingEventLeftMouseClick(const QPointF &pos)
+    {
+        /* create a list of items */
+        QList<QGraphicsItem*> list = items(pos);
+        if(!list.isEmpty()) {
+            QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
+
+            if(!items.isEmpty()) {
+                deleteItems(QList<CGraphicsItem*>() << items.first());
+            }
+        }
+    }
+
+    /*!
+     * \brief Left button deleting event: delete items
+     *
+     * \param pos: pos clicked
+     */
+    void CGraphicsScene::deletingEventRightMouseClick(const QPointF &pos)
+    {
+        /* create a list of items */
+        QList<QGraphicsItem*> list = items(pos);
+        if(!list.isEmpty()) {
+            QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
+
+            if(!items.isEmpty()) {
+                disconnectItems(QList<CGraphicsItem*>() << items.first());
+            }
+        }
     }
 
     /*********************************************************************
@@ -1198,73 +1776,9 @@ namespace Caneda
         }
     }
 
-    /*************************************************************
-     *
-     *          DELETING
-     *
-     *************************************************************/
-    /*!
-     * \brief Delete action
-     *
-     * Delete action: left click delete, right click disconnect item
-     */
-    void CGraphicsScene::deletingEvent(const QGraphicsSceneMouseEvent *event)
-    {
-        if(event->type() != QEvent::GraphicsSceneMousePress) {
-            return;
-        }
-
-        QPointF pos = event->scenePos();
-        /* left click */
-        if((event->buttons() & Qt::LeftButton) == Qt::LeftButton) {
-            return deletingEventLeftMouseClick(pos);
-        }
-        /* right click */
-        if((event->buttons() & Qt::RightButton) == Qt::RightButton) {
-            return deletingEventRightMouseClick(pos);
-        }
-        return;
-    }
-
-    /*!
-     * \brief Left button deleting event: delete items
-     *
-     * \param pos: pos clicked
-     */
-    void CGraphicsScene::deletingEventLeftMouseClick(const QPointF &pos)
-    {
-        /* create a list of items */
-        QList<QGraphicsItem*> _list = items(pos);
-        if(!_list.isEmpty()) {
-            QList<CGraphicsItem*> _items = filterItems<CGraphicsItem>(_list);
-
-            if(!_items.isEmpty()) {
-                deleteItems(QList<CGraphicsItem*>() << _items.first());
-            }
-        }
-    }
-
-    /*!
-     * \brief Left button deleting event: delete items
-     *
-     * \param pos: pos clicked
-     */
-    void CGraphicsScene::deletingEventRightMouseClick(const QPointF &pos)
-    {
-        /* create a list of items */
-        QList<QGraphicsItem*> _list = items(pos);
-        if(!_list.isEmpty()) {
-            QList<CGraphicsItem*> _items = filterItems<CGraphicsItem>(_list);
-
-            if(!_items.isEmpty()) {
-                disconnectItems(QList<CGraphicsItem*>() << _items.first());
-            }
-        }
-    }
-
     /******************************************************************
      *
-     *                   Rotate Event
+     *                         Rotate Event
      *
      *****************************************************************/
     /*!
@@ -1293,30 +1807,64 @@ namespace Caneda
         }
 
         // Get items
-        QList<QGraphicsItem*> _list = items(event->scenePos());
+        QList<QGraphicsItem*> list = items(event->scenePos());
         // Filter item
-        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list);
-        if(!qItems.isEmpty()) {
-            rotateItems(QList<CGraphicsItem*>() << qItems.first(), angle);
+        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
+        if(!items.isEmpty()) {
+            rotateItems(QList<CGraphicsItem*>() << items.first(), angle);
         }
     }
 
-    /*!
-     * \brief Rotate an item list
+    /**********************************************************************
      *
-     * \param items: item list
-     * \param dir: rotation direction
+     *                           Mirror
+     *
+     **********************************************************************/
+    /*!
+     * \brief Mirror event
+     *
+     * \param event: event
+     * \param axis: mirror axis
      */
-    void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir)
+    void CGraphicsScene::mirroringEvent(const QGraphicsSceneMouseEvent *event,
+            const Qt::Axis axis)
     {
-        m_undoStack->beginMacro(QString("Rotate items"));
-        m_undoStack->push(new RotateItemsCmd(items, dir, this));
-        m_undoStack->endMacro();
+        // Select item and filter items
+        QList<QGraphicsItem*> list = items(event->scenePos());
+        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
+
+        if(!items.isEmpty()) {
+            mirrorItems(QList<CGraphicsItem*>() << items.first(), axis);
+        }
+    }
+
+    //! \brief Mirror X event
+    void CGraphicsScene::mirroringXEvent(const QGraphicsSceneMouseEvent *event)
+    {
+        if(event->type() != QEvent::GraphicsSceneMousePress) {
+            return;
+        }
+
+        if(event->buttons() == Qt::LeftButton) {
+            mirroringEvent(event, Qt::XAxis);
+        }
+    }
+
+    //! \brief Mirror Y event
+    void CGraphicsScene::mirroringYEvent(const QGraphicsSceneMouseEvent *event)
+    {
+        if(event->type() != QEvent::GraphicsSceneMousePress) {
+            return;
+        }
+
+        if(event->buttons() == Qt::LeftButton) {
+            mirroringEvent(event, Qt::YAxis);
+        }
     }
 
     /******************************************************************
      *
-     *  Zooming Area Event
+     *                       Zooming Area Event
      *
      *****************************************************************/
     /*!
@@ -1365,485 +1913,6 @@ namespace Caneda
         }
     }
 
-    /******************************************************************
-     *
-     *                   Other Events
-     *
-     *****************************************************************/
-    void CGraphicsScene::paintingDrawEvent(QGraphicsSceneMouseEvent *event)
-    {
-        if(!m_paintingDrawItem) {
-            return;
-        }
-
-        EllipseArc *arc = 0;
-        GraphicText *text = 0;
-        QPointF dest = event->scenePos();
-        dest += m_paintingDrawItem->paintingRect().topLeft();
-        dest = smartNearingGridPoint(dest);
-
-        if(m_paintingDrawItem->type() == EllipseArc::Type) {
-            arc = static_cast<EllipseArc*>(m_paintingDrawItem);
-        }
-
-        if(m_paintingDrawItem->type() == GraphicText::Type) {
-            text = static_cast<GraphicText*>(m_paintingDrawItem);
-        }
-
-
-        if(event->type() == QEvent::GraphicsSceneMousePress) {
-            clearSelection();
-            ++m_paintingDrawClicks;
-
-            // First handle special painting items
-            if(arc && m_paintingDrawClicks < 4) {
-                if(m_paintingDrawClicks == 1) {
-                    arc->setStartAngle(0);
-                    arc->setSpanAngle(360);
-                    arc->setPos(dest);
-                    addItem(arc);
-                }
-                else if(m_paintingDrawClicks == 2) {
-                    arc->setSpanAngle(180);
-                }
-
-                return;
-            }
-            else if(text) {
-                Q_ASSERT(m_paintingDrawClicks == 1);
-                text->setPos(dest);
-                int result = text->launchPropertyDialog(Caneda::DontPushUndoCmd);
-                if(result == QDialog::Accepted) {
-                    // Place the text item
-                    placeItem(m_paintingDrawItem, dest);
-
-                    // Make an empty copy of the item for the next item insertion
-                    m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
-                    m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-                    static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
-                }
-
-                // This means the text was set through the text dialog
-                m_paintingDrawClicks = 0;
-                return;
-            }
-
-            // This is the generic case
-            if(m_paintingDrawClicks == 1) {
-                m_paintingDrawItem->setPos(dest);
-                addItem(m_paintingDrawItem);
-            }
-            else {
-                m_paintingDrawClicks = 0;
-
-                // Place the painting item
-                dest = m_paintingDrawItem->pos();
-                placeItem(m_paintingDrawItem, dest);
-
-                // Make an empty copy of the item for the next item insertion
-                m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
-                m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-            }
-        }
-
-        else if(event->type() == QEvent::GraphicsSceneMouseMove) {
-            if(arc && m_paintingDrawClicks > 1) {
-                QPointF delta = event->scenePos() - arc->scenePos();
-                int angle = int(180/M_PI * std::atan2(-delta.y(), delta.x()));
-
-                if(m_paintingDrawClicks == 2) {
-                    while(angle < 0) {
-                        angle += 360;
-                    }
-                    arc->setStartAngle(int(angle));
-                }
-
-                else if(m_paintingDrawClicks == 3) {
-                    int span = angle - arc->startAngle();
-                    while(span < 0) {
-                        span += 360;
-                    }
-                    arc->setSpanAngle(span);
-                }
-            }
-
-            else if(m_paintingDrawClicks == 1) {
-                QRectF rect = m_paintingDrawItem->paintingRect();
-                const QPointF gridifiedPos = smartNearingGridPoint(event->scenePos());
-                rect.setBottomRight(m_paintingDrawItem->mapFromScene(gridifiedPos));
-                m_paintingDrawItem->setPaintingRect(rect);
-            }
-        }
-    }
-
-    /*!
-     * \brief This event corresponds to placing/pasting items on scene.
-     *
-     * When the mouse is moved without pressing, then feed back of all
-     * m_insertibles items moving is done here.
-     * On mouse press, these items are placed on the scene and a duplicate is
-     * retained to support further placing/insertion/paste.
-     */
-    void CGraphicsScene::insertingItemsEvent(QGraphicsSceneMouseEvent *event)
-    {
-        if(event->type() == QEvent::GraphicsSceneMousePress) {
-
-            if(event->button() == Qt::LeftButton) {
-
-                // First temporarily remove the item from the scene. This item
-                // is the one the user is grabbing with the mouse and about to
-                // insert into the scene. If this "moving" item is not removed
-                // there is a collision, and a temporal connection between its
-                // ports is made (as the ports of the inserting items collides
-                // with the ports of the new item created.
-                clearSelection();
-                foreach(CGraphicsItem *item, m_insertibles) {
-                    removeItem(item);
-                }
-
-                // Create a new item and copy the properties of the inserting
-                // item.
-                m_undoStack->beginMacro(QString("Insert items"));
-                foreach(CGraphicsItem *item, m_insertibles) {
-                    CGraphicsItem *copied = item->copy(0);
-                    placeItem(copied, smartNearingGridPoint(item->pos()));
-                }
-                m_undoStack->endMacro();
-
-                // Re-add the inserting items into the scene, to be able to
-                // insert more items of the same kind.
-                foreach(CGraphicsItem *item, m_insertibles) {
-                    addItem(item);
-                    item->setSelected(true);
-                }
-
-            }
-            else if(event->button() == Qt::RightButton) {
-
-                QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
-
-                foreach(CGraphicsItem *item, m_insertibles) {
-                    item->rotate90(Caneda::AntiClockwise);
-                    item->setPos(smartNearingGridPoint(item->pos() + delta));
-                }
-
-            }
-
-        }
-        else if(event->type() == QEvent::GraphicsSceneMouseMove) {
-
-            QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
-
-            foreach(CGraphicsItem *item, m_insertibles) {
-                item->show();
-                item->setPos(smartNearingGridPoint(item->pos() + delta));
-            }
-
-        }
-    }
-
-    /******************************************************************
-     *
-     *                   Moving Events
-     *
-     *****************************************************************/
-    /*!
-     * \brief Handle events other than the specilized mouse actions.
-     *
-     * This involves moving items in a special way so that wires disconnect
-     * from unselected components, and unselected wires change their geometry
-     * to accomodate item movements.
-     *
-     * \sa disconnectDisconnectibles(), processForSpecialMove(),
-     * specialMove(), endSpecialMove()
-     */
-    void CGraphicsScene::normalEvent(QGraphicsSceneMouseEvent *e)
-    {
-        switch(e->type()) {
-            case QEvent::GraphicsSceneMousePress:
-                {
-                    QGraphicsScene::mousePressEvent(e);
-                    processForSpecialMove(selectedItems());
-                }
-                break;
-
-            case QEvent::GraphicsSceneMouseMove:
-                {
-                    if(!m_areItemsMoving) {
-                        if(e->buttons() & Qt::LeftButton && !selectedItems().isEmpty()) {
-                            m_areItemsMoving = true;
-                            m_undoStack->beginMacro(QString("Move items"));
-                        }
-                        else {
-                            return;
-                        }
-                    }
-
-                    disconnectDisconnectibles();
-                    QGraphicsScene::mouseMoveEvent(e);
-                    specialMove();
-                }
-                break;
-
-            case QEvent::GraphicsSceneMouseRelease:
-                {
-                    if(m_areItemsMoving) {
-                        m_areItemsMoving = false;
-                        endSpecialMove();
-                        m_undoStack->endMacro();
-                    }
-                    QGraphicsScene::mouseReleaseEvent(e);
-                }
-                break;
-
-            case QEvent::GraphicsSceneMouseDoubleClick:
-                {
-                    if(selectedItems().size() == 0) {
-
-                        IDocument *document = DocumentViewManager::instance()->currentDocument();
-                        if (document) {
-                            document->launchPropertiesDialog();
-                        }
-
-                    }
-
-                    QGraphicsScene::mouseDoubleClickEvent(e);
-                }
-
-                break;
-
-            default:
-                qDebug() << "CGraphicsScene::normalEvent() :  Unknown event type";
-        };
-    }
-
-    /*!
-     * \brief Check which items should be moved in a special way, to allow
-     * proper wire and component movements.
-     *
-     * This method decides which tipe of movement each item must perform. In
-     * general, moving wires should disconnect from unselected components, and
-     * unselected wires should change their geometry to accomodate item
-     * movements. This is acomplished by generating two lists:
-     *
-     * \li A list of items to disconnect
-     * \li A list of wires whose geometry must be updated
-     *
-     * The action of this function is observed, for example, when moving an
-     * item (a wire, a component, etc) connected to other components. By
-     * processing if the item is a component or a wire and deciding if the
-     * items must remain together (in the case of wires or when moving only
-     * a component connected to wires) or separated from the connections
-     * (when moving a wire away from a component), expected movements are
-     * performed.
-     *
-     * \sa normalEvent(), specialMove()
-     */
-    void CGraphicsScene::processForSpecialMove(QList<QGraphicsItem*> _items)
-    {
-        disconnectibles.clear();
-        specialMoveItems.clear();
-
-        foreach(QGraphicsItem *item, _items) {
-            // Save item's position for later use
-            storePos(item, smartNearingGridPoint(item->scenePos()));
-
-            CGraphicsItem *_item = canedaitem_cast<CGraphicsItem*>(item);
-            if(_item) {
-                // Check for disconnections and wire resizing
-                foreach(Port *port, _item->ports()) {
-
-                    foreach(Port *other, *(port->connections())) {
-                        // If the item connected is a component, determine whether it should
-                        // be disconnected or not.
-                        if(other->parentItem()->type() == CGraphicsItem::ComponentType &&
-                                !other->parentItem()->isSelected()) {
-                            disconnectibles << _item;
-                        }
-                        // If the item connected is a wire, determine whether it should be
-                        // resized or moved.
-                        if(other->parentItem()->type() == CGraphicsItem::WireType &&
-                                !other->parentItem()->isSelected()) {
-                            specialMoveItems << other->parentItem();
-                        }
-                        // If the item connected is a port, determine whether it should be
-                        // moved or not.
-                        if(other->parentItem()->type() == CGraphicsItem::PortSymbolType &&
-                                !other->parentItem()->isSelected()) {
-                            specialMoveItems << other->parentItem();
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-
-    /*!
-     * \brief Disconnect the items in the disconnectibles list.
-     *
-     * This method disconnects the ports in the disconnectibles list, generated
-     * by the processForSpecialMove() method. The disconnection should happen
-     * when two (or more) components are connected and one of them is clicked
-     * and dragged, or when a wire is moved away from a (unselected) component.
-     *
-     * \sa normalEvent(), processForSpecialMove()
-     */
-    void CGraphicsScene::disconnectDisconnectibles()
-    {
-        QSet<CGraphicsItem*> remove;
-
-        foreach(CGraphicsItem *_item, disconnectibles) {
-
-            int disconnections = 0;
-            foreach(Port *port, _item->ports()) {
-
-                foreach(Port *other, *(port->connections())) {
-                    if(other->parentItem()->type() == CGraphicsItem::ComponentType &&
-                            other->parentItem() != _item &&
-                            !other->parentItem()->isSelected()) {
-
-                        m_undoStack->push(new DisconnectCmd(port, other));
-                        ++disconnections;
-
-                        break;
-                    }
-                }
-
-            }
-
-            if(disconnections) {
-                remove << _item;
-            }
-        }
-
-        foreach(CGraphicsItem *_item, remove)
-            disconnectibles.removeAll(_item);
-    }
-
-    /*!
-     * \brief Move the unselected items in a special way to allow proper wire
-     * movements.
-     *
-     * This method accomodates the geometry of all wires which must be resized
-     * due to the current wire movement, but are not selected (and moving)
-     * themselves. It also moves some special items which must move along with
-     * the selected wires.
-     *
-     * The action of this function is observed, for example, when moving a wire
-     * connected to other wires. Thanks to this function, the connected ports
-     * of all wires stay together. If this function was to be removed, after
-     * a wire movement action, the connected wires would remain untouched, and
-     * a gap would appear between the moved wire and the connected wires (which
-     * would remain in their original place).
-     *
-     * \sa normalEvent(), processForSpecialMove()
-     */
-    void CGraphicsScene::specialMove()
-    {
-        foreach(CGraphicsItem *_item, specialMoveItems) {
-
-            // The wires in specialMoveItems are those wires that are not selected
-            // but whose geometry must acommodate to the current moving wire.
-            if(_item->type() == CGraphicsItem::WireType) {
-
-                Wire *wire = canedaitem_cast<Wire*>(_item);
-                wire->storeState();
-
-                // Check both ports (port1 and port2) of the unselected wire for
-                // possible ports movement.
-
-                // First check port1
-                foreach(Port *other, *(wire->port1()->connections())) {
-                    // If some of the connected ports has moved, we have found the
-                    // moving wire and this port must copy that port position.
-                    if(other->scenePos() != wire->port1()->scenePos()) {
-                        wire->movePort1(other->scenePos());
-                        break;
-                    }
-                }
-
-                // Then check port2
-                foreach(Port *other, *(wire->port2()->connections())) {
-                    // If some of the connected ports has moved, we have found the
-                    // moving wire and this port must copy that port position.
-                    if(other->scenePos() != wire->port2()->scenePos()) {
-                        wire->movePort2(other->scenePos());
-                        break;
-                    }
-                }
-
-            }
-
-            // The ports in specialMoveItems must be moved along the selected
-            // (and moving) wires.
-            if(_item->type() == CGraphicsItem::PortSymbolType) {
-
-                PortSymbol *portSymbol = canedaitem_cast<PortSymbol*>(_item);
-
-                foreach(Port *other, *(portSymbol->port()->connections())) {
-                    // If some of the connected ports has moved, we have found the
-                    // moving item and this port must copy that port position.
-                    if(other->scenePos() != portSymbol->scenePos()) {
-                        portSymbol->setPos(other->scenePos());
-                        break;
-                    }
-                }
-
-            }
-
-        }
-    }
-
-    /*!
-     * \brief End the special move and finalize wire's segements.
-     *
-     * This method ends the special move by pushing the necessary UndoCommands
-     * relative to position changes of items on a scene. Also finalize wire's
-     * segments.
-     *
-     * \sa normalEvent()
-     */
-    void CGraphicsScene::endSpecialMove()
-    {
-        foreach(QGraphicsItem *item, selectedItems()) {
-
-            m_undoStack->push(new MoveCmd(item, storedPos(item),
-                        smartNearingGridPoint(item->scenePos())));
-
-
-            CGraphicsItem * m_item = canedaitem_cast<CGraphicsItem*>(item);
-            if(m_item) {
-                connectItems(m_item);
-                splitAndCreateNodes(m_item);
-            }
-
-        }
-
-        foreach(CGraphicsItem *_item, specialMoveItems) {
-
-            if(_item->type() == CGraphicsItem::WireType) {
-                Wire *wire = canedaitem_cast<Wire*>(_item);
-                m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
-                                                         wire->currentState()));
-            }
-
-        }
-
-        foreach(QGraphicsItem *item, specialMoveItems) {
-
-            PortSymbol * m_item = canedaitem_cast<PortSymbol*>(item);
-            if(m_item) {
-                connectItems(m_item);
-                splitAndCreateNodes(m_item);
-            }
-
-        }
-
-        specialMoveItems.clear();
-        disconnectibles.clear();
-    }
-
     /**********************************************************************
      *
      *                           Place item
@@ -1883,7 +1952,7 @@ namespace Caneda
      */
     int CGraphicsScene::componentLabelSuffix(const QString& prefix) const
     {
-        int _max = 1;
+        int max = 1;
 
         foreach(QGraphicsItem *item, items()) {
             Component *comp = canedaitem_cast<Component*>(item);
@@ -1891,354 +1960,274 @@ namespace Caneda
                 bool ok;
                 int suffix = comp->labelSuffix().toInt(&ok);
                 if(ok) {
-                    _max = qMax(_max, suffix+1);
+                    max = qMax(max, suffix+1);
                 }
             }
         }
 
-        return _max;
+        return max;
     }
 
-    /**********************************************************************
+    /******************************************************************
      *
-     *                           Mirror
+     *                   Moving Events
      *
-     **********************************************************************/
+     *****************************************************************/
     /*!
-     * \brief Mirror event
+     * \brief Check which items should be moved in a special way, to allow
+     * proper wire and component movements.
      *
-     * \param event: event
-     * \param axis: mirror axis
+     * This method decides which tipe of movement each item must perform. In
+     * general, moving wires should disconnect from unselected components, and
+     * unselected wires should change their geometry to accomodate item
+     * movements. This is acomplished by generating two lists:
+     *
+     * \li A list of items to disconnect
+     * \li A list of wires whose geometry must be updated
+     *
+     * The action of this function is observed, for example, when moving an
+     * item (a wire, a component, etc) connected to other components. By
+     * processing if the item is a component or a wire and deciding if the
+     * items must remain together (in the case of wires or when moving only
+     * a component connected to wires) or separated from the connections
+     * (when moving a wire away from a component), expected movements are
+     * performed.
+     *
+     * \sa normalEvent(), specialMove()
      */
-    void CGraphicsScene::mirroringEvent(const QGraphicsSceneMouseEvent *event,
-            const Qt::Axis axis)
+    void CGraphicsScene::processForSpecialMove()
     {
-        // Select item and filter items
-        QList<QGraphicsItem*> _list = items(event->scenePos());
-        QList<CGraphicsItem*> qItems = filterItems<CGraphicsItem>(_list);
+        disconnectibles.clear();
+        specialMoveItems.clear();
 
-        if(!qItems.isEmpty()) {
-            mirrorItems(QList<CGraphicsItem*>() << qItems.first(), axis);
-        }
-    }
+        foreach(QGraphicsItem *qItem, selectedItems()) {
+            // Save item's position for later use
+            storePos(qItem, smartNearingGridPoint(qItem->scenePos()));
 
-    //! \brief Mirror X event
-    void CGraphicsScene::mirroringXEvent(const QGraphicsSceneMouseEvent *event)
-    {
-        if(event->type() != QEvent::GraphicsSceneMousePress) {
-            return;
-        }
+            CGraphicsItem *item = canedaitem_cast<CGraphicsItem*>(qItem);
 
-        if(event->buttons() == Qt::LeftButton) {
-            mirroringEvent(event, Qt::XAxis);
-        }
-    }
+            if(item) {
+                // Check for disconnections and wire resizing
+                foreach(Port *port, item->ports()) {
 
-    //! \brief Mirror Y event
-    void CGraphicsScene::mirroringYEvent(const QGraphicsSceneMouseEvent *event)
-    {
-        if(event->type() != QEvent::GraphicsSceneMousePress) {
-            return;
-        }
-
-        if(event->buttons() == Qt::LeftButton) {
-            mirroringEvent(event, Qt::YAxis);
-        }
-    }
-
-    /**********************************************************************
-     *
-     *                           Distribute elements
-     *
-     **********************************************************************/
-    //! \brief Short function for qsort sort by abscissa
-    static inline bool pointCmpFunction_X(const CGraphicsItem *lhs, const CGraphicsItem  *rhs)
-    {
-        return lhs->pos().x() < rhs->pos().x();
-    }
-
-    //!Short function for qsort sort by abscissa
-    static inline bool pointCmpFunction_Y(const CGraphicsItem *lhs, const CGraphicsItem  *rhs)
-    {
-        return lhs->pos().y() < rhs->pos().y();
-    }
-
-    /*!
-     * \brief Distribute horizontally
-     *
-     * \param items: items to distribute
-     * \todo Why not filter wire ??
-     * +     * Ans: Because wires need special treatment. Wire's don't have single
-     * +     * x and y coord (think of several segments of wires which form single
-     * +     * Wire object)
-     * +     * Therefore distribution needs separate check for segments which make it
-     * +     * hard now. We should come out with some good solution for this.
-     * +     * Bastein: Do you have any solution ?
-     */
-    void CGraphicsScene::distributeElementsHorizontally(QList<CGraphicsItem*> items)
-    {
-        qreal x1, x2, x, dx;
-        QPointF newPos;
-
-        /* undo */
-        m_undoStack->beginMacro("Distribute horizontally");
-
-        /* disconnect */
-        disconnectItems(items);
-
-        /*sort item */
-        qSort(items.begin(), items.end(), pointCmpFunction_X);
-        x1 = items.first()->pos().x();
-        x2 = items.last()->pos().x();
-
-        /* compute step */
-        dx = (x2 - x1) / (items.size() - 1);
-        x = x1;
-
-        foreach(CGraphicsItem *item, items) {
-            /* why not filter wire ??? */
-            if(item->type() == CGraphicsItem::WireType) {
-                continue;
-            }
-
-            /* compute new position */
-            newPos = item->pos();
-            newPos.setX(x);
-            x += dx;
-
-            /* move to new pos */
-            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
-        }
-
-        /* try to reconnect */
-        connectItems(items);
-        splitAndCreateNodes(items);
-
-        /* end command */
-        m_undoStack->endMacro();
-
-    }
-
-    /*!
-     * \brief Distribute vertically
-     *
-     * \param items: items to distribute
-     * \todo Why not filter wire ??
-     */
-    void CGraphicsScene::distributeElementsVertically(QList<CGraphicsItem*> items)
-    {
-        qreal y1, y2, y, dy;
-        QPointF newPos;
-
-        /* undo */
-        m_undoStack->beginMacro("Distribute vertically");
-
-        /* disconnect */
-        disconnectItems(items);
-
-        /*sort item */
-        qSort(items.begin(), items.end(), pointCmpFunction_Y);
-        y1 = items.first()->pos().y();
-        y2 = items.last()->pos().y();
-
-        /* compute step */
-        dy = (y2 - y1) / (items.size() - 1);
-        y = y1;
-
-        foreach(CGraphicsItem *item, items) {
-            /* why not filter wire ??? */
-            if(item->type() == CGraphicsItem::WireType) {
-                continue;
-            }
-
-            /* compute new position */
-            newPos = item->pos();
-            newPos.setY(y);
-            y += dy;
-
-            /* move to new pos */
-            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
-        }
-
-        /* try to reconnect */
-        connectItems(items);
-        splitAndCreateNodes(items);
-
-        /* end command */
-        m_undoStack->endMacro();
-
-    }
-
-    /**********************************************************************
-     *
-     *                           Misc
-     *
-     **********************************************************************/
-    /*!
-     * \brief Calculates the center of the items given as a parameter.
-     *
-     * It actually unites the boundingRect of the items sent as parameters
-     * and then returns the center of the united rectangle. This center may be
-     * used as a reference point for several actions, for example, rotation,
-     * mirroring, and copy/paste/inserting items on the scene.
-     *
-     * \param items The items which geometric center has to be calculated.
-     * \return The geometric center of the items.
-     */
-    QPointF CGraphicsScene::centerOfItems(const QList<CGraphicsItem*> &items)
-    {
-        QRectF rect = items.isEmpty() ? QRectF() :
-            items.first()->sceneBoundingRect();
-
-        foreach(CGraphicsItem *item, items) {
-            rect |= item->sceneBoundingRect();
-        }
-
-        return rect.center();
-    }
-
-    //! \copydoc connectItems(CGraphicsItem *item)
-    void CGraphicsScene::connectItems(QList<CGraphicsItem*> &items)
-    {
-        // Check and connect each item
-        foreach (CGraphicsItem *item, items) {
-            connectItems(item);
-        }
-    }
-
-    /*!
-     * \brief Check for overlapping ports around the scene, and connect the
-     * coinciding ports.
-     *
-     * This method checks for overlapping ports around the scene, and connects
-     * the coinciding ports. Although previously this method was included in
-     * the CGraphicsItem class, later was moved to CGraphicsScene to give more
-     * flexibility and to avoid infinite recursions when calling this method
-     * from inside a newly created or deleted item.
-     *
-     * \param item: items to connect
-     *
-     * \sa splitAndCreateNodes()
-     */
-    void CGraphicsScene::connectItems(CGraphicsItem *item)
-    {
-        // Find existing intersecting ports and connect
-        foreach(Port *port, item->ports()) {
-            Port *other = port->findCoincidingPort();
-            if(other) {
-                port->connectTo(other);
-            }
-        }
-    }
-
-    //! \copydoc disconnectItems(CGraphicsItem *item)
-    void CGraphicsScene::disconnectItems(QList<CGraphicsItem*> &items)
-    {
-        foreach(CGraphicsItem *item, items) {
-            disconnectItems(item);
-        }
-    }
-
-    /*!
-     * \brief Disconnect an item from any wire or other components
-     *
-     * \param item: item to disconnect
-     */
-    void CGraphicsScene::disconnectItems(CGraphicsItem *item)
-    {
-        QList<Port*> ports = item->ports();
-        foreach(Port *p, ports) {
-            p->disconnect();
-        }
-    }
-
-    //! \copydoc splitAndCreateNodes(CGraphicsItem *item)
-    void CGraphicsScene::splitAndCreateNodes(QList<CGraphicsItem *> &items)
-    {
-        foreach (CGraphicsItem *item, items) {
-            splitAndCreateNodes(item);
-        }
-    }
-
-    /*!
-     * \brief Search wire collisions and if found split the wire.
-     *
-     * This method searches for wire collisions, and if a collision is present,
-     * splits the wire in two, creating a new node. This is done, for example,
-     * when wiring the schematic and a wire ends in the middle of another wire.
-     * In that case, a connection must be made, thus the need to split the
-     * colliding wire.
-     *
-     * \return Returns true if new node was created.
-     *
-     * \sa connectItems()
-     */
-    void CGraphicsScene::splitAndCreateNodes(CGraphicsItem *item)
-    {
-        // Check for collisions in each port, otherwise the items intersect
-        // but no node should be created.
-        foreach(Port *port, item->ports()) {
-
-            // List of wires to delete after collision and creation of new wires
-            QList<Wire*> markedForDeletion;
-
-            // Detect all colliding items
-            QList<QGraphicsItem*> collisions = port->collidingItems(Qt::IntersectsItemBoundingRect);
-
-            // Filter colliding wires only
-            foreach(QGraphicsItem *collidingItem, collisions) {
-                Wire* collidingWire = canedaitem_cast<Wire*>(collidingItem);
-                if(collidingWire) {
-
-                    // If already connected, the collision is the result of the connection,
-                    // otherwise there is a potential new node.
-                    bool alreadyConnected = false;
-                    foreach(Port *portIterator, item->ports()) {
-                        alreadyConnected |=
-                                portIterator->isConnectedTo(collidingWire->port1()) ||
-                                portIterator->isConnectedTo(collidingWire->port2());
+                    foreach(Port *other, *(port->connections())) {
+                        // If the item connected is a component, determine whether it should
+                        // be disconnected or not.
+                        if(other->parentItem()->type() == CGraphicsItem::ComponentType &&
+                                !other->parentItem()->isSelected()) {
+                            disconnectibles << item;
+                        }
+                        // If the item connected is a wire, determine whether it should be
+                        // resized or moved.
+                        if(other->parentItem()->type() == CGraphicsItem::WireType &&
+                                !other->parentItem()->isSelected()) {
+                            specialMoveItems << other->parentItem();
+                        }
+                        // If the item connected is a port, determine whether it should be
+                        // moved or not.
+                        if(other->parentItem()->type() == CGraphicsItem::PortSymbolType &&
+                                !other->parentItem()->isSelected()) {
+                            specialMoveItems << other->parentItem();
+                        }
                     }
 
-                    if(!alreadyConnected){
-                        // Calculate the start, middle and end points. As the ports are mapped in the parent's
-                        // coordinate system, we must calculate the positions (via the mapToScene method) in
-                        // the global (scene) coordinate system.
-                        QPointF startPoint  = collidingWire->port1()->scenePos();
-                        QPointF middlePoint = port->scenePos();
-                        QPointF endPoint    = collidingWire->port2()->scenePos();
-
-                        // Mark old wire for deletion. The deletion is performed in a second
-                        // stage to avoid referencing null pointers inside the foreach loop.
-                        markedForDeletion << collidingWire;
-
-                        // Create two new wires
-                        Wire *wire1 = new Wire(startPoint, middlePoint, this);
-                        Wire *wire2 = new Wire(middlePoint, endPoint, this);
-
-                        // Create new node (connections to the colliding wire)
-                        port->connectTo(wire1->port2());
-                        port->connectTo(wire2->port1());
-
-                        wire1->updateGeometry();
-                        wire2->updateGeometry();
-
-                        // Restore old wire connections
-                        connectItems(wire1);
-                        connectItems(wire2);
-                    }
                 }
             }
+        }
+    }
 
-            // Delete all wires marked for deletion. The deletion is performed
-            // in a second stage to avoid referencing null pointers inside the
-            // foreach loop.
-            foreach(Wire *w, markedForDeletion) {
-                delete w;
+    /*!
+     * \brief Move the unselected items in a special way to allow proper wire
+     * movements.
+     *
+     * This method accomodates the geometry of all wires which must be resized
+     * due to the current wire movement, but are not selected (and moving)
+     * themselves. It also moves some special items which must move along with
+     * the selected wires.
+     *
+     * The action of this function is observed, for example, when moving a wire
+     * connected to other wires. Thanks to this function, the connected ports
+     * of all wires stay together. If this function was to be removed, after
+     * a wire movement action, the connected wires would remain untouched, and
+     * a gap would appear between the moved wire and the connected wires (which
+     * would remain in their original place).
+     *
+     * \sa normalEvent(), processForSpecialMove()
+     */
+    void CGraphicsScene::specialMove()
+    {
+        foreach(CGraphicsItem *item, specialMoveItems) {
+
+            // The wires in specialMoveItems are those wires that are not selected
+            // but whose geometry must acommodate to the current moving wire.
+            if(item->type() == CGraphicsItem::WireType) {
+
+                Wire *wire = canedaitem_cast<Wire*>(item);
+                wire->storeState();
+
+                // Check both ports (port1 and port2) of the unselected wire for
+                // possible ports movement.
+
+                // First check port1
+                foreach(Port *other, *(wire->port1()->connections())) {
+                    // If some of the connected ports has moved, we have found the
+                    // moving wire and this port must copy that port position.
+                    if(other->scenePos() != wire->port1()->scenePos()) {
+                        wire->movePort1(other->scenePos());
+                        break;
+                    }
+                }
+
+                // Then check port2
+                foreach(Port *other, *(wire->port2()->connections())) {
+                    // If some of the connected ports has moved, we have found the
+                    // moving wire and this port must copy that port position.
+                    if(other->scenePos() != wire->port2()->scenePos()) {
+                        wire->movePort2(other->scenePos());
+                        break;
+                    }
+                }
+
             }
 
-            // Clear the list to avoid dereferencing deleted wires
-            markedForDeletion.clear();
+            // The ports in specialMoveItems must be moved along the selected
+            // (and moving) wires.
+            if(item->type() == CGraphicsItem::PortSymbolType) {
+
+                PortSymbol *portSymbol = canedaitem_cast<PortSymbol*>(item);
+
+                foreach(Port *other, *(portSymbol->port()->connections())) {
+                    // If some of the connected ports has moved, we have found the
+                    // moving item and this port must copy that port position.
+                    if(other->scenePos() != portSymbol->scenePos()) {
+                        portSymbol->setPos(other->scenePos());
+                        break;
+                    }
+                }
+
+            }
+
         }
+    }
+
+    /*!
+     * \brief End the special move and finalize wire's segements.
+     *
+     * This method ends the special move by pushing the necessary UndoCommands
+     * relative to position changes of items on a scene. Also finalize wire's
+     * segments.
+     *
+     * \sa normalEvent()
+     */
+    void CGraphicsScene::endSpecialMove()
+    {
+        foreach(QGraphicsItem *item, selectedItems()) {
+
+            m_undoStack->push(new MoveCmd(item, storedPos(item),
+                        smartNearingGridPoint(item->scenePos())));
+
+            CGraphicsItem *canedaItem = canedaitem_cast<CGraphicsItem*>(item);
+            if(canedaItem) {
+                connectItems(canedaItem);
+                splitAndCreateNodes(canedaItem);
+            }
+        }
+
+        foreach(CGraphicsItem *item, specialMoveItems) {
+            if(item->type() == CGraphicsItem::WireType) {
+                Wire *wire = canedaitem_cast<Wire*>(item);
+                m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
+                                                         wire->currentState()));
+            }
+        }
+
+        foreach(QGraphicsItem *item, specialMoveItems) {
+            PortSymbol *portSymbol = canedaitem_cast<PortSymbol*>(item);
+            if(portSymbol) {
+                connectItems(portSymbol);
+                splitAndCreateNodes(portSymbol);
+            }
+        }
+
+        specialMoveItems.clear();
+        disconnectibles.clear();
+    }
+
+    /*!
+     * \brief Disconnect the items in the disconnectibles list.
+     *
+     * This method disconnects the ports in the disconnectibles list, generated
+     * by the processForSpecialMove() method. The disconnection should happen
+     * when two (or more) components are connected and one of them is clicked
+     * and dragged, or when a wire is moved away from a (unselected) component.
+     *
+     * \sa normalEvent(), processForSpecialMove()
+     */
+    void CGraphicsScene::disconnectDisconnectibles()
+    {
+        QSet<CGraphicsItem*> remove;
+
+        foreach(CGraphicsItem *item, disconnectibles) {
+
+            int disconnections = 0;
+            foreach(Port *port, item->ports()) {
+
+                foreach(Port *other, *(port->connections())) {
+                    if(other->parentItem()->type() == CGraphicsItem::ComponentType &&
+                            other->parentItem() != item &&
+                            !other->parentItem()->isSelected()) {
+
+                        m_undoStack->push(new DisconnectCmd(port, other));
+                        ++disconnections;
+
+                        break;
+                    }
+                }
+
+            }
+
+            if(disconnections) {
+                remove << item;
+            }
+        }
+
+        foreach(CGraphicsItem *item, remove) {
+            disconnectibles.removeAll(item);
+        }
+    }
+
+    /*!
+     * \brief Reset the state
+     *
+     * This callback is called when for instance you press esc key
+     */
+    void CGraphicsScene::resetState()
+    {
+        // Clear focus on any item on this scene.
+        setFocusItem(0);
+        // Clear selection.
+        clearSelection();
+
+        // Clear the list holding items to be pasted/placed on graphics scene.
+        qDeleteAll(m_insertibles);
+        m_insertibles.clear();
+
+        // If current state is wiring, delete last attempt
+        if(m_wiringState == SINGLETON_WIRE){
+            Q_ASSERT(m_currentWiringWire != NULL);
+            delete m_currentWiringWire;
+            m_wiringState = NO_WIRE;
+        }
+
+        // Reset drawing item
+        delete m_paintingDrawItem;
+        m_paintingDrawItem = 0;
+        m_paintingDrawClicks = 0;
+
+        // Clear zoom
+        m_zoomRect = QRectF();
+        m_zoomBand->hide();
+        m_zoomBandClicks = 0;
     }
 
 } // namespace Caneda

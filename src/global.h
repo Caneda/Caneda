@@ -24,6 +24,7 @@
 #include <config.h>
 
 #include <QDebug>
+#include <QGraphicsItem>
 #include <QPainter>
 #include <QVariant>
 
@@ -68,6 +69,18 @@ namespace Caneda
     inline int sign(int value)
     {
         return value >= 0 ? +1 : -1;
+    }
+
+    //! \brief Short function for qsort sort by abscissa
+    static inline bool pointCmpFunction_X(const QGraphicsItem *lhs, const QGraphicsItem  *rhs)
+    {
+        return lhs->pos().x() < rhs->pos().x();
+    }
+
+    //!Short function for qsort sort by abscissa
+    static inline bool pointCmpFunction_Y(const QGraphicsItem *lhs, const QGraphicsItem  *rhs)
+    {
+        return lhs->pos().y() < rhs->pos().y();
     }
 
     //! \brief Default grid spacing

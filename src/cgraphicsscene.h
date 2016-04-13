@@ -83,10 +83,12 @@ namespace Caneda
 
         bool alignElements(const Qt::Alignment alignment);
         bool distributeElements(const Qt::Orientation orientation);
+        void distributeElementsHorizontally(QList<CGraphicsItem*> items);
+        void distributeElementsVertically(QList<CGraphicsItem*> items);
 
         // Document properties
         bool isBackgroundVisible() const { return m_backgroundVisible; }
-        void setBackgroundVisible(bool vis);
+        void setBackgroundVisible(bool visible);
 
         void print(QPrinter *printer, bool fitInView);
         bool exportImage(QPaintDevice &);
@@ -98,8 +100,8 @@ namespace Caneda
         bool eventFilter(QObject *object, QEvent *event);
         void blockShortcuts(bool block);
 
-        void beginPaintingDraw(Painting *item);
         void beginInsertingItems(const QList<CGraphicsItem*> &items);
+        void beginPaintingDraw(Painting *item);
 
         // Connect/disconnect methods
         QPointF centerOfItems(const QList<CGraphicsItem*> &items);
@@ -130,59 +132,59 @@ namespace Caneda
     protected:
         void drawBackground(QPainter *p, const QRectF& r);
 
-        // Events
+        // Custom event handlers
         bool event(QEvent *event);
-        void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
 
-        void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
-        void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
-        void dropEvent(QGraphicsSceneDragDropEvent * event);
+        void mousePressEvent(QGraphicsSceneMouseEvent *event);
+        void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+        void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-        void mousePressEvent(QGraphicsSceneMouseEvent *e);
-        void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
-        void mouseReleaseEvent(QGraphicsSceneMouseEvent *e);
-        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e);
-        void wheelEvent(QGraphicsSceneWheelEvent *e);
+        void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
+        void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+        void dropEvent(QGraphicsSceneDragDropEvent *event);
+
+        void wheelEvent(QGraphicsSceneWheelEvent *event);
+
+        void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
     private:
-        // Custom handlers
-        void sendMouseActionEvent(QGraphicsSceneMouseEvent *e);
-        void resetState();
+        // Custom event handlers
+        void sendMouseActionEvent(QGraphicsSceneMouseEvent *event);
+        void normalEvent(QGraphicsSceneMouseEvent *event);
 
-        void wiringEvent(QGraphicsSceneMouseEvent *e);
+        void insertingItemsEvent(QGraphicsSceneMouseEvent *event);
+        void paintingDrawEvent(QGraphicsSceneMouseEvent *event);
+
+        void deletingEvent(const QGraphicsSceneMouseEvent *event);
+        void deletingEventLeftMouseClick(const QPointF &pos);
+        void deletingEventRightMouseClick(const QPointF &pos);
+
+        void wiringEvent(QGraphicsSceneMouseEvent *event);
         void wiringEventMouseClick(const QGraphicsSceneMouseEvent *event, const QPointF &pos);
         void wiringEventLeftMouseClick(const QPointF &pos);
         void wiringEventRightMouseClick();
         void wiringEventMouseMove(const QPointF &newPos);
 
-        void deletingEvent(const QGraphicsSceneMouseEvent *e);
-        void deletingEventLeftMouseClick(const QPointF &pos);
-        void deletingEventRightMouseClick(const QPointF &pos);
+        void rotatingEvent(QGraphicsSceneMouseEvent *event);
 
-        void rotatingEvent(QGraphicsSceneMouseEvent *e);
-        void zoomingAreaEvent(QGraphicsSceneMouseEvent *e);
-        void paintingDrawEvent(QGraphicsSceneMouseEvent *e);
-        void insertingItemsEvent(QGraphicsSceneMouseEvent *e);
+        void mirroringEvent(const QGraphicsSceneMouseEvent *event, const Qt::Axis axis);
+        void mirroringXEvent(const QGraphicsSceneMouseEvent *event);
+        void mirroringYEvent(const QGraphicsSceneMouseEvent *event);
 
-        void normalEvent(QGraphicsSceneMouseEvent *e);
-        void processForSpecialMove(QList<QGraphicsItem*> _items);
-        void disconnectDisconnectibles();
-        void specialMove();
-        void endSpecialMove();
+        void zoomingAreaEvent(QGraphicsSceneMouseEvent *event);
 
-        // Placing items
+        // Custom private methods
         void placeItem(CGraphicsItem *item, const QPointF &pos);
         int componentLabelSuffix(const QString& labelPrefix) const;
 
-        // Private edit events
-        void mirroringEvent(const QGraphicsSceneMouseEvent *event, const Qt::Axis axis);
-        void mirroringXEvent(const QGraphicsSceneMouseEvent *e);
-        void mirroringYEvent(const QGraphicsSceneMouseEvent *e);
+        void processForSpecialMove();
+        void specialMove();
+        void endSpecialMove();
+        void disconnectDisconnectibles();
+        void resetState();
 
-        void distributeElementsHorizontally(QList<CGraphicsItem*> items);
-        void distributeElementsVertically(QList<CGraphicsItem*> items);
-
-        // Helper variables (aka state holders)
+        // Helper variables or state holders
         //! \brief Last grid position of mouse cursor
         QPointF lastPos;
 
@@ -238,19 +240,19 @@ namespace Caneda
          */
         QList<CGraphicsItem*> specialMoveItems;
 
-        //! Wiring state machine state enum
+        //! \brief Wiring state machine state enum
         enum wiringStateEnum {
             NO_WIRE,               //! There are no wire segments yet
             SINGLETON_WIRE         //! Already created wire segments
         };
 
-        //! State variable for the wire state machine
+        //! \brief State variable for the wire state machine
         wiringStateEnum m_wiringState;
 
-        //! Current wire
+        //! \brief Current wire
         Wire *m_currentWiringWire;
 
-        //! Current mouse action
+        //! \brief Current mouse action
         Caneda::MouseAction m_mouseAction;
 
         /*!
