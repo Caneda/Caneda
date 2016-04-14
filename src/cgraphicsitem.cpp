@@ -51,26 +51,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Rotate item by 90 degrees
-     *
-     * This method rotates an item by 90 degrees. The direction of the rotation
-     * is passed as a parameter.
-     *
-     * \param dir Direction of rotation
-     *
-     * \sa rotate(AngleDirection dir, QPointF pivotPoint)
-     */
-    void CGraphicsItem::rotate(Caneda::AngleDirection dir)
-    {
-        if(dir == Caneda::AntiClockwise) {
-            setRotation(rotation() - 90.0);
-        }
-        else {
-            setRotation(rotation() + 90.0);
-        }
-    }
-
-    /*!
      * \brief Rotate item by 90 degrees around a pivot point
      *
      * This method rotates an item around a pivot point, allowing for complex
@@ -91,13 +71,12 @@ namespace Caneda
      *
      * \param dir Direction of rotation
      * \param pivotPoint Point around which the rotation is performed
-     *
-     * \sa rotate(Caneda::AngleDirection dir)
      */
     void CGraphicsItem::rotate(AngleDirection dir, QPointF pivotPoint)
     {
         // Rotate item
-        rotate(dir);
+        qreal angle = (dir == Caneda::Clockwise) ? 90.0 : -90.0;
+        setRotation(rotation() + angle);
 
         // Move to the rotated position around the pivot point
         QTransform transform;
@@ -112,26 +91,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Mirror item according to an axis
-     *
-     * This method mirrors an item around an axis. The axis of the mirror
-     * is passed as a parameter.
-     *
-     * \param axis Mirror axis
-     *
-     * \sa mirror(Qt::Axis axis, QPointF pivotPoint)
-     */
-    void CGraphicsItem::mirror(Qt::Axis axis)
-    {
-        if(axis == Qt::XAxis) {
-            setTransform(QTransform::fromScale(1.0, -1.0), true);
-        }
-        else {
-            setTransform(QTransform::fromScale(-1.0, 1.0), true);
-        }
-    }
-
-    /*!
      * \brief Mirror item according to an axis around a pivot point
      *
      * This method mirrors an item around a pivot point, allowing for complex
@@ -140,13 +99,16 @@ namespace Caneda
      *
      * \param axis Mirror axis
      * \param pivotPoint Point around which the mirror is performed
-     *
-     * \sa mirror(Qt::Axis axis)
      */
     void CGraphicsItem::mirror(Qt::Axis axis, QPointF pivotPoint)
     {
         // Mirror item
-        mirror(axis);
+        if(axis == Qt::XAxis) {
+            setTransform(QTransform::fromScale(1.0, -1.0), true);
+        }
+        else {
+            setTransform(QTransform::fromScale(-1.0, 1.0), true);
+        }
 
         // Move to the mirrored position around the pivot point
         QPointF newPos = pos();
@@ -161,7 +123,6 @@ namespace Caneda
         newPos = smartNearingGridPoint(newPos);
         setPos(newPos);
     }
-
 
     /*!
      * \brief Stores the item's current position for later usage.
