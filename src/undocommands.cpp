@@ -21,13 +21,9 @@
 #include "undocommands.h"
 
 #include "cgraphicsscene.h"
-#include "component.h"
 #include "graphictext.h"
 #include "port.h"
 #include "wire.h"
-//#include "xmlutilities.h"
-
-#include <QDebug>
 
 namespace Caneda
 {

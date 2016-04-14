@@ -31,7 +31,6 @@ namespace Caneda
 {
     // Forward declarations.
     class CGraphicsItem;
-    class Component;
     class GraphicText;
     class Painting;
     class Port;
