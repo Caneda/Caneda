@@ -675,6 +675,7 @@ namespace Caneda
     void CGraphicsScene::beginPaintingDraw(Painting *item)
     {
         Q_ASSERT(m_mouseAction == Caneda::PaintingDrawEvent);
+
         m_paintingDrawClicks = 0;
         delete m_paintingDrawItem;
         m_paintingDrawItem = item->copy();

@@ -35,8 +35,8 @@ namespace Caneda
     /*!
      * \brief Constructs a wire between \a startPos and \a endPos.
      *
-     * During creation, this class also connects the wire's port's to every
-     * other coinciding ports in the scene.
+     * During creation, the initial position of the wire must be set to avoid
+     * strange artifacts during copy/paste operations.
      *
      * \param startPos Starting position of the wire.
      * \param endPos Ending position of the wire.
@@ -49,6 +49,9 @@ namespace Caneda
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
+
+        // Set initial position
+        setPos(startPos);
 
         // Create ports
         m_ports << new Port(this);
@@ -70,56 +73,24 @@ namespace Caneda
      * while drawing a new wire, or changing the geometry of an existing one.
      *
      * The order of the steps involved is important, as if care is not taken
-     * strange artifacts occur. On the other hand, the center or position of
-     * the item must be updated to be positioned as close as possible to the
-     * real center. If the position is not updated, although at first the wire
-     * appears to be correctly drawn, when rotating the center of rotation
-     * would be offset making it difficult to coordinate the rotations with the
-     * rest of the scene's components.
-     *
-     * This method performs the following steps:
-     * \li First saves the pos of the other port as it will be moved when a new
-     * center is set.
-     * \li Secondly, it moves the position of the wire to the calculated center
-     * from the new position of this port and the saved position of the other
-     * port. It is important to note that for odd number of grid lenghts the
-     * center will be moved to the nearest grid. This results in rotations that
-     * are slightly shifted to fit in the grid.
-     * \li Lastly, it sets the new port position, and restores the other port
-     * position with the new wire center.
+     * strange artifacts occur. On the other hand, the position of the wire is
+     * set at the constructor, fixed in a point. When rotating the wire, the
+     * center of rotation is offset around that point, but as the rotations are
+     * performed around pivot points, this fact is hidded behind the
+     * implementation.
      *
      * \param newScenePos Destination position of the port.
-     *
-     * sa smartNearingGridPoint()
      */
     void Wire::movePort1(const QPointF& newScenePos)
     {
-        // Save the pos of the other port.
-        QPointF otherPortPos = port2()->scenePos();
-
-        // Move the position of the wire to the new calculated center.
-        QPointF center = QRectF(otherPortPos, newScenePos).center();
-        setPos(smartNearingGridPoint(center));
-
-        // Set new port position, and restore the other port position with the new center.
         port1()->setPos(mapFromScene(newScenePos));
-        port2()->setPos(mapFromScene(otherPortPos));
         updateGeometry();
     }
 
     //! \copydoc movePort1()
     void Wire::movePort2(const QPointF& newScenePos)
     {
-        // Save the pos of the other port.
-        QPointF otherPortPos = port1()->scenePos();
-
-        // Move the position of the wire to the new calculated center.
-        QPointF center = QRectF(otherPortPos, newScenePos).center();
-        setPos(smartNearingGridPoint(center));
-
-        // Set new port position, and restore the other port position with the new center.
         port2()->setPos(mapFromScene(newScenePos));
-        port1()->setPos(mapFromScene(otherPortPos));
         updateGeometry();
     }
 
