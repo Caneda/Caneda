@@ -1437,7 +1437,7 @@ namespace Caneda
                 // item.
                 m_undoStack->beginMacro(QString("Insert items"));
                 foreach(CGraphicsItem *item, m_insertibles) {
-                    CGraphicsItem *copied = item->copy(0);
+                    CGraphicsItem *copied = item->copy();
                     placeItem(copied, smartNearingGridPoint(item->pos()));
                 }
                 m_undoStack->endMacro();
