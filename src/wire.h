@@ -97,7 +97,7 @@ namespace Caneda
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
     private:
-        WireData store; //!< Stores the wire data when needed(undo/redo).
+        WireData m_store; //! \brief Stores the wire data when needed (undo/redo).
     };
 
 } // namespace Caneda

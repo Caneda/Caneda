@@ -208,14 +208,14 @@ namespace Caneda
     //! \brief Returns the wire's stored status. Required for undo/redo.
     WireData Wire::storedState() const
     {
-        return store;
+        return m_store;
     }
 
     //! \brief Stores wire's status. Required for undo/redo.
     void Wire::storeState()
     {
-        store.port1Pos = port1()->pos();
-        store.port2Pos = port2()->pos();
+        m_store.port1Pos = port1()->pos();
+        m_store.port2Pos = port2()->pos();
     }
 
     //! \brief Set's the wire status to \a state. Required for undo/redo.

@@ -162,6 +162,34 @@ namespace Caneda
         setPos(newPos);
     }
 
+
+    /*!
+     * \brief Stores the item's current position for later usage.
+     *
+     * This method stores the current item position and is required for
+     * recovering the last known position while handling the undo/redo
+     * commands.
+     *
+     * \sa storedPos()
+     */
+    void CGraphicsItem::storePos()
+    {
+        m_store = pos();
+    }
+
+    /*!
+     * \brief Returns the previously stored position of this item.
+     *
+     * This method is required for recovering the last position while handling
+     * undo/redo.
+     *
+     * \sa storePos()
+     */
+    QPointF CGraphicsItem::storedPos() const
+    {
+        return m_store;
+    }
+
     /*!
      * \brief Convenience method to get the saved text as string.
      *
@@ -284,26 +312,6 @@ namespace Caneda
             // If path is empty just add the bounding rect to the path.
             m_shape.addRect(m_boundingRect);
         }
-    }
-
-    /*!
-     * \brief Stores the item's current position in data field of item.
-     *
-     * This method is required for handling undo/redo.
-     */
-    void storePos(QGraphicsItem *item, const QPointF &pos)
-    {
-        item->setData(PointKey, QVariant(pos));
-    }
-
-    /*!
-     * \brief Returns the stored point by fetching from item's data field.
-     *
-     * This method is required for handling undo/redo.
-     */
-    QPointF storedPos(QGraphicsItem *item)
-    {
-        return item->data(PointKey).toPointF();
     }
 
 } // namespace Caneda

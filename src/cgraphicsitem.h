@@ -145,6 +145,9 @@ namespace Caneda
         //! Virtual method to read item's properties from reader.
         virtual void loadData(Caneda::XmlReader *) {}
 
+        void storePos();
+        QPointF storedPos() const;
+
         QString saveDataText() const;
         void loadDataFromText(const QString &str);
 
@@ -166,6 +169,8 @@ namespace Caneda
         QPainterPath m_shape; //! Shape cache
 
         QList<Port*> m_ports; //! Ports list
+
+        QPointF m_store; //! \brief Stores the item position when moved (needed for undo/redo).
     };
 
     /*!
@@ -216,11 +221,6 @@ namespace Caneda
 
         return tItems;
     }
-
-    //! Key used to store the current position of an item in it's data field.
-    static const int PointKey = 10;
-    void storePos(QGraphicsItem *item, const QPointF& pos);
-    QPointF storedPos(QGraphicsItem *item);
 
 } // namespace Caneda
 

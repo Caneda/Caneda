@@ -1988,12 +1988,12 @@ namespace Caneda
         specialMoveItems.clear();
 
         foreach(QGraphicsItem *qItem, selectedItems()) {
-            // Save item's position for later use
-            storePos(qItem, smartNearingGridPoint(qItem->scenePos()));
-
             CGraphicsItem *item = canedaitem_cast<CGraphicsItem*>(qItem);
 
             if(item) {
+                // Save item's position for later use in undo/redo.
+                item->storePos();
+
                 // Check for disconnections and wire resizing
                 foreach(Port *port, item->ports()) {
 
@@ -2110,11 +2110,12 @@ namespace Caneda
     {
         foreach(QGraphicsItem *item, selectedItems()) {
 
-            m_undoStack->push(new MoveCmd(item, storedPos(item),
-                        smartNearingGridPoint(item->scenePos())));
-
             CGraphicsItem *canedaItem = canedaitem_cast<CGraphicsItem*>(item);
+
             if(canedaItem) {
+                m_undoStack->push(new MoveCmd(item, canedaItem->storedPos(),
+                            smartNearingGridPoint(item->scenePos())));
+
                 connectItems(canedaItem);
                 splitAndCreateNodes(canedaItem);
             }
