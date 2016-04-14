@@ -190,9 +190,10 @@ namespace Caneda
     //! \copydoc CGraphicsItem::copy()
     Wire* Wire::copy(CGraphicsScene *scene) const
     {
-        Wire *wire = new Wire(QPointF(1,1), QPointF(5,5), scene);
-        wire->movePort1(port1()->scenePos());
-        wire->movePort2(port2()->scenePos());
+        QPointF startPos = port1()->scenePos();
+        QPointF endPos = port2()->scenePos();
+
+        Wire *wire = new Wire(startPos, endPos, scene);
         return wire;
     }
 
