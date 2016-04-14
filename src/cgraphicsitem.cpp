@@ -246,9 +246,16 @@ namespace Caneda
      */
 
     /*!
-     * \brief Copies data of current-item to \a item.
+     * \brief Copies the basic data of the current item to the item passed as a
+     * parameter.
      *
-     * Sublasses should reimplement it to copy their data.
+     * This method is used by the reimplemented classes to copy the basic data
+     * while a copy/paste operation is in progress. While the reimplemented
+     * classes must reimplement the copy() method to handle the particular
+     * properties of each kind of item, they may call this method to copy the
+     * generic data as position, rotation, scale and transforms in general.
+     *
+     * \sa copy()
      */
     void CGraphicsItem::copyDataTo(CGraphicsItem *item) const
     {
