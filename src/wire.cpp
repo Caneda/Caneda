@@ -190,9 +190,6 @@ namespace Caneda
     Wire* Wire::copy(CGraphicsScene *scene) const
     {
         Wire *wire = new Wire(QPointF(1,1), QPointF(5,5), scene);
-        wire->movePort1(port1()->scenePos());
-        wire->movePort2(port2()->scenePos());
-
         Wire::copyDataTo(wire);
         return wire;
     }
@@ -200,6 +197,8 @@ namespace Caneda
     void Wire::copyDataTo(Wire *wire) const
     {
         CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(wire));
+        wire->movePort1(port1()->scenePos());
+        wire->movePort2(port2()->scenePos());
     }
 
     /*!
