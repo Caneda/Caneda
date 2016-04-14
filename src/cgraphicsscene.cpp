@@ -1452,11 +1452,11 @@ namespace Caneda
             }
             else if(event->button() == Qt::RightButton) {
 
-                QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
+                // Rotate
+                QPointF rotationCenter = centerOfItems(m_insertibles);
 
                 foreach(CGraphicsItem *item, m_insertibles) {
-                    item->rotate(Caneda::AntiClockwise);
-                    item->setPos(smartNearingGridPoint(item->pos() + delta));
+                    item->rotate(Caneda::Clockwise, rotationCenter);
                 }
 
             }
@@ -1464,6 +1464,7 @@ namespace Caneda
         }
         else if(event->type() == QEvent::GraphicsSceneMouseMove) {
 
+            // Move snapping each item to the grid
             QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
 
             foreach(CGraphicsItem *item, m_insertibles) {
