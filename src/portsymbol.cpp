@@ -162,20 +162,16 @@ namespace Caneda
         update();
     }
 
-    //! \brief Returns a copy of port symbol item parented to scene \a scene.
+    //! \copydoc CGraphicsItem::copy()
     PortSymbol* PortSymbol::copy(CGraphicsScene *scene) const
     {
         PortSymbol *portSymbol = new PortSymbol(scene);
         portSymbol->m_label->setText(m_label->text());
-        PortSymbol::copyDataTo(portSymbol);
-        return portSymbol;
-    }
 
-    void PortSymbol::copyDataTo(PortSymbol *portSymbol) const
-    {
-        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(portSymbol));
+        CGraphicsItem::copyDataTo(portSymbol);
         portSymbol->updateGeometry();
-        portSymbol->update();
+
+        return portSymbol;
     }
 
     //! \copydoc CGraphicsItem::launchPropertyDialog()

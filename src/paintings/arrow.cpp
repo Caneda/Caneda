@@ -95,7 +95,7 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \brief Returns a copy of this arrow.
+    //! \copydoc CGraphicsItem::copy()
     Arrow* Arrow::copy(CGraphicsScene *scene) const
     {
         Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), scene);

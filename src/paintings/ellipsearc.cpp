@@ -93,12 +93,12 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \brief Returns a copy of EllipseArc painting item.
+    //! \copydoc CGraphicsItem::copy()
     EllipseArc* EllipseArc::copy(CGraphicsScene *scene) const
     {
-        EllipseArc *arc = new EllipseArc(ellipse(), m_startAngle, m_spanAngle, scene);
-        Painting::copyDataTo(arc);
-        return arc;
+        EllipseArc *ellipseArc = new EllipseArc(ellipse(), m_startAngle, m_spanAngle, scene);
+        Painting::copyDataTo(ellipseArc);
+        return ellipseArc;
     }
 
     //! \brief Save's data to xml referred by \a writer.

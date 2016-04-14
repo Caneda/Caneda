@@ -124,7 +124,6 @@ namespace Caneda
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
 
         Component *copy(CGraphicsScene *scene = 0) const;
-        void copyDataTo(Component *comp) const;
 
         int launchPropertyDialog(Caneda::UndoOption opt);
 

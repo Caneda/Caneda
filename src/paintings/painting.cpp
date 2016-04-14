@@ -227,18 +227,12 @@ namespace Caneda
         return 0;
     }
 
-    //! Reimplemented for convenience though it doesn't do actual work.
-    Painting* Painting::copy(CGraphicsScene *) const
-    {
-        return 0;
-    }
-
     //! \copydoc CGraphicsItem::copyDataTo()
     void Painting::copyDataTo(Painting *painting) const
     {
         painting->setPen(pen());
         painting->setBrush(brush());
-        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(painting));
+        CGraphicsItem::copyDataTo(painting);
     }
 
     /*!

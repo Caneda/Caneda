@@ -68,7 +68,6 @@ namespace Caneda
         void loadData(Caneda::XmlReader *reader);
 
         PortSymbol* copy(CGraphicsScene *scene = 0) const;
-        void copyDataTo(PortSymbol *portSymbol) const;
 
         int launchPropertyDialog(Caneda::UndoOption opt);
 

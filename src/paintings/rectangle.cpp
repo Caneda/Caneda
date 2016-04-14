@@ -72,7 +72,7 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \copydoc Painting::copy()
+    //! \copydoc CGraphicsItem::copy()
     Rectangle* Rectangle::copy(CGraphicsScene *scene) const
     {
         Rectangle *rectItem = new Rectangle(rect(), scene);

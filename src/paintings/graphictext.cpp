@@ -105,7 +105,7 @@ namespace Caneda
         }
     }
 
-    //! \brief Returns a copy of this item.
+    //! \copydoc CGraphicsItem::copy()
     GraphicText* GraphicText::copy(CGraphicsScene *scene) const
     {
         GraphicText *text = new GraphicText(richText(), scene);

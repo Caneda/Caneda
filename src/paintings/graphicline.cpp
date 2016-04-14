@@ -70,7 +70,7 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \brief Returns copy of this line item.
+    //! \copydoc CGraphicsItem::copy()
     GraphicLine* GraphicLine::copy(CGraphicsScene *scene) const
     {
         GraphicLine *lineItem = new GraphicLine(line(), scene);

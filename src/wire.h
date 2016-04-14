@@ -75,7 +75,6 @@ namespace Caneda
                 QWidget *widget = 0);
 
         Wire* copy(CGraphicsScene *scene = 0) const;
-        void copyDataTo(Wire *wire) const;
 
         static Wire* loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void saveData(Caneda::XmlWriter *writer) const;

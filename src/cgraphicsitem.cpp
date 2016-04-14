@@ -234,8 +234,15 @@ namespace Caneda
      *
      * \brief Returns a copy of the current item parented to \a scene.
      *
-     * Subclasses should reimplement this method to return the appropriate
-     * copy of the reimplemented item.
+     * This method returns a copy of the current item. It is usually used by
+     * the copy/paste functionality to have an identical copy of this item
+     * ready to paste.
+     *
+     * Subclasses of the CGraphicsItem class should reimplement this method to
+     * return an appropriate copy of the reimplemented item, copying in the
+     * process the needed properties of the reimplementation.
+     *
+     * \sa copyDataTo()
      */
 
     /*!
@@ -245,12 +252,10 @@ namespace Caneda
      */
     void CGraphicsItem::copyDataTo(CGraphicsItem *item) const
     {
+        item->setShapeAndBoundRect(m_shape, m_boundingRect);
         item->setTransform(transform());
-        item->prepareGeometryChange();
-        item->m_boundingRect = m_boundingRect;
-        item->m_shape = m_shape;
-        item->setPos(pos());
         item->setRotation(rotation());
+        item->setPos(pos());
     }
 
     /*!
@@ -297,17 +302,17 @@ namespace Caneda
      * \param rect The bound rect to be cached.
      * \param pw Pen width of pen used to paint outer stroke of item.
      */
-    void CGraphicsItem::setShapeAndBoundRect(const QPainterPath& path,
-            const QRectF& rect, qreal pw)
+    void CGraphicsItem::setShapeAndBoundRect(const QPainterPath& shape,
+            const QRectF& boundingRect, qreal penWidth)
     {
         // Inform scene about change in geometry.
         prepareGeometryChange();
 
         // Adjust the bounding rect by pen width as required by graphicsview.
-        m_boundingRect = rect;
-        m_boundingRect.adjust(-pw, -pw, pw, pw);
+        m_boundingRect = boundingRect;
+        m_boundingRect.adjust(-penWidth, -penWidth, penWidth, penWidth);
 
-        m_shape = path;
+        m_shape = shape;
         if(m_shape.isEmpty()) {
             // If path is empty just add the bounding rect to the path.
             m_shape.addRect(m_boundingRect);

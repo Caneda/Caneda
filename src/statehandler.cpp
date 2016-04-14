@@ -275,8 +275,7 @@ namespace Caneda
         }
     }
 
-    void StateHandler::slotInsertToolbarComponent(const QString& sender,
-            bool on)
+    void StateHandler::slotInsertToolbarComponent(const QString& sender, bool on)
     {
         CGraphicsItem *item = d->toolbarInsertibles[sender];
         if (!on || !item) {

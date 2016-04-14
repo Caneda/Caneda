@@ -152,7 +152,7 @@ namespace Caneda
         void loadDataFromText(const QString &str);
 
         virtual CGraphicsItem* copy(CGraphicsScene *scene = 0) const = 0;
-        virtual void copyDataTo(CGraphicsItem*item) const;
+        virtual void copyDataTo(CGraphicsItem *item) const;
 
         //! \brief Subclasses should implement this, to launch its own dialog.
         virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
@@ -162,7 +162,7 @@ namespace Caneda
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
         void setShapeAndBoundRect(const QPainterPath& path,
-                const QRectF& rect,
+                const QRectF& boundingRect,
                 qreal penWidth = 1.0);
 
         QRectF m_boundingRect; //! Bounding box cache

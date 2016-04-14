@@ -120,7 +120,7 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \copydoc Painting::copy()
+    //! \copydoc CGraphicsItem::copy()
     Layer* Layer::copy(CGraphicsScene *scene) const
     {
         Layer *layerItem = new Layer(rect(), layerName(), netLabel(), scene);

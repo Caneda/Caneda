@@ -71,12 +71,12 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \brief Returns a copy of this Ellipse item.
+    //! \copydoc CGraphicsItem::copy()
     Ellipse* Ellipse::copy(CGraphicsScene *scene) const
     {
-        Ellipse *ell = new Ellipse(ellipse(), scene);
-        Painting::copyDataTo(ell);
-        return ell;
+        Ellipse *ellipseItem = new Ellipse(ellipse(), scene);
+        Painting::copyDataTo(ellipseItem);
+        return ellipseItem;
     }
 
     //! \brief Saves ellipse data as xml.

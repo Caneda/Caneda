@@ -326,21 +326,12 @@ namespace Caneda
         painter->setPen(savedPen);
     }
 
-    //! \brief Returns a copy of this component.
+    //! \copydoc CGraphicsItem::copy()
     Component* Component::copy(CGraphicsScene *scene) const
     {
-        Component *retVal = new Component(d, scene);
-        // No need for Component::copyDataTo() because data is already copied from d pointer.
-        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
-        return retVal;
-    }
-
-    //! \brief Copies the data to \a component.
-    void Component::copyDataTo(Component *component) const
-    {
-        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(component));
-        component->d = new ComponentData(d, qobject_cast<CGraphicsScene*>(scene()));
-        component->update();
+        Component *component = new Component(d, scene);
+        CGraphicsItem::copyDataTo(component);
+        return component;
     }
 
     //! \copydoc CGraphicsItem::launchPropertyDialog()
