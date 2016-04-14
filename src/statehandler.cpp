@@ -29,6 +29,7 @@
 #include "portsymbol.h"
 #include "settings.h"
 #include "undocommands.h"
+#include "wire.h"
 #include "xmlutilities.h"
 
 #include <QApplication>

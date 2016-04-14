@@ -23,6 +23,7 @@
 #include "cgraphicsscene.h"
 #include "global.h"
 #include "library.h"
+#include "port.h"
 #include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"

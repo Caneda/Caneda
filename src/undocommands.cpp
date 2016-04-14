@@ -24,7 +24,8 @@
 #include "component.h"
 #include "graphictext.h"
 #include "port.h"
-#include "xmlutilities.h"
+#include "wire.h"
+//#include "xmlutilities.h"
 
 #include <QDebug>
 
@@ -34,10 +35,10 @@ namespace Caneda
      *                                MoveCmd                                *
      *************************************************************************/
     //! \brief Constructor.
-    MoveCmd::MoveCmd(QGraphicsItem *i,const QPointF& init,const QPointF& end,
+    MoveCmd::MoveCmd(CGraphicsItem *item, const QPointF &init, const QPointF &end,
             QUndoCommand *parent) :
         QUndoCommand(parent),
-        m_item(i), m_initialPos(init), m_finalPos(end)
+        m_item(item), m_initialPos(init), m_finalPos(end)
     {
     }
 
@@ -51,7 +52,6 @@ namespace Caneda
         else {
             m_item->setPos(m_initialPos);
         }
-
     }
 
     void MoveCmd::redo()
@@ -106,29 +106,6 @@ namespace Caneda
     void AddWireCmd::redo()
     {
         m_scene->addItem(m_wire);
-    }
-
-    /*************************************************************************
-     *                           WireStateChangeCmd                          *
-     *************************************************************************/
-    //! \brief Constructor.
-    WireStateChangeCmd::WireStateChangeCmd(Wire *wire, WireData initState,
-            WireData finalState, QUndoCommand *parent) :
-        QUndoCommand(parent),
-        m_wire(wire), m_initState(initState), m_finalState(finalState)
-    {
-    }
-
-    void WireStateChangeCmd::undo()
-    {
-        m_wire->setState(m_initState);
-        m_wire->update();
-    }
-
-    void WireStateChangeCmd::redo()
-    {
-        m_wire->setState(m_finalState);
-        m_wire->update();
     }
 
     /*************************************************************************

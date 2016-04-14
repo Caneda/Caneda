@@ -32,13 +32,6 @@ namespace Caneda
     class CGraphicsItem;
     class CGraphicsScene;
 
-    //! Shareable wire's data
-    struct WireData
-    {
-        QPointF port1Pos;
-        QPointF port2Pos;
-    };
-
     /*!
      * \brief The Wire class forms part of one of the CGraphicsItem
      * derived classes available on Caneda. It represents a wire on schematic,
@@ -84,20 +77,12 @@ namespace Caneda
         Wire* copy(CGraphicsScene *scene = 0) const;
         void copyDataTo(Wire *wire) const;
 
-        WireData storedState() const;
-        void storeState();
-        void setState(WireData state);
-        WireData currentState() const;
-
         static Wire* loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
     protected:
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-
-    private:
-        WireData m_store; //! \brief Stores the wire data when needed (undo/redo).
     };
 
 } // namespace Caneda

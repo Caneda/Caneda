@@ -22,6 +22,8 @@
 
 #include "cgraphicsscene.h"
 
+#include <QWidget>
+
 class QComboBox;
 class QCheckBox;
 class QDateEdit;
@@ -29,6 +31,7 @@ class QFrame;
 class QLabel;
 class QLineEdit;
 class QListWidget;
+class QPushButton;
 class QRadioButton;
 class QSpinBox;
 

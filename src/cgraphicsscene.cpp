@@ -33,6 +33,7 @@
 #include "property.h"
 #include "propertydialog.h"
 #include "settings.h"
+#include "wire.h"
 #include "xmlutilities.h"
 
 #include <QClipboard>
@@ -2049,11 +2050,9 @@ namespace Caneda
             // but whose geometry must acommodate to the current moving wire.
             if(item->type() == CGraphicsItem::WireType) {
 
-                Wire *wire = canedaitem_cast<Wire*>(item);
-                wire->storeState();
-
                 // Check both ports (port1 and port2) of the unselected wire for
                 // possible ports movement.
+                Wire *wire = canedaitem_cast<Wire*>(item);
 
                 // First check port1
                 foreach(Port *other, *(wire->port1()->connections())) {
@@ -2108,24 +2107,15 @@ namespace Caneda
      */
     void CGraphicsScene::endSpecialMove()
     {
-        foreach(QGraphicsItem *item, selectedItems()) {
+        foreach(QGraphicsItem *qItem, selectedItems()) {
+            CGraphicsItem *item = canedaitem_cast<CGraphicsItem*>(qItem);
 
-            CGraphicsItem *canedaItem = canedaitem_cast<CGraphicsItem*>(item);
+            if(item) {
+                m_undoStack->push(new MoveCmd(item, item->storedPos(),
+                            smartNearingGridPoint(item->pos())));
 
-            if(canedaItem) {
-                m_undoStack->push(new MoveCmd(item, canedaItem->storedPos(),
-                            smartNearingGridPoint(item->scenePos())));
-
-                connectItems(canedaItem);
-                splitAndCreateNodes(canedaItem);
-            }
-        }
-
-        foreach(CGraphicsItem *item, specialMoveItems) {
-            if(item->type() == CGraphicsItem::WireType) {
-                Wire *wire = canedaitem_cast<Wire*>(item);
-                m_undoStack->push(new WireStateChangeCmd(wire, wire->storedState(),
-                                                         wire->currentState()));
+                connectItems(item);
+                splitAndCreateNodes(item);
             }
         }
 

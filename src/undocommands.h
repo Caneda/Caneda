@@ -21,8 +21,8 @@
 #ifndef UNDO_COMMANDS_H
 #define UNDO_COMMANDS_H
 
+#include "global.h"
 #include "property.h"
-#include "wire.h"
 
 #include <QPair>
 #include <QUndoCommand>
@@ -30,23 +30,24 @@
 namespace Caneda
 {
     // Forward declarations.
+    class CGraphicsItem;
     class Component;
     class GraphicText;
     class Painting;
     class Port;
-    class CGraphicsItem;
+    class Wire;
 
     class MoveCmd : public QUndoCommand
     {
     public:
-        MoveCmd(QGraphicsItem *i,const QPointF& init, const QPointF& final,
+        MoveCmd(CGraphicsItem *item, const QPointF &init, const QPointF &final,
                 QUndoCommand *parent = 0);
 
         void undo();
         void redo();
 
     private:
-        QGraphicsItem * const m_item;
+        CGraphicsItem *m_item;
         QPointF m_initialPos;
         QPointF m_finalPos;
     };
@@ -76,20 +77,6 @@ namespace Caneda
         Wire *m_wire;
         CGraphicsScene *m_scene;
         QPointF m_pos;
-    };
-
-    class WireStateChangeCmd : public QUndoCommand
-    {
-    public:
-        WireStateChangeCmd(Wire *wire, WireData initState, WireData finalState,
-                QUndoCommand *parent = 0);
-
-        void undo();
-        void redo();
-
-    private:
-        Wire *m_wire;
-        WireData m_initState, m_finalState;
     };
 
     class InsertItemCmd : public QUndoCommand
