@@ -51,7 +51,7 @@ CONFIGURE_FILE( ${Caneda_SOURCE_DIR}/config.h.cmake ${Caneda_BINARY_DIR}/config.
 ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( docs )
 ADD_SUBDIRECTORY( images )
-ADD_SUBDIRECTORY( i18n )
+#ADD_SUBDIRECTORY( i18n )
 ADD_SUBDIRECTORY( libraries )
 
 # ==================================================================================
