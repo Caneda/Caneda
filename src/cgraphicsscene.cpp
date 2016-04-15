@@ -1362,12 +1362,9 @@ namespace Caneda
             case QEvent::GraphicsSceneMouseMove:
                 {
                     if(!m_areItemsMoving) {
-                        if(event->buttons() & Qt::LeftButton && !selectedItems().isEmpty()) {
+                        if((event->buttons() & Qt::LeftButton) && !selectedItems().isEmpty()) {
                             m_areItemsMoving = true;
                             m_undoStack->beginMacro(tr("Move items"));
-                        }
-                        else {
-                            return;
                         }
                     }
 
@@ -1401,7 +1398,6 @@ namespace Caneda
 
                     QGraphicsScene::mouseDoubleClickEvent(event);
                 }
-
                 break;
 
             default:
