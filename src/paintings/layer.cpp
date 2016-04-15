@@ -184,7 +184,8 @@ namespace Caneda
         updateBrush();
     }
 
-    int Layer::launchPropertyDialog(Caneda::UndoOption opt)
+    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    int Layer::launchPropertiesDialog(Caneda::UndoOption opt)
     {
         StyleDialog dia(this, opt);
         return dia.exec();

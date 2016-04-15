@@ -105,6 +105,9 @@ namespace Caneda
         QRectF storedPaintingRect() const { return m_store; }
         void storePaintingRect() { m_store = paintingRect(); }
 
+        //! \copydoc CGraphicsItem::launchPropertiesDialog()
+        virtual int launchPropertiesDialog(Caneda::UndoOption) = 0;
+
     protected:
         /*!
          * Subclasses should reimplement to do calculations this is notified

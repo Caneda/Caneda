@@ -1518,7 +1518,7 @@ namespace Caneda
             else if(text) {
                 Q_ASSERT(m_paintingDrawClicks == 1);
                 text->setPos(dest);
-                int result = text->launchPropertyDialog(Caneda::DontPushUndoCmd);
+                int result = text->launchPropertiesDialog(Caneda::DontPushUndoCmd);
                 if(result == QDialog::Accepted) {
                     // Place the text item
                     placeItem(m_paintingDrawItem, dest);

@@ -130,7 +130,8 @@ namespace Caneda
         }
     }
 
-    int Rectangle::launchPropertyDialog(Caneda::UndoOption opt)
+    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    int Rectangle::launchPropertiesDialog(Caneda::UndoOption opt)
     {
         StyleDialog dia(this, opt);
         return dia.exec();

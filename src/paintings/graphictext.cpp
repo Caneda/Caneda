@@ -161,8 +161,8 @@ namespace Caneda
         }
     }
 
-    //! \brief Launch rich text edit dialog.
-    int GraphicText::launchPropertyDialog(Caneda::UndoOption opt)
+    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    int GraphicText::launchPropertiesDialog(Caneda::UndoOption opt)
     {
         GraphicTextDialog dialog(this, opt);
         return dialog.exec();

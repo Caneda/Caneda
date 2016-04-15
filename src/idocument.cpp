@@ -604,7 +604,7 @@ namespace Caneda
         // If there is any selection, launch corresponding properties dialog.
         if(!schItems.isEmpty()) {
             foreach(CGraphicsItem *item, schItems) {
-                item->launchPropertyDialog(Caneda::PushUndoCmd);
+                item->launchPropertiesDialog(Caneda::PushUndoCmd);
             }
         }
     }
@@ -923,7 +923,7 @@ namespace Caneda
         // If there is any selection, launch corresponding properties dialog.
         if(!schItems.isEmpty()) {
             foreach(CGraphicsItem *item, schItems) {
-                item->launchPropertyDialog(Caneda::PushUndoCmd);
+                item->launchPropertiesDialog(Caneda::PushUndoCmd);
             }
         }
     }
@@ -1097,7 +1097,7 @@ namespace Caneda
         CSimulationView *sv = qobject_cast<CSimulationView*>(v->toWidget());
 
         if(sv) {
-            sv->launchPropertyDialog();
+            sv->launchPropertiesDialog();
         }
     }
 
@@ -1350,11 +1350,11 @@ namespace Caneda
         // else launch the properties dialog corresponding to the current scene
         if(!schItems.isEmpty()) {
             foreach(CGraphicsItem *item, schItems) {
-                item->launchPropertyDialog(Caneda::PushUndoCmd);
+                item->launchPropertiesDialog(Caneda::PushUndoCmd);
             }
         }
         else {
-            m_cGraphicsScene->properties()->launchPropertyDialog();
+            m_cGraphicsScene->properties()->launchPropertiesDialog();
         }
     }
 

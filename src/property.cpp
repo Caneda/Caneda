@@ -378,8 +378,8 @@ namespace Caneda
         updatePropertyDisplay();
     }
 
-    //! \copydoc CGraphicsItem::launchPropertyDialog()
-    int PropertyGroup::launchPropertyDialog()
+    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    int PropertyGroup::launchPropertiesDialog()
     {
         PropertyDialog *dia = new PropertyDialog(this);
         int status = dia->exec();
@@ -405,7 +405,7 @@ namespace Caneda
     //! \brief Launches property dialog on double click.
     void PropertyGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
     {
-        launchPropertyDialog();
+        launchPropertiesDialog();
     }
 
 } // namespace Caneda

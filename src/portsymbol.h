@@ -69,7 +69,7 @@ namespace Caneda
 
         PortSymbol* copy(CGraphicsScene *scene = 0) const;
 
-        int launchPropertyDialog(Caneda::UndoOption opt);
+        int launchPropertiesDialog(Caneda::UndoOption opt);
 
     private:
         void init(const QString &label);

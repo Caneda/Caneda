@@ -152,8 +152,8 @@ namespace Caneda
         virtual CGraphicsItem* copy(CGraphicsScene *scene = 0) const = 0;
         virtual void copyDataTo(CGraphicsItem *item) const;
 
-        //! \brief Subclasses should implement this, to launch its own dialog.
-        virtual int launchPropertyDialog(Caneda::UndoOption) { return QDialog::Accepted; }
+        //! \brief Launch the properties dialog of the current item.
+        virtual int launchPropertiesDialog(Caneda::UndoOption) = 0;
 
     protected:
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

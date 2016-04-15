@@ -80,6 +80,9 @@ namespace Caneda
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
+        //! \copydoc CGraphicsItem::launchPropertiesDialog()
+        int launchPropertiesDialog(Caneda::UndoOption opt) { return QDialog::Accepted;}
+
     protected:
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     };

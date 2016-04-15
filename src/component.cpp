@@ -334,10 +334,10 @@ namespace Caneda
         return component;
     }
 
-    //! \copydoc CGraphicsItem::launchPropertyDialog()
-    int Component::launchPropertyDialog(Caneda::UndoOption)
+    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    int Component::launchPropertiesDialog(Caneda::UndoOption)
     {
-        return d->properties->launchPropertyDialog();
+        return d->properties->launchPropertiesDialog();
     }
 
     //! \brief Returns the rect adjusted to accomodate ports too.

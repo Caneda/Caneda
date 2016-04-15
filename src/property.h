@@ -153,7 +153,7 @@ namespace Caneda
         void readProperties(Caneda::XmlReader *reader);
 
     public Q_SLOTS:
-        int launchPropertyDialog();
+        int launchPropertiesDialog();
 
     protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);

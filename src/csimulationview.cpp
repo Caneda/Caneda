@@ -309,8 +309,8 @@ namespace Caneda
         renderer.renderTo(this, device);
     }
 
-    //! \copydoc CGraphicsItem::launchPropertyDialog()
-    int CSimulationView::launchPropertyDialog()
+    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    int CSimulationView::launchPropertiesDialog()
     {
         SimulationDialog *dia = new SimulationDialog(this);
         int status = dia->exec();
@@ -355,7 +355,7 @@ namespace Caneda
     //! \brief Show plot properties dialog upon mouse double click.
     void CSimulationView::mouseDoubleClickEvent(QMouseEvent *event)
     {
-        launchPropertyDialog();
+        launchPropertiesDialog();
     }
 
 } // namespace Caneda

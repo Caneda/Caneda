@@ -130,7 +130,8 @@ namespace Caneda
         setPaintingRect(QRectF(line.p1(), line.p2()));
     }
 
-    int GraphicLine::launchPropertyDialog(Caneda::UndoOption opt)
+    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    int GraphicLine::launchPropertiesDialog(Caneda::UndoOption opt)
     {
         StyleDialog dia(this, opt);
         return dia.exec();

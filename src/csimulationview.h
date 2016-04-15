@@ -95,7 +95,7 @@ namespace Caneda
         void exportImage(QPaintDevice &device);
 
     public Q_SLOTS:
-        int launchPropertyDialog();
+        int launchPropertiesDialog();
         void contextMenuEvent(const QPoint &pos);
 
     Q_SIGNALS:
