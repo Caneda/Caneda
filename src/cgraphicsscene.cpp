@@ -1363,14 +1363,24 @@ namespace Caneda
                 {
                     if(!m_areItemsMoving) {
                         if((event->buttons() & Qt::LeftButton) && !selectedItems().isEmpty()) {
+                            // Items are selected and we are begining a new move operation
                             m_areItemsMoving = true;
                             m_undoStack->beginMacro(tr("Move items"));
+
+                            disconnectDisconnectibles();
+                            QGraphicsScene::mouseMoveEvent(event);
+                            specialMove();
+                        }
+                        else {
+                            // No items are selected and we are begining a select operation
+                            QGraphicsScene::mouseMoveEvent(event);
                         }
                     }
-
-                    disconnectDisconnectibles();
-                    QGraphicsScene::mouseMoveEvent(event);
-                    specialMove();
+                    else {
+                        // We were already moving items
+                        QGraphicsScene::mouseMoveEvent(event);
+                        specialMove();
+                    }
                 }
                 break;
 
