@@ -110,7 +110,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        StyleDialog(Painting *painting, Caneda::UndoOption opt, QWidget *parent = 0);
+        StyleDialog(Painting *painting, QWidget *parent = 0);
 
     public Q_SLOTS:
         void setupStyleWidgets();
@@ -130,7 +130,6 @@ namespace Caneda
         QPolygon headPolygon;
 
         Painting *painting;
-        Caneda::UndoOption undoOption;
 
         Ui::StyleDialogBase ui;
     };

@@ -288,13 +288,12 @@ namespace Caneda
      *                              StyleDialog                              *
      *************************************************************************/
     //! \brief Constructor.
-    StyleDialog::StyleDialog(Painting *_painting, Caneda::UndoOption option, QWidget *parent) :
+    StyleDialog::StyleDialog(Painting *_painting, QWidget *parent) :
         QDialog(parent),
         fillColor(Qt::white),
         lineColorPixmap(32, 32),
         fillColorPixmap(32, 32),
-        painting(_painting),
-        undoOption(option)
+        painting(_painting)
     {
         Settings *settings = Settings::instance();
         lineColor = settings->currentValue("gui/foregroundColor").value<QColor>();

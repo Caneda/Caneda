@@ -133,7 +133,7 @@ namespace Caneda
     //! \copydoc CGraphicsItem::launchPropertiesDialog()
     int GraphicLine::launchPropertiesDialog(Caneda::UndoOption opt)
     {
-        StyleDialog dia(this, opt);
+        StyleDialog dia(this);
         return dia.exec();
     }
 
