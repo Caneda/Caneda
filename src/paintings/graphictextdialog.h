@@ -42,7 +42,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt,
+        GraphicTextDialog(GraphicText *text, bool enableUndoCommand,
                 QWidget *parent = 0);
 
         QString plainText() const;
@@ -106,7 +106,7 @@ namespace Caneda
         QVBoxLayout *mainLayout;
 
         GraphicText *textItem;
-        Caneda::UndoOption undoOption;
+        bool enableUndoCommand;
     };
 
 } // namespace Caneda

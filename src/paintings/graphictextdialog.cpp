@@ -41,8 +41,8 @@
 namespace Caneda
 {
     //! \brief Constructor.
-    GraphicTextDialog::GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt, QWidget *parent)
-    : QDialog(parent), textItem(text), undoOption(opt)
+    GraphicTextDialog::GraphicTextDialog(GraphicText *text, bool enableUndoCommand, QWidget *parent)
+    : QDialog(parent), textItem(text), enableUndoCommand(enableUndoCommand)
     {
         mainLayout = new QVBoxLayout(this);
         toolBarLayout = new QHBoxLayout;
@@ -131,7 +131,7 @@ namespace Caneda
                 QString oldText = textItem->richText();
                 QString newText = richText();
                 if(oldText != newText) {
-                    if(undoOption == Caneda::PushUndoCmd) {
+                    if(enableUndoCommand == true) {
                         QUndoCommand *cmd = new GraphicTextChangeCmd(textItem, oldText, newText);
                         scene->undoStack()->push(cmd);
                     }

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -26,9 +26,9 @@
 #include <QDebug>
 #include <QGraphicsItem>
 #include <QPainter>
-#include <QVariant>
 
 // Forward declarations
+class QGraphicsItem;
 class QIcon;
 
 namespace Caneda
@@ -44,21 +44,13 @@ namespace Caneda
     QString versionString();
 
     QIcon icon(const QString& iconName);
-    QString pathForCanedaFile(const QString& fileName);
 
     QString localePrefix();
 
     bool checkVersion(const QString& line);
 
-    QVariant::Type stringToType(const QString& string);
-    QString typeToString(QVariant::Type type);
-
     inline QString boolToString(bool boolean) {
         return boolean ? QString("true") : QString("false");
-    }
-
-    inline bool stringToBool(const QString& str) {
-        return str == "true" ? true : false;
     }
 
     inline QString realToString(qreal val) {
@@ -85,9 +77,7 @@ namespace Caneda
 
     //! \brief Default grid spacing
     static const uint DefaultGridSpace = 10;
-    QString Alignment2QString(const Qt::Alignment alignment);
     QPointF smartNearingGridPoint(const QPointF &pos);
-    QColor invertcolor(const QColor & color);
 
     QString latexToUnicode(const QString& input);
     QString unicodeToLatex(QString unicode);
@@ -127,12 +117,6 @@ namespace Caneda
     enum AngleDirection {
         Clockwise,
         AntiClockwise
-    };
-
-    //! \brief This enum determines the undo options.
-    enum UndoOption {
-        DontPushUndoCmd,
-        PushUndoCmd
     };
 
     //! \brief Render hints

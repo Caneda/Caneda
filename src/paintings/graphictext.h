@@ -52,7 +52,6 @@ namespace Caneda
         void loadData(Caneda::XmlReader *reader);
 
         int launchPropertiesDialog();
-        int launchTextDialog(Caneda::UndoOption opt);
 
     private:
         QGraphicsTextItem *m_textItem;

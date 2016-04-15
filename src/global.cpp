@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -89,13 +89,6 @@ namespace Caneda
         return QIcon::fromTheme(iconName, QIcon(Caneda::bitmapDirectory() + iconName + ".png"));
     }
 
-    QString pathForCanedaFile(const QString& fileName)
-    {
-        QString retVal = QDir::homePath();
-        retVal += QDir::toNativeSeparators(QString("/.caneda/") + fileName);
-        return retVal;
-    }
-
     QString localePrefix()
     {
         QString retVal = QLocale::system().name();
@@ -116,68 +109,6 @@ namespace Caneda
         if(lv > sv) // wrong version number ? (only backward compatible)
             return false;
         return true;
-    }
-
-    //! \brief A function which returns corresponding variant type from given \a atring.
-    QVariant::Type stringToType(const QString& _string)
-    {
-        char first = _string.at(0).toLatin1();
-        QString remain = _string.right(_string.size() - 1);
-        QVariant::Type retVal = QVariant::Invalid;
-        switch(first) {
-        case 's':
-            if(remain == "tring") {
-                retVal = QVariant::String;
-            }
-            break;
-
-        case 'b':
-            if(remain == "oolean") {
-                retVal = QVariant::Bool;
-            }
-            break;
-
-        case 'i':
-            if(remain == "nt") {
-                retVal = QVariant::Int;
-            }
-            break;
-
-        case 'd':
-            if(remain == "ouble") {
-                retVal = QVariant::Double;
-            }
-            break;
-        };
-
-        if(retVal == QVariant::Invalid) {
-            qDebug() << "stringToType() : Invalid qvariant type found" << _string;
-        }
-
-        return retVal;
-    }
-
-    //! \brief Returns string corresponding to \a type.
-    QString typeToString(QVariant::Type type)
-    {
-        switch(type)
-        {
-        case QVariant::String:
-            return QString("string");
-
-        case QVariant::Bool:
-            return QString("boolean");
-
-        case QVariant::Int:
-            return QString("int");
-
-        case QVariant::Double:
-            return QString("double");
-
-        default: ;
-        };
-        qDebug() << "typeToString() : Invalid type" << type;
-        return QString();
     }
 
     /*!
@@ -264,29 +195,6 @@ namespace Caneda
         return Output;
     }
 
-    //! \return A string corresponding to the alignement
-    QString Alignment2QString(const Qt::Alignment alignment)
-    {
-        switch(alignment) {
-            case Qt::AlignLeft :
-                return QObject::tr("Align left");
-            case Qt::AlignRight :
-                return QObject::tr("Align right");
-            case Qt::AlignTop :
-                return QObject::tr("Align top");
-            case Qt::AlignBottom :
-                return QObject::tr("Align bottom");
-            case Qt::AlignHCenter :
-                return QObject::tr("Centers horizontally");
-            case Qt::AlignVCenter :
-                return QObject::tr("Centers vertically");
-            case Qt::AlignCenter:
-                return QObject::tr("Center both vertically and horizontally");
-            default:
-                return "";
-        }
-    }
-
     /*!
      * \brief Get nearest grid point (grid snapping)
      *
@@ -308,14 +216,6 @@ namespace Caneda
         y *= sign(point.y());
 
         return QPointF(x, y);
-    }
-
-    //! \brief Invert a color
-    QColor invertcolor(const QColor & color)
-    {
-        QColor inverted;
-        inverted.setRgbF(1.0 - color.redF(), 1.0 - color.greenF(), 1.0 - color.blueF(),1.0);
-        return inverted;
     }
 
 } // namespace Caneda

@@ -146,7 +146,7 @@ namespace Caneda
      */
     void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items)
     {
-        m_undoStack->beginMacro(QString("Delete items"));
+        m_undoStack->beginMacro(tr("Delete items"));
         m_undoStack->push(new RemoveItemsCmd(items, this));
         m_undoStack->endMacro();
     }
@@ -159,7 +159,7 @@ namespace Caneda
      */
     void CGraphicsScene::mirrorItems(QList<CGraphicsItem*> &items, const Qt::Axis axis)
     {
-        m_undoStack->beginMacro(QString("Mirror items"));
+        m_undoStack->beginMacro(tr("Mirror items"));
         m_undoStack->push(new MirrorItemsCmd(items, axis, this));
         m_undoStack->endMacro();
     }
@@ -172,7 +172,7 @@ namespace Caneda
      */
     void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir)
     {
-        m_undoStack->beginMacro(QString("Rotate items"));
+        m_undoStack->beginMacro(tr("Rotate items"));
         m_undoStack->push(new RotateItemsCmd(items, dir, this));
         m_undoStack->endMacro();
     }
@@ -196,7 +196,7 @@ namespace Caneda
         }
 
         // Setup undo
-        m_undoStack->beginMacro(Alignment2QString(alignment));
+        m_undoStack->beginMacro(tr("Align items"));
 
         // Disconnect
         disconnectItems(items);
@@ -301,7 +301,7 @@ namespace Caneda
      */
     void CGraphicsScene::distributeElementsHorizontally(QList<CGraphicsItem*> items)
     {
-        m_undoStack->beginMacro("Distribute elements horizontally");
+        m_undoStack->beginMacro(tr("Distribute items"));
 
         disconnectItems(items);
 
@@ -341,7 +341,7 @@ namespace Caneda
      */
     void CGraphicsScene::distributeElementsVertically(QList<CGraphicsItem*> items)
     {
-        m_undoStack->beginMacro("Distribute elements vertically");
+        m_undoStack->beginMacro(tr("Distribute items"));
 
         disconnectItems(items);
 
@@ -1139,45 +1139,45 @@ namespace Caneda
             // no libraries involved). Some other "miscellaneous" items
             // are hardcoded too. On the other hand, components are
             // loaded from existing libraries.
-            CGraphicsItem *qItem = 0;
+            CGraphicsItem *item = 0;
             if(itemCategory == QObject::tr("Paint Tools") || itemCategory == QObject::tr("Layout Tools")) {
-                qItem = Painting::fromName(itemName);
+                item = Painting::fromName(itemName);
             }
             else if(itemCategory == QObject::tr("Miscellaneous")) {
                 // This must be repeated for each type of miscellaneous item,
                 // for example ground, port symbols, etc.
                 if(itemName == QObject::tr("Ground")) {
-                    qItem = new PortSymbol("Ground", this);
+                    item = new PortSymbol("Ground", this);
                 }
                 else if(itemName == QObject::tr("Port Symbol")) {
-                    qItem = new PortSymbol(this);
+                    item = new PortSymbol(this);
                 }
             }
 
             // If the item was not found in the fixed libraries, search for the
             // item in the dinamic loaded libraries ("Components" category).
-            if(!qItem) {
-                qItem = LibraryManager::instance()->newComponent(itemName, 0, itemCategory);
+            if(!item) {
+                item = LibraryManager::instance()->newComponent(itemName, 0, itemCategory);
             }
 
             // Check if the item was successfully found and created
-            if(qItem) {
+            if(item) {
                 // If the item is a GraphicText item, open a dialog to type the text
-                if(qItem->type() == GraphicText::Type) {
-                    GraphicTextDialog dialog(0, Caneda::DontPushUndoCmd);
+                if(item->type() == GraphicText::Type) {
+                    GraphicTextDialog dialog(0, false);
                     if(dialog.exec() == QDialog::Accepted) {
-                        GraphicText *textItem = static_cast<GraphicText*>(qItem);
+                        GraphicText *textItem = static_cast<GraphicText*>(item);
                         textItem->setRichText(dialog.richText());
                     }
                     else {
-                        delete qItem;
+                        delete item;
                         return;
                     }
                 }
 
                 // For all item types, place the result in the nearest grid position
                 QPointF dest = smartNearingGridPoint(event->scenePos());
-                placeItem(qItem, dest);
+                placeItem(item, dest);
                 event->acceptProposedAction();
             }
         }
@@ -1364,7 +1364,7 @@ namespace Caneda
                     if(!m_areItemsMoving) {
                         if(event->buttons() & Qt::LeftButton && !selectedItems().isEmpty()) {
                             m_areItemsMoving = true;
-                            m_undoStack->beginMacro(QString("Move items"));
+                            m_undoStack->beginMacro(tr("Move items"));
                         }
                         else {
                             return;
@@ -1436,7 +1436,7 @@ namespace Caneda
 
                 // Create a new item and copy the properties of the inserting
                 // item.
-                m_undoStack->beginMacro(QString("Insert items"));
+                m_undoStack->beginMacro(tr("Insert items"));
                 foreach(CGraphicsItem *item, m_insertibles) {
                     CGraphicsItem *copied = item->copy();
                     placeItem(copied, smartNearingGridPoint(item->pos()));
@@ -1517,9 +1517,9 @@ namespace Caneda
             }
             else if(text) {
                 Q_ASSERT(m_paintingDrawClicks == 1);
-                text->setPos(dest);
-                int result = text->launchTextDialog(Caneda::DontPushUndoCmd);
-                if(result == QDialog::Accepted) {
+
+                GraphicTextDialog dialog(text, false);
+                if(dialog.exec() == QDialog::Accepted) {
                     // Place the text item
                     placeItem(m_paintingDrawItem, dest);
 
@@ -1928,7 +1928,7 @@ namespace Caneda
             component->setLabel(label);
         }
 
-        m_undoStack->beginMacro(QString("Place item"));
+        m_undoStack->beginMacro(tr("Place items"));
         m_undoStack->push(new InsertItemCmd(item, this, pos));
         m_undoStack->endMacro();
     }
