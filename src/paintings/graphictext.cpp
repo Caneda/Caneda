@@ -162,7 +162,13 @@ namespace Caneda
     }
 
     //! \copydoc CGraphicsItem::launchPropertiesDialog()
-    int GraphicText::launchPropertiesDialog(Caneda::UndoOption opt)
+    int GraphicText::launchPropertiesDialog()
+    {
+        return launchTextDialog(Caneda::PushUndoCmd);
+    }
+
+    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    int GraphicText::launchTextDialog(Caneda::UndoOption opt)
     {
         GraphicTextDialog dialog(this, opt);
         return dialog.exec();

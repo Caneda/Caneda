@@ -130,7 +130,7 @@ namespace Caneda
     }
 
     //! \copydoc CGraphicsItem::launchPropertiesDialog()
-    int Ellipse::launchPropertiesDialog(Caneda::UndoOption opt)
+    int Ellipse::launchPropertiesDialog()
     {
         StyleDialog dia(this);
         return dia.exec();

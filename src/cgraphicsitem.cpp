@@ -256,7 +256,7 @@ namespace Caneda
     void CGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     {
         if(event->buttons().testFlag(Qt::LeftButton)) {
-            launchPropertiesDialog(Caneda::PushUndoCmd);
+            launchPropertiesDialog();
         }
     }
 

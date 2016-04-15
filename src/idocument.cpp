@@ -604,7 +604,7 @@ namespace Caneda
         // If there is any selection, launch corresponding properties dialog.
         if(!schItems.isEmpty()) {
             foreach(CGraphicsItem *item, schItems) {
-                item->launchPropertiesDialog(Caneda::PushUndoCmd);
+                item->launchPropertiesDialog();
             }
         }
     }
@@ -923,7 +923,7 @@ namespace Caneda
         // If there is any selection, launch corresponding properties dialog.
         if(!schItems.isEmpty()) {
             foreach(CGraphicsItem *item, schItems) {
-                item->launchPropertiesDialog(Caneda::PushUndoCmd);
+                item->launchPropertiesDialog();
             }
         }
     }
@@ -1350,7 +1350,7 @@ namespace Caneda
         // else launch the properties dialog corresponding to the current scene
         if(!schItems.isEmpty()) {
             foreach(CGraphicsItem *item, schItems) {
-                item->launchPropertiesDialog(Caneda::PushUndoCmd);
+                item->launchPropertiesDialog();
             }
         }
         else {

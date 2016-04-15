@@ -164,7 +164,7 @@ namespace Caneda
         }
     }
 
-    int EllipseArc::launchPropertiesDialog(Caneda::UndoOption opt)
+    int EllipseArc::launchPropertiesDialog()
     {
         StyleDialog dialog(this);
         return dialog.exec();

@@ -81,7 +81,7 @@ namespace Caneda
         void loadData(Caneda::XmlReader *reader);
 
         //! \copydoc CGraphicsItem::launchPropertiesDialog()
-        int launchPropertiesDialog(Caneda::UndoOption opt) { return QDialog::Accepted;}
+        int launchPropertiesDialog() { return QDialog::Accepted; }
 
     protected:
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

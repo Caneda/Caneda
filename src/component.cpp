@@ -335,7 +335,7 @@ namespace Caneda
     }
 
     //! \copydoc CGraphicsItem::launchPropertiesDialog()
-    int Component::launchPropertiesDialog(Caneda::UndoOption)
+    int Component::launchPropertiesDialog()
     {
         return d->properties->launchPropertiesDialog();
     }

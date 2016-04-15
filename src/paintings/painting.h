@@ -106,7 +106,7 @@ namespace Caneda
         void storePaintingRect() { m_store = paintingRect(); }
 
         //! \copydoc CGraphicsItem::launchPropertiesDialog()
-        virtual int launchPropertiesDialog(Caneda::UndoOption) = 0;
+        virtual int launchPropertiesDialog() = 0;
 
     protected:
         /*!

@@ -58,7 +58,7 @@ namespace Caneda
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        int launchPropertiesDialog(Caneda::UndoOption opt);
+        int launchPropertiesDialog();
 
     private:
         int m_startAngle;

@@ -175,7 +175,7 @@ namespace Caneda
     }
 
     //! \copydoc CGraphicsItem::launchPropertiesDialog()
-    int PortSymbol::launchPropertiesDialog(Caneda::UndoOption)
+    int PortSymbol::launchPropertiesDialog()
     {
         QString newLabel = QString(m_label->text());
 

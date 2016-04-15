@@ -125,7 +125,7 @@ namespace Caneda
 
         Component *copy(CGraphicsScene *scene = 0) const;
 
-        int launchPropertiesDialog(Caneda::UndoOption opt);
+        int launchPropertiesDialog();
 
     protected:
         QRectF adjustedBoundRect(const QRectF& rect);

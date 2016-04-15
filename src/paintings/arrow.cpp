@@ -253,7 +253,7 @@ namespace Caneda
     }
 
     //! \copydoc CGraphicsItem::launchPropertiesDialog()
-    int Arrow::launchPropertiesDialog(Caneda::UndoOption opt)
+    int Arrow::launchPropertiesDialog()
     {
         StyleDialog dia(this);
         return dia.exec();
