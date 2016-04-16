@@ -75,7 +75,6 @@ namespace Caneda
     private:
         Wire *m_wire;
         CGraphicsScene *m_scene;
-        QPointF m_pos;
     };
 
     class InsertItemCmd : public QUndoCommand

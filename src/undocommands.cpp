@@ -89,8 +89,7 @@ namespace Caneda
     AddWireCmd::AddWireCmd(Wire *wire, CGraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_wire(wire),
-        m_scene(scene),
-        m_pos(m_wire->pos())
+        m_scene(scene)
     {
     }
 
@@ -111,7 +110,9 @@ namespace Caneda
     InsertItemCmd::InsertItemCmd(CGraphicsItem *const item, CGraphicsScene *scene,
             QPointF pos, QUndoCommand *parent) :
         QUndoCommand(parent),
-        m_item(item), m_scene(scene), m_pos(pos)
+        m_item(item),
+        m_scene(scene),
+        m_pos(pos)
     {
     }
 
