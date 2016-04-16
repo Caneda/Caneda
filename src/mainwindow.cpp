@@ -168,6 +168,26 @@ namespace Caneda
         action->setWhatsThis(tr("New file\n\nCreates a new file document"));
         connect(action, SIGNAL(triggered()), SLOT(newFile()));
 
+        action = am->createAction("fileNewSchematic", Caneda::icon("document-new"), tr("&Schematic file"));
+        action->setStatusTip(tr("Creates a new schematic file document"));
+        action->setWhatsThis(tr("New schematic file\n\nCreates a new schematic file document"));
+        connect(action, SIGNAL(triggered()), SLOT(newSchematic()));
+
+        action = am->createAction("fileNewSymbol", Caneda::icon("document-properties"), tr("S&ymbol file"));
+        action->setStatusTip(tr("Creates a new symbol file document"));
+        action->setWhatsThis(tr("New symbol file\n\nCreates a new symbol file document"));
+        connect(action, SIGNAL(triggered()), SLOT(newSymbol()));
+
+        action = am->createAction("fileNewLayout", Caneda::icon("view-grid"), tr("&Layout file"));
+        action->setStatusTip(tr("Creates a new layout file document"));
+        action->setWhatsThis(tr("New layout file\n\nCreates a new layout file document"));
+        connect(action, SIGNAL(triggered()), SLOT(newLayout()));
+
+        action = am->createAction("fileNewText", Caneda::icon("text-plain"), tr("&Text file"));
+        action->setStatusTip(tr("Creates a new text file document"));
+        action->setWhatsThis(tr("New text file\n\nCreates a new text file document"));
+        connect(action, SIGNAL(triggered()), SLOT(newText()));
+
         action = am->createAction("fileOpen", Caneda::icon("document-open"), tr("&Open..."));
         action->setShortcut(QKeySequence(QKeySequence::Open));
         action->setStatusTip(tr("Opens an existing document"));
@@ -564,17 +584,22 @@ namespace Caneda
     {
         ActionManager* am = ActionManager::instance();
         QMenu *menu = 0;
-        QMenu *recentFilesMenu = 0;
+        QMenu *subMenu = 0;
 
         // File menu
         menu = menuBar()->addMenu(tr("&File"));
 
-        menu->addAction(am->actionForName("fileNew"));
+        subMenu = menu->addMenu(Caneda::icon("document-new"), tr("&New..."));
+        subMenu->addAction(am->actionForName("fileNewSchematic"));
+        subMenu->addAction(am->actionForName("fileNewSymbol"));
+        subMenu->addAction(am->actionForName("fileNewLayout"));
+        subMenu->addAction(am->actionForName("fileNewText"));
+
         menu->addAction(am->actionForName("fileOpen"));
 
-        recentFilesMenu = menu->addMenu(Caneda::icon("document-open-recent"), tr("Open &Recent"));
+        subMenu = menu->addMenu(Caneda::icon("document-open-recent"), tr("Open &Recent"));
         for(int i=0; i<maxRecentFiles; i++) {
-            recentFilesMenu->addAction(am->recentFilesActions().at(i));
+            subMenu->addAction(am->recentFilesActions().at(i));
         }
         DocumentViewManager::instance()->updateRecentFilesActionList();  // Update the list from the previosly saved configuration file
 
@@ -812,6 +837,34 @@ namespace Caneda
             p->exec();
             delete p;
         }
+    }
+
+    //! \brief Create a new schematic file.
+    void MainWindow::newSchematic()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->newDocument(SchematicContext::instance());
+    }
+
+    //! \brief Create a new symbol file.
+    void MainWindow::newSymbol()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->newDocument(SymbolContext::instance());
+    }
+
+    //! \brief Create a new layout file.
+    void MainWindow::newLayout()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->newDocument(LayoutContext::instance());
+    }
+
+    //! \brief Create a new text file.
+    void MainWindow::newText()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->newDocument(TextContext::instance());
     }
 
     /*!
