@@ -94,9 +94,7 @@ namespace Caneda
         bool exportImage(QPaintDevice &);
 
         // Mouse actions
-        Caneda::MouseAction mouseAction() const { return m_mouseAction; }
         void setMouseAction(const Caneda::MouseAction ma);
-
         bool eventFilter(QObject *object, QEvent *event);
         void blockShortcuts(bool block);
 
@@ -116,18 +114,15 @@ namespace Caneda
 
         //! \brief Return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
-        bool isModified() const { return m_modified; }
 
         // Spice/electric related scene properties
         PropertyGroup* properties() { return m_properties; }
         void addProperty(Property property);
 
-    public Q_SLOTS:
-        void setModified(const bool m = true);
-
     Q_SIGNALS:
+        //! \brief This signal is emitted whenever the undostack enters or leaves the clean state.
         void changed();
-        void mouseActionChanged();
+        void mouseActionChanged(Caneda::MouseAction);
 
     protected:
         void drawBackground(QPainter *p, const QRectF& r);
@@ -260,13 +255,6 @@ namespace Caneda
          * \sa CGraphicsScene::eventFilter, CGraphicsScene::blockShortcuts
          */
         bool m_shortcutsBlocked;
-
-        /*!
-         * \brief Flag to hold whether a schematic is modified or not
-         * i.e to determine whether a file should be saved or not on closing.
-         * \sa setModified
-         */
-        bool m_modified;
 
         /*!
          * \brief Flag to hold whether the background color should be drawn or not

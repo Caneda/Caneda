@@ -362,8 +362,6 @@ namespace Caneda
 
     void DocumentViewManager::replaceView(IView *oldView, IDocument *document)
     {
-        DocumentData *data = documentDataForDocument(document);
-
         IView *newView = createView(document);
         if (!newView) {
             return;

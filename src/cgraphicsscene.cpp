@@ -70,7 +70,6 @@ namespace Caneda
 
         // Setup grid
         m_backgroundVisible = true;
-        m_modified = false;
 
         m_areItemsMoving = false;
         m_shortcutsBlocked = false;
@@ -94,7 +93,7 @@ namespace Caneda
 
         m_zoomBandClicks = 0;
 
-        connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(setModified(bool)));
+        connect(undoStack(), SIGNAL(cleanChanged(bool)), this, SIGNAL(changed()));
     }
 
     /**********************************************************************
@@ -546,7 +545,7 @@ namespace Caneda
         m_areItemsMoving = false;
         m_mouseAction = action;
 
-        emit mouseActionChanged();
+        emit mouseActionChanged(m_mouseAction);
 
         resetState();
 
@@ -871,22 +870,6 @@ namespace Caneda
     void CGraphicsScene::addProperty(Property property)
     {
         m_properties->addProperty(property.name(), property);
-    }
-
-    /*!
-     * \brief Set whether this scene is modified or not
-     *
-     * This method emits the signal modificationChanged(bool) as well
-     * as the signal titleToBeUpdated()
-     *
-     * \param m True/false to set it to unmodified/modified.
-     */
-    void CGraphicsScene::setModified(const bool m)
-    {
-        if(m_modified != !m) {
-            m_modified = !m;
-            emit changed();
-        }
     }
 
     /*!

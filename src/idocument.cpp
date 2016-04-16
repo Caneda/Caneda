@@ -377,7 +377,7 @@ namespace Caneda
 
     bool LayoutDocument::isModified() const
     {
-        return m_cGraphicsScene->isModified();
+        return !m_cGraphicsScene->undoStack()->isClean();
     }
 
     bool LayoutDocument::canUndo() const
@@ -643,7 +643,7 @@ namespace Caneda
 
     bool SchematicDocument::isModified() const
     {
-        return m_cGraphicsScene->isModified();
+        return !m_cGraphicsScene->undoStack()->isClean();
     }
 
     bool SchematicDocument::canUndo() const
@@ -1126,7 +1126,7 @@ namespace Caneda
 
     bool SymbolDocument::isModified() const
     {
-        return m_cGraphicsScene->isModified();
+        return !m_cGraphicsScene->undoStack()->isClean();
     }
 
     bool SymbolDocument::canUndo() const

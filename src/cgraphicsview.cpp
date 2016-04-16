@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -31,8 +31,8 @@ namespace Caneda
      *
      * \param sv Scene to point this view to.
      */
-    CGraphicsView::CGraphicsView(CGraphicsScene *sv) :
-        QGraphicsView(sv ? sv : 0),
+    CGraphicsView::CGraphicsView(CGraphicsScene *scene) :
+        QGraphicsView(scene),
         m_zoomRange(0.30, 10.0),
         m_zoomFactor(0.3),
         m_currentZoom(1.0),
@@ -51,11 +51,11 @@ namespace Caneda
         setMouseTracking(true);
         setAttribute(Qt::WA_NoSystemBackground);
 
-        connect(cGraphicsScene(), SIGNAL(mouseActionChanged()), this,
-                SLOT(onMouseActionChanged()));
+        connect(scene, SIGNAL(mouseActionChanged(Caneda::MouseAction)),
+                this, SLOT(onMouseActionChanged(Caneda::MouseAction)));
 
         // Update current drag mode
-        onMouseActionChanged();
+        onMouseActionChanged(Caneda::Normal);
     }
 
     CGraphicsScene* CGraphicsView::cGraphicsScene() const
@@ -78,7 +78,7 @@ namespace Caneda
 
     void CGraphicsView::zoomFitInBest()
     {
-        if (scene()) {
+        if(scene()) {
             zoomFitRect(scene()->itemsBoundingRect());
         }
     }
@@ -90,7 +90,7 @@ namespace Caneda
 
     void CGraphicsView::zoomFitRect(const QRectF &rect)
     {
-        if (rect.isEmpty()) {
+        if(rect.isEmpty()) {
             return;
         }
 
@@ -109,7 +109,7 @@ namespace Caneda
 
     void CGraphicsView::mousePressEvent(QMouseEvent *event)
     {
-        if (event->button() == Qt::MiddleButton) {
+        if(event->button() == Qt::MiddleButton) {
             panMode = true;
             panStartPosition = mapToScene(event->pos());
 
@@ -124,7 +124,7 @@ namespace Caneda
 
     void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
     {
-        if (panMode) {
+        if(panMode) {
             QPointF d = mapToScene(event->pos()) - panStartPosition;
             translate(d.x(), d.y());
             panStartPosition = mapToScene(event->pos());
@@ -141,7 +141,7 @@ namespace Caneda
 
     void CGraphicsView::mouseReleaseEvent(QMouseEvent *event)
     {
-        if (event->button() == Qt::MiddleButton) {
+        if(event->button() == Qt::MiddleButton) {
             panMode = false;
 
             setCursor(Qt::ArrowCursor);
@@ -153,7 +153,7 @@ namespace Caneda
     void CGraphicsView::focusInEvent(QFocusEvent *event)
     {
         QGraphicsView::focusInEvent(event);
-        if (hasFocus()) {
+        if(hasFocus()) {
             emit focussedIn(this);
         }
     }
@@ -161,29 +161,37 @@ namespace Caneda
     void CGraphicsView::focusOutEvent(QFocusEvent *event)
     {
         QGraphicsView::focusOutEvent(event);
-        if (!hasFocus()) {
+        if(!hasFocus()) {
             emit focussedOut(this);
         }
     }
 
-    void CGraphicsView::onMouseActionChanged()
+    /*!
+     * \brief Update the mouse action mode.
+     *
+     * This method updates the mouse action mode, taking care of setting the
+     * correct mouse drag mode. That enables the RubberBandDrag mouse mode
+     * during mouse selection, and disables it on every other mouse action.
+     */
+    void CGraphicsView::onMouseActionChanged(MouseAction mouseAction)
     {
-        if (cGraphicsScene()->mouseAction() == Caneda::Normal) {
+        if(mouseAction == Caneda::Normal) {
             setDragMode(QGraphicsView::RubberBandDrag);
-        } else {
+        }
+        else {
             setDragMode(QGraphicsView::NoDrag);
         }
     }
 
     void CGraphicsView::setZoomLevel(qreal zoomLevel)
     {
-        if (!m_zoomRange.contains(zoomLevel)) {
+        if(!m_zoomRange.contains(zoomLevel)) {
             return;
         }
 
         // If zoom is perform with any method but the mouse
         // (QGraphicsView::AnchorUnderMouse), set anchor to the center
-        if (transformationAnchor() != QGraphicsView::AnchorUnderMouse) {
+        if(transformationAnchor() != QGraphicsView::AnchorUnderMouse) {
             setTransformationAnchor(QGraphicsView::AnchorViewCenter);  // Set graphicsview anchor to the center
         }
 

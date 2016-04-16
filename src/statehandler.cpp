@@ -45,7 +45,6 @@ namespace Caneda
         StateHandlerPrivate() {
             mouseAction = Caneda::Normal;
             paintingDrawItem = 0;
-
         }
 
         ~StateHandlerPrivate() {
