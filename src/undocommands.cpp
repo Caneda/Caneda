@@ -126,6 +126,7 @@ namespace Caneda
         m_scene->addItem(m_item);
         m_item->setPos(m_pos);
         m_scene->connectItems(m_item);
+        m_scene->splitAndCreateNodes(m_item);
     }
 
     /*************************************************************************
