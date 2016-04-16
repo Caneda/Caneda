@@ -40,8 +40,6 @@
 #include <QGraphicsSceneEvent>
 #include <QKeySequence>
 #include <QMenu>
-#include <QMimeData>
-#include <QMimeType>
 #include <QPainter>
 #include <QShortcutEvent>
 
@@ -108,12 +106,7 @@ namespace Caneda
         deleteItems(items);
     }
 
-    /*!
-     * \brief Copy item
-     *
-     * \todo Document format
-     * \todo Use own mime type
-     */
+    //! \brief Copy items
     void CGraphicsScene::copyItems(QList<CGraphicsItem*> &items)
     {
         if(items.isEmpty()) {
@@ -138,11 +131,7 @@ namespace Caneda
         clipboard->setText(clipText);
     }
 
-    /*!
-     * \brief Delete an item list
-     *
-     * \param items: item list
-     */
+    //! \brief Delete items
     void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items)
     {
         m_undoStack->beginMacro(tr("Delete items"));
@@ -550,64 +539,6 @@ namespace Caneda
         resetState();
 
         //! \todo Implemement this for all mouse actions
-    }
-
-    /*!
-     * \brief Event filter filter's out some events on the watched object.
-     *
-     * This filter is used to install on QApplication object to filter our
-     * shortcut events.
-     * This filter is installed by \a setMouseAction method if the new action
-     * is InsertingItems and removed if the new action is different, thus blocking
-     * shortcuts on InsertItems and unblocking for other mouse actions
-     * \sa CGraphicsScene::setMouseAction, CGraphicsScene::blockShortcuts
-     * \sa QObject::eventFilter
-     *
-     * \todo Take care if multiple scenes install event filters.
-     */
-    bool CGraphicsScene::eventFilter(QObject *watched, QEvent *event)
-    {
-        if(event->type() != QEvent::Shortcut && event->type() != QEvent::ShortcutOverride) {
-            return QGraphicsScene::eventFilter(watched, event);
-        }
-
-        QKeySequence key;
-
-        if(event->type() == QEvent::Shortcut) {
-            key = static_cast<QShortcutEvent*>(event)->key();
-        }
-        else {
-            key = static_cast<QKeyEvent*>(event)->key();
-        }
-
-        if(key == QKeySequence(Qt::Key_Escape)) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-
-    /*!
-     * \brief Blocks/unblocks the shortcuts on the QApplication.
-     *
-     * \param block True blocks while false unblocks the shortcuts.
-     * \sa CGraphicsScene::eventFilter
-     */
-    void CGraphicsScene::blockShortcuts(bool block)
-    {
-        if(block) {
-            if(!m_shortcutsBlocked) {
-                qApp->installEventFilter(this);
-                m_shortcutsBlocked = true;
-            }
-        }
-        else {
-            if(m_shortcutsBlocked) {
-                qApp->removeEventFilter(this);
-                m_shortcutsBlocked = false;
-            }
-        }
     }
 
     /*!
@@ -1037,138 +968,6 @@ namespace Caneda
     void CGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     {
         sendMouseActionEvent(event);
-    }
-
-    /*!
-     * \brief Drag enter event handler.
-     *
-     * Receive drag enter events in CGraphicsScene. Drag enter events are
-     * generated as the cursor enters the scene's area. Items can only perform
-     * drop events if the last drag move event was accepted. Accepted events
-     * are filtered and only from the sidebar (application/caneda.sidebarItem
-     * mime data).
-     *
-     * This method in conjunction with dragMoveEvent() and dropEvent(), are
-     * used to allow drag and dropping items from the sidebar, without the need
-     * to enter the insert mode.
-     *
-     * \param event event to be accepted
-     * \sa dropEvent, dragMoveEvent
-     */
-    void CGraphicsScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
-    {
-        if(event->mimeData()->formats().contains("application/caneda.sidebarItem")) {
-            event->acceptProposedAction();
-            blockShortcuts(true);
-        }
-        else {
-            event->ignore();
-        }
-    }
-
-    /*!
-     * \brief Drag move event handler.
-     *
-     * Receive drag move events in CGraphicsScene. Drag move events are
-     * generated as the cursor moves around inside the scene's area. Items can
-     * only perform drop events if the last drag move event was accepted. This
-     * is acomplished in with this method. Accepted events are filtered and
-     * only from the sidebar (application/caneda.sidebarItem mime data).
-     *
-     * This method in conjunction with dragEnterEvent() and dropEvent(), are
-     * used to allow drag and dropping items from the sidebar, without the need
-     * to enter the insert mode.
-     *
-     * \param event event to be accepted
-     * \sa dropEvent, dragEnterEvent
-     */
-    void CGraphicsScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
-    {
-        if(event->mimeData()->formats().contains("application/caneda.sidebarItem")) {
-            event->acceptProposedAction();
-        }
-        else {
-            event->ignore();
-        }
-    }
-
-    /*!
-     * \brief Drop event handler.
-     *
-     * Receive drop events in CGraphicsScene. Items can only perform drop
-     * events if the last drag move event was accepted. Accepted events are
-     * filtered and only from the sidebar (application/caneda.sidebarItem mime
-     * data).
-     *
-     * This method in conjunction with dragEnterEvent() and dragMoveEvent(),
-     * are used to allow drag and dropping items from the sidebar, without the
-     * need to enter the insert mode.
-     *
-     * \param event event to be accepted
-     * \sa dragMoveEvent, dragEnterEvent, StateHandler::slotSidebarItemClicked()
-     */
-    void CGraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
-    {
-        if(event->mimeData()->formats().contains("application/caneda.sidebarItem")) {
-            event->accept();
-
-            QByteArray encodedData = event->mimeData()->data("application/caneda.sidebarItem");
-            QDataStream stream(&encodedData, QIODevice::ReadOnly);
-            QString itemName, itemCategory;
-            stream >> itemName >> itemCategory;
-
-            // Get a component or painting based on the name and category.
-            // The painting is processed in a special hardcoded way (with
-            // no libraries involved). Some other "miscellaneous" items
-            // are hardcoded too. On the other hand, components are
-            // loaded from existing libraries.
-            CGraphicsItem *item = 0;
-            if(itemCategory == QObject::tr("Paint Tools") || itemCategory == QObject::tr("Layout Tools")) {
-                item = Painting::fromName(itemName);
-            }
-            else if(itemCategory == QObject::tr("Miscellaneous")) {
-                // This must be repeated for each type of miscellaneous item,
-                // for example ground, port symbols, etc.
-                if(itemName == QObject::tr("Ground")) {
-                    item = new PortSymbol("Ground", this);
-                }
-                else if(itemName == QObject::tr("Port Symbol")) {
-                    item = new PortSymbol(this);
-                }
-            }
-
-            // If the item was not found in the fixed libraries, search for the
-            // item in the dinamic loaded libraries ("Components" category).
-            if(!item) {
-                item = LibraryManager::instance()->newComponent(itemName, 0, itemCategory);
-            }
-
-            // Check if the item was successfully found and created
-            if(item) {
-                // If the item is a GraphicText item, open a dialog to type the text
-                if(item->type() == GraphicText::Type) {
-                    GraphicTextDialog dialog(0, false);
-                    if(dialog.exec() == QDialog::Accepted) {
-                        GraphicText *textItem = static_cast<GraphicText*>(item);
-                        textItem->setRichText(dialog.richText());
-                    }
-                    else {
-                        delete item;
-                        return;
-                    }
-                }
-
-                // For all item types, place the result in the nearest grid position
-                QPointF dest = smartNearingGridPoint(event->scenePos());
-                placeItem(item, dest);
-                event->acceptProposedAction();
-            }
-        }
-        else {
-            event->ignore();
-        }
-
-        blockShortcuts(false);
     }
 
     void CGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
@@ -2189,6 +1988,64 @@ namespace Caneda
         m_zoomRect = QRectF();
         m_zoomBand->hide();
         m_zoomBandClicks = 0;
+    }
+
+    /*!
+     * \brief Event filter filter's out some events on the watched object.
+     *
+     * This filter is used to install on QApplication object to filter our
+     * shortcut events.
+     * This filter is installed by \a setMouseAction method if the new action
+     * is InsertingItems and removed if the new action is different, thus blocking
+     * shortcuts on InsertItems and unblocking for other mouse actions
+     * \sa CGraphicsScene::setMouseAction, CGraphicsScene::blockShortcuts
+     * \sa QObject::eventFilter
+     *
+     * \todo Take care if multiple scenes install event filters.
+     */
+    bool CGraphicsScene::eventFilter(QObject *watched, QEvent *event)
+    {
+        if(event->type() != QEvent::Shortcut && event->type() != QEvent::ShortcutOverride) {
+            return QGraphicsScene::eventFilter(watched, event);
+        }
+
+        QKeySequence key;
+
+        if(event->type() == QEvent::Shortcut) {
+            key = static_cast<QShortcutEvent*>(event)->key();
+        }
+        else {
+            key = static_cast<QKeyEvent*>(event)->key();
+        }
+
+        if(key == QKeySequence(Qt::Key_Escape)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    /*!
+     * \brief Blocks/unblocks the shortcuts on the QApplication.
+     *
+     * \param block True blocks while false unblocks the shortcuts.
+     * \sa CGraphicsScene::eventFilter
+     */
+    void CGraphicsScene::blockShortcuts(bool block)
+    {
+        if(block) {
+            if(!m_shortcutsBlocked) {
+                qApp->installEventFilter(this);
+                m_shortcutsBlocked = true;
+            }
+        }
+        else {
+            if(m_shortcutsBlocked) {
+                qApp->removeEventFilter(this);
+                m_shortcutsBlocked = false;
+            }
+        }
     }
 
 } // namespace Caneda

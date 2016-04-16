@@ -95,8 +95,6 @@ namespace Caneda
 
         // Mouse actions
         void setMouseAction(const Caneda::MouseAction ma);
-        bool eventFilter(QObject *object, QEvent *event);
-        void blockShortcuts(bool block);
 
         void beginInsertingItems(const QList<CGraphicsItem*> &items);
         void beginPaintingDraw(Painting *item);
@@ -135,12 +133,7 @@ namespace Caneda
         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-        void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
-        void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
-        void dropEvent(QGraphicsSceneDragDropEvent *event);
-
         void wheelEvent(QGraphicsSceneWheelEvent *event);
-
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
     private:
@@ -178,6 +171,9 @@ namespace Caneda
         void endSpecialMove();
         void disconnectDisconnectibles();
         void resetState();
+
+        bool eventFilter(QObject *object, QEvent *event);
+        void blockShortcuts(bool block);
 
         // Helper variables or state holders
         //! \brief Last grid position of mouse cursor

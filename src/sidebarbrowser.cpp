@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -26,7 +26,6 @@
 
 #include <QAction>
 #include <QDebug>
-#include <QDrag>
 #include <QHeaderView>
 #include <QIcon>
 #include <QList>
@@ -413,8 +412,6 @@ namespace Caneda
     {
         header()->hide();
 
-        setDragDropMode(QAbstractItemView::DragOnly);
-        setDragEnabled(true);
         setAlternatingRowColors(true);
         setAnimated(true);
         setIconSize(QSize(24, 24));
@@ -426,11 +423,6 @@ namespace Caneda
         QTreeView::mousePressEvent(event);
     }
 
-    void TreeView::mouseMoveEvent(QMouseEvent *event)
-    {
-        QTreeView::mouseMoveEvent(event);
-    }
-
     void TreeView::mouseReleaseEvent(QMouseEvent *event)
     {
         if(invalidPressed && !indexAt(event->pos()).isValid()) {
@@ -438,20 +430,6 @@ namespace Caneda
         }
         QTreeView::mouseReleaseEvent(event);
     }
-
-    void TreeView::startDrag(Qt::DropActions supportedActions)
-    {
-        QModelIndex index = selectedIndexes().first();
-        QPixmap pix = model()->data(index, SidebarModel::DragPixmapRole).value<QPixmap>();
-
-        QDrag *drag = new QDrag(this);
-
-        drag->setPixmap(pix);
-        drag->setMimeData(model()->mimeData(selectedIndexes()));
-        drag->setHotSpot(QPoint(pix.width()/2, pix.height()/2));
-        drag->exec(supportedActions);
-    }
-
 
     /*************************************************************************
      *                            SidebarBrowser                             *
@@ -490,7 +468,7 @@ namespace Caneda
         connect(m_treeView, SIGNAL(invalidAreaClicked(const QModelIndex&)), this,
                 SLOT(slotOnClicked(const QModelIndex&)));
         connect(m_treeView, SIGNAL(activated(const QModelIndex&)), this,
-                SLOT(slotOnDoubleClicked(const QModelIndex&)));
+                SLOT(slotOnClicked(const QModelIndex&)));
 
         setWindowTitle(tr("Schematic Items"));
         m_currentComponent = "";
@@ -547,21 +525,6 @@ namespace Caneda
                 QString item, category;
                 stream >> item >> category;
                 emit itemClicked(item, category);
-                m_currentComponent = item;
-            }
-        }
-    }
-
-    void SidebarBrowser::slotOnDoubleClicked(const QModelIndex& index)
-    {
-        if(index.isValid()) {
-            QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
-            if(mime) {
-                QByteArray encodedData = mime->data("application/caneda.sidebarItem");
-                QDataStream stream(&encodedData, QIODevice::ReadOnly);
-                QString item, category;
-                stream >> item >> category;
-                emit itemDoubleClicked(item, category);
                 m_currentComponent = item;
             }
         }

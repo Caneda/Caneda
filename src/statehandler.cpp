@@ -197,7 +197,6 @@ namespace Caneda
             qItem = LibraryManager::instance()->newComponent(item, 0, category);
         }
 
-
         // Check if the item was successfully found and created
         if(qItem) {
             if(category == "Paint Tools" || category == "Layout Tools") {
@@ -213,7 +212,6 @@ namespace Caneda
         else {
             slotSetNormalAction();
         }
-
     }
 
     void StateHandler::slotHandlePaste()

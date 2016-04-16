@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2013-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -180,14 +180,11 @@ namespace Caneda
     public:
         TreeView(QWidget *parent = 0);
 
-        void startDrag(Qt::DropActions supportedActions);
-
     signals:
         void invalidAreaClicked(const QModelIndex &index);
 
         protected:
         void mousePressEvent(QMouseEvent *event);
-        void mouseMoveEvent(QMouseEvent *event);
         void mouseReleaseEvent(QMouseEvent *event);
 
         bool invalidPressed;
@@ -234,7 +231,6 @@ namespace Caneda
     private Q_SLOTS:
         void filterTextChanged();
         void slotOnClicked(const QModelIndex& index);
-        void slotOnDoubleClicked(const QModelIndex& index);
 
     private:
         SidebarModel *m_model;
