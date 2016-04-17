@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -44,8 +44,6 @@ namespace Caneda
     class SymbolDocument;
     class TextDocument;
     class TextEdit;
-    class WebDocument;
-    class WebPage;
 
     /*************************************************************************
      *                       General IView Structure                         *
@@ -326,56 +324,6 @@ namespace Caneda
 
     private:
         TextEdit *m_textEdit;
-
-        void setZoomLevel(qreal level);
-
-        const qreal m_originalZoom;
-        ZoomRange m_zoomRange;
-        qreal m_currentZoom;
-    };
-
-    /*!
-     * \brief This class represents the web browser view interface
-     * implementation.
-     *
-     * This class represents the view for a web document, in a manner
-     * similar to Qt's Graphics View Architecture, and provides the view
-     * widget, which visualizes the contents of the document. The view is
-     * included as a pointer to WebPage, that contains all the view specific
-     * methods. You can attach several views to the same document, to provide
-     * different viewports into the same data set of the document (for example,
-     * when using split views).
-     *
-     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
-     * \sa WebContext, WebDocument
-     */
-    class WebView : public IView
-    {
-        Q_OBJECT
-
-    public:
-        WebView(WebDocument *document);
-
-        // IView interface methods
-        virtual QWidget* toWidget() const;
-        virtual IContext* context() const;
-
-        virtual void zoomIn();
-        virtual void zoomOut();
-        virtual void zoomFitInBest();
-        virtual void zoomOriginal();
-
-        virtual IView* duplicate();
-
-        virtual void updateSettingsChanges();
-        // End of IView interface methods
-
-    private Q_SLOTS:
-        void onFocussed();
-        void updateUrl(const QUrl& link);
-
-    private:
-        WebPage *m_webPage;
 
         void setZoomLevel(qreal level);
 

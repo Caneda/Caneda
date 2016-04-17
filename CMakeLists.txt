@@ -28,9 +28,7 @@ SET( BASEDIR     "share/caneda/" )
 SET( BITMAPDIR   "share/caneda/images/" )
 SET( BINARYDIR   "bin/" )
 SET( DESKTOPDIR  "share/applications/" )
-SET( DOCDIR      "share/caneda/docs/" )
 SET( ICONDIR     "share/icons/" )
-SET( MANDIR      "share/man/man1/" )
 SET( MIMEDIR     "share/mime/packages/" )
 SET( LANGUAGEDIR "share/caneda/i18n/" )
 SET( LIBRARYDIR  "share/caneda/libraries/" )
@@ -49,7 +47,6 @@ CONFIGURE_FILE( ${Caneda_SOURCE_DIR}/config.h.cmake ${Caneda_BINARY_DIR}/config.
 # Include sources directories
 
 ADD_SUBDIRECTORY( src )
-ADD_SUBDIRECTORY( docs )
 ADD_SUBDIRECTORY( images )
 #ADD_SUBDIRECTORY( i18n )
 ADD_SUBDIRECTORY( libraries )

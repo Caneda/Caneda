@@ -36,7 +36,6 @@
 #include "statehandler.h"
 #include "syntaxhighlighters.h"
 #include "textedit.h"
-#include "webpage.h"
 
 #include <QDir>
 #include <QFile>
@@ -49,7 +48,6 @@
 #include <QTextDocument>
 #include <QTextStream>
 #include <QUndoStack>
-#include <QUrl>
 
 namespace Caneda
 {
@@ -1724,87 +1722,6 @@ namespace Caneda
             manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".log"));
         }
 
-    }
-
-
-    /*************************************************************************
-     *                             WebDocument                               *
-     *************************************************************************/
-    //! \brief Constructor.
-    WebDocument::WebDocument()
-    {
-        m_webUrl = new QUrl;
-    }
-
-    IContext* WebDocument::context()
-    {
-        return WebContext::instance();
-    }
-
-    QUndoStack* WebDocument::undoStack()
-    {
-        QUndoStack *stack = new QUndoStack(this);
-        return stack;
-    }
-
-    void WebDocument::copy()
-    {
-        WebPage *page = activeWebPage();
-        if (!page) {
-            return;
-        }
-        page->copy();
-    }
-
-    void WebDocument::print(QPrinter *printer, bool fitInView)
-    {
-        Q_UNUSED(fitInView);
-
-        WebPage *page = activeWebPage();
-        if (!page) {
-            return;
-        }
-
-        page->print(printer);
-    }
-
-    QSizeF WebDocument::documentSize()
-    {
-        // Return 0, as this method is only used for graphic documents.
-        QSizeF size(0, 0);
-        return size;
-    }
-
-    bool WebDocument::load(QString *errorMessage)
-    {
-        if (fileName().isEmpty()) {
-            if (errorMessage) {
-                *errorMessage = tr("Empty filename");
-            }
-            return false;
-        }
-
-        m_webUrl->setUrl(fileName());
-        return true;
-    }
-
-    IView* WebDocument::createView()
-    {
-        return new WebView(this);
-    }
-
-    WebPage* WebDocument::activeWebPage()
-    {
-        IView *view = DocumentViewManager::instance()->currentView();
-        WebView *wv = qobject_cast<WebView*>(view);
-
-        WebPage *wp = qobject_cast<WebPage*>(wv->toWidget());
-
-        if (wp) {
-            return wp;
-        }
-
-        return 0;
     }
 
 } // namespace Caneda

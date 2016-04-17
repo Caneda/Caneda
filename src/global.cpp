@@ -48,13 +48,6 @@ namespace Caneda
         return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
     }
 
-    QString docDirectory()
-    {
-        const QString var(DOCDIR);
-        QDir CanedaDir = QDir(var);
-        return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
-    }
-
     QString langDirectory()
     {
         const QString var(LANGUAGEDIR);

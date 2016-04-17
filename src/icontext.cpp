@@ -26,7 +26,6 @@
 #include "sidebarbrowser.h"
 #include "sidebarsimulationbrowser.h"
 #include "sidebartextbrowser.h"
-#include "sidebarwebbrowser.h"
 #include "statehandler.h"
 
 #include <QDebug>
@@ -599,71 +598,6 @@ namespace Caneda
     IDocument* TextContext::open(const QString& fileName, QString *errorMessage)
     {
         TextDocument *document = new TextDocument();
-        document->setFileName(fileName);
-
-        if (!document->load(errorMessage)) {
-            delete document;
-            document = 0;
-        }
-
-        return document;
-    }
-
-    /*************************************************************************
-     *                           Web Context                                 *
-     *************************************************************************/
-    //! \brief Constructor.
-    WebContext::WebContext(QObject *parent) : IContext(parent)
-    {
-        m_sidebarWebBrowser = new SidebarWebBrowser();
-    }
-
-    //! \copydoc MainWindow::instance()
-    WebContext* WebContext::instance()
-    {
-        static WebContext *instance = 0;
-        if (!instance) {
-            instance = new WebContext();
-        }
-        return instance;
-    }
-
-    QWidget* WebContext::sideBarWidget()
-    {
-        return m_sidebarWebBrowser;
-    }
-
-    bool WebContext::canOpen(const QFileInfo& info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "htm";
-        supportedSuffixes << "html";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    QStringList WebContext::fileNameFilters() const
-    {
-        QStringList nameFilters;
-        nameFilters << QObject::tr("Web page (*.htm *.html)")+" (*.htm *.html);;";
-
-        return nameFilters;
-    }
-
-    IDocument* WebContext::newDocument()
-    {
-        return new WebDocument;
-    }
-
-    IDocument* WebContext::open(const QString& fileName, QString *errorMessage)
-    {
-        WebDocument *document = new WebDocument();
         document->setFileName(fileName);
 
         if (!document->load(errorMessage)) {

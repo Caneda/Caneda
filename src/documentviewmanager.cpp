@@ -594,7 +594,6 @@ namespace Caneda
         m_contexts << LayoutContext::instance();
         m_contexts << SimulationContext::instance();
         m_contexts << TextContext::instance();
-        m_contexts << WebContext::instance();
     }
 
     TabWidget* DocumentViewManager::tabWidget() const

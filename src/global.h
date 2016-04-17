@@ -36,7 +36,6 @@ namespace Caneda
     QString baseDirectory();
     QString binaryDirectory();
     QString bitmapDirectory();
-    QString docDirectory();
     QString langDirectory();
     QString libDirectory();
 

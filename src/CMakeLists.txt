@@ -16,7 +16,7 @@ ADD_SUBDIRECTORY( paintings )
 
 SET( CANEDA_SRCS
   wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
-  cgraphicsitem.cpp cgraphicsscene.cpp sidebarwebbrowser.cpp
+  cgraphicsitem.cpp cgraphicsscene.cpp
   global.cpp units.cpp main.cpp mainwindow.cpp library.cpp
   cgraphicsview.cpp  undocommands.cpp component.cpp
   property.cpp port.cpp fileformats.cpp fileimport.cpp
@@ -25,7 +25,7 @@ SET( CANEDA_SRCS
   statehandler.cpp documentviewmanager.cpp icontext.cpp
   idocument.cpp iview.cpp tabs.cpp syntaxhighlighters.cpp
   csimulationscene.cpp csimulationview.cpp csimulationitem.cpp
-  textedit.cpp webpage.cpp xmlutilities.cpp messagewidget.cpp
+  textedit.cpp xmlutilities.cpp messagewidget.cpp
   sidebarsimulationbrowser.cpp
 )
 

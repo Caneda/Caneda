@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -30,7 +30,6 @@
 #include "global.h"
 #include "statehandler.h"
 #include "textedit.h"
-#include "webpage.h"
 
 #include <QAction>
 #include <QApplication>
@@ -40,7 +39,6 @@
 #include <QHBoxLayout>
 #include <QToolBar>
 #include <QToolButton>
-#include <QUrl>
 
 namespace Caneda
 {
@@ -528,88 +526,6 @@ namespace Caneda
         m_currentZoom = zoomLevel;
 
         m_textEdit->setPointSize(m_currentZoom);
-    }
-
-
-    /*************************************************************************
-     *                               WebView                                 *
-     *************************************************************************/
-    //! \brief Constructor.
-    WebView::WebView(WebDocument *document) :
-        IView(document),
-        m_zoomRange(0.4, 10.0),
-        m_originalZoom(QFontInfo(qApp->font()).pointSizeF()/10)
-    {
-        m_currentZoom = m_originalZoom;
-        m_webPage = new WebPage(document->webUrl());
-
-        connect(m_webPage, SIGNAL(focussed()), this, SLOT(onFocussed()));
-        connect(m_webPage, SIGNAL(anchorClicked(QUrl)), this, SLOT(updateUrl(QUrl)));
-    }
-
-    QWidget* WebView::toWidget() const
-    {
-        return m_webPage;
-    }
-
-    IContext* WebView::context() const
-    {
-        return WebContext::instance();
-    }
-
-    void WebView::zoomIn()
-    {
-        setZoomLevel(m_currentZoom + 0.1);
-    }
-
-    void WebView::zoomOut()
-    {
-        setZoomLevel(m_currentZoom - 0.1);
-    }
-
-    void WebView::zoomFitInBest()
-    {
-        setZoomLevel(2);
-    }
-
-    void WebView::zoomOriginal()
-    {
-        setZoomLevel(m_originalZoom);
-    }
-
-    IView* WebView::duplicate()
-    {
-        return document()->createView();
-    }
-
-    void WebView::updateSettingsChanges()
-    {
-    }
-
-    void WebView::onFocussed()
-    {
-        emit focussedIn(static_cast<IView*>(this));
-    }
-
-    void WebView::updateUrl(const QUrl& link)
-    {
-        document()->setFileName(link.toString());
-
-    }
-
-    void WebView::setZoomLevel(qreal zoomLevel)
-    {
-        if (!m_zoomRange.contains(zoomLevel)) {
-            return;
-        }
-
-        if (qFuzzyCompare(zoomLevel, m_currentZoom)) {
-            return;
-        }
-
-        m_currentZoom = zoomLevel;
-
-        m_webPage->setPointSize(m_currentZoom);
     }
 
 } // namespace Caneda

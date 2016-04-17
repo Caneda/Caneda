@@ -35,7 +35,6 @@ namespace Caneda
     class SidebarBrowser;
     class SidebarSimulationBrowser;
     class SidebarTextBrowser;
-    class SidebarWebBrowser;
 
     /*************************************************************************
      *                     General IContext Structure                        *
@@ -304,51 +303,6 @@ namespace Caneda
 
         SidebarTextBrowser *m_sidebarTextBrowser;
     };
-
-    /*!
-     * \brief This class represents the web browser context interface
-     * implementation.
-     *
-     * Only one instance of this class is used during the whole life span of
-     * the program. This class answers the general questions like which file
-     * suffixes it can handle, points to the appropiate methods to create new
-     * documents of its type, etc.
-     *
-     * This class also provides objects like the toolbar, statusbar, etc, which
-     * are specific to this particular context.
-     *
-     * This class is a singleton class and its only static instance (returned
-     * by instance()) is to be used.
-     *
-     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
-     * \sa WebDocument, WebView
-     */
-     class WebContext : public IContext
-     {
-         Q_OBJECT
-
-     public:
-         static WebContext* instance();
-
-         // IContext interface methods
-         virtual QToolBar* toolBar() { return 0; }
-         virtual QWidget* sideBarWidget();
-         virtual QString sideBarTitle() { return QString(tr("Help Browser")); }
-         virtual void updateSideBar() { return; }
-
-         virtual bool canOpen(const QFileInfo& info) const;
-         virtual QStringList fileNameFilters() const;
-         virtual QString defaultSuffix() const { return "html"; }
-
-         virtual IDocument* newDocument();
-         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
-         // End of IContext interface methods
-
-     private:
-         WebContext(QObject *parent = 0);
-
-         SidebarWebBrowser *m_sidebarWebBrowser;
-     };
 
 } // namespace Caneda
 
