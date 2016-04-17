@@ -120,7 +120,7 @@ namespace Caneda
         writer->writeAttribute("name", "text");
 
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writeEmptyElement("properties");
         writer->writeAttribute("text", richText());

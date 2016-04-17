@@ -109,7 +109,7 @@ namespace Caneda
 
         writer->writeRectAttribute(ellipse(), QLatin1String("ellipse"));
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writeEmptyElement("properties");
         writer->writeAttribute("startAngle", QString::number(m_startAngle));

@@ -87,7 +87,7 @@ namespace Caneda
 
         writer->writeRectAttribute(ellipse(), QLatin1String("ellipse"));
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writePen(pen());
         writer->writeBrush(brush());

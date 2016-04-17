@@ -86,7 +86,7 @@ namespace Caneda
 
         writer->writeLineAttribute(line());
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writePen(pen());
 

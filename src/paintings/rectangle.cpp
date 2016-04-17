@@ -77,6 +77,7 @@ namespace Caneda
     {
         Rectangle *rectItem = new Rectangle(rect(), scene);
         Painting::copyDataTo(rectItem);
+
         return rectItem;
     }
 
@@ -88,7 +89,7 @@ namespace Caneda
 
         writer->writeRectAttribute(rect(), QLatin1String("rectangle"));
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writePen(pen());
         writer->writeBrush(brush());

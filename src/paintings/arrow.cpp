@@ -111,7 +111,7 @@ namespace Caneda
 
         writer->writeLineAttribute(line());
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writeEmptyElement("properties");
         writer->writeAttribute("headStyle", QString::number(int(m_headStyle)));

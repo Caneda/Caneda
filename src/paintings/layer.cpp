@@ -136,7 +136,7 @@ namespace Caneda
 
         writer->writeRectAttribute(rect(), QLatin1String("rect"));
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writeEmptyElement("properties");
         writer->writeAttribute("layerName", QString::number(int(m_layerName)));
