@@ -28,19 +28,14 @@ namespace Caneda
  *
  * \tableofcontents
  *
- * Caneda is an open source EDA software focused on easy of use and portability.
- * While in the short term schematic capture and simulation is the primary goal,
- * in the long term future, PCB and layout edition will be covered. The software
- * aims to support all kinds of circuit simulation types, e.g. DC, AC,
- * S-parameter and harmonic balance analysis.
+ * Caneda is an open source EDA software suite focused on ease of use and
+ * portability. Its main goal is to handle the complete design process:
+ * schematic capture, simulation and circuit layout or PCB. Caneda aims to
+ * support all kinds of circuit simulation types, e.g. DC, AC, S-parameter and
+ * harmonic balance analysis.
  *
- * Caneda is currently under a heavy development state. It is not yet
- * recommended for the final user and some basic functions may still be missing
- * (simulations are not yet implemented!). Bugs may arise and some nasty crashes
- * occur. However if you don't mind being an early tester, do not hesitate to
- * try it! Any feedback is welcome, from bugs, artworks to UI changes
- * recommendations. Although we're not quite ready there, we are slowly getting
- * to the point where simulation is being introduced.
+ * Caneda is currently under a heavy development state. Any feedback is
+ * welcome, from bugs, artworks to UI changes recommendations.
  *
  * Caneda is currently looking for help. If you want to help as a developer,
  * create new components to be included in the next realease or help us write
