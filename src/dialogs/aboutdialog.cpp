@@ -94,8 +94,8 @@ namespace Caneda
                 "<br><br>" +
                 tr("© 2008-2016 Caneda developer team") +
                 "<br><br>"
-                "<a href=\"http://caneda.github.io\">"
-                "http://caneda.github.io</a>"
+                "<a href=\"http://www.caneda.org\">"
+                "http://www.caneda.org</a>"
                 );
         about->setAlignment(Qt::AlignCenter);
         about->setOpenExternalLinks(true);
@@ -123,7 +123,7 @@ namespace Caneda
         QLabel *translators = new QLabel();
 
         addAuthor(translators, "Pablo Daniel Pareja Obregon", "parejaobregon@gmail.com",
-                  tr("Spanish translation"));
+                  tr("Spanish"));
 
         translators->setAlignment(Qt::AlignCenter);
         translators->setOpenExternalLinks(true);
