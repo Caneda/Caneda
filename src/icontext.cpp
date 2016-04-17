@@ -183,17 +183,17 @@ namespace Caneda
 
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
-                QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
+                QPixmap(Caneda::imageDirectory() + "arrow.svg"));
         paintingItems << qMakePair(QObject::tr("Ellipse"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipse.svg"));
         paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipsearc.svg"));
         paintingItems << qMakePair(QObject::tr("Line"),
-                QPixmap(Caneda::bitmapDirectory() + "line.svg"));
+                QPixmap(Caneda::imageDirectory() + "line.svg"));
         paintingItems << qMakePair(QObject::tr("Rectangle"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+                QPixmap(Caneda::imageDirectory() + "rectangle.svg"));
         paintingItems << qMakePair(QObject::tr("Text"),
-                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
+                QPixmap(Caneda::imageDirectory() + "text.svg"));
 
         m_sidebarBrowser->plugItems(layerItems, QObject::tr("Layout Tools"));
         m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
@@ -292,25 +292,25 @@ namespace Caneda
 
         QList<QPair<QString, QPixmap> > miscellaneousItems;
         miscellaneousItems << qMakePair(QObject::tr("Ground"),
-                QPixmap(Caneda::bitmapDirectory() + "ground.svg"));
+                QPixmap(Caneda::imageDirectory() + "ground.svg"));
         miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
-                QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
+                QPixmap(Caneda::imageDirectory() + "portsymbol.svg"));
 
         m_sidebarBrowser->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
 
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
-                QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
+                QPixmap(Caneda::imageDirectory() + "arrow.svg"));
         paintingItems << qMakePair(QObject::tr("Ellipse"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipse.svg"));
         paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipsearc.svg"));
         paintingItems << qMakePair(QObject::tr("Line"),
-                QPixmap(Caneda::bitmapDirectory() + "line.svg"));
+                QPixmap(Caneda::imageDirectory() + "line.svg"));
         paintingItems << qMakePair(QObject::tr("Rectangle"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+                QPixmap(Caneda::imageDirectory() + "rectangle.svg"));
         paintingItems << qMakePair(QObject::tr("Text"),
-                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
+                QPixmap(Caneda::imageDirectory() + "text.svg"));
 
         m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
@@ -456,23 +456,23 @@ namespace Caneda
 
         QList<QPair<QString, QPixmap> > miscellaneousItems;
         miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
-                QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
+                QPixmap(Caneda::imageDirectory() + "portsymbol.svg"));
 
         m_sidebarBrowser->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
 
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
-                QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
+                QPixmap(Caneda::imageDirectory() + "arrow.svg"));
         paintingItems << qMakePair(QObject::tr("Ellipse"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipse.svg"));
         paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipsearc.svg"));
         paintingItems << qMakePair(QObject::tr("Line"),
-                QPixmap(Caneda::bitmapDirectory() + "line.svg"));
+                QPixmap(Caneda::imageDirectory() + "line.svg"));
         paintingItems << qMakePair(QObject::tr("Rectangle"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+                QPixmap(Caneda::imageDirectory() + "rectangle.svg"));
         paintingItems << qMakePair(QObject::tr("Text"),
-                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
+                QPixmap(Caneda::imageDirectory() + "text.svg"));
 
         m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }

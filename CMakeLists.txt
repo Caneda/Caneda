@@ -25,10 +25,10 @@ FIND_PACKAGE( Qwt ${QWT_MIN_VERSION} REQUIRED )
 # Configure runtime directories
 
 SET( BASEDIR     "share/caneda/" )
-SET( BITMAPDIR   "share/caneda/images/" )
 SET( BINARYDIR   "bin/" )
 SET( DESKTOPDIR  "share/applications/" )
 SET( ICONDIR     "share/icons/" )
+SET( IMAGEDIR    "share/caneda/images/" )
 SET( MIMEDIR     "share/mime/packages/" )
 SET( LANGUAGEDIR "share/caneda/i18n/" )
 SET( LIBRARYDIR  "share/caneda/libraries/" )

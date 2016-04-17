@@ -69,7 +69,7 @@ namespace Caneda
         QWidget *icon_and_title = new QWidget();
         // icon
         QLabel *icon = new QLabel();
-        icon->setPixmap(QPixmap(Caneda::bitmapDirectory() + "caneda.png"));
+        icon->setPixmap(QPixmap(Caneda::imageDirectory() + "caneda.png"));
         // label "Caneda"
         QLabel *title = new QLabel("<span style=\"font-weight:0;font-size:16pt;\">Caneda "
                                    + Caneda::version() + "</span>");

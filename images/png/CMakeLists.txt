@@ -25,4 +25,4 @@ SET(PNGS align-horizontal-center.png c_microstrip.png document-save-as.png
          document-open-recent.png
 )
 
-INSTALL(FILES ${PNGS} DESTINATION ${BITMAPDIR})
+INSTALL(FILES ${PNGS} DESTINATION ${IMAGEDIR})

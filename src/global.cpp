@@ -41,9 +41,9 @@ namespace Caneda
         return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
     }
 
-    QString bitmapDirectory()
+    QString imageDirectory()
     {
-        const QString var(BITMAPDIR);
+        const QString var(IMAGEDIR);
         QDir CanedaDir = QDir(var);
         return QDir::toNativeSeparators(CanedaDir.canonicalPath() + "/");
     }
@@ -79,7 +79,7 @@ namespace Caneda
     */
     QIcon icon(const QString& iconName)
     {
-        return QIcon::fromTheme(iconName, QIcon(Caneda::bitmapDirectory() + iconName + ".png"));
+        return QIcon::fromTheme(iconName, QIcon(Caneda::imageDirectory() + iconName + ".png"));
     }
 
     QString localePrefix()
