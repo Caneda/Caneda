@@ -5,7 +5,7 @@ Caneda is an open source EDA software suite focused on ease of use and portabili
 
 For details visit the project's homepage:
 
-http://caneda.github.io
+http://www.caneda.org
 
 
 Requirements
