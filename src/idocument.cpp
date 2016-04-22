@@ -994,7 +994,8 @@ namespace Caneda
      * This method checks the kind of error present on the process and shows a
      * message to the user. Basically, this method is called when the process
      * could not start due to a missing or incorrect installation of the
-     * simulation backend.
+     * simulation backend. Other checks are performed in the performBasicChecks()
+     * method.
      *
      * \todo In the future, when Qt5.6 is out, use this method to connect to
      * the QProcess::errorOccurred(QProcess::ProcessError) signal in the
@@ -1018,7 +1019,7 @@ namespace Caneda
      * checked against QProcess::FailedToStart, triggering a message similar to
      * the currently present.
      *
-     * \sa simulate()
+     * \sa simulate(), performBasicChecks()
      */
     bool SchematicDocument::simulationError()
     {
@@ -1084,7 +1085,7 @@ namespace Caneda
      *
      * \return True if all checks are ok, false if there are errors.
      *
-     * \sa simulate()
+     * \sa simulate(), simulationError()
      */
     bool SchematicDocument::performBasicChecks()
     {
