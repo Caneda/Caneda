@@ -1144,8 +1144,39 @@ namespace Caneda
         //***********************************************
         // Check for the presence of a simulation profile
         //***********************************************
-        //! \todo Check for the presence of a simulation profile.
+        bool foundSimulationProfile = false;
 
+        // Iterate over all components
+        QList<Component*> components = filterItems<Component>(items);
+
+        // Check for a component that starts with "Sim" as keyword. Although
+        // theoretically any component could be named like this, this is the
+        // best check we can do.
+        foreach(Component *c, components) {
+            if(c->label().startsWith("Sim")) {
+                foundSimulationProfile = true;
+            }
+        }
+
+        // If didn't find a simulation profile display an error
+        if(!foundSimulationProfile) {
+            DocumentViewManager *manager = DocumentViewManager::instance();
+            IView *view = manager->currentView();
+
+            MessageWidget *dialog = new MessageWidget(tr("Missing simulation profile..."), view->toWidget());
+            dialog->setMessageType(MessageWidget::Error);
+            dialog->setIcon(Caneda::icon("dialog-error"));
+
+            QAction *action = new QAction(Caneda::icon("help-contents"), tr("More info..."), this);
+            connect(action, SIGNAL(triggered()), SLOT(showSimulationHelp()));
+
+            dialog->addAction(action);
+            dialog->show();
+
+            return false;
+        }
+
+        // Default return value
         return true;
     }
 
