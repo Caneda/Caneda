@@ -32,6 +32,7 @@
 #include "iview.h"
 #include "mainwindow.h"
 #include "messagewidget.h"
+#include "portsymbol.h"
 #include "settings.h"
 #include "statehandler.h"
 #include "syntaxhighlighters.h"
@@ -1090,7 +1091,45 @@ namespace Caneda
      */
     bool SchematicDocument::performBasicChecks()
     {
-        //! \todo Implement the checks...
+        // Get a list of all the items in the scene
+        QList<QGraphicsItem*> items = m_cGraphicsScene->items();
+
+        //***************************************
+        // Check for the presence of a ground net
+        //***************************************
+        bool foundGroundNet = false;
+
+        // Iterate over all PortSymbols
+        QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
+
+        foreach(PortSymbol *p, portSymbols) {
+            if(p->label().toLower() == "ground" || p->label().toLower() == "gnd") {
+                foundGroundNet = true;
+            }
+        }
+
+        // If didn't find a ground net display an error
+        if(!foundGroundNet) {
+            DocumentViewManager *manager = DocumentViewManager::instance();
+            IView *view = manager->currentView();
+
+            MessageWidget *dialog = new MessageWidget(tr("Missing ground net..."), view->toWidget());
+            dialog->setMessageType(MessageWidget::Error);
+            dialog->setIcon(Caneda::icon("dialog-error"));
+
+            QAction *action = new QAction(Caneda::icon("help-contents"), tr("More info..."), this);
+            connect(action, SIGNAL(triggered()), SLOT(showSimulationHelp()));
+
+            dialog->addAction(action);
+            dialog->show();
+
+            return false;
+        }
+
+        //***********************************************
+        // Check for the presence of a simulation profile
+        //***********************************************
+        //! \todo Check for the presence of a simulation profile.
 
         return true;
     }
