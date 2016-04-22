@@ -293,11 +293,13 @@ namespace Caneda
 
     private Q_SLOTS:
         void simulationReady(int error);
+        void showSimulationHelp();
 
     private:
         CGraphicsScene *m_cGraphicsScene;
 
         void alignElements(Qt::Alignment alignment);
+        bool checksAreOk();
     };
 
     /*!

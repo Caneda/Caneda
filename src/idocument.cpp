@@ -37,6 +37,7 @@
 #include "syntaxhighlighters.h"
 #include "textedit.h"
 
+#include <QDesktopServices>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -777,10 +778,14 @@ namespace Caneda
      * opening the waveform viewer (could be internal or external acording to
      * the user settings).
      *
-     * \sa simulationReady(), simulationLog()
+     * \sa simulationReady(), checksAreOk()
      */
     void SchematicDocument::simulate()
     {
+        if(!checksAreOk()) {
+            return;
+        }
+
         if(fileName().isEmpty()) {
             return;
         }
@@ -937,7 +942,7 @@ namespace Caneda
      * ocurred, simulation results are shown to the user. The waveform viewer
      * can be internal or external acording to the user settings.
      *
-     * \sa simulate(), simulationLog()
+     * \sa simulate()
      */
     void SchematicDocument::simulationReady(int error)
     {
@@ -974,6 +979,12 @@ namespace Caneda
         manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
     }
 
+    //! \brief Opens the simulation help.
+    void SchematicDocument::showSimulationHelp()
+    {
+        QDesktopServices::openUrl(QUrl("http://caneda.readthedocs.org/en/latest/simulationerrors.html"));
+    }
+
     //! \brief Align selected elements appropriately based on \a alignment
     void SchematicDocument::alignElements(Qt::Alignment alignment)
     {
@@ -981,6 +992,60 @@ namespace Caneda
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }
+    }
+
+    /*!
+     * \brief Perform basic checks to determine if we are ready to perform a
+     * simulation.
+     *
+     * This method performs the basic checks and throws an error if we are
+     * not ready to simulate the schematic. Some of the checks performed are:
+     * \li The existance of the simulator backend binary.
+     * \li The presence of a ground node in the schematic.
+     * \li The presence of a simulation profile in the schematic.
+     *
+     * \return True if all checks are ok, false if there are errors.
+     *
+     * \sa simulate()
+     */
+    bool SchematicDocument::checksAreOk()
+    {
+        //*****************************
+        // Simulator checks
+        //*****************************
+        // Get the current spice command
+        Settings *settings = Settings::instance();
+        QString simulationCommand = settings->currentValue("sim/simulationCommand").toString();
+
+        // If using ngspice (the default spice backend) check if its intalled.
+        if(simulationCommand.startsWith("ngspice")) {
+
+            simulationCommand = QString("ngspice -v");
+            QProcess *simulationProcess = new QProcess(this);
+            simulationProcess->start(simulationCommand);
+            simulationProcess->waitForFinished();
+
+            if(simulationProcess->error() == QProcess::FailedToStart) {
+                // If FailedToStart either ngspice is missing, the user has
+                // insufficient permissions to invoke the program.
+                DocumentViewManager *manager = DocumentViewManager::instance();
+                IView *view = manager->currentView();
+
+                MessageWidget *dialog = new MessageWidget(tr("Missing simulator backend..."), view->toWidget());
+                dialog->setMessageType(MessageWidget::Error);
+                dialog->setIcon(Caneda::icon("dialog-error"));
+
+                QAction *action = new QAction(Caneda::icon("help-contents"), tr("More info..."), this);
+                connect(action, SIGNAL(triggered()), SLOT(showSimulationHelp()));
+
+                dialog->addAction(action);
+                dialog->show();
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
@@ -1474,7 +1539,7 @@ namespace Caneda
      * file extension, and then open the waveform viewer (could be internal
      * or external acording to the user settings).
      *
-     * \sa simulationReady(), simulationLog()
+     * \sa simulationReady()
      */
     void TextDocument::simulate()
     {
@@ -1666,7 +1731,7 @@ namespace Caneda
      * ocurred, simulation results are shown to the user. The waveform viewer
      * can be internal or external acording to the user settings.
      *
-     * \sa simulate(), simulationLog()
+     * \sa simulate()
      */
     void TextDocument::simulationReady(int error)
     {
