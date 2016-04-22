@@ -778,11 +778,23 @@ namespace Caneda
      * opening the waveform viewer (could be internal or external acording to
      * the user settings).
      *
-     * \sa simulationReady(), checksAreOk()
+     * \sa simulationReady(), simulationError(), performBasicChecks()
      */
     void SchematicDocument::simulate()
     {
-        if(!checksAreOk()) {
+        /*! \todo In the future (after Qt5.6 is released), instead of this
+         * first check, simply connect the simulation process with the slot
+         * simulationError, in a way similar to the following:
+         * connect(simulationProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(simulationError(QProcess::ProcessError)));
+         * This will check against any simulator, instead of the current
+         * check that only verifies the ngspice installation.
+         * \sa simulationError()
+         */
+        if(!simulationError()) {
+            return;
+        }
+
+        if(!performBasicChecks()) {
             return;
         }
 
@@ -979,40 +991,40 @@ namespace Caneda
         manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".raw"));
     }
 
-    //! \brief Opens the simulation help.
-    void SchematicDocument::showSimulationHelp()
-    {
-        QDesktopServices::openUrl(QUrl("http://caneda.readthedocs.org/en/latest/simulationerrors.html"));
-    }
-
-    //! \brief Align selected elements appropriately based on \a alignment
-    void SchematicDocument::alignElements(Qt::Alignment alignment)
-    {
-        if (!m_cGraphicsScene->alignElements(alignment)) {
-            QMessageBox::information(0, tr("Info"),
-                    tr("At least two elements must be selected!"));
-        }
-    }
-
     /*!
-     * \brief Perform basic checks to determine if we are ready to perform a
-     * simulation.
+     * \brief Check what error has occured and show a message to the user.
      *
-     * This method performs the basic checks and throws an error if we are
-     * not ready to simulate the schematic. Some of the checks performed are:
-     * \li The existance of the simulator backend binary.
-     * \li The presence of a ground node in the schematic.
-     * \li The presence of a simulation profile in the schematic.
+     * This method checks the kind of error present on the process and shows a
+     * message to the user. Basically, this method is called when the process
+     * could not start due to a missing or incorrect installation of the
+     * simulation backend.
      *
-     * \return True if all checks are ok, false if there are errors.
+     * \todo In the future, when Qt5.6 is out, use this method to connect to
+     * the QProcess::errorOccurred(QProcess::ProcessError) signal in the
+     * simulate method. That would allow to check against a generic simulator,
+     * without needing to use a predefined simulation command. As in Qt
+     * previous versions to 5.6 that signal was not present, this method was
+     * used with a return value and called before calling the simulator. As
+     * beforehand we do not know what simulator is to be used and what commands
+     * are available we only check for the default simulator, ie, ngspice. The
+     * ngspice simulator has the -v parameter which is used to check if
+     * it is installed without needing to call the entire simulation just to
+     * check if the binary is present. When the signal is available (after
+     * Qt5.6 is released and available in the most common distributions) we
+     * can call this method in the form of a slot connected to the previous
+     * signal. In that way, we do not need to know the simulation command and
+     * instead this method is called if there's any problem.
+     * In that time, this method should be declared as:
+     * void SchematicDocument::simulationError(QProcess::ProcessError).
+     * In the implementation, instead of using all the presently involved checks,
+     * simply we should check the passed argument QProcess::ProcessError and
+     * checked against QProcess::FailedToStart, triggering a message similar to
+     * the currently present.
      *
      * \sa simulate()
      */
-    bool SchematicDocument::checksAreOk()
+    bool SchematicDocument::simulationError()
     {
-        //*****************************
-        // Simulator checks
-        //*****************************
         // Get the current spice command
         Settings *settings = Settings::instance();
         QString simulationCommand = settings->currentValue("sim/simulationCommand").toString();
@@ -1044,6 +1056,41 @@ namespace Caneda
                 return false;
             }
         }
+
+        return true;
+    }
+
+    //! \brief Opens the simulation help.
+    void SchematicDocument::showSimulationHelp()
+    {
+        QDesktopServices::openUrl(QUrl("http://caneda.readthedocs.org/en/latest/simulationerrors.html"));
+    }
+
+    //! \brief Align selected elements appropriately based on \a alignment
+    void SchematicDocument::alignElements(Qt::Alignment alignment)
+    {
+        if (!m_cGraphicsScene->alignElements(alignment)) {
+            QMessageBox::information(0, tr("Info"),
+                    tr("At least two elements must be selected!"));
+        }
+    }
+
+    /*!
+     * \brief Perform basic checks to determine if we are ready to perform a
+     * simulation.
+     *
+     * This method performs the basic checks and throws an error if we are
+     * not ready to simulate the schematic. Some of the checks performed are:
+     * \li The presence of a ground node in the schematic.
+     * \li The presence of a simulation profile in the schematic.
+     *
+     * \return True if all checks are ok, false if there are errors.
+     *
+     * \sa simulate()
+     */
+    bool SchematicDocument::performBasicChecks()
+    {
+        //! \todo Implement the checks...
 
         return true;
     }
