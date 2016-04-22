@@ -799,10 +799,6 @@ namespace Caneda
             return;
         }
 
-        if(fileName().isEmpty()) {
-            return;
-        }
-
         QFileInfo info(fileName());
         QString baseName = info.completeBaseName();
         QString path = info.path();
@@ -1082,6 +1078,7 @@ namespace Caneda
      *
      * This method performs the basic checks and throws an error if we are
      * not ready to simulate the schematic. Some of the checks performed are:
+     * \li The presence of a filename to simulate.
      * \li The presence of a ground node in the schematic.
      * \li The presence of a simulation profile in the schematic.
      *
@@ -1091,12 +1088,30 @@ namespace Caneda
      */
     bool SchematicDocument::performBasicChecks()
     {
-        // Get a list of all the items in the scene
-        QList<QGraphicsItem*> items = m_cGraphicsScene->items();
+        //***************************************
+        // Check if there is a filename
+        //***************************************
+        // Although there's no need to save the file before simulating,
+        // we need at least a filename to perform the simulation.
+        if(fileName().isEmpty()) {
+            DocumentViewManager *manager = DocumentViewManager::instance();
+            IView *view = manager->currentView();
+
+            MessageWidget *dialog = new MessageWidget(tr("Missing filename. Please save at least once before performing a simulation..."),
+                                                      view->toWidget());
+            dialog->setMessageType(MessageWidget::Error);
+            dialog->setIcon(Caneda::icon("dialog-error"));
+            dialog->show();
+
+            return false;
+        }
 
         //***************************************
         // Check for the presence of a ground net
         //***************************************
+        // Get a list of all the items in the scene
+        QList<QGraphicsItem*> items = m_cGraphicsScene->items();
+
         bool foundGroundNet = false;
 
         // Iterate over all PortSymbols
