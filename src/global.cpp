@@ -23,8 +23,6 @@
 #include <QDir>
 #include <QIcon>
 
-using namespace std;
-
 namespace Caneda
 {
     QString baseDirectory()
