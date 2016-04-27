@@ -44,7 +44,7 @@
 #include <QPainter>
 #include <QShortcutEvent>
 
-#include <cmath>
+#include <math.h>
 
 namespace Caneda
 {
@@ -312,9 +312,9 @@ namespace Caneda
             QRectF printedArea = fullPage ? printer->paperRect() : printer->pageRect();
 
             const int horizontalPages =
-                int(std::ceil(diagramRect.width() / printedArea.width()));
+                int(ceil(diagramRect.width() / printedArea.width()));
             const int verticalPages =
-                int(std::ceil(diagramRect.height() / printedArea.height()));
+                int(ceil(diagramRect.height() / printedArea.height()));
 
             QList<QRectF> pagesToPrint;
 
@@ -1211,7 +1211,7 @@ namespace Caneda
 
             QPointF refPos = m_currentWiringWire->port1()->scenePos();
 
-            if( abs(refPos.x()-newPos.x()) > abs(refPos.y()-newPos.y()) ) {
+            if( qAbs(refPos.x()-newPos.x()) > qAbs(refPos.y()-newPos.y()) ) {
                 m_currentWiringWire->movePort2(QPointF(newPos.x(), refPos.y()));
             }
             else {
@@ -1472,7 +1472,7 @@ namespace Caneda
         else if(event->type() == QEvent::GraphicsSceneMouseMove) {
             if(arc && m_paintingDrawClicks > 1) {
                 QPointF delta = event->scenePos() - arc->scenePos();
-                int angle = int(180/M_PI * std::atan2(-delta.y(), delta.x()));
+                int angle = int(180/M_PI * atan2(-delta.y(), delta.x()));
 
                 if(m_paintingDrawClicks == 2) {
                     while(angle < 0) {
