@@ -33,8 +33,6 @@
 #include <QMessageBox>
 #include <QSvgGenerator>
 
-#include <math.h>
-
 namespace Caneda
 {
     //! \brief Constructor.

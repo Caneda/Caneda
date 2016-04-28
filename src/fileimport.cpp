@@ -27,8 +27,6 @@
 #include <QFile>
 #include <QMessageBox>
 
-#include <math.h>
-
 namespace Caneda
 {
     //! \brief Constructor.
@@ -217,8 +215,8 @@ namespace Caneda
                     real = tok.first().toDouble();  // Get the real part
                     imaginary = tok.last().toDouble();  // Get the imaginary part
 
-                    magnitude = sqrt(real*real + imaginary*imaginary);  // Calculate the magnitude part
-                    phase = atan(imaginary/real) * 180/M_PI;  // Calculate the phase part
+                    magnitude = qSqrt(real*real + imaginary*imaginary);  // Calculate the magnitude part
+                    phase = qAtan(imaginary/real) * 180/M_PI;  // Calculate the phase part
 
                     dataSamples[j][i] = magnitude;
                     dataSamplesPhase[j][i] = phase;
@@ -322,8 +320,8 @@ namespace Caneda
                     out >> real;  // Get the real part
                     out >> imaginary;  // Get the imaginary part
 
-                    magnitude = sqrt(real*real + imaginary*imaginary);  // Calculate the magnitude part
-                    phase = atan(imaginary/real) * 180/M_PI;  // Calculate the phase part
+                    magnitude = qSqrt(real*real + imaginary*imaginary);  // Calculate the magnitude part
+                    phase = qAtan(imaginary/real) * 180/M_PI;  // Calculate the phase part
 
                     dataSamples[j][i] = magnitude;
                     dataSamplesPhase[j][i] = phase;

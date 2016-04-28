@@ -42,8 +42,7 @@
 #include <QMenu>
 #include <QPainter>
 #include <QShortcutEvent>
-
-#include <math.h>
+#include <QtMath>
 
 namespace Caneda
 {
@@ -405,9 +404,9 @@ namespace Caneda
             QRectF printedArea = fullPage ? printer->paperRect() : printer->pageRect();
 
             const int horizontalPages =
-                int(ceil(diagramRect.width() / printedArea.width()));
+                qCeil(diagramRect.width() / printedArea.width());
             const int verticalPages =
-                int(ceil(diagramRect.height() / printedArea.height()));
+                qCeil(diagramRect.height() / printedArea.height());
 
             QList<QRectF> pagesToPrint;
 
@@ -1343,7 +1342,7 @@ namespace Caneda
         else if(event->type() == QEvent::GraphicsSceneMouseMove) {
             if(arc && m_paintingDrawClicks > 1) {
                 QPointF delta = event->scenePos() - arc->scenePos();
-                int angle = int(180/M_PI * atan2(-delta.y(), delta.x()));
+                int angle = int(180/M_PI * qAtan2(-delta.y(), delta.x()));
 
                 if(m_paintingDrawClicks == 2) {
                     while(angle < 0) {

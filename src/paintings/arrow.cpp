@@ -26,8 +26,7 @@
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
-
-#include <math.h>
+#include <QtMath>
 
 namespace Caneda
 {
@@ -212,7 +211,7 @@ namespace Caneda
     {
         QRectF rect = paintingRect();
 
-        qreal angle = (atan2(-rect.height(), rect.width()));
+        qreal angle = qAtan2(-rect.height(), rect.width());
         angle = -270 + (angle * 180 / M_PI);
 
         QMatrix mapper;
