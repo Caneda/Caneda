@@ -17,7 +17,7 @@ ADD_SUBDIRECTORY( paintings )
 SET( CANEDA_SRCS
   wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
   cgraphicsitem.cpp cgraphicsscene.cpp
-  global.cpp units.cpp main.cpp mainwindow.cpp library.cpp
+  global.cpp main.cpp mainwindow.cpp library.cpp
   cgraphicsview.cpp  undocommands.cpp component.cpp
   property.cpp port.cpp fileformats.cpp fileimport.cpp
   fileexport.cpp folderbrowser.cpp settings.cpp
