@@ -17,49 +17,42 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "simulationdialog.h"
+#ifndef CHARTS_DIALOG_H
+#define CHARTS_DIALOG_H
 
-#include "chartview.h"
-
-#include <qwt_plot_curve.h>
+#include "ui_chartsdialog.h"
 
 namespace Caneda
 {
-    /*!
-     * \brief Constructor.
-     *
-     * \param parent Parent of this object, the simulation view
-     * being modified by this dialog.
-     */
-    SimulationDialog::SimulationDialog(ChartView *parent) :
-        QDialog(parent)
-    {
-        // Initialize designer dialog
-        ui.setupUi(this);
-
-        // Set log axis checkboxes state
-        ui.checkBoxXscale->setChecked(parent->isLogAxis(QwtPlot::xBottom));
-        ui.checkBoxYleftScale->setChecked(parent->isLogAxis(QwtPlot::yLeft));
-        ui.checkBoxYrightScale->setChecked(parent->isLogAxis(QwtPlot::yRight));
-    }
+    // Forward declations
+    class ChartView;
 
     /*!
-     * \brief Accept dialog
+     * \brief Dialog to select simulation properties in a ChartView plot.
      *
-     * Accept dialog and set new plot properties according to the user input.
+     * This dialog presents to the user the properties of the selected
+     * simulation plot (ChartView) and the visible waveforms.
+     *
+     * This class handles the user interface part of the dialog, and
+     * presentation part to the user, while SidebarChartsBrowser class handles
+     * the data interaction itself.
+     *
+     * \sa ChartView, SidebarChartsBrowser
      */
-    void SimulationDialog::accept()
+    class ChartsDialog : public QDialog
     {
-        ChartView *parent = static_cast<ChartView*>(this->parent());
+        Q_OBJECT
 
-        // Set log axis checkboxes state
-        parent->setLogAxis(QwtPlot::xBottom, ui.checkBoxXscale->isChecked());
-        parent->setLogAxis(QwtPlot::yLeft, ui.checkBoxYleftScale->isChecked());
-        parent->setLogAxis(QwtPlot::yRight, ui.checkBoxYrightScale->isChecked());
+    public:
+        ChartsDialog(ChartView *parent = 0);
 
-        // Accept dialog
-        parent->replot();
-        QDialog::accept();
-    }
+    public Q_SLOTS:
+        void accept();
+
+    private:
+        Ui::ChartsDialog ui;
+    };
 
 } // namespace Caneda
+
+#endif //CHARTS_DIALOG_H

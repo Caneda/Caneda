@@ -17,42 +17,49 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIMULATIONDIALOG_H
-#define SIMULATIONDIALOG_H
+#include "chartsdialog.h"
 
-#include "ui_simulationdialog.h"
+#include "chartview.h"
+
+#include <qwt_plot_curve.h>
 
 namespace Caneda
 {
-    // Forward declations
-    class ChartView;
+    /*!
+     * \brief Constructor.
+     *
+     * \param parent Parent of this object, the simulation view
+     * being modified by this dialog.
+     */
+    ChartsDialog::ChartsDialog(ChartView *parent) :
+        QDialog(parent)
+    {
+        // Initialize designer dialog
+        ui.setupUi(this);
+
+        // Set log axis checkboxes state
+        ui.checkBoxXscale->setChecked(parent->isLogAxis(QwtPlot::xBottom));
+        ui.checkBoxYleftScale->setChecked(parent->isLogAxis(QwtPlot::yLeft));
+        ui.checkBoxYrightScale->setChecked(parent->isLogAxis(QwtPlot::yRight));
+    }
 
     /*!
-     * \brief Dialog to select simulation properties in a ChartView plot.
+     * \brief Accept dialog
      *
-     * This dialog presents to the user the properties of the selected
-     * simulation plot (ChartView) and the visible waveforms.
-     *
-     * This class handles the user interface part of the dialog, and
-     * presentation part to the user, while SimulationModel class handles
-     * the data interaction itself.
-     *
-     * \sa ChartView, WaveformsMap, SimulationModel, QSortFilterProxyModel
+     * Accept dialog and set new plot properties according to the user input.
      */
-    class SimulationDialog : public QDialog
+    void ChartsDialog::accept()
     {
-        Q_OBJECT
+        ChartView *parent = static_cast<ChartView*>(this->parent());
 
-    public:
-        SimulationDialog(ChartView *parent = 0);
+        // Set log axis checkboxes state
+        parent->setLogAxis(QwtPlot::xBottom, ui.checkBoxXscale->isChecked());
+        parent->setLogAxis(QwtPlot::yLeft, ui.checkBoxYleftScale->isChecked());
+        parent->setLogAxis(QwtPlot::yRight, ui.checkBoxYrightScale->isChecked());
 
-    public Q_SLOTS:
-        void accept();
-
-    private:
-        Ui::SimulationDialog ui;
-    };
+        // Accept dialog
+        parent->replot();
+        QDialog::accept();
+    }
 
 } // namespace Caneda
-
-#endif //SIMULATIONDIALOG_H

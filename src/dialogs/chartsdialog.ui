@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SimulationDialog</class>
- <widget class="QDialog" name="SimulationDialog">
+ <class>ChartsDialog</class>
+ <widget class="QDialog" name="ChartsDialog">
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>
@@ -82,7 +82,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>SimulationDialog</receiver>
+   <receiver>ChartsDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -98,7 +98,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>SimulationDialog</receiver>
+   <receiver>ChartsDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
