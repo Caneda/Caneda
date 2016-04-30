@@ -27,7 +27,7 @@
 namespace Caneda
 {
     // Forward declarations
-    class SidebarComponentsBrowser;
+    class SidebarItemsBrowser;
 
     /*!
      * \brief This class represents the dialog to open a component in a
@@ -46,7 +46,7 @@ namespace Caneda
         virtual void done(int r);
 
     private:
-        SidebarComponentsBrowser *m_projectsSidebar;
+        SidebarItemsBrowser *m_projectsSidebar;
         QString m_fileName;
         QString m_libraryName;
         QString m_libraryFileName;

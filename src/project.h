@@ -25,7 +25,7 @@
 namespace Caneda
 {
     // Forward declarations
-    class SidebarComponentsBrowser;
+    class SidebarItemsBrowser;
     class Library;
 
     /*!
@@ -86,7 +86,7 @@ namespace Caneda
         void importFromProject();
         void generateSymbol(const QString&);
 
-        SidebarComponentsBrowser *m_projectsSidebar;
+        SidebarItemsBrowser *m_projectsSidebar;
         Library *projectLibrary;
         QString m_libraryName;
         QString m_libraryFileName;

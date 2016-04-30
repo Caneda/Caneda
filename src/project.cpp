@@ -27,7 +27,7 @@
 #include "idocument.h"
 #include "library.h"
 #include "projectfilenewdialog.h"
-#include "sidebarcomponentsbrowser.h"
+#include "sidebaritemsbrowser.h"
 
 #include <QDebug>
 #include <QDir>
@@ -60,7 +60,7 @@ namespace Caneda
         toolbar->addAction(am->actionForName("projDel"));
         toolbar->addAction(am->actionForName("projClose"));
 
-        m_projectsSidebar = new SidebarComponentsBrowser(this);
+        m_projectsSidebar = new SidebarItemsBrowser(this);
         connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
                 SIGNAL(itemClicked(const QString&, const QString&)));
         connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,

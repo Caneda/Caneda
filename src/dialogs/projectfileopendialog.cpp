@@ -20,7 +20,7 @@
 #include "projectfileopendialog.h"
 
 #include "global.h"
-#include "sidebarcomponentsbrowser.h"
+#include "sidebaritemsbrowser.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -34,7 +34,7 @@ namespace Caneda
         ui.setupUi(this);
 
         //Add components browser
-        m_projectsSidebar = new SidebarComponentsBrowser(this);
+        m_projectsSidebar = new SidebarItemsBrowser(this);
         if(!libraryFileName.isEmpty()) {
             m_libraryFileName = libraryFileName;
             m_libraryName = QFileInfo(libraryFileName).baseName();

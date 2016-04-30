@@ -52,7 +52,7 @@ namespace Caneda
      * of code structures. These structures or templates are inserted into the
      * currently opened document upon user double click.
      *
-     * \sa TextContext, SidebarComponentsBrowser
+     * \sa TextContext, SidebarItemsBrowser
      */
     class SidebarTextBrowser : public QWidget
     {

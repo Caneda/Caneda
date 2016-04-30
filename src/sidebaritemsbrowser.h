@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIDEBAR_COMPONENTS_BROWSER_H
-#define SIDEBAR_COMPONENTS_BROWSER_H
+#ifndef SIDEBAR_ITEMS_BROWSER_H
+#define SIDEBAR_ITEMS_BROWSER_H
 
 #include <QAbstractItemModel>
 #include <QPair>
@@ -31,15 +31,15 @@ namespace Caneda
 {
     /*!
      * \brief The CategoryItem class implements the items to be used by the
-     * SidebarComponentsModel class.
+     * SidebarItemsModel class.
      *
      * This class implements a custom type of items to be inserted in a
-     * QAbstractItemModel. It is used in Caneda by the SidebarComponentsModel
+     * QAbstractItemModel. It is used in Caneda by the SidebarItemsModel
      * class, to insert items and have the ability to use QPixmaps associated
      * with each item inserted. Items can also correspond to categories (or
      * libraries), in which case the QPixmap is not necessary.
      *
-     * \sa SidebarComponentsModel
+     * \sa SidebarItemsModel
      */
     class CategoryItem
     {
@@ -76,17 +76,17 @@ namespace Caneda
 
 
     /*!
-     * \brief The SidebarComponentsModel class implements a custom
+     * \brief The SidebarItemsModel class implements a custom
      * QAbstractItemModel, and provides the actual interface for item model
      * classes.
      *
      * The QAbstractItemModel class defines the standard interface that item
      * models must use to be able to interoperate with other components in the
      * model/view architecture. It is not supposed to be instantiated directly,
-     * and must be subclassed to create new models. The SidebarComponentsModel
+     * and must be subclassed to create new models. The SidebarItemsModel
      * class is the subclass implemented by Caneda.
      *
-     * The SidebarComponentsModel class is one of the Model/View Classes and
+     * The SidebarItemsModel class is one of the Model/View Classes and
      * implements the model part of Qt's model/view framework.
      *
      * The underlying data model is exposed to views and delegates as a
@@ -100,7 +100,7 @@ namespace Caneda
      *
      * \sa TreeView, CategoryItem
      */
-    class SidebarComponentsModel : public QAbstractItemModel
+    class SidebarItemsModel : public QAbstractItemModel
     {
         Q_OBJECT
 
@@ -109,7 +109,7 @@ namespace Caneda
             DragPixmapRole = Qt::UserRole + 1
         };
 
-        SidebarComponentsModel(QObject *parent=0);
+        SidebarItemsModel(QObject *parent=0);
 
         int columnCount(const QModelIndex & parent = QModelIndex()) const {
             Q_UNUSED(parent);
@@ -172,7 +172,7 @@ namespace Caneda
      * The model/view architecture ensures that the contents of the tree view
      * are updated as the model changes.
      *
-     *  \sa SidebarComponentsModel
+     *  \sa SidebarItemsModel
      */
     class TreeView : public QTreeView
     {
@@ -207,15 +207,15 @@ namespace Caneda
      * the currently opened document upon user double click.
      *
      * \sa LayoutContext, SchematicContext, SymbolContext, SidebarTextBrowser
-     * \sa TreeView, SidebarComponentsModel
+     * \sa TreeView, SidebarItemsModel
      */
-    class SidebarComponentsBrowser : public QWidget
+    class SidebarItemsBrowser : public QWidget
     {
         Q_OBJECT
 
     public:
-        SidebarComponentsBrowser(QWidget *parent = 0);
-        ~SidebarComponentsBrowser();
+        SidebarItemsBrowser(QWidget *parent = 0);
+        ~SidebarItemsBrowser();
 
         void plugLibrary(QString libraryName, QString category);
         void unPlugLibrary(QString libraryName, QString category);
@@ -234,7 +234,7 @@ namespace Caneda
         void slotOnClicked(const QModelIndex& index);
 
     private:
-        SidebarComponentsModel *m_model;
+        SidebarItemsModel *m_model;
         FilterProxyModel *m_proxyModel;
         TreeView *m_treeView;
 
@@ -245,4 +245,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //SIDEBAR_COMPONENTS_BROWSER_H
+#endif //SIDEBAR_ITEMS_BROWSER_H
