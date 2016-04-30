@@ -17,10 +17,10 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "csimulationview.h"
+#include "chartview.h"
 
 #include "actionmanager.h"
-#include "csimulationscene.h"
+#include "chartscene.h"
 #include "settings.h"
 #include "simulationdialog.h"
 
@@ -42,26 +42,26 @@ namespace Caneda
      *                           CPlotMagnifier                              *
      *************************************************************************/
     //! \brief Constructor
-    CPlotMagnifier::CPlotMagnifier(QWidget *canvas): QwtPlotMagnifier(canvas)
+    PlotMagnifier::PlotMagnifier(QWidget *canvas): QwtPlotMagnifier(canvas)
     {
         m_zoomFactor = 1.1;
     }
 
     //! \brief Zoom in the plot
-    void CPlotMagnifier::zoomIn()
+    void PlotMagnifier::zoomIn()
     {
         rescale(1.0 / m_zoomFactor);
     }
 
     //! \brief Zoom out the plot
-    void CPlotMagnifier::zoomOut()
+    void PlotMagnifier::zoomOut()
     {
         rescale(m_zoomFactor);
     }
 
 
     /*************************************************************************
-     *                          CSimulationView                              *
+     *                              ChartView                                *
      *************************************************************************/
     /*!
      * \brief Constructs a new simulation view.
@@ -69,9 +69,9 @@ namespace Caneda
      * \param sv Simulation scene to point this view to.
      * \param parent Parent of this object.
      */
-    CSimulationView::CSimulationView(CSimulationScene *scene, QWidget *parent) :
+    ChartView::ChartView(ChartScene *scene, QWidget *parent) :
         QwtPlot(parent),
-        m_csimulationScene(scene),
+        m_chartScene(scene),
         m_logXaxis(false),
         m_logYleftAxis(false),
         m_logYrightAxis(false)
@@ -86,7 +86,7 @@ namespace Caneda
         panner->setMouseButton(Qt::MidButton);
 
         // Zoom in/out with the wheel
-        m_magnifier = new CPlotMagnifier(m_canvas);
+        m_magnifier = new PlotMagnifier(m_canvas);
         m_magnifier->setMouseButton(Qt::NoButton);  // Disable default left button action
         m_magnifier->setWheelFactor(1/m_magnifier->wheelFactor());  // Invert the wheel direction
 
@@ -116,40 +116,40 @@ namespace Caneda
         connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenuEvent(const QPoint &)));
     }
 
-    void CSimulationView::zoomIn()
+    void ChartView::zoomIn()
     {
         m_magnifier->zoomIn();
     }
 
-    void CSimulationView::zoomOut()
+    void ChartView::zoomOut()
     {
         m_magnifier->zoomOut();
     }
 
-    void CSimulationView::zoomFitInBest()
+    void ChartView::zoomFitInBest()
     {
         m_zoomer->zoom(0);
     }
 
-    void CSimulationView::zoomOriginal()
+    void ChartView::zoomOriginal()
     {
         m_zoomer->zoom(0);
     }
 
     //! \brief Adds all items available in the scene to the plot widget.
-    void CSimulationView::populate()
+    void ChartView::populate()
     {
-        QList<CSimulationPlotCurve*> m_items = m_csimulationScene->items();
+        QList<ChartSeries*> m_items = m_chartScene->items();
 
         QColor color = QColor(0, 0, 0);
         int colorIndex= 0;
         int valueIndex = 255;
 
         // Attach the items to the plot
-        foreach(CSimulationPlotCurve *item, m_items) {
+        foreach(ChartSeries *item, m_items) {
             // Recreate the curve to be able to attach
             // the same curve to different views
-            CSimulationPlotCurve *newCurve = new CSimulationPlotCurve();
+            ChartSeries *newCurve = new ChartSeries();
             newCurve->setData(item->data());
             newCurve->setTitle(item->title());
             newCurve->attach(this);
@@ -160,7 +160,7 @@ namespace Caneda
             }
 
             // Select the style and color of the new curve
-            newCurve->setRenderHint(CSimulationPlotCurve::RenderAntialiased);
+            newCurve->setRenderHint(ChartSeries::RenderAntialiased);
             color.setHsv(colorIndex , 200, valueIndex);
             newCurve->setPen(QPen(color));
 
@@ -225,7 +225,7 @@ namespace Caneda
      *
      * \sa isLogAxis()
      */
-    void CSimulationView::setLogAxis(QwtPlot::Axis axis, bool logarithmic)
+    void ChartView::setLogAxis(QwtPlot::Axis axis, bool logarithmic)
     {
         // Set logarithmic the corresponding axis
         if(logarithmic) {
@@ -255,7 +255,7 @@ namespace Caneda
      *
      * \sa setLogAxis()
      */
-    bool CSimulationView::isLogAxis(QwtPlot::Axis axis)
+    bool ChartView::isLogAxis(QwtPlot::Axis axis)
     {
         if(axis == QwtPlot::xBottom || axis == QwtPlot::xTop) {
             return m_logXaxis;
@@ -269,7 +269,7 @@ namespace Caneda
     }
 
     //! \brief Loads the saved user settings, updating the values on the canvas.
-    void CSimulationView::loadUserSettings()
+    void ChartView::loadUserSettings()
     {
         // Load settings
         Settings *settings = Settings::instance();
@@ -291,7 +291,7 @@ namespace Caneda
         }
     }
 
-    void CSimulationView::print(QPrinter *printer, bool fitInView)
+    void ChartView::print(QPrinter *printer, bool fitInView)
     {
         QwtPlotRenderer renderer;
         renderer.setDiscardFlag(QwtPlotRenderer::DiscardNone, true);
@@ -300,7 +300,7 @@ namespace Caneda
         renderer.renderTo(this, *printer);
     }
 
-    void CSimulationView::exportImage(QPaintDevice &device)
+    void ChartView::exportImage(QPaintDevice &device)
     {
         QwtPlotRenderer renderer;
         renderer.setDiscardFlag(QwtPlotRenderer::DiscardNone, true);
@@ -310,7 +310,7 @@ namespace Caneda
     }
 
     //! \copydoc CGraphicsItem::launchPropertiesDialog()
-    int CSimulationView::launchPropertiesDialog()
+    int ChartView::launchPropertiesDialog()
     {
         SimulationDialog *dia = new SimulationDialog(this);
         int status = dia->exec();
@@ -320,7 +320,7 @@ namespace Caneda
     }
 
     //! \brief Context menu.
-    void CSimulationView::contextMenuEvent(const QPoint &pos)
+    void ChartView::contextMenuEvent(const QPoint &pos)
     {
         ActionManager* am = ActionManager::instance();
         QMenu *_menu = new QMenu();
@@ -339,7 +339,7 @@ namespace Caneda
     }
 
     //! \brief Update the status bar with the plot coordinates on move event.
-    void CSimulationView::mouseMoveEvent(QMouseEvent *event)
+    void ChartView::mouseMoveEvent(QMouseEvent *event)
     {
         QPoint newCursorPos = m_zoomer->trackerPosition();
         double x = invTransform(xBottom, newCursorPos.x());
@@ -353,7 +353,7 @@ namespace Caneda
     }
 
     //! \brief Show plot properties dialog upon mouse double click.
-    void CSimulationView::mouseDoubleClickEvent(QMouseEvent *event)
+    void ChartView::mouseDoubleClickEvent(QMouseEvent *event)
     {
         launchPropertiesDialog();
     }

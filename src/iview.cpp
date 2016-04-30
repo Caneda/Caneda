@@ -22,8 +22,8 @@
 
 #include "actionmanager.h"
 #include "cgraphicsview.h"
-#include "csimulationscene.h"
-#include "csimulationview.h"
+#include "chartscene.h"
+#include "chartview.h"
 #include "documentviewmanager.h"
 #include "icontext.h"
 #include "idocument.h"
@@ -318,21 +318,21 @@ namespace Caneda
     SimulationView::SimulationView(SimulationDocument *document) :
         IView(document)
     {
-        m_simulationView = new CSimulationView(document->cSimulationScene(), 0);
-        m_simulationView->populate();
+        m_chartView = new ChartView(document->chartScene(), 0);
+        m_chartView->populate();
 
         //! \todo Reimplement this
-//        connect(m_simulationView, SIGNAL(focussedIn(CSimulationView*)), this,
+//        connect(m_chartView, SIGNAL(focussedIn(ChartView*)), this,
 //                SLOT(onWidgetFocussedIn()));
-//        connect(m_simulationView, SIGNAL(focussedOut(CSimulationView*)), this,
+//        connect(m_chartView, SIGNAL(focussedOut(ChartView*)), this,
 //                SLOT(onWidgetFocussedOut()));
-        connect(m_simulationView, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_chartView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     QWidget* SimulationView::toWidget() const
     {
-        return m_simulationView;
+        return m_chartView;
     }
 
     IContext* SimulationView::context() const
@@ -342,22 +342,22 @@ namespace Caneda
 
     void SimulationView::zoomIn()
     {
-        m_simulationView->zoomIn();
+        m_chartView->zoomIn();
     }
 
     void SimulationView::zoomOut()
     {
-        m_simulationView->zoomOut();
+        m_chartView->zoomOut();
     }
 
     void SimulationView::zoomFitInBest()
     {
-        m_simulationView->zoomFitInBest();
+        m_chartView->zoomFitInBest();
     }
 
     void SimulationView::zoomOriginal()
     {
-        m_simulationView->zoomOriginal();
+        m_chartView->zoomOriginal();
     }
 
     IView* SimulationView::duplicate()
@@ -367,8 +367,8 @@ namespace Caneda
 
     void SimulationView::updateSettingsChanges()
     {
-        m_simulationView->loadUserSettings();
-        m_simulationView->replot();
+        m_chartView->loadUserSettings();
+        m_chartView->replot();
     }
 
     void SimulationView::onWidgetFocussedIn()

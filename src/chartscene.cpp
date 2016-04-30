@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "csimulationscene.h"
+#include "chartscene.h"
 
 namespace Caneda
 {
@@ -26,7 +26,7 @@ namespace Caneda
      *
      * \param parent Parent of the scene.
      */
-    CSimulationScene::CSimulationScene(QWidget *parent) :
+    ChartScene::ChartScene(QWidget *parent) :
         QWidget(parent)
     {
     }
@@ -35,7 +35,7 @@ namespace Caneda
      * \brief Adds or moves the item and all its childen to this scene. This
      * scene takes ownership of the item.
      */
-    void CSimulationScene::addItem(CSimulationPlotCurve *item)
+    void ChartScene::addItem(ChartSeries *item)
     {
         m_items.append(item);
     }

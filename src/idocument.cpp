@@ -22,8 +22,8 @@
 
 #include "actionmanager.h"
 #include "cgraphicsscene.h"
-#include "csimulationscene.h"
-#include "csimulationview.h"
+#include "chartscene.h"
+#include "chartview.h"
 #include "documentviewmanager.h"
 #include "fileformats.h"
 #include "icontext.h"
@@ -1175,7 +1175,7 @@ namespace Caneda
     //! \brief Constructor.
     SimulationDocument::SimulationDocument()
     {
-        m_cSimulationScene = new CSimulationScene();
+        m_chartScene = new ChartScene();
     }
 
     IContext* SimulationDocument::context()
@@ -1219,9 +1219,9 @@ namespace Caneda
          */
         DocumentViewManager *manager = DocumentViewManager::instance();
         IView *v = manager->currentView();
-        CSimulationView *sv = qobject_cast<CSimulationView*>(v->toWidget());
+        ChartView *cv = qobject_cast<ChartView*>(v->toWidget());
 
-        sv->print(printer, fitInView);
+        cv->print(printer, fitInView);
     }
 
     void SimulationDocument::exportImage(QPaintDevice &device)
@@ -1234,9 +1234,9 @@ namespace Caneda
          */
         DocumentViewManager *manager = DocumentViewManager::instance();
         IView *v = manager->currentView();
-        CSimulationView *sv = qobject_cast<CSimulationView*>(v->toWidget());
+        ChartView *cv = qobject_cast<ChartView*>(v->toWidget());
 
-        sv->exportImage(device);
+        cv->exportImage(device);
     }
 
     QSizeF SimulationDocument::documentSize()
@@ -1271,10 +1271,10 @@ namespace Caneda
     {
         DocumentViewManager *manager = DocumentViewManager::instance();
         IView *v = manager->currentView();
-        CSimulationView *sv = qobject_cast<CSimulationView*>(v->toWidget());
+        ChartView *cv = qobject_cast<ChartView*>(v->toWidget());
 
-        if(sv) {
-            sv->launchPropertiesDialog();
+        if(cv) {
+            cv->launchPropertiesDialog();
         }
     }
 

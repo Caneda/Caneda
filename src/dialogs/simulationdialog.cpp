@@ -19,7 +19,7 @@
 
 #include "simulationdialog.h"
 
-#include "csimulationview.h"
+#include "chartview.h"
 
 #include <qwt_plot_curve.h>
 
@@ -31,7 +31,7 @@ namespace Caneda
      * \param parent Parent of this object, the simulation view
      * being modified by this dialog.
      */
-    SimulationDialog::SimulationDialog(CSimulationView *parent) :
+    SimulationDialog::SimulationDialog(ChartView *parent) :
         QDialog(parent)
     {
         // Initialize designer dialog
@@ -50,7 +50,7 @@ namespace Caneda
      */
     void SimulationDialog::accept()
     {
-        CSimulationView *parent = static_cast<CSimulationView*>(this->parent());
+        ChartView *parent = static_cast<ChartView*>(this->parent());
 
         // Set log axis checkboxes state
         parent->setLogAxis(QwtPlot::xBottom, ui.checkBoxXscale->isChecked());

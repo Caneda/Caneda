@@ -19,7 +19,7 @@
 
 #include "sidebarsimulationbrowser.h"
 
-#include "csimulationview.h"
+#include "chartview.h"
 #include "documentviewmanager.h"
 #include "iview.h"
 
@@ -176,7 +176,7 @@ namespace Caneda
      * \param parent Parent of this object, the simulation view
      * being modified by this dialog.
      */
-    SidebarSimulationBrowser::SidebarSimulationBrowser(CSimulationView *parent) :
+    SidebarSimulationBrowser::SidebarSimulationBrowser(ChartView *parent) :
         QWidget(parent)
     {
         QVBoxLayout *layoutTop = new QVBoxLayout(this);
@@ -335,7 +335,7 @@ namespace Caneda
     /*!
      * \brief Update waveforms list
      *
-     * This method updates the waveforms list given a CSimulationView. This is
+     * This method updates the waveforms list given a ChartView. This is
      * usually used when changing between views to keep the list of available
      * waveforms synchronized with the currently selected simulation.
      */
@@ -343,7 +343,7 @@ namespace Caneda
     {
         // Get the current view
         DocumentViewManager *manager = DocumentViewManager::instance();
-        CSimulationView *view = static_cast<CSimulationView*>(manager->currentView()->toWidget());
+        ChartView *view = static_cast<ChartView*>(manager->currentView()->toWidget());
 
         // Populate the waveforms list
         QwtPlotItemList list = view->itemList(QwtPlotItem::Rtti_PlotCurve);
@@ -374,7 +374,7 @@ namespace Caneda
     {
         // Get the current view
         DocumentViewManager *manager = DocumentViewManager::instance();
-        CSimulationView *view = static_cast<CSimulationView*>(manager->currentView()->toWidget());
+        ChartView *view = static_cast<ChartView*>(manager->currentView()->toWidget());
 
         // Set waveforms visibility
         QwtPlotItemList list = view->itemList(QwtPlotItem::Rtti_PlotCurve);

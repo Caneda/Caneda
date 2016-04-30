@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,28 +17,42 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "csimulationitem.h"
+#ifndef CHART_SCENE_H
+#define CHART_SCENE_H
+
+#include <chartitem.h>
+
+#include <QWidget>
 
 namespace Caneda
 {
     /*!
-     * \brief Constructor
+     * \brief This class implements the scene class of Qt's Graphics View
+     * Architecture, representing the actual document interface (scene),
+     * containing the simulation waveform data.
      *
-     * \param title Title of the curve
+     * Each scene must have at least one associated view (ChartView), to
+     * display the contents of the scene (waveforms). Several views can be
+     * attached to the same scene, providing different viewports into the same
+     * data set (for example, when using split views).
+     *
+     * \sa ChartView
      */
-    CSimulationPlotCurve::CSimulationPlotCurve(const QString &title) :
-        QwtPlotCurve(title)
+    class ChartScene : public QWidget
     {
-    }
+        Q_OBJECT
 
-    /*!
-     * \brief Constructor
-     *
-     * \param title Title of the curve
-     */
-    CSimulationPlotCurve::CSimulationPlotCurve(const QwtText &title) :
-        QwtPlotCurve(title)
-    {
-    }
+    public:
+        ChartScene(QWidget *parent = 0);
+
+        //! \brief Returns a list of all items in the scene in descending stacking
+        QList<ChartSeries*> items() const { return m_items; }
+        void addItem(ChartSeries *item);
+
+    private:
+        QList<ChartSeries*> m_items;  //! \brief Items available in the scene (curves, markers, etc)
+    };
 
 } // namespace Caneda
+
+#endif //CHART_SCENE_H

@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef C_SIMULATION_VIEW_H
-#define C_SIMULATION_VIEW_H
+#ifndef CHART_VIEW_H
+#define CHART_VIEW_H
 
 #include <QtPrintSupport/QPrinter>
 
@@ -34,7 +34,7 @@ class QwtPlotZoomer;
 namespace Caneda
 {
     // Forward declations
-    class CSimulationScene;
+    class ChartScene;
 
     /*!
      * \brief Reimplementation of the QwtPlotMagnifier class to allow for the
@@ -42,12 +42,12 @@ namespace Caneda
      *
      * \sa QwtPlotMagnifier
      */
-    class CPlotMagnifier: public QwtPlotMagnifier
+    class PlotMagnifier: public QwtPlotMagnifier
     {
         Q_OBJECT
 
     public:
-        CPlotMagnifier(QWidget *);
+        PlotMagnifier(QWidget *);
 
         void zoomIn();
         void zoomOut();
@@ -71,14 +71,14 @@ namespace Caneda
      * multiple views associated to it, allowing the user to look at the scene
      * for example, with multiple zoom levels.
      *
-     * \sa CSimulationScene
+     * \sa ChartScene
      */
-    class CSimulationView : public QwtPlot
+    class ChartView : public QwtPlot
     {
         Q_OBJECT
 
     public:
-        CSimulationView(CSimulationScene *scene, QWidget *parent = 0);
+        ChartView(ChartScene *scene, QWidget *parent = 0);
 
         virtual void zoomIn();
         virtual void zoomOut();
@@ -106,17 +106,17 @@ namespace Caneda
         void mouseDoubleClickEvent(QMouseEvent * event);
 
     private:
-        CSimulationScene *m_csimulationScene;
+        ChartScene *m_chartScene;
 
         QwtPlotCanvas *m_canvas;
         QwtPlotGrid *m_grid;
         QwtLegend *m_legend;
         QwtPlotZoomer *m_zoomer;
-        CPlotMagnifier *m_magnifier;
+        PlotMagnifier *m_magnifier;
 
         bool m_logXaxis, m_logYleftAxis, m_logYrightAxis;
     };
 
 } // namespace Caneda
 
-#endif //C_SIMULATION_VIEW_H
+#endif //CHART_VIEW_H

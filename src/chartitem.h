@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef C_SIMULATION_ITEM_H
-#define C_SIMULATION_ITEM_H
+#ifndef CHART_ITEM_H
+#define CHART_ITEM_H
 
 #include <QString>
 
@@ -32,11 +32,11 @@ namespace Caneda
      *
      * \sa QwtPlotCurve
      */
-    class CSimulationPlotCurve : public QwtPlotCurve
+    class ChartSeries : public QwtPlotCurve
     {
     public:
-        CSimulationPlotCurve(const QString &title = QString::null);
-        CSimulationPlotCurve(const QwtText &title);
+        ChartSeries(const QString &title = QString::null);
+        ChartSeries(const QwtText &title);
 
         QString type() const { return m_type; }  //! \brief Returns the type of curve
         void setType(const QString type) { m_type = type; }    //! \brief Sets the type of curve
@@ -47,4 +47,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif // C_SIMULATION_ITEM_H
+#endif //CHART_ITEM_H

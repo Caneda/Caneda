@@ -30,8 +30,8 @@ namespace Caneda
 {
     // Forward declarations
     class CGraphicsScene;
-    class CSimulationPlotCurve;
-    class CSimulationScene;
+    class ChartSeries;
+    class ChartScene;
     class LayoutDocument;
     class SchematicDocument;
     class SimulationDocument;
@@ -220,12 +220,12 @@ namespace Caneda
         void parseAsciiData(QTextStream *file, const int nvars, const int npoints, const bool real);
         void parseBinaryData(QTextStream *file, const int nvars, const int npoints, const bool real);
 
-        CSimulationScene* cSimulationScene() const;
+        ChartScene* chartScene() const;
 
         SimulationDocument *m_simulationDocument;
 
-        QList<CSimulationPlotCurve*> plotCurves;       // List of magnitude curves.
-        QList<CSimulationPlotCurve*> plotCurvesPhase;  // List of phase curves.
+        QList<ChartSeries*> plotCurves;       // List of magnitude curves.
+        QList<ChartSeries*> plotCurvesPhase;  // List of phase curves.
     };
 
 } // namespace Caneda

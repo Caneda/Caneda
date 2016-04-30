@@ -34,7 +34,7 @@ namespace Caneda
 {
     // Forward declarations
     class CGraphicsScene;
-    class CSimulationScene;
+    class ChartScene;
     class DocumentViewManager;
     class IContext;
     class IView;
@@ -306,7 +306,7 @@ namespace Caneda
      * This class manages document specific methods like saving,
      * loading, exporting to different formats, as well as containing the
      * actual scene. The scene itself is included as a pointer to
-     * CSimulationScene, that contains all the scene specific methods.
+     * ChartScene, that contains all the scene specific methods.
      *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa SimulationContext, SimulationView
@@ -367,10 +367,10 @@ namespace Caneda
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
-        CSimulationScene* cSimulationScene() const { return m_cSimulationScene; }
+        ChartScene* chartScene() const { return m_chartScene; }
 
     private:
-        CSimulationScene *m_cSimulationScene;
+        ChartScene *m_chartScene;
     };
 
     /*!

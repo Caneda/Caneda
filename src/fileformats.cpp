@@ -22,8 +22,8 @@
 
 #include "cgraphicsscene.h"
 #include "component.h"
-#include "csimulationitem.h"
-#include "csimulationscene.h"
+#include "chartitem.h"
+#include "chartscene.h"
 #include "global.h"
 #include "idocument.h"
 #include "library.h"
@@ -1709,7 +1709,7 @@ namespace Caneda
     //! \brief Load the waveform file indicated by \a filename.
     bool FormatRawSimulation::load()
     {
-        CSimulationScene *scene = cSimulationScene();
+        ChartScene *scene = chartScene();
         if(!scene) {
             return false;
         }
@@ -1784,14 +1784,14 @@ namespace Caneda
                         // Create a new curve, and add it to the list
                         if(real) {
                             // If dealing with real numbers, create an array only for the magnitude and use the provided curve types
-                            CSimulationPlotCurve *curve = new CSimulationPlotCurve(tok.at(1));  // tok.at(1) = name
+                            ChartSeries *curve = new ChartSeries(tok.at(1));  // tok.at(1) = name
                             curve->setType(tok.at(2));  // tok.at(2) = type of curve (voltage, current, etc)
                             plotCurves.append(curve);   // Append new curve to the list
                         }
                         else {
                             // If dealing with complex numbers, create an array for the magnitude and another one for the phase
-                            CSimulationPlotCurve *curve = new CSimulationPlotCurve("Mag(" + tok.at(1) + ")");       // tok.at(1) = name
-                            CSimulationPlotCurve *curvePhase = new CSimulationPlotCurve("Phase(" + tok.at(1) + ")");  // tok.at(1) = name
+                            ChartSeries *curve = new ChartSeries("Mag(" + tok.at(1) + ")");       // tok.at(1) = name
+                            ChartSeries *curvePhase = new ChartSeries("Phase(" + tok.at(1) + ")");  // tok.at(1) = name
                             curve->setType("magnitude");         // type of curve (magnitude, phase, etc)
                             curvePhase->setType("phase");        // type of curve (magnitude, phase, etc)
                             plotCurves.append(curve);            // Append new curve to the list
@@ -1864,7 +1864,7 @@ namespace Caneda
                 // Copy the data into the curves
                 plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
                 // Add the curve to the scene
-                cSimulationScene()->addItem(plotCurves[i]);
+                chartScene()->addItem(plotCurves[i]);
             }
         }
         else {
@@ -1910,8 +1910,8 @@ namespace Caneda
                 plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
                 plotCurvesPhase[i]->setSamples(dataSamples[0], dataSamplesPhase[i], npoints);
                 // Add the curve to the scene
-                cSimulationScene()->addItem(plotCurves[i]);
-                cSimulationScene()->addItem(plotCurvesPhase[i]);
+                chartScene()->addItem(plotCurves[i]);
+                chartScene()->addItem(plotCurvesPhase[i]);
             }
         }
     }
@@ -1974,7 +1974,7 @@ namespace Caneda
                 // Copy the data into the curves
                 plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
                 // Add the curve to the scene
-                cSimulationScene()->addItem(plotCurves[i]);
+                chartScene()->addItem(plotCurves[i]);
             }
         }
         else {
@@ -2015,15 +2015,15 @@ namespace Caneda
                 plotCurves[i]->setSamples(dataSamples[0], dataSamples[i], npoints);
                 plotCurvesPhase[i]->setSamples(dataSamples[0], dataSamplesPhase[i], npoints);
                 // Add the curve to the scene
-                cSimulationScene()->addItem(plotCurves[i]);
-                cSimulationScene()->addItem(plotCurvesPhase[i]);
+                chartScene()->addItem(plotCurves[i]);
+                chartScene()->addItem(plotCurvesPhase[i]);
             }
         }
     }
 
-    CSimulationScene* FormatRawSimulation::cSimulationScene() const
+    ChartScene* FormatRawSimulation::chartScene() const
     {
-        return m_simulationDocument ? m_simulationDocument->cSimulationScene() : 0;
+        return m_simulationDocument ? m_simulationDocument->chartScene() : 0;
     }
 
 } // namespace Caneda

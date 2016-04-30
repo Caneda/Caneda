@@ -25,26 +25,26 @@
 namespace Caneda
 {
     // Forward declations
-    class CSimulationView;
+    class ChartView;
 
     /*!
-     * \brief Dialog to select simulation properties in a CSimulationView plot.
+     * \brief Dialog to select simulation properties in a ChartView plot.
      *
      * This dialog presents to the user the properties of the selected
-     * simulation plot (CSimulationView) and the visible waveforms.
+     * simulation plot (ChartView) and the visible waveforms.
      *
      * This class handles the user interface part of the dialog, and
      * presentation part to the user, while SimulationModel class handles
      * the data interaction itself.
      *
-     * \sa CSimulationView, WaveformsMap, SimulationModel, QSortFilterProxyModel
+     * \sa ChartView, WaveformsMap, SimulationModel, QSortFilterProxyModel
      */
     class SimulationDialog : public QDialog
     {
         Q_OBJECT
 
     public:
-        SimulationDialog(CSimulationView *parent = 0);
+        SimulationDialog(ChartView *parent = 0);
 
     public Q_SLOTS:
         void accept();

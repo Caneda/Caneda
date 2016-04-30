@@ -32,7 +32,7 @@ class QTableView;
 namespace Caneda
 {
     // Forward declations
-    class CSimulationView;
+    class ChartView;
 
     //! \def WaveformsMap This is a typedef to map waveforms with selected status.
     typedef QMap<QString, bool> WaveformsMap;
@@ -85,16 +85,16 @@ namespace Caneda
 
     /*!
      * \brief Dialog to select waveforms and set properties in a
-     * CSimulationView plot.
+     * ChartView plot.
      *
      * This dialog presents to the user the properties of the selected
-     * simulation plot (CSimulationView) and the visible waveforms.
+     * simulation plot (ChartView) and the visible waveforms.
      *
      * This class handles the user interface part of the dialog, and
      * presentation part to the user, while SidebarSimulationModel class
      * handles the data interaction itself.
      *
-     * \sa CSimulationView, WaveformsMap, SidebarSimulationModel,
+     * \sa ChartView, WaveformsMap, SidebarSimulationModel,
      * QSortFilterProxyModel
      */
     class SidebarSimulationBrowser : public QWidget
@@ -102,7 +102,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SidebarSimulationBrowser(CSimulationView *parent = 0);
+        SidebarSimulationBrowser(ChartView *parent = 0);
 
         void updateWaveformsList();
 
