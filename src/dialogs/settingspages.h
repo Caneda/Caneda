@@ -20,7 +20,7 @@
 #ifndef SETTINGS_PAGES_H
 #define SETTINGS_PAGES_H
 
-#include "cgraphicsscene.h"
+#include "graphicsscene.h"
 
 #include <QWidget>
 

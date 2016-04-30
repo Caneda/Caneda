@@ -21,11 +21,11 @@
 #include "idocument.h"
 
 #include "actionmanager.h"
-#include "cgraphicsscene.h"
 #include "chartscene.h"
 #include "chartview.h"
 #include "documentviewmanager.h"
 #include "fileformats.h"
+#include "graphicsscene.h"
 #include "icontext.h"
 #include "iview.h"
 #include "mainwindow.h"
@@ -356,14 +356,14 @@ namespace Caneda
     //! \brief Constructor.
     LayoutDocument::LayoutDocument()
     {
-        m_cGraphicsScene = new CGraphicsScene(this);
-        connect(m_cGraphicsScene, SIGNAL(changed()), this,
+        m_graphicsScene = new GraphicsScene(this);
+        connect(m_graphicsScene, SIGNAL(changed()), this,
                 SLOT(emitDocumentChanged()));
-        connect(m_cGraphicsScene->undoStack(), SIGNAL(canUndoChanged(bool)),
+        connect(m_graphicsScene->undoStack(), SIGNAL(canUndoChanged(bool)),
                 this, SLOT(emitDocumentChanged()));
-        connect(m_cGraphicsScene->undoStack(), SIGNAL(canRedoChanged(bool)),
+        connect(m_graphicsScene->undoStack(), SIGNAL(canRedoChanged(bool)),
                 this, SLOT(emitDocumentChanged()));
-        connect(m_cGraphicsScene, SIGNAL(selectionChanged()), this,
+        connect(m_graphicsScene, SIGNAL(selectionChanged()), this,
                 SLOT(emitDocumentChanged()));
     }
 
@@ -374,33 +374,33 @@ namespace Caneda
 
     bool LayoutDocument::isModified() const
     {
-        return !m_cGraphicsScene->undoStack()->isClean();
+        return !m_graphicsScene->undoStack()->isClean();
     }
 
     bool LayoutDocument::canUndo() const
     {
-        return m_cGraphicsScene->undoStack()->canUndo();
+        return m_graphicsScene->undoStack()->canUndo();
     }
 
     bool LayoutDocument::canRedo() const
     {
-        return m_cGraphicsScene->undoStack()->canRedo();
+        return m_graphicsScene->undoStack()->canRedo();
     }
 
     void LayoutDocument::undo()
     {
-        m_cGraphicsScene->undoStack()->undo();
+        m_graphicsScene->undoStack()->undo();
     }
 
     void LayoutDocument::redo()
     {
-        m_cGraphicsScene->undoStack()->redo();
+        m_graphicsScene->undoStack()->redo();
     }
 
     bool LayoutDocument::canCut() const
     {
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> schItems = filterItems<GraphicsItem>(qItems);
 
         return schItems.isEmpty() == false;
     }
@@ -412,21 +412,21 @@ namespace Caneda
 
     void LayoutDocument::cut()
     {
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> schItems = filterItems<GraphicsItem>(qItems);
 
         if(!schItems.isEmpty()) {
-            m_cGraphicsScene->cutItems(schItems);
+            m_graphicsScene->cutItems(schItems);
         }
     }
 
     void LayoutDocument::copy()
     {
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> schItems = filterItems<GraphicsItem>(qItems);
 
         if(!schItems.isEmpty()) {
-            m_cGraphicsScene->copyItems(schItems);
+            m_graphicsScene->copyItems(schItems);
         }
     }
 
@@ -438,8 +438,8 @@ namespace Caneda
     void LayoutDocument::selectAll()
     {
         QPainterPath path;
-        path.addRect(m_cGraphicsScene->sceneRect());
-        m_cGraphicsScene->setSelectionArea(path);
+        path.addRect(m_graphicsScene->sceneRect());
+        m_graphicsScene->setSelectionArea(path);
     }
 
     void LayoutDocument::intoHierarchy()
@@ -474,7 +474,7 @@ namespace Caneda
 
     void LayoutDocument::distributeHorizontal()
     {
-        if (!m_cGraphicsScene->distributeElements(Qt::Horizontal)) {
+        if (!m_graphicsScene->distributeElements(Qt::Horizontal)) {
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }
@@ -482,7 +482,7 @@ namespace Caneda
 
     void LayoutDocument::distributeVertical()
     {
-        if (!m_cGraphicsScene->distributeElements(Qt::Vertical)) {
+        if (!m_graphicsScene->distributeElements(Qt::Vertical)) {
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }
@@ -505,17 +505,17 @@ namespace Caneda
 
     void LayoutDocument::print(QPrinter *printer, bool fitInView)
     {
-        m_cGraphicsScene->print(printer, fitInView);
+        m_graphicsScene->print(printer, fitInView);
     }
 
     void LayoutDocument::exportImage(QPaintDevice &device)
     {
-        m_cGraphicsScene->exportImage(device);
+        m_graphicsScene->exportImage(device);
     }
 
     QSizeF LayoutDocument::documentSize()
     {
-        return m_cGraphicsScene->itemsBoundingRect().size();
+        return m_graphicsScene->itemsBoundingRect().size();
     }
 
     bool LayoutDocument::load(QString *errorMessage)
@@ -551,7 +551,7 @@ namespace Caneda
                 return false;
             }
 
-            m_cGraphicsScene->undoStack()->clear();
+            m_graphicsScene->undoStack()->clear();
             return true;
         }
 
@@ -590,12 +590,12 @@ namespace Caneda
     void LayoutDocument::launchPropertiesDialog()
     {
         // Get a list of selected items
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> schItems = filterItems<GraphicsItem>(qItems);
 
         // If there is any selection, launch corresponding properties dialog.
         if(!schItems.isEmpty()) {
-            foreach(CGraphicsItem *item, schItems) {
+            foreach(GraphicsItem *item, schItems) {
                 item->launchPropertiesDialog();
             }
         }
@@ -604,7 +604,7 @@ namespace Caneda
     //! \brief Align selected elements appropriately based on \a alignment
     void LayoutDocument::alignElements(Qt::Alignment alignment)
     {
-        if (!m_cGraphicsScene->alignElements(alignment)) {
+        if (!m_graphicsScene->alignElements(alignment)) {
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }
@@ -617,14 +617,14 @@ namespace Caneda
     //! \brief Constructor.
     SchematicDocument::SchematicDocument()
     {
-        m_cGraphicsScene = new CGraphicsScene(this);
-        connect(m_cGraphicsScene, SIGNAL(changed()), this,
+        m_graphicsScene = new GraphicsScene(this);
+        connect(m_graphicsScene, SIGNAL(changed()), this,
                 SLOT(emitDocumentChanged()));
-        connect(m_cGraphicsScene->undoStack(), SIGNAL(canUndoChanged(bool)),
+        connect(m_graphicsScene->undoStack(), SIGNAL(canUndoChanged(bool)),
                 this, SLOT(emitDocumentChanged()));
-        connect(m_cGraphicsScene->undoStack(), SIGNAL(canRedoChanged(bool)),
+        connect(m_graphicsScene->undoStack(), SIGNAL(canRedoChanged(bool)),
                 this, SLOT(emitDocumentChanged()));
-        connect(m_cGraphicsScene, SIGNAL(selectionChanged()), this,
+        connect(m_graphicsScene, SIGNAL(selectionChanged()), this,
                 SLOT(emitDocumentChanged()));
     }
 
@@ -635,33 +635,33 @@ namespace Caneda
 
     bool SchematicDocument::isModified() const
     {
-        return !m_cGraphicsScene->undoStack()->isClean();
+        return !m_graphicsScene->undoStack()->isClean();
     }
 
     bool SchematicDocument::canUndo() const
     {
-        return m_cGraphicsScene->undoStack()->canUndo();
+        return m_graphicsScene->undoStack()->canUndo();
     }
 
     bool SchematicDocument::canRedo() const
     {
-        return m_cGraphicsScene->undoStack()->canRedo();
+        return m_graphicsScene->undoStack()->canRedo();
     }
 
     void SchematicDocument::undo()
     {
-        m_cGraphicsScene->undoStack()->undo();
+        m_graphicsScene->undoStack()->undo();
     }
 
     void SchematicDocument::redo()
     {
-        m_cGraphicsScene->undoStack()->redo();
+        m_graphicsScene->undoStack()->redo();
     }
 
     bool SchematicDocument::canCut() const
     {
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> schItems = filterItems<GraphicsItem>(qItems);
 
         return schItems.isEmpty() == false;
     }
@@ -673,21 +673,21 @@ namespace Caneda
 
     void SchematicDocument::cut()
     {
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> schItems = filterItems<GraphicsItem>(qItems);
 
         if(!schItems.isEmpty()) {
-            m_cGraphicsScene->cutItems(schItems);
+            m_graphicsScene->cutItems(schItems);
         }
     }
 
     void SchematicDocument::copy()
     {
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> schItems = filterItems<GraphicsItem>(qItems);
 
         if(!schItems.isEmpty()) {
-            m_cGraphicsScene->copyItems(schItems);
+            m_graphicsScene->copyItems(schItems);
         }
     }
 
@@ -699,8 +699,8 @@ namespace Caneda
     void SchematicDocument::selectAll()
     {
         QPainterPath path;
-        path.addRect(m_cGraphicsScene->sceneRect());
-        m_cGraphicsScene->setSelectionArea(path);
+        path.addRect(m_graphicsScene->sceneRect());
+        m_graphicsScene->setSelectionArea(path);
     }
 
     void SchematicDocument::intoHierarchy()
@@ -735,7 +735,7 @@ namespace Caneda
 
     void SchematicDocument::distributeHorizontal()
     {
-        if (!m_cGraphicsScene->distributeElements(Qt::Horizontal)) {
+        if (!m_graphicsScene->distributeElements(Qt::Horizontal)) {
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }
@@ -743,7 +743,7 @@ namespace Caneda
 
     void SchematicDocument::distributeVertical()
     {
-        if (!m_cGraphicsScene->distributeElements(Qt::Vertical)) {
+        if (!m_graphicsScene->distributeElements(Qt::Vertical)) {
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }
@@ -825,17 +825,17 @@ namespace Caneda
 
     void SchematicDocument::print(QPrinter *printer, bool fitInView)
     {
-        m_cGraphicsScene->print(printer, fitInView);
+        m_graphicsScene->print(printer, fitInView);
     }
 
     void SchematicDocument::exportImage(QPaintDevice &device)
     {
-        m_cGraphicsScene->exportImage(device);
+        m_graphicsScene->exportImage(device);
     }
 
     QSizeF SchematicDocument::documentSize()
     {
-        return m_cGraphicsScene->itemsBoundingRect().size();
+        return m_graphicsScene->itemsBoundingRect().size();
     }
 
     bool SchematicDocument::load(QString *errorMessage)
@@ -871,7 +871,7 @@ namespace Caneda
                 return false;
             }
 
-            m_cGraphicsScene->undoStack()->clear();
+            m_graphicsScene->undoStack()->clear();
             return true;
         }
 
@@ -916,12 +916,12 @@ namespace Caneda
     void SchematicDocument::launchPropertiesDialog()
     {
         // Get a list of selected items
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> schItems = filterItems<GraphicsItem>(qItems);
 
         // If there is any selection, launch corresponding properties dialog.
         if(!schItems.isEmpty()) {
-            foreach(CGraphicsItem *item, schItems) {
+            foreach(GraphicsItem *item, schItems) {
                 item->launchPropertiesDialog();
             }
         }
@@ -1054,7 +1054,7 @@ namespace Caneda
     //! \brief Align selected elements appropriately based on \a alignment
     void SchematicDocument::alignElements(Qt::Alignment alignment)
     {
-        if (!m_cGraphicsScene->alignElements(alignment)) {
+        if (!m_graphicsScene->alignElements(alignment)) {
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }
@@ -1098,7 +1098,7 @@ namespace Caneda
         // Check for the presence of a ground net
         //***************************************
         // Get a list of all the items in the scene
-        QList<QGraphicsItem*> items = m_cGraphicsScene->items();
+        QList<QGraphicsItem*> items = m_graphicsScene->items();
 
         bool foundGroundNet = false;
 
@@ -1285,14 +1285,14 @@ namespace Caneda
     //! \brief Constructor.
     SymbolDocument::SymbolDocument()
     {
-        m_cGraphicsScene = new CGraphicsScene(this);
-        connect(m_cGraphicsScene, SIGNAL(changed()), this,
+        m_graphicsScene = new GraphicsScene(this);
+        connect(m_graphicsScene, SIGNAL(changed()), this,
                 SLOT(emitDocumentChanged()));
-        connect(m_cGraphicsScene->undoStack(), SIGNAL(canUndoChanged(bool)),
+        connect(m_graphicsScene->undoStack(), SIGNAL(canUndoChanged(bool)),
                 this, SLOT(emitDocumentChanged()));
-        connect(m_cGraphicsScene->undoStack(), SIGNAL(canRedoChanged(bool)),
+        connect(m_graphicsScene->undoStack(), SIGNAL(canRedoChanged(bool)),
                 this, SLOT(emitDocumentChanged()));
-        connect(m_cGraphicsScene, SIGNAL(selectionChanged()), this,
+        connect(m_graphicsScene, SIGNAL(selectionChanged()), this,
                 SLOT(emitDocumentChanged()));
     }
 
@@ -1303,33 +1303,33 @@ namespace Caneda
 
     bool SymbolDocument::isModified() const
     {
-        return !m_cGraphicsScene->undoStack()->isClean();
+        return !m_graphicsScene->undoStack()->isClean();
     }
 
     bool SymbolDocument::canUndo() const
     {
-        return m_cGraphicsScene->undoStack()->canUndo();
+        return m_graphicsScene->undoStack()->canUndo();
     }
 
     bool SymbolDocument::canRedo() const
     {
-        return m_cGraphicsScene->undoStack()->canRedo();
+        return m_graphicsScene->undoStack()->canRedo();
     }
 
     void SymbolDocument::undo()
     {
-        m_cGraphicsScene->undoStack()->undo();
+        m_graphicsScene->undoStack()->undo();
     }
 
     void SymbolDocument::redo()
     {
-        m_cGraphicsScene->undoStack()->redo();
+        m_graphicsScene->undoStack()->redo();
     }
 
     bool SymbolDocument::canCut() const
     {
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> symItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> symItems = filterItems<GraphicsItem>(qItems);
 
         return symItems.isEmpty() == false;
     }
@@ -1341,21 +1341,21 @@ namespace Caneda
 
     void SymbolDocument::cut()
     {
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> symItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> symItems = filterItems<GraphicsItem>(qItems);
 
         if(!symItems.isEmpty()) {
-            m_cGraphicsScene->cutItems(symItems);
+            m_graphicsScene->cutItems(symItems);
         }
     }
 
     void SymbolDocument::copy()
     {
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> symItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> symItems = filterItems<GraphicsItem>(qItems);
 
         if(!symItems.isEmpty()) {
-            m_cGraphicsScene->copyItems(symItems);
+            m_graphicsScene->copyItems(symItems);
         }
     }
 
@@ -1367,8 +1367,8 @@ namespace Caneda
     void SymbolDocument::selectAll()
     {
         QPainterPath path;
-        path.addRect(m_cGraphicsScene->sceneRect());
-        m_cGraphicsScene->setSelectionArea(path);
+        path.addRect(m_graphicsScene->sceneRect());
+        m_graphicsScene->setSelectionArea(path);
     }
 
     void SymbolDocument::intoHierarchy()
@@ -1403,7 +1403,7 @@ namespace Caneda
 
     void SymbolDocument::distributeHorizontal()
     {
-        if (!m_cGraphicsScene->distributeElements(Qt::Horizontal)) {
+        if (!m_graphicsScene->distributeElements(Qt::Horizontal)) {
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }
@@ -1411,7 +1411,7 @@ namespace Caneda
 
     void SymbolDocument::distributeVertical()
     {
-        if (!m_cGraphicsScene->distributeElements(Qt::Vertical)) {
+        if (!m_graphicsScene->distributeElements(Qt::Vertical)) {
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }
@@ -1429,17 +1429,17 @@ namespace Caneda
 
     void SymbolDocument::print(QPrinter *printer, bool fitInView)
     {
-        m_cGraphicsScene->print(printer, fitInView);
+        m_graphicsScene->print(printer, fitInView);
     }
 
     void SymbolDocument::exportImage(QPaintDevice &device)
     {
-        m_cGraphicsScene->exportImage(device);
+        m_graphicsScene->exportImage(device);
     }
 
     QSizeF SymbolDocument::documentSize()
     {
-        return m_cGraphicsScene->itemsBoundingRect().size();
+        return m_graphicsScene->itemsBoundingRect().size();
     }
 
     bool SymbolDocument::load(QString *errorMessage)
@@ -1475,7 +1475,7 @@ namespace Caneda
                 return false;
             }
 
-            m_cGraphicsScene->undoStack()->clear();
+            m_graphicsScene->undoStack()->clear();
             return true;
         }
 
@@ -1515,25 +1515,25 @@ namespace Caneda
     void SymbolDocument::launchPropertiesDialog()
     {
         // Get a list of selected items
-        QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
-        QList<CGraphicsItem*> schItems = filterItems<CGraphicsItem>(qItems);
+        QList<QGraphicsItem*> qItems = m_graphicsScene->selectedItems();
+        QList<GraphicsItem*> schItems = filterItems<GraphicsItem>(qItems);
 
         // If there is any selection, launch corresponding properties dialog,
         // else launch the properties dialog corresponding to the current scene
         if(!schItems.isEmpty()) {
-            foreach(CGraphicsItem *item, schItems) {
+            foreach(GraphicsItem *item, schItems) {
                 item->launchPropertiesDialog();
             }
         }
         else {
-            m_cGraphicsScene->properties()->launchPropertiesDialog();
+            m_graphicsScene->properties()->launchPropertiesDialog();
         }
     }
 
     //! \brief Align selected elements appropriately based on \a alignment
     void SymbolDocument::alignElements(Qt::Alignment alignment)
     {
-        if (!m_cGraphicsScene->alignElements(alignment)) {
+        if (!m_graphicsScene->alignElements(alignment)) {
             QMessageBox::information(0, tr("Info"),
                     tr("At least two elements must be selected!"));
         }

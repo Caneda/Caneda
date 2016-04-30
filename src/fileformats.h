@@ -29,7 +29,7 @@ class QString;
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsScene;
+    class GraphicsScene;
     class ChartSeries;
     class ChartScene;
     class LayoutDocument;
@@ -61,7 +61,7 @@ namespace Caneda
         bool load();
 
         SchematicDocument* schematicDocument() const;
-        CGraphicsScene* cGraphicsScene() const;
+        GraphicsScene* graphicsScene() const;
 
         QString fileName() const;
 
@@ -102,7 +102,7 @@ namespace Caneda
         bool load();
 
         SymbolDocument* symbolDocument() const;
-        CGraphicsScene* cGraphicsScene() const;
+        GraphicsScene* graphicsScene() const;
         ComponentData* component() const;
 
         QString fileName() const;
@@ -145,7 +145,7 @@ namespace Caneda
         bool load();
 
         LayoutDocument* layoutDocument() const;
-        CGraphicsScene* cGraphicsScene() const;
+        GraphicsScene* graphicsScene() const;
 
         QString fileName() const;
 
@@ -182,7 +182,7 @@ namespace Caneda
         bool save();
 
         SchematicDocument* schematicDocument() const;
-        CGraphicsScene* cGraphicsScene() const;
+        GraphicsScene* graphicsScene() const;
         QString fileName() const;
 
     private:

@@ -20,8 +20,8 @@
 
 #include "property.h"
 
-#include "cgraphicsscene.h"
 #include "global.h"
+#include "graphicsscene.h"
 #include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
@@ -162,7 +162,7 @@ namespace Caneda
      * \param scene The graphics scene to which this property should belong.
      * \param propMap The PropertyMap to use on initialization.
      */
-    PropertyGroup::PropertyGroup(CGraphicsScene *scene, const PropertyMap &propMap)
+    PropertyGroup::PropertyGroup(GraphicsScene *scene, const PropertyMap &propMap)
     {
         m_propertyMap = propMap;
         m_userPropertiesEnabled = false;
@@ -378,7 +378,7 @@ namespace Caneda
         updatePropertyDisplay();
     }
 
-    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
     int PropertyGroup::launchPropertiesDialog()
     {
         PropertyDialog *dia = new PropertyDialog(this);

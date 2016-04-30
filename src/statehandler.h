@@ -27,7 +27,7 @@ namespace Caneda
 {
     // Forward declarations.
     class StateHandlerPrivate;
-    class CGraphicsView;
+    class GraphicsView;
 
     /*!
      * \todo Document this class.
@@ -43,15 +43,15 @@ namespace Caneda
         static StateHandler* instance();
         ~StateHandler();
 
-        void registerWidget(CGraphicsView *widget);
-        void unregisterWidget(CGraphicsView *widget);
+        void registerWidget(GraphicsView *widget);
+        void unregisterWidget(GraphicsView *widget);
 
 
     public Q_SLOTS:
         void slotSidebarItemClicked(const QString& item, const QString& category);
         void slotHandlePaste();
         void slotOnObjectDestroyed(QObject *object);
-        void slotUpdateFocussedWidget(CGraphicsView *widget);
+        void slotUpdateFocussedWidget(GraphicsView *widget);
         void slotPerformToggleAction(bool on);
         void slotPerformToggleAction(const QString& actionName, bool on);
         void slotSetNormalAction();
@@ -60,8 +60,8 @@ namespace Caneda
     private:
         StateHandler(QObject *parent = 0);
 
-        void applyCursor(CGraphicsView *widget);
-        void applyState(CGraphicsView *widget);
+        void applyCursor(GraphicsView *widget);
+        void applyState(GraphicsView *widget);
         void applyStateToAllWidgets();
 
         StateHandlerPrivate *d;

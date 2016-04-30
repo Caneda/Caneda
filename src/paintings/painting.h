@@ -21,7 +21,7 @@
 #ifndef PAINTING_H
 #define PAINTING_H
 
-#include "cgraphicsitem.h"
+#include "graphicsitem.h"
 
 // Forward declarations
 class QBrush;
@@ -43,7 +43,7 @@ namespace Caneda
     Q_DECLARE_OPERATORS_FOR_FLAGS(Caneda::ResizeHandles)
 
     /*!
-     * \brief The Painting class forms part of one of the CGraphicsItem derived
+     * \brief The Painting class forms part of one of the GraphicsItem derived
      * classes available on Caneda. It is the base class for all painting
      * related items, like lines, rectangles, ellipses, etc.
      *
@@ -54,20 +54,20 @@ namespace Caneda
      * \a setPaintingRect(). The mouse functionalities corresponding to resize
      * handles are also handled by this class.
      *
-     * \sa CGraphicsItem
+     * \sa GraphicsItem
      */
-    class Painting : public CGraphicsItem
+    class Painting : public GraphicsItem
     {
     public:
-        Painting(CGraphicsScene *scene = 0);
+        Painting(GraphicsScene *scene = 0);
 
-        //! \copydoc CGraphicsItem::Type
-        enum { Type = CGraphicsItem::PaintingType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::Type
+        enum { Type = GraphicsItem::PaintingType };
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         enum PaintingType {
-            ArrowType = CGraphicsItem::PaintingType + 1,
+            ArrowType = GraphicsItem::PaintingType + 1,
             EllipseType,
             EllipseArcType,
             GraphicLineType,
@@ -95,17 +95,17 @@ namespace Caneda
 
         void setResizeHandles(Caneda::ResizeHandles handles);
 
-        //! \copydoc CGraphicsItem::copy()
-        virtual Painting* copy(CGraphicsScene *scene = 0) const = 0;
+        //! \copydoc GraphicsItem::copy()
+        virtual Painting* copy(GraphicsScene *scene = 0) const = 0;
         virtual void copyDataTo(Painting *painting) const;
 
         static Painting* fromName(const QString& name);
-        static Painting* loadPainting(Caneda::XmlReader *reader, CGraphicsScene *scene = 0);
+        static Painting* loadPainting(Caneda::XmlReader *reader, GraphicsScene *scene = 0);
 
         QRectF storedPaintingRect() const { return m_store; }
         void storePaintingRect() { m_store = paintingRect(); }
 
-        //! \copydoc CGraphicsItem::launchPropertiesDialog()
+        //! \copydoc GraphicsItem::launchPropertiesDialog()
         virtual int launchPropertiesDialog() = 0;
 
     protected:

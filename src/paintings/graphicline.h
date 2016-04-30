@@ -29,11 +29,11 @@ namespace Caneda
     class GraphicLine : public Painting
     {
     public:
-        GraphicLine(const QLineF &line, CGraphicsScene *scene = 0);
+        GraphicLine(const QLineF &line, GraphicsScene *scene = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::GraphicLineType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
@@ -44,7 +44,7 @@ namespace Caneda
         QLineF line() const { return lineFromRect(paintingRect()); }
         void setLine(const QLineF &line);
 
-        GraphicLine* copy(CGraphicsScene *scene = 0) const;
+        GraphicLine* copy(GraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

@@ -30,7 +30,7 @@
 namespace Caneda
 {
     //Forward declarations
-    class CGraphicsScene;
+    class GraphicsScene;
     class XmlWriter;
     class XmlReader;
 
@@ -130,7 +130,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PropertyGroup(CGraphicsScene* scene = 0, const PropertyMap& propMap = PropertyMap());
+        PropertyGroup(GraphicsScene* scene = 0, const PropertyMap& propMap = PropertyMap());
 
         void addProperty(const QString& key, const Property& prop);
         //! Returns selected property from property map.

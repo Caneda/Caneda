@@ -18,10 +18,10 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "cgraphicsitem.h"
+#include "graphicsitem.h"
 
 #include "actionmanager.h"
-#include "cgraphicsscene.h"
+#include "graphicsscene.h"
 #include "port.h"
 #include "settings.h"
 #include "xmlutilities.h"
@@ -35,9 +35,9 @@ namespace Caneda
      * \brief Constructs a new graphics item and adds it to a scene.
      *
      * \param parent Parent of the item.
-     * \param scene CGraphicsScene where to add the item.
+     * \param scene GraphicsScene where to add the item.
      */
-    CGraphicsItem::CGraphicsItem(QGraphicsItem* parent, CGraphicsScene* scene) :
+    GraphicsItem::GraphicsItem(QGraphicsItem* parent, GraphicsScene* scene) :
         QGraphicsItem(parent),
         m_boundingRect(0, 0, 0, 0)
     {
@@ -72,7 +72,7 @@ namespace Caneda
      * \param dir Direction of rotation
      * \param pivotPoint Point around which the rotation is performed
      */
-    void CGraphicsItem::rotate(AngleDirection dir, QPointF pivotPoint)
+    void GraphicsItem::rotate(AngleDirection dir, QPointF pivotPoint)
     {
         // Rotate item
         qreal angle = (dir == Caneda::Clockwise) ? 90.0 : -90.0;
@@ -100,7 +100,7 @@ namespace Caneda
      * \param axis Mirror axis
      * \param pivotPoint Point around which the mirror is performed
      */
-    void CGraphicsItem::mirror(Qt::Axis axis, QPointF pivotPoint)
+    void GraphicsItem::mirror(Qt::Axis axis, QPointF pivotPoint)
     {
         // Mirror item
         if(axis == Qt::XAxis) {
@@ -133,7 +133,7 @@ namespace Caneda
      *
      * \sa storedPos()
      */
-    void CGraphicsItem::storePos()
+    void GraphicsItem::storePos()
     {
         m_store = pos();
     }
@@ -146,7 +146,7 @@ namespace Caneda
      *
      * \sa storePos()
      */
-    QPointF CGraphicsItem::storedPos() const
+    QPointF GraphicsItem::storedPos() const
     {
         return m_store;
     }
@@ -158,7 +158,7 @@ namespace Caneda
      * there will be unnecessary creation of xml writer and reader instances which
      * will render the program inefficient.
      */
-    QString CGraphicsItem::saveDataText() const
+    QString GraphicsItem::saveDataText() const
     {
         QString retVal;
         Caneda::XmlWriter writer(&retVal);
@@ -173,7 +173,7 @@ namespace Caneda
      * there will be unnecessary creation of xml writer and reader instances which
      * will render the program inefficient.
      */
-    void CGraphicsItem::loadDataFromText(const QString &text)
+    void GraphicsItem::loadDataFromText(const QString &text)
     {
         Caneda::XmlReader reader(text.toUtf8());
         while(!reader.atEnd()) {
@@ -191,7 +191,7 @@ namespace Caneda
     }
 
     /*!
-     * \fn CGraphicsItem::copy()
+     * \fn GraphicsItem::copy()
      *
      * \brief Returns a copy of the current item parented to \a scene.
      *
@@ -199,7 +199,7 @@ namespace Caneda
      * the copy/paste functionality to have an identical copy of this item
      * ready to paste.
      *
-     * Subclasses of the CGraphicsItem class should reimplement this method to
+     * Subclasses of the GraphicsItem class should reimplement this method to
      * return an appropriate copy of the reimplemented item, copying in the
      * process the needed properties of the reimplementation.
      *
@@ -218,7 +218,7 @@ namespace Caneda
      *
      * \sa copy()
      */
-    void CGraphicsItem::copyDataTo(CGraphicsItem *item) const
+    void GraphicsItem::copyDataTo(GraphicsItem *item) const
     {
         item->setShapeAndBoundRect(m_shape, m_boundingRect);
         item->setTransform(transform());
@@ -230,7 +230,7 @@ namespace Caneda
      * \brief Constructs and returns a context menu with the actions
      * corresponding to the selected object.
      */
-    void CGraphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+    void GraphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         ActionManager* am = ActionManager::instance();
         QMenu *_menu = new QMenu();
@@ -253,7 +253,7 @@ namespace Caneda
         _menu->exec(event->screenPos());
     }
 
-    void CGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     {
         if(event->buttons().testFlag(Qt::LeftButton)) {
             launchPropertiesDialog();
@@ -270,7 +270,7 @@ namespace Caneda
      * \param rect The bound rect to be cached.
      * \param pw Pen width of pen used to paint outer stroke of item.
      */
-    void CGraphicsItem::setShapeAndBoundRect(const QPainterPath& shape,
+    void GraphicsItem::setShapeAndBoundRect(const QPainterPath& shape,
             const QRectF& boundingRect, qreal penWidth)
     {
         // Inform scene about change in geometry.

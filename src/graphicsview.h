@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef C_GRAPHICS_VIEW_H
-#define C_GRAPHICS_VIEW_H
+#ifndef GRAPHICS_VIEW_H
+#define GRAPHICS_VIEW_H
 
 #include "global.h"
 
@@ -28,7 +28,7 @@
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsScene;
+    class GraphicsScene;
 
     /*!
      * \brief This class provides a view for displaying all Caneda graphics
@@ -45,16 +45,16 @@ namespace Caneda
      * multiple views associated to it, allowing the user to look at the scene
      * for example, with multiple zoom levels.
      *
-     * \sa CGraphicsScene
+     * \sa GraphicsScene
      */
-    class CGraphicsView : public QGraphicsView
+    class GraphicsView : public QGraphicsView
     {
         Q_OBJECT
 
     public:
-        CGraphicsView(CGraphicsScene *scene = 0);
+        GraphicsView(GraphicsScene *scene = 0);
 
-        CGraphicsScene* cGraphicsScene() const;
+        GraphicsScene* graphicsScene() const;
 
         void zoomIn();
         void zoomOut();
@@ -66,8 +66,8 @@ namespace Caneda
 
     Q_SIGNALS:
         void cursorPositionChanged(const QString& newPos);
-        void focussedIn(CGraphicsView *view);
-        void focussedOut(CGraphicsView *view);
+        void focussedIn(GraphicsView *view);
+        void focussedOut(GraphicsView *view);
 
     protected:
         void mousePressEvent(QMouseEvent *event);
@@ -93,4 +93,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //C_GRAPHICS_VIEW_H
+#endif //GRAPHICS_VIEW_H

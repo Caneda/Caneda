@@ -19,8 +19,8 @@
 
 #include "graphictextdialog.h"
 
-#include "cgraphicsscene.h"
 #include "global.h"
+#include "graphicsscene.h"
 #include "undocommands.h"
 
 #include <QAction>
@@ -126,7 +126,7 @@ namespace Caneda
         }
         else {
             if(textItem) {
-                CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(textItem->scene());
+                GraphicsScene *scene = qobject_cast<GraphicsScene*>(textItem->scene());
 
                 QString oldText = textItem->richText();
                 QString newText = richText();

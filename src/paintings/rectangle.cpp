@@ -35,7 +35,7 @@ namespace Caneda
      * \param rect Rectangle in local coords.
      * \param scene Scene to which this item should be added.
      */
-    Rectangle::Rectangle(const QRectF& rect, CGraphicsScene *scene) :
+    Rectangle::Rectangle(const QRectF& rect, GraphicsScene *scene) :
         Painting(scene)
     {
         setRect(rect);
@@ -72,8 +72,8 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \copydoc CGraphicsItem::copy()
-    Rectangle* Rectangle::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    Rectangle* Rectangle::copy(GraphicsScene *scene) const
     {
         Rectangle *rectItem = new Rectangle(rect(), scene);
         Painting::copyDataTo(rectItem);
@@ -131,7 +131,7 @@ namespace Caneda
         }
     }
 
-    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
     int Rectangle::launchPropertiesDialog()
     {
         StyleDialog dia(this);

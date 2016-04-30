@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef C_GRAPHICS_SCENE_H
-#define C_GRAPHICS_SCENE_H
+#ifndef GRAPHICS_SCENE_H
+#define GRAPHICS_SCENE_H
 
 #include "global.h"
 #include "undocommands.h"
@@ -37,7 +37,7 @@ namespace Caneda
 {
     // Forward declarations
     class Component;
-    class CGraphicsItem;
+    class GraphicsItem;
     class Painting;
     class Wire;
 
@@ -49,7 +49,7 @@ namespace Caneda
      *
      * This class implements the scene class of Qt's Graphics View
      * Architecture, representing the actual document interface (scene). Each
-     * scene must have at least one associated view (CGraphicsView), to display
+     * scene must have at least one associated view (GraphicsView), to display
      * the contents of the scene. Several views can be attached to the same
      * scene, providing different viewports into the same data set (for
      * example, when using split views).
@@ -60,31 +60,31 @@ namespace Caneda
      * subclassed for more specific operations and handling of the different
      * types of documents.
      *
-     * \sa CGraphicsView, CGraphicsItem
+     * \sa GraphicsView, GraphicsItem
      */
-    class CGraphicsScene : public QGraphicsScene
+    class GraphicsScene : public QGraphicsScene
     {
         Q_OBJECT
 
     public:
-        CGraphicsScene(QObject *parent = 0);
+        GraphicsScene(QObject *parent = 0);
 
         // Edit actions
-        void cutItems(QList<CGraphicsItem*> &items);
-        void copyItems(QList<CGraphicsItem*> &items);
-        void deleteItems(QList<CGraphicsItem*> &items);
+        void cutItems(QList<GraphicsItem*> &items);
+        void copyItems(QList<GraphicsItem*> &items);
+        void deleteItems(QList<GraphicsItem*> &items);
 
-        void mirrorItems(QList<CGraphicsItem*> &items, const Qt::Axis axis);
-        void mirrorXItems(QList<CGraphicsItem*> &items) { mirrorItems(items, Qt::XAxis); }
-        void mirrorYItems(QList<CGraphicsItem*> &items) { mirrorItems(items, Qt::YAxis); }
+        void mirrorItems(QList<GraphicsItem*> &items, const Qt::Axis axis);
+        void mirrorXItems(QList<GraphicsItem*> &items) { mirrorItems(items, Qt::XAxis); }
+        void mirrorYItems(QList<GraphicsItem*> &items) { mirrorItems(items, Qt::YAxis); }
 
-        void rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir);
-        void rotateItems(QList<CGraphicsItem*> &items) { rotateItems(items, Caneda::Clockwise); }
+        void rotateItems(QList<GraphicsItem*> &items, const Caneda::AngleDirection dir);
+        void rotateItems(QList<GraphicsItem*> &items) { rotateItems(items, Caneda::Clockwise); }
 
         bool alignElements(const Qt::Alignment alignment);
         bool distributeElements(const Qt::Orientation orientation);
-        void distributeElementsHorizontally(QList<CGraphicsItem*> items);
-        void distributeElementsVertically(QList<CGraphicsItem*> items);
+        void distributeElementsHorizontally(QList<GraphicsItem*> items);
+        void distributeElementsVertically(QList<GraphicsItem*> items);
 
         // Document properties
         bool isBackgroundVisible() const { return m_backgroundVisible; }
@@ -96,19 +96,19 @@ namespace Caneda
         // Mouse actions
         void setMouseAction(const Caneda::MouseAction ma);
 
-        void beginInsertingItems(const QList<CGraphicsItem*> &items);
+        void beginInsertingItems(const QList<GraphicsItem*> &items);
         void beginPaintingDraw(Painting *item);
 
         // Connect/disconnect methods
-        QPointF centerOfItems(const QList<CGraphicsItem*> &items);
+        QPointF centerOfItems(const QList<GraphicsItem*> &items);
 
-        void connectItems(CGraphicsItem *item);
-        void connectItems(QList<CGraphicsItem *> &items);
-        void disconnectItems(CGraphicsItem *item);
-        void disconnectItems(QList<CGraphicsItem *> &items);
+        void connectItems(GraphicsItem *item);
+        void connectItems(QList<GraphicsItem *> &items);
+        void disconnectItems(GraphicsItem *item);
+        void disconnectItems(QList<GraphicsItem *> &items);
 
-        void splitAndCreateNodes(CGraphicsItem *item);
-        void splitAndCreateNodes(QList<CGraphicsItem *> &items);
+        void splitAndCreateNodes(GraphicsItem *item);
+        void splitAndCreateNodes(QList<GraphicsItem *> &items);
 
         //! \brief Return current undo stack
         QUndoStack* undoStack() { return m_undoStack; }
@@ -163,7 +163,7 @@ namespace Caneda
         void zoomingAreaEvent(QGraphicsSceneMouseEvent *event);
 
         // Custom private methods
-        void placeItem(CGraphicsItem *item, const QPointF &pos);
+        void placeItem(GraphicsItem *item, const QPointF &pos);
         int componentLabelSuffix(const QString& labelPrefix) const;
 
         void processForSpecialMove();
@@ -185,8 +185,8 @@ namespace Caneda
          */
         bool m_areItemsMoving;
 
-        //! \brief List of CGraphicsItem which are to be placed/pasted.
-        QList<CGraphicsItem*> m_insertibles;
+        //! \brief List of GraphicsItem which are to be placed/pasted.
+        QList<GraphicsItem*> m_insertibles;
 
         //! \brief The Painting (Ellipse, Rectangle...) being drawn currently
         Painting *m_paintingDrawItem;
@@ -213,7 +213,7 @@ namespace Caneda
          * processForSpecialMove() and the disconnection is performed in the
          * disconnect() method.
          */
-        QList<CGraphicsItem*> disconnectibles;
+        QList<GraphicsItem*> disconnectibles;
 
         /*!
          * \brief List of items requiring special movements due to mouse event
@@ -229,7 +229,7 @@ namespace Caneda
          *
          * \sa processForSpecialMove(), specialMove()
          */
-        QList<CGraphicsItem*> specialMoveItems;
+        QList<GraphicsItem*> specialMoveItems;
 
         //! \brief Wiring state machine state enum
         enum wiringStateEnum {
@@ -248,7 +248,7 @@ namespace Caneda
 
         /*!
          * \brief State holder to know whether shortcut events are blocked or not
-         * \sa CGraphicsScene::eventFilter, CGraphicsScene::blockShortcuts
+         * \sa GraphicsScene::eventFilter, GraphicsScene::blockShortcuts
          */
         bool m_shortcutsBlocked;
 
@@ -266,7 +266,7 @@ namespace Caneda
         QRectF m_zoomRect;
         int m_zoomBandClicks;
 
-        //! \brief CGraphicsScene undo stack
+        //! \brief GraphicsScene undo stack
         QUndoStack *m_undoStack;
 
         /*! \brief Spice/electric related scene properties
@@ -282,4 +282,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //C_GRAPHICS_SCENE_H
+#endif //GRAPHICS_SCENE_H

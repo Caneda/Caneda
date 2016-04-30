@@ -36,7 +36,7 @@ namespace Caneda
      * \param scene Scene to which this item should be added.
      */
     Layer::Layer(const QRectF &rect, LayerName layerName, const QString &netLabel,
-                 CGraphicsScene *scene) :
+                 GraphicsScene *scene) :
         Painting(scene),
         m_layerName(layerName),
         m_netLabel(netLabel)
@@ -120,8 +120,8 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \copydoc CGraphicsItem::copy()
-    Layer* Layer::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    Layer* Layer::copy(GraphicsScene *scene) const
     {
         Layer *layerItem = new Layer(rect(), layerName(), netLabel(), scene);
         Painting::copyDataTo(layerItem);
@@ -184,7 +184,7 @@ namespace Caneda
         updateBrush();
     }
 
-    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
     int Layer::launchPropertiesDialog()
     {
         StyleDialog dia(this);

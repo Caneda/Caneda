@@ -40,7 +40,7 @@ namespace Caneda
      * \param scene The graphics scene to which this arrow is to be added.
      */
     Arrow::Arrow(const QLineF &line, HeadStyle style, qreal headWidth, qreal headHeight,
-            CGraphicsScene *scene) :
+            GraphicsScene *scene) :
         Painting(scene),
         m_headStyle(style),
         m_headWidth(headWidth),
@@ -94,8 +94,8 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \copydoc CGraphicsItem::copy()
-    Arrow* Arrow::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    Arrow* Arrow::copy(GraphicsScene *scene) const
     {
         Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), scene);
         Painting::copyDataTo(arrow);
@@ -251,7 +251,7 @@ namespace Caneda
         }
     }
 
-    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
     int Arrow::launchPropertiesDialog()
     {
         StyleDialog dia(this);

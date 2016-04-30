@@ -29,28 +29,28 @@
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsItem;
-    class CGraphicsScene;
+    class GraphicsItem;
+    class GraphicsScene;
 
     /*!
-     * \brief The Wire class forms part of one of the CGraphicsItem
+     * \brief The Wire class forms part of one of the GraphicsItem
      * derived classes available on Caneda. It represents a wire on schematic,
      * and connects different components throught the use of ports. One port
      * can have one or multiple wire connections, allowing multiple components
      * to be connected together.
      *
-     * \sa CGraphicsItem, Component, Port
+     * \sa GraphicsItem, Component, Port
      */
-    class Wire : public CGraphicsItem
+    class Wire : public GraphicsItem
     {
     public:
         Wire(const QPointF &startPos, const QPointF &endPos,
-                CGraphicsScene *scene = 0);
+                GraphicsScene *scene = 0);
         ~Wire();
 
-        //! \copydoc CGraphicsItem::Type
-        enum { Type = CGraphicsItem::WireType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::Type
+        enum { Type = GraphicsItem::WireType };
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         //! Return's the list's first member.
@@ -74,13 +74,13 @@ namespace Caneda
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0);
 
-        Wire* copy(CGraphicsScene *scene = 0) const;
+        Wire* copy(GraphicsScene *scene = 0) const;
 
-        static Wire* loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene);
+        static Wire* loadWire(Caneda::XmlReader *reader, GraphicsScene *scene);
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        //! \copydoc CGraphicsItem::launchPropertiesDialog()
+        //! \copydoc GraphicsItem::launchPropertiesDialog()
         int launchPropertiesDialog() { return QDialog::Accepted; }
 
     protected:

@@ -20,7 +20,7 @@
 
 #include "undocommands.h"
 
-#include "cgraphicsscene.h"
+#include "graphicsscene.h"
 #include "graphictext.h"
 #include "port.h"
 #include "wire.h"
@@ -31,7 +31,7 @@ namespace Caneda
      *                                MoveCmd                                *
      *************************************************************************/
     //! \brief Constructor.
-    MoveCmd::MoveCmd(CGraphicsItem *item, const QPointF &init, const QPointF &end,
+    MoveCmd::MoveCmd(GraphicsItem *item, const QPointF &init, const QPointF &end,
             QUndoCommand *parent) :
         QUndoCommand(parent),
         m_item(item), m_initialPos(init), m_finalPos(end)
@@ -86,7 +86,7 @@ namespace Caneda
      *                                AddWireCmd                             *
      *************************************************************************/
     //! \brief Constructor.
-    AddWireCmd::AddWireCmd(Wire *wire, CGraphicsScene *scene, QUndoCommand *parent) :
+    AddWireCmd::AddWireCmd(Wire *wire, GraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_wire(wire),
         m_scene(scene)
@@ -107,7 +107,7 @@ namespace Caneda
      *                           InsertItemCmd                               *
      *************************************************************************/
     //! \brief Constructor.
-    InsertItemCmd::InsertItemCmd(CGraphicsItem *const item, CGraphicsScene *scene,
+    InsertItemCmd::InsertItemCmd(GraphicsItem *const item, GraphicsScene *scene,
             QPointF pos, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_item(item),
@@ -134,12 +134,12 @@ namespace Caneda
      *                           RemoveItemsCmd                              *
      *************************************************************************/
     //! \brief Constructor.
-    RemoveItemsCmd::RemoveItemsCmd(const QList<CGraphicsItem*> &items, CGraphicsScene *scene,
+    RemoveItemsCmd::RemoveItemsCmd(const QList<GraphicsItem*> &items, GraphicsScene *scene,
             QUndoCommand *parent) :
         QUndoCommand(parent),
         m_scene(scene)
     {
-        foreach(CGraphicsItem *item, items) {
+        foreach(GraphicsItem *item, items) {
             m_itemPointPairs << ItemPointPair(item, item->pos());
         }
     }
@@ -166,8 +166,8 @@ namespace Caneda
      *                          RotateItemsCmd                               *
      *************************************************************************/
     //! \brief Constructor.
-    RotateItemsCmd::RotateItemsCmd(const QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir,
-                                   CGraphicsScene *scene, QUndoCommand *parent) :
+    RotateItemsCmd::RotateItemsCmd(const QList<GraphicsItem*> &items, const Caneda::AngleDirection dir,
+                                   GraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_items(items),
         m_dir(dir),
@@ -183,7 +183,7 @@ namespace Caneda
         // Rotate
         QPointF rotationCenter = m_scene->centerOfItems(m_items);
 
-        foreach(CGraphicsItem *item, m_items) {
+        foreach(GraphicsItem *item, m_items) {
             item->rotate(m_dir == Caneda::Clockwise ? Caneda::AntiClockwise : Caneda::Clockwise, rotationCenter);
         }
 
@@ -199,7 +199,7 @@ namespace Caneda
         // Rotate
         QPointF rotationCenter = m_scene->centerOfItems(m_items);
 
-        foreach(CGraphicsItem *item, m_items) {
+        foreach(GraphicsItem *item, m_items) {
             item->rotate(m_dir, rotationCenter);
         }
 
@@ -211,8 +211,8 @@ namespace Caneda
      *                          MirrorItemsCmd                               *
      *************************************************************************/
     //! \brief Constructor.
-    MirrorItemsCmd::MirrorItemsCmd(QList<CGraphicsItem*> items, const Qt::Axis axis,
-                                   CGraphicsScene *scene, QUndoCommand *parent) :
+    MirrorItemsCmd::MirrorItemsCmd(QList<GraphicsItem*> items, const Qt::Axis axis,
+                                   GraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_items(items),
         m_axis(axis),
@@ -233,7 +233,7 @@ namespace Caneda
         // Mirror
         QPointF mirrorCenter = m_scene->centerOfItems(m_items);
 
-        foreach(CGraphicsItem *item, m_items) {
+        foreach(GraphicsItem *item, m_items) {
             item->mirror(m_axis, mirrorCenter);
         }
 

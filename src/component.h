@@ -21,7 +21,7 @@
 #ifndef QCOMPONENT_H
 #define QCOMPONENT_H
 
-#include "cgraphicsitem.h"
+#include "graphicsitem.h"
 #include "property.h"
 
 namespace Caneda
@@ -32,8 +32,8 @@ namespace Caneda
     //! \brief Shareable component's data.
     struct ComponentData : public QSharedData
     {
-        ComponentData(CGraphicsScene *scene = 0);
-        ComponentData(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene = 0);
+        ComponentData(GraphicsScene *scene = 0);
+        ComponentData(const QSharedDataPointer<ComponentData>& other, GraphicsScene *scene = 0);
 
         //! Static properties.
         QString name;
@@ -60,7 +60,7 @@ namespace Caneda
     typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
 
     /*!
-     * \brief The Component class forms part of one of the CGraphicsItem
+     * \brief The Component class forms part of one of the GraphicsItem
      * derived classes available on Caneda. It is the base class for all
      * electronic components available through libraries. These components are
      * then inserted on a schematic to form a circuit.
@@ -73,21 +73,21 @@ namespace Caneda
      * able to render the symbol, the symbol itself must be previously
      * registered (by the LibraryManager::registerComponent() method).
      *
-     * \sa CGraphicsItem, LibraryManager
+     * \sa GraphicsItem, LibraryManager
      */
-    class Component : public QObject, public CGraphicsItem
+    class Component : public QObject, public GraphicsItem
     {
         Q_OBJECT
 
     public:
-        Component(CGraphicsScene *scene = 0);
+        Component(GraphicsScene *scene = 0);
         Component(const QSharedDataPointer<ComponentData>& other,
-                  CGraphicsScene *scene = 0);
+                  GraphicsScene *scene = 0);
         ~Component();
 
-        //! \copydoc CGraphicsItem::Type
-        enum { Type = CGraphicsItem::ComponentType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::Type
+        enum { Type = GraphicsItem::ComponentType };
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         //! Returns name of the component (without localization).
@@ -117,13 +117,13 @@ namespace Caneda
 
         QString model(const QString& type) const;
 
-        static Component* loadComponent(Caneda::XmlReader *reader, CGraphicsScene *scene);
+        static Component* loadComponent(Caneda::XmlReader *reader, GraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);
         void saveData(Caneda::XmlWriter *writer) const;
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
 
-        Component *copy(CGraphicsScene *scene = 0) const;
+        Component *copy(GraphicsScene *scene = 0) const;
 
         int launchPropertiesDialog();
 

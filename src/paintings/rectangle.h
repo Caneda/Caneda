@@ -34,11 +34,11 @@ namespace Caneda
     class Rectangle : public Painting
     {
     public:
-        Rectangle(const QRectF &rect, CGraphicsScene *scene = 0);
+        Rectangle(const QRectF &rect, GraphicsScene *scene = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::RectangleType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF& rect) const;
@@ -49,7 +49,7 @@ namespace Caneda
         QRectF rect() const { return paintingRect(); }
         void setRect(const QRectF& rect) { setPaintingRect(rect); }
 
-        Rectangle* copy(CGraphicsScene *scene = 0) const;
+        Rectangle* copy(GraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

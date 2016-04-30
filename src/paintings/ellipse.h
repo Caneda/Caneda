@@ -29,11 +29,11 @@ namespace Caneda
     class Ellipse : public Painting
     {
     public:
-        Ellipse(QRectF rect, CGraphicsScene *scene = 0);
+        Ellipse(QRectF rect, GraphicsScene *scene = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::EllipseType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
@@ -44,7 +44,7 @@ namespace Caneda
         QRectF ellipse() const { return paintingRect(); }
         void setEllipse(const QRectF& rect) { setPaintingRect(rect); }
 
-        Ellipse* copy(CGraphicsScene *scene = 0) const;
+        Ellipse* copy(GraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

@@ -309,7 +309,7 @@ namespace Caneda
         renderer.renderTo(this, device);
     }
 
-    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
     int ChartView::launchPropertiesDialog()
     {
         ChartsDialog *dia = new ChartsDialog(this);

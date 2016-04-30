@@ -33,9 +33,9 @@ namespace Caneda
      * \brief Constructs a line item.
      *
      * \param line Line in local coords.
-     * \param scene CGraphicsScene to which this item should be added.
+     * \param scene GraphicsScene to which this item should be added.
      */
-    GraphicLine::GraphicLine(const QLineF &line, CGraphicsScene *scene) :
+    GraphicLine::GraphicLine(const QLineF &line, GraphicsScene *scene) :
           Painting(scene)
     {
         setLine(line);
@@ -70,8 +70,8 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \copydoc CGraphicsItem::copy()
-    GraphicLine* GraphicLine::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    GraphicLine* GraphicLine::copy(GraphicsScene *scene) const
     {
         GraphicLine *lineItem = new GraphicLine(line(), scene);
         Painting::copyDataTo(lineItem);
@@ -130,7 +130,7 @@ namespace Caneda
         setPaintingRect(QRectF(line.p1(), line.p2()));
     }
 
-    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
     int GraphicLine::launchPropertiesDialog()
     {
         StyleDialog dia(this);

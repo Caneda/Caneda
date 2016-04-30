@@ -35,10 +35,10 @@ namespace Caneda
      * \param rect The ellipse rect of arc (local coords).
      * \param startAngle Starting angle of arc.
      * \param spanAngle Span angle of arc.
-     * \param scene CGraphicsScene to which this item should be added.
+     * \param scene GraphicsScene to which this item should be added.
      */
     EllipseArc::EllipseArc(QRectF rect, int startAngle, int spanAngle,
-            CGraphicsScene *scene) :
+            GraphicsScene *scene) :
         Painting(scene),
         m_startAngle(startAngle),
         m_spanAngle(spanAngle)
@@ -93,8 +93,8 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \copydoc CGraphicsItem::copy()
-    EllipseArc* EllipseArc::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    EllipseArc* EllipseArc::copy(GraphicsScene *scene) const
     {
         EllipseArc *ellipseArc = new EllipseArc(ellipse(), m_startAngle, m_spanAngle, scene);
         Painting::copyDataTo(ellipseArc);

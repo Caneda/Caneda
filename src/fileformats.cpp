@@ -20,11 +20,11 @@
 
 #include "fileformats.h"
 
-#include "cgraphicsscene.h"
 #include "component.h"
 #include "chartitem.h"
 #include "chartscene.h"
 #include "global.h"
+#include "graphicsscene.h"
 #include "idocument.h"
 #include "library.h"
 #include "painting.h"
@@ -62,7 +62,7 @@ namespace Caneda
      */
     bool FormatXmlSchematic::save()
     {
-        if(!cGraphicsScene()) {
+        if(!graphicsScene()) {
             return false;
         }
 
@@ -97,7 +97,7 @@ namespace Caneda
      */
     bool FormatXmlSchematic::load()
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
         if(!scene) {
             return false;
         }
@@ -169,7 +169,7 @@ namespace Caneda
      */
     void FormatXmlSchematic::saveComponents(Caneda::XmlWriter *writer)
     {
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Component*> components = filterItems<Component>(items);
 
         if(!components.isEmpty()) {
@@ -194,7 +194,7 @@ namespace Caneda
      */
     void FormatXmlSchematic::savePorts(Caneda::XmlWriter *writer)
     {
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
 
         if(!portSymbols.isEmpty()) {
@@ -219,7 +219,7 @@ namespace Caneda
      */
     void FormatXmlSchematic::saveWires(Caneda::XmlWriter *writer)
     {
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Wire*> wires = filterItems<Wire>(items);
 
         if(!wires.isEmpty()) {
@@ -236,15 +236,15 @@ namespace Caneda
      *
      * This method saves all scene paintings to an XmlWriter. To do so, it
      * takes each Painting from the scene, and saves the data using the
-     * CGraphicsItem::saveData() method.
+     * GraphicsItem::saveData() method.
      *
      * \param writer XmlWriter responsible for writing the xml data.
      *
-     * \sa CGraphicsItem::saveData()
+     * \sa GraphicsItem::saveData()
      */
     void FormatXmlSchematic::savePaintings(Caneda::XmlWriter *writer)
     {
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
 
         if(!paintings.isEmpty()) {
@@ -322,7 +322,7 @@ namespace Caneda
      */
     void FormatXmlSchematic::loadComponents(Caneda::XmlReader *reader)
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "components") {
             reader->raiseError(QObject::tr("Malformatted file"));
         }
@@ -356,7 +356,7 @@ namespace Caneda
      */
     void FormatXmlSchematic::loadPorts(Caneda::XmlReader *reader)
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "ports") {
             reader->raiseError(QObject::tr("Malformatted file"));
         }
@@ -390,7 +390,7 @@ namespace Caneda
      */
     void FormatXmlSchematic::loadWires(Caneda::XmlReader* reader)
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "wires") {
             reader->raiseError(QObject::tr("Malformatted file"));
         }
@@ -424,7 +424,7 @@ namespace Caneda
      */
     void FormatXmlSchematic::loadPaintings(Caneda::XmlReader *reader)
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "paintings") {
             reader->raiseError(QObject::tr("Malformatted file"));
         }
@@ -455,9 +455,9 @@ namespace Caneda
         return m_schematicDocument;
     }
 
-    CGraphicsScene* FormatXmlSchematic::cGraphicsScene() const
+    GraphicsScene* FormatXmlSchematic::graphicsScene() const
     {
-        return m_schematicDocument ? m_schematicDocument->cGraphicsScene() : 0;
+        return m_schematicDocument ? m_schematicDocument->graphicsScene() : 0;
     }
 
     QString FormatXmlSchematic::fileName() const
@@ -508,7 +508,7 @@ namespace Caneda
      */
     bool FormatXmlSymbol::save()
     {
-        if(!cGraphicsScene()) {
+        if(!graphicsScene()) {
             return false;
         }
 
@@ -562,9 +562,9 @@ namespace Caneda
         return m_symbolDocument;
     }
 
-    CGraphicsScene* FormatXmlSymbol::cGraphicsScene() const
+    GraphicsScene* FormatXmlSymbol::graphicsScene() const
     {
-        return m_symbolDocument ? m_symbolDocument->cGraphicsScene() : 0;
+        return m_symbolDocument ? m_symbolDocument->graphicsScene() : 0;
     }
 
     ComponentData* FormatXmlSymbol::component() const
@@ -643,15 +643,15 @@ namespace Caneda
      *
      * This method saves all scene paintings to an XmlWriter. To do so, it
      * takes each Painting from the scene, and saves the data using the
-     * CGraphicsItem::saveData() method.
+     * GraphicsItem::saveData() method.
      *
      * \param writer XmlWriter responsible for writing the xml data.
      *
-     * \sa CGraphicsItem::saveData()
+     * \sa GraphicsItem::saveData()
      */
     void FormatXmlSymbol::saveSymbol(XmlWriter *writer)
     {
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
 
         if(!paintings.isEmpty()) {
@@ -676,7 +676,7 @@ namespace Caneda
      */
     void FormatXmlSymbol::savePorts(XmlWriter *writer)
     {
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
 
         if(!portSymbols.isEmpty()) {
@@ -701,7 +701,7 @@ namespace Caneda
      */
     void FormatXmlSymbol::saveProperties(XmlWriter *writer)
     {
-        PropertyGroup *properties = cGraphicsScene()->properties();
+        PropertyGroup *properties = graphicsScene()->properties();
 
         if(!properties->propertyMap().isEmpty()) {
             writer->writeStartElement("properties");
@@ -735,7 +735,7 @@ namespace Caneda
      */
     void FormatXmlSymbol::saveModels(XmlWriter *writer)
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
         QList<QGraphicsItem*> items = scene->items();
         PropertyGroup *properties = scene->properties();
         QFileInfo info(fileName());
@@ -804,7 +804,7 @@ namespace Caneda
             Q_ASSERT(Caneda::checkVersion(attributes.value("version").toString()));
 
             // Check if we are opening the file for edition or to include it in a library
-            if(cGraphicsScene()) {
+            if(graphicsScene()) {
                 // We are opening the file for symbol edition
                 //! \todo Implement this.
             }
@@ -828,7 +828,7 @@ namespace Caneda
                     // Read display text
                     if(reader->name() == "displaytext") {
                         // Check if we are opening the file for edition or to include it in a library
-                        if(cGraphicsScene()) {
+                        if(graphicsScene()) {
                             // We are opening the file for symbol edition
                             //! \todo Implement this.
                             reader->readUnknownElement();
@@ -843,7 +843,7 @@ namespace Caneda
                     // Read description
                     else if(reader->name() == "description") {
                         // Check if we are opening the file for edition or to include it in a library
-                        if(cGraphicsScene()) {
+                        if(graphicsScene()) {
                             // We are opening the file for symbol edition
                             //! \todo Implement this.
                             reader->readUnknownElement();
@@ -908,9 +908,9 @@ namespace Caneda
             if(reader->isStartElement() && reader->name() == "painting") {
 
                 // Check if we are opening the file for edition or to include it in a library
-                if(cGraphicsScene()) {
+                if(graphicsScene()) {
                     // We are opening the file for symbol edition
-                    Painting::loadPainting(reader, cGraphicsScene());
+                    Painting::loadPainting(reader, graphicsScene());
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
@@ -947,9 +947,9 @@ namespace Caneda
 
             if(reader->isStartElement() && reader->name() == "port") {
                 // Check if we are opening the file for edition or to include it in a library
-                if(cGraphicsScene()) {
+                if(graphicsScene()) {
                     // We are opening the file for symbol edition
-                    PortSymbol *portSymbol = new PortSymbol(cGraphicsScene());
+                    PortSymbol *portSymbol = new PortSymbol(graphicsScene());
                     portSymbol->loadData(reader);
                 }
                 else if(component()) {
@@ -973,7 +973,7 @@ namespace Caneda
      */
     void FormatXmlSymbol::loadProperties(Caneda::XmlReader *reader)
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
 
         // If we are opening the file for symbol edition, read and set the
         // properties position in the scene
@@ -1031,7 +1031,7 @@ namespace Caneda
                     QString modelSyntax = attribs.value("syntax").toString();
 
                     // Check if we are opening the file for edition or to include it in a library
-                    CGraphicsScene *scene = cGraphicsScene();
+                    GraphicsScene *scene = graphicsScene();
                     if(scene) {
                         // We are opening the file for symbol edition
                         //! \todo We must add the model as a special property, or allow some form of editing the model
@@ -1070,7 +1070,7 @@ namespace Caneda
      */
     bool FormatXmlLayout::save()
     {
-        if(!cGraphicsScene()) {
+        if(!graphicsScene()) {
             return false;
         }
 
@@ -1105,7 +1105,7 @@ namespace Caneda
      */
     bool FormatXmlLayout::load()
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
         if(!scene) {
             return false;
         }
@@ -1166,15 +1166,15 @@ namespace Caneda
      *
      * This method saves all scene paintings to an XmlWriter. To do so, it
      * takes each Painting from the scene, and saves the data using the
-     * CGraphicsItem::saveData() method.
+     * GraphicsItem::saveData() method.
      *
      * \param writer XmlWriter responsible for writing the xml data.
      *
-     * \sa CGraphicsItem::saveData()
+     * \sa GraphicsItem::saveData()
      */
     void FormatXmlLayout::savePaintings(Caneda::XmlWriter *writer)
     {
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
 
         if(!paintings.isEmpty()) {
@@ -1243,7 +1243,7 @@ namespace Caneda
      */
     void FormatXmlLayout::loadPaintings(Caneda::XmlReader *reader)
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "paintings") {
             reader->raiseError(QObject::tr("Malformatted file"));
         }
@@ -1275,9 +1275,9 @@ namespace Caneda
         return m_layoutDocument;
     }
 
-    CGraphicsScene* FormatXmlLayout::cGraphicsScene() const
+    GraphicsScene* FormatXmlLayout::graphicsScene() const
     {
-        return m_layoutDocument ? m_layoutDocument->cGraphicsScene() : 0;
+        return m_layoutDocument ? m_layoutDocument->graphicsScene() : 0;
     }
 
     QString FormatXmlLayout::fileName() const
@@ -1297,7 +1297,7 @@ namespace Caneda
 
     bool FormatSpice::save()
     {
-        CGraphicsScene *scene = cGraphicsScene();
+        GraphicsScene *scene = graphicsScene();
         if(!scene) {
             return false;
         }
@@ -1326,9 +1326,9 @@ namespace Caneda
         return m_schematicDocument;
     }
 
-    CGraphicsScene *FormatSpice::cGraphicsScene() const
+    GraphicsScene *FormatSpice::graphicsScene() const
     {
-        return m_schematicDocument ? m_schematicDocument->cGraphicsScene() : 0;
+        return m_schematicDocument ? m_schematicDocument->graphicsScene() : 0;
     }
 
     QString FormatSpice::fileName() const
@@ -1359,7 +1359,7 @@ namespace Caneda
     QString FormatSpice::generateNetlist()
     {
         LibraryManager *libraryManager = LibraryManager::instance();
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Component*> components = filterItems<Component>(items);
         PortsNetlist netlist = generateNetlistTopology();
 
@@ -1617,14 +1617,14 @@ namespace Caneda
      */
     PortsNetlist FormatSpice::generateNetlistTopology()
     {
-        /*! \todo Investigate: If we use QList<CGraphicsItem*> canedaItems = filterItems<Ports>(items);
+        /*! \todo Investigate: If we use QList<GraphicsItem*> canedaItems = filterItems<Ports>(items);
          *  some phantom ports appear, and seem to be uninitialized, generating an ugly crash. Hence
          *  we filter generic items and use an iteration over their ports as a workaround.
          */
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
-        QList<CGraphicsItem*> canedaItems = filterItems<CGraphicsItem>(items);
+        QList<QGraphicsItem*> items = graphicsScene()->items();
+        QList<GraphicsItem*> canedaItems = filterItems<GraphicsItem>(items);
         QList<Port*> ports;
-        foreach(CGraphicsItem *i, canedaItems) {
+        foreach(GraphicsItem *i, canedaItems) {
             ports << i->ports();
         }
 
@@ -1668,7 +1668,7 @@ namespace Caneda
      */
     void FormatSpice::replacePortNames(PortsNetlist *netlist)
     {
-        QList<QGraphicsItem*> items = cGraphicsScene()->items();
+        QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
 
         // Iterate over all PortSymbols

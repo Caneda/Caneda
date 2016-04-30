@@ -33,7 +33,7 @@ class QTextDocument;
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsScene;
+    class GraphicsScene;
     class ChartScene;
     class DocumentViewManager;
     class IContext;
@@ -142,7 +142,7 @@ namespace Caneda
      * This class manages document specific methods like saving,
      * loading, exporting to different formats, as well as containing the
      * actual scene. The scene itself is included as a pointer to
-     * CGraphicsScene, that contains all the scene specific methods.
+     * GraphicsScene, that contains all the scene specific methods.
      *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa LayoutContext, LayoutView
@@ -203,10 +203,10 @@ namespace Caneda
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
-        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
+        GraphicsScene* graphicsScene() const { return m_graphicsScene; }
 
     private:
-        CGraphicsScene *m_cGraphicsScene;
+        GraphicsScene *m_graphicsScene;
 
         void alignElements(Qt::Alignment alignment);
     };
@@ -221,7 +221,7 @@ namespace Caneda
      * This class manages document specific methods like saving,
      * loading, exporting to different formats, as well as containing the
      * actual scene. The scene itself is included as a pointer to
-     * CGraphicsScene, that contains all the scene specific methods.
+     * GraphicsScene, that contains all the scene specific methods.
      *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa SchematicContext, SchematicView
@@ -282,7 +282,7 @@ namespace Caneda
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
-        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
+        GraphicsScene* graphicsScene() const { return m_graphicsScene; }
 
     private Q_SLOTS:
         void simulationReady(int error);
@@ -290,7 +290,7 @@ namespace Caneda
         void showSimulationHelp();
 
     private:
-        CGraphicsScene *m_cGraphicsScene;
+        GraphicsScene *m_graphicsScene;
 
         void alignElements(Qt::Alignment alignment);
         bool performBasicChecks();
@@ -383,7 +383,7 @@ namespace Caneda
      * This class manages document specific methods like saving,
      * loading, exporting to different formats, as well as containing the
      * actual scene. The scene itself is included as a pointer to
-     * CGraphicsScene, that contains all the scene specific methods.
+     * GraphicsScene, that contains all the scene specific methods.
      *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa SymbolContext, SymbolView
@@ -444,10 +444,10 @@ namespace Caneda
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
-        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
+        GraphicsScene* graphicsScene() const { return m_graphicsScene; }
 
     private:
-        CGraphicsScene *m_cGraphicsScene;
+        GraphicsScene *m_graphicsScene;
 
         void alignElements(Qt::Alignment alignment);
     };

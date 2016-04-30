@@ -45,18 +45,18 @@ namespace Caneda
 
         Arrow(const QLineF &line = QLineF(), HeadStyle style = FilledArrow,
                 qreal headWidth = 12, qreal headHeight = 20,
-                CGraphicsScene *scene = 0);
+                GraphicsScene *scene = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::ArrowType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 
         void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
-        Arrow* copy(CGraphicsScene *scene = 0) const;
+        Arrow* copy(GraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

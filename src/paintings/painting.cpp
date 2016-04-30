@@ -20,7 +20,7 @@
 
 #include "painting.h"
 
-#include "cgraphicsscene.h"
+#include "graphicsscene.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -42,7 +42,7 @@
 namespace Caneda
 {
     //! \brief Constructs a painting item with default pen and default brush.
-    Painting::Painting(CGraphicsScene *scene) : CGraphicsItem(0, scene),
+    Painting::Painting(GraphicsScene *scene) : GraphicsItem(0, scene),
     m_brush(Qt::NoBrush),
     m_resizeHandles(Caneda::NoHandle),
     m_activeHandle(Caneda::NoHandle)
@@ -227,19 +227,19 @@ namespace Caneda
         return 0;
     }
 
-    //! \copydoc CGraphicsItem::copyDataTo()
+    //! \copydoc GraphicsItem::copyDataTo()
     void Painting::copyDataTo(Painting *painting) const
     {
         painting->setPen(pen());
         painting->setBrush(brush());
-        CGraphicsItem::copyDataTo(painting);
+        GraphicsItem::copyDataTo(painting);
     }
 
     /*!
      * \brief Loads and returns a pointer to new painting object as read
      * from \a reader. On failure returns null.
      */
-    Painting* Painting::loadPainting(Caneda::XmlReader *reader, CGraphicsScene *scene)
+    Painting* Painting::loadPainting(Caneda::XmlReader *reader, GraphicsScene *scene)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
 
@@ -308,7 +308,7 @@ namespace Caneda
 
         //call base method to get move behaviour as no handle is pressed
         if(m_activeHandle == Caneda::NoHandle) {
-            CGraphicsItem::mousePressEvent(event);
+            GraphicsItem::mousePressEvent(event);
         }
         else {
             storePaintingRect();
@@ -319,7 +319,7 @@ namespace Caneda
     void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     {
         if(m_activeHandle == Caneda::NoHandle) {
-            CGraphicsItem::mouseMoveEvent(event);
+            GraphicsItem::mouseMoveEvent(event);
             Q_ASSERT(scene()->mouseGrabberItem() == this);
             return;
         }
@@ -363,10 +363,10 @@ namespace Caneda
      */
     void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
-        CGraphicsItem::mouseReleaseEvent(event);
+        GraphicsItem::mouseReleaseEvent(event);
         if(m_activeHandle != Caneda::NoHandle && m_paintingRect != m_store) {
             PaintingRectChangeCmd *cmd = new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect);
-            CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(this->scene());
+            GraphicsScene *scene = qobject_cast<GraphicsScene*>(this->scene());
             scene->undoStack()->push(cmd);
         }
         m_activeHandle = Caneda::NoHandle;

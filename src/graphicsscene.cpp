@@ -19,12 +19,12 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "cgraphicsscene.h"
+#include "graphicsscene.h"
 
 #include "actionmanager.h"
-#include "cgraphicsview.h"
 #include "documentviewmanager.h"
 #include "ellipsearc.h"
+#include "graphicsview.h"
 #include "graphictextdialog.h"
 #include "idocument.h"
 #include "iview.h"
@@ -51,7 +51,7 @@ namespace Caneda
      *
      * \param parent Parent of the scene.
      */
-    CGraphicsScene::CGraphicsScene(QObject *parent) :
+    GraphicsScene::GraphicsScene(QObject *parent) :
         QGraphicsScene(QRectF(-2500, -2500, 5000, 5000), parent)
     {
         // Initialize m_mouseAction before anything else to avoid event
@@ -99,14 +99,14 @@ namespace Caneda
      *
      **********************************************************************/
     //! \brief Cut items
-    void CGraphicsScene::cutItems(QList<CGraphicsItem*> &items)
+    void GraphicsScene::cutItems(QList<GraphicsItem*> &items)
     {
         copyItems(items);
         deleteItems(items);
     }
 
     //! \brief Copy items
-    void CGraphicsScene::copyItems(QList<CGraphicsItem*> &items)
+    void GraphicsScene::copyItems(QList<GraphicsItem*> &items)
     {
         if(items.isEmpty()) {
             return;
@@ -120,7 +120,7 @@ namespace Caneda
         writer->writeStartElement("caneda");
         writer->writeAttribute("version", Caneda::version());
 
-        foreach(CGraphicsItem *item, items) {
+        foreach(GraphicsItem *item, items) {
             item->saveData(writer);
         }
 
@@ -131,7 +131,7 @@ namespace Caneda
     }
 
     //! \brief Delete items
-    void CGraphicsScene::deleteItems(QList<CGraphicsItem*> &items)
+    void GraphicsScene::deleteItems(QList<GraphicsItem*> &items)
     {
         m_undoStack->beginMacro(tr("Delete items"));
         m_undoStack->push(new RemoveItemsCmd(items, this));
@@ -144,7 +144,7 @@ namespace Caneda
      * \param items: item to mirror
      * \param axis: mirror axis
      */
-    void CGraphicsScene::mirrorItems(QList<CGraphicsItem*> &items, const Qt::Axis axis)
+    void GraphicsScene::mirrorItems(QList<GraphicsItem*> &items, const Qt::Axis axis)
     {
         m_undoStack->beginMacro(tr("Mirror items"));
         m_undoStack->push(new MirrorItemsCmd(items, axis, this));
@@ -157,7 +157,7 @@ namespace Caneda
      * \param items: item list
      * \param dir: rotation direction
      */
-    void CGraphicsScene::rotateItems(QList<CGraphicsItem*> &items, const Caneda::AngleDirection dir)
+    void GraphicsScene::rotateItems(QList<GraphicsItem*> &items, const Caneda::AngleDirection dir)
     {
         m_undoStack->beginMacro(tr("Rotate items"));
         m_undoStack->push(new RotateItemsCmd(items, dir, this));
@@ -172,10 +172,10 @@ namespace Caneda
      * \todo string of undo
      * \todo filter wires ???
      */
-    bool CGraphicsScene::alignElements(const Qt::Alignment alignment)
+    bool GraphicsScene::alignElements(const Qt::Alignment alignment)
     {
         QList<QGraphicsItem*> gItems = selectedItems();
-        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems);
+        QList<GraphicsItem*> items = filterItems<GraphicsItem>(gItems);
 
         // Could not align less than two elements
         if(items.size() < 2) {
@@ -190,7 +190,7 @@ namespace Caneda
 
         // Compute bounding rectangle
         QRectF rect = items.first()->sceneBoundingRect();
-        QList<CGraphicsItem*>::iterator it = items.begin()+1;
+        QList<GraphicsItem*>::iterator it = items.begin()+1;
         while(it != items.end()) {
             rect |= (*it)->sceneBoundingRect();
             ++it;
@@ -198,7 +198,7 @@ namespace Caneda
 
         it = items.begin();
         while(it != items.end()) {
-            if((*it)->type() == CGraphicsItem::WireType) {
+            if((*it)->type() == GraphicsItem::WireType) {
                 ++it;
                 continue;
             }
@@ -256,10 +256,10 @@ namespace Caneda
      * \param orientation: distribute according to orientation
      * \todo filter wire ??? Do not distribute wire ??
      */
-    bool CGraphicsScene::distributeElements(const Qt::Orientation orientation)
+    bool GraphicsScene::distributeElements(const Qt::Orientation orientation)
     {
         QList<QGraphicsItem*> gItems = selectedItems();
-        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(gItems);
+        QList<GraphicsItem*> items = filterItems<GraphicsItem>(gItems);
 
         // Could not distribute single items
         if(items.size() < 2) {
@@ -286,7 +286,7 @@ namespace Caneda
      *
      * \param items: items to distribute
      */
-    void CGraphicsScene::distributeElementsHorizontally(QList<CGraphicsItem*> items)
+    void GraphicsScene::distributeElementsHorizontally(QList<GraphicsItem*> items)
     {
         m_undoStack->beginMacro(tr("Distribute items"));
 
@@ -301,8 +301,8 @@ namespace Caneda
         qreal dx = (x2 - x1) / (items.size() - 1);
         qreal x = x1;
 
-        foreach(CGraphicsItem *item, items) {
-            if(item->type() == CGraphicsItem::WireType) {
+        foreach(GraphicsItem *item, items) {
+            if(item->type() == GraphicsItem::WireType) {
                 continue;
             }
 
@@ -326,7 +326,7 @@ namespace Caneda
      *
      * \copydoc distributeElementsHorizontally()
      */
-    void CGraphicsScene::distributeElementsVertically(QList<CGraphicsItem*> items)
+    void GraphicsScene::distributeElementsVertically(QList<GraphicsItem*> items)
     {
         m_undoStack->beginMacro(tr("Distribute items"));
 
@@ -341,8 +341,8 @@ namespace Caneda
         qreal dy = (y2 - y1) / (items.size() - 1);
         qreal y = y1;
 
-        foreach(CGraphicsItem *item, items) {
-            if(item->type() == CGraphicsItem::WireType) {
+        foreach(GraphicsItem *item, items) {
+            if(item->type() == GraphicsItem::WireType) {
                 continue;
             }
 
@@ -371,7 +371,7 @@ namespace Caneda
      *
      * \param visible Set true of false to show or hide the background color.
      */
-    void CGraphicsScene::setBackgroundVisible(bool visible)
+    void GraphicsScene::setBackgroundVisible(bool visible)
     {
         m_backgroundVisible = visible;
         update();
@@ -384,7 +384,7 @@ namespace Caneda
      * a postscript (ps) file or a portable document format (pdf)
      * file.
      */
-    void CGraphicsScene::print(QPrinter *printer, bool fitInView)
+    void GraphicsScene::print(QPrinter *printer, bool fitInView)
     {
         QPainter p(printer);
         p.setRenderHints(Caneda::DefaulRenderHints);
@@ -457,7 +457,7 @@ namespace Caneda
      * \return bool True on success, false otherwise
      * \sa ExportDialog, IDocument::exportImage()
      */
-    bool CGraphicsScene::exportImage(QPaintDevice &pix)
+    bool GraphicsScene::exportImage(QPaintDevice &pix)
     {
         // Calculate the source area
         QRectF source_area = itemsBoundingRect();
@@ -514,7 +514,7 @@ namespace Caneda
      *
      * \param MouseAction: mouse action to set
      */
-    void CGraphicsScene::setMouseAction(const Caneda::MouseAction action)
+    void GraphicsScene::setMouseAction(const Caneda::MouseAction action)
     {
         if(m_mouseAction == action) {
             return;
@@ -569,12 +569,12 @@ namespace Caneda
      *
      * \note Regarding ugly cast:
      * I think a virtual member function - prepareForInsertion() should be added
-     * to CGraphicsItem which does nothing. Then classes like component can specialize
+     * to GraphicsItem which does nothing. Then classes like component can specialize
      * this method to do necessary operation like hiding properties.
      * Then in the loop, there is no need for cast. Just call that prepare method
      * on all items.
      */
-    void CGraphicsScene::beginInsertingItems(const QList<CGraphicsItem*> &items)
+    void GraphicsScene::beginInsertingItems(const QList<GraphicsItem*> &items)
     {
         Q_ASSERT(m_mouseAction == Caneda::InsertingItems);
 
@@ -584,12 +584,12 @@ namespace Caneda
         m_insertibles = items;
 
         // Add items
-        foreach(CGraphicsItem *item, m_insertibles) {
+        foreach(GraphicsItem *item, m_insertibles) {
             item->setSelected(true);
             // Hide all items here, they are made visible in ::insertingItemsEvent
             item->hide();
             // Replace by item->prepareForInsertion()
-            if(item->type() == CGraphicsItem::ComponentType) {
+            if(item->type() == GraphicsItem::ComponentType) {
                 Component *comp = canedaitem_cast<Component*>(item);
                 comp->properties()->hide();
             }
@@ -601,7 +601,7 @@ namespace Caneda
      *
      * This is the mode which is used while inserting painting items.
      */
-    void CGraphicsScene::beginPaintingDraw(Painting *item)
+    void GraphicsScene::beginPaintingDraw(Painting *item)
     {
         Q_ASSERT(m_mouseAction == Caneda::PaintingDrawEvent);
 
@@ -626,12 +626,12 @@ namespace Caneda
      * \param items The items which geometric center has to be calculated.
      * \return The geometric center of the items.
      */
-    QPointF CGraphicsScene::centerOfItems(const QList<CGraphicsItem*> &items)
+    QPointF GraphicsScene::centerOfItems(const QList<GraphicsItem*> &items)
     {
         QRectF rect = items.isEmpty() ? QRectF() :
             items.first()->sceneBoundingRect();
 
-        foreach(CGraphicsItem *item, items) {
+        foreach(GraphicsItem *item, items) {
             rect |= item->sceneBoundingRect();
         }
 
@@ -644,7 +644,7 @@ namespace Caneda
      *
      * This method checks for overlapping ports around the scene, and connects
      * the coinciding ports. Although previously this method was included in
-     * the CGraphicsItem class, later was moved to CGraphicsScene to give more
+     * the GraphicsItem class, later was moved to GraphicsScene to give more
      * flexibility and to avoid infinite recursions when calling this method
      * from inside a newly created or deleted item.
      *
@@ -652,7 +652,7 @@ namespace Caneda
      *
      * \sa splitAndCreateNodes()
      */
-    void CGraphicsScene::connectItems(CGraphicsItem *item)
+    void GraphicsScene::connectItems(GraphicsItem *item)
     {
         // Find existing intersecting ports and connect
         foreach(Port *port, item->ports()) {
@@ -663,11 +663,11 @@ namespace Caneda
         }
     }
 
-    //! \copydoc connectItems(CGraphicsItem *item)
-    void CGraphicsScene::connectItems(QList<CGraphicsItem*> &items)
+    //! \copydoc connectItems(GraphicsItem *item)
+    void GraphicsScene::connectItems(QList<GraphicsItem*> &items)
     {
         // Check and connect each item
-        foreach (CGraphicsItem *item, items) {
+        foreach (GraphicsItem *item, items) {
             connectItems(item);
         }
     }
@@ -677,7 +677,7 @@ namespace Caneda
      *
      * \param item: item to disconnect
      */
-    void CGraphicsScene::disconnectItems(CGraphicsItem *item)
+    void GraphicsScene::disconnectItems(GraphicsItem *item)
     {
         QList<Port*> ports = item->ports();
         foreach(Port *p, ports) {
@@ -685,10 +685,10 @@ namespace Caneda
         }
     }
 
-    //! \copydoc disconnectItems(CGraphicsItem *item)
-    void CGraphicsScene::disconnectItems(QList<CGraphicsItem*> &items)
+    //! \copydoc disconnectItems(GraphicsItem *item)
+    void GraphicsScene::disconnectItems(QList<GraphicsItem*> &items)
     {
-        foreach(CGraphicsItem *item, items) {
+        foreach(GraphicsItem *item, items) {
             disconnectItems(item);
         }
     }
@@ -706,7 +706,7 @@ namespace Caneda
      *
      * \sa connectItems()
      */
-    void CGraphicsScene::splitAndCreateNodes(CGraphicsItem *item)
+    void GraphicsScene::splitAndCreateNodes(GraphicsItem *item)
     {
         // Check for collisions in each port, otherwise the items intersect
         // but no node should be created.
@@ -774,10 +774,10 @@ namespace Caneda
         }
     }
 
-    //! \copydoc splitAndCreateNodes(CGraphicsItem *item)
-    void CGraphicsScene::splitAndCreateNodes(QList<CGraphicsItem *> &items)
+    //! \copydoc splitAndCreateNodes(GraphicsItem *item)
+    void GraphicsScene::splitAndCreateNodes(QList<GraphicsItem *> &items)
     {
-        foreach (CGraphicsItem *item, items) {
+        foreach (GraphicsItem *item, items) {
             splitAndCreateNodes(item);
         }
     }
@@ -797,7 +797,7 @@ namespace Caneda
      * \param property New property to add to the PropertyGroup
      * \sa PropertyGroup::addProperty()
      */
-    void CGraphicsScene::addProperty(Property property)
+    void GraphicsScene::addProperty(Property property)
     {
         m_properties->addProperty(property.name(), property);
     }
@@ -809,7 +809,7 @@ namespace Caneda
      * \param rect: Visible area
      * \todo Finish visual representation
      */
-    void CGraphicsScene::drawBackground(QPainter *painter, const QRectF& rect)
+    void GraphicsScene::drawBackground(QPainter *painter, const QRectF& rect)
     {
         QPen savedpen = painter->pen();
 
@@ -845,7 +845,7 @@ namespace Caneda
             //Make grid size display dinamic, depending on zoom level
             DocumentViewManager *manager = DocumentViewManager::instance();
             IView *v = manager->currentView();
-            CGraphicsView *sv = qobject_cast<CGraphicsView*>(v->toWidget());
+            GraphicsView *sv = qobject_cast<GraphicsView*>(v->toWidget());
 
             if(sv) {
                 if(sv->currentZoom() < 1) {
@@ -899,12 +899,12 @@ namespace Caneda
      * cursor is moved outside the scene.
      * Hint: Hidden items don't result in any changes to the scene's states.
      */
-    bool CGraphicsScene::event(QEvent *event)
+    bool GraphicsScene::event(QEvent *event)
     {
         if(m_mouseAction == InsertingItems) {
             if(event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
                 bool visible = (event->type() == QEvent::Enter);
-                foreach(CGraphicsItem *item, m_insertibles) {
+                foreach(GraphicsItem *item, m_insertibles) {
                     item->setVisible(visible);
                 }
             }
@@ -916,7 +916,7 @@ namespace Caneda
     /*!
      * \brief Event called when mouse is pressed
      */
-    void CGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         lastPos = smartNearingGridPoint(event->scenePos());
 
@@ -930,7 +930,7 @@ namespace Caneda
     /*!
      * \brief Mouse move event
      */
-    void CGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     {
         QPointF point = smartNearingGridPoint(event->scenePos());
         if(point == lastPos) {
@@ -953,7 +953,7 @@ namespace Caneda
     /*!
      * \brief Release mouse event
      */
-    void CGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
         sendMouseActionEvent(event);
     }
@@ -964,15 +964,15 @@ namespace Caneda
      * Encapsulates the mouseDoubleClickEvent as one of MouseAction and calls
      * corresponding callback.
      */
-    void CGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     {
         sendMouseActionEvent(event);
     }
 
-    void CGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
+    void GraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
     {
         QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
-        CGraphicsView *sv = qobject_cast<CGraphicsView*>(v);
+        GraphicsView *sv = qobject_cast<GraphicsView*>(v);
         if(!sv) {
             return;
         }
@@ -1016,7 +1016,7 @@ namespace Caneda
      * \brief Constructs and returns a context menu with the actions
      * corresponding to the selected object.
      */
-    void CGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+    void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         if(m_mouseAction == Normal) {
             ActionManager* am = ActionManager::instance();
@@ -1077,7 +1077,7 @@ namespace Caneda
     /*!
      * \brief Call the appropriate mouseAction event based on the current mouse action
      */
-    void CGraphicsScene::sendMouseActionEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::sendMouseActionEvent(QGraphicsSceneMouseEvent *event)
     {
         switch(m_mouseAction) {
             case Wiring:
@@ -1130,7 +1130,7 @@ namespace Caneda
      * \sa disconnectDisconnectibles(), processForSpecialMove(),
      * specialMove(), endSpecialMove()
      */
-    void CGraphicsScene::normalEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::normalEvent(QGraphicsSceneMouseEvent *event)
     {
         switch(event->type()) {
             case QEvent::GraphicsSceneMousePress:
@@ -1192,7 +1192,7 @@ namespace Caneda
                 break;
 
             default:
-                qDebug() << "CGraphicsScene::normalEvent() :  Unknown event type";
+                qDebug() << "GraphicsScene::normalEvent() :  Unknown event type";
         };
     }
 
@@ -1204,7 +1204,7 @@ namespace Caneda
      * On mouse press, these items are placed on the scene and a duplicate is
      * retained to support further placing/insertion/paste.
      */
-    void CGraphicsScene::insertingItemsEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::insertingItemsEvent(QGraphicsSceneMouseEvent *event)
     {
         if(event->type() == QEvent::GraphicsSceneMousePress) {
 
@@ -1217,22 +1217,22 @@ namespace Caneda
                 // ports is made (as the ports of the inserting items collides
                 // with the ports of the new item created.
                 clearSelection();
-                foreach(CGraphicsItem *item, m_insertibles) {
+                foreach(GraphicsItem *item, m_insertibles) {
                     removeItem(item);
                 }
 
                 // Create a new item and copy the properties of the inserting
                 // item.
                 m_undoStack->beginMacro(tr("Insert items"));
-                foreach(CGraphicsItem *item, m_insertibles) {
-                    CGraphicsItem *copied = item->copy();
+                foreach(GraphicsItem *item, m_insertibles) {
+                    GraphicsItem *copied = item->copy();
                     placeItem(copied, smartNearingGridPoint(item->pos()));
                 }
                 m_undoStack->endMacro();
 
                 // Re-add the inserting items into the scene, to be able to
                 // insert more items of the same kind.
-                foreach(CGraphicsItem *item, m_insertibles) {
+                foreach(GraphicsItem *item, m_insertibles) {
                     addItem(item);
                     item->setSelected(true);
                 }
@@ -1243,7 +1243,7 @@ namespace Caneda
                 // Rotate
                 QPointF rotationCenter = centerOfItems(m_insertibles);
 
-                foreach(CGraphicsItem *item, m_insertibles) {
+                foreach(GraphicsItem *item, m_insertibles) {
                     item->rotate(Caneda::Clockwise, rotationCenter);
                 }
 
@@ -1255,7 +1255,7 @@ namespace Caneda
             // Move snapping each item to the grid
             QPointF delta = event->scenePos() - centerOfItems(m_insertibles);
 
-            foreach(CGraphicsItem *item, m_insertibles) {
+            foreach(GraphicsItem *item, m_insertibles) {
                 item->show();
                 item->setPos(smartNearingGridPoint(item->pos() + delta));
             }
@@ -1263,7 +1263,7 @@ namespace Caneda
         }
     }
 
-    void CGraphicsScene::paintingDrawEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::paintingDrawEvent(QGraphicsSceneMouseEvent *event)
     {
         if(!m_paintingDrawItem) {
             return;
@@ -1379,7 +1379,7 @@ namespace Caneda
      *
      * Delete action: left click delete, right click disconnect item
      */
-    void CGraphicsScene::deletingEvent(const QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::deletingEvent(const QGraphicsSceneMouseEvent *event)
     {
         if(event->type() != QEvent::GraphicsSceneMousePress) {
             return;
@@ -1401,16 +1401,16 @@ namespace Caneda
      *
      * \param pos: pos clicked
      */
-    void CGraphicsScene::deletingEventLeftMouseClick(const QPointF &pos)
+    void GraphicsScene::deletingEventLeftMouseClick(const QPointF &pos)
     {
         // Create a list of items
         QList<QGraphicsItem*> list = items(pos);
 
         if(!list.isEmpty()) {
-            QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
+            QList<GraphicsItem*> items = filterItems<GraphicsItem>(list);
 
             if(!items.isEmpty()) {
-                deleteItems(QList<CGraphicsItem*>() << items.first());
+                deleteItems(QList<GraphicsItem*>() << items.first());
             }
         }
     }
@@ -1420,16 +1420,16 @@ namespace Caneda
      *
      * \param pos: pos clicked
      */
-    void CGraphicsScene::deletingEventRightMouseClick(const QPointF &pos)
+    void GraphicsScene::deletingEventRightMouseClick(const QPointF &pos)
     {
         // Create a list of items
         QList<QGraphicsItem*> list = items(pos);
 
         if(!list.isEmpty()) {
-            QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
+            QList<GraphicsItem*> items = filterItems<GraphicsItem>(list);
 
             if(!items.isEmpty()) {
-                disconnectItems(QList<CGraphicsItem*>() << items.first());
+                disconnectItems(QList<GraphicsItem*>() << items.first());
             }
         }
     }
@@ -1440,7 +1440,7 @@ namespace Caneda
      *
      *********************************************************************/
     //! \brief Wiring event
-    void CGraphicsScene::wiringEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::wiringEvent(QGraphicsSceneMouseEvent *event)
     {
         QPointF pos = smartNearingGridPoint(event->scenePos());
 
@@ -1460,7 +1460,7 @@ namespace Caneda
      * \param Event: mouse event
      * \param pos: coordinate of mouse action point
      */
-    void CGraphicsScene::wiringEventMouseClick(const QGraphicsSceneMouseEvent *event, const QPointF &pos)
+    void GraphicsScene::wiringEventMouseClick(const QGraphicsSceneMouseEvent *event, const QPointF &pos)
     {
         // Left click - Add control point
         if((event->buttons() & Qt::LeftButton) == Qt::LeftButton)  {
@@ -1477,7 +1477,7 @@ namespace Caneda
      *
      * \param pos: coordinate of mouse action point
      */
-    void CGraphicsScene::wiringEventLeftMouseClick(const QPointF &pos)
+    void GraphicsScene::wiringEventLeftMouseClick(const QPointF &pos)
     {
         if(m_wiringState == NO_WIRE) {
             // Create a new wire
@@ -1513,7 +1513,7 @@ namespace Caneda
     }
 
     //! \brief Right mouse click wire event, ie finish wire event
-    void CGraphicsScene::wiringEventRightMouseClick()
+    void GraphicsScene::wiringEventRightMouseClick()
     {
         if(m_wiringState ==  SINGLETON_WIRE) {
             // Check if port 1 and 2 overlap
@@ -1537,7 +1537,7 @@ namespace Caneda
      *
      * \param newPos: coordinate of mouse action point
      */
-    void CGraphicsScene::wiringEventMouseMove(const QPointF &newPos)
+    void GraphicsScene::wiringEventMouseMove(const QPointF &newPos)
     {
         if(m_wiringState != NO_WIRE) {
 
@@ -1562,7 +1562,7 @@ namespace Caneda
      * \brief Rotate item
      * \note right anticlockwise
      */
-    void CGraphicsScene::rotatingEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::rotatingEvent(QGraphicsSceneMouseEvent *event)
     {
         Caneda::AngleDirection angle;
 
@@ -1586,9 +1586,9 @@ namespace Caneda
         // Get items
         QList<QGraphicsItem*> list = items(event->scenePos());
         // Filter item
-        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
+        QList<GraphicsItem*> items = filterItems<GraphicsItem>(list);
         if(!items.isEmpty()) {
-            rotateItems(QList<CGraphicsItem*>() << items.first(), angle);
+            rotateItems(QList<GraphicsItem*>() << items.first(), angle);
         }
     }
 
@@ -1603,20 +1603,20 @@ namespace Caneda
      * \param event: event
      * \param axis: mirror axis
      */
-    void CGraphicsScene::mirroringEvent(const QGraphicsSceneMouseEvent *event,
+    void GraphicsScene::mirroringEvent(const QGraphicsSceneMouseEvent *event,
             const Qt::Axis axis)
     {
         // Select item and filter items
         QList<QGraphicsItem*> list = items(event->scenePos());
-        QList<CGraphicsItem*> items = filterItems<CGraphicsItem>(list);
+        QList<GraphicsItem*> items = filterItems<GraphicsItem>(list);
 
         if(!items.isEmpty()) {
-            mirrorItems(QList<CGraphicsItem*>() << items.first(), axis);
+            mirrorItems(QList<GraphicsItem*>() << items.first(), axis);
         }
     }
 
     //! \brief Mirror X event
-    void CGraphicsScene::mirroringXEvent(const QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::mirroringXEvent(const QGraphicsSceneMouseEvent *event)
     {
         if(event->type() != QEvent::GraphicsSceneMousePress) {
             return;
@@ -1628,7 +1628,7 @@ namespace Caneda
     }
 
     //! \brief Mirror Y event
-    void CGraphicsScene::mirroringYEvent(const QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::mirroringYEvent(const QGraphicsSceneMouseEvent *event)
     {
         if(event->type() != QEvent::GraphicsSceneMousePress) {
             return;
@@ -1654,10 +1654,10 @@ namespace Caneda
      * corresponding feedback (zoom band) is shown which indiates area that will
      * be zoomed. On mouse release, the area (rect) selected is zoomed.
      */
-    void CGraphicsScene::zoomingAreaEvent(QGraphicsSceneMouseEvent *event)
+    void GraphicsScene::zoomingAreaEvent(QGraphicsSceneMouseEvent *event)
     {
         QGraphicsView *view = static_cast<QGraphicsView *>(event->widget()->parent());
-        CGraphicsView *cView = qobject_cast<CGraphicsView*>(view);
+        GraphicsView *cView = qobject_cast<GraphicsView*>(view);
         if(!cView) {
             return;
         }
@@ -1702,9 +1702,9 @@ namespace Caneda
      * \param pos position of the item
      * \warning pos is not rounded (grid snapping)
      */
-    void CGraphicsScene::placeItem(CGraphicsItem *item, const QPointF &pos)
+    void GraphicsScene::placeItem(GraphicsItem *item, const QPointF &pos)
     {
-        if(item->type() == CGraphicsItem::ComponentType) {
+        if(item->type() == GraphicsItem::ComponentType) {
             Component *component = canedaitem_cast<Component*>(item);
 
             int labelSuffix = componentLabelSuffix(component->labelPrefix());
@@ -1727,7 +1727,7 @@ namespace Caneda
      * labelprefix and uses the highest of these suffixes + 1 as the new
      * suffix candidate.
      */
-    int CGraphicsScene::componentLabelSuffix(const QString& prefix) const
+    int GraphicsScene::componentLabelSuffix(const QString& prefix) const
     {
         int max = 1;
 
@@ -1772,13 +1772,13 @@ namespace Caneda
      *
      * \sa normalEvent(), specialMove()
      */
-    void CGraphicsScene::processForSpecialMove()
+    void GraphicsScene::processForSpecialMove()
     {
         disconnectibles.clear();
         specialMoveItems.clear();
 
         foreach(QGraphicsItem *qItem, selectedItems()) {
-            CGraphicsItem *item = canedaitem_cast<CGraphicsItem*>(qItem);
+            GraphicsItem *item = canedaitem_cast<GraphicsItem*>(qItem);
 
             if(item) {
                 // Save item's position for later use in undo/redo.
@@ -1790,19 +1790,19 @@ namespace Caneda
                     foreach(Port *other, *(port->connections())) {
                         // If the item connected is a component, determine whether it should
                         // be disconnected or not.
-                        if(other->parentItem()->type() == CGraphicsItem::ComponentType &&
+                        if(other->parentItem()->type() == GraphicsItem::ComponentType &&
                                 !other->parentItem()->isSelected()) {
                             disconnectibles << item;
                         }
                         // If the item connected is a wire, determine whether it should be
                         // resized or moved.
-                        if(other->parentItem()->type() == CGraphicsItem::WireType &&
+                        if(other->parentItem()->type() == GraphicsItem::WireType &&
                                 !other->parentItem()->isSelected()) {
                             specialMoveItems << other->parentItem();
                         }
                         // If the item connected is a port, determine whether it should be
                         // moved or not.
-                        if(other->parentItem()->type() == CGraphicsItem::PortSymbolType &&
+                        if(other->parentItem()->type() == GraphicsItem::PortSymbolType &&
                                 !other->parentItem()->isSelected()) {
                             specialMoveItems << other->parentItem();
                         }
@@ -1831,13 +1831,13 @@ namespace Caneda
      *
      * \sa normalEvent(), processForSpecialMove()
      */
-    void CGraphicsScene::specialMove()
+    void GraphicsScene::specialMove()
     {
-        foreach(CGraphicsItem *item, specialMoveItems) {
+        foreach(GraphicsItem *item, specialMoveItems) {
 
             // The wires in specialMoveItems are those wires that are not selected
             // but whose geometry must acommodate to the current moving wire.
-            if(item->type() == CGraphicsItem::WireType) {
+            if(item->type() == GraphicsItem::WireType) {
 
                 // Check both ports (port1 and port2) of the unselected wire for
                 // possible ports movement.
@@ -1867,7 +1867,7 @@ namespace Caneda
 
             // The ports in specialMoveItems must be moved along the selected
             // (and moving) wires.
-            if(item->type() == CGraphicsItem::PortSymbolType) {
+            if(item->type() == GraphicsItem::PortSymbolType) {
 
                 PortSymbol *portSymbol = canedaitem_cast<PortSymbol*>(item);
 
@@ -1894,10 +1894,10 @@ namespace Caneda
      *
      * \sa normalEvent()
      */
-    void CGraphicsScene::endSpecialMove()
+    void GraphicsScene::endSpecialMove()
     {
         foreach(QGraphicsItem *qItem, selectedItems()) {
-            CGraphicsItem *item = canedaitem_cast<CGraphicsItem*>(qItem);
+            GraphicsItem *item = canedaitem_cast<GraphicsItem*>(qItem);
 
             if(item) {
                 m_undoStack->push(new MoveCmd(item, item->storedPos(),
@@ -1922,17 +1922,17 @@ namespace Caneda
      *
      * \sa normalEvent(), processForSpecialMove()
      */
-    void CGraphicsScene::disconnectDisconnectibles()
+    void GraphicsScene::disconnectDisconnectibles()
     {
-        QSet<CGraphicsItem*> remove;
+        QSet<GraphicsItem*> remove;
 
-        foreach(CGraphicsItem *item, disconnectibles) {
+        foreach(GraphicsItem *item, disconnectibles) {
 
             int disconnections = 0;
             foreach(Port *port, item->ports()) {
 
                 foreach(Port *other, *(port->connections())) {
-                    if(other->parentItem()->type() == CGraphicsItem::ComponentType &&
+                    if(other->parentItem()->type() == GraphicsItem::ComponentType &&
                             other->parentItem() != item &&
                             !other->parentItem()->isSelected()) {
 
@@ -1950,7 +1950,7 @@ namespace Caneda
             }
         }
 
-        foreach(CGraphicsItem *item, remove) {
+        foreach(GraphicsItem *item, remove) {
             disconnectibles.removeAll(item);
         }
     }
@@ -1960,7 +1960,7 @@ namespace Caneda
      *
      * This callback is called when for instance you press esc key
      */
-    void CGraphicsScene::resetState()
+    void GraphicsScene::resetState()
     {
         // Clear focus on any item on this scene.
         setFocusItem(0);
@@ -1997,12 +1997,12 @@ namespace Caneda
      * This filter is installed by \a setMouseAction method if the new action
      * is InsertingItems and removed if the new action is different, thus blocking
      * shortcuts on InsertItems and unblocking for other mouse actions
-     * \sa CGraphicsScene::setMouseAction, CGraphicsScene::blockShortcuts
+     * \sa GraphicsScene::setMouseAction, GraphicsScene::blockShortcuts
      * \sa QObject::eventFilter
      *
      * \todo Take care if multiple scenes install event filters.
      */
-    bool CGraphicsScene::eventFilter(QObject *watched, QEvent *event)
+    bool GraphicsScene::eventFilter(QObject *watched, QEvent *event)
     {
         if(event->type() != QEvent::Shortcut && event->type() != QEvent::ShortcutOverride) {
             return QGraphicsScene::eventFilter(watched, event);
@@ -2029,9 +2029,9 @@ namespace Caneda
      * \brief Blocks/unblocks the shortcuts on the QApplication.
      *
      * \param block True blocks while false unblocks the shortcuts.
-     * \sa CGraphicsScene::eventFilter
+     * \sa GraphicsScene::eventFilter
      */
-    void CGraphicsScene::blockShortcuts(bool block)
+    void GraphicsScene::blockShortcuts(bool block)
     {
         if(block) {
             if(!m_shortcutsBlocked) {

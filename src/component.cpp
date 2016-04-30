@@ -20,8 +20,8 @@
 
 #include "component.h"
 
-#include "cgraphicsscene.h"
 #include "global.h"
+#include "graphicsscene.h"
 #include "library.h"
 #include "port.h"
 #include "propertydialog.h"
@@ -35,7 +35,7 @@
 namespace Caneda
 {
     //! \brief Constructs default empty ComponentData.
-    ComponentData::ComponentData(CGraphicsScene *scene)
+    ComponentData::ComponentData(GraphicsScene *scene)
     {
         properties = new PropertyGroup(scene);
     }
@@ -50,7 +50,7 @@ namespace Caneda
      * components would share only one reference, modifying only one set
      * of properties data.
      */
-    ComponentData::ComponentData(const QSharedDataPointer<ComponentData> &other, CGraphicsScene *scene)
+    ComponentData::ComponentData(const QSharedDataPointer<ComponentData> &other, GraphicsScene *scene)
     {
         // Copy all data from given ComponentDataPtr
         name = other->name;
@@ -74,16 +74,16 @@ namespace Caneda
      *
      * \param scene Scene where this component belong to.
      */
-    Component::Component(CGraphicsScene *scene) :
-        CGraphicsItem(0, scene)
+    Component::Component(GraphicsScene *scene) :
+        GraphicsItem(0, scene)
     {
         d = new ComponentData(scene);
         init();
     }
 
     //! \brief Constructs a component from \a other data.
-    Component::Component(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene) :
-        CGraphicsItem(0, scene)
+    Component::Component(const QSharedDataPointer<ComponentData>& other, GraphicsScene *scene) :
+        GraphicsItem(0, scene)
     {
         d = new ComponentData(other, scene);
         init();
@@ -191,12 +191,12 @@ namespace Caneda
      * and its data is filled using the loadData() method.
      *
      * \param reader The xmlreader used to read xml data.
-     * \param scene CGraphicsScene to which component should be parented to.
+     * \param scene GraphicsScene to which component should be parented to.
      * \return Returns new component pointer on success and null on failure.
      *
      * \sa LibraryManager::newComponent(), loadData()
      */
-    Component* Component::loadComponent(Caneda::XmlReader *reader, CGraphicsScene *scene)
+    Component* Component::loadComponent(Caneda::XmlReader *reader, GraphicsScene *scene)
     {
         Component *retVal = 0;
         Q_ASSERT(reader->isStartElement() && reader->name() == "component");
@@ -326,15 +326,15 @@ namespace Caneda
         painter->setPen(savedPen);
     }
 
-    //! \copydoc CGraphicsItem::copy()
-    Component* Component::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    Component* Component::copy(GraphicsScene *scene) const
     {
         Component *component = new Component(d, scene);
-        CGraphicsItem::copyDataTo(component);
+        GraphicsItem::copyDataTo(component);
         return component;
     }
 
-    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
     int Component::launchPropertiesDialog()
     {
         return d->properties->launchPropertiesDialog();
@@ -359,7 +359,7 @@ namespace Caneda
             // (properties) so that it maintains identity when transformed.
             d->properties->setTransform(transform().inverted());
         }
-        return CGraphicsItem::itemChange(change, value);
+        return GraphicsItem::itemChange(change, value);
     }
 
     //! \brief Updates the bounding rect of this item.

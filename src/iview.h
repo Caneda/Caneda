@@ -33,7 +33,7 @@ class QWidget;
 namespace Caneda
 {
     // Forward declarations.
-    class CGraphicsView;
+    class GraphicsView;
     class ChartView;
     class DocumentViewManager;
     class LayoutDocument;
@@ -115,7 +115,7 @@ namespace Caneda
      * This class represents the view for a document, in a manner
      * similar to Qt's Graphics View Architecture, and provides the view
      * widget, which visualizes the contents of a scene. The view is included
-     * as a pointer to CGraphicsView, that contains all the view specific
+     * as a pointer to GraphicsView, that contains all the view specific
      * methods. You can attach several views to the same scene, to provide
      * different viewports into the same data set of the document (for example,
      * when using split views).
@@ -149,7 +149,7 @@ namespace Caneda
         void onWidgetFocussedOut();
 
     private:
-        CGraphicsView *m_cGraphicsView;
+        GraphicsView *m_graphicsView;
     };
 
     /*!
@@ -159,7 +159,7 @@ namespace Caneda
      * This class represents the view for a document, in a manner
      * similar to Qt's Graphics View Architecture, and provides the view
      * widget, which visualizes the contents of a scene. The view is included
-     * as a pointer to CGraphicsView, that contains all the view specific
+     * as a pointer to GraphicsView, that contains all the view specific
      * methods. You can attach several views to the same scene, to provide
      * different viewports into the same data set of the document (for example,
      * when using split views).
@@ -193,7 +193,7 @@ namespace Caneda
         void onWidgetFocussedOut();
 
     private:
-        CGraphicsView *m_cGraphicsView;
+        GraphicsView *m_graphicsView;
     };
 
     /*!
@@ -247,7 +247,7 @@ namespace Caneda
      * This class represents the view for a document, in a manner
      * similar to Qt's Graphics View Architecture, and provides the view
      * widget, which visualizes the contents of a scene. The view is included
-     * as a pointer to CGraphicsView, that contains all the view specific
+     * as a pointer to GraphicsView, that contains all the view specific
      * methods. You can attach several views to the same scene, to provide
      * different viewports into the same data set of the document (for example,
      * when using split views).
@@ -281,7 +281,7 @@ namespace Caneda
         void onWidgetFocussedOut();
 
     private:
-        CGraphicsView *m_cGraphicsView;
+        GraphicsView *m_graphicsView;
     };
 
     /*!

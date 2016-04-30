@@ -18,9 +18,9 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "cgraphicsview.h"
+#include "graphicsview.h"
 
-#include "cgraphicsscene.h"
+#include "graphicsscene.h"
 
 #include <QMouseEvent>
 
@@ -31,7 +31,7 @@ namespace Caneda
      *
      * \param sv Scene to point this view to.
      */
-    CGraphicsView::CGraphicsView(CGraphicsScene *scene) :
+    GraphicsView::GraphicsView(GraphicsScene *scene) :
         QGraphicsView(scene),
         m_zoomRange(0.30, 10.0),
         m_zoomFactor(0.3),
@@ -58,37 +58,37 @@ namespace Caneda
         onMouseActionChanged(Caneda::Normal);
     }
 
-    CGraphicsScene* CGraphicsView::cGraphicsScene() const
+    GraphicsScene* GraphicsView::graphicsScene() const
     {
-        CGraphicsScene* s = qobject_cast<CGraphicsScene*>(scene());
+        GraphicsScene* s = qobject_cast<GraphicsScene*>(scene());
         return s;
     }
 
-    void CGraphicsView::zoomIn()
+    void GraphicsView::zoomIn()
     {
         qreal newZoom = m_currentZoom * (1 + m_zoomFactor);
         setZoomLevel(qMin(newZoom, m_zoomRange.max));
     }
 
-    void CGraphicsView::zoomOut()
+    void GraphicsView::zoomOut()
     {
         qreal newZoom = m_currentZoom / (1 + m_zoomFactor);
         setZoomLevel(qMax(newZoom, m_zoomRange.min));
     }
 
-    void CGraphicsView::zoomFitInBest()
+    void GraphicsView::zoomFitInBest()
     {
         if(scene()) {
             zoomFitRect(scene()->itemsBoundingRect());
         }
     }
 
-    void CGraphicsView::zoomOriginal()
+    void GraphicsView::zoomOriginal()
     {
         setZoomLevel(1.0);
     }
 
-    void CGraphicsView::zoomFitRect(const QRectF &rect)
+    void GraphicsView::zoomFitRect(const QRectF &rect)
     {
         if(rect.isEmpty()) {
             return;
@@ -107,7 +107,7 @@ namespace Caneda
         centerOn(center);
     }
 
-    void CGraphicsView::mousePressEvent(QMouseEvent *event)
+    void GraphicsView::mousePressEvent(QMouseEvent *event)
     {
         if(event->button() == Qt::MiddleButton) {
             panMode = true;
@@ -122,7 +122,7 @@ namespace Caneda
         QGraphicsView::mousePressEvent(event);
     }
 
-    void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
+    void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     {
         if(panMode) {
             QPointF d = mapToScene(event->pos()) - panStartPosition;
@@ -139,7 +139,7 @@ namespace Caneda
         QGraphicsView::mouseMoveEvent(event);
     }
 
-    void CGraphicsView::mouseReleaseEvent(QMouseEvent *event)
+    void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
     {
         if(event->button() == Qt::MiddleButton) {
             panMode = false;
@@ -150,7 +150,7 @@ namespace Caneda
         QGraphicsView::mouseReleaseEvent(event);
     }
 
-    void CGraphicsView::focusInEvent(QFocusEvent *event)
+    void GraphicsView::focusInEvent(QFocusEvent *event)
     {
         QGraphicsView::focusInEvent(event);
         if(hasFocus()) {
@@ -158,7 +158,7 @@ namespace Caneda
         }
     }
 
-    void CGraphicsView::focusOutEvent(QFocusEvent *event)
+    void GraphicsView::focusOutEvent(QFocusEvent *event)
     {
         QGraphicsView::focusOutEvent(event);
         if(!hasFocus()) {
@@ -173,7 +173,7 @@ namespace Caneda
      * correct mouse drag mode. That enables the RubberBandDrag mouse mode
      * during mouse selection, and disables it on every other mouse action.
      */
-    void CGraphicsView::onMouseActionChanged(MouseAction mouseAction)
+    void GraphicsView::onMouseActionChanged(MouseAction mouseAction)
     {
         if(mouseAction == Caneda::Normal) {
             setDragMode(QGraphicsView::RubberBandDrag);
@@ -183,7 +183,7 @@ namespace Caneda
         }
     }
 
-    void CGraphicsView::setZoomLevel(qreal zoomLevel)
+    void GraphicsView::setZoomLevel(qreal zoomLevel)
     {
         if(!m_zoomRange.contains(zoomLevel)) {
             return;

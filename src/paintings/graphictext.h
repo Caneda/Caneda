@@ -29,11 +29,11 @@ namespace Caneda
     class GraphicText : public Painting
     {
     public:
-        GraphicText(const QString &text = QString(), CGraphicsScene *scene = 0);
+        GraphicText(const QString &text = QString(), GraphicsScene *scene = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::GraphicTextType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QString plainText() const;
@@ -46,7 +46,7 @@ namespace Caneda
 
         void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
 
-        GraphicText* copy(CGraphicsScene *scene = 0) const;
+        GraphicText* copy(GraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

@@ -20,8 +20,8 @@
 
 #include "propertydialog.h"
 
-#include "cgraphicsscene.h"
 #include "global.h"
+#include "graphicsscene.h"
 #include "undocommands.h"
 
 #include <QSortFilterProxyModel>
@@ -330,7 +330,7 @@ namespace Caneda
      */
     void PropertyDialog::accept()
     {
-        CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(m_propertyGroup->scene());
+        GraphicsScene *scene = qobject_cast<GraphicsScene*>(m_propertyGroup->scene());
         if(scene) {
             PropertyMapCmd *cmd = new PropertyMapCmd(m_propertyGroup, m_propertyGroup->propertyMap(),
                     m_model->propMap);

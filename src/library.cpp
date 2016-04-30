@@ -20,10 +20,10 @@
 
 #include "library.h"
 
-#include "cgraphicsscene.h"
-#include "cgraphicsview.h"
 #include "fileformats.h"
 #include "global.h"
+#include "graphicsscene.h"
+#include "graphicsview.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -185,7 +185,7 @@ namespace Caneda
      * \param library The library to which the \a componentName belongs.
      * \return Component on success and null pointer on failure.
      */
-    Component* LibraryManager::newComponent(QString componentName, CGraphicsScene *scene,
+    Component* LibraryManager::newComponent(QString componentName, GraphicsScene *scene,
             QString library)
     {
         ComponentDataPtr data;

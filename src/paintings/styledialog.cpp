@@ -19,7 +19,7 @@
 
 #include "styledialog.h"
 
-#include "cgraphicsscene.h"
+#include "graphicsscene.h"
 #include "settings.h"
 
 #include "arrow.h"
@@ -465,7 +465,7 @@ namespace Caneda
             layer->setPaintingRect(newRect);
         }
 
-        CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(painting->scene());
+        GraphicsScene *scene = qobject_cast<GraphicsScene*>(painting->scene());
         if(scene) {
             QUndoCommand *cmd = new PaintingPropertyChangeCmd(painting, saveData);
             scene->undoStack()->push(cmd);

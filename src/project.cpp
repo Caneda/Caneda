@@ -308,29 +308,27 @@ namespace Caneda
      */
     void Project::generateSymbol(const QString& fileName)
     {
-        //PORT:
-#if 0
-        QString symbolFileName = fileName;
+//        //PORT:
+//        QString symbolFileName = fileName;
 
-        // First, we open the symbol from corresponding schematic
-        SchematicContext *context = SchematicContext::instance();
-        QScopedPointer<SchematicDocument> document(qobject_cast<SchematicDocument*>(context->newDocument()));
-        document->setFileName(symbolFileName);
-        document->cGraphicsScene()->setMode(Caneda::SymbolMode);
-        document->load();
+//        // First, we open the symbol from corresponding schematic
+//        SchematicContext *context = SchematicContext::instance();
+//        QScopedPointer<SchematicDocument> document(qobject_cast<SchematicDocument*>(context->newDocument()));
+//        document->setFileName(symbolFileName);
+//        document->graphicsScene()->setMode(Caneda::SymbolMode);
+//        document->load();
 
-        // Then we save the symbol in a xsym file
-        symbolFileName.replace(".xsch",".xsym");
-        document->setFileName(symbolFileName);
-        FormatXmlSymbol *symbol = new FormatXmlSymbol(document.data());
-        symbol->save();
+//        // Then we save the symbol in a xsym file
+//        symbolFileName.replace(".xsch",".xsym");
+//        document->setFileName(symbolFileName);
+//        FormatXmlSymbol *symbol = new FormatXmlSymbol(document.data());
+//        symbol->save();
 
-        // Finally we load the new component in the library
-        projectLibrary->parseExternalComponent(symbolFileName);
-        projectLibrary->saveLibrary();
-        m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-        m_projectsSidebar->plugLibrary(m_libraryName, "root");
-#endif
+//        // Finally we load the new component in the library
+//        projectLibrary->parseExternalComponent(symbolFileName);
+//        projectLibrary->saveLibrary();
+//        m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+//        m_projectsSidebar->plugLibrary(m_libraryName, "root");
     }
 
 } // namespace Caneda

@@ -21,10 +21,10 @@
 #include "iview.h"
 
 #include "actionmanager.h"
-#include "cgraphicsview.h"
 #include "chartscene.h"
 #include "chartview.h"
 #include "documentviewmanager.h"
+#include "graphicsview.h"
 #include "icontext.h"
 #include "idocument.h"
 #include "global.h"
@@ -180,19 +180,19 @@ namespace Caneda
     LayoutView::LayoutView(LayoutDocument *document) :
         IView(document)
     {
-        m_cGraphicsView = new CGraphicsView(document->cGraphicsScene());
-        StateHandler::instance()->registerWidget(m_cGraphicsView);
-        connect(m_cGraphicsView, SIGNAL(focussedIn(CGraphicsView*)), this,
+        m_graphicsView = new GraphicsView(document->graphicsScene());
+        StateHandler::instance()->registerWidget(m_graphicsView);
+        connect(m_graphicsView, SIGNAL(focussedIn(GraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
-        connect(m_cGraphicsView, SIGNAL(focussedOut(CGraphicsView*)), this,
+        connect(m_graphicsView, SIGNAL(focussedOut(GraphicsView*)), this,
                 SLOT(onWidgetFocussedOut()));
-        connect(m_cGraphicsView, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_graphicsView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     QWidget* LayoutView::toWidget() const
     {
-        return m_cGraphicsView;
+        return m_graphicsView;
     }
 
     IContext* LayoutView::context() const
@@ -202,22 +202,22 @@ namespace Caneda
 
     void LayoutView::zoomIn()
     {
-        m_cGraphicsView->zoomIn();
+        m_graphicsView->zoomIn();
     }
 
     void LayoutView::zoomOut()
     {
-        m_cGraphicsView->zoomOut();
+        m_graphicsView->zoomOut();
     }
 
     void LayoutView::zoomFitInBest()
     {
-        m_cGraphicsView->zoomFitInBest();
+        m_graphicsView->zoomFitInBest();
     }
 
     void LayoutView::zoomOriginal()
     {
-        m_cGraphicsView->zoomOriginal();
+        m_graphicsView->zoomOriginal();
     }
 
     IView* LayoutView::duplicate()
@@ -227,8 +227,8 @@ namespace Caneda
 
     void LayoutView::updateSettingsChanges()
     {
-        m_cGraphicsView->invalidateScene();
-        m_cGraphicsView->resetCachedContent();
+        m_graphicsView->invalidateScene();
+        m_graphicsView->resetCachedContent();
     }
 
     void LayoutView::onWidgetFocussedIn()
@@ -249,19 +249,19 @@ namespace Caneda
     SchematicView::SchematicView(SchematicDocument *document) :
         IView(document)
     {
-        m_cGraphicsView = new CGraphicsView(document->cGraphicsScene());
-        StateHandler::instance()->registerWidget(m_cGraphicsView);
-        connect(m_cGraphicsView, SIGNAL(focussedIn(CGraphicsView*)), this,
+        m_graphicsView = new GraphicsView(document->graphicsScene());
+        StateHandler::instance()->registerWidget(m_graphicsView);
+        connect(m_graphicsView, SIGNAL(focussedIn(GraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
-        connect(m_cGraphicsView, SIGNAL(focussedOut(CGraphicsView*)), this,
+        connect(m_graphicsView, SIGNAL(focussedOut(GraphicsView*)), this,
                 SLOT(onWidgetFocussedOut()));
-        connect(m_cGraphicsView, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_graphicsView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     QWidget* SchematicView::toWidget() const
     {
-        return m_cGraphicsView;
+        return m_graphicsView;
     }
 
     IContext* SchematicView::context() const
@@ -271,22 +271,22 @@ namespace Caneda
 
     void SchematicView::zoomIn()
     {
-        m_cGraphicsView->zoomIn();
+        m_graphicsView->zoomIn();
     }
 
     void SchematicView::zoomOut()
     {
-        m_cGraphicsView->zoomOut();
+        m_graphicsView->zoomOut();
     }
 
     void SchematicView::zoomFitInBest()
     {
-        m_cGraphicsView->zoomFitInBest();
+        m_graphicsView->zoomFitInBest();
     }
 
     void SchematicView::zoomOriginal()
     {
-        m_cGraphicsView->zoomOriginal();
+        m_graphicsView->zoomOriginal();
     }
 
     IView* SchematicView::duplicate()
@@ -296,8 +296,8 @@ namespace Caneda
 
     void SchematicView::updateSettingsChanges()
     {
-        m_cGraphicsView->invalidateScene();
-        m_cGraphicsView->resetCachedContent();
+        m_graphicsView->invalidateScene();
+        m_graphicsView->resetCachedContent();
     }
 
     void SchematicView::onWidgetFocussedIn()
@@ -389,19 +389,19 @@ namespace Caneda
     SymbolView::SymbolView(SymbolDocument *document) :
         IView(document)
     {
-        m_cGraphicsView = new CGraphicsView(document->cGraphicsScene());
-        StateHandler::instance()->registerWidget(m_cGraphicsView);
-        connect(m_cGraphicsView, SIGNAL(focussedIn(CGraphicsView*)), this,
+        m_graphicsView = new GraphicsView(document->graphicsScene());
+        StateHandler::instance()->registerWidget(m_graphicsView);
+        connect(m_graphicsView, SIGNAL(focussedIn(GraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
-        connect(m_cGraphicsView, SIGNAL(focussedOut(CGraphicsView*)), this,
+        connect(m_graphicsView, SIGNAL(focussedOut(GraphicsView*)), this,
                 SLOT(onWidgetFocussedOut()));
-        connect(m_cGraphicsView, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_graphicsView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
     QWidget* SymbolView::toWidget() const
     {
-        return m_cGraphicsView;
+        return m_graphicsView;
     }
 
     IContext* SymbolView::context() const
@@ -411,22 +411,22 @@ namespace Caneda
 
     void SymbolView::zoomIn()
     {
-        m_cGraphicsView->zoomIn();
+        m_graphicsView->zoomIn();
     }
 
     void SymbolView::zoomOut()
     {
-        m_cGraphicsView->zoomOut();
+        m_graphicsView->zoomOut();
     }
 
     void SymbolView::zoomFitInBest()
     {
-        m_cGraphicsView->zoomFitInBest();
+        m_graphicsView->zoomFitInBest();
     }
 
     void SymbolView::zoomOriginal()
     {
-        m_cGraphicsView->zoomOriginal();
+        m_graphicsView->zoomOriginal();
     }
 
     IView* SymbolView::duplicate()
@@ -436,8 +436,8 @@ namespace Caneda
 
     void SymbolView::updateSettingsChanges()
     {
-        m_cGraphicsView->invalidateScene();
-        m_cGraphicsView->resetCachedContent();
+        m_graphicsView->invalidateScene();
+        m_graphicsView->resetCachedContent();
     }
 
     void SymbolView::onWidgetFocussedIn()

@@ -46,11 +46,11 @@ namespace Caneda
         };
 
         Layer(const QRectF &rect, LayerName layerName = Metal1, const QString &netLabel = "",
-              CGraphicsScene *scene = 0);
+              GraphicsScene *scene = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::LayerType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF& rect) const;
@@ -68,7 +68,7 @@ namespace Caneda
         QString netLabel() const { return m_netLabel; }
         void setNetLabel(QString netLabel) { m_netLabel = netLabel; }
 
-        Layer* copy(CGraphicsScene *scene = 0) const;
+        Layer* copy(GraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

@@ -19,7 +19,7 @@
 
 #include "portsymbol.h"
 
-#include "cgraphicsitem.h"
+#include "graphicsitem.h"
 #include "portsymboldialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
@@ -31,11 +31,11 @@ namespace Caneda
     /*!
      * \brief Constructs a port symbol item.
      *
-     * \param scene CGraphicsScene on which the port symbol should be added.
+     * \param scene GraphicsScene on which the port symbol should be added.
      *
      * \sa init()
      */
-    PortSymbol::PortSymbol(CGraphicsScene *scene) : CGraphicsItem(0, scene)
+    PortSymbol::PortSymbol(GraphicsScene *scene) : GraphicsItem(0, scene)
     {
         // Create a port with the default name
         init(QString("label"));
@@ -46,11 +46,11 @@ namespace Caneda
      *
      * \param label Label of the port. Special ports as GND, should pass the
      *        corresponding label.
-     * \param scene CGraphicsScene on which the port symbol should be added.
+     * \param scene GraphicsScene on which the port symbol should be added.
      *
      * \sa init()
      */
-    PortSymbol::PortSymbol(const QString &label, CGraphicsScene *scene) : CGraphicsItem(0, scene)
+    PortSymbol::PortSymbol(const QString &label, GraphicsScene *scene) : GraphicsItem(0, scene)
     {
         init(label);
     }
@@ -162,19 +162,19 @@ namespace Caneda
         update();
     }
 
-    //! \copydoc CGraphicsItem::copy()
-    PortSymbol* PortSymbol::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    PortSymbol* PortSymbol::copy(GraphicsScene *scene) const
     {
         PortSymbol *portSymbol = new PortSymbol(scene);
         portSymbol->m_label->setText(m_label->text());
 
-        CGraphicsItem::copyDataTo(portSymbol);
+        GraphicsItem::copyDataTo(portSymbol);
         portSymbol->updateGeometry();
 
         return portSymbol;
     }
 
-    //! \copydoc CGraphicsItem::launchPropertiesDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
     int PortSymbol::launchPropertiesDialog()
     {
         QString newLabel = QString(m_label->text());
@@ -196,12 +196,12 @@ namespace Caneda
      * created, its data is filled using the loadData() method.
      *
      * \param reader The xmlreader used to read xml data.
-     * \param scene CGraphicsScene to which PortSymbol should be parented to.
+     * \param scene GraphicsScene to which PortSymbol should be parented to.
      * \return Returns new PortSymbol pointer on success and null on failure.
      *
      * \sa loadData()
      */
-    PortSymbol* PortSymbol::loadPortSymbol(Caneda::XmlReader *reader, CGraphicsScene *scene)
+    PortSymbol* PortSymbol::loadPortSymbol(Caneda::XmlReader *reader, GraphicsScene *scene)
     {
         PortSymbol *retVal = new PortSymbol(scene);
         retVal->loadData(reader);

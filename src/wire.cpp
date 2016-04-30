@@ -21,8 +21,8 @@
 #include "wire.h"
 
 #include "actionmanager.h"
-#include "cgraphicsscene.h"
 #include "global.h"
+#include "graphicsscene.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -40,10 +40,10 @@ namespace Caneda
      *
      * \param startPos Starting position of the wire.
      * \param endPos Ending position of the wire.
-     * \param scene CGraphicsScene where to add this wire.
+     * \param scene GraphicsScene where to add this wire.
      */
     Wire::Wire(const QPointF& startPos, const QPointF& endPos,
-            CGraphicsScene *scene) : CGraphicsItem(0, scene)
+            GraphicsScene *scene) : GraphicsItem(0, scene)
     {
         // Set flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
@@ -135,7 +135,7 @@ namespace Caneda
         stroker.setWidth(2*portRadius);
         path = stroker.createStroke(path);
 
-        CGraphicsItem::setShapeAndBoundRect(path, boundingRect());
+        GraphicsItem::setShapeAndBoundRect(path, boundingRect());
     }
 
     //! \brief Returns bounding rectangle arround the wire
@@ -158,8 +158,8 @@ namespace Caneda
         return rect;
     }
 
-    //! \copydoc CGraphicsItem::copy()
-    Wire* Wire::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    Wire* Wire::copy(GraphicsScene *scene) const
     {
         QPointF startPos = port1()->scenePos();
         QPointF endPos = port2()->scenePos();
@@ -172,13 +172,13 @@ namespace Caneda
      * \brief Saves current wire data to \a Caneda::XmlWriter.
      *
      * Saves current wire data to \a Caneda::XmlWriter. This method is the
-     * virtual implementation of CGraphicsItem::saveData(), to allow for
+     * virtual implementation of GraphicsItem::saveData(), to allow for
      * wire copy/pasting. It is also used during
      * FormatXmlSchematic::saveWires() to save wires into a schematic file.
      *
      * \param writer The xmlwriter used to write xml data.
      *
-     * \sa FormatXmlSchematic::saveWires(), CGraphicsItem::saveData(),
+     * \sa FormatXmlSchematic::saveWires(), GraphicsItem::saveData(),
      * loadData()
      */
     void Wire::saveData(Caneda::XmlWriter *writer) const
@@ -204,12 +204,12 @@ namespace Caneda
      * created, its data is filled using the loadData() method.
      *
      * \param reader The xmlreader used to read xml data.
-     * \param scene CGraphicsScene to which the wire should be parented to.
+     * \param scene GraphicsScene to which the wire should be parented to.
      * \return Returns new wire pointer on success and null on failure.
      *
      * \sa loadData()
      */
-    Wire* Wire::loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene)
+    Wire* Wire::loadWire(Caneda::XmlReader *reader, GraphicsScene *scene)
     {
         Wire *retVal = new Wire(QPointF(10,10), QPointF(50,50), scene);
         retVal->loadData(reader);
@@ -236,7 +236,7 @@ namespace Caneda
         updateGeometry();
     }
 
-    //! \copydoc CGraphicsItem::contextMenuEvent()
+    //! \copydoc GraphicsItem::contextMenuEvent()
     void Wire::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         ActionManager* am = ActionManager::instance();

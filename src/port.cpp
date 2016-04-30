@@ -20,7 +20,6 @@
 
 #include "port.h"
 
-#include "cgraphicsitem.h"
 #include "settings.h"
 #include "wire.h"
 
@@ -31,10 +30,10 @@
 namespace Caneda
 {
     /*!
-     * \brief Constructs a Port item with a CGraphicsItem as \a parent and
+     * \brief Constructs a Port item with a GraphicsItem as \a parent and
      * port's name \a portName.
      */
-    Port::Port(CGraphicsItem* parent, QString portName) :
+    Port::Port(GraphicsItem* parent, QString portName) :
         QGraphicsItem(parent)
     {
         // Set component flags
@@ -55,9 +54,9 @@ namespace Caneda
      *  \brief Returns a pointer to this item's parent item. If this item does
      *  not have a parent, 0 is returned.
      */
-    CGraphicsItem* Port::parentItem() const
+    GraphicsItem* Port::parentItem() const
     {
-        CGraphicsItem *item = canedaitem_cast<CGraphicsItem*>(QGraphicsItem::parentItem());
+        GraphicsItem *item = canedaitem_cast<GraphicsItem*>(QGraphicsItem::parentItem());
         if(item) {
             return item;
         }
@@ -91,7 +90,7 @@ namespace Caneda
         connectedPorts << m_connections;
 
         foreach(Port *port, connectedPorts) {
-            if(port->parentItem()->type() == CGraphicsItem::WireType) {
+            if(port->parentItem()->type() == GraphicsItem::WireType) {
                 Wire *_wire = static_cast<Wire*>(port->parentItem());
                 _wire->port1()->getEquipotentialPorts(connectedPorts);
                 _wire->port2()->getEquipotentialPorts(connectedPorts);
@@ -198,9 +197,9 @@ namespace Caneda
             parentItem()->collidingItems(Qt::IntersectsItemBoundingRect);
 
         foreach(QGraphicsItem *item, collisions) {
-            if(canedaitem_cast<CGraphicsItem*>(item)) {
+            if(canedaitem_cast<GraphicsItem*>(item)) {
 
-                QList<Port*> ports = canedaitem_cast<CGraphicsItem*>(item)->ports();
+                QList<Port*> ports = canedaitem_cast<GraphicsItem*>(item)->ports();
                 foreach(Port *p, ports) {
                     if(p->scenePos() == scenePos() &&
                             p->parentItem() != parentItem() &&

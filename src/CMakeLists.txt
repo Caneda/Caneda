@@ -15,14 +15,14 @@ ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( paintings )
 
 SET( CANEDA_SRCS
-  actionmanager.cpp cgraphicsitem.cpp cgraphicsscene.cpp cgraphicsview.cpp
-  chartitem.cpp chartscene.cpp chartview.cpp component.cpp
+  actionmanager.cpp chartitem.cpp chartscene.cpp chartview.cpp component.cpp
   documentviewmanager.cpp fileformats.cpp folderbrowser.cpp global.cpp
-  icontext.cpp idocument.cpp iview.cpp library.cpp main.cpp mainwindow.cpp
-  messagewidget.cpp port.cpp portsymbol.cpp project.cpp property.cpp settings.cpp
+  graphicsitem.cpp graphicsscene.cpp graphicsview.cpp icontext.cpp
+  idocument.cpp iview.cpp library.cpp main.cpp mainwindow.cpp messagewidget.cpp
+  port.cpp portsymbol.cpp project.cpp property.cpp settings.cpp
   sidebarchartsbrowser.cpp sidebaritemsbrowser.cpp sidebartextbrowser.cpp
-  statehandler.cpp syntaxhighlighters.cpp tabs.cpp textedit.cpp undocommands.cpp
-  wire.cpp xmlutilities.cpp
+  statehandler.cpp syntaxhighlighters.cpp tabs.cpp textedit.cpp
+  undocommands.cpp wire.cpp xmlutilities.cpp
 )
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} )

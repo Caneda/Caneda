@@ -21,9 +21,9 @@
 #include "statehandler.h"
 
 #include "actionmanager.h"
-#include "cgraphicsscene.h"
-#include "cgraphicsview.h"
 #include "global.h"
+#include "graphicsscene.h"
+#include "graphicsview.h"
 #include "library.h"
 #include "painting.h"
 #include "portsymbol.h"
@@ -53,7 +53,7 @@ namespace Caneda
         }
 
         void clearInsertibles() {
-            foreach (CGraphicsItem* item, insertibles) {
+            foreach (GraphicsItem* item, insertibles) {
                 if (item->scene()) {
                     item->scene()->removeItem(item);
                 }
@@ -63,17 +63,17 @@ namespace Caneda
         }
 
         Caneda::MouseAction mouseAction;
-        QList<CGraphicsItem*> insertibles;
+        QList<GraphicsItem*> insertibles;
         Painting *paintingDrawItem;
 
-        QSet<CGraphicsScene*> scenes;
-        QSet<CGraphicsView*> widgets;
+        QSet<GraphicsScene*> scenes;
+        QSet<GraphicsView*> widgets;
 
-        QPointer<CGraphicsView> focussedWidget;
-        QHash<QString, CGraphicsItem*> toolbarInsertibles;
+        QPointer<GraphicsView> focussedWidget;
+        QHash<QString, GraphicsItem*> toolbarInsertibles;
     };
 
-    static bool areItemsEquivalent(CGraphicsItem *a, CGraphicsItem *b)
+    static bool areItemsEquivalent(GraphicsItem *a, GraphicsItem *b)
     {
         if (!a || !b) {
             return false;
@@ -82,7 +82,7 @@ namespace Caneda
             return false;
         }
 
-        if (a->type() == CGraphicsItem::ComponentType) {
+        if (a->type() == GraphicsItem::ComponentType) {
             Component *ac = canedaitem_cast<Component*>(a);
             Component *bc = canedaitem_cast<Component*>(b);
 
@@ -118,9 +118,9 @@ namespace Caneda
         delete d;
     }
 
-    void StateHandler::registerWidget(CGraphicsView *widget)
+    void StateHandler::registerWidget(GraphicsView *widget)
     {
-        CGraphicsScene *scene = widget->cGraphicsScene();
+        GraphicsScene *scene = widget->graphicsScene();
         if (!scene) {
             qWarning() << Q_FUNC_INFO << "Widget doesn't have an associated scene";
             return;
@@ -128,8 +128,8 @@ namespace Caneda
         if (!d->widgets.contains(widget)) {
             d->widgets << widget;
             connect(widget, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
-            connect(widget, SIGNAL(focussedIn(CGraphicsView*)),
-                    SLOT(slotUpdateFocussedWidget(CGraphicsView*)));
+            connect(widget, SIGNAL(focussedIn(GraphicsView*)),
+                    SLOT(slotUpdateFocussedWidget(GraphicsView*)));
         }
 
         if (!d->scenes.contains(scene)) {
@@ -138,7 +138,7 @@ namespace Caneda
         }
     }
 
-    void StateHandler::unregisterWidget(CGraphicsView *widget)
+    void StateHandler::unregisterWidget(GraphicsView *widget)
     {
         if (!widget) {
             return;
@@ -146,11 +146,11 @@ namespace Caneda
         if (d->widgets.contains(widget)) {
             d->widgets.remove(widget);
             disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
-            disconnect(widget, SIGNAL(focussedIn(CGraphicsView*)), this,
-                    SLOT(slotUpdateFocussedWidget(CGraphicsView*)));
+            disconnect(widget, SIGNAL(focussedIn(GraphicsView*)), this,
+                    SLOT(slotUpdateFocussedWidget(GraphicsView*)));
         }
 
-        CGraphicsScene *scene = widget->cGraphicsScene();
+        GraphicsScene *scene = widget->graphicsScene();
         if (scene && d->scenes.contains(scene)) {
             d->scenes.remove(scene);
             disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
@@ -167,7 +167,7 @@ namespace Caneda
      *
      * \param item: item's name
      * \param category: item's category name
-     * \sa CGraphicsScene::dropEvent()
+     * \sa GraphicsScene::dropEvent()
      */
     void StateHandler::slotSidebarItemClicked(const QString& item,
             const QString& category)
@@ -176,7 +176,7 @@ namespace Caneda
         d->clearInsertibles();
 
         // Get a component or painting based on the name and category.
-        CGraphicsItem *qItem = 0;
+        GraphicsItem *qItem = 0;
         if(category == "Paint Tools" || category == "Layout Tools") {
             qItem = Painting::fromName(item);
         }
@@ -236,7 +236,7 @@ namespace Caneda
             return;
         }
 
-        QList<CGraphicsItem*> _items;
+        QList<GraphicsItem*> _items;
         while(!reader.atEnd()) {
             reader.readNext();
 
@@ -245,7 +245,7 @@ namespace Caneda
             }
 
             if(reader.isStartElement()) {
-                CGraphicsItem *readItem = 0;
+                GraphicsItem *readItem = 0;
                 if(reader.name() == "component") {
                     readItem = Component::loadComponent(&reader, 0);
                 }
@@ -274,7 +274,7 @@ namespace Caneda
 
     void StateHandler::slotInsertToolbarComponent(const QString& sender, bool on)
     {
-        CGraphicsItem *item = d->toolbarInsertibles[sender];
+        GraphicsItem *item = d->toolbarInsertibles[sender];
         if (!on || !item) {
             slotSetNormalAction();
             return;
@@ -294,14 +294,14 @@ namespace Caneda
          * the lists. Using of these pointers to access any method or variable
          * will result in ugly crash!!!
          */
-        CGraphicsScene *scene = static_cast<CGraphicsScene*>(object);
-        CGraphicsView *widget = static_cast<CGraphicsView*>(object);
+        GraphicsScene *scene = static_cast<GraphicsScene*>(object);
+        GraphicsView *widget = static_cast<GraphicsView*>(object);
 
         d->scenes.remove(scene);
         d->widgets.remove(widget);
     }
 
-    void StateHandler::slotUpdateFocussedWidget(CGraphicsView *widget)
+    void StateHandler::slotUpdateFocussedWidget(GraphicsView *widget)
     {
         d->focussedWidget = widget;
     }
@@ -334,7 +334,7 @@ namespace Caneda
      */
     void StateHandler::slotPerformToggleAction(const QString& actionName, bool on)
     {
-        typedef void (CGraphicsScene::*pActionFunc) (QList<CGraphicsItem*>&);
+        typedef void (GraphicsScene::*pActionFunc) (QList<GraphicsItem*>&);
 
         ActionManager *am = ActionManager::instance();
 
@@ -343,13 +343,13 @@ namespace Caneda
         pActionFunc func = 0;
 
         if (actionName == "editDelete") {
-            func = &CGraphicsScene::deleteItems;
+            func = &GraphicsScene::deleteItems;
         } else if (actionName == "editRotate") {
-            func = &CGraphicsScene::rotateItems;
+            func = &GraphicsScene::rotateItems;
         } else if (actionName == "editMirror") {
-            func = &CGraphicsScene::mirrorXItems;
+            func = &GraphicsScene::mirrorXItems;
         } else if (actionName == "editMirrorY") {
-            func = &CGraphicsScene::mirrorYItems;
+            func = &GraphicsScene::mirrorYItems;
         }
 
         QList<QAction*> mouseActions = ActionManager::instance()->mouseActions();
@@ -363,9 +363,9 @@ namespace Caneda
         }
 
         //else part
-        CGraphicsScene *scene = 0;
+        GraphicsScene *scene = 0;
         if (d->focussedWidget.isNull() == false) {
-            scene = d->focussedWidget->cGraphicsScene();
+            scene = d->focussedWidget->graphicsScene();
         }
         QList<QGraphicsItem*> selectedItems;
         if (scene) {
@@ -374,7 +374,7 @@ namespace Caneda
 
         do {
             if(!selectedItems.isEmpty() && func != 0) {
-                QList<CGraphicsItem*> funcable = filterItems<CGraphicsItem>(selectedItems);
+                QList<GraphicsItem*> funcable = filterItems<GraphicsItem>(selectedItems);
 
                 if(funcable.isEmpty()) {
                     break;
@@ -397,7 +397,7 @@ namespace Caneda
             }
         }
 
-        QHash<QString, CGraphicsItem*>::const_iterator it =
+        QHash<QString, GraphicsItem*>::const_iterator it =
             d->toolbarInsertibles.begin();
         while (it != d->toolbarInsertibles.end()) {
             QAction *act = am->actionForName(it.key());
@@ -434,7 +434,7 @@ namespace Caneda
         slotPerformToggleAction("select", true);
     }
 
-    void StateHandler::applyCursor(CGraphicsView *widget)
+    void StateHandler::applyCursor(GraphicsView *widget)
     {
         QCursor cursor;
 
@@ -478,10 +478,10 @@ namespace Caneda
         widget->setCursor(cursor);
     }
 
-    void StateHandler::applyState(CGraphicsView *widget)
+    void StateHandler::applyState(GraphicsView *widget)
     {
         applyCursor(widget);
-        CGraphicsScene *scene = widget->cGraphicsScene();
+        GraphicsScene *scene = widget->graphicsScene();
         if (!scene) {
             return;
         }
@@ -489,8 +489,8 @@ namespace Caneda
         scene->setMouseAction(d->mouseAction);
         if (d->mouseAction == Caneda::InsertingItems) {
             if (!d->insertibles.isEmpty()) {
-                QList<CGraphicsItem*> copy;
-                foreach (CGraphicsItem *it, d->insertibles) {
+                QList<GraphicsItem*> copy;
+                foreach (GraphicsItem *it, d->insertibles) {
                     copy << it->copy(scene);
                 }
                 scene->beginInsertingItems(copy);
@@ -505,7 +505,7 @@ namespace Caneda
 
     void StateHandler::applyStateToAllWidgets()
     {
-        foreach (CGraphicsView *widget, d->widgets) {
+        foreach (GraphicsView *widget, d->widgets) {
             applyState(widget);
         }
     }

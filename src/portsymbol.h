@@ -25,8 +25,8 @@
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsItem;
-    class CGraphicsScene;
+    class GraphicsItem;
+    class GraphicsScene;
 
     /*!
      * \brief Represents the port symbol on component symbols and schematics.
@@ -42,16 +42,16 @@ namespace Caneda
      * names as the ports in the symbol.
      *
      */
-    class PortSymbol : public CGraphicsItem
+    class PortSymbol : public GraphicsItem
     {
     public:
-        PortSymbol(CGraphicsScene *scene = 0);
-        PortSymbol(const QString &label, CGraphicsScene *scene = 0);
+        PortSymbol(GraphicsScene *scene = 0);
+        PortSymbol(const QString &label, GraphicsScene *scene = 0);
         ~PortSymbol();
 
-        //! \copydoc CGraphicsItem::Type
-        enum { Type = CGraphicsItem::PortSymbolType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::Type
+        enum { Type = GraphicsItem::PortSymbolType };
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         //! Return's the symbol's port
@@ -63,11 +63,11 @@ namespace Caneda
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-        static PortSymbol* loadPortSymbol(Caneda::XmlReader *reader, CGraphicsScene *scene);
+        static PortSymbol* loadPortSymbol(Caneda::XmlReader *reader, GraphicsScene *scene);
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        PortSymbol* copy(CGraphicsScene *scene = 0) const;
+        PortSymbol* copy(GraphicsScene *scene = 0) const;
 
         int launchPropertiesDialog();
 
