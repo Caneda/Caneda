@@ -300,6 +300,20 @@ namespace Caneda
         return createIndex(parentItem->row(), 0, parentItem);
     }
 
+    /*!
+     * \brief Returns the data stored for the item referred by index.
+     *
+     * This class returns the item data corresponding to index position.
+     * For example, if we are editing an item that is a leaf of the tree
+     * view and it is not a library, the data corresponds to a component,
+     * hence the return value is the name of the component or the icon
+     * depending on the role of the index (a display role indicates the
+     * name and a decoration role indicates the icon).
+     *
+     * \param index Item to return data from
+     * \param role Role of the item (editable, checkable, etc).
+     * \return data stored for given item
+     */
     QVariant SidebarItemsModel::data(const QModelIndex & index, int role) const
     {
         if(!index.isValid()) {
@@ -340,6 +354,13 @@ namespace Caneda
                 static_cast<CategoryItem*>(index.internalPointer())->isLibrary());
     }
 
+    /*!
+     * \brief Returns item flags according to its position. This flags
+     * are responsible for the item editable or checkable state.
+     *
+     * \param index Item for which its flags must be returned.
+     * \return Qt::ItemFlags Item's flags.
+     */
     Qt::ItemFlags SidebarItemsModel::flags(const QModelIndex& index) const
     {
         Qt::ItemFlags flag = Qt::ItemIsEnabled;
@@ -507,6 +528,7 @@ namespace Caneda
         return m_currentComponent;
     }
 
+    //! \brief Filters items according to user input on a QLineEdit.
     void SidebarItemsBrowser::filterTextChanged()
     {
         QString text = m_filterEdit->text();
