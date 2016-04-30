@@ -29,7 +29,6 @@
 class QPaintDevice;
 class QPrinter;
 class QTextDocument;
-class QUndoStack;
 
 namespace Caneda
 {
@@ -77,8 +76,6 @@ namespace Caneda
 
         virtual void undo() = 0;
         virtual void redo() = 0;
-
-        virtual QUndoStack* undoStack() = 0;
 
         virtual bool canCut() const = 0;
         virtual bool canCopy() const = 0;
@@ -168,8 +165,6 @@ namespace Caneda
         virtual void undo();
         virtual void redo();
 
-        virtual QUndoStack* undoStack();
-
         virtual bool canCut() const;
         virtual bool canCopy() const;
         virtual bool canPaste() const { return true; }
@@ -248,8 +243,6 @@ namespace Caneda
 
         virtual void undo();
         virtual void redo();
-
-        virtual QUndoStack* undoStack();
 
         virtual bool canCut() const;
         virtual bool canCopy() const;
@@ -336,8 +329,6 @@ namespace Caneda
         virtual void undo() {}
         virtual void redo() {}
 
-        virtual QUndoStack* undoStack();
-
         virtual bool canCut() const { return false; }
         virtual bool canCopy() const { return false; }
         virtual bool canPaste() const { return false; }
@@ -414,8 +405,6 @@ namespace Caneda
 
         virtual void undo();
         virtual void redo();
-
-        virtual QUndoStack* undoStack();
 
         virtual bool canCut() const;
         virtual bool canCopy() const;
@@ -495,8 +484,6 @@ namespace Caneda
 
         virtual void undo();
         virtual void redo();
-
-        virtual QUndoStack* undoStack();
 
         virtual bool canCut() const { return true; }
         virtual bool canCopy() const { return true; }

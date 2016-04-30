@@ -20,9 +20,8 @@
 
 #include "propertydialog.h"
 
-#include "documentviewmanager.h"
+#include "cgraphicsscene.h"
 #include "global.h"
-#include "idocument.h"
 #include "undocommands.h"
 
 #include <QSortFilterProxyModel>
@@ -331,11 +330,12 @@ namespace Caneda
      */
     void PropertyDialog::accept()
     {
-        PropertyMapCmd *cmd = new PropertyMapCmd(m_propertyGroup, m_propertyGroup->propertyMap(),
-                m_model->propMap);
-
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        manager->currentDocument()->undoStack()->push(cmd);
+        CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(m_propertyGroup->scene());
+        if(scene) {
+            PropertyMapCmd *cmd = new PropertyMapCmd(m_propertyGroup, m_propertyGroup->propertyMap(),
+                    m_model->propMap);
+            scene->undoStack()->push(cmd);
+        }
 
         QDialog::accept();
     }

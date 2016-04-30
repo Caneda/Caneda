@@ -49,7 +49,6 @@
 #include <QTextCodec>
 #include <QTextDocument>
 #include <QTextStream>
-#include <QUndoStack>
 
 namespace Caneda
 {
@@ -400,11 +399,6 @@ namespace Caneda
         m_cGraphicsScene->undoStack()->redo();
     }
 
-    QUndoStack* LayoutDocument::undoStack()
-    {
-        return m_cGraphicsScene->undoStack();
-    }
-
     bool LayoutDocument::canCut() const
     {
         QList<QGraphicsItem*> qItems = m_cGraphicsScene->selectedItems();
@@ -664,11 +658,6 @@ namespace Caneda
     void SchematicDocument::redo()
     {
         m_cGraphicsScene->undoStack()->redo();
-    }
-
-    QUndoStack* SchematicDocument::undoStack()
-    {
-        return m_cGraphicsScene->undoStack();
     }
 
     bool SchematicDocument::canCut() const
@@ -1196,12 +1185,6 @@ namespace Caneda
         return SimulationContext::instance();
     }
 
-    QUndoStack* SimulationDocument::undoStack()
-    {
-        QUndoStack *stack = new QUndoStack(this);
-        return stack;
-    }
-
     void SimulationDocument::distributeHorizontal()
     {
         /*!
@@ -1343,11 +1326,6 @@ namespace Caneda
     void SymbolDocument::redo()
     {
         m_cGraphicsScene->undoStack()->redo();
-    }
-
-    QUndoStack* SymbolDocument::undoStack()
-    {
-        return m_cGraphicsScene->undoStack();
     }
 
     bool SymbolDocument::canCut() const
@@ -1611,12 +1589,6 @@ namespace Caneda
     void TextDocument::redo()
     {
         m_textDocument->redo();
-    }
-
-    QUndoStack* TextDocument::undoStack()
-    {
-        QUndoStack *stack = new QUndoStack(this);
-        return stack;
     }
 
     void TextDocument::cut()
