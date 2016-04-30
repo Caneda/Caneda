@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -30,11 +30,16 @@ namespace Caneda
 {
     // Forward declarations
     class CGraphicsScene;
+    class CSimulationPlotCurve;
+    class CSimulationScene;
     class LayoutDocument;
     class SchematicDocument;
+    class SimulationDocument;
     class SymbolDocument;
     class XmlReader;
     class XmlWriter;
+
+    typedef QList<QPair<Port *, QString> > PortsNetlist;
 
     /*!
      * \brief This class handles all the access to the schematic documents file
@@ -152,6 +157,75 @@ namespace Caneda
         void loadPaintings(Caneda::XmlReader *reader);
 
         LayoutDocument *m_layoutDocument;
+    };
+
+    /*!
+     * \brief This class handles all the access to the raw spice simulation
+     * documents file format.
+     *
+     * This class is in charge of saving and loading all raw spice simulation
+     * related documents. This is the only class that knows about raw spice
+     * simulation document formats, and has the access functions to return a
+     * SimulationDocument, with all of its components.
+     *
+     * This class does not handle document saving, as waveform data saving will
+     * not be supported at the moment (raw waveform data is only generated and
+     * saved by the simulator).
+     *
+     * \sa \ref DocumentFormats
+     */
+    class FormatSpice
+    {
+    public:
+        FormatSpice(SchematicDocument *doc = 0);
+
+        bool save();
+
+        SchematicDocument* schematicDocument() const;
+        CGraphicsScene* cGraphicsScene() const;
+        QString fileName() const;
+
+    private:
+        QString generateNetlist();
+        PortsNetlist generateNetlistTopology();
+        void replacePortNames(PortsNetlist *netlist);
+
+        SchematicDocument *m_schematicDocument;
+    };
+
+    /*!
+     * \brief This class handles all the access to the raw spice simulation
+     * documents file format.
+     *
+     * This class is in charge of saving and loading all raw spice simulation
+     * related documents. This is the only class that knows about raw spice
+     * simulation document formats, and has the access functions to return a
+     * SimulationDocument, with all of its components.
+     *
+     * This class does not handle document saving, as waveform data saving will
+     * not be supported at the moment (raw waveform data is only generated and
+     * saved by the simulator).
+     *
+     * \sa \ref DocumentFormats
+     */
+    class FormatRawSimulation
+    {
+    public:
+        FormatRawSimulation(SimulationDocument *doc = 0);
+
+        bool load();
+
+    private:
+        void parseFile(QTextStream *file);
+        void parseAsciiData(QTextStream *file, const int nvars, const int npoints, const bool real);
+        void parseBinaryData(QTextStream *file, const int nvars, const int npoints, const bool real);
+
+        CSimulationScene* cSimulationScene() const;
+
+        SimulationDocument *m_simulationDocument;
+
+        QList<CSimulationPlotCurve*> plotCurves;       // List of magnitude curves.
+        QList<CSimulationPlotCurve*> plotCurvesPhase;  // List of phase curves.
     };
 
 } // namespace Caneda
