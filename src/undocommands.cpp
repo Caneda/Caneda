@@ -30,7 +30,17 @@ namespace Caneda
     /*************************************************************************
      *                                MoveCmd                                *
      *************************************************************************/
-    //! \brief Constructor.
+    /*!
+     * \brief Constructs a QUndoCommand object with parent parent.
+     *
+     * In the constructor of the QUndoCommand classes, the basic information
+     * necessary to perform the undo/redo actions must be stored. In particular
+     * that information is stored in private members and only available to this
+     * class. All undo/redo actions must be performed by calling the
+     * undo() or redo() methods.
+     *
+     * sa undo(), redo()
+     */
     MoveCmd::MoveCmd(GraphicsItem *item, const QPointF &init, const QPointF &end,
             QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -38,6 +48,18 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \brief Reverts a change to a document.
+     *
+     * After undo() is called, the state of the document should be the same as
+     * before redo() was called. This function must be implemented in each
+     * QUndoCommand derived class. Calling QUndoStack::undo() or
+     * QUndoStack::redo() from the QUndoStack in a scene will invoke the
+     * methods defined here which must define the sequence of steps to
+     * redo/undo the corresponding actions.
+     *
+     * \sa redo()
+     */
     void MoveCmd::undo()
     {
         if(m_item->parentItem()) {
@@ -50,6 +72,18 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief Applies a change to a document.
+     *
+     * After redo() is called, the state of the document should reflect the
+     * invoked action. This function must be implemented in each
+     * QUndoCommand derived class. Calling QUndoStack::undo() or
+     * QUndoStack::redo() from the QUndoStack in a scene will invoke the
+     * methods defined here which must define the sequence of steps to
+     * redo/undo the corresponding actions.
+     *
+     * \sa undo()
+     */
     void MoveCmd::redo()
     {
         if(m_item->parentItem()) {
@@ -62,30 +96,34 @@ namespace Caneda
         }
     }
 
+
     /*************************************************************************
      *                           DisconnectCmd                               *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     DisconnectCmd::DisconnectCmd(Port *p1, Port *p2, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_port1(p1), m_port2(p2)
     {
     }
 
+    //! \copydoc MoveCmd::undo()
     void DisconnectCmd::undo()
     {
         m_port1->connectTo(m_port2);
     }
 
+    //! \copydoc MoveCmd::redo()
     void DisconnectCmd::redo()
     {
         m_port1->disconnect();
     }
 
+
     /*************************************************************************
      *                                AddWireCmd                             *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     AddWireCmd::AddWireCmd(Wire *wire, GraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
         m_wire(wire),
@@ -93,20 +131,23 @@ namespace Caneda
     {
     }
 
+    //! \copydoc MoveCmd::undo()
     void AddWireCmd::undo()
     {
         m_scene->removeItem(m_wire);
     }
 
+    //! \copydoc MoveCmd::redo()
     void AddWireCmd::redo()
     {
         m_scene->addItem(m_wire);
     }
 
+
     /*************************************************************************
      *                           InsertItemCmd                               *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     InsertItemCmd::InsertItemCmd(GraphicsItem *const item, GraphicsScene *scene,
             QPointF pos, QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -116,12 +157,14 @@ namespace Caneda
     {
     }
 
+    //! \copydoc MoveCmd::undo()
     void InsertItemCmd::undo()
     {
         m_scene->disconnectItems(m_item);
         m_scene->removeItem(m_item);
     }
 
+    //! \copydoc MoveCmd::redo()
     void InsertItemCmd::redo()
     {
         m_scene->addItem(m_item);
@@ -130,10 +173,11 @@ namespace Caneda
         m_scene->splitAndCreateNodes(m_item);
     }
 
+
     /*************************************************************************
      *                           RemoveItemsCmd                              *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     RemoveItemsCmd::RemoveItemsCmd(const QList<GraphicsItem*> &items, GraphicsScene *scene,
             QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -144,6 +188,7 @@ namespace Caneda
         }
     }
 
+    //! \copydoc MoveCmd::undo()
     void RemoveItemsCmd::undo()
     {
         foreach(ItemPointPair p, m_itemPointPairs) {
@@ -153,6 +198,7 @@ namespace Caneda
         }
     }
 
+    //! \copydoc MoveCmd::redo()
     void RemoveItemsCmd::redo()
     {
         foreach(ItemPointPair p, m_itemPointPairs) {
@@ -165,7 +211,7 @@ namespace Caneda
     /*************************************************************************
      *                          RotateItemsCmd                               *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     RotateItemsCmd::RotateItemsCmd(const QList<GraphicsItem*> &items, const Caneda::AngleDirection dir,
                                    GraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -175,6 +221,7 @@ namespace Caneda
     {
     }
 
+    //! \copydoc MoveCmd::undo()
     void RotateItemsCmd::undo()
     {
         // Disconnect
@@ -191,6 +238,7 @@ namespace Caneda
         m_scene->connectItems(m_items);
     }
 
+    //! \copydoc MoveCmd::redo()
     void RotateItemsCmd::redo()
     {
         // Disconnect
@@ -207,10 +255,11 @@ namespace Caneda
         m_scene->connectItems(m_items);
     }
 
+
     /*************************************************************************
      *                          MirrorItemsCmd                               *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     MirrorItemsCmd::MirrorItemsCmd(QList<GraphicsItem*> items, const Qt::Axis axis,
                                    GraphicsScene *scene, QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -220,11 +269,13 @@ namespace Caneda
     {
     }
 
+    //! \copydoc MoveCmd::undo()
     void MirrorItemsCmd::undo()
     {
         redo();
     }
 
+    //! \copydoc MoveCmd::redo()
     void MirrorItemsCmd::redo()
     {
         // Disconnect item before mirroring
@@ -241,10 +292,11 @@ namespace Caneda
         m_scene->connectItems(m_items);
     }
 
+
     /*************************************************************************
      *                        PaintingRectChangeCmd                          *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     PaintingRectChangeCmd::PaintingRectChangeCmd(Painting *painting, QRectF oldRect,
             QRectF newRect,
             QUndoCommand *parent) :
@@ -255,20 +307,23 @@ namespace Caneda
     {
     }
 
+    //! \copydoc MoveCmd::undo()
     void PaintingRectChangeCmd::undo()
     {
         m_painting->setPaintingRect(m_oldRect);
     }
 
+    //! \copydoc MoveCmd::redo()
     void PaintingRectChangeCmd::redo()
     {
         m_painting->setPaintingRect(m_newRect);
     }
 
+
     /*************************************************************************
      *                       PaintingPropertyChangeCmd                       *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     PaintingPropertyChangeCmd::PaintingPropertyChangeCmd(Painting *painting, QString oldText,
             QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -279,20 +334,23 @@ namespace Caneda
         qDebug() << m_newPropertyText.toLatin1().constData();
     }
 
+    //! \copydoc MoveCmd::undo()
     void PaintingPropertyChangeCmd::undo()
     {
         m_painting->loadDataFromText(m_oldPropertyText);
     }
 
+    //! \copydoc MoveCmd::redo()
     void PaintingPropertyChangeCmd::redo()
     {
         m_painting->loadDataFromText(m_newPropertyText);
     }
 
+
     /*************************************************************************
      *                         GraphicTextChangeCmd                          *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     GraphicTextChangeCmd::GraphicTextChangeCmd(GraphicText *text, QString oldText,
             QString newText,
             QUndoCommand *parent) :
@@ -303,20 +361,23 @@ namespace Caneda
     {
     }
 
+    //! \copydoc MoveCmd::undo()
     void GraphicTextChangeCmd::undo()
     {
         m_graphicText->setRichText(m_oldText);
     }
 
+    //! \copydoc MoveCmd::redo()
     void GraphicTextChangeCmd::redo()
     {
         m_graphicText->setRichText(m_newText);
     }
 
+
     /*************************************************************************
      *                            PropertyMapCmd                             *
      *************************************************************************/
-    //! \brief Constructor.
+    //! \copydoc MoveCmd::MoveCmd()
     PropertyMapCmd::PropertyMapCmd(PropertyGroup *propGroup, const PropertyMap& old,
             const PropertyMap& newMap, QUndoCommand *parent) :
         QUndoCommand(parent),
@@ -326,11 +387,13 @@ namespace Caneda
     {
     }
 
+    //! \copydoc MoveCmd::undo()
     void PropertyMapCmd::undo()
     {
         m_propertyGroup->setPropertyMap(m_oldMap);
     }
 
+    //! \copydoc MoveCmd::redo()
     void PropertyMapCmd::redo()
     {
         m_propertyGroup->setPropertyMap(m_newMap);

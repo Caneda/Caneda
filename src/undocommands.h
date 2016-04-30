@@ -36,6 +36,41 @@ namespace Caneda
     class Port;
     class Wire;
 
+    /*!
+     * \brief Move command implementation of the QUndoCommand/QUndoStack
+     * pattern for Qt's Undo Framework.
+     *
+     * Caneda uses Qt's Undo Framework to implement undo/redo system. Qt's Undo
+     * Framework is an implementation of a Command pattern system, for
+     * implementing undo/redo functionality in applications.
+     *
+     * The Command pattern is based on the idea that all editing in an
+     * application is done by creating instances of command objects. Command
+     * objects apply changes to a document and are stored on a command stack.
+     * Furthermore, each command knows how to undo its changes to bring the
+     * document back to its previous state. As long as the application only
+     * uses command objects to change the state of the document, it is possible
+     * to undo a sequence of commands by traversing the stack downwards and
+     * calling undo on each command in turn. It is also possible to redo a
+     * sequence of commands by traversing the stack upwards and calling redo on
+     * each command.
+     *
+     * Caneda uses two clases from Qt's Undo Framework:
+     * \li QUndoCommand is the base class of all commands stored on an undo
+     * stack. It can apply (redo) or undo a single change in the document.
+     * \li QUndoStack is a list of QUndoCommand objects. It contains all the
+     * commands executed on the document and can roll the document's state
+     * backwards or forwards by undoing or redoing them. The undo stacks are
+     * usually stored in Caneda as a private member of the scene classes.
+     *
+     * While a QUndoStack maintains a stack of commands that have been applied
+     * to a document. A QUndoCommand represents a single editing action on a
+     * document; for example, inserting or deleting a component in a schematic.
+     * New commands are pushed on the stack using push(). Any QUndoCommand can
+     * apply a change to a document with the redo() method and undo the change
+     * with the undo() method. The implementations for these functions must be
+     * provided in each derived class.
+     */
     class MoveCmd : public QUndoCommand
     {
     public:
@@ -51,6 +86,12 @@ namespace Caneda
         QPointF m_finalPos;
     };
 
+    /*!
+     * \brief Disconnect command implementation of the QUndoCommand/QUndoStack
+     * pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class DisconnectCmd : public QUndoCommand
     {
     public:
@@ -64,6 +105,12 @@ namespace Caneda
         Port * const m_port2;
     };
 
+    /*!
+     * \brief Add wire command implementation of the QUndoCommand/QUndoStack
+     * pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class AddWireCmd : public QUndoCommand
     {
     public:
@@ -77,6 +124,12 @@ namespace Caneda
         GraphicsScene *m_scene;
     };
 
+    /*!
+     * \brief Insert item command implementation of the QUndoCommand/QUndoStack
+     * pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class InsertItemCmd : public QUndoCommand
     {
     public:
@@ -92,6 +145,12 @@ namespace Caneda
         QPointF m_pos;
     };
 
+    /*!
+     * \brief Remove items command implementation of the QUndoCommand/QUndoStack
+     * pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class RemoveItemsCmd : public QUndoCommand
     {
     public:
@@ -108,6 +167,12 @@ namespace Caneda
         GraphicsScene *const m_scene;
     };
 
+    /*!
+     * \brief Rotate command implementation of the QUndoCommand/QUndoStack
+     * pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class RotateItemsCmd : public QUndoCommand
     {
     public:
@@ -123,6 +188,12 @@ namespace Caneda
         GraphicsScene *const m_scene;
     };
 
+    /*!
+     * \brief Mirror command implementation of the QUndoCommand/QUndoStack
+     * pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class MirrorItemsCmd : public QUndoCommand
     {
     public:
@@ -138,6 +209,12 @@ namespace Caneda
         GraphicsScene *const m_scene;
     };
 
+    /*!
+     * \brief Change painting item geometry command implementation of the
+     * QUndoCommand/QUndoStack pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class PaintingRectChangeCmd : public QUndoCommand
     {
     public:
@@ -153,6 +230,12 @@ namespace Caneda
         QRectF m_newRect;
     };
 
+    /*!
+     * \brief Change painting item properties command implementation of the
+     * QUndoCommand/QUndoStack pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class PaintingPropertyChangeCmd : public QUndoCommand
     {
     public:
@@ -168,6 +251,12 @@ namespace Caneda
         QString m_newPropertyText;
     };
 
+    /*!
+     * \brief Change graphic text properties command implementation of the
+     * QUndoCommand/QUndoStack pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class GraphicTextChangeCmd : public QUndoCommand
     {
     public:
@@ -183,6 +272,12 @@ namespace Caneda
         QString m_newText;
     };
 
+    /*!
+     * \brief Change components' properties command implementation of the
+     * QUndoCommand/QUndoStack pattern for Qt's Undo Framework.
+     *
+     * \copydetails MoveCmd
+     */
     class PropertyMapCmd : public QUndoCommand
     {
     public:
