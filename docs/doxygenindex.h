@@ -49,7 +49,7 @@ namespace Caneda
  *
  * Caneda's main classes are MainWindow, which implements the window the user
  * interacts with, IContext, IDocument and IView which form part of Caneda's
- * Document-View framework and CGraphicsScene which provides a canvas for
+ * Document-View framework and GraphicsScene which provides a canvas for
  * managing graphics elements.
  *
  * \li <b>The MainWindow Class:</b> The MainWindow class is one of Caneda's
@@ -63,7 +63,7 @@ namespace Caneda
  * change the bulk of the existing code. The main classes in Caneda's
  * Document-View framework are IContext, IDocument and IView, which must be
  * inherited to create more specific uses for each file type.
- * \li <b>The CGraphicsScene Class:</b> This class provides a canvas for
+ * \li <b>The GraphicsScene Class:</b> This class provides a canvas for
  * managing graphics elements common to all Caneda's graphics scenes
  * (schematics, symbols, layouts, etc). This is one of Caneda's most important
  * classes, along with MainWindow class and \ref DocumentViewFramework.
@@ -90,6 +90,8 @@ namespace Caneda
  * Any feedback is also welcome, from bugs, artworks to UI changes
  * recommendations.
  *
+ * \li <b>Website:</b> http://caneda.org/
+ * \li <b>User documentation:</b> http://caneda.readthedocs.io/
  * \li <b>Maintainer:</b> Pablo Daniel Pareja Obregón <parejaobregon(at)gmail.com>
  * \li <b>Bug tracker:</b> https://github.com/Caneda/Caneda/issues
  *
@@ -99,7 +101,7 @@ namespace Caneda
  * with the sources.
  *
  * \sa MainWindow, IContext, IDocument, IView, DocumentViewManager, Tab, TabWidget,
- * CGraphicsScene
+ * GraphicsScene
  */
 
 } // namespace Caneda
