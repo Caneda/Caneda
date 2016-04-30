@@ -20,7 +20,7 @@ chartitem.cpp chartscene.cpp chartview.cpp component.cpp
 documentviewmanager.cpp fileformats.cpp folderbrowser.cpp global.cpp
 icontext.cpp idocument.cpp iview.cpp library.cpp main.cpp mainwindow.cpp
 messagewidget.cpp port.cpp portsymbol.cpp project.cpp property.cpp settings.cpp
-sidebarcomponentsbrowser.cpp sidebarsimulationbrowser.cpp sidebartextbrowser.cpp
+sidebarchartsbrowser.cpp sidebarcomponentsbrowser.cpp sidebartextbrowser.cpp
 statehandler.cpp syntaxhighlighters.cpp tabs.cpp textedit.cpp undocommands.cpp
 wire.cpp xmlutilities.cpp
 )

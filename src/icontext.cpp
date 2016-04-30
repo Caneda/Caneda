@@ -23,8 +23,8 @@
 #include "idocument.h"
 #include "library.h"
 #include "settings.h"
+#include "sidebarchartsbrowser.h"
 #include "sidebarcomponentsbrowser.h"
-#include "sidebarsimulationbrowser.h"
 #include "sidebartextbrowser.h"
 #include "statehandler.h"
 
@@ -377,7 +377,7 @@ namespace Caneda
     //! \brief Constructor.
     SimulationContext::SimulationContext(QObject *parent) : IContext(parent)
     {
-        m_sidebarBrowser = new SidebarSimulationBrowser();
+        m_sidebarBrowser = new SidebarChartsBrowser();
     }
 
     //! \copydoc MainWindow::instance()

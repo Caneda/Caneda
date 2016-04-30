@@ -33,7 +33,7 @@ namespace Caneda
     // Forward declarations.
     class IDocument;
     class SidebarComponentsBrowser;
-    class SidebarSimulationBrowser;
+    class SidebarChartsBrowser;
     class SidebarTextBrowser;
 
     /*************************************************************************
@@ -212,7 +212,7 @@ namespace Caneda
     private:
         SimulationContext(QObject *parent = 0);
 
-        SidebarSimulationBrowser *m_sidebarBrowser;
+        SidebarChartsBrowser *m_sidebarBrowser;
     };
 
     /*!

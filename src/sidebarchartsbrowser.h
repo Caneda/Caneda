@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIDEBAR_SIMULATION_BROWSER_H
-#define SIDEBAR_SIMULATION_BROWSER_H
+#ifndef SIDEBAR_CHARTS_BROWSER_H
+#define SIDEBAR_CHARTS_BROWSER_H
 
 #include <QAbstractTableModel>
 #include <QWidget>
@@ -43,7 +43,7 @@ namespace Caneda
      *
      * This class derives from QAbstractTableModel and provides the abstract
      * interface for waveform items in a table model class. While the
-     * SidebarSimulationBrowser class implements the user interface, this class
+     * SidebarChartsBrowser class implements the user interface, this class
      * interacts with the data itself.
      *
      * This class defines a standard interface that must used to be able to
@@ -58,14 +58,14 @@ namespace Caneda
      * setData(). Items can be queried with flags() (see Qt::ItemFlag) to see
      * if they can be selected, dragged, or manipulated in other ways.
      *
-     * \sa QAbstractTableModel, SidebarSimulationBrowser
+     * \sa QAbstractTableModel, SidebarChartsBrowser
      */
-    class SidebarSimulationModel : public QAbstractTableModel
+    class SidebarChartsModel : public QAbstractTableModel
     {
         Q_OBJECT
 
     public:
-        SidebarSimulationModel(WaveformsMap simulationList, QObject *parent = 0);
+        SidebarChartsModel(WaveformsMap simulationList, QObject *parent = 0);
 
         int rowCount(const QModelIndex& = QModelIndex() ) const { return m_simMap.size(); }
         int columnCount(const QModelIndex& = QModelIndex() ) const { return 2; }
@@ -77,7 +77,7 @@ namespace Caneda
         bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
     private:
-        friend class SidebarSimulationBrowser;
+        friend class SidebarChartsBrowser;
 
         WaveformsMap m_simMap;
         QList<QString> keys;
@@ -91,18 +91,18 @@ namespace Caneda
      * simulation plot (ChartView) and the visible waveforms.
      *
      * This class handles the user interface part of the dialog, and
-     * presentation part to the user, while SidebarSimulationModel class
+     * presentation part to the user, while SidebarChartsModel class
      * handles the data interaction itself.
      *
-     * \sa ChartView, WaveformsMap, SidebarSimulationModel,
+     * \sa ChartView, WaveformsMap, SidebarChartsModel,
      * QSortFilterProxyModel
      */
-    class SidebarSimulationBrowser : public QWidget
+    class SidebarChartsBrowser : public QWidget
     {
         Q_OBJECT
 
     public:
-        SidebarSimulationBrowser(ChartView *parent = 0);
+        SidebarChartsBrowser(ChartView *parent = 0);
 
         void updateWaveformsList();
 
@@ -116,7 +116,7 @@ namespace Caneda
         void updateSimulationView();
 
     private:
-        SidebarSimulationModel *m_model;
+        SidebarChartsModel *m_model;
         QSortFilterProxyModel *m_proxyModel;
         QTableView *m_tableView;
         WaveformsMap m_simulationList;
@@ -127,4 +127,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //SIDEBAR_SIMULATION_BROWSER_H
+#endif //SIDEBAR_CHARTS_BROWSER_H

@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "sidebarsimulationbrowser.h"
+#include "sidebarchartsbrowser.h"
 
 #include "chartview.h"
 #include "documentviewmanager.h"
@@ -38,7 +38,7 @@
 namespace Caneda
 {
     //*************************************************************
-    //**************** SidebarSimulationModel *********************
+    //******************* SidebarChartsModel **********************
     //*************************************************************
     /*!
      * \brief Constructor.
@@ -49,7 +49,7 @@ namespace Caneda
      *
      * \sa WaveformsMap
      */
-    SidebarSimulationModel::SidebarSimulationModel(WaveformsMap simulationList, QObject *parent) :
+    SidebarChartsModel::SidebarChartsModel(WaveformsMap simulationList, QObject *parent) :
         QAbstractTableModel(parent),
         m_simMap(simulationList),
         keys(simulationList.keys())
@@ -68,7 +68,7 @@ namespace Caneda
      * \param role Role of the item (editable, checkable, etc).
      * \return data stored for given item
      */
-    QVariant SidebarSimulationModel::data(const QModelIndex& index, int role) const
+    QVariant SidebarChartsModel::data(const QModelIndex& index, int role) const
     {
         if(!index.isValid() || index.row() >= m_simMap.size()) {
             return QVariant();
@@ -92,7 +92,7 @@ namespace Caneda
      * This method defines column header text to be displayed on the
      * associated table view.
      */
-    QVariant SidebarSimulationModel::headerData(int section, Qt::Orientation o, int role) const
+    QVariant SidebarChartsModel::headerData(int section, Qt::Orientation o, int role) const
     {
         if(role != Qt::DisplayRole) {
             return QVariant();
@@ -117,7 +117,7 @@ namespace Caneda
      * \param index Item for which its flags must be returned.
      * \return Qt::ItemFlags Item's flags.
      */
-    Qt::ItemFlags SidebarSimulationModel::flags(const QModelIndex& index) const
+    Qt::ItemFlags SidebarChartsModel::flags(const QModelIndex& index) const
     {
         if(!index.isValid()) {
             return Qt::ItemIsEnabled;
@@ -138,9 +138,9 @@ namespace Caneda
     }
 
     /*!
-     * \brief Sets data in a SidebarSimulationModel item.
+     * \brief Sets data in a SidebarChartsModel item.
      *
-     * Sets the data in a SidebarSimulationModel item, ie. modifies the user
+     * Sets the data in a SidebarChartsModel item, ie. modifies the user
      * edited data.
      *
      * \param index Item to be edited.
@@ -151,7 +151,7 @@ namespace Caneda
      *
      * \sa WaveformsMap
      */
-    bool SidebarSimulationModel::setData(const QModelIndex& index, const QVariant& value,
+    bool SidebarChartsModel::setData(const QModelIndex& index, const QVariant& value,
             int role)
     {
         if(index.isValid()){
@@ -168,7 +168,7 @@ namespace Caneda
     }
 
     //*************************************************************
-    //*************** SidebarSimulationBrowser ********************
+    //****************** SidebarChartsBrowser *********************
     //*************************************************************
     /*!
      * \brief Constructor.
@@ -176,7 +176,7 @@ namespace Caneda
      * \param parent Parent of this object, the simulation view
      * being modified by this dialog.
      */
-    SidebarSimulationBrowser::SidebarSimulationBrowser(ChartView *parent) :
+    SidebarChartsBrowser::SidebarChartsBrowser(ChartView *parent) :
         QWidget(parent)
     {
         QVBoxLayout *layoutTop = new QVBoxLayout(this);
@@ -241,7 +241,7 @@ namespace Caneda
     }
 
     //! \brief Filters properties according to user input on a QLineEdit.
-    void SidebarSimulationBrowser::filterTextChanged()
+    void SidebarChartsBrowser::filterTextChanged()
     {
         QString text = m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
@@ -249,7 +249,7 @@ namespace Caneda
     }
 
     //! \brief Select all available waveforms
-    void SidebarSimulationBrowser::selectAll()
+    void SidebarChartsBrowser::selectAll()
     {
         m_model->beginResetModel();
 
@@ -267,7 +267,7 @@ namespace Caneda
     }
 
     //! \brief Deselect all waveforms
-    void SidebarSimulationBrowser::selectNone()
+    void SidebarChartsBrowser::selectNone()
     {
         m_model->beginResetModel();
 
@@ -285,7 +285,7 @@ namespace Caneda
     }
 
     //! \brief Select all available voltage waveforms
-    void SidebarSimulationBrowser::selectVoltages()
+    void SidebarChartsBrowser::selectVoltages()
     {
         m_model->beginResetModel();
 
@@ -309,7 +309,7 @@ namespace Caneda
     }
 
     //! \brief Select all available current waveforms
-    void SidebarSimulationBrowser::selectCurrents()
+    void SidebarChartsBrowser::selectCurrents()
     {
         m_model->beginResetModel();
 
@@ -339,7 +339,7 @@ namespace Caneda
      * usually used when changing between views to keep the list of available
      * waveforms synchronized with the currently selected simulation.
      */
-    void SidebarSimulationBrowser::updateWaveformsList()
+    void SidebarChartsBrowser::updateWaveformsList()
     {
         // Get the current view
         DocumentViewManager *manager = DocumentViewManager::instance();
@@ -354,7 +354,7 @@ namespace Caneda
         }
 
         // Create a new table model
-        m_model = new SidebarSimulationModel(m_simulationList, this);  //! \todo What happens with the old pointer??? Should we destroy it first?
+        m_model = new SidebarChartsModel(m_simulationList, this);  //! \todo What happens with the old pointer??? Should we destroy it first?
         m_proxyModel->setSourceModel(m_model);
 
         // Resize the table columns to fit the contents. This must be done
@@ -370,7 +370,7 @@ namespace Caneda
      * This method updates the simulation waveforms visibility according to the
      * user input.
      */
-    void SidebarSimulationBrowser::updateSimulationView()
+    void SidebarChartsBrowser::updateSimulationView()
     {
         // Get the current view
         DocumentViewManager *manager = DocumentViewManager::instance();
