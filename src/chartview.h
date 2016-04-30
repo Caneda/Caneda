@@ -57,7 +57,7 @@ namespace Caneda
     };
 
     /*!
-     * \brief This class provides a view for displaying simulations scenes
+     * \brief This class provides a view for displaying ChartScenes
      * (several grouped simulation waveforms).
      *
      * This class implements the view class of Qt's Graphics View Architecture.

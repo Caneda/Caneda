@@ -64,9 +64,9 @@ namespace Caneda
      *                              ChartView                                *
      *************************************************************************/
     /*!
-     * \brief Constructs a new simulation view.
+     * \brief Constructs a new ChartView.
      *
-     * \param sv Simulation scene to point this view to.
+     * \param scene ChartScene to point this view to.
      * \param parent Parent of this object.
      */
     ChartView::ChartView(ChartScene *scene, QWidget *parent) :

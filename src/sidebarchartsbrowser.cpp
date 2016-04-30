@@ -337,7 +337,7 @@ namespace Caneda
      *
      * This method updates the waveforms list given a ChartView. This is
      * usually used when changing between views to keep the list of available
-     * waveforms synchronized with the currently selected simulation.
+     * waveforms synchronized with the currently selected chart.
      */
     void SidebarChartsBrowser::updateChartSeriesMap()
     {
@@ -365,9 +365,9 @@ namespace Caneda
     }
 
     /*!
-     * \brief Update simulation waveforms visibility (ChartView)
+     * \brief Update chart waveforms visibility (ChartView)
      *
-     * This method updates the simulation waveforms visibility according to the
+     * This method updates the chart waveforms visibility according to the
      * user input.
      */
     void SidebarChartsBrowser::updateChartView()

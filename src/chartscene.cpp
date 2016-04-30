@@ -22,7 +22,7 @@
 namespace Caneda
 {
     /*!
-     * \brief Constructs a new simulation scene.
+     * \brief Constructs a new ChartScene.
      *
      * \param parent Parent of the scene.
      */

@@ -28,7 +28,7 @@ namespace Caneda
     /*!
      * \brief Constructor.
      *
-     * \param parent Parent of this object, the simulation view
+     * \param parent Parent of this object, the ChartView
      * being modified by this dialog.
      */
     ChartsDialog::ChartsDialog(ChartView *parent) :
