@@ -20,9 +20,9 @@
 #include "chartview.h"
 
 #include "actionmanager.h"
+#include "chartsdialog.h"
 #include "chartscene.h"
 #include "settings.h"
-#include "simulationdialog.h"
 
 #include <QMenu>
 #include <QMouseEvent>
@@ -312,7 +312,7 @@ namespace Caneda
     //! \copydoc CGraphicsItem::launchPropertiesDialog()
     int ChartView::launchPropertiesDialog()
     {
-        SimulationDialog *dia = new SimulationDialog(this);
+        ChartsDialog *dia = new ChartsDialog(this);
         int status = dia->exec();
         delete dia;
 

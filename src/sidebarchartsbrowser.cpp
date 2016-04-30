@@ -43,16 +43,16 @@ namespace Caneda
     /*!
      * \brief Constructor.
      *
-     * \param simulationList WaveformsMap wich contains waveforms to be set
+     * \param chartSeriesMap ChartSeriesMap wich contains waveforms to be set
      * visible/not-visible.
      * \param parent Parent of this object.
      *
-     * \sa WaveformsMap
+     * \sa ChartSeriesMap
      */
-    SidebarChartsModel::SidebarChartsModel(WaveformsMap simulationList, QObject *parent) :
+    SidebarChartsModel::SidebarChartsModel(ChartSeriesMap chartSeriesMap, QObject *parent) :
         QAbstractTableModel(parent),
-        m_simMap(simulationList),
-        keys(simulationList.keys())
+        m_chartSeriesMap(chartSeriesMap),
+        keys(chartSeriesMap.keys())
     {
     }
 
@@ -70,7 +70,7 @@ namespace Caneda
      */
     QVariant SidebarChartsModel::data(const QModelIndex& index, int role) const
     {
-        if(!index.isValid() || index.row() >= m_simMap.size()) {
+        if(!index.isValid() || index.row() >= m_chartSeriesMap.size()) {
             return QVariant();
         }
 
@@ -80,7 +80,7 @@ namespace Caneda
             return key;
         }
         else if(role == Qt::CheckStateRole && index.column() == 1) {
-            return m_simMap[key] ? Qt::Checked : Qt::Unchecked;
+            return m_chartSeriesMap[key] ? Qt::Checked : Qt::Unchecked;
         }
 
         return QVariant();
@@ -149,7 +149,7 @@ namespace Caneda
      * item, checkable item, etc).
      * \return True on success, false otherwise.
      *
-     * \sa WaveformsMap
+     * \sa ChartSeriesMap
      */
     bool SidebarChartsModel::setData(const QModelIndex& index, const QVariant& value,
             int role)
@@ -157,7 +157,7 @@ namespace Caneda
         if(index.isValid()){
             // If editing the property visibility, set new visibility
             if(role == Qt::CheckStateRole && index.column() == 1) {
-                m_simMap[keys[index.row()]] = value.toBool();
+                m_chartSeriesMap[keys[index.row()]] = value.toBool();
             }
 
             emit dataChanged(index, index);
@@ -173,7 +173,7 @@ namespace Caneda
     /*!
      * \brief Constructor.
      *
-     * \param parent Parent of this object, the simulation view
+     * \param parent Parent of this object, the ChartView
      * being modified by this dialog.
      */
     SidebarChartsBrowser::SidebarChartsBrowser(ChartView *parent) :
@@ -237,7 +237,7 @@ namespace Caneda
         connect(buttonVoltages, SIGNAL(clicked()), this, SLOT(selectVoltages()));
         connect(buttonCurrents, SIGNAL(clicked()), this, SLOT(selectCurrents()));
 
-        connect(m_tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(updateSimulationView()));
+        connect(m_tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(updateChartView()));
     }
 
     //! \brief Filters properties according to user input on a QLineEdit.
@@ -253,17 +253,17 @@ namespace Caneda
     {
         m_model->beginResetModel();
 
-        WaveformsMap::const_iterator it = m_model->m_simMap.begin(),
-            end = m_model->m_simMap.end();
+        ChartSeriesMap::const_iterator it = m_model->m_chartSeriesMap.begin(),
+            end = m_model->m_chartSeriesMap.end();
 
         while(it != end) {
-            m_model->m_simMap[it.key()] = true;
+            m_model->m_chartSeriesMap[it.key()] = true;
             ++it;
         }
 
         m_model->endResetModel();
 
-        updateSimulationView();
+        updateChartView();
     }
 
     //! \brief Deselect all waveforms
@@ -271,17 +271,17 @@ namespace Caneda
     {
         m_model->beginResetModel();
 
-        WaveformsMap::const_iterator it = m_model->m_simMap.begin(),
-            end = m_model->m_simMap.end();
+        ChartSeriesMap::const_iterator it = m_model->m_chartSeriesMap.begin(),
+            end = m_model->m_chartSeriesMap.end();
 
         while(it != end) {
-            m_model->m_simMap[it.key()] = false;
+            m_model->m_chartSeriesMap[it.key()] = false;
             ++it;
         }
 
         m_model->endResetModel();
 
-        updateSimulationView();
+        updateChartView();
     }
 
     //! \brief Select all available voltage waveforms
@@ -289,15 +289,15 @@ namespace Caneda
     {
         m_model->beginResetModel();
 
-        WaveformsMap::const_iterator it = m_model->m_simMap.begin(),
-            end = m_model->m_simMap.end();
+        ChartSeriesMap::const_iterator it = m_model->m_chartSeriesMap.begin(),
+            end = m_model->m_chartSeriesMap.end();
 
         while(it != end) {
             if(it.key().startsWith("v")) {
-                m_model->m_simMap[it.key()] = true;
+                m_model->m_chartSeriesMap[it.key()] = true;
             }
             else {
-                m_model->m_simMap[it.key()] = false;
+                m_model->m_chartSeriesMap[it.key()] = false;
             }
 
             ++it;
@@ -305,7 +305,7 @@ namespace Caneda
 
         m_model->endResetModel();
 
-        updateSimulationView();
+        updateChartView();
     }
 
     //! \brief Select all available current waveforms
@@ -313,15 +313,15 @@ namespace Caneda
     {
         m_model->beginResetModel();
 
-        WaveformsMap::const_iterator it = m_model->m_simMap.begin(),
-            end = m_model->m_simMap.end();
+        ChartSeriesMap::const_iterator it = m_model->m_chartSeriesMap.begin(),
+            end = m_model->m_chartSeriesMap.end();
 
         while(it != end) {
             if(it.key().startsWith("i")) {
-                m_model->m_simMap[it.key()] = true;
+                m_model->m_chartSeriesMap[it.key()] = true;
             }
             else {
-                m_model->m_simMap[it.key()] = false;
+                m_model->m_chartSeriesMap[it.key()] = false;
             }
 
             ++it;
@@ -329,17 +329,17 @@ namespace Caneda
 
         m_model->endResetModel();
 
-        updateSimulationView();
+        updateChartView();
     }
 
     /*!
-     * \brief Update waveforms list
+     * \brief Update ChartSeries map
      *
      * This method updates the waveforms list given a ChartView. This is
      * usually used when changing between views to keep the list of available
      * waveforms synchronized with the currently selected simulation.
      */
-    void SidebarChartsBrowser::updateWaveformsList()
+    void SidebarChartsBrowser::updateChartSeriesMap()
     {
         // Get the current view
         DocumentViewManager *manager = DocumentViewManager::instance();
@@ -347,14 +347,14 @@ namespace Caneda
 
         // Populate the waveforms list
         QwtPlotItemList list = view->itemList(QwtPlotItem::Rtti_PlotCurve);
-        m_simulationList.clear();
+        m_chartSeriesMap.clear();
         for(int i=0; i<list.size(); ++i) {
-            m_simulationList.insert(list.at(i)->title().text(),
+            m_chartSeriesMap.insert(list.at(i)->title().text(),
                                     list.at(i)->isVisible());
         }
 
         // Create a new table model
-        m_model = new SidebarChartsModel(m_simulationList, this);  //! \todo What happens with the old pointer??? Should we destroy it first?
+        m_model = new SidebarChartsModel(m_chartSeriesMap, this);  //! \todo What happens with the old pointer??? Should we destroy it first?
         m_proxyModel->setSourceModel(m_model);
 
         // Resize the table columns to fit the contents. This must be done
@@ -365,12 +365,12 @@ namespace Caneda
     }
 
     /*!
-     * \brief Update simulation waveforms visibility
+     * \brief Update simulation waveforms visibility (ChartView)
      *
      * This method updates the simulation waveforms visibility according to the
      * user input.
      */
-    void SidebarChartsBrowser::updateSimulationView()
+    void SidebarChartsBrowser::updateChartView()
     {
         // Get the current view
         DocumentViewManager *manager = DocumentViewManager::instance();
@@ -379,7 +379,7 @@ namespace Caneda
         // Set waveforms visibility
         QwtPlotItemList list = view->itemList(QwtPlotItem::Rtti_PlotCurve);
         for(int i=0; i<list.size(); ++i) {
-            list.at(i)->setVisible(m_model->m_simMap[list.at(i)->title().text()]);
+            list.at(i)->setVisible(m_model->m_chartSeriesMap[list.at(i)->title().text()]);
         }
 
         view->replot();

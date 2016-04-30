@@ -398,7 +398,7 @@ namespace Caneda
     void SimulationContext::updateSideBar()
     {
         if(m_sidebarBrowser) {
-            m_sidebarBrowser->updateWaveformsList();
+            m_sidebarBrowser->updateChartSeriesMap();
         }
     }
 

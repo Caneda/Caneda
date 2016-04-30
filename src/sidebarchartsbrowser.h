@@ -34,8 +34,8 @@ namespace Caneda
     // Forward declations
     class ChartView;
 
-    //! \def WaveformsMap This is a typedef to map waveforms with selected status.
-    typedef QMap<QString, bool> WaveformsMap;
+    //! \def ChartSeriesMap This is a typedef to map waveforms with selected status.
+    typedef QMap<QString, bool> ChartSeriesMap;
 
     /*!
      * \brief Model to provide the abstract interface for waveform items
@@ -65,9 +65,9 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SidebarChartsModel(WaveformsMap simulationList, QObject *parent = 0);
+        SidebarChartsModel(ChartSeriesMap chartSeriesMap, QObject *parent = 0);
 
-        int rowCount(const QModelIndex& = QModelIndex() ) const { return m_simMap.size(); }
+        int rowCount(const QModelIndex& = QModelIndex() ) const { return m_chartSeriesMap.size(); }
         int columnCount(const QModelIndex& = QModelIndex() ) const { return 2; }
 
         QVariant data(const QModelIndex&, int role) const;
@@ -79,7 +79,7 @@ namespace Caneda
     private:
         friend class SidebarChartsBrowser;
 
-        WaveformsMap m_simMap;
+        ChartSeriesMap m_chartSeriesMap;
         QList<QString> keys;
     };
 
@@ -94,7 +94,7 @@ namespace Caneda
      * presentation part to the user, while SidebarChartsModel class
      * handles the data interaction itself.
      *
-     * \sa ChartView, WaveformsMap, SidebarChartsModel,
+     * \sa ChartView, ChartSeriesMap, SidebarChartsModel,
      * QSortFilterProxyModel
      */
     class SidebarChartsBrowser : public QWidget
@@ -104,7 +104,7 @@ namespace Caneda
     public:
         SidebarChartsBrowser(ChartView *parent = 0);
 
-        void updateWaveformsList();
+        void updateChartSeriesMap();
 
     private Q_SLOTS:
         void filterTextChanged();
@@ -113,13 +113,14 @@ namespace Caneda
         void selectVoltages();
         void selectCurrents();
 
-        void updateSimulationView();
+        void updateChartView();
 
     private:
         SidebarChartsModel *m_model;
         QSortFilterProxyModel *m_proxyModel;
         QTableView *m_tableView;
-        WaveformsMap m_simulationList;
+
+        ChartSeriesMap m_chartSeriesMap;
 
         QLineEdit *m_filterEdit;
         QPushButton *buttonAll, *buttonNone, *buttonVoltages, *buttonCurrents;
