@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef SIDEBAR_BROWSER_H
-#define SIDEBAR_BROWSER_H
+#ifndef SIDEBAR_COMPONENTS_BROWSER_H
+#define SIDEBAR_COMPONENTS_BROWSER_H
 
 #include <QAbstractItemModel>
 #include <QPair>
@@ -31,15 +31,15 @@ namespace Caneda
 {
     /*!
      * \brief The CategoryItem class implements the items to be used by the
-     * SidebarModel class.
+     * SidebarComponentsModel class.
      *
      * This class implements a custom type of items to be inserted in a
-     * QAbstractItemModel. It is used in Caneda by the SidebarModel class,
-     * to insert items and have the ability to use QPixmaps associated with
-     * each item inserted. Items can also correspond to categories
-     * (or libraries), in which case the QPixmap is not necessary.
+     * QAbstractItemModel. It is used in Caneda by the SidebarComponentsModel
+     * class, to insert items and have the ability to use QPixmaps associated
+     * with each item inserted. Items can also correspond to categories (or
+     * libraries), in which case the QPixmap is not necessary.
      *
-     * \sa SidebarModel
+     * \sa SidebarComponentsModel
      */
     class CategoryItem
     {
@@ -76,17 +76,18 @@ namespace Caneda
 
 
     /*!
-     * \brief The SidebarModel class implements a custom QAbstractItemModel,
-     * and provides the actual interface for item model classes.
+     * \brief The SidebarComponentsModel class implements a custom
+     * QAbstractItemModel, and provides the actual interface for item model
+     * classes.
      *
      * The QAbstractItemModel class defines the standard interface that item
      * models must use to be able to interoperate with other components in the
      * model/view architecture. It is not supposed to be instantiated directly,
-     * and must be subclassed to create new models. The SidebarModel class is
-     * the subclass implemented by Caneda.
+     * and must be subclassed to create new models. The SidebarComponentsModel
+     * class is the subclass implemented by Caneda.
      *
-     * The SidebarModel class is one of the Model/View Classes and implements
-     * the model part of Qt's model/view framework.
+     * The SidebarComponentsModel class is one of the Model/View Classes and
+     * implements the model part of Qt's model/view framework.
      *
      * The underlying data model is exposed to views and delegates as a
      * hierarchy of tables. Each item has a unique index specified by a
@@ -99,7 +100,7 @@ namespace Caneda
      *
      * \sa TreeView, CategoryItem
      */
-    class SidebarModel : public QAbstractItemModel
+    class SidebarComponentsModel : public QAbstractItemModel
     {
         Q_OBJECT
 
@@ -108,7 +109,7 @@ namespace Caneda
             DragPixmapRole = Qt::UserRole + 1
         };
 
-        SidebarModel(QObject *parent=0);
+        SidebarComponentsModel(QObject *parent=0);
 
         int columnCount(const QModelIndex & parent = QModelIndex()) const {
             Q_UNUSED(parent);
@@ -171,7 +172,7 @@ namespace Caneda
      * The model/view architecture ensures that the contents of the tree view
      * are updated as the model changes.
      *
-     *  \sa SidebarModel
+     *  \sa SidebarComponentsModel
      */
     class TreeView : public QTreeView
     {
@@ -206,15 +207,15 @@ namespace Caneda
      * the currently opened document upon user double click.
      *
      * \sa LayoutContext, SchematicContext, SymbolContext, SidebarTextBrowser
-     * \sa TreeView, SidebarModel
+     * \sa TreeView, SidebarComponentsModel
      */
-    class SidebarBrowser : public QWidget
+    class SidebarComponentsBrowser : public QWidget
     {
         Q_OBJECT
 
     public:
-        SidebarBrowser(QWidget *parent = 0);
-        ~SidebarBrowser();
+        SidebarComponentsBrowser(QWidget *parent = 0);
+        ~SidebarComponentsBrowser();
 
         void plugLibrary(QString libraryName, QString category);
         void unPlugLibrary(QString libraryName, QString category);
@@ -233,7 +234,7 @@ namespace Caneda
         void slotOnClicked(const QModelIndex& index);
 
     private:
-        SidebarModel *m_model;
+        SidebarComponentsModel *m_model;
         FilterProxyModel *m_proxyModel;
         TreeView *m_treeView;
 
@@ -244,4 +245,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //SIDEBAR_BROWSER_H
+#endif //SIDEBAR_COMPONENTS_BROWSER_H

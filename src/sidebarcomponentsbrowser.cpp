@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "sidebarbrowser.h"
+#include "sidebarcomponentsbrowser.h"
 
 #include "component.h"
 #include "global.h"
@@ -91,10 +91,10 @@ namespace Caneda
 
 
     /*************************************************************************
-     *                             SidebarModel                              *
+     *                       SidebarComponentsModel                          *
      *************************************************************************/
     //! \brief Constructor.
-    SidebarModel::SidebarModel(QObject *parent) : QAbstractItemModel(parent)
+    SidebarComponentsModel::SidebarComponentsModel(QObject *parent) : QAbstractItemModel(parent)
     {
         rootItem = new CategoryItem("Root", "");
     }
@@ -105,7 +105,7 @@ namespace Caneda
      * \param libraryName Library name
      * \param category Category to place the library
      */
-    void SidebarModel::plugLibrary(const QString& libraryName, const QString& category)
+    void SidebarComponentsModel::plugLibrary(const QString& libraryName, const QString& category)
     {
         LibraryManager *manager = LibraryManager::instance();
         const Library *libItem = manager->library(libraryName);
@@ -147,7 +147,7 @@ namespace Caneda
      * \param libraryName Library name
      * \param category Category of the library to be removed
      */
-    void SidebarModel::unPlugLibrary(const QString& libraryName, const QString& category)
+    void SidebarComponentsModel::unPlugLibrary(const QString& libraryName, const QString& category)
     {
         const Library *libItem = LibraryManager::instance()->library(libraryName);
         if(!libItem) {
@@ -186,7 +186,7 @@ namespace Caneda
      * \param libraryName library to look for
      * \param category library's category
      */
-    int SidebarModel::libraryRow(const QString &libraryName, const QString &category)
+    int SidebarComponentsModel::libraryRow(const QString &libraryName, const QString &category)
     {
         if(category == "root") {
             for(int i = 0; i < rootItem->childCount(); i++) {
@@ -210,7 +210,7 @@ namespace Caneda
         return -1;
     }
 
-    void SidebarModel::plugItem(QString itemName, const QPixmap& itemPixmap, QString category)
+    void SidebarComponentsModel::plugItem(QString itemName, const QPixmap& itemPixmap, QString category)
     {
         CategoryItem *catItem = 0;
 
@@ -237,7 +237,7 @@ namespace Caneda
         }
     }
 
-    void SidebarModel::plugItems(const QList<QPair<QString, QPixmap> > &items,
+    void SidebarComponentsModel::plugItems(const QList<QPair<QString, QPixmap> > &items,
             QString category)
     {
         CategoryItem *catItem = 0;
@@ -265,7 +265,7 @@ namespace Caneda
         endResetModel();
     }
 
-    QModelIndex SidebarModel::index(int row, int column, const QModelIndex & parent) const
+    QModelIndex SidebarComponentsModel::index(int row, int column, const QModelIndex & parent) const
     {
         if(column != 0) {
             return QModelIndex();
@@ -276,7 +276,7 @@ namespace Caneda
         return childItem ? createIndex(row, 0, childItem) : QModelIndex();
     }
 
-    int SidebarModel::rowCount(const QModelIndex & parent) const
+    int SidebarComponentsModel::rowCount(const QModelIndex & parent) const
     {
         CategoryItem *parentItem;
         parentItem = !parent.isValid() ? rootItem :
@@ -284,7 +284,7 @@ namespace Caneda
         return parentItem->childCount();
     }
 
-    QModelIndex SidebarModel::parent(const QModelIndex & index) const
+    QModelIndex SidebarComponentsModel::parent(const QModelIndex & index) const
     {
         if(!index.isValid()) {
             return QModelIndex();
@@ -300,7 +300,7 @@ namespace Caneda
         return createIndex(parentItem->row(), 0, parentItem);
     }
 
-    QVariant SidebarModel::data(const QModelIndex & index, int role) const
+    QVariant SidebarComponentsModel::data(const QModelIndex & index, int role) const
     {
         if(!index.isValid()) {
             return QVariant();
@@ -328,19 +328,19 @@ namespace Caneda
         return QVariant();
     }
 
-    bool SidebarModel::isLeaf(const QModelIndex& index) const
+    bool SidebarComponentsModel::isLeaf(const QModelIndex& index) const
     {
         return (index.isValid() &&
                 static_cast<CategoryItem*>(index.internalPointer())->isLeaf());
     }
 
-    bool SidebarModel::isLibrary(const QModelIndex& index) const
+    bool SidebarComponentsModel::isLibrary(const QModelIndex& index) const
     {
         return (index.isValid() &&
                 static_cast<CategoryItem*>(index.internalPointer())->isLibrary());
     }
 
-    Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const
+    Qt::ItemFlags SidebarComponentsModel::flags(const QModelIndex& index) const
     {
         Qt::ItemFlags flag = Qt::ItemIsEnabled;
         if(isLeaf(index) && !isLibrary(index)) {
@@ -350,12 +350,12 @@ namespace Caneda
         return flag;
     }
 
-    QStringList SidebarModel::mimeTypes() const
+    QStringList SidebarComponentsModel::mimeTypes() const
     {
         return QStringList() << "application/caneda.sidebarItem";
     }
 
-    QMimeData* SidebarModel::mimeData(const QModelIndexList &indexes) const
+    QMimeData* SidebarComponentsModel::mimeData(const QModelIndexList &indexes) const
     {
         QMimeData *mimeData = new QMimeData();
         QByteArray encodedData;
@@ -432,10 +432,10 @@ namespace Caneda
     }
 
     /*************************************************************************
-     *                            SidebarBrowser                             *
+     *                     SidebarComponentsBrowser                          *
      *************************************************************************/
     //! \brief Constructor.
-    SidebarBrowser::SidebarBrowser(QWidget *parent) : QWidget(parent)
+    SidebarComponentsBrowser::SidebarComponentsBrowser(QWidget *parent) : QWidget(parent)
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -447,7 +447,7 @@ namespace Caneda
         m_treeView = new TreeView();
         layout->addWidget(m_treeView);
 
-        m_model = new SidebarModel(this);
+        m_model = new SidebarComponentsModel(this);
         m_proxyModel = new FilterProxyModel(this);
         m_proxyModel->setDynamicSortFilter(true);
         m_proxyModel->setSourceModel(m_model);
@@ -475,39 +475,39 @@ namespace Caneda
     }
 
     //! \brief Destructor.
-    SidebarBrowser::~SidebarBrowser()
+    SidebarComponentsBrowser::~SidebarComponentsBrowser()
     {
         m_treeView->setModel(0);
     }
 
-    void SidebarBrowser::plugLibrary(QString libraryName, QString category)
+    void SidebarComponentsBrowser::plugLibrary(QString libraryName, QString category)
     {
         m_model->plugLibrary(libraryName, category);
     }
 
-    void SidebarBrowser::unPlugLibrary(QString libraryName, QString category)
+    void SidebarComponentsBrowser::unPlugLibrary(QString libraryName, QString category)
     {
         m_model->unPlugLibrary(libraryName, category);
     }
 
-    void SidebarBrowser::plugItem(QString itemName, const QPixmap& itemPixmap,
+    void SidebarComponentsBrowser::plugItem(QString itemName, const QPixmap& itemPixmap,
             QString category)
     {
         m_model->plugItem(itemName, itemPixmap, category);
     }
 
-    void SidebarBrowser::plugItems(const QList<QPair<QString, QPixmap> > &items,
+    void SidebarComponentsBrowser::plugItems(const QList<QPair<QString, QPixmap> > &items,
             QString category)
     {
         m_model->plugItems(items, category);
     }
 
-    QString SidebarBrowser::currentComponent()
+    QString SidebarComponentsBrowser::currentComponent()
     {
         return m_currentComponent;
     }
 
-    void SidebarBrowser::filterTextChanged()
+    void SidebarComponentsBrowser::filterTextChanged()
     {
         QString text = m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
@@ -515,7 +515,7 @@ namespace Caneda
         m_treeView->expandAll();
     }
 
-    void SidebarBrowser::slotOnClicked(const QModelIndex& index)
+    void SidebarComponentsBrowser::slotOnClicked(const QModelIndex& index)
     {
         if(index.isValid()) {
             QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);

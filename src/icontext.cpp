@@ -23,7 +23,7 @@
 #include "idocument.h"
 #include "library.h"
 #include "settings.h"
-#include "sidebarbrowser.h"
+#include "sidebarcomponentsbrowser.h"
 #include "sidebarsimulationbrowser.h"
 #include "sidebartextbrowser.h"
 #include "statehandler.h"
@@ -155,7 +155,7 @@ namespace Caneda
     {
         // We create the sidebar corresponding to this context
         StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarBrowser();
+        m_sidebarBrowser = new SidebarComponentsBrowser();
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -262,7 +262,7 @@ namespace Caneda
     SchematicContext::SchematicContext(QObject *parent) : IContext(parent)
     {
         StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarBrowser();
+        m_sidebarBrowser = new SidebarComponentsBrowser();
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -450,7 +450,7 @@ namespace Caneda
     SymbolContext::SymbolContext(QObject *parent) : IContext(parent)
     {
         StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarBrowser();
+        m_sidebarBrowser = new SidebarComponentsBrowser();
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 

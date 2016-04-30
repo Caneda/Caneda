@@ -15,7 +15,7 @@ ADD_SUBDIRECTORY( dialogs )
 ADD_SUBDIRECTORY( paintings )
 
 SET( CANEDA_SRCS
-  wire.cpp sidebarbrowser.cpp sidebartextbrowser.cpp
+  wire.cpp sidebarcomponentsbrowser.cpp sidebartextbrowser.cpp
   cgraphicsitem.cpp cgraphicsscene.cpp
   global.cpp main.cpp mainwindow.cpp library.cpp
   cgraphicsview.cpp  undocommands.cpp component.cpp
