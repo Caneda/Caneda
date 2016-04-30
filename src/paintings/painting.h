@@ -93,8 +93,6 @@ namespace Caneda
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-        void setResizeHandles(Caneda::ResizeHandles handles);
-
         //! \copydoc GraphicsItem::copy()
         virtual Painting* copy(GraphicsScene *scene = 0) const = 0;
         virtual void copyDataTo(Painting *painting) const;
@@ -102,20 +100,19 @@ namespace Caneda
         static Painting* fromName(const QString& name);
         static Painting* loadPainting(Caneda::XmlReader *reader, GraphicsScene *scene = 0);
 
-        QRectF storedPaintingRect() const { return m_store; }
-        void storePaintingRect() { m_store = paintingRect(); }
-
         //! \copydoc GraphicsItem::launchPropertiesDialog()
         virtual int launchPropertiesDialog() = 0;
 
     protected:
         /*!
-         * Subclasses should reimplement to do calculations this is notified
-         * usually in call \a setPaintingRect.
+         * \brief Subclasses should reimplement to do calculations this is
+         * notified usually in call \a setPaintingRect.
          */
         virtual void geometryChange() {}
 
         void adjustGeometry();
+
+        void setResizeHandles(Caneda::ResizeHandles handles);
 
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -131,6 +128,11 @@ namespace Caneda
         Caneda::ResizeHandle handleHitTest(const QPointF& point, Caneda::ResizeHandles handles,
                                            const QRectF& rect);
 
+        //! \brief Returns the previously stored geometry required for undo/redo.
+        QRectF storedPaintingRect() const { return m_store; }
+        //! \brief Stores the item's geometry required for undo/redo
+        void storePaintingRect() { m_store = m_paintingRect; }
+
         /*!
          * \brief Represents the rectangle containing the painting item.
          *
@@ -141,8 +143,10 @@ namespace Caneda
         QRectF m_paintingRect;
         QPen m_pen;
         QBrush m_brush;
+
         Caneda::ResizeHandles m_resizeHandles;
         Caneda::ResizeHandle m_activeHandle;
+
         QRectF m_store;
     };
 
