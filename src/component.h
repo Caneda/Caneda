@@ -81,8 +81,7 @@ namespace Caneda
 
     public:
         Component(GraphicsScene *scene = 0);
-        Component(const QSharedDataPointer<ComponentData>& other,
-                  GraphicsScene *scene = 0);
+        Component(const ComponentDataPtr& other, GraphicsScene *scene = 0);
         ~Component();
 
         //! \copydoc GraphicsItem::Type

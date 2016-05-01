@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -92,8 +92,6 @@ namespace Caneda
     public:
         static LibraryManager* instance();
 
-        Component* newComponent(QString name, QString library, GraphicsScene *scene);
-
         // Library management related methods
         bool newLibrary(const QString& libPath);
         bool load(const QString& libPath);
@@ -109,6 +107,8 @@ namespace Caneda
 
         QPainterPath symbolCache(const QString &compName, const QString &libName);
         const QPixmap pixmapCache(const QString &compName, const QString &libName);
+
+        ComponentDataPtr componentData(QString name, QString library);
 
     private:
         LibraryManager(QObject *parent = 0);

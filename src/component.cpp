@@ -82,7 +82,7 @@ namespace Caneda
     }
 
     //! \brief Constructs a component from \a other data.
-    Component::Component(const QSharedDataPointer<ComponentData>& other, GraphicsScene *scene) :
+    Component::Component(const ComponentDataPtr &other, GraphicsScene *scene) :
         GraphicsItem(0, scene)
     {
         d = new ComponentData(other, scene);
@@ -194,7 +194,7 @@ namespace Caneda
      * \param scene GraphicsScene to which component should be parented to.
      * \return Returns new component pointer on success and null on failure.
      *
-     * \sa LibraryManager::newComponent(), loadData()
+     * \sa LibraryManager::componentData(), loadData()
      */
     Component* Component::loadComponent(Caneda::XmlReader *reader, GraphicsScene *scene)
     {
@@ -206,7 +206,11 @@ namespace Caneda
 
         Q_ASSERT(!compName.isEmpty());
 
-        retVal = LibraryManager::instance()->newComponent(compName, libName, scene);
+        ComponentDataPtr data = LibraryManager::instance()->componentData(compName, libName);
+        if(data.constData()) {
+            retVal = new Component(data, scene);
+        }
+
         if(retVal) {
             retVal->loadData(reader);
         }

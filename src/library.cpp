@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,8 +22,6 @@
 
 #include "fileformats.h"
 #include "global.h"
-#include "graphicsscene.h"
-#include "graphicsview.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -175,31 +173,6 @@ namespace Caneda
             instance = new LibraryManager();
         }
         return instance;
-    }
-
-    /*!
-     * \brief Constructs a new component given its name and library.
-     *
-     * \param name The component's name.
-     * \param library The library to which the \a componentName belongs.
-     * \param scene The scene on which component is to be rendered.
-     * \return Component on success and null pointer on failure.
-     */
-    Component* LibraryManager::newComponent(QString name,
-            QString library, GraphicsScene *scene)
-    {
-        ComponentDataPtr data;
-
-        if(m_libraryHash.contains(library)) {
-            data = m_libraryHash[library]->component(name);
-        }
-
-        if(data.constData()) {
-            Component* comp = new Component(data, scene);
-            return comp;
-        }
-
-        return 0;
     }
 
     //! \brief Create library indicated by path \a libPath.
@@ -372,6 +345,26 @@ namespace Caneda
         }
 
         return pix;
+    }
+
+    /*!
+     * \brief Returns default component data given its name and library.
+     *
+     * \param name The component's name.
+     * \param library The library to which the \a componentName belongs.
+     * \return ComponentDataPtr on success and null pointer on failure.
+     *
+     * \sa Library::component()
+     */
+    ComponentDataPtr LibraryManager::componentData(QString name, QString library)
+    {
+        ComponentDataPtr data;
+
+        if(m_libraryHash.contains(library)) {
+            data = m_libraryHash[library]->component(name);
+        }
+
+        return data;
     }
 
 } // namespace Caneda

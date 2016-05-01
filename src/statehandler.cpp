@@ -194,7 +194,10 @@ namespace Caneda
         // If the item was not found in the fixed libraries, search for the
         // item in the dinamic loaded libraries ("Components" category).
         if(!qItem) {
-            qItem = LibraryManager::instance()->newComponent(item, category, 0);
+            ComponentDataPtr data = LibraryManager::instance()->componentData(item, category);
+            if(data.constData()) {
+                qItem = new Component(data);
+            }
         }
 
         // Check if the item was successfully found and created
