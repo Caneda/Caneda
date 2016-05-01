@@ -184,13 +184,9 @@ namespace Caneda
     //! \copydoc GraphicsItem::launchPropertiesDialog()
     int PortSymbol::launchPropertiesDialog()
     {
-        QString newLabel = QString(m_label->text());
-
-        PortSymbolDialog *dia = new PortSymbolDialog(&newLabel);
+        PortSymbolDialog *dia = new PortSymbolDialog(this);
         int status = dia->exec();
         delete dia;
-
-        setLabel(newLabel);
 
         return status;
     }

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2014-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -17,15 +17,18 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef PORTSYMBOLDIALOG_H
-#define PORTSYMBOLDIALOG_H
+#ifndef PORTSYMBOL_DIALOG_H
+#define PORTSYMBOL_DIALOG_H
 
 #include "ui_portsymboldialog.h"
 
 namespace Caneda
 {
+    // Forward declarations
+    class PortSymbol;
+
     /*!
-     * \brief Dialog to modify PortSymbol properties
+     * \brief Dialog to modify PortSymbol properties.
      *
      * This dialog presents to the user the properties of the selected
      * PortSymbol. By default, properties are presented with a QLineEdit.
@@ -37,17 +40,17 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PortSymbolDialog(QString *label, QWidget *parent = 0);
+        PortSymbolDialog(PortSymbol *portSymbol, QWidget *parent = 0);
 
     public Q_SLOTS:
         void accept();
 
     private:
-        QString *m_label;
+        PortSymbol *m_portSymbol;
 
         Ui::PortSymbolDialog ui;
     };
 
 } // namespace Caneda
 
-#endif //PORTSYMBOLDIALOG_H
+#endif //PORTSYMBOL_DIALOG_H
