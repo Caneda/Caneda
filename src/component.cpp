@@ -40,13 +40,6 @@ namespace Caneda
         properties = new PropertyGroup();
     }
 
-    //! \brief Constructs a ComponentData object from a ComponentDataPtr.
-    ComponentData::ComponentData(const QSharedDataPointer<ComponentData> &other)
-    {
-        properties = new PropertyGroup();
-        copyData(other);
-    }
-
     /*!
      * \brief Copy ComponentData from a ComponentDataPtr.
      *
@@ -91,7 +84,8 @@ namespace Caneda
     Component::Component(const ComponentDataPtr &other, GraphicsScene *scene) :
         GraphicsItem(0, scene)
     {
-        d = new ComponentData(other);
+        d = new ComponentData();
+        d.data()->copyData(other);
         init();
     }
 

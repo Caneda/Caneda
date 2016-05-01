@@ -33,7 +33,6 @@ namespace Caneda
     struct ComponentData : public QSharedData
     {
         ComponentData();
-        ComponentData(const QSharedDataPointer<ComponentData>& other);
 
         void copyData(const QSharedDataPointer<ComponentData>& other);
 
