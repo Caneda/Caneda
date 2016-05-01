@@ -129,7 +129,6 @@ namespace Caneda
 
     protected:
         QRectF adjustedBoundRect(const QRectF& rect);
-        QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
     public slots:
         void updateBoundingRect();

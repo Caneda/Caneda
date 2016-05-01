@@ -336,18 +336,6 @@ namespace Caneda
         return adjustedRect;
     }
 
-    //! \brief React to change of item position.
-    QVariant Component::itemChange(GraphicsItemChange change,
-            const QVariant &value)
-    {
-        if(change == ItemTransformHasChanged) {
-            // Set the inverse of component's matrix to the PropertyGroup
-            // (properties) so that it maintains identity when transformed.
-            d->properties->setTransform(transform().inverted());
-        }
-        return GraphicsItem::itemChange(change, value);
-    }
-
     //! \brief Updates the bounding rect of this item.
     void Component::updateBoundingRect()
     {
