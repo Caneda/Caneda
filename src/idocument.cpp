@@ -1048,7 +1048,7 @@ namespace Caneda
     //! \brief Opens the simulation help.
     void SchematicDocument::showSimulationHelp()
     {
-        QDesktopServices::openUrl(QUrl("http://caneda.readthedocs.org/en/latest/simulationerrors.html"));
+        QDesktopServices::openUrl(QUrl("http://caneda.readthedocs.io/en/latest/simulationerrors.html"));
     }
 
     //! \brief Align selected elements appropriately based on \a alignment

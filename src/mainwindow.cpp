@@ -1425,7 +1425,7 @@ namespace Caneda
     //! \brief Opens the help index.
     void MainWindow::helpIndex()
     {
-        QDesktopServices::openUrl(QUrl("http://caneda.readthedocs.org"));
+        QDesktopServices::openUrl(QUrl("http://caneda.readthedocs.io"));
     }
 
     //! \brief Opens the examples repository in an external window.
