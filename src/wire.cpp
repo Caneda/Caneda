@@ -168,19 +168,7 @@ namespace Caneda
         return wire;
     }
 
-    /*!
-     * \brief Saves current wire data to \a Caneda::XmlWriter.
-     *
-     * Saves current wire data to \a Caneda::XmlWriter. This method is the
-     * virtual implementation of GraphicsItem::saveData(), to allow for
-     * wire copy/pasting. It is also used during
-     * FormatXmlSchematic::saveWires() to save wires into a schematic file.
-     *
-     * \param writer The xmlwriter used to write xml data.
-     *
-     * \sa FormatXmlSchematic::saveWires(), GraphicsItem::saveData(),
-     * loadData()
-     */
+    //! \copydoc GraphicsItem::saveData()
     void Wire::saveData(Caneda::XmlWriter *writer) const
     {
         writer->writeStartElement("wire");
@@ -197,26 +185,7 @@ namespace Caneda
         writer->writeEndElement();
     }
 
-    /*!
-     * \brief Convenience static method to load a wire saved as xml.
-     *
-     * This method loads a wire saved as xml. Once the wire is
-     * created, its data is filled using the loadData() method.
-     *
-     * \param reader The xmlreader used to read xml data.
-     * \param scene GraphicsScene to which the wire should be parented to.
-     * \return Returns new wire pointer on success and null on failure.
-     *
-     * \sa loadData()
-     */
-    Wire* Wire::loadWire(Caneda::XmlReader *reader, GraphicsScene *scene)
-    {
-        Wire *retVal = new Wire(QPointF(10,10), QPointF(50,50), scene);
-        retVal->loadData(reader);
-
-        return retVal;
-    }
-
+    //! \copydoc GraphicsItem::loadData()
     void Wire::loadData(Caneda::XmlReader *reader)
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "wire");

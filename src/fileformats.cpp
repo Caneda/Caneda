@@ -371,7 +371,8 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "port") {
-                    PortSymbol *portSymbol = PortSymbol::loadPortSymbol(reader, scene);
+                    PortSymbol *portSymbol = new PortSymbol(scene);
+                    portSymbol->loadData(reader);
                     scene->connectItems(portSymbol);
                 }
                 else {
@@ -405,7 +406,8 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "wire") {
-                    Wire *wire = Wire::loadWire(reader, scene);
+                    Wire *wire = new Wire(QPointF(10,10), QPointF(50,50), scene);
+                    wire->loadData(reader);
                     scene->connectItems(wire);
                 }
                 else {

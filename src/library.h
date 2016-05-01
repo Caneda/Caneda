@@ -92,9 +92,7 @@ namespace Caneda
     public:
         static LibraryManager* instance();
 
-        Component* newComponent(QString componentName,
-                                GraphicsScene *scene,
-                                QString library);
+        Component* newComponent(QString name, QString library, GraphicsScene *scene);
 
         // Library management related methods
         bool newLibrary(const QString& libPath);

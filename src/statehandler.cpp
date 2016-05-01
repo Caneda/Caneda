@@ -184,17 +184,17 @@ namespace Caneda
             // This must be repeated for each type of miscellaneous item,
             // for example ground, port symbols, etc.
             if(item == QObject::tr("Ground")) {
-                qItem = new PortSymbol("Ground", 0);
+                qItem = new PortSymbol("Ground");
             }
             if(item == QObject::tr("Port Symbol")) {
-                qItem = new PortSymbol(0);
+                qItem = new PortSymbol();
             }
         }
 
         // If the item was not found in the fixed libraries, search for the
         // item in the dinamic loaded libraries ("Components" category).
         if(!qItem) {
-            qItem = LibraryManager::instance()->newComponent(item, 0, category);
+            qItem = LibraryManager::instance()->newComponent(item, category, 0);
         }
 
         // Check if the item was successfully found and created
@@ -250,13 +250,15 @@ namespace Caneda
                     readItem = Component::loadComponent(&reader, 0);
                 }
                 else if(reader.name() == "wire") {
-                    readItem = Wire::loadWire(&reader, 0);
+                    readItem = new Wire(QPointF(10,10), QPointF(50,50));
+                    readItem->loadData(&reader);
                 }
                 else if(reader.name() == "painting")  {
                     readItem = Painting::loadPainting(&reader, 0);
                 }
                 else if(reader.name() == "port")  {
-                    readItem = PortSymbol::loadPortSymbol(&reader, 0);
+                    readItem = new PortSymbol();
+                    readItem->loadData(&reader);
                 }
 
                 if(readItem) {

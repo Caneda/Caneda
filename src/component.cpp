@@ -206,7 +206,7 @@ namespace Caneda
 
         Q_ASSERT(!compName.isEmpty());
 
-        retVal = LibraryManager::instance()->newComponent(compName, scene, libName);
+        retVal = LibraryManager::instance()->newComponent(compName, libName, scene);
         if(retVal) {
             retVal->loadData(reader);
         }

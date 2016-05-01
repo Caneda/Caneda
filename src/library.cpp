@@ -180,18 +180,18 @@ namespace Caneda
     /*!
      * \brief Constructs a new component given its name and library.
      *
-     * \param componentName The component's name.
-     * \param scene The scene on which component is to be rendered.
+     * \param name The component's name.
      * \param library The library to which the \a componentName belongs.
+     * \param scene The scene on which component is to be rendered.
      * \return Component on success and null pointer on failure.
      */
-    Component* LibraryManager::newComponent(QString componentName, GraphicsScene *scene,
-            QString library)
+    Component* LibraryManager::newComponent(QString name,
+            QString library, GraphicsScene *scene)
     {
         ComponentDataPtr data;
 
         if(m_libraryHash.contains(library)) {
-            data = m_libraryHash[library]->component(componentName);
+            data = m_libraryHash[library]->component(name);
         }
 
         if(data.constData()) {

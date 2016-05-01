@@ -138,10 +138,10 @@ namespace Caneda
         //! Return the shape of the item.
         QPainterPath shape() const { return m_shape; }
 
-        //! Virtual method to write item's properties to writer.
-        virtual void saveData(Caneda::XmlWriter *) const {}
-        //! Virtual method to read item's properties from reader.
-        virtual void loadData(Caneda::XmlReader *) {}
+        //! \brief Save item's data to a Caneda::XmlWriter.
+        virtual void saveData(Caneda::XmlWriter *) const = 0;
+        //! \brief Load item's data from a Caneda::XmlReader.
+        virtual void loadData(Caneda::XmlReader *) = 0;
 
         void storePos();
         QPointF storedPos() const;
