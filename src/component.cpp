@@ -35,22 +35,29 @@
 namespace Caneda
 {
     //! \brief Constructs default empty ComponentData.
-    ComponentData::ComponentData(GraphicsScene *scene)
+    ComponentData::ComponentData()
     {
-        properties = new PropertyGroup(scene);
+        properties = new PropertyGroup();
+    }
+
+    //! \brief Constructs a ComponentData object from a ComponentDataPtr.
+    ComponentData::ComponentData(const QSharedDataPointer<ComponentData> &other)
+    {
+        properties = new PropertyGroup();
+        copyData(other);
     }
 
     /*!
-     * \brief Constructs a ComponentData object from a ComponentDataPtr.
+     * \brief Copy ComponentData from a ComponentDataPtr.
      *
-     * Contructs a new ComponentData object from ComponentDataPtr. Special
+     * Copies data from a ComponentData pointed by a ComponentDataPtr. Special
      * care is taken to avoid copying the properties pointer, and copying
      * properties content (PropertyMap) instead. Otherwise, one would be
      * copying the reference to the PropertyGroup (properties) and all
      * components would share only one reference, modifying only one set
      * of properties data.
      */
-    ComponentData::ComponentData(const QSharedDataPointer<ComponentData> &other, GraphicsScene *scene)
+    void ComponentData::copyData(const QSharedDataPointer<ComponentData> &other)
     {
         // Copy all data from given ComponentDataPtr
         name = other->name;
@@ -63,7 +70,6 @@ namespace Caneda
 
         // Recreate PropertyGroup (properties) as it is a pointer
         // and only internal data must be copied.
-        properties = new PropertyGroup(scene);
         properties->setPropertyMap(other->properties->propertyMap());
 
         models = other->models;
@@ -77,7 +83,7 @@ namespace Caneda
     Component::Component(GraphicsScene *scene) :
         GraphicsItem(0, scene)
     {
-        d = new ComponentData(scene);
+        d = new ComponentData();
         init();
     }
 
@@ -85,7 +91,7 @@ namespace Caneda
     Component::Component(const ComponentDataPtr &other, GraphicsScene *scene) :
         GraphicsItem(0, scene)
     {
-        d = new ComponentData(other, scene);
+        d = new ComponentData(other);
         init();
     }
 
@@ -206,49 +212,13 @@ namespace Caneda
     }
 
     /*!
-     * \brief Convenience static method to load a component saved as xml.
-     *
-     * This method loads a component saved as xml. Once the component name
-     * and library are retrieved, a new component is created from LibraryManager
-     * and its data is filled using the loadData() method.
-     *
-     * \param reader The xmlreader used to read xml data.
-     * \param scene GraphicsScene to which component should be parented to.
-     * \return Returns new component pointer on success and null on failure.
-     *
-     * \sa LibraryManager::componentData(), loadData()
-     */
-    Component* Component::loadComponent(Caneda::XmlReader *reader, GraphicsScene *scene)
-    {
-        Component *retVal = 0;
-        Q_ASSERT(reader->isStartElement() && reader->name() == "component");
-
-        QString compName = reader->attributes().value("name").toString();
-        QString libName = reader->attributes().value("library").toString();
-
-        Q_ASSERT(!compName.isEmpty());
-
-        ComponentDataPtr data = LibraryManager::instance()->componentData(compName, libName);
-        if(data.constData()) {
-            retVal = new Component(data, scene);
-        }
-
-        if(retVal) {
-            retVal->loadData(reader);
-        }
-        else {
-            // Read to the end of the file if not found in any of Caneda libraries.
-            qWarning() << "Warning: Found unknown element" << compName << ", skipping";
-            reader->readUnknownElement();
-        }
-        return retVal;
-    }
-
-    /*!
      * \copydoc GraphicsItem::loadData()
      *
      * Loads current component data (name, library, position, properties
-     * and transform) from \a Caneda::XmlReader.
+     * and transform) from \a Caneda::XmlReader. Once the component name and
+     * library are retrieved, the component data is created from LibraryManager
+     * and the remaining properties are read from the
+     * PropertyGroup::readProperties() method.
      *
      * \sa saveData()
      */
@@ -256,12 +226,26 @@ namespace Caneda
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "component");
 
-        d->name = reader->attributes().value("name").toString();
-        d->library = reader->attributes().value("library").toString();
-
         setPos(reader->readPointAttribute("pos"));
         setTransform(reader->readTransformAttribute("transform"));
 
+        QString compName = reader->attributes().value("name").toString();
+        QString libName = reader->attributes().value("library").toString();
+        ComponentDataPtr data = LibraryManager::instance()->componentData(compName, libName);
+
+        // If the component is found in any Caneda library, copy its data,
+        // otherwise read to the end of the file.
+        if(data.constData()) {
+            d.data()->copyData(data);
+            init();
+        }
+        else {
+            qWarning() << "Warning: Found unknown element" << compName << ", skipping...";
+            reader->readUnknownElement();
+            return;
+        }
+
+        // Read the component properties
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -270,7 +254,6 @@ namespace Caneda
             }
 
             if(reader->isStartElement()) {
-
                 if(reader->name() == "properties") {
                     d->properties->readProperties(reader);
                 }
@@ -278,7 +261,6 @@ namespace Caneda
                     qWarning() << "Warning: Found unknown element" << reader->name().toString();
                     reader->readUnknownElement();
                 }
-
             }
         }
     }

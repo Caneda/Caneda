@@ -250,7 +250,8 @@ namespace Caneda
             if(reader.isStartElement()) {
                 GraphicsItem *readItem = 0;
                 if(reader.name() == "component") {
-                    readItem = Component::loadComponent(&reader, 0);
+                    readItem = new Component();
+                    readItem->loadData(&reader);
                 }
                 else if(reader.name() == "wire") {
                     readItem = new Wire(QPointF(10,10), QPointF(50,50));
@@ -270,7 +271,7 @@ namespace Caneda
             }
         }
 
-        if (_items.isEmpty() == false) {
+        if (!_items.isEmpty()) {
             d->clearInsertibles();
             d->insertibles = _items;
             slotPerformToggleAction("insertItem", true);

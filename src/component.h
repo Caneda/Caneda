@@ -32,8 +32,10 @@ namespace Caneda
     //! \brief Shareable component's data.
     struct ComponentData : public QSharedData
     {
-        ComponentData(GraphicsScene *scene = 0);
-        ComponentData(const QSharedDataPointer<ComponentData>& other, GraphicsScene *scene = 0);
+        ComponentData();
+        ComponentData(const QSharedDataPointer<ComponentData>& other);
+
+        void copyData(const QSharedDataPointer<ComponentData>& other);
 
         //! Static properties.
         QString name;
@@ -116,13 +118,12 @@ namespace Caneda
 
         QString model(const QString& type) const;
 
-        void saveData(Caneda::XmlWriter *writer) const;
-        static Component* loadComponent(Caneda::XmlReader *reader, GraphicsScene *scene);
-        void loadData(Caneda::XmlReader *reader);
-
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
 
         Component *copy(GraphicsScene *scene = 0) const;
+
+        void saveData(Caneda::XmlWriter *writer) const;
+        void loadData(Caneda::XmlReader *reader);
 
         int launchPropertiesDialog();
 

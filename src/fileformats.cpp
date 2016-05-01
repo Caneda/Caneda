@@ -337,7 +337,8 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "component") {
-                    Component *comp = Component::loadComponent(reader, scene);
+                    Component *comp = new Component(scene);
+                    comp->loadData(reader);
                     scene->connectItems(comp);
                 }
                 else {
