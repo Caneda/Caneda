@@ -184,6 +184,28 @@ namespace Caneda
     }
 
     /*!
+     * \copydoc GraphicsItem::saveData()
+     *
+     * Saves current component data (name, library, position, properties
+     * and transform) to \a Caneda::XmlWriter.
+     *
+     * \sa loadData()
+     */
+    void Component::saveData(Caneda::XmlWriter *writer) const
+    {
+        writer->writeStartElement("component");
+        writer->writeAttribute("name", name());
+        writer->writeAttribute("library", library());
+
+        writer->writePointAttribute(pos(), "pos");
+        writer->writeTransformAttribute(sceneTransform());
+
+        d->properties->writeProperties(writer);
+
+        writer->writeEndElement();  //</component>
+    }
+
+    /*!
      * \brief Convenience static method to load a component saved as xml.
      *
      * This method loads a component saved as xml. Once the component name
@@ -223,12 +245,12 @@ namespace Caneda
     }
 
     /*!
-     * \brief Loads current component data from \a Caneda::XmlReader.
+     * \copydoc GraphicsItem::loadData()
      *
      * Loads current component data (name, library, position, properties
      * and transform) from \a Caneda::XmlReader.
      *
-     * \sa loadComponentData(), saveData()
+     * \sa saveData()
      */
     void Component::loadData(Caneda::XmlReader *reader)
     {
@@ -259,28 +281,6 @@ namespace Caneda
 
             }
         }
-    }
-
-    /*!
-     * \brief Saves current component data to \a Caneda::XmlWriter.
-     *
-     * Saves current component data (name, library, position, properties
-     * and transform) to \a Caneda::XmlWriter.
-     *
-     * \sa loadComponentData(), loadData()
-     */
-    void Component::saveData(Caneda::XmlWriter *writer) const
-    {
-        writer->writeStartElement("component");
-        writer->writeAttribute("name", name());
-        writer->writeAttribute("library", library());
-
-        writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(sceneTransform());
-
-        d->properties->writeProperties(writer);
-
-        writer->writeEndElement();  //</component>
     }
 
     /*!

@@ -116,9 +116,9 @@ namespace Caneda
 
         QString model(const QString& type) const;
 
+        void saveData(Caneda::XmlWriter *writer) const;
         static Component* loadComponent(Caneda::XmlReader *reader, GraphicsScene *scene);
         void loadData(Caneda::XmlReader *reader);
-        void saveData(Caneda::XmlWriter *writer) const;
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
 
