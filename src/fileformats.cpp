@@ -442,7 +442,10 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "painting") {
-                    Painting::loadPainting(reader, scene);
+                    QString name = reader->attributes().value("name").toString();
+                    Painting *painting = Painting::fromName(name);
+                    painting->loadData(reader);
+                    scene->addItem(painting);
                 }
                 else {
                     qWarning() << "Error: Found unknown painting type" << reader->name().toString();
@@ -913,11 +916,17 @@ namespace Caneda
                 // Check if we are opening the file for edition or to include it in a library
                 if(graphicsScene()) {
                     // We are opening the file for symbol edition
-                    Painting::loadPainting(reader, graphicsScene());
+                    QString name = reader->attributes().value("name").toString();
+                    Painting *painting = Painting::fromName(name);
+                    painting->loadData(reader);
+                    graphicsScene()->addItem(painting);
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library
-                    Painting *newSymbol = Painting::loadPainting(reader);
+                    QString name = reader->attributes().value("name").toString();
+                    Painting *newSymbol = Painting::fromName(name);
+                    newSymbol->loadData(reader);
+
                     QRectF rect = newSymbol->paintingRect();
                     rect.moveTo(newSymbol->pos());
                     data.addPath(newSymbol->shapeForRect(rect));
@@ -925,7 +934,6 @@ namespace Caneda
 
             }
         }
-
 
         // If we are opening the file as a component, register the recreated QPainterPath
         if(component()) {
@@ -1261,7 +1269,10 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "painting") {
-                    Painting::loadPainting(reader,scene);
+                    QString name = reader->attributes().value("name").toString();
+                    Painting *painting = Painting::fromName(name);
+                    painting->loadData(reader);
+                    scene->addItem(painting);
                 }
                 else {
                     qWarning() << "Error: Found unknown painting type" <<

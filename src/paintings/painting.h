@@ -61,6 +61,8 @@ namespace Caneda
     public:
         Painting(GraphicsScene *scene = 0);
 
+        static Painting* fromName(const QString& name);
+
         //! \copydoc GraphicsItem::Type
         enum { Type = GraphicsItem::PaintingType };
         //! \copydoc GraphicsItem::type()
@@ -96,9 +98,6 @@ namespace Caneda
         //! \copydoc GraphicsItem::copy()
         virtual Painting* copy(GraphicsScene *scene = 0) const = 0;
         virtual void copyDataTo(Painting *painting) const;
-
-        static Painting* fromName(const QString& name);
-        static Painting* loadPainting(Caneda::XmlReader *reader, GraphicsScene *scene = 0);
 
         //! \copydoc GraphicsItem::launchPropertiesDialog()
         virtual int launchPropertiesDialog() = 0;

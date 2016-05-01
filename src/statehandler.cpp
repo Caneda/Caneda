@@ -261,10 +261,12 @@ namespace Caneda
                     readItem = new Wire(QPointF(10,10), QPointF(50,50));
                     readItem->loadData(&reader);
                 }
-                else if(reader.name() == "painting")  {
-                    readItem = Painting::loadPainting(&reader, 0);
+                else if(reader.name() == "painting") {
+                    QString name = reader.attributes().value("name").toString();
+                    readItem = Painting::fromName(name);
+                    readItem->loadData(&reader);
                 }
-                else if(reader.name() == "port")  {
+                else if(reader.name() == "port") {
                     readItem = new PortSymbol();
                     readItem->loadData(&reader);
                 }
