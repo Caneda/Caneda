@@ -350,6 +350,11 @@ namespace Caneda
     /*!
      * \brief Returns default component data given its name and library.
      *
+     * This method is used while loading a component to get the needed data
+     * from the component's library. In this way, after a component is created,
+     * this method must be called to get all the information to fill into the
+     * component.
+     *
      * \param name The component's name.
      * \param library The library to which the \a componentName belongs.
      * \return ComponentDataPtr on success and null pointer on failure.
