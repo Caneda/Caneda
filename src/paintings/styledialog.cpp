@@ -21,6 +21,7 @@
 
 #include "graphicsscene.h"
 #include "settings.h"
+#include "xmlutilities.h"
 
 #include "arrow.h"
 #include "ellipsearc.h"
@@ -435,7 +436,9 @@ namespace Caneda
 
     void StyleDialog::applySettings()
     {
-        QString saveData = painting->saveDataText();
+        QString saveData;
+        Caneda::XmlWriter writer(&saveData);
+        painting->saveData(&writer);
 
         painting->setPen(previewWidget->pen());
 

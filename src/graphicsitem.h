@@ -146,9 +146,6 @@ namespace Caneda
         void storePos();
         QPointF storedPos() const;
 
-        QString saveDataText() const;
-        void loadDataFromText(const QString &str);
-
         virtual GraphicsItem* copy(GraphicsScene *scene = 0) const = 0;
         virtual void copyDataTo(GraphicsItem *item) const;
 

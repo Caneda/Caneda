@@ -152,45 +152,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Convenience method to get the saved text as string.
-     *
-     * Though this is simple, this method shouldn't be used in too many places as
-     * there will be unnecessary creation of xml writer and reader instances which
-     * will render the program inefficient.
-     */
-    QString GraphicsItem::saveDataText() const
-    {
-        QString retVal;
-        Caneda::XmlWriter writer(&retVal);
-        saveData(&writer);
-        return retVal;
-    }
-
-    /*!
-     * \brief Convenience method to just load data from string.
-     *
-     * Though this is simple, this method shouldn't be used in too many places as
-     * there will be unnecessary creation of xml writer and reader instances which
-     * will render the program inefficient.
-     */
-    void GraphicsItem::loadDataFromText(const QString &text)
-    {
-        Caneda::XmlReader reader(text.toUtf8());
-        while(!reader.atEnd()) {
-            // skip until end element is found.
-            reader.readNext();
-
-            if(reader.isEndElement()) {
-                break;
-            }
-
-            if(reader.isStartElement()) {
-                loadData(&reader);
-            }
-        }
-    }
-
-    /*!
      * \fn GraphicsItem::copy()
      *
      * \brief Returns a copy of the current item parented to \a scene.

@@ -24,6 +24,7 @@
 #include "graphictext.h"
 #include "port.h"
 #include "wire.h"
+#include "xmlutilities.h"
 
 namespace Caneda
 {
@@ -328,22 +329,48 @@ namespace Caneda
             QUndoCommand *parent) :
         QUndoCommand(parent),
         m_painting(painting),
-        m_oldPropertyText(oldText),
-        m_newPropertyText(m_painting->saveDataText())
+        m_oldPropertyText(oldText)
     {
-        qDebug() << m_newPropertyText.toLatin1().constData();
+        Caneda::XmlWriter writer(&m_newPropertyText);
+        painting->saveData(&writer);
     }
 
     //! \copydoc MoveCmd::undo()
     void PaintingPropertyChangeCmd::undo()
     {
-        m_painting->loadDataFromText(m_oldPropertyText);
+        Caneda::XmlReader reader(m_oldPropertyText.toUtf8());
+
+        while(!reader.atEnd()) {
+
+            reader.readNext();
+
+            if(reader.isEndElement()) {
+                break;
+            }
+
+            if(reader.isStartElement()) {
+                m_painting->loadData(&reader);
+            }
+        }
     }
 
     //! \copydoc MoveCmd::redo()
     void PaintingPropertyChangeCmd::redo()
     {
-        m_painting->loadDataFromText(m_newPropertyText);
+        Caneda::XmlReader reader(m_newPropertyText.toUtf8());
+
+        while(!reader.atEnd()) {
+
+            reader.readNext();
+
+            if(reader.isEndElement()) {
+                break;
+            }
+
+            if(reader.isStartElement()) {
+                m_painting->loadData(&reader);
+            }
+        }
     }
 
 
