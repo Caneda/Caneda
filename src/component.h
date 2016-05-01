@@ -34,7 +34,7 @@ namespace Caneda
     {
         ComponentData();
 
-        void copyData(const QSharedDataPointer<ComponentData>& other);
+        void setData(const QSharedDataPointer<ComponentData>& other);
 
         //! Static properties.
         QString name;
@@ -82,7 +82,6 @@ namespace Caneda
 
     public:
         Component(GraphicsScene *scene = 0);
-        Component(const ComponentDataPtr& other, GraphicsScene *scene = 0);
         ~Component();
 
         //! \copydoc GraphicsItem::Type
@@ -111,6 +110,10 @@ namespace Caneda
         //! Returns the label of the component in the form {label_prefix}{number_suffix}
         QString label() const { return d->properties->propertyValue("label"); }
         bool setLabel(const QString& _label);
+
+        //! Returns the component data.
+        ComponentDataPtr componentData() const { return d; }
+        void setComponentData(const ComponentDataPtr& other);
 
         //! Returns the property map (actually copy of property map).
         PropertyGroup* properties() const { return d->properties; }

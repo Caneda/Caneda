@@ -50,7 +50,7 @@ namespace Caneda
      * components would share only one reference, modifying only one set
      * of properties data.
      */
-    void ComponentData::copyData(const QSharedDataPointer<ComponentData> &other)
+    void ComponentData::setData(const QSharedDataPointer<ComponentData> &other)
     {
         // Copy all data from given ComponentDataPtr
         name = other->name;
@@ -77,15 +77,6 @@ namespace Caneda
         GraphicsItem(0, scene)
     {
         d = new ComponentData();
-        init();
-    }
-
-    //! \brief Constructs a component from \a other data.
-    Component::Component(const ComponentDataPtr &other, GraphicsScene *scene) :
-        GraphicsItem(0, scene)
-    {
-        d = new ComponentData();
-        d.data()->copyData(other);
         init();
     }
 
@@ -150,6 +141,20 @@ namespace Caneda
 
         d->properties->setPropertyValue("label", newLabel);
         return true;
+    }
+
+    /*!
+     * \brief Sets the data of the component.
+     *
+     * This method also handles updating internal data, component label,
+     * component ports, etc.
+     *
+     * \param other Component data to set into this component.
+     */
+    void Component::setComponentData(const ComponentDataPtr &other)
+    {
+        d.data()->setData(other);
+        init();
     }
 
     //! \brief Returns the label's suffix part.
@@ -230,8 +235,7 @@ namespace Caneda
         // If the component is found in any Caneda library, copy its data,
         // otherwise read to the end of the file.
         if(data.constData()) {
-            d.data()->copyData(data);
-            init();
+            setComponentData(data);
         }
         else {
             qWarning() << "Warning: Found unknown element" << compName << ", skipping...";
@@ -309,7 +313,9 @@ namespace Caneda
     //! \copydoc GraphicsItem::copy()
     Component* Component::copy(GraphicsScene *scene) const
     {
-        Component *component = new Component(d, scene);
+        Component *component = new Component(scene);
+        component->setComponentData(d);
+
         GraphicsItem::copyDataTo(component);
         return component;
     }

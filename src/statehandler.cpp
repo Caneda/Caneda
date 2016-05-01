@@ -196,7 +196,9 @@ namespace Caneda
         if(!qItem) {
             ComponentDataPtr data = LibraryManager::instance()->componentData(item, category);
             if(data.constData()) {
-                qItem = new Component(data);
+                qItem = new Component();
+                Component *comp = static_cast<Component*>(qItem);
+                comp->setComponentData(data);
             }
         }
 
