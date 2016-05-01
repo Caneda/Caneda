@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -31,28 +31,26 @@ namespace Caneda
     /*!
      * \brief Constructs a port symbol item.
      *
+     * This method initializes the main port parameters.
+     *
      * \param scene GraphicsScene on which the port symbol should be added.
      *
      * \sa init()
      */
     PortSymbol::PortSymbol(GraphicsScene *scene) : GraphicsItem(0, scene)
     {
-        // Create a port with the default name
-        init(QString("label"));
-    }
+        // Set component flags
+        setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+        setFlag(ItemSendsGeometryChanges, true);
+        setFlag(ItemSendsScenePositionChanges, true);
 
-    /*!
-     * \brief Constructs a port symbol item.
-     *
-     * \param label Label of the port. Special ports as GND, should pass the
-     *        corresponding label.
-     * \param scene GraphicsScene on which the port symbol should be added.
-     *
-     * \sa init()
-     */
-    PortSymbol::PortSymbol(const QString &label, GraphicsScene *scene) : GraphicsItem(0, scene)
-    {
-        init(label);
+        // Initialize port label with the default name
+        m_label = new QGraphicsSimpleTextItem("label", this);
+
+        // Create ports
+        m_ports << new Port(this);
+
+        updateGeometry();
     }
 
     //! \brief Destructor.
@@ -62,63 +60,17 @@ namespace Caneda
     }
 
     /*!
-     * \brief Initialize the ports parameters
+     * \brief Sets the label of the PortSymbol.
      *
-     * This method initializes the main port parameters. It is done separately
-     * from the contructors methods to allow reutilization of the code in
-     * different existing contructors.
-     *
-     * \param label Label of the port. Special ports as GND, should pass the
-     *        corresponding label.
+     * \param newLabel The label to be set.
+     * \return True on success and false on failure.
      */
-    void PortSymbol::init(const QString &label)
+    bool PortSymbol::setLabel(const QString &newLabel)
     {
-        // Set component flags
-        setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-        setFlag(ItemSendsGeometryChanges, true);
-        setFlag(ItemSendsScenePositionChanges, true);
-
-        // Initialize port label
-        m_label = new QGraphicsSimpleTextItem(label, this);
-
-        // Create ports
-        m_ports << new Port(this);
-
+        m_label->setText(newLabel);
         updateGeometry();
-    }
 
-    //! \brief Draw port symbol
-    void PortSymbol::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
-    {
-        // Save pen
-        QPen savedPen = painter->pen();
-
-        // Set global pen settings
-        Settings *settings = Settings::instance();
-        if(option->state & QStyle::State_Selected) {
-            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
-                                 settings->currentValue("gui/lineWidth").toInt()));
-
-            // Set the label font settings
-            m_label->setBrush(QBrush(settings->currentValue("gui/selectionColor").value<QColor>()));
-        }
-        else {
-            painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
-                                 settings->currentValue("gui/lineWidth").toInt()));
-
-            // Set the label font settings
-            m_label->setBrush(QBrush(settings->currentValue("gui/foregroundColor").value<QColor>()));
-        }
-
-        // Draw the port symbol if it is a termination point or ground
-        if(m_label->text().toLower() == "ground" ||
-                m_label->text().toLower() == "gnd" ||
-                port()->connections()->size() <= 2) {
-            painter->drawPath(m_symbol);
-        }
-
-        // Restore pen
-        painter->setPen(savedPen);
+        return true;
     }
 
     //! \brief Updates the geometry of the port symbol.
@@ -162,31 +114,48 @@ namespace Caneda
         update();
     }
 
+    //! \brief Draw port symbol
+    void PortSymbol::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+    {
+        // Save pen
+        QPen savedPen = painter->pen();
+
+        // Set global pen settings
+        Settings *settings = Settings::instance();
+        if(option->state & QStyle::State_Selected) {
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+
+            // Set the label font settings
+            m_label->setBrush(QBrush(settings->currentValue("gui/selectionColor").value<QColor>()));
+        }
+        else {
+            painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+
+            // Set the label font settings
+            m_label->setBrush(QBrush(settings->currentValue("gui/foregroundColor").value<QColor>()));
+        }
+
+        // Draw the port symbol if it is a termination point or ground
+        if(m_label->text().toLower() == "ground" ||
+                m_label->text().toLower() == "gnd" ||
+                port()->connections()->size() <= 2) {
+            painter->drawPath(m_symbol);
+        }
+
+        // Restore pen
+        painter->setPen(savedPen);
+    }
+
     //! \copydoc GraphicsItem::copy()
     PortSymbol* PortSymbol::copy(GraphicsScene *scene) const
     {
         PortSymbol *portSymbol = new PortSymbol(scene);
-        portSymbol->m_label->setText(m_label->text());
+        portSymbol->setLabel(label());
 
         GraphicsItem::copyDataTo(portSymbol);
-        portSymbol->updateGeometry();
-
         return portSymbol;
-    }
-
-    //! \copydoc GraphicsItem::launchPropertiesDialog()
-    int PortSymbol::launchPropertiesDialog()
-    {
-        QString newLabel = QString(m_label->text());
-
-        PortSymbolDialog *dia = new PortSymbolDialog(&newLabel);
-        int status = dia->exec();
-        delete dia;
-
-        m_label->setText(newLabel);
-        updateGeometry();
-
-        return status;
     }
 
     //! \copydoc GraphicsItem::saveData()
@@ -205,12 +174,25 @@ namespace Caneda
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "port");
 
-        m_label->setText(reader->attributes().value("name").toString());
         setPos(reader->readPointAttribute("pos"));
-        updateGeometry();
+        setLabel(reader->attributes().value("name").toString());
 
         // Read until end of element
         reader->readUnknownElement();
+    }
+
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
+    int PortSymbol::launchPropertiesDialog()
+    {
+        QString newLabel = QString(m_label->text());
+
+        PortSymbolDialog *dia = new PortSymbolDialog(&newLabel);
+        int status = dia->exec();
+        delete dia;
+
+        setLabel(newLabel);
+
+        return status;
     }
 
 } // namespace Caneda

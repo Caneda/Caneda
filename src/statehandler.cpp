@@ -184,7 +184,9 @@ namespace Caneda
             // This must be repeated for each type of miscellaneous item,
             // for example ground, port symbols, etc.
             if(item == QObject::tr("Ground")) {
-                qItem = new PortSymbol("Ground");
+                qItem = new PortSymbol();
+                PortSymbol *portSymbol = static_cast<PortSymbol*>(qItem);
+                portSymbol->setLabel("Ground");
             }
             if(item == QObject::tr("Port Symbol")) {
                 qItem = new PortSymbol();

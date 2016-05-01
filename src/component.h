@@ -136,7 +136,7 @@ namespace Caneda
         void updateBoundingRect();
 
     private:
-        void init();
+        void updateSharedData();
 
         //! \brief Component shared data
         ComponentDataPtr d;

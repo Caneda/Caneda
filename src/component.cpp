@@ -24,13 +24,13 @@
 #include "graphicsscene.h"
 #include "library.h"
 #include "port.h"
-#include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
 #include <QDebug>
 #include <QFile>
 #include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 namespace Caneda
 {
@@ -73,11 +73,16 @@ namespace Caneda
      *
      * \param scene Scene where this component belong to.
      */
-    Component::Component(GraphicsScene *scene) :
-        GraphicsItem(0, scene)
+    Component::Component(GraphicsScene *scene) : GraphicsItem(0, scene)
     {
+        // Set component flags
+        setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+        setFlag(ItemSendsGeometryChanges, true);
+        setFlag(ItemSendsScenePositionChanges, true);
+
+        // Create component shared data
         d = new ComponentData();
-        init();
+        updateSharedData();
     }
 
     //! \brief Destructor.
@@ -87,21 +92,15 @@ namespace Caneda
     }
 
     /*!
-     * \brief Intialize the component.
+     * \brief Update this component's shared data related properties.
      *
-     * This method sets component's flags, adds initial label based on
-     * default prefix value and adds the component's ports.
-     *
-     * The symbol corresponding to this component should already be
-     * registered with LibraryManager using LibraryManager::registerComponent().
+     * This method updates the component's properties related to its shared
+     * data, for example adds the component ports depending on the ports
+     * available in the shared data. It also adds an initial label based on the
+     * default prefix value.
      */
-    void Component::init()
+    void Component::updateSharedData()
     {
-        // Set component flags
-        setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-        setFlag(ItemSendsGeometryChanges, true);
-        setFlag(ItemSendsScenePositionChanges, true);
-
         // Add component label
         Property _label("label", labelPrefix().append('1'), tr("Label"), true);
         d->properties->addProperty("label", _label);
@@ -121,6 +120,13 @@ namespace Caneda
         d->properties->setParentItem(this);
         d->properties->setTransform(transform().inverted());
         d->properties->setPos(boundingRect().bottomLeft());
+    }
+
+    //! \brief Returns the label's suffix part.
+    QString Component::labelSuffix() const
+    {
+        QString _label = label();
+        return _label.mid(labelPrefix().length());
     }
 
     /*!
@@ -154,14 +160,7 @@ namespace Caneda
     void Component::setComponentData(const ComponentDataPtr &other)
     {
         d.data()->setData(other);
-        init();
-    }
-
-    //! \brief Returns the label's suffix part.
-    QString Component::labelSuffix() const
-    {
-        QString _label = label();
-        return _label.mid(labelPrefix().length());
+        updateSharedData();
     }
 
     /*!
@@ -186,6 +185,63 @@ namespace Caneda
     QString Component::model(const QString& type) const
     {
         return d->models[type];
+    }
+
+    /*!
+     * \brief Paints a previously registered component.
+     *
+     * Takes care of painting a component on a scene. The component must be
+     * previously registered using LibraryManager::registerComponent(). This
+     * method also takes care of setting the correct global settings pen
+     * according to its selection state.
+     *
+     * \sa LibraryManager::registerComponent()
+     */
+    void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+            QWidget *w)
+    {
+        // Paint the component symbol
+        Settings *settings = Settings::instance();
+        LibraryManager *libraryManager = LibraryManager::instance();
+        QPainterPath symbol = libraryManager->symbolCache(name(), library());
+
+        // Save pen
+        QPen savedPen = painter->pen();
+
+        if(option->state & QStyle::State_Selected) {
+            // If selected, the paint is performed without the pixmap cache
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+
+            painter->drawPath(symbol);  // Draw symbol
+        }
+        else if(painter->worldTransform().isScaling()) {
+            // If zooming, the paint is performed without the pixmap cache
+            painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+
+            painter->drawPath(symbol);  // Draw symbol
+        }
+        else {
+            // Else, a pixmap cached is used
+            QPixmap pix = libraryManager->pixmapCache(name(), library());
+            QRect rect =  symbol.boundingRect().toRect();
+            rect.adjust(-1.0, -1.0, 1.0, 1.0);  // Adjust rect to avoid clipping when size = 1px in any dimension
+            painter->drawPixmap(rect, pix);
+        }
+
+        // Restore pen
+        painter->setPen(savedPen);
+    }
+
+    //! \copydoc GraphicsItem::copy()
+    Component* Component::copy(GraphicsScene *scene) const
+    {
+        Component *component = new Component(scene);
+        component->setComponentData(d);
+
+        GraphicsItem::copyDataTo(component);
+        return component;
     }
 
     /*!
@@ -261,63 +317,6 @@ namespace Caneda
                 }
             }
         }
-    }
-
-    /*!
-     * \brief Paints a previously registered component.
-     *
-     * Takes care of painting a component on a scene. The component must be
-     * previously registered using LibraryManager::registerComponent(). This
-     * method also takes care of setting the correct global settings pen
-     * according to its selection state.
-     *
-     * \sa LibraryManager::registerComponent()
-     */
-    void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-            QWidget *w)
-    {
-        // Paint the component symbol
-        Settings *settings = Settings::instance();
-        LibraryManager *libraryManager = LibraryManager::instance();
-        QPainterPath symbol = libraryManager->symbolCache(name(), library());
-
-        // Save pen
-        QPen savedPen = painter->pen();
-
-        if(option->state & QStyle::State_Selected) {
-            // If selected, the paint is performed without the pixmap cache
-            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
-                                 settings->currentValue("gui/lineWidth").toInt()));
-
-            painter->drawPath(symbol);  // Draw symbol
-        }
-        else if(painter->worldTransform().isScaling()) {
-            // If zooming, the paint is performed without the pixmap cache
-            painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
-                                 settings->currentValue("gui/lineWidth").toInt()));
-
-            painter->drawPath(symbol);  // Draw symbol
-        }
-        else {
-            // Else, a pixmap cached is used
-            QPixmap pix = libraryManager->pixmapCache(name(), library());
-            QRect rect =  symbol.boundingRect().toRect();
-            rect.adjust(-1.0, -1.0, 1.0, 1.0);  // Adjust rect to avoid clipping when size = 1px in any dimension
-            painter->drawPixmap(rect, pix);
-        }
-
-        // Restore pen
-        painter->setPen(savedPen);
-    }
-
-    //! \copydoc GraphicsItem::copy()
-    Component* Component::copy(GraphicsScene *scene) const
-    {
-        Component *component = new Component(scene);
-        component->setComponentData(d);
-
-        GraphicsItem::copyDataTo(component);
-        return component;
     }
 
     //! \copydoc GraphicsItem::launchPropertiesDialog()

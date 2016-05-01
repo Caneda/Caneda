@@ -23,9 +23,6 @@
 
 #include "port.h"
 
-#include <QList>
-#include <QMenu>
-
 namespace Caneda
 {
     // Forward declarations
@@ -69,7 +66,7 @@ namespace Caneda
         bool isNull() const { return port1()->scenePos() == port2()->scenePos(); }
 
         void updateGeometry();
-        QRectF boundingRect () const;
+        QRectF boundingRect() const;
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0);

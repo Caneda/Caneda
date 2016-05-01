@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -46,7 +46,6 @@ namespace Caneda
     {
     public:
         PortSymbol(GraphicsScene *scene = 0);
-        PortSymbol(const QString &label, GraphicsScene *scene = 0);
         ~PortSymbol();
 
         //! \copydoc GraphicsItem::Type
@@ -56,23 +55,23 @@ namespace Caneda
 
         //! Return's the symbol's port
         Port* port() const { return m_ports[0]; }
+
         //! Return's the symbol's label
         QString label() const { return m_label->text();}
+        bool setLabel(const QString &newLabel);
 
         void updateGeometry();
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
+        PortSymbol* copy(GraphicsScene *scene = 0) const;
+
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
-
-        PortSymbol* copy(GraphicsScene *scene = 0) const;
 
         int launchPropertiesDialog();
 
     private:
-        void init(const QString &label);
-
         QGraphicsSimpleTextItem *m_label;
         QPainterPath m_symbol;
     };

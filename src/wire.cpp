@@ -27,6 +27,7 @@
 #include "xmlutilities.h"
 
 #include <QGraphicsSceneEvent>
+#include <QMenu>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
@@ -94,31 +95,6 @@ namespace Caneda
         updateGeometry();
     }
 
-    //! \brief Draw wire.
-    void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-            QWidget *widget)
-    {
-        // Save pen
-        QPen savedPen = painter->pen();
-
-        // Set global pen settings
-        Settings *settings = Settings::instance();
-        if(option->state & QStyle::State_Selected) {
-            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
-                                 settings->currentValue("gui/lineWidth").toInt()));
-        }
-        else {
-            painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
-                                 settings->currentValue("gui/lineWidth").toInt()));
-        }
-
-        // Draw the wire
-        painter->drawLine(port1()->pos(), port2()->pos());
-
-        // Restore pen
-        painter->setPen(savedPen);
-    }
-
     //! \brief Updates the wire's geometry and caches it.
     void Wire::updateGeometry()
     {
@@ -156,6 +132,31 @@ namespace Caneda
         rect = rect.normalized();
         rect.adjust(-portRadius, -portRadius, +portRadius, +portRadius);
         return rect;
+    }
+
+    //! \brief Draw wire.
+    void Wire::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+            QWidget *widget)
+    {
+        // Save pen
+        QPen savedPen = painter->pen();
+
+        // Set global pen settings
+        Settings *settings = Settings::instance();
+        if(option->state & QStyle::State_Selected) {
+            painter->setPen(QPen(settings->currentValue("gui/selectionColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+        }
+        else {
+            painter->setPen(QPen(settings->currentValue("gui/lineColor").value<QColor>(),
+                                 settings->currentValue("gui/lineWidth").toInt()));
+        }
+
+        // Draw the wire
+        painter->drawLine(port1()->pos(), port2()->pos());
+
+        // Restore pen
+        painter->setPen(savedPen);
     }
 
     //! \copydoc GraphicsItem::copy()
