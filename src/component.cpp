@@ -159,7 +159,7 @@ namespace Caneda
      */
     void Component::setComponentData(const ComponentDataPtr &other)
     {
-        d.data()->setData(other);
+        d->setData(other);
         updateSharedData();
     }
 
