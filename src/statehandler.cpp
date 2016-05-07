@@ -223,7 +223,8 @@ namespace Caneda
 
     void StateHandler::slotHandlePaste()
     {
-        const QString text = qApp->clipboard()->text();
+        QClipboard *clipboard =  QApplication::clipboard();
+        const QString text = clipboard->text();
 
         Caneda::XmlReader reader(text.toUtf8());
 

@@ -23,7 +23,6 @@
 #include "mainwindow.h"
 #include "settings.h"
 
-#include <QApplication>
 #include <QColorDialog>
 #include <QComboBox>
 #include <QCheckBox>

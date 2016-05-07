@@ -458,7 +458,7 @@ namespace Caneda
     TextView::TextView(TextDocument *document) :
         IView(document),
         m_zoomRange(6.0, 30.0),
-        m_originalZoom(QFontInfo(qApp->font()).pointSizeF())
+        m_originalZoom(QFontInfo(QApplication::font()).pointSizeF())
     {
         m_currentZoom = m_originalZoom;
         m_textEdit = new TextEdit(document->textDocument());
