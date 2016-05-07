@@ -43,11 +43,11 @@ namespace Caneda
      *
      * \param parent Parent of the widget.
      */
-    Project::Project(QWidget *parent) : QWidget(parent)
+    Project::Project(QWidget *parent) : QWidget(parent),
+        m_libraryName(),
+        m_libraryFileName()
     {
         projectLibrary = 0;
-        m_libraryFileName = "";
-        m_libraryName = "";
 
         QVBoxLayout *layout = new QVBoxLayout(this);
 
