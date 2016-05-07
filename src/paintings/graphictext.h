@@ -25,11 +25,12 @@
 
 namespace Caneda
 {
-    //! \brief Represent's text item on schematic.
+    //! \brief Represents a text item on the schematic.
     class GraphicText : public Painting
     {
     public:
-        GraphicText(const QString &text = QString(), GraphicsScene *scene = 0);
+        explicit GraphicText(const QString &text = QString(),
+                             GraphicsScene *scene = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::GraphicTextType };

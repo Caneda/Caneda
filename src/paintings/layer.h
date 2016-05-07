@@ -45,8 +45,10 @@ namespace Caneda
             PWell
         };
 
-        Layer(const QRectF &rect, LayerName layerName = Metal1, const QString &netLabel = "",
-              GraphicsScene *scene = 0);
+        explicit Layer(const QRectF &rect,
+                       LayerName layerName = Metal1,
+                       const QString &netLabel = "",
+                       GraphicsScene *scene = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::LayerType };

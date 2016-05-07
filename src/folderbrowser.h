@@ -44,7 +44,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        FolderBrowser(QWidget *parent = 0);
+        explicit FolderBrowser(QWidget *parent = 0);
 
     signals:
         void itemDoubleClicked(const QString& filename);

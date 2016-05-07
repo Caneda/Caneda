@@ -44,9 +44,11 @@ namespace Caneda
     class CategoryItem
     {
     public:
-        CategoryItem(const QString& name, const QString& filename,
-                const QPixmap &pixmap = QPixmap(), bool isLibrary = false,
-                CategoryItem *parent = 0);
+        explicit CategoryItem(const QString& name,
+                              const QString& filename,
+                              const QPixmap &pixmap = QPixmap(),
+                              bool isLibrary = false,
+                              CategoryItem *parent = 0);
         ~CategoryItem();
 
         CategoryItem *parent() const { return m_parentItem; }
@@ -109,7 +111,7 @@ namespace Caneda
             DragPixmapRole = Qt::UserRole + 1
         };
 
-        SidebarItemsModel(QObject *parent=0);
+        explicit SidebarItemsModel(QObject *parent=0);
 
         int columnCount(const QModelIndex & parent = QModelIndex()) const {
             Q_UNUSED(parent);
@@ -150,7 +152,7 @@ namespace Caneda
     class FilterProxyModel : public QSortFilterProxyModel
     {
     public:
-        FilterProxyModel(QObject *parent = 0);
+        explicit FilterProxyModel(QObject *parent = 0);
 
         bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
     };
@@ -179,7 +181,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        TreeView(QWidget *parent = 0);
+        explicit TreeView(QWidget *parent = 0);
 
     signals:
         void invalidAreaClicked(const QModelIndex &index);
@@ -214,7 +216,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SidebarItemsBrowser(QWidget *parent = 0);
+        explicit SidebarItemsBrowser(QWidget *parent = 0);
         ~SidebarItemsBrowser();
 
         void plugLibrary(QString libraryName, QString category);

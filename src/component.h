@@ -32,7 +32,7 @@ namespace Caneda
     //! \brief Shareable component's data.
     struct ComponentData : public QSharedData
     {
-        ComponentData();
+        explicit ComponentData();
 
         void setData(const QSharedDataPointer<ComponentData>& other);
 
@@ -81,7 +81,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        Component(GraphicsScene *scene = 0);
+        explicit Component(GraphicsScene *scene = 0);
         ~Component();
 
         //! \copydoc GraphicsItem::Type

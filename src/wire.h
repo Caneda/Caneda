@@ -41,8 +41,9 @@ namespace Caneda
     class Wire : public GraphicsItem
     {
     public:
-        Wire(const QPointF &startPos, const QPointF &endPos,
-                GraphicsScene *scene = 0);
+        explicit Wire(const QPointF &startPos,
+                      const QPointF &endPos,
+                      GraphicsScene *scene = 0);
         ~Wire();
 
         //! \copydoc GraphicsItem::Type

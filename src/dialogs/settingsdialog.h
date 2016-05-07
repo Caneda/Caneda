@@ -47,8 +47,9 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SettingsDialog(QList<SettingsPage *> pages, const char *title,
-                QWidget *parent = 0);
+        explicit SettingsDialog(QList<SettingsPage *> pages,
+                                const char *title,
+                                QWidget *parent = 0);
 
     public Q_SLOTS:
         void changePage(QListWidgetItem *, QListWidgetItem *);

@@ -55,7 +55,7 @@ namespace Caneda
     class FormatXmlSchematic
     {
     public:
-        FormatXmlSchematic(SchematicDocument *doc = 0);
+        explicit FormatXmlSchematic(SchematicDocument *doc = 0);
 
         bool save();
         bool load();
@@ -95,8 +95,8 @@ namespace Caneda
     class FormatXmlSymbol
     {
     public:
-        FormatXmlSymbol(SymbolDocument *doc = 0);
-        FormatXmlSymbol(ComponentData *component);
+        explicit FormatXmlSymbol(SymbolDocument *doc = 0);
+        explicit FormatXmlSymbol(ComponentData *component);
 
         bool save();
         bool load();
@@ -139,7 +139,7 @@ namespace Caneda
     class FormatXmlLayout
     {
     public:
-        FormatXmlLayout(LayoutDocument *doc = 0);
+        explicit FormatXmlLayout(LayoutDocument *doc = 0);
 
         bool save();
         bool load();
@@ -177,7 +177,7 @@ namespace Caneda
     class FormatSpice
     {
     public:
-        FormatSpice(SchematicDocument *doc = 0);
+        explicit FormatSpice(SchematicDocument *doc = 0);
 
         bool save();
 
@@ -211,7 +211,7 @@ namespace Caneda
     class FormatRawSimulation
     {
     public:
-        FormatRawSimulation(SimulationDocument *doc = 0);
+        explicit FormatRawSimulation(SimulationDocument *doc = 0);
 
         bool load();
 

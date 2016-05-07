@@ -42,8 +42,9 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        GraphicTextDialog(GraphicText *text, bool enableUndoCommand,
-                QWidget *parent = 0);
+        explicit GraphicTextDialog(GraphicText *text,
+                                   bool enableUndoCommand,
+                                   QWidget *parent = 0);
 
         QString plainText() const;
         QString richText() const;

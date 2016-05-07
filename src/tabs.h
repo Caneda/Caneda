@@ -37,7 +37,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        ViewContainer(IView *view, QWidget *parent = 0);
+        explicit ViewContainer(IView *view, QWidget *parent = 0);
         ~ViewContainer();
 
         IView* view() const;
@@ -61,7 +61,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        Tab(IView *view, QWidget *parent = 0);
+        explicit Tab(IView *view, QWidget *parent = 0);
 
         IView* activeView() const;
 
@@ -101,7 +101,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        TabWidget(QWidget *parent = 0);
+        explicit TabWidget(QWidget *parent = 0);
 
         QList<Tab*> tabs() const;
         Tab* tabForView(IView *view) const;

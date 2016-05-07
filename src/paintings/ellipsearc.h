@@ -29,8 +29,10 @@ namespace Caneda
     class EllipseArc : public Painting
     {
     public:
-        EllipseArc(QRectF rect = QRectF(), int startAngle = 20, int spanAngle = 180,
-                GraphicsScene *scene = 0);
+        explicit EllipseArc(QRectF rect = QRectF(),
+                            int startAngle = 20,
+                            int spanAngle = 180,
+                            GraphicsScene *scene = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::EllipseArcType };

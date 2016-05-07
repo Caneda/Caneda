@@ -38,7 +38,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        ProjectFileOpenDialog(QString = "", QWidget * = 0);
+        explicit ProjectFileOpenDialog(QString libraryFileName = "",
+                                       QWidget *parent = 0);
 
         QString fileName() const { return m_fileName; }
 

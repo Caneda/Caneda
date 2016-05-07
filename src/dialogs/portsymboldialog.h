@@ -40,7 +40,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PortSymbolDialog(PortSymbol *portSymbol, QWidget *parent = 0);
+        explicit PortSymbolDialog(PortSymbol *portSymbol, QWidget *parent = 0);
 
     public Q_SLOTS:
         void accept();

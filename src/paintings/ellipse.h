@@ -25,11 +25,11 @@
 
 namespace Caneda
 {
-    //! * \brief Represents an ellipse on a graphics scene.
+    //! \brief Represents an ellipse on a graphics scene.
     class Ellipse : public Painting
     {
     public:
-        Ellipse(QRectF rect, GraphicsScene *scene = 0);
+        explicit Ellipse(QRectF rect, GraphicsScene *scene = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::EllipseType };

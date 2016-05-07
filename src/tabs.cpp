@@ -381,7 +381,7 @@ namespace Caneda
     class TabBarPrivate : public QTabBar
     {
     public:
-        TabBarPrivate(QWidget *parent=0l) : QTabBar(parent)
+        explicit TabBarPrivate(QWidget *parent=0l) : QTabBar(parent)
         {
             setDrawBase(true);
         }

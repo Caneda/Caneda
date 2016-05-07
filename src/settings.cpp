@@ -26,6 +26,7 @@
 #include <QFont>
 #include <QSettings>
 #include <QSize>
+#include <QVariant>
 
 namespace Caneda
 {

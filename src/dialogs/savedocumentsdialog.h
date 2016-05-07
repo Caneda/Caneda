@@ -41,8 +41,9 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        FileBrowserLineEdit(QTreeWidgetItem *item, const QFileInfo& fileInfo,
-                QWidget *parent = 0);
+        explicit FileBrowserLineEdit(QTreeWidgetItem *item,
+                                     const QFileInfo& fileInfo,
+                                     QWidget *parent = 0);
 
         QFileInfo fileInfo() const;
         void updateTexts();
@@ -65,8 +66,8 @@ namespace Caneda
             Abort = QDialogButtonBox::RejectRole
         };
 
-        SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
-                QWidget *parent = 0);
+        explicit SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
+                                     QWidget *parent = 0);
 
         QList<QPair<IDocument*, QString> > newFilePaths() const;
 

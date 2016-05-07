@@ -65,7 +65,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SidebarChartsModel(ChartSeriesMap chartSeriesMap, QObject *parent = 0);
+        explicit SidebarChartsModel(ChartSeriesMap chartSeriesMap, QObject *parent = 0);
 
         int rowCount(const QModelIndex& = QModelIndex() ) const { return m_chartSeriesMap.size(); }
         int columnCount(const QModelIndex& = QModelIndex() ) const { return 2; }
@@ -102,7 +102,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SidebarChartsBrowser(ChartView *parent = 0);
+        explicit SidebarChartsBrowser(ChartView *parent = 0);
 
         void updateChartSeriesMap();
 

@@ -64,7 +64,7 @@ namespace Caneda
         QList<QAction*> recentFilesActions() const;
 
     private:
-        ActionManager(QObject *parent = 0);
+        explicit ActionManager(QObject *parent = 0);
 
         QHash<QString, QAction*> m_actionHash;
         QHash<QAction*, Caneda::MouseAction> m_mouseActionHash;

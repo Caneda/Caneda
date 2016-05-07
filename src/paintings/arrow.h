@@ -26,7 +26,8 @@
 namespace Caneda
 {
     /*!
-     * \brief This class is used to represent resizable arrow item on a graphics scene.
+     * \brief This class is used to represent resizable arrow item on a
+     * graphics scene.
      *
      * This class supports two different styles of arrow.
      *
@@ -35,17 +36,19 @@ namespace Caneda
     class Arrow : public Painting
     {
     public:
-        //! \brief Represents the arrow head style.
+        //! \brief Enum to represent the arrow head style.
         enum HeadStyle {
-            //! This represents an ordinary arrow head style (two lines pointing in one direction)
+            //! Ordinary arrow head style (two lines pointing in a direction)
             TwoLineArrow,
-            //! This represents a filled arrow head style (filled triangle pointing in one direction)
+            //! Filled arrow head style (filled triangle pointing in a direction)
             FilledArrow
         };
 
-        Arrow(const QLineF &line = QLineF(), HeadStyle style = FilledArrow,
-                qreal headWidth = 12, qreal headHeight = 20,
-                GraphicsScene *scene = 0);
+        explicit Arrow(const QLineF &line = QLineF(),
+                       HeadStyle style = FilledArrow,
+                       qreal headWidth = 12,
+                       qreal headHeight = 20,
+                       GraphicsScene *scene = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::ArrowType };

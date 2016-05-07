@@ -35,7 +35,7 @@ namespace Caneda
     class FileFilterProxyModel : public QSortFilterProxyModel
     {
     public:
-        FileFilterProxyModel(QObject *parent = 0);
+        explicit FileFilterProxyModel(QObject *parent = 0);
 
         bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
     };
@@ -59,7 +59,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SidebarTextBrowser(QWidget *parent = 0);
+        explicit SidebarTextBrowser(QWidget *parent = 0);
         ~SidebarTextBrowser();
 
     private Q_SLOTS:

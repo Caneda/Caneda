@@ -37,7 +37,7 @@ namespace Caneda
     //! \brief Sharable port's data.
     struct PortData : public QSharedData
     {
-        PortData(QPointF _pos, QString _name) : pos(_pos), name(_name) {}
+        explicit PortData(QPointF _pos, QString _name) : pos(_pos), name(_name) {}
 
         QPointF pos;
         QString name;
@@ -63,7 +63,7 @@ namespace Caneda
     class Port : public QGraphicsItem
     {
     public:
-        Port(GraphicsItem* parent, QString portName = QString());
+        explicit Port(GraphicsItem* parent, QString portName = QString());
         ~Port();
 
         //! Returns the port's name.

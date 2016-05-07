@@ -58,7 +58,7 @@ namespace Caneda
         void slotInsertToolbarComponent(const QString& action, bool on);
 
     private:
-        StateHandler(QObject *parent = 0);
+        explicit StateHandler(QObject *parent = 0);
 
         void applyCursor(GraphicsView *widget);
         void applyState(GraphicsView *widget);

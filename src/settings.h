@@ -22,10 +22,9 @@
 #define SETTINGS_H
 
 #include <QMap>
-#include <QVariant>
 
-// Forward declarations
-class QSettings;
+//Forward declarations
+class QVariant;
 
 namespace Caneda
 {
@@ -54,7 +53,7 @@ namespace Caneda
         bool save();
 
     private:
-        Settings();
+        explicit Settings();
 
         QMap<QString, QVariant> defaultSettings;
         QMap<QString, QVariant> currentSettings;

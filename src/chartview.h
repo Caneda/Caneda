@@ -47,7 +47,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PlotMagnifier(QWidget *);
+        explicit PlotMagnifier(QWidget *);
 
         void zoomIn();
         void zoomOut();
@@ -78,7 +78,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        ChartView(ChartScene *scene, QWidget *parent = 0);
+        explicit ChartView(ChartScene *scene, QWidget *parent = 0);
 
         virtual void zoomIn();
         virtual void zoomOut();

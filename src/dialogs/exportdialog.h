@@ -40,7 +40,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        ExportDialog(IDocument *, QWidget *parent = 0);
+        explicit ExportDialog(IDocument *, QWidget *parent = 0);
 
     public Q_SLOTS:
         void slotChooseDirectory();

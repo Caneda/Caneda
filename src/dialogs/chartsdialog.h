@@ -44,7 +44,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        ChartsDialog(ChartView *parent = 0);
+        explicit ChartsDialog(ChartView *parent = 0);
 
     public Q_SLOTS:
         void accept();

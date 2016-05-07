@@ -73,7 +73,7 @@ namespace Caneda
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0) = 0;
 
     protected:
-        IContext(QObject *parent = 0);
+        explicit IContext(QObject *parent = 0);
     };
 
 
@@ -120,7 +120,7 @@ namespace Caneda
         // End of IContext interface methods
 
     private:
-        LayoutContext(QObject *parent = 0);
+        explicit LayoutContext(QObject *parent = 0);
 
         SidebarItemsBrowser *m_sidebarBrowser;
     };
@@ -165,7 +165,7 @@ namespace Caneda
         // End of IContext interface methods
 
     private:
-        SchematicContext(QObject *parent = 0);
+        explicit SchematicContext(QObject *parent = 0);
 
         SidebarItemsBrowser *m_sidebarBrowser;
     };
@@ -210,7 +210,7 @@ namespace Caneda
         // End of IContext interface methods
 
     private:
-        SimulationContext(QObject *parent = 0);
+        explicit SimulationContext(QObject *parent = 0);
 
         SidebarChartsBrowser *m_sidebarBrowser;
     };
@@ -255,7 +255,7 @@ namespace Caneda
         // End of IContext interface methods
 
     private:
-        SymbolContext(QObject *parent = 0);
+        explicit SymbolContext(QObject *parent = 0);
 
         SidebarItemsBrowser *m_sidebarBrowser;
     };
@@ -299,7 +299,7 @@ namespace Caneda
         // End of IContext interface methods
 
     private:
-        TextContext(QObject *parent = 0);
+        explicit TextContext(QObject *parent = 0);
 
         SidebarTextBrowser *m_sidebarTextBrowser;
     };

@@ -42,7 +42,7 @@ namespace Caneda
     class Library
     {
     public:
-        Library(QString libraryPath);
+        explicit Library(QString libraryPath);
 
         //! Returns library name.
         QString libraryName() const { return m_libraryName; }
@@ -111,7 +111,7 @@ namespace Caneda
         ComponentDataPtr componentData(QString name, QString library);
 
     private:
-        LibraryManager(QObject *parent = 0);
+        explicit LibraryManager(QObject *parent = 0);
 
         //! Hash table to hold libraries.
         QHash<QString, Library*> m_libraryHash;

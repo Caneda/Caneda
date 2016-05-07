@@ -35,7 +35,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        AboutDialog(QWidget *parent = 0);
+        explicit AboutDialog(QWidget *parent = 0);
 
     private:
         QWidget *title() const;

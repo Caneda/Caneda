@@ -45,7 +45,7 @@ namespace Caneda
     class PortSymbol : public GraphicsItem
     {
     public:
-        PortSymbol(GraphicsScene *scene = 0);
+        explicit PortSymbol(GraphicsScene *scene = 0);
         ~PortSymbol();
 
         //! \copydoc GraphicsItem::Type

@@ -29,7 +29,7 @@ namespace Caneda
     class GraphicLine : public Painting
     {
     public:
-        GraphicLine(const QLineF &line, GraphicsScene *scene = 0);
+        explicit GraphicLine(const QLineF &line, GraphicsScene *scene = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::GraphicLineType };

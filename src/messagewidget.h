@@ -100,6 +100,7 @@ namespace Caneda
         Q_PROPERTY(bool closeButtonVisible READ isCloseButtonVisible WRITE setCloseButtonVisible)
         Q_PROPERTY(MessageType messageType READ messageType WRITE setMessageType)
         Q_PROPERTY(QIcon icon READ icon WRITE setIcon)
+
     public:
 
         /**

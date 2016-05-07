@@ -28,13 +28,13 @@ namespace Caneda
     /*!
      * \brief Represents rectangular painting item.
      *
-     * This class allows user to draw rectangle on schematic. The rectangles can
-     * be filled by setting \a Painting::setBrush() .
+     * This class allows user to draw rectangle on schematic. The rectangles
+     * can be filled by setting \a Painting::setBrush() .
      */
     class Rectangle : public Painting
     {
     public:
-        Rectangle(const QRectF &rect, GraphicsScene *scene = 0);
+        explicit Rectangle(const QRectF &rect, GraphicsScene *scene = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::RectangleType };

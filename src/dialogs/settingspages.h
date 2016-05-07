@@ -47,7 +47,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SettingsPage(QWidget *parent);
+        explicit SettingsPage(QWidget *parent);
 
         /// Applies the configuration input by the user in the configuration page
         virtual void applyConf() = 0;
@@ -66,7 +66,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        GeneralConfigurationPage(QWidget *parent = 0);
+        explicit GeneralConfigurationPage(QWidget *parent = 0);
 
     private Q_SLOTS:
         void slotColorButtonDialog(QPushButton *);
@@ -96,7 +96,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        LibrariesConfigurationPage(QWidget *parent = 0);
+        explicit LibrariesConfigurationPage(QWidget *parent = 0);
 
     private Q_SLOTS:
         void slotAddLibrary();
@@ -123,7 +123,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SimulationConfigurationPage(QWidget *parent = 0);
+        explicit SimulationConfigurationPage(QWidget *parent = 0);
 
     private Q_SLOTS:
         void slotSimulationEngineSelected();
@@ -146,7 +146,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        HdlConfigurationPage(QWidget *parent = 0);
+        explicit HdlConfigurationPage(QWidget *parent = 0);
 
     private Q_SLOTS:
         void slotColorKeyword();
@@ -177,7 +177,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        LayoutConfigurationPage(QWidget *parent = 0);
+        explicit LayoutConfigurationPage(QWidget *parent = 0);
 
     private Q_SLOTS:
         void slotColorMetal1();

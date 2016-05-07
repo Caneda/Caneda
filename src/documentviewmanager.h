@@ -82,7 +82,7 @@ namespace Caneda
         void onViewFocussedIn(IView *view);
 
     private:
-        DocumentViewManager(QObject *parent = 0);
+        explicit DocumentViewManager(QObject *parent = 0);
 
         DocumentData* documentDataForFileName(const QString &fileName) const;
         DocumentData* documentDataForDocument(IDocument *document) const;

@@ -43,7 +43,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        Highlighter(QTextDocument *parent = 0);
+        explicit Highlighter(QTextDocument *parent = 0);
 
     protected:
         void highlightBlock(const QString &text);
@@ -79,7 +79,7 @@ namespace Caneda
     {
         Q_OBJECT
     public:
-        VhdlHighlighter(QTextDocument *parent = 0);
+        explicit VhdlHighlighter(QTextDocument *parent = 0);
     };
 
     /*!
@@ -92,7 +92,7 @@ namespace Caneda
     {
         Q_OBJECT
     public:
-        VerilogHighlighter(QTextDocument *parent = 0);
+        explicit VerilogHighlighter(QTextDocument *parent = 0);
     };
 
     /*!
@@ -105,7 +105,7 @@ namespace Caneda
     {
         Q_OBJECT
     public:
-        SpiceHighlighter(QTextDocument *parent = 0);
+        explicit SpiceHighlighter(QTextDocument *parent = 0);
     };
 
 } // namespace Caneda

@@ -43,7 +43,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        ChartScene(QWidget *parent = 0);
+        explicit ChartScene(QWidget *parent = 0);
 
         //! \brief Returns a list of all items in the scene in descending stacking
         QList<ChartSeries*> items() const { return m_items; }

@@ -52,7 +52,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        GraphicsView(GraphicsScene *scene = 0);
+        explicit GraphicsView(GraphicsScene *scene = 0);
 
         GraphicsScene* graphicsScene() const;
 

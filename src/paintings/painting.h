@@ -59,7 +59,7 @@ namespace Caneda
     class Painting : public GraphicsItem
     {
     public:
-        Painting(GraphicsScene *scene = 0);
+        explicit Painting(GraphicsScene *scene = 0);
 
         static Painting* fromName(const QString& name);
 

@@ -61,7 +61,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        IDocument();
+        explicit IDocument();
 
         QString fileName() const;
         void setFileName(const QString &fileName);
@@ -152,7 +152,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        LayoutDocument();
+        explicit LayoutDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -231,7 +231,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SchematicDocument();
+        explicit SchematicDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -316,7 +316,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SimulationDocument();
+        explicit SimulationDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -393,7 +393,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SymbolDocument();
+        explicit SymbolDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -472,7 +472,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        TextDocument();
+        explicit TextDocument();
 
         // IDocument interface methods
         virtual IContext* context();
