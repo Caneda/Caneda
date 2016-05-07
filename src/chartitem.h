@@ -38,8 +38,10 @@ namespace Caneda
         explicit ChartSeries(const QString &title = QString::null);
         explicit ChartSeries(const QwtText &title);
 
-        QString type() const { return m_type; }  //! \brief Returns the type of curve
-        void setType(const QString type) { m_type = type; }    //! \brief Sets the type of curve
+        //! \brief Returns the type of curve
+        QString type() const { return m_type; }
+        //! \brief Sets the type of curve
+        void setType(const QString& type) { m_type = type; }
 
     private:
         QString m_type;  //! \brief Type of curve (voltage, current, etc)
