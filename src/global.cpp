@@ -147,8 +147,6 @@ namespace Caneda
     QString latexToUnicode(const QString& Input)
     {
         int Begin = 0, End = 0;
-        struct tSpecialChar *p;
-
         QString Output = "";
         Output.reserve(Input.size());
 
@@ -156,7 +154,7 @@ namespace Caneda
             Output += Input.mid(End, Begin - End);
             End = Begin++;
 
-            p = SpecialChars;
+            struct tSpecialChar *p = SpecialChars;
             while(p->Unicode != 0) {  // test all special characters
                 if(Input.mid(Begin).startsWith(p->Mnemonic)) {
                     Output += QChar(p->Unicode);

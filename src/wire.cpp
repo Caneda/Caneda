@@ -44,7 +44,7 @@ namespace Caneda
      * \param scene GraphicsScene where to add this wire.
      */
     Wire::Wire(const QPointF& startPos, const QPointF& endPos,
-            GraphicsScene *scene) : GraphicsItem(0, scene)
+               GraphicsScene *scene) : GraphicsItem(0, scene)
     {
         // Set flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);

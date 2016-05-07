@@ -314,8 +314,8 @@ namespace Caneda
         bool ok1, ok2, ok3;
 
         int pointSize(attribs.value("pointSize").toString().toInt(&ok1));
-        int pixelSize(attribs.value("pixelSize").toString().toInt(&ok2));
         if(pointSize == -1) {
+            int pixelSize(attribs.value("pixelSize").toString().toInt(&ok2));
             font.setPixelSize(pixelSize);
         }
         else {
