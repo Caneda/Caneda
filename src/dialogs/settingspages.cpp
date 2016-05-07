@@ -146,10 +146,10 @@ namespace Caneda
 
         //Finally we set the general layout of all groups *************************
         QVBoxLayout *vlayout1 = new QVBoxLayout();
-        QLabel *title_label_ = new QLabel(title());
+        title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);
 
-        QFrame *horiz_line_ = new QFrame();
+        horiz_line_ = new QFrame();
         horiz_line_->setFrameShape(QFrame::HLine);
         vlayout1->addWidget(horiz_line_);
 
@@ -288,10 +288,10 @@ namespace Caneda
         QLabel *warningLabel = new QLabel(tr("Warning: libraries will be set upon program restart"));
 
         QVBoxLayout *vlayout1 = new QVBoxLayout();
-        QLabel *title_label_ = new QLabel(title());
+        title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);
 
-        QFrame *horiz_line_ = new QFrame();
+        horiz_line_ = new QFrame();
         horiz_line_->setFrameShape(QFrame::HLine);
         vlayout1->addWidget(horiz_line_);
 
@@ -429,10 +429,10 @@ namespace Caneda
 
         //Finally we set the general layout of all groups ***********************************
         QVBoxLayout *vlayout1 = new QVBoxLayout();
-        QLabel *title_label_ = new QLabel(title());
+        title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);
 
-        QFrame *horiz_line_ = new QFrame();
+        horiz_line_ = new QFrame();
         horiz_line_->setFrameShape(QFrame::HLine);
         vlayout1->addWidget(horiz_line_);
 
@@ -589,10 +589,10 @@ namespace Caneda
 
         //Finally we set the general layout of all groups ***********************************
         QVBoxLayout *vlayout1 = new QVBoxLayout();
-        QLabel *title_label_ = new QLabel(title());
+        title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);
 
-        QFrame *horiz_line_ = new QFrame();
+        horiz_line_ = new QFrame();
         horiz_line_->setFrameShape(QFrame::HLine);
         vlayout1->addWidget(horiz_line_);
 
@@ -796,10 +796,10 @@ namespace Caneda
 
         //Finally we set the general layout of all groups ***********************************
         QVBoxLayout *vlayout1 = new QVBoxLayout();
-        QLabel *title_label_ = new QLabel(title());
+        title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);
 
-        QFrame *horiz_line_ = new QFrame();
+        horiz_line_ = new QFrame();
         horiz_line_->setFrameShape(QFrame::HLine);
         vlayout1->addWidget(horiz_line_);
 
