@@ -22,10 +22,6 @@
 #define PROPERTY_H
 
 #include <QGraphicsSimpleTextItem>
-#include <QMap>
-#include <QObject>
-#include <QSharedData>
-#include <QString>
 
 namespace Caneda
 {
