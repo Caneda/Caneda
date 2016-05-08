@@ -26,8 +26,7 @@ namespace Caneda
      *
      * \param title Title of the curve
      */
-    ChartSeries::ChartSeries(const QString &title) :
-        QwtPlotCurve(title)
+    ChartSeries::ChartSeries(const QString &title) : QwtPlotCurve(title)
     {
     }
 
@@ -36,8 +35,7 @@ namespace Caneda
      *
      * \param title Title of the curve
      */
-    ChartSeries::ChartSeries(const QwtText &title) :
-        QwtPlotCurve(title)
+    ChartSeries::ChartSeries(const QwtText &title) : QwtPlotCurve(title)
     {
     }
 

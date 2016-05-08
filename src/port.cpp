@@ -33,14 +33,13 @@ namespace Caneda
      * \brief Constructs a Port item with a GraphicsItem as \a parent and
      * port's name \a portName.
      */
-    Port::Port(GraphicsItem* parent, QString portName) :
-        QGraphicsItem(parent)
+    Port::Port(GraphicsItem *parent) : QGraphicsItem(parent)
     {
         // Set component flags
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
-        m_name = portName;
+        m_name = "";
         m_connections.append(this);
     }
 

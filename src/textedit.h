@@ -48,7 +48,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        explicit TextEdit(QTextDocument *document);
+        explicit TextEdit(QTextDocument *document, QWidget *parent = 0);
 
         void setPointSize(qreal size);
 

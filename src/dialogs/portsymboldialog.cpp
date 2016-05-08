@@ -29,8 +29,10 @@ namespace Caneda
      * \param portSymbol The PortSymbol being modified by this dialog.
      * \param parent Parent of this object.
      */
-    PortSymbolDialog::PortSymbolDialog(PortSymbol *portSymbol, QWidget *parent) :
-        QDialog(parent), m_portSymbol(portSymbol)
+    PortSymbolDialog::PortSymbolDialog(PortSymbol *portSymbol,
+                                       QWidget *parent) :
+        QDialog(parent),
+        m_portSymbol(portSymbol)
     {
         // Initialize designer dialog
         ui.setupUi(this);

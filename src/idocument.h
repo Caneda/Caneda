@@ -61,7 +61,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        explicit IDocument();
+        explicit IDocument(QObject *parent = 0);
 
         QString fileName() const;
         void setFileName(const QString &fileName);
@@ -112,7 +112,7 @@ namespace Caneda
         virtual IView* createView() = 0;
         QList<IView*> views() const;
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) = 0;
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) = 0;
         virtual void launchPropertiesDialog() = 0;
 
     public Q_SLOTS:
@@ -152,7 +152,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        explicit LayoutDocument();
+        explicit LayoutDocument(QObject *parent = 0);
 
         // IDocument interface methods
         virtual IContext* context();
@@ -199,7 +199,7 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
@@ -231,7 +231,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        explicit SchematicDocument();
+        explicit SchematicDocument(QObject *parent = 0);
 
         // IDocument interface methods
         virtual IContext* context();
@@ -278,7 +278,7 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
@@ -316,7 +316,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        explicit SimulationDocument();
+        explicit SimulationDocument(QObject *parent = 0);
 
         // IDocument interface methods
         virtual IContext* context();
@@ -363,7 +363,7 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) {}
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *) {}
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
@@ -393,7 +393,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        explicit SymbolDocument();
+        explicit SymbolDocument(QObject *parent = 0);
 
         // IDocument interface methods
         virtual IContext* context();
@@ -440,7 +440,7 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
@@ -472,7 +472,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        explicit TextDocument();
+        explicit TextDocument(QObject *parent = 0);
 
         // IDocument interface methods
         virtual IContext* context();
@@ -519,7 +519,7 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) {}
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *) {}
         virtual void launchPropertiesDialog() {}
         // End of IDocument interface methods
 

@@ -35,11 +35,13 @@ namespace Caneda
      *                         FileFilterProxyModel                          *
      *************************************************************************/
     //! \brief Constructor.
-    FileFilterProxyModel::FileFilterProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
+    FileFilterProxyModel::FileFilterProxyModel(QObject *parent) :
+        QSortFilterProxyModel(parent)
     {
     }
 
-    bool FileFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+    bool FileFilterProxyModel::filterAcceptsRow(int sourceRow,
+                                                const QModelIndex &sourceParent) const
     {
         QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
         QFileSystemModel *fileModel = static_cast<QFileSystemModel*>(sourceModel());

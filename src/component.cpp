@@ -102,13 +102,14 @@ namespace Caneda
     void Component::updateSharedData()
     {
         // Add component label
-        Property _label("label", labelPrefix().append('1'), tr("Label"), true);
+        Property _label("label", labelPrefix().append('1'), QObject::tr("Label"), true);
         d->properties->addProperty("label", _label);
 
         // Add component ports
         const QList<PortData*> portDatas = d.constData()->ports;
         foreach(const PortData *data, portDatas) {
-            Port *port = new Port(this, data->name);
+            Port *port = new Port(this);
+            port->setName(data->name);
             port->setPos(data->pos);
             m_ports << port;
         }
@@ -198,7 +199,7 @@ namespace Caneda
      * \sa LibraryManager::registerComponent()
      */
     void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-            QWidget *w)
+            QWidget *)
     {
         // Paint the component symbol
         Settings *settings = Settings::instance();

@@ -37,8 +37,8 @@ namespace Caneda
 {
     //! \brief Constructor.
     ExportDialog::ExportDialog(IDocument *document, QWidget *parent) :
-            QDialog(parent),
-            m_document(document)
+        QDialog(parent),
+        m_document(document)
     {
         ui.setupUi(this);
 

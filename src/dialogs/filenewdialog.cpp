@@ -29,8 +29,7 @@ namespace Caneda
      * We use the actions instead of directly setting the buttons to mantain
      * coeherence with the rest of the application.
      */
-    FileNewDialog::FileNewDialog(QWidget *parent) :
-        QDialog(parent)
+    FileNewDialog::FileNewDialog(QWidget *parent) : QDialog(parent)
     {
         ui.setupUi(this);
 

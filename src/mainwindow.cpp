@@ -44,7 +44,7 @@
 namespace Caneda
 {
     //! \brief Constructs and setups the MainWindow for the application.
-    MainWindow::MainWindow(QWidget *w) : QMainWindow(w)
+    MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     {
         m_tabWidget = new TabWidget(this);
         m_tabWidget->setFocusPolicy(Qt::NoFocus);

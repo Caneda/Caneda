@@ -37,7 +37,7 @@ namespace Caneda
      * \param parent Parent of the item.
      * \param scene GraphicsScene where to add the item.
      */
-    GraphicsItem::GraphicsItem(QGraphicsItem* parent, GraphicsScene* scene) :
+    GraphicsItem::GraphicsItem(QGraphicsItem *parent, GraphicsScene *scene) :
         QGraphicsItem(parent),
         m_boundingRect(0, 0, 0, 0)
     {

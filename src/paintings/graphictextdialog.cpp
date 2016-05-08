@@ -41,8 +41,12 @@
 namespace Caneda
 {
     //! \brief Constructor.
-    GraphicTextDialog::GraphicTextDialog(GraphicText *text, bool enableUndoCommand, QWidget *parent)
-    : QDialog(parent), textItem(text), enableUndoCommand(enableUndoCommand)
+    GraphicTextDialog::GraphicTextDialog(GraphicText *text,
+                                         bool enableUndoCommand,
+                                         QWidget *parent) :
+        QDialog(parent),
+        textItem(text),
+        enableUndoCommand(enableUndoCommand)
     {
         mainLayout = new QVBoxLayout(this);
         toolBarLayout = new QHBoxLayout;

@@ -28,7 +28,8 @@
 namespace Caneda
 {
     //! \brief Constructor.
-    ProjectFileOpenDialog::ProjectFileOpenDialog(QString libraryFileName, QWidget *parent) :
+    ProjectFileOpenDialog::ProjectFileOpenDialog(QString libraryFileName,
+                                                 QWidget *parent) :
         QDialog(parent)
     {
         ui.setupUi(this);

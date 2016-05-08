@@ -43,9 +43,9 @@ namespace Caneda
 {
     //! \brief Constructs a painting item with default pen and default brush.
     Painting::Painting(GraphicsScene *scene) : GraphicsItem(0, scene),
-    m_brush(Qt::NoBrush),
-    m_resizeHandles(Caneda::NoHandle),
-    m_activeHandle(Caneda::NoHandle)
+        m_brush(Qt::NoBrush),
+        m_resizeHandles(Caneda::NoHandle),
+        m_activeHandle(Caneda::NoHandle)
     {
         Settings *settings = Settings::instance();
         m_pen = QPen(settings->currentValue("gui/foregroundColor").value<QColor>());

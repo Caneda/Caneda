@@ -125,13 +125,11 @@ namespace Caneda
      *
      * \sa PropertyData, Property
      */
-    class PropertyGroup : public QObject, public QGraphicsSimpleTextItem
+    class PropertyGroup : public QGraphicsSimpleTextItem
     {
-        Q_OBJECT
-
     public:
-        explicit PropertyGroup(GraphicsScene* scene = 0,
-                               const PropertyMap& propMap = PropertyMap());
+        explicit PropertyGroup(GraphicsScene *scene = 0,
+                               QGraphicsItem * parent = 0);
 
         void addProperty(const QString& key, const Property& prop);
         //! Returns selected property from property map.

@@ -25,7 +25,7 @@
 namespace Caneda
 {
     //! \brief Constructor.
-    TextEdit::TextEdit(QTextDocument *document)
+    TextEdit::TextEdit(QTextDocument *document, QWidget *parent) : QPlainTextEdit(parent)
     {
         QPlainTextDocumentLayout *layout = new QPlainTextDocumentLayout(document);
         document->setDocumentLayout(layout);

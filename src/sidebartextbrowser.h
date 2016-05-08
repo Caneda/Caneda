@@ -34,6 +34,8 @@ namespace Caneda
      */
     class FileFilterProxyModel : public QSortFilterProxyModel
     {
+        Q_OBJECT
+
     public:
         explicit FileFilterProxyModel(QObject *parent = 0);
 

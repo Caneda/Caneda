@@ -73,7 +73,9 @@ namespace Caneda
      */
 
     //! \brief Constructor.
-    IView::IView(IDocument *document) : m_document(document)
+    IView::IView(IDocument *document) :
+        QObject(document),
+        m_document(document)
     {
         Q_ASSERT(document != 0);
         m_toolBar = new QToolBar;
@@ -177,8 +179,7 @@ namespace Caneda
      *                             LayoutView                                *
      *************************************************************************/
     //! \brief Constructor.
-    LayoutView::LayoutView(LayoutDocument *document) :
-        IView(document)
+    LayoutView::LayoutView(LayoutDocument *document) : IView(document)
     {
         m_graphicsView = new GraphicsView(document->graphicsScene());
         StateHandler::instance()->registerWidget(m_graphicsView);
@@ -246,8 +247,7 @@ namespace Caneda
      *                           SchematicView                               *
      *************************************************************************/
     //! \brief Constructor.
-    SchematicView::SchematicView(SchematicDocument *document) :
-        IView(document)
+    SchematicView::SchematicView(SchematicDocument *document) : IView(document)
     {
         m_graphicsView = new GraphicsView(document->graphicsScene());
         StateHandler::instance()->registerWidget(m_graphicsView);
@@ -386,8 +386,7 @@ namespace Caneda
      *                             SymbolView                                *
      *************************************************************************/
     //! \brief Constructor.
-    SymbolView::SymbolView(SymbolDocument *document) :
-        IView(document)
+    SymbolView::SymbolView(SymbolDocument *document) : IView(document)
     {
         m_graphicsView = new GraphicsView(document->graphicsScene());
         StateHandler::instance()->registerWidget(m_graphicsView);

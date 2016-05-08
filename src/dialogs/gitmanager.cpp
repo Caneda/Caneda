@@ -30,8 +30,8 @@ namespace Caneda
      *
      * \param parent Parent of the widget.
      */
-    GitManager::GitManager(const QString& dir,
-            QWidget *parent) : QDialog(parent)
+    GitManager::GitManager(const QString& dir, QWidget *parent) :
+        QDialog(parent)
     {
         ui.setupUi(this);
 

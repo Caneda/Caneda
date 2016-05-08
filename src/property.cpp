@@ -162,9 +162,10 @@ namespace Caneda
      * \param scene The graphics scene to which this property should belong.
      * \param propMap The PropertyMap to use on initialization.
      */
-    PropertyGroup::PropertyGroup(GraphicsScene *scene, const PropertyMap &propMap)
+    PropertyGroup::PropertyGroup(GraphicsScene *scene,
+                                 QGraphicsItem *parent) :
+        QGraphicsSimpleTextItem(parent)
     {
-        m_propertyMap = propMap;
         m_userPropertiesEnabled = false;
 
         if(scene) {

@@ -76,10 +76,8 @@ namespace Caneda
      *
      * \sa GraphicsItem, LibraryManager
      */
-    class Component : public QObject, public GraphicsItem
+    class Component : public GraphicsItem
     {
-        Q_OBJECT
-
     public:
         explicit Component(GraphicsScene *scene = 0);
         ~Component();
@@ -109,20 +107,20 @@ namespace Caneda
 
         //! Returns the label of the component in the form {label_prefix}{number_suffix}
         QString label() const { return d->properties->propertyValue("label"); }
-        bool setLabel(const QString& _label);
+        bool setLabel(const QString &_label);
 
         //! Returns the component data.
         ComponentDataPtr componentData() const { return d; }
-        void setComponentData(const ComponentDataPtr& other);
+        void setComponentData(const ComponentDataPtr &other);
 
         //! Returns the property map (actually copy of property map).
         PropertyGroup* properties() const { return d->properties; }
 
-        QString model(const QString& type) const;
+        QString model(const QString &type) const;
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
 
-        Component *copy(GraphicsScene *scene = 0) const;
+        Component* copy(GraphicsScene *scene = 0) const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
@@ -130,7 +128,7 @@ namespace Caneda
         int launchPropertiesDialog();
 
     protected:
-        QRectF adjustedBoundRect(const QRectF& rect);
+        QRectF adjustedBoundRect(const QRectF &rect);
 
     public slots:
         void updateBoundingRect();

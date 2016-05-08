@@ -332,7 +332,7 @@ namespace Caneda
      */
     void StateHandler::slotPerformToggleAction(bool on)
     {
-        QAction *action = qobject_cast<QAction *>(sender());
+        QAction *action = qobject_cast<QAction*>(sender());
         if(action) {
             slotPerformToggleAction(action->objectName(), on);
         }

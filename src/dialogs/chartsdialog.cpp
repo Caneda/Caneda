@@ -31,8 +31,7 @@ namespace Caneda
      * \param parent Parent of this object, the ChartView
      * being modified by this dialog.
      */
-    ChartsDialog::ChartsDialog(ChartView *parent) :
-        QDialog(parent)
+    ChartsDialog::ChartsDialog(ChartView *parent) : QDialog(parent)
     {
         // Initialize designer dialog
         ui.setupUi(this);

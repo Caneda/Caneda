@@ -96,7 +96,7 @@ namespace Caneda
     {
         Settings *settings = Settings::instance();
 
-        //First we set the appereance settings group of options *******************
+        // First we set the appereance settings group of options
         checkShowGrid = new QCheckBox();
         checkShowGrid->setChecked(settings->currentValue("gui/gridVisible").value<bool>());
 
@@ -144,7 +144,7 @@ namespace Caneda
         appereanceLayout->addRow(tr("Line width:"), spinWidth);
 
 
-        //Finally we set the general layout of all groups *************************
+        // Finally we set the general layout of all groups
         QVBoxLayout *vlayout1 = new QVBoxLayout();
         title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);
@@ -237,7 +237,7 @@ namespace Caneda
     {
         Settings *settings = Settings::instance();
 
-        // Set the schematic library options *************************************
+        // Set the schematic library options
         libraryList = new QListWidget(this);
         QStringList libraries;
         libraries << settings->currentValue("libraries/schematic").toStringList();
@@ -260,7 +260,7 @@ namespace Caneda
         currentLibrariesLayout->addLayout(libraryButtons);
 
 
-        // Set the schematic library options *************************************
+        // Set the schematic library options
         hdlLibraryList = new QListWidget(this);
         QStringList hdlLibraries;
         hdlLibraries << settings->currentValue("libraries/hdl").toStringList();
@@ -282,7 +282,7 @@ namespace Caneda
         currentHdlLibrariesLayout->addWidget(hdlLibraryList);
         currentHdlLibrariesLayout->addLayout(hdlLibraryButtons);
 
-        //Finally we set the general layout of all groups *************************
+        // Finally we set the general layout of all groups
         getNewLibraries = new QPushButton(tr("Get new libraries..."));
         connect(getNewLibraries, SIGNAL(clicked()), SLOT(slotGetNewLibraries()));
         QLabel *warningLabel = new QLabel(tr("Warning: libraries will be set upon program restart"));
@@ -388,7 +388,7 @@ namespace Caneda
     {
         Settings *settings = Settings::instance();
 
-        //First we set the simulation group of options ***************************************
+        // First we set the simulation group of options
         QGroupBox *groupSimulator = new QGroupBox(tr("Simulation Engine"), this);
         QGroupBox *groupOutput = new QGroupBox(tr("Output Data"), this);
 
@@ -427,7 +427,7 @@ namespace Caneda
         connect(ngspiceMode, SIGNAL(clicked()), SLOT(slotSimulationEngineSelected()));
         connect(customMode, SIGNAL(clicked()), SLOT(slotSimulationEngineSelected()));
 
-        //Finally we set the general layout of all groups ***********************************
+        // Finally we set the general layout of all groups
         QVBoxLayout *vlayout1 = new QVBoxLayout();
         title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);
@@ -508,7 +508,7 @@ namespace Caneda
      */
     HdlConfigurationPage::HdlConfigurationPage(QWidget *parent) : SettingsPage(parent)
     {
-        //First we set the color settings group of options **********************************
+        // First we set the color settings group of options
         QGroupBox *colorsHighlighting = new QGroupBox(tr("Colors for Syntax Highlighting"),
                 this);
         QGridLayout *generalLayout = new QGridLayout(colorsHighlighting);
@@ -587,7 +587,7 @@ namespace Caneda
         generalLayout->addWidget(systemButton, 3, 1);
 
 
-        //Finally we set the general layout of all groups ***********************************
+        // Finally we set the general layout of all groups
         QVBoxLayout *vlayout1 = new QVBoxLayout();
         title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);
@@ -713,9 +713,10 @@ namespace Caneda
      *
      * \param parent The parent of the dialog.
      */
-    LayoutConfigurationPage::LayoutConfigurationPage(QWidget *parent) : SettingsPage(parent)
+    LayoutConfigurationPage::LayoutConfigurationPage(QWidget *parent) :
+        SettingsPage(parent)
     {
-        //First we set the color settings group of options **********************************
+        // First we set the color settings group of options
         QGroupBox *colorsLayers = new QGroupBox(tr("Layer Colors"),
                 this);
         QGridLayout *generalLayout = new QGridLayout(colorsLayers);
@@ -794,7 +795,7 @@ namespace Caneda
         generalLayout->addWidget(pwellButton, 3, 1);
 
 
-        //Finally we set the general layout of all groups ***********************************
+        // Finally we set the general layout of all groups
         QVBoxLayout *vlayout1 = new QVBoxLayout();
         title_label_ = new QLabel(title());
         vlayout1->addWidget(title_label_);

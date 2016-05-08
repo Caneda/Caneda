@@ -36,8 +36,10 @@ namespace Caneda
      * \param title Window title.
      * \param parent Parent of the dialog.
      */
-    SettingsDialog::SettingsDialog(QList<SettingsPage *> wantedPages, const char *title,
-            QWidget *parent) : QDialog(parent)
+    SettingsDialog::SettingsDialog(QList<SettingsPage *> wantedPages,
+                                   const char *title,
+                                   QWidget *parent) :
+        QDialog(parent)
     {
         setWindowTitle(tr(title, "window title"));
 

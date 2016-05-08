@@ -78,6 +78,7 @@ namespace Caneda
     class VhdlHighlighter : public Highlighter
     {
         Q_OBJECT
+
     public:
         explicit VhdlHighlighter(QTextDocument *parent = 0);
     };
@@ -91,6 +92,7 @@ namespace Caneda
     class VerilogHighlighter : public Highlighter
     {
         Q_OBJECT
+
     public:
         explicit VerilogHighlighter(QTextDocument *parent = 0);
     };
@@ -104,6 +106,7 @@ namespace Caneda
     class SpiceHighlighter : public Highlighter
     {
         Q_OBJECT
+
     public:
         explicit SpiceHighlighter(QTextDocument *parent = 0);
     };

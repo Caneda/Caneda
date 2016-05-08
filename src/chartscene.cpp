@@ -26,8 +26,7 @@ namespace Caneda
      *
      * \param parent Parent of the scene.
      */
-    ChartScene::ChartScene(QWidget *parent) :
-        QWidget(parent)
+    ChartScene::ChartScene(QWidget *parent) : QWidget(parent)
     {
     }
 

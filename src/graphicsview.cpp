@@ -29,7 +29,7 @@ namespace Caneda
     /*!
      * \brief Constructs a new graphics view.
      *
-     * \param sv Scene to point this view to.
+     * \param scene Scene to point this view to.
      */
     GraphicsView::GraphicsView(GraphicsScene *scene) :
         QGraphicsView(scene),

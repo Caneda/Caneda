@@ -137,7 +137,7 @@ namespace Caneda
         void closeEvent(QCloseEvent *closeEvent);
 
     private:
-        explicit MainWindow(QWidget *w=0);
+        explicit MainWindow(QWidget *parent = 0);
 
         void initActions();
         void initMouseActions();

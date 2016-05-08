@@ -320,7 +320,7 @@ namespace Caneda
      */
 
     //! \brief Constructor.
-    IDocument::IDocument()
+    IDocument::IDocument(QObject *parent) : QObject(parent)
     {
     }
 
@@ -354,7 +354,7 @@ namespace Caneda
      *                           LayoutDocument                              *
      *************************************************************************/
     //! \brief Constructor.
-    LayoutDocument::LayoutDocument()
+    LayoutDocument::LayoutDocument(QObject *parent) : IDocument(parent)
     {
         m_graphicsScene = new GraphicsScene(this);
         connect(m_graphicsScene, SIGNAL(changed()), this,
@@ -567,7 +567,7 @@ namespace Caneda
         return new LayoutView(this);
     }
 
-    void LayoutDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *e)
+    void LayoutDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         // Launch the context of the current document
         ActionManager* am = ActionManager::instance();
@@ -584,7 +584,7 @@ namespace Caneda
         _menu->addAction(am->actionForName("schEdit"));
         _menu->addAction(am->actionForName("symEdit"));
 
-        _menu->exec(e->screenPos());
+        _menu->exec(event->screenPos());
     }
 
     void LayoutDocument::launchPropertiesDialog()
@@ -615,7 +615,7 @@ namespace Caneda
      *                          SchematicDocument                            *
      *************************************************************************/
     //! \brief Constructor.
-    SchematicDocument::SchematicDocument()
+    SchematicDocument::SchematicDocument(QObject *parent) : IDocument(parent)
     {
         m_graphicsScene = new GraphicsScene(this);
         connect(m_graphicsScene, SIGNAL(changed()), this,
@@ -887,7 +887,7 @@ namespace Caneda
         return new SchematicView(this);
     }
 
-    void SchematicDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *e)
+    void SchematicDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         // Launch the context of the current document
         ActionManager* am = ActionManager::instance();
@@ -910,7 +910,7 @@ namespace Caneda
         //                _menu->addAction(am->actionForName("intoH"));
         //                _menu->addAction(am->actionForName("popH"));
 
-        _menu->exec(e->screenPos());
+        _menu->exec(event->screenPos());
     }
 
     void SchematicDocument::launchPropertiesDialog()
@@ -1173,7 +1173,7 @@ namespace Caneda
      *                         SimulationDocument                            *
      *************************************************************************/
     //! \brief Constructor.
-    SimulationDocument::SimulationDocument()
+    SimulationDocument::SimulationDocument(QObject *parent) : IDocument(parent)
     {
         m_chartScene = new ChartScene();
     }
@@ -1283,7 +1283,7 @@ namespace Caneda
      *                           SymbolDocument                              *
      *************************************************************************/
     //! \brief Constructor.
-    SymbolDocument::SymbolDocument()
+    SymbolDocument::SymbolDocument(QObject *parent) : IDocument(parent)
     {
         m_graphicsScene = new GraphicsScene(this);
         connect(m_graphicsScene, SIGNAL(changed()), this,
@@ -1491,7 +1491,7 @@ namespace Caneda
         return new SymbolView(this);
     }
 
-    void SymbolDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *e)
+    void SymbolDocument::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         // Launch the context of the current document
         ActionManager* am = ActionManager::instance();
@@ -1509,7 +1509,7 @@ namespace Caneda
         _menu->addAction(am->actionForName("layEdit"));
         _menu->addAction(am->actionForName("propertiesDialog"));
 
-        _menu->exec(e->screenPos());
+        _menu->exec(event->screenPos());
     }
 
     void SymbolDocument::launchPropertiesDialog()
@@ -1544,7 +1544,7 @@ namespace Caneda
      *                            TextDocument                               *
      *************************************************************************/
     //! \brief Constructor.
-    TextDocument::TextDocument()
+    TextDocument::TextDocument(QObject *parent) : IDocument(parent)
     {
         m_textDocument = new QTextDocument;
         m_textDocument->setModified(false);

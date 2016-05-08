@@ -63,11 +63,12 @@ namespace Caneda
     class Port : public QGraphicsItem
     {
     public:
-        explicit Port(GraphicsItem* parent, QString portName = QString());
+        explicit Port(GraphicsItem *parent = 0);
         ~Port();
 
         //! Returns the port's name.
         QString name() const { return m_name; }
+        void setName(const QString &newName) { m_name = newName; }
 
         GraphicsItem* parentItem() const;
 

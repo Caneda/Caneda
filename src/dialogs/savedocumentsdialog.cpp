@@ -55,8 +55,8 @@ namespace Caneda
      *************************************************************************/
     //! \brief Constructor.
     FileBrowserLineEdit::FileBrowserLineEdit(QTreeWidgetItem *item,
-            const QFileInfo& fileInfo,
-            QWidget *parent) :
+                                             const QFileInfo& fileInfo,
+                                             QWidget *parent) :
         QWidget(parent)
     {
         d = new FileBrowserLineEditPrivate;

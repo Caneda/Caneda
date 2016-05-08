@@ -41,8 +41,7 @@ namespace Caneda
     class Wire : public GraphicsItem
     {
     public:
-        explicit Wire(const QPointF &startPos,
-                      const QPointF &endPos,
+        explicit Wire(const QPointF &startPos, const QPointF &endPos,
                       GraphicsScene *scene = 0);
         ~Wire();
 
