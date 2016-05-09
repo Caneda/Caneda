@@ -1839,7 +1839,7 @@ namespace Caneda
     void TextDocument::simulationReady(int error)
     {
         // If there was any error during the process, do not display the waveforms
-        if(error | simulationErrorStatus) {
+        if(error || simulationErrorStatus) {
             return;
         }
 
