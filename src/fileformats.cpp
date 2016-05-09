@@ -95,7 +95,7 @@ namespace Caneda
      *
      * \sa loadFromText(), save()
      */
-    bool FormatXmlSchematic::load()
+    bool FormatXmlSchematic::load() const
     {
         GraphicsScene *scene = graphicsScene();
         if(!scene) {
@@ -262,7 +262,7 @@ namespace Caneda
      *
      * \param text String containing xml data to be read.
      */
-    bool FormatXmlSchematic::loadFromText(const QString& text)
+    bool FormatXmlSchematic::loadFromText(const QString& text) const
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
 
@@ -320,7 +320,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSchematic::loadComponents(Caneda::XmlReader *reader)
+    void FormatXmlSchematic::loadComponents(Caneda::XmlReader *reader) const
     {
         GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "components") {
@@ -355,7 +355,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSchematic::loadPorts(Caneda::XmlReader *reader)
+    void FormatXmlSchematic::loadPorts(Caneda::XmlReader *reader) const
     {
         GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "ports") {
@@ -390,7 +390,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSchematic::loadWires(Caneda::XmlReader* reader)
+    void FormatXmlSchematic::loadWires(Caneda::XmlReader* reader) const
     {
         GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "wires") {
@@ -425,7 +425,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSchematic::loadPaintings(Caneda::XmlReader *reader)
+    void FormatXmlSchematic::loadPaintings(Caneda::XmlReader *reader) const
     {
         GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "paintings") {
@@ -547,7 +547,7 @@ namespace Caneda
      *
      * \sa loadFromText(), save()
      */
-    bool FormatXmlSymbol::load()
+    bool FormatXmlSymbol::load() const
     {
         QFile file(fileName());
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -792,7 +792,7 @@ namespace Caneda
      *
      * \param text String containing xml data to be read.
      */
-    bool FormatXmlSymbol::loadFromText(const QString &text)
+    bool FormatXmlSymbol::loadFromText(const QString &text) const
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
 
@@ -900,7 +900,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSymbol::loadSymbol(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::loadSymbol(Caneda::XmlReader *reader) const
     {
         QPainterPath data;
 
@@ -947,7 +947,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSymbol::loadPorts(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::loadPorts(Caneda::XmlReader *reader) const
     {
         while(!reader->atEnd()) {
             reader->readNext();
@@ -982,7 +982,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSymbol::loadProperties(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::loadProperties(Caneda::XmlReader *reader) const
     {
         GraphicsScene *scene = graphicsScene();
 
@@ -1025,7 +1025,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlSymbol::loadModels(Caneda::XmlReader *reader)
+    void FormatXmlSymbol::loadModels(Caneda::XmlReader *reader) const
     {
         Q_ASSERT(reader->isStartElement() && reader->name() == "models");
 
@@ -1114,7 +1114,7 @@ namespace Caneda
      *
      * \sa loadFromText(), save()
      */
-    bool FormatXmlLayout::load()
+    bool FormatXmlLayout::load() const
     {
         GraphicsScene *scene = graphicsScene();
         if(!scene) {
@@ -1203,7 +1203,7 @@ namespace Caneda
      *
      * \param text String containing xml data to be read.
      */
-    bool FormatXmlLayout::loadFromText(const QString& text)
+    bool FormatXmlLayout::loadFromText(const QString& text) const
     {
         Caneda::XmlReader *reader = new Caneda::XmlReader(text.toUtf8());
 
@@ -1252,7 +1252,7 @@ namespace Caneda
      *
      * \param reader XmlReader responsible for reading xml data.
      */
-    void FormatXmlLayout::loadPaintings(Caneda::XmlReader *reader)
+    void FormatXmlLayout::loadPaintings(Caneda::XmlReader *reader) const
     {
         GraphicsScene *scene = graphicsScene();
         if(!reader->isStartElement() || reader->name() != "paintings") {

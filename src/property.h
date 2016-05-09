@@ -95,7 +95,7 @@ namespace Caneda
         void setVisible(bool visible) { d->visible = visible; }
 
         static Property loadProperty(Caneda::XmlReader *reader);
-        void saveProperty(Caneda::XmlWriter *writer);
+        void saveProperty(Caneda::XmlWriter *writer) const;
 
     private:
         //! Pointer enabling implicit sharing of data.

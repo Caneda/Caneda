@@ -130,7 +130,7 @@ namespace Caneda
      *
      * \param reader XmlReader which is used for writing.
      */
-    void Property::saveProperty(Caneda::XmlWriter *writer)
+    void Property::saveProperty(Caneda::XmlWriter *writer) const
     {
         writer->writeStartElement("property");
 
