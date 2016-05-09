@@ -124,8 +124,7 @@ namespace Caneda
     class PropertyGroup : public QGraphicsSimpleTextItem
     {
     public:
-        explicit PropertyGroup(GraphicsScene *scene = 0,
-                               QGraphicsItem * parent = 0);
+        explicit PropertyGroup(QGraphicsItem *parent = 0);
 
         void addProperty(const QString& key, const Property& prop);
         //! Returns selected property from property map.

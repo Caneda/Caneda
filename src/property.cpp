@@ -162,15 +162,10 @@ namespace Caneda
      * \param scene The graphics scene to which this property should belong.
      * \param propMap The PropertyMap to use on initialization.
      */
-    PropertyGroup::PropertyGroup(GraphicsScene *scene,
-                                 QGraphicsItem *parent) :
+    PropertyGroup::PropertyGroup(QGraphicsItem *parent) :
         QGraphicsSimpleTextItem(parent)
     {
         m_userPropertiesEnabled = false;
-
-        if(scene) {
-            scene->addItem(this);
-        }
 
         // Set items flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);

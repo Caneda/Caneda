@@ -59,8 +59,9 @@ namespace Caneda
         m_mouseAction = Normal;
 
         // Setup spice/electric related scene properties
-        m_properties = new PropertyGroup(this);
+        m_properties = new PropertyGroup();
         m_properties->setUserPropertiesEnabled(true);
+        addItem(m_properties);
 
         // Setup undo stack
         m_undoStack = new QUndoStack(this);
