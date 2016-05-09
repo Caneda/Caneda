@@ -33,8 +33,8 @@ namespace Caneda
      */
     GraphicsView::GraphicsView(GraphicsScene *scene) :
         QGraphicsView(scene),
-        m_zoomRange(0.30, 10.0),
         m_zoomFactor(0.3),
+        m_zoomRange(0.30, 10.0),
         m_currentZoom(1.0),
         panMode(false)
     {

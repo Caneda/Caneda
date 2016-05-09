@@ -47,8 +47,8 @@ namespace Caneda
             const QPixmap& pixmap, bool isLibrary, CategoryItem *parent) :
         m_name(name),
         m_filename(filename),
-        m_iconPixmap(pixmap),
         m_isLibrary(isLibrary),
+        m_iconPixmap(pixmap),
         m_parentItem(parent)
     {
         if(m_parentItem) {
