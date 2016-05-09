@@ -326,6 +326,10 @@ namespace Caneda
     bool DocumentViewManager::closeViewHelper(IView *view, bool askSaveIfModified,
             bool closeDocumentIfLastView)
     {
+        if(!view) {
+            return false;
+        }
+
         DocumentData *data = documentDataForDocument(view->document());
 
         if (data->document->isModified()) {
