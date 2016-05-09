@@ -57,7 +57,7 @@ namespace Caneda
     public:
         explicit FormatXmlSchematic(SchematicDocument *doc = 0);
 
-        bool save();
+        bool save() const;
         bool load() const;
 
         SchematicDocument* schematicDocument() const;
@@ -66,11 +66,11 @@ namespace Caneda
         QString fileName() const;
 
     private:
-        QString saveText();
-        void saveComponents(Caneda::XmlWriter *writer);
-        void savePorts(Caneda::XmlWriter *writer);
-        void saveWires(Caneda::XmlWriter *writer);
-        void savePaintings(Caneda::XmlWriter *writer);
+        QString saveText() const;
+        void saveComponents(Caneda::XmlWriter *writer) const;
+        void savePorts(Caneda::XmlWriter *writer) const;
+        void saveWires(Caneda::XmlWriter *writer) const;
+        void savePaintings(Caneda::XmlWriter *writer) const;
 
         bool loadFromText(const QString &text) const;
         void loadComponents(Caneda::XmlReader *reader) const;
@@ -98,7 +98,7 @@ namespace Caneda
         explicit FormatXmlSymbol(SymbolDocument *doc = 0);
         explicit FormatXmlSymbol(ComponentData *component);
 
-        bool save();
+        bool save() const;
         bool load() const;
 
         SymbolDocument* symbolDocument() const;
@@ -108,13 +108,13 @@ namespace Caneda
         QString fileName() const;
 
     private:
-        QString saveText();
-        void saveSymbol(Caneda::XmlWriter *writer);
-        void savePorts(Caneda::XmlWriter *writer);
-        void saveProperties(Caneda::XmlWriter *writer);
-        void saveModels(Caneda::XmlWriter *writer);
+        QString saveText() const;
+        void saveSymbol(Caneda::XmlWriter *writer) const;
+        void savePorts(Caneda::XmlWriter *writer) const;
+        void saveProperties(Caneda::XmlWriter *writer) const;
+        void saveModels(Caneda::XmlWriter *writer) const;
 
-        bool loadFromText(const QString& text) const;
+        bool loadFromText(const QString &text) const;
         void loadSymbol(Caneda::XmlReader *reader) const;
         void loadPorts(Caneda::XmlReader *reader) const;
         void loadProperties(Caneda::XmlReader *reader) const;
@@ -141,7 +141,7 @@ namespace Caneda
     public:
         explicit FormatXmlLayout(LayoutDocument *doc = 0);
 
-        bool save();
+        bool save() const;
         bool load() const;
 
         LayoutDocument* layoutDocument() const;
@@ -150,10 +150,10 @@ namespace Caneda
         QString fileName() const;
 
     private:
-        QString saveText();
-        void savePaintings(Caneda::XmlWriter *writer);
+        QString saveText() const;
+        void savePaintings(Caneda::XmlWriter *writer) const;
 
-        bool loadFromText(const QString& text) const;
+        bool loadFromText(const QString &text) const;
         void loadPaintings(Caneda::XmlReader *reader) const;
 
         LayoutDocument *m_layoutDocument;

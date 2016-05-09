@@ -60,7 +60,7 @@ namespace Caneda
      *
      * \sa saveText(), load()
      */
-    bool FormatXmlSchematic::save()
+    bool FormatXmlSchematic::save() const
     {
         if(!graphicsScene()) {
             return false;
@@ -131,7 +131,7 @@ namespace Caneda
      *
      * \sa save()
      */
-    QString FormatXmlSchematic::saveText()
+    QString FormatXmlSchematic::saveText() const
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
@@ -167,7 +167,7 @@ namespace Caneda
      *
      * \sa Component::saveData()
      */
-    void FormatXmlSchematic::saveComponents(Caneda::XmlWriter *writer)
+    void FormatXmlSchematic::saveComponents(Caneda::XmlWriter *writer) const
     {
         QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Component*> components = filterItems<Component>(items);
@@ -192,7 +192,7 @@ namespace Caneda
      *
      * \sa PortSymbol::saveData()
      */
-    void FormatXmlSchematic::savePorts(Caneda::XmlWriter *writer)
+    void FormatXmlSchematic::savePorts(Caneda::XmlWriter *writer) const
     {
         QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
@@ -217,7 +217,7 @@ namespace Caneda
      *
      * \sa Wire::saveData()
      */
-    void FormatXmlSchematic::saveWires(Caneda::XmlWriter *writer)
+    void FormatXmlSchematic::saveWires(Caneda::XmlWriter *writer) const
     {
         QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Wire*> wires = filterItems<Wire>(items);
@@ -242,7 +242,7 @@ namespace Caneda
      *
      * \sa GraphicsItem::saveData()
      */
-    void FormatXmlSchematic::savePaintings(Caneda::XmlWriter *writer)
+    void FormatXmlSchematic::savePaintings(Caneda::XmlWriter *writer) const
     {
         QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
@@ -512,7 +512,7 @@ namespace Caneda
      *
      * \sa saveText(), load()
      */
-    bool FormatXmlSymbol::save()
+    bool FormatXmlSymbol::save() const
     {
         if(!graphicsScene()) {
             return false;
@@ -598,7 +598,7 @@ namespace Caneda
      *
      * \sa save()
      */
-    QString FormatXmlSymbol::saveText()
+    QString FormatXmlSymbol::saveText() const
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
@@ -655,7 +655,7 @@ namespace Caneda
      *
      * \sa GraphicsItem::saveData()
      */
-    void FormatXmlSymbol::saveSymbol(XmlWriter *writer)
+    void FormatXmlSymbol::saveSymbol(XmlWriter *writer) const
     {
         QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
@@ -680,7 +680,7 @@ namespace Caneda
      *
      * \sa PortSymbol::saveData()
      */
-    void FormatXmlSymbol::savePorts(XmlWriter *writer)
+    void FormatXmlSymbol::savePorts(XmlWriter *writer) const
     {
         QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<PortSymbol*> portSymbols = filterItems<PortSymbol>(items);
@@ -705,7 +705,7 @@ namespace Caneda
      *
      * \sa Property::saveProperty()
      */
-    void FormatXmlSymbol::saveProperties(XmlWriter *writer)
+    void FormatXmlSymbol::saveProperties(XmlWriter *writer) const
     {
         PropertyGroup *properties = graphicsScene()->properties();
 
@@ -739,7 +739,7 @@ namespace Caneda
      *
      * \param reader XmlWriter responsible for writing xml data.
      */
-    void FormatXmlSymbol::saveModels(XmlWriter *writer)
+    void FormatXmlSymbol::saveModels(XmlWriter *writer) const
     {
         GraphicsScene *scene = graphicsScene();
         QList<QGraphicsItem*> items = scene->items();
@@ -1079,7 +1079,7 @@ namespace Caneda
      *
      * \sa saveText(), load()
      */
-    bool FormatXmlLayout::save()
+    bool FormatXmlLayout::save() const
     {
         if(!graphicsScene()) {
             return false;
@@ -1150,7 +1150,7 @@ namespace Caneda
      *
      * \sa save()
      */
-    QString FormatXmlLayout::saveText()
+    QString FormatXmlLayout::saveText() const
     {
         QString retVal;
         Caneda::XmlWriter *writer = new Caneda::XmlWriter(&retVal);
@@ -1183,7 +1183,7 @@ namespace Caneda
      *
      * \sa GraphicsItem::saveData()
      */
-    void FormatXmlLayout::savePaintings(Caneda::XmlWriter *writer)
+    void FormatXmlLayout::savePaintings(Caneda::XmlWriter *writer) const
     {
         QList<QGraphicsItem*> items = graphicsScene()->items();
         QList<Painting*> paintings = filterItems<Painting>(items);
