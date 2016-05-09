@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -35,11 +35,13 @@ namespace Caneda
      * \param rect The ellipse rect of arc (local coords).
      * \param startAngle Starting angle of arc.
      * \param spanAngle Span angle of arc.
-     * \param scene GraphicsScene to which this item should be added.
+     * \param parent Parent of the EllipseArc item.
      */
-    EllipseArc::EllipseArc(QRectF rect, int startAngle, int spanAngle,
-            GraphicsScene *scene) :
-        Painting(scene),
+    EllipseArc::EllipseArc(QRectF rect,
+                           int startAngle,
+                           int spanAngle,
+                           QGraphicsItem *parent) :
+        Painting(parent),
         m_startAngle(startAngle),
         m_spanAngle(spanAngle)
     {
@@ -94,9 +96,10 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    EllipseArc* EllipseArc::copy(GraphicsScene *scene) const
+    EllipseArc* EllipseArc::copy() const
     {
-        EllipseArc *ellipseArc = new EllipseArc(ellipse(), m_startAngle, m_spanAngle, scene);
+        EllipseArc *ellipseArc = new EllipseArc(ellipse(), m_startAngle,
+                                                m_spanAngle, parentItem());
         Painting::copyDataTo(ellipseArc);
         return ellipseArc;
     }

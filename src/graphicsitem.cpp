@@ -21,7 +21,6 @@
 #include "graphicsitem.h"
 
 #include "actionmanager.h"
-#include "graphicsscene.h"
 #include "port.h"
 #include "settings.h"
 #include "xmlutilities.h"
@@ -32,22 +31,17 @@
 namespace Caneda
 {
     /*!
-     * \brief Constructs a new graphics item and adds it to a scene.
+     * \brief Constructs a new graphics item.
      *
      * \param parent Parent of the item.
-     * \param scene GraphicsScene where to add the item.
      */
-    GraphicsItem::GraphicsItem(QGraphicsItem *parent, GraphicsScene *scene) :
+    GraphicsItem::GraphicsItem(QGraphicsItem *parent) :
         QGraphicsItem(parent),
         m_boundingRect(0, 0, 0, 0)
     {
         m_shape.addRect(m_boundingRect);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
-
-        if(scene) {
-            scene->addItem(this);
-        }
     }
 
     /*!

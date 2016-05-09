@@ -79,7 +79,7 @@ namespace Caneda
     class Component : public GraphicsItem
     {
     public:
-        explicit Component(GraphicsScene *scene = 0);
+        explicit Component(QGraphicsItem *parent = 0);
         ~Component();
 
         //! \copydoc GraphicsItem::Type
@@ -120,7 +120,7 @@ namespace Caneda
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
 
-        Component* copy(GraphicsScene *scene = 0) const;
+        Component* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

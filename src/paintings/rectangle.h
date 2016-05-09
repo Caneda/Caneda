@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -34,7 +34,7 @@ namespace Caneda
     class Rectangle : public Painting
     {
     public:
-        explicit Rectangle(const QRectF &rect, GraphicsScene *scene = 0);
+        explicit Rectangle(const QRectF &rect, QGraphicsItem *parent = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::RectangleType };
@@ -49,7 +49,7 @@ namespace Caneda
         QRectF rect() const { return paintingRect(); }
         void setRect(const QRectF& rect) { setPaintingRect(rect); }
 
-        Rectangle* copy(GraphicsScene *scene = 0) const;
+        Rectangle* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

@@ -20,7 +20,6 @@
 
 #include "painting.h"
 
-#include "graphicsscene.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -28,6 +27,7 @@
 #include "ellipse.h"
 #include "ellipsearc.h"
 #include "graphicline.h"
+#include "graphicsscene.h"
 #include "graphictext.h"
 #include "layer.h"
 #include "portsymbol.h"
@@ -41,8 +41,13 @@
 
 namespace Caneda
 {
-    //! \brief Constructs a painting item with default pen and default brush.
-    Painting::Painting(GraphicsScene *scene) : GraphicsItem(0, scene),
+    /*!
+     * \brief Constructs a painting item with default pen and default brush.
+     *
+     * \param parent Parent of the Painting item.
+     */
+    Painting::Painting(QGraphicsItem *parent) :
+        GraphicsItem(parent),
         m_brush(Qt::NoBrush),
         m_resizeHandles(Caneda::NoHandle),
         m_activeHandle(Caneda::NoHandle)
@@ -347,7 +352,7 @@ namespace Caneda
     {
         GraphicsItem::mouseReleaseEvent(event);
         if(m_activeHandle != Caneda::NoHandle && m_paintingRect != m_store) {
-            PaintingRectChangeCmd *cmd = new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect);
+            ChangePaintingRectCmd *cmd = new ChangePaintingRectCmd(this, storedPaintingRect(), m_paintingRect);
             GraphicsScene *scene = qobject_cast<GraphicsScene*>(this->scene());
             scene->undoStack()->push(cmd);
         }

@@ -21,7 +21,6 @@
 #include "component.h"
 
 #include "global.h"
-#include "graphicsscene.h"
 #include "library.h"
 #include "port.h"
 #include "settings.h"
@@ -71,9 +70,9 @@ namespace Caneda
     /*!
      * \brief Constructs and initializes a default empty component item.
      *
-     * \param scene Scene where this component belong to.
+     * \param parent Parent of the component item.
      */
-    Component::Component(GraphicsScene *scene) : GraphicsItem(0, scene)
+    Component::Component(QGraphicsItem *parent) : GraphicsItem(parent)
     {
         // Set component flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
@@ -236,9 +235,9 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    Component* Component::copy(GraphicsScene *scene) const
+    Component* Component::copy() const
     {
-        Component *component = new Component(scene);
+        Component *component = new Component(parentItem());
         component->setComponentData(d);
 
         GraphicsItem::copyDataTo(component);

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,9 +33,9 @@ namespace Caneda
      * \brief Constructs an Ellipse item.
      *
      * \param rect Ellipse rect
-     * \param scene GraphicsScene to which this item should be added.
+     * \param parent Parent of the Ellipse item.
      */
-    Ellipse::Ellipse(QRectF rect, GraphicsScene *scene) : Painting(scene)
+    Ellipse::Ellipse(QRectF rect, QGraphicsItem *parent) : Painting(parent)
     {
         setEllipse(rect);
         setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
@@ -72,9 +72,9 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    Ellipse* Ellipse::copy(GraphicsScene *scene) const
+    Ellipse* Ellipse::copy() const
     {
-        Ellipse *ellipseItem = new Ellipse(ellipse(), scene);
+        Ellipse *ellipseItem = new Ellipse(ellipse(), parentItem());
         Painting::copyDataTo(ellipseItem);
         return ellipseItem;
     }

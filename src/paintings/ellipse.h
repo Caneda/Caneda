@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,7 +29,7 @@ namespace Caneda
     class Ellipse : public Painting
     {
     public:
-        explicit Ellipse(QRectF rect, GraphicsScene *scene = 0);
+        explicit Ellipse(QRectF rect, QGraphicsItem *parent = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::EllipseType };
@@ -44,7 +44,7 @@ namespace Caneda
         QRectF ellipse() const { return paintingRect(); }
         void setEllipse(const QRectF& rect) { setPaintingRect(rect); }
 
-        Ellipse* copy(GraphicsScene *scene = 0) const;
+        Ellipse* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

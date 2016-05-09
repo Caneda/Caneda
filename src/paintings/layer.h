@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -48,7 +48,7 @@ namespace Caneda
         explicit Layer(const QRectF &rect,
                        LayerName layerName = Metal1,
                        const QString &netLabel = "",
-                       GraphicsScene *scene = 0);
+                       QGraphicsItem *parent = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::LayerType };
@@ -70,7 +70,7 @@ namespace Caneda
         QString netLabel() const { return m_netLabel; }
         void setNetLabel(QString netLabel) { m_netLabel = netLabel; }
 
-        Layer* copy(GraphicsScene *scene = 0) const;
+        Layer* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

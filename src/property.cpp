@@ -21,12 +21,12 @@
 #include "property.h"
 
 #include "global.h"
-#include "graphicsscene.h"
 #include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
 #include <QDebug>
+#include <QGraphicsScene>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
@@ -157,10 +157,9 @@ namespace Caneda
      *                            PropertyGroup                              *
      *************************************************************************/
     /*!
-     * \brief Constructs a PropertyGroup from a given scene and PropertyMap.
+     * \brief Constructs a new PropertyGroup.
      *
-     * \param scene The graphics scene to which this property should belong.
-     * \param propMap The PropertyMap to use on initialization.
+     * \param parent Parent of the item.
      */
     PropertyGroup::PropertyGroup(QGraphicsItem *parent) :
         QGraphicsSimpleTextItem(parent)

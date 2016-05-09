@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,10 +33,10 @@ namespace Caneda
      * \brief Constructs a line item.
      *
      * \param line Line in local coords.
-     * \param scene GraphicsScene to which this item should be added.
+     * \param parent Parent of the GraphicLine item.
      */
-    GraphicLine::GraphicLine(const QLineF &line, GraphicsScene *scene) :
-          Painting(scene)
+    GraphicLine::GraphicLine(const QLineF &line, QGraphicsItem *parent) :
+          Painting(parent)
     {
         setLine(line);
         setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle);
@@ -71,9 +71,9 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    GraphicLine* GraphicLine::copy(GraphicsScene *scene) const
+    GraphicLine* GraphicLine::copy() const
     {
-        GraphicLine *lineItem = new GraphicLine(line(), scene);
+        GraphicLine *lineItem = new GraphicLine(line(), parentItem());
         Painting::copyDataTo(lineItem);
         return lineItem;
     }

@@ -236,7 +236,7 @@ namespace Caneda
 
             // Move item
             QPointF itemPos = (*it)->pos();
-            m_undoStack->push(new MoveCmd(*it, itemPos, itemPos + delta));;
+            m_undoStack->push(new MoveItemCmd(*it, itemPos, itemPos + delta));;
             ++it;
         }
 
@@ -313,7 +313,7 @@ namespace Caneda
             x += dx;
 
             // Move the item to the new position
-            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+            m_undoStack->push(new MoveItemCmd(item, item->pos(), newPos));
         }
 
         connectItems(items);
@@ -353,7 +353,7 @@ namespace Caneda
             y += dy;
 
             // Move the item to the new position
-            m_undoStack->push(new MoveCmd(item, item->pos(), newPos));
+            m_undoStack->push(new MoveItemCmd(item, item->pos(), newPos));
         }
 
         connectItems(items);
@@ -586,6 +586,7 @@ namespace Caneda
 
         // Add items
         foreach(GraphicsItem *item, m_insertibles) {
+            // Set the item as selected
             item->setSelected(true);
             // Hide all items here, they are made visible in ::insertingItemsEvent
             item->hide();
@@ -594,6 +595,8 @@ namespace Caneda
                 Component *comp = canedaitem_cast<Component*>(item);
                 comp->properties()->hide();
             }
+            // Finally add the item to the scene
+            addItem(item);
         }
     }
 
@@ -746,8 +749,10 @@ namespace Caneda
                         markedForDeletion << collidingWire;
 
                         // Create two new wires
-                        Wire *wire1 = new Wire(startPoint, middlePoint, this);
-                        Wire *wire2 = new Wire(middlePoint, endPoint, this);
+                        Wire *wire1 = new Wire(startPoint, middlePoint);
+                        Wire *wire2 = new Wire(middlePoint, endPoint);
+                        addItem(wire1);
+                        addItem(wire2);
 
                         // Create new node (connections to the colliding wire)
                         port->connectTo(wire1->port2());
@@ -1482,7 +1487,8 @@ namespace Caneda
     {
         if(m_wiringState == NO_WIRE) {
             // Create a new wire
-            m_currentWiringWire = new Wire(pos, pos, this);
+            m_currentWiringWire = new Wire(pos, pos);
+            addItem(m_currentWiringWire);
             m_wiringState = SINGLETON_WIRE;
             return;
         }
@@ -1505,7 +1511,8 @@ namespace Caneda
             else  {
                 // Add a wire segment
                 QPointF refPos = m_currentWiringWire->port2()->pos() + m_currentWiringWire->pos();
-                m_currentWiringWire = new Wire(refPos, refPos, this);
+                m_currentWiringWire = new Wire(refPos, refPos);
+                addItem(m_currentWiringWire);
             }
 
             return;
@@ -1717,7 +1724,7 @@ namespace Caneda
         }
 
         m_undoStack->beginMacro(tr("Place items"));
-        m_undoStack->push(new InsertItemCmd(item, this, pos));
+        m_undoStack->push(new InsertItemCmd(item, pos, this));
         m_undoStack->endMacro();
     }
 
@@ -1901,7 +1908,7 @@ namespace Caneda
             GraphicsItem *item = canedaitem_cast<GraphicsItem*>(qItem);
 
             if(item) {
-                m_undoStack->push(new MoveCmd(item, item->storedPos(),
+                m_undoStack->push(new MoveItemCmd(item, item->storedPos(),
                             smartNearingGridPoint(item->pos())));
 
                 connectItems(item);

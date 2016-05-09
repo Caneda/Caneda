@@ -27,7 +27,6 @@ namespace Caneda
 {
     // Forward declarations
     class GraphicsItem;
-    class GraphicsScene;
 
     /*!
      * \brief The Wire class forms part of one of the GraphicsItem
@@ -42,7 +41,7 @@ namespace Caneda
     {
     public:
         explicit Wire(const QPointF &startPos, const QPointF &endPos,
-                      GraphicsScene *scene = 0);
+                      QGraphicsItem *parent = 0);
         ~Wire();
 
         //! \copydoc GraphicsItem::Type
@@ -71,7 +70,7 @@ namespace Caneda
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0);
 
-        Wire* copy(GraphicsScene *scene = 0) const;
+        Wire* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

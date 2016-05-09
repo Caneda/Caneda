@@ -26,7 +26,6 @@ namespace Caneda
 {
     // Forward declarations
     class GraphicsItem;
-    class GraphicsScene;
 
     /*!
      * \brief Represents the port symbol on component symbols and schematics.
@@ -45,7 +44,7 @@ namespace Caneda
     class PortSymbol : public GraphicsItem
     {
     public:
-        explicit PortSymbol(GraphicsScene *scene = 0);
+        explicit PortSymbol(QGraphicsItem *parent = 0);
         ~PortSymbol();
 
         //! \copydoc GraphicsItem::Type
@@ -64,7 +63,7 @@ namespace Caneda
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-        PortSymbol* copy(GraphicsScene *scene = 0) const;
+        PortSymbol* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

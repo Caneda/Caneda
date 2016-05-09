@@ -136,7 +136,7 @@ namespace Caneda
                 QString newText = richText();
                 if(oldText != newText) {
                     if(enableUndoCommand == true) {
-                        QUndoCommand *cmd = new GraphicTextChangeCmd(textItem, oldText, newText);
+                        QUndoCommand *cmd = new ChangeGraphicTextCmd(textItem, oldText, newText);
                         scene->undoStack()->push(cmd);
                     }
                     else {

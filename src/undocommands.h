@@ -31,6 +31,7 @@ namespace Caneda
 {
     // Forward declarations.
     class GraphicsItem;
+    class GraphicsScene;
     class GraphicText;
     class Painting;
     class Port;
@@ -39,7 +40,7 @@ namespace Caneda
     typedef QPair<GraphicsItem*, QPointF> ItemPointPair;
 
     /*!
-     * \brief Move command implementation of the QUndoCommand/QUndoStack
+     * \brief Move item command implementation of the QUndoCommand/QUndoStack
      * pattern for Qt's Undo Framework.
      *
      * Caneda uses Qt's Undo Framework to implement undo/redo system. Qt's Undo
@@ -73,13 +74,13 @@ namespace Caneda
      * with the undo() method. The implementations for these functions must be
      * provided in each derived class.
      */
-    class MoveCmd : public QUndoCommand
+    class MoveItemCmd : public QUndoCommand
     {
     public:
-        explicit MoveCmd(GraphicsItem *item,
-                         const QPointF &init,
-                         const QPointF &final,
-                         QUndoCommand *parent = 0);
+        explicit MoveItemCmd(GraphicsItem *item,
+                             const QPointF &init,
+                             const QPointF &final,
+                             QUndoCommand *parent = 0);
 
         void undo();
         void redo();
@@ -94,7 +95,7 @@ namespace Caneda
      * \brief Disconnect command implementation of the QUndoCommand/QUndoStack
      * pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
     class DisconnectCmd : public QUndoCommand
     {
@@ -110,17 +111,17 @@ namespace Caneda
     };
 
     /*!
-     * \brief Add wire command implementation of the QUndoCommand/QUndoStack
+     * \brief Insert wire command implementation of the QUndoCommand/QUndoStack
      * pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
-    class AddWireCmd : public QUndoCommand
+    class InsertWireCmd : public QUndoCommand
     {
     public:
-        explicit AddWireCmd(Wire *wire,
-                            GraphicsScene *scene,
-                            QUndoCommand *parent = 0);
+        explicit InsertWireCmd(Wire *wire,
+                               GraphicsScene *scene,
+                               QUndoCommand *parent = 0);
 
         void undo();
         void redo();
@@ -134,14 +135,14 @@ namespace Caneda
      * \brief Insert item command implementation of the QUndoCommand/QUndoStack
      * pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
     class InsertItemCmd : public QUndoCommand
     {
     public:
         explicit InsertItemCmd(GraphicsItem *const item,
-                               GraphicsScene *scene,
                                QPointF pos,
+                               GraphicsScene *scene,
                                QUndoCommand *parent = 0);
 
         void undo();
@@ -157,7 +158,7 @@ namespace Caneda
      * \brief Remove items command implementation of the QUndoCommand/QUndoStack
      * pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
     class RemoveItemsCmd : public QUndoCommand
     {
@@ -178,7 +179,7 @@ namespace Caneda
      * \brief Rotate command implementation of the QUndoCommand/QUndoStack
      * pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
     class RotateItemsCmd : public QUndoCommand
     {
@@ -201,7 +202,7 @@ namespace Caneda
      * \brief Mirror command implementation of the QUndoCommand/QUndoStack
      * pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
     class MirrorItemsCmd : public QUndoCommand
     {
@@ -224,12 +225,12 @@ namespace Caneda
      * \brief Change painting item geometry command implementation of the
      * QUndoCommand/QUndoStack pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
-    class PaintingRectChangeCmd : public QUndoCommand
+    class ChangePaintingRectCmd : public QUndoCommand
     {
     public:
-        explicit PaintingRectChangeCmd(Painting *paintng,
+        explicit ChangePaintingRectCmd(Painting *paintng,
                                        QRectF oldRect,
                                        QRectF newRect,
                                        QUndoCommand *parent = 0);
@@ -247,12 +248,12 @@ namespace Caneda
      * \brief Change painting item properties command implementation of the
      * QUndoCommand/QUndoStack pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
-    class PaintingPropertyChangeCmd : public QUndoCommand
+    class ChangePaintingPropertyCmd : public QUndoCommand
     {
     public:
-        explicit PaintingPropertyChangeCmd(Painting *painting,
+        explicit ChangePaintingPropertyCmd(Painting *painting,
                                            QString oldText,
                                            QUndoCommand *parent = 0);
 
@@ -269,12 +270,12 @@ namespace Caneda
      * \brief Change graphic text properties command implementation of the
      * QUndoCommand/QUndoStack pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
-    class GraphicTextChangeCmd : public QUndoCommand
+    class ChangeGraphicTextCmd : public QUndoCommand
     {
     public:
-        explicit GraphicTextChangeCmd(GraphicText *text,
+        explicit ChangeGraphicTextCmd(GraphicText *text,
                                       QString oldText,
                                       QString newText,
                                       QUndoCommand *parent = 0);
@@ -292,15 +293,15 @@ namespace Caneda
      * \brief Change components' properties command implementation of the
      * QUndoCommand/QUndoStack pattern for Qt's Undo Framework.
      *
-     * \copydetails MoveCmd
+     * \copydetails MoveItemCmd
      */
-    class PropertyMapCmd : public QUndoCommand
+    class ChangePropertyMapCmd : public QUndoCommand
     {
     public:
-        explicit PropertyMapCmd(PropertyGroup *propGroup,
-                                const PropertyMap& old,
-                                const PropertyMap& newMap,
-                                QUndoCommand *parent = 0);
+        explicit ChangePropertyMapCmd(PropertyGroup *propGroup,
+                                      const PropertyMap& old,
+                                      const PropertyMap& newMap,
+                                      QUndoCommand *parent = 0);
 
         void undo();
         void redo();

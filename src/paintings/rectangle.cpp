@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,10 +33,10 @@ namespace Caneda
      * \brief Constructs a rectangle painting item.
      *
      * \param rect Rectangle in local coords.
-     * \param scene Scene to which this item should be added.
+     * \param parent Parent of the Rectangle item.
      */
-    Rectangle::Rectangle(const QRectF& rect, GraphicsScene *scene) :
-        Painting(scene)
+    Rectangle::Rectangle(const QRectF& rect, QGraphicsItem *parent) :
+        Painting(parent)
     {
         setRect(rect);
         setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
@@ -73,9 +73,9 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    Rectangle* Rectangle::copy(GraphicsScene *scene) const
+    Rectangle* Rectangle::copy() const
     {
-        Rectangle *rectItem = new Rectangle(rect(), scene);
+        Rectangle *rectItem = new Rectangle(rect(), parentItem());
         Painting::copyDataTo(rectItem);
 
         return rectItem;

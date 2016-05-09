@@ -39,10 +39,9 @@
 namespace Caneda
 {
     // Forward declarations
+    class Port;
     class XmlReader;
     class XmlWriter;
-    class GraphicsScene;
-    class Port;
 
     /*!
      * \brief The GraphicsItem class forms part of the Graphics-View framework,
@@ -61,7 +60,7 @@ namespace Caneda
     class GraphicsItem : public QGraphicsItem
     {
     public:
-        explicit GraphicsItem(QGraphicsItem *parent = 0, GraphicsScene *scene = 0);
+        explicit GraphicsItem(QGraphicsItem *parent = 0);
 
         /*!
          * \brief GraphicsItem identification types.
@@ -146,7 +145,7 @@ namespace Caneda
         void storePos();
         QPointF storedPos() const;
 
-        virtual GraphicsItem* copy(GraphicsScene *scene = 0) const = 0;
+        virtual GraphicsItem* copy() const = 0;
         virtual void copyDataTo(GraphicsItem *item) const;
 
         //! \brief Launch the properties dialog of the current item.

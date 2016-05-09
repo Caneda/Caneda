@@ -59,7 +59,7 @@ namespace Caneda
     class Painting : public GraphicsItem
     {
     public:
-        explicit Painting(GraphicsScene *scene = 0);
+        explicit Painting(QGraphicsItem *parent = 0);
 
         static Painting* fromName(const QString& name);
 
@@ -96,7 +96,7 @@ namespace Caneda
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
         //! \copydoc GraphicsItem::copy()
-        virtual Painting* copy(GraphicsScene *scene = 0) const = 0;
+        virtual Painting* copy() const = 0;
         virtual void copyDataTo(Painting *painting) const;
 
         //! \copydoc GraphicsItem::launchPropertiesDialog()

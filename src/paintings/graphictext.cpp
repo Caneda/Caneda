@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -35,9 +35,10 @@ namespace Caneda
      * \brief Constructs a text item.
      *
      * \param text Item's text.
-     * \param scene GraphicsScene to which this item should be added.
+     * \param parent Parent of the GraphicText item.
      */
-    GraphicText::GraphicText(const QString &text, GraphicsScene *scene) : Painting(scene)
+    GraphicText::GraphicText(const QString &text, QGraphicsItem *parent) :
+        Painting(parent)
     {
         m_textItem = new QGraphicsTextItem(this);
         m_textItem->setAcceptedMouseButtons(0);
@@ -106,9 +107,9 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    GraphicText* GraphicText::copy(GraphicsScene *scene) const
+    GraphicText* GraphicText::copy() const
     {
-        GraphicText *text = new GraphicText(richText(), scene);
+        GraphicText *text = new GraphicText(richText(), parentItem());
         Painting::copyDataTo(text);
         return text;
     }

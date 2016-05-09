@@ -504,7 +504,7 @@ namespace Caneda
             if (!d->insertibles.isEmpty()) {
                 QList<GraphicsItem*> copy;
                 foreach (GraphicsItem *it, d->insertibles) {
-                    copy << it->copy(scene);
+                    copy << it->copy();
                 }
                 scene->beginInsertingItems(copy);
             }

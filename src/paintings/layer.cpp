@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,11 +33,13 @@ namespace Caneda
      *
      * \param rect Rectangle in local coords.
      * \param layerName Phisical layer to recreate
-     * \param scene Scene to which this item should be added.
+     * \param parent Parent of the Layer item.
      */
-    Layer::Layer(const QRectF &rect, LayerName layerName, const QString &netLabel,
-                 GraphicsScene *scene) :
-        Painting(scene),
+    Layer::Layer(const QRectF &rect,
+                 LayerName layerName,
+                 const QString &netLabel,
+                 QGraphicsItem *parent) :
+        Painting(parent),
         m_layerName(layerName),
         m_netLabel(netLabel)
     {
@@ -121,9 +123,9 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    Layer* Layer::copy(GraphicsScene *scene) const
+    Layer* Layer::copy() const
     {
-        Layer *layerItem = new Layer(rect(), layerName(), netLabel(), scene);
+        Layer *layerItem = new Layer(rect(), layerName(), netLabel(), parentItem());
         Painting::copyDataTo(layerItem);
         return layerItem;
     }

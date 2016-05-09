@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -30,7 +30,7 @@ namespace Caneda
     {
     public:
         explicit GraphicText(const QString &text = QString(),
-                             GraphicsScene *scene = 0);
+                             QGraphicsItem *parent = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::GraphicTextType };
@@ -47,7 +47,7 @@ namespace Caneda
 
         void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
 
-        GraphicText* copy(GraphicsScene *scene = 0) const;
+        GraphicText* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

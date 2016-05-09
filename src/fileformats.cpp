@@ -337,8 +337,9 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "component") {
-                    Component *component = new Component(scene);
+                    Component *component = new Component();
                     component->loadData(reader);
+                    scene->addItem(component);
                     scene->connectItems(component);
                 }
                 else {
@@ -372,8 +373,9 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "port") {
-                    PortSymbol *portSymbol = new PortSymbol(scene);
+                    PortSymbol *portSymbol = new PortSymbol();
                     portSymbol->loadData(reader);
+                    scene->addItem(portSymbol);
                     scene->connectItems(portSymbol);
                 }
                 else {
@@ -407,8 +409,9 @@ namespace Caneda
 
             if(reader->isStartElement()) {
                 if(reader->name() == "wire") {
-                    Wire *wire = new Wire(QPointF(10,10), QPointF(50,50), scene);
+                    Wire *wire = new Wire(QPointF(10,10), QPointF(50,50));
                     wire->loadData(reader);
+                    scene->addItem(wire);
                     scene->connectItems(wire);
                 }
                 else {
@@ -949,6 +952,8 @@ namespace Caneda
      */
     void FormatXmlSymbol::loadPorts(Caneda::XmlReader *reader) const
     {
+        GraphicsScene *scene = graphicsScene();
+
         while(!reader->atEnd()) {
             reader->readNext();
 
@@ -960,8 +965,9 @@ namespace Caneda
                 // Check if we are opening the file for edition or to include it in a library
                 if(graphicsScene()) {
                     // We are opening the file for symbol edition
-                    PortSymbol *portSymbol = new PortSymbol(graphicsScene());
+                    PortSymbol *portSymbol = new PortSymbol();
                     portSymbol->loadData(reader);
+                    scene->addItem(portSymbol);
                 }
                 else if(component()) {
                     // We are opening the file as a component to include it in a library

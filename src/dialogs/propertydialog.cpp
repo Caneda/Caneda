@@ -332,8 +332,9 @@ namespace Caneda
     {
         GraphicsScene *scene = qobject_cast<GraphicsScene*>(m_propertyGroup->scene());
         if(scene) {
-            PropertyMapCmd *cmd = new PropertyMapCmd(m_propertyGroup, m_propertyGroup->propertyMap(),
-                    m_model->propMap);
+            ChangePropertyMapCmd *cmd = new ChangePropertyMapCmd(m_propertyGroup,
+                                                                 m_propertyGroup->propertyMap(),
+                                                                 m_model->propMap);
             scene->undoStack()->push(cmd);
         }
 

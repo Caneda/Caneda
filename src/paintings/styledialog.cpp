@@ -470,7 +470,7 @@ namespace Caneda
 
         GraphicsScene *scene = qobject_cast<GraphicsScene*>(painting->scene());
         if(scene) {
-            QUndoCommand *cmd = new PaintingPropertyChangeCmd(painting, saveData);
+            QUndoCommand *cmd = new ChangePaintingPropertyCmd(painting, saveData);
             scene->undoStack()->push(cmd);
         }
     }

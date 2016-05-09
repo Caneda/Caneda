@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,7 +29,7 @@ namespace Caneda
     class GraphicLine : public Painting
     {
     public:
-        explicit GraphicLine(const QLineF &line, GraphicsScene *scene = 0);
+        explicit GraphicLine(const QLineF &line, QGraphicsItem *parent = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::GraphicLineType };
@@ -44,7 +44,7 @@ namespace Caneda
         QLineF line() const { return lineFromRect(paintingRect()); }
         void setLine(const QLineF &line);
 
-        GraphicLine* copy(GraphicsScene *scene = 0) const;
+        GraphicLine* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

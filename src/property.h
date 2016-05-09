@@ -26,7 +26,6 @@
 namespace Caneda
 {
     //Forward declarations
-    class GraphicsScene;
     class XmlWriter;
     class XmlReader;
 

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -27,11 +27,7 @@ namespace Caneda
 {
     /*!
      * \brief This class is used to represent resizable arrow item on a
-     * graphics scene.
-     *
-     * This class supports two different styles of arrow.
-     *
-     * \sa HeadStyle
+     * graphicsscene.
      */
     class Arrow : public Painting
     {
@@ -48,7 +44,7 @@ namespace Caneda
                        HeadStyle style = FilledArrow,
                        qreal headWidth = 12,
                        qreal headHeight = 20,
-                       GraphicsScene *scene = 0);
+                       QGraphicsItem *parent = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::ArrowType };
@@ -59,7 +55,7 @@ namespace Caneda
 
         void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
-        Arrow* copy(GraphicsScene *scene = 0) const;
+        Arrow* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
@@ -93,7 +89,7 @@ namespace Caneda
         qreal m_headWidth;
         qreal m_headHeight;
 
-        //the head's tip is always at index 1
+        // The head's tip is always at index 1
         QPolygonF m_head;
     };
 

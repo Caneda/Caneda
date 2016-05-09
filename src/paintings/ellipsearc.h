@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -32,7 +32,7 @@ namespace Caneda
         explicit EllipseArc(QRectF rect = QRectF(),
                             int startAngle = 20,
                             int spanAngle = 180,
-                            GraphicsScene *scene = 0);
+                            QGraphicsItem *parent = 0);
 
         //! \copydoc GraphicsItem::Type
         enum { Type = Painting::EllipseArcType };
@@ -55,7 +55,7 @@ namespace Caneda
         QRectF ellipse() const { return paintingRect(); }
         void setEllipse(const QRectF& ellipse) { setPaintingRect(ellipse); }
 
-        EllipseArc* copy(GraphicsScene *scene = 0) const;
+        EllipseArc* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);

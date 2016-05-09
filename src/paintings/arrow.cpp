@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -37,11 +37,14 @@ namespace Caneda
      * \param style The arrow's head style. See \a HeadStyle
      * \param headWidth The base width of triangle of arrow's head.
      * \param headHeight The height of triangle of arrow head.
-     * \param scene The graphics scene to which this arrow is to be added.
+     * \param parent Parent of the Arrow item.
      */
-    Arrow::Arrow(const QLineF &line, HeadStyle style, qreal headWidth, qreal headHeight,
-            GraphicsScene *scene) :
-        Painting(scene),
+    Arrow::Arrow(const QLineF &line,
+                 HeadStyle style,
+                 qreal headWidth,
+                 qreal headHeight,
+                 QGraphicsItem *parent) :
+        Painting(parent),
         m_headStyle(style),
         m_headWidth(headWidth),
         m_headHeight(headHeight)
@@ -95,9 +98,9 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    Arrow* Arrow::copy(GraphicsScene *scene) const
+    Arrow* Arrow::copy() const
     {
-        Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), scene);
+        Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), parentItem());
         Painting::copyDataTo(arrow);
         return arrow;
     }

@@ -22,7 +22,6 @@
 
 #include "actionmanager.h"
 #include "global.h"
-#include "graphicsscene.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -41,10 +40,10 @@ namespace Caneda
      *
      * \param startPos Starting position of the wire.
      * \param endPos Ending position of the wire.
-     * \param scene GraphicsScene where to add this wire.
+     * \param parent Parent of the Wire item.
      */
     Wire::Wire(const QPointF& startPos, const QPointF& endPos,
-               GraphicsScene *scene) : GraphicsItem(0, scene)
+               QGraphicsItem *parent) : GraphicsItem(parent)
     {
         // Set flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
@@ -160,12 +159,12 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    Wire* Wire::copy(GraphicsScene *scene) const
+    Wire* Wire::copy() const
     {
         QPointF startPos = port1()->scenePos();
         QPointF endPos = port2()->scenePos();
 
-        Wire *wire = new Wire(startPos, endPos, scene);
+        Wire *wire = new Wire(startPos, endPos, parentItem());
         return wire;
     }
 

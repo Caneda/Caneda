@@ -33,11 +33,11 @@ namespace Caneda
      *
      * This method initializes the main port parameters.
      *
-     * \param scene GraphicsScene on which the port symbol should be added.
+     * \param parent Parent of the PortSymbol item.
      *
-     * \sa init()
+     * \sa updateGeometry()
      */
-    PortSymbol::PortSymbol(GraphicsScene *scene) : GraphicsItem(0, scene)
+    PortSymbol::PortSymbol(QGraphicsItem *parent) : GraphicsItem(parent)
     {
         // Set component flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
@@ -149,9 +149,9 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::copy()
-    PortSymbol* PortSymbol::copy(GraphicsScene *scene) const
+    PortSymbol* PortSymbol::copy() const
     {
-        PortSymbol *portSymbol = new PortSymbol(scene);
+        PortSymbol *portSymbol = new PortSymbol(parentItem());
         portSymbol->setLabel(label());
 
         GraphicsItem::copyDataTo(portSymbol);
