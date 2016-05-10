@@ -23,7 +23,6 @@
 
 #include <QObject>
 #include <QGraphicsSceneEvent>
-#include <QVariant>
 
 // Forward declarations
 class QPaintDevice;
@@ -153,6 +152,7 @@ namespace Caneda
 
     public:
         explicit LayoutDocument(QObject *parent = 0);
+        ~LayoutDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -232,6 +232,7 @@ namespace Caneda
 
     public:
         explicit SchematicDocument(QObject *parent = 0);
+        ~SchematicDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -317,6 +318,7 @@ namespace Caneda
 
     public:
         explicit SimulationDocument(QObject *parent = 0);
+        ~SimulationDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -394,6 +396,7 @@ namespace Caneda
 
     public:
         explicit SymbolDocument(QObject *parent = 0);
+        ~SymbolDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -473,6 +476,7 @@ namespace Caneda
 
     public:
         explicit TextDocument(QObject *parent = 0);
+        ~TextDocument();
 
         // IDocument interface methods
         virtual IContext* context();

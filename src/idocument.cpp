@@ -367,6 +367,12 @@ namespace Caneda
                 SLOT(emitDocumentChanged()));
     }
 
+    //! \brief Destructor.
+    LayoutDocument::~LayoutDocument()
+    {
+        delete m_graphicsScene;
+    }
+
     IContext* LayoutDocument::context()
     {
         return LayoutContext::instance();
@@ -626,6 +632,12 @@ namespace Caneda
                 this, SLOT(emitDocumentChanged()));
         connect(m_graphicsScene, SIGNAL(selectionChanged()), this,
                 SLOT(emitDocumentChanged()));
+    }
+
+    //! \brief Destructor.
+    SchematicDocument::~SchematicDocument()
+    {
+        delete m_graphicsScene;
     }
 
     IContext* SchematicDocument::context()
@@ -1175,7 +1187,13 @@ namespace Caneda
     //! \brief Constructor.
     SimulationDocument::SimulationDocument(QObject *parent) : IDocument(parent)
     {
-        m_chartScene = new ChartScene();
+        m_chartScene = new ChartScene;
+    }
+
+    //! \brief Destructor.
+    SimulationDocument::~SimulationDocument()
+    {
+        delete m_chartScene;
     }
 
     IContext* SimulationDocument::context()
@@ -1294,6 +1312,12 @@ namespace Caneda
                 this, SLOT(emitDocumentChanged()));
         connect(m_graphicsScene, SIGNAL(selectionChanged()), this,
                 SLOT(emitDocumentChanged()));
+    }
+
+    //! \brief Destructor.
+    SymbolDocument::~SymbolDocument()
+    {
+        delete m_graphicsScene;
     }
 
     IContext* SymbolDocument::context()
@@ -1557,6 +1581,12 @@ namespace Caneda
                 this, SLOT(emitDocumentChanged()));
         connect(m_textDocument, SIGNAL(contentsChanged()),
                 this, SLOT(onContentsChanged()));
+    }
+
+    //! \brief Destructor.
+    TextDocument::~TextDocument()
+    {
+        delete m_textDocument;
     }
 
     IContext* TextDocument::context()

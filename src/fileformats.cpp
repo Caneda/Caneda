@@ -1726,6 +1726,13 @@ namespace Caneda
     {
     }
 
+    //! \brief Destructor.
+    FormatRawSimulation::~FormatRawSimulation()
+    {
+        qDeleteAll(plotCurves);
+        qDeleteAll(plotCurvesPhase);
+    }
+
     //! \brief Load the waveform file indicated by \a filename.
     bool FormatRawSimulation::load()
     {
@@ -1934,6 +1941,10 @@ namespace Caneda
                 chartScene()->addItem(plotCurvesPhase[i]);
             }
         }
+
+        // Delete the temporal data arrays
+        qDeleteAll(dataSamples);
+        qDeleteAll(dataSamplesPhase);
     }
 
     /*!
@@ -2039,6 +2050,10 @@ namespace Caneda
                 chartScene()->addItem(plotCurvesPhase[i]);
             }
         }
+
+        // Delete the temporal data arrays
+        qDeleteAll(dataSamples);
+        qDeleteAll(dataSamplesPhase);
     }
 
     ChartScene* FormatRawSimulation::chartScene() const

@@ -191,6 +191,12 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
+    //! \brief Destructor.
+    LayoutView::~LayoutView()
+    {
+        delete m_graphicsView;
+    }
+
     QWidget* LayoutView::toWidget() const
     {
         return m_graphicsView;
@@ -257,6 +263,12 @@ namespace Caneda
                 SLOT(onWidgetFocussedOut()));
         connect(m_graphicsView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
+    }
+
+    //! \brief Destructor.
+    SchematicView::~SchematicView()
+    {
+        delete m_graphicsView;
     }
 
     QWidget* SchematicView::toWidget() const
@@ -330,6 +342,12 @@ namespace Caneda
                 this, SIGNAL(statusBarMessage(const QString &)));
     }
 
+    //! \brief Destructor.
+    SimulationView::~SimulationView()
+    {
+        delete m_chartView;
+    }
+
     QWidget* SimulationView::toWidget() const
     {
         return m_chartView;
@@ -396,6 +414,12 @@ namespace Caneda
                 SLOT(onWidgetFocussedOut()));
         connect(m_graphicsView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
+    }
+
+    //! \brief Destructor.
+    SymbolView::~SymbolView()
+    {
+        delete m_graphicsView;
     }
 
     QWidget* SymbolView::toWidget() const
@@ -466,6 +490,12 @@ namespace Caneda
                 SLOT(onFocussed()));
         connect(m_textEdit, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
+    }
+
+    //! \brief Destructor.
+    TextView::~TextView()
+    {
+        delete m_textEdit;
     }
 
     QWidget* TextView::toWidget() const

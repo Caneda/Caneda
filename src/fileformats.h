@@ -212,6 +212,7 @@ namespace Caneda
     {
     public:
         explicit FormatRawSimulation(SimulationDocument *doc = 0);
+        ~FormatRawSimulation();
 
         bool load();
 
