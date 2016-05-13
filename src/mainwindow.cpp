@@ -293,24 +293,6 @@ namespace Caneda
         action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
         connect(action, SIGNAL(triggered()), SLOT(find()));
 
-        action = am->createAction("schEdit", Caneda::icon("draw-freehand"), tr("&Edit circuit schematic"));
-        action->setShortcut(QKeySequence(tr("F2")));
-        action->setStatusTip(tr("Switches to schematic edit"));
-        action->setWhatsThis(tr("Edit Circuit Schematic\n\nSwitches to schematic edit"));
-        connect(action, SIGNAL(triggered()), SLOT(openSchematic()));
-
-        action = am->createAction("symEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &symbol"));
-        action->setShortcut(QKeySequence(tr("F3")));
-        action->setStatusTip(tr("Switches to symbol edit"));
-        action->setWhatsThis(tr("Edit Circuit Symbol\n\nSwitches to symbol edit"));
-        connect(action, SIGNAL(triggered()), SLOT(openSymbol()));
-
-        action = am->createAction("layEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &layout"));
-        action->setShortcut(QKeySequence(tr("F4")));
-        action->setStatusTip(tr("Switches to layout edit"));
-        action->setWhatsThis(tr("Edit Circuit Layout\n\nSwitches to layout edit"));
-        connect(action, SIGNAL(triggered()), SLOT(openLayout()));
-
         action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into subcircuit"));
         action->setShortcut(QKeySequence(tr("Ctrl+I")));
         action->setToolTip(tr("Go into Subcircuit") + " (" + action->shortcut().toString() + ")");
@@ -450,6 +432,24 @@ namespace Caneda
         action->setStatusTip(tr("Opens backup and history dialog"));
         action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
         connect(action, SIGNAL(triggered()), SLOT(backupAndHistory()));
+
+        action = am->createAction("schEdit", Caneda::icon("draw-freehand"), tr("&Edit circuit schematic"));
+        action->setShortcut(QKeySequence(tr("F2")));
+        action->setStatusTip(tr("Switches to schematic edit"));
+        action->setWhatsThis(tr("Edit Circuit Schematic\n\nSwitches to schematic edit"));
+        connect(action, SIGNAL(triggered()), SLOT(openSchematic()));
+
+        action = am->createAction("symEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &symbol"));
+        action->setShortcut(QKeySequence(tr("F3")));
+        action->setStatusTip(tr("Switches to symbol edit"));
+        action->setWhatsThis(tr("Edit Circuit Symbol\n\nSwitches to symbol edit"));
+        connect(action, SIGNAL(triggered()), SLOT(openSymbol()));
+
+        action = am->createAction("layEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &layout"));
+        action->setShortcut(QKeySequence(tr("F4")));
+        action->setStatusTip(tr("Switches to layout edit"));
+        action->setWhatsThis(tr("Edit Circuit Layout\n\nSwitches to layout edit"));
+        connect(action, SIGNAL(triggered()), SLOT(openLayout()));
 
         action = am->createAction("simulate", Caneda::icon("media-playback-start"), tr("Simulate"));
         action->setShortcut(QKeySequence(QKeySequence::Refresh));
@@ -643,13 +643,9 @@ namespace Caneda
         menu->addAction(am->actionForName("editRotate"));
 
         //! \todo Reenable this option once implemented
+        //        menu->addSeparator();
+
         //        menu->addAction(am->actionForName("editFind"));
-
-        menu->addSeparator();
-
-        menu->addAction(am->actionForName("schEdit"));
-        menu->addAction(am->actionForName("symEdit"));
-        menu->addAction(am->actionForName("layEdit"));
 
         //! \todo Reenable these options once implemented
         //        menu->addSeparator();
@@ -714,11 +710,13 @@ namespace Caneda
         //        menu->addAction(am->actionForName("backupAndHistory"));
 
         // Tools menu
-        //! \todo Implement tools menu with a plugins' infrastructure.
-        //        menu = menuBar()->addMenu(tr("&Tools"));
+        menu = menuBar()->addMenu(tr("&Tools"));
 
-        // Simulation menu
-        menu = menuBar()->addMenu(tr("&Simulation"));
+        menu->addAction(am->actionForName("schEdit"));
+        menu->addAction(am->actionForName("symEdit"));
+        menu->addAction(am->actionForName("layEdit"));
+
+        menu->addSeparator();
 
         menu->addAction(am->actionForName("simulate"));
         menu->addAction(am->actionForName("openSym"));
