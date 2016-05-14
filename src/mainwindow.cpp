@@ -453,7 +453,6 @@ namespace Caneda
         action->setStatusTip(tr("Enables/disables the menubar"));
         action->setWhatsThis(tr("Show menubar\n\nEnables/disables the menubar"));
         action->setCheckable(true);
-        action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showMenuBar(bool)));
         m_tabWidget->addAction(action);  // Add the action to the tabWidget to be able to receive the shortcuts when the menu is hidden.
 
@@ -461,36 +460,31 @@ namespace Caneda
         action->setStatusTip(tr("Enables/disables the toolbar"));
         action->setWhatsThis(tr("Show toolbar\n\nEnables/disables the toolbar"));
         action->setCheckable(true);
-        action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showToolBar(bool)));
 
         action = am->createAction("showStatusBar",  tr("Show &statusbar"));
         action->setStatusTip(tr("Enables/disables the statusbar"));
         action->setWhatsThis(tr("Show statusbar\n\nEnables/disables the statusbar"));
         action->setCheckable(true);
-        action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showStatusBar(bool)));
 
         action = am->createAction("showSideBarBrowser",  tr("Show sidebar browser"));
         action->setStatusTip(tr("Enables/disables the sidebar browser"));
         action->setWhatsThis(tr("Show sidebar browser\n\nEnables/disables the sidebar browser"));
         action->setCheckable(true);
-        action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showSideBarBrowser(bool)));
 
         action = am->createAction("showFolderBrowser",  tr("Show folder browser"));
         action->setStatusTip(tr("Enables/disables the folder browser"));
         action->setWhatsThis(tr("Show folder browser\n\nEnables/disables the folder browser"));
         action->setCheckable(true);
-        action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showFolderBrowser(bool)));
 
-        action = am->createAction("fullScreen", tr("&Full screen mode"));
+        action = am->createAction("showFullScreen", tr("&Full screen mode"));
         action->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
         action->setStatusTip(tr("Enables/disables the full screen mode"));
         action->setWhatsThis(tr("Full screen mode\n\nEnables/disables the full screen mode"));
         action->setCheckable(true);
-        action->setChecked(false);
         connect(action, SIGNAL(toggled(bool)), SLOT(showFullScreen(bool)));
 
         action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("&Configure Caneda..."));
@@ -753,7 +747,7 @@ namespace Caneda
 
         menu->addSeparator();
 
-        menu->addAction(am->actionForName("fullScreen"));
+        menu->addAction(am->actionForName("showFullScreen"));
 
         menu->addSeparator();
 
@@ -841,8 +835,6 @@ namespace Caneda
         // Add the widgets to the toolbar
         statusBarWidget->addPermanentWidget(m_statusLabel);
         statusBarWidget->addPermanentWidget(viewToolbar);
-
-        statusBarWidget->setVisible(am->actionForName("showStatusBar")->isChecked());
     }
 
     //! \brief Syncs the settings to the configuration file and closes the window.
@@ -1551,6 +1543,18 @@ namespace Caneda
         if (dockData.isEmpty() == false) {
             restoreState(dockData);
         }
+
+        showMenuBar(settings->currentValue("gui/showMenuBar").toBool());
+        showStatusBar(settings->currentValue("gui/showStatusBar").toBool());
+
+        // Load the actions checked state.
+        ActionManager* am = ActionManager::instance();
+        am->actionForName("showMenuBar")->setChecked(settings->currentValue("gui/showMenuBar").toBool());
+        am->actionForName("showToolBar")->setChecked(settings->currentValue("gui/showToolBar").toBool());
+        am->actionForName("showStatusBar")->setChecked(settings->currentValue("gui/showStatusBar").toBool());
+        am->actionForName("showSideBarBrowser")->setChecked(settings->currentValue("gui/showSideBarBrowser").toBool());
+        am->actionForName("showFolderBrowser")->setChecked(settings->currentValue("gui/showFolderBrowser").toBool());
+        am->actionForName("showFullScreen")->setChecked(settings->currentValue("gui/showFullScreen").toBool());
     }
 
     /*!
@@ -1569,6 +1573,15 @@ namespace Caneda
         // Update current geometry and dockPosition values before saving.
         settings->setCurrentValue("gui/geometry", saveGeometry());
         settings->setCurrentValue("gui/dockPositions", saveState());
+
+        // Update current menu and statusbar visibility values before saving.
+        ActionManager* am = ActionManager::instance();
+        settings->setCurrentValue("gui/showMenuBar", am->actionForName("showMenuBar")->isChecked());
+        settings->setCurrentValue("gui/showToolBar", am->actionForName("showToolBar")->isChecked());
+        settings->setCurrentValue("gui/showStatusBar", am->actionForName("showStatusBar")->isChecked());
+        settings->setCurrentValue("gui/showSideBarBrowser", am->actionForName("showSideBarBrowser")->isChecked());
+        settings->setCurrentValue("gui/showFolderBrowser", am->actionForName("showFolderBrowser")->isChecked());
+        settings->setCurrentValue("gui/showFullScreen", am->actionForName("showFullScreen")->isChecked());
 
         settings->save();
     }

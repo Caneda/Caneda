@@ -46,6 +46,12 @@ namespace Caneda
         defaultSettings["libraries/schematic"] = QVariant(QStringList(libraries));
         defaultSettings["libraries/hdl"] = QVariant(QStringList(Caneda::libDirectory() + "hdl"));
 
+        defaultSettings["gui/showMenuBar"] = QVariant(bool(true));
+        defaultSettings["gui/showToolBar"] = QVariant(bool(true));
+        defaultSettings["gui/showStatusBar"] = QVariant(bool(true));
+        defaultSettings["gui/showSideBarBrowser"] = QVariant(bool(true));
+        defaultSettings["gui/showFolderBrowser"] = QVariant(bool(true));
+        defaultSettings["gui/showFullScreen"] = QVariant(bool(false));
         defaultSettings["gui/geometry"] = QVariant(QByteArray());
         defaultSettings["gui/dockPositions"] = QVariant(QByteArray());
         defaultSettings["gui/gridVisible"] = QVariant(bool(true));
