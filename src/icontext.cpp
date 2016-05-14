@@ -79,19 +79,6 @@ namespace Caneda
      */
 
     /*!
-     * \fn IContext::sideBarTitle()
-     *
-     * \brief Returns the sideBarWidget title to this context.
-     *
-     * SideBarWidgets are context sensitive, containing only those items and
-     * tools relative to the current context as components, painting tools,
-     * code snippets, etc. This method returns the sideBar title corresponding
-     * to this context, allowing to update the title of the sidebarDockWidget.
-     *
-     * \sa sideBarWidget(), TabWidget::updateTabContext()
-     */
-
-    /*!
      * \fn IContext::updateSideBar()
      *
      * \brief Updates sidebar contents.
@@ -156,6 +143,7 @@ namespace Caneda
         // We create the sidebar corresponding to this context
         StateHandler *handler = StateHandler::instance();
         m_sidebarBrowser = new SidebarItemsBrowser();
+        m_sidebarBrowser->setWindowTitle(tr("Components Browser"));
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -263,6 +251,7 @@ namespace Caneda
     {
         StateHandler *handler = StateHandler::instance();
         m_sidebarBrowser = new SidebarItemsBrowser();
+        m_sidebarBrowser->setWindowTitle(tr("Components Browser"));
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -378,6 +367,7 @@ namespace Caneda
     SimulationContext::SimulationContext(QObject *parent) : IContext(parent)
     {
         m_sidebarBrowser = new SidebarChartsBrowser();
+        m_sidebarBrowser->setWindowTitle(tr("Displayed Waveforms"));
     }
 
     //! \copydoc MainWindow::instance()
@@ -451,6 +441,7 @@ namespace Caneda
     {
         StateHandler *handler = StateHandler::instance();
         m_sidebarBrowser = new SidebarItemsBrowser();
+        m_sidebarBrowser->setWindowTitle(tr("Components Browser"));
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -540,6 +531,7 @@ namespace Caneda
     TextContext::TextContext(QObject *parent) : IContext(parent)
     {
         m_sidebarTextBrowser = new SidebarTextBrowser();
+        m_sidebarTextBrowser->setWindowTitle(tr("Text Templates"));
     }
 
     //! \copydoc MainWindow::instance()

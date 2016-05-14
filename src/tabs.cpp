@@ -542,8 +542,9 @@ namespace Caneda
             return;
         }
 
-        mw->sidebarDockWidget()->setWindowTitle(view->context()->sideBarTitle());
-        mw->sidebarDockWidget()->setWidget(view->context()->sideBarWidget());
+        QWidget *sidebar = view->context()->sideBarWidget();
+        mw->sidebarDockWidget()->setWindowTitle(sidebar->windowTitle());
+        mw->sidebarDockWidget()->setWidget(sidebar);
         view->context()->updateSideBar();
 
         IDocument *document = view->document();
