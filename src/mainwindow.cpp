@@ -118,7 +118,6 @@ namespace Caneda
         m_sidebarDockWidget->setObjectName("componentsSidebar");
         m_sidebarDockWidget->setMinimumWidth(260);
         addDockWidget(Qt::LeftDockWidgetArea, m_sidebarDockWidget);
-        docksMenu->addAction(m_sidebarDockWidget->toggleViewAction());
     }
 
     //! \brief Initializes the Projects sidebar.
@@ -136,8 +135,6 @@ namespace Caneda
         m_projectDockWidget->setObjectName("projectsSidebar");
         m_projectDockWidget->setVisible(false);
         addDockWidget(Qt::LeftDockWidgetArea, m_projectDockWidget);
-        //! \todo Uncomment once project is reimplemented.
-        //        docksMenu->addAction(m_projectDockWidget->toggleViewAction());
     }
 
     //! \brief Initializes the FolderBrowser sidebar.
@@ -153,7 +150,6 @@ namespace Caneda
         m_browserDockWidget->setObjectName("folderBrowserSidebar");
         addDockWidget(Qt::LeftDockWidgetArea, m_browserDockWidget);
         tabifyDockWidget(m_browserDockWidget, m_projectDockWidget);
-        docksMenu->addAction(m_browserDockWidget->toggleViewAction());
     }
 
     //! \brief Creates and intializes all the actions used.
@@ -452,28 +448,42 @@ namespace Caneda
         action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
         connect(action, SIGNAL(triggered()), SLOT(backupAndHistory()));
 
-        action = am->createAction("viewMenu", tr("Show &menubar"));
+        action = am->createAction("showMenuBar", tr("Show &menubar"));
         action->setShortcut(QKeySequence(tr("Ctrl+M")));
         action->setStatusTip(tr("Enables/disables the menubar"));
         action->setWhatsThis(tr("Show menubar\n\nEnables/disables the menubar"));
         action->setCheckable(true);
         action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(viewMenu(bool)));
+        connect(action, SIGNAL(toggled(bool)), SLOT(showMenuBar(bool)));
         m_tabWidget->addAction(action);  // Add the action to the tabWidget to be able to receive the shortcuts when the menu is hidden.
 
-        action = am->createAction("viewToolBar",  tr("Show &toolbar"));
+        action = am->createAction("showToolBar",  tr("Show &toolbar"));
         action->setStatusTip(tr("Enables/disables the toolbar"));
         action->setWhatsThis(tr("Show toolbar\n\nEnables/disables the toolbar"));
         action->setCheckable(true);
         action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(viewToolBar(bool)));
+        connect(action, SIGNAL(toggled(bool)), SLOT(showToolBar(bool)));
 
-        action = am->createAction("viewStatusBar",  tr("Show &statusbar"));
+        action = am->createAction("showStatusBar",  tr("Show &statusbar"));
         action->setStatusTip(tr("Enables/disables the statusbar"));
         action->setWhatsThis(tr("Show statusbar\n\nEnables/disables the statusbar"));
         action->setCheckable(true);
         action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(viewStatusBar(bool)));
+        connect(action, SIGNAL(toggled(bool)), SLOT(showStatusBar(bool)));
+
+        action = am->createAction("showSideBarBrowser",  tr("Show sidebar browser"));
+        action->setStatusTip(tr("Enables/disables the sidebar browser"));
+        action->setWhatsThis(tr("Show sidebar browser\n\nEnables/disables the sidebar browser"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(showSideBarBrowser()));
+
+        action = am->createAction("showFolderBrowser",  tr("Show folder browser"));
+        action->setStatusTip(tr("Enables/disables the folder browser"));
+        action->setWhatsThis(tr("Show folder browser\n\nEnables/disables the folder browser"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(showFolderBrowser()));
 
         action = am->createAction("fullScreen", tr("&Full screen mode"));
         action->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
@@ -481,7 +491,7 @@ namespace Caneda
         action->setWhatsThis(tr("Full screen mode\n\nEnables/disables the full screen mode"));
         action->setCheckable(true);
         action->setChecked(false);
-        connect(action, SIGNAL(toggled(bool)), SLOT(setFullScreen(bool)));
+        connect(action, SIGNAL(toggled(bool)), SLOT(showFullScreen(bool)));
 
         action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("&Configure Caneda..."));
         action->setShortcut(QKeySequence(QKeySequence::Preferences));
@@ -733,10 +743,13 @@ namespace Caneda
         // Settings menu
         menu = menuBar()->addMenu(tr("&Settings"));
 
-        menu->addAction(am->actionForName("viewMenu"));
-        menu->addAction(am->actionForName("viewToolBar"));
-        menu->addAction(am->actionForName("viewStatusBar"));
-        docksMenu = menu->addMenu(tr("&Docks and Toolbars"));
+        menu->addAction(am->actionForName("showMenuBar"));
+        menu->addAction(am->actionForName("showToolBar"));
+        menu->addAction(am->actionForName("showStatusBar"));
+
+        subMenu = menu->addMenu(tr("&Docks and Toolbars"));
+        subMenu->addAction(am->actionForName("showSideBarBrowser"));
+        subMenu->addAction(am->actionForName("showFolderBrowser"));
 
         menu->addSeparator();
 
@@ -829,7 +842,7 @@ namespace Caneda
         statusBarWidget->addPermanentWidget(m_statusLabel);
         statusBarWidget->addPermanentWidget(viewToolbar);
 
-        statusBarWidget->setVisible(am->actionForName("viewStatusBar")->isChecked());
+        statusBarWidget->setVisible(am->actionForName("showStatusBar")->isChecked());
     }
 
     //! \brief Syncs the settings to the configuration file and closes the window.
@@ -1401,13 +1414,13 @@ namespace Caneda
     }
 
     //! \brief Toogles the visibility of the menu.
-    void MainWindow::viewMenu(bool toogle)
+    void MainWindow::showMenuBar(bool toogle)
     {
         menuBar()->setVisible(toogle);
     }
 
     //! \brief Toogles the visibility of the toolbars.
-    void MainWindow::viewToolBar(bool toogle)
+    void MainWindow::showToolBar(bool toogle)
     {
         fileToolbar->setVisible(toogle);
         editToolbar->setVisible(toogle);
@@ -1416,16 +1429,28 @@ namespace Caneda
     }
 
     //! \brief Toogles the visibility of the statusbar.
-    void MainWindow::viewStatusBar(bool toogle)
+    void MainWindow::showStatusBar(bool toogle)
     {
         statusBar()->setVisible(toogle);
     }
 
+    //! \brief Toogles the visibility of the sidebar browser.
+    void MainWindow::showSideBarBrowser()
+    {
+        m_sidebarDockWidget->toggleViewAction()->trigger();
+    }
+
+    //! \brief Toogles the visibility of the folder browser.
+    void MainWindow::showFolderBrowser()
+    {
+        m_browserDockWidget->toggleViewAction()->trigger();
+    }
+
     //! \brief Toogles the full screen mode.
-    void MainWindow::setFullScreen(bool toogle)
+    void MainWindow::showFullScreen(bool toogle)
     {
         if(toogle) {
-            showFullScreen();
+            QMainWindow::showFullScreen();
         }
         else {
             showMaximized();
@@ -1600,6 +1625,24 @@ namespace Caneda
     void MainWindow::statusBarMessage(const QString& newPos)
     {
         m_statusLabel->setText(newPos);
+    }
+
+    //! \brief Launch the global context menu
+    void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+    {
+        ActionManager* am = ActionManager::instance();
+        QMenu *_menu = new QMenu(this);
+
+        _menu->addAction(am->actionForName("showMenuBar"));
+        _menu->addAction(am->actionForName("showToolBar"));
+        _menu->addAction(am->actionForName("showStatusBar"));
+
+        _menu->addSeparator();
+
+        _menu->addAction(am->actionForName("showSideBarBrowser"));
+        _menu->addAction(am->actionForName("showFolderBrowser"));
+
+        _menu->exec(event->globalPos());
     }
 
 } // namespace Caneda

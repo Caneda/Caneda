@@ -121,10 +121,12 @@ namespace Caneda
         void showNetlist();
         void backupAndHistory();
 
-        void viewMenu(bool);
-        void viewToolBar(bool);
-        void viewStatusBar(bool);
-        void setFullScreen(bool);
+        void showMenuBar(bool);
+        void showToolBar(bool);
+        void showStatusBar(bool);
+        void showSideBarBrowser();
+        void showFolderBrowser();
+        void showFullScreen(bool);
         void applicationSettings();
 
         void helpIndex();
@@ -136,6 +138,7 @@ namespace Caneda
         void statusBarMessage(const QString& newPos);
 
     protected:
+        virtual void contextMenuEvent(QContextMenuEvent * event);
         void closeEvent(QCloseEvent *closeEvent);
 
     private:
@@ -157,7 +160,6 @@ namespace Caneda
         TabWidget *m_tabWidget;
         Project *m_project;
 
-        QMenu *docksMenu;
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
         QDockWidget *m_sidebarDockWidget, *m_projectDockWidget,
                     *m_browserDockWidget;
