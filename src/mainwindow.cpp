@@ -454,7 +454,6 @@ namespace Caneda
         action->setWhatsThis(tr("Show menubar\n\nEnables/disables the menubar"));
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showMenuBar(bool)));
-        m_tabWidget->addAction(action);  // Add the action to the tabWidget to be able to receive the shortcuts when the menu is hidden.
 
         action = am->createAction("showToolBar",  tr("Show &toolbar"));
         action->setStatusTip(tr("Enables/disables the toolbar"));
@@ -475,15 +474,16 @@ namespace Caneda
         action->setCheckable(true);
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showWidgets(bool)));
-        m_tabWidget->addAction(action);  // Add the action to the tabWidget to be able to receive the shortcuts when the menu is hidden.
 
         action = am->createAction("showSideBarBrowser",  tr("Show sidebar browser"));
+        action->setShortcut(QKeySequence(tr("T")));
         action->setStatusTip(tr("Enables/disables the sidebar browser"));
         action->setWhatsThis(tr("Show sidebar browser\n\nEnables/disables the sidebar browser"));
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showSideBarBrowser(bool)));
 
         action = am->createAction("showFolderBrowser",  tr("Show folder browser"));
+        action->setShortcut(QKeySequence(tr("F")));
         action->setStatusTip(tr("Enables/disables the folder browser"));
         action->setWhatsThis(tr("Show folder browser\n\nEnables/disables the folder browser"));
         action->setCheckable(true);
@@ -533,6 +533,12 @@ namespace Caneda
         action->setStatusTip(tr("About Qt by Nokia"));
         action->setWhatsThis(tr("About Qt\n\nAbout Qt by Nokia"));
         connect(action, SIGNAL(triggered()), SLOT(aboutQt()));
+
+        // Add the actions to the tabWidget to receive shortcuts when the menu is hidden.
+        const QList<QAction*> actions = am->actions();
+        foreach(QAction *_action, actions) {
+            m_tabWidget->addAction(_action);
+        }
 
         initMouseActions();
     }
@@ -607,6 +613,12 @@ namespace Caneda
         action = am->createMouseAction("paintingDraw", Caneda::PaintingDrawEvent,
                 tr("Painting draw action"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+
+        // Add the actions to the tabWidget to receive shortcuts when the menu is hidden.
+        const QList<QAction*> actions = am->mouseActions();
+        foreach(QAction *_action, actions) {
+            m_tabWidget->addAction(_action);
+        }
     }
 
     //! \brief Creates and initializes the menus.

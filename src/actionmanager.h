@@ -60,6 +60,7 @@ namespace Caneda
         QAction* actionForName(const QString& name) const;
         Caneda::MouseAction mouseActionForAction(QAction *action) const;
 
+        QList<QAction*> actions() const;
         QList<QAction*> mouseActions() const;
         QList<QAction*> recentFilesActions() const;
 
