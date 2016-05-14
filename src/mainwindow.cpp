@@ -476,14 +476,14 @@ namespace Caneda
         action->setWhatsThis(tr("Show sidebar browser\n\nEnables/disables the sidebar browser"));
         action->setCheckable(true);
         action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(showSideBarBrowser()));
+        connect(action, SIGNAL(toggled(bool)), SLOT(showSideBarBrowser(bool)));
 
         action = am->createAction("showFolderBrowser",  tr("Show folder browser"));
         action->setStatusTip(tr("Enables/disables the folder browser"));
         action->setWhatsThis(tr("Show folder browser\n\nEnables/disables the folder browser"));
         action->setCheckable(true);
         action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(showFolderBrowser()));
+        connect(action, SIGNAL(toggled(bool)), SLOT(showFolderBrowser(bool)));
 
         action = am->createAction("fullScreen", tr("&Full screen mode"));
         action->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
@@ -1435,15 +1435,15 @@ namespace Caneda
     }
 
     //! \brief Toogles the visibility of the sidebar browser.
-    void MainWindow::showSideBarBrowser()
+    void MainWindow::showSideBarBrowser(bool toogle)
     {
-        m_sidebarDockWidget->toggleViewAction()->trigger();
+        m_sidebarDockWidget->setVisible(toogle);
     }
 
     //! \brief Toogles the visibility of the folder browser.
-    void MainWindow::showFolderBrowser()
+    void MainWindow::showFolderBrowser(bool toogle)
     {
-        m_browserDockWidget->toggleViewAction()->trigger();
+        m_browserDockWidget->setVisible(toogle);
     }
 
     //! \brief Toogles the full screen mode.
