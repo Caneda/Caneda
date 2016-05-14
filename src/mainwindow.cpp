@@ -460,7 +460,7 @@ namespace Caneda
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(viewMenu(bool)));
 
-        action = am->createAction("viewToolBar",  tr("Show tool&bar"));
+        action = am->createAction("viewToolBar",  tr("Show &toolbar"));
         action->setStatusTip(tr("Enables/disables the toolbar"));
         action->setWhatsThis(tr("Show toolbar\n\nEnables/disables the toolbar"));
         action->setCheckable(true);
@@ -473,6 +473,14 @@ namespace Caneda
         action->setCheckable(true);
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(viewStatusBar(bool)));
+
+        action = am->createAction("fullScreen", tr("&Full screen mode"));
+        action->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
+        action->setStatusTip(tr("Enables/disables the full screen mode"));
+        action->setWhatsThis(tr("Full screen mode\n\nEnables/disables the full screen mode"));
+        action->setCheckable(true);
+        action->setChecked(false);
+        connect(action, SIGNAL(toggled(bool)), SLOT(setFullScreen(bool)));
 
         action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("&Configure Caneda..."));
         action->setShortcut(QKeySequence(QKeySequence::Preferences));
@@ -728,6 +736,10 @@ namespace Caneda
         menu->addAction(am->actionForName("viewToolBar"));
         menu->addAction(am->actionForName("viewStatusBar"));
         docksMenu = menu->addMenu(tr("&Docks and Toolbars"));
+
+        menu->addSeparator();
+
+        menu->addAction(am->actionForName("fullScreen"));
 
         menu->addSeparator();
 
@@ -1406,6 +1418,17 @@ namespace Caneda
     void MainWindow::viewStatusBar(bool toogle)
     {
         statusBar()->setVisible(toogle);
+    }
+
+    //! \brief Toogles the full screen mode.
+    void MainWindow::setFullScreen(bool toogle)
+    {
+        if(toogle) {
+            showFullScreen();
+        }
+        else {
+            showMaximized();
+        }
     }
 
     //! \brief Opens the applications settings dialog.

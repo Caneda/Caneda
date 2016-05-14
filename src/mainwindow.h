@@ -124,6 +124,7 @@ namespace Caneda
         void viewMenu(bool);
         void viewToolBar(bool);
         void viewStatusBar(bool);
+        void setFullScreen(bool);
         void applicationSettings();
 
         void helpIndex();
