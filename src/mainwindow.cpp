@@ -459,6 +459,7 @@ namespace Caneda
         action->setCheckable(true);
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(viewMenu(bool)));
+        m_tabWidget->addAction(action);  // Add the action to the tabWidget to be able to receive the shortcuts when the menu is hidden.
 
         action = am->createAction("viewToolBar",  tr("Show &toolbar"));
         action->setStatusTip(tr("Enables/disables the toolbar"));
