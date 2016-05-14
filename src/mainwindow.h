@@ -124,6 +124,7 @@ namespace Caneda
         void showMenuBar(bool);
         void showToolBar(bool);
         void showStatusBar(bool);
+        void showWidgets(bool);
         void showSideBarBrowser(bool);
         void showFolderBrowser(bool);
         void showFullScreen(bool);

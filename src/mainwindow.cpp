@@ -468,6 +468,15 @@ namespace Caneda
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showStatusBar(bool)));
 
+        action = am->createAction("showWidgets",  tr("Show widgets"));
+        action->setShortcut(QKeySequence(tr("Ctrl+Up")));
+        action->setStatusTip(tr("Show/hide all widgets"));
+        action->setWhatsThis(tr("Show widgets\n\nShow/hide all widgets"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(showWidgets(bool)));
+        m_tabWidget->addAction(action);  // Add the action to the tabWidget to be able to receive the shortcuts when the menu is hidden.
+
         action = am->createAction("showSideBarBrowser",  tr("Show sidebar browser"));
         action->setStatusTip(tr("Enables/disables the sidebar browser"));
         action->setWhatsThis(tr("Show sidebar browser\n\nEnables/disables the sidebar browser"));
@@ -742,6 +751,8 @@ namespace Caneda
         menu->addAction(am->actionForName("showStatusBar"));
 
         subMenu = menu->addMenu(tr("&Docks and Toolbars"));
+        subMenu->addAction(am->actionForName("showWidgets"));
+        subMenu->addSeparator();
         subMenu->addAction(am->actionForName("showSideBarBrowser"));
         subMenu->addAction(am->actionForName("showFolderBrowser"));
 
@@ -1426,6 +1437,16 @@ namespace Caneda
         statusBar()->setVisible(toogle);
     }
 
+    //! \brief Toogles the visibility of all widgets.
+    void MainWindow::showWidgets(bool toogle)
+    {
+         showMenuBar(toogle);
+         showToolBar(toogle);
+         showStatusBar(toogle);
+         showSideBarBrowser(toogle);
+         showFolderBrowser(toogle);
+    }
+
     //! \brief Toogles the visibility of the sidebar browser.
     void MainWindow::showSideBarBrowser(bool toogle)
     {
@@ -1645,6 +1666,10 @@ namespace Caneda
     {
         ActionManager* am = ActionManager::instance();
         QMenu *_menu = new QMenu(this);
+
+        _menu->addAction(am->actionForName("showWidgets"));
+
+        _menu->addSeparator();
 
         _menu->addAction(am->actionForName("showMenuBar"));
         _menu->addAction(am->actionForName("showToolBar"));
