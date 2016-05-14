@@ -69,8 +69,9 @@ namespace Caneda
         void newLayout();
         void newText();
         void open(QString fileName = QString());
-        void openRecent();
         void openFileFormat(const QString &suffix);
+        void openRecent();
+        void clearRecent();
         void save();
         void saveAs();
         bool saveAll();

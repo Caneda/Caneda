@@ -489,6 +489,18 @@ namespace Caneda
     }
 
     /*!
+     * \brief Clears the list of recently opened documents.
+     *
+     * \sa addFileToRecentFiles(), updateRecentFilesActionList()
+     */
+    void DocumentViewManager::clearRecentFiles()
+    {
+        Settings *settings = Settings::instance();
+        settings->setCurrentValue("gui/recentFiles", QStringList());
+        updateRecentFilesActionList();
+    }
+
+    /*!
      * \brief Updates recent files list
      *
      * The recently opened files are represented by a list of Actions. The

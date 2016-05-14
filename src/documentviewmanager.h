@@ -73,6 +73,7 @@ namespace Caneda
 
         void updateSettingsChanges();
         void addFileToRecentFiles(const QString &filePath);
+        void clearRecentFiles();
         void updateRecentFilesActionList();
 
     Q_SIGNALS:

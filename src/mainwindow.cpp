@@ -195,6 +195,11 @@ namespace Caneda
             connect(action, SIGNAL(triggered()), SLOT(openRecent()));
         }
 
+        action = am->createAction("clearRecent", tr("&Clear list"));
+        action->setStatusTip(tr("Clears the list of recently opened documents"));
+        action->setWhatsThis(tr("Clear list\n\nClears the list of recently opened documents"));
+        connect(action, SIGNAL(triggered()), SLOT(clearRecent()));
+
         action = am->createAction("fileSave", Caneda::icon("document-save"), tr("&Save"));
         action->setShortcut(QKeySequence(QKeySequence::Save));
         action->setStatusTip(tr("Saves the current document"));
@@ -644,6 +649,8 @@ namespace Caneda
             subMenu->addAction(am->recentFilesActions().at(i));
         }
         DocumentViewManager::instance()->updateRecentFilesActionList();  // Update the list from the previosly saved configuration file
+        subMenu->addSeparator();
+        subMenu->addAction(am->actionForName("clearRecent"));
 
         menu->addAction(am->actionForName("fileClose"));
 
@@ -952,23 +959,6 @@ namespace Caneda
         }
     }
 
-    /*!
-     * \brief Open recently opened file.
-     *
-     * First identify the Action that called the slot and then load the
-     * corresponding file. The entire file path is stored in action->data()
-     * and the name of the file without the path is stored in action->text().
-     *
-     * \sa open(), DocumentViewManager::updateRecentFilesActionList()
-     */
-    void MainWindow::openRecent()
-    {
-        QAction *action = qobject_cast<QAction *>(sender());
-        if(action) {
-            open(action->data().toString());
-        }
-    }
-
     //! \brief Opens the selected file format given an opened file.
     void MainWindow::openFileFormat(const QString &suffix)
     {
@@ -988,6 +978,30 @@ namespace Caneda
         filename = QDir::toNativeSeparators(path + "/" + filename + "." + suffix);
 
         open(filename);
+    }
+
+    /*!
+     * \brief Open recently opened file.
+     *
+     * First identify the Action that called the slot and then load the
+     * corresponding file. The entire file path is stored in action->data()
+     * and the name of the file without the path is stored in action->text().
+     *
+     * \sa open(), DocumentViewManager::updateRecentFilesActionList()
+     */
+    void MainWindow::openRecent()
+    {
+        QAction *action = qobject_cast<QAction *>(sender());
+        if(action) {
+            open(action->data().toString());
+        }
+    }
+
+    //! \brief Clears the list of recently opened documents.
+    void MainWindow::clearRecent()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->clearRecentFiles();
     }
 
     //! \brief Saves the current active document.
