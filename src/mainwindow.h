@@ -77,7 +77,6 @@ namespace Caneda
         void closeFile();
         void print();
         void exportImage();
-        void applicationSettings();
 
         void undo();
         void redo();
@@ -86,10 +85,6 @@ namespace Caneda
         void paste();
         void find();
         void selectAll();
-
-        void openLayout();
-        void openSchematic();
-        void openSymbol();
 
         void intoHierarchy();
         void popHierarchy();
@@ -101,8 +96,6 @@ namespace Caneda
         void splitHorizontal();
         void splitVertical();
         void closeSplit();
-        void viewToolBar(bool);
-        void viewStatusBar(bool);
 
         void alignTop();
         void alignBottom();
@@ -118,12 +111,20 @@ namespace Caneda
         void addToProject();
         void removeFromProject();
         void closeProject();
-        void backupAndHistory();
 
+        void openLayout();
+        void openSchematic();
+        void openSymbol();
         void simulate();
         void openSimulation();
         void showLog();
         void showNetlist();
+        void backupAndHistory();
+
+        void viewMenu(bool);
+        void viewToolBar(bool);
+        void viewStatusBar(bool);
+        void applicationSettings();
 
         void helpIndex();
         void helpExamples();

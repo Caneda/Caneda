@@ -234,17 +234,6 @@ namespace Caneda
         action->setWhatsThis(tr("Export Image\n\n""Exports the current view to an image file"));
         connect(action, SIGNAL(triggered()), SLOT(exportImage()));
 
-        action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("Application settings..."));
-        action->setShortcut(QKeySequence(QKeySequence::Preferences));
-        action->setStatusTip(tr("Sets the properties of the application"));
-        action->setWhatsThis(tr("Caneda Settings\n\nSets the properties of the application"));
-        connect(action, SIGNAL(triggered()), SLOT(applicationSettings()));
-
-        action = am->createAction("propertiesDialog", Caneda::icon("document-properties"), tr("Edit parameters..."));
-        action->setStatusTip(tr("Launches current selection properties dialog"));
-        action->setWhatsThis(tr("Edit Parameters\n\nLaunches current selection properties dialog"));
-        connect(action, SIGNAL(triggered()), SLOT(launchPropertiesDialog()));
-
         action = am->createAction("fileQuit", Caneda::icon("application-exit"), tr("E&xit"));
         action->setShortcut(QKeySequence(QKeySequence::Quit));
         action->setStatusTip(tr("Quits the application"));
@@ -349,20 +338,6 @@ namespace Caneda
         action->setWhatsThis(tr("Close Split\n\nCloses the current split"));
         connect(action, SIGNAL(triggered()), SLOT(closeSplit()));
 
-        action = am->createAction("viewToolBar",  tr("Tool&bar"));
-        action->setStatusTip(tr("Enables/disables the toolbar"));
-        action->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
-        action->setCheckable(true);
-        action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(viewToolBar(bool)));
-
-        action = am->createAction("viewStatusBar",  tr("&Statusbar"));
-        action->setStatusTip(tr("Enables/disables the statusbar"));
-        action->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
-        action->setCheckable(true);
-        action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), SLOT(viewStatusBar(bool)));
-
         action = am->createAction("alignTop", Caneda::icon("align-vertical-top"), tr("Align top"));
         action->setStatusTip(tr("Align top selected elements"));
         action->setWhatsThis(tr("Align top\n\nAlign selected elements to their upper edge"));
@@ -428,11 +403,6 @@ namespace Caneda
         action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
         connect(action, SIGNAL(triggered()), SLOT(closeProject()));
 
-        action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and history..."));
-        action->setStatusTip(tr("Opens backup and history dialog"));
-        action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
-        connect(action, SIGNAL(triggered()), SLOT(backupAndHistory()));
-
         action = am->createAction("schEdit", Caneda::icon("draw-freehand"), tr("&Edit circuit schematic"));
         action->setShortcut(QKeySequence(tr("F2")));
         action->setStatusTip(tr("Switches to schematic edit"));
@@ -459,23 +429,61 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(simulate()));
 
         action = am->createAction("openSym", Caneda::icon("system-switch-user"), tr("View circuit simulation"));
-        action->setShortcut(tr("F6"));
+        action->setShortcut(QKeySequence(tr("F6")));
         action->setToolTip(tr("View Circuit Simulation") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Changes to circuit simulation"));
         action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
         connect(action, SIGNAL(triggered()), SLOT(openSimulation()));
 
         action = am->createAction("showLog", Caneda::icon("document-preview"), tr("Show simulation log"));
-        action->setShortcut(tr("F7"));
+        action->setShortcut(QKeySequence(tr("F7")));
         action->setStatusTip(tr("Shows simulation log"));
         action->setWhatsThis(tr("Show Log\n\nShows the log of the current simulation"));
         connect(action, SIGNAL(triggered()), SLOT(showLog()));
 
         action = am->createAction("showNetlist", Caneda::icon("document-preview"), tr("Show circuit netlist"));
-        action->setShortcut(tr("F8"));
+        action->setShortcut(QKeySequence(tr("F8")));
         action->setStatusTip(tr("Shows the circuit netlist"));
         action->setWhatsThis(tr("Show Netlist\n\nShows the netlist of the current circuit"));
         connect(action, SIGNAL(triggered()), SLOT(showNetlist()));
+
+        action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and history..."));
+        action->setStatusTip(tr("Opens backup and history dialog"));
+        action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
+        connect(action, SIGNAL(triggered()), SLOT(backupAndHistory()));
+
+        action = am->createAction("viewMenu", tr("Show &menubar"));
+        action->setShortcut(QKeySequence(tr("Ctrl+M")));
+        action->setStatusTip(tr("Enables/disables the menubar"));
+        action->setWhatsThis(tr("Show menubar\n\nEnables/disables the menubar"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(viewMenu(bool)));
+
+        action = am->createAction("viewToolBar",  tr("Show tool&bar"));
+        action->setStatusTip(tr("Enables/disables the toolbar"));
+        action->setWhatsThis(tr("Show toolbar\n\nEnables/disables the toolbar"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(viewToolBar(bool)));
+
+        action = am->createAction("viewStatusBar",  tr("Show &statusbar"));
+        action->setStatusTip(tr("Enables/disables the statusbar"));
+        action->setWhatsThis(tr("Show statusbar\n\nEnables/disables the statusbar"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, SIGNAL(toggled(bool)), SLOT(viewStatusBar(bool)));
+
+        action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("&Configure Caneda..."));
+        action->setShortcut(QKeySequence(QKeySequence::Preferences));
+        action->setStatusTip(tr("Sets the properties of the application"));
+        action->setWhatsThis(tr("Caneda Settings\n\nSets the properties of the application"));
+        connect(action, SIGNAL(triggered()), SLOT(applicationSettings()));
+
+        action = am->createAction("propertiesDialog", Caneda::icon("document-properties"), tr("Edit parameters..."));
+        action->setStatusTip(tr("Launches current selection properties dialog"));
+        action->setWhatsThis(tr("Edit Parameters\n\nLaunches current selection properties dialog"));
+        connect(action, SIGNAL(triggered()), SLOT(launchPropertiesDialog()));
 
         action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("&Help index..."));
         action->setShortcut(QKeySequence(QKeySequence::HelpContents));
@@ -615,10 +623,6 @@ namespace Caneda
 
         menu->addSeparator();
 
-        menu->addAction(am->actionForName("appSettings"));
-
-        menu->addSeparator();
-
         menu->addAction(am->actionForName("fileQuit"));
 
         // Edit menu
@@ -667,15 +671,6 @@ namespace Caneda
         menu->addAction(am->actionForName("splitHorizontal"));
         menu->addAction(am->actionForName("splitVertical"));
         menu->addAction(am->actionForName("splitClose"));
-
-        menu->addSeparator();
-
-        docksMenu = menu->addMenu(tr("&Docks and Toolbars"));
-
-        docksMenu->addAction(am->actionForName("viewToolBar"));
-        docksMenu->addAction(am->actionForName("viewStatusBar"));
-
-        docksMenu->addSeparator();
 
         // Align menu
         menu = menuBar()->addMenu(tr("P&ositioning"));
@@ -726,6 +721,18 @@ namespace Caneda
         menu->addAction(am->actionForName("showLog"));
         menu->addAction(am->actionForName("showNetlist"));
 
+        // Settings menu
+        menu = menuBar()->addMenu(tr("&Settings"));
+
+        menu->addAction(am->actionForName("viewMenu"));
+        menu->addAction(am->actionForName("viewToolBar"));
+        menu->addAction(am->actionForName("viewStatusBar"));
+        docksMenu = menu->addMenu(tr("&Docks and Toolbars"));
+
+        menu->addSeparator();
+
+        menu->addAction(am->actionForName("appSettings"));
+
         // Help menu
         menu = menuBar()->addMenu(tr("&Help"));
 
@@ -744,7 +751,7 @@ namespace Caneda
     {
         ActionManager* am = ActionManager::instance();
 
-        fileToolbar  = addToolBar(tr("File"));
+        fileToolbar = addToolBar(tr("File"));
         fileToolbar->setObjectName("fileToolBar");
 
         fileToolbar->addAction(am->actionForName("fileNew"));
@@ -761,7 +768,7 @@ namespace Caneda
         editToolbar->addAction(am->actionForName("editUndo"));
         editToolbar->addAction(am->actionForName("editRedo"));
 
-        workToolbar  = addToolBar(tr("Work"));
+        workToolbar = addToolBar(tr("Work"));
         workToolbar->setObjectName("workToolbar");
 
         workToolbar->addAction(am->actionForName("select"));
@@ -1049,31 +1056,6 @@ namespace Caneda
         delete p;
     }
 
-    //! \brief Opens the applications settings dialog.
-    void MainWindow::applicationSettings()
-    {
-        QList<SettingsPage *> wantedPages;
-        SettingsPage *page = new GeneralConfigurationPage(this);
-        wantedPages << page;
-        page = new HdlConfigurationPage(this);
-        wantedPages << page;
-        page = new LibrariesConfigurationPage(this);
-        wantedPages << page;
-        page = new LayoutConfigurationPage(this);
-        wantedPages << page;
-        page = new SimulationConfigurationPage(this);
-        wantedPages << page;
-
-        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Caneda", this);
-        int result = d->exec();
-
-        // Update all document views to reflect the current settings.
-        if(result == QDialog::Accepted) {
-            DocumentViewManager::instance()->updateSettingsChanges();
-            repaint();
-        }
-    }
-
     //! \brief Calls the current document undo action.
     void MainWindow::undo()
     {
@@ -1133,27 +1115,6 @@ namespace Caneda
         if (document) {
             document->selectAll();
         }
-    }
-
-    //! \brief Opens the layout document corresponding to the current file.
-    void MainWindow::openLayout()
-    {
-        LayoutContext *ly = LayoutContext::instance();
-        openFileFormat(ly->defaultSuffix());
-    }
-
-    //! \brief Opens the schematic document corresponding to the current file.
-    void MainWindow::openSchematic()
-    {
-        SchematicContext *sc = SchematicContext::instance();
-        openFileFormat(sc->defaultSuffix());
-    }
-
-    //! \brief Opens the symbol document corresponding to the current file.
-    void MainWindow::openSymbol()
-    {
-        SymbolContext *sy = SymbolContext::instance();
-        openFileFormat(sy->defaultSuffix());
     }
 
     //! \brief Opens the selected item file description for edition.
@@ -1238,21 +1199,6 @@ namespace Caneda
         if(view) {
             manager->closeView(view);
         }
-    }
-
-    //! \brief Toogles the visibility of the toolbars.
-    void MainWindow::viewToolBar(bool toogle)
-    {
-        fileToolbar->setVisible(toogle);
-        editToolbar->setVisible(toogle);
-        viewToolbar->setVisible(toogle);
-        workToolbar->setVisible(toogle);
-    }
-
-    //! \brief Toogles the visibility of the statusbar.
-    void MainWindow::viewStatusBar(bool toogle)
-    {
-        statusBar()->setVisible(toogle);
     }
 
     //! \brief Aligns the selected elements to the top
@@ -1374,10 +1320,25 @@ namespace Caneda
         }
     }
 
-    //! \brief Opens the backup and history file dialog.
-    void MainWindow::backupAndHistory()
+    //! \brief Opens the layout document corresponding to the current file.
+    void MainWindow::openLayout()
     {
-        m_project->slotBackupAndHistory();
+        LayoutContext *ly = LayoutContext::instance();
+        openFileFormat(ly->defaultSuffix());
+    }
+
+    //! \brief Opens the schematic document corresponding to the current file.
+    void MainWindow::openSchematic()
+    {
+        SchematicContext *sc = SchematicContext::instance();
+        openFileFormat(sc->defaultSuffix());
+    }
+
+    //! \brief Opens the symbol document corresponding to the current file.
+    void MainWindow::openSymbol()
+    {
+        SymbolContext *sy = SymbolContext::instance();
+        openFileFormat(sy->defaultSuffix());
     }
 
     //! \brief Simulates the current document.
@@ -1418,6 +1379,58 @@ namespace Caneda
         QString baseName = info.completeBaseName();
 
         manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".net"));
+    }
+
+    //! \brief Opens the backup and history file dialog.
+    void MainWindow::backupAndHistory()
+    {
+        m_project->slotBackupAndHistory();
+    }
+
+    //! \brief Toogles the visibility of the menu.
+    void MainWindow::viewMenu(bool toogle)
+    {
+        menuBar()->setVisible(toogle);
+    }
+
+    //! \brief Toogles the visibility of the toolbars.
+    void MainWindow::viewToolBar(bool toogle)
+    {
+        fileToolbar->setVisible(toogle);
+        editToolbar->setVisible(toogle);
+        viewToolbar->setVisible(toogle);
+        workToolbar->setVisible(toogle);
+    }
+
+    //! \brief Toogles the visibility of the statusbar.
+    void MainWindow::viewStatusBar(bool toogle)
+    {
+        statusBar()->setVisible(toogle);
+    }
+
+    //! \brief Opens the applications settings dialog.
+    void MainWindow::applicationSettings()
+    {
+        QList<SettingsPage *> wantedPages;
+        SettingsPage *page = new GeneralConfigurationPage(this);
+        wantedPages << page;
+        page = new HdlConfigurationPage(this);
+        wantedPages << page;
+        page = new LibrariesConfigurationPage(this);
+        wantedPages << page;
+        page = new LayoutConfigurationPage(this);
+        wantedPages << page;
+        page = new SimulationConfigurationPage(this);
+        wantedPages << page;
+
+        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Caneda", this);
+        int result = d->exec();
+
+        // Update all document views to reflect the current settings.
+        if(result == QDialog::Accepted) {
+            DocumentViewManager::instance()->updateSettingsChanges();
+            repaint();
+        }
     }
 
     //! \brief Opens the help index.
