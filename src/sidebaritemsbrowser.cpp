@@ -475,13 +475,8 @@ namespace Caneda
         m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
         m_treeView->setModel(m_proxyModel);
 
-        QShortcut *filterEditShortcut = new QShortcut(
-                    QKeySequence(tr("C", "Insert component shortcut")), this);
-
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
                 this, SLOT(filterTextChanged()));
-        connect(filterEditShortcut, SIGNAL(activated()), m_filterEdit, SLOT(setFocus()));
-        connect(filterEditShortcut, SIGNAL(activated()), m_filterEdit, SLOT(clear()));
 
         connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
         connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this,
@@ -491,7 +486,7 @@ namespace Caneda
         connect(m_treeView, SIGNAL(activated(const QModelIndex&)), this,
                 SLOT(slotOnClicked(const QModelIndex&)));
 
-        setWindowTitle(tr("Schematic Items"));
+        setWindowTitle(tr("Components Browser"));
         m_currentComponent = "";
     }
 
@@ -526,6 +521,21 @@ namespace Caneda
     QString SidebarItemsBrowser::currentComponent()
     {
         return m_currentComponent;
+    }
+
+    /*!
+     * \brief Filters available items in the sidebar.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. This method allows for an external object to request
+     * the selection of the sidebar focus and filtering, for example when
+     * inserting items.
+     */
+    void SidebarItemsBrowser::filterItems()
+    {
+        m_filterEdit->setFocus();
+        m_filterEdit->clear();
     }
 
     //! \brief Filters items according to user input on a QLineEdit.

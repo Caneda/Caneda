@@ -105,6 +105,7 @@ namespace Caneda
         explicit SidebarChartsBrowser(ChartView *parent = 0);
 
         void updateChartSeriesMap();
+        void filterItems();
 
     private Q_SLOTS:
         void filterTextChanged();

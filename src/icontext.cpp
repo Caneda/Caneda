@@ -43,56 +43,6 @@ namespace Caneda
     }
 
     /*!
-     * \fn IContext::toolBar()
-     *
-     * \brief Returns the toolbar corresponding to this context.
-     *
-     * There are two type of toolbars:
-     * \li Main toolbars, containing common actions as copy, cut, paste, undo,
-     * etc.
-     * \li Context sensitive toolbars, containing only those actions relative
-     * to the current context as insert wire, rotate, etc.
-     *
-     * While the main toolbars are displayed in the main window for every
-     * context, context sensitive toolbars are displayed inside each tab when
-     * a specific type of context is opened. This method returns a pointer to
-     * the current context toolbar.
-     *
-     * \todo Implement context sensitive toolbars and attach them inside each
-     * tab.
-     *
-     * \sa sideBarWidget()
-     */
-
-    /*!
-     * \fn IContext::sideBarWidget()
-     *
-     * \brief Returns the sideBarWidget corresponding to this context.
-     *
-     * SideBarWidgets are context sensitive, containing only those items and
-     * tools relative to the current context as components, painting tools,
-     * code snippets, etc. In this sense, context sensitive sidebars are
-     * changed every time a specific type of context is opened or changed to.
-     * This method returns a pointer to the current context sideBarWidget.
-     *
-     * \sa toolBar(), updateSideBar()
-     */
-
-    /*!
-     * \fn IContext::updateSideBar()
-     *
-     * \brief Updates sidebar contents.
-     *
-     * SideBarWidgets are context sensitive, containing only those items and
-     * tools relative to the current context as components, painting tools,
-     * code snippets, etc. Upon certain conditions, sidebars may need updating,
-     * for example when inserting or removing libraries. This method allows for
-     * an external event to request the update of the sidebar.
-     *
-     * \sa sideBarWidget()
-     */
-
-    /*!
      * \fn IContext::canOpen()
      *
      * \brief Indicates if a particular file extension is managed by this
@@ -134,6 +84,70 @@ namespace Caneda
      * \brief Open a document of the current context type.
      */
 
+    /*!
+     * \fn IContext::toolBar()
+     *
+     * \brief Returns the toolbar corresponding to this context.
+     *
+     * There are two type of toolbars:
+     * \li Main toolbars, containing common actions as copy, cut, paste, undo,
+     * etc.
+     * \li Context sensitive toolbars, containing only those actions relative
+     * to the current context as insert wire, rotate, etc.
+     *
+     * While the main toolbars are displayed in the main window for every
+     * context, context sensitive toolbars are displayed inside each tab when
+     * a specific type of context is opened. This method returns a pointer to
+     * the current context toolbar.
+     *
+     * \todo Implement context sensitive toolbars and attach them inside each
+     * tab.
+     *
+     * \sa sideBarWidget()
+     */
+
+    /*!
+     * \fn IContext::sideBarWidget()
+     *
+     * \brief Returns the sideBarWidget corresponding to this context.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. In this sense, context sensitive sidebars are
+     * changed every time a specific type of context is opened or changed to.
+     * This method returns a pointer to the current context sideBarWidget.
+     *
+     * \sa toolBar(), updateSideBar()
+     */
+
+    /*!
+     * \fn IContext::filterSideBarItems()
+     *
+     * \brief Filters available items in the sidebar.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. This method allows for an external event to request
+     * the selection of the sidebar focus and filtering, for example when
+     * inserting items.
+     *
+     * \sa sideBarWidget()
+     */
+
+    /*!
+     * \fn IContext::updateSideBar()
+     *
+     * \brief Updates sidebar contents.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. Upon certain conditions, sidebars may need updating,
+     * for example when inserting or removing libraries. This method allows for
+     * an external event to request the update of the sidebar.
+     *
+     * \sa sideBarWidget()
+     */
+
     /*************************************************************************
      *                          Layout Context                               *
      *************************************************************************/
@@ -143,7 +157,6 @@ namespace Caneda
         // We create the sidebar corresponding to this context
         StateHandler *handler = StateHandler::instance();
         m_sidebarBrowser = new SidebarItemsBrowser();
-        m_sidebarBrowser->setWindowTitle(tr("Components Browser"));
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -197,11 +210,6 @@ namespace Caneda
         return context;
     }
 
-    QWidget* LayoutContext::sideBarWidget()
-    {
-        return m_sidebarBrowser;
-    }
-
     bool LayoutContext::canOpen(const QFileInfo &info) const
     {
         QStringList supportedSuffixes;
@@ -243,6 +251,16 @@ namespace Caneda
         return document;
     }
 
+    QWidget* LayoutContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
+    }
+
+    void LayoutContext::filterSideBarItems()
+    {
+        m_sidebarBrowser->filterItems();
+    }
+
     /*************************************************************************
      *                         Schematic Context                             *
      *************************************************************************/
@@ -251,7 +269,6 @@ namespace Caneda
     {
         StateHandler *handler = StateHandler::instance();
         m_sidebarBrowser = new SidebarItemsBrowser();
-        m_sidebarBrowser->setWindowTitle(tr("Components Browser"));
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -314,11 +331,6 @@ namespace Caneda
         return context;
     }
 
-    QWidget* SchematicContext::sideBarWidget()
-    {
-        return m_sidebarBrowser;
-    }
-
     bool SchematicContext::canOpen(const QFileInfo &info) const
     {
         QStringList supportedSuffixes;
@@ -360,6 +372,16 @@ namespace Caneda
         return document;
     }
 
+    QWidget* SchematicContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
+    }
+
+    void SchematicContext::filterSideBarItems()
+    {
+        m_sidebarBrowser->filterItems();
+    }
+
     /*************************************************************************
      *                        Simulation Context                             *
      *************************************************************************/
@@ -367,7 +389,6 @@ namespace Caneda
     SimulationContext::SimulationContext(QObject *parent) : IContext(parent)
     {
         m_sidebarBrowser = new SidebarChartsBrowser();
-        m_sidebarBrowser->setWindowTitle(tr("Displayed Waveforms"));
     }
 
     //! \copydoc MainWindow::instance()
@@ -378,18 +399,6 @@ namespace Caneda
             context = new SimulationContext();
         }
         return context;
-    }
-
-    QWidget *SimulationContext::sideBarWidget()
-    {
-        return m_sidebarBrowser;
-    }
-
-    void SimulationContext::updateSideBar()
-    {
-        if(m_sidebarBrowser) {
-            m_sidebarBrowser->updateChartSeriesMap();
-        }
     }
 
     bool SimulationContext::canOpen(const QFileInfo &info) const
@@ -433,6 +442,23 @@ namespace Caneda
         return document;
     }
 
+    QWidget *SimulationContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
+    }
+
+    void SimulationContext::filterSideBarItems()
+    {
+        m_sidebarBrowser->filterItems();
+    }
+
+    void SimulationContext::updateSideBar()
+    {
+        if(m_sidebarBrowser) {
+            m_sidebarBrowser->updateChartSeriesMap();
+        }
+    }
+
     /*************************************************************************
      *                          Symbol Context                               *
      *************************************************************************/
@@ -441,7 +467,6 @@ namespace Caneda
     {
         StateHandler *handler = StateHandler::instance();
         m_sidebarBrowser = new SidebarItemsBrowser();
-        m_sidebarBrowser->setWindowTitle(tr("Components Browser"));
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -476,11 +501,6 @@ namespace Caneda
             context = new SymbolContext();
         }
         return context;
-    }
-
-    QWidget* SymbolContext::sideBarWidget()
-    {
-        return m_sidebarBrowser;
     }
 
     bool SymbolContext::canOpen(const QFileInfo &info) const
@@ -524,6 +544,16 @@ namespace Caneda
         return document;
     }
 
+    QWidget* SymbolContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
+    }
+
+    void SymbolContext::filterSideBarItems()
+    {
+        m_sidebarBrowser->filterItems();
+    }
+
     /*************************************************************************
      *                           Text Context                                *
      *************************************************************************/
@@ -531,7 +561,6 @@ namespace Caneda
     TextContext::TextContext(QObject *parent) : IContext(parent)
     {
         m_sidebarTextBrowser = new SidebarTextBrowser();
-        m_sidebarTextBrowser->setWindowTitle(tr("Text Templates"));
     }
 
     //! \copydoc MainWindow::instance()
@@ -542,11 +571,6 @@ namespace Caneda
             instance = new TextContext();
         }
         return instance;
-    }
-
-    QWidget* TextContext::sideBarWidget()
-    {
-        return m_sidebarTextBrowser;
     }
 
     bool TextContext::canOpen(const QFileInfo& info) const
@@ -598,6 +622,11 @@ namespace Caneda
         }
 
         return document;
+    }
+
+    QWidget* TextContext::sideBarWidget()
+    {
+        return m_sidebarTextBrowser;
     }
 
 } // namespace Caneda

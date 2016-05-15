@@ -226,6 +226,7 @@ namespace Caneda
         void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
 
         QString currentComponent();
+        void filterItems();
 
     signals:
         void itemClicked(const QString& item, const QString& category);

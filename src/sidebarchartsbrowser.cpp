@@ -189,9 +189,6 @@ namespace Caneda
         m_filterEdit->setPlaceholderText(tr("Search..."));
         layoutTop->addWidget(m_filterEdit);
 
-        QShortcut *filterEditShortcut = new QShortcut(
-                    QKeySequence(tr("C", "Insert component shortcut")), this);
-
         // Create proxy model and set its properties.
         // The model is set in updateWaveformsList().
         m_proxyModel = new QSortFilterProxyModel(this);
@@ -229,8 +226,6 @@ namespace Caneda
         // Signals and slots connections
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
                 this, SLOT(filterTextChanged()));
-        connect(filterEditShortcut, SIGNAL(activated()), m_filterEdit, SLOT(setFocus()));
-        connect(filterEditShortcut, SIGNAL(activated()), m_filterEdit, SLOT(clear()));
 
         connect(buttonAll, SIGNAL(clicked()), this, SLOT(selectAll()));
         connect(buttonNone, SIGNAL(clicked()), this, SLOT(selectNone()));
@@ -238,6 +233,8 @@ namespace Caneda
         connect(buttonCurrents, SIGNAL(clicked()), this, SLOT(selectCurrents()));
 
         connect(m_tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(updateChartView()));
+
+        setWindowTitle(tr("Displayed Waveforms"));
     }
 
     //! \brief Filters properties according to user input on a QLineEdit.
@@ -362,6 +359,21 @@ namespace Caneda
         // here when filling the model (in the constructor the columns do
         // not yet exist, resulting in a crash if resized there).
         m_tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    }
+
+    /*!
+     * \brief Filters available items in the sidebar.
+     *
+     * SideBarWidgets are context sensitive, containing only those items and
+     * tools relative to the current context as components, painting tools,
+     * code snippets, etc. This method allows for an external object to request
+     * the selection of the sidebar focus and filtering, for example when
+     * inserting items.
+     */
+    void SidebarChartsBrowser::filterItems()
+    {
+        m_filterEdit->setFocus();
+        m_filterEdit->clear();
     }
 
     /*!

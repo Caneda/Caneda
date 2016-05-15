@@ -87,6 +87,7 @@ namespace Caneda
         void find();
         void selectAll();
 
+        void filterItems();
         void intoHierarchy();
         void popHierarchy();
 

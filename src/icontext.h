@@ -60,16 +60,17 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        virtual QToolBar* toolBar() = 0;
-        virtual QWidget* sideBarWidget() = 0;
-        virtual void updateSideBar() = 0;
-
         virtual bool canOpen(const QFileInfo& info) const = 0;
         virtual QStringList fileNameFilters() const = 0;
         virtual QString defaultSuffix() const = 0;
 
         virtual IDocument* newDocument() = 0;
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0) = 0;
+
+        virtual QToolBar* toolBar() = 0;
+        virtual QWidget* sideBarWidget() = 0;
+        virtual void filterSideBarItems() = 0;
+        virtual void updateSideBar() = 0;
 
     protected:
         explicit IContext(QObject *parent = 0);
@@ -105,16 +106,17 @@ namespace Caneda
         static LayoutContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual void updateSideBar() { return; }
-
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
         virtual QString defaultSuffix() const { return "xlay"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void filterSideBarItems();
+        virtual void updateSideBar() {}
         // End of IContext interface methods
 
     private:
@@ -149,16 +151,17 @@ namespace Caneda
         static SchematicContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual void updateSideBar() { return; }
-
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
         virtual QString defaultSuffix() const { return "xsch"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void filterSideBarItems();
+        virtual void updateSideBar() {}
         // End of IContext interface methods
 
     private:
@@ -193,16 +196,17 @@ namespace Caneda
         static SimulationContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual void updateSideBar();
-
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
         virtual QString defaultSuffix() const { return "raw"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void filterSideBarItems();
+        virtual void updateSideBar();
         // End of IContext interface methods
 
     private:
@@ -237,16 +241,17 @@ namespace Caneda
         static SymbolContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual void updateSideBar() { return; }
-
         virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
         virtual QString defaultSuffix() const { return "xsym"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void filterSideBarItems();
+        virtual void updateSideBar() {}
         // End of IContext interface methods
 
     private:
@@ -280,16 +285,17 @@ namespace Caneda
         static TextContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual void updateSideBar() { return; }
-
         virtual bool canOpen(const QFileInfo& info) const;
         virtual QStringList fileNameFilters() const;
         virtual QString defaultSuffix() const { return "txt"; }
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void filterSideBarItems() {}
+        virtual void updateSideBar() {}
         // End of IContext interface methods
 
     private:

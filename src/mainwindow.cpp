@@ -283,6 +283,12 @@ namespace Caneda
         action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
         connect(action, SIGNAL(triggered()), SLOT(find()));
 
+        action = am->createAction("filterItems",  tr("Filter items"));
+        action->setShortcut(QKeySequence(tr("C")));
+        action->setStatusTip(tr("Filters available sidebar items"));
+        action->setWhatsThis(tr("Filter items\n\nFilters available sidebar items"));
+        connect(action, SIGNAL(triggered()), SLOT(filterItems()));
+
         action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into subcircuit"));
         action->setShortcut(QKeySequence(tr("Ctrl+I")));
         action->setToolTip(tr("Go into Subcircuit") + " (" + action->shortcut().toString() + ")");
@@ -1169,6 +1175,15 @@ namespace Caneda
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
             document->selectAll();
+        }
+    }
+
+    //! \brief Request the selection of the sidebar focus and filtering.
+    void MainWindow::filterItems()
+    {
+        IView *view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->context()->filterSideBarItems();
         }
     }
 
