@@ -52,10 +52,12 @@ namespace Caneda
      *
      * \sa \ref DocumentFormats
      */
-    class FormatXmlSchematic
+    class FormatXmlSchematic : public QObject
     {
+        Q_OBJECT
+
     public:
-        explicit FormatXmlSchematic(SchematicDocument *doc = 0);
+        explicit FormatXmlSchematic(SchematicDocument *document = 0);
 
         bool save() const;
         bool load() const;
@@ -92,10 +94,12 @@ namespace Caneda
      *
      * \sa \ref DocumentFormats
      */
-    class FormatXmlSymbol
+    class FormatXmlSymbol : public QObject
     {
+        Q_OBJECT
+
     public:
-        explicit FormatXmlSymbol(SymbolDocument *doc = 0);
+        explicit FormatXmlSymbol(SymbolDocument *document = 0);
         explicit FormatXmlSymbol(ComponentData *component);
 
         bool save() const;
@@ -136,10 +140,12 @@ namespace Caneda
      *
      * \sa \ref DocumentFormats
      */
-    class FormatXmlLayout
+    class FormatXmlLayout : public QObject
     {
+        Q_OBJECT
+
     public:
-        explicit FormatXmlLayout(LayoutDocument *doc = 0);
+        explicit FormatXmlLayout(LayoutDocument *document = 0);
 
         bool save() const;
         bool load() const;
@@ -174,10 +180,12 @@ namespace Caneda
      *
      * \sa \ref DocumentFormats
      */
-    class FormatSpice
+    class FormatSpice : public QObject
     {
+        Q_OBJECT
+
     public:
-        explicit FormatSpice(SchematicDocument *doc = 0);
+        explicit FormatSpice(SchematicDocument *document = 0);
 
         bool save();
 
@@ -208,11 +216,12 @@ namespace Caneda
      *
      * \sa \ref DocumentFormats
      */
-    class FormatRawSimulation
+    class FormatRawSimulation : public QObject
     {
+        Q_OBJECT
+
     public:
-        explicit FormatRawSimulation(SimulationDocument *doc = 0);
-        ~FormatRawSimulation();
+        explicit FormatRawSimulation(SimulationDocument *document = 0);
 
         bool load();
 

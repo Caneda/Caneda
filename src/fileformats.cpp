@@ -46,8 +46,9 @@ namespace Caneda
      *                         FormatXmlSchematic                            *
      *************************************************************************/
     //! \brief Constructor.
-    FormatXmlSchematic::FormatXmlSchematic(SchematicDocument *doc):
-        m_schematicDocument(doc)
+    FormatXmlSchematic::FormatXmlSchematic(SchematicDocument *document):
+        QObject(document),
+        m_schematicDocument(document)
     {
     }
 
@@ -479,8 +480,9 @@ namespace Caneda
      *                           FormatXmlSymbol                             *
      *************************************************************************/
     //! \brief Constructor.
-    FormatXmlSymbol::FormatXmlSymbol(SymbolDocument *doc) :
-        m_symbolDocument(doc)
+    FormatXmlSymbol::FormatXmlSymbol(SymbolDocument *document) :
+        QObject(document),
+        m_symbolDocument(document)
     {
         if(m_symbolDocument) {
             m_fileName = m_symbolDocument->fileName();
@@ -494,6 +496,7 @@ namespace Caneda
 
     //! \brief Constructor.
     FormatXmlSymbol::FormatXmlSymbol(ComponentData *component) :
+        QObject(0),
         m_component(component)
     {
         if(m_component) {
@@ -1071,8 +1074,9 @@ namespace Caneda
      *                           FormatXmlLayout                             *
      *************************************************************************/
     //! \brief Constructor.
-    FormatXmlLayout::FormatXmlLayout(LayoutDocument *doc):
-        m_layoutDocument(doc)
+    FormatXmlLayout::FormatXmlLayout(LayoutDocument *document):
+        QObject(document),
+        m_layoutDocument(document)
     {
     }
 
@@ -1310,8 +1314,9 @@ namespace Caneda
      *                             FormatSpice                               *
      *************************************************************************/
     //! \brief Constructor.
-    FormatSpice::FormatSpice(SchematicDocument *doc) :
-        m_schematicDocument(doc)
+    FormatSpice::FormatSpice(SchematicDocument *document) :
+        QObject(document),
+        m_schematicDocument(document)
     {
     }
 
@@ -1721,16 +1726,10 @@ namespace Caneda
      *                         FormatRawSimulation                           *
      *************************************************************************/
     //! \brief Constructor.
-    FormatRawSimulation::FormatRawSimulation(SimulationDocument *doc) :
-        m_simulationDocument(doc)
+    FormatRawSimulation::FormatRawSimulation(SimulationDocument *document) :
+        QObject(document),
+        m_simulationDocument(document)
     {
-    }
-
-    //! \brief Destructor.
-    FormatRawSimulation::~FormatRawSimulation()
-    {
-        qDeleteAll(plotCurves);
-        qDeleteAll(plotCurvesPhase);
     }
 
     //! \brief Load the waveform file indicated by \a filename.
