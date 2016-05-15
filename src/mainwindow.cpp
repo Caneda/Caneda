@@ -853,7 +853,7 @@ namespace Caneda
         ActionManager* am = ActionManager::instance();
 
         // Initially the label is an empty space.
-        m_statusLabel = new QLabel(QString(""), statusBarWidget);
+        m_statusLabel = new QLabel(QString(), statusBarWidget);
 
         // Configure viewToolbar
         viewToolbar  = addToolBar(tr("View"));
@@ -939,12 +939,11 @@ namespace Caneda
 
         if(fileName.isEmpty()) {
             if(!m_project->isValid()) {
-                fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
-                        manager->fileNameFilters().join(""));
+                fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),
+                                                        manager->fileNameFilters().join(QString()));
             }
             else {
-                ProjectFileOpenDialog *p =
-                        new ProjectFileOpenDialog(m_project->libraryFileName(), this);
+                ProjectFileOpenDialog *p = new ProjectFileOpenDialog(m_project->libraryFileName(), this);
                 int status = p->exec();
 
                 if(status == QDialog::Accepted) {
@@ -1040,8 +1039,8 @@ namespace Caneda
             return;
         }
 
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "",
-                manager->currentDocument()->context()->fileNameFilters().join(""));
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(),
+                                                        manager->currentDocument()->context()->fileNameFilters().join(QString()));
         if(fileName.isEmpty()) {
             return;
         }
@@ -1051,8 +1050,7 @@ namespace Caneda
 
         QString errorMessage;
         if(!document->save(&errorMessage)) {
-            QMessageBox::critical(this,
-                    tr("%1 : File save error").arg(document->fileName()), errorMessage);
+            QMessageBox::critical(this, tr("%1 : File save error").arg(document->fileName()), errorMessage);
             document->setFileName(oldFileName);
         }
         else {

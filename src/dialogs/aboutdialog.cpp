@@ -144,14 +144,13 @@ namespace Caneda
         QString text;
         // Verification that the file exists
         if(!file->exists()) {
-            text = QString(QObject::tr("The text file that contains the GNU/GPL is not found."));
+            text = QString(tr("The text file that contains the GNU/GPL is not found."));
         }
         else if(!file->open(QIODevice::ReadOnly | QIODevice::Text)) {
-            text = QString(QObject::tr("The text file that contains the GNU/GPL exists but could not be opened."));
+            text = QString(tr("The text file that contains the GNU/GPL exists but could not be opened."));
         }
         else {
             QTextStream in(file);
-            text = QString("");
             while(!in.atEnd()) {
                 text += in.readLine() + QChar('\n');
             }

@@ -96,7 +96,7 @@ namespace Caneda
     //! \brief Constructor.
     SidebarItemsModel::SidebarItemsModel(QObject *parent) : QAbstractItemModel(parent)
     {
-        rootItem = new CategoryItem("Root", "");
+        rootItem = new CategoryItem("Root", QString());
     }
 
     /*!
@@ -215,8 +215,8 @@ namespace Caneda
         CategoryItem *catItem = 0;
 
         if(category == "root") {
-            catItem = new CategoryItem(itemName, "",
-                    QPixmap(), true, rootItem);
+            catItem = new CategoryItem(itemName, QString(),
+                                       QPixmap(), true, rootItem);
         }
         else {
             for(int i = 0; i < rootItem->childCount(); i++) {
@@ -227,7 +227,8 @@ namespace Caneda
             }
 
             if(!catItem) {
-                catItem = new CategoryItem(category, category, QPixmap(), false, rootItem);
+                catItem = new CategoryItem(category, category,
+                                           QPixmap(), false, rootItem);
             }
 
             new CategoryItem(itemName, category, itemPixmap, false, catItem);
@@ -487,7 +488,7 @@ namespace Caneda
                 SLOT(slotOnClicked(const QModelIndex&)));
 
         setWindowTitle(tr("Components Browser"));
-        m_currentComponent = "";
+        m_currentComponent = QString();
     }
 
     //! \brief Destructor.

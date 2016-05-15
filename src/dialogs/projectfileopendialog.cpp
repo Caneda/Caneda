@@ -48,7 +48,7 @@ namespace Caneda
         connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
                 SLOT(accept()));
 
-        m_fileName = "";
+        m_fileName = QString();
     }
 
     void ProjectFileOpenDialog::done(int r)

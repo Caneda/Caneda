@@ -35,8 +35,7 @@ namespace Caneda
     class ChartSeries : public QwtPlotCurve
     {
     public:
-        explicit ChartSeries(const QString &title = QString::null);
-        explicit ChartSeries(const QwtText &title);
+        explicit ChartSeries(const QString &title = QString());
 
         //! \brief Returns the type of curve
         QString type() const { return m_type; }

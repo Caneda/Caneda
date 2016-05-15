@@ -147,7 +147,7 @@ namespace Caneda
     QString latexToUnicode(const QString& Input)
     {
         int Begin = 0, End = 0;
-        QString Output = "";
+        QString Output = QString();
         Output.reserve(Input.size());
 
         while((Begin=Input.indexOf('\\', Begin)) >= 0) {

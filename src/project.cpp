@@ -81,7 +81,7 @@ namespace Caneda
     void Project::slotNewProject()
     {
         QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"),
-                                                        "", tr("Caneda Projects (*.xpro)"));
+                                                        QString(), tr("Caneda Projects (*.xpro)"));
         if(fileName.isEmpty()) {
             return;
         }
@@ -114,7 +114,7 @@ namespace Caneda
         //If no name is provided, we open a dialog asking the user for a project to be opened
         if(fileName.isEmpty()) {
             fileName = QFileDialog::getOpenFileName(this, tr("Open Project"),
-                                                    "", tr("Caneda Projects (*.xpro)"));
+                                                    QString(), tr("Caneda Projects (*.xpro)"));
         }
 
         if(fileName.isEmpty()) {
@@ -205,8 +205,8 @@ namespace Caneda
             library->unload(m_libraryName);
 
             projectLibrary = 0;
-            m_libraryFileName = "";
-            m_libraryName = "";
+            m_libraryFileName = QString();
+            m_libraryName = QString();
         }
     }
 
@@ -235,7 +235,7 @@ namespace Caneda
     void Project::addExistingComponent()
     {
         QString sourceFileName = QFileDialog::getOpenFileName(this, tr("Add File to Project"),
-                                                              "", tr("Component-xml (*.xsch)"));
+                                                              QString(), tr("Component-xml (*.xsch)"));
 
         if(sourceFileName.isEmpty()) {
             return;

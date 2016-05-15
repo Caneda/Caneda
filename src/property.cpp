@@ -256,7 +256,7 @@ namespace Caneda
         foreach(const Property property, m_propertyMap) {
             if(property.isVisible()) {
 
-                QString propertyText = "";  // Current property text
+                QString propertyText = QString();  // Current property text
 
                 // Add property name (except for the label property)
                 if(!property.name().startsWith("label", Qt::CaseInsensitive)) {

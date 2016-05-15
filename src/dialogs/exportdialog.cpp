@@ -45,7 +45,7 @@ namespace Caneda
         // Title and file name of the scene
         QString diagramFilename = document->fileName();
         if(diagramFilename.isEmpty()) {
-            diagramFilename = QObject::tr("untitled");
+            diagramFilename = QString(tr("untitled"));
         }
 
         ui.labelSchematicName->setText(diagramFilename);
@@ -72,10 +72,10 @@ namespace Caneda
         slotResetSize();
 
         ui.btnLock->setIcon(Caneda::icon("object-locked"));
-        ui.btnLock->setToolTip(QObject::tr("Keep proportions"));
+        ui.btnLock->setToolTip(QString(tr("Keep proportions")));
 
         ui.btnReset->setIcon(Caneda::icon("edit-clear-locationbar-rtl"));
-        ui.btnReset->setToolTip(QObject::tr("Restore dimensions"));
+        ui.btnReset->setToolTip(QString(tr("Restore dimensions")));
 
         ui.comboFormat->addItem(tr("PNG (*.png)"), "PNG");
         ui.comboFormat->addItem(tr("JPEG (*.jpg)"), "JPG");

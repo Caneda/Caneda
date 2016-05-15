@@ -307,8 +307,10 @@ namespace Caneda
 
     void LibrariesConfigurationPage::slotAddLibrary()
     {
-        QString dir = QFileDialog::getExistingDirectory(this, tr("Select Library"),
-                                                        "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        QString dir = QFileDialog::getExistingDirectory(this,
+                                                        tr("Select Library"),
+                                                        QString(),
+                                                        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if(!dir.isEmpty()) {
             new QListWidgetItem(dir, libraryList);
         }
@@ -323,8 +325,10 @@ namespace Caneda
 
     void LibrariesConfigurationPage::slotAddHdlLibrary()
     {
-        QString dir = QFileDialog::getExistingDirectory(this, tr("Select Library"),
-                                                        "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        QString dir = QFileDialog::getExistingDirectory(this,
+                                                        tr("Select Library"),
+                                                        QString(),
+                                                        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if(!dir.isEmpty()) {
             new QListWidgetItem(dir, hdlLibraryList);
         }
@@ -417,12 +421,12 @@ namespace Caneda
 
         QFormLayout *simulatorLayout = new QFormLayout(groupSimulator);
         simulatorLayout->addRow(tr("Engine:"), ngspiceMode);
-        simulatorLayout->addRow("", customMode);
+        simulatorLayout->addRow(QString(), customMode);
         simulatorLayout->addRow(tr("Command:"), lineSimulationCommand);
 
         QFormLayout *outputLayout = new QFormLayout(groupOutput);
         outputLayout->addRow(tr("Output format:"), binaryMode);
-        outputLayout->addRow("", asciiMode);
+        outputLayout->addRow(QString(), asciiMode);
 
         connect(ngspiceMode, SIGNAL(clicked()), SLOT(slotSimulationEngineSelected()));
         connect(customMode, SIGNAL(clicked()), SLOT(slotSimulationEngineSelected()));

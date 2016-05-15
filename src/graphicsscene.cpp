@@ -1319,7 +1319,7 @@ namespace Caneda
                     // Make an empty copy of the item for the next item insertion
                     m_paintingDrawItem = static_cast<Painting*>(m_paintingDrawItem->copy());
                     m_paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-                    static_cast<GraphicText*>(m_paintingDrawItem)->setText("");
+                    static_cast<GraphicText*>(m_paintingDrawItem)->setText(QString());
                 }
 
                 // This means the text was set through the text dialog

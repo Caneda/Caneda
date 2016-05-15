@@ -47,7 +47,7 @@ namespace Caneda
 
         explicit Layer(const QRectF &rect,
                        LayerName layerName = Metal1,
-                       const QString &netLabel = "",
+                       const QString &netLabel = QString(),
                        QGraphicsItem *parent = 0);
 
         //! \copydoc GraphicsItem::Type

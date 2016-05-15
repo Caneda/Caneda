@@ -181,9 +181,13 @@ namespace Caneda
     void FolderBrowser::slotNewFolder()
     {
         bool ok;
-        QString text = QInputDialog::getText(this, tr("New Folder"),
-                tr("Please enter new folder name:"), QLineEdit::Normal,
-                "", &ok);
+        QString text = QInputDialog::getText(this,
+                                             tr("New Folder"),
+                                             tr("Please enter new folder name:"),
+                                             QLineEdit::Normal,
+                                             QString(),
+                                             &ok);
+
         if(ok && !text.isEmpty()) {
             m_fileModel->mkdir(m_listView->rootIndex(), text);
         }

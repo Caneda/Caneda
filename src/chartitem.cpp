@@ -30,13 +30,4 @@ namespace Caneda
     {
     }
 
-    /*!
-     * \brief Constructor
-     *
-     * \param title Title of the curve
-     */
-    ChartSeries::ChartSeries(const QwtText &title) : QwtPlotCurve(title)
-    {
-    }
-
 } // namespace Caneda
