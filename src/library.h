@@ -39,10 +39,12 @@ namespace Caneda
      *
      * \sa LibraryManager, Component
      */
-    class Library
+    class Library : public QObject
     {
+        Q_OBJECT
+
     public:
-        explicit Library(QString libraryPath);
+        explicit Library(QString libraryPath, QObject *parent = 0);
 
         //! Returns library name.
         QString libraryName() const { return m_libraryName; }

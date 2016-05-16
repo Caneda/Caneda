@@ -149,7 +149,8 @@ namespace Caneda
      */
     void SidebarItemsModel::unPlugLibrary(const QString& libraryName, const QString& category)
     {
-        const Library *libItem = LibraryManager::instance()->library(libraryName);
+        LibraryManager *manager = LibraryManager::instance();
+        const Library *libItem = manager->library(libraryName);
         if(!libItem) {
             return;
         }

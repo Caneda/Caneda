@@ -40,7 +40,8 @@ namespace Caneda
      *                                Library                                *
      *************************************************************************/
     //! \brief Constructs a new library from a file path.
-    Library::Library(QString libraryPath) :
+    Library::Library(QString libraryPath, QObject *parent) :
+        QObject(parent),
         m_libraryName(QFileInfo(libraryPath).baseName()),
         m_libraryPath(libraryPath)
     {
