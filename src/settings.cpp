@@ -54,8 +54,6 @@ namespace Caneda
         defaultSettings["gui/showFolderBrowser"] = QVariant(bool(true));
         defaultSettings["gui/showFullScreen"] = QVariant(bool(false));
 
-        defaultSettings["gui/geometry"] = QVariant(QByteArray());
-        defaultSettings["gui/dockPositions"] = QVariant(QByteArray());
         defaultSettings["gui/gridVisible"] = QVariant(bool(true));
         defaultSettings["gui/foregroundColor"] = QVariant(QColor(Qt::darkGray));
         defaultSettings["gui/backgroundColor"] = QVariant(QColor(Qt::white));
@@ -63,7 +61,6 @@ namespace Caneda
         defaultSettings["gui/lineColor"] = QVariant(QColor(Qt::blue));
         defaultSettings["gui/selectionColor"] = QVariant(QColor(255, 128, 0)); // Dark orange
         defaultSettings["gui/lineWidth"] = QVariant(int(1));
-        defaultSettings["gui/recentFiles"] = QVariant(QStringList());
 
         defaultSettings["gui/hdl/keyword"]= QVariant(QVariant(QColor(Qt::black)));
         defaultSettings["gui/hdl/type"]= QVariant(QVariant(QColor(Qt::blue)));
@@ -149,7 +146,7 @@ namespace Caneda
     {
         QSettings settings;
 
-        QStringList childKeys = defaultSettings.keys();
+        QStringList childKeys = settings.allKeys();
         foreach (const QString& childKey, childKeys) {
             setCurrentValue(childKey, settings.value(childKey));
         }
@@ -166,7 +163,7 @@ namespace Caneda
     {
         QSettings settings;
 
-        QStringList childKeys = defaultSettings.keys();
+        QStringList childKeys = currentSettings.keys();
         foreach (const QString& childKey, childKeys) {
             settings.setValue(childKey, currentValue(childKey));
         }
