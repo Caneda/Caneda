@@ -125,8 +125,8 @@ namespace Caneda
             component->library = libraryName();
             component->filename = componentPath;
 
-            FormatXmlSymbol *format = new FormatXmlSymbol(component);
-            readOk = readOk & format->load();
+            FormatXmlSymbol format(component, this);
+            readOk = readOk & format.load();
 
             if(!readOk) {
                 QMessageBox::warning(0, QObject::tr("Error"),

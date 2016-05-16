@@ -490,8 +490,8 @@ namespace Caneda
     }
 
     //! \brief Constructor.
-    FormatXmlSymbol::FormatXmlSymbol(ComponentData *component) :
-        QObject(0),
+    FormatXmlSymbol::FormatXmlSymbol(ComponentData *component, QObject *parent) :
+        QObject(parent),
         m_component(component)
     {
         if(m_component) {
@@ -926,6 +926,8 @@ namespace Caneda
                     QRectF rect = newSymbol->paintingRect();
                     rect.moveTo(newSymbol->pos());
                     data.addPath(newSymbol->shapeForRect(rect));
+
+                    delete newSymbol;
                 }
 
             }

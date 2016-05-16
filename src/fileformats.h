@@ -98,7 +98,7 @@ namespace Caneda
 
     public:
         explicit FormatXmlSymbol(SymbolDocument *document = 0);
-        explicit FormatXmlSymbol(ComponentData *component);
+        explicit FormatXmlSymbol(ComponentData *component, QObject *parent = 0);
 
         bool save() const;
         bool load() const;

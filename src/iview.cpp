@@ -78,7 +78,7 @@ namespace Caneda
         m_document(document)
     {
         Q_ASSERT(document != 0);
-        m_toolBar = new QToolBar;
+        m_toolBar = new QToolBar();
 
         DocumentViewManager *manager = DocumentViewManager::instance();
         connect(manager, SIGNAL(changed()), this, SLOT(onDocumentViewManagerChanged()));
@@ -106,6 +106,11 @@ namespace Caneda
         m_toolBar->addWidget(closeViewButton);
 
         onDocumentViewManagerChanged();
+    }
+
+    IView::~IView()
+    {
+        delete m_toolBar;
     }
 
     IDocument* IView::document() const
