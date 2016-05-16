@@ -460,11 +460,6 @@ namespace Caneda
         }
     }
 
-    SchematicDocument* FormatXmlSchematic::schematicDocument() const
-    {
-        return m_schematicDocument;
-    }
-
     GraphicsScene* FormatXmlSchematic::graphicsScene() const
     {
         return m_schematicDocument ? m_schematicDocument->graphicsScene() : 0;
@@ -567,11 +562,6 @@ namespace Caneda
         file.close();
 
         return result;
-    }
-
-    SymbolDocument* FormatXmlSymbol::symbolDocument() const
-    {
-        return m_symbolDocument;
     }
 
     GraphicsScene* FormatXmlSymbol::graphicsScene() const
@@ -1294,11 +1284,6 @@ namespace Caneda
         }
     }
 
-    LayoutDocument* FormatXmlLayout::layoutDocument() const
-    {
-        return m_layoutDocument;
-    }
-
     GraphicsScene* FormatXmlLayout::graphicsScene() const
     {
         return m_layoutDocument ? m_layoutDocument->graphicsScene() : 0;
@@ -1344,11 +1329,6 @@ namespace Caneda
         file.close();
 
         return true;
-    }
-
-    SchematicDocument *FormatSpice::schematicDocument() const
-    {
-        return m_schematicDocument;
     }
 
     GraphicsScene *FormatSpice::graphicsScene() const

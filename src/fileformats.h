@@ -62,11 +62,6 @@ namespace Caneda
         bool save() const;
         bool load() const;
 
-        SchematicDocument* schematicDocument() const;
-        GraphicsScene* graphicsScene() const;
-
-        QString fileName() const;
-
     private:
         QString saveText() const;
         void saveComponents(Caneda::XmlWriter *writer) const;
@@ -79,6 +74,9 @@ namespace Caneda
         void loadPorts(Caneda::XmlReader *reader) const;
         void loadWires(Caneda::XmlReader *reader) const;
         void loadPaintings(Caneda::XmlReader *reader) const;
+
+        GraphicsScene* graphicsScene() const;
+        QString fileName() const;
 
         SchematicDocument *m_schematicDocument;
     };
@@ -105,12 +103,6 @@ namespace Caneda
         bool save() const;
         bool load() const;
 
-        SymbolDocument* symbolDocument() const;
-        GraphicsScene* graphicsScene() const;
-        ComponentData* component() const;
-
-        QString fileName() const;
-
     private:
         QString saveText() const;
         void saveSymbol(Caneda::XmlWriter *writer) const;
@@ -123,6 +115,10 @@ namespace Caneda
         void loadPorts(Caneda::XmlReader *reader) const;
         void loadProperties(Caneda::XmlReader *reader) const;
         void loadModels(Caneda::XmlReader *reader) const;
+
+        GraphicsScene* graphicsScene() const;
+        ComponentData* component() const;
+        QString fileName() const;
 
         SymbolDocument *m_symbolDocument;
         ComponentData *m_component;
@@ -150,17 +146,15 @@ namespace Caneda
         bool save() const;
         bool load() const;
 
-        LayoutDocument* layoutDocument() const;
-        GraphicsScene* graphicsScene() const;
-
-        QString fileName() const;
-
     private:
         QString saveText() const;
         void savePaintings(Caneda::XmlWriter *writer) const;
 
         bool loadFromText(const QString &text) const;
         void loadPaintings(Caneda::XmlReader *reader) const;
+
+        GraphicsScene* graphicsScene() const;
+        QString fileName() const;
 
         LayoutDocument *m_layoutDocument;
     };
@@ -189,14 +183,13 @@ namespace Caneda
 
         bool save();
 
-        SchematicDocument* schematicDocument() const;
-        GraphicsScene* graphicsScene() const;
-        QString fileName() const;
-
     private:
         QString generateNetlist();
         PortsNetlist generateNetlistTopology();
         void replacePortNames(PortsNetlist *netlist);
+
+        GraphicsScene* graphicsScene() const;
+        QString fileName() const;
 
         SchematicDocument *m_schematicDocument;
     };
