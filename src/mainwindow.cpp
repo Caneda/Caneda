@@ -642,7 +642,7 @@ namespace Caneda
         // File menu
         menu = menuBar()->addMenu(tr("&File"));
 
-        subMenu = menu->addMenu(Caneda::icon("document-new"), tr("&New..."));
+        subMenu = menu->addMenu(Caneda::icon("document-new"), tr("&New"));
         subMenu->addAction(am->actionForName("fileNewSchematic"));
         subMenu->addAction(am->actionForName("fileNewSymbol"));
         subMenu->addAction(am->actionForName("fileNewLayout"));
