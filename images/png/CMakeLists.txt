@@ -11,7 +11,7 @@ SET(PNGS align-horizontal-center.png c_microstrip.png document-save-as.png
          unmodified.png align-vertical-top.png distribute-horizontal-center.png edit-cut.png
          format-text-italic.png library.png port.png view-grid.png application-exit.png
          distribute-vertical-center.png edit-delete.png format-text-subscript.png marker.png
-         preferences-other.png view-left-close.png archive-remove.png document-close.png
+         view-left-close.png archive-remove.png document-close.png
          edit-find.png format-text-superscript.png media-playback-start.png printer.png
          view-split-left-right.png att_bridge.png document-new.png edit-paste.png
          format-text-underline.png microstrip.png project-new.png view-split-top-bottom.png
@@ -23,6 +23,7 @@ SET(PNGS align-horizontal-center.png c_microstrip.png document-save-as.png
          folder-new.png go-previous.png object-flip-vertical.png system-switch-user.png
          zoom-out.png list-remove.png list-add.png edit-clear-locationbar-rtl.png
          document-open-recent.png show-menu.png view-fullscreen.png
+         configure.png configure-shortcuts.png view-sidetree.png
 )
 
 INSTALL(FILES ${PNGS} DESTINATION ${IMAGEDIR})

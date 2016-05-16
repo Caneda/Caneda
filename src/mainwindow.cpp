@@ -466,7 +466,7 @@ namespace Caneda
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showMenuBar(bool)));
 
-        action = am->createAction("showToolBar",  tr("Show &toolbar"));
+        action = am->createAction("showToolBar", tr("Show &toolbar"));
         action->setStatusTip(tr("Enables/disables the toolbar"));
         action->setWhatsThis(tr("Show toolbar\n\nEnables/disables the toolbar"));
         action->setCheckable(true);
@@ -478,7 +478,7 @@ namespace Caneda
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showStatusBar(bool)));
 
-        action = am->createAction("showWidgets",  tr("Show widgets"));
+        action = am->createAction("showWidgets", Caneda::icon("configure"), tr("Show widgets"));
         action->setShortcut(QKeySequence(tr("Ctrl+Up")));
         action->setStatusTip(tr("Show/hide all widgets"));
         action->setWhatsThis(tr("Show widgets\n\nShow/hide all widgets"));
@@ -486,14 +486,14 @@ namespace Caneda
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showWidgets(bool)));
 
-        action = am->createAction("showSideBarBrowser",  tr("Show sidebar browser"));
+        action = am->createAction("showSideBarBrowser", Caneda::icon("view-sidetree"), tr("Show sidebar browser"));
         action->setShortcut(QKeySequence(tr("T")));
         action->setStatusTip(tr("Enables/disables the sidebar browser"));
         action->setWhatsThis(tr("Show sidebar browser\n\nEnables/disables the sidebar browser"));
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showSideBarBrowser(bool)));
 
-        action = am->createAction("showFolderBrowser",  tr("Show folder browser"));
+        action = am->createAction("showFolderBrowser", Caneda::icon("document-open"), tr("Show folder browser"));
         action->setShortcut(QKeySequence(tr("F")));
         action->setStatusTip(tr("Enables/disables the folder browser"));
         action->setWhatsThis(tr("Show folder browser\n\nEnables/disables the folder browser"));
@@ -507,7 +507,7 @@ namespace Caneda
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showFullScreen(bool)));
 
-        action = am->createAction("appSettings", Caneda::icon("preferences-other"), tr("&Configure Caneda..."));
+        action = am->createAction("appSettings", Caneda::icon("configure"), tr("&Configure Caneda..."));
         action->setShortcut(QKeySequence(QKeySequence::Preferences));
         action->setStatusTip(tr("Sets the properties of the application"));
         action->setWhatsThis(tr("Caneda Settings\n\nSets the properties of the application"));
