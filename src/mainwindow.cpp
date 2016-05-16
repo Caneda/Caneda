@@ -459,7 +459,7 @@ namespace Caneda
         action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
         connect(action, SIGNAL(triggered()), SLOT(backupAndHistory()));
 
-        action = am->createAction("showMenuBar", tr("Show &menubar"));
+        action = am->createAction("showMenuBar", Caneda::icon("show-menu"), tr("Show &menubar"));
         action->setShortcut(QKeySequence(tr("Ctrl+M")));
         action->setStatusTip(tr("Enables/disables the menubar"));
         action->setWhatsThis(tr("Show menubar\n\nEnables/disables the menubar"));
@@ -500,7 +500,7 @@ namespace Caneda
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showFolderBrowser(bool)));
 
-        action = am->createAction("showFullScreen", tr("&Full screen mode"));
+        action = am->createAction("showFullScreen", Caneda::icon("view-fullscreen"), tr("&Full screen mode"));
         action->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
         action->setStatusTip(tr("Enables/disables the full screen mode"));
         action->setWhatsThis(tr("Full screen mode\n\nEnables/disables the full screen mode"));
