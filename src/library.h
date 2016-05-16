@@ -24,7 +24,6 @@
 #include "component.h"
 
 #include <QHash>
-#include <QObject>
 
 namespace Caneda
 {

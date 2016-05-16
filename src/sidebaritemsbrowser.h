@@ -41,14 +41,17 @@ namespace Caneda
      *
      * \sa SidebarItemsModel
      */
-    class CategoryItem
+    class CategoryItem : public QObject
     {
+        Q_OBJECT
+
     public:
         explicit CategoryItem(const QString& name,
                               const QString& filename,
                               const QPixmap &pixmap = QPixmap(),
                               bool isLibrary = false,
-                              CategoryItem *parent = 0);
+                              CategoryItem *parentItem = 0,
+                              QObject *parent = 0);
         ~CategoryItem();
 
         CategoryItem *parent() const { return m_parentItem; }

@@ -65,16 +65,16 @@ namespace Caneda
      * \param _description Description of property.
      * \param _visible Visibility of property object(item)
      */
-    Property::Property(const QString& _name,
-                       const QString& _value,
-                       const QString& _description,
-                       bool _visible)
+    Property::Property(const QString& name,
+                       const QString& value,
+                       const QString& description,
+                       bool visible)
     {
         d = new PropertyData;
-        d->name = _name;
-        d->value = _value;
-        d->description = _description;
-        d->visible = _visible;
+        d->name = name;
+        d->value = value;
+        d->description = description;
+        d->visible = visible;
     }
 
     //! \brief Construct property from shared data.

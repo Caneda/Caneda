@@ -67,10 +67,10 @@ namespace Caneda
     class Property
     {
     public:
-        explicit Property(const QString &_name = QString(),
-                          const QString &_defaultValue = QString(),
-                          const QString &_description = QString(),
-                          bool _visible=false);
+        explicit Property(const QString &name = QString(),
+                          const QString &defaultValue = QString(),
+                          const QString &description = QString(),
+                          bool visible=false);
         explicit Property(QSharedDataPointer<PropertyData> data);
 
         //! Returns the property name.

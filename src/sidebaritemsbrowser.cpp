@@ -43,13 +43,18 @@ namespace Caneda
      *                             CategoryItem                              *
      *************************************************************************/
     //! \brief Constructor.
-    CategoryItem::CategoryItem(const QString& name, const QString& filename,
-            const QPixmap& pixmap, bool isLibrary, CategoryItem *parent) :
+    CategoryItem::CategoryItem(const QString& name,
+                               const QString& filename,
+                               const QPixmap& pixmap,
+                               bool isLibrary,
+                               CategoryItem *parentItem,
+                               QObject *parent) :
+        QObject(parent),
         m_name(name),
         m_filename(filename),
         m_isLibrary(isLibrary),
         m_iconPixmap(pixmap),
-        m_parentItem(parent)
+        m_parentItem(parentItem)
     {
         if(m_parentItem) {
             m_parentItem->addChild(this);

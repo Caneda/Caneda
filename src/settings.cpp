@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -31,7 +31,7 @@
 namespace Caneda
 {
     //! \brief Constructor.
-    Settings::Settings()
+    Settings::Settings(QObject *parent) : QObject(parent)
     {
         QStringList libraries;
         libraries << Caneda::libDirectory() + "components/active";
@@ -43,6 +43,7 @@ namespace Caneda
         libraries << Caneda::libDirectory() + "components/simulations";
         libraries << Caneda::libDirectory() + "components/sources";
         libraries << Caneda::libDirectory() + "components/transmission";
+
         defaultSettings["libraries/schematic"] = QVariant(QStringList(libraries));
         defaultSettings["libraries/hdl"] = QVariant(QStringList(Caneda::libDirectory() + "hdl"));
 
@@ -52,6 +53,7 @@ namespace Caneda
         defaultSettings["gui/showSideBarBrowser"] = QVariant(bool(true));
         defaultSettings["gui/showFolderBrowser"] = QVariant(bool(true));
         defaultSettings["gui/showFullScreen"] = QVariant(bool(false));
+
         defaultSettings["gui/geometry"] = QVariant(QByteArray());
         defaultSettings["gui/dockPositions"] = QVariant(QByteArray());
         defaultSettings["gui/gridVisible"] = QVariant(bool(true));
