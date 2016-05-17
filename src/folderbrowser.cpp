@@ -40,16 +40,16 @@ namespace Caneda
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
 
-        QToolBar *toolbar = new QToolBar;
+        QToolBar *toolbar = new QToolBar(this);
 
-        QToolButton *buttonUp = new QToolButton();
+        QToolButton *buttonUp = new QToolButton(this);
         buttonUp->setIcon(Caneda::icon("go-up"));
         buttonUp->setShortcut(Qt::Key_Backspace);
         buttonUp->setStatusTip(tr("Go up one folder"));
         buttonUp->setToolTip(tr("Go up one folder"));
         buttonUp->setWhatsThis(tr("Go up one folder"));
 
-        buttonBack = new QToolButton();
+        buttonBack = new QToolButton(this);
         buttonBack->setIcon(Caneda::icon("go-previous"));
         buttonBack->setShortcut(Qt::ALT + Qt::Key_Left);
         buttonBack->setStatusTip(tr("Go previous folder"));
@@ -57,7 +57,7 @@ namespace Caneda
         buttonBack->setWhatsThis(tr("Go previous folder"));
         buttonBack->setEnabled(false);
 
-        buttonForward = new QToolButton();
+        buttonForward = new QToolButton(this);
         buttonForward->setIcon(Caneda::icon("go-next"));
         buttonForward->setShortcut(Qt::ALT + Qt::Key_Right);
         buttonForward->setStatusTip(tr("Go next folder"));
@@ -65,20 +65,20 @@ namespace Caneda
         buttonForward->setWhatsThis(tr("Go next folder"));
         buttonForward->setEnabled(false);
 
-        QToolButton *buttonHome = new QToolButton();
+        QToolButton *buttonHome = new QToolButton(this);
         buttonHome->setIcon(Caneda::icon("go-home"));
         buttonHome->setShortcut(Qt::CTRL + Qt::Key_Home);
         buttonHome->setStatusTip(tr("Go to the home folder"));
         buttonHome->setToolTip(tr("Go to the home folder"));
         buttonHome->setWhatsThis(tr("Go to the home folder"));
 
-        QToolButton *buttonNewFolder = new QToolButton();
+        QToolButton *buttonNewFolder = new QToolButton(this);
         buttonNewFolder->setIcon(Caneda::icon("folder-new"));
         buttonNewFolder->setStatusTip(tr("Create new folder"));
         buttonNewFolder->setToolTip(tr("Create new folder"));
         buttonNewFolder->setWhatsThis(tr("Create new folder"));
 
-        QToolButton *buttonDeleteFile = new QToolButton();
+        QToolButton *buttonDeleteFile = new QToolButton(this);
         buttonDeleteFile->setIcon(Caneda::icon("archive-remove"));
         buttonDeleteFile->setStatusTip(tr("Delete file/folder"));
         buttonDeleteFile->setToolTip(tr("Delete file/folder"));
@@ -98,10 +98,10 @@ namespace Caneda
         toolbar->addWidget(buttonNewFolder);
         toolbar->addWidget(buttonDeleteFile);
 
-        m_fileModel = new QFileSystemModel;
+        m_fileModel = new QFileSystemModel(this);
         m_fileModel->setRootPath(QDir::homePath());
 
-        m_listView = new QListView;
+        m_listView = new QListView(this);
         m_listView->setModel(m_fileModel);
         m_listView->setRootIndex(m_fileModel->index(QDir::homePath()));
 
