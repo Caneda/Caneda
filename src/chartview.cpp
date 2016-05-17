@@ -332,7 +332,7 @@ namespace Caneda
         _menu->addAction(am->actionForName("zoomOut"));
 
         _menu->addSeparator();
-        _menu->addAction(am->actionForName("schEdit"));
+        _menu->addAction(am->actionForName("openSchematic"));
         _menu->addAction(am->actionForName("propertiesDialog"));
 
         _menu->exec(QCursor::pos());

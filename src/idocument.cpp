@@ -142,7 +142,7 @@ namespace Caneda
      */
 
     /*!
-     * \fn IDocument::intoHierarchy()
+     * \fn IDocument::enterHierarchy()
      *
      * \brief Open selected item for edition.
      *
@@ -154,13 +154,13 @@ namespace Caneda
      * case of a layout circuit using hierarchies serve its purpose to edit
      * certain circuit (for example a flip-flop or a not gate) and then use it
      * in read only mode in higher hierarchies. When one needs to edit that
-     * subcircuit, the action intoHierarchy() comes into place.
+     * subcircuit, the action enterHierarchy() comes into place.
      *
-     * \sa popHierarchy()
+     * \sa exitHierarchy()
      */
 
     /*!
-     * \fn IDocument::popHierarchy()
+     * \fn IDocument::exitHierarchy()
      *
      * \brief Open parent item for edition.
      *
@@ -173,7 +173,7 @@ namespace Caneda
      * a not gate) can be included in read-only mode in bigger circuits,
      * allowing for the creation of a bottom-up approach.
      *
-     * \sa intoHierarchy()
+     * \sa enterHierarchy()
      */
 
     /*!
@@ -448,12 +448,12 @@ namespace Caneda
         m_graphicsScene->setSelectionArea(path);
     }
 
-    void LayoutDocument::intoHierarchy()
+    void LayoutDocument::enterHierarchy()
     {
         //! \todo Implement this
     }
 
-    void LayoutDocument::popHierarchy()
+    void LayoutDocument::exitHierarchy()
     {
         //! \todo Implement this
     }
@@ -587,8 +587,8 @@ namespace Caneda
 
         _menu->addSeparator();
 
-        _menu->addAction(am->actionForName("schEdit"));
-        _menu->addAction(am->actionForName("symEdit"));
+        _menu->addAction(am->actionForName("openSchematic"));
+        _menu->addAction(am->actionForName("openSymbol"));
 
         _menu->exec(event->screenPos());
     }
@@ -715,12 +715,12 @@ namespace Caneda
         m_graphicsScene->setSelectionArea(path);
     }
 
-    void SchematicDocument::intoHierarchy()
+    void SchematicDocument::enterHierarchy()
     {
         //! \todo Implement this
     }
 
-    void SchematicDocument::popHierarchy()
+    void SchematicDocument::exitHierarchy()
     {
         //! \todo Implement this
     }
@@ -905,7 +905,7 @@ namespace Caneda
         ActionManager* am = ActionManager::instance();
         QMenu *_menu = new QMenu();
         _menu->addAction(am->actionForName("select"));
-        _menu->addAction(am->actionForName("insWire"));
+        _menu->addAction(am->actionForName("insertWire"));
         _menu->addAction(am->actionForName("editDelete"));
 
         _menu->addSeparator();
@@ -914,13 +914,13 @@ namespace Caneda
 
         _menu->addSeparator();
 
-        _menu->addAction(am->actionForName("symEdit"));
-        _menu->addAction(am->actionForName("layEdit"));
-        _menu->addAction(am->actionForName("openSym"));
+        _menu->addAction(am->actionForName("openSymbol"));
+        _menu->addAction(am->actionForName("openLayout"));
+        _menu->addAction(am->actionForName("openSimulation"));
 
         //! \todo Reenable these options once implemented
-        //                _menu->addAction(am->actionForName("intoH"));
-        //                _menu->addAction(am->actionForName("popH"));
+        //                _menu->addAction(am->actionForName("enterHierarchy"));
+        //                _menu->addAction(am->actionForName("exitHierarchy"));
 
         _menu->exec(event->screenPos());
     }
@@ -966,10 +966,10 @@ namespace Caneda
             dialog->setIcon(Caneda::icon("dialog-error"));
 
             ActionManager* am = ActionManager::instance();
-            QAction* act = am->actionForName("showLog");
+            QAction* act = am->actionForName("openLog");
             dialog->addAction(act);
 
-            act = am->actionForName("showNetlist");
+            act = am->actionForName("openNetlist");
             dialog->addAction(act);
 
             dialog->show();
@@ -1395,12 +1395,12 @@ namespace Caneda
         m_graphicsScene->setSelectionArea(path);
     }
 
-    void SymbolDocument::intoHierarchy()
+    void SymbolDocument::enterHierarchy()
     {
         //! \todo Implement this. This should return to the schematic document.
     }
 
-    void SymbolDocument::popHierarchy()
+    void SymbolDocument::exitHierarchy()
     {
         //! \todo Implement this. This should return to the schematic document.
     }
@@ -1529,8 +1529,8 @@ namespace Caneda
 
         _menu->addSeparator();
 
-        _menu->addAction(am->actionForName("schEdit"));
-        _menu->addAction(am->actionForName("layEdit"));
+        _menu->addAction(am->actionForName("openSchematic"));
+        _menu->addAction(am->actionForName("openLayout"));
         _menu->addAction(am->actionForName("propertiesDialog"));
 
         _menu->exec(event->screenPos());
@@ -1655,12 +1655,12 @@ namespace Caneda
         te->selectAll();
     }
 
-    void TextDocument::intoHierarchy()
+    void TextDocument::enterHierarchy()
     {
         //! \todo Implement this. This should open currently selected file.
     }
 
-    void TextDocument::popHierarchy()
+    void TextDocument::exitHierarchy()
     {
         //! \todo Implement this. This should return to previously opened file.
     }

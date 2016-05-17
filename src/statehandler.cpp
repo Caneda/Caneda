@@ -359,7 +359,7 @@ namespace Caneda
             func = &GraphicsScene::deleteItems;
         } else if (actionName == "editRotate") {
             func = &GraphicsScene::rotateItems;
-        } else if (actionName == "editMirror") {
+        } else if (actionName == "editMirrorX") {
             func = &GraphicsScene::mirrorXItems;
         } else if (actionName == "editMirrorY") {
             func = &GraphicsScene::mirrorYItems;

@@ -86,8 +86,8 @@ namespace Caneda
 
         virtual void selectAll() = 0;
 
-        virtual void intoHierarchy() = 0;
-        virtual void popHierarchy() = 0;
+        virtual void enterHierarchy() = 0;
+        virtual void exitHierarchy() = 0;
 
         virtual void alignTop() = 0;
         virtual void alignBottom() = 0;
@@ -175,8 +175,8 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual void intoHierarchy();
-        virtual void popHierarchy();
+        virtual void enterHierarchy();
+        virtual void exitHierarchy();
 
         virtual void alignTop();
         virtual void alignBottom();
@@ -255,8 +255,8 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual void intoHierarchy();
-        virtual void popHierarchy();
+        virtual void enterHierarchy();
+        virtual void exitHierarchy();
 
         virtual void alignTop();
         virtual void alignBottom();
@@ -341,8 +341,8 @@ namespace Caneda
 
         virtual void selectAll() {}
 
-        virtual void intoHierarchy() {}
-        virtual void popHierarchy() {}
+        virtual void enterHierarchy() {}
+        virtual void exitHierarchy() {}
 
         virtual void alignTop() {}
         virtual void alignBottom() {}
@@ -419,8 +419,8 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual void intoHierarchy();
-        virtual void popHierarchy();
+        virtual void enterHierarchy();
+        virtual void exitHierarchy();
 
         virtual void alignTop();
         virtual void alignBottom();
@@ -499,8 +499,8 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual void intoHierarchy();
-        virtual void popHierarchy();
+        virtual void enterHierarchy();
+        virtual void exitHierarchy();
 
         virtual void alignTop() {}
         virtual void alignBottom() {}

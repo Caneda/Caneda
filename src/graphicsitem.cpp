@@ -198,7 +198,7 @@ namespace Caneda
         _menu->addSeparator();
 
         _menu->addAction(am->actionForName("editRotate"));
-        _menu->addAction(am->actionForName("editMirror"));
+        _menu->addAction(am->actionForName("editMirrorX"));
         _menu->addAction(am->actionForName("editMirrorY"));
 
         _menu->addSeparator();

@@ -88,8 +88,8 @@ namespace Caneda
         void selectAll();
 
         void filterItems();
-        void intoHierarchy();
-        void popHierarchy();
+        void enterHierarchy();
+        void exitHierarchy();
 
         void zoomIn();
         void zoomOut();
@@ -119,8 +119,8 @@ namespace Caneda
         void openSymbol();
         void simulate();
         void openSimulation();
-        void showLog();
-        void showNetlist();
+        void openLog();
+        void openNetlist();
         void backupAndHistory();
 
         void showMenuBar(bool);

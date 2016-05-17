@@ -152,14 +152,13 @@ namespace Caneda
         tabifyDockWidget(m_browserDockWidget, m_projectDockWidget);
     }
 
-    //! \brief Creates and intializes all the actions used.
+    //! \brief Creates and initializes all the actions used.
     void MainWindow::initActions()
     {
         QAction *action = 0;
         ActionManager *am = ActionManager::instance();
 
         action = am->createAction("fileNew", Caneda::icon("document-new"), tr("&New..."));
-        action->setShortcut(QKeySequence(QKeySequence::New));
         action->setStatusTip(tr("Creates a new file document"));
         action->setWhatsThis(tr("New file\n\nCreates a new file document"));
         connect(action, SIGNAL(triggered()), SLOT(newFile()));
@@ -185,7 +184,6 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(newText()));
 
         action = am->createAction("fileOpen", Caneda::icon("document-open"), tr("&Open..."));
-        action->setShortcut(QKeySequence(QKeySequence::Open));
         action->setStatusTip(tr("Opens an existing document"));
         action->setWhatsThis(tr("Open File\n\nOpens an existing document"));
         connect(action, SIGNAL(triggered()), SLOT(open()));
@@ -201,13 +199,11 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(clearRecent()));
 
         action = am->createAction("fileSave", Caneda::icon("document-save"), tr("&Save"));
-        action->setShortcut(QKeySequence(QKeySequence::Save));
         action->setStatusTip(tr("Saves the current document"));
         action->setWhatsThis(tr("Save File\n\nSaves the current document"));
         connect(action, SIGNAL(triggered()), SLOT(save()));
 
         action = am->createAction("fileSaveAs", Caneda::icon("document-save-as"), tr("Save as..."));
-        action->setShortcut(QKeySequence(QKeySequence::SaveAs));
         action->setStatusTip(tr("Saves the current document under a new filename"));
         action->setWhatsThis(tr("Save As\n\nSaves the current document under a new filename"));
         connect(action, SIGNAL(triggered()), SLOT(saveAs()));
@@ -218,129 +214,106 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(saveAll()));
 
         action = am->createAction("fileClose", Caneda::icon("document-close"), tr("&Close"));
-        action->setShortcut(QKeySequence(QKeySequence::Close));
         action->setStatusTip(tr("Closes the current document"));
         action->setWhatsThis(tr("Close File\n\nCloses the current document"));
         connect(action, SIGNAL(triggered()), SLOT(closeFile()));
 
         action = am->createAction("filePrint", Caneda::icon("document-print"), tr("&Print..."));
-        action->setShortcut(QKeySequence(QKeySequence::Print));
         action->setStatusTip(tr("Prints the current document"));
         action->setWhatsThis(tr("Print File\n\nPrints the current document"));
         connect(action, SIGNAL(triggered()), SLOT(print()));
 
         action = am->createAction("fileExportImage", Caneda::icon("image-x-generic"), tr("&Export image..."));
-        action->setShortcut(QKeySequence(tr("Ctrl+E")));
         action->setStatusTip(tr("Exports the current view to an image file"));
         action->setWhatsThis(tr("Export Image\n\n""Exports the current view to an image file"));
         connect(action, SIGNAL(triggered()), SLOT(exportImage()));
 
         action = am->createAction("fileQuit", Caneda::icon("application-exit"), tr("E&xit"));
-        action->setShortcut(QKeySequence(QKeySequence::Quit));
         action->setStatusTip(tr("Quits the application"));
         action->setWhatsThis(tr("Exit\n\nQuits the application"));
         connect(action, SIGNAL(triggered()), SLOT(close()));
 
         action = am->createAction("editUndo", Caneda::icon("edit-undo"), tr("&Undo"));
-        action->setShortcut(QKeySequence(QKeySequence::Undo));
         action->setStatusTip(tr("Undoes the last command"));
         action->setWhatsThis(tr("Undo\n\nMakes the last action undone"));
         connect(action, SIGNAL(triggered()), SLOT(undo()));
 
         action = am->createAction("editRedo", Caneda::icon("edit-redo"), tr("&Redo"));
-        action->setShortcut(QKeySequence(QKeySequence::Redo));
         action->setStatusTip(tr("Redoes the last command"));
         action->setWhatsThis(tr("Redo\n\nRepeats the last action once more"));
         connect(action, SIGNAL(triggered()), SLOT(redo()));
 
         action = am->createAction("editCut", Caneda::icon("edit-cut"), tr("Cu&t"));
-        action->setShortcut(QKeySequence(QKeySequence::Cut));
         action->setStatusTip(tr("Cuts out the selection and puts it into the clipboard"));
         action->setWhatsThis(tr("Cut\n\nCuts out the selection and puts it into the clipboard"));
         connect(action, SIGNAL(triggered()), SLOT(cut()));
 
         action = am->createAction("editCopy", Caneda::icon("edit-copy"), tr("&Copy"));
-        action->setShortcut(QKeySequence(QKeySequence::Copy));
         action->setStatusTip(tr("Copies the selection into the clipboard"));
         action->setWhatsThis(tr("Copy\n\nCopies the selection into the clipboard"));
         connect(action, SIGNAL(triggered()), SLOT(copy()));
 
         action = am->createAction("editPaste", Caneda::icon("edit-paste"), tr("&Paste"));
-        action->setShortcut(QKeySequence(QKeySequence::Paste));
         action->setStatusTip(tr("Pastes the clipboard contents to the cursor position"));
         action->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to the cursor position"));
         connect(action, SIGNAL(triggered()), SLOT(paste()));
 
         action = am->createAction("selectAll", Caneda::icon("select-rectangular"), tr("Select all"));
-        action->setShortcut(QKeySequence(QKeySequence::SelectAll));
         action->setStatusTip(tr("Selects all elements"));
         action->setWhatsThis(tr("Select All\n\nSelects all elements of the document"));
         connect(action, SIGNAL(triggered()), SLOT(selectAll()));
 
         action = am->createAction("editFind", Caneda::icon("edit-find"), tr("Find..."));
-        action->setShortcut(QKeySequence(QKeySequence::Find));
         action->setStatusTip(tr("Find a piece of text"));
         action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
         connect(action, SIGNAL(triggered()), SLOT(find()));
 
         action = am->createAction("filterItems",  tr("Filter items"));
-        action->setShortcut(QKeySequence(tr("C")));
         action->setStatusTip(tr("Filters available sidebar items"));
         action->setWhatsThis(tr("Filter items\n\nFilters available sidebar items"));
         connect(action, SIGNAL(triggered()), SLOT(filterItems()));
 
-        action = am->createAction("intoH", Caneda::icon("go-bottom"), tr("Go into subcircuit"));
-        action->setShortcut(QKeySequence(tr("Ctrl+I")));
-        action->setToolTip(tr("Go into Subcircuit") + " (" + action->shortcut().toString() + ")");
-        action->setStatusTip(tr("Goes inside the selected subcircuit"));
-        action->setWhatsThis(tr("Go into Subcircuit\n\nGoes inside the selected subcircuit"));
-        connect(action, SIGNAL(triggered()), SLOT(intoHierarchy()));
+        action = am->createAction("enterHierarchy", Caneda::icon("go-bottom"), tr("Enter hierarchy"));
+        action->setStatusTip(tr("Enters the selected subcircuit hierarchy"));
+        action->setWhatsThis(tr("Enter hierarchy\n\nEnters the selected subcircuit hierarchy"));
+        connect(action, SIGNAL(triggered()), SLOT(enterHierarchy()));
 
-        action = am->createAction("popH", Caneda::icon("go-top"), tr("Pop out"));
-        action->setShortcut(QKeySequence(tr("Ctrl+Shift+I")));
-        action->setToolTip(tr("Pop Out") + " (" + action->shortcut().toString() + ")");
-        action->setStatusTip(tr("Goes outside the current subcircuit"));
-        action->setWhatsThis(tr("Pop Out\n\nGoes up one hierarchy level (leaves the current subcircuit)"));
-        connect(action, SIGNAL(triggered()), SLOT(popHierarchy()));
+        action = am->createAction("exitHierarchy", Caneda::icon("go-top"), tr("Exit hierarchy"));
+        action->setStatusTip(tr("Exits current subcircuit hierarchy"));
+        action->setWhatsThis(tr("Exit hierarchy\n\nExits current subcircuit hierarchy"));
+        connect(action, SIGNAL(triggered()), SLOT(exitHierarchy()));
 
         action = am->createAction("zoomFitInBest", Caneda::icon("zoom-fit-best"), tr("View all"));
-        action->setShortcut(QKeySequence(tr("0")));
         action->setStatusTip(tr("Show the whole contents"));
         action->setWhatsThis(tr("View all\n\nShows the whole page content"));
         connect(action, SIGNAL(triggered()), SLOT(zoomBestFit()));
 
         action = am->createAction("zoomOriginal", Caneda::icon("zoom-original"), tr("View 1:1"));
-        action->setShortcut(QKeySequence(tr("1")));
         action->setStatusTip(tr("View without magnification"));
         action->setWhatsThis(tr("Zoom 1:1\n\nShows the page content without magnification"));
         connect(action, SIGNAL(triggered()), SLOT(zoomOriginal()));
 
         action = am->createAction("zoomIn", Caneda::icon("zoom-in"), tr("Zoom in"));
-        action->setShortcut(QKeySequence(tr("+")));
         action->setStatusTip(tr("Zooms in the content"));
         action->setWhatsThis(tr("Zoom In \n\nZooms in the content"));
         connect(action, SIGNAL(triggered()), SLOT(zoomIn()));
 
         action = am->createAction("zoomOut", Caneda::icon("zoom-out"), tr("Zoom out"));
-        action->setShortcut(QKeySequence(tr("-")));
         action->setStatusTip(tr("Zooms out the content"));
         action->setWhatsThis(tr("Zoom Out \n\nZooms out the content"));
         connect(action, SIGNAL(triggered()), SLOT(zoomOut()));
 
         action = am->createAction("splitHorizontal", Caneda::icon("view-split-left-right"), tr("Split &horizontal"));
-        action->setShortcut(QKeySequence(tr("Ctrl+Shift+L")));
         action->setStatusTip(tr("Splits the current view in horizontal orientation"));
         action->setWhatsThis(tr("Split Horizontal\n\nSplits the current view in horizontal orientation"));
         connect(action, SIGNAL(triggered()), SLOT(splitHorizontal()));
 
         action = am->createAction("splitVertical", Caneda::icon("view-split-top-bottom"), tr("Split &vertical"));
-        action->setShortcut(QKeySequence(tr("Ctrl+Shift+T")));
         action->setStatusTip(tr("Splits the current view in vertical orientation"));
         action->setWhatsThis(tr("Split Vertical\n\nSplits the current view in vertical orientation"));
         connect(action, SIGNAL(triggered()), SLOT(splitVertical()));
 
         action = am->createAction("splitClose", Caneda::icon("view-left-close"), tr("&Close split"));
-        action->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
         action->setStatusTip(tr("Closes the current split"));
         action->setWhatsThis(tr("Close Split\n\nCloses the current split"));
         connect(action, SIGNAL(triggered()), SLOT(closeSplit()));
@@ -410,49 +383,40 @@ namespace Caneda
         action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
         connect(action, SIGNAL(triggered()), SLOT(closeProject()));
 
-        action = am->createAction("schEdit", Caneda::icon("draw-freehand"), tr("&Edit circuit schematic"));
-        action->setShortcut(QKeySequence(tr("F2")));
+        action = am->createAction("openSchematic", Caneda::icon("draw-freehand"), tr("&Edit circuit schematic"));
         action->setStatusTip(tr("Switches to schematic edit"));
         action->setWhatsThis(tr("Edit Circuit Schematic\n\nSwitches to schematic edit"));
         connect(action, SIGNAL(triggered()), SLOT(openSchematic()));
 
-        action = am->createAction("symEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &symbol"));
-        action->setShortcut(QKeySequence(tr("F3")));
+        action = am->createAction("openSymbol", Caneda::icon("draw-freehand"), tr("Edit circuit &symbol"));
         action->setStatusTip(tr("Switches to symbol edit"));
         action->setWhatsThis(tr("Edit Circuit Symbol\n\nSwitches to symbol edit"));
         connect(action, SIGNAL(triggered()), SLOT(openSymbol()));
 
-        action = am->createAction("layEdit", Caneda::icon("draw-freehand"), tr("Edit circuit &layout"));
-        action->setShortcut(QKeySequence(tr("F4")));
+        action = am->createAction("openLayout", Caneda::icon("draw-freehand"), tr("Edit circuit &layout"));
         action->setStatusTip(tr("Switches to layout edit"));
         action->setWhatsThis(tr("Edit Circuit Layout\n\nSwitches to layout edit"));
         connect(action, SIGNAL(triggered()), SLOT(openLayout()));
 
         action = am->createAction("simulate", Caneda::icon("media-playback-start"), tr("Simulate"));
-        action->setShortcut(QKeySequence(QKeySequence::Refresh));
-        action->setToolTip(tr("Simulate") + " (" + action->shortcut().toString() + ")");
         action->setStatusTip(tr("Simulates the current circuit"));
         action->setWhatsThis(tr("Simulate\n\nSimulates the current circuit"));
         connect(action, SIGNAL(triggered()), SLOT(simulate()));
 
-        action = am->createAction("openSym", Caneda::icon("system-switch-user"), tr("View circuit simulation"));
-        action->setShortcut(QKeySequence(tr("F6")));
-        action->setToolTip(tr("View Circuit Simulation") + " (" + action->shortcut().toString() + ")");
+        action = am->createAction("openSimulation", Caneda::icon("system-switch-user"), tr("View circuit simulation"));
         action->setStatusTip(tr("Changes to circuit simulation"));
         action->setWhatsThis(tr("View Circuit Simulation\n\n")+tr("Changes to circuit simulation"));
         connect(action, SIGNAL(triggered()), SLOT(openSimulation()));
 
-        action = am->createAction("showLog", Caneda::icon("document-preview"), tr("Show simulation log"));
-        action->setShortcut(QKeySequence(tr("F7")));
+        action = am->createAction("openLog", Caneda::icon("document-preview"), tr("Show simulation log"));
         action->setStatusTip(tr("Shows simulation log"));
         action->setWhatsThis(tr("Show Log\n\nShows the log of the current simulation"));
-        connect(action, SIGNAL(triggered()), SLOT(showLog()));
+        connect(action, SIGNAL(triggered()), SLOT(openLog()));
 
-        action = am->createAction("showNetlist", Caneda::icon("document-preview"), tr("Show circuit netlist"));
-        action->setShortcut(QKeySequence(tr("F8")));
+        action = am->createAction("openNetlist", Caneda::icon("document-preview"), tr("Show circuit netlist"));
         action->setStatusTip(tr("Shows the circuit netlist"));
         action->setWhatsThis(tr("Show Netlist\n\nShows the netlist of the current circuit"));
-        connect(action, SIGNAL(triggered()), SLOT(showNetlist()));
+        connect(action, SIGNAL(triggered()), SLOT(openNetlist()));
 
         action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and history..."));
         action->setStatusTip(tr("Opens backup and history dialog"));
@@ -460,7 +424,6 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(backupAndHistory()));
 
         action = am->createAction("showMenuBar", Caneda::icon("show-menu"), tr("Show &menubar"));
-        action->setShortcut(QKeySequence(tr("Ctrl+M")));
         action->setStatusTip(tr("Enables/disables the menubar"));
         action->setWhatsThis(tr("Show menubar\n\nEnables/disables the menubar"));
         action->setCheckable(true);
@@ -479,7 +442,6 @@ namespace Caneda
         connect(action, SIGNAL(toggled(bool)), SLOT(showStatusBar(bool)));
 
         action = am->createAction("showWidgets", Caneda::icon("configure"), tr("Show widgets"));
-        action->setShortcut(QKeySequence(tr("Ctrl+Up")));
         action->setStatusTip(tr("Show/hide all widgets"));
         action->setWhatsThis(tr("Show widgets\n\nShow/hide all widgets"));
         action->setCheckable(true);
@@ -487,28 +449,24 @@ namespace Caneda
         connect(action, SIGNAL(toggled(bool)), SLOT(showWidgets(bool)));
 
         action = am->createAction("showSideBarBrowser", Caneda::icon("view-sidetree"), tr("Show sidebar browser"));
-        action->setShortcut(QKeySequence(tr("T")));
         action->setStatusTip(tr("Enables/disables the sidebar browser"));
         action->setWhatsThis(tr("Show sidebar browser\n\nEnables/disables the sidebar browser"));
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showSideBarBrowser(bool)));
 
         action = am->createAction("showFolderBrowser", Caneda::icon("document-open"), tr("Show folder browser"));
-        action->setShortcut(QKeySequence(tr("F")));
         action->setStatusTip(tr("Enables/disables the folder browser"));
         action->setWhatsThis(tr("Show folder browser\n\nEnables/disables the folder browser"));
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showFolderBrowser(bool)));
 
         action = am->createAction("showFullScreen", Caneda::icon("view-fullscreen"), tr("&Full screen mode"));
-        action->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
         action->setStatusTip(tr("Enables/disables the full screen mode"));
         action->setWhatsThis(tr("Full screen mode\n\nEnables/disables the full screen mode"));
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showFullScreen(bool)));
 
-        action = am->createAction("appSettings", Caneda::icon("configure"), tr("&Configure Caneda..."));
-        action->setShortcut(QKeySequence(QKeySequence::Preferences));
+        action = am->createAction("settings", Caneda::icon("configure"), tr("&Configure Caneda..."));
         action->setStatusTip(tr("Sets the properties of the application"));
         action->setWhatsThis(tr("Caneda Settings\n\nSets the properties of the application"));
         connect(action, SIGNAL(triggered()), SLOT(applicationSettings()));
@@ -519,7 +477,6 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(launchPropertiesDialog()));
 
         action = am->createAction("helpIndex", Caneda::icon("help-contents"), tr("&Help index..."));
-        action->setShortcut(QKeySequence(QKeySequence::HelpContents));
         action->setStatusTip(tr("Index of Caneda Help"));
         action->setWhatsThis(tr("Help Index\n\nIndex of intern Caneda help"));
         connect(action, SIGNAL(triggered()), SLOT(helpIndex()));
@@ -530,7 +487,6 @@ namespace Caneda
         connect(action, SIGNAL(triggered()), SLOT(helpExamples()));
 
         QAction *qAction = QWhatsThis::createAction(this);
-        action->setShortcut(QKeySequence(QKeySequence::WhatsThis));
         action = am->createAction("whatsThis", qAction->icon(), qAction->text());
         connect(action, SIGNAL(triggered()), qAction, SLOT(trigger()));
         connect(action, SIGNAL(hovered()), qAction, SLOT(hover()));
@@ -545,16 +501,24 @@ namespace Caneda
         action->setWhatsThis(tr("About Qt\n\nAbout Qt by Nokia"));
         connect(action, SIGNAL(triggered()), SLOT(aboutQt()));
 
-        // Add the actions to the tabWidget to receive shortcuts when the menu is hidden.
+        // Load action shortcuts and add the actions to the tabWidget to receive
+        // shortcuts when the menu is hidden.
+        Settings *settings = Settings::instance();
+
         const QList<QAction*> actions = am->actions();
-        foreach(QAction *_action, actions) {
-            m_tabWidget->addAction(_action);
+        foreach(QAction *act, actions) {
+            // Load this action shortcut
+            QString name = "shortcuts/" + act->objectName();
+            act->setShortcut(settings->currentValue(name).value<QKeySequence>());
+            // Add the action to the tabWidget
+            m_tabWidget->addAction(act);
         }
 
+        // Initialize the mouse actions.
         initMouseActions();
     }
 
-    //! \brief Creates and intializes the mouse actions.
+    //! \brief Creates and initializes the mouse actions.
     void MainWindow::initMouseActions()
     {
         QAction *action = 0;
@@ -562,73 +526,63 @@ namespace Caneda
 
         StateHandler *handler = StateHandler::instance();
 
-        action = am->createMouseAction("select", Caneda::Normal,
-                Caneda::icon("edit-select"), tr("Select"));
-        action->setShortcut(QKeySequence(tr("Esc")));
-        action->setToolTip(tr("Select") + " (" + action->shortcut().toString() + ")");
+        action = am->createMouseAction("select", Caneda::Normal, Caneda::icon("edit-select"), tr("Select"));
         action->setStatusTip(tr("Activate select mode"));
         action->setWhatsThis(tr("Select\n\nActivates select mode"));
         action->setChecked(true);
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
 
-        action = am->createMouseAction("editDelete", Caneda::Deleting,
-                Caneda::icon("edit-delete"), tr("&Delete"));
-        action->setShortcut(QKeySequence(QKeySequence::Delete));
-        action->setToolTip(tr("Delete") + " (" + action->shortcut().toString() + ")");
+        action = am->createMouseAction("editDelete", Caneda::Deleting, Caneda::icon("edit-delete"), tr("&Delete"));
         action->setStatusTip(tr("Deletes the selected components"));
         action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
 
-        action = am->createMouseAction("editRotate", Caneda::Rotating,
-                Caneda::icon("object-rotate-right"), tr("Rotate"));
-        action->setShortcut(QKeySequence(tr("R")));
-        action->setToolTip(tr("Rotate") + " (" + action->shortcut().toString() + ")");
+        action = am->createMouseAction("editRotate", Caneda::Rotating, Caneda::icon("object-rotate-right"), tr("Rotate"));
         action->setStatusTip(tr("Rotates the selected component"));
         action->setWhatsThis(tr("Rotate\n\nRotates the selected component counter-clockwise"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
 
-        action = am->createMouseAction("editMirror", Caneda::MirroringX,
-                Caneda::icon("object-flip-vertical"), tr("Mirror vertically"));
-        action->setShortcut(QKeySequence(tr("V")));
-        action->setToolTip(tr("Mirror vertically") + " (" + action->shortcut().toString() + ")");
+        action = am->createMouseAction("editMirrorX", Caneda::MirroringX, Caneda::icon("object-flip-vertical"), tr("Mirror vertically"));
         action->setStatusTip(tr("Mirrors the selected components vertically"));
         action->setWhatsThis(tr("Mirror vertically Axis\n\nMirrors the selected components vertically"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
 
-        action = am->createMouseAction("editMirrorY", Caneda::MirroringY,
-                Caneda::icon("object-flip-horizontal"), tr("Mirror horizontally"));
-        action->setShortcut(QKeySequence(tr("H")));
-        action->setToolTip(tr("Mirror horizontally") + " (" + action->shortcut().toString() + ")");
+        action = am->createMouseAction("editMirrorY", Caneda::MirroringY, Caneda::icon("object-flip-horizontal"), tr("Mirror horizontally"));
         action->setStatusTip(tr("Mirrors the selected components horizontally"));
         action->setWhatsThis(tr("Mirror horizontally\n\nMirrors the selected components horizontally"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
 
-        action = am->createMouseAction("insWire", Caneda::Wiring,
-                Caneda::icon("wire"), tr("Wire"));
-        action->setShortcut(QKeySequence(tr("W")));
-        action->setToolTip(tr("Wire") + " (" + action->shortcut().toString() + ")");
+        action = am->createMouseAction("insertWire", Caneda::Wiring, Caneda::icon("wire"), tr("Wire"));
         action->setStatusTip(tr("Inserts a wire"));
         action->setWhatsThis(tr("Wire\n\nInserts a wire"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
 
-        action = am->createMouseAction("zoomArea", Caneda::ZoomingAreaEvent,
-                Caneda::icon("transform-scale"), tr("Zoom area"));
+        action = am->createMouseAction("zoomArea", Caneda::ZoomingAreaEvent, Caneda::icon("transform-scale"), tr("Zoom area"));
         action->setStatusTip(tr("Zooms a selected area in the current view"));
         action->setWhatsThis(tr("Zooms a selected area in the current view"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
 
-        action = am->createMouseAction("insertItem", Caneda::InsertingItems,
-                tr("Insert item action"));
+        action = am->createMouseAction("insertItem", Caneda::InsertingItems, tr("Insert item"));
+        action->setStatusTip(tr("Inserts an item"));
+        action->setWhatsThis(tr("Insert item\n\nInserts an item"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
 
-        action = am->createMouseAction("paintingDraw", Caneda::PaintingDrawEvent,
-                tr("Painting draw action"));
+        action = am->createMouseAction("paintingDraw", Caneda::PaintingDrawEvent, tr("Painting draw operation"));
+        action->setStatusTip(tr("Begins a painting draw operation"));
+        action->setWhatsThis(tr("Painting draw operation\n\nBegins a painting draw operation"));
         connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
 
-        // Add the actions to the tabWidget to receive shortcuts when the menu is hidden.
+        // Load action shortcuts and add the actions to the tabWidget to receive
+        // shortcuts when the menu is hidden.
+        Settings *settings = Settings::instance();
+
         const QList<QAction*> actions = am->mouseActions();
-        foreach(QAction *_action, actions) {
-            m_tabWidget->addAction(_action);
+        foreach(QAction *act, actions) {
+            // Load this action shortcut
+            QString name = "shortcuts/" + act->objectName();
+            act->setShortcut(settings->currentValue(name).value<QKeySequence>());
+            // Add the action to the tabWidget
+            m_tabWidget->addAction(act);
         }
     }
 
@@ -689,7 +643,7 @@ namespace Caneda
         menu->addAction(am->actionForName("select"));
         menu->addAction(am->actionForName("selectAll"));
         menu->addAction(am->actionForName("editDelete"));
-        menu->addAction(am->actionForName("editMirror"));
+        menu->addAction(am->actionForName("editMirrorX"));
         menu->addAction(am->actionForName("editMirrorY"));
         menu->addAction(am->actionForName("editRotate"));
 
@@ -701,8 +655,8 @@ namespace Caneda
         //! \todo Reenable these options once implemented
         //        menu->addSeparator();
 
-        //        menu->addAction(am->actionForName("intoH"));
-        //        menu->addAction(am->actionForName("popH"));
+        //        menu->addAction(am->actionForName("enterHierarchy"));
+        //        menu->addAction(am->actionForName("exitHierarchy"));
 
         // View menu
         menu = menuBar()->addMenu(tr("&View"));
@@ -754,19 +708,19 @@ namespace Caneda
         // Tools menu
         menu = menuBar()->addMenu(tr("&Tools"));
 
-        menu->addAction(am->actionForName("schEdit"));
-        menu->addAction(am->actionForName("symEdit"));
-        menu->addAction(am->actionForName("layEdit"));
+        menu->addAction(am->actionForName("openSchematic"));
+        menu->addAction(am->actionForName("openSymbol"));
+        menu->addAction(am->actionForName("openLayout"));
 
         menu->addSeparator();
 
         menu->addAction(am->actionForName("simulate"));
-        menu->addAction(am->actionForName("openSym"));
+        menu->addAction(am->actionForName("openSimulation"));
 
         menu->addSeparator();
 
-        menu->addAction(am->actionForName("showLog"));
-        menu->addAction(am->actionForName("showNetlist"));
+        menu->addAction(am->actionForName("openLog"));
+        menu->addAction(am->actionForName("openNetlist"));
 
         // Settings menu
         menu = menuBar()->addMenu(tr("&Settings"));
@@ -787,7 +741,7 @@ namespace Caneda
 
         menu->addSeparator();
 
-        menu->addAction(am->actionForName("appSettings"));
+        menu->addAction(am->actionForName("settings"));
 
         // Help menu
         menu = menuBar()->addMenu(tr("&Help"));
@@ -829,21 +783,21 @@ namespace Caneda
 
         workToolbar->addAction(am->actionForName("select"));
         workToolbar->addAction(am->actionForName("editDelete"));
-        workToolbar->addAction(am->actionForName("editMirror"));
+        workToolbar->addAction(am->actionForName("editMirrorX"));
         workToolbar->addAction(am->actionForName("editMirrorY"));
         workToolbar->addAction(am->actionForName("editRotate"));
 
         workToolbar->addSeparator();
 
-        workToolbar->addAction(am->actionForName("insWire"));
+        workToolbar->addAction(am->actionForName("insertWire"));
         //! \todo Reenable this option once implemented
-        //        workToolbar->addAction(am->actionForName("intoH"));
-        //        workToolbar->addAction(am->actionForName("popH"));
+        //        workToolbar->addAction(am->actionForName("enterHierarchy"));
+        //        workToolbar->addAction(am->actionForName("exitHierarchy"));
 
         workToolbar->addSeparator();
 
         workToolbar->addAction(am->actionForName("simulate"));
-        workToolbar->addAction(am->actionForName("openSym"));
+        workToolbar->addAction(am->actionForName("openSimulation"));
     }
 
     //! \brief Creates and intializes the statusbar.
@@ -1186,20 +1140,20 @@ namespace Caneda
     }
 
     //! \brief Opens the selected item file description for edition.
-    void MainWindow::intoHierarchy()
+    void MainWindow::enterHierarchy()
     {
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
-            document->intoHierarchy();
+            document->enterHierarchy();
         }
     }
 
     //! \brief Opens the parent document from where this item was opened.
-    void MainWindow::popHierarchy()
+    void MainWindow::exitHierarchy()
     {
         IDocument *document = DocumentViewManager::instance()->currentDocument();
         if (document) {
-            document->popHierarchy();
+            document->exitHierarchy();
         }
     }
 
@@ -1426,7 +1380,7 @@ namespace Caneda
     }
 
     //! \brief Opens the log corresponding to the current file.
-    void MainWindow::showLog()
+    void MainWindow::openLog()
     {
         DocumentViewManager *manager = DocumentViewManager::instance();
 
@@ -1438,7 +1392,7 @@ namespace Caneda
     }
 
     //! \brief Opens the netlist corresponding to the current file.
-    void MainWindow::showNetlist()
+    void MainWindow::openNetlist()
     {
         DocumentViewManager *manager = DocumentViewManager::instance();
 
