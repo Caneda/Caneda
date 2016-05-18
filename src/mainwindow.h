@@ -87,10 +87,6 @@ namespace Caneda
         void find();
         void selectAll();
 
-        void filterItems();
-        void enterHierarchy();
-        void exitHierarchy();
-
         void zoomIn();
         void zoomOut();
         void zoomBestFit();
@@ -121,6 +117,10 @@ namespace Caneda
         void openSimulation();
         void openLog();
         void openNetlist();
+
+        void filterItems();
+        void enterHierarchy();
+        void exitHierarchy();
         void backupAndHistory();
 
         void showMenuBar(bool);

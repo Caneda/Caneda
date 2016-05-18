@@ -269,21 +269,6 @@ namespace Caneda
         action->setWhatsThis(tr("Find\n\nSearches for a piece of text"));
         connect(action, SIGNAL(triggered()), SLOT(find()));
 
-        action = am->createAction("filterItems",  tr("Filter items"));
-        action->setStatusTip(tr("Filters available sidebar items"));
-        action->setWhatsThis(tr("Filter items\n\nFilters available sidebar items"));
-        connect(action, SIGNAL(triggered()), SLOT(filterItems()));
-
-        action = am->createAction("enterHierarchy", Caneda::icon("go-bottom"), tr("Enter hierarchy"));
-        action->setStatusTip(tr("Enters the selected subcircuit hierarchy"));
-        action->setWhatsThis(tr("Enter hierarchy\n\nEnters the selected subcircuit hierarchy"));
-        connect(action, SIGNAL(triggered()), SLOT(enterHierarchy()));
-
-        action = am->createAction("exitHierarchy", Caneda::icon("go-top"), tr("Exit hierarchy"));
-        action->setStatusTip(tr("Exits current subcircuit hierarchy"));
-        action->setWhatsThis(tr("Exit hierarchy\n\nExits current subcircuit hierarchy"));
-        connect(action, SIGNAL(triggered()), SLOT(exitHierarchy()));
-
         action = am->createAction("zoomFitInBest", Caneda::icon("zoom-fit-best"), tr("View all"));
         action->setStatusTip(tr("Show the whole contents"));
         action->setWhatsThis(tr("View all\n\nShows the whole page content"));
@@ -418,6 +403,21 @@ namespace Caneda
         action->setStatusTip(tr("Shows the circuit netlist"));
         action->setWhatsThis(tr("Show Netlist\n\nShows the netlist of the current circuit"));
         connect(action, SIGNAL(triggered()), SLOT(openNetlist()));
+
+        action = am->createAction("filterItems",  tr("Filter items"));
+        action->setStatusTip(tr("Filters available sidebar items"));
+        action->setWhatsThis(tr("Filter items\n\nFilters available sidebar items"));
+        connect(action, SIGNAL(triggered()), SLOT(filterItems()));
+
+        action = am->createAction("enterHierarchy", Caneda::icon("go-bottom"), tr("Enter hierarchy"));
+        action->setStatusTip(tr("Enters the selected subcircuit hierarchy"));
+        action->setWhatsThis(tr("Enter hierarchy\n\nEnters the selected subcircuit hierarchy"));
+        connect(action, SIGNAL(triggered()), SLOT(enterHierarchy()));
+
+        action = am->createAction("exitHierarchy", Caneda::icon("go-top"), tr("Exit hierarchy"));
+        action->setStatusTip(tr("Exits current subcircuit hierarchy"));
+        action->setWhatsThis(tr("Exit hierarchy\n\nExits current subcircuit hierarchy"));
+        connect(action, SIGNAL(triggered()), SLOT(exitHierarchy()));
 
         action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and history..."));
         action->setStatusTip(tr("Opens backup and history dialog"));
@@ -658,12 +658,6 @@ namespace Caneda
 
         //        menu->addAction(am->actionForName("editFind"));
 
-        //! \todo Reenable these options once implemented
-        //        menu->addSeparator();
-
-        //        menu->addAction(am->actionForName("enterHierarchy"));
-        //        menu->addAction(am->actionForName("exitHierarchy"));
-
         // View menu
         menu = menuBar()->addMenu(tr("&View"));
 
@@ -707,10 +701,6 @@ namespace Caneda
         //        menu->addAction(am->actionForName("projDel"));
         //        menu->addAction(am->actionForName("projClose"));
 
-        //        menu->addSeparator();
-
-        //        menu->addAction(am->actionForName("backupAndHistory"));
-
         // Tools menu
         menu = menuBar()->addMenu(tr("&Tools"));
 
@@ -727,6 +717,13 @@ namespace Caneda
 
         menu->addAction(am->actionForName("openLog"));
         menu->addAction(am->actionForName("openNetlist"));
+
+        //! \todo Reenable these options once implemented
+        //        menu->addSeparator();
+
+        //        menu->addAction(am->actionForName("enterHierarchy"));
+        //        menu->addAction(am->actionForName("exitHierarchy"));
+        //        menu->addAction(am->actionForName("backupAndHistory"));
 
         // Settings menu
         menu = menuBar()->addMenu(tr("&Settings"));
@@ -1137,33 +1134,6 @@ namespace Caneda
         }
     }
 
-    //! \brief Request the selection of the sidebar focus and filtering.
-    void MainWindow::filterItems()
-    {
-        IView *view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->context()->filterSideBarItems();
-        }
-    }
-
-    //! \brief Opens the selected item file description for edition.
-    void MainWindow::enterHierarchy()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->enterHierarchy();
-        }
-    }
-
-    //! \brief Opens the parent document from where this item was opened.
-    void MainWindow::exitHierarchy()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->exitHierarchy();
-        }
-    }
-
     //! \brief Calls the current view zoom in action.
     void MainWindow::zoomIn()
     {
@@ -1408,6 +1378,33 @@ namespace Caneda
         QString baseName = info.completeBaseName();
 
         manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".net"));
+    }
+
+    //! \brief Request the selection of the sidebar focus and filtering.
+    void MainWindow::filterItems()
+    {
+        IView *view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->context()->filterSideBarItems();
+        }
+    }
+
+    //! \brief Opens the selected item file description for edition.
+    void MainWindow::enterHierarchy()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->enterHierarchy();
+        }
+    }
+
+    //! \brief Opens the parent document from where this item was opened.
+    void MainWindow::exitHierarchy()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->exitHierarchy();
+        }
     }
 
     //! \brief Opens the backup and history file dialog.
