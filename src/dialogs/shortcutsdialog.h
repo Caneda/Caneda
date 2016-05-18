@@ -23,10 +23,10 @@
 #include "ui_shortcutsdialog.h"
 
 #include <QAbstractTableModel>
-#include <QWidget>
 
 // Forward declarations.
 class QSortFilterProxyModel;
+class QWidget;
 
 namespace Caneda
 {
