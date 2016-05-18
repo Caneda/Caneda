@@ -196,21 +196,20 @@ namespace Caneda
         m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
         // Apply table properties and set proxy model
-        m_tableView = new QTableView();
-        layoutHorizontal->addWidget(m_tableView);
-
+        m_tableView = new QTableView(this);
         m_tableView->setModel(m_proxyModel);
         m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
         m_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
         m_tableView->setEditTriggers(QAbstractItemView::AnyKeyPressed | QAbstractItemView::DoubleClicked);
         m_tableView->verticalHeader()->setVisible(false);
+        layoutHorizontal->addWidget(m_tableView);
 
         // Add selection buttons
-        QLabel *labelButtons = new QLabel(tr("Select:"));
-        buttonAll = new QPushButton("All");
-        buttonNone = new QPushButton("None");
-        buttonVoltages = new QPushButton("Voltages");
-        buttonCurrents = new QPushButton("Currents");
+        QLabel *labelButtons = new QLabel(tr("Select:"), this);
+        buttonAll = new QPushButton("All", this);
+        buttonNone = new QPushButton("None", this);
+        buttonVoltages = new QPushButton("Voltages", this);
+        buttonCurrents = new QPushButton("Currents", this);
         layoutButtons->addWidget(labelButtons);
         layoutButtons->addWidget(buttonAll);
         layoutButtons->addWidget(buttonNone);
