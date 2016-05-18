@@ -36,6 +36,7 @@
 #include "savedocumentsdialog.h"
 #include "settings.h"
 #include "settingsdialog.h"
+#include "shortcutsdialog.h"
 #include "statehandler.h"
 #include "tabs.h"
 
@@ -466,9 +467,14 @@ namespace Caneda
         action->setCheckable(true);
         connect(action, SIGNAL(toggled(bool)), SLOT(showFullScreen(bool)));
 
+        action = am->createAction("editShortcuts", Caneda::icon("configure-shortcuts"), tr("Configure s&hortcuts..."));
+        action->setStatusTip(tr("Launches the configuration dialog for the application shortcuts"));
+        action->setWhatsThis(tr("Configure shortcuts\n\nLaunches the configuration dialog for the application shortcuts"));
+        connect(action, SIGNAL(triggered()), SLOT(editShortcuts()));
+
         action = am->createAction("settings", Caneda::icon("configure"), tr("&Configure Caneda..."));
-        action->setStatusTip(tr("Sets the properties of the application"));
-        action->setWhatsThis(tr("Caneda Settings\n\nSets the properties of the application"));
+        action->setStatusTip(tr("Launches the application settings dialog"));
+        action->setWhatsThis(tr("Caneda Settings\n\nLaunches the application settings dialog"));
         connect(action, SIGNAL(triggered()), SLOT(applicationSettings()));
 
         action = am->createAction("propertiesDialog", Caneda::icon("document-properties"), tr("Edit parameters..."));
@@ -741,6 +747,7 @@ namespace Caneda
 
         menu->addSeparator();
 
+        menu->addAction(am->actionForName("editShortcuts"));
         menu->addAction(am->actionForName("settings"));
 
         // Help menu
@@ -1461,6 +1468,14 @@ namespace Caneda
         else {
             showMaximized();
         }
+    }
+
+    //! \brief Opens the shortcuts editor dialog.
+    void MainWindow::editShortcuts()
+    {
+        ShortcutsDialog *d = new ShortcutsDialog(this);
+        d->exec();
+        delete d;
     }
 
     //! \brief Opens the applications settings dialog.

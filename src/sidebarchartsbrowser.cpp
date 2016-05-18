@@ -43,7 +43,7 @@ namespace Caneda
     /*!
      * \brief Constructor.
      *
-     * \param chartSeriesMap ChartSeriesMap wich contains waveforms to be set
+     * \param chartSeriesMap ChartSeriesMap which contains waveforms to be set
      * visible/not-visible.
      * \param parent Parent of this object.
      *

@@ -34,7 +34,7 @@ namespace Caneda
     /*!
      * \brief Constructor.
      *
-     * \param map PropertyMap wich contains all properties to be modified.
+     * \param map PropertyMap which contains all properties to be modified.
      * \param parent Parent of this object.
      *
      * \sa PropertyMap

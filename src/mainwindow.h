@@ -130,6 +130,7 @@ namespace Caneda
         void showSideBarBrowser(bool);
         void showFolderBrowser(bool);
         void showFullScreen(bool);
+        void editShortcuts();
         void applicationSettings();
 
         void helpIndex();
