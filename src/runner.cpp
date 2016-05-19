@@ -182,8 +182,10 @@ namespace Caneda
     //! \brief Accept the dialog an run the selected action.
     void Runner::triggerAction()
     {
-        int currentIndex = m_proxyModel->mapToSource(m_listView->currentIndex()).row();
-        m_actions.at(currentIndex)->trigger();
+        if(m_listView->currentIndex().isValid()) {
+            int currentIndex = m_proxyModel->mapToSource(m_listView->currentIndex()).row();
+            m_actions.at(currentIndex)->trigger();
+        }
 
         accept();
     }
