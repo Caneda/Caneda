@@ -126,8 +126,8 @@ namespace Caneda
         defaultSettings["shortcuts/openNetlist"] = QVariant(QKeySequence(tr("F8")));
 
         defaultSettings["shortcuts/filterItems"] = QVariant(QKeySequence(tr("C")));
-        defaultSettings["shortcuts/enterHierarchy"] = QVariant(QKeySequence(tr("Ctrl+I")));
-        defaultSettings["shortcuts/exitHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Shift+I")));
+        defaultSettings["shortcuts/enterHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Right")));
+        defaultSettings["shortcuts/exitHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Left")));
         defaultSettings["shortcuts/invokeRunner"] = QVariant(QKeySequence(tr("Ctrl+Space")));
 
         defaultSettings["shortcuts/showMenuBar"] = QVariant(QKeySequence(tr("Ctrl+M")));
