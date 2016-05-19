@@ -21,6 +21,7 @@
 
 #include "actionmanager.h"
 
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QListView>
 #include <QSortFilterProxyModel>
@@ -118,6 +119,7 @@ namespace Caneda
         m_filterEdit = new QLineEdit(this);
         m_filterEdit->setClearButtonEnabled(true);
         m_filterEdit->setPlaceholderText(tr("Search..."));
+        m_filterEdit->installEventFilter(this);
         layout->addWidget(m_filterEdit);
 
         // Get the list of actions
@@ -147,6 +149,25 @@ namespace Caneda
 
         // Start with the focus on the filter
         m_filterEdit->setFocus();
+    }
+
+    //! \brief Filter event to select the listView on down arrow key event
+    bool Runner::eventFilter(QObject *object, QEvent *event)
+    {
+        if(object == m_filterEdit) {
+            if(event->type() == QEvent::KeyPress) {
+                QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+                if(keyEvent->key() == Qt::Key_Down) {
+                    m_listView->setFocus();
+                    m_listView->setCurrentIndex(m_proxyModel->index(0,0));
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return QDialog::eventFilter(object, event);
     }
 
     //! \brief Filters actions according to user input on a QLineEdit.

@@ -93,6 +93,9 @@ namespace Caneda
     public:
         explicit Runner(QWidget *parent = 0);
 
+    protected:
+        bool eventFilter(QObject *object, QEvent *event);
+
     private Q_SLOTS:
         void filterTextChanged();
         void triggerAction();
