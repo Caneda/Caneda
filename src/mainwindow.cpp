@@ -345,30 +345,31 @@ namespace Caneda
         action->setWhatsThis(tr("Distribute vertically\n\n""Distribute vertically selected elements"));
         connect(action, SIGNAL(triggered()), SLOT(distributeVertical()));
 
-        action = am->createAction("projNew", Caneda::icon("project-new"), tr("&New project..."));
-        action->setStatusTip(tr("Creates a new project"));
-        action->setWhatsThis(tr("New Project\n\nCreates a new project"));
-        connect(action, SIGNAL(triggered()), SLOT(newProject()));
+        //! \todo Reenable these actions once project actions and tools are reimplemented.
+        //        action = am->createAction("projNew", Caneda::icon("project-new"), tr("&New project..."));
+        //        action->setStatusTip(tr("Creates a new project"));
+        //        action->setWhatsThis(tr("New Project\n\nCreates a new project"));
+        //        connect(action, SIGNAL(triggered()), SLOT(newProject()));
 
-        action = am->createAction("projOpen", Caneda::icon("document-open"), tr("&Open project..."));
-        action->setStatusTip(tr("Opens an existing project"));
-        action->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
-        connect(action, SIGNAL(triggered()), SLOT(openProject()));
+        //        action = am->createAction("projOpen", Caneda::icon("document-open"), tr("&Open project..."));
+        //        action->setStatusTip(tr("Opens an existing project"));
+        //        action->setWhatsThis(tr("Open Project\n\nOpens an existing project"));
+        //        connect(action, SIGNAL(triggered()), SLOT(openProject()));
 
-        action = am->createAction("addToProj", Caneda::icon("document-new"), tr("&Add file to project..."));
-        action->setStatusTip(tr("Adds a file to current project"));
-        action->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
-        connect(action, SIGNAL(triggered()), SLOT(addToProject()));
+        //        action = am->createAction("addToProj", Caneda::icon("document-new"), tr("&Add file to project..."));
+        //        action->setStatusTip(tr("Adds a file to current project"));
+        //        action->setWhatsThis(tr("Add File to Project\n\nAdds a file to current project"));
+        //        connect(action, SIGNAL(triggered()), SLOT(addToProject()));
 
-        action = am->createAction("projDel", Caneda::icon("document-close"), tr("&Remove from project"));
-        action->setStatusTip(tr("Removes a file from current project"));
-        action->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
-        connect(action, SIGNAL(triggered()), SLOT(removeFromProject()));
+        //        action = am->createAction("projDel", Caneda::icon("document-close"), tr("&Remove from project"));
+        //        action->setStatusTip(tr("Removes a file from current project"));
+        //        action->setWhatsThis(tr("Remove from Project\n\nRemoves a file from current project"));
+        //        connect(action, SIGNAL(triggered()), SLOT(removeFromProject()));
 
-        action = am->createAction("projClose", Caneda::icon("dialog-close"), tr("&Close project"));
-        action->setStatusTip(tr("Closes the current project"));
-        action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
-        connect(action, SIGNAL(triggered()), SLOT(closeProject()));
+        //        action = am->createAction("projClose", Caneda::icon("dialog-close"), tr("&Close project"));
+        //        action->setStatusTip(tr("Closes the current project"));
+        //        action->setWhatsThis(tr("Close Project\n\nCloses the current project"));
+        //        connect(action, SIGNAL(triggered()), SLOT(closeProject()));
 
         action = am->createAction("openSchematic", Caneda::icon("draw-freehand"), tr("&Edit circuit schematic"));
         action->setStatusTip(tr("Switches to schematic edit"));
@@ -410,25 +411,26 @@ namespace Caneda
         action->setWhatsThis(tr("Filter items\n\nFilters available sidebar items"));
         connect(action, SIGNAL(triggered()), SLOT(filterItems()));
 
-        action = am->createAction("enterHierarchy", Caneda::icon("go-bottom"), tr("Enter hierarchy"));
-        action->setStatusTip(tr("Enters the selected subcircuit hierarchy"));
-        action->setWhatsThis(tr("Enter hierarchy\n\nEnters the selected subcircuit hierarchy"));
-        connect(action, SIGNAL(triggered()), SLOT(enterHierarchy()));
-
-        action = am->createAction("exitHierarchy", Caneda::icon("go-top"), tr("Exit hierarchy"));
-        action->setStatusTip(tr("Exits current subcircuit hierarchy"));
-        action->setWhatsThis(tr("Exit hierarchy\n\nExits current subcircuit hierarchy"));
-        connect(action, SIGNAL(triggered()), SLOT(exitHierarchy()));
-
         action = am->createAction("invokeRunner", Caneda::icon("fork"), tr("&Quick launcher..."));
         action->setStatusTip(tr("Opens the quick launcher dialog"));
         action->setWhatsThis(tr("Quick launcher\n\nOpens the quick launcher dialog"));
         connect(action, SIGNAL(triggered()), SLOT(invokeRunner()));
 
-        action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and history..."));
-        action->setStatusTip(tr("Opens backup and history dialog"));
-        action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
-        connect(action, SIGNAL(triggered()), SLOT(backupAndHistory()));
+        //! \todo Reenable these actions once reimplemented.
+        //        action = am->createAction("enterHierarchy", Caneda::icon("go-bottom"), tr("Enter hierarchy"));
+        //        action->setStatusTip(tr("Enters the selected subcircuit hierarchy"));
+        //        action->setWhatsThis(tr("Enter hierarchy\n\nEnters the selected subcircuit hierarchy"));
+        //        connect(action, SIGNAL(triggered()), SLOT(enterHierarchy()));
+
+        //        action = am->createAction("exitHierarchy", Caneda::icon("go-top"), tr("Exit hierarchy"));
+        //        action->setStatusTip(tr("Exits current subcircuit hierarchy"));
+        //        action->setWhatsThis(tr("Exit hierarchy\n\nExits current subcircuit hierarchy"));
+        //        connect(action, SIGNAL(triggered()), SLOT(exitHierarchy()));
+
+        //        action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and history..."));
+        //        action->setStatusTip(tr("Opens backup and history dialog"));
+        //        action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
+        //        connect(action, SIGNAL(triggered()), SLOT(backupAndHistory()));
 
         action = am->createAction("showMenuBar", Caneda::icon("show-menu"), tr("Show &menubar"));
         action->setStatusTip(tr("Enables/disables the menubar"));
@@ -1396,6 +1398,14 @@ namespace Caneda
         }
     }
 
+    //! \brief Opens the runner dialog.
+    void MainWindow::invokeRunner()
+    {
+        Runner *r = new Runner(this);
+        r->exec();
+        delete r;
+    }
+
     //! \brief Opens the selected item file description for edition.
     void MainWindow::enterHierarchy()
     {
@@ -1412,14 +1422,6 @@ namespace Caneda
         if (document) {
             document->exitHierarchy();
         }
-    }
-
-    //! \brief Opens the runner dialog.
-    void MainWindow::invokeRunner()
-    {
-        Runner *r = new Runner(this);
-        r->exec();
-        delete r;
     }
 
     //! \brief Opens the backup and history file dialog.

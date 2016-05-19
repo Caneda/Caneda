@@ -52,14 +52,15 @@ namespace Caneda
 
         QVBoxLayout *layout = new QVBoxLayout(this);
 
-        QToolBar *toolbar = new QToolBar;
+        QToolBar *toolbar = new QToolBar(this);
 
-        ActionManager* am = ActionManager::instance();
-        toolbar->addAction(am->actionForName("projNew"));
-        toolbar->addAction(am->actionForName("projOpen"));
-        toolbar->addAction(am->actionForName("addToProj"));
-        toolbar->addAction(am->actionForName("projDel"));
-        toolbar->addAction(am->actionForName("projClose"));
+        //! \todo Reenable these menus once project and tools reimplemented.
+        //        ActionManager* am = ActionManager::instance();
+        //        toolbar->addAction(am->actionForName("projNew"));
+        //        toolbar->addAction(am->actionForName("projOpen"));
+        //        toolbar->addAction(am->actionForName("addToProj"));
+        //        toolbar->addAction(am->actionForName("projDel"));
+        //        toolbar->addAction(am->actionForName("projClose"));
 
         m_projectsSidebar = new SidebarItemsBrowser(this);
         connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
