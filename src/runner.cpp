@@ -158,8 +158,11 @@ namespace Caneda
             if(event->type() == QEvent::KeyPress) {
                 QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
                 if(keyEvent->key() == Qt::Key_Down) {
+                    // Set the row next to the currently selected one
+                    int index = m_listView->currentIndex().row() + 1;
+                    m_listView->setCurrentIndex(m_proxyModel->index(index,0));
                     m_listView->setFocus();
-                    m_listView->setCurrentIndex(m_proxyModel->index(0,0));
+
                     return true;
                 }
             }
