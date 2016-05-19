@@ -121,6 +121,7 @@ namespace Caneda
         void filterItems();
         void enterHierarchy();
         void exitHierarchy();
+        void invokeRunner();
         void backupAndHistory();
 
         void showMenuBar(bool);

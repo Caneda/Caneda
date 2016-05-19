@@ -109,10 +109,6 @@ namespace Caneda
         defaultSettings["shortcuts/editMirrorY"] = QVariant(QKeySequence(tr("H")));
         defaultSettings["shortcuts/insertWire"] = QVariant(QKeySequence(tr("W")));
 
-        defaultSettings["shortcuts/filterItems"] = QVariant(QKeySequence(tr("C")));
-        defaultSettings["shortcuts/enterHierarchy"] = QVariant(QKeySequence(tr("Ctrl+I")));
-        defaultSettings["shortcuts/exitHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Shift+I")));
-
         defaultSettings["shortcuts/zoomFitInBest"] = QVariant(QKeySequence(tr("0")));
         defaultSettings["shortcuts/zoomOriginal"] = QVariant(QKeySequence(tr("1")));
         defaultSettings["shortcuts/zoomIn"] = QVariant(QKeySequence(tr("+")));
@@ -128,6 +124,11 @@ namespace Caneda
         defaultSettings["shortcuts/openSimulation"] = QVariant(QKeySequence(tr("F6")));
         defaultSettings["shortcuts/openLog"] = QVariant(QKeySequence(tr("F7")));
         defaultSettings["shortcuts/openNetlist"] = QVariant(QKeySequence(tr("F8")));
+
+        defaultSettings["shortcuts/filterItems"] = QVariant(QKeySequence(tr("C")));
+        defaultSettings["shortcuts/enterHierarchy"] = QVariant(QKeySequence(tr("Ctrl+I")));
+        defaultSettings["shortcuts/exitHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Shift+I")));
+        defaultSettings["shortcuts/invokeRunner"] = QVariant(QKeySequence(tr("Ctrl+Space")));
 
         defaultSettings["shortcuts/showMenuBar"] = QVariant(QKeySequence(tr("Ctrl+M")));
         defaultSettings["shortcuts/showWidgets"] = QVariant(QKeySequence(tr("Ctrl+Up")));

@@ -23,7 +23,7 @@ SET(PNGS align-horizontal-center.png c_microstrip.png document-save-as.png
          folder-new.png go-previous.png object-flip-vertical.png system-switch-user.png
          zoom-out.png list-remove.png list-add.png edit-clear-locationbar-rtl.png
          document-open-recent.png show-menu.png view-fullscreen.png
-         configure.png configure-shortcuts.png view-sidetree.png
+         configure.png configure-shortcuts.png view-sidetree.png fork.png
 )
 
 INSTALL(FILES ${PNGS} DESTINATION ${IMAGEDIR})

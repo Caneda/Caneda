@@ -33,6 +33,7 @@
 #include "project.h"
 #include "projectfileopendialog.h"
 #include "printdialog.h"
+#include "runner.h"
 #include "savedocumentsdialog.h"
 #include "settings.h"
 #include "settingsdialog.h"
@@ -419,6 +420,11 @@ namespace Caneda
         action->setWhatsThis(tr("Exit hierarchy\n\nExits current subcircuit hierarchy"));
         connect(action, SIGNAL(triggered()), SLOT(exitHierarchy()));
 
+        action = am->createAction("invokeRunner", Caneda::icon("fork"), tr("&Quick launcher..."));
+        action->setStatusTip(tr("Opens the quick launcher dialog"));
+        action->setWhatsThis(tr("Quick launcher\n\nOpens the quick launcher dialog"));
+        connect(action, SIGNAL(triggered()), SLOT(invokeRunner()));
+
         action = am->createAction("backupAndHistory", Caneda::icon("chronometer"), tr("&Backup and history..."));
         action->setStatusTip(tr("Opens backup and history dialog"));
         action->setWhatsThis(tr("Backup and History\n\nOpens backup and history dialog"));
@@ -718,9 +724,10 @@ namespace Caneda
         menu->addAction(am->actionForName("openLog"));
         menu->addAction(am->actionForName("openNetlist"));
 
-        //! \todo Reenable these options once implemented
-        //        menu->addSeparator();
+        menu->addSeparator();
+        menu->addAction(am->actionForName("invokeRunner"));
 
+        //! \todo Reenable these options once implemented
         //        menu->addAction(am->actionForName("enterHierarchy"));
         //        menu->addAction(am->actionForName("exitHierarchy"));
         //        menu->addAction(am->actionForName("backupAndHistory"));
@@ -1405,6 +1412,14 @@ namespace Caneda
         if (document) {
             document->exitHierarchy();
         }
+    }
+
+    //! \brief Opens the runner dialog.
+    void MainWindow::invokeRunner()
+    {
+        Runner *r = new Runner(this);
+        r->exec();
+        delete r;
     }
 
     //! \brief Opens the backup and history file dialog.
