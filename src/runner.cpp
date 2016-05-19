@@ -109,6 +109,9 @@ namespace Caneda
      */
     Runner::Runner(QWidget *parent) : QDialog(parent)
     {
+        // Set a popup window type to be able to close it clicking outside
+        setWindowFlags(Qt::Popup);
+
         QVBoxLayout *layout = new QVBoxLayout(this);
 
         // Set lineedit properties
@@ -141,6 +144,9 @@ namespace Caneda
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
         connect(m_filterEdit, SIGNAL(returnPressed()), this, SLOT(triggerAction()));
         connect(m_listView, SIGNAL(activated(QModelIndex)), this, SLOT(triggerAction()));
+
+        // Start with the focus on the filter
+        m_filterEdit->setFocus();
     }
 
     //! \brief Filters actions according to user input on a QLineEdit.
