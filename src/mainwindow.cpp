@@ -230,9 +230,9 @@ namespace Caneda
         action->setWhatsThis(tr("Export Image\n\n""Exports the current view to an image file"));
         connect(action, SIGNAL(triggered()), SLOT(exportImage()));
 
-        action = am->createAction("fileQuit", Caneda::icon("application-exit"), tr("E&xit"));
+        action = am->createAction("fileQuit", Caneda::icon("application-exit"), tr("&Quit"));
         action->setStatusTip(tr("Quits the application"));
-        action->setWhatsThis(tr("Exit\n\nQuits the application"));
+        action->setWhatsThis(tr("Quit\n\nQuits the application"));
         connect(action, SIGNAL(triggered()), SLOT(close()));
 
         action = am->createAction("editUndo", Caneda::icon("edit-undo"), tr("&Undo"));
