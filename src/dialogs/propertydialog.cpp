@@ -109,7 +109,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Returns item flags according to its position. This flags
+     * \brief Returns item flags according to its position. These flags
      * are responsible for the item editable or checkable state.
      *
      * \param index Item for which its flags must be returned.
