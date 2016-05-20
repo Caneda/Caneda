@@ -23,6 +23,7 @@
 #include "ui_shortcutsdialog.h"
 
 #include <QAbstractTableModel>
+#include <QStyledItemDelegate>
 
 // Forward declarations.
 class QSortFilterProxyModel;
@@ -30,6 +31,29 @@ class QWidget;
 
 namespace Caneda
 {
+    class ShortcutDelegate : public QStyledItemDelegate
+    {
+        Q_OBJECT
+
+    public:
+        explicit ShortcutDelegate(QObject *parent = 0);
+
+        virtual QWidget *createEditor(QWidget *parent,
+                                      const QStyleOptionViewItem &option,
+                                      const QModelIndex &index) const;
+
+        virtual void setEditorData(QWidget *editor,
+                                   const QModelIndex &index) const;
+
+        virtual void setModelData(QWidget *editor,
+                                  QAbstractItemModel *model,
+                                  const QModelIndex &index) const;
+
+        virtual void updateEditorGeometry(QWidget *editor,
+                                          const QStyleOptionViewItem &option,
+                                          const QModelIndex &index) const;
+    };
+
     /*!
      * \brief Model to provide the abstract interface for action items and
      * shortcuts in a table.

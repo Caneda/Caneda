@@ -22,10 +22,47 @@
 #include "actionmanager.h"
 #include "settings.h"
 
+#include <QKeySequenceEdit>
 #include <QSortFilterProxyModel>
 
 namespace Caneda
 {
+    //*************************************************************
+    //********************* ShortcutDelegate **********************
+    //*************************************************************
+    ShortcutDelegate::ShortcutDelegate(QObject *parent) : QStyledItemDelegate(parent)
+    {
+    }
+
+    QWidget *ShortcutDelegate::createEditor(QWidget *parent,
+                                            const QStyleOptionViewItem &option,
+                                            const QModelIndex &index) const
+    {
+        QKeySequenceEdit *editor = new QKeySequenceEdit(parent);
+        return (QWidget*)editor;
+    }
+
+    void ShortcutDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+    {
+        QKeySequenceEdit *keyEditor = static_cast<QKeySequenceEdit*>(editor);
+        keyEditor->setKeySequence(QKeySequence(index.data(Qt::EditRole).toString()));
+    }
+
+    void ShortcutDelegate::setModelData(QWidget *editor,
+                                        QAbstractItemModel *model,
+                                        const QModelIndex &index) const
+    {
+        QKeySequenceEdit *keyEditor = static_cast<QKeySequenceEdit*>(editor);
+        model->setData(index, keyEditor->keySequence());
+    }
+
+    void ShortcutDelegate::updateEditorGeometry(QWidget *editor,
+                                                const QStyleOptionViewItem &option,
+                                                const QModelIndex &index) const
+    {
+        editor->setGeometry(option.rect);
+    }
+
     //*************************************************************
     //******************* ShortcutsDialogModel ********************
     //*************************************************************
@@ -119,11 +156,11 @@ namespace Caneda
 
         // Column 1 is editable (shortcut button)
         if(index.column() == 1) {
-            flags |= Qt::ItemIsEnabled;
+            flags |= Qt::ItemIsEditable;
         }
         // Column 0 is not editable
         else {
-            flags |= Qt::ItemIsEnabled;
+            flags |= Qt::NoItemFlags;
         }
 
         return flags;
@@ -145,9 +182,8 @@ namespace Caneda
             int role)
     {
         if(index.isValid()){
-            // If editing the property visibility, set new visibility
-            if(role == Qt::CheckStateRole && index.column() == 1) {
-                //! \todo Edit the shortcut here...
+            if(index.column() == 1) {
+                m_actions.at(index.row())->setShortcut(value.value<QKeySequence>());
             }
 
             emit dataChanged(index, index);
@@ -183,8 +219,9 @@ namespace Caneda
         m_proxyModel->setSourceModel(m_model);
         m_proxyModel->sort(0);
 
-        // Set QTreeWidget proxy model
+        // Set QTableView proxy model and item delegate
         ui.tableView->setModel(m_proxyModel);
+        ui.tableView->setItemDelegateForColumn(1, new ShortcutDelegate(this));
 
         // Signals and slots connections
         connect(ui.lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
