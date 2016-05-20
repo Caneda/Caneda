@@ -34,20 +34,39 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \brief Returns the widget used to edit the item.
+     *
+     * Returns the widget used to edit the item specified by index for editing.
+     * The parent widget and style option are used to control how the editor
+     * widget appears.
+     */
     QWidget *ShortcutDelegate::createEditor(QWidget *parent,
                                             const QStyleOptionViewItem &option,
                                             const QModelIndex &index) const
     {
         QKeySequenceEdit *editor = new QKeySequenceEdit(parent);
-        return (QWidget*)editor;
+        return editor;
     }
 
+    /*!
+     * \brief Sets the data to be displayed and edited by the editor.
+     *
+     * Sets the data to be displayed and edited by the editor from the data
+     * model item specified by the model index.
+     */
     void ShortcutDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
     {
         QKeySequenceEdit *keyEditor = static_cast<QKeySequenceEdit*>(editor);
         keyEditor->setKeySequence(QKeySequence(index.data(Qt::EditRole).toString()));
     }
 
+    /*!
+     * \brief Gets data from the editor widget and stores it in the model.
+     *
+     * Gets data from the editor widget and stores it in the specified model at
+     * the item index.
+     */
     void ShortcutDelegate::setModelData(QWidget *editor,
                                         QAbstractItemModel *model,
                                         const QModelIndex &index) const
@@ -56,6 +75,12 @@ namespace Caneda
         model->setData(index, keyEditor->keySequence());
     }
 
+    /*!
+     * \brief Set editor geometry.
+     *
+     * Updates the editor for the item specified by index according to the
+     * style option given.
+     */
     void ShortcutDelegate::updateEditorGeometry(QWidget *editor,
                                                 const QStyleOptionViewItem &option,
                                                 const QModelIndex &index) const

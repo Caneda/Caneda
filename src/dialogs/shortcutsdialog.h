@@ -31,6 +31,35 @@ class QWidget;
 
 namespace Caneda
 {
+    /*!
+     * \brief This class provides display and editing facilities for data items
+     * from a model.
+     *
+     * When displaying data from models in Qt item views, e.g., a QTableView,
+     * the individual items are drawn by a delegate. Also, when an item is
+     * edited, it provides an editor widget, which is placed on top of the item
+     * view while editing takes place. QStyledItemDelegate is the default
+     * delegate for all Qt item views, and is installed upon them when they are
+     * created. To create a custom editor, for example a spinbox to edit
+     * numbers in a QTableView, the QStyledItemDelegate must be subclassed.
+     * This class is such a subclass.
+     *
+     * The QStyledItemDelegate class is one of the Model/View Classes and is
+     * part of Qt's model/view framework. The delegate allows the display and
+     * editing of items to be developed independently from the model and view.
+     *
+     * For every QStyledItemDelegate subclass, the following virtual functions
+     * must be reimplemented:
+     *
+     * \li createEditor() returns the widget used to change data from the model
+     * and can be reimplemented to customize editing behavior.
+     * \li setEditorData() provides the widget with data to manipulate.
+     * \li setModelData() returns updated data to the model.
+     * \li updateEditorGeometry() ensures that the editor is displayed
+     * correctly with respect to the item view.
+     *
+     * \sa QStyledItemDelegate, ShortcutsDialogModel
+     */
     class ShortcutDelegate : public QStyledItemDelegate
     {
         Q_OBJECT
