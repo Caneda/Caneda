@@ -23,6 +23,7 @@
 #include "settings.h"
 
 #include <QKeySequenceEdit>
+#include <QMessageBox>
 #include <QSortFilterProxyModel>
 
 namespace Caneda
@@ -207,9 +208,42 @@ namespace Caneda
                                        const QVariant& value,
                                        int role)
     {
-        if(index.isValid()){
-            if(index.column() == 1) {
+        if(index.isValid() && index.column() == 1){
+
+            // Check if the shortcut is already used
+            bool shortcutUsed = false;
+
+            foreach(QAction *action, m_actions) {
+                if(action != m_actions.at(index.row()) && action->shortcut() == value.value<QKeySequence>()) {
+                    shortcutUsed = true;
+                    break;
+                }
+            }
+
+            if(!shortcutUsed) {
+                // Set new shortcut
                 m_actions.at(index.row())->setShortcut(value.value<QKeySequence>());
+            }
+            else {
+                // Raise message dialog
+                int ret = QMessageBox::critical(static_cast<QWidget*>(parent()),
+                                                tr("Shortcut already used"),
+                                                tr("The shortcut you selected is already used.\n\n"
+                                                   "Do you want to reassign the shortcut to this action?"),
+                                                QMessageBox::Ok | QMessageBox::Cancel);
+
+                // Dialog accepted
+                if(ret == QMessageBox::Ok) {
+                    // Remove conflicting shortcuts
+                    foreach(QAction *action, m_actions) {
+                        if(action->shortcut() == value.value<QKeySequence>()) {
+                            action->setShortcut(QKeySequence());
+                        }
+                    }
+                    // Set new shortcut
+                    m_actions.at(index.row())->setShortcut(value.value<QKeySequence>());
+                }
+
             }
 
             emit dataChanged(index, index);
