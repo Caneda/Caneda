@@ -97,6 +97,99 @@ namespace Caneda
         rootItem = new CategoryItem("Root", QString());
     }
 
+    int SidebarItemsModel::rowCount(const QModelIndex & parent) const
+    {
+        CategoryItem *parentItem;
+        parentItem = !parent.isValid() ? rootItem :
+            static_cast<CategoryItem*>(parent.internalPointer());
+        return parentItem->childCount();
+    }
+
+    /*!
+     * \brief Returns the data stored for the item referred by index.
+     *
+     * This class returns the item data corresponding to index position.
+     * For example, if we are editing an item that is a leaf of the tree
+     * view and it is not a library, the data corresponds to a component,
+     * hence the return value is the name of the component or the icon
+     * depending on the role of the index (a display role indicates the
+     * name and a decoration role indicates the icon).
+     *
+     * \param index Item to return data from
+     * \param role Role of the item (editable, checkable, etc).
+     * \return data stored for given item
+     */
+    QVariant SidebarItemsModel::data(const QModelIndex & index, int role) const
+    {
+        if(!index.isValid()) {
+            return QVariant();
+        }
+
+        CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
+
+        if(role == Qt::DisplayRole) {
+            return QVariant(item->name());
+        }
+
+        if(role == Qt::DecorationRole) {
+            return QVariant(QIcon(item->iconPixmap()));
+        }
+
+        if(role == Qt::SizeHintRole) {
+            return QSize(150, 32);
+        }
+
+        return QVariant();
+    }
+
+    /*!
+     * \brief Returns item flags according to its position. These flags
+     * are responsible for the item editable or checkable state.
+     *
+     * \param index Item for which its flags must be returned.
+     * \return Qt::ItemFlags Item's flags.
+     */
+    Qt::ItemFlags SidebarItemsModel::flags(const QModelIndex& index) const
+    {
+        Qt::ItemFlags flag = Qt::ItemIsEnabled;
+
+        bool isLeaf = static_cast<CategoryItem*>(index.internalPointer())->isLeaf();
+        bool isLibrary = static_cast<CategoryItem*>(index.internalPointer())->isLibrary();
+
+        if(isLeaf && !isLibrary) {
+            flag |= Qt::ItemIsSelectable;
+        }
+
+        return flag;
+    }
+
+    QModelIndex SidebarItemsModel::index(int row, int column, const QModelIndex & parent) const
+    {
+        if(column != 0) {
+            return QModelIndex();
+        }
+        CategoryItem *parentItem;
+        parentItem = !parent.isValid() ? rootItem : static_cast<CategoryItem*>(parent.internalPointer());
+        CategoryItem *childItem = parentItem->child(row);
+        return childItem ? createIndex(row, 0, childItem) : QModelIndex();
+    }
+
+    QModelIndex SidebarItemsModel::parent(const QModelIndex & index) const
+    {
+        if(!index.isValid()) {
+            return QModelIndex();
+        }
+
+        CategoryItem *childItem = static_cast<CategoryItem*>(index.internalPointer());
+        CategoryItem *parentItem = childItem->parent();
+
+        if(parentItem == rootItem) {
+            return QModelIndex();
+        }
+
+        return createIndex(parentItem->row(), 0, parentItem);
+    }
+
     /*!
      * \brief Add a library to the sidebar
      *
@@ -179,36 +272,6 @@ namespace Caneda
         endResetModel();
     }
 
-    /*!
-     * \brief Returns the library row upon success, -1 if not found
-     *
-     * \param libraryName library to look for
-     * \param category library's category
-     */
-    int SidebarItemsModel::libraryRow(const QString &libraryName, const QString &category)
-    {
-        if(category == "root") {
-            for(int i = 0; i < rootItem->childCount(); i++) {
-                if(rootItem->child(i)->name() == libraryName) {
-                    return i;
-                }
-            }
-        }
-        else {
-            for(int i = 0; i < rootItem->childCount(); i++) {
-                if(rootItem->child(i)->name() == category) {
-                    for(int j = 0; j < rootItem->child(i)->childCount(); j++) {
-                        if(rootItem->child(i)->child(j)->name() == libraryName) {
-                            return j;
-                        }
-                    }
-                }
-            }
-        }
-
-        return -1;
-    }
-
     void SidebarItemsModel::plugItem(QString itemName, const QPixmap& itemPixmap, QString category)
     {
         CategoryItem *catItem = 0;
@@ -263,116 +326,6 @@ namespace Caneda
 
         beginResetModel();
         endResetModel();
-    }
-
-    QModelIndex SidebarItemsModel::index(int row, int column, const QModelIndex & parent) const
-    {
-        if(column != 0) {
-            return QModelIndex();
-        }
-        CategoryItem *parentItem;
-        parentItem = !parent.isValid() ? rootItem : static_cast<CategoryItem*>(parent.internalPointer());
-        CategoryItem *childItem = parentItem->child(row);
-        return childItem ? createIndex(row, 0, childItem) : QModelIndex();
-    }
-
-    int SidebarItemsModel::rowCount(const QModelIndex & parent) const
-    {
-        CategoryItem *parentItem;
-        parentItem = !parent.isValid() ? rootItem :
-            static_cast<CategoryItem*>(parent.internalPointer());
-        return parentItem->childCount();
-    }
-
-    QModelIndex SidebarItemsModel::parent(const QModelIndex & index) const
-    {
-        if(!index.isValid()) {
-            return QModelIndex();
-        }
-
-        CategoryItem *childItem = static_cast<CategoryItem*>(index.internalPointer());
-        CategoryItem *parentItem = childItem->parent();
-
-        if(parentItem == rootItem) {
-            return QModelIndex();
-        }
-
-        return createIndex(parentItem->row(), 0, parentItem);
-    }
-
-    /*!
-     * \brief Returns the data stored for the item referred by index.
-     *
-     * This class returns the item data corresponding to index position.
-     * For example, if we are editing an item that is a leaf of the tree
-     * view and it is not a library, the data corresponds to a component,
-     * hence the return value is the name of the component or the icon
-     * depending on the role of the index (a display role indicates the
-     * name and a decoration role indicates the icon).
-     *
-     * \param index Item to return data from
-     * \param role Role of the item (editable, checkable, etc).
-     * \return data stored for given item
-     */
-    QVariant SidebarItemsModel::data(const QModelIndex & index, int role) const
-    {
-        if(!index.isValid()) {
-            return QVariant();
-        }
-
-        CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
-
-        if(role == Qt::DisplayRole) {
-            return QVariant(item->name());
-        }
-
-        if(item->isLeaf() && !item->isLibrary()) {
-            switch(role) {
-                case Qt::DecorationRole :
-                    return QVariant(QIcon(item->iconPixmap()));
-
-                case DragPixmapRole:
-                    return QVariant(QPixmap(item->iconPixmap()));
-            }
-        }
-
-        if(role == Qt::SizeHintRole) {
-            return QSize(150, 32);
-        }
-        return QVariant();
-    }
-
-    bool SidebarItemsModel::isLeaf(const QModelIndex& index) const
-    {
-        return (index.isValid() &&
-                static_cast<CategoryItem*>(index.internalPointer())->isLeaf());
-    }
-
-    bool SidebarItemsModel::isLibrary(const QModelIndex& index) const
-    {
-        return (index.isValid() &&
-                static_cast<CategoryItem*>(index.internalPointer())->isLibrary());
-    }
-
-    /*!
-     * \brief Returns item flags according to its position. These flags
-     * are responsible for the item editable or checkable state.
-     *
-     * \param index Item for which its flags must be returned.
-     * \return Qt::ItemFlags Item's flags.
-     */
-    Qt::ItemFlags SidebarItemsModel::flags(const QModelIndex& index) const
-    {
-        Qt::ItemFlags flag = Qt::ItemIsEnabled;
-        if(isLeaf(index) && !isLibrary(index)) {
-            flag |= Qt::ItemIsSelectable;
-        }
-        return flag;
-    }
-
-    QStringList SidebarItemsModel::mimeTypes() const
-    {
-        return QStringList() << "application/caneda.sidebarItem";
     }
 
     QMimeData* SidebarItemsModel::mimeData(const QModelIndexList &indexes) const

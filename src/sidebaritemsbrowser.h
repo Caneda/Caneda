@@ -115,39 +115,25 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        enum {
-            DragPixmapRole = Qt::UserRole + 1
-        };
+        explicit SidebarItemsModel(QObject *parent = 0);
 
-        explicit SidebarItemsModel(QObject *parent=0);
-
-        int columnCount(const QModelIndex & parent = QModelIndex()) const {
-            Q_UNUSED(parent);
-            return 1;
-        }
-
+        int columnCount(const QModelIndex & = QModelIndex()) const { return 1; }
         int rowCount(const QModelIndex & parent) const;
 
         QVariant data(const QModelIndex & index, int role) const;
-        QModelIndex index(int row, int column, const QModelIndex & parent) const;
 
+        Qt::ItemFlags flags(const QModelIndex & index) const;
+
+        QModelIndex index(int row, int column, const QModelIndex & parent) const;
         QModelIndex parent(const QModelIndex & index) const;
 
-        Qt::ItemFlags flags(const QModelIndex& index) const;
+        void plugLibrary(const QString & libraryName, const QString & category);
+        void unPlugLibrary(const QString & libraryName, const QString & category);
 
-        bool isLeaf(const QModelIndex& index) const;
-        bool isLibrary(const QModelIndex& index) const;
+        void plugItem(QString itemName, const QPixmap & itemPixmap, QString category);
+        void plugItems(const QList<QPair<QString, QPixmap> > & items, QString category);
 
-        QStringList mimeTypes() const;
-        QMimeData* mimeData(const QModelIndexList& indexes) const;
-
-        void plugLibrary(const QString& libraryName, const QString& category);
-        void unPlugLibrary(const QString& libraryName, const QString& category);
-
-        int libraryRow(const QString& libraryName, const QString& category);
-
-        void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
-        void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
+        QMimeData* mimeData(const QModelIndexList & indexes) const;
 
     private:
         CategoryItem *rootItem;
