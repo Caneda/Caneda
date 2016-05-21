@@ -21,20 +21,12 @@
 #include "sidebaritemsbrowser.h"
 
 #include "component.h"
-#include "global.h"
 #include "library.h"
 
-#include <QAction>
-#include <QDebug>
 #include <QHeaderView>
-#include <QIcon>
-#include <QList>
 #include <QLineEdit>
 #include <QMimeData>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QShortcut>
-#include <QVariant>
+#include <QTreeView>
 #include <QVBoxLayout>
 
 namespace Caneda
@@ -431,35 +423,6 @@ namespace Caneda
 
 
     /*************************************************************************
-     *                                TreeView                               *
-     *************************************************************************/
-    //! \brief Constructor.
-    TreeView::TreeView(QWidget *parent) :
-        QTreeView(parent),
-        invalidPressed(false)
-    {
-        header()->hide();
-
-        setAlternatingRowColors(true);
-        setAnimated(true);
-        setIconSize(QSize(24, 24));
-    }
-
-    void TreeView::mousePressEvent(QMouseEvent *event)
-    {
-        invalidPressed = !indexAt(event->pos()).isValid();
-        QTreeView::mousePressEvent(event);
-    }
-
-    void TreeView::mouseReleaseEvent(QMouseEvent *event)
-    {
-        if(invalidPressed && !indexAt(event->pos()).isValid()) {
-            emit invalidAreaClicked(QModelIndex());
-        }
-        QTreeView::mouseReleaseEvent(event);
-    }
-
-    /*************************************************************************
      *                       SidebarItemsBrowser                             *
      *************************************************************************/
     //! \brief Constructor.
@@ -467,31 +430,35 @@ namespace Caneda
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
 
+        // Set lineEdit properties
         m_filterEdit = new QLineEdit(this);
         m_filterEdit->setClearButtonEnabled(true);
         m_filterEdit->setPlaceholderText(tr("Search..."));
         layout->addWidget(m_filterEdit);
 
-        m_treeView = new TreeView();
-        layout->addWidget(m_treeView);
-
+        // Create a new model
         m_model = new SidebarItemsModel(this);
+
+        // Create proxy model and set its properties.
         m_proxyModel = new FilterProxyModel(this);
         m_proxyModel->setDynamicSortFilter(true);
-        m_proxyModel->setSourceModel(m_model);
         m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+        m_proxyModel->setSourceModel(m_model);
+
+        // Create view, set its properties and proxy model
+        m_treeView = new QTreeView(this);
+        m_treeView->header()->hide();
+        m_treeView->setAlternatingRowColors(true);
+        m_treeView->setAnimated(true);
+        m_treeView->setIconSize(QSize(24, 24));
         m_treeView->setModel(m_proxyModel);
+        layout->addWidget(m_treeView);
 
-        connect(m_filterEdit, SIGNAL(textChanged(const QString &)),
-                this, SLOT(filterTextChanged()));
-
+        // Signals and slots connections
+        connect(m_filterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
+        connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(slotOnClicked(const QModelIndex&)));
+        connect(m_treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(slotOnClicked(const QModelIndex&)));
         connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
-        connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this,
-                SLOT(slotOnClicked(const QModelIndex&)));
-        connect(m_treeView, SIGNAL(invalidAreaClicked(const QModelIndex&)), this,
-                SLOT(slotOnClicked(const QModelIndex&)));
-        connect(m_treeView, SIGNAL(activated(const QModelIndex&)), this,
-                SLOT(slotOnClicked(const QModelIndex&)));
 
         setWindowTitle(tr("Components Browser"));
         m_currentComponent = QString();

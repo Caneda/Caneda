@@ -23,9 +23,13 @@
 
 #include <QAbstractItemModel>
 #include <QPair>
-#include <QPixmap>
 #include <QSortFilterProxyModel>
-#include <QTreeView>
+#include <QWidget>
+
+// Forward declaration
+class QLineEdit;
+class QPixmap;
+class QTreeView;
 
 namespace Caneda
 {
@@ -149,7 +153,7 @@ namespace Caneda
     };
 
     /*!
-     * \brief The FilterProxyModel class helps in filtering sidebar display
+     * \brief The FilterProxyModel class helps in filtering a sidebar model
      * corresponding to a QLineEdit.
      */
     class FilterProxyModel : public QSortFilterProxyModel
@@ -158,42 +162,6 @@ namespace Caneda
         explicit FilterProxyModel(QObject *parent = 0);
 
         bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-    };
-
-    /*!
-     * \brief The TreeView class implements a custom QTreeView, and provides a
-     *  model/view implementation of a tree view.
-     *
-     * The TreeView class implements a tree representation of items from a
-     * model. This class is used to provide standard hierarchical lists, using
-     * the flexible approach provided by Qt's model/view architecture.
-     *
-     * The TreeView class, derived from QTreeView is one of the Model/View
-     * Classes defined by Qt, and is part of the model/view framework. TreeView
-     * implements the interfaces defined by the QAbstractItemView class to
-     * allow it to display data provided by models derived from the
-     * QAbstractItemModel class.
-     *
-     * The model/view architecture ensures that the contents of the tree view
-     * are updated as the model changes.
-     *
-     *  \sa SidebarItemsModel
-     */
-    class TreeView : public QTreeView
-    {
-        Q_OBJECT
-
-    public:
-        explicit TreeView(QWidget *parent = 0);
-
-    signals:
-        void invalidAreaClicked(const QModelIndex &index);
-
-        protected:
-        void mousePressEvent(QMouseEvent *event);
-        void mouseReleaseEvent(QMouseEvent *event);
-
-        bool invalidPressed;
     };
 
     /*!
@@ -242,7 +210,7 @@ namespace Caneda
     private:
         SidebarItemsModel *m_model;
         FilterProxyModel *m_proxyModel;
-        TreeView *m_treeView;
+        QTreeView *m_treeView;
 
         QLineEdit *m_filterEdit;
 
