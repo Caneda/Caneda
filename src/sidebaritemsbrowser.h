@@ -155,6 +155,12 @@ namespace Caneda
     /*!
      * \brief The FilterProxyModel class helps in filtering a sidebar model
      * corresponding to a QLineEdit.
+     *
+     * This class is used to be able to filter the items present in any model
+     * column (categories are in the first columns of the tree, and the items
+     * are in succesive columns). The QSortFilterProxyModel doesn't allow
+     * multicolumn filtering, hence it must be subclassed for those cases where
+     * it's needed.
      */
     class FilterProxyModel : public QSortFilterProxyModel
     {

@@ -405,6 +405,15 @@ namespace Caneda
     {
     }
 
+    /*!
+     * \brief Returns true if the item should be included in the model
+     * (filtered); false otherwise.
+     *
+     * This method must be reimplemented from QSortFilterProxyModel to be able
+     * to perform multicolumn filtering. It returns true if the item in the row
+     * indicated by the given sourceRow and sourceParent should be included in
+     * the model; otherwise returns false.
+     */
     bool FilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
     {
         QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
