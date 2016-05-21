@@ -24,6 +24,7 @@
 #include "library.h"
 
 #include <QHeaderView>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QMimeData>
 #include <QTreeView>
@@ -443,6 +444,7 @@ namespace Caneda
         m_filterEdit = new QLineEdit(this);
         m_filterEdit->setClearButtonEnabled(true);
         m_filterEdit->setPlaceholderText(tr("Search..."));
+        m_filterEdit->installEventFilter(this);
         layout->addWidget(m_filterEdit);
 
         // Create a new model
@@ -519,6 +521,28 @@ namespace Caneda
     {
         m_filterEdit->setFocus();
         m_filterEdit->clear();
+    }
+
+    //! \brief Filter event to select the view on down arrow key event
+    bool SidebarItemsBrowser::eventFilter(QObject *object, QEvent *event)
+    {
+        if(object == m_filterEdit) {
+            if(event->type() == QEvent::KeyPress) {
+                QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+                if(keyEvent->key() == Qt::Key_Down) {
+                    // Set the row next to the currently selected one
+                    int index = m_treeView->currentIndex().row() + 1;
+                    m_treeView->setCurrentIndex(m_proxyModel->index(index,0));
+                    m_treeView->setFocus();
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return QWidget::eventFilter(object, event);
     }
 
     //! \brief Filters items according to user input on a QLineEdit.

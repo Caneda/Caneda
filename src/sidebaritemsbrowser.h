@@ -209,6 +209,9 @@ namespace Caneda
         void itemClicked(const QString& item, const QString& category);
         void itemDoubleClicked(const QString& item, const QString& category);
 
+    protected:
+        bool eventFilter(QObject *object, QEvent *event);
+
     private Q_SLOTS:
         void filterTextChanged();
         void slotOnClicked(const QModelIndex& index);
