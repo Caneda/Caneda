@@ -66,8 +66,8 @@ namespace Caneda
         int row() const;
         QString name() const { return m_name; }
         QString filename() const { return m_filename; }
-
         QPixmap iconPixmap() const { return m_iconPixmap; }
+
         bool isLeaf() const { return m_childItems.isEmpty(); }
         bool isLibrary() const { return m_isLibrary; }
 
@@ -77,8 +77,9 @@ namespace Caneda
     private:
         QString m_name;
         QString m_filename;
-        bool m_isLibrary;
         QPixmap m_iconPixmap;
+
+        bool m_isLibrary;
         QList<CategoryItem*> m_childItems;
         CategoryItem *m_parentItem;
     };

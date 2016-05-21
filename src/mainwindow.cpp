@@ -416,6 +416,11 @@ namespace Caneda
         action->setWhatsThis(tr("Quick launcher\n\nOpens the quick launcher dialog"));
         connect(action, SIGNAL(triggered()), SLOT(invokeRunner()));
 
+        action = am->createAction("invokeRunnerItems", Caneda::icon("fork"), tr("&Quick items insert..."));
+        action->setStatusTip(tr("Opens the quick items insert dialog"));
+        action->setWhatsThis(tr("Quick items insert\n\nOpens the quick items insert dialog"));
+        connect(action, SIGNAL(triggered()), SLOT(invokeRunnerItems()));
+
         //! \todo Reenable these actions once reimplemented.
         //        action = am->createAction("enterHierarchy", Caneda::icon("go-bottom"), tr("Enter hierarchy"));
         //        action->setStatusTip(tr("Enters the selected subcircuit hierarchy"));
@@ -728,6 +733,7 @@ namespace Caneda
 
         menu->addSeparator();
         menu->addAction(am->actionForName("invokeRunner"));
+        menu->addAction(am->actionForName("invokeRunnerItems"));
 
         //! \todo Reenable these options once implemented
         //        menu->addAction(am->actionForName("enterHierarchy"));
@@ -1404,6 +1410,11 @@ namespace Caneda
         Runner *r = new Runner(this);
         r->exec();
         delete r;
+    }
+
+    //! \brief Opens the runner items dialog.
+    void MainWindow::invokeRunnerItems()
+    {
     }
 
     //! \brief Opens the selected item file description for edition.

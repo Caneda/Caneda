@@ -366,7 +366,6 @@ namespace Caneda
         Qt::ItemFlags flag = Qt::ItemIsEnabled;
         if(isLeaf(index) && !isLibrary(index)) {
             flag |= Qt::ItemIsSelectable;
-            flag |= Qt::ItemIsDragEnabled;
         }
         return flag;
     }
