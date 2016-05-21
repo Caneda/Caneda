@@ -111,8 +111,8 @@ namespace Caneda
 
         defaultSettings["shortcuts/zoomFitInBest"] = QVariant(QKeySequence(tr(".")));
         defaultSettings["shortcuts/zoomOriginal"] = QVariant(QKeySequence(tr("Home")));
-        defaultSettings["shortcuts/zoomIn"] = QVariant(QKeySequence(tr("PgDown")));
-        defaultSettings["shortcuts/zoomOut"] = QVariant(QKeySequence(tr("PgUp")));
+        defaultSettings["shortcuts/zoomIn"] = QVariant(QKeySequence(tr("+")));
+        defaultSettings["shortcuts/zoomOut"] = QVariant(QKeySequence(tr("-")));
         defaultSettings["shortcuts/splitHorizontal"] = QVariant(QKeySequence(tr("Ctrl+Shift+L")));
         defaultSettings["shortcuts/splitVertical"] = QVariant(QKeySequence(tr("Ctrl+Shift+T")));
         defaultSettings["shortcuts/splitClose"] = QVariant(QKeySequence(tr("Ctrl+Shift+R")));
