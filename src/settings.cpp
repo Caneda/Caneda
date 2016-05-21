@@ -109,8 +109,8 @@ namespace Caneda
         defaultSettings["shortcuts/editMirrorY"] = QVariant(QKeySequence(tr("H")));
         defaultSettings["shortcuts/insertWire"] = QVariant(QKeySequence(tr("W")));
 
-        defaultSettings["shortcuts/zoomFitInBest"] = QVariant(QKeySequence(tr("0")));
-        defaultSettings["shortcuts/zoomOriginal"] = QVariant(QKeySequence(tr("1")));
+        defaultSettings["shortcuts/zoomFitInBest"] = QVariant(QKeySequence(tr(".")));
+        defaultSettings["shortcuts/zoomOriginal"] = QVariant(QKeySequence(tr("Home")));
         defaultSettings["shortcuts/zoomIn"] = QVariant(QKeySequence(tr("+")));
         defaultSettings["shortcuts/zoomOut"] = QVariant(QKeySequence(tr("-")));
         defaultSettings["shortcuts/splitHorizontal"] = QVariant(QKeySequence(tr("Ctrl+Shift+L")));
