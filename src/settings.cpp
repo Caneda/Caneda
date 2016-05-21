@@ -125,14 +125,14 @@ namespace Caneda
         defaultSettings["shortcuts/openLog"] = QVariant(QKeySequence(tr("F7")));
         defaultSettings["shortcuts/openNetlist"] = QVariant(QKeySequence(tr("F8")));
 
-        defaultSettings["shortcuts/filterItems"] = QVariant(QKeySequence(tr("C")));
+        defaultSettings["shortcuts/filterItems"] = QVariant(QKeySequence(tr("Alt+C")));
         defaultSettings["shortcuts/enterHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Right")));
         defaultSettings["shortcuts/exitHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Left")));
         defaultSettings["shortcuts/invokeRunner"] = QVariant(QKeySequence(tr("Ctrl+Space")));
 
         defaultSettings["shortcuts/showMenuBar"] = QVariant(QKeySequence(tr("Ctrl+M")));
         defaultSettings["shortcuts/showWidgets"] = QVariant(QKeySequence(tr("Ctrl+Up")));
-        defaultSettings["shortcuts/showSideBarBrowser"] = QVariant(QKeySequence(tr("T")));
+        defaultSettings["shortcuts/showSideBarBrowser"] = QVariant(QKeySequence(tr("C")));
         defaultSettings["shortcuts/showFolderBrowser"] = QVariant(QKeySequence(tr("F")));
         defaultSettings["shortcuts/showFullScreen"] = QVariant(QKeySequence(tr("Ctrl+Shift+F")));
         defaultSettings["shortcuts/settings"] = QVariant(QKeySequence(QKeySequence::Preferences));

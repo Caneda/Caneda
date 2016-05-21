@@ -115,7 +115,7 @@ namespace Caneda
 
         QVBoxLayout *layout = new QVBoxLayout(this);
 
-        // Set lineedit properties
+        // Set lineEdit properties
         m_filterEdit = new QLineEdit(this);
         m_filterEdit->setClearButtonEnabled(true);
         m_filterEdit->setPlaceholderText(tr("Search..."));
@@ -138,8 +138,8 @@ namespace Caneda
 
         // Create table view, set properties and proxy model
         m_listView = new QListView(this);
-        m_listView->setModel(m_proxyModel);
         m_listView->setSelectionMode(QAbstractItemView::SingleSelection);
+        m_listView->setModel(m_proxyModel);
         layout->addWidget(m_listView);
 
         // Signals and slots connections
