@@ -682,7 +682,7 @@ namespace Caneda
         menu->addAction(am->actionForName("splitClose"));
 
         // Align menu
-        menu = menuBar()->addMenu(tr("P&ositioning"));
+        menu = menuBar()->addMenu(tr("&Placement"));
 
         menu->addAction(am->actionForName("centerHor"));
         menu->addAction(am->actionForName("centerVert"));
