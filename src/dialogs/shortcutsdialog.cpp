@@ -203,8 +203,9 @@ namespace Caneda
      * item, checkable item, etc).
      * \return True on success, false otherwise.
      */
-    bool ShortcutsDialogModel::setData(const QModelIndex& index, const QVariant& value,
-            int role)
+    bool ShortcutsDialogModel::setData(const QModelIndex& index,
+                                       const QVariant& value,
+                                       int role)
     {
         if(index.isValid()){
             if(index.column() == 1) {
@@ -252,6 +253,7 @@ namespace Caneda
         connect(ui.lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
         connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(applyShortcuts()));
         connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+        connect(ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(restoreDefaults(QAbstractButton*)));
     }
 
     //! \brief Filters actions according to user input on a QLineEdit.
@@ -263,18 +265,20 @@ namespace Caneda
     }
 
     //! \brief Load default action shortcuts
-    void ShortcutsDialog::restoreDefaults()
+    void ShortcutsDialog::restoreDefaults(QAbstractButton *button)
     {
-        m_model->beginResetModel();
+        if(ui.buttonBox->buttonRole(button) == QDialogButtonBox::ResetRole) {
+            m_model->beginResetModel();
 
-        Settings *settings = Settings::instance();
+            Settings *settings = Settings::instance();
 
-        foreach(QAction *action, m_actions) {
-            QString name = "shortcuts/" + action->objectName();
-            action->setShortcut(settings->defaultValue(name).value<QKeySequence>());
+            foreach(QAction *action, m_actions) {
+                QString name = "shortcuts/" + action->objectName();
+                action->setShortcut(settings->defaultValue(name).value<QKeySequence>());
+            }
+
+            m_model->endResetModel();
         }
-
-        m_model->endResetModel();
     }
 
     //! \brief Save all shortcuts changes

@@ -149,7 +149,7 @@ namespace Caneda
 
     private Q_SLOTS:
         void filterTextChanged();
-        void restoreDefaults();
+        void restoreDefaults(QAbstractButton *button);
         void applyShortcuts();
 
     private:
