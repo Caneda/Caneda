@@ -168,9 +168,11 @@ namespace Caneda
         if(column != 0) {
             return QModelIndex();
         }
+
         CategoryItem *parentItem;
         parentItem = !parent.isValid() ? rootItem : static_cast<CategoryItem*>(parent.internalPointer());
         CategoryItem *childItem = parentItem->child(row);
+
         return childItem ? createIndex(row, 0, childItem) : QModelIndex();
     }
 
@@ -188,144 +190,6 @@ namespace Caneda
         }
 
         return createIndex(parentItem->row(), 0, parentItem);
-    }
-
-    /*!
-     * \brief Add a library to the sidebar
-     *
-     * \param libraryName Library name
-     * \param category Category to place the library
-     */
-    void SidebarItemsModel::plugLibrary(const QString& libraryName, const QString& category)
-    {
-        LibraryManager *manager = LibraryManager::instance();
-        const Library *libItem = manager->library(libraryName);
-
-        if(!libItem) {
-            return;
-        }
-
-        CategoryItem *libRoot;
-        if(category == "root") {
-            libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryPath(),
-                    QPixmap(), true, rootItem);
-        }
-        else {
-            for(int i = 0; i < rootItem->childCount(); i++) {
-                if(rootItem->child(i)->name() == category) {
-                    libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryPath(),
-                            QPixmap(), true, rootItem->child(i));
-                    break;
-                }
-            }
-        }
-
-        // Get the components list and plug each component into the sidebar browser
-        QStringList components(libItem->componentsList());
-        foreach(const QString component, components) {
-            ComponentDataPtr data = libItem->component(component);
-            QPixmap pixmap = manager->pixmapCache(data->name, data->library);
-            new CategoryItem(data->name, data->filename, pixmap, false, libRoot);
-        }
-
-        beginResetModel();
-        endResetModel();
-    }
-
-    /*!
-     * \brief Remove a library from the sidebar
-     *
-     * \param libraryName Library name
-     * \param category Category of the library to be removed
-     */
-    void SidebarItemsModel::unPlugLibrary(const QString& libraryName, const QString& category)
-    {
-        LibraryManager *manager = LibraryManager::instance();
-        const Library *libItem = manager->library(libraryName);
-        if(!libItem) {
-            return;
-        }
-
-        if(category == "root") {
-            for(int i = 0; i < rootItem->childCount(); i++) {
-                if(rootItem->child(i)->filename() == libItem->libraryPath()) {
-                    rootItem->removeChild(i);
-                    break;
-                }
-            }
-        }
-        else {
-            for(int i = 0; i < rootItem->childCount(); i++) {
-                if(rootItem->child(i)->name() == category) {
-                    for(int j = 0; j < rootItem->child(i)->childCount(); j++) {
-                        if(rootItem->child(i)->child(j)->filename() ==
-                                libItem->libraryPath()) {
-                            rootItem->child(i)->removeChild(j);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        beginResetModel();
-        endResetModel();
-    }
-
-    void SidebarItemsModel::plugItem(QString itemName, const QPixmap& itemPixmap, QString category)
-    {
-        CategoryItem *catItem = 0;
-
-        if(category == "root") {
-            catItem = new CategoryItem(itemName, QString(),
-                                       QPixmap(), true, rootItem);
-        }
-        else {
-            for(int i = 0; i < rootItem->childCount(); i++) {
-                if(rootItem->child(i)->name() == category) {
-                    catItem = rootItem->child(i);
-                    break;
-                }
-            }
-
-            if(!catItem) {
-                catItem = new CategoryItem(category, category,
-                                           QPixmap(), false, rootItem);
-            }
-
-            new CategoryItem(itemName, category, itemPixmap, false, catItem);
-
-            beginResetModel();
-            endResetModel();
-        }
-    }
-
-    void SidebarItemsModel::plugItems(const QList<QPair<QString, QPixmap> > &items,
-            QString category)
-    {
-        CategoryItem *catItem = 0;
-
-        for(int i = 0; i < rootItem->childCount(); i++) {
-            if(rootItem->child(i)->name() == category) {
-                catItem = rootItem->child(i);
-                break;
-            }
-        }
-
-        if(!catItem) {
-            catItem = new CategoryItem(category, category, QPixmap(), false, rootItem);
-        }
-
-        QList<QPair<QString, QPixmap> >::const_iterator it = items.begin(),
-            end = items.end();
-
-        while(it != end) {
-            new CategoryItem(it->first, category, it->second, false, catItem);
-            ++it;
-        }
-
-        beginResetModel();
-        endResetModel();
     }
 
     QMimeData* SidebarItemsModel::mimeData(const QModelIndexList &indexes) const
@@ -433,26 +297,160 @@ namespace Caneda
         m_treeView->setModel(0);
     }
 
+    /*!
+     * \brief Add a library to the sidebar
+     *
+     * \param libraryName Library name
+     * \param category Category to place the library
+     */
     void SidebarItemsBrowser::plugLibrary(QString libraryName, QString category)
     {
-        m_model->plugLibrary(libraryName, category);
+        LibraryManager *manager = LibraryManager::instance();
+        const Library *libItem = manager->library(libraryName);
+
+        if(!libItem) {
+            return;
+        }
+
+        m_model->beginResetModel();
+
+        CategoryItem *libRoot;
+        if(category == "root") {
+            libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryPath(),
+                    QPixmap(), true, m_model->rootItem);
+        }
+        else {
+            for(int i = 0; i < m_model->rootItem->childCount(); i++) {
+                if(m_model->rootItem->child(i)->name() == category) {
+                    libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryPath(),
+                            QPixmap(), true, m_model->rootItem->child(i));
+                    break;
+                }
+            }
+        }
+
+        // Get the components list and plug each component into the sidebar browser
+        QStringList components(libItem->componentsList());
+        foreach(const QString component, components) {
+            ComponentDataPtr data = libItem->component(component);
+            QPixmap pixmap = manager->pixmapCache(data->name, data->library);
+            new CategoryItem(data->name, data->filename, pixmap, false, libRoot);
+        }
+
+        m_model->endResetModel();
     }
 
+    /*!
+     * \brief Remove a library from the sidebar
+     *
+     * \param libraryName Library name
+     * \param category Category of the library to be removed
+     */
     void SidebarItemsBrowser::unPlugLibrary(QString libraryName, QString category)
     {
-        m_model->unPlugLibrary(libraryName, category);
+        LibraryManager *manager = LibraryManager::instance();
+        const Library *libItem = manager->library(libraryName);
+        if(!libItem) {
+            return;
+        }
+
+        m_model->beginResetModel();
+
+        if(category == "root") {
+            for(int i = 0; i < m_model->rootItem->childCount(); i++) {
+                if(m_model->rootItem->child(i)->filename() == libItem->libraryPath()) {
+                    m_model->rootItem->removeChild(i);
+                    break;
+                }
+            }
+        }
+        else {
+            for(int i = 0; i < m_model->rootItem->childCount(); i++) {
+                if(m_model->rootItem->child(i)->name() == category) {
+                    for(int j = 0; j < m_model->rootItem->child(i)->childCount(); j++) {
+                        if(m_model->rootItem->child(i)->child(j)->filename() ==
+                                libItem->libraryPath()) {
+                            m_model->rootItem->child(i)->removeChild(j);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        m_model->endResetModel();
     }
 
+    /*!
+     * \brief Add an item to the sidebar
+     *
+     * \param itemName Item name
+     * \param itemPixmap Item icon
+     * \param category Category to place the item
+     */
     void SidebarItemsBrowser::plugItem(QString itemName, const QPixmap& itemPixmap,
             QString category)
     {
-        m_model->plugItem(itemName, itemPixmap, category);
+        CategoryItem *catItem = 0;
+
+        if(category == "root") {
+            catItem = new CategoryItem(itemName, QString(),
+                                       QPixmap(), true, m_model->rootItem);
+        }
+        else {
+            m_model->beginResetModel();
+
+            for(int i = 0; i < m_model->rootItem->childCount(); i++) {
+                if(m_model->rootItem->child(i)->name() == category) {
+                    catItem = m_model->rootItem->child(i);
+                    break;
+                }
+            }
+
+            if(!catItem) {
+                catItem = new CategoryItem(category, category,
+                                           QPixmap(), false, m_model->rootItem);
+            }
+
+            new CategoryItem(itemName, category, itemPixmap, false, catItem);
+
+            m_model->endResetModel();
+        }
     }
 
+    /*!
+     * \brief Add multiple items to the sidebar
+     *
+     * \param items List of items with their icons
+     * \param category Category to place the items
+     */
     void SidebarItemsBrowser::plugItems(const QList<QPair<QString, QPixmap> > &items,
             QString category)
     {
-        m_model->plugItems(items, category);
+        m_model->beginResetModel();
+
+        CategoryItem *catItem = 0;
+
+        for(int i = 0; i < m_model->rootItem->childCount(); i++) {
+            if(m_model->rootItem->child(i)->name() == category) {
+                catItem = m_model->rootItem->child(i);
+                break;
+            }
+        }
+
+        if(!catItem) {
+            catItem = new CategoryItem(category, category, QPixmap(), false, m_model->rootItem);
+        }
+
+        QList<QPair<QString, QPixmap> >::const_iterator it = items.begin(),
+            end = items.end();
+
+        while(it != end) {
+            new CategoryItem(it->first, category, it->second, false, catItem);
+            ++it;
+        }
+
+        m_model->endResetModel();
     }
 
     QString SidebarItemsBrowser::currentComponent()
@@ -506,6 +504,7 @@ namespace Caneda
         m_treeView->expandAll();
     }
 
+    //! \brief Emits the component and category clicked on the model.
     void SidebarItemsBrowser::slotOnClicked(const QModelIndex& index)
     {
         if(index.isValid()) {

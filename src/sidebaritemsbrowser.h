@@ -127,15 +127,11 @@ namespace Caneda
         QModelIndex index(int row, int column, const QModelIndex & parent) const;
         QModelIndex parent(const QModelIndex & index) const;
 
-        void plugLibrary(const QString & libraryName, const QString & category);
-        void unPlugLibrary(const QString & libraryName, const QString & category);
-
-        void plugItem(QString itemName, const QPixmap & itemPixmap, QString category);
-        void plugItems(const QList<QPair<QString, QPixmap> > & items, QString category);
-
         QMimeData* mimeData(const QModelIndexList & indexes) const;
 
     private:
+        friend class SidebarItemsBrowser;
+
         CategoryItem *rootItem;
     };
 
