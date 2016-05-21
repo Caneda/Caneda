@@ -252,7 +252,7 @@ namespace Caneda
         // Signals and slots connections
         connect(ui.lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
         connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(applyShortcuts()));
-        connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+        connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(restoreShortcuts()));
         connect(ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(restoreDefaults(QAbstractButton*)));
     }
 
@@ -262,6 +262,34 @@ namespace Caneda
         QString text = ui.lineEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
+    }
+
+    //! \brief Save all shortcut changes
+    void ShortcutsDialog::applyShortcuts()
+    {
+        // The actions have the shortcuts already set in the model view,
+        // so simply save them in the settings manager.
+        Settings *settings = Settings::instance();
+
+        foreach(QAction *action, m_actions) {
+            QString name = "shortcuts/" + action->objectName();
+            settings->setCurrentValue(name, QVariant(action->shortcut()));
+        }
+
+        accept();
+    }
+
+    //! \brief Restore action shortcuts (discard all shortcut changes)
+    void ShortcutsDialog::restoreShortcuts()
+    {
+        Settings *settings = Settings::instance();
+
+        foreach(QAction *action, m_actions) {
+            QString name = "shortcuts/" + action->objectName();
+            action->setShortcut(settings->currentValue(name).value<QKeySequence>());
+        }
+
+        reject();
     }
 
     //! \brief Load default action shortcuts
@@ -279,12 +307,6 @@ namespace Caneda
 
             m_model->endResetModel();
         }
-    }
-
-    //! \brief Save all shortcuts changes
-    void ShortcutsDialog::applyShortcuts()
-    {
-        accept();
     }
 
 } // namespace Caneda
