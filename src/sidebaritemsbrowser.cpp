@@ -315,7 +315,7 @@ namespace Caneda
                         m_proxyModel->mapToSource(index));
 
             QString item = currentItem->text();
-            QString category = currentItem->parent()->text();
+            QString category = currentItem->parent() ? currentItem->parent()->text() : "root";
 
             emit itemClicked(item, category);
             m_currentComponent = item;
