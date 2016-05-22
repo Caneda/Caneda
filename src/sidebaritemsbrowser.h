@@ -93,7 +93,7 @@ namespace Caneda
 
     private Q_SLOTS:
         void filterTextChanged();
-        void slotOnClicked(const QModelIndex& index);
+        void itemClicked(const QModelIndex& index);
 
     private:
         QStandardItemModel *m_model;

@@ -101,8 +101,8 @@ namespace Caneda
 
         // Signals and slots connections
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
-        connect(m_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(slotOnClicked(QModelIndex)));
-        connect(m_treeView, SIGNAL(activated(QModelIndex)), this, SLOT(slotOnClicked(QModelIndex)));
+        connect(m_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(itemClicked(QModelIndex)));
+        connect(m_treeView, SIGNAL(activated(QModelIndex)), this, SLOT(itemClicked(QModelIndex)));
 
         setWindowTitle(tr("Components Browser"));
     }
@@ -292,7 +292,7 @@ namespace Caneda
     }
 
     //! \brief Emits the component and category clicked on the model.
-    void SidebarItemsBrowser::slotOnClicked(const QModelIndex& index)
+    void SidebarItemsBrowser::itemClicked(const QModelIndex& index)
     {
         if(index.isValid()) {
             QStandardItem *currentItem = m_model->itemFromIndex(
