@@ -44,7 +44,7 @@ namespace Caneda
         QString fileName() const { return m_fileName; }
 
     public Q_SLOTS:
-        virtual void done(int r);
+        void itemDoubleClicked(const QString& item, const QString& category);
 
     private:
         SidebarItemsBrowser *m_projectsSidebar;

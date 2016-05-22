@@ -19,7 +19,6 @@
 
 #include "projectfileopendialog.h"
 
-#include "global.h"
 #include "sidebaritemsbrowser.h"
 
 #include <QDir>
@@ -45,25 +44,24 @@ namespace Caneda
         }
         ui.layout->addWidget(m_projectsSidebar);
 
-        connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
-                SLOT(accept()));
+        connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(QString, QString)),
+                this, SLOT(itemDoubleClicked(QString, QString)));
 
         m_fileName = QString();
     }
 
-    void ProjectFileOpenDialog::done(int r)
+    void ProjectFileOpenDialog::itemDoubleClicked(const QString& item, const QString& category)
     {
-        if (r == QDialog::Accepted) {
-            QString baseName = m_projectsSidebar->currentComponent();
-            if(!baseName.isEmpty()) {
-                QString path = QFileInfo(m_libraryFileName).path();
-                m_fileName = QDir::toNativeSeparators(path + "/" + baseName + ".xsch");
-            }
-            else {
-                return;
-            }
+        QString baseName = item;
+        if(!baseName.isEmpty()) {
+            QString path = QFileInfo(m_libraryFileName).path();
+            m_fileName = QDir::toNativeSeparators(path + "/" + baseName + ".xsch");
         }
-        QDialog::done(r);
+        else {
+            return;
+        }
+
+        QDialog::accept();
     }
 
 } // namespace Caneda

@@ -160,43 +160,44 @@ namespace Caneda
         }
     }
 
+    //! \todo Reimplement or remove this
     void Project::slotRemoveFromProject()
     {
-        if(projectLibrary) {
-            if(!m_projectsSidebar->currentComponent().isEmpty()) {
+//        if(projectLibrary) {
+//            if(!m_projectsSidebar->currentComponent().isEmpty()) {
 
-                int ret = QMessageBox::warning(this, tr("Delete component"),
-                                  tr("You're about to delete one component. This action can't be undone.\n"
-                                     "Do you want to continue?"),
-                                  QMessageBox::Ok | QMessageBox::Cancel);
+//                int ret = QMessageBox::warning(this, tr("Delete component"),
+//                                  tr("You're about to delete one component. This action can't be undone.\n"
+//                                     "Do you want to continue?"),
+//                                  QMessageBox::Ok | QMessageBox::Cancel);
 
-                switch (ret) {
-                    case QMessageBox::Ok: {
+//                switch (ret) {
+//                    case QMessageBox::Ok: {
 
-                        QString fileName = projectLibrary->component(m_projectsSidebar->currentComponent())->filename;
-                        fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).baseName();
+//                        QString fileName = projectLibrary->component(m_projectsSidebar->currentComponent())->filename;
+//                        fileName = QFileInfo(m_libraryFileName).absolutePath() + "/" + QFileInfo(fileName).baseName();
 
-                        QFile::remove(fileName + ".xsch");
-                        QFile::remove(fileName + ".xsym");
+//                        QFile::remove(fileName + ".xsch");
+//                        QFile::remove(fileName + ".xsym");
 
-                        projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
-                        m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
-                        m_projectsSidebar->plugLibrary(m_libraryName, "root");
-                        break;
-                    }
-                    case QMessageBox::Cancel:
-                        break;
+//                        projectLibrary->removeComponent(m_projectsSidebar->currentComponent());
+//                        m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+//                        m_projectsSidebar->plugLibrary(m_libraryName, "root");
+//                        break;
+//                    }
+//                    case QMessageBox::Cancel:
+//                        break;
 
-                    default:
-                        break;
-                }
-            }
-        }
-        else {
-            QMessageBox::critical(this, tr("Error"),
-                    tr("Invalid project!"));
-            return;
-        }
+//                    default:
+//                        break;
+//                }
+//            }
+//        }
+//        else {
+//            QMessageBox::critical(this, tr("Error"),
+//                    tr("Invalid project!"));
+//            return;
+//        }
     }
 
     void Project::slotCloseProject()

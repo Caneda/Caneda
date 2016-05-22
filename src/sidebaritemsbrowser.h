@@ -82,7 +82,6 @@ namespace Caneda
         void plugItem(QString itemName, const QPixmap& itemPixmap, QString category);
         void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
 
-        QString currentComponent();
         void focusFilter();
 
     signals:
@@ -102,8 +101,6 @@ namespace Caneda
         QTreeView *m_treeView;
 
         QLineEdit *m_filterEdit;
-
-        QString m_currentComponent;
     };
 
 } // namespace Caneda

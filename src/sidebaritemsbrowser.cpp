@@ -105,7 +105,6 @@ namespace Caneda
         connect(m_treeView, SIGNAL(activated(QModelIndex)), this, SLOT(slotOnClicked(QModelIndex)));
 
         setWindowTitle(tr("Components Browser"));
-        m_currentComponent = QString();
     }
 
     //! \brief Destructor.
@@ -246,11 +245,6 @@ namespace Caneda
         m_treeView->expandAll();
     }
 
-    QString SidebarItemsBrowser::currentComponent()
-    {
-        return m_currentComponent;
-    }
-
     /*!
      * \brief Filters available items in the sidebar.
      *
@@ -308,7 +302,6 @@ namespace Caneda
             QString category = currentItem->parent() ? currentItem->parent()->text() : "root";
 
             emit itemClicked(item, category);
-            m_currentComponent = item;
         }
     }
 
