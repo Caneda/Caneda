@@ -1,6 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,197 +19,28 @@
 
 #include "sidebaritemsbrowser.h"
 
-#include "component.h"
 #include "library.h"
 
 #include <QHeaderView>
 #include <QKeyEvent>
 #include <QLineEdit>
-#include <QMimeData>
 #include <QTreeView>
 #include <QVBoxLayout>
 
 namespace Caneda
 {
     /*************************************************************************
-     *                             CategoryItem                              *
+     *                             SidebarItem                               *
      *************************************************************************/
     //! \brief Constructor.
-    CategoryItem::CategoryItem(const QString& name,
-                               const QString& filename,
-                               const QPixmap& pixmap,
-                               bool isLibrary,
-                               CategoryItem *parentItem,
-                               QObject *parent) :
-        QObject(parent),
-        m_name(name),
-        m_filename(filename),
-        m_isLibrary(isLibrary),
-        m_iconPixmap(pixmap),
-        m_parentItem(parentItem)
+    SidebarItem::SidebarItem(const QString &name,
+                             const QString &filename,
+                             const QIcon &icon) :
+        QStandardItem(icon, name),
+        m_filename(filename)
     {
-        if(m_parentItem) {
-            m_parentItem->addChild(this);
-        }
-    }
-
-    //! \brief Destructor.
-    CategoryItem::~CategoryItem()
-    {
-        qDeleteAll(m_childItems);
-    }
-
-    CategoryItem* CategoryItem::child(int row) const
-    {
-        if(m_childItems.isEmpty() || row >= m_childItems.size()) {
-            return 0;
-        }
-        return m_childItems.value(row);
-    }
-
-    void CategoryItem::addChild(CategoryItem *c)
-    {
-        c->m_parentItem = const_cast<CategoryItem*>(this);
-        m_childItems << c;
-    }
-
-    void CategoryItem::removeChild(int c)
-    {
-        m_childItems.removeAt(c);
-    }
-
-    int CategoryItem::row() const
-    {
-        if(m_parentItem) {
-            return m_parentItem->m_childItems.indexOf(const_cast<CategoryItem*>(this));
-        }
-        return 0;
-    }
-
-
-    /*************************************************************************
-     *                         SidebarItemsModel                             *
-     *************************************************************************/
-    //! \brief Constructor.
-    SidebarItemsModel::SidebarItemsModel(QObject *parent) : QAbstractItemModel(parent)
-    {
-        rootItem = new CategoryItem("Root", QString());
-    }
-
-    int SidebarItemsModel::rowCount(const QModelIndex & parent) const
-    {
-        CategoryItem *parentItem;
-        parentItem = !parent.isValid() ? rootItem :
-            static_cast<CategoryItem*>(parent.internalPointer());
-        return parentItem->childCount();
-    }
-
-    /*!
-     * \brief Returns the data stored for the item referred by index.
-     *
-     * This class returns the item data corresponding to index position.
-     * For example, if we are editing an item that is a leaf of the tree
-     * view and it is not a library, the data corresponds to a component,
-     * hence the return value is the name of the component or the icon
-     * depending on the role of the index (a display role indicates the
-     * name and a decoration role indicates the icon).
-     *
-     * \param index Item to return data from
-     * \param role Role of the item (editable, checkable, etc).
-     * \return data stored for given item
-     */
-    QVariant SidebarItemsModel::data(const QModelIndex & index, int role) const
-    {
-        if(!index.isValid()) {
-            return QVariant();
-        }
-
-        CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
-
-        if(role == Qt::DisplayRole) {
-            return QVariant(item->name());
-        }
-
-        if(role == Qt::DecorationRole) {
-            return QVariant(QIcon(item->iconPixmap()));
-        }
-
-        if(role == Qt::SizeHintRole) {
-            return QSize(150, 32);
-        }
-
-        return QVariant();
-    }
-
-    /*!
-     * \brief Returns item flags according to its position. These flags
-     * are responsible for the item editable or checkable state.
-     *
-     * \param index Item for which its flags must be returned.
-     * \return Qt::ItemFlags Item's flags.
-     */
-    Qt::ItemFlags SidebarItemsModel::flags(const QModelIndex& index) const
-    {
-        Qt::ItemFlags flag = Qt::ItemIsEnabled;
-
-        bool isLeaf = static_cast<CategoryItem*>(index.internalPointer())->isLeaf();
-        bool isLibrary = static_cast<CategoryItem*>(index.internalPointer())->isLibrary();
-
-        if(isLeaf && !isLibrary) {
-            flag |= Qt::ItemIsSelectable;
-        }
-
-        return flag;
-    }
-
-    QModelIndex SidebarItemsModel::index(int row, int column, const QModelIndex & parent) const
-    {
-        if(column != 0) {
-            return QModelIndex();
-        }
-
-        CategoryItem *parentItem;
-        parentItem = !parent.isValid() ? rootItem : static_cast<CategoryItem*>(parent.internalPointer());
-        CategoryItem *childItem = parentItem->child(row);
-
-        return childItem ? createIndex(row, 0, childItem) : QModelIndex();
-    }
-
-    QModelIndex SidebarItemsModel::parent(const QModelIndex & index) const
-    {
-        if(!index.isValid()) {
-            return QModelIndex();
-        }
-
-        CategoryItem *childItem = static_cast<CategoryItem*>(index.internalPointer());
-        CategoryItem *parentItem = childItem->parent();
-
-        if(parentItem == rootItem) {
-            return QModelIndex();
-        }
-
-        return createIndex(parentItem->row(), 0, parentItem);
-    }
-
-    QMimeData* SidebarItemsModel::mimeData(const QModelIndexList &indexes) const
-    {
-        QMimeData *mimeData = new QMimeData();
-        QByteArray encodedData;
-
-        QDataStream stream(&encodedData, QIODevice::WriteOnly);
-
-        foreach(QModelIndex index, indexes) {
-            if(index.isValid()) {
-                CategoryItem *item = static_cast<CategoryItem*>(index.internalPointer());
-                if(item->isLeaf() && !item->isLibrary()) {
-                    QString category = item->parent()->name();
-                    stream << item->name() << category;
-                }
-            }
-        }
-
-        mimeData->setData("application/caneda.sidebarItem", encodedData);
-        return mimeData;
+        setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        setSizeHint(QSize(150, 32));
     }
 
 
@@ -264,7 +94,7 @@ namespace Caneda
         layout->addWidget(m_filterEdit);
 
         // Create a new model
-        m_model = new SidebarItemsModel(this);
+        m_model = new QStandardItemModel(this);
 
         // Create proxy model and set its properties.
         m_proxyModel = new FilterProxyModel(this);
@@ -283,9 +113,8 @@ namespace Caneda
 
         // Signals and slots connections
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
-        connect(m_treeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(slotOnClicked(const QModelIndex&)));
-        connect(m_treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(slotOnClicked(const QModelIndex&)));
-        connect(m_model, SIGNAL(modelReset()), m_treeView, SLOT(expandAll()));
+        connect(m_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(slotOnClicked(QModelIndex)));
+        connect(m_treeView, SIGNAL(activated(QModelIndex)), this, SLOT(slotOnClicked(QModelIndex)));
 
         setWindowTitle(tr("Components Browser"));
         m_currentComponent = QString();
@@ -312,32 +141,26 @@ namespace Caneda
             return;
         }
 
-        m_model->beginResetModel();
-
-        CategoryItem *libRoot;
+        SidebarItem *libRoot;
         if(category == "root") {
-            libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryPath(),
-                    QPixmap(), true, m_model->rootItem);
+            libRoot = new SidebarItem(libItem->libraryName(), libItem->libraryPath(), QIcon());
+            m_model->invisibleRootItem()->appendRow(libRoot);
         }
         else {
-            for(int i = 0; i < m_model->rootItem->childCount(); i++) {
-                if(m_model->rootItem->child(i)->name() == category) {
-                    libRoot = new CategoryItem(libItem->libraryName(), libItem->libraryPath(),
-                            QPixmap(), true, m_model->rootItem->child(i));
-                    break;
-                }
-            }
+            libRoot = new SidebarItem(libItem->libraryName(), libItem->libraryPath(), QIcon());
+            m_model->findItems(category).first()->appendRow(libRoot);
         }
 
         // Get the components list and plug each component into the sidebar browser
         QStringList components(libItem->componentsList());
         foreach(const QString component, components) {
             ComponentDataPtr data = libItem->component(component);
-            QPixmap pixmap = manager->pixmapCache(data->name, data->library);
-            new CategoryItem(data->name, data->filename, pixmap, false, libRoot);
+            QIcon icon = QIcon(manager->pixmapCache(data->name, data->library));
+            SidebarItem *item = new SidebarItem(data->name, data->filename, icon);
+            libRoot->appendRow(item);
         }
 
-        m_model->endResetModel();
+        m_treeView->expandAll();
     }
 
     /*!
@@ -348,37 +171,25 @@ namespace Caneda
      */
     void SidebarItemsBrowser::unPlugLibrary(QString libraryName, QString category)
     {
-        LibraryManager *manager = LibraryManager::instance();
-        const Library *libItem = manager->library(libraryName);
-        if(!libItem) {
-            return;
-        }
-
-        m_model->beginResetModel();
-
         if(category == "root") {
-            for(int i = 0; i < m_model->rootItem->childCount(); i++) {
-                if(m_model->rootItem->child(i)->filename() == libItem->libraryPath()) {
-                    m_model->rootItem->removeChild(i);
-                    break;
-                }
+            if(!m_model->findItems(libraryName).isEmpty()) {
+                QStandardItem *catItem = m_model->findItems(libraryName).first();
+                m_model->invisibleRootItem()->removeRow(catItem->row());
             }
         }
         else {
-            for(int i = 0; i < m_model->rootItem->childCount(); i++) {
-                if(m_model->rootItem->child(i)->name() == category) {
-                    for(int j = 0; j < m_model->rootItem->child(i)->childCount(); j++) {
-                        if(m_model->rootItem->child(i)->child(j)->filename() ==
-                                libItem->libraryPath()) {
-                            m_model->rootItem->child(i)->removeChild(j);
-                            break;
-                        }
-                    }
+            if(!m_model->findItems(category).isEmpty()) {
+
+                SidebarItem *catItem = static_cast<SidebarItem*>(m_model->findItems(category).first());
+
+                if(!m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).isEmpty()) {
+                    QStandardItem *libItem = m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).first();
+                    catItem->removeRow(libItem->row());
                 }
             }
         }
 
-        m_model->endResetModel();
+        m_treeView->expandAll();
     }
 
     /*!
@@ -391,31 +202,26 @@ namespace Caneda
     void SidebarItemsBrowser::plugItem(QString itemName, const QPixmap& itemPixmap,
             QString category)
     {
-        CategoryItem *catItem = 0;
+        SidebarItem *catItem = 0;
 
         if(category == "root") {
-            catItem = new CategoryItem(itemName, QString(),
-                                       QPixmap(), true, m_model->rootItem);
+            catItem = new SidebarItem(itemName, QString(), QIcon());
+            m_model->invisibleRootItem()->appendRow(catItem);
         }
         else {
-            m_model->beginResetModel();
-
-            for(int i = 0; i < m_model->rootItem->childCount(); i++) {
-                if(m_model->rootItem->child(i)->name() == category) {
-                    catItem = m_model->rootItem->child(i);
-                    break;
-                }
+            if(m_model->findItems(category).isEmpty()) {
+                catItem = new SidebarItem(category, category, QIcon());
+                m_model->invisibleRootItem()->appendRow(catItem);
+            }
+            else {
+                catItem = static_cast<SidebarItem*>(m_model->findItems(category).first());
             }
 
-            if(!catItem) {
-                catItem = new CategoryItem(category, category,
-                                           QPixmap(), false, m_model->rootItem);
-            }
-
-            new CategoryItem(itemName, category, itemPixmap, false, catItem);
-
-            m_model->endResetModel();
+            SidebarItem *item = new SidebarItem(itemName, category, QIcon(itemPixmap));
+            catItem->appendRow(item);
         }
+
+        m_treeView->expandAll();
     }
 
     /*!
@@ -427,30 +233,27 @@ namespace Caneda
     void SidebarItemsBrowser::plugItems(const QList<QPair<QString, QPixmap> > &items,
             QString category)
     {
-        m_model->beginResetModel();
+        SidebarItem *catItem = 0;
 
-        CategoryItem *catItem = 0;
-
-        for(int i = 0; i < m_model->rootItem->childCount(); i++) {
-            if(m_model->rootItem->child(i)->name() == category) {
-                catItem = m_model->rootItem->child(i);
-                break;
-            }
+        if(m_model->findItems(category).isEmpty()) {
+            catItem = new SidebarItem(category, category, QIcon());
+            m_model->invisibleRootItem()->appendRow(catItem);
+        }
+        else {
+            catItem = static_cast<SidebarItem*>(m_model->findItems(category).first());
         }
 
-        if(!catItem) {
-            catItem = new CategoryItem(category, category, QPixmap(), false, m_model->rootItem);
-        }
 
         QList<QPair<QString, QPixmap> >::const_iterator it = items.begin(),
             end = items.end();
 
         while(it != end) {
-            new CategoryItem(it->first, category, it->second, false, catItem);
+            SidebarItem *item = new SidebarItem(it->first, category, QIcon(it->second));
+            catItem->appendRow(item);
             ++it;
         }
 
-        m_model->endResetModel();
+        m_treeView->expandAll();
     }
 
     QString SidebarItemsBrowser::currentComponent()
@@ -467,7 +270,7 @@ namespace Caneda
      * the selection of the sidebar focus and filtering, for example when
      * inserting items.
      */
-    void SidebarItemsBrowser::filterItems()
+    void SidebarItemsBrowser::focusFilter()
     {
         m_filterEdit->setFocus();
         m_filterEdit->clear();
@@ -508,15 +311,14 @@ namespace Caneda
     void SidebarItemsBrowser::slotOnClicked(const QModelIndex& index)
     {
         if(index.isValid()) {
-            QMimeData *mime = index.model()->mimeData(QModelIndexList() << index);
-            if(mime) {
-                QByteArray encodedData = mime->data("application/caneda.sidebarItem");
-                QDataStream stream(&encodedData, QIODevice::ReadOnly);
-                QString item, category;
-                stream >> item >> category;
-                emit itemClicked(item, category);
-                m_currentComponent = item;
-            }
+            QStandardItem *currentItem = m_model->itemFromIndex(
+                        m_proxyModel->mapToSource(index));
+
+            QString item = currentItem->text();
+            QString category = currentItem->parent()->text();
+
+            emit itemClicked(item, category);
+            m_currentComponent = item;
         }
     }
 

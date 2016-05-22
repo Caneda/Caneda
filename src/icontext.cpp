@@ -258,7 +258,7 @@ namespace Caneda
 
     void LayoutContext::filterSideBarItems()
     {
-        m_sidebarBrowser->filterItems();
+        m_sidebarBrowser->focusFilter();
     }
 
     /*************************************************************************
@@ -379,7 +379,7 @@ namespace Caneda
 
     void SchematicContext::filterSideBarItems()
     {
-        m_sidebarBrowser->filterItems();
+        m_sidebarBrowser->focusFilter();
     }
 
     /*************************************************************************
@@ -551,7 +551,7 @@ namespace Caneda
 
     void SymbolContext::filterSideBarItems()
     {
-        m_sidebarBrowser->filterItems();
+        m_sidebarBrowser->focusFilter();
     }
 
     /*************************************************************************

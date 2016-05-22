@@ -1,6 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,9 +20,9 @@
 #ifndef SIDEBAR_ITEMS_BROWSER_H
 #define SIDEBAR_ITEMS_BROWSER_H
 
-#include <QAbstractItemModel>
 #include <QPair>
 #include <QSortFilterProxyModel>
+#include <QStandardItem>
 #include <QWidget>
 
 // Forward declaration
@@ -34,105 +33,29 @@ class QTreeView;
 namespace Caneda
 {
     /*!
-     * \brief The CategoryItem class implements the items to be used by the
-     * SidebarItemsModel class.
+     * \brief The SidebarItem class implements a tree like structure of items
+     * to be used by the QStandardItemModel class.
      *
      * This class implements a custom type of items to be inserted in a
-     * QAbstractItemModel. It is used in Caneda by the SidebarItemsModel
-     * class, to insert items and have the ability to use QPixmaps associated
-     * with each item inserted. Items can also correspond to categories (or
-     * libraries), in which case the QPixmap is not necessary.
+     * QStandardItemModel. It is used in Caneda to insert items and have the
+     * ability to use QIcons associated with each item inserted in a tree.
+     * Items can also correspond to categories (or libraries), in which case
+     * the QIcon is not necessary.
      *
-     * \sa SidebarItemsModel
+     * \sa QStandardItemModel
      */
-    class CategoryItem : public QObject
+    class SidebarItem : public QStandardItem
     {
-        Q_OBJECT
-
     public:
-        explicit CategoryItem(const QString& name,
-                              const QString& filename,
-                              const QPixmap &pixmap = QPixmap(),
-                              bool isLibrary = false,
-                              CategoryItem *parentItem = 0,
-                              QObject *parent = 0);
-        ~CategoryItem();
+        explicit SidebarItem(const QString & name,
+                             const QString & filename,
+                             const QIcon & icon = QIcon());
 
-        CategoryItem *parent() const { return m_parentItem; }
-
-        CategoryItem *child(int row) const;
-        int childCount() const { return m_childItems.size(); }
-
-        int row() const;
-        QString name() const { return m_name; }
+        QString name() const { return text(); }
         QString filename() const { return m_filename; }
-        QPixmap iconPixmap() const { return m_iconPixmap; }
-
-        bool isLeaf() const { return m_childItems.isEmpty(); }
-        bool isLibrary() const { return m_isLibrary; }
-
-        void addChild(CategoryItem* c);
-        void removeChild(int c);
 
     private:
-        QString m_name;
         QString m_filename;
-        QPixmap m_iconPixmap;
-
-        bool m_isLibrary;
-        QList<CategoryItem*> m_childItems;
-        CategoryItem *m_parentItem;
-    };
-
-
-    /*!
-     * \brief The SidebarItemsModel class implements a custom
-     * QAbstractItemModel, and provides the actual interface for item model
-     * classes.
-     *
-     * The QAbstractItemModel class defines the standard interface that item
-     * models must use to be able to interoperate with other components in the
-     * model/view architecture. It is not supposed to be instantiated directly,
-     * and must be subclassed to create new models. The SidebarItemsModel
-     * class is the subclass implemented by Caneda.
-     *
-     * The SidebarItemsModel class is one of the Model/View Classes and
-     * implements the model part of Qt's model/view framework.
-     *
-     * The underlying data model is exposed to views and delegates as a
-     * hierarchy of tables. Each item has a unique index specified by a
-     * QModelIndex. Every item of data that can be accessed via a model has an
-     * associated model index. You can obtain this model index using the
-     * index() function. Each index may have a sibling() index; child items
-     * have a parent() index. Each item has a number of data elements
-     * associated with it and they can be retrieved by specifying a role (see
-     * Qt::ItemDataRole) to the model's data() function.
-     *
-     * \sa TreeView, CategoryItem
-     */
-    class SidebarItemsModel : public QAbstractItemModel
-    {
-        Q_OBJECT
-
-    public:
-        explicit SidebarItemsModel(QObject *parent = 0);
-
-        int columnCount(const QModelIndex & = QModelIndex()) const { return 1; }
-        int rowCount(const QModelIndex & parent) const;
-
-        QVariant data(const QModelIndex & index, int role) const;
-
-        Qt::ItemFlags flags(const QModelIndex & index) const;
-
-        QModelIndex index(int row, int column, const QModelIndex & parent) const;
-        QModelIndex parent(const QModelIndex & index) const;
-
-        QMimeData* mimeData(const QModelIndexList & indexes) const;
-
-    private:
-        friend class SidebarItemsBrowser;
-
-        CategoryItem *rootItem;
     };
 
     /*!
@@ -169,7 +92,7 @@ namespace Caneda
      * the currently opened document upon user double click.
      *
      * \sa LayoutContext, SchematicContext, SymbolContext, SidebarTextBrowser
-     * \sa TreeView, SidebarItemsModel
+     * \sa QStandardItemModel
      */
     class SidebarItemsBrowser : public QWidget
     {
@@ -186,7 +109,7 @@ namespace Caneda
         void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
 
         QString currentComponent();
-        void filterItems();
+        void focusFilter();
 
     signals:
         void itemClicked(const QString& item, const QString& category);
@@ -200,7 +123,7 @@ namespace Caneda
         void slotOnClicked(const QModelIndex& index);
 
     private:
-        SidebarItemsModel *m_model;
+        QStandardItemModel *m_model;
         FilterProxyModel *m_proxyModel;
         QTreeView *m_treeView;
 
