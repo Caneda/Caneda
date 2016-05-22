@@ -24,26 +24,12 @@
 #include <QHeaderView>
 #include <QKeyEvent>
 #include <QLineEdit>
+#include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
 
 namespace Caneda
 {
-    /*************************************************************************
-     *                             SidebarItem                               *
-     *************************************************************************/
-    //! \brief Constructor.
-    SidebarItem::SidebarItem(const QString &name,
-                             const QString &filename,
-                             const QIcon &icon) :
-        QStandardItem(icon, name),
-        m_filename(filename)
-    {
-        setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        setSizeHint(QSize(150, 32));
-    }
-
-
     /*************************************************************************
      *                          FilterProxyModel                             *
      *************************************************************************/
@@ -107,7 +93,9 @@ namespace Caneda
         m_treeView->header()->hide();
         m_treeView->setAlternatingRowColors(true);
         m_treeView->setAnimated(true);
+        m_treeView->setUniformRowHeights(true);
         m_treeView->setIconSize(QSize(24, 24));
+        m_treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
         m_treeView->setModel(m_proxyModel);
         layout->addWidget(m_treeView);
 
@@ -141,13 +129,14 @@ namespace Caneda
             return;
         }
 
-        SidebarItem *libRoot;
+        QStandardItem *libRoot;
         if(category == "root") {
-            libRoot = new SidebarItem(libItem->libraryName(), libItem->libraryPath(), QIcon());
+            libRoot = new QStandardItem(libItem->libraryName());
+            libRoot->setSizeHint(QSize(150, 32));
             m_model->invisibleRootItem()->appendRow(libRoot);
         }
         else {
-            libRoot = new SidebarItem(libItem->libraryName(), libItem->libraryPath(), QIcon());
+            libRoot = new QStandardItem(libItem->libraryName());
             m_model->findItems(category).first()->appendRow(libRoot);
         }
 
@@ -156,7 +145,7 @@ namespace Caneda
         foreach(const QString component, components) {
             ComponentDataPtr data = libItem->component(component);
             QIcon icon = QIcon(manager->pixmapCache(data->name, data->library));
-            SidebarItem *item = new SidebarItem(data->name, data->filename, icon);
+            QStandardItem *item = new QStandardItem(icon, data->name);
             libRoot->appendRow(item);
         }
 
@@ -180,7 +169,7 @@ namespace Caneda
         else {
             if(!m_model->findItems(category).isEmpty()) {
 
-                SidebarItem *catItem = static_cast<SidebarItem*>(m_model->findItems(category).first());
+                QStandardItem *catItem = m_model->findItems(category).first();
 
                 if(!m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).isEmpty()) {
                     QStandardItem *libItem = m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).first();
@@ -202,22 +191,23 @@ namespace Caneda
     void SidebarItemsBrowser::plugItem(QString itemName, const QPixmap& itemPixmap,
             QString category)
     {
-        SidebarItem *catItem = 0;
+        QStandardItem *catItem = 0;
 
         if(category == "root") {
-            catItem = new SidebarItem(itemName, QString(), QIcon());
+            catItem = new QStandardItem(itemName);
+            catItem->setSizeHint(QSize(150, 32));
             m_model->invisibleRootItem()->appendRow(catItem);
         }
         else {
             if(m_model->findItems(category).isEmpty()) {
-                catItem = new SidebarItem(category, category, QIcon());
+                catItem = new QStandardItem(category);
                 m_model->invisibleRootItem()->appendRow(catItem);
             }
             else {
-                catItem = static_cast<SidebarItem*>(m_model->findItems(category).first());
+                catItem = m_model->findItems(category).first();
             }
 
-            SidebarItem *item = new SidebarItem(itemName, category, QIcon(itemPixmap));
+            QStandardItem *item = new QStandardItem(QIcon(itemPixmap), itemName);
             catItem->appendRow(item);
         }
 
@@ -233,14 +223,14 @@ namespace Caneda
     void SidebarItemsBrowser::plugItems(const QList<QPair<QString, QPixmap> > &items,
             QString category)
     {
-        SidebarItem *catItem = 0;
+        QStandardItem *catItem = 0;
 
         if(m_model->findItems(category).isEmpty()) {
-            catItem = new SidebarItem(category, category, QIcon());
+            catItem = new QStandardItem(category);
             m_model->invisibleRootItem()->appendRow(catItem);
         }
         else {
-            catItem = static_cast<SidebarItem*>(m_model->findItems(category).first());
+            catItem = m_model->findItems(category).first();
         }
 
 
@@ -248,7 +238,7 @@ namespace Caneda
             end = items.end();
 
         while(it != end) {
-            SidebarItem *item = new SidebarItem(it->first, category, QIcon(it->second));
+            QStandardItem *item = new QStandardItem(QIcon(it->second), it->first);
             catItem->appendRow(item);
             ++it;
         }

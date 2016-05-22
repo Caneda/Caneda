@@ -22,42 +22,16 @@
 
 #include <QPair>
 #include <QSortFilterProxyModel>
-#include <QStandardItem>
 #include <QWidget>
 
 // Forward declaration
 class QLineEdit;
 class QPixmap;
+class QStandardItemModel;
 class QTreeView;
 
 namespace Caneda
 {
-    /*!
-     * \brief The SidebarItem class implements a tree like structure of items
-     * to be used by the QStandardItemModel class.
-     *
-     * This class implements a custom type of items to be inserted in a
-     * QStandardItemModel. It is used in Caneda to insert items and have the
-     * ability to use QIcons associated with each item inserted in a tree.
-     * Items can also correspond to categories (or libraries), in which case
-     * the QIcon is not necessary.
-     *
-     * \sa QStandardItemModel
-     */
-    class SidebarItem : public QStandardItem
-    {
-    public:
-        explicit SidebarItem(const QString & name,
-                             const QString & filename,
-                             const QIcon & icon = QIcon());
-
-        QString name() const { return text(); }
-        QString filename() const { return m_filename; }
-
-    private:
-        QString m_filename;
-    };
-
     /*!
      * \brief The FilterProxyModel class helps in filtering a sidebar model
      * corresponding to a QLineEdit.
