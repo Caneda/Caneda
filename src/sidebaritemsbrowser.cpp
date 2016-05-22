@@ -114,13 +114,49 @@ namespace Caneda
     }
 
     /*!
-     * \brief Add a library to the sidebar
+     * \brief Add multiple items to the sidebar, using a category as root.
      *
-     * \param libraryName Library name
-     * \param category Category to place the library
+     * \param items List of items to insert with their icons.
+     * \param category Category where to place the items.
+     */
+    void SidebarItemsBrowser::plugItems(const QList<QPair<QString, QPixmap> > &items,
+            QString category)
+    {
+        // Search the category inside the tree. If not present, create it.
+        QStandardItem *catItem = 0;
+
+        if(m_model->findItems(category).isEmpty()) {
+            catItem = new QStandardItem(category);
+            catItem->setSizeHint(QSize(150, 32));
+            m_model->invisibleRootItem()->appendRow(catItem);
+        }
+        else {
+            catItem = m_model->findItems(category).first();
+        }
+
+        // Get the items list and plug each one into the tree
+        QList<QPair<QString, QPixmap> >::const_iterator it = items.begin(),
+            end = items.end();
+
+        while(it != end) {
+            QStandardItem *item = new QStandardItem(QIcon(it->second), it->first);
+            catItem->appendRow(item);
+            ++it;
+        }
+
+        // Expand the treeView to show all components
+        m_treeView->expandAll();
+    }
+
+    /*!
+     * \brief Add a library to the sidebar, using a category as root.
+     *
+     * \param libraryName Library name to insert.
+     * \param category Category where to place the library.
      */
     void SidebarItemsBrowser::plugLibrary(QString libraryName, QString category)
     {
+        // Get the library indicated by libraryName.
         LibraryManager *manager = LibraryManager::instance();
         const Library *libItem = manager->library(libraryName);
 
@@ -128,18 +164,23 @@ namespace Caneda
             return;
         }
 
-        QStandardItem *libRoot;
-        if(category == "root") {
-            libRoot = new QStandardItem(libItem->libraryName());
-            libRoot->setSizeHint(QSize(150, 32));
-            m_model->invisibleRootItem()->appendRow(libRoot);
+        // Search the category inside the tree. If not present, create it.
+        QStandardItem *catItem = 0;
+
+        if(m_model->findItems(category).isEmpty()) {
+            catItem = new QStandardItem(category);
+            catItem->setSizeHint(QSize(150, 32));
+            m_model->invisibleRootItem()->appendRow(catItem);
         }
         else {
-            libRoot = new QStandardItem(libItem->libraryName());
-            m_model->findItems(category).first()->appendRow(libRoot);
+            catItem = m_model->findItems(category).first();
         }
 
-        // Get the components list and plug each component into the sidebar browser
+        // Append the library root to the indicated category.
+        QStandardItem *libRoot = new QStandardItem(libItem->libraryName());
+        catItem->appendRow(libRoot);
+
+        // Get the components list and plug each one into the tree
         QStringList components(libItem->componentsList());
         foreach(const QString component, components) {
             ComponentDataPtr data = libItem->component(component);
@@ -148,6 +189,7 @@ namespace Caneda
             libRoot->appendRow(item);
         }
 
+        // Expand the treeView to show all components
         m_treeView->expandAll();
     }
 
@@ -175,71 +217,6 @@ namespace Caneda
                     catItem->removeRow(libItem->row());
                 }
             }
-        }
-
-        m_treeView->expandAll();
-    }
-
-    /*!
-     * \brief Add an item to the sidebar
-     *
-     * \param itemName Item name
-     * \param itemPixmap Item icon
-     * \param category Category to place the item
-     */
-    void SidebarItemsBrowser::plugItem(QString itemName, const QPixmap& itemPixmap,
-            QString category)
-    {
-        QStandardItem *catItem = 0;
-
-        if(category == "root") {
-            catItem = new QStandardItem(itemName);
-            catItem->setSizeHint(QSize(150, 32));
-            m_model->invisibleRootItem()->appendRow(catItem);
-        }
-        else {
-            if(m_model->findItems(category).isEmpty()) {
-                catItem = new QStandardItem(category);
-                m_model->invisibleRootItem()->appendRow(catItem);
-            }
-            else {
-                catItem = m_model->findItems(category).first();
-            }
-
-            QStandardItem *item = new QStandardItem(QIcon(itemPixmap), itemName);
-            catItem->appendRow(item);
-        }
-
-        m_treeView->expandAll();
-    }
-
-    /*!
-     * \brief Add multiple items to the sidebar
-     *
-     * \param items List of items with their icons
-     * \param category Category to place the items
-     */
-    void SidebarItemsBrowser::plugItems(const QList<QPair<QString, QPixmap> > &items,
-            QString category)
-    {
-        QStandardItem *catItem = 0;
-
-        if(m_model->findItems(category).isEmpty()) {
-            catItem = new QStandardItem(category);
-            m_model->invisibleRootItem()->appendRow(catItem);
-        }
-        else {
-            catItem = m_model->findItems(category).first();
-        }
-
-
-        QList<QPair<QString, QPixmap> >::const_iterator it = items.begin(),
-            end = items.end();
-
-        while(it != end) {
-            QStandardItem *item = new QStandardItem(QIcon(it->second), it->first);
-            catItem->appendRow(item);
-            ++it;
         }
 
         m_treeView->expandAll();

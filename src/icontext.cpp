@@ -275,9 +275,6 @@ namespace Caneda
         // Load schematic libraries
         LibraryManager *libraryManager = LibraryManager::instance();
         if(libraryManager->loadLibraryTree()) {
-            // Plug the components root
-            m_sidebarBrowser->plugItem("Components", QPixmap(), "root");
-
             // Get the libraries list and sort them alphabetically
             QStringList libraries(libraryManager->librariesList());
             libraries.sort();
