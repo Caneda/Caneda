@@ -271,6 +271,19 @@ namespace Caneda
         return m_sidebarBrowser;
     }
 
+    void LayoutContext::quickInsert()
+    {
+        StateHandler *handler = StateHandler::instance();
+        QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
+
+        connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+
+        quickInsert->exec();
+
+        delete quickInsert;
+    }
+
     void LayoutContext::filterSideBarItems()
     {
         m_sidebarBrowser->focusFilter();
@@ -393,15 +406,12 @@ namespace Caneda
     void SchematicContext::quickInsert()
     {
         StateHandler *handler = StateHandler::instance();
-
         QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
+
         connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
         quickInsert->exec();
-
-        disconnect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                   SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
         delete quickInsert;
     }
@@ -576,6 +586,19 @@ namespace Caneda
     QWidget* SymbolContext::sideBarWidget()
     {
         return m_sidebarBrowser;
+    }
+
+    void SymbolContext::quickInsert()
+    {
+        StateHandler *handler = StateHandler::instance();
+        QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
+
+        connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+
+        quickInsert->exec();
+
+        delete quickInsert;
     }
 
     void SymbolContext::filterSideBarItems()

@@ -117,7 +117,7 @@ namespace Caneda
 
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
-        virtual void quickInsert() {}
+        virtual void quickInsert();
         virtual void filterSideBarItems();
         virtual void updateSideBar() {}
         // End of IContext interface methods
@@ -257,7 +257,7 @@ namespace Caneda
 
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
-        virtual void quickInsert() {}
+        virtual void quickInsert();
         virtual void filterSideBarItems();
         virtual void updateSideBar() {}
         // End of IContext interface methods
