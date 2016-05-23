@@ -361,21 +361,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Filters available items in the sidebar.
-     *
-     * SideBarWidgets are context sensitive, containing only those items and
-     * tools relative to the current context as components, painting tools,
-     * code snippets, etc. This method allows for an external object to request
-     * the selection of the sidebar focus and filtering, for example when
-     * inserting items.
-     */
-    void SidebarChartsBrowser::filterItems()
-    {
-        m_filterEdit->setFocus();
-        m_filterEdit->clear();
-    }
-
-    /*!
      * \brief Update chart waveforms visibility (ChartView)
      *
      * This method updates the chart waveforms visibility according to the

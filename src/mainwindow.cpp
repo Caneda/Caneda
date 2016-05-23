@@ -406,11 +406,6 @@ namespace Caneda
         action->setWhatsThis(tr("Show Netlist\n\nShows the netlist of the current circuit"));
         connect(action, SIGNAL(triggered()), SLOT(openNetlist()));
 
-        action = am->createAction("filterItems",  tr("Filter items"));
-        action->setStatusTip(tr("Filters available sidebar items"));
-        action->setWhatsThis(tr("Filter items\n\nFilters available sidebar items"));
-        connect(action, SIGNAL(triggered()), SLOT(filterItems()));
-
         action = am->createAction("quickLauncher", Caneda::icon("fork"), tr("&Quick launcher..."));
         action->setStatusTip(tr("Opens the quick launcher dialog"));
         action->setWhatsThis(tr("Quick launcher\n\nOpens the quick launcher dialog"));
@@ -1393,15 +1388,6 @@ namespace Caneda
         QString baseName = info.completeBaseName();
 
         manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".net"));
-    }
-
-    //! \brief Request the selection of the sidebar focus and filtering.
-    void MainWindow::filterItems()
-    {
-        IView *view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->context()->filterSideBarItems();
-        }
     }
 
     //! \brief Opens the quick launcher dialog.

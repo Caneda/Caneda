@@ -103,8 +103,6 @@ namespace Caneda
         explicit SidebarItemsBrowser(QStandardItemModel *model, QWidget *parent = 0);
         ~SidebarItemsBrowser();
 
-        void focusFilter();
-
     signals:
         void itemClicked(const QString& item, const QString& category);
         void itemDoubleClicked(const QString& item, const QString& category);
@@ -114,6 +112,7 @@ namespace Caneda
 
     private Q_SLOTS:
         void filterTextChanged();
+
         void itemClicked(const QModelIndex& index);
 
     private:

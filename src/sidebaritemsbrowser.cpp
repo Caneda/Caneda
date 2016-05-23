@@ -219,21 +219,6 @@ namespace Caneda
         m_treeView->setModel(0);
     }
 
-    /*!
-     * \brief Filters available items in the sidebar.
-     *
-     * SideBarWidgets are context sensitive, containing only those items and
-     * tools relative to the current context as components, painting tools,
-     * code snippets, etc. This method allows for an external object to request
-     * the selection of the sidebar focus and filtering, for example when
-     * inserting items.
-     */
-    void SidebarItemsBrowser::focusFilter()
-    {
-        m_filterEdit->setFocus();
-        m_filterEdit->clear();
-    }
-
     //! \brief Filter event to select the view on down arrow key event
     bool SidebarItemsBrowser::eventFilter(QObject *object, QEvent *event)
     {

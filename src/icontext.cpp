@@ -131,20 +131,6 @@ namespace Caneda
      * etc. This method allows for an external event to request an insert items
      * dialog.
      *
-     * \sa sideBarWidget(), filterSideBarItems()
-     */
-
-    /*!
-     * \fn IContext::filterSideBarItems()
-     *
-     * \brief Filters available items in the sidebar.
-     *
-     * SideBarWidgets are context sensitive, containing only those items and
-     * tools relative to the current context as components, painting tools,
-     * code snippets, etc. This method allows for an external event to request
-     * the selection of the sidebar focus and filtering, for example when
-     * inserting items.
-     *
      * \sa sideBarWidget()
      */
 
@@ -284,11 +270,6 @@ namespace Caneda
         delete quickInsert;
     }
 
-    void LayoutContext::filterSideBarItems()
-    {
-        m_sidebarBrowser->focusFilter();
-    }
-
     /*************************************************************************
      *                         Schematic Context                             *
      *************************************************************************/
@@ -416,11 +397,6 @@ namespace Caneda
         delete quickInsert;
     }
 
-    void SchematicContext::filterSideBarItems()
-    {
-        m_sidebarBrowser->focusFilter();
-    }
-
     /*************************************************************************
      *                        Simulation Context                             *
      *************************************************************************/
@@ -484,11 +460,6 @@ namespace Caneda
     QWidget *SimulationContext::sideBarWidget()
     {
         return m_sidebarBrowser;
-    }
-
-    void SimulationContext::filterSideBarItems()
-    {
-        m_sidebarBrowser->filterItems();
     }
 
     void SimulationContext::updateSideBar()
@@ -599,11 +570,6 @@ namespace Caneda
         quickInsert->exec(QCursor::pos());
 
         delete quickInsert;
-    }
-
-    void SymbolContext::filterSideBarItems()
-    {
-        m_sidebarBrowser->focusFilter();
     }
 
     /*************************************************************************
