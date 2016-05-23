@@ -122,19 +122,6 @@ namespace Caneda
      */
 
     /*!
-     * \fn IContext::quickInsert()
-     *
-     * \brief Opens an insert dialog for items available in this context.
-     *
-     * Insert items are context sensitive, containing only those items relative
-     * to the current context as components, painting tools, code snippets,
-     * etc. This method allows for an external event to request an insert items
-     * dialog.
-     *
-     * \sa sideBarWidget()
-     */
-
-    /*!
      * \fn IContext::updateSideBar()
      *
      * \brief Updates sidebar contents.
@@ -144,6 +131,19 @@ namespace Caneda
      * code snippets, etc. Upon certain conditions, sidebars may need updating,
      * for example when inserting or removing libraries. This method allows for
      * an external event to request the update of the sidebar.
+     *
+     * \sa sideBarWidget()
+     */
+
+    /*!
+     * \fn IContext::quickInsert()
+     *
+     * \brief Opens an insert dialog for items available in this context.
+     *
+     * Insert items are context sensitive, containing only those items relative
+     * to the current context as components, painting tools, code snippets,
+     * etc. This method allows for an external event to request an insert items
+     * dialog.
      *
      * \sa sideBarWidget()
      */

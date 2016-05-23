@@ -70,8 +70,8 @@ namespace Caneda
 
         virtual QToolBar* toolBar() = 0;
         virtual QWidget* sideBarWidget() = 0;
-        virtual void quickInsert() = 0;
         virtual void updateSideBar() = 0;
+        virtual void quickInsert() = 0;
 
     protected:
         explicit IContext(QObject *parent = 0);
@@ -116,8 +116,8 @@ namespace Caneda
 
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
-        virtual void quickInsert();
         virtual void updateSideBar() {}
+        virtual void quickInsert();
         // End of IContext interface methods
 
     private:
@@ -162,8 +162,8 @@ namespace Caneda
 
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
-        virtual void quickInsert();
         virtual void updateSideBar() {}
+        virtual void quickInsert();
         // End of IContext interface methods
 
     private:
@@ -208,8 +208,8 @@ namespace Caneda
 
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
-        virtual void quickInsert() {}
         virtual void updateSideBar();
+        virtual void quickInsert() {}
         // End of IContext interface methods
 
     private:
@@ -253,8 +253,8 @@ namespace Caneda
 
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
-        virtual void quickInsert();
         virtual void updateSideBar() {}
+        virtual void quickInsert();
         // End of IContext interface methods
 
     private:
@@ -298,8 +298,8 @@ namespace Caneda
 
         virtual QToolBar* toolBar() { return 0; }
         virtual QWidget* sideBarWidget();
-        virtual void quickInsert() {}
         virtual void updateSideBar() {}
+        virtual void quickInsert() {}
         // End of IContext interface methods
 
     private:
