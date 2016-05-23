@@ -156,7 +156,8 @@ namespace Caneda
     {
         // We create the sidebar corresponding to this context
         StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarItemsBrowser();
+        m_sidebarItems = new SidebarItemsModel(this);
+        m_sidebarBrowser = new SidebarItemsBrowser(m_sidebarItems);
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -196,8 +197,8 @@ namespace Caneda
         paintingItems << qMakePair(QObject::tr("Text"),
                 QPixmap(Caneda::imageDirectory() + "text.svg"));
 
-        m_sidebarBrowser->plugItems(layerItems, QObject::tr("Layout Tools"));
-        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
+        m_sidebarItems->plugItems(layerItems, QObject::tr("Layout Tools"));
+        m_sidebarItems->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
     //! \copydoc MainWindow::instance()
@@ -268,7 +269,8 @@ namespace Caneda
     SchematicContext::SchematicContext(QObject *parent) : IContext(parent)
     {
         StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarItemsBrowser();
+        m_sidebarItems = new SidebarItemsModel(this);
+        m_sidebarBrowser = new SidebarItemsBrowser(m_sidebarItems);
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
@@ -282,7 +284,7 @@ namespace Caneda
 
             // Plug each library into the sidebar browser
             foreach(const QString library, libraries) {
-                m_sidebarBrowser->plugLibrary(library, "Components");
+                m_sidebarItems->plugLibrary(library, "Components");
                 qDebug() << "Loaded " + library + " library";
             }
 
@@ -300,8 +302,6 @@ namespace Caneda
         miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
                 QPixmap(Caneda::imageDirectory() + "portsymbol.svg"));
 
-        m_sidebarBrowser->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
-
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
                 QPixmap(Caneda::imageDirectory() + "arrow.svg"));
@@ -316,7 +316,8 @@ namespace Caneda
         paintingItems << qMakePair(QObject::tr("Text"),
                 QPixmap(Caneda::imageDirectory() + "text.svg"));
 
-        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
+        m_sidebarItems->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
+        m_sidebarItems->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
     //! \copydoc MainWindow::instance()
@@ -464,15 +465,14 @@ namespace Caneda
     SymbolContext::SymbolContext(QObject *parent) : IContext(parent)
     {
         StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarItemsBrowser();
+        m_sidebarItems = new SidebarItemsModel(this);
+        m_sidebarBrowser = new SidebarItemsBrowser(m_sidebarItems);
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
         QList<QPair<QString, QPixmap> > miscellaneousItems;
         miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
                 QPixmap(Caneda::imageDirectory() + "portsymbol.svg"));
-
-        m_sidebarBrowser->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
 
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
@@ -488,7 +488,8 @@ namespace Caneda
         paintingItems << qMakePair(QObject::tr("Text"),
                 QPixmap(Caneda::imageDirectory() + "text.svg"));
 
-        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
+        m_sidebarItems->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
+        m_sidebarItems->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
     //! \copydoc MainWindow::instance()

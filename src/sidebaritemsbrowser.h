@@ -22,16 +22,43 @@
 
 #include <QPair>
 #include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 #include <QWidget>
 
 // Forward declaration
 class QLineEdit;
 class QPixmap;
-class QStandardItemModel;
 class QTreeView;
 
 namespace Caneda
 {
+    /*!
+     * \brief Model to provide the abstract interface for library tree items.
+     *
+     * This class derives from QStandardItemModel and provides the abstract
+     * interface for library tree items. While the SidebarItemsBrowser class
+     * implements the user interface, this class interacts with the data
+     * itself.
+     *
+     * This class defines a standard interface that must used to be able to
+     * interoperate with other components in Qt's model/view framework. The
+     * underlying data model is exposed as a simple tree of rows and columns.
+     * Each item has a unique index specified by a QModelIndex.
+     *
+     * \sa QStandardItemModel, SidebarItemsBrowser
+     */
+    class SidebarItemsModel : public QStandardItemModel
+    {
+        Q_OBJECT
+
+    public:
+        explicit SidebarItemsModel(QObject *parent = 0);
+
+        void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
+        void plugLibrary(QString libraryName, QString category);
+        void unPlugLibrary(QString libraryName, QString category);
+    };
+
     /*!
      * \brief The FilterProxyModel class helps in filtering a sidebar model
      * corresponding to a QLineEdit.
@@ -73,7 +100,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        explicit SidebarItemsBrowser(QWidget *parent = 0);
+        explicit SidebarItemsBrowser(QStandardItemModel *model, QWidget *parent = 0);
         ~SidebarItemsBrowser();
 
         void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);

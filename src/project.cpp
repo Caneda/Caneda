@@ -62,7 +62,8 @@ namespace Caneda
         //        toolbar->addAction(am->actionForName("projDel"));
         //        toolbar->addAction(am->actionForName("projClose"));
 
-        m_projectsSidebar = new SidebarItemsBrowser(this);
+        m_sidebarItems = new SidebarItemsModel(this);
+        m_projectsSidebar = new SidebarItemsBrowser(m_sidebarItems, this);
         connect(m_projectsSidebar, SIGNAL(itemClicked(const QString&, const QString&)), this,
                 SIGNAL(itemClicked(const QString&, const QString&)));
         connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
@@ -107,7 +108,7 @@ namespace Caneda
             setCurrentLibrary(fileName);
             projectLibrary = library->library(m_libraryName);
             qDebug() << "Successfully created library!";
-            m_projectsSidebar->plugLibrary(m_libraryName, "root");
+            m_sidebarItems->plugLibrary(m_libraryName, "root");
         }
     }
 
@@ -129,7 +130,7 @@ namespace Caneda
             setCurrentLibrary(fileName);
             projectLibrary = library->library(m_libraryName);
             qDebug() << "Successfully loaded library!";
-            m_projectsSidebar->plugLibrary(m_libraryName, "root");
+            m_sidebarItems->plugLibrary(m_libraryName, "root");
         }
     }
 
@@ -203,7 +204,7 @@ namespace Caneda
     void Project::slotCloseProject()
     {
         if(projectLibrary) {
-            m_projectsSidebar->unPlugLibrary(m_libraryName, "root");
+            m_sidebarItems->unPlugLibrary(m_libraryName, "root");
             LibraryManager *library = LibraryManager::instance();
             library->unload(m_libraryName);
 

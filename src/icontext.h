@@ -32,8 +32,9 @@ namespace Caneda
 {
     // Forward declarations.
     class IDocument;
-    class SidebarItemsBrowser;
     class SidebarChartsBrowser;
+    class SidebarItemsBrowser;
+    class SidebarItemsModel;
     class SidebarTextBrowser;
 
     /*************************************************************************
@@ -122,6 +123,7 @@ namespace Caneda
     private:
         explicit LayoutContext(QObject *parent = 0);
 
+        SidebarItemsModel *m_sidebarItems;
         SidebarItemsBrowser *m_sidebarBrowser;
     };
 
@@ -167,6 +169,7 @@ namespace Caneda
     private:
         explicit SchematicContext(QObject *parent = 0);
 
+        SidebarItemsModel *m_sidebarItems;
         SidebarItemsBrowser *m_sidebarBrowser;
     };
 
@@ -257,6 +260,7 @@ namespace Caneda
     private:
         explicit SymbolContext(QObject *parent = 0);
 
+        SidebarItemsModel *m_sidebarItems;
         SidebarItemsBrowser *m_sidebarBrowser;
     };
 

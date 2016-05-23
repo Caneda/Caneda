@@ -34,14 +34,17 @@ namespace Caneda
         ui.setupUi(this);
 
         //Add components browser
-        m_projectsSidebar = new SidebarItemsBrowser(this);
+        m_sidebarItems = new SidebarItemsModel(this);
+        m_projectsSidebar = new SidebarItemsBrowser(m_sidebarItems, this);
+
         if(!libraryFileName.isEmpty()) {
             m_libraryFileName = libraryFileName;
             m_libraryName = QFileInfo(libraryFileName).baseName();
             m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
 
-            m_projectsSidebar->plugLibrary(m_libraryName, "root");
+            m_sidebarItems->plugLibrary(m_libraryName, "root");
         }
+
         ui.layout->addWidget(m_projectsSidebar);
 
         connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(QString, QString)),

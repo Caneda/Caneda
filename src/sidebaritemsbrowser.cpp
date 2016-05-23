@@ -24,12 +24,117 @@
 #include <QHeaderView>
 #include <QKeyEvent>
 #include <QLineEdit>
-#include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
 
 namespace Caneda
 {
+    /*************************************************************************
+     *                          FilterProxyModel                             *
+     *************************************************************************/
+    //! \brief Constructor.
+    SidebarItemsModel::SidebarItemsModel(QObject *parent) : QStandardItemModel(parent)
+    {
+    }
+
+    /*!
+     * \brief Add multiple items to the model, using a category as root.
+     *
+     * \param items List of items to insert with their icons.
+     * \param category Category where to place the items.
+     */
+    void SidebarItemsModel::plugItems(const QList<QPair<QString, QPixmap> > &items,
+            QString category)
+    {
+        // Search the category inside the tree. If not present, create it.
+        QStandardItem *catItem = 0;
+
+        if(findItems(category).isEmpty()) {
+            catItem = new QStandardItem(category);
+            catItem->setSizeHint(QSize(150, 32));
+            invisibleRootItem()->appendRow(catItem);
+        }
+        else {
+            catItem = findItems(category).first();
+        }
+
+        // Get the items list and plug each one into the tree
+        QList<QPair<QString, QPixmap> >::const_iterator it = items.begin(),
+            end = items.end();
+
+        while(it != end) {
+            QStandardItem *item = new QStandardItem(QIcon(it->second), it->first);
+            catItem->appendRow(item);
+            ++it;
+        }
+    }
+
+    /*!
+     * \brief Add a library to the model, using a category as root.
+     *
+     * \param libraryName Library name to insert.
+     * \param category Category where to place the library.
+     */
+    void SidebarItemsModel::plugLibrary(QString libraryName, QString category)
+    {
+        // Get the library indicated by libraryName.
+        LibraryManager *manager = LibraryManager::instance();
+        const Library *libItem = manager->library(libraryName);
+
+        if(!libItem) {
+            return;
+        }
+
+        // Search the category inside the tree. If not present, create it.
+        QStandardItem *catItem = 0;
+
+        if(findItems(category).isEmpty()) {
+            catItem = new QStandardItem(category);
+            catItem->setSizeHint(QSize(150, 32));
+            invisibleRootItem()->appendRow(catItem);
+        }
+        else {
+            catItem = findItems(category).first();
+        }
+
+        // Append the library root to the indicated category.
+        QStandardItem *libRoot = new QStandardItem(libItem->libraryName());
+        catItem->appendRow(libRoot);
+
+        // Get the components list and plug each one into the tree
+        QStringList components(libItem->componentsList());
+
+        foreach(const QString component, components) {
+            ComponentDataPtr data = libItem->component(component);
+            QIcon icon = QIcon(manager->pixmapCache(data->name, data->library));
+            QStandardItem *item = new QStandardItem(icon, data->name);
+            libRoot->appendRow(item);
+        }
+    }
+
+    /*!
+     * \brief Remove a library from the model.
+     *
+     * \param libraryName Library name to remove.
+     * \param category Category of the library to be removed.
+     */
+    void SidebarItemsModel::unPlugLibrary(QString libraryName, QString category)
+    {
+        // Search the category
+        if(!findItems(category).isEmpty()) {
+
+            QStandardItem *catItem = findItems(category).first();
+
+            // If found the category, search the library
+            if(!findItems(libraryName, Qt::MatchExactly, catItem->column()).isEmpty()) {
+                // Remove the library
+                QStandardItem *library = findItems(libraryName, Qt::MatchExactly, catItem->column()).first();
+                catItem->removeRow(library->row());
+            }
+        }
+    }
+
+
     /*************************************************************************
      *                          FilterProxyModel                             *
      *************************************************************************/
@@ -68,7 +173,10 @@ namespace Caneda
      *                       SidebarItemsBrowser                             *
      *************************************************************************/
     //! \brief Constructor.
-    SidebarItemsBrowser::SidebarItemsBrowser(QWidget *parent) : QWidget(parent)
+    SidebarItemsBrowser::SidebarItemsBrowser(QStandardItemModel *model,
+                                             QWidget *parent) :
+        QWidget(parent),
+        m_model(model)
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -78,9 +186,6 @@ namespace Caneda
         m_filterEdit->setPlaceholderText(tr("Search..."));
         m_filterEdit->installEventFilter(this);
         layout->addWidget(m_filterEdit);
-
-        // Create a new model
-        m_model = new QStandardItemModel(this);
 
         // Create proxy model and set its properties.
         m_proxyModel = new FilterProxyModel(this);
@@ -112,103 +217,6 @@ namespace Caneda
     SidebarItemsBrowser::~SidebarItemsBrowser()
     {
         m_treeView->setModel(0);
-    }
-
-    /*!
-     * \brief Add multiple items to the sidebar, using a category as root.
-     *
-     * \param items List of items to insert with their icons.
-     * \param category Category where to place the items.
-     */
-    void SidebarItemsBrowser::plugItems(const QList<QPair<QString, QPixmap> > &items,
-            QString category)
-    {
-        // Search the category inside the tree. If not present, create it.
-        QStandardItem *catItem = 0;
-
-        if(m_model->findItems(category).isEmpty()) {
-            catItem = new QStandardItem(category);
-            catItem->setSizeHint(QSize(150, 32));
-            m_model->invisibleRootItem()->appendRow(catItem);
-        }
-        else {
-            catItem = m_model->findItems(category).first();
-        }
-
-        // Get the items list and plug each one into the tree
-        QList<QPair<QString, QPixmap> >::const_iterator it = items.begin(),
-            end = items.end();
-
-        while(it != end) {
-            QStandardItem *item = new QStandardItem(QIcon(it->second), it->first);
-            catItem->appendRow(item);
-            ++it;
-        }
-    }
-
-    /*!
-     * \brief Add a library to the sidebar, using a category as root.
-     *
-     * \param libraryName Library name to insert.
-     * \param category Category where to place the library.
-     */
-    void SidebarItemsBrowser::plugLibrary(QString libraryName, QString category)
-    {
-        // Get the library indicated by libraryName.
-        LibraryManager *manager = LibraryManager::instance();
-        const Library *libItem = manager->library(libraryName);
-
-        if(!libItem) {
-            return;
-        }
-
-        // Search the category inside the tree. If not present, create it.
-        QStandardItem *catItem = 0;
-
-        if(m_model->findItems(category).isEmpty()) {
-            catItem = new QStandardItem(category);
-            catItem->setSizeHint(QSize(150, 32));
-            m_model->invisibleRootItem()->appendRow(catItem);
-        }
-        else {
-            catItem = m_model->findItems(category).first();
-        }
-
-        // Append the library root to the indicated category.
-        QStandardItem *libRoot = new QStandardItem(libItem->libraryName());
-        catItem->appendRow(libRoot);
-
-        // Get the components list and plug each one into the tree
-        QStringList components(libItem->componentsList());
-
-        foreach(const QString component, components) {
-            ComponentDataPtr data = libItem->component(component);
-            QIcon icon = QIcon(manager->pixmapCache(data->name, data->library));
-            QStandardItem *item = new QStandardItem(icon, data->name);
-            libRoot->appendRow(item);
-        }
-    }
-
-    /*!
-     * \brief Remove a library from the sidebar.
-     *
-     * \param libraryName Library name to remove.
-     * \param category Category of the library to be removed.
-     */
-    void SidebarItemsBrowser::unPlugLibrary(QString libraryName, QString category)
-    {
-        // Search the category
-        if(!m_model->findItems(category).isEmpty()) {
-
-            QStandardItem *catItem = m_model->findItems(category).first();
-
-            // If found the category, search the library
-            if(!m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).isEmpty()) {
-                // Remove the library
-                QStandardItem *library = m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).first();
-                catItem->removeRow(library->row());
-            }
-        }
     }
 
     /*!
