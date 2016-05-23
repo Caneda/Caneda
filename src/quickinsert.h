@@ -20,7 +20,7 @@
 #ifndef QUICK_INSERT_H
 #define QUICK_INSERT_H
 
-#include <QDialog>
+#include <QMenu>
 
 // Forward declarations.
 class QLineEdit;
@@ -45,7 +45,7 @@ namespace Caneda
      *
      * \sa SidebarItemsModel, QSortFilterProxyModel
      */
-    class QuickInsert : public QDialog
+    class QuickInsert : public QMenu
     {
         Q_OBJECT
 

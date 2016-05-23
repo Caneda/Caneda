@@ -108,10 +108,10 @@ namespace Caneda
      *
      * \param parent Parent of this object.
      */
-    QuickLauncher::QuickLauncher(QWidget *parent) : QDialog(parent)
+    QuickLauncher::QuickLauncher(QWidget *parent) : QMenu(parent)
     {
-        // Set a popup window type to be able to close it clicking outside
-        setWindowFlags(Qt::Popup);
+        // Set window geometry
+        setMinimumSize(300,300);
 
         QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -170,7 +170,7 @@ namespace Caneda
             return false;
         }
 
-        return QDialog::eventFilter(object, event);
+        return QMenu::eventFilter(object, event);
     }
 
     //! \brief Filters actions according to user input on a QLineEdit.
@@ -190,7 +190,7 @@ namespace Caneda
             m_actions.at(currentIndex)->trigger();
         }
 
-        accept();
+        hide();
     }
 
 } // namespace Caneda

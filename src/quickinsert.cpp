@@ -35,11 +35,11 @@ namespace Caneda
      * \param parent Parent of this object.
      */
     QuickInsert::QuickInsert(SidebarItemsModel *model, QWidget *parent) :
-        QDialog(parent),
+        QMenu(parent),
         m_model(model)
     {
-        // Set a popup window type to be able to close it clicking outside
-        setWindowFlags(Qt::Popup);
+        // Set window geometry
+        setMinimumSize(300,300);
 
         QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -97,7 +97,7 @@ namespace Caneda
             return false;
         }
 
-        return QDialog::eventFilter(object, event);
+        return QMenu::eventFilter(object, event);
     }
 
     //! \brief Filters actions according to user input on a QLineEdit.
@@ -124,7 +124,7 @@ namespace Caneda
             emit itemClicked(item, category);
         }
 
-        accept();
+        hide();
     }
 
 } // namespace Caneda

@@ -279,7 +279,7 @@ namespace Caneda
         connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
-        quickInsert->exec();
+        quickInsert->exec(QCursor::pos());
 
         delete quickInsert;
     }
@@ -411,7 +411,7 @@ namespace Caneda
         connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
-        quickInsert->exec();
+        quickInsert->exec(QCursor::pos());
 
         delete quickInsert;
     }
@@ -596,7 +596,7 @@ namespace Caneda
         connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
-        quickInsert->exec();
+        quickInsert->exec(QCursor::pos());
 
         delete quickInsert;
     }

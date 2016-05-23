@@ -21,7 +21,7 @@
 #define QUICK_LAUNCHER_H
 
 #include <QAbstractTableModel>
-#include <QDialog>
+#include <QMenu>
 
 // Forward declarations.
 class QLineEdit;
@@ -86,7 +86,7 @@ namespace Caneda
      *
      * \sa QuickLauncherModel, QSortFilterProxyModel
      */
-    class QuickLauncher : public QDialog
+    class QuickLauncher : public QMenu
     {
         Q_OBJECT
 

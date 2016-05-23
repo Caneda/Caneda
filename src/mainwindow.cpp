@@ -1408,7 +1408,7 @@ namespace Caneda
     void MainWindow::quickLauncher()
     {
         QuickLauncher *launcher = new QuickLauncher(this);
-        launcher->exec();
+        launcher->exec(QCursor::pos());
         delete launcher;
     }
 
