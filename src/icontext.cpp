@@ -22,6 +22,7 @@
 
 #include "idocument.h"
 #include "library.h"
+#include "runneritems.h"
 #include "settings.h"
 #include "sidebarchartsbrowser.h"
 #include "sidebaritemsbrowser.h"
@@ -387,6 +388,22 @@ namespace Caneda
     QWidget* SchematicContext::sideBarWidget()
     {
         return m_sidebarBrowser;
+    }
+
+    void SchematicContext::insertItems()
+    {
+        StateHandler *handler = StateHandler::instance();
+
+        RunnerItems *runner = new RunnerItems(m_sidebarItems);
+        connect(runner, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+
+        runner->exec();
+
+        disconnect(runner, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                   SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+
+        delete runner;
     }
 
     void SchematicContext::filterSideBarItems()
