@@ -194,31 +194,27 @@ namespace Caneda
     }
 
     /*!
-     * \brief Remove a library from the sidebar
+     * \brief Remove a library from the sidebar.
      *
-     * \param libraryName Library name
-     * \param category Category of the library to be removed
+     * \param libraryName Library name to remove.
+     * \param category Category of the library to be removed.
      */
     void SidebarItemsBrowser::unPlugLibrary(QString libraryName, QString category)
     {
-        if(category == "root") {
-            if(!m_model->findItems(libraryName).isEmpty()) {
-                QStandardItem *catItem = m_model->findItems(libraryName).first();
-                m_model->invisibleRootItem()->removeRow(catItem->row());
-            }
-        }
-        else {
-            if(!m_model->findItems(category).isEmpty()) {
+        // Search the category
+        if(!m_model->findItems(category).isEmpty()) {
 
-                QStandardItem *catItem = m_model->findItems(category).first();
+            QStandardItem *catItem = m_model->findItems(category).first();
 
-                if(!m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).isEmpty()) {
-                    QStandardItem *libItem = m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).first();
-                    catItem->removeRow(libItem->row());
-                }
+            // If found the category, search the library
+            if(!m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).isEmpty()) {
+                // Remove the library
+                QStandardItem *library = m_model->findItems(libraryName, Qt::MatchExactly, catItem->column()).first();
+                catItem->removeRow(library->row());
             }
         }
 
+        // Expand the treeView to show all components
         m_treeView->expandAll();
     }
 
