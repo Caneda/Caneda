@@ -126,7 +126,7 @@ namespace Caneda
         defaultSettings["shortcuts/openNetlist"] = QVariant(QKeySequence(tr("F8")));
 
         defaultSettings["shortcuts/filterItems"] = QVariant(QKeySequence(tr("Alt+C")));
-        defaultSettings["shortcuts/quickLauncher"] = QVariant(QKeySequence(tr("Ctrl+Space")));
+        defaultSettings["shortcuts/quickLauncher"] = QVariant(QKeySequence(tr("Space")));
         defaultSettings["shortcuts/quickInsert"] = QVariant(QKeySequence(tr("I")));
         defaultSettings["shortcuts/enterHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Right")));
         defaultSettings["shortcuts/exitHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Left")));
