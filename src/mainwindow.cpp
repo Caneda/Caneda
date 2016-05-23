@@ -416,10 +416,10 @@ namespace Caneda
         action->setWhatsThis(tr("Quick launcher\n\nOpens the quick launcher dialog"));
         connect(action, SIGNAL(triggered()), SLOT(invokeRunner()));
 
-        action = am->createAction("invokeRunnerItems", Caneda::icon("fork"), tr("&Quick items insert..."));
+        action = am->createAction("insertItems", Caneda::icon("fork"), tr("&Quick items insert..."));
         action->setStatusTip(tr("Opens the quick items insert dialog"));
         action->setWhatsThis(tr("Quick items insert\n\nOpens the quick items insert dialog"));
-        connect(action, SIGNAL(triggered()), SLOT(invokeRunnerItems()));
+        connect(action, SIGNAL(triggered()), SLOT(insertItems()));
 
         //! \todo Reenable these actions once reimplemented.
         //        action = am->createAction("enterHierarchy", Caneda::icon("go-bottom"), tr("Enter hierarchy"));
@@ -733,7 +733,7 @@ namespace Caneda
 
         menu->addSeparator();
         menu->addAction(am->actionForName("invokeRunner"));
-        menu->addAction(am->actionForName("invokeRunnerItems"));
+        menu->addAction(am->actionForName("insertItems"));
 
         //! \todo Reenable these options once implemented
         //        menu->addAction(am->actionForName("enterHierarchy"));
@@ -1412,9 +1412,13 @@ namespace Caneda
         delete r;
     }
 
-    //! \brief Opens the runner items dialog.
-    void MainWindow::invokeRunnerItems()
+    //! \brief Opens the insert items dialog.
+    void MainWindow::insertItems()
     {
+        IView *view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->context()->insertItems();
+        }
     }
 
     //! \brief Opens the selected item file description for edition.

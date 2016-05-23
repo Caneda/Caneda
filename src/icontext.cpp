@@ -121,6 +121,19 @@ namespace Caneda
      */
 
     /*!
+     * \fn IContext::insertItems()
+     *
+     * \brief Opens an insert dialog for items available in this context.
+     *
+     * Insert items are context sensitive, containing only those items relative
+     * to the current context as components, painting tools, code snippets,
+     * etc. This method allows for an external event to request an insert items
+     * dialog.
+     *
+     * \sa sideBarWidget(), filterSideBarItems()
+     */
+
+    /*!
      * \fn IContext::filterSideBarItems()
      *
      * \brief Filters available items in the sidebar.

@@ -120,7 +120,7 @@ namespace Caneda
 
         void filterItems();
         void invokeRunner();
-        void invokeRunnerItems();
+        void insertItems();
         void enterHierarchy();
         void exitHierarchy();
         void backupAndHistory();
