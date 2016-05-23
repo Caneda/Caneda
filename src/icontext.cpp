@@ -275,6 +275,7 @@ namespace Caneda
         // Load schematic libraries
         LibraryManager *libraryManager = LibraryManager::instance();
         if(libraryManager->loadLibraryTree()) {
+
             // Get the libraries list and sort them alphabetically
             QStringList libraries(libraryManager->librariesList());
             libraries.sort();

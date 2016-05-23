@@ -100,6 +100,7 @@ namespace Caneda
         layout->addWidget(m_treeView);
 
         // Signals and slots connections
+        connect(m_model, SIGNAL(rowsInserted(QModelIndex, int, int)), m_treeView, SLOT(expandAll()));
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
         connect(m_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(itemClicked(QModelIndex)));
         connect(m_treeView, SIGNAL(activated(QModelIndex)), this, SLOT(itemClicked(QModelIndex)));
@@ -143,9 +144,6 @@ namespace Caneda
             catItem->appendRow(item);
             ++it;
         }
-
-        // Expand the treeView to show all components
-        m_treeView->expandAll();
     }
 
     /*!
@@ -182,15 +180,13 @@ namespace Caneda
 
         // Get the components list and plug each one into the tree
         QStringList components(libItem->componentsList());
+
         foreach(const QString component, components) {
             ComponentDataPtr data = libItem->component(component);
             QIcon icon = QIcon(manager->pixmapCache(data->name, data->library));
             QStandardItem *item = new QStandardItem(icon, data->name);
             libRoot->appendRow(item);
         }
-
-        // Expand the treeView to show all components
-        m_treeView->expandAll();
     }
 
     /*!
@@ -213,9 +209,6 @@ namespace Caneda
                 catItem->removeRow(library->row());
             }
         }
-
-        // Expand the treeView to show all components
-        m_treeView->expandAll();
     }
 
     /*!
