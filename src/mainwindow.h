@@ -119,8 +119,8 @@ namespace Caneda
         void openNetlist();
 
         void filterItems();
-        void invokeRunner();
-        void insertItems();
+        void quickLauncher();
+        void quickInsert();
         void enterHierarchy();
         void exitHierarchy();
         void backupAndHistory();

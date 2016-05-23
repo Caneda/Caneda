@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "runner.h"
+#include "quicklauncher.h"
 
 #include "actionmanager.h"
 
@@ -30,7 +30,7 @@
 namespace Caneda
 {
     //*************************************************************
-    //*********************** RunnerModel *************************
+    //******************* QuickLauncherModel **********************
     //*************************************************************
     /*!
      * \brief Constructor.
@@ -38,7 +38,7 @@ namespace Caneda
      * \param actions List of available application actions.
      * \param parent Parent of this object.
      */
-    RunnerModel::RunnerModel(QList<QAction *> actions, QObject *parent) :
+    QuickLauncherModel::QuickLauncherModel(QList<QAction *> actions, QObject *parent) :
         QAbstractTableModel(parent),
         m_actions(actions)
     {
@@ -56,7 +56,7 @@ namespace Caneda
      * \param role Role of the item (editable, checkable, etc).
      * \return data stored for given item
      */
-    QVariant RunnerModel::data(const QModelIndex& index, int role) const
+    QVariant QuickLauncherModel::data(const QModelIndex& index, int role) const
     {
         if(!index.isValid() || index.row() >= m_actions.size()) {
             return QVariant();
@@ -84,7 +84,7 @@ namespace Caneda
      * \param index Item for which its flags must be returned.
      * \return Qt::ItemFlags Item's flags.
      */
-    Qt::ItemFlags RunnerModel::flags(const QModelIndex& index) const
+    Qt::ItemFlags QuickLauncherModel::flags(const QModelIndex& index) const
     {
         if(!index.isValid()) {
             return Qt::ItemIsEnabled;
@@ -101,14 +101,14 @@ namespace Caneda
 
 
     //*************************************************************
-    //************************ Runner *****************************
+    //********************* QuickLauncher *************************
     //*************************************************************
     /*!
      * \brief Constructor.
      *
      * \param parent Parent of this object.
      */
-    Runner::Runner(QWidget *parent) : QDialog(parent)
+    QuickLauncher::QuickLauncher(QWidget *parent) : QDialog(parent)
     {
         // Set a popup window type to be able to close it clicking outside
         setWindowFlags(Qt::Popup);
@@ -127,7 +127,7 @@ namespace Caneda
         m_actions = am->actions();
 
         // Create a new table model
-        m_model = new RunnerModel(m_actions, this);
+        m_model = new QuickLauncherModel(m_actions, this);
 
         // Create proxy model and set its properties.
         m_proxyModel = new QSortFilterProxyModel(this);
@@ -152,7 +152,7 @@ namespace Caneda
     }
 
     //! \brief Filter event to select the listView on down arrow key event
-    bool Runner::eventFilter(QObject *object, QEvent *event)
+    bool QuickLauncher::eventFilter(QObject *object, QEvent *event)
     {
         if(object == m_filterEdit) {
             if(event->type() == QEvent::KeyPress) {
@@ -174,7 +174,7 @@ namespace Caneda
     }
 
     //! \brief Filters actions according to user input on a QLineEdit.
-    void Runner::filterTextChanged()
+    void QuickLauncher::filterTextChanged()
     {
         QString text = m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
@@ -183,7 +183,7 @@ namespace Caneda
     }
 
     //! \brief Accept the dialog and run the selected action.
-    void Runner::triggerAction()
+    void QuickLauncher::triggerAction()
     {
         if(m_listView->currentIndex().isValid()) {
             int currentIndex = m_proxyModel->mapToSource(m_listView->currentIndex()).row();

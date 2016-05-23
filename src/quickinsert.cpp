@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#include "runneritems.h"
+#include "quickinsert.h"
 
 #include "sidebaritemsbrowser.h"
 
@@ -34,7 +34,7 @@ namespace Caneda
      *
      * \param parent Parent of this object.
      */
-    RunnerItems::RunnerItems(SidebarItemsModel *model, QWidget *parent) :
+    QuickInsert::QuickInsert(SidebarItemsModel *model, QWidget *parent) :
         QDialog(parent),
         m_model(model)
     {
@@ -79,7 +79,7 @@ namespace Caneda
     }
 
     //! \brief Filter event to select the listView on down arrow key event
-    bool RunnerItems::eventFilter(QObject *object, QEvent *event)
+    bool QuickInsert::eventFilter(QObject *object, QEvent *event)
     {
         if(object == m_filterEdit) {
             if(event->type() == QEvent::KeyPress) {
@@ -101,7 +101,7 @@ namespace Caneda
     }
 
     //! \brief Filters actions according to user input on a QLineEdit.
-    void RunnerItems::filterTextChanged()
+    void QuickInsert::filterTextChanged()
     {
         QString text = m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
@@ -111,7 +111,7 @@ namespace Caneda
     }
 
     //! \brief Accept the dialog and insert the selected action.
-    void RunnerItems::insertItem()
+    void QuickInsert::insertItem()
     {
         if(m_treeView->currentIndex().isValid()) {
 

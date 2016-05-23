@@ -33,7 +33,7 @@
 #include "project.h"
 #include "projectfileopendialog.h"
 #include "printdialog.h"
-#include "runner.h"
+#include "quicklauncher.h"
 #include "savedocumentsdialog.h"
 #include "settings.h"
 #include "settingsdialog.h"
@@ -411,15 +411,15 @@ namespace Caneda
         action->setWhatsThis(tr("Filter items\n\nFilters available sidebar items"));
         connect(action, SIGNAL(triggered()), SLOT(filterItems()));
 
-        action = am->createAction("invokeRunner", Caneda::icon("fork"), tr("&Quick launcher..."));
+        action = am->createAction("quickLauncher", Caneda::icon("fork"), tr("&Quick launcher..."));
         action->setStatusTip(tr("Opens the quick launcher dialog"));
         action->setWhatsThis(tr("Quick launcher\n\nOpens the quick launcher dialog"));
-        connect(action, SIGNAL(triggered()), SLOT(invokeRunner()));
+        connect(action, SIGNAL(triggered()), SLOT(quickLauncher()));
 
-        action = am->createAction("insertItems", Caneda::icon("fork"), tr("&Quick items insert..."));
-        action->setStatusTip(tr("Opens the quick items insert dialog"));
-        action->setWhatsThis(tr("Quick items insert\n\nOpens the quick items insert dialog"));
-        connect(action, SIGNAL(triggered()), SLOT(insertItems()));
+        action = am->createAction("quickInsert", Caneda::icon("fork"), tr("&Quick insert..."));
+        action->setStatusTip(tr("Opens the quick insert dialog"));
+        action->setWhatsThis(tr("Quick insert\n\nOpens the quick insert dialog"));
+        connect(action, SIGNAL(triggered()), SLOT(quickInsert()));
 
         //! \todo Reenable these actions once reimplemented.
         //        action = am->createAction("enterHierarchy", Caneda::icon("go-bottom"), tr("Enter hierarchy"));
@@ -732,8 +732,8 @@ namespace Caneda
         menu->addAction(am->actionForName("openNetlist"));
 
         menu->addSeparator();
-        menu->addAction(am->actionForName("invokeRunner"));
-        menu->addAction(am->actionForName("insertItems"));
+        menu->addAction(am->actionForName("quickLauncher"));
+        menu->addAction(am->actionForName("quickInsert"));
 
         //! \todo Reenable these options once implemented
         //        menu->addAction(am->actionForName("enterHierarchy"));
@@ -1404,20 +1404,20 @@ namespace Caneda
         }
     }
 
-    //! \brief Opens the runner dialog.
-    void MainWindow::invokeRunner()
+    //! \brief Opens the quick launcher dialog.
+    void MainWindow::quickLauncher()
     {
-        Runner *r = new Runner(this);
-        r->exec();
-        delete r;
+        QuickLauncher *launcher = new QuickLauncher(this);
+        launcher->exec();
+        delete launcher;
     }
 
-    //! \brief Opens the insert items dialog.
-    void MainWindow::insertItems()
+    //! \brief Opens the quick insert dialog.
+    void MainWindow::quickInsert()
     {
         IView *view = DocumentViewManager::instance()->currentView();
         if (view) {
-            view->context()->insertItems();
+            view->context()->quickInsert();
         }
     }
 

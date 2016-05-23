@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.                                             *
  ***************************************************************************/
 
-#ifndef RUNNER_ITEMS_H
-#define RUNNER_ITEMS_H
+#ifndef QUICK_INSERT_H
+#define QUICK_INSERT_H
 
 #include <QDialog>
 
@@ -34,7 +34,7 @@ namespace Caneda
     class SidebarItemsModel;
 
     /*!
-     * \brief Runner dialog to select and insert items.
+     * \brief Quick insert dialog to select and insert items.
      *
      * This dialog presents to the user the context available items allowing to
      * insert any item in an easy way.
@@ -45,12 +45,12 @@ namespace Caneda
      *
      * \sa SidebarItemsModel, QSortFilterProxyModel
      */
-    class RunnerItems : public QDialog
+    class QuickInsert : public QDialog
     {
         Q_OBJECT
 
     public:
-        explicit RunnerItems(SidebarItemsModel *model, QWidget *parent = 0);
+        explicit QuickInsert(SidebarItemsModel *model, QWidget *parent = 0);
 
     signals:
         void itemClicked(const QString& item, const QString& category);
@@ -72,4 +72,4 @@ namespace Caneda
 
 } // namespace Caneda
 
-#endif //RUNNER_ITEMS_H
+#endif //QUICK_INSERT_H

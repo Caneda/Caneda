@@ -22,7 +22,7 @@
 
 #include "idocument.h"
 #include "library.h"
-#include "runneritems.h"
+#include "quickinsert.h"
 #include "settings.h"
 #include "sidebarchartsbrowser.h"
 #include "sidebaritemsbrowser.h"
@@ -122,7 +122,7 @@ namespace Caneda
      */
 
     /*!
-     * \fn IContext::insertItems()
+     * \fn IContext::quickInsert()
      *
      * \brief Opens an insert dialog for items available in this context.
      *
@@ -390,20 +390,20 @@ namespace Caneda
         return m_sidebarBrowser;
     }
 
-    void SchematicContext::insertItems()
+    void SchematicContext::quickInsert()
     {
         StateHandler *handler = StateHandler::instance();
 
-        RunnerItems *runner = new RunnerItems(m_sidebarItems);
-        connect(runner, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+        QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
+        connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                 SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
-        runner->exec();
+        quickInsert->exec();
 
-        disconnect(runner, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+        disconnect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
                    SLOT(slotSidebarItemClicked(const QString&, const QString&)));
 
-        delete runner;
+        delete quickInsert;
     }
 
     void SchematicContext::filterSideBarItems()
