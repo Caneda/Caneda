@@ -34,6 +34,7 @@
 #include "projectfileopendialog.h"
 #include "printdialog.h"
 #include "quicklauncher.h"
+#include "quickopen.h"
 #include "savedocumentsdialog.h"
 #include "settings.h"
 #include "settingsdialog.h"
@@ -416,6 +417,11 @@ namespace Caneda
         action->setWhatsThis(tr("Quick insert\n\nOpens the quick insert dialog"));
         connect(action, SIGNAL(triggered()), SLOT(quickInsert()));
 
+        action = am->createAction("quickOpen", Caneda::icon("fork"), tr("&Quick open..."));
+        action->setStatusTip(tr("Opens the quick open dialog"));
+        action->setWhatsThis(tr("Quick open\n\nOpens the quick open dialog"));
+        connect(action, SIGNAL(triggered()), SLOT(quickOpen()));
+
         //! \todo Reenable these actions once reimplemented.
         //        action = am->createAction("enterHierarchy", Caneda::icon("go-bottom"), tr("Enter hierarchy"));
         //        action->setStatusTip(tr("Enters the selected subcircuit hierarchy"));
@@ -729,6 +735,7 @@ namespace Caneda
         menu->addSeparator();
         menu->addAction(am->actionForName("quickLauncher"));
         menu->addAction(am->actionForName("quickInsert"));
+        menu->addAction(am->actionForName("quickOpen"));
 
         //! \todo Reenable these options once implemented
         //        menu->addAction(am->actionForName("enterHierarchy"));
@@ -1405,6 +1412,18 @@ namespace Caneda
         if (view) {
             view->context()->quickInsert();
         }
+    }
+
+    //! \brief Opens the quick open dialog.
+    void MainWindow::quickOpen()
+    {
+        QuickOpen *quickBrowser = new QuickOpen(this);
+
+        connect(quickBrowser, SIGNAL(itemDoubleClicked(const QString&)), this,
+                SLOT(open(const QString&)));
+
+        quickBrowser->exec(QCursor::pos());
+        delete quickBrowser;
     }
 
     //! \brief Opens the selected item file description for edition.

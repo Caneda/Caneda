@@ -20,9 +20,10 @@ SET( CANEDA_SRCS
   graphicsitem.cpp graphicsscene.cpp graphicsview.cpp icontext.cpp
   idocument.cpp iview.cpp library.cpp main.cpp mainwindow.cpp messagewidget.cpp
   port.cpp portsymbol.cpp project.cpp property.cpp quicklauncher.cpp
-  quickinsert.cpp settings.cpp sidebarchartsbrowser.cpp sidebaritemsbrowser.cpp
-  sidebartextbrowser.cpp statehandler.cpp syntaxhighlighters.cpp tabs.cpp
-  textedit.cpp undocommands.cpp wire.cpp xmlutilities.cpp
+  quickinsert.cpp quickopen.cpp settings.cpp sidebarchartsbrowser.cpp
+  sidebaritemsbrowser.cpp sidebartextbrowser.cpp statehandler.cpp
+  syntaxhighlighters.cpp tabs.cpp textedit.cpp undocommands.cpp wire.cpp
+  xmlutilities.cpp
 )
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} )

@@ -127,6 +127,7 @@ namespace Caneda
 
         defaultSettings["shortcuts/quickLauncher"] = QVariant(QKeySequence(tr("Space")));
         defaultSettings["shortcuts/quickInsert"] = QVariant(QKeySequence(tr("I")));
+        defaultSettings["shortcuts/quickOpen"] = QVariant(QKeySequence(tr("O")));
         defaultSettings["shortcuts/enterHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Right")));
         defaultSettings["shortcuts/exitHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Left")));
 

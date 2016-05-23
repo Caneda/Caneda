@@ -120,6 +120,7 @@ namespace Caneda
 
         void quickLauncher();
         void quickInsert();
+        void quickOpen();
         void enterHierarchy();
         void exitHierarchy();
         void backupAndHistory();
