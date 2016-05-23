@@ -103,10 +103,6 @@ namespace Caneda
         explicit SidebarItemsBrowser(QStandardItemModel *model, QWidget *parent = 0);
         ~SidebarItemsBrowser();
 
-        void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
-        void plugLibrary(QString libraryName, QString category);
-        void unPlugLibrary(QString libraryName, QString category);
-
         void focusFilter();
 
     signals:

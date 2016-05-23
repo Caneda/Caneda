@@ -182,7 +182,7 @@ namespace Caneda
         m_listView->setCurrentIndex(m_proxyModel->index(0,0));
     }
 
-    //! \brief Accept the dialog an run the selected action.
+    //! \brief Accept the dialog and run the selected action.
     void Runner::triggerAction()
     {
         if(m_listView->currentIndex().isValid()) {
