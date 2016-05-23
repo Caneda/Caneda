@@ -85,9 +85,7 @@ namespace Caneda
             if(event->type() == QEvent::KeyPress) {
                 QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
                 if(keyEvent->key() == Qt::Key_Down) {
-                    // Set the row next to the currently selected one
-                    int index = m_treeView->currentIndex().row() + 1;
-                    m_treeView->setCurrentIndex(m_proxyModel->index(index,0));
+                    m_treeView->setCurrentIndex(m_proxyModel->index(0,0));
                     m_treeView->setFocus();
 
                     return true;
