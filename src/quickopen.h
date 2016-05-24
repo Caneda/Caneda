@@ -71,8 +71,6 @@ namespace Caneda
         void slotBackFolder();
         void slotForwardFolder();
         void slotHomeFolder();
-        void slotNewFolder();
-        void slotDeleteFile();
 
     private:
         QFileSystemModel *m_model;

@@ -79,31 +79,15 @@ namespace Caneda
         buttonHome->setToolTip(tr("Go to the home folder"));
         buttonHome->setWhatsThis(tr("Go to the home folder"));
 
-        QToolButton *buttonNewFolder = new QToolButton(this);
-        buttonNewFolder->setIcon(Caneda::icon("folder-new"));
-        buttonNewFolder->setStatusTip(tr("Create new folder"));
-        buttonNewFolder->setToolTip(tr("Create new folder"));
-        buttonNewFolder->setWhatsThis(tr("Create new folder"));
-
-        QToolButton *buttonDeleteFile = new QToolButton(this);
-        buttonDeleteFile->setIcon(Caneda::icon("archive-remove"));
-        buttonDeleteFile->setStatusTip(tr("Delete file/folder"));
-        buttonDeleteFile->setToolTip(tr("Delete file/folder"));
-        buttonDeleteFile->setWhatsThis(tr("Delete file/folder"));
-
         connect(buttonUp, SIGNAL(clicked()), this, SLOT(slotUpFolder()));
         connect(buttonBack, SIGNAL(clicked()), this, SLOT(slotBackFolder()));
         connect(buttonForward, SIGNAL(clicked()), this, SLOT(slotForwardFolder()));
         connect(buttonHome, SIGNAL(clicked()), this, SLOT(slotHomeFolder()));
-        connect(buttonNewFolder, SIGNAL(clicked()), this, SLOT(slotNewFolder()));
-        connect(buttonDeleteFile, SIGNAL(clicked()), this, SLOT(slotDeleteFile()));
 
         toolbar->addWidget(buttonUp);
         toolbar->addWidget(buttonBack);
         toolbar->addWidget(buttonForward);
         toolbar->addWidget(buttonHome);
-        toolbar->addWidget(buttonNewFolder);
-        toolbar->addWidget(buttonDeleteFile);
         layout->addWidget(toolbar);
 
         // Set lineEdit properties
@@ -249,52 +233,6 @@ namespace Caneda
 
         buttonBack->setEnabled(true);
         buttonForward->setEnabled(false);
-    }
-
-    //! \brief Create a new folder.
-    void QuickOpen::slotNewFolder()
-    {
-        bool ok;
-        QString text = QInputDialog::getText(this,
-                                             tr("New Folder"),
-                                             tr("Please enter new folder name:"),
-                                             QLineEdit::Normal,
-                                             QString(),
-                                             &ok);
-
-        if(ok && !text.isEmpty()) {
-            m_model->mkdir(m_listView->rootIndex(), text);
-        }
-    }
-
-    //! \brief Delete currently selected file.
-    void QuickOpen::slotDeleteFile()
-    {
-        int ret = QMessageBox::critical(this, tr("Delete File/Folder"),
-                tr("You're about to delete one file/folder. This action can't be undone.\n"
-                    "Do you want to continue?"),
-                QMessageBox::Ok | QMessageBox::Cancel);
-        switch (ret) {
-            case QMessageBox::Ok:
-                if(m_model->isDir(m_listView->currentIndex())) {
-                    bool result = m_model->rmdir(m_listView->currentIndex());
-                    if(!result) {
-                        QMessageBox::warning(this, tr("Delete File/Folder"),
-                                tr("Folder not empty. Skipping."),
-                                QMessageBox::Ok);
-                    }
-                }
-                else {
-                    m_model->remove(m_listView->currentIndex());
-                }
-                break;
-
-            case QMessageBox::Cancel:
-                break;
-
-            default:
-                break;
-        }
     }
 
 } // namespace Caneda
