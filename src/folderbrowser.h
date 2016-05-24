@@ -20,7 +20,6 @@
 #ifndef FOLDERBROWSER_H
 #define FOLDERBROWSER_H
 
-#include <QModelIndex>
 #include <QWidget>
 
 // Forward declarations
@@ -51,6 +50,7 @@ namespace Caneda
 
     private Q_SLOTS:
         void slotOnDoubleClicked(const QModelIndex& index);
+
         void slotUpFolder();
         void slotBackFolder();
         void slotForwardFolder();
@@ -61,6 +61,7 @@ namespace Caneda
     private:
         QFileSystemModel *m_fileModel;
         QListView *m_listView;
+
         QList<QModelIndex> previousPages;
         QList<QModelIndex> nextPages;
 

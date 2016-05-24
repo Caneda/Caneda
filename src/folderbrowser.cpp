@@ -40,6 +40,7 @@ namespace Caneda
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
 
+        // Create the toolbar
         QToolBar *toolbar = new QToolBar(this);
 
         QToolButton *buttonUp = new QToolButton(this);
@@ -97,23 +98,26 @@ namespace Caneda
         toolbar->addWidget(buttonHome);
         toolbar->addWidget(buttonNewFolder);
         toolbar->addWidget(buttonDeleteFile);
+        layout->addWidget(toolbar);
 
+        // Create a new filesystem model
         m_fileModel = new QFileSystemModel(this);
         m_fileModel->setRootPath(QDir::homePath());
 
+        // Create a list view and set its properties
         m_listView = new QListView(this);
         m_listView->setModel(m_fileModel);
         m_listView->setRootIndex(m_fileModel->index(QDir::homePath()));
+        layout->addWidget(m_listView);
 
+        // Signals and slots connections
         connect(m_listView, SIGNAL(activated(QModelIndex)),
                 this, SLOT(slotOnDoubleClicked(QModelIndex)));
-
-        layout->addWidget(toolbar);
-        layout->addWidget(m_listView);
 
         setWindowTitle(tr("Folder Browser"));
     }
 
+    //! \brief Open the selected item.
     void FolderBrowser::slotOnDoubleClicked(const QModelIndex& index)
     {
         if(m_fileModel->isDir(index)) {
@@ -124,12 +128,12 @@ namespace Caneda
             buttonBack->setEnabled(true);
             buttonForward->setEnabled(false);
         }
-        // it is a file so we let the main window handle the action
         else {
             emit itemDoubleClicked(m_fileModel->fileInfo(index).absoluteFilePath());
         }
     }
 
+    //! \brief Go up one folder in the filesystem.
     void FolderBrowser::slotUpFolder()
     {
         previousPages << m_listView->rootIndex();
@@ -140,6 +144,7 @@ namespace Caneda
         buttonForward->setEnabled(false);
     }
 
+    //! \brief Go the the previous folder.
     void FolderBrowser::slotBackFolder()
     {
         if(!previousPages.isEmpty()) {
@@ -154,6 +159,7 @@ namespace Caneda
         }
     }
 
+    //! \brief Go the the next folder.
     void FolderBrowser::slotForwardFolder()
     {
         if(!nextPages.isEmpty()) {
@@ -168,6 +174,7 @@ namespace Caneda
         }
     }
 
+    //! \brief Go the the home folder.
     void FolderBrowser::slotHomeFolder()
     {
         previousPages << m_listView->rootIndex();
@@ -178,6 +185,7 @@ namespace Caneda
         buttonForward->setEnabled(false);
     }
 
+    //! \brief Create a new folder.
     void FolderBrowser::slotNewFolder()
     {
         bool ok;
@@ -193,6 +201,7 @@ namespace Caneda
         }
     }
 
+    //! \brief Delete currently selected folder/file.
     void FolderBrowser::slotDeleteFile()
     {
         int ret = QMessageBox::critical(this, tr("Delete File/Folder"),
