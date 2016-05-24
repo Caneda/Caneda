@@ -20,6 +20,7 @@
 #include "quickopen.h"
 
 #include "global.h"
+#include "sidebaritemsbrowser.h"
 
 #include <QFileSystemModel>
 #include <QInputDialog>
@@ -27,7 +28,6 @@
 #include <QLineEdit>
 #include <QListView>
 #include <QMessageBox>
-#include <QSortFilterProxyModel>
 #include <QToolBar>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -118,7 +118,7 @@ namespace Caneda
         m_model->setRootPath(QDir::homePath());
 
         // Create proxy model and set its properties.
-        m_proxyModel = new QSortFilterProxyModel(this);
+        m_proxyModel = new FilterProxyModel(this);
         m_proxyModel->setDynamicSortFilter(true);
         m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
         m_proxyModel->setSourceModel(m_model);

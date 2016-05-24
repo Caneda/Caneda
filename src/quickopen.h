@@ -26,12 +26,13 @@
 class QFileSystemModel;
 class QLineEdit;
 class QListView;
-class QModelIndex;
-class QSortFilterProxyModel;
 class QToolButton;
 
 namespace Caneda
 {
+    // Forward declarations.
+    class FilterProxyModel;
+
     /*!
      * \brief QuickOpen dialog to select and open files.
      *
@@ -75,7 +76,7 @@ namespace Caneda
 
     private:
         QFileSystemModel *m_model;
-        QSortFilterProxyModel *m_proxyModel;
+        FilterProxyModel *m_proxyModel;
         QListView *m_listView;
 
         QLineEdit *m_filterEdit;
