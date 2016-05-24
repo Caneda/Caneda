@@ -146,8 +146,13 @@ namespace Caneda
                 QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
                 if(keyEvent->key() == Qt::Key_Down) {
                     // Set the row next to the currently selected one
-                    int index = m_listView->currentIndex().row() + 1;
-                    m_listView->setCurrentIndex(m_proxyModel->index(index,0));
+                    if(m_listView->currentIndex() == m_listView->rootIndex().child(0,0)) {
+                        m_listView->setCurrentIndex(m_listView->rootIndex().child(1,0));
+                    }
+                    else {
+                        m_listView->setCurrentIndex(m_listView->rootIndex().child(0,0));
+                    }
+
                     m_listView->setFocus();
 
                     return true;
@@ -166,7 +171,7 @@ namespace Caneda
         QString text = m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
-        m_listView->setCurrentIndex(m_proxyModel->index(0,0));
+        m_listView->setCurrentIndex(m_listView->rootIndex().child(0,0));
     }
 
     //! \brief Accept the dialog and open the selected item.
