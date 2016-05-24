@@ -122,7 +122,6 @@ namespace Caneda
         m_proxyModel->setDynamicSortFilter(true);
         m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
         m_proxyModel->setSourceModel(m_model);
-        m_proxyModel->sort(0);
 
         // Create a list view, set properties and proxy model
         m_listView = new QListView(this);
