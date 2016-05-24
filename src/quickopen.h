@@ -58,14 +58,14 @@ namespace Caneda
         explicit QuickOpen(QWidget *parent = 0);
 
     signals:
-        void itemDoubleClicked(const QString& filename);
+        void itemSelected(const QString& filename);
 
     protected:
         bool eventFilter(QObject *object, QEvent *event);
 
     private Q_SLOTS:
         void filterTextChanged();
-        void slotOnDoubleClicked();
+        void itemSelected();
 
         void slotUpFolder();
         void slotBackFolder();

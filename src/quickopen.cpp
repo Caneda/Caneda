@@ -131,8 +131,8 @@ namespace Caneda
 
         // Signals and slots connections
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
-        connect(m_filterEdit, SIGNAL(returnPressed()), this, SLOT(slotOnDoubleClicked()));
-        connect(m_listView, SIGNAL(activated(QModelIndex)), this, SLOT(slotOnDoubleClicked()));
+        connect(m_filterEdit, SIGNAL(returnPressed()), this, SLOT(itemSelected()));
+        connect(m_listView, SIGNAL(activated(QModelIndex)), this, SLOT(itemSelected()));
 
         // Start with the focus on the filter
         m_filterEdit->setFocus();
@@ -169,8 +169,8 @@ namespace Caneda
         m_listView->setCurrentIndex(m_proxyModel->index(0,0));
     }
 
-    //! \brief Accept the dialog and run the selected action.
-    void QuickOpen::slotOnDoubleClicked()
+    //! \brief Accept the dialog and open the selected item.
+    void QuickOpen::itemSelected()
     {
         if(m_listView->currentIndex().isValid()) {
 
@@ -181,10 +181,13 @@ namespace Caneda
 
                 buttonBack->setEnabled(true);
                 buttonForward->setEnabled(false);
+
+                m_filterEdit->clear();
+                m_filterEdit->setFocus();
             }
             // it is a file so we let the main window handle the action
             else {
-                emit itemDoubleClicked(m_model->fileInfo(m_proxyModel->mapToSource(m_listView->currentIndex())).absoluteFilePath());
+                emit itemSelected(m_model->fileInfo(m_proxyModel->mapToSource(m_listView->currentIndex())).absoluteFilePath());
                 hide();
             }
 

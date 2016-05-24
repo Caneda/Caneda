@@ -1419,8 +1419,7 @@ namespace Caneda
     {
         QuickOpen *quickBrowser = new QuickOpen(this);
 
-        connect(quickBrowser, SIGNAL(itemDoubleClicked(const QString&)), this,
-                SLOT(open(const QString&)));
+        connect(quickBrowser, SIGNAL(itemSelected(QString)), this, SLOT(open(QString)));
 
         quickBrowser->exec(QCursor::pos());
         delete quickBrowser;
