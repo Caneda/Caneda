@@ -176,7 +176,7 @@ namespace Caneda
         if(m_listView->currentIndex().isValid()) {
 
             if(m_model->isDir(m_proxyModel->mapToSource(m_listView->currentIndex()))) {
-                previousPages << m_listView->rootIndex();
+                previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
                 m_listView->setRootIndex(m_listView->currentIndex());
                 nextPages.clear();
 
@@ -198,7 +198,7 @@ namespace Caneda
     //! \brief Go up one folder in the filesystem.
     void QuickOpen::slotUpFolder()
     {
-        previousPages << m_listView->rootIndex();
+        previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
         m_listView->setRootIndex(m_listView->rootIndex().parent());
         nextPages.clear();
 
@@ -210,8 +210,8 @@ namespace Caneda
     void QuickOpen::slotBackFolder()
     {
         if(!previousPages.isEmpty()) {
-            nextPages << m_listView->rootIndex();
-            m_listView->setRootIndex(previousPages.last());
+            nextPages << m_proxyModel->mapToSource(m_listView->rootIndex());
+            m_listView->setRootIndex(m_proxyModel->mapFromSource(previousPages.last()));
             previousPages.removeLast();
 
             buttonForward->setEnabled(true);
@@ -225,8 +225,8 @@ namespace Caneda
     void QuickOpen::slotForwardFolder()
     {
         if(!nextPages.isEmpty()) {
-            previousPages << m_listView->rootIndex();
-            m_listView->setRootIndex(nextPages.last());
+            previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
+            m_listView->setRootIndex(m_proxyModel->mapFromSource(nextPages.last()));
             nextPages.removeLast();
 
             buttonBack->setEnabled(true);
@@ -239,7 +239,7 @@ namespace Caneda
     //! \brief Go the the home folder.
     void QuickOpen::slotHomeFolder()
     {
-        previousPages << m_listView->rootIndex();
+        previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
         m_listView->setRootIndex(m_proxyModel->mapFromSource(m_model->index(QDir::homePath())));
         nextPages.clear();
 
