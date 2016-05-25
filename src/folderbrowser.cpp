@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -101,13 +101,13 @@ namespace Caneda
         layout->addWidget(toolbar);
 
         // Create a new filesystem model
-        m_fileModel = new QFileSystemModel(this);
-        m_fileModel->setRootPath(QDir::homePath());
+        m_model = new QFileSystemModel(this);
+        m_model->setRootPath(QDir::homePath());
 
         // Create a list view and set its properties
         m_listView = new QListView(this);
-        m_listView->setModel(m_fileModel);
-        m_listView->setRootIndex(m_fileModel->index(QDir::homePath()));
+        m_listView->setModel(m_model);
+        m_listView->setRootIndex(m_model->index(QDir::homePath()));
         layout->addWidget(m_listView);
 
         // Signals and slots connections
@@ -120,7 +120,7 @@ namespace Caneda
     //! \brief Set the current folder to \a path.
     void FolderBrowser::setCurrentFolder(const QString& path)
     {
-        m_listView->setRootIndex(m_fileModel->index(path));
+        m_listView->setRootIndex(m_model->index(path));
 
         previousPages.clear();
         nextPages.clear();
@@ -132,7 +132,7 @@ namespace Caneda
     //! \brief Open the selected item.
     void FolderBrowser::slotOnDoubleClicked(const QModelIndex& index)
     {
-        if(m_fileModel->isDir(index)) {
+        if(m_model->isDir(index)) {
             previousPages << m_listView->rootIndex();
             m_listView->setRootIndex(index);
             nextPages.clear();
@@ -141,7 +141,7 @@ namespace Caneda
             buttonForward->setEnabled(false);
         }
         else {
-            emit itemDoubleClicked(m_fileModel->fileInfo(index).absoluteFilePath());
+            emit itemDoubleClicked(m_model->fileInfo(index).absoluteFilePath());
         }
     }
 
@@ -190,7 +190,7 @@ namespace Caneda
     void FolderBrowser::slotHomeFolder()
     {
         previousPages << m_listView->rootIndex();
-        m_listView->setRootIndex(m_fileModel->index(QDir::homePath()));
+        m_listView->setRootIndex(m_model->index(QDir::homePath()));
         nextPages.clear();
 
         buttonBack->setEnabled(true);
@@ -209,7 +209,7 @@ namespace Caneda
                                              &ok);
 
         if(ok && !text.isEmpty()) {
-            m_fileModel->mkdir(m_listView->rootIndex(), text);
+            m_model->mkdir(m_listView->rootIndex(), text);
         }
     }
 
@@ -222,8 +222,8 @@ namespace Caneda
                 QMessageBox::Ok | QMessageBox::Cancel);
         switch (ret) {
             case QMessageBox::Ok:
-                if(m_fileModel->isDir(m_listView->currentIndex())) {
-                    bool result = m_fileModel->rmdir(m_listView->currentIndex());
+                if(m_model->isDir(m_listView->currentIndex())) {
+                    bool result = m_model->rmdir(m_listView->currentIndex());
                     if(!result) {
                         QMessageBox::warning(this, tr("Delete File/Folder"),
                                 tr("Folder not empty. Skipping."),
@@ -231,7 +231,7 @@ namespace Caneda
                     }
                 }
                 else {
-                    m_fileModel->remove(m_listView->currentIndex());
+                    m_model->remove(m_listView->currentIndex());
                 }
                 break;
 

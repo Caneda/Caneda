@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -61,7 +61,7 @@ namespace Caneda
         void slotDeleteFile();
 
     private:
-        QFileSystemModel *m_fileModel;
+        QFileSystemModel *m_model;
         QListView *m_listView;
 
         QList<QModelIndex> previousPages;
