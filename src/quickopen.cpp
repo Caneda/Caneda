@@ -141,6 +141,7 @@ namespace Caneda
             if(event->type() == QEvent::KeyPress) {
                 QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
                 if(keyEvent->key() == Qt::Key_Down) {
+
                     // Set the row next to the currently selected one
                     if(m_listView->currentIndex() == m_listView->rootIndex().child(0,0)) {
                         m_listView->setCurrentIndex(m_listView->rootIndex().child(1,0));
@@ -149,6 +150,7 @@ namespace Caneda
                         m_listView->setCurrentIndex(m_listView->rootIndex().child(0,0));
                     }
 
+                    // Set the focus in the treeview
                     m_listView->setFocus();
 
                     return true;
