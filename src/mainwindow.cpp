@@ -143,7 +143,7 @@ namespace Caneda
     //! \brief Initializes the FolderBrowser sidebar.
     void MainWindow::setupFolderBrowserSidebar()
     {
-        FolderBrowser *m_folderBrowser = new FolderBrowser(this);
+        m_folderBrowser = new FolderBrowser(this);
 
         connect(m_folderBrowser, SIGNAL(itemDoubleClicked(QString)), this,
                 SLOT(open(QString)));
@@ -1419,6 +1419,12 @@ namespace Caneda
     {
         QuickOpen *quickBrowser = new QuickOpen(this);
 
+        // Set the dialog to open in the current file folder
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        QFileInfo info(manager->currentDocument()->fileName());
+        QString path = info.path();
+        quickBrowser->setCurrentFolder(path);
+
         connect(quickBrowser, SIGNAL(itemSelected(QString)), this, SLOT(open(QString)));
 
         quickBrowser->exec(QCursor::pos());
@@ -1571,15 +1577,21 @@ namespace Caneda
      */
     void MainWindow::initFiles(QStringList files)
     {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+
         if(!files.isEmpty()) {
             foreach(const QString &str, files) {
                 open(str);
             }
         }
         else {
-            DocumentViewManager *manager = DocumentViewManager::instance();
             manager->newDocument(SchematicContext::instance());
         }
+
+        // Set the dialog to open in the current file folder
+        QFileInfo info(manager->currentDocument()->fileName());
+        QString path = info.path();
+        m_folderBrowser->setCurrentFolder(path);
     }
 
     /*!

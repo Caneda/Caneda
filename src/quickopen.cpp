@@ -122,6 +122,18 @@ namespace Caneda
         m_filterEdit->setFocus();
     }
 
+    //! \brief Set the current folder to \a path.
+    void QuickOpen::setCurrentFolder(const QString& path)
+    {
+        m_listView->setRootIndex(m_proxyModel->mapFromSource(m_model->index(path)));
+
+        previousPages.clear();
+        nextPages.clear();
+
+        buttonBack->setEnabled(false);
+        buttonForward->setEnabled(false);
+    }
+
     //! \brief Filter event to select the listView on down arrow key event
     bool QuickOpen::eventFilter(QObject *object, QEvent *event)
     {

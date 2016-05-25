@@ -57,6 +57,8 @@ namespace Caneda
     public:
         explicit QuickOpen(QWidget *parent = 0);
 
+        void setCurrentFolder(const QString& path);
+
     signals:
         void itemSelected(const QString& filename);
 

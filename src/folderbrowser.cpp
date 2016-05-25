@@ -117,6 +117,18 @@ namespace Caneda
         setWindowTitle(tr("Folder Browser"));
     }
 
+    //! \brief Set the current folder to \a path.
+    void FolderBrowser::setCurrentFolder(const QString& path)
+    {
+        m_listView->setRootIndex(m_fileModel->index(path));
+
+        previousPages.clear();
+        nextPages.clear();
+
+        buttonBack->setEnabled(false);
+        buttonForward->setEnabled(false);
+    }
+
     //! \brief Open the selected item.
     void FolderBrowser::slotOnDoubleClicked(const QModelIndex& index)
     {

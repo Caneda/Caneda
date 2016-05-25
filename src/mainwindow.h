@@ -29,6 +29,7 @@ class QLabel;
 namespace Caneda
 {
     // Forward declarations
+    class FolderBrowser;
     class Project;
     class TabWidget;
 
@@ -164,6 +165,7 @@ namespace Caneda
         void saveSettings();
 
         TabWidget *m_tabWidget;
+        FolderBrowser *m_folderBrowser;
         Project *m_project;
 
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
