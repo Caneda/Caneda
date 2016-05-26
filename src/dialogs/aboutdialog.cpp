@@ -1,8 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006-2009 Xavier Guerrin                                  *
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
- * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Caneda.                                       *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -24,14 +21,6 @@
 
 #include "global.h"
 
-#include <QDialogButtonBox>
-#include <QFile>
-#include <QLabel>
-#include <QTabWidget>
-#include <QTextEdit>
-#include <QTextStream>
-#include <QVBoxLayout>
-
 namespace Caneda
 {
     /*!
@@ -41,113 +30,22 @@ namespace Caneda
      */
     AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent)
     {
-        // Title, size, behavior...
-        setWindowTitle(tr("About Caneda", "window title"));
-        setModal(true);
+        ui.setupUi(this);
 
-        QTabWidget *tabs = new QTabWidget(this);
-        tabs->addTab(aboutTab(),        tr("A&bout",             "tab title"));
-        tabs->addTab(authorsTab(),      tr("A&uthors",           "tab title"));
-        tabs->addTab(translatorsTab(),  tr("&Translators",       "tab title"));
-        tabs->addTab(licenseTab(),      tr("&Licence Agreement", "tab title"));
+        // Header part of the dialog
+        ui.labelIcon->setPixmap(QPixmap(Caneda::imageDirectory() + "caneda.png"));
 
-        // Button to close the dialog box
-        QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
-        connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-        connect(buttons, SIGNAL(rejected()), this, SLOT(accept()));
+        ui.labelTitle->setText("<span style=\"font-weight:0;font-size:16pt;\">Caneda "
+                               + Caneda::version() + "</span>");
 
-        QVBoxLayout *vlayout = new QVBoxLayout();
-        vlayout->addWidget(title());
-        vlayout->addWidget(tabs);
-        vlayout->addWidget(buttons);
-        setLayout(vlayout);
-    }
-
-    //! \return The title "Caneda" with its icon
-    QWidget *AboutDialog::title() const
-    {
-        QWidget *icon_and_title = new QWidget();
-        // icon
-        QLabel *icon = new QLabel();
-        icon->setPixmap(QPixmap(Caneda::imageDirectory() + "caneda.png"));
-        // label "Caneda"
-        QLabel *title = new QLabel("<span style=\"font-weight:0;font-size:16pt;\">Caneda "
-                                   + Caneda::version() + "</span>");
-        title->setTextFormat(Qt::RichText);
-        // All in a grid
-        QGridLayout *grid_layout = new QGridLayout();
-        grid_layout->addWidget(icon, 0, 0);
-        grid_layout->addWidget(title, 0, 1);
-        grid_layout->setColumnStretch(0, 1);
-        grid_layout->setColumnStretch(1, 100);
-        icon_and_title->setLayout(grid_layout);
-        return icon_and_title;
-    }
-
-    //! \return The widget contained by the tab "About"
-    QWidget *AboutDialog::aboutTab() const
-    {
-        QLabel *about = new QLabel(
-                tr("Caneda - Circuits and Networks EDA") +
-                "<br>" +
-                tr("An application for schematic capture and simulation.") +
-                "<br><br>" +
-                tr("© 2008-2016 Caneda developer team") +
-                "<br><br>"
-                "<a href=\"http://www.caneda.org\">"
-                "http://www.caneda.org</a>"
-                );
-        about->setAlignment(Qt::AlignCenter);
-        about->setOpenExternalLinks(true);
-        about->setTextFormat(Qt::RichText);
-        return about;
-    }
-
-    //! \return The widget contained by the tab "Authors"
-    QWidget *AboutDialog::authorsTab() const
-    {
-        QLabel *authors = new QLabel();
-
-        addAuthor(authors, "Pablo Daniel Pareja Obregon", "parejaobregon@gmail.com",
-                  tr("Developer"));
-
-        authors->setAlignment(Qt::AlignCenter);
-        authors->setOpenExternalLinks(true);
-        authors->setTextFormat(Qt::RichText);
-        return authors;
-    }
-
-    //! \return The widget contained by the tab "Translators"
-    QWidget *AboutDialog::translatorsTab() const
-    {
-        QLabel *translators = new QLabel();
-
-        addAuthor(translators, "Pablo Daniel Pareja Obregon", "parejaobregon@gmail.com",
-                  tr("Spanish"));
-
-        translators->setAlignment(Qt::AlignCenter);
-        translators->setOpenExternalLinks(true);
-        translators->setTextFormat(Qt::RichText);
-        return translators;
-    }
-
-    //! \return The widget contained by the tab "Licence Agreement"
-    QWidget *AboutDialog::licenseTab() const
-    {
-        QWidget *license = new QWidget();
-        // label
-        QLabel *title_license =
-                new QLabel(tr("This program is licensed under the GNU/GPL v2."));
-
-        // Text of the GNU/GPL v2 in a scrollable non-editable text box
+        // Text of the license in a read-only text edit
         QFile *file = new QFile(Caneda::baseDirectory() + "COPYING");
         QString text;
-        // Verification that the file exists
         if(!file->exists()) {
-            text = QString(tr("The text file that contains the GNU/GPL is not found."));
+            text = QString(tr("The text file that contains the license is not found."));
         }
         else if(!file->open(QIODevice::ReadOnly | QIODevice::Text)) {
-            text = QString(tr("The text file that contains the GNU/GPL exists but could not be opened."));
+            text = QString(tr("The text file that contains the license exists but could not be opened."));
         }
         else {
             QTextStream in(file);
@@ -157,36 +55,7 @@ namespace Caneda
             file->close();
         }
 
-        QTextEdit *text_license = new QTextEdit();
-        text_license->setPlainText(text);
-        text_license->setReadOnly(true);
-
-        QVBoxLayout *license_layout = new QVBoxLayout();
-        license_layout->addWidget(title_license);
-        license_layout->addWidget(text_license);
-        license->setLayout(license_layout);
-        return license;
-    }
-
-    /*!
-     * \brief Adds someone to the list of authors.
-     *
-     * \param label Label which will add the person
-     * \param name Name of the person
-     * \param email Email address of the person
-     * \param work Function/work done by the person
-     */
-    void AboutDialog::addAuthor(QLabel *label, const QString &name, const QString &email,
-                                const QString &work) const
-    {
-        QString new_text = label->text();
-
-        QString author_template =
-                "<span style=\"text-decoration: underline;\">%1</span> : %2 &lt;<a href=\"mailto:%3\">%3</a>&gt;<br><br>";
-
-        // adds the title of the person
-        new_text += author_template.arg(work).arg(name).arg(email);
-        label->setText(new_text);
+        ui.textEditLicense->setPlainText(text);
     }
 
 } // namespace Caneda
