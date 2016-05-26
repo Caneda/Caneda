@@ -1419,11 +1419,15 @@ namespace Caneda
     {
         QuickOpen *quickBrowser = new QuickOpen(this);
 
-        // Set the dialog to open in the current file folder
         DocumentViewManager *manager = DocumentViewManager::instance();
-        QFileInfo info(manager->currentDocument()->fileName());
-        QString path = info.path();
-        quickBrowser->setCurrentFolder(path);
+        IDocument *document = manager->currentDocument();
+        if (document) {
+            // Set the dialog to open in the current file folder
+            QFileInfo info(document->fileName());
+            QString path = info.path();
+
+            quickBrowser->setCurrentFolder(path);
+        }
 
         connect(quickBrowser, SIGNAL(itemSelected(QString)), this, SLOT(open(QString)));
 
