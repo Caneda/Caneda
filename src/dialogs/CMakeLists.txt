@@ -1,8 +1,8 @@
 SET( DIALOGS_SRCS
   aboutdialog.cpp chartsdialog.cpp exportdialog.cpp filenewdialog.cpp
-  gitmanager.cpp portsymboldialog.cpp printdialog.cpp projectfilenewdialog.cpp
-  projectfileopendialog.cpp propertydialog.cpp savedocumentsdialog.cpp
-  settingsdialog.cpp shortcutsdialog.cpp
+  messagewidget.cpp portsymboldialog.cpp printdialog.cpp
+  projectfilenewdialog.cpp projectfileopendialog.cpp propertydialog.cpp
+  savedocumentsdialog.cpp settingsdialog.cpp shortcutsdialog.cpp
 )
 
 ADD_LIBRARY( dialogs ${DIALOGS_SRCS} )
