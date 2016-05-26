@@ -130,10 +130,10 @@ namespace Caneda
                                                         QString(),
                                                         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if(!dir.isEmpty()) {
-            new QListWidgetItem(dir, ui.listLibraries);
+            ui.listLibraries->addItem(dir);
+            ui.listLibraries->sortItems(Qt::AscendingOrder);
         }
 
-        ui.listLibraries->sortItems(Qt::AscendingOrder);
     }
 
     //! \brief Remove a library from the libraries list
@@ -150,7 +150,8 @@ namespace Caneda
                                                         QString(),
                                                         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if(!dir.isEmpty()) {
-            new QListWidgetItem(dir, ui.listHdlLibraries);
+            ui.listHdlLibraries->addItem(dir);
+            ui.listHdlLibraries->sortItems(Qt::AscendingOrder);
         }
 
         ui.listHdlLibraries->sortItems(Qt::AscendingOrder);

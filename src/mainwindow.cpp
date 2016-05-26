@@ -1528,6 +1528,8 @@ namespace Caneda
             DocumentViewManager::instance()->updateSettingsChanges();
             repaint();
         }
+
+        delete dialog;
     }
 
     //! \brief Opens the help index.
