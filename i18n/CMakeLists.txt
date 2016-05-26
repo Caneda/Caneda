@@ -12,9 +12,7 @@
 # following TS_FILES rule.
 
 SET( TS_FILES
-caneda_de.ts caneda_es.ts caneda_fr.ts caneda_he.ts caneda_hu.ts
-caneda_it.ts caneda_jp.ts caneda_pl.ts caneda_pt.ts caneda_ro.ts
-caneda_ru.ts caneda_sv.ts caneda_tr.ts caneda_uk.ts caneda_es_AR.ts
+caneda_es.ts
 )
 
 QT5_ADD_TRANSLATION( QM_FILES ${TS_FILES} )
