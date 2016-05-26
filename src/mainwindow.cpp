@@ -1520,20 +1520,8 @@ namespace Caneda
     //! \brief Opens the applications settings dialog.
     void MainWindow::applicationSettings()
     {
-        QList<SettingsPage *> wantedPages;
-        SettingsPage *page = new GeneralConfigurationPage(this);
-        wantedPages << page;
-        page = new HdlConfigurationPage(this);
-        wantedPages << page;
-        page = new LibrariesConfigurationPage(this);
-        wantedPages << page;
-        page = new LayoutConfigurationPage(this);
-        wantedPages << page;
-        page = new SimulationConfigurationPage(this);
-        wantedPages << page;
-
-        SettingsDialog *d = new SettingsDialog(wantedPages, "Configure Caneda", this);
-        int result = d->exec();
+        SettingsDialog *dialog = new SettingsDialog(this);
+        int result = dialog->exec();
 
         // Update all document views to reflect the current settings.
         if(result == QDialog::Accepted) {
