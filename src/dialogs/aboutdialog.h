@@ -24,8 +24,6 @@
 
 #include <QDialog>
 
-class QLabel;
-
 namespace Caneda
 {
     //! \brief About dialog.
