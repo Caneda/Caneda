@@ -54,6 +54,8 @@ namespace Caneda
         void simulationEngineChanged();
 
         void changePage(int index);
+
+        void restoreDefaults(QAbstractButton *button);
         void applySettings();
 
     private:

@@ -91,6 +91,7 @@ namespace Caneda
         // Signals/slots connections
         connect(ui.buttons, SIGNAL(accepted()), this, SLOT(applySettings()));
         connect(ui.buttons, SIGNAL(rejected()), this, SLOT(reject()));
+        connect(ui.buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(restoreDefaults(QAbstractButton*)));
         connect(ui.pagesList, SIGNAL(currentRowChanged(int)), this, SLOT(changePage(int)));
 
         // General group of settings
@@ -228,6 +229,58 @@ namespace Caneda
         ui.pagesWidget->setCurrentIndex(index);
     }
 
+    //! \brief Restore the default settings in all pages.
+    void SettingsDialog::restoreDefaults(QAbstractButton *button)
+    {
+        if(ui.buttons->buttonRole(button) != QDialogButtonBox::ResetRole) {
+            return;
+        }
+
+        // Read the the default settings into the dialog widgets
+        Settings *settings = Settings::instance();
+        QMap<QString, QVariant> map;
+
+        // General group of settings
+        map["gui/gridVisible"] = settings->defaultValue("gui/gridVisible");
+        map["gui/backgroundColor"] = settings->defaultValue("gui/backgroundColor");
+        map["gui/simulationBackgroundColor"] = settings->defaultValue("gui/simulationBackgroundColor");
+        map["gui/foregroundColor"] = settings->defaultValue("gui/foregroundColor");
+        map["gui/lineColor"] = settings->defaultValue("gui/lineColor");
+        map["gui/selectionColor"] = settings->defaultValue("gui/selectionColor");
+        map["gui/lineWidth"] = settings->defaultValue("gui/lineWidth");
+
+        // Libraries group of settings
+        map["libraries/schematic"] = settings->defaultValue("libraries/schematic");
+        map["libraries/hdl"] = settings->defaultValue("libraries/hdl");
+
+        // Simulation group of settings
+        map["sim/simulationCommand"] = settings->defaultValue("sim/simulationCommand");
+        map["sim/simulationEngine"] = settings->defaultValue("sim/simulationEngine");
+        map["sim/outputFormat"] = settings->defaultValue("sim/outputFormat");
+
+        // Layout group of settings
+        map["gui/layout/metal1"] = settings->defaultValue("gui/layout/metal1");
+        map["gui/layout/metal2"] = settings->defaultValue("gui/layout/metal2");
+        map["gui/layout/poly1"] = settings->defaultValue("gui/layout/poly1");
+        map["gui/layout/poly2"] = settings->defaultValue("gui/layout/poly2");
+        map["gui/layout/active"] = settings->defaultValue("gui/layout/active");
+        map["gui/layout/contact"] = settings->defaultValue("gui/layout/contact");
+        map["gui/layout/nwell"] = settings->defaultValue("gui/layout/nwell");
+        map["gui/layout/pwell"] = settings->defaultValue("gui/layout/pwell");
+
+        // HDL group of settings
+        map["gui/hdl/keyword"] = settings->defaultValue("gui/hdl/keyword");
+        map["gui/hdl/type"] = settings->defaultValue("gui/hdl/type");
+        map["gui/hdl/attribute"] = settings->defaultValue("gui/hdl/attribute");
+        map["gui/hdl/block"] = settings->defaultValue("gui/hdl/block");
+        map["gui/hdl/class"] = settings->defaultValue("gui/hdl/class");
+        map["gui/hdl/data"] = settings->defaultValue("gui/hdl/data");
+        map["gui/hdl/comment"] = settings->defaultValue("gui/hdl/comment");
+        map["gui/hdl/system"] = settings->defaultValue("gui/hdl/system");
+
+        updateWidgets(map);
+    }
+
     //! \brief Apply the settings of all pages.
     void SettingsDialog::applySettings()
     {
@@ -316,16 +369,20 @@ namespace Caneda
         ui.spinWidth->setValue(map["gui/lineWidth"].toInt());
 
         // Libraries group of settings
+        ui.listLibraries->clear();
+        ui.listHdlLibraries->clear();
+
         QStringList libraries = map["libraries/schematic"].toStringList();
         foreach (const QString &library, libraries) {
             ui.listLibraries->addItem(library);
         }
-        ui.listLibraries->sortItems(Qt::AscendingOrder);
 
         libraries = map["libraries/hdl"].toStringList();
         foreach (const QString &library, libraries) {
             ui.listHdlLibraries->addItem(library);
         }
+
+        ui.listLibraries->sortItems(Qt::AscendingOrder);
         ui.listHdlLibraries->sortItems(Qt::AscendingOrder);
 
         // Simulation group of settings
