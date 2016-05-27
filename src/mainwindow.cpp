@@ -171,7 +171,7 @@ namespace Caneda
         action->setWhatsThis(tr("New schematic file\n\nCreates a new schematic file document"));
         connect(action, SIGNAL(triggered()), SLOT(newSchematic()));
 
-        action = am->createAction("fileNewSymbol", Caneda::icon("document-properties"), tr("S&ymbol file"));
+        action = am->createAction("fileNewSymbol", Caneda::icon("draw-freehand"), tr("S&ymbol file"));
         action->setStatusTip(tr("Creates a new symbol file document"));
         action->setWhatsThis(tr("New symbol file\n\nCreates a new symbol file document"));
         connect(action, SIGNAL(triggered()), SLOT(newSymbol()));
