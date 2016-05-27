@@ -20,6 +20,7 @@
 #include "quickopen.h"
 
 #include "global.h"
+#include "icontext.h"
 #include "sidebaritemsbrowser.h"
 
 #include <QFileSystemModel>
@@ -79,15 +80,42 @@ namespace Caneda
         buttonHome->setToolTip(tr("Go to the home folder"));
         buttonHome->setWhatsThis(tr("Go to the home folder"));
 
-        connect(buttonUp, SIGNAL(clicked()), this, SLOT(slotUpFolder()));
-        connect(buttonBack, SIGNAL(clicked()), this, SLOT(slotBackFolder()));
-        connect(buttonForward, SIGNAL(clicked()), this, SLOT(slotForwardFolder()));
-        connect(buttonHome, SIGNAL(clicked()), this, SLOT(slotHomeFolder()));
+        // Create the filter button
+        QToolButton *buttonFilters = new QToolButton(this);
+        QMenu *filterMenu = new QMenu(this);
+        QActionGroup *filterGroup = new QActionGroup(this);
 
+        buttonFilters->setIcon(Caneda::icon("configure"));
+        buttonFilters->setPopupMode(QToolButton::InstantPopup);
+        buttonFilters->setMenu(filterMenu);
+
+        filterNone = new QAction(Caneda::icon("view-sidetree"), tr("Show all"), filterGroup);
+        filterSchematics = new QAction(Caneda::icon("document-new"), tr("Show schematics"), filterGroup);
+        filterSymbols = new QAction(Caneda::icon("draw-freehand"), tr("Show symbols"), filterGroup);
+        filterLayouts = new QAction(Caneda::icon("view-grid"), tr("Show layouts"), filterGroup);
+        filterText = new QAction(Caneda::icon("text-plain"), tr("Show text files"), filterGroup);
+
+        filterNone->setCheckable(true);
+        filterSchematics->setCheckable(true);
+        filterSymbols->setCheckable(true);
+        filterLayouts->setCheckable(true);
+        filterText->setCheckable(true);
+
+        filterNone->setChecked(true);
+
+        filterMenu->addActions(filterGroup->actions());
+
+        // Add the buttons to the toolbar
         toolbar->addWidget(buttonUp);
         toolbar->addWidget(buttonBack);
         toolbar->addWidget(buttonForward);
         toolbar->addWidget(buttonHome);
+
+        QWidget *spacer = new QWidget(this);
+        spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        toolbar->addWidget(spacer);
+
+        toolbar->addWidget(buttonFilters);
         layout->addWidget(toolbar);
 
         // Set lineEdit properties
@@ -114,6 +142,17 @@ namespace Caneda
         layout->addWidget(m_listView);
 
         // Signals and slots connections
+        connect(buttonUp, SIGNAL(clicked()), this, SLOT(slotUpFolder()));
+        connect(buttonBack, SIGNAL(clicked()), this, SLOT(slotBackFolder()));
+        connect(buttonForward, SIGNAL(clicked()), this, SLOT(slotForwardFolder()));
+        connect(buttonHome, SIGNAL(clicked()), this, SLOT(slotHomeFolder()));
+
+        connect(filterNone, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
+        connect(filterSchematics, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
+        connect(filterSymbols, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
+        connect(filterLayouts, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
+        connect(filterText, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
+
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
         connect(m_filterEdit, SIGNAL(returnPressed()), this, SLOT(itemSelected()));
         connect(m_listView, SIGNAL(activated(QModelIndex)), this, SLOT(itemSelected()));
@@ -170,6 +209,46 @@ namespace Caneda
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
         m_listView->setCurrentIndex(m_listView->rootIndex().child(0,0));
+    }
+
+    //! \brief Filters the view to show only selected file type.
+    void QuickOpen::filterFileTypes()
+    {
+        QAction *action = qobject_cast<QAction*>(sender());
+        if(!action) {
+            return;
+        }
+
+        QStringList filters;
+        if(action == filterNone) {
+            // Default filter (show all but hidden files)
+            m_model->setFilter(QDir::Dirs|QDir::AllDirs|QDir::Files|
+                               QDir::Drives|QDir::NoDot|QDir::NoDotDot|
+                               QDir::AllEntries);
+        }
+        else if(action == filterSchematics) {
+            m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
+            IContext *context = SchematicContext::instance();
+            filters << "*." + context->defaultSuffix();
+        }
+        else if(action == filterSymbols) {
+            m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
+            IContext *context = SymbolContext::instance();
+            filters << "*." + context->defaultSuffix();
+        }
+        else if(action == filterLayouts) {
+            m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
+            IContext *context = LayoutContext::instance();
+            filters << "*." + context->defaultSuffix();
+        }
+        else if(action == filterText) {
+            m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
+            IContext *context = TextContext::instance();
+            filters << "*." + context->defaultSuffix();
+        }
+
+        m_model->setNameFilters(filters);
+        m_model->setNameFilterDisables(false);
     }
 
     //! \brief Accept the dialog and open the selected item.

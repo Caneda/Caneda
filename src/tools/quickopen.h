@@ -67,6 +67,7 @@ namespace Caneda
 
     private Q_SLOTS:
         void filterTextChanged();
+        void filterFileTypes();
         void itemSelected();
 
         void slotUpFolder();
@@ -84,6 +85,8 @@ namespace Caneda
         QList<QModelIndex> previousPages;
         QList<QModelIndex> nextPages;
 
+        QAction *filterNone, *filterSchematics, *filterSymbols,
+        *filterLayouts, *filterText;
         QToolButton *buttonBack, *buttonForward;
     };
 
