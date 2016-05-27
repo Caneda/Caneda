@@ -57,7 +57,7 @@ namespace Caneda
         void applySettings();
 
     private:
-        void init();
+        void updateWidgets(QMap<QString, QVariant> map);
 
         Ui::SettingsDialog ui;
     };

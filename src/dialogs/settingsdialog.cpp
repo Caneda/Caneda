@@ -37,14 +37,56 @@ namespace Caneda
     {
         ui.setupUi(this);
 
-        // List of pages
+        // Set the icons in the list of pages
         ui.pagesList->item(0)->setIcon(Caneda::icon("preferences-other"));
         ui.pagesList->item(1)->setIcon(Caneda::icon("library"));
         ui.pagesList->item(2)->setIcon(Caneda::icon("media-playback-start"));
         ui.pagesList->item(3)->setIcon(Caneda::icon("view-grid"));
         ui.pagesList->item(4)->setIcon(Caneda::icon("code-context"));
 
-        init();
+        // Read the settings into the dialog widgets
+        Settings *settings = Settings::instance();
+        QMap<QString, QVariant> map;
+
+        // General group of settings
+        map["gui/gridVisible"] = settings->currentValue("gui/gridVisible");
+        map["gui/backgroundColor"] = settings->currentValue("gui/backgroundColor");
+        map["gui/simulationBackgroundColor"] = settings->currentValue("gui/simulationBackgroundColor");
+        map["gui/foregroundColor"] = settings->currentValue("gui/foregroundColor");
+        map["gui/lineColor"] = settings->currentValue("gui/lineColor");
+        map["gui/selectionColor"] = settings->currentValue("gui/selectionColor");
+        map["gui/lineWidth"] = settings->currentValue("gui/lineWidth");
+
+        // Libraries group of settings
+        map["libraries/schematic"] = settings->currentValue("libraries/schematic");
+        map["libraries/hdl"] = settings->currentValue("libraries/hdl");
+
+        // Simulation group of settings
+        map["sim/simulationCommand"] = settings->currentValue("sim/simulationCommand");
+        map["sim/simulationEngine"] = settings->currentValue("sim/simulationEngine");
+        map["sim/outputFormat"] = settings->currentValue("sim/outputFormat");
+
+        // Layout group of settings
+        map["gui/layout/metal1"] = settings->currentValue("gui/layout/metal1");
+        map["gui/layout/metal2"] = settings->currentValue("gui/layout/metal2");
+        map["gui/layout/poly1"] = settings->currentValue("gui/layout/poly1");
+        map["gui/layout/poly2"] = settings->currentValue("gui/layout/poly2");
+        map["gui/layout/active"] = settings->currentValue("gui/layout/active");
+        map["gui/layout/contact"] = settings->currentValue("gui/layout/contact");
+        map["gui/layout/nwell"] = settings->currentValue("gui/layout/nwell");
+        map["gui/layout/pwell"] = settings->currentValue("gui/layout/pwell");
+
+        // HDL group of settings
+        map["gui/hdl/keyword"] = settings->currentValue("gui/hdl/keyword");
+        map["gui/hdl/type"] = settings->currentValue("gui/hdl/type");
+        map["gui/hdl/attribute"] = settings->currentValue("gui/hdl/attribute");
+        map["gui/hdl/block"] = settings->currentValue("gui/hdl/block");
+        map["gui/hdl/class"] = settings->currentValue("gui/hdl/class");
+        map["gui/hdl/data"] = settings->currentValue("gui/hdl/data");
+        map["gui/hdl/comment"] = settings->currentValue("gui/hdl/comment");
+        map["gui/hdl/system"] = settings->currentValue("gui/hdl/system");
+
+        updateWidgets(map);
 
         // Signals/slots connections
         connect(ui.buttons, SIGNAL(accepted()), this, SLOT(applySettings()));
@@ -262,97 +304,67 @@ namespace Caneda
     }
 
     //! \brief Load current settings into each settings page
-    void SettingsDialog::init()
+    void SettingsDialog::updateWidgets(QMap<QString, QVariant> map)
     {
-        // Read the settings into the dialog widgets
-        Settings *settings = Settings::instance();
-
-        QColor currentColor;
-
         // General group of settings
-        ui.checkShowGrid->setChecked(settings->currentValue("gui/gridVisible").value<bool>());
-
-        currentColor = settings->currentValue("gui/backgroundColor").value<QColor>();
-        setButtonColor(ui.buttonBackground, currentColor);
-        currentColor = settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
-        setButtonColor(ui.buttonSimulationBackground, currentColor);
-        currentColor = settings->currentValue("gui/foregroundColor").value<QColor>();
-        setButtonColor(ui.buttonForeground, currentColor);
-        currentColor = settings->currentValue("gui/lineColor").value<QColor>();
-        setButtonColor(ui.buttonLine, currentColor);
-        currentColor = settings->currentValue("gui/selectionColor").value<QColor>();
-        setButtonColor(ui.buttonSelection, currentColor);
-
-        ui.spinWidth->setValue(settings->currentValue("gui/lineWidth").toInt());
+        ui.checkShowGrid->setChecked(map["gui/gridVisible"].value<bool>());
+        setButtonColor(ui.buttonBackground, map["gui/backgroundColor"].value<QColor>());
+        setButtonColor(ui.buttonSimulationBackground, map["gui/simulationBackgroundColor"].value<QColor>());
+        setButtonColor(ui.buttonForeground, map["gui/foregroundColor"].value<QColor>());
+        setButtonColor(ui.buttonLine, map["gui/lineColor"].value<QColor>());
+        setButtonColor(ui.buttonSelection, map["gui/selectionColor"].value<QColor>());
+        ui.spinWidth->setValue(map["gui/lineWidth"].toInt());
 
         // Libraries group of settings
-        QStringList libraries;
-        libraries << settings->currentValue("libraries/schematic").toStringList();
-        foreach (const QString &str, libraries) {
-            ui.listLibraries->addItem(str);
+        QStringList libraries = map["libraries/schematic"].toStringList();
+        foreach (const QString &library, libraries) {
+            ui.listLibraries->addItem(library);
         }
         ui.listLibraries->sortItems(Qt::AscendingOrder);
 
-        QStringList hdlLibraries;
-        hdlLibraries << settings->currentValue("libraries/hdl").toStringList();
-        foreach (const QString &str, hdlLibraries) {
-            ui.listHdlLibraries->addItem(str);
+        libraries = map["libraries/hdl"].toStringList();
+        foreach (const QString &library, libraries) {
+            ui.listHdlLibraries->addItem(library);
         }
         ui.listHdlLibraries->sortItems(Qt::AscendingOrder);
 
         // Simulation group of settings
-        ui.lineSimulationCommand->setText(settings->currentValue("sim/simulationCommand").toString());
+        ui.lineSimulationCommand->setText(map["sim/simulationCommand"].toString());
 
-        if(settings->currentValue("sim/simulationEngine").toString() == "ngspice") {
+        if(map["sim/simulationEngine"].toString() == "ngspice") {
             ui.radioNgspiceMode->setChecked(true);
             ui.lineSimulationCommand->setEnabled(false);
         }
-        else if(settings->currentValue("sim/simulationEngine").toString() == "custom") {
+        else if(map["sim/simulationEngine"].toString() == "custom") {
             ui.radioCustomMode->setChecked(true);
         }
 
-        if(settings->currentValue("sim/outputFormat").toString() == "binary") {
+        if(map["sim/outputFormat"].toString() == "binary") {
             ui.radioBinaryMode->setChecked(true);
         }
-        else if(settings->currentValue("sim/outputFormat").toString() == "ascii") {
+        else if(map["sim/outputFormat"].toString() == "ascii") {
             ui.radioAsciiMode->setChecked(true);
         }
 
         // Layout group of settings
-        currentColor = settings->currentValue("gui/layout/metal1").value<QColor>();
-        setButtonColor(ui.buttonMetal1, currentColor);
-        currentColor = settings->currentValue("gui/layout/metal2").value<QColor>();
-        setButtonColor(ui.buttonMetal2, currentColor);
-        currentColor = settings->currentValue("gui/layout/poly1").value<QColor>();
-        setButtonColor(ui.buttonPoly1, currentColor);
-        currentColor = settings->currentValue("gui/layout/poly2").value<QColor>();
-        setButtonColor(ui.buttonPoly2, currentColor);
-        currentColor = settings->currentValue("gui/layout/active").value<QColor>();
-        setButtonColor(ui.buttonActive, currentColor);
-        currentColor = settings->currentValue("gui/layout/contact").value<QColor>();
-        setButtonColor(ui.buttonContact, currentColor);
-        currentColor = settings->currentValue("gui/layout/nwell").value<QColor>();
-        setButtonColor(ui.buttonNwell, currentColor);
-        currentColor = settings->currentValue("gui/layout/pwell").value<QColor>();
-        setButtonColor(ui.buttonPwell, currentColor);
+        setButtonColor(ui.buttonMetal1, map["gui/layout/metal1"].value<QColor>());
+        setButtonColor(ui.buttonMetal2, map["gui/layout/metal2"].value<QColor>());
+        setButtonColor(ui.buttonPoly1, map["gui/layout/poly1"].value<QColor>());
+        setButtonColor(ui.buttonPoly2, map["gui/layout/poly2"].value<QColor>());
+        setButtonColor(ui.buttonActive, map["gui/layout/active"].value<QColor>());
+        setButtonColor(ui.buttonContact, map["gui/layout/contact"].value<QColor>());
+        setButtonColor(ui.buttonNwell, map["gui/layout/nwell"].value<QColor>());
+        setButtonColor(ui.buttonPwell, map["gui/layout/pwell"].value<QColor>());
 
         // HDL group of settings
-        currentColor = settings->currentValue("gui/hdl/keyword").value<QColor>();
-        setButtonColor(ui.buttonKeyword, currentColor);
-        currentColor = settings->currentValue("gui/hdl/type").value<QColor>();
-        setButtonColor(ui.buttonType, currentColor);
-        currentColor = settings->currentValue("gui/hdl/attribute").value<QColor>();
-        setButtonColor(ui.buttonAttribute, currentColor);
-        currentColor = settings->currentValue("gui/hdl/block").value<QColor>();
-        setButtonColor(ui.buttonBlock, currentColor);
-        currentColor = settings->currentValue("gui/hdl/class").value<QColor>();
-        setButtonColor(ui.buttonClass, currentColor);
-        currentColor = settings->currentValue("gui/hdl/data").value<QColor>();
-        setButtonColor(ui.buttonData, currentColor);
-        currentColor = settings->currentValue("gui/hdl/comment").value<QColor>();
-        setButtonColor(ui.buttonComment, currentColor);
-        currentColor = settings->currentValue("gui/hdl/system").value<QColor>();
-        setButtonColor(ui.buttonSystem, currentColor);
+        setButtonColor(ui.buttonKeyword, map["gui/hdl/keyword"].value<QColor>());
+        setButtonColor(ui.buttonType, map["gui/hdl/type"].value<QColor>());
+        setButtonColor(ui.buttonAttribute, map["gui/hdl/attribute"].value<QColor>());
+        setButtonColor(ui.buttonBlock, map["gui/hdl/block"].value<QColor>());
+        setButtonColor(ui.buttonClass, map["gui/hdl/class"].value<QColor>());
+        setButtonColor(ui.buttonData, map["gui/hdl/data"].value<QColor>());
+        setButtonColor(ui.buttonComment, map["gui/hdl/comment"].value<QColor>());
+        setButtonColor(ui.buttonSystem, map["gui/hdl/system"].value<QColor>());
     }
 
 } // namespace Caneda
