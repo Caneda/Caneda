@@ -21,6 +21,7 @@
 
 #include "global.h"
 #include "icontext.h"
+#include "settings.h"
 #include "sidebaritemsbrowser.h"
 
 #include <QFileSystemModel>
@@ -83,7 +84,7 @@ namespace Caneda
         // Create the filter button
         QToolButton *buttonFilters = new QToolButton(this);
         QMenu *filterMenu = new QMenu(this);
-        QActionGroup *filterGroup = new QActionGroup(this);
+        filterGroup = new QActionGroup(this);
 
         buttonFilters->setIcon(Caneda::icon("configure"));
         buttonFilters->setPopupMode(QToolButton::InstantPopup);
@@ -101,7 +102,9 @@ namespace Caneda
         filterLayouts->setCheckable(true);
         filterText->setCheckable(true);
 
-        filterNone->setChecked(true);
+        Settings *settings = Settings::instance();
+        int index = settings->currentValue("quickopen/filter").toInt();
+        filterGroup->actions().at(index)->setChecked(true);
 
         filterMenu->addActions(filterGroup->actions());
 
@@ -157,7 +160,8 @@ namespace Caneda
         connect(m_filterEdit, SIGNAL(returnPressed()), this, SLOT(itemSelected()));
         connect(m_listView, SIGNAL(activated(QModelIndex)), this, SLOT(itemSelected()));
 
-        // Start with the focus on the filter
+        // Filter the selected filetype and start with the focus on the filter
+        filterGroup->actions().at(index)->trigger();
         m_filterEdit->setFocus();
     }
 
@@ -270,6 +274,10 @@ namespace Caneda
         if(!action) {
             return;
         }
+
+        Settings *settings = Settings::instance();
+        int index = filterGroup->actions().indexOf(action);
+        settings->setCurrentValue("quickopen/filter", QVariant(index));
 
         QStringList filters;
         if(action == filterNone) {
