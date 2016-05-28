@@ -25,8 +25,8 @@
 
 #include <QCompleter>
 #include <QDialogButtonBox>
-#include <QDirModel>
 #include <QFileDialog>
+#include <QFileSystemModel>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -63,7 +63,10 @@ namespace Caneda
         }
 
         QCompleter *completer = new QCompleter(this);
-        completer->setModel(new QDirModel(completer));
+        QFileSystemModel *model = new QFileSystemModel(completer);
+        model->setRootPath(ui.editPath->text());
+        model->setFilter(QDir::Dirs|QDir::AllDirs|QDir::Drives|QDir::NoDot|QDir::NoDotDot);
+        completer->setModel(model);
         ui.editPath->setCompleter(completer);
 
         ui.btnBrowse->setIcon(Caneda::icon("document-open"));

@@ -24,8 +24,8 @@
 #include "settings.h"
 
 #include <QCompleter>
-#include <QDirModel>
 #include <QFileDialog>
+#include <QFileSystemModel>
 #include <QPointer>
 
 #include <QtPrintSupport/QPrintDialog>
@@ -57,10 +57,6 @@ namespace Caneda
         m_printer = new QPrinter;
         m_printer->setOrientation(QPrinter::Landscape);
 
-        QCompleter *completer = new QCompleter(this);
-        completer->setModel(new QDirModel(completer));
-        ui.filePathEdit->setCompleter(completer);
-
         const QString fileName = m_document->fileName();
         if (!fileName.isEmpty()) {
             m_printer->setDocName(fileName);
@@ -74,6 +70,11 @@ namespace Caneda
             ui.filePathEdit->setText(QDir::toNativeSeparators(QDir::homePath()));
         }
 
+        QCompleter *completer = new QCompleter(this);
+        QFileSystemModel *model = new QFileSystemModel(completer);
+        model->setRootPath(ui.filePathEdit->text());
+        completer->setModel(model);
+        ui.filePathEdit->setCompleter(completer);
     }
 
     void PrintDialog::done(int r)
@@ -114,7 +115,7 @@ namespace Caneda
         }
     }
 
-    //! Allows the user to select a file
+    //! \brief Allows the user to select a file
     void PrintDialog::onBrowseButtonClicked()
     {
         QString extension;
