@@ -173,6 +173,58 @@ namespace Caneda
         buttonForward->setEnabled(false);
     }
 
+    //! \brief Go up one folder in the filesystem.
+    void QuickOpen::slotUpFolder()
+    {
+        previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
+        m_listView->setRootIndex(m_listView->rootIndex().parent());
+        nextPages.clear();
+
+        buttonBack->setEnabled(true);
+        buttonForward->setEnabled(false);
+    }
+
+    //! \brief Go the the previous folder.
+    void QuickOpen::slotBackFolder()
+    {
+        if(!previousPages.isEmpty()) {
+            nextPages << m_proxyModel->mapToSource(m_listView->rootIndex());
+            m_listView->setRootIndex(m_proxyModel->mapFromSource(previousPages.last()));
+            previousPages.removeLast();
+
+            buttonForward->setEnabled(true);
+            if(previousPages.isEmpty()) {
+                buttonBack->setEnabled(false);
+            }
+        }
+    }
+
+    //! \brief Go the the next folder.
+    void QuickOpen::slotForwardFolder()
+    {
+        if(!nextPages.isEmpty()) {
+            previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
+            m_listView->setRootIndex(m_proxyModel->mapFromSource(nextPages.last()));
+            nextPages.removeLast();
+
+            buttonBack->setEnabled(true);
+            if(nextPages.isEmpty()) {
+                buttonForward->setEnabled(false);
+            }
+        }
+    }
+
+    //! \brief Go the the home folder.
+    void QuickOpen::slotHomeFolder()
+    {
+        previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
+        m_listView->setRootIndex(m_proxyModel->mapFromSource(m_model->index(QDir::homePath())));
+        nextPages.clear();
+
+        buttonBack->setEnabled(true);
+        buttonForward->setEnabled(false);
+    }
+
     //! \brief Filter event to select the listView on down arrow key event
     bool QuickOpen::eventFilter(QObject *object, QEvent *event)
     {
@@ -274,58 +326,6 @@ namespace Caneda
             }
 
         }
-    }
-
-    //! \brief Go up one folder in the filesystem.
-    void QuickOpen::slotUpFolder()
-    {
-        previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
-        m_listView->setRootIndex(m_listView->rootIndex().parent());
-        nextPages.clear();
-
-        buttonBack->setEnabled(true);
-        buttonForward->setEnabled(false);
-    }
-
-    //! \brief Go the the previous folder.
-    void QuickOpen::slotBackFolder()
-    {
-        if(!previousPages.isEmpty()) {
-            nextPages << m_proxyModel->mapToSource(m_listView->rootIndex());
-            m_listView->setRootIndex(m_proxyModel->mapFromSource(previousPages.last()));
-            previousPages.removeLast();
-
-            buttonForward->setEnabled(true);
-            if(previousPages.isEmpty()) {
-                buttonBack->setEnabled(false);
-            }
-        }
-    }
-
-    //! \brief Go the the next folder.
-    void QuickOpen::slotForwardFolder()
-    {
-        if(!nextPages.isEmpty()) {
-            previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
-            m_listView->setRootIndex(m_proxyModel->mapFromSource(nextPages.last()));
-            nextPages.removeLast();
-
-            buttonBack->setEnabled(true);
-            if(nextPages.isEmpty()) {
-                buttonForward->setEnabled(false);
-            }
-        }
-    }
-
-    //! \brief Go the the home folder.
-    void QuickOpen::slotHomeFolder()
-    {
-        previousPages << m_proxyModel->mapToSource(m_listView->rootIndex());
-        m_listView->setRootIndex(m_proxyModel->mapFromSource(m_model->index(QDir::homePath())));
-        nextPages.clear();
-
-        buttonBack->setEnabled(true);
-        buttonForward->setEnabled(false);
     }
 
 } // namespace Caneda

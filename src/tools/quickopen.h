@@ -62,18 +62,17 @@ namespace Caneda
     signals:
         void itemSelected(const QString& filename);
 
-    protected:
-        bool eventFilter(QObject *object, QEvent *event);
-
     private Q_SLOTS:
-        void filterTextChanged();
-        void filterFileTypes();
-        void itemSelected();
-
         void slotUpFolder();
         void slotBackFolder();
         void slotForwardFolder();
         void slotHomeFolder();
+
+        bool eventFilter(QObject *object, QEvent *event);
+        void filterTextChanged();
+        void filterFileTypes();
+
+        void itemSelected();
 
     private:
         QFileSystemModel *m_model;
