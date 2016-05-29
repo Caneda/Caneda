@@ -95,12 +95,14 @@ namespace Caneda
         filterSchematics = new QAction(Caneda::icon("application-x-caneda-schematic"), tr("Show schematics"), filterGroup);
         filterSymbols = new QAction(Caneda::icon("application-x-caneda-symbol"), tr("Show symbols"), filterGroup);
         filterLayouts = new QAction(Caneda::icon("application-x-caneda-layout"), tr("Show layouts"), filterGroup);
+        filterSimulations = new QAction(Caneda::icon("application-x-spice-simulation-raw"), tr("Show simulations"), filterGroup);
         filterText = new QAction(Caneda::icon("text-plain"), tr("Show text files"), filterGroup);
 
         filterNone->setCheckable(true);
         filterSchematics->setCheckable(true);
         filterSymbols->setCheckable(true);
         filterLayouts->setCheckable(true);
+        filterSimulations->setCheckable(true);
         filterText->setCheckable(true);
 
         Settings *settings = Settings::instance();
@@ -156,6 +158,7 @@ namespace Caneda
         connect(filterSchematics, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
         connect(filterSymbols, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
         connect(filterLayouts, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
+        connect(filterSimulations, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
         connect(filterText, SIGNAL(triggered(bool)), this, SLOT(filterFileTypes()));
 
         connect(m_filterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(filterTextChanged()));
@@ -313,6 +316,13 @@ namespace Caneda
         else if(action == filterLayouts) {
             m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
             IContext *context = LayoutContext::instance();
+            foreach(const QString &suffix, context->supportedSuffixes()) {
+                filters << "*." + suffix;
+            }
+        }
+        else if(action == filterSimulations) {
+            m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
+            IContext *context = SimulationContext::instance();
             foreach(const QString &suffix, context->supportedSuffixes()) {
                 filters << "*." + suffix;
             }

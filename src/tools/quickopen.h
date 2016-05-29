@@ -85,8 +85,8 @@ namespace Caneda
         QList<QModelIndex> nextPages;
 
         QActionGroup *filterGroup;
-        QAction *filterNone, *filterSchematics, *filterSymbols,
-        *filterLayouts, *filterText;
+        QAction *filterNone, *filterSchematics, *filterSimulations,
+        *filterSymbols, *filterLayouts, *filterText;
         QToolButton *buttonBack, *buttonForward;
     };
 
