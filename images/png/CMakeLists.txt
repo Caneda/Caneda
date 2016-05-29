@@ -1,5 +1,8 @@
 # toolbar pictures
-SET(PNGS align-horizontal-center.png c_microstrip.png document-save-as.png
+SET(PNGS align-horizontal-center.png application-x-caneda-layout.png
+         application-x-caneda-schematic.png application-x-caneda-symbol.png
+         application-x-spice-netlist.png application-x-spice-simulation-raw.png
+         c_microstrip.png document-save-as.png folder.png unknown.png
          format-justify-center.png go-top.png object-locked.png terminal.png
          align-horizontal-left.png coax.png document-save.png format-justify-fill.png
          go-up.png object-rotate-left.png object-rotate-right.png text-plain.png

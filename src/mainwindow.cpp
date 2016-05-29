@@ -166,17 +166,17 @@ namespace Caneda
         action->setWhatsThis(tr("New file\n\nCreates a new file document"));
         connect(action, SIGNAL(triggered()), SLOT(newFile()));
 
-        action = am->createAction("fileNewSchematic", Caneda::icon("document-new"), tr("&Schematic file"));
+        action = am->createAction("fileNewSchematic", Caneda::icon("application-x-caneda-schematic"), tr("&Schematic file"));
         action->setStatusTip(tr("Creates a new schematic file document"));
         action->setWhatsThis(tr("New schematic file\n\nCreates a new schematic file document"));
         connect(action, SIGNAL(triggered()), SLOT(newSchematic()));
 
-        action = am->createAction("fileNewSymbol", Caneda::icon("draw-freehand"), tr("S&ymbol file"));
+        action = am->createAction("fileNewSymbol", Caneda::icon("application-x-caneda-symbol"), tr("S&ymbol file"));
         action->setStatusTip(tr("Creates a new symbol file document"));
         action->setWhatsThis(tr("New symbol file\n\nCreates a new symbol file document"));
         connect(action, SIGNAL(triggered()), SLOT(newSymbol()));
 
-        action = am->createAction("fileNewLayout", Caneda::icon("view-grid"), tr("&Layout file"));
+        action = am->createAction("fileNewLayout", Caneda::icon("application-x-caneda-layout"), tr("&Layout file"));
         action->setStatusTip(tr("Creates a new layout file document"));
         action->setWhatsThis(tr("New layout file\n\nCreates a new layout file document"));
         connect(action, SIGNAL(triggered()), SLOT(newLayout()));
