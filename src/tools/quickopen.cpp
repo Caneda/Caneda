@@ -21,6 +21,7 @@
 
 #include "global.h"
 #include "icontext.h"
+#include "modelviewhelpers.h"
 #include "settings.h"
 #include "sidebaritemsbrowser.h"
 
@@ -130,6 +131,7 @@ namespace Caneda
 
         // Create a new filesystem model
         m_model = new QFileSystemModel(this);
+        m_model->setIconProvider(new IconProvider());
         m_model->setRootPath(QDir::homePath());
 
         // Create proxy model and set its properties.

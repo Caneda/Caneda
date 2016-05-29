@@ -20,6 +20,7 @@
 #include "folderbrowser.h"
 
 #include "global.h"
+#include "modelviewhelpers.h"
 
 #include <QFileSystemModel>
 #include <QInputDialog>
@@ -102,6 +103,7 @@ namespace Caneda
 
         // Create a new filesystem model
         m_model = new QFileSystemModel(this);
+        m_model->setIconProvider(new IconProvider());
         m_model->setRootPath(QDir::homePath());
 
         // Create a list view and set its properties

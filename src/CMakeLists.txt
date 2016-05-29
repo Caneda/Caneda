@@ -22,10 +22,10 @@ SET( CANEDA_SRCS
   documentviewmanager.cpp fileformats.cpp folderbrowser.cpp global.cpp
   graphicsitem.cpp graphicsscene.cpp graphicsview.cpp icontext.cpp
   idocument.cpp iview.cpp library.cpp main.cpp mainwindow.cpp
-  port.cpp portsymbol.cpp project.cpp property.cpp settings.cpp
-  sidebarchartsbrowser.cpp sidebaritemsbrowser.cpp sidebartextbrowser.cpp
-  statehandler.cpp syntaxhighlighters.cpp tabs.cpp textedit.cpp
-  undocommands.cpp wire.cpp xmlutilities.cpp
+  modelviewhelpers.cpp port.cpp portsymbol.cpp project.cpp property.cpp
+  settings.cpp sidebarchartsbrowser.cpp sidebaritemsbrowser.cpp
+  sidebartextbrowser.cpp statehandler.cpp syntaxhighlighters.cpp tabs.cpp
+  textedit.cpp undocommands.cpp wire.cpp xmlutilities.cpp
 )
 
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} )
