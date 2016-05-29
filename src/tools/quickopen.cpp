@@ -91,6 +91,8 @@ namespace Caneda
         buttonFilters->setMenu(filterMenu);
 
         filterNone = new QAction(Caneda::icon("view-sidetree"), tr("Show all"), filterGroup);
+        QAction *filtersSeparator = new QAction(filterGroup);
+        filtersSeparator->setSeparator(true);
         filterSchematics = new QAction(Caneda::icon("application-x-caneda-schematic"), tr("Show schematics"), filterGroup);
         filterSymbols = new QAction(Caneda::icon("application-x-caneda-symbol"), tr("Show symbols"), filterGroup);
         filterLayouts = new QAction(Caneda::icon("application-x-caneda-layout"), tr("Show layouts"), filterGroup);
