@@ -92,9 +92,9 @@ namespace Caneda
         buttonFilters->setMenu(filterMenu);
 
         filterNone = new QAction(Caneda::icon("view-sidetree"), tr("Show all"), filterGroup);
-        filterSchematics = new QAction(Caneda::icon("document-new"), tr("Show schematics"), filterGroup);
-        filterSymbols = new QAction(Caneda::icon("draw-freehand"), tr("Show symbols"), filterGroup);
-        filterLayouts = new QAction(Caneda::icon("view-grid"), tr("Show layouts"), filterGroup);
+        filterSchematics = new QAction(Caneda::icon("application-x-caneda-schematic"), tr("Show schematics"), filterGroup);
+        filterSymbols = new QAction(Caneda::icon("application-x-caneda-symbol"), tr("Show symbols"), filterGroup);
+        filterLayouts = new QAction(Caneda::icon("application-x-caneda-layout"), tr("Show layouts"), filterGroup);
         filterText = new QAction(Caneda::icon("text-plain"), tr("Show text files"), filterGroup);
 
         filterNone->setCheckable(true);
