@@ -258,12 +258,20 @@ namespace Caneda
         return QMenu::eventFilter(object, event);
     }
 
-    //! \brief Filters actions according to user input on a QLineEdit.
+    //! \brief Filters items according to user input on a QLineEdit.
     void QuickOpen::filterTextChanged()
     {
+        // Update the root index in the proxy model to avoid becoming rootless
+        // while filtering.
+        QModelIndex currentRootIndex = m_proxyModel->mapToSource(m_listView->rootIndex());
+        m_proxyModel->setSourceRoot(currentRootIndex);
+
+        // Filter the proxy model
         QString text = m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
+
+        // Select the first item in the result
         m_listView->setCurrentIndex(m_listView->rootIndex().child(0,0));
     }
 

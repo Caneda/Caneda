@@ -75,6 +75,12 @@ namespace Caneda
         explicit FilterProxyModel(QObject *parent = 0);
 
         bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+
+        //! \brief Method to prevent from becoming rootless while filtering
+        void setSourceRoot(const QModelIndex &sourceRoot) { m_sourceRoot = sourceRoot; }
+
+      private:
+        QModelIndex m_sourceRoot;
     };
 
     /*!

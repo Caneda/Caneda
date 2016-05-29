@@ -151,10 +151,18 @@ namespace Caneda
      * to perform multicolumn filtering. It returns true if the item in the row
      * indicated by the given sourceRow and sourceParent should be included in
      * the model; otherwise returns false.
+     *
+     * Special care must also be taken to avoid filtering the parent or root
+     * item.
      */
     bool FilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
     {
         QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
+
+        // Make sure the root is always accepted, or we become rootless
+        if(m_sourceRoot.isValid() && index0 == m_sourceRoot) {
+            return true;
+        }
 
         // Do bottom to top filtering
         if(sourceModel()->hasChildren(index0)) {
