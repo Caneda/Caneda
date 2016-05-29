@@ -20,6 +20,7 @@
 #include "sidebaritemsbrowser.h"
 
 #include "library.h"
+#include "modelviewhelpers.h"
 
 #include <QHeaderView>
 #include <QKeyEvent>
@@ -30,7 +31,7 @@
 namespace Caneda
 {
     /*************************************************************************
-     *                          FilterProxyModel                             *
+     *                          SidebarItemsModel                            *
      *************************************************************************/
     //! \brief Constructor.
     SidebarItemsModel::SidebarItemsModel(QObject *parent) : QStandardItemModel(parent)
@@ -133,49 +134,6 @@ namespace Caneda
             }
         }
     }
-
-
-    /*************************************************************************
-     *                          FilterProxyModel                             *
-     *************************************************************************/
-    //! \brief Constructor.
-    FilterProxyModel::FilterProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
-    {
-    }
-
-    /*!
-     * \brief Returns true if the item should be included in the model
-     * (filtered); false otherwise.
-     *
-     * This method must be reimplemented from QSortFilterProxyModel to be able
-     * to perform multicolumn filtering. It returns true if the item in the row
-     * indicated by the given sourceRow and sourceParent should be included in
-     * the model; otherwise returns false.
-     *
-     * Special care must also be taken to avoid filtering the parent or root
-     * item.
-     */
-    bool FilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
-    {
-        QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
-
-        // Make sure the root is always accepted, or we become rootless
-        if(m_sourceRoot.isValid() && index0 == m_sourceRoot) {
-            return true;
-        }
-
-        // Do bottom to top filtering
-        if(sourceModel()->hasChildren(index0)) {
-            for(int i=0; i < sourceModel()->rowCount(index0); ++i) {
-                if(filterAcceptsRow(i, index0)) {
-                    return true;
-                }
-            }
-        }
-
-        return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
-    }
-
 
     /*************************************************************************
      *                       SidebarItemsBrowser                             *

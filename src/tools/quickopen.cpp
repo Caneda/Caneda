@@ -23,7 +23,6 @@
 #include "icontext.h"
 #include "modelviewhelpers.h"
 #include "settings.h"
-#include "sidebaritemsbrowser.h"
 
 #include <QFileSystemModel>
 #include <QInputDialog>

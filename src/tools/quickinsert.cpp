@@ -19,6 +19,7 @@
 
 #include "quickinsert.h"
 
+#include "modelviewhelpers.h"
 #include "sidebaritemsbrowser.h"
 
 #include <QHeaderView>

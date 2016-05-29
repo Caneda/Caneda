@@ -21,9 +21,55 @@
 #define MODEL_VIEW_HELPERS_H
 
 #include <QFileIconProvider>
+#include <QSortFilterProxyModel>
 
 namespace Caneda
 {
+    /*!
+     * \brief The FilterProxyModel class helps in filtering an items model in a
+     * tree like structure, using the text of a QLineEdit.
+     *
+     * This class is used to be able to filter the items present in any model
+     * column (categories are in the first columns of the tree, and the items
+     * are in succesive columns). The QSortFilterProxyModel doesn't allow
+     * multicolumn filtering, hence it must be subclassed for those cases where
+     * it's needed.
+     */
+    class FilterProxyModel : public QSortFilterProxyModel
+    {
+    public:
+        explicit FilterProxyModel(QObject *parent = 0);
+
+        bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+
+        //! \brief Method to prevent from becoming rootless while filtering
+        void setSourceRoot(const QModelIndex &sourceRoot) { m_sourceRoot = sourceRoot; }
+
+      private:
+        QModelIndex m_sourceRoot;
+    };
+
+    /*!
+     * \brief The FileFilterProxyModel class helps in filtering a file model in
+     * a tree like structure, using the text of a QLineEdit.
+     *
+     * The main difference of the class with respect to the FilterProxyModel is
+     * that it keeps the folders in the model while filtering, allowing for a
+     * different user interface. It is mainly used in the SidebarTextBrowser
+     * class for displaying (filtering) available sidebar items.
+     *
+     * \sa SidebarTextBrowser, FilterProxyModel
+     */
+    class FileFilterProxyModel : public QSortFilterProxyModel
+    {
+        Q_OBJECT
+
+    public:
+        explicit FileFilterProxyModel(QObject *parent = 0);
+
+        bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+    };
+
     /*!
      * \brief Reimplementation of QFileIconProvider to allow for custom icons
      * in view widgets with a model derived from QFileSystemModel.

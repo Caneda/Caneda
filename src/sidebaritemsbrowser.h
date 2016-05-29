@@ -21,7 +21,6 @@
 #define SIDEBAR_ITEMS_BROWSER_H
 
 #include <QPair>
-#include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 #include <QWidget>
 
@@ -32,6 +31,9 @@ class QTreeView;
 
 namespace Caneda
 {
+    // Forward declarations.
+    class FilterProxyModel;
+
     /*!
      * \brief Model to provide the abstract interface for library tree items.
      *
@@ -57,30 +59,6 @@ namespace Caneda
         void plugItems(const QList<QPair<QString, QPixmap> > &items, QString category);
         void plugLibrary(QString libraryName, QString category);
         void unPlugLibrary(QString libraryName, QString category);
-    };
-
-    /*!
-     * \brief The FilterProxyModel class helps in filtering a sidebar model
-     * corresponding to a QLineEdit.
-     *
-     * This class is used to be able to filter the items present in any model
-     * column (categories are in the first columns of the tree, and the items
-     * are in succesive columns). The QSortFilterProxyModel doesn't allow
-     * multicolumn filtering, hence it must be subclassed for those cases where
-     * it's needed.
-     */
-    class FilterProxyModel : public QSortFilterProxyModel
-    {
-    public:
-        explicit FilterProxyModel(QObject *parent = 0);
-
-        bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-
-        //! \brief Method to prevent from becoming rootless while filtering
-        void setSourceRoot(const QModelIndex &sourceRoot) { m_sourceRoot = sourceRoot; }
-
-      private:
-        QModelIndex m_sourceRoot;
     };
 
     /*!

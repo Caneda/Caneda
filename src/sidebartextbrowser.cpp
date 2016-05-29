@@ -21,6 +21,7 @@
 
 #include "documentviewmanager.h"
 #include "idocument.h"
+#include "modelviewhelpers.h"
 #include "settings.h"
 
 #include <QFileSystemModel>
@@ -31,32 +32,6 @@
 
 namespace Caneda
 {
-    /*************************************************************************
-     *                         FileFilterProxyModel                          *
-     *************************************************************************/
-    //! \brief Constructor.
-    FileFilterProxyModel::FileFilterProxyModel(QObject *parent) :
-        QSortFilterProxyModel(parent)
-    {
-    }
-
-    bool FileFilterProxyModel::filterAcceptsRow(int sourceRow,
-                                                const QModelIndex &sourceParent) const
-    {
-        QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
-        QFileSystemModel *fileModel = static_cast<QFileSystemModel*>(sourceModel());
-
-        if(fileModel != NULL && fileModel->isDir(index0)) {
-            return true;
-        }
-
-        return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
-    }
-
-
-    /*************************************************************************
-     *                           SidebarTextBrowser                          *
-     *************************************************************************/
     //! \brief Constructor.
     SidebarTextBrowser::SidebarTextBrowser(QWidget *parent) : QWidget(parent)
     {
