@@ -44,8 +44,6 @@ namespace Caneda
     }
 
     /*!
-     * \fn IContext::canOpen()
-     *
      * \brief Indicates if a particular file extension is managed by this
      * context.
      *
@@ -53,6 +51,30 @@ namespace Caneda
      * context. This allows to find what context is in charge of a particular
      * file type.
      */
+    bool IContext::canOpen(const QFileInfo &info) const
+    {
+        foreach (const QString &suffix, supportedSuffixes()) {
+            if (info.suffix() == suffix) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /*!
+     * \brief Returns the default suffix of the current context type.
+     *
+     * This method returns the default suffix of this context to be used in
+     * any dialog required. It always returns the first suffix of the
+     * supportedSuffixes method.
+     *
+     * \sa supportedSuffixes()
+     */
+    QString IContext::defaultSuffix() const
+    {
+        return supportedSuffixes().first();
+    }
 
     /*!
      * \fn IContext::fileNameFilters()
@@ -68,9 +90,11 @@ namespace Caneda
      */
 
     /*!
-     * \fn IContext::defaultSuffix()
+     * \fn IContext::supportedSuffixes()
      *
-     * \brief Returns the default suffix of the current content type.
+     * \brief Returns the filename extensions available for this context.
+     *
+     * \sa defaultSuffix(), fileNameFilters()
      */
 
     /*!
@@ -211,26 +235,22 @@ namespace Caneda
         return context;
     }
 
-    bool LayoutContext::canOpen(const QFileInfo &info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "xlay";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     QStringList LayoutContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Layout-xml (*.xlay)")+" (*.xlay);;";
+        nameFilters << QObject::tr("Layout-xml (*.xlay)") + " (*.xlay);;";
 
         return nameFilters;
+    }
+
+    QStringList LayoutContext::supportedSuffixes() const
+    {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
+        QStringList supportedSuffixes;
+        supportedSuffixes << "xlay";
+
+        return supportedSuffixes;
     }
 
     IDocument* LayoutContext::newDocument()
@@ -338,26 +358,22 @@ namespace Caneda
         return context;
     }
 
-    bool SchematicContext::canOpen(const QFileInfo &info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "xsch";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     QStringList SchematicContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Schematic-xml (*.xsch)")+" (*.xsch);;";
+        nameFilters << QObject::tr("Schematic-xml (*.xsch)") + " (*.xsch);;";
 
         return nameFilters;
+    }
+
+    QStringList SchematicContext::supportedSuffixes() const
+    {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
+        QStringList supportedSuffixes;
+        supportedSuffixes << "xsch";
+
+        return supportedSuffixes;
     }
 
     IDocument* SchematicContext::newDocument()
@@ -416,26 +432,22 @@ namespace Caneda
         return context;
     }
 
-    bool SimulationContext::canOpen(const QFileInfo &info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "raw";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     QStringList SimulationContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Raw waveform data (*.raw)")+" (*.raw);;";
+        nameFilters << QObject::tr("Raw waveform data (*.raw)") + " (*.raw);;";
 
         return nameFilters;
+    }
+
+    QStringList SimulationContext::supportedSuffixes() const
+    {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
+        QStringList supportedSuffixes;
+        supportedSuffixes << "raw";
+
+        return supportedSuffixes;
     }
 
     IDocument* SimulationContext::newDocument()
@@ -513,26 +525,22 @@ namespace Caneda
         return context;
     }
 
-    bool SymbolContext::canOpen(const QFileInfo &info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "xsym";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     QStringList SymbolContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Symbol-xml (*.xsym)")+" (*.xsym);;";
+        nameFilters << QObject::tr("Symbol-xml (*.xsym)") + " (*.xsym);;";
 
         return nameFilters;
+    }
+
+    QStringList SymbolContext::supportedSuffixes() const
+    {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
+        QStringList supportedSuffixes;
+        supportedSuffixes << "xsym";
+
+        return supportedSuffixes;
     }
 
     IDocument* SymbolContext::newDocument()
@@ -591,10 +599,21 @@ namespace Caneda
         return instance;
     }
 
-    bool TextContext::canOpen(const QFileInfo& info) const
+    QStringList TextContext::fileNameFilters() const
     {
+        QStringList nameFilters;
+        nameFilters << QObject::tr("Spice netlist (*.spc *.sp *.net *.cir)") + " (*.spc *.sp *.net *.cir);;";
+        nameFilters << QObject::tr("HDL source (*.vhdl *.vhd *.v)") + " (*.vhdl *.vhd *.v);;";
+        nameFilters << QObject::tr("Text file (*.txt)") + " (*.txt);;";
+
+        return nameFilters;
+    }
+
+    QStringList TextContext::supportedSuffixes() const
+    {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
         QStringList supportedSuffixes;
-        supportedSuffixes << "";
         supportedSuffixes << "txt";
         supportedSuffixes << "log";
         supportedSuffixes << "net";
@@ -604,24 +623,9 @@ namespace Caneda
         supportedSuffixes << "vhd";
         supportedSuffixes << "vhdl";
         supportedSuffixes << "v";
+        supportedSuffixes << "";
 
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    QStringList TextContext::fileNameFilters() const
-    {
-        QStringList nameFilters;
-        nameFilters << QObject::tr("Spice netlist (*.spc *.sp *.net *.cir)")+" (*.spc *.sp *.net *.cir);;";
-        nameFilters << QObject::tr("HDL source (*.vhdl *.vhd *.v)")+" (*.vhdl *.vhd *.v);;";
-        nameFilters << QObject::tr("Text file (*.txt)")+" (*.txt);;";
-
-        return nameFilters;
+        return supportedSuffixes;
     }
 
     IDocument* TextContext::newDocument()

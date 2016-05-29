@@ -297,22 +297,30 @@ namespace Caneda
         else if(action == filterSchematics) {
             m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
             IContext *context = SchematicContext::instance();
-            filters << "*." + context->defaultSuffix();
+            foreach(const QString &suffix, context->supportedSuffixes()) {
+                filters << "*." + suffix;
+            }
         }
         else if(action == filterSymbols) {
             m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
             IContext *context = SymbolContext::instance();
-            filters << "*." + context->defaultSuffix();
+            foreach(const QString &suffix, context->supportedSuffixes()) {
+                filters << "*." + suffix;
+            }
         }
         else if(action == filterLayouts) {
             m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
             IContext *context = LayoutContext::instance();
-            filters << "*." + context->defaultSuffix();
+            foreach(const QString &suffix, context->supportedSuffixes()) {
+                filters << "*." + suffix;
+            }
         }
         else if(action == filterText) {
             m_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files);
             IContext *context = TextContext::instance();
-            filters << "*." + context->defaultSuffix();
+            foreach(const QString &suffix, context->supportedSuffixes()) {
+                filters << "*." + suffix;
+            }
         }
 
         m_model->setNameFilters(filters);

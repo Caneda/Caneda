@@ -61,9 +61,11 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        virtual bool canOpen(const QFileInfo& info) const = 0;
+        bool canOpen(const QFileInfo &info) const;
+
         virtual QStringList fileNameFilters() const = 0;
-        virtual QString defaultSuffix() const = 0;
+        virtual QStringList supportedSuffixes() const = 0;
+        virtual QString defaultSuffix() const;
 
         virtual IDocument* newDocument() = 0;
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0) = 0;
@@ -107,9 +109,8 @@ namespace Caneda
         static LayoutContext* instance();
 
         // IContext interface methods
-        virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "xlay"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
@@ -153,9 +154,8 @@ namespace Caneda
         static SchematicContext* instance();
 
         // IContext interface methods
-        virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "xsch"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
@@ -199,9 +199,8 @@ namespace Caneda
         static SimulationContext* instance();
 
         // IContext interface methods
-        virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "raw"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
@@ -244,9 +243,8 @@ namespace Caneda
         static SymbolContext* instance();
 
         // IContext interface methods
-        virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "xsym"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
@@ -289,9 +287,8 @@ namespace Caneda
         static TextContext* instance();
 
         // IContext interface methods
-        virtual bool canOpen(const QFileInfo& info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "txt"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
