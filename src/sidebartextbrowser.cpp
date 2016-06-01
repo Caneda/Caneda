@@ -53,6 +53,7 @@ namespace Caneda
         layout->addWidget(m_filterEdit);
 
         m_fileModel = new QFileSystemModel;
+        m_fileModel->setIconProvider(new IconProvider());
         QModelIndex rootModelIndex = m_fileModel->setRootPath(libpath);
 
         m_proxyModel = new FileFilterProxyModel(this);
