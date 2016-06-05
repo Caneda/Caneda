@@ -171,9 +171,9 @@ namespace Caneda
             addToProject();
         }
         else {
-            QPointer<FileNewDialog> p = new FileNewDialog(this);
-            p->exec();
-            delete p;
+            QPointer<FileNewDialog> dialog = new FileNewDialog(this);
+            dialog->exec();
+            delete dialog;
         }
     }
 
@@ -222,14 +222,14 @@ namespace Caneda
                                                         manager->fileNameFilters().join(QString()));
             }
             else {
-                ProjectFileOpenDialog *p = new ProjectFileOpenDialog(m_project->libraryFileName(), this);
-                int status = p->exec();
+                ProjectFileOpenDialog *dialog = new ProjectFileOpenDialog(m_project->libraryFileName(), this);
+                int status = dialog->exec();
 
                 if(status == QDialog::Accepted) {
-                    fileName = p->fileName();
+                    fileName = dialog->fileName();
                 }
 
-                delete p;
+                delete dialog;
             }
         }
 
@@ -375,9 +375,9 @@ namespace Caneda
             return;
         }
 
-        QPointer<PrintDialog> p = new PrintDialog(document, this);
-        p->exec();
-        delete p;
+        QPointer<PrintDialog> dialog = new PrintDialog(document, this);
+        dialog->exec();
+        delete dialog;
     }
 
     //! \brief Opens the export image dialog.
@@ -389,9 +389,9 @@ namespace Caneda
             return;
         }
 
-        QPointer<ExportDialog> p = new ExportDialog(document, this);
-        p->exec();
-        delete p;
+        QPointer<ExportDialog> dialog = new ExportDialog(document, this);
+        dialog->exec();
+        delete dialog;
     }
 
     //! \brief Calls the current document undo action.
@@ -848,9 +848,9 @@ namespace Caneda
     //! \brief Opens the about dialog.
     void MainWindow::about()
     {
-        QPointer<AboutDialog> p = new AboutDialog(this);
-        p->exec();
-        delete p;
+        QPointer<AboutDialog> dialog = new AboutDialog(this);
+        dialog->exec();
+        delete dialog;
     }
 
     //! \brief Opens the about Qt dialog.

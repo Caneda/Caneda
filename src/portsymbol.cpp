@@ -182,13 +182,10 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::launchPropertiesDialog()
-    int PortSymbol::launchPropertiesDialog()
+    void PortSymbol::launchPropertiesDialog()
     {
-        PortSymbolDialog *dia = new PortSymbolDialog(this);
-        int status = dia->exec();
-        delete dia;
-
-        return status;
+        PortSymbolDialog dialog(this);
+        dialog.exec();
     }
 
 } // namespace Caneda

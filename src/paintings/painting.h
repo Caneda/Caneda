@@ -100,7 +100,7 @@ namespace Caneda
         virtual void copyDataTo(Painting *painting) const;
 
         //! \copydoc GraphicsItem::launchPropertiesDialog()
-        virtual int launchPropertiesDialog() = 0;
+        virtual void launchPropertiesDialog() = 0;
 
     protected:
         /*!

@@ -145,8 +145,7 @@ namespace Caneda
         void writeProperties(Caneda::XmlWriter *writer);
         void readProperties(Caneda::XmlReader *reader);
 
-    public Q_SLOTS:
-        int launchPropertiesDialog();
+        void launchPropertiesDialog();
 
     protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);

@@ -163,10 +163,10 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::launchPropertiesDialog()
-    int GraphicText::launchPropertiesDialog()
+    void GraphicText::launchPropertiesDialog()
     {
         GraphicTextDialog dialog(this, true);
-        return dialog.exec();
+        dialog.exec();
     }
 
 } // namespace Caneda

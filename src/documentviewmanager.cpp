@@ -204,7 +204,7 @@ namespace Caneda
             return true;
         }
 
-        QPointer<SaveDocumentsDialog> dialog(new SaveDocumentsDialog(modifiedDocuments));
+        QPointer<SaveDocumentsDialog> dialog = new SaveDocumentsDialog(modifiedDocuments);
         dialog->exec();
 
         int result = dialog->result();

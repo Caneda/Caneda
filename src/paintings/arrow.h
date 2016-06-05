@@ -75,7 +75,7 @@ namespace Caneda
         QLineF line() const { return lineFromRect(paintingRect()); }
         void setLine(const QLineF &line);
 
-        int launchPropertiesDialog();
+        void launchPropertiesDialog();
 
     protected:
         void geometryChange();

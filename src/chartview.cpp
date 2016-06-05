@@ -310,13 +310,11 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::launchPropertiesDialog()
-    int ChartView::launchPropertiesDialog()
+    void ChartView::launchPropertiesDialog()
     {
-        ChartsDialog *dia = new ChartsDialog(this);
-        int status = dia->exec();
-        delete dia;
-
-        return status;
+        ChartsDialog *dialog = new ChartsDialog(this);
+        dialog->exec();
+        delete dialog;
     }
 
     //! \brief Context menu.

@@ -132,10 +132,10 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::launchPropertiesDialog()
-    int Rectangle::launchPropertiesDialog()
+    void Rectangle::launchPropertiesDialog()
     {
-        StyleDialog dia(this);
-        return dia.exec();
+        StyleDialog dialog(this);
+        dialog.exec();
     }
 
 } // namespace Caneda

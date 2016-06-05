@@ -167,10 +167,11 @@ namespace Caneda
         }
     }
 
-    int EllipseArc::launchPropertiesDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
+    void EllipseArc::launchPropertiesDialog()
     {
         StyleDialog dialog(this);
-        return dialog.exec();
+        dialog.exec();
     }
 
 } // namespace Caneda

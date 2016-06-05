@@ -374,13 +374,10 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::launchPropertiesDialog()
-    int PropertyGroup::launchPropertiesDialog()
+    void PropertyGroup::launchPropertiesDialog()
     {
-        PropertyDialog *dia = new PropertyDialog(this);
-        int status = dia->exec();
-        delete dia;
-
-        return status;
+        PropertyDialog dialog(this);
+        dialog.exec();
     }
 
     //! \brief On mouse click deselect selected items other than this.

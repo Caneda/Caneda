@@ -187,10 +187,10 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::launchPropertiesDialog()
-    int Layer::launchPropertiesDialog()
+    void Layer::launchPropertiesDialog()
     {
-        StyleDialog dia(this);
-        return dia.exec();
+        StyleDialog dialog(this);
+        dialog.exec();
     }
 
 } // namespace Caneda

@@ -54,7 +54,7 @@ namespace Caneda
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        int launchPropertiesDialog();
+        void launchPropertiesDialog();
     };
 
 } // namespace Caneda

@@ -320,9 +320,9 @@ namespace Caneda
     }
 
     //! \copydoc GraphicsItem::launchPropertiesDialog()
-    int Component::launchPropertiesDialog()
+    void Component::launchPropertiesDialog()
     {
-        return d->properties->launchPropertiesDialog();
+        d->properties->launchPropertiesDialog();
     }
 
     //! \brief Returns the rect adjusted to accomodate ports too.

@@ -137,22 +137,22 @@ namespace Caneda
     void Project::slotAddToProject()
     {
         if(projectLibrary) {
-            ProjectFileNewDialog *p = new ProjectFileNewDialog(this);
-            int status = p->exec();
+            ProjectFileNewDialog *dialog = new ProjectFileNewDialog(this);
+            int status = dialog->exec();
 
             if(status == QDialog::Accepted) {
-                if(p->userChoice() == Caneda::ExistingComponent) {
+                if(dialog->userChoice() == Caneda::ExistingComponent) {
                     addExistingComponent();
                 }
-                else if(p->userChoice() == Caneda::NewComponent) {
-                    addNewComponent(p->fileName());
+                else if(dialog->userChoice() == Caneda::NewComponent) {
+                    addNewComponent(dialog->fileName());
                 }
                 else {
                     importFromProject();
                 }
             }
 
-            delete p;
+            delete dialog;
         }
         else {
             QMessageBox::critical(this, tr("Error"),
@@ -217,8 +217,9 @@ namespace Caneda
     void Project::slotBackupAndHistory()
     {
         if(projectLibrary) {
-            GitManager *gitDialog = new GitManager(QFileInfo(m_libraryFileName).absolutePath(), this);
-            gitDialog->exec();
+            GitManager *dialog = new GitManager(QFileInfo(m_libraryFileName).absolutePath(), this);
+            dialog->exec();
+            delete dialog;
         }
     }
 

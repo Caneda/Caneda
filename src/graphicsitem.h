@@ -149,7 +149,7 @@ namespace Caneda
         virtual void copyDataTo(GraphicsItem *item) const;
 
         //! \brief Launch the properties dialog of the current item.
-        virtual int launchPropertiesDialog() = 0;
+        virtual void launchPropertiesDialog() = 0;
 
     protected:
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

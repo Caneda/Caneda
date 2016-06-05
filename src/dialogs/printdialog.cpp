@@ -81,13 +81,12 @@ namespace Caneda
     {
         if (r == QDialog::Accepted) {
             if (ui.printerChoice->isChecked()) {
-                QPointer<QPrintDialog> d(new QPrintDialog);
-                d->setWindowTitle(tr("Print options", "window title"));
-                d->setEnabledOptions(QAbstractPrintDialog::PrintShowPageSize);
+                QPrintDialog *dialog = new QPrintDialog(this);
+                dialog->setWindowTitle(tr("Print options"));
+                dialog->setEnabledOptions(QAbstractPrintDialog::PrintShowPageSize);
 
-                int status = d->exec();
-
-                delete d.data();
+                int status = dialog->exec();
+                delete dialog;
 
                 if(status == QDialog::Rejected) {
                     return;

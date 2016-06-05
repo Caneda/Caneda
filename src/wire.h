@@ -76,7 +76,7 @@ namespace Caneda
         void loadData(Caneda::XmlReader *reader);
 
         //! \copydoc GraphicsItem::launchPropertiesDialog()
-        int launchPropertiesDialog() { return QDialog::Accepted; }
+        void launchPropertiesDialog() {}
 
     protected:
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
