@@ -53,6 +53,7 @@ namespace Caneda
         defaultSettings["gui/showStatusBar"] = QVariant(bool(true));
         defaultSettings["gui/showSideBarBrowser"] = QVariant(bool(true));
         defaultSettings["gui/showFolderBrowser"] = QVariant(bool(true));
+        defaultSettings["gui/showAll"] = QVariant(bool(true));
         defaultSettings["gui/showFullScreen"] = QVariant(bool(false));
 
         defaultSettings["gui/gridVisible"] = QVariant(bool(true));
@@ -132,7 +133,7 @@ namespace Caneda
         defaultSettings["shortcuts/exitHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Left")));
 
         defaultSettings["shortcuts/showMenuBar"] = QVariant(QKeySequence(tr("Ctrl+M")));
-        defaultSettings["shortcuts/showWidgets"] = QVariant(QKeySequence(tr("Ctrl+Up")));
+        defaultSettings["shortcuts/showAll"] = QVariant(QKeySequence(tr("Ctrl+Up")));
         defaultSettings["shortcuts/showSideBarBrowser"] = QVariant(QKeySequence(tr("C")));
         defaultSettings["shortcuts/showFolderBrowser"] = QVariant(QKeySequence(tr("F")));
         defaultSettings["shortcuts/showFullScreen"] = QVariant(QKeySequence(tr("Ctrl+Shift+F")));

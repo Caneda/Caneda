@@ -126,13 +126,9 @@ namespace Caneda
         void exitHierarchy();
         void backupAndHistory();
 
-        void showMenuBar(bool);
-        void showToolBar(bool);
-        void showStatusBar(bool);
-        void showWidgets(bool);
-        void showSideBarBrowser(bool);
-        void showFolderBrowser(bool);
-        void showFullScreen(bool);
+        void updateVisibility();
+        void showAll();
+        void showFullScreen();
         void editShortcuts();
         void applicationSettings();
 
