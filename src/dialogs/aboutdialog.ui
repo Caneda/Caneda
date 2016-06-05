@@ -67,7 +67,7 @@
        <item>
         <widget class="QLabel" name="labelAbout">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Caneda&lt;/span&gt; - Circuits and Networks EDA&lt;br/&gt;An application for schematic capture and simulation.&lt;br/&gt;&lt;br/&gt;© 2008-2016 Caneda developer team&lt;br/&gt;&lt;br/&gt;&lt;a href=&quot;http://www.caneda.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;http://www.caneda.org&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Caneda&lt;/span&gt; - Circuits and Networks EDA&lt;br/&gt;An application for schematic capture and simulation.&lt;br/&gt;&lt;br/&gt;© 2008-2016 Caneda development team&lt;br/&gt;&lt;br/&gt;&lt;a href=&quot;http://www.caneda.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;http://www.caneda.org&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::RichText</enum>
@@ -106,7 +106,7 @@
        <item>
         <widget class="QLabel" name="labelDeveloper">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Pablo Daniel Pareja Obregón&lt;/span&gt; &amp;lt;&lt;a href=&quot;mailto:parejaobregon@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;parejaobregon@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;&lt;br/&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Maintainer and Developer&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Mercedes Puzio&lt;/span&gt; &amp;lt;&lt;a href=&quot;mpuzio@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;mpuzio@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;&lt;br/&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Website and Documentation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Pablo Daniel Pareja Obregón&lt;/span&gt; &amp;lt;&lt;a href=&quot;mailto:parejaobregon@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;parejaobregon@caneda.org&lt;/span&gt;&lt;/a&gt;&amp;gt;&lt;br/&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Maintainer and Developer&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Mercedes Puzio&lt;/span&gt; &amp;lt;&lt;a href=&quot;mpuzio@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;mpuzio@caneda.org&lt;/span&gt;&lt;/a&gt;&amp;gt;&lt;br/&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Website and Documentation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::RichText</enum>
@@ -155,7 +155,7 @@
        <item>
         <widget class="QLabel" name="labelTranslatorES">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Mercedes Puzio&lt;/span&gt; &amp;lt;&lt;a href=&quot;mpuzio@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;mpuzio@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;&lt;br&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Spanish Translation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Mercedes Puzio&lt;/span&gt; &amp;lt;&lt;a href=&quot;mpuzio@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;mpuzio@caneda.org&lt;/span&gt;&lt;/a&gt;&amp;gt;&lt;br/&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Spanish Translation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::RichText</enum>
