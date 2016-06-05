@@ -93,13 +93,13 @@ namespace Caneda
         }
         if (!widgets.contains(widget)) {
             widgets << widget;
-            connect(widget, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
-            connect(widget, SIGNAL(focussedIn(GraphicsView*)), SLOT(slotUpdateFocussedWidget(GraphicsView*)));
+            connect(widget, SIGNAL(destroyed(QObject*)), SLOT(objectDestroyed(QObject*)));
+            connect(widget, SIGNAL(focussedIn(GraphicsView*)), SLOT(updateFocussedWidget(GraphicsView*)));
         }
 
         if (!scenes.contains(scene)) {
             scenes << scene;
-            connect(scene, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
+            connect(scene, SIGNAL(destroyed(QObject*)), SLOT(objectDestroyed(QObject*)));
         }
     }
 
@@ -110,30 +110,163 @@ namespace Caneda
         }
         if (widgets.contains(widget)) {
             widgets.remove(widget);
-            disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
-            disconnect(widget, SIGNAL(focussedIn(GraphicsView*)), this, SLOT(slotUpdateFocussedWidget(GraphicsView*)));
+            disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(objectDestroyed(QObject*)));
+            disconnect(widget, SIGNAL(focussedIn(GraphicsView*)), this, SLOT(updateFocussedWidget(GraphicsView*)));
         }
 
         GraphicsScene *scene = widget->graphicsScene();
         if (scene && scenes.contains(scene)) {
             scenes.remove(scene);
-            disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
+            disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(objectDestroyed(QObject*)));
+        }
+    }
+
+    //! \brief Toggles the normal select action on.
+    void StateHandler::setNormalAction()
+    {
+        performToggleAction("select", true);
+    }
+
+    /*!
+     * \brief Toogles the action perfomed.
+     *
+     * This method toggles the action corresponding to the sender, invoking the
+     * performToggleAction(const QString&, bool) method, to takes care of
+     * preserving the mutual exclusiveness off the checkable actions.
+     *
+     * While performToggleAction(const QString&, bool) is a general method
+     * this method allows the direct connection to the toggled(bool) signal of
+     * a QAction object.
+     */
+    void StateHandler::performToggleAction(bool on)
+    {
+        QAction *action = qobject_cast<QAction*>(sender());
+        if(action) {
+            performToggleAction(action->objectName(), on);
         }
     }
 
     /*!
-     * \brief Insert a component or painting based on its name and category.
+     * \brief Toogles the action perfomed.
+     *
+     * This method toggles the action and calls the function pointed by
+     * \a func if on is true. This method takes care to preserve the mutual
+     * exclusiveness off the checkable actions.
+     */
+    void StateHandler::performToggleAction(const QString& actionName, bool on)
+    {
+        typedef void (GraphicsScene::*pActionFunc) (QList<GraphicsItem*>&);
+
+        ActionManager *am = ActionManager::instance();
+
+        QAction *action = am->actionForName(actionName);
+        Caneda::MouseAction ma = am->mouseActionForAction(action);
+        pActionFunc func = 0;
+
+        if (actionName == "editDelete") {
+            func = &GraphicsScene::deleteItems;
+        }
+        else if (actionName == "editRotate") {
+            func = &GraphicsScene::rotateItems;
+        }
+        else if (actionName == "editMirrorX") {
+            func = &GraphicsScene::mirrorXItems;
+        }
+        else if (actionName == "editMirrorY") {
+            func = &GraphicsScene::mirrorYItems;
+        }
+
+        QList<QAction*> mouseActions = ActionManager::instance()->mouseActions();
+
+        //toggling off any action switches normal select action "on"
+        if(!on) {
+            // Normal action can't be turned off through UI by clicking
+            // the selct action again.
+            setNormalAction();
+            return;
+        }
+
+        //else part
+        GraphicsScene *scene = 0;
+        if (focussedWidget) {
+            scene = focussedWidget->graphicsScene();
+        }
+        QList<QGraphicsItem*> selectedItems;
+        if (scene) {
+            selectedItems = scene->selectedItems();
+        }
+
+        do {
+            if(!selectedItems.isEmpty() && func != 0) {
+                QList<GraphicsItem*> funcable = filterItems<GraphicsItem>(selectedItems);
+
+                if(funcable.isEmpty()) {
+                    break;
+                }
+
+                (scene->*func)(funcable);
+
+                // Turn off this action
+                performToggleAction(action->objectName(), false);
+                return;
+            }
+        } while(false); //For break
+
+        // Just ensure all other action's are off.
+        foreach(QAction *act, mouseActions) {
+            if(act != action) {
+                act->blockSignals(true);
+                act->setChecked(false);
+                act->blockSignals(false);
+            }
+        }
+
+        QHash<QString, GraphicsItem*>::const_iterator it =
+            toolbarInsertibles.begin();
+        while (it != toolbarInsertibles.end()) {
+            QAction *act = am->actionForName(it.key());
+            act->blockSignals(true);
+            act->setChecked(false);
+            act->blockSignals(false);
+            ++it;
+        }
+
+        if (actionName == "insertItem" && insertibles.size() == 1) {
+            for (it = toolbarInsertibles.begin();
+                    it != toolbarInsertibles.end(); ++it) {
+                if (areItemsEquivalent(it.value(), insertibles.first())) {
+                    QAction *act = am->actionForName(it.key());
+                    act->blockSignals(true);
+                    act->setChecked(true);
+                    act->blockSignals(false);
+                }
+            }
+        }
+
+        // Ensure current action is on visibly
+        action->blockSignals(true);
+        action->setChecked(true);
+        action->blockSignals(false);
+
+        mouseAction = ma;
+
+        foreach (GraphicsView *widget, widgets) {
+            applyState(widget);
+        }
+    }
+
+    /*!
+     * \brief Insert an item based on its name and category.
      *
      * Get a component or painting based on the name and category. The
      * painting is processed in a special hardcoded way (with no libraries
      * involved). Some other "miscellaneous" items are hardcoded too. On the
      * other hand, components are loaded from existing libraries.
      *
-     * \param item: item's name
-     * \param category: item's category name
-     * \sa GraphicsScene::dropEvent()
+     * \param item Item's name
+     * \param category Item's category
      */
-    void StateHandler::slotSidebarItemClicked(const QString& item,
+    void StateHandler::sidebarItemClicked(const QString& item,
             const QString& category)
     {
         // Clear old item first
@@ -173,19 +306,32 @@ namespace Caneda
             if(category == "Paint Tools" || category == "Layout Tools") {
                 paintingDrawItem = static_cast<Painting*>(qItem);
                 paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-                slotPerformToggleAction("paintingDraw", true);
+                performToggleAction("paintingDraw", true);
             }
             else {
                 insertibles << qItem;
-                slotPerformToggleAction("insertItem", true);
+                performToggleAction("insertItem", true);
             }
         }
         else {
-            slotSetNormalAction();
+            setNormalAction();
         }
     }
 
-    void StateHandler::slotHandlePaste()
+    void StateHandler::insertToolbarComponent(const QString& sender, bool on)
+    {
+        GraphicsItem *item = toolbarInsertibles[sender];
+        if (!on || !item) {
+            setNormalAction();
+            return;
+        }
+
+        clearInsertibles();
+        insertibles << item->copy();
+        performToggleAction("insertItem", true);
+    }
+
+    void StateHandler::handlePaste()
     {
         QClipboard *clipboard =  QApplication::clipboard();
         const QString text = clipboard->text();
@@ -245,24 +391,11 @@ namespace Caneda
         if (!_items.isEmpty()) {
             clearInsertibles();
             insertibles = _items;
-            slotPerformToggleAction("insertItem", true);
+            performToggleAction("insertItem", true);
         }
     }
 
-    void StateHandler::slotInsertToolbarComponent(const QString& sender, bool on)
-    {
-        GraphicsItem *item = toolbarInsertibles[sender];
-        if (!on || !item) {
-            slotSetNormalAction();
-            return;
-        }
-
-        clearInsertibles();
-        insertibles << item->copy();
-        slotPerformToggleAction("insertItem", true);
-    }
-
-    void StateHandler::slotOnObjectDestroyed(QObject *object)
+    void StateHandler::objectDestroyed(QObject *object)
     {
         /*!
          * \todo HACK: Using static cast to convert QObject pointers to scene
@@ -278,140 +411,9 @@ namespace Caneda
         widgets.remove(widget);
     }
 
-    void StateHandler::slotUpdateFocussedWidget(GraphicsView *widget)
+    void StateHandler::updateFocussedWidget(GraphicsView *widget)
     {
         focussedWidget = widget;
-    }
-
-    /*!
-     * \brief Toogles the action perfomed.
-     *
-     * This method toggles the action corresponding to the sender, invoking the
-     * slotPerformToggleAction(const QString&, bool) method, to takes care of
-     * preserving the mutual exclusiveness off the checkable actions.
-     *
-     * While slotPerformToggleAction(const QString&, bool) is a general method
-     * this method allows the direct connection to the toggled(bool) signal of
-     * a QAction object.
-     */
-    void StateHandler::slotPerformToggleAction(bool on)
-    {
-        QAction *action = qobject_cast<QAction*>(sender());
-        if(action) {
-            slotPerformToggleAction(action->objectName(), on);
-        }
-    }
-
-    /*!
-     * \brief Toogles the action perfomed.
-     *
-     * This method toggles the action and calls the function pointed by
-     * \a func if on is true. This method takes care to preserve the mutual
-     * exclusiveness off the checkable actions.
-     */
-    void StateHandler::slotPerformToggleAction(const QString& actionName, bool on)
-    {
-        typedef void (GraphicsScene::*pActionFunc) (QList<GraphicsItem*>&);
-
-        ActionManager *am = ActionManager::instance();
-
-        QAction *action = am->actionForName(actionName);
-        Caneda::MouseAction ma = am->mouseActionForAction(action);
-        pActionFunc func = 0;
-
-        if (actionName == "editDelete") {
-            func = &GraphicsScene::deleteItems;
-        }
-        else if (actionName == "editRotate") {
-            func = &GraphicsScene::rotateItems;
-        }
-        else if (actionName == "editMirrorX") {
-            func = &GraphicsScene::mirrorXItems;
-        }
-        else if (actionName == "editMirrorY") {
-            func = &GraphicsScene::mirrorYItems;
-        }
-
-        QList<QAction*> mouseActions = ActionManager::instance()->mouseActions();
-
-        //toggling off any action switches normal select action "on"
-        if(!on) {
-            // Normal action can't be turned off through UI by clicking
-            // the selct action again.
-            slotSetNormalAction();
-            return;
-        }
-
-        //else part
-        GraphicsScene *scene = 0;
-        if (focussedWidget) {
-            scene = focussedWidget->graphicsScene();
-        }
-        QList<QGraphicsItem*> selectedItems;
-        if (scene) {
-            selectedItems = scene->selectedItems();
-        }
-
-        do {
-            if(!selectedItems.isEmpty() && func != 0) {
-                QList<GraphicsItem*> funcable = filterItems<GraphicsItem>(selectedItems);
-
-                if(funcable.isEmpty()) {
-                    break;
-                }
-
-                (scene->*func)(funcable);
-
-                // Turn off this action
-                slotPerformToggleAction(action->objectName(), false);
-                return;
-            }
-        } while(false); //For break
-
-        // Just ensure all other action's are off.
-        foreach(QAction *act, mouseActions) {
-            if(act != action) {
-                act->blockSignals(true);
-                act->setChecked(false);
-                act->blockSignals(false);
-            }
-        }
-
-        QHash<QString, GraphicsItem*>::const_iterator it =
-            toolbarInsertibles.begin();
-        while (it != toolbarInsertibles.end()) {
-            QAction *act = am->actionForName(it.key());
-            act->blockSignals(true);
-            act->setChecked(false);
-            act->blockSignals(false);
-            ++it;
-        }
-
-        if (actionName == "insertItem" && insertibles.size() == 1) {
-            for (it = toolbarInsertibles.begin();
-                    it != toolbarInsertibles.end(); ++it) {
-                if (areItemsEquivalent(it.value(), insertibles.first())) {
-                    QAction *act = am->actionForName(it.key());
-                    act->blockSignals(true);
-                    act->setChecked(true);
-                    act->blockSignals(false);
-                }
-            }
-        }
-
-        // Ensure current action is on visibly
-        action->blockSignals(true);
-        action->setChecked(true);
-        action->blockSignals(false);
-
-        mouseAction = ma;
-        applyStateToAllWidgets();
-    }
-
-    //! \brief Toggles the normal select action on.
-    void StateHandler::slotSetNormalAction()
-    {
-        slotPerformToggleAction("select", true);
     }
 
     void StateHandler::applyCursor(GraphicsView *widget)
@@ -482,13 +484,6 @@ namespace Caneda
                 Painting *copy = paintingDrawItem->copy();
                 scene->beginPaintingDraw(copy);
             }
-        }
-    }
-
-    void StateHandler::applyStateToAllWidgets()
-    {
-        foreach (GraphicsView *widget, widgets) {
-            applyState(widget);
         }
     }
 

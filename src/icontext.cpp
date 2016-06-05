@@ -183,7 +183,7 @@ namespace Caneda
         m_sidebarItems = new SidebarItemsModel(this);
         m_sidebarBrowser = new SidebarItemsBrowser(m_sidebarItems);
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(sidebarItemClicked(const QString&, const QString&)));
 
         Settings *settings = Settings::instance();
 
@@ -283,7 +283,7 @@ namespace Caneda
         QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
 
         connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(sidebarItemClicked(const QString&, const QString&)));
 
         quickInsert->exec(QCursor::pos());
 
@@ -300,7 +300,7 @@ namespace Caneda
         m_sidebarItems = new SidebarItemsModel(this);
         m_sidebarBrowser = new SidebarItemsBrowser(m_sidebarItems);
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(sidebarItemClicked(const QString&, const QString&)));
 
         // Load schematic libraries
         LibraryManager *libraryManager = LibraryManager::instance();
@@ -406,7 +406,7 @@ namespace Caneda
         QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
 
         connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(sidebarItemClicked(const QString&, const QString&)));
 
         quickInsert->exec(QCursor::pos());
 
@@ -491,7 +491,7 @@ namespace Caneda
         m_sidebarItems = new SidebarItemsModel(this);
         m_sidebarBrowser = new SidebarItemsBrowser(m_sidebarItems);
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(sidebarItemClicked(const QString&, const QString&)));
 
         QList<QPair<QString, QPixmap> > miscellaneousItems;
         miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
@@ -573,7 +573,7 @@ namespace Caneda
         QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
 
         connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(sidebarItemClicked(const QString&, const QString&)));
 
         quickInsert->exec(QCursor::pos());
 

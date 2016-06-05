@@ -45,21 +45,23 @@ namespace Caneda
         void unregisterWidget(GraphicsView *widget);
 
     public Q_SLOTS:
-        void slotSidebarItemClicked(const QString& item, const QString& category);
-        void slotHandlePaste();
-        void slotOnObjectDestroyed(QObject *object);
-        void slotUpdateFocussedWidget(GraphicsView *widget);
-        void slotPerformToggleAction(bool on);
-        void slotPerformToggleAction(const QString& actionName, bool on);
-        void slotSetNormalAction();
-        void slotInsertToolbarComponent(const QString& action, bool on);
+        void setNormalAction();
+        void performToggleAction(bool on);
+        void performToggleAction(const QString& actionName, bool on);
+
+        void sidebarItemClicked(const QString& item, const QString& category);
+        void insertToolbarComponent(const QString& action, bool on);
+
+        void handlePaste();
+
+        void objectDestroyed(QObject *object);
+        void updateFocussedWidget(GraphicsView *widget);
 
     private:
         explicit StateHandler(QObject *parent = 0);
 
         void applyCursor(GraphicsView *widget);
         void applyState(GraphicsView *widget);
-        void applyStateToAllWidgets();
 
         void clearInsertibles();
 

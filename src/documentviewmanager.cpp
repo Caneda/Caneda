@@ -116,7 +116,7 @@ namespace Caneda
     void DocumentViewManager::newDocument(IContext *context)
     {
         StateHandler *handler = StateHandler::instance();
-        handler->slotSetNormalAction();
+        handler->setNormalAction();
 
         IDocument *document = context->newDocument();
         if (!document) {
@@ -135,7 +135,7 @@ namespace Caneda
     bool DocumentViewManager::openFile(const QString &fileName)
     {
         StateHandler *handler = StateHandler::instance();
-        handler->slotSetNormalAction();
+        handler->setNormalAction();
 
         if(fileName.isEmpty()) {
             return false;

@@ -1283,47 +1283,47 @@ namespace Caneda
         action->setStatusTip(tr("Activate select mode"));
         action->setWhatsThis(tr("Select\n\nActivates select mode"));
         action->setChecked(true);
-        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(performToggleAction(bool)));
 
         action = am->createMouseAction("editDelete", Caneda::Deleting, Caneda::icon("edit-delete"), tr("&Delete"));
         action->setStatusTip(tr("Deletes the selected components"));
         action->setWhatsThis(tr("Delete\n\nDeletes the selected components"));
-        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(performToggleAction(bool)));
 
         action = am->createMouseAction("editRotate", Caneda::Rotating, Caneda::icon("object-rotate-right"), tr("Rotate"));
         action->setStatusTip(tr("Rotates the selected component"));
         action->setWhatsThis(tr("Rotate\n\nRotates the selected component counter-clockwise"));
-        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(performToggleAction(bool)));
 
         action = am->createMouseAction("editMirrorX", Caneda::MirroringX, Caneda::icon("object-flip-vertical"), tr("Mirror vertically"));
         action->setStatusTip(tr("Mirrors the selected components vertically"));
         action->setWhatsThis(tr("Mirror vertically Axis\n\nMirrors the selected components vertically"));
-        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(performToggleAction(bool)));
 
         action = am->createMouseAction("editMirrorY", Caneda::MirroringY, Caneda::icon("object-flip-horizontal"), tr("Mirror horizontally"));
         action->setStatusTip(tr("Mirrors the selected components horizontally"));
         action->setWhatsThis(tr("Mirror horizontally\n\nMirrors the selected components horizontally"));
-        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(performToggleAction(bool)));
 
         action = am->createMouseAction("insertWire", Caneda::Wiring, Caneda::icon("wire"), tr("Wire"));
         action->setStatusTip(tr("Inserts a wire"));
         action->setWhatsThis(tr("Wire\n\nInserts a wire"));
-        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(performToggleAction(bool)));
 
         action = am->createMouseAction("zoomArea", Caneda::ZoomingAreaEvent, Caneda::icon("transform-scale"), tr("Zoom area"));
         action->setStatusTip(tr("Zooms a selected area in the current view"));
         action->setWhatsThis(tr("Zooms a selected area in the current view"));
-        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(performToggleAction(bool)));
 
         action = am->createMouseAction("insertItem", Caneda::InsertingItems, tr("Insert item"));
         action->setStatusTip(tr("Inserts an item"));
         action->setWhatsThis(tr("Insert item\n\nInserts an item"));
-        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(performToggleAction(bool)));
 
         action = am->createMouseAction("paintingDraw", Caneda::PaintingDrawEvent, tr("Painting draw operation"));
         action->setStatusTip(tr("Begins a painting draw operation"));
         action->setWhatsThis(tr("Painting draw operation\n\nBegins a painting draw operation"));
-        connect(action, SIGNAL(toggled(bool)), handler, SLOT(slotPerformToggleAction(bool)));
+        connect(action, SIGNAL(toggled(bool)), handler, SLOT(performToggleAction(bool)));
 
         // Load action shortcuts and add the actions to the tabWidget to receive
         // shortcuts when the menu is hidden.
@@ -1596,7 +1596,7 @@ namespace Caneda
         StateHandler *handler = StateHandler::instance();
         m_project = new Project(this);
         connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(sidebarItemClicked(const QString&, const QString&)));
         connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
                 SLOT(open(QString)));
 
