@@ -140,10 +140,6 @@ namespace Caneda
         void launchPropertiesDialog();
         void statusBarMessage(const QString& newPos);
 
-    protected:
-        virtual void contextMenuEvent(QContextMenuEvent * event);
-        void closeEvent(QCloseEvent *closeEvent);
-
     private:
         explicit MainWindow(QWidget *parent = 0);
 
@@ -159,6 +155,9 @@ namespace Caneda
 
         void loadSettings();
         void saveSettings();
+
+        void contextMenuEvent(QContextMenuEvent * event);
+        void closeEvent(QCloseEvent *closeEvent);
 
         TabWidget *m_tabWidget;
         FolderBrowser *m_folderBrowser;

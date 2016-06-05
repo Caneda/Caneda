@@ -114,46 +114,780 @@ namespace Caneda
         return m_sidebarDockWidget;
     }
 
-    //! \brief Initializes the Components sidebar.
-    void MainWindow::setupSidebar()
+    /*!
+     * \brief Updates the window and tab title.
+     *
+     *  Update the window and tab title. The [*] in the title indicates to the
+     *  application where to insert the file modified character * when
+     *  setWindowModified is invoked.
+     */
+    void MainWindow::updateWindowTitle()
     {
-        m_sidebarDockWidget = new QDockWidget(this);
-        m_sidebarDockWidget->setObjectName("componentsSidebar");
-        m_sidebarDockWidget->setMinimumWidth(260);
-        addDockWidget(Qt::LeftDockWidgetArea, m_sidebarDockWidget);
+        Tab *tab = tabWidget()->currentTab();
+        if(!tab) {
+            setWindowTitle(QString("Caneda"));
+            return;
+        }
+
+        IView *view = tab->activeView();
+        if (!view) {
+            return;
+        }
+
+        setWindowTitle(tab->tabText() + QString("[*] - Caneda"));
+        setWindowModified(view->document()->isModified());
     }
 
-    //! \brief Initializes the Projects sidebar.
-    void MainWindow::setupProjectsSidebar()
+    /*!
+     * \brief Creates or opens a new file used for the program initial state.
+     *
+     * This method creates or opens a new file used for the program initial
+     * state. If an argument with filenames is present, tries to open all files
+     * in the argument, otherwise creates a new empty file.
+     */
+    void MainWindow::initFiles(QStringList files)
     {
-        StateHandler *handler = StateHandler::instance();
-        m_project = new Project(this);
-        connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
-        connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
-                SLOT(open(QString)));
+        DocumentViewManager *manager = DocumentViewManager::instance();
 
-        m_projectDockWidget = new QDockWidget(m_project->windowTitle(), this);
-        m_projectDockWidget->setWidget(m_project);
-        m_projectDockWidget->setObjectName("projectsSidebar");
-        m_projectDockWidget->setVisible(false);
-        addDockWidget(Qt::LeftDockWidgetArea, m_projectDockWidget);
+        if(!files.isEmpty()) {
+            foreach(const QString &str, files) {
+                open(str);
+            }
+        }
+        else {
+            manager->newDocument(SchematicContext::instance());
+        }
+
+        // Set the dialog to open in the current file folder
+        QFileInfo info(manager->currentDocument()->fileName());
+        QString path = info.path();
+        m_folderBrowser->setCurrentFolder(path);
     }
 
-    //! \brief Initializes the FolderBrowser sidebar.
-    void MainWindow::setupFolderBrowserSidebar()
+    //! \brief Opens the file new dialog.
+    void MainWindow::newFile()
     {
-        m_folderBrowser = new FolderBrowser(this);
-
-        connect(m_folderBrowser, SIGNAL(itemDoubleClicked(QString)), this,
-                SLOT(open(QString)));
-
-        m_browserDockWidget = new QDockWidget(m_folderBrowser->windowTitle(), this);
-        m_browserDockWidget->setWidget(m_folderBrowser);
-        m_browserDockWidget->setObjectName("folderBrowserSidebar");
-        addDockWidget(Qt::LeftDockWidgetArea, m_browserDockWidget);
-        tabifyDockWidget(m_browserDockWidget, m_projectDockWidget);
+        if(m_project->isValid()) {
+            addToProject();
+        }
+        else {
+            QPointer<FileNewDialog> p = new FileNewDialog(this);
+            p->exec();
+            delete p;
+        }
     }
+
+    //! \brief Create a new schematic file.
+    void MainWindow::newSchematic()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->newDocument(SchematicContext::instance());
+    }
+
+    //! \brief Create a new symbol file.
+    void MainWindow::newSymbol()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->newDocument(SymbolContext::instance());
+    }
+
+    //! \brief Create a new layout file.
+    void MainWindow::newLayout()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->newDocument(LayoutContext::instance());
+    }
+
+    //! \brief Create a new text file.
+    void MainWindow::newText()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->newDocument(TextContext::instance());
+    }
+
+    /*!
+     * \brief Opens the file open dialog.
+     *
+     * Opens the file open dialog. If the file is already opened, the
+     * corresponding tab is set as the current one. Otherwise the file is
+     * opened and its tab is set as current tab.
+     */
+    void MainWindow::open(QString fileName)
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+
+        if(fileName.isEmpty()) {
+            if(!m_project->isValid()) {
+                fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),
+                                                        manager->fileNameFilters().join(QString()));
+            }
+            else {
+                ProjectFileOpenDialog *p = new ProjectFileOpenDialog(m_project->libraryFileName(), this);
+                int status = p->exec();
+
+                if(status == QDialog::Accepted) {
+                    fileName = p->fileName();
+                }
+
+                delete p;
+            }
+        }
+
+        if(!fileName.isEmpty()) {
+            if(QFileInfo(fileName).suffix() == "xpro") {
+                openProject(fileName);
+            }
+            else {
+                manager->openFile(fileName);
+            }
+        }
+    }
+
+    //! \brief Opens the selected file format given an opened file.
+    void MainWindow::openFileFormat(const QString &suffix)
+    {
+        IDocument *doc = DocumentViewManager::instance()->currentDocument();
+
+        if (!doc) return;
+
+        if (doc->fileName().isEmpty()) {
+            QMessageBox::critical(0, tr("Critical"),
+                                  tr("Please, save current file first!"));
+            return;
+        }
+
+        QFileInfo info(doc->fileName());
+        QString filename = info.completeBaseName();
+        QString path = info.path();
+        filename = QDir::toNativeSeparators(path + "/" + filename + "." + suffix);
+
+        open(filename);
+    }
+
+    /*!
+     * \brief Open recently opened file.
+     *
+     * First identify the Action that called the slot and then load the
+     * corresponding file. The entire file path is stored in action->data()
+     * and the name of the file without the path is stored in action->text().
+     *
+     * \sa open(), DocumentViewManager::updateRecentFilesActionList()
+     */
+    void MainWindow::openRecent()
+    {
+        QAction *action = qobject_cast<QAction *>(sender());
+        if(action) {
+            open(action->data().toString());
+        }
+    }
+
+    //! \brief Clears the list of recently opened documents.
+    void MainWindow::clearRecent()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        manager->clearRecentFiles();
+    }
+
+    //! \brief Saves the current active document.
+    void MainWindow::save()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (!document) {
+            return;
+        }
+
+        if (document->fileName().isEmpty()) {
+            saveAs();
+            return;
+        }
+
+        QString errorMessage;
+        if (!document->save(&errorMessage)) {
+            QMessageBox::critical(this,
+                    tr("%1 : File save error").arg(document->fileName()), errorMessage);
+        }
+    }
+
+    //! \brief Opens a dialog to select a new filename and saves the current file.
+    void MainWindow::saveAs()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if(!document) {
+            return;
+        }
+
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(),
+                                                        manager->currentDocument()->context()->fileNameFilters().join(QString()));
+        if(fileName.isEmpty()) {
+            return;
+        }
+
+        QString oldFileName = document->fileName();
+        document->setFileName(fileName);
+
+        QString errorMessage;
+        if(!document->save(&errorMessage)) {
+            QMessageBox::critical(this, tr("%1 : File save error").arg(document->fileName()), errorMessage);
+            document->setFileName(oldFileName);
+        }
+        else {
+            open(fileName); // The document was saved ok, now reopen the document to load text highlighting
+        }
+
+        //! \todo Update/close other open document having same name as the above saved one.
+    }
+
+    /*!
+     * \brief Opens a dialog giving the user options to save all modified files.
+     *
+     * \return True on success, false on cancel
+     */
+    bool MainWindow::saveAll()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        QList<IDocument*> openDocuments = manager->documents();
+
+        return manager->saveDocuments(openDocuments);
+    }
+
+    /*!
+     * \brief Closes the selected tab.
+     *
+     * Before closing it prompts user whether to save or not if the document is
+     * modified and takes necessary actions.
+     */
+    void MainWindow::closeFile()
+    {
+        Tab *current = tabWidget()->currentTab();
+        if (current) {
+            current->close();
+        }
+    }
+
+    //! \brief Opens the print dialog.
+    void MainWindow::print()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (!document) {
+            return;
+        }
+
+        QPointer<PrintDialog> p = new PrintDialog(document, this);
+        p->exec();
+        delete p;
+    }
+
+    //! \brief Opens the export image dialog.
+    void MainWindow::exportImage()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (!document) {
+            return;
+        }
+
+        QPointer<ExportDialog> p = new ExportDialog(document, this);
+        p->exec();
+        delete p;
+    }
+
+    //! \brief Calls the current document undo action.
+    void MainWindow::undo()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->undo();
+        }
+
+    }
+
+    //! \brief Calls the current document redo action.
+    void MainWindow::redo()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->redo();
+        }
+    }
+
+    //! \brief Calls the current document cut action.
+    void MainWindow::cut()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->cut();
+        }
+    }
+
+    //! \brief Calls the current document copy action.
+    void MainWindow::copy()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->copy();
+        }
+    }
+
+    //! \brief Calls the current document paste action.
+    void MainWindow::paste()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->paste();
+        }
+    }
+
+    //! \brief Calls the current document find action.
+    void MainWindow::find()
+    {
+        //! \todo Implement this or rather port directly
+    }
+
+    //! \brief Calls the current document select all action.
+    void MainWindow::selectAll()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->selectAll();
+        }
+    }
+
+    //! \brief Calls the current view zoom in action.
+    void MainWindow::zoomIn()
+    {
+        IView* view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->zoomIn();
+        }
+    }
+
+    //! \brief Calls the current view zoom out action.
+    void MainWindow::zoomOut()
+    {
+        IView* view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->zoomOut();
+        }
+    }
+
+    //! \brief Calls the current view zoom best fit action.
+    void MainWindow::zoomBestFit()
+    {
+        IView* view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->zoomFitInBest();
+        }
+    }
+
+    //! \brief Calls the current view zoom original action.
+    void MainWindow::zoomOriginal()
+    {
+        IView* view = DocumentViewManager::instance()->currentView();
+        if(view) {
+            view->zoomOriginal();
+        }
+    }
+
+    //! \brief Calls the current view split horizontal action.
+    void MainWindow::splitHorizontal()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView* view = manager->currentView();
+        if(view) {
+            manager->splitView(view, Qt::Horizontal);
+        }
+    }
+
+    //! \brief Calls the current view split vertical action.
+    void MainWindow::splitVertical()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView* view = manager->currentView();
+        if(view) {
+            manager->splitView(view, Qt::Vertical);
+        }
+    }
+
+    //! \brief Calls the current view close split action.
+    void MainWindow::closeSplit()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView* view = manager->currentView();
+        if(view) {
+            manager->closeView(view);
+        }
+    }
+
+    //! \brief Aligns the selected elements to the top
+    void MainWindow::alignTop()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->alignTop();
+        }
+    }
+
+    //! \brief Aligns the selected elements to the bottom
+    void MainWindow::alignBottom()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->alignBottom();
+        }
+    }
+
+    //! \brief Aligns the selected elements to the left
+    void MainWindow::alignLeft()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->alignLeft();
+        }
+    }
+
+    //! \brief Aligns the selected elements to the right
+    void MainWindow::alignRight()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->alignRight();
+        }
+    }
+
+    //! \brief Centers the selected elements horizontally.
+    void MainWindow::centerHorizontal()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->centerHorizontal();
+        }
+    }
+
+    //! \brief Centers the selected elements vertically.
+    void MainWindow::centerVertical()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->centerVertical();
+        }
+    }
+
+    //! \brief Distributes the selected elements horizontally.
+    void MainWindow::distributeHorizontal()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->distributeHorizontal();
+        }
+    }
+
+    //! \brief Distributes the selected elements vertically.
+    void MainWindow::distributeVertical()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->distributeVertical();
+        }
+    }
+
+    //! \brief Prepares the window and created a new project.
+    void MainWindow::newProject()
+    {
+        if(saveAll()) {
+            m_tabWidget->closeAllTabs();
+            m_projectDockWidget->setVisible(true);
+            m_projectDockWidget->raise();
+            m_project->slotNewProject();
+        }
+    }
+
+    //! \brief Prepares the window and opens a new project.
+    void MainWindow::openProject(QString fileName)
+    {
+        if(saveAll()) {
+            m_tabWidget->closeAllTabs();
+            m_projectDockWidget->setVisible(true);
+            m_projectDockWidget->raise();
+            m_project->slotOpenProject(fileName);
+        }
+    }
+
+    //! \brief Adds a file to the current project.
+    void MainWindow::addToProject()
+    {
+        m_projectDockWidget->setVisible(true);
+        m_projectDockWidget->raise();
+        m_project->slotAddToProject();
+    }
+
+    //! \brief Removes a file from the current project.
+    void MainWindow::removeFromProject()
+    {
+        m_projectDockWidget->setVisible(true);
+        m_projectDockWidget->raise();
+        m_project->slotRemoveFromProject();
+    }
+
+    //! \brief Closes the current project.
+    void MainWindow::closeProject()
+    {
+        if(saveAll()) {
+            m_project->slotCloseProject();
+            m_tabWidget->closeAllTabs();
+        }
+    }
+
+    //! \brief Opens the layout document corresponding to the current file.
+    void MainWindow::openLayout()
+    {
+        LayoutContext *ly = LayoutContext::instance();
+        openFileFormat(ly->defaultSuffix());
+    }
+
+    //! \brief Opens the schematic document corresponding to the current file.
+    void MainWindow::openSchematic()
+    {
+        SchematicContext *sc = SchematicContext::instance();
+        openFileFormat(sc->defaultSuffix());
+    }
+
+    //! \brief Opens the symbol document corresponding to the current file.
+    void MainWindow::openSymbol()
+    {
+        SymbolContext *sy = SymbolContext::instance();
+        openFileFormat(sy->defaultSuffix());
+    }
+
+    //! \brief Simulates the current document.
+    void MainWindow::simulate()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->simulate();
+        }
+    }
+
+    //! \brief Opens the simulation corresponding to the current file.
+    void MainWindow::openSimulation()
+    {
+        SimulationContext *si = SimulationContext::instance();
+        openFileFormat(si->defaultSuffix());
+    }
+
+    //! \brief Opens the log corresponding to the current file.
+    void MainWindow::openLog()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+
+        QFileInfo info(manager->currentDocument()->fileName());
+        QString path = info.path();
+        QString baseName = info.completeBaseName();
+
+        manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".log"));
+    }
+
+    //! \brief Opens the netlist corresponding to the current file.
+    void MainWindow::openNetlist()
+    {
+        DocumentViewManager *manager = DocumentViewManager::instance();
+
+        QFileInfo info(manager->currentDocument()->fileName());
+        QString path = info.path();
+        QString baseName = info.completeBaseName();
+
+        manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".net"));
+    }
+
+    //! \brief Opens the quick launcher dialog.
+    void MainWindow::quickLauncher()
+    {
+        QuickLauncher *launcher = new QuickLauncher(this);
+        launcher->exec(QCursor::pos());
+        delete launcher;
+    }
+
+    //! \brief Opens the quick insert dialog.
+    void MainWindow::quickInsert()
+    {
+        IView *view = DocumentViewManager::instance()->currentView();
+        if (view) {
+            view->context()->quickInsert();
+        }
+    }
+
+    //! \brief Opens the quick open dialog.
+    void MainWindow::quickOpen()
+    {
+        QuickOpen *quickBrowser = new QuickOpen(this);
+
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (document) {
+            // Set the dialog to open in the current file folder
+            QFileInfo info(document->fileName());
+            QString path = info.path();
+
+            quickBrowser->setCurrentFolder(path);
+        }
+
+        connect(quickBrowser, SIGNAL(itemSelected(QString)), this, SLOT(open(QString)));
+
+        quickBrowser->exec(QCursor::pos());
+        delete quickBrowser;
+    }
+
+    //! \brief Opens the selected item file description for edition.
+    void MainWindow::enterHierarchy()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->enterHierarchy();
+        }
+    }
+
+    //! \brief Opens the parent document from where this item was opened.
+    void MainWindow::exitHierarchy()
+    {
+        IDocument *document = DocumentViewManager::instance()->currentDocument();
+        if (document) {
+            document->exitHierarchy();
+        }
+    }
+
+    //! \brief Opens the backup and history file dialog.
+    void MainWindow::backupAndHistory()
+    {
+        m_project->slotBackupAndHistory();
+    }
+
+    //! \brief Updates the visibility of the different toolbars and widgets.
+    void MainWindow::updateVisibility()
+    {
+        ActionManager* am = ActionManager::instance();
+
+        menuBar()->setVisible(am->actionForName("showMenuBar")->isChecked());
+
+        fileToolbar->setVisible(am->actionForName("showToolBar")->isChecked());
+        editToolbar->setVisible(am->actionForName("showToolBar")->isChecked());
+        viewToolbar->setVisible(am->actionForName("showToolBar")->isChecked());
+        workToolbar->setVisible(am->actionForName("showToolBar")->isChecked());
+
+        statusBar()->setVisible(am->actionForName("showStatusBar")->isChecked());
+
+        m_sidebarDockWidget->setVisible(am->actionForName("showSideBarBrowser")->isChecked());
+        m_browserDockWidget->setVisible(am->actionForName("showFolderBrowser")->isChecked());
+    }
+
+    //! \brief Toogles the visibility of all widgets at once.
+    void MainWindow::showAll()
+    {
+        ActionManager* am = ActionManager::instance();
+
+        bool show = am->actionForName("showAll")->isChecked();
+
+        am->actionForName("showMenuBar")->setChecked(show);
+        am->actionForName("showToolBar")->setChecked(show);
+        am->actionForName("showStatusBar")->setChecked(show);
+        am->actionForName("showSideBarBrowser")->setChecked(show);
+        am->actionForName("showFolderBrowser")->setChecked(show);
+
+        updateVisibility();
+    }
+
+    //! \brief Toogles the full screen mode.
+    void MainWindow::showFullScreen()
+    {
+        ActionManager* am = ActionManager::instance();
+
+        if(am->actionForName("showFullScreen")->isChecked()) {
+            QMainWindow::showFullScreen();
+        }
+        else {
+            showMaximized();
+        }
+    }
+
+    //! \brief Opens the shortcuts editor dialog.
+    void MainWindow::editShortcuts()
+    {
+        ShortcutsDialog *dialog = new ShortcutsDialog(this);
+        dialog->exec();
+        delete dialog;
+    }
+
+    //! \brief Opens the applications settings dialog.
+    void MainWindow::applicationSettings()
+    {
+        SettingsDialog *dialog = new SettingsDialog(this);
+        int result = dialog->exec();
+
+        // Update all document views to reflect the current settings.
+        if(result == QDialog::Accepted) {
+            DocumentViewManager::instance()->updateSettingsChanges();
+            repaint();
+        }
+
+        delete dialog;
+    }
+
+    //! \brief Opens the help index.
+    void MainWindow::helpIndex()
+    {
+        QDesktopServices::openUrl(QUrl("http://docs.caneda.org"));
+    }
+
+    //! \brief Opens the examples repository in an external window.
+    void MainWindow::helpExamples()
+    {
+        QDesktopServices::openUrl(QUrl("https://github.com/Caneda/Examples"));
+    }
+
+    //! \brief Opens the about dialog.
+    void MainWindow::about()
+    {
+        QPointer<AboutDialog> p = new AboutDialog(this);
+        p->exec();
+        delete p;
+    }
+
+    //! \brief Opens the about Qt dialog.
+    void MainWindow::aboutQt()
+    {
+        QApplication::aboutQt();
+    }
+
+    /*!
+     * \brief Launches the properties dialog corresponding to current document.
+     *
+     * The properties dialog should be some kind of settings dialog, but specific
+     * to the current document and context.
+     *
+     * This method should be implemented according to the calling context. For
+     * example, the properties dialog for a schematic scene should be a simple
+     * dialog to add or remove properties. In that case, if a component is selected
+     * the properties dialog should contain the component properties. On the
+     * other hand, when called from a simulation context, simulation options may
+     * be presented for the user. In order to do so, and be context aware, the
+     * IDocument::launchPropertiesDialog() of the current document is invoked.
+     *
+     * \sa IDocument::launchPropertiesDialog()
+     */
+     void MainWindow::launchPropertiesDialog()
+     {
+         IDocument *document = DocumentViewManager::instance()->currentDocument();
+         if (document) {
+             document->launchPropertiesDialog();
+         }
+     }
+
+     //! \brief Sets a new statusbar message.
+     void MainWindow::statusBarMessage(const QString& newPos)
+     {
+         m_statusLabel->setText(newPos);
+     }
 
     //! \brief Creates and initializes all the actions used.
     void MainWindow::initActions()
@@ -847,737 +1581,45 @@ namespace Caneda
         statusBarWidget->addPermanentWidget(viewToolbar);
     }
 
-    //! \brief Syncs the settings to the configuration file and closes the window.
-    void MainWindow::closeEvent(QCloseEvent *e)
+    //! \brief Initializes the Components sidebar.
+    void MainWindow::setupSidebar()
     {
-        if(saveAll()) {
-            saveSettings();
-            e->accept();
-        }
-        else {
-            e->ignore();
-        }
+        m_sidebarDockWidget = new QDockWidget(this);
+        m_sidebarDockWidget->setObjectName("componentsSidebar");
+        m_sidebarDockWidget->setMinimumWidth(260);
+        addDockWidget(Qt::LeftDockWidgetArea, m_sidebarDockWidget);
     }
 
-    //! \brief Opens the file new dialog.
-    void MainWindow::newFile()
+    //! \brief Initializes the Projects sidebar.
+    void MainWindow::setupProjectsSidebar()
     {
-        if(m_project->isValid()) {
-            addToProject();
-        }
-        else {
-            QPointer<FileNewDialog> p = new FileNewDialog(this);
-            p->exec();
-            delete p;
-        }
-    }
-
-    //! \brief Create a new schematic file.
-    void MainWindow::newSchematic()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        manager->newDocument(SchematicContext::instance());
-    }
-
-    //! \brief Create a new symbol file.
-    void MainWindow::newSymbol()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        manager->newDocument(SymbolContext::instance());
-    }
-
-    //! \brief Create a new layout file.
-    void MainWindow::newLayout()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        manager->newDocument(LayoutContext::instance());
-    }
-
-    //! \brief Create a new text file.
-    void MainWindow::newText()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        manager->newDocument(TextContext::instance());
-    }
-
-    /*!
-     * \brief Opens the file open dialog.
-     *
-     * Opens the file open dialog. If the file is already opened, the
-     * corresponding tab is set as the current one. Otherwise the file is
-     * opened and its tab is set as current tab.
-     */
-    void MainWindow::open(QString fileName)
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-
-        if(fileName.isEmpty()) {
-            if(!m_project->isValid()) {
-                fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),
-                                                        manager->fileNameFilters().join(QString()));
-            }
-            else {
-                ProjectFileOpenDialog *p = new ProjectFileOpenDialog(m_project->libraryFileName(), this);
-                int status = p->exec();
-
-                if(status == QDialog::Accepted) {
-                    fileName = p->fileName();
-                }
-
-                delete p;
-            }
-        }
-
-        if(!fileName.isEmpty()) {
-            if(QFileInfo(fileName).suffix() == "xpro") {
-                openProject(fileName);
-            }
-            else {
-                manager->openFile(fileName);
-            }
-        }
-    }
-
-    //! \brief Opens the selected file format given an opened file.
-    void MainWindow::openFileFormat(const QString &suffix)
-    {
-        IDocument *doc = DocumentViewManager::instance()->currentDocument();
-
-        if (!doc) return;
-
-        if (doc->fileName().isEmpty()) {
-            QMessageBox::critical(0, tr("Critical"),
-                                  tr("Please, save current file first!"));
-            return;
-        }
-
-        QFileInfo info(doc->fileName());
-        QString filename = info.completeBaseName();
-        QString path = info.path();
-        filename = QDir::toNativeSeparators(path + "/" + filename + "." + suffix);
-
-        open(filename);
-    }
-
-    /*!
-     * \brief Open recently opened file.
-     *
-     * First identify the Action that called the slot and then load the
-     * corresponding file. The entire file path is stored in action->data()
-     * and the name of the file without the path is stored in action->text().
-     *
-     * \sa open(), DocumentViewManager::updateRecentFilesActionList()
-     */
-    void MainWindow::openRecent()
-    {
-        QAction *action = qobject_cast<QAction *>(sender());
-        if(action) {
-            open(action->data().toString());
-        }
-    }
-
-    //! \brief Clears the list of recently opened documents.
-    void MainWindow::clearRecent()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        manager->clearRecentFiles();
-    }
-
-    //! \brief Saves the current active document.
-    void MainWindow::save()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
-        if (!document) {
-            return;
-        }
-
-        if (document->fileName().isEmpty()) {
-            saveAs();
-            return;
-        }
-
-        QString errorMessage;
-        if (!document->save(&errorMessage)) {
-            QMessageBox::critical(this,
-                    tr("%1 : File save error").arg(document->fileName()), errorMessage);
-        }
-    }
-
-    //! \brief Opens a dialog to select a new filename and saves the current file.
-    void MainWindow::saveAs()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
-        if(!document) {
-            return;
-        }
-
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(),
-                                                        manager->currentDocument()->context()->fileNameFilters().join(QString()));
-        if(fileName.isEmpty()) {
-            return;
-        }
-
-        QString oldFileName = document->fileName();
-        document->setFileName(fileName);
-
-        QString errorMessage;
-        if(!document->save(&errorMessage)) {
-            QMessageBox::critical(this, tr("%1 : File save error").arg(document->fileName()), errorMessage);
-            document->setFileName(oldFileName);
-        }
-        else {
-            open(fileName); // The document was saved ok, now reopen the document to load text highlighting
-        }
-
-        //! \todo Update/close other open document having same name as the above saved one.
-    }
-
-    /*!
-     * \brief Opens a dialog giving the user options to save all modified files.
-     *
-     * \return True on success, false on cancel
-     */
-    bool MainWindow::saveAll()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        QList<IDocument*> openDocuments = manager->documents();
-
-        return manager->saveDocuments(openDocuments);
-    }
-
-    /*!
-     * \brief Closes the selected tab.
-     *
-     * Before closing it prompts user whether to save or not if the document is
-     * modified and takes necessary actions.
-     */
-    void MainWindow::closeFile()
-    {
-        Tab *current = tabWidget()->currentTab();
-        if (current) {
-            current->close();
-        }
-    }
-
-    //! \brief Opens the print dialog.
-    void MainWindow::print()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
-        if (!document) {
-            return;
-        }
-
-        QPointer<PrintDialog> p = new PrintDialog(document, this);
-        p->exec();
-        delete p;
-    }
-
-    //! \brief Opens the export image dialog.
-    void MainWindow::exportImage()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
-        if (!document) {
-            return;
-        }
-
-        QPointer<ExportDialog> p = new ExportDialog(document, this);
-        p->exec();
-        delete p;
-    }
-
-    //! \brief Calls the current document undo action.
-    void MainWindow::undo()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->undo();
-        }
-
-    }
-
-    //! \brief Calls the current document redo action.
-    void MainWindow::redo()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->redo();
-        }
-    }
-
-    //! \brief Calls the current document cut action.
-    void MainWindow::cut()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->cut();
-        }
-    }
-
-    //! \brief Calls the current document copy action.
-    void MainWindow::copy()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->copy();
-        }
-    }
-
-    //! \brief Calls the current document paste action.
-    void MainWindow::paste()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->paste();
-        }
-    }
-
-    //! \brief Calls the current document find action.
-    void MainWindow::find()
-    {
-        //! \todo Implement this or rather port directly
-    }
-
-    //! \brief Calls the current document select all action.
-    void MainWindow::selectAll()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->selectAll();
-        }
-    }
-
-    //! \brief Calls the current view zoom in action.
-    void MainWindow::zoomIn()
-    {
-        IView* view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->zoomIn();
-        }
-    }
-
-    //! \brief Calls the current view zoom out action.
-    void MainWindow::zoomOut()
-    {
-        IView* view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->zoomOut();
-        }
-    }
-
-    //! \brief Calls the current view zoom best fit action.
-    void MainWindow::zoomBestFit()
-    {
-        IView* view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->zoomFitInBest();
-        }
-    }
-
-    //! \brief Calls the current view zoom original action.
-    void MainWindow::zoomOriginal()
-    {
-        IView* view = DocumentViewManager::instance()->currentView();
-        if(view) {
-            view->zoomOriginal();
-        }
-    }
-
-    //! \brief Calls the current view split horizontal action.
-    void MainWindow::splitHorizontal()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IView* view = manager->currentView();
-        if(view) {
-            manager->splitView(view, Qt::Horizontal);
-        }
-    }
-
-    //! \brief Calls the current view split vertical action.
-    void MainWindow::splitVertical()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IView* view = manager->currentView();
-        if(view) {
-            manager->splitView(view, Qt::Vertical);
-        }
-    }
-
-    //! \brief Calls the current view close split action.
-    void MainWindow::closeSplit()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IView* view = manager->currentView();
-        if(view) {
-            manager->closeView(view);
-        }
-    }
-
-    //! \brief Aligns the selected elements to the top
-    void MainWindow::alignTop()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->alignTop();
-        }
-    }
-
-    //! \brief Aligns the selected elements to the bottom
-    void MainWindow::alignBottom()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->alignBottom();
-        }
-    }
-
-    //! \brief Aligns the selected elements to the left
-    void MainWindow::alignLeft()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->alignLeft();
-        }
-    }
+        StateHandler *handler = StateHandler::instance();
+        m_project = new Project(this);
+        connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+        connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
+                SLOT(open(QString)));
 
-    //! \brief Aligns the selected elements to the right
-    void MainWindow::alignRight()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->alignRight();
-        }
-    }
-
-    //! \brief Centers the selected elements horizontally.
-    void MainWindow::centerHorizontal()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->centerHorizontal();
-        }
-    }
-
-    //! \brief Centers the selected elements vertically.
-    void MainWindow::centerVertical()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->centerVertical();
-        }
-    }
-
-    //! \brief Distributes the selected elements horizontally.
-    void MainWindow::distributeHorizontal()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->distributeHorizontal();
-        }
-    }
-
-    //! \brief Distributes the selected elements vertically.
-    void MainWindow::distributeVertical()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->distributeVertical();
-        }
-    }
-
-    //! \brief Prepares the window and created a new project.
-    void MainWindow::newProject()
-    {
-        if(saveAll()) {
-            m_tabWidget->closeAllTabs();
-            m_projectDockWidget->setVisible(true);
-            m_projectDockWidget->raise();
-            m_project->slotNewProject();
-        }
-    }
-
-    //! \brief Prepares the window and opens a new project.
-    void MainWindow::openProject(QString fileName)
-    {
-        if(saveAll()) {
-            m_tabWidget->closeAllTabs();
-            m_projectDockWidget->setVisible(true);
-            m_projectDockWidget->raise();
-            m_project->slotOpenProject(fileName);
-        }
-    }
-
-    //! \brief Adds a file to the current project.
-    void MainWindow::addToProject()
-    {
-        m_projectDockWidget->setVisible(true);
-        m_projectDockWidget->raise();
-        m_project->slotAddToProject();
-    }
-
-    //! \brief Removes a file from the current project.
-    void MainWindow::removeFromProject()
-    {
-        m_projectDockWidget->setVisible(true);
-        m_projectDockWidget->raise();
-        m_project->slotRemoveFromProject();
-    }
-
-    //! \brief Closes the current project.
-    void MainWindow::closeProject()
-    {
-        if(saveAll()) {
-            m_project->slotCloseProject();
-            m_tabWidget->closeAllTabs();
-        }
-    }
-
-    //! \brief Opens the layout document corresponding to the current file.
-    void MainWindow::openLayout()
-    {
-        LayoutContext *ly = LayoutContext::instance();
-        openFileFormat(ly->defaultSuffix());
-    }
-
-    //! \brief Opens the schematic document corresponding to the current file.
-    void MainWindow::openSchematic()
-    {
-        SchematicContext *sc = SchematicContext::instance();
-        openFileFormat(sc->defaultSuffix());
-    }
-
-    //! \brief Opens the symbol document corresponding to the current file.
-    void MainWindow::openSymbol()
-    {
-        SymbolContext *sy = SymbolContext::instance();
-        openFileFormat(sy->defaultSuffix());
-    }
-
-    //! \brief Simulates the current document.
-    void MainWindow::simulate()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->simulate();
-        }
-    }
-
-    //! \brief Opens the simulation corresponding to the current file.
-    void MainWindow::openSimulation()
-    {
-        SimulationContext *si = SimulationContext::instance();
-        openFileFormat(si->defaultSuffix());
-    }
-
-    //! \brief Opens the log corresponding to the current file.
-    void MainWindow::openLog()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-
-        QFileInfo info(manager->currentDocument()->fileName());
-        QString path = info.path();
-        QString baseName = info.completeBaseName();
-
-        manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".log"));
-    }
-
-    //! \brief Opens the netlist corresponding to the current file.
-    void MainWindow::openNetlist()
-    {
-        DocumentViewManager *manager = DocumentViewManager::instance();
-
-        QFileInfo info(manager->currentDocument()->fileName());
-        QString path = info.path();
-        QString baseName = info.completeBaseName();
-
-        manager->openFile(QDir::toNativeSeparators(path + "/" + baseName + ".net"));
-    }
-
-    //! \brief Opens the quick launcher dialog.
-    void MainWindow::quickLauncher()
-    {
-        QuickLauncher *launcher = new QuickLauncher(this);
-        launcher->exec(QCursor::pos());
-        delete launcher;
-    }
-
-    //! \brief Opens the quick insert dialog.
-    void MainWindow::quickInsert()
-    {
-        IView *view = DocumentViewManager::instance()->currentView();
-        if (view) {
-            view->context()->quickInsert();
-        }
-    }
-
-    //! \brief Opens the quick open dialog.
-    void MainWindow::quickOpen()
-    {
-        QuickOpen *quickBrowser = new QuickOpen(this);
-
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        IDocument *document = manager->currentDocument();
-        if (document) {
-            // Set the dialog to open in the current file folder
-            QFileInfo info(document->fileName());
-            QString path = info.path();
-
-            quickBrowser->setCurrentFolder(path);
-        }
-
-        connect(quickBrowser, SIGNAL(itemSelected(QString)), this, SLOT(open(QString)));
-
-        quickBrowser->exec(QCursor::pos());
-        delete quickBrowser;
-    }
-
-    //! \brief Opens the selected item file description for edition.
-    void MainWindow::enterHierarchy()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->enterHierarchy();
-        }
-    }
-
-    //! \brief Opens the parent document from where this item was opened.
-    void MainWindow::exitHierarchy()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->exitHierarchy();
-        }
-    }
-
-    //! \brief Opens the backup and history file dialog.
-    void MainWindow::backupAndHistory()
-    {
-        m_project->slotBackupAndHistory();
-    }
-
-    //! \brief Updates the visibility of the different toolbars and widgets.
-    void MainWindow::updateVisibility()
-    {
-        ActionManager* am = ActionManager::instance();
-
-        menuBar()->setVisible(am->actionForName("showMenuBar")->isChecked());
-
-        fileToolbar->setVisible(am->actionForName("showToolBar")->isChecked());
-        editToolbar->setVisible(am->actionForName("showToolBar")->isChecked());
-        viewToolbar->setVisible(am->actionForName("showToolBar")->isChecked());
-        workToolbar->setVisible(am->actionForName("showToolBar")->isChecked());
-
-        statusBar()->setVisible(am->actionForName("showStatusBar")->isChecked());
-
-        m_sidebarDockWidget->setVisible(am->actionForName("showSideBarBrowser")->isChecked());
-        m_browserDockWidget->setVisible(am->actionForName("showFolderBrowser")->isChecked());
-    }
-
-    //! \brief Toogles the visibility of all widgets at once.
-    void MainWindow::showAll()
-    {
-        ActionManager* am = ActionManager::instance();
-
-        bool show = am->actionForName("showAll")->isChecked();
-
-        am->actionForName("showMenuBar")->setChecked(show);
-        am->actionForName("showToolBar")->setChecked(show);
-        am->actionForName("showStatusBar")->setChecked(show);
-        am->actionForName("showSideBarBrowser")->setChecked(show);
-        am->actionForName("showFolderBrowser")->setChecked(show);
-
-        updateVisibility();
-    }
-
-    //! \brief Toogles the full screen mode.
-    void MainWindow::showFullScreen()
-    {
-        ActionManager* am = ActionManager::instance();
-
-        if(am->actionForName("showFullScreen")->isChecked()) {
-            QMainWindow::showFullScreen();
-        }
-        else {
-            showMaximized();
-        }
-    }
-
-    //! \brief Opens the shortcuts editor dialog.
-    void MainWindow::editShortcuts()
-    {
-        ShortcutsDialog *d = new ShortcutsDialog(this);
-        d->exec();
-        delete d;
-    }
-
-    //! \brief Opens the applications settings dialog.
-    void MainWindow::applicationSettings()
-    {
-        SettingsDialog *dialog = new SettingsDialog(this);
-        int result = dialog->exec();
-
-        // Update all document views to reflect the current settings.
-        if(result == QDialog::Accepted) {
-            DocumentViewManager::instance()->updateSettingsChanges();
-            repaint();
-        }
-
-        delete dialog;
-    }
-
-    //! \brief Opens the help index.
-    void MainWindow::helpIndex()
-    {
-        QDesktopServices::openUrl(QUrl("http://docs.caneda.org"));
-    }
-
-    //! \brief Opens the examples repository in an external window.
-    void MainWindow::helpExamples()
-    {
-        QDesktopServices::openUrl(QUrl("https://github.com/Caneda/Examples"));
-    }
-
-    //! \brief Opens the about dialog.
-    void MainWindow::about()
-    {
-        QPointer<AboutDialog> p = new AboutDialog(this);
-        p->exec();
-        delete p;
-    }
-
-    //! \brief Opens the about Qt dialog.
-    void MainWindow::aboutQt()
-    {
-        QApplication::aboutQt();
+        m_projectDockWidget = new QDockWidget(m_project->windowTitle(), this);
+        m_projectDockWidget->setWidget(m_project);
+        m_projectDockWidget->setObjectName("projectsSidebar");
+        m_projectDockWidget->setVisible(false);
+        addDockWidget(Qt::LeftDockWidgetArea, m_projectDockWidget);
     }
 
-    /*!
-     * \brief Creates or opens a new file used for the program initial state.
-     *
-     * This method creates or opens a new file used for the program initial
-     * state. If an argument with filenames is present, tries to open all files
-     * in the argument, otherwise creates a new empty file.
-     */
-    void MainWindow::initFiles(QStringList files)
+    //! \brief Initializes the FolderBrowser sidebar.
+    void MainWindow::setupFolderBrowserSidebar()
     {
-        DocumentViewManager *manager = DocumentViewManager::instance();
+        m_folderBrowser = new FolderBrowser(this);
 
-        if(!files.isEmpty()) {
-            foreach(const QString &str, files) {
-                open(str);
-            }
-        }
-        else {
-            manager->newDocument(SchematicContext::instance());
-        }
+        connect(m_folderBrowser, SIGNAL(itemDoubleClicked(QString)), this,
+                SLOT(open(QString)));
 
-        // Set the dialog to open in the current file folder
-        QFileInfo info(manager->currentDocument()->fileName());
-        QString path = info.path();
-        m_folderBrowser->setCurrentFolder(path);
+        m_browserDockWidget = new QDockWidget(m_folderBrowser->windowTitle(), this);
+        m_browserDockWidget->setWidget(m_folderBrowser);
+        m_browserDockWidget->setObjectName("folderBrowserSidebar");
+        addDockWidget(Qt::LeftDockWidgetArea, m_browserDockWidget);
+        tabifyDockWidget(m_browserDockWidget, m_projectDockWidget);
     }
 
     /*!
@@ -1649,60 +1691,6 @@ namespace Caneda
         settings->save();
     }
 
-   /*!
-    * \brief Launches the properties dialog corresponding to current document.
-    *
-    * The properties dialog should be some kind of settings dialog, but specific
-    * to the current document and context.
-    *
-    * This method should be implemented according to the calling context. For
-    * example, the properties dialog for a schematic scene should be a simple
-    * dialog to add or remove properties. In that case, if a component is selected
-    * the properties dialog should contain the component properties. On the
-    * other hand, when called from a simulation context, simulation options may
-    * be presented for the user. In order to do so, and be context aware, the
-    * IDocument::launchPropertiesDialog() of the current document is invoked.
-    *
-    * \sa IDocument::launchPropertiesDialog()
-    */
-    void MainWindow::launchPropertiesDialog()
-    {
-        IDocument *document = DocumentViewManager::instance()->currentDocument();
-        if (document) {
-            document->launchPropertiesDialog();
-        }
-    }
-
-    /*!
-     * \brief Updates the window and tab title.
-     *
-     *  Update the window and tab title. The [*] in the title indicates to the
-     *  application where to insert the file modified character * when
-     *  setWindowModified is invoked.
-     */
-    void MainWindow::updateWindowTitle()
-    {
-        Tab *tab = tabWidget()->currentTab();
-        if(!tab) {
-            setWindowTitle(QString("Caneda"));
-            return;
-        }
-
-        IView *view = tab->activeView();
-        if (!view) {
-            return;
-        }
-
-        setWindowTitle(tab->tabText() + QString("[*] - Caneda"));
-        setWindowModified(view->document()->isModified());
-    }
-
-    //! \brief Sets a new statusbar message.
-    void MainWindow::statusBarMessage(const QString& newPos)
-    {
-        m_statusLabel->setText(newPos);
-    }
-
     //! \brief Launch the global context menu
     void MainWindow::contextMenuEvent(QContextMenuEvent *event)
     {
@@ -1723,6 +1711,18 @@ namespace Caneda
         _menu->addAction(am->actionForName("showFolderBrowser"));
 
         _menu->exec(event->globalPos());
+    }
+
+    //! \brief Syncs the settings to the configuration file and closes the window.
+    void MainWindow::closeEvent(QCloseEvent *e)
+    {
+        if(saveAll()) {
+            saveSettings();
+            e->accept();
+        }
+        else {
+            e->ignore();
+        }
     }
 
 } // namespace Caneda
