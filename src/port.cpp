@@ -39,7 +39,6 @@ namespace Caneda
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
 
-        m_name = QString();
         m_connections.append(this);
     }
 

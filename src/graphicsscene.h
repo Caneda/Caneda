@@ -268,14 +268,7 @@ namespace Caneda
         //! \brief GraphicsScene undo stack
         QUndoStack *m_undoStack;
 
-        /*! \brief Spice/electric related scene properties
-         *
-         * Properties should be always strings. While more specific types
-         * could be used, string types allow the use of suffixes and parameters
-         * like p for pico, u for micro, and {R} for parameter, for example.
-         *
-         * \sa PropertyData, Property, PropertyGroup
-         */
+        //! \brief Spice/electric related scene properties
         PropertyGroup *m_properties;
     };
 

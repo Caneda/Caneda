@@ -106,8 +106,8 @@ namespace Caneda
         void redo();
 
     private:
-        Port * const m_port1;
-        Port * const m_port2;
+        Port *const m_port1;
+        Port *const m_port2;
     };
 
     /*!

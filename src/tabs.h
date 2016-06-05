@@ -30,7 +30,6 @@ namespace Caneda
     // Forward declarations.
     class IDocument;
     class IView;
-    class Manager;
 
     class ViewContainer : public QWidget
     {
@@ -92,8 +91,6 @@ namespace Caneda
         QIcon unmodifiedIcon() const;
 
         QList<IView*> m_views;
-
-        friend class Manager;
     };
 
     class TabWidget : public QTabWidget
