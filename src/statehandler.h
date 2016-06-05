@@ -29,7 +29,6 @@ namespace Caneda
 {
     // Forward declarations.
     class GraphicsItem;
-    class GraphicsScene;
     class GraphicsView;
     class Painting;
 
@@ -69,7 +68,6 @@ namespace Caneda
         QList<GraphicsItem*> insertibles;
         Painting *paintingDrawItem;
 
-        QSet<GraphicsScene*> scenes;
         QSet<GraphicsView*> widgets;
 
         GraphicsView *focussedWidget;

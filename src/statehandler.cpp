@@ -86,38 +86,19 @@ namespace Caneda
 
     void StateHandler::registerWidget(GraphicsView *widget)
     {
-        GraphicsScene *scene = widget->graphicsScene();
-        if (!scene) {
-            qWarning() << Q_FUNC_INFO << "Widget doesn't have an associated scene";
-            return;
-        }
-        if (!widgets.contains(widget)) {
+        if(!widgets.contains(widget)) {
             widgets << widget;
             connect(widget, SIGNAL(destroyed(QObject*)), SLOT(objectDestroyed(QObject*)));
             connect(widget, SIGNAL(focussedIn(GraphicsView*)), SLOT(updateFocussedWidget(GraphicsView*)));
-        }
-
-        if (!scenes.contains(scene)) {
-            scenes << scene;
-            connect(scene, SIGNAL(destroyed(QObject*)), SLOT(objectDestroyed(QObject*)));
         }
     }
 
     void StateHandler::unregisterWidget(GraphicsView *widget)
     {
-        if (!widget) {
-            return;
-        }
-        if (widgets.contains(widget)) {
+        if(widgets.contains(widget)) {
             widgets.remove(widget);
             disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(objectDestroyed(QObject*)));
             disconnect(widget, SIGNAL(focussedIn(GraphicsView*)), this, SLOT(updateFocussedWidget(GraphicsView*)));
-        }
-
-        GraphicsScene *scene = widget->graphicsScene();
-        if (scene && scenes.contains(scene)) {
-            scenes.remove(scene);
-            disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(objectDestroyed(QObject*)));
         }
     }
 
@@ -398,17 +379,14 @@ namespace Caneda
     void StateHandler::objectDestroyed(QObject *object)
     {
         /*!
-         * \todo HACK: Using static cast to convert QObject pointers to scene
-         * and widget respectively. This might result in invalid pointers, but
-         * the main purpose why we need them is just to remove the same from
-         * the lists. Using of these pointers to access any method or variable
-         * will result in ugly crash!!!
+         * \todo HACK: Using static cast to convert QObject pointers to widget.
+         * This might result in invalid pointers, but the main purpose why we
+         * need them is just to remove the same from the list. Using these
+         * pointers to access any method or variable will result in ugly crash.
          */
-        GraphicsScene *scene = static_cast<GraphicsScene*>(object);
         GraphicsView *widget = static_cast<GraphicsView*>(object);
-
-        scenes.remove(scene);
         widgets.remove(widget);
+        focussedWidget = 0;
     }
 
     void StateHandler::updateFocussedWidget(GraphicsView *widget)
