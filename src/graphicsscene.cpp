@@ -73,7 +73,7 @@ namespace Caneda
         m_shortcutsBlocked = false;
 
         // Wire state machine
-        m_wiringState = NO_WIRE;
+        m_currentlyWiring = false;
         m_currentWiringWire = NULL;
 
         m_paintingDrawItem = 0;
@@ -1485,15 +1485,15 @@ namespace Caneda
      */
     void GraphicsScene::wiringEventLeftMouseClick(const QPointF &pos)
     {
-        if(m_wiringState == NO_WIRE) {
+        if(!m_currentlyWiring) {
             // Create a new wire
             m_currentWiringWire = new Wire(pos, pos);
             addItem(m_currentWiringWire);
-            m_wiringState = SINGLETON_WIRE;
+            m_currentlyWiring = true;
             return;
         }
 
-        if(m_wiringState == SINGLETON_WIRE) {
+        if(m_currentlyWiring) {
             // Check if port 1 and 2 overlap
             if(m_currentWiringWire->isNull())  {
                 return;
@@ -1506,7 +1506,7 @@ namespace Caneda
             if(m_currentWiringWire->port2()->hasAnyConnection()) {
                 // If a connection was made, detach current wire and finalize
                 m_currentWiringWire = NULL;
-                m_wiringState = NO_WIRE;
+                m_currentlyWiring = false;
             }
             else  {
                 // Add a wire segment
@@ -1523,7 +1523,7 @@ namespace Caneda
     //! \brief Right mouse click wire event, ie finish wire event
     void GraphicsScene::wiringEventRightMouseClick()
     {
-        if(m_wiringState ==  SINGLETON_WIRE) {
+        if(m_currentlyWiring) {
             // Check if port 1 and 2 overlap
             if(m_currentWiringWire->isNull()) {
                 return;
@@ -1534,7 +1534,7 @@ namespace Caneda
 
             // Detach current wire and finalize
             m_currentWiringWire = NULL;
-            m_wiringState = NO_WIRE;
+            m_currentlyWiring = false;
 
             return;
         }
@@ -1547,7 +1547,7 @@ namespace Caneda
      */
     void GraphicsScene::wiringEventMouseMove(const QPointF &newPos)
     {
-        if(m_wiringState != NO_WIRE) {
+        if(m_currentlyWiring) {
 
             QPointF refPos = m_currentWiringWire->port1()->scenePos();
 
@@ -1980,10 +1980,10 @@ namespace Caneda
         m_insertibles.clear();
 
         // If current state is wiring, delete last attempt
-        if(m_wiringState == SINGLETON_WIRE){
+        if(m_currentlyWiring){
             Q_ASSERT(m_currentWiringWire != NULL);
             delete m_currentWiringWire;
-            m_wiringState = NO_WIRE;
+            m_currentlyWiring = false;
         }
 
         // Reset drawing item

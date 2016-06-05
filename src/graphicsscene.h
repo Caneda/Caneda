@@ -231,14 +231,13 @@ namespace Caneda
          */
         QList<GraphicsItem*> specialMoveItems;
 
-        //! \brief Wiring state machine state enum
-        enum wiringStateEnum {
-            NO_WIRE,               //! There are no wire segments yet
-            SINGLETON_WIRE         //! Already created wire segments
-        };
-
-        //! \brief State variable for the wire state machine
-        wiringStateEnum m_wiringState;
+        /*!
+         * \brief State variable for the current wire state.
+         *
+         * \li false There are no wire segments yet (currently not creating wires).
+         * \li true Already created wire segments (currently creating a wire).
+         */
+        bool m_currentlyWiring;
 
         //! \brief Current wire
         Wire *m_currentWiringWire;
