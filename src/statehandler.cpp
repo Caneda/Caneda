@@ -21,58 +21,19 @@
 #include "statehandler.h"
 
 #include "actionmanager.h"
-#include "global.h"
 #include "graphicsscene.h"
 #include "graphicsview.h"
 #include "library.h"
 #include "painting.h"
 #include "portsymbol.h"
-#include "settings.h"
-#include "undocommands.h"
 #include "wire.h"
 #include "xmlutilities.h"
 
 #include <QApplication>
 #include <QClipboard>
-#include <QDebug>
-#include <QPointer>
-#include <QSet>
 
 namespace Caneda
 {
-    struct StateHandlerPrivate
-    {
-        StateHandlerPrivate() {
-            mouseAction = Caneda::Normal;
-            paintingDrawItem = 0;
-        }
-
-        ~StateHandlerPrivate() {
-            delete paintingDrawItem;
-            clearInsertibles();
-        }
-
-        void clearInsertibles() {
-            foreach (GraphicsItem* item, insertibles) {
-                if (item->scene()) {
-                    item->scene()->removeItem(item);
-                }
-                delete item;
-            }
-            insertibles.clear();
-        }
-
-        Caneda::MouseAction mouseAction;
-        QList<GraphicsItem*> insertibles;
-        Painting *paintingDrawItem;
-
-        QSet<GraphicsScene*> scenes;
-        QSet<GraphicsView*> widgets;
-
-        QPointer<GraphicsView> focussedWidget;
-        QHash<QString, GraphicsItem*> toolbarInsertibles;
-    };
-
     static bool areItemsEquivalent(GraphicsItem *a, GraphicsItem *b)
     {
         if (!a || !b) {
@@ -90,16 +51,19 @@ namespace Caneda
                 ac->name() == bc->name();
         }
 
-        // Implement for other kinds of comparison required to compare
-        // insertibles and toolbarInsertibles of
-        // StateHandlerPrivate class.
+        /*!
+         * \todo Implement for other kinds of comparison required to compare
+         * insertibles and toolbarInsertibles private members.
+         */
         return false;
     }
 
     //! \brief Constructor.
     StateHandler::StateHandler(QObject *parent) : QObject(parent)
     {
-        d = new StateHandlerPrivate;
+        mouseAction = Caneda::Normal;
+        paintingDrawItem = 0;
+        focussedWidget = 0;
     }
 
     //! \copydoc MainWindow::instance()
@@ -115,7 +79,9 @@ namespace Caneda
     //! \brief Destructor.
     StateHandler::~StateHandler()
     {
-        delete d;
+        delete focussedWidget;
+        delete paintingDrawItem;
+        clearInsertibles();
     }
 
     void StateHandler::registerWidget(GraphicsView *widget)
@@ -125,15 +91,14 @@ namespace Caneda
             qWarning() << Q_FUNC_INFO << "Widget doesn't have an associated scene";
             return;
         }
-        if (!d->widgets.contains(widget)) {
-            d->widgets << widget;
+        if (!widgets.contains(widget)) {
+            widgets << widget;
             connect(widget, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
-            connect(widget, SIGNAL(focussedIn(GraphicsView*)),
-                    SLOT(slotUpdateFocussedWidget(GraphicsView*)));
+            connect(widget, SIGNAL(focussedIn(GraphicsView*)), SLOT(slotUpdateFocussedWidget(GraphicsView*)));
         }
 
-        if (!d->scenes.contains(scene)) {
-            d->scenes << scene;
+        if (!scenes.contains(scene)) {
+            scenes << scene;
             connect(scene, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
         }
     }
@@ -143,16 +108,15 @@ namespace Caneda
         if (!widget) {
             return;
         }
-        if (d->widgets.contains(widget)) {
-            d->widgets.remove(widget);
+        if (widgets.contains(widget)) {
+            widgets.remove(widget);
             disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
-            disconnect(widget, SIGNAL(focussedIn(GraphicsView*)), this,
-                    SLOT(slotUpdateFocussedWidget(GraphicsView*)));
+            disconnect(widget, SIGNAL(focussedIn(GraphicsView*)), this, SLOT(slotUpdateFocussedWidget(GraphicsView*)));
         }
 
         GraphicsScene *scene = widget->graphicsScene();
-        if (scene && d->scenes.contains(scene)) {
-            d->scenes.remove(scene);
+        if (scene && scenes.contains(scene)) {
+            scenes.remove(scene);
             disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
         }
     }
@@ -173,7 +137,7 @@ namespace Caneda
             const QString& category)
     {
         // Clear old item first
-        d->clearInsertibles();
+        clearInsertibles();
 
         // Get a component or painting based on the name and category.
         GraphicsItem *qItem = 0;
@@ -207,12 +171,12 @@ namespace Caneda
         // Check if the item was successfully found and created
         if(qItem) {
             if(category == "Paint Tools" || category == "Layout Tools") {
-                d->paintingDrawItem = static_cast<Painting*>(qItem);
-                d->paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
+                paintingDrawItem = static_cast<Painting*>(qItem);
+                paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
                 slotPerformToggleAction("paintingDraw", true);
             }
             else {
-                d->insertibles << qItem;
+                insertibles << qItem;
                 slotPerformToggleAction("insertItem", true);
             }
         }
@@ -279,22 +243,22 @@ namespace Caneda
         }
 
         if (!_items.isEmpty()) {
-            d->clearInsertibles();
-            d->insertibles = _items;
+            clearInsertibles();
+            insertibles = _items;
             slotPerformToggleAction("insertItem", true);
         }
     }
 
     void StateHandler::slotInsertToolbarComponent(const QString& sender, bool on)
     {
-        GraphicsItem *item = d->toolbarInsertibles[sender];
+        GraphicsItem *item = toolbarInsertibles[sender];
         if (!on || !item) {
             slotSetNormalAction();
             return;
         }
 
-        d->clearInsertibles();
-        d->insertibles << item->copy();
+        clearInsertibles();
+        insertibles << item->copy();
         slotPerformToggleAction("insertItem", true);
     }
 
@@ -310,13 +274,13 @@ namespace Caneda
         GraphicsScene *scene = static_cast<GraphicsScene*>(object);
         GraphicsView *widget = static_cast<GraphicsView*>(object);
 
-        d->scenes.remove(scene);
-        d->widgets.remove(widget);
+        scenes.remove(scene);
+        widgets.remove(widget);
     }
 
     void StateHandler::slotUpdateFocussedWidget(GraphicsView *widget)
     {
-        d->focussedWidget = widget;
+        focussedWidget = widget;
     }
 
     /*!
@@ -357,11 +321,14 @@ namespace Caneda
 
         if (actionName == "editDelete") {
             func = &GraphicsScene::deleteItems;
-        } else if (actionName == "editRotate") {
+        }
+        else if (actionName == "editRotate") {
             func = &GraphicsScene::rotateItems;
-        } else if (actionName == "editMirrorX") {
+        }
+        else if (actionName == "editMirrorX") {
             func = &GraphicsScene::mirrorXItems;
-        } else if (actionName == "editMirrorY") {
+        }
+        else if (actionName == "editMirrorY") {
             func = &GraphicsScene::mirrorYItems;
         }
 
@@ -377,8 +344,8 @@ namespace Caneda
 
         //else part
         GraphicsScene *scene = 0;
-        if (d->focussedWidget.isNull() == false) {
-            scene = d->focussedWidget->graphicsScene();
+        if (focussedWidget) {
+            scene = focussedWidget->graphicsScene();
         }
         QList<QGraphicsItem*> selectedItems;
         if (scene) {
@@ -411,8 +378,8 @@ namespace Caneda
         }
 
         QHash<QString, GraphicsItem*>::const_iterator it =
-            d->toolbarInsertibles.begin();
-        while (it != d->toolbarInsertibles.end()) {
+            toolbarInsertibles.begin();
+        while (it != toolbarInsertibles.end()) {
             QAction *act = am->actionForName(it.key());
             act->blockSignals(true);
             act->setChecked(false);
@@ -420,10 +387,10 @@ namespace Caneda
             ++it;
         }
 
-        if (actionName == "insertItem" && d->insertibles.size() == 1) {
-            for (it = d->toolbarInsertibles.begin();
-                    it != d->toolbarInsertibles.end(); ++it) {
-                if (areItemsEquivalent(it.value(), d->insertibles.first())) {
+        if (actionName == "insertItem" && insertibles.size() == 1) {
+            for (it = toolbarInsertibles.begin();
+                    it != toolbarInsertibles.end(); ++it) {
+                if (areItemsEquivalent(it.value(), insertibles.first())) {
                     QAction *act = am->actionForName(it.key());
                     act->blockSignals(true);
                     act->setChecked(true);
@@ -437,7 +404,7 @@ namespace Caneda
         action->setChecked(true);
         action->blockSignals(false);
 
-        d->mouseAction = ma;
+        mouseAction = ma;
         applyStateToAllWidgets();
     }
 
@@ -451,7 +418,7 @@ namespace Caneda
     {
         QCursor cursor;
 
-        switch (d->mouseAction) {
+        switch (mouseAction) {
             case Caneda::Wiring:
                 cursor.setShape(Qt::CrossCursor);
                 break;
@@ -494,23 +461,25 @@ namespace Caneda
     void StateHandler::applyState(GraphicsView *widget)
     {
         applyCursor(widget);
+
         GraphicsScene *scene = widget->graphicsScene();
         if (!scene) {
             return;
         }
 
-        scene->setMouseAction(d->mouseAction);
-        if (d->mouseAction == Caneda::InsertingItems) {
-            if (!d->insertibles.isEmpty()) {
+        scene->setMouseAction(mouseAction);
+        if (mouseAction == Caneda::InsertingItems) {
+            if (!insertibles.isEmpty()) {
                 QList<GraphicsItem*> copy;
-                foreach (GraphicsItem *it, d->insertibles) {
+                foreach (GraphicsItem *it, insertibles) {
                     copy << it->copy();
                 }
                 scene->beginInsertingItems(copy);
             }
-        } else if (d->mouseAction == Caneda::PaintingDrawEvent) {
-            if (d->paintingDrawItem) {
-                Painting *copy = d->paintingDrawItem->copy();
+        }
+        else if (mouseAction == Caneda::PaintingDrawEvent) {
+            if (paintingDrawItem) {
+                Painting *copy = paintingDrawItem->copy();
                 scene->beginPaintingDraw(copy);
             }
         }
@@ -518,9 +487,21 @@ namespace Caneda
 
     void StateHandler::applyStateToAllWidgets()
     {
-        foreach (GraphicsView *widget, d->widgets) {
+        foreach (GraphicsView *widget, widgets) {
             applyState(widget);
         }
+    }
+
+    void StateHandler::clearInsertibles()
+    {
+        foreach (GraphicsItem* item, insertibles) {
+            if(item->scene()) {
+                item->scene()->removeItem(item);
+            }
+            delete item;
+        }
+
+        insertibles.clear();
     }
 
 } // namespace Caneda

@@ -21,20 +21,18 @@
 #ifndef STATE_HANDLER_H
 #define STATE_HANDLER_H
 
+#include "global.h"
+
 #include <QObject>
 
 namespace Caneda
 {
     // Forward declarations.
-    class StateHandlerPrivate;
+    class GraphicsItem;
+    class GraphicsScene;
     class GraphicsView;
+    class Painting;
 
-    /*!
-     * \todo Document this class.
-     *
-     * This class is a singleton class and its only static instance (returned
-     * by instance()) is to be used.
-     */
     class StateHandler : public QObject
     {
         Q_OBJECT
@@ -45,7 +43,6 @@ namespace Caneda
 
         void registerWidget(GraphicsView *widget);
         void unregisterWidget(GraphicsView *widget);
-
 
     public Q_SLOTS:
         void slotSidebarItemClicked(const QString& item, const QString& category);
@@ -64,7 +61,17 @@ namespace Caneda
         void applyState(GraphicsView *widget);
         void applyStateToAllWidgets();
 
-        StateHandlerPrivate *d;
+        void clearInsertibles();
+
+        Caneda::MouseAction mouseAction;
+        QList<GraphicsItem*> insertibles;
+        Painting *paintingDrawItem;
+
+        QSet<GraphicsScene*> scenes;
+        QSet<GraphicsView*> widgets;
+
+        GraphicsView *focussedWidget;
+        QHash<QString, GraphicsItem*> toolbarInsertibles;
     };
 
 } // namespace Caneda
