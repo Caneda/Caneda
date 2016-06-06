@@ -1596,7 +1596,7 @@ namespace Caneda
         StateHandler *handler = StateHandler::instance();
         m_project = new Project(this);
         connect(m_project, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(sidebarItemClicked(const QString&, const QString&)));
+                SLOT(insertItem(const QString&, const QString&)));
         connect(m_project, SIGNAL(itemDoubleClicked(QString)), this,
                 SLOT(open(QString)));
 

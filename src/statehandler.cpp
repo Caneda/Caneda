@@ -34,30 +34,6 @@
 
 namespace Caneda
 {
-    static bool areItemsEquivalent(GraphicsItem *a, GraphicsItem *b)
-    {
-        if (!a || !b) {
-            return false;
-        }
-        if (a->type() != b->type()) {
-            return false;
-        }
-
-        if (a->type() == GraphicsItem::ComponentType) {
-            Component *ac = canedaitem_cast<Component*>(a);
-            Component *bc = canedaitem_cast<Component*>(b);
-
-            return ac->library() == bc->library() &&
-                ac->name() == bc->name();
-        }
-
-        /*!
-         * \todo Implement for other kinds of comparison required to compare
-         * insertibles and toolbarInsertibles private members.
-         */
-        return false;
-    }
-
     //! \brief Constructor.
     StateHandler::StateHandler(QObject *parent) : QObject(parent)
     {
@@ -159,7 +135,7 @@ namespace Caneda
 
         QList<QAction*> mouseActions = ActionManager::instance()->mouseActions();
 
-        //toggling off any action switches normal select action "on"
+        // Toggling off any action switches normal select action "on"
         if(!on) {
             // Normal action can't be turned off through UI by clicking
             // the selct action again.
@@ -167,7 +143,6 @@ namespace Caneda
             return;
         }
 
-        //else part
         GraphicsScene *scene = 0;
         if (focussedWidget) {
             scene = focussedWidget->graphicsScene();
@@ -202,28 +177,6 @@ namespace Caneda
             }
         }
 
-        QHash<QString, GraphicsItem*>::const_iterator it =
-            toolbarInsertibles.begin();
-        while (it != toolbarInsertibles.end()) {
-            QAction *act = am->actionForName(it.key());
-            act->blockSignals(true);
-            act->setChecked(false);
-            act->blockSignals(false);
-            ++it;
-        }
-
-        if (actionName == "insertItem" && insertibles.size() == 1) {
-            for (it = toolbarInsertibles.begin();
-                    it != toolbarInsertibles.end(); ++it) {
-                if (areItemsEquivalent(it.value(), insertibles.first())) {
-                    QAction *act = am->actionForName(it.key());
-                    act->blockSignals(true);
-                    act->setChecked(true);
-                    act->blockSignals(false);
-                }
-            }
-        }
-
         // Ensure current action is on visibly
         action->blockSignals(true);
         action->setChecked(true);
@@ -247,8 +200,7 @@ namespace Caneda
      * \param item Item's name
      * \param category Item's category
      */
-    void StateHandler::sidebarItemClicked(const QString& item,
-            const QString& category)
+    void StateHandler::insertItem(const QString& item, const QString& category)
     {
         // Clear old item first
         clearInsertibles();
@@ -297,19 +249,6 @@ namespace Caneda
         else {
             setNormalAction();
         }
-    }
-
-    void StateHandler::insertToolbarComponent(const QString& sender, bool on)
-    {
-        GraphicsItem *item = toolbarInsertibles[sender];
-        if (!on || !item) {
-            setNormalAction();
-            return;
-        }
-
-        clearInsertibles();
-        insertibles << item->copy();
-        performToggleAction("insertItem", true);
     }
 
     void StateHandler::handlePaste()

@@ -48,8 +48,7 @@ namespace Caneda
         void performToggleAction(bool on);
         void performToggleAction(const QString& actionName, bool on);
 
-        void sidebarItemClicked(const QString& item, const QString& category);
-        void insertToolbarComponent(const QString& action, bool on);
+        void insertItem(const QString& item, const QString& category);
 
         void handlePaste();
 
@@ -69,9 +68,7 @@ namespace Caneda
         Painting *paintingDrawItem;
 
         QSet<GraphicsView*> widgets;
-
         GraphicsView *focussedWidget;
-        QHash<QString, GraphicsItem*> toolbarInsertibles;
     };
 
 } // namespace Caneda
