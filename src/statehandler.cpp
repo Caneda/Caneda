@@ -88,12 +88,14 @@ namespace Caneda
      * \brief Toogles the action perfomed.
      *
      * This method toggles the action corresponding to the sender, invoking the
-     * performToggleAction(const QString&, bool) method, to takes care of
-     * preserving the mutual exclusiveness off the checkable actions.
+     * performToggleAction(const QString&, bool) method. This method takes care
+     * of preserving the mutual exclusiveness of the checkable actions.
      *
-     * While performToggleAction(const QString&, bool) is a general method
-     * this method allows the direct connection to the toggled(bool) signal of
-     * a QAction object.
+     * While performToggleAction(const QString&, bool) is the method that
+     * actually performs the toggle action, this method allows the direct
+     * connection to the toggled(bool) signal of a QAction object.
+     *
+     * \sa performToggleAction(const QString&, bool)
      */
     void StateHandler::performToggleAction(bool on)
     {
@@ -106,9 +108,11 @@ namespace Caneda
     /*!
      * \brief Toogles the action perfomed.
      *
-     * This method toggles the action and calls the function pointed by
-     * \a func if on is true. This method takes care to preserve the mutual
-     * exclusiveness off the checkable actions.
+     * This method toggles the selected action and calls its associated method
+     * if on is true. This method also takes care of preserving the mutual
+     * exclusiveness of the checkable actions.
+     *
+     * \sa performToggleAction(bool)
      */
     void StateHandler::performToggleAction(const QString& actionName, bool on)
     {
@@ -251,6 +255,10 @@ namespace Caneda
         }
     }
 
+    /*!
+     * \brief This method handles the paste action by reading the clipboard and
+     * inserting (if found) the corresponding items.
+     */
     void StateHandler::handlePaste()
     {
         QClipboard *clipboard =  QApplication::clipboard();
@@ -274,7 +282,7 @@ namespace Caneda
             return;
         }
 
-        QList<GraphicsItem*> _items;
+        QList<GraphicsItem*> items;
         while(!reader.atEnd()) {
             reader.readNext();
 
@@ -303,14 +311,14 @@ namespace Caneda
                 }
 
                 if(readItem) {
-                    _items << readItem;
+                    items << readItem;
                 }
             }
         }
 
-        if (!_items.isEmpty()) {
+        if (!items.isEmpty()) {
             clearInsertibles();
-            insertibles = _items;
+            insertibles = items;
             performToggleAction("insertItem", true);
         }
     }
@@ -333,6 +341,7 @@ namespace Caneda
         focussedWidget = widget;
     }
 
+    //! \brief Apply the cursor of the current action to a given view.
     void StateHandler::applyCursor(GraphicsView *widget)
     {
         QCursor cursor;
@@ -404,6 +413,7 @@ namespace Caneda
         }
     }
 
+    //! \brief Clear the list of insertible items.
     void StateHandler::clearInsertibles()
     {
         foreach (GraphicsItem* item, insertibles) {
