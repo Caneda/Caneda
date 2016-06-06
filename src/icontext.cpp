@@ -238,7 +238,7 @@ namespace Caneda
     QStringList LayoutContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Layout-xml (*.xlay)") + " (*.xlay);;";
+        nameFilters << QObject::tr("Layout-xml (*.xlay)");
 
         return nameFilters;
     }
@@ -361,7 +361,7 @@ namespace Caneda
     QStringList SchematicContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Schematic-xml (*.xsch)") + " (*.xsch);;";
+        nameFilters << QObject::tr("Schematic-xml (*.xsch)");
 
         return nameFilters;
     }
@@ -435,7 +435,7 @@ namespace Caneda
     QStringList SimulationContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Raw waveform data (*.raw)") + " (*.raw);;";
+        nameFilters << QObject::tr("Raw waveform data (*.raw)");
 
         return nameFilters;
     }
@@ -528,7 +528,7 @@ namespace Caneda
     QStringList SymbolContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Symbol-xml (*.xsym)") + " (*.xsym);;";
+        nameFilters << QObject::tr("Symbol-xml (*.xsym)");
 
         return nameFilters;
     }
@@ -602,9 +602,9 @@ namespace Caneda
     QStringList TextContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Spice netlist (*.spc *.sp *.net *.cir)") + " (*.spc *.sp *.net *.cir);;";
-        nameFilters << QObject::tr("HDL source (*.vhdl *.vhd *.v)") + " (*.vhdl *.vhd *.v);;";
-        nameFilters << QObject::tr("Text file (*.txt)") + " (*.txt);;";
+        nameFilters << QObject::tr("Spice netlist (*.spc *.sp *.net *.cir)");
+        nameFilters << QObject::tr("HDL source (*.vhdl *.vhd *.v)");
+        nameFilters << QObject::tr("Text file (*.txt)");
 
         return nameFilters;
     }

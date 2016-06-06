@@ -211,35 +211,30 @@ namespace Caneda
      * Opens the file open dialog. If the file is already opened, the
      * corresponding tab is set as the current one. Otherwise the file is
      * opened and its tab is set as current tab.
+     *
+     * A custom QFileDialog is created (instead of using QFileDialog::getSaveFileName())
+     * to be able to set name filters as a QStringList. This improves the
+     * flexibility of the dialog, as the IContext::fileNameFilters() methods
+     * can be used.
+     *
+     * \sa save(), saveAll(), saveAs()
      */
     void MainWindow::open(QString fileName)
     {
         DocumentViewManager *manager = DocumentViewManager::instance();
 
         if(fileName.isEmpty()) {
-            if(!m_project->isValid()) {
-                fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),
-                                                        manager->fileNameFilters().join(QString()));
-            }
-            else {
-                ProjectFileOpenDialog *dialog = new ProjectFileOpenDialog(m_project->libraryFileName(), this);
-                int status = dialog->exec();
+            QFileDialog dialog(this, tr("Open File"));
+            dialog.setFileMode(QFileDialog::ExistingFile);
+            dialog.setNameFilters(manager->fileNameFilters());
 
-                if(status == QDialog::Accepted) {
-                    fileName = dialog->fileName();
-                }
-
-                delete dialog;
+            if (dialog.exec()) {
+                fileName = dialog.selectedFiles().first();
             }
         }
 
         if(!fileName.isEmpty()) {
-            if(QFileInfo(fileName).suffix() == "xpro") {
-                openProject(fileName);
-            }
-            else {
-                manager->openFile(fileName);
-            }
+            manager->openFile(fileName);
         }
     }
 
@@ -309,7 +304,18 @@ namespace Caneda
         }
     }
 
-    //! \brief Opens a dialog to select a new filename and saves the current file.
+    /*!
+     * \brief Opens a dialog to select a new filename and saves the current
+     * file.
+     *
+     * Opens a dialog to select a new filename and saves the current file. A
+     * custom QFileDialog is created (instead of using QFileDialog::getSaveFileName())
+     * to be able to set the default suffix. By using a default suffix, it is
+     * automatically appended to the end of the filename in the case the user
+     * didn't add a custom suffix.
+     *
+     * \sa save(), saveAll(), open()
+     */
     void MainWindow::saveAs()
     {
         DocumentViewManager *manager = DocumentViewManager::instance();
@@ -318,8 +324,17 @@ namespace Caneda
             return;
         }
 
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(),
-                                                        manager->currentDocument()->context()->fileNameFilters().join(QString()));
+        QFileDialog dialog(this, tr("Save File"));
+        dialog.setFileMode(QFileDialog::AnyFile);
+        dialog.setAcceptMode(QFileDialog::AcceptSave);
+        dialog.setNameFilters(manager->currentDocument()->context()->fileNameFilters());
+        dialog.setDefaultSuffix(manager->currentDocument()->context()->defaultSuffix());
+
+        QString fileName;
+        if (dialog.exec()) {
+            fileName = dialog.selectedFiles().first();
+        }
+
         if(fileName.isEmpty()) {
             return;
         }
@@ -342,7 +357,9 @@ namespace Caneda
     /*!
      * \brief Opens a dialog giving the user options to save all modified files.
      *
-     * \return True on success, false on cancel
+     * \return True on success, false on cancel.
+     *
+     * \sa save(), saveAs()
      */
     bool MainWindow::saveAll()
     {

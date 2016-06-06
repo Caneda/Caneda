@@ -295,8 +295,7 @@ namespace Caneda
     {
         QStringList nameFilters;
 
-        nameFilters << QObject::tr("Any File (*)")+" (*);;";
-        nameFilters << QObject::tr("Caneda project (*.xpro)")+" (*.xpro);;";
+        nameFilters << QObject::tr("Any File (*)");
 
         foreach (IContext *context, m_contexts) {
             nameFilters << context->fileNameFilters();
