@@ -40,8 +40,8 @@ namespace Caneda
         static StateHandler* instance();
         ~StateHandler();
 
-        void registerWidget(GraphicsView *widget);
-        void unregisterWidget(GraphicsView *widget);
+        void registerView(GraphicsView *view);
+        void unregisterView(GraphicsView *view);
 
     public Q_SLOTS:
         void setNormalAction();
@@ -53,13 +53,13 @@ namespace Caneda
         void handlePaste();
 
         void objectDestroyed(QObject *object);
-        void updateFocussedWidget(GraphicsView *widget);
+        void updateFocussedView(GraphicsView *view);
 
     private:
         explicit StateHandler(QObject *parent = 0);
 
-        void applyCursor(GraphicsView *widget);
-        void applyState(GraphicsView *widget);
+        void applyCursor(GraphicsView *view);
+        void applyState(GraphicsView *view);
 
         void clearInsertibles();
 
@@ -67,8 +67,8 @@ namespace Caneda
         QList<GraphicsItem*> insertibles;
         Painting *paintingDrawItem;
 
-        QSet<GraphicsView*> widgets;
-        GraphicsView *focussedWidget;
+        QSet<GraphicsView*> views;
+        GraphicsView *focussedView;
     };
 
 } // namespace Caneda

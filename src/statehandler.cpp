@@ -39,7 +39,7 @@ namespace Caneda
     {
         mouseAction = Caneda::Normal;
         paintingDrawItem = 0;
-        focussedWidget = 0;
+        focussedView = 0;
     }
 
     //! \copydoc MainWindow::instance()
@@ -55,26 +55,26 @@ namespace Caneda
     //! \brief Destructor.
     StateHandler::~StateHandler()
     {
-        delete focussedWidget;
+        delete focussedView;
         delete paintingDrawItem;
         clearInsertibles();
     }
 
-    void StateHandler::registerWidget(GraphicsView *widget)
+    void StateHandler::registerView(GraphicsView *view)
     {
-        if(!widgets.contains(widget)) {
-            widgets << widget;
-            connect(widget, SIGNAL(destroyed(QObject*)), SLOT(objectDestroyed(QObject*)));
-            connect(widget, SIGNAL(focussedIn(GraphicsView*)), SLOT(updateFocussedWidget(GraphicsView*)));
+        if(!views.contains(view)) {
+            views << view;
+            connect(view, SIGNAL(destroyed(QObject*)), SLOT(objectDestroyed(QObject*)));
+            connect(view, SIGNAL(focussedIn(GraphicsView*)), SLOT(updateFocussedView(GraphicsView*)));
         }
     }
 
-    void StateHandler::unregisterWidget(GraphicsView *widget)
+    void StateHandler::unregisterView(GraphicsView *view)
     {
-        if(widgets.contains(widget)) {
-            widgets.remove(widget);
-            disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(objectDestroyed(QObject*)));
-            disconnect(widget, SIGNAL(focussedIn(GraphicsView*)), this, SLOT(updateFocussedWidget(GraphicsView*)));
+        if(views.contains(view)) {
+            views.remove(view);
+            disconnect(view, SIGNAL(destroyed(QObject*)), this, SLOT(objectDestroyed(QObject*)));
+            disconnect(view, SIGNAL(focussedIn(GraphicsView*)), this, SLOT(updateFocussedView(GraphicsView*)));
         }
     }
 
@@ -148,8 +148,8 @@ namespace Caneda
         }
 
         GraphicsScene *scene = 0;
-        if (focussedWidget) {
-            scene = focussedWidget->graphicsScene();
+        if (focussedView) {
+            scene = focussedView->graphicsScene();
         }
         QList<QGraphicsItem*> selectedItems;
         if (scene) {
@@ -188,8 +188,8 @@ namespace Caneda
 
         mouseAction = ma;
 
-        foreach (GraphicsView *widget, widgets) {
-            applyState(widget);
+        foreach (GraphicsView *view, views) {
+            applyState(view);
         }
     }
 
@@ -326,23 +326,23 @@ namespace Caneda
     void StateHandler::objectDestroyed(QObject *object)
     {
         /*!
-         * \todo HACK: Using static cast to convert QObject pointers to widget.
+         * \todo HACK: Using static cast to convert QObject pointers to view.
          * This might result in invalid pointers, but the main purpose why we
          * need them is just to remove the same from the list. Using these
          * pointers to access any method or variable will result in ugly crash.
          */
-        GraphicsView *widget = static_cast<GraphicsView*>(object);
-        widgets.remove(widget);
-        focussedWidget = 0;
+        GraphicsView *view = static_cast<GraphicsView*>(object);
+        views.remove(view);
+        focussedView = 0;
     }
 
-    void StateHandler::updateFocussedWidget(GraphicsView *widget)
+    void StateHandler::updateFocussedView(GraphicsView *view)
     {
-        focussedWidget = widget;
+        focussedView = view;
     }
 
     //! \brief Apply the cursor of the current action to a given view.
-    void StateHandler::applyCursor(GraphicsView *widget)
+    void StateHandler::applyCursor(GraphicsView *view)
     {
         QCursor cursor;
 
@@ -383,14 +383,14 @@ namespace Caneda
                 cursor.setShape(Qt::ArrowCursor);
         }
 
-        widget->setCursor(cursor);
+        view->setCursor(cursor);
     }
 
-    void StateHandler::applyState(GraphicsView *widget)
+    void StateHandler::applyState(GraphicsView *view)
     {
-        applyCursor(widget);
+        applyCursor(view);
 
-        GraphicsScene *scene = widget->graphicsScene();
+        GraphicsScene *scene = view->graphicsScene();
         if (!scene) {
             return;
         }
