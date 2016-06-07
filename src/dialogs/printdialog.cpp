@@ -117,27 +117,25 @@ namespace Caneda
     //! \brief Allows the user to select a file
     void PrintDialog::onBrowseButtonClicked()
     {
-        QString extension;
-        QString filter;
+        QString defaultSuffix = "pdf";
+        QStringList filters;
+        filters << tr("PDF files (*.pdf)");
 
-        if(ui.printerChoice->isChecked()) {
-            return;
+        // Create custom dialog with pdf as default suffix
+        QFileDialog dialog(this, tr("Save As"));
+        dialog.setFileMode(QFileDialog::AnyFile);
+        dialog.setAcceptMode(QFileDialog::AcceptSave);
+        dialog.setDirectory(ui.filePathEdit->text());
+        dialog.setNameFilters(filters);
+        dialog.setDefaultSuffix(defaultSuffix);
+
+        QString fileName;
+        if (dialog.exec()) {
+            fileName = dialog.selectedFiles().first();
         }
-        else if(ui.pdfChoice->isChecked()) {
-            extension = ".pdf";
-            filter    = tr("PDF Files (*.pdf)", "file filter");
-        }
 
-        QString filepath = QFileDialog::getSaveFileName(this,
-                QString(),
-                ui.filePathEdit->text(),
-                filter);
-
-        if(!filepath.isEmpty()) {
-            if(!filepath.endsWith(extension)) {
-                filepath += extension;
-            }
-            ui.filePathEdit->setText(filepath);
+        if(!fileName.isEmpty()) {
+            ui.filePathEdit->setText(fileName);
         }
     }
 
