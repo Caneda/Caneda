@@ -86,11 +86,11 @@ namespace Caneda
     void FileBrowserLineEdit::browseButtonClicked()
     {
         QString fileName =
-            QFileDialog::getSaveFileName(0, tr("Save File"), d->fileInfo.absoluteFilePath(),
+            QFileDialog::getSaveFileName(this, tr("Save File"), d->fileInfo.absoluteFilePath(),
                     Settings::instance()->currentValue("nosave/canedaFilter").toString());
+
         QFileInfo fi(fileName);
-        if (fi.fileName().isEmpty() == false &&
-                QFileInfo(fi.absolutePath()).exists()) {
+        if (!fi.fileName().isEmpty() && QFileInfo(fi.absolutePath()).exists()) {
             d->fileInfo = fi;
             updateTexts();
         }
