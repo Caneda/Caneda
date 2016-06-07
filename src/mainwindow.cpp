@@ -689,8 +689,12 @@ namespace Caneda
     void MainWindow::openLog()
     {
         DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (!document) {
+            return;
+        }
 
-        QFileInfo info(manager->currentDocument()->fileName());
+        QFileInfo info(document->fileName());
         QString path = info.path();
         QString baseName = info.completeBaseName();
 
@@ -701,8 +705,12 @@ namespace Caneda
     void MainWindow::openNetlist()
     {
         DocumentViewManager *manager = DocumentViewManager::instance();
+        IDocument *document = manager->currentDocument();
+        if (!document) {
+            return;
+        }
 
-        QFileInfo info(manager->currentDocument()->fileName());
+        QFileInfo info(document->fileName());
         QString path = info.path();
         QString baseName = info.completeBaseName();
 
