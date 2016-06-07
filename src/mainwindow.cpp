@@ -212,11 +212,6 @@ namespace Caneda
      * corresponding tab is set as the current one. Otherwise the file is
      * opened and its tab is set as current tab.
      *
-     * A custom QFileDialog is created (instead of using QFileDialog::getSaveFileName())
-     * to be able to set name filters as a QStringList. This improves the
-     * flexibility of the dialog, as the IContext::fileNameFilters() methods
-     * can be used.
-     *
      * \sa save(), saveAll(), saveAs()
      */
     void MainWindow::open(QString fileName)
@@ -224,13 +219,8 @@ namespace Caneda
         DocumentViewManager *manager = DocumentViewManager::instance();
 
         if(fileName.isEmpty()) {
-            QFileDialog dialog(this, tr("Open File"));
-            dialog.setFileMode(QFileDialog::ExistingFile);
-            dialog.setNameFilters(manager->fileNameFilters());
-
-            if (dialog.exec()) {
-                fileName = dialog.selectedFiles().first();
-            }
+            fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),
+                                                    manager->fileNameFilters().join(QString(";;")));
         }
 
         if(!fileName.isEmpty()) {
@@ -324,6 +314,7 @@ namespace Caneda
             return;
         }
 
+        // Create custom dialog with default suffix
         QFileDialog dialog(this, tr("Save File"));
         dialog.setFileMode(QFileDialog::AnyFile);
         dialog.setAcceptMode(QFileDialog::AcceptSave);
