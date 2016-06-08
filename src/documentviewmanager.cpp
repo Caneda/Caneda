@@ -210,28 +210,7 @@ namespace Caneda
         int result = dialog->result();
 
         if (result == QDialogButtonBox::AcceptRole) {
-            QList<QPair<IDocument*, QString> > newFilePaths = dialog->newFilePaths();
-            QList<QPair<IDocument*, QString> >::iterator it;
-
-            bool failedInBetween = false;
-
-            for (it = newFilePaths.begin(); it != newFilePaths.end(); ++it) {
-                IDocument *document = it->first;
-                const QString newFileName = it->second;
-                QString oldFileName = document->fileName();
-
-                document->setFileName(newFileName);
-                if (!document->save()) {
-                    failedInBetween = true;
-                    document->setFileName(oldFileName);
-                }
-            }
-
-            if (failedInBetween) {
-                QMessageBox::critical(0, tr("File save error"),
-                        tr("Could not save some files"));
-                return false;
-            }
+            return true;
         }
         else if (result == QDialogButtonBox::DestructiveRole) {
             return true;

@@ -130,6 +130,7 @@ namespace Caneda
         // If the dialog was accepted, verify and set the names of all documents
         if (ui.buttonBox->buttonRole(button) == QDialogButtonBox::AcceptRole) {
 
+            // Check that all files selected for saving have a filename selected.
             for (int i = 0; i < ui.treeWidget->topLevelItemCount(); ++i) {
                 QTreeWidgetItem *item = ui.treeWidget->topLevelItem(i);
                 if (item->checkState(0) == Qt::Checked) {
@@ -140,13 +141,39 @@ namespace Caneda
                     if (widget->fileInfo().fileName().isEmpty()) {
                         QMessageBox::warning(0, tr("Filename not set"),
                                 tr("Please set file names for untitled documents"));
-                        m_newFilePaths.clear();
                         return;
                     }
-
-                    m_newFilePaths << qMakePair(m_modifiedDocuments[i],
-                            widget->fileInfo().absoluteFilePath());
                 }
+            }
+
+            // Save all selected files
+            bool failedInBetween = false;
+
+            for (int i = 0; i < ui.treeWidget->topLevelItemCount(); ++i) {
+                QTreeWidgetItem *item = ui.treeWidget->topLevelItem(i);
+                if (item->checkState(0) == Qt::Checked) {
+
+                    FileBrowserLineEdit *widget =
+                        qobject_cast<FileBrowserLineEdit*>(ui.treeWidget->itemWidget(item, 1));
+
+                    IDocument *document = m_modifiedDocuments[i];
+                    const QString newFileName = widget->fileInfo().absoluteFilePath();
+                    QString oldFileName = document->fileName();
+
+                    document->setFileName(newFileName);
+                    if (!document->save()) {
+                        failedInBetween = true;
+                        document->setFileName(oldFileName);
+                    }
+                }
+            }
+
+            if (failedInBetween) {
+                QMessageBox::critical(0, tr("File save error"),
+                        tr("Could not save some files"));
+                setResult(QDialogButtonBox::RejectRole);
+                hide();
+                return;
             }
 
         }
