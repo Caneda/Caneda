@@ -98,12 +98,20 @@ namespace Caneda
      */
     void StateHandler::performToggleAction(const QString& actionName, bool on)
     {
-        typedef void (GraphicsScene::*pActionFunc) (QList<GraphicsItem*>&);
+        // When turning off any action (other than select), the normal action
+        // (select) must be turned on.
+        if(!on) {
+            setNormalAction();
+            return;
+        }
 
+        // Set the current mouse action.
         ActionManager *am = ActionManager::instance();
-
         QAction *action = am->actionForName(actionName);
-        Caneda::MouseAction ma = am->mouseActionForAction(action);
+        mouseAction = am->mouseActionForAction(action);
+
+        // Get the function associated to the selected action.
+        typedef void (GraphicsScene::*pActionFunc) (QList<GraphicsItem*>&);
         pActionFunc func = 0;
 
         if (actionName == "editDelete") {
@@ -119,16 +127,7 @@ namespace Caneda
             func = &GraphicsScene::mirrorYItems;
         }
 
-        QList<QAction*> mouseActions = ActionManager::instance()->mouseActions();
-
-        // Toggling off any action switches normal select action "on"
-        if(!on) {
-            // Normal action can't be turned off through UI by clicking
-            // the selct action again.
-            setNormalAction();
-            return;
-        }
-
+        // Get selected items.
         GraphicsView *view = 0;
         GraphicsScene *scene = 0;
         QList<QGraphicsItem*> selectedItems;
@@ -146,23 +145,22 @@ namespace Caneda
             selectedItems = scene->selectedItems();
         }
 
-        do {
-            if(!selectedItems.isEmpty() && func != 0) {
-                QList<GraphicsItem*> funcable = filterItems<GraphicsItem>(selectedItems);
+        // If there is any selected item, apply the action to the selected
+        // items, and deselect the action.
+        if(!selectedItems.isEmpty() && func != 0) {
+            QList<GraphicsItem*> funcable = filterItems<GraphicsItem>(selectedItems);
 
-                if(funcable.isEmpty()) {
-                    break;
-                }
-
+            if(!funcable.isEmpty()) {
                 (scene->*func)(funcable);
-
                 // Turn off this action
                 performToggleAction(action->objectName(), false);
                 return;
             }
-        } while(false); //For break
+        }
 
-        // Just ensure all other action's are off.
+        // Turn off all other actions.
+        QList<QAction*> mouseActions = ActionManager::instance()->mouseActions();
+
         foreach(QAction *act, mouseActions) {
             if(act != action) {
                 act->blockSignals(true);
@@ -171,13 +169,12 @@ namespace Caneda
             }
         }
 
-        // Ensure current action is on visibly
+        // Turn on this action.
         action->blockSignals(true);
         action->setChecked(true);
         action->blockSignals(false);
 
-        mouseAction = ma;
-
+        // Set the state and cursor corresponding to this action in all views.
         foreach(IView *iview, manager->views()) {
             GraphicsView* view = qobject_cast<GraphicsView*>(iview->toWidget());
             if(view) {
