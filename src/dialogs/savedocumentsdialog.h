@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,18 +24,15 @@
 #include "ui_savedocumentsdialog.h"
 
 #include <QDialog>
-#include <QSet>
+#include <QFileInfo>
 
 // Forward declarations.
-class QFileInfo;
+class QToolButton;
 
 namespace Caneda
 {
-
     // Forward declarations.
     class IDocument;
-    class FileBrowserLineEditPrivate;
-    class SaveDocumentsDialogPrivate;
 
     class FileBrowserLineEdit : public QWidget
     {
@@ -46,13 +44,17 @@ namespace Caneda
                                      QWidget *parent = 0);
 
         QFileInfo fileInfo() const;
-        void updateTexts();
 
     private Q_SLOTS:
         void browseButtonClicked();
+        void updateTexts();
 
     private:
-        FileBrowserLineEditPrivate *d;
+        QTreeWidgetItem *m_item;
+        QFileInfo m_fileInfo;
+
+        QLineEdit *m_lineEdit;
+        QToolButton *m_browseButton;
     };
 
     class SaveDocumentsDialog : public QDialog
@@ -60,20 +62,13 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        enum ResultType {
-            SaveSelected = QDialogButtonBox::AcceptRole,
-            DoNotSave = QDialogButtonBox::DestructiveRole,
-            Abort = QDialogButtonBox::RejectRole
-        };
-
         explicit SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
                                      QWidget *parent = 0);
 
         QList<QPair<IDocument*, QString> > newFilePaths() const;
 
     public Q_SLOTS:
-        void slotButtonClicked(QAbstractButton *button);
-        void slotHandleClick(const QModelIndex& index);
+        void buttonClicked(QAbstractButton *button);
         void reject();
 
     private:

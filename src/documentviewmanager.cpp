@@ -192,7 +192,7 @@ namespace Caneda
 
     bool DocumentViewManager::saveDocuments(const QList<IDocument*> &documents)
     {
-        // First collect only the modified documents and prompt for save.
+        // Collect the modified documents and prompt for save.
         QList<IDocument*> modifiedDocuments;
         foreach (IDocument *document, documents) {
             if (document->isModified()) {
@@ -209,13 +209,7 @@ namespace Caneda
 
         int result = dialog->result();
 
-        if (result == SaveDocumentsDialog::DoNotSave) {
-            return true;
-        }
-        else if (result == SaveDocumentsDialog::Abort) {
-            return false;
-        }
-        else {
+        if (result == QDialogButtonBox::AcceptRole) {
             QList<QPair<IDocument*, QString> > newFilePaths = dialog->newFilePaths();
             QList<QPair<IDocument*, QString> >::iterator it;
 
@@ -238,6 +232,12 @@ namespace Caneda
                         tr("Could not save some files"));
                 return false;
             }
+        }
+        else if (result == QDialogButtonBox::DestructiveRole) {
+            return true;
+        }
+        else if (result == QDialogButtonBox::RejectRole) {
+            return false;
         }
 
         delete dialog.data();
