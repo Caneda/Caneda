@@ -47,7 +47,7 @@ namespace Caneda
 
         void insertItem(const QString& item, const QString& category);
 
-        void handlePaste();
+        void paste();
 
     private:
         explicit StateHandler(QObject *parent = 0);

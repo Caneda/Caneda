@@ -252,7 +252,7 @@ namespace Caneda
      * \brief This method handles the paste action by reading the clipboard and
      * inserting (if found) the corresponding items.
      */
-    void StateHandler::handlePaste()
+    void StateHandler::paste()
     {
         QClipboard *clipboard =  QApplication::clipboard();
         const QString text = clipboard->text();
@@ -316,7 +316,7 @@ namespace Caneda
         }
     }
 
-    //! \brief Apply the cursor of the current action to a given view.
+    //! \brief Apply the cursor of the current state to the given view.
     void StateHandler::applyCursor(GraphicsView *view)
     {
         QCursor cursor;
@@ -361,6 +361,7 @@ namespace Caneda
         view->setCursor(cursor);
     }
 
+    //! \brief Apply the current state to the given view.
     void StateHandler::applyState(GraphicsView *view)
     {
         applyCursor(view);

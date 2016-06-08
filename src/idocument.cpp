@@ -438,7 +438,7 @@ namespace Caneda
 
     void LayoutDocument::paste()
     {
-        StateHandler::instance()->handlePaste();
+        StateHandler::instance()->paste();
     }
 
     void LayoutDocument::selectAll()
@@ -705,7 +705,7 @@ namespace Caneda
 
     void SchematicDocument::paste()
     {
-        StateHandler::instance()->handlePaste();
+        StateHandler::instance()->paste();
     }
 
     void SchematicDocument::selectAll()
@@ -1385,7 +1385,7 @@ namespace Caneda
 
     void SymbolDocument::paste()
     {
-        StateHandler::instance()->handlePaste();
+        StateHandler::instance()->paste();
     }
 
     void SymbolDocument::selectAll()
