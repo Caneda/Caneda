@@ -63,6 +63,7 @@ namespace Caneda
         explicit Tab(IView *view, QWidget *parent = 0);
 
         IView* activeView() const;
+        QList<IView*> views() const;
 
         QString tabText() const;
         QIcon tabIcon() const;

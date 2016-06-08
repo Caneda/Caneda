@@ -401,6 +401,31 @@ namespace Caneda
         return tab->activeView();
     }
 
+
+    QList<IDocument*> DocumentViewManager::documents() const
+    {
+        QList<IDocument*> documents;
+        QList<DocumentData*>::const_iterator it = m_documentDataList.constBegin(),
+            end = m_documentDataList.constEnd();
+        for (; it != end; ++it) {
+            documents << (*it)->document;
+        }
+
+        return documents;
+    }
+
+    QList<IView*> DocumentViewManager::views() const
+    {
+        QList<IView*> views;
+        QList<Tab*> tabs = tabWidget()->tabs();
+
+        foreach(Tab *tab, tabs) {
+            views << tab->views();
+        }
+
+        return views;
+    }
+
     IDocument* DocumentViewManager::documentForFileName(const QString &fileName) const
     {
         DocumentData *data = documentDataForFileName(fileName);
@@ -425,18 +450,6 @@ namespace Caneda
             << " is not in manager's document data list";
 
         return QList<IView*>();
-    }
-
-    QList<IDocument*> DocumentViewManager::documents() const
-    {
-        QList<IDocument*> documents;
-        QList<DocumentData*>::const_iterator it = m_documentDataList.constBegin(),
-            end = m_documentDataList.constEnd();
-        for (; it != end; ++it) {
-            documents << (*it)->document;
-        }
-
-        return documents;
     }
 
     void DocumentViewManager::updateSettingsChanges()

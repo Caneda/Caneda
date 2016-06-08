@@ -187,7 +187,6 @@ namespace Caneda
     LayoutView::LayoutView(LayoutDocument *document) : IView(document)
     {
         m_graphicsView = new GraphicsView(document->graphicsScene());
-        StateHandler::instance()->registerView(m_graphicsView);
         connect(m_graphicsView, SIGNAL(focussedIn(GraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
         connect(m_graphicsView, SIGNAL(focussedOut(GraphicsView*)), this,
@@ -261,7 +260,6 @@ namespace Caneda
     SchematicView::SchematicView(SchematicDocument *document) : IView(document)
     {
         m_graphicsView = new GraphicsView(document->graphicsScene());
-        StateHandler::instance()->registerView(m_graphicsView);
         connect(m_graphicsView, SIGNAL(focussedIn(GraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
         connect(m_graphicsView, SIGNAL(focussedOut(GraphicsView*)), this,
@@ -412,7 +410,6 @@ namespace Caneda
     SymbolView::SymbolView(SymbolDocument *document) : IView(document)
     {
         m_graphicsView = new GraphicsView(document->graphicsScene());
-        StateHandler::instance()->registerView(m_graphicsView);
         connect(m_graphicsView, SIGNAL(focussedIn(GraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
         connect(m_graphicsView, SIGNAL(focussedOut(GraphicsView*)), this,

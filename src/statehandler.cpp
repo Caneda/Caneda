@@ -21,8 +21,10 @@
 #include "statehandler.h"
 
 #include "actionmanager.h"
+#include "documentviewmanager.h"
 #include "graphicsscene.h"
 #include "graphicsview.h"
+#include "iview.h"
 #include "library.h"
 #include "painting.h"
 #include "portsymbol.h"
@@ -39,7 +41,6 @@ namespace Caneda
     {
         mouseAction = Caneda::Normal;
         paintingDrawItem = 0;
-        focussedView = 0;
     }
 
     //! \copydoc MainWindow::instance()
@@ -55,27 +56,8 @@ namespace Caneda
     //! \brief Destructor.
     StateHandler::~StateHandler()
     {
-        delete focussedView;
         delete paintingDrawItem;
         clearInsertibles();
-    }
-
-    void StateHandler::registerView(GraphicsView *view)
-    {
-        if(!views.contains(view)) {
-            views << view;
-            connect(view, SIGNAL(destroyed(QObject*)), SLOT(objectDestroyed(QObject*)));
-            connect(view, SIGNAL(focussedIn(GraphicsView*)), SLOT(updateFocussedView(GraphicsView*)));
-        }
-    }
-
-    void StateHandler::unregisterView(GraphicsView *view)
-    {
-        if(views.contains(view)) {
-            views.remove(view);
-            disconnect(view, SIGNAL(destroyed(QObject*)), this, SLOT(objectDestroyed(QObject*)));
-            disconnect(view, SIGNAL(focussedIn(GraphicsView*)), this, SLOT(updateFocussedView(GraphicsView*)));
-        }
     }
 
     //! \brief Toggles the normal select action on.
@@ -147,12 +129,20 @@ namespace Caneda
             return;
         }
 
+        GraphicsView *view = 0;
         GraphicsScene *scene = 0;
-        if (focussedView) {
-            scene = focussedView->graphicsScene();
-        }
         QList<QGraphicsItem*> selectedItems;
-        if (scene) {
+
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView *currentView = manager->currentView();
+
+        if(currentView) {
+            view = qobject_cast<GraphicsView*>(currentView->toWidget());
+        }
+        if(view) {
+            scene = view->graphicsScene();
+        }
+        if(scene) {
             selectedItems = scene->selectedItems();
         }
 
@@ -188,8 +178,11 @@ namespace Caneda
 
         mouseAction = ma;
 
-        foreach (GraphicsView *view, views) {
-            applyState(view);
+        foreach(IView *iview, manager->views()) {
+            GraphicsView* view = qobject_cast<GraphicsView*>(iview->toWidget());
+            if(view) {
+                applyState(view);
+            }
         }
     }
 
@@ -321,24 +314,6 @@ namespace Caneda
             insertibles = items;
             performToggleAction("insertItem", true);
         }
-    }
-
-    void StateHandler::objectDestroyed(QObject *object)
-    {
-        /*!
-         * \todo HACK: Using static cast to convert QObject pointers to view.
-         * This might result in invalid pointers, but the main purpose why we
-         * need them is just to remove the same from the list. Using these
-         * pointers to access any method or variable will result in ugly crash.
-         */
-        GraphicsView *view = static_cast<GraphicsView*>(object);
-        views.remove(view);
-        focussedView = 0;
-    }
-
-    void StateHandler::updateFocussedView(GraphicsView *view)
-    {
-        focussedView = view;
     }
 
     //! \brief Apply the cursor of the current action to a given view.

@@ -156,6 +156,11 @@ namespace Caneda
         return m_views.isEmpty() ? 0 : m_views.first();
     }
 
+    QList<IView*> Tab::views() const
+    {
+        return m_views;
+    }
+
     QString Tab::tabText() const
     {
         IView *view = activeView();

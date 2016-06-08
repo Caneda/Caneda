@@ -67,9 +67,11 @@ namespace Caneda
         IDocument* currentDocument() const;
         IView* currentView() const;
 
+        QList<IDocument*> documents() const;
+        QList<IView*> views() const;
+
         IDocument* documentForFileName(const QString &fileName) const;
         QList<IView*> viewsForDocument(const IDocument *document) const;
-        QList<IDocument*> documents() const;
 
         void updateSettingsChanges();
         void addFileToRecentFiles(const QString &filePath);
