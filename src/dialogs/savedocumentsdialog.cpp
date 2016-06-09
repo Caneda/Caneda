@@ -123,9 +123,8 @@ namespace Caneda
     //! \brief Check what button was pressed and accept/reject the dialog.
     void SaveDocumentsDialog::buttonClicked(QAbstractButton *button)
     {
-        // Check what button was pressed.
         if (ui.buttonBox->buttonRole(button) == QDialogButtonBox::AcceptRole) {
-            // Discard button was pressed, accept the dialog saving the selected files
+            // Save documents button was pressed, accept the dialog saving the selected files
 
             // Check that all files selected for saving have a filename selected.
             for (int i = 0; i < ui.treeWidget->topLevelItemCount(); ++i) {
@@ -159,7 +158,7 @@ namespace Caneda
 
                     document->setFileName(newFileName);
                     if (!document->save()) {
-                        failedInBetween = true;
+                        failedInBetween = true;  // Using this flag allows to continue saving the rest of the documents upon any error.
                         document->setFileName(oldFileName);
                     }
                 }
@@ -183,7 +182,6 @@ namespace Caneda
             // Cancel button was pressed, discard the dialog
             reject();
         }
-
     }
 
 } // namespace Caneda
