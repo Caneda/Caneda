@@ -32,6 +32,25 @@ namespace Caneda
     class GraphicsView;
     class Painting;
 
+    /*!
+     * \brief The StateHandler class is one of Caneda's classes to handle
+     * actions (along with the ActionManager class). This class manages the
+     * state of the different actions, mantains the mutual exclusiveness of
+     * the selectable actions, and applies certain actions to a scene.
+     *
+     * While the ActionManager is in charge of creating and managing the
+     * actual actions (for example returning a pointer to an action of a
+     * certain name), this class handles which action is currently selected
+     * turning off all other actions. It also applies the corresponding cursor
+     * and state to all views, and in certain actions applies the action
+     * itself, relagating in the other cases the action to the corresponding
+     * scene or view.
+     *
+     * This class is a singleton class and its only static instance (returned
+     * by instance()) is to be used.
+     *
+     * \sa ActionManager, IView, DocumentViewManager
+     */
     class StateHandler : public QObject
     {
         Q_OBJECT
@@ -46,7 +65,6 @@ namespace Caneda
         void performToggleAction(const QString& actionName, bool on);
 
         void insertItem(const QString& item, const QString& category);
-
         void paste();
 
     private:

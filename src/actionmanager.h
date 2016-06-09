@@ -29,16 +29,23 @@
 namespace Caneda
 {
     /*!
-     * \brief Singleton class to manage all of Caneda's actions in a single place.
+     * \brief The ActionManager class is in charge of managing all of Caneda's
+     * actions in a single place. It allows creation, listing and getting
+     * pointers to actions given their name.
      *
-     * This object is a singleton class to manage all of Caneda's actions in a
-     * single place. This allows to access and create any number of actions
-     * from any place throughout the code, without risking of having duplicates
-     * and allowing the access of actions created somewhere else by other class.
+     * This class is a singleton, allowing to access and create any number of
+     * actions from any place throughout the code, without risking of having
+     * duplicates and allowing the access of actions created somewhere else by
+     * other class.
      *
-     * By using a singleton, only one object instance of this class is allowed
-     * and created at any time thoughout all Caneda's process execution. Its
-     * only static instance (returned by instance()) is to be used.
+     * While the StateHandler class is in charge of handling which action is
+     * currently selected and relaying the cursor and state to all views, this
+     * class creates and manages the actual actions throughout their lifetime.
+     *
+     * This class is a singleton class and its only static instance (returned
+     * by instance()) is to be used.
+     *
+     * \sa MainWindow, StateHandler
      */
     class ActionManager : public QObject
     {
