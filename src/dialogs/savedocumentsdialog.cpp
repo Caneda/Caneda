@@ -120,15 +120,12 @@ namespace Caneda
                 this, SLOT(buttonClicked(QAbstractButton*)));
     }
 
-    QList<QPair<IDocument*, QString> > SaveDocumentsDialog::newFilePaths() const
-    {
-        return m_newFilePaths;
-    }
-
+    //! \brief Check what button was pressed and accept/reject the dialog.
     void SaveDocumentsDialog::buttonClicked(QAbstractButton *button)
     {
-        // If the dialog was accepted, verify and set the names of all documents
+        // Check what button was pressed.
         if (ui.buttonBox->buttonRole(button) == QDialogButtonBox::AcceptRole) {
+            // Discard button was pressed, accept the dialog saving the selected files
 
             // Check that all files selected for saving have a filename selected.
             for (int i = 0; i < ui.treeWidget->topLevelItemCount(); ++i) {
@@ -168,24 +165,25 @@ namespace Caneda
                 }
             }
 
+            // If there was an error, discard the dialog
             if (failedInBetween) {
                 QMessageBox::critical(0, tr("File save error"),
                         tr("Could not save some files"));
-                setResult(QDialogButtonBox::RejectRole);
-                hide();
+                reject();
                 return;
             }
 
+            accept();
+        }
+        else if(ui.buttonBox->buttonRole(button) == QDialogButtonBox::DestructiveRole) {
+            // Discard button was pressed, accept the dialog without saving
+            accept();
+        }
+        else {
+            // Cancel button was pressed, discard the dialog
+            reject();
         }
 
-        setResult(ui.buttonBox->buttonRole(button));
-        hide();
-    }
-
-    void SaveDocumentsDialog::reject()
-    {
-        setResult(QDialogButtonBox::RejectRole);
-        hide();
     }
 
 } // namespace Caneda

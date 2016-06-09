@@ -190,6 +190,7 @@ namespace Caneda
         return data != 0;
     }
 
+    //! \brief Prompt the user to save the modified documents.
     bool DocumentViewManager::saveDocuments(const QList<IDocument*> &documents)
     {
         // Collect the modified documents and prompt for save.
@@ -204,24 +205,15 @@ namespace Caneda
             return true;
         }
 
-        QPointer<SaveDocumentsDialog> dialog = new SaveDocumentsDialog(modifiedDocuments);
-        dialog->exec();
+        SaveDocumentsDialog *dialog = new SaveDocumentsDialog(modifiedDocuments);
+        int result = dialog->exec();
+        delete dialog;
 
-        int result = dialog->result();
-
-        if (result == QDialogButtonBox::AcceptRole) {
+        if (result == QDialog::Accepted) {
             return true;
         }
-        else if (result == QDialogButtonBox::DestructiveRole) {
-            return true;
-        }
-        else if (result == QDialogButtonBox::RejectRole) {
-            return false;
-        }
 
-        delete dialog.data();
-
-        return true;
+        return false;
     }
 
     bool DocumentViewManager::closeDocuments(const QList<IDocument*> &documents,

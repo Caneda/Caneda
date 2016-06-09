@@ -65,17 +65,13 @@ namespace Caneda
         explicit SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
                                      QWidget *parent = 0);
 
-        QList<QPair<IDocument*, QString> > newFilePaths() const;
-
     public Q_SLOTS:
         void buttonClicked(QAbstractButton *button);
-        void reject();
 
     private:
         Ui::SaveDocumentsDialog ui;
 
         QList<IDocument*> m_modifiedDocuments;
-        QList<QPair<IDocument*, QString> > m_newFilePaths;
     };
 
 } // namespace Caneda
