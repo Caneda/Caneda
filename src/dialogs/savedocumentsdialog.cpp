@@ -20,6 +20,7 @@
 
 #include "savedocumentsdialog.h"
 
+#include "icontext.h"
 #include "idocument.h"
 #include "global.h"
 
@@ -37,17 +38,16 @@ namespace Caneda
      *************************************************************************/
     //! \brief Constructor.
     FileBrowserLineEdit::FileBrowserLineEdit(QTreeWidgetItem *item,
-                                             const QFileInfo& fileInfo,
+                                             IDocument *document,
                                              QWidget *parent) :
         QWidget(parent),
         m_item(item),
-        m_fileInfo(fileInfo)
+        m_document(document)
     {
         QHBoxLayout *layout = new QHBoxLayout(this);
 
         m_lineEdit = new QLineEdit(this);
         m_lineEdit->setReadOnly(true);
-        m_lineEdit->setText(m_fileInfo.absolutePath());
 
         m_browseButton = new QToolButton(this);
         m_browseButton->setIcon(Caneda::icon("document-open"));
@@ -57,33 +57,50 @@ namespace Caneda
 
         connect(m_browseButton, SIGNAL(clicked()), SLOT(browseButtonClicked()));
 
-        updateTexts();
+        updateTexts(m_document->fileName());
     }
 
-    QFileInfo FileBrowserLineEdit::fileInfo() const
+    //! \brief Returns current filename to be saved.
+    QString FileBrowserLineEdit::fileName() const
     {
-        return m_fileInfo;
+        return m_lineEdit->text();
     }
 
+    //! \brief Create a custom dialog with the default suffix.
     void FileBrowserLineEdit::browseButtonClicked()
     {
-        QString fileName =
-            QFileDialog::getSaveFileName(this, tr("Save File"), m_fileInfo.absoluteFilePath());
+        QFileDialog dialog(this, tr("Save File"));
+        dialog.setFileMode(QFileDialog::AnyFile);
+        dialog.setAcceptMode(QFileDialog::AcceptSave);
 
-        QFileInfo fi(fileName);
-        if (!fi.fileName().isEmpty() && QFileInfo(fi.absolutePath()).exists()) {
-            m_fileInfo = fi;
-            updateTexts();
+        QFileInfo fileInfo(fileName());
+        QString suffix = fileInfo.suffix().isEmpty() ?
+                    m_document->context()->defaultSuffix() : fileInfo.suffix();
+
+        dialog.setNameFilters(m_document->context()->fileNameFilters());
+        dialog.selectFile(fileName());
+        dialog.setDefaultSuffix(suffix);
+
+        QString fileName;
+        if (dialog.exec()) {
+            fileName = dialog.selectedFiles().first();
+            updateTexts(fileName);
         }
     }
 
-    void FileBrowserLineEdit::updateTexts()
+    //! \brief Update current item text acording to the given filename.
+    void FileBrowserLineEdit::updateTexts(const QString &fileName)
     {
-        QString doc = m_fileInfo.fileName();
-        QString path = m_fileInfo.absolutePath();
+        QFileInfo fileInfo(fileName);
+        QString doc = fileInfo.fileName();
+        QString path = fileInfo.filePath();
 
-        if (doc.isEmpty()) {
-            doc = tr("Untitled");
+        if(doc.isEmpty()) {
+            doc = tr("untitled") + "." + m_document->context()->defaultSuffix();
+        }
+
+        if(path.isEmpty()) {
+            path = QDir::homePath() + "/" + doc;
         }
 
         m_lineEdit->setText(path);
@@ -111,8 +128,7 @@ namespace Caneda
             QTreeWidgetItem *item = new QTreeWidgetItem(ui.treeWidget);
             item->setCheckState(0, Qt::Checked);
 
-            QFileInfo fileInfo(m_modifiedDocuments[i]->fileName());
-            FileBrowserLineEdit *widget = new FileBrowserLineEdit(item, fileInfo);
+            FileBrowserLineEdit *widget = new FileBrowserLineEdit(item, m_modifiedDocuments[i], this);
             ui.treeWidget->setItemWidget(item, 1, widget);
         }
 
@@ -126,22 +142,6 @@ namespace Caneda
         if (ui.buttonBox->buttonRole(button) == QDialogButtonBox::AcceptRole) {
             // Save documents button was pressed, accept the dialog saving the selected files
 
-            // Check that all files selected for saving have a filename selected.
-            for (int i = 0; i < ui.treeWidget->topLevelItemCount(); ++i) {
-                QTreeWidgetItem *item = ui.treeWidget->topLevelItem(i);
-                if (item->checkState(0) == Qt::Checked) {
-
-                    FileBrowserLineEdit *widget =
-                        qobject_cast<FileBrowserLineEdit*>(ui.treeWidget->itemWidget(item, 1));
-
-                    if (widget->fileInfo().fileName().isEmpty()) {
-                        QMessageBox::warning(0, tr("Filename not set"),
-                                tr("Please set file names for untitled documents"));
-                        return;
-                    }
-                }
-            }
-
             // Save all selected files
             bool failedInBetween = false;
 
@@ -153,7 +153,7 @@ namespace Caneda
                         qobject_cast<FileBrowserLineEdit*>(ui.treeWidget->itemWidget(item, 1));
 
                     IDocument *document = m_modifiedDocuments[i];
-                    const QString newFileName = widget->fileInfo().absoluteFilePath();
+                    const QString newFileName = widget->fileName();
                     QString oldFileName = document->fileName();
 
                     document->setFileName(newFileName);

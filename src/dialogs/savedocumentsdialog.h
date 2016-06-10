@@ -24,7 +24,6 @@
 #include "ui_savedocumentsdialog.h"
 
 #include <QDialog>
-#include <QFileInfo>
 
 // Forward declarations.
 class QToolButton;
@@ -40,18 +39,18 @@ namespace Caneda
 
     public:
         explicit FileBrowserLineEdit(QTreeWidgetItem *item,
-                                     const QFileInfo& fileInfo,
+                                     IDocument *document,
                                      QWidget *parent = 0);
 
-        QFileInfo fileInfo() const;
+        QString fileName() const;
 
     private Q_SLOTS:
         void browseButtonClicked();
-        void updateTexts();
+        void updateTexts(const QString &fileName);
 
     private:
         QTreeWidgetItem *m_item;
-        QFileInfo m_fileInfo;
+        IDocument *m_document;
 
         QLineEdit *m_lineEdit;
         QToolButton *m_browseButton;
