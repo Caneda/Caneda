@@ -2,8 +2,8 @@
 # Caneda project
 PROJECT( Caneda )
 
-SET( PACKAGE_VERSION "0.2.1" )
-SET( PACKAGE_STRING "caneda 0.2.1" )
+SET( PACKAGE_VERSION "0.3.0" )
+SET( PACKAGE_STRING "caneda 0.3.0" )
 
 # ==================================================================================
 # Minimum libraries required
