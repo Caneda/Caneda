@@ -41,7 +41,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        ProjectFileNewDialog(QWidget *parent = 0);
+        explicit ProjectFileNewDialog(QWidget *parent = 0);
 
         QString fileName() const { return m_filename; }
         Caneda::ProjectFileNewChoice userChoice() const { return m_userchoice; }

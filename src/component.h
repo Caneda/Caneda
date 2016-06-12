@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,7 +21,7 @@
 #ifndef QCOMPONENT_H
 #define QCOMPONENT_H
 
-#include "cgraphicsitem.h"
+#include "graphicsitem.h"
 #include "property.h"
 
 namespace Caneda
@@ -32,8 +32,9 @@ namespace Caneda
     //! \brief Shareable component's data.
     struct ComponentData : public QSharedData
     {
-        ComponentData(CGraphicsScene *scene = 0);
-        ComponentData(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene = 0);
+        explicit ComponentData();
+
+        void setData(const QSharedDataPointer<ComponentData>& other);
 
         //! Static properties.
         QString name;
@@ -60,7 +61,7 @@ namespace Caneda
     typedef QSharedDataPointer<ComponentData> ComponentDataPtr;
 
     /*!
-     * \brief The Component class forms part of one of the CGraphicsItem
+     * \brief The Component class forms part of one of the GraphicsItem
      * derived classes available on Caneda. It is the base class for all
      * electronic components available through libraries. These components are
      * then inserted on a schematic to form a circuit.
@@ -73,21 +74,17 @@ namespace Caneda
      * able to render the symbol, the symbol itself must be previously
      * registered (by the LibraryManager::registerComponent() method).
      *
-     * \sa CGraphicsItem, LibraryManager
+     * \sa GraphicsItem, LibraryManager
      */
-    class Component : public QObject, public CGraphicsItem
+    class Component : public GraphicsItem
     {
-        Q_OBJECT
-
     public:
-        Component(CGraphicsScene *scene = 0);
-        Component(const QSharedDataPointer<ComponentData>& other,
-                  CGraphicsScene *scene = 0);
+        explicit Component(QGraphicsItem *parent = 0);
         ~Component();
 
-        //! \copydoc CGraphicsItem::Type
-        enum { Type = CGraphicsItem::ComponentType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::Type
+        enum { Type = GraphicsItem::ComponentType };
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         //! Returns name of the component (without localization).
@@ -110,33 +107,34 @@ namespace Caneda
 
         //! Returns the label of the component in the form {label_prefix}{number_suffix}
         QString label() const { return d->properties->propertyValue("label"); }
-        bool setLabel(const QString& _label);
+        bool setLabel(const QString &_label);
+
+        //! Returns the component data.
+        ComponentDataPtr componentData() const { return d; }
+        void setComponentData(const ComponentDataPtr &other);
 
         //! Returns the property map (actually copy of property map).
         PropertyGroup* properties() const { return d->properties; }
 
-        QString model(const QString& type) const;
-
-        static Component* loadComponent(Caneda::XmlReader *reader, CGraphicsScene *scene);
-        void loadData(Caneda::XmlReader *reader);
-        void saveData(Caneda::XmlWriter *writer) const;
+        QString model(const QString &type) const;
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
 
-        Component *copy(CGraphicsScene *scene = 0) const;
-        void copyDataTo(Component *comp) const;
+        Component* copy() const;
 
-        int launchPropertyDialog(Caneda::UndoOption opt);
+        void saveData(Caneda::XmlWriter *writer) const;
+        void loadData(Caneda::XmlReader *reader);
+
+        void launchPropertiesDialog();
 
     protected:
-        QRectF adjustedBoundRect(const QRectF& rect);
-        QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+        QRectF adjustedBoundRect(const QRectF &rect);
 
     public slots:
         void updateBoundingRect();
 
     private:
-        void init();
+        void updateSharedData();
 
         //! \brief Component shared data
         ComponentDataPtr d;

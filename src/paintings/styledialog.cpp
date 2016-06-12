@@ -19,8 +19,9 @@
 
 #include "styledialog.h"
 
-#include "cgraphicsscene.h"
+#include "graphicsscene.h"
 #include "settings.h"
+#include "xmlutilities.h"
 
 #include "arrow.h"
 #include "ellipsearc.h"
@@ -288,13 +289,12 @@ namespace Caneda
      *                              StyleDialog                              *
      *************************************************************************/
     //! \brief Constructor.
-    StyleDialog::StyleDialog(Painting *_painting, Caneda::UndoOption option, QWidget *parent) :
+    StyleDialog::StyleDialog(Painting *_painting, QWidget *parent) :
         QDialog(parent),
         fillColor(Qt::white),
         lineColorPixmap(32, 32),
         fillColorPixmap(32, 32),
-        painting(_painting),
-        undoOption(option)
+        painting(_painting)
     {
         Settings *settings = Settings::instance();
         lineColor = settings->currentValue("gui/foregroundColor").value<QColor>();
@@ -436,7 +436,9 @@ namespace Caneda
 
     void StyleDialog::applySettings()
     {
-        QString saveData = painting->saveDataText();
+        QString saveData;
+        Caneda::XmlWriter writer(&saveData);
+        painting->saveData(&writer);
 
         painting->setPen(previewWidget->pen());
 
@@ -466,9 +468,9 @@ namespace Caneda
             layer->setPaintingRect(newRect);
         }
 
-        CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(painting->scene());
+        GraphicsScene *scene = qobject_cast<GraphicsScene*>(painting->scene());
         if(scene) {
-            QUndoCommand *cmd = new PaintingPropertyChangeCmd(painting, saveData);
+            QUndoCommand *cmd = new ChangePaintingPropertyCmd(painting, saveData);
             scene->undoStack()->push(cmd);
         }
     }

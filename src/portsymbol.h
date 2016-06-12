@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2013-2014 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2013-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -25,8 +25,7 @@
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsItem;
-    class CGraphicsScene;
+    class GraphicsItem;
 
     /*!
      * \brief Represents the port symbol on component symbols and schematics.
@@ -42,39 +41,36 @@ namespace Caneda
      * names as the ports in the symbol.
      *
      */
-    class PortSymbol : public CGraphicsItem
+    class PortSymbol : public GraphicsItem
     {
     public:
-        PortSymbol(CGraphicsScene *scene = 0);
-        PortSymbol(const QString &label, CGraphicsScene *scene = 0);
+        explicit PortSymbol(QGraphicsItem *parent = 0);
         ~PortSymbol();
 
-        //! \copydoc CGraphicsItem::Type
-        enum { Type = CGraphicsItem::PortSymbolType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::Type
+        enum { Type = GraphicsItem::PortSymbolType };
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         //! Return's the symbol's port
         Port* port() const { return m_ports[0]; }
+
         //! Return's the symbol's label
         QString label() const { return m_label->text();}
+        bool setLabel(const QString &newLabel);
 
         void updateGeometry();
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-        static PortSymbol* loadPortSymbol(Caneda::XmlReader *reader, CGraphicsScene *scene);
+        PortSymbol* copy() const;
+
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        PortSymbol* copy(CGraphicsScene *scene = 0) const;
-        void copyDataTo(PortSymbol *portSymbol) const;
-
-        int launchPropertyDialog(Caneda::UndoOption opt);
+        void launchPropertiesDialog();
 
     private:
-        void init(const QString &label);
-
         QGraphicsSimpleTextItem *m_label;
         QPainterPath m_symbol;
     };

@@ -55,7 +55,7 @@ namespace Caneda
     {
     public:
         //! Constructs an xml stream reader acting on \a data.
-        XmlReader(const QByteArray & data) : QXmlStreamReader(data) {}
+        explicit XmlReader(const QByteArray & data) : QXmlStreamReader(data) {}
 
         int readInt();
         double readDouble();
@@ -100,11 +100,11 @@ namespace Caneda
     {
     public:
         //! Constructs an xml stream writer acting on \a device.
-        XmlWriter(QIODevice *device) : QXmlStreamWriter(device) {}
+        explicit XmlWriter(QIODevice *device) : QXmlStreamWriter(device) {}
         //! Constructs an xml stream writer acting on \a bytearray.
-        XmlWriter(QByteArray *bytearray) : QXmlStreamWriter(bytearray) {}
+        explicit XmlWriter(QByteArray *bytearray) : QXmlStreamWriter(bytearray) {}
         //! Constructs an xml stream writer acting on \a string.
-        XmlWriter(QString *string) : QXmlStreamWriter(string) {}
+        explicit XmlWriter(QString *string) : QXmlStreamWriter(string) {}
 
         void writeElement(const QString& tag, const QString& value);
         void writeElement(const QString& tag, int value);

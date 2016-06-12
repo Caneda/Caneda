@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -35,11 +35,13 @@ namespace Caneda
      * \param rect The ellipse rect of arc (local coords).
      * \param startAngle Starting angle of arc.
      * \param spanAngle Span angle of arc.
-     * \param scene CGraphicsScene to which this item should be added.
+     * \param parent Parent of the EllipseArc item.
      */
-    EllipseArc::EllipseArc(QRectF rect, int startAngle, int spanAngle,
-            CGraphicsScene *scene) :
-        Painting(scene),
+    EllipseArc::EllipseArc(QRectF rect,
+                           int startAngle,
+                           int spanAngle,
+                           QGraphicsItem *parent) :
+        Painting(parent),
         m_startAngle(startAngle),
         m_spanAngle(spanAngle)
     {
@@ -93,12 +95,13 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \brief Returns a copy of EllipseArc painting item.
-    EllipseArc* EllipseArc::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    EllipseArc* EllipseArc::copy() const
     {
-        EllipseArc *arc = new EllipseArc(ellipse(), m_startAngle, m_spanAngle, scene);
-        Painting::copyDataTo(arc);
-        return arc;
+        EllipseArc *ellipseArc = new EllipseArc(ellipse(), m_startAngle,
+                                                m_spanAngle, parentItem());
+        Painting::copyDataTo(ellipseArc);
+        return ellipseArc;
     }
 
     //! \brief Save's data to xml referred by \a writer.
@@ -109,7 +112,7 @@ namespace Caneda
 
         writer->writeRectAttribute(ellipse(), QLatin1String("ellipse"));
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writeEmptyElement("properties");
         writer->writeAttribute("startAngle", QString::number(m_startAngle));
@@ -164,10 +167,11 @@ namespace Caneda
         }
     }
 
-    int EllipseArc::launchPropertyDialog(Caneda::UndoOption opt)
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
+    void EllipseArc::launchPropertiesDialog()
     {
-        StyleDialog dialog(this, opt);
-        return dialog.exec();
+        StyleDialog dialog(this);
+        dialog.exec();
     }
 
 } // namespace Caneda

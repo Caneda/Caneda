@@ -20,7 +20,6 @@
 #ifndef SIDEBAR_TEXT_BROWSER_H
 #define SIDEBAR_TEXT_BROWSER_H
 
-#include <QSortFilterProxyModel>
 #include <QTreeView>
 
 // Forward declarations
@@ -28,17 +27,8 @@ class QFileSystemModel;
 
 namespace Caneda
 {
-    /*!
-     * \brief The FileFilterProxyModel class helps in filtering sidebar display
-     * corresponding to a QLineEdit.
-     */
-    class FileFilterProxyModel : public QSortFilterProxyModel
-    {
-    public:
-        FileFilterProxyModel(QObject *parent = 0);
-
-        bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-    };
+    // Forward declarations
+    class FileFilterProxyModel;
 
     /*!
      * \brief This class implements the sidebar dockwidget with templates to be
@@ -52,14 +42,14 @@ namespace Caneda
      * of code structures. These structures or templates are inserted into the
      * currently opened document upon user double click.
      *
-     * \sa TextContext, SidebarBrowser
+     * \sa TextContext, SidebarItemsBrowser
      */
     class SidebarTextBrowser : public QWidget
     {
         Q_OBJECT
 
     public:
-        SidebarTextBrowser(QWidget *parent = 0);
+        explicit SidebarTextBrowser(QWidget *parent = 0);
         ~SidebarTextBrowser();
 
     private Q_SLOTS:

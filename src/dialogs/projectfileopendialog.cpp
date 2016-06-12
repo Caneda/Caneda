@@ -19,8 +19,7 @@
 
 #include "projectfileopendialog.h"
 
-#include "global.h"
-#include "sidebarbrowser.h"
+#include "sidebaritemsbrowser.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -28,41 +27,44 @@
 namespace Caneda
 {
     //! \brief Constructor.
-    ProjectFileOpenDialog::ProjectFileOpenDialog(QString libraryFileName, QWidget *parent) :
+    ProjectFileOpenDialog::ProjectFileOpenDialog(QString libraryFileName,
+                                                 QWidget *parent) :
         QDialog(parent)
     {
         ui.setupUi(this);
 
         //Add components browser
-        m_projectsSidebar = new SidebarBrowser(this);
+        m_sidebarItems = new SidebarItemsModel(this);
+        m_projectsSidebar = new SidebarItemsBrowser(m_sidebarItems, this);
+
         if(!libraryFileName.isEmpty()) {
             m_libraryFileName = libraryFileName;
             m_libraryName = QFileInfo(libraryFileName).baseName();
             m_libraryName.replace(0, 1, m_libraryName.left(1).toUpper()); // First letter in uppercase
 
-            m_projectsSidebar->plugLibrary(m_libraryName, "root");
+            m_sidebarItems->plugLibrary(m_libraryName, "root");
         }
+
         ui.layout->addWidget(m_projectsSidebar);
 
-        connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(const QString&, const QString&)), this,
-                SLOT(accept()));
+        connect(m_projectsSidebar, SIGNAL(itemDoubleClicked(QString, QString)),
+                this, SLOT(itemDoubleClicked(QString, QString)));
 
-        m_fileName = "";
+        m_fileName = QString();
     }
 
-    void ProjectFileOpenDialog::done(int r)
+    void ProjectFileOpenDialog::itemDoubleClicked(const QString& item, const QString& category)
     {
-        if (r == QDialog::Accepted) {
-            QString baseName = m_projectsSidebar->currentComponent();
-            if(!baseName.isEmpty()) {
-                QString path = QFileInfo(m_libraryFileName).path();
-                m_fileName = QDir::toNativeSeparators(path + "/" + baseName + ".xsch");
-            }
-            else {
-                return;
-            }
+        QString baseName = item;
+        if(!baseName.isEmpty()) {
+            QString path = QFileInfo(m_libraryFileName).path();
+            m_fileName = QDir::toNativeSeparators(path + "/" + baseName + ".xsch");
         }
-        QDialog::done(r);
+        else {
+            return;
+        }
+
+        QDialog::accept();
     }
 
 } // namespace Caneda

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -26,8 +26,7 @@
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
-
-#include <math.h>
+#include <QtMath>
 
 namespace Caneda
 {
@@ -38,11 +37,14 @@ namespace Caneda
      * \param style The arrow's head style. See \a HeadStyle
      * \param headWidth The base width of triangle of arrow's head.
      * \param headHeight The height of triangle of arrow head.
-     * \param scene The graphics scene to which this arrow is to be added.
+     * \param parent Parent of the Arrow item.
      */
-    Arrow::Arrow(const QLineF &line, HeadStyle style, qreal headWidth, qreal headHeight,
-            CGraphicsScene *scene) :
-        Painting(scene),
+    Arrow::Arrow(const QLineF &line,
+                 HeadStyle style,
+                 qreal headWidth,
+                 qreal headHeight,
+                 QGraphicsItem *parent) :
+        Painting(parent),
         m_headStyle(style),
         m_headWidth(headWidth),
         m_headHeight(headHeight)
@@ -95,10 +97,10 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \brief Returns a copy of this arrow.
-    Arrow* Arrow::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    Arrow* Arrow::copy() const
     {
-        Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), scene);
+        Arrow *arrow = new Arrow(line(), headStyle(), headWidth(), headHeight(), parentItem());
         Painting::copyDataTo(arrow);
         return arrow;
     }
@@ -111,7 +113,7 @@ namespace Caneda
 
         writer->writeLineAttribute(line());
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writeEmptyElement("properties");
         writer->writeAttribute("headStyle", QString::number(int(m_headStyle)));
@@ -212,7 +214,7 @@ namespace Caneda
     {
         QRectF rect = paintingRect();
 
-        qreal angle = (atan2(-rect.height(), rect.width()));
+        qreal angle = qAtan2(-rect.height(), rect.width());
         angle = -270 + (angle * 180 / M_PI);
 
         QMatrix mapper;
@@ -252,10 +254,11 @@ namespace Caneda
         }
     }
 
-    int Arrow::launchPropertyDialog(Caneda::UndoOption opt)
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
+    void Arrow::launchPropertiesDialog()
     {
-        StyleDialog dia(this, opt);
-        return dia.exec();
+        StyleDialog dialog(this);
+        dialog.exec();
     }
 
 } // namespace Caneda

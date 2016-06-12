@@ -29,6 +29,7 @@ class QLabel;
 namespace Caneda
 {
     // Forward declarations
+    class FolderBrowser;
     class Project;
     class TabWidget;
 
@@ -64,16 +65,20 @@ namespace Caneda
 
     private Q_SLOTS:
         void newFile();
+        void newSchematic();
+        void newSymbol();
+        void newLayout();
+        void newText();
         void open(QString fileName = QString());
-        void openRecent();
         void openFileFormat(const QString &suffix);
+        void openRecent();
+        void clearRecent();
         void save();
         void saveAs();
         bool saveAll();
         void closeFile();
         void print();
         void exportImage();
-        void applicationSettings();
 
         void undo();
         void redo();
@@ -83,13 +88,6 @@ namespace Caneda
         void find();
         void selectAll();
 
-        void openLayout();
-        void openSchematic();
-        void openSymbol();
-
-        void intoHierarchy();
-        void popHierarchy();
-
         void zoomIn();
         void zoomOut();
         void zoomBestFit();
@@ -97,8 +95,6 @@ namespace Caneda
         void splitHorizontal();
         void splitVertical();
         void closeSplit();
-        void viewToolBar(bool);
-        void viewStatusBar(bool);
 
         void alignTop();
         void alignBottom();
@@ -114,12 +110,27 @@ namespace Caneda
         void addToProject();
         void removeFromProject();
         void closeProject();
-        void backupAndHistory();
 
+        void openLayout();
+        void openSchematic();
+        void openSymbol();
         void simulate();
         void openSimulation();
-        void showLog();
-        void showNetlist();
+        void openLog();
+        void openNetlist();
+
+        void quickLauncher();
+        void quickInsert();
+        void quickOpen();
+        void enterHierarchy();
+        void exitHierarchy();
+        void backupAndHistory();
+
+        void updateVisibility();
+        void showAll();
+        void showFullScreen();
+        void editShortcuts();
+        void applicationSettings();
 
         void helpIndex();
         void helpExamples();
@@ -129,11 +140,8 @@ namespace Caneda
         void launchPropertiesDialog();
         void statusBarMessage(const QString& newPos);
 
-    protected:
-        void closeEvent(QCloseEvent *closeEvent);
-
     private:
-        MainWindow(QWidget *w=0);
+        explicit MainWindow(QWidget *parent = 0);
 
         void initActions();
         void initMouseActions();
@@ -148,10 +156,13 @@ namespace Caneda
         void loadSettings();
         void saveSettings();
 
+        void contextMenuEvent(QContextMenuEvent * event);
+        void closeEvent(QCloseEvent *closeEvent);
+
         TabWidget *m_tabWidget;
+        FolderBrowser *m_folderBrowser;
         Project *m_project;
 
-        QMenu *docksMenu;
         QToolBar *fileToolbar, *editToolbar, *viewToolbar, *workToolbar;
         QDockWidget *m_sidebarDockWidget, *m_projectDockWidget,
                     *m_browserDockWidget;

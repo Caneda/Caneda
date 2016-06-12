@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -24,13 +24,15 @@
 
 #include <QColor>
 #include <QFont>
+#include <QKeySequence>
 #include <QSettings>
 #include <QSize>
+#include <QVariant>
 
 namespace Caneda
 {
     //! \brief Constructor.
-    Settings::Settings()
+    Settings::Settings(QObject *parent) : QObject(parent)
     {
         QStringList libraries;
         libraries << Caneda::libDirectory() + "components/active";
@@ -42,11 +44,18 @@ namespace Caneda
         libraries << Caneda::libDirectory() + "components/simulations";
         libraries << Caneda::libDirectory() + "components/sources";
         libraries << Caneda::libDirectory() + "components/transmission";
+
         defaultSettings["libraries/schematic"] = QVariant(QStringList(libraries));
         defaultSettings["libraries/hdl"] = QVariant(QStringList(Caneda::libDirectory() + "hdl"));
 
-        defaultSettings["gui/geometry"] = QVariant(QByteArray());
-        defaultSettings["gui/dockPositions"] = QVariant(QByteArray());
+        defaultSettings["gui/showMenuBar"] = QVariant(bool(true));
+        defaultSettings["gui/showToolBar"] = QVariant(bool(true));
+        defaultSettings["gui/showStatusBar"] = QVariant(bool(true));
+        defaultSettings["gui/showSideBarBrowser"] = QVariant(bool(true));
+        defaultSettings["gui/showFolderBrowser"] = QVariant(bool(true));
+        defaultSettings["gui/showAll"] = QVariant(bool(true));
+        defaultSettings["gui/showFullScreen"] = QVariant(bool(false));
+
         defaultSettings["gui/gridVisible"] = QVariant(bool(true));
         defaultSettings["gui/foregroundColor"] = QVariant(QColor(Qt::darkGray));
         defaultSettings["gui/backgroundColor"] = QVariant(QColor(Qt::white));
@@ -54,7 +63,6 @@ namespace Caneda
         defaultSettings["gui/lineColor"] = QVariant(QColor(Qt::blue));
         defaultSettings["gui/selectionColor"] = QVariant(QColor(255, 128, 0)); // Dark orange
         defaultSettings["gui/lineWidth"] = QVariant(int(1));
-        defaultSettings["gui/recentFiles"] = QVariant(QStringList());
 
         defaultSettings["gui/hdl/keyword"]= QVariant(QVariant(QColor(Qt::black)));
         defaultSettings["gui/hdl/type"]= QVariant(QVariant(QColor(Qt::blue)));
@@ -77,6 +85,60 @@ namespace Caneda
         defaultSettings["sim/simulationEngine"] = QVariant(QString("ngspice"));  //! \todo In the future this could be replaced by an enum, to avoid problems
         defaultSettings["sim/simulationCommand"] = QVariant(QString("ngspice -b -r %filename.raw %filename.net"));
         defaultSettings["sim/outputFormat"] = QVariant(QString("binary"));  //! \todo In the future this could be replaced by an enum, to avoid problems
+
+        defaultSettings["shortcuts/fileNew"] = QVariant(QKeySequence(QKeySequence::New));
+        defaultSettings["shortcuts/fileOpen"] = QVariant(QKeySequence(QKeySequence::Open));
+        defaultSettings["shortcuts/fileSave"] = QVariant(QKeySequence(QKeySequence::Save));
+        defaultSettings["shortcuts/fileSaveAs"] = QVariant(QKeySequence(QKeySequence::SaveAs));
+        defaultSettings["shortcuts/fileClose"] = QVariant(QKeySequence(QKeySequence::Close));
+        defaultSettings["shortcuts/filePrint"] = QVariant(QKeySequence(QKeySequence::Print));
+        defaultSettings["shortcuts/fileExportImage"] = QVariant(QKeySequence(tr("Ctrl+E")));
+        defaultSettings["shortcuts/fileQuit"] = QVariant(QKeySequence(QKeySequence::Quit));
+
+        defaultSettings["shortcuts/editUndo"] = QVariant(QKeySequence(QKeySequence::Undo));
+        defaultSettings["shortcuts/editRedo"] = QVariant(QKeySequence(QKeySequence::Redo));
+        defaultSettings["shortcuts/editCut"] = QVariant(QKeySequence(QKeySequence::Cut));
+        defaultSettings["shortcuts/editCopy"] = QVariant(QKeySequence(QKeySequence::Copy));
+        defaultSettings["shortcuts/editPaste"] = QVariant(QKeySequence(QKeySequence::Paste));
+        defaultSettings["shortcuts/selectAll"] = QVariant(QKeySequence(QKeySequence::SelectAll));
+        defaultSettings["shortcuts/editFind"] = QVariant(QKeySequence(QKeySequence::Find));
+
+        defaultSettings["shortcuts/select"] = QVariant(QKeySequence(tr("Esc")));
+        defaultSettings["shortcuts/editDelete"] = QVariant(QKeySequence(QKeySequence::Delete));
+        defaultSettings["shortcuts/editRotate"] = QVariant(QKeySequence(tr("R")));
+        defaultSettings["shortcuts/editMirrorX"] = QVariant(QKeySequence(tr("V")));
+        defaultSettings["shortcuts/editMirrorY"] = QVariant(QKeySequence(tr("H")));
+        defaultSettings["shortcuts/insertWire"] = QVariant(QKeySequence(tr("W")));
+
+        defaultSettings["shortcuts/zoomFitInBest"] = QVariant(QKeySequence(tr(".")));
+        defaultSettings["shortcuts/zoomOriginal"] = QVariant(QKeySequence(tr("Home")));
+        defaultSettings["shortcuts/zoomIn"] = QVariant(QKeySequence(tr("+")));
+        defaultSettings["shortcuts/zoomOut"] = QVariant(QKeySequence(tr("-")));
+        defaultSettings["shortcuts/splitHorizontal"] = QVariant(QKeySequence(tr("Ctrl+Shift+L")));
+        defaultSettings["shortcuts/splitVertical"] = QVariant(QKeySequence(tr("Ctrl+Shift+T")));
+        defaultSettings["shortcuts/splitClose"] = QVariant(QKeySequence(tr("Ctrl+Shift+R")));
+
+        defaultSettings["shortcuts/openSchematic"] = QVariant(QKeySequence(tr("F2")));
+        defaultSettings["shortcuts/openSymbol"] = QVariant(QKeySequence(tr("F3")));
+        defaultSettings["shortcuts/openLayout"] = QVariant(QKeySequence(tr("F4")));
+        defaultSettings["shortcuts/simulate"] = QVariant(QKeySequence(QKeySequence::Refresh));
+        defaultSettings["shortcuts/openSimulation"] = QVariant(QKeySequence(tr("F6")));
+        defaultSettings["shortcuts/openLog"] = QVariant(QKeySequence(tr("F7")));
+        defaultSettings["shortcuts/openNetlist"] = QVariant(QKeySequence(tr("F8")));
+
+        defaultSettings["shortcuts/quickLauncher"] = QVariant(QKeySequence(tr("Space")));
+        defaultSettings["shortcuts/quickInsert"] = QVariant(QKeySequence(tr("I")));
+        defaultSettings["shortcuts/quickOpen"] = QVariant(QKeySequence(tr("O")));
+        defaultSettings["shortcuts/enterHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Right")));
+        defaultSettings["shortcuts/exitHierarchy"] = QVariant(QKeySequence(tr("Ctrl+Left")));
+
+        defaultSettings["shortcuts/showMenuBar"] = QVariant(QKeySequence(tr("Ctrl+M")));
+        defaultSettings["shortcuts/showAll"] = QVariant(QKeySequence(tr("Ctrl+Up")));
+        defaultSettings["shortcuts/showSideBarBrowser"] = QVariant(QKeySequence(tr("C")));
+        defaultSettings["shortcuts/showFolderBrowser"] = QVariant(QKeySequence(tr("F")));
+        defaultSettings["shortcuts/showFullScreen"] = QVariant(QKeySequence(tr("Ctrl+Shift+F")));
+        defaultSettings["shortcuts/settings"] = QVariant(QKeySequence(QKeySequence::Preferences));
+        defaultSettings["shortcuts/helpIndex"] = QVariant(QKeySequence(QKeySequence::HelpContents));
 
         currentSettings = defaultSettings;
     }
@@ -140,7 +202,7 @@ namespace Caneda
     {
         QSettings settings;
 
-        QStringList childKeys = defaultSettings.keys();
+        QStringList childKeys = settings.allKeys();
         foreach (const QString& childKey, childKeys) {
             setCurrentValue(childKey, settings.value(childKey));
         }
@@ -157,7 +219,7 @@ namespace Caneda
     {
         QSettings settings;
 
-        QStringList childKeys = defaultSettings.keys();
+        QStringList childKeys = currentSettings.keys();
         foreach (const QString& childKey, childKeys) {
             settings.setValue(childKey, currentValue(childKey));
         }

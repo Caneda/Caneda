@@ -20,13 +20,13 @@
 
 #include "property.h"
 
-#include "cgraphicsscene.h"
 #include "global.h"
 #include "propertydialog.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
 #include <QDebug>
+#include <QGraphicsScene>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
@@ -65,16 +65,16 @@ namespace Caneda
      * \param _description Description of property.
      * \param _visible Visibility of property object(item)
      */
-    Property::Property(const QString& _name,
-                       const QString& _value,
-                       const QString& _description,
-                       bool _visible)
+    Property::Property(const QString& name,
+                       const QString& value,
+                       const QString& description,
+                       bool visible)
     {
         d = new PropertyData;
-        d->name = _name;
-        d->value = _value;
-        d->description = _description;
-        d->visible = _visible;
+        d->name = name;
+        d->value = value;
+        d->description = description;
+        d->visible = visible;
     }
 
     //! \brief Construct property from shared data.
@@ -130,7 +130,7 @@ namespace Caneda
      *
      * \param reader XmlReader which is used for writing.
      */
-    void Property::saveProperty(Caneda::XmlWriter *writer)
+    void Property::saveProperty(Caneda::XmlWriter *writer) const
     {
         writer->writeStartElement("property");
 
@@ -157,19 +157,14 @@ namespace Caneda
      *                            PropertyGroup                              *
      *************************************************************************/
     /*!
-     * \brief Constructs a PropertyGroup from a given scene and PropertyMap.
+     * \brief Constructs a new PropertyGroup.
      *
-     * \param scene The graphics scene to which this property should belong.
-     * \param propMap The PropertyMap to use on initialization.
+     * \param parent Parent of the item.
      */
-    PropertyGroup::PropertyGroup(CGraphicsScene *scene, const PropertyMap &propMap)
+    PropertyGroup::PropertyGroup(QGraphicsItem *parent) :
+        QGraphicsSimpleTextItem(parent)
     {
-        m_propertyMap = propMap;
         m_userPropertiesEnabled = false;
-
-        if(scene) {
-            scene->addItem(this);
-        }
 
         // Set items flags
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
@@ -261,7 +256,7 @@ namespace Caneda
         foreach(const Property property, m_propertyMap) {
             if(property.isVisible()) {
 
-                QString propertyText = "";  // Current property text
+                QString propertyText = QString();  // Current property text
 
                 // Add property name (except for the label property)
                 if(!property.name().startsWith("label", Qt::CaseInsensitive)) {
@@ -378,14 +373,11 @@ namespace Caneda
         updatePropertyDisplay();
     }
 
-    //! \copydoc CGraphicsItem::launchPropertyDialog()
-    int PropertyGroup::launchPropertyDialog()
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
+    void PropertyGroup::launchPropertiesDialog()
     {
-        PropertyDialog *dia = new PropertyDialog(this);
-        int status = dia->exec();
-        delete dia;
-
-        return status;
+        PropertyDialog dialog(this);
+        dialog.exec();
     }
 
     //! \brief On mouse click deselect selected items other than this.
@@ -405,7 +397,7 @@ namespace Caneda
     //! \brief Launches property dialog on double click.
     void PropertyGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
     {
-        launchPropertyDialog();
+        launchPropertiesDialog();
     }
 
 } // namespace Caneda

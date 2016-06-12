@@ -35,7 +35,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PrintDialog(IDocument *document, QWidget *parent = 0);
+        explicit PrintDialog(IDocument *document, QWidget *parent = 0);
 
     public Q_SLOTS:
         virtual void done(int r);

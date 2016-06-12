@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,8 +20,6 @@
 
 #include "library.h"
 
-#include "cgraphicsscene.h"
-#include "cgraphicsview.h"
 #include "fileformats.h"
 #include "global.h"
 #include "settings.h"
@@ -42,10 +40,11 @@ namespace Caneda
      *                                Library                                *
      *************************************************************************/
     //! \brief Constructs a new library from a file path.
-    Library::Library(QString libraryPath)
+    Library::Library(QString libraryPath, QObject *parent) :
+        QObject(parent),
+        m_libraryName(QFileInfo(libraryPath).baseName()),
+        m_libraryPath(libraryPath)
     {
-        m_libraryPath = libraryPath;
-        m_libraryName = QFileInfo(libraryPath).baseName();
     }
 
     //! \brief Returns the shared data of component from given name.
@@ -126,8 +125,8 @@ namespace Caneda
             component->library = libraryName();
             component->filename = componentPath;
 
-            FormatXmlSymbol *format = new FormatXmlSymbol(component);
-            readOk = readOk & format->load();
+            FormatXmlSymbol format(component, this);
+            readOk = readOk & format.load();
 
             if(!readOk) {
                 QMessageBox::warning(0, QObject::tr("Error"),
@@ -175,31 +174,6 @@ namespace Caneda
             instance = new LibraryManager();
         }
         return instance;
-    }
-
-    /*!
-     * \brief Constructs a new component given its name and library.
-     *
-     * \param componentName The component's name.
-     * \param scene The scene on which component is to be rendered.
-     * \param library The library to which the \a componentName belongs.
-     * \return Component on success and null pointer on failure.
-     */
-    Component* LibraryManager::newComponent(QString componentName, CGraphicsScene *scene,
-            QString library)
-    {
-        ComponentDataPtr data;
-
-        if(m_libraryHash.contains(library)) {
-            data = m_libraryHash[library]->component(componentName);
-        }
-
-        if(data.constData()) {
-            Component* comp = new Component(data, scene);
-            return comp;
-        }
-
-        return 0;
     }
 
     //! \brief Create library indicated by path \a libPath.
@@ -372,6 +346,31 @@ namespace Caneda
         }
 
         return pix;
+    }
+
+    /*!
+     * \brief Returns default component data given its name and library.
+     *
+     * This method is used while loading a component to get the needed data
+     * from the component's library. In this way, after a component is created,
+     * this method must be called to get all the information to fill into the
+     * component.
+     *
+     * \param name The component's name.
+     * \param library The library to which the \a componentName belongs.
+     * \return ComponentDataPtr on success and null pointer on failure.
+     *
+     * \sa Library::component()
+     */
+    ComponentDataPtr LibraryManager::componentData(QString name, QString library)
+    {
+        ComponentDataPtr data;
+
+        if(m_libraryHash.contains(library)) {
+            data = m_libraryHash[library]->component(name);
+        }
+
+        return data;
     }
 
 } // namespace Caneda

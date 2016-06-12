@@ -32,10 +32,10 @@ namespace Caneda
 {
     // Forward declarations.
     class IDocument;
-    class SidebarBrowser;
-    class SidebarSimulationBrowser;
+    class SidebarChartsBrowser;
+    class SidebarItemsBrowser;
+    class SidebarItemsModel;
     class SidebarTextBrowser;
-    class SidebarWebBrowser;
 
     /*************************************************************************
      *                     General IContext Structure                        *
@@ -61,20 +61,22 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        virtual QToolBar* toolBar() = 0;
-        virtual QWidget* sideBarWidget() = 0;
-        virtual QString sideBarTitle() = 0;
-        virtual void updateSideBar() = 0;
+        bool canOpen(const QFileInfo &info) const;
 
-        virtual bool canOpen(const QFileInfo& info) const = 0;
         virtual QStringList fileNameFilters() const = 0;
-        virtual QString defaultSuffix() const = 0;
+        virtual QStringList supportedSuffixes() const = 0;
+        virtual QString defaultSuffix() const;
 
         virtual IDocument* newDocument() = 0;
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0) = 0;
 
+        virtual QToolBar* toolBar() = 0;
+        virtual QWidget* sideBarWidget() = 0;
+        virtual void updateSideBar() = 0;
+        virtual void quickInsert() = 0;
+
     protected:
-        IContext(QObject *parent = 0);
+        explicit IContext(QObject *parent = 0);
     };
 
 
@@ -107,23 +109,23 @@ namespace Caneda
         static LayoutContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual QString sideBarTitle() { return QString(tr("Components Browser")); }
-        virtual void updateSideBar() { return; }
-
-        virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "xlay"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void updateSideBar() {}
+        virtual void quickInsert();
         // End of IContext interface methods
 
     private:
-        LayoutContext(QObject *parent = 0);
+        explicit LayoutContext(QObject *parent = 0);
 
-        SidebarBrowser *m_sidebarBrowser;
+        SidebarItemsModel *m_sidebarItems;
+        SidebarItemsBrowser *m_sidebarBrowser;
     };
 
     /*!
@@ -152,23 +154,23 @@ namespace Caneda
         static SchematicContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual QString sideBarTitle() { return QString(tr("Components Browser")); }
-        virtual void updateSideBar() { return; }
-
-        virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "xsch"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void updateSideBar() {}
+        virtual void quickInsert();
         // End of IContext interface methods
 
     private:
-        SchematicContext(QObject *parent = 0);
+        explicit SchematicContext(QObject *parent = 0);
 
-        SidebarBrowser *m_sidebarBrowser;
+        SidebarItemsModel *m_sidebarItems;
+        SidebarItemsBrowser *m_sidebarBrowser;
     };
 
     /*!
@@ -197,23 +199,22 @@ namespace Caneda
         static SimulationContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual QString sideBarTitle() { return QString(tr("Displayed Waveforms")); }
-        virtual void updateSideBar();
-
-        virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "raw"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void updateSideBar();
+        virtual void quickInsert() {}
         // End of IContext interface methods
 
     private:
-        SimulationContext(QObject *parent = 0);
+        explicit SimulationContext(QObject *parent = 0);
 
-        SidebarSimulationBrowser *m_sidebarBrowser;
+        SidebarChartsBrowser *m_sidebarBrowser;
     };
 
     /*!
@@ -242,23 +243,23 @@ namespace Caneda
         static SymbolContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual QString sideBarTitle() { return QString(tr("Components Browser")); }
-        virtual void updateSideBar() { return; }
-
-        virtual bool canOpen(const QFileInfo &info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "xsym"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString &fileName, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void updateSideBar() {}
+        virtual void quickInsert();
         // End of IContext interface methods
 
     private:
-        SymbolContext(QObject *parent = 0);
+        explicit SymbolContext(QObject *parent = 0);
 
-        SidebarBrowser *m_sidebarBrowser;
+        SidebarItemsModel *m_sidebarItems;
+        SidebarItemsBrowser *m_sidebarBrowser;
     };
 
     /*!
@@ -286,69 +287,23 @@ namespace Caneda
         static TextContext* instance();
 
         // IContext interface methods
-        virtual QToolBar* toolBar() { return 0; }
-        virtual QWidget* sideBarWidget();
-        virtual QString sideBarTitle() { return QString(tr("Text Templates")); }
-        virtual void updateSideBar() { return; }
-
-        virtual bool canOpen(const QFileInfo& info) const;
         virtual QStringList fileNameFilters() const;
-        virtual QString defaultSuffix() const { return "txt"; }
+        virtual QStringList supportedSuffixes() const;
 
         virtual IDocument* newDocument();
         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
+
+        virtual QToolBar* toolBar() { return 0; }
+        virtual QWidget* sideBarWidget();
+        virtual void updateSideBar() {}
+        virtual void quickInsert() {}
         // End of IContext interface methods
 
     private:
-        TextContext(QObject *parent = 0);
+        explicit TextContext(QObject *parent = 0);
 
         SidebarTextBrowser *m_sidebarTextBrowser;
     };
-
-    /*!
-     * \brief This class represents the web browser context interface
-     * implementation.
-     *
-     * Only one instance of this class is used during the whole life span of
-     * the program. This class answers the general questions like which file
-     * suffixes it can handle, points to the appropiate methods to create new
-     * documents of its type, etc.
-     *
-     * This class also provides objects like the toolbar, statusbar, etc, which
-     * are specific to this particular context.
-     *
-     * This class is a singleton class and its only static instance (returned
-     * by instance()) is to be used.
-     *
-     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
-     * \sa WebDocument, WebView
-     */
-     class WebContext : public IContext
-     {
-         Q_OBJECT
-
-     public:
-         static WebContext* instance();
-
-         // IContext interface methods
-         virtual QToolBar* toolBar() { return 0; }
-         virtual QWidget* sideBarWidget();
-         virtual QString sideBarTitle() { return QString(tr("Help Browser")); }
-         virtual void updateSideBar() { return; }
-
-         virtual bool canOpen(const QFileInfo& info) const;
-         virtual QStringList fileNameFilters() const;
-         virtual QString defaultSuffix() const { return "html"; }
-
-         virtual IDocument* newDocument();
-         virtual IDocument* open(const QString& filename, QString *errorMessage = 0);
-         // End of IContext interface methods
-
-     private:
-         WebContext(QObject *parent = 0);
-
-         SidebarWebBrowser *m_sidebarWebBrowser;
-     };
 
 } // namespace Caneda
 

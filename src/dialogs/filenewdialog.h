@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -31,7 +31,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        FileNewDialog(QWidget *parent = 0);
+        explicit FileNewDialog(QWidget *parent = 0);
 
     public Q_SLOTS:
         virtual void done(int r);

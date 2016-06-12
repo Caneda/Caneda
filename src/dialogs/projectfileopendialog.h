@@ -27,7 +27,8 @@
 namespace Caneda
 {
     // Forward declarations
-    class SidebarBrowser;
+    class SidebarItemsBrowser;
+    class SidebarItemsModel;
 
     /*!
      * \brief This class represents the dialog to open a component in a
@@ -38,15 +39,18 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        ProjectFileOpenDialog(QString = "", QWidget * = 0);
+        explicit ProjectFileOpenDialog(QString libraryFileName = QString(),
+                                       QWidget *parent = 0);
 
         QString fileName() const { return m_fileName; }
 
     public Q_SLOTS:
-        virtual void done(int r);
+        void itemDoubleClicked(const QString& item, const QString& category);
 
     private:
-        SidebarBrowser *m_projectsSidebar;
+        SidebarItemsModel *m_sidebarItems;
+        SidebarItemsBrowser *m_projectsSidebar;
+
         QString m_fileName;
         QString m_libraryName;
         QString m_libraryFileName;

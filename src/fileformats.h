@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2009-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,12 +29,17 @@ class QString;
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsScene;
+    class GraphicsScene;
+    class ChartSeries;
+    class ChartScene;
     class LayoutDocument;
     class SchematicDocument;
+    class SimulationDocument;
     class SymbolDocument;
     class XmlReader;
     class XmlWriter;
+
+    typedef QList<QPair<Port *, QString> > PortsNetlist;
 
     /*!
      * \brief This class handles all the access to the schematic documents file
@@ -47,31 +52,31 @@ namespace Caneda
      *
      * \sa \ref DocumentFormats
      */
-    class FormatXmlSchematic
+    class FormatXmlSchematic : public QObject
     {
+        Q_OBJECT
+
     public:
-        FormatXmlSchematic(SchematicDocument *doc = 0);
+        explicit FormatXmlSchematic(SchematicDocument *document = 0);
 
-        bool save();
-        bool load();
-
-        SchematicDocument* schematicDocument() const;
-        CGraphicsScene* cGraphicsScene() const;
-
-        QString fileName() const;
+        bool save() const;
+        bool load() const;
 
     private:
-        QString saveText();
-        void saveComponents(Caneda::XmlWriter *writer);
-        void savePorts(Caneda::XmlWriter *writer);
-        void saveWires(Caneda::XmlWriter *writer);
-        void savePaintings(Caneda::XmlWriter *writer);
+        QString saveText() const;
+        void saveComponents(Caneda::XmlWriter *writer) const;
+        void savePorts(Caneda::XmlWriter *writer) const;
+        void saveWires(Caneda::XmlWriter *writer) const;
+        void savePaintings(Caneda::XmlWriter *writer) const;
 
-        bool loadFromText(const QString& text);
-        void loadComponents(Caneda::XmlReader *reader);
-        void loadPorts(Caneda::XmlReader *reader);
-        void loadWires(Caneda::XmlReader *reader);
-        void loadPaintings(Caneda::XmlReader *reader);
+        bool loadFromText(const QString &text) const;
+        void loadComponents(Caneda::XmlReader *reader) const;
+        void loadPorts(Caneda::XmlReader *reader) const;
+        void loadWires(Caneda::XmlReader *reader) const;
+        void loadPaintings(Caneda::XmlReader *reader) const;
+
+        GraphicsScene* graphicsScene() const;
+        QString fileName() const;
 
         SchematicDocument *m_schematicDocument;
     };
@@ -87,33 +92,33 @@ namespace Caneda
      *
      * \sa \ref DocumentFormats
      */
-    class FormatXmlSymbol
+    class FormatXmlSymbol : public QObject
     {
+        Q_OBJECT
+
     public:
-        FormatXmlSymbol(SymbolDocument *doc = 0);
-        FormatXmlSymbol(ComponentData *component);
+        explicit FormatXmlSymbol(SymbolDocument *document = 0);
+        explicit FormatXmlSymbol(ComponentData *component, QObject *parent = 0);
 
-        bool save();
-        bool load();
-
-        SymbolDocument* symbolDocument() const;
-        CGraphicsScene* cGraphicsScene() const;
-        ComponentData* component() const;
-
-        QString fileName() const;
+        bool save() const;
+        bool load() const;
 
     private:
-        QString saveText();
-        void saveSymbol(Caneda::XmlWriter *writer);
-        void savePorts(Caneda::XmlWriter *writer);
-        void saveProperties(Caneda::XmlWriter *writer);
-        void saveModels(Caneda::XmlWriter *writer);
+        QString saveText() const;
+        void saveSymbol(Caneda::XmlWriter *writer) const;
+        void savePorts(Caneda::XmlWriter *writer) const;
+        void saveProperties(Caneda::XmlWriter *writer) const;
+        void saveModels(Caneda::XmlWriter *writer) const;
 
-        bool loadFromText(const QString& text);
-        void loadSymbol(Caneda::XmlReader *reader);
-        void loadPorts(Caneda::XmlReader *reader);
-        void loadProperties(Caneda::XmlReader *reader);
-        void loadModels(Caneda::XmlReader *reader);
+        bool loadFromText(const QString &text) const;
+        void loadSymbol(Caneda::XmlReader *reader) const;
+        void loadPorts(Caneda::XmlReader *reader) const;
+        void loadProperties(Caneda::XmlReader *reader) const;
+        void loadModels(Caneda::XmlReader *reader) const;
+
+        GraphicsScene* graphicsScene() const;
+        ComponentData* component() const;
+        QString fileName() const;
 
         SymbolDocument *m_symbolDocument;
         ComponentData *m_component;
@@ -131,27 +136,99 @@ namespace Caneda
      *
      * \sa \ref DocumentFormats
      */
-    class FormatXmlLayout
+    class FormatXmlLayout : public QObject
     {
+        Q_OBJECT
+
     public:
-        FormatXmlLayout(LayoutDocument *doc = 0);
+        explicit FormatXmlLayout(LayoutDocument *document = 0);
 
-        bool save();
-        bool load();
-
-        LayoutDocument* layoutDocument() const;
-        CGraphicsScene* cGraphicsScene() const;
-
-        QString fileName() const;
+        bool save() const;
+        bool load() const;
 
     private:
-        QString saveText();
-        void savePaintings(Caneda::XmlWriter *writer);
+        QString saveText() const;
+        void savePaintings(Caneda::XmlWriter *writer) const;
 
-        bool loadFromText(const QString& text);
-        void loadPaintings(Caneda::XmlReader *reader);
+        bool loadFromText(const QString &text) const;
+        void loadPaintings(Caneda::XmlReader *reader) const;
+
+        GraphicsScene* graphicsScene() const;
+        QString fileName() const;
 
         LayoutDocument *m_layoutDocument;
+    };
+
+    /*!
+     * \brief This class handles all the access to the raw spice simulation
+     * documents file format.
+     *
+     * This class is in charge of saving and loading all raw spice simulation
+     * related documents. This is the only class that knows about raw spice
+     * simulation document formats, and has the access functions to return a
+     * SimulationDocument, with all of its components.
+     *
+     * This class does not handle document saving, as waveform data saving will
+     * not be supported at the moment (raw waveform data is only generated and
+     * saved by the simulator).
+     *
+     * \sa \ref DocumentFormats
+     */
+    class FormatSpice : public QObject
+    {
+        Q_OBJECT
+
+    public:
+        explicit FormatSpice(SchematicDocument *document = 0);
+
+        bool save();
+
+    private:
+        QString generateNetlist();
+        PortsNetlist generateNetlistTopology();
+        void replacePortNames(PortsNetlist *netlist);
+
+        GraphicsScene* graphicsScene() const;
+        QString fileName() const;
+
+        SchematicDocument *m_schematicDocument;
+    };
+
+    /*!
+     * \brief This class handles all the access to the raw spice simulation
+     * documents file format.
+     *
+     * This class is in charge of saving and loading all raw spice simulation
+     * related documents. This is the only class that knows about raw spice
+     * simulation document formats, and has the access functions to return a
+     * SimulationDocument, with all of its components.
+     *
+     * This class does not handle document saving, as waveform data saving will
+     * not be supported at the moment (raw waveform data is only generated and
+     * saved by the simulator).
+     *
+     * \sa \ref DocumentFormats
+     */
+    class FormatRawSimulation : public QObject
+    {
+        Q_OBJECT
+
+    public:
+        explicit FormatRawSimulation(SimulationDocument *document = 0);
+
+        bool load();
+
+    private:
+        void parseFile(QTextStream *file);
+        void parseAsciiData(QTextStream *file, const int nvars, const int npoints, const bool real);
+        void parseBinaryData(QTextStream *file, const int nvars, const int npoints, const bool real);
+
+        ChartScene* chartScene() const;
+
+        SimulationDocument *m_simulationDocument;
+
+        QList<ChartSeries*> plotCurves;       // List of magnitude curves.
+        QList<ChartSeries*> plotCurvesPhase;  // List of phase curves.
     };
 
 } // namespace Caneda

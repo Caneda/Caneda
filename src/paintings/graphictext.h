@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -25,15 +25,16 @@
 
 namespace Caneda
 {
-    //! \brief Represent's text item on schematic.
+    //! \brief Represents a text item on the schematic.
     class GraphicText : public Painting
     {
     public:
-        GraphicText(const QString &text = QString(), CGraphicsScene *scene = 0);
+        explicit GraphicText(const QString &text = QString(),
+                             QGraphicsItem *parent = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::GraphicTextType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QString plainText() const;
@@ -46,12 +47,12 @@ namespace Caneda
 
         void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
 
-        GraphicText* copy(CGraphicsScene *scene = 0) const;
+        GraphicText* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        int launchPropertyDialog(Caneda::UndoOption opt);
+        void launchPropertiesDialog();
 
     private:
         QGraphicsTextItem *m_textItem;

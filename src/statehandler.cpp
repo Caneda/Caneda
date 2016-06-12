@@ -21,85 +21,26 @@
 #include "statehandler.h"
 
 #include "actionmanager.h"
-#include "cgraphicsscene.h"
-#include "cgraphicsview.h"
-#include "global.h"
+#include "documentviewmanager.h"
+#include "graphicsscene.h"
+#include "graphicsview.h"
+#include "iview.h"
 #include "library.h"
 #include "painting.h"
 #include "portsymbol.h"
-#include "settings.h"
-#include "undocommands.h"
+#include "wire.h"
 #include "xmlutilities.h"
 
 #include <QApplication>
 #include <QClipboard>
-#include <QDebug>
-#include <QPointer>
-#include <QSet>
 
 namespace Caneda
 {
-    struct StateHandlerPrivate
-    {
-        StateHandlerPrivate() {
-            mouseAction = Caneda::Normal;
-            paintingDrawItem = 0;
-
-        }
-
-        ~StateHandlerPrivate() {
-            delete paintingDrawItem;
-            clearInsertibles();
-        }
-
-        void clearInsertibles() {
-            foreach (CGraphicsItem* item, insertibles) {
-                if (item->scene()) {
-                    item->scene()->removeItem(item);
-                }
-                delete item;
-            }
-            insertibles.clear();
-        }
-
-        Caneda::MouseAction mouseAction;
-        QList<CGraphicsItem*> insertibles;
-        Painting *paintingDrawItem;
-
-        QSet<CGraphicsScene*> scenes;
-        QSet<CGraphicsView*> widgets;
-
-        QPointer<CGraphicsView> focussedWidget;
-        QHash<QString, CGraphicsItem*> toolbarInsertibles;
-    };
-
-    static bool areItemsEquivalent(CGraphicsItem *a, CGraphicsItem *b)
-    {
-        if (!a || !b) {
-            return false;
-        }
-        if (a->type() != b->type()) {
-            return false;
-        }
-
-        if (a->type() == CGraphicsItem::ComponentType) {
-            Component *ac = canedaitem_cast<Component*>(a);
-            Component *bc = canedaitem_cast<Component*>(b);
-
-            return ac->library() == bc->library() &&
-                ac->name() == bc->name();
-        }
-
-        // Implement for other kinds of comparison required to compare
-        // insertibles and toolbarInsertibles of
-        // StateHandlerPrivate class.
-        return false;
-    }
-
     //! \brief Constructor.
     StateHandler::StateHandler(QObject *parent) : QObject(parent)
     {
-        d = new StateHandlerPrivate;
+        mouseAction = Caneda::Normal;
+        paintingDrawItem = 0;
     }
 
     //! \copydoc MainWindow::instance()
@@ -115,68 +56,151 @@ namespace Caneda
     //! \brief Destructor.
     StateHandler::~StateHandler()
     {
-        delete d;
+        delete paintingDrawItem;
+        clearInsertibles();
     }
 
-    void StateHandler::registerWidget(CGraphicsView *widget)
+    //! \brief Toggles the normal select action on.
+    void StateHandler::setNormalAction()
     {
-        CGraphicsScene *scene = widget->cGraphicsScene();
-        if (!scene) {
-            qWarning() << Q_FUNC_INFO << "Widget doesn't have an associated scene";
-            return;
-        }
-        if (!d->widgets.contains(widget)) {
-            d->widgets << widget;
-            connect(widget, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
-            connect(widget, SIGNAL(focussedIn(CGraphicsView*)),
-                    SLOT(slotUpdateFocussedWidget(CGraphicsView*)));
-        }
-
-        if (!d->scenes.contains(scene)) {
-            d->scenes << scene;
-            connect(scene, SIGNAL(destroyed(QObject*)), SLOT(slotOnObjectDestroyed(QObject*)));
-        }
+        performToggleAction("select", true);
     }
 
-    void StateHandler::unregisterWidget(CGraphicsView *widget)
+    /*!
+     * \brief Toogles the action perfomed.
+     *
+     * This method toggles the action corresponding to the sender, invoking the
+     * performToggleAction(const QString&, bool) method. This method takes care
+     * of preserving the mutual exclusiveness of the checkable actions.
+     *
+     * While performToggleAction(const QString&, bool) is the method that
+     * actually performs the toggle action, this method allows the direct
+     * connection to the toggled(bool) signal of a QAction object.
+     *
+     * \sa performToggleAction(const QString&, bool)
+     */
+    void StateHandler::performToggleAction(bool on)
     {
-        if (!widget) {
-            return;
-        }
-        if (d->widgets.contains(widget)) {
-            d->widgets.remove(widget);
-            disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
-            disconnect(widget, SIGNAL(focussedIn(CGraphicsView*)), this,
-                    SLOT(slotUpdateFocussedWidget(CGraphicsView*)));
-        }
-
-        CGraphicsScene *scene = widget->cGraphicsScene();
-        if (scene && d->scenes.contains(scene)) {
-            d->scenes.remove(scene);
-            disconnect(scene, SIGNAL(destroyed(QObject*)), this, SLOT(slotOnObjectDestroyed(QObject*)));
+        QAction *action = qobject_cast<QAction*>(sender());
+        if(action) {
+            performToggleAction(action->objectName(), on);
         }
     }
 
     /*!
-     * \brief Insert a component or painting based on its name and category.
+     * \brief Toogles the action perfomed.
+     *
+     * This method toggles the selected action and calls its associated method
+     * if on is true. This method also takes care of preserving the mutual
+     * exclusiveness of the checkable actions.
+     *
+     * \sa performToggleAction(bool)
+     */
+    void StateHandler::performToggleAction(const QString& actionName, bool on)
+    {
+        // When turning off any action (other than select), the normal action
+        // (select) must be turned on.
+        if(!on) {
+            setNormalAction();
+            return;
+        }
+
+        // Set the current mouse action.
+        ActionManager *am = ActionManager::instance();
+        QAction *action = am->actionForName(actionName);
+        mouseAction = am->mouseActionForAction(action);
+
+        // Get the function associated to the selected action.
+        typedef void (GraphicsScene::*pActionFunc) (QList<GraphicsItem*>&);
+        pActionFunc func = 0;
+
+        if (actionName == "editDelete") {
+            func = &GraphicsScene::deleteItems;
+        }
+        else if (actionName == "editRotate") {
+            func = &GraphicsScene::rotateItems;
+        }
+        else if (actionName == "editMirrorX") {
+            func = &GraphicsScene::mirrorXItems;
+        }
+        else if (actionName == "editMirrorY") {
+            func = &GraphicsScene::mirrorYItems;
+        }
+
+        // Get selected items.
+        GraphicsView *view = 0;
+        GraphicsScene *scene = 0;
+        QList<QGraphicsItem*> selectedItems;
+
+        DocumentViewManager *manager = DocumentViewManager::instance();
+        IView *currentView = manager->currentView();
+
+        if(currentView) {
+            view = qobject_cast<GraphicsView*>(currentView->toWidget());
+        }
+        if(view) {
+            scene = view->graphicsScene();
+        }
+        if(scene) {
+            selectedItems = scene->selectedItems();
+        }
+
+        // If there is any selected item, apply the action to the selected
+        // items, and deselect the action.
+        if(!selectedItems.isEmpty() && func != 0) {
+            QList<GraphicsItem*> funcable = filterItems<GraphicsItem>(selectedItems);
+
+            if(!funcable.isEmpty()) {
+                (scene->*func)(funcable);
+                // Turn off this action
+                performToggleAction(action->objectName(), false);
+                return;
+            }
+        }
+
+        // Turn off all other actions.
+        QList<QAction*> mouseActions = ActionManager::instance()->mouseActions();
+
+        foreach(QAction *act, mouseActions) {
+            if(act != action) {
+                act->blockSignals(true);
+                act->setChecked(false);
+                act->blockSignals(false);
+            }
+        }
+
+        // Turn on this action.
+        action->blockSignals(true);
+        action->setChecked(true);
+        action->blockSignals(false);
+
+        // Set the state and cursor corresponding to this action in all views.
+        foreach(IView *iview, manager->views()) {
+            GraphicsView* view = qobject_cast<GraphicsView*>(iview->toWidget());
+            if(view) {
+                applyState(view);
+            }
+        }
+    }
+
+    /*!
+     * \brief Insert an item based on its name and category.
      *
      * Get a component or painting based on the name and category. The
      * painting is processed in a special hardcoded way (with no libraries
      * involved). Some other "miscellaneous" items are hardcoded too. On the
      * other hand, components are loaded from existing libraries.
      *
-     * \param item: item's name
-     * \param category: item's category name
-     * \sa CGraphicsScene::dropEvent()
+     * \param item Item's name
+     * \param category Item's category
      */
-    void StateHandler::slotSidebarItemClicked(const QString& item,
-            const QString& category)
+    void StateHandler::insertItem(const QString& item, const QString& category)
     {
         // Clear old item first
-        d->clearInsertibles();
+        clearInsertibles();
 
         // Get a component or painting based on the name and category.
-        CGraphicsItem *qItem = 0;
+        GraphicsItem *qItem = 0;
         if(category == "Paint Tools" || category == "Layout Tools") {
             qItem = Painting::fromName(item);
         }
@@ -184,41 +208,51 @@ namespace Caneda
             // This must be repeated for each type of miscellaneous item,
             // for example ground, port symbols, etc.
             if(item == QObject::tr("Ground")) {
-                qItem = new PortSymbol("Ground", 0);
+                qItem = new PortSymbol();
+                PortSymbol *portSymbol = static_cast<PortSymbol*>(qItem);
+                portSymbol->setLabel("Ground");
             }
             if(item == QObject::tr("Port Symbol")) {
-                qItem = new PortSymbol(0);
+                qItem = new PortSymbol();
             }
         }
 
         // If the item was not found in the fixed libraries, search for the
         // item in the dinamic loaded libraries ("Components" category).
         if(!qItem) {
-            qItem = LibraryManager::instance()->newComponent(item, 0, category);
+            ComponentDataPtr data = LibraryManager::instance()->componentData(item, category);
+            if(data.constData()) {
+                qItem = new Component();
+                Component *comp = static_cast<Component*>(qItem);
+                comp->setComponentData(data);
+            }
         }
-
 
         // Check if the item was successfully found and created
         if(qItem) {
             if(category == "Paint Tools" || category == "Layout Tools") {
-                d->paintingDrawItem = static_cast<Painting*>(qItem);
-                d->paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
-                slotPerformToggleAction("paintingDraw", true);
+                paintingDrawItem = static_cast<Painting*>(qItem);
+                paintingDrawItem->setPaintingRect(QRectF(0, 0, 0, 0));
+                performToggleAction("paintingDraw", true);
             }
             else {
-                d->insertibles << qItem;
-                slotPerformToggleAction("insertItem", true);
+                insertibles << qItem;
+                performToggleAction("insertItem", true);
             }
         }
         else {
-            slotSetNormalAction();
+            setNormalAction();
         }
-
     }
 
-    void StateHandler::slotHandlePaste()
+    /*!
+     * \brief This method handles the paste action by reading the clipboard and
+     * inserting (if found) the corresponding items.
+     */
+    void StateHandler::paste()
     {
-        const QString text = qApp->clipboard()->text();
+        QClipboard *clipboard =  QApplication::clipboard();
+        const QString text = clipboard->text();
 
         Caneda::XmlReader reader(text.toUtf8());
 
@@ -238,7 +272,7 @@ namespace Caneda
             return;
         }
 
-        QList<CGraphicsItem*> _items;
+        QList<GraphicsItem*> items;
         while(!reader.atEnd()) {
             reader.readNext();
 
@@ -247,201 +281,44 @@ namespace Caneda
             }
 
             if(reader.isStartElement()) {
-                CGraphicsItem *readItem = 0;
+                GraphicsItem *readItem = 0;
                 if(reader.name() == "component") {
-                    readItem = Component::loadComponent(&reader, 0);
+                    readItem = new Component();
+                    readItem->loadData(&reader);
                 }
                 else if(reader.name() == "wire") {
-                    readItem = Wire::loadWire(&reader, 0);
+                    readItem = new Wire(QPointF(10,10), QPointF(50,50));
+                    readItem->loadData(&reader);
                 }
-                else if(reader.name() == "painting")  {
-                    readItem = Painting::loadPainting(&reader, 0);
+                else if(reader.name() == "painting") {
+                    QString name = reader.attributes().value("name").toString();
+                    readItem = Painting::fromName(name);
+                    readItem->loadData(&reader);
                 }
-                else if(reader.name() == "port")  {
-                    readItem = PortSymbol::loadPortSymbol(&reader, 0);
+                else if(reader.name() == "port") {
+                    readItem = new PortSymbol();
+                    readItem->loadData(&reader);
                 }
 
                 if(readItem) {
-                    _items << readItem;
+                    items << readItem;
                 }
             }
         }
 
-        if (_items.isEmpty() == false) {
-            d->clearInsertibles();
-            d->insertibles = _items;
-            slotPerformToggleAction("insertItem", true);
+        if (!items.isEmpty()) {
+            clearInsertibles();
+            insertibles = items;
+            performToggleAction("insertItem", true);
         }
     }
 
-    void StateHandler::slotInsertToolbarComponent(const QString& sender,
-            bool on)
-    {
-        CGraphicsItem *item = d->toolbarInsertibles[sender];
-        if (!on || !item) {
-            slotSetNormalAction();
-            return;
-        }
-
-        d->clearInsertibles();
-        d->insertibles << item->copy();
-        slotPerformToggleAction("insertItem", true);
-    }
-
-    void StateHandler::slotOnObjectDestroyed(QObject *object)
-    {
-        /*!
-         * \todo HACK: Using static cast to convert QObject pointers to scene
-         * and widget respectively. This might result in invalid pointers, but
-         * the main purpose why we need them is just to remove the same from
-         * the lists. Using of these pointers to access any method or variable
-         * will result in ugly crash!!!
-         */
-        CGraphicsScene *scene = static_cast<CGraphicsScene*>(object);
-        CGraphicsView *widget = static_cast<CGraphicsView*>(object);
-
-        d->scenes.remove(scene);
-        d->widgets.remove(widget);
-    }
-
-    void StateHandler::slotUpdateFocussedWidget(CGraphicsView *widget)
-    {
-        d->focussedWidget = widget;
-    }
-
-    /*!
-     * \brief Toogles the action perfomed.
-     *
-     * This method toggles the action corresponding to the sender, invoking the
-     * slotPerformToggleAction(const QString&, bool) method, to takes care of
-     * preserving the mutual exclusiveness off the checkable actions.
-     *
-     * While slotPerformToggleAction(const QString&, bool) is a general method
-     * this method allows the direct connection to the toggled(bool) signal of
-     * a QAction object.
-     */
-    void StateHandler::slotPerformToggleAction(bool on)
-    {
-        QAction *action = qobject_cast<QAction *>(sender());
-        if(action) {
-            slotPerformToggleAction(action->objectName(), on);
-        }
-    }
-
-    /*!
-     * \brief Toogles the action perfomed.
-     *
-     * This method toggles the action and calls the function pointed by
-     * \a func if on is true. This method takes care to preserve the mutual
-     * exclusiveness off the checkable actions.
-     */
-    void StateHandler::slotPerformToggleAction(const QString& actionName, bool on)
-    {
-        typedef void (CGraphicsScene::*pActionFunc) (QList<CGraphicsItem*>&);
-
-        ActionManager *am = ActionManager::instance();
-
-        QAction *action = am->actionForName(actionName);
-        Caneda::MouseAction ma = am->mouseActionForAction(action);
-        pActionFunc func = 0;
-
-        if (actionName == "editDelete") {
-            func = &CGraphicsScene::deleteItems;
-        } else if (actionName == "editRotate") {
-            func = &CGraphicsScene::rotateItems;
-        } else if (actionName == "editMirror") {
-            func = &CGraphicsScene::mirrorXItems;
-        } else if (actionName == "editMirrorY") {
-            func = &CGraphicsScene::mirrorYItems;
-        }
-
-        QList<QAction*> mouseActions = ActionManager::instance()->mouseActions();
-
-        //toggling off any action switches normal select action "on"
-        if(!on) {
-            // Normal action can't be turned off through UI by clicking
-            // the selct action again.
-            slotSetNormalAction();
-            return;
-        }
-
-        //else part
-        CGraphicsScene *scene = 0;
-        if (d->focussedWidget.isNull() == false) {
-            scene = d->focussedWidget->cGraphicsScene();
-        }
-        QList<QGraphicsItem*> selectedItems;
-        if (scene) {
-            selectedItems = scene->selectedItems();
-        }
-
-        do {
-            if(!selectedItems.isEmpty() && func != 0) {
-                QList<CGraphicsItem*> funcable = filterItems<CGraphicsItem>(selectedItems);
-
-                if(funcable.isEmpty()) {
-                    break;
-                }
-
-                (scene->*func)(funcable);
-
-                // Turn off this action
-                slotPerformToggleAction(action->objectName(), false);
-                return;
-            }
-        } while(false); //For break
-
-        // Just ensure all other action's are off.
-        foreach(QAction *act, mouseActions) {
-            if(act != action) {
-                act->blockSignals(true);
-                act->setChecked(false);
-                act->blockSignals(false);
-            }
-        }
-
-        QHash<QString, CGraphicsItem*>::const_iterator it =
-            d->toolbarInsertibles.begin();
-        while (it != d->toolbarInsertibles.end()) {
-            QAction *act = am->actionForName(it.key());
-            act->blockSignals(true);
-            act->setChecked(false);
-            act->blockSignals(false);
-            ++it;
-        }
-
-        if (actionName == "insertItem" && d->insertibles.size() == 1) {
-            for (it = d->toolbarInsertibles.begin();
-                    it != d->toolbarInsertibles.end(); ++it) {
-                if (areItemsEquivalent(it.value(), d->insertibles.first())) {
-                    QAction *act = am->actionForName(it.key());
-                    act->blockSignals(true);
-                    act->setChecked(true);
-                    act->blockSignals(false);
-                }
-            }
-        }
-
-        // Ensure current action is on visibly
-        action->blockSignals(true);
-        action->setChecked(true);
-        action->blockSignals(false);
-
-        d->mouseAction = ma;
-        applyStateToAllWidgets();
-    }
-
-    //! \brief Toggles the normal select action on.
-    void StateHandler::slotSetNormalAction()
-    {
-        slotPerformToggleAction("select", true);
-    }
-
-    void StateHandler::applyCursor(CGraphicsView *widget)
+    //! \brief Apply the cursor of the current state to the given view.
+    void StateHandler::applyCursor(GraphicsView *view)
     {
         QCursor cursor;
 
-        switch (d->mouseAction) {
+        switch (mouseAction) {
             case Caneda::Wiring:
                 cursor.setShape(Qt::CrossCursor);
                 break;
@@ -478,39 +355,48 @@ namespace Caneda
                 cursor.setShape(Qt::ArrowCursor);
         }
 
-        widget->setCursor(cursor);
+        view->setCursor(cursor);
     }
 
-    void StateHandler::applyState(CGraphicsView *widget)
+    //! \brief Apply the current state to the given view.
+    void StateHandler::applyState(GraphicsView *view)
     {
-        applyCursor(widget);
-        CGraphicsScene *scene = widget->cGraphicsScene();
+        applyCursor(view);
+
+        GraphicsScene *scene = view->graphicsScene();
         if (!scene) {
             return;
         }
 
-        scene->setMouseAction(d->mouseAction);
-        if (d->mouseAction == Caneda::InsertingItems) {
-            if (!d->insertibles.isEmpty()) {
-                QList<CGraphicsItem*> copy;
-                foreach (CGraphicsItem *it, d->insertibles) {
-                    copy << it->copy(scene);
+        scene->setMouseAction(mouseAction);
+        if (mouseAction == Caneda::InsertingItems) {
+            if (!insertibles.isEmpty()) {
+                QList<GraphicsItem*> copy;
+                foreach (GraphicsItem *it, insertibles) {
+                    copy << it->copy();
                 }
                 scene->beginInsertingItems(copy);
             }
-        } else if (d->mouseAction == Caneda::PaintingDrawEvent) {
-            if (d->paintingDrawItem) {
-                Painting *copy = d->paintingDrawItem->copy();
+        }
+        else if (mouseAction == Caneda::PaintingDrawEvent) {
+            if (paintingDrawItem) {
+                Painting *copy = paintingDrawItem->copy();
                 scene->beginPaintingDraw(copy);
             }
         }
     }
 
-    void StateHandler::applyStateToAllWidgets()
+    //! \brief Clear the list of insertible items.
+    void StateHandler::clearInsertibles()
     {
-        foreach (CGraphicsView *widget, d->widgets) {
-            applyState(widget);
+        foreach (GraphicsItem* item, insertibles) {
+            if(item->scene()) {
+                item->scene()->removeItem(item);
+            }
+            delete item;
         }
+
+        insertibles.clear();
     }
 
 } // namespace Caneda

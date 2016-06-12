@@ -22,11 +22,11 @@
 
 #include "idocument.h"
 #include "library.h"
+#include "quickinsert.h"
 #include "settings.h"
-#include "sidebarbrowser.h"
-#include "sidebarsimulationbrowser.h"
+#include "sidebarchartsbrowser.h"
+#include "sidebaritemsbrowser.h"
 #include "sidebartextbrowser.h"
-#include "sidebarwebbrowser.h"
 #include "statehandler.h"
 
 #include <QDebug>
@@ -42,6 +42,72 @@ namespace Caneda
     IContext::IContext(QObject *parent) : QObject(parent)
     {
     }
+
+    /*!
+     * \brief Indicates if a particular file extension is managed by this
+     * context.
+     *
+     * This method indicates if a particular file extension is managed by this
+     * context. This allows to find what context is in charge of a particular
+     * file type.
+     */
+    bool IContext::canOpen(const QFileInfo &info) const
+    {
+        foreach (const QString &suffix, supportedSuffixes()) {
+            if (info.suffix() == suffix) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /*!
+     * \brief Returns the default suffix of the current context type.
+     *
+     * This method returns the default suffix of this context to be used in
+     * any dialog required. It always returns the first suffix of the
+     * supportedSuffixes method.
+     *
+     * \sa supportedSuffixes()
+     */
+    QString IContext::defaultSuffix() const
+    {
+        return supportedSuffixes().first();
+    }
+
+    /*!
+     * \fn IContext::fileNameFilters()
+     *
+     * \brief Returns the filename extensions or filters available for this
+     * context.
+     *
+     * Filename filters are used in open/save dialogs to allow the user to
+     * filter the files displayed and ease the selection of the wanted file. In
+     * this way, for example, if opening a schematic document the dialog should
+     * display only schematic files. The method fileNameFilters() is used to
+     * know what extensions correspond to that particular type of context.
+     */
+
+    /*!
+     * \fn IContext::supportedSuffixes()
+     *
+     * \brief Returns the filename extensions available for this context.
+     *
+     * \sa defaultSuffix(), fileNameFilters()
+     */
+
+    /*!
+     * \fn IContext::newDocument()
+     *
+     * \brief Create a new document of the current context type.
+     */
+
+    /*!
+     * \fn IContext::open()
+     *
+     * \brief Open a document of the current context type.
+     */
 
     /*!
      * \fn IContext::toolBar()
@@ -80,19 +146,6 @@ namespace Caneda
      */
 
     /*!
-     * \fn IContext::sideBarTitle()
-     *
-     * \brief Returns the sideBarWidget title to this context.
-     *
-     * SideBarWidgets are context sensitive, containing only those items and
-     * tools relative to the current context as components, painting tools,
-     * code snippets, etc. This method returns the sideBar title corresponding
-     * to this context, allowing to update the title of the sidebarDockWidget.
-     *
-     * \sa sideBarWidget(), TabWidget::updateTabContext()
-     */
-
-    /*!
      * \fn IContext::updateSideBar()
      *
      * \brief Updates sidebar contents.
@@ -107,45 +160,16 @@ namespace Caneda
      */
 
     /*!
-     * \fn IContext::canOpen()
+     * \fn IContext::quickInsert()
      *
-     * \brief Indicates if a particular file extension is managed by this
-     * context.
+     * \brief Opens an insert dialog for items available in this context.
      *
-     * This method indicates if a particular file extension is managed by this
-     * context. This allows to find what context is in charge of a particular
-     * file type.
-     */
-
-    /*!
-     * \fn IContext::fileNameFilters()
+     * Insert items are context sensitive, containing only those items relative
+     * to the current context as components, painting tools, code snippets,
+     * etc. This method allows for an external event to request an insert items
+     * dialog.
      *
-     * \brief Returns the filename extensions or filters available for this
-     * context.
-     *
-     * Filename filters are used in open/save dialogs to allow the user to
-     * filter the files displayed and ease the selection of the wanted file. In
-     * this way, for example, if opening a schematic document the dialog should
-     * display only schematic files. The method fileNameFilters() is used to
-     * know what extensions correspond to that particular type of context.
-     */
-
-    /*!
-     * \fn IContext::defaultSuffix()
-     *
-     * \brief Returns the default suffix of the current content type.
-     */
-
-    /*!
-     * \fn IContext::newDocument()
-     *
-     * \brief Create a new document of the current context type.
-     */
-
-    /*!
-     * \fn IContext::open()
-     *
-     * \brief Open a document of the current context type.
+     * \sa sideBarWidget()
      */
 
     /*************************************************************************
@@ -156,9 +180,10 @@ namespace Caneda
     {
         // We create the sidebar corresponding to this context
         StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarBrowser();
+        m_sidebarItems = new SidebarItemsModel(this);
+        m_sidebarBrowser = new SidebarItemsBrowser(m_sidebarItems);
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(insertItem(const QString&, const QString&)));
 
         Settings *settings = Settings::instance();
 
@@ -184,20 +209,20 @@ namespace Caneda
 
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
-                QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
+                QPixmap(Caneda::imageDirectory() + "arrow.svg"));
         paintingItems << qMakePair(QObject::tr("Ellipse"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipse.svg"));
         paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipsearc.svg"));
         paintingItems << qMakePair(QObject::tr("Line"),
-                QPixmap(Caneda::bitmapDirectory() + "line.svg"));
+                QPixmap(Caneda::imageDirectory() + "line.svg"));
         paintingItems << qMakePair(QObject::tr("Rectangle"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+                QPixmap(Caneda::imageDirectory() + "rectangle.svg"));
         paintingItems << qMakePair(QObject::tr("Text"),
-                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
+                QPixmap(Caneda::imageDirectory() + "text.svg"));
 
-        m_sidebarBrowser->plugItems(layerItems, QObject::tr("Layout Tools"));
-        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
+        m_sidebarItems->plugItems(layerItems, QObject::tr("Layout Tools"));
+        m_sidebarItems->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
     //! \copydoc MainWindow::instance()
@@ -210,31 +235,22 @@ namespace Caneda
         return context;
     }
 
-    QWidget* LayoutContext::sideBarWidget()
-    {
-        return m_sidebarBrowser;
-    }
-
-    bool LayoutContext::canOpen(const QFileInfo &info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "xlay";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     QStringList LayoutContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Layout-xml (*.xlay)")+" (*.xlay);;";
+        nameFilters << QObject::tr("Layout-xml (*.xlay)");
 
         return nameFilters;
+    }
+
+    QStringList LayoutContext::supportedSuffixes() const
+    {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
+        QStringList supportedSuffixes;
+        supportedSuffixes << "xlay";
+
+        return supportedSuffixes;
     }
 
     IDocument* LayoutContext::newDocument()
@@ -256,6 +272,24 @@ namespace Caneda
         return document;
     }
 
+    QWidget* LayoutContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
+    }
+
+    void LayoutContext::quickInsert()
+    {
+        StateHandler *handler = StateHandler::instance();
+        QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
+
+        connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                SLOT(insertItem(const QString&, const QString&)));
+
+        quickInsert->exec(QCursor::pos());
+
+        delete quickInsert;
+    }
+
     /*************************************************************************
      *                         Schematic Context                             *
      *************************************************************************/
@@ -263,15 +297,14 @@ namespace Caneda
     SchematicContext::SchematicContext(QObject *parent) : IContext(parent)
     {
         StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarBrowser();
+        m_sidebarItems = new SidebarItemsModel(this);
+        m_sidebarBrowser = new SidebarItemsBrowser(m_sidebarItems);
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(insertItem(const QString&, const QString&)));
 
         // Load schematic libraries
         LibraryManager *libraryManager = LibraryManager::instance();
         if(libraryManager->loadLibraryTree()) {
-            // Plug the components root
-            m_sidebarBrowser->plugItem("Components", QPixmap(), "root");
 
             // Get the libraries list and sort them alphabetically
             QStringList libraries(libraryManager->librariesList());
@@ -279,7 +312,7 @@ namespace Caneda
 
             // Plug each library into the sidebar browser
             foreach(const QString library, libraries) {
-                m_sidebarBrowser->plugLibrary(library, "Components");
+                m_sidebarItems->plugLibrary(library, "Components");
                 qDebug() << "Loaded " + library + " library";
             }
 
@@ -293,27 +326,26 @@ namespace Caneda
 
         QList<QPair<QString, QPixmap> > miscellaneousItems;
         miscellaneousItems << qMakePair(QObject::tr("Ground"),
-                QPixmap(Caneda::bitmapDirectory() + "ground.svg"));
+                QPixmap(Caneda::imageDirectory() + "ground.svg"));
         miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
-                QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
-
-        m_sidebarBrowser->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
+                QPixmap(Caneda::imageDirectory() + "portsymbol.svg"));
 
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
-                QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
+                QPixmap(Caneda::imageDirectory() + "arrow.svg"));
         paintingItems << qMakePair(QObject::tr("Ellipse"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipse.svg"));
         paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipsearc.svg"));
         paintingItems << qMakePair(QObject::tr("Line"),
-                QPixmap(Caneda::bitmapDirectory() + "line.svg"));
+                QPixmap(Caneda::imageDirectory() + "line.svg"));
         paintingItems << qMakePair(QObject::tr("Rectangle"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+                QPixmap(Caneda::imageDirectory() + "rectangle.svg"));
         paintingItems << qMakePair(QObject::tr("Text"),
-                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
+                QPixmap(Caneda::imageDirectory() + "text.svg"));
 
-        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
+        m_sidebarItems->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
+        m_sidebarItems->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
     //! \copydoc MainWindow::instance()
@@ -326,31 +358,22 @@ namespace Caneda
         return context;
     }
 
-    QWidget* SchematicContext::sideBarWidget()
-    {
-        return m_sidebarBrowser;
-    }
-
-    bool SchematicContext::canOpen(const QFileInfo &info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "xsch";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     QStringList SchematicContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Schematic-xml (*.xsch)")+" (*.xsch);;";
+        nameFilters << QObject::tr("Schematic-xml (*.xsch)");
 
         return nameFilters;
+    }
+
+    QStringList SchematicContext::supportedSuffixes() const
+    {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
+        QStringList supportedSuffixes;
+        supportedSuffixes << "xsch";
+
+        return supportedSuffixes;
     }
 
     IDocument* SchematicContext::newDocument()
@@ -372,13 +395,31 @@ namespace Caneda
         return document;
     }
 
+    QWidget* SchematicContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
+    }
+
+    void SchematicContext::quickInsert()
+    {
+        StateHandler *handler = StateHandler::instance();
+        QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
+
+        connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                SLOT(insertItem(const QString&, const QString&)));
+
+        quickInsert->exec(QCursor::pos());
+
+        delete quickInsert;
+    }
+
     /*************************************************************************
      *                        Simulation Context                             *
      *************************************************************************/
     //! \brief Constructor.
     SimulationContext::SimulationContext(QObject *parent) : IContext(parent)
     {
-        m_sidebarBrowser = new SidebarSimulationBrowser();
+        m_sidebarBrowser = new SidebarChartsBrowser();
     }
 
     //! \copydoc MainWindow::instance()
@@ -391,38 +432,22 @@ namespace Caneda
         return context;
     }
 
-    QWidget *SimulationContext::sideBarWidget()
-    {
-        return m_sidebarBrowser;
-    }
-
-    void SimulationContext::updateSideBar()
-    {
-        if(m_sidebarBrowser) {
-            m_sidebarBrowser->updateWaveformsList();
-        }
-    }
-
-    bool SimulationContext::canOpen(const QFileInfo &info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "raw";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     QStringList SimulationContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Raw waveform data (*.raw)")+" (*.raw);;";
+        nameFilters << QObject::tr("Raw waveform data (*.raw)");
 
         return nameFilters;
+    }
+
+    QStringList SimulationContext::supportedSuffixes() const
+    {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
+        QStringList supportedSuffixes;
+        supportedSuffixes << "raw";
+
+        return supportedSuffixes;
     }
 
     IDocument* SimulationContext::newDocument()
@@ -444,6 +469,18 @@ namespace Caneda
         return document;
     }
 
+    QWidget *SimulationContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
+    }
+
+    void SimulationContext::updateSideBar()
+    {
+        if(m_sidebarBrowser) {
+            m_sidebarBrowser->updateChartSeriesMap();
+        }
+    }
+
     /*************************************************************************
      *                          Symbol Context                               *
      *************************************************************************/
@@ -451,31 +488,31 @@ namespace Caneda
     SymbolContext::SymbolContext(QObject *parent) : IContext(parent)
     {
         StateHandler *handler = StateHandler::instance();
-        m_sidebarBrowser = new SidebarBrowser();
+        m_sidebarItems = new SidebarItemsModel(this);
+        m_sidebarBrowser = new SidebarItemsBrowser(m_sidebarItems);
         connect(m_sidebarBrowser, SIGNAL(itemClicked(const QString&, const QString&)), handler,
-                SLOT(slotSidebarItemClicked(const QString&, const QString&)));
+                SLOT(insertItem(const QString&, const QString&)));
 
         QList<QPair<QString, QPixmap> > miscellaneousItems;
         miscellaneousItems << qMakePair(QObject::tr("Port Symbol"),
-                QPixmap(Caneda::bitmapDirectory() + "portsymbol.svg"));
-
-        m_sidebarBrowser->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
+                QPixmap(Caneda::imageDirectory() + "portsymbol.svg"));
 
         QList<QPair<QString, QPixmap> > paintingItems;
         paintingItems << qMakePair(QObject::tr("Arrow"),
-                QPixmap(Caneda::bitmapDirectory() + "arrow.svg"));
+                QPixmap(Caneda::imageDirectory() + "arrow.svg"));
         paintingItems << qMakePair(QObject::tr("Ellipse"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipse.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipse.svg"));
         paintingItems << qMakePair(QObject::tr("Elliptic Arc"),
-                QPixmap(Caneda::bitmapDirectory() + "ellipsearc.svg"));
+                QPixmap(Caneda::imageDirectory() + "ellipsearc.svg"));
         paintingItems << qMakePair(QObject::tr("Line"),
-                QPixmap(Caneda::bitmapDirectory() + "line.svg"));
+                QPixmap(Caneda::imageDirectory() + "line.svg"));
         paintingItems << qMakePair(QObject::tr("Rectangle"),
-                QPixmap(Caneda::bitmapDirectory() + "rectangle.svg"));
+                QPixmap(Caneda::imageDirectory() + "rectangle.svg"));
         paintingItems << qMakePair(QObject::tr("Text"),
-                QPixmap(Caneda::bitmapDirectory() + "text.svg"));
+                QPixmap(Caneda::imageDirectory() + "text.svg"));
 
-        m_sidebarBrowser->plugItems(paintingItems, QObject::tr("Paint Tools"));
+        m_sidebarItems->plugItems(miscellaneousItems, QObject::tr("Miscellaneous"));
+        m_sidebarItems->plugItems(paintingItems, QObject::tr("Paint Tools"));
     }
 
     //! \copydoc MainWindow::instance()
@@ -488,31 +525,22 @@ namespace Caneda
         return context;
     }
 
-    QWidget* SymbolContext::sideBarWidget()
-    {
-        return m_sidebarBrowser;
-    }
-
-    bool SymbolContext::canOpen(const QFileInfo &info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "xsym";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     QStringList SymbolContext::fileNameFilters() const
     {
         QStringList nameFilters;
-        nameFilters << QObject::tr("Symbol-xml (*.xsym)")+" (*.xsym);;";
+        nameFilters << QObject::tr("Symbol-xml (*.xsym)");
 
         return nameFilters;
+    }
+
+    QStringList SymbolContext::supportedSuffixes() const
+    {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
+        QStringList supportedSuffixes;
+        supportedSuffixes << "xsym";
+
+        return supportedSuffixes;
     }
 
     IDocument* SymbolContext::newDocument()
@@ -534,6 +562,24 @@ namespace Caneda
         return document;
     }
 
+    QWidget* SymbolContext::sideBarWidget()
+    {
+        return m_sidebarBrowser;
+    }
+
+    void SymbolContext::quickInsert()
+    {
+        StateHandler *handler = StateHandler::instance();
+        QuickInsert *quickInsert = new QuickInsert(m_sidebarItems);
+
+        connect(quickInsert, SIGNAL(itemClicked(const QString&, const QString&)), handler,
+                SLOT(insertItem(const QString&, const QString&)));
+
+        quickInsert->exec(QCursor::pos());
+
+        delete quickInsert;
+    }
+
     /*************************************************************************
      *                           Text Context                                *
      *************************************************************************/
@@ -553,15 +599,21 @@ namespace Caneda
         return instance;
     }
 
-    QWidget* TextContext::sideBarWidget()
+    QStringList TextContext::fileNameFilters() const
     {
-        return m_sidebarTextBrowser;
+        QStringList nameFilters;
+        nameFilters << QObject::tr("Spice netlist (*.spc *.sp *.net *.cir)");
+        nameFilters << QObject::tr("HDL source (*.vhdl *.vhd *.v)");
+        nameFilters << QObject::tr("Text file (*.txt)");
+
+        return nameFilters;
     }
 
-    bool TextContext::canOpen(const QFileInfo& info) const
+    QStringList TextContext::supportedSuffixes() const
     {
+        // List of supported suffixes. The first suffix is the default value
+        // provided by defaultSuffix() for all dialogs.
         QStringList supportedSuffixes;
-        supportedSuffixes << "";
         supportedSuffixes << "txt";
         supportedSuffixes << "log";
         supportedSuffixes << "net";
@@ -571,24 +623,9 @@ namespace Caneda
         supportedSuffixes << "vhd";
         supportedSuffixes << "vhdl";
         supportedSuffixes << "v";
+        supportedSuffixes << "";
 
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    QStringList TextContext::fileNameFilters() const
-    {
-        QStringList nameFilters;
-        nameFilters << QObject::tr("Spice netlist (*.spc *.sp *.net *.cir)")+" (*.spc *.sp *.net *.cir);;";
-        nameFilters << QObject::tr("HDL source (*.vhdl *.vhd *.v)")+" (*.vhdl *.vhd *.v);;";
-        nameFilters << QObject::tr("Text file (*.txt)")+" (*.txt);;";
-
-        return nameFilters;
+        return supportedSuffixes;
     }
 
     IDocument* TextContext::newDocument()
@@ -609,69 +646,9 @@ namespace Caneda
         return document;
     }
 
-    /*************************************************************************
-     *                           Web Context                                 *
-     *************************************************************************/
-    //! \brief Constructor.
-    WebContext::WebContext(QObject *parent) : IContext(parent)
+    QWidget* TextContext::sideBarWidget()
     {
-        m_sidebarWebBrowser = new SidebarWebBrowser();
-    }
-
-    //! \copydoc MainWindow::instance()
-    WebContext* WebContext::instance()
-    {
-        static WebContext *instance = 0;
-        if (!instance) {
-            instance = new WebContext();
-        }
-        return instance;
-    }
-
-    QWidget* WebContext::sideBarWidget()
-    {
-        return m_sidebarWebBrowser;
-    }
-
-    bool WebContext::canOpen(const QFileInfo& info) const
-    {
-        QStringList supportedSuffixes;
-        supportedSuffixes << "htm";
-        supportedSuffixes << "html";
-
-        foreach (const QString &suffix, supportedSuffixes) {
-            if (suffix == info.suffix()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    QStringList WebContext::fileNameFilters() const
-    {
-        QStringList nameFilters;
-        nameFilters << QObject::tr("Web page (*.htm *.html)")+" (*.htm *.html);;";
-
-        return nameFilters;
-    }
-
-    IDocument* WebContext::newDocument()
-    {
-        return new WebDocument;
-    }
-
-    IDocument* WebContext::open(const QString& fileName, QString *errorMessage)
-    {
-        WebDocument *document = new WebDocument();
-        document->setFileName(fileName);
-
-        if (!document->load(errorMessage)) {
-            delete document;
-            document = 0;
-        }
-
-        return document;
+        return m_sidebarTextBrowser;
     }
 
 } // namespace Caneda

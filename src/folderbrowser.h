@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,7 +20,6 @@
 #ifndef FOLDERBROWSER_H
 #define FOLDERBROWSER_H
 
-#include <QModelIndex>
 #include <QWidget>
 
 // Forward declarations
@@ -44,13 +43,16 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        FolderBrowser(QWidget *parent = 0);
+        explicit FolderBrowser(QWidget *parent = 0);
+
+        void setCurrentFolder(const QString& path);
 
     signals:
         void itemDoubleClicked(const QString& filename);
 
     private Q_SLOTS:
         void slotOnDoubleClicked(const QModelIndex& index);
+
         void slotUpFolder();
         void slotBackFolder();
         void slotForwardFolder();
@@ -59,8 +61,9 @@ namespace Caneda
         void slotDeleteFile();
 
     private:
-        QFileSystemModel *m_fileModel;
+        QFileSystemModel *m_model;
         QListView *m_listView;
+
         QList<QModelIndex> previousPages;
         QList<QModelIndex> nextPages;
 

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,7 +21,7 @@
 #ifndef PAINTING_H
 #define PAINTING_H
 
-#include "cgraphicsitem.h"
+#include "graphicsitem.h"
 
 // Forward declarations
 class QBrush;
@@ -43,7 +43,7 @@ namespace Caneda
     Q_DECLARE_OPERATORS_FOR_FLAGS(Caneda::ResizeHandles)
 
     /*!
-     * \brief The Painting class forms part of one of the CGraphicsItem derived
+     * \brief The Painting class forms part of one of the GraphicsItem derived
      * classes available on Caneda. It is the base class for all painting
      * related items, like lines, rectangles, ellipses, etc.
      *
@@ -54,20 +54,22 @@ namespace Caneda
      * \a setPaintingRect(). The mouse functionalities corresponding to resize
      * handles are also handled by this class.
      *
-     * \sa CGraphicsItem
+     * \sa GraphicsItem
      */
-    class Painting : public CGraphicsItem
+    class Painting : public GraphicsItem
     {
     public:
-        Painting(CGraphicsScene *scene = 0);
+        explicit Painting(QGraphicsItem *parent = 0);
 
-        //! \copydoc CGraphicsItem::Type
-        enum { Type = CGraphicsItem::PaintingType };
-        //! \copydoc CGraphicsItem::type()
+        static Painting* fromName(const QString& name);
+
+        //! \copydoc GraphicsItem::Type
+        enum { Type = GraphicsItem::PaintingType };
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         enum PaintingType {
-            ArrowType = CGraphicsItem::PaintingType + 1,
+            ArrowType = GraphicsItem::PaintingType + 1,
             EllipseType,
             EllipseArcType,
             GraphicLineType,
@@ -93,25 +95,23 @@ namespace Caneda
 
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
-        void setResizeHandles(Caneda::ResizeHandles handles);
-
-        Painting* copy(CGraphicsScene *scene = 0) const;
+        //! \copydoc GraphicsItem::copy()
+        virtual Painting* copy() const = 0;
         virtual void copyDataTo(Painting *painting) const;
 
-        static Painting* fromName(const QString& name);
-        static Painting* loadPainting(Caneda::XmlReader *reader, CGraphicsScene *scene = 0);
-
-        QRectF storedPaintingRect() const { return m_store; }
-        void storePaintingRect() { m_store = paintingRect(); }
+        //! \copydoc GraphicsItem::launchPropertiesDialog()
+        virtual void launchPropertiesDialog() = 0;
 
     protected:
         /*!
-         * Subclasses should reimplement to do calculations this is notified
-         * usually in call \a setPaintingRect.
+         * \brief Subclasses should reimplement to do calculations this is
+         * notified usually in call \a setPaintingRect.
          */
         virtual void geometryChange() {}
 
         void adjustGeometry();
+
+        void setResizeHandles(Caneda::ResizeHandles handles);
 
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -127,6 +127,11 @@ namespace Caneda
         Caneda::ResizeHandle handleHitTest(const QPointF& point, Caneda::ResizeHandles handles,
                                            const QRectF& rect);
 
+        //! \brief Returns the previously stored geometry required for undo/redo.
+        QRectF storedPaintingRect() const { return m_store; }
+        //! \brief Stores the item's geometry required for undo/redo
+        void storePaintingRect() { m_store = m_paintingRect; }
+
         /*!
          * \brief Represents the rectangle containing the painting item.
          *
@@ -137,8 +142,10 @@ namespace Caneda
         QRectF m_paintingRect;
         QPen m_pen;
         QBrush m_brush;
+
         Caneda::ResizeHandles m_resizeHandles;
         Caneda::ResizeHandle m_activeHandle;
+
         QRectF m_store;
     };
 

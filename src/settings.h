@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,10 +22,10 @@
 #define SETTINGS_H
 
 #include <QMap>
-#include <QVariant>
+#include <QObject>
 
-// Forward declarations
-class QSettings;
+//Forward declarations
+class QVariant;
 
 namespace Caneda
 {
@@ -40,8 +40,10 @@ namespace Caneda
      *
      * \sa SettingsDialog
      */
-    class Settings
+    class Settings : public QObject
     {
+        Q_OBJECT
+
     public:
         static Settings* instance();
 
@@ -54,7 +56,7 @@ namespace Caneda
         bool save();
 
     private:
-        Settings();
+        explicit Settings(QObject *parent = 0);
 
         QMap<QString, QVariant> defaultSettings;
         QMap<QString, QVariant> currentSettings;

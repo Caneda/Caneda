@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsDialog</class>
+ <widget class="QDialog" name="SettingsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Configure Caneda</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QListWidget" name="pagesList">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>General</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Libraries</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Simulation</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Layout</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>HDL</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QStackedWidget" name="pagesWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="pageGeneral">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="titleLabel">
+           <property name="text">
+            <string>General</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame">
+           <property name="frameShape">
+            <enum>QFrame::HLine</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Appearance</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <layout class="QFormLayout" name="formLayout">
+              <item row="0" column="1">
+               <widget class="QCheckBox" name="checkShowGrid">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelGrid">
+                <property name="text">
+                 <string>Show grid:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="buttonBackground">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="buttonSimulationBackground">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QPushButton" name="buttonForeground">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QPushButton" name="buttonLine">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QPushButton" name="buttonSelection">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="labelBackground">
+                <property name="text">
+                 <string>Background color:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="labelSimulation">
+                <property name="text">
+                 <string>Simulation color:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="labelForeground">
+                <property name="text">
+                 <string>Foreground color:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="labelLine">
+                <property name="text">
+                 <string>Line color:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="labelSelection">
+                <property name="text">
+                 <string>Selection color:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QSpinBox" name="spinWidth">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="labelLineWidth">
+                <property name="text">
+                 <string>Line width:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>271</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="pageLibraries">
+        <layout class="QVBoxLayout" name="verticalLayout_13">
+         <item>
+          <widget class="QLabel" name="titleLabel_5">
+           <property name="text">
+            <string>Libraries</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_5">
+           <property name="frameShape">
+            <enum>QFrame::HLine</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_6">
+           <property name="title">
+            <string>Schematic Libraries</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <item>
+             <widget class="QListWidget" name="listLibraries"/>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QPushButton" name="buttonAddLibrary">
+                <property name="text">
+                 <string>Add library...</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="buttonRemoveLibrary">
+                <property name="text">
+                 <string>Remove library</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_7">
+           <property name="title">
+            <string>HDL Libraries</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QListWidget" name="listHdlLibraries"/>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QPushButton" name="buttonAddHdlLibrary">
+                <property name="text">
+                 <string>Add library...</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="buttonRemoveHdlLibrary">
+                <property name="text">
+                 <string>Remove library</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="buttonGetNewLibraries">
+           <property name="text">
+            <string>Get new libraries...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelRestartWarning">
+           <property name="text">
+            <string>Warning: libraries will be set upon program restart</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>21</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="pageSimulation">
+        <layout class="QVBoxLayout" name="verticalLayout_10">
+         <item>
+          <widget class="QLabel" name="titleLabel_4">
+           <property name="text">
+            <string>Simulation</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_4">
+           <property name="frameShape">
+            <enum>QFrame::HLine</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_4">
+           <property name="title">
+            <string>Simulation Engine</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <layout class="QFormLayout" name="formLayout_4">
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::ExpandingFieldsGrow</enum>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelEngine">
+                <property name="text">
+                 <string>Engine:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="labelSimulationCommand">
+                <property name="text">
+                 <string>Command:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="lineSimulationCommand"/>
+              </item>
+              <item row="0" column="1">
+               <widget class="QRadioButton" name="radioNgspiceMode">
+                <property name="text">
+                 <string>Ngspice</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QRadioButton" name="radioCustomMode">
+                <property name="text">
+                 <string>Custom</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_5">
+           <property name="title">
+            <string>Output Data</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <layout class="QFormLayout" name="formLayout_5">
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::ExpandingFieldsGrow</enum>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelOutputFormat">
+                <property name="text">
+                 <string>Output format:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QRadioButton" name="radioBinaryMode">
+                <property name="text">
+                 <string>Binary</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QRadioButton" name="radioAsciiMode">
+                <property name="text">
+                 <string>Ascii</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>160</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="pageLayout">
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <widget class="QLabel" name="titleLabel_3">
+           <property name="text">
+            <string>Layout</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_3">
+           <property name="frameShape">
+            <enum>QFrame::HLine</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_3">
+           <property name="title">
+            <string>Layer Colors</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <layout class="QFormLayout" name="formLayout_3">
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::ExpandingFieldsGrow</enum>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelMetal1">
+                <property name="text">
+                 <string>Metal 1:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="buttonMetal1">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="labelMetal2">
+                <property name="text">
+                 <string>Metal 2:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="buttonMetal2">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="labelPoly1">
+                <property name="text">
+                 <string>Poly 1:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="buttonPoly1">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="labelPoly2">
+                <property name="text">
+                 <string>Poly 2:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QPushButton" name="buttonPoly2">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="labelActive">
+                <property name="text">
+                 <string>Active:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QPushButton" name="buttonActive">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QPushButton" name="buttonContact">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QPushButton" name="buttonNwell">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QPushButton" name="buttonPwell">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="labelContact">
+                <property name="text">
+                 <string>Contact:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="labelNwell">
+                <property name="text">
+                 <string>nwell:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="labelPwell">
+                <property name="text">
+                 <string>pwell:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>241</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="pageHdl">
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QLabel" name="titleLabel_2">
+           <property name="text">
+            <string>HDL</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_2">
+           <property name="frameShape">
+            <enum>QFrame::HLine</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="title">
+            <string>Colors for Syntax Highlighting</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <layout class="QFormLayout" name="formLayout_2">
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::ExpandingFieldsGrow</enum>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelKeyword">
+                <property name="text">
+                 <string>Keyword:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="buttonKeyword">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="labelType">
+                <property name="text">
+                 <string>Type:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="buttonType">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="labelAttribute">
+                <property name="text">
+                 <string>Attribute:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="buttonAttribute">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="labelBlock">
+                <property name="text">
+                 <string>Block:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QPushButton" name="buttonBlock">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="labelClass">
+                <property name="text">
+                 <string>Class:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QPushButton" name="buttonClass">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QPushButton" name="buttonData">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QPushButton" name="buttonComment">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QPushButton" name="buttonSystem">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="labelData">
+                <property name="text">
+                 <string>Data:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="labelComment">
+                <property name="text">
+                 <string>Comment:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="labelSystem">
+                <property name="text">
+                 <string>System:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>241</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttons">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

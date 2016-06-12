@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -28,17 +28,17 @@ namespace Caneda
     /*!
      * \brief Represents rectangular painting item.
      *
-     * This class allows user to draw rectangle on schematic. The rectangles can
-     * be filled by setting \a Painting::setBrush() .
+     * This class allows user to draw rectangle on schematic. The rectangles
+     * can be filled by setting \a Painting::setBrush() .
      */
     class Rectangle : public Painting
     {
     public:
-        Rectangle(const QRectF &rect, CGraphicsScene *scene = 0);
+        explicit Rectangle(const QRectF &rect, QGraphicsItem *parent = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::RectangleType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF& rect) const;
@@ -49,12 +49,12 @@ namespace Caneda
         QRectF rect() const { return paintingRect(); }
         void setRect(const QRectF& rect) { setPaintingRect(rect); }
 
-        Rectangle* copy(CGraphicsScene *scene = 0) const;
+        Rectangle* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        int launchPropertyDialog(Caneda::UndoOption opt);
+        void launchPropertiesDialog();
     };
 
 } // namespace Caneda

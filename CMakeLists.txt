@@ -2,8 +2,8 @@
 # Caneda project
 PROJECT( Caneda )
 
-SET( PACKAGE_VERSION "0.2.1" )
-SET( PACKAGE_STRING "caneda 0.2.1" )
+SET( PACKAGE_VERSION "0.3.0" )
+SET( PACKAGE_STRING "caneda 0.3.0" )
 
 # ==================================================================================
 # Minimum libraries required
@@ -25,12 +25,10 @@ FIND_PACKAGE( Qwt ${QWT_MIN_VERSION} REQUIRED )
 # Configure runtime directories
 
 SET( BASEDIR     "share/caneda/" )
-SET( BITMAPDIR   "share/caneda/images/" )
 SET( BINARYDIR   "bin/" )
 SET( DESKTOPDIR  "share/applications/" )
-SET( DOCDIR      "share/caneda/docs/" )
 SET( ICONDIR     "share/icons/" )
-SET( MANDIR      "share/man/man1/" )
+SET( IMAGEDIR    "share/caneda/images/" )
 SET( MIMEDIR     "share/mime/packages/" )
 SET( LANGUAGEDIR "share/caneda/i18n/" )
 SET( LIBRARYDIR  "share/caneda/libraries/" )
@@ -49,9 +47,8 @@ CONFIGURE_FILE( ${Caneda_SOURCE_DIR}/config.h.cmake ${Caneda_BINARY_DIR}/config.
 # Include sources directories
 
 ADD_SUBDIRECTORY( src )
-ADD_SUBDIRECTORY( docs )
 ADD_SUBDIRECTORY( images )
-ADD_SUBDIRECTORY( i18n )
+#ADD_SUBDIRECTORY( i18n )
 ADD_SUBDIRECTORY( libraries )
 
 # ==================================================================================

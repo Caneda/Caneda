@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,35 +24,36 @@
 #include "ui_savedocumentsdialog.h"
 
 #include <QDialog>
-#include <QSet>
 
 // Forward declarations.
-class QFileInfo;
+class QToolButton;
 
 namespace Caneda
 {
-
     // Forward declarations.
     class IDocument;
-    class FileBrowserLineEditPrivate;
-    class SaveDocumentsDialogPrivate;
 
     class FileBrowserLineEdit : public QWidget
     {
         Q_OBJECT
 
     public:
-        FileBrowserLineEdit(QTreeWidgetItem *item, const QFileInfo& fileInfo,
-                QWidget *parent = 0);
+        explicit FileBrowserLineEdit(QTreeWidgetItem *item,
+                                     IDocument *document,
+                                     QWidget *parent = 0);
 
-        QFileInfo fileInfo() const;
-        void updateTexts();
+        QString fileName() const;
 
     private Q_SLOTS:
         void browseButtonClicked();
+        void updateTexts(const QString &fileName);
 
     private:
-        FileBrowserLineEditPrivate *d;
+        QTreeWidgetItem *m_item;
+        IDocument *m_document;
+
+        QLineEdit *m_lineEdit;
+        QToolButton *m_browseButton;
     };
 
     class SaveDocumentsDialog : public QDialog
@@ -59,27 +61,16 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        enum ResultType {
-            SaveSelected = QDialogButtonBox::AcceptRole,
-            DoNotSave = QDialogButtonBox::DestructiveRole,
-            Abort = QDialogButtonBox::RejectRole
-        };
-
-        SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
-                QWidget *parent = 0);
-
-        QList<QPair<IDocument*, QString> > newFilePaths() const;
+        explicit SaveDocumentsDialog(const QList<IDocument*> &modifiedDocuments,
+                                     QWidget *parent = 0);
 
     public Q_SLOTS:
-        void slotButtonClicked(QAbstractButton *button);
-        void slotHandleClick(const QModelIndex& index);
-        void reject();
+        void buttonClicked(QAbstractButton *button);
 
     private:
         Ui::SaveDocumentsDialog ui;
 
         QList<IDocument*> m_modifiedDocuments;
-        QList<QPair<IDocument*, QString> > m_newFilePaths;
     };
 
 } // namespace Caneda

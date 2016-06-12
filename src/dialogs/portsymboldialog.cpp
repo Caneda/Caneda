@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2014 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2014-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -19,22 +19,26 @@
 
 #include "portsymboldialog.h"
 
+#include "portsymbol.h"
+
 namespace Caneda
 {
     /*!
      * \brief Constructor.
      *
-     * \param label The port label being modified by this dialog.
+     * \param portSymbol The PortSymbol being modified by this dialog.
      * \param parent Parent of this object.
      */
-    PortSymbolDialog::PortSymbolDialog(QString *label, QWidget *parent) :
-        QDialog(parent), m_label(label)
+    PortSymbolDialog::PortSymbolDialog(PortSymbol *portSymbol,
+                                       QWidget *parent) :
+        QDialog(parent),
+        m_portSymbol(portSymbol)
     {
         // Initialize designer dialog
         ui.setupUi(this);
 
         ui.editName->setClearButtonEnabled(true);
-        ui.editName->setText(*m_label);
+        ui.editName->setText(m_portSymbol->label());
     }
 
     /*!
@@ -44,12 +48,7 @@ namespace Caneda
      */
     void PortSymbolDialog::accept()
     {
-        // Clear and append the new value. This is done using the access
-        // functions to modify the value of the object pointed by the pointer
-        // instead of the local pointer.
-        m_label->clear();
-        m_label->append(ui.editName->text());
-
+        m_portSymbol->setLabel(ui.editName->text());
         QDialog::accept();
     }
 

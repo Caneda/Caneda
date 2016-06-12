@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,9 +33,9 @@ namespace Caneda
      * \brief Constructs an Ellipse item.
      *
      * \param rect Ellipse rect
-     * \param scene CGraphicsScene to which this item should be added.
+     * \param parent Parent of the Ellipse item.
      */
-    Ellipse::Ellipse(QRectF rect, CGraphicsScene *scene) : Painting(scene)
+    Ellipse::Ellipse(QRectF rect, QGraphicsItem *parent) : Painting(parent)
     {
         setEllipse(rect);
         setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle |
@@ -71,12 +71,12 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \brief Returns a copy of this Ellipse item.
-    Ellipse* Ellipse::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    Ellipse* Ellipse::copy() const
     {
-        Ellipse *ell = new Ellipse(ellipse(), scene);
-        Painting::copyDataTo(ell);
-        return ell;
+        Ellipse *ellipseItem = new Ellipse(ellipse(), parentItem());
+        Painting::copyDataTo(ellipseItem);
+        return ellipseItem;
     }
 
     //! \brief Saves ellipse data as xml.
@@ -87,7 +87,7 @@ namespace Caneda
 
         writer->writeRectAttribute(ellipse(), QLatin1String("ellipse"));
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writePen(pen());
         writer->writeBrush(brush());
@@ -129,10 +129,11 @@ namespace Caneda
         }
     }
 
-    int Ellipse::launchPropertyDialog(Caneda::UndoOption opt)
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
+    void Ellipse::launchPropertiesDialog()
     {
-        StyleDialog dia(this, opt);
-        return dia.exec();
+        StyleDialog dialog(this);
+        dialog.exec();
     }
 
 } // namespace Caneda

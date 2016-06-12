@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -35,9 +35,10 @@ namespace Caneda
      * \brief Constructs a text item.
      *
      * \param text Item's text.
-     * \param scene CGraphicsScene to which this item should be added.
+     * \param parent Parent of the GraphicText item.
      */
-    GraphicText::GraphicText(const QString &text, CGraphicsScene *scene) : Painting(scene)
+    GraphicText::GraphicText(const QString &text, QGraphicsItem *parent) :
+        Painting(parent)
     {
         m_textItem = new QGraphicsTextItem(this);
         m_textItem->setAcceptedMouseButtons(0);
@@ -105,10 +106,10 @@ namespace Caneda
         }
     }
 
-    //! \brief Returns a copy of this item.
-    GraphicText* GraphicText::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    GraphicText* GraphicText::copy() const
     {
-        GraphicText *text = new GraphicText(richText(), scene);
+        GraphicText *text = new GraphicText(richText(), parentItem());
         Painting::copyDataTo(text);
         return text;
     }
@@ -120,7 +121,7 @@ namespace Caneda
         writer->writeAttribute("name", "text");
 
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writeEmptyElement("properties");
         writer->writeAttribute("text", richText());
@@ -161,11 +162,11 @@ namespace Caneda
         }
     }
 
-    //! \brief Launch rich text edit dialog.
-    int GraphicText::launchPropertyDialog(Caneda::UndoOption opt)
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
+    void GraphicText::launchPropertiesDialog()
     {
-        GraphicTextDialog dialog(this, opt);
-        return dialog.exec();
+        GraphicTextDialog dialog(this, true);
+        dialog.exec();
     }
 
 } // namespace Caneda

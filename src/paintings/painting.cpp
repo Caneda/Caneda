@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2012 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,7 +20,6 @@
 
 #include "painting.h"
 
-#include "cgraphicsscene.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
@@ -28,6 +27,7 @@
 #include "ellipse.h"
 #include "ellipsearc.h"
 #include "graphicline.h"
+#include "graphicsscene.h"
 #include "graphictext.h"
 #include "layer.h"
 #include "portsymbol.h"
@@ -41,11 +41,16 @@
 
 namespace Caneda
 {
-    //! \brief Constructs a painting item with default pen and default brush.
-    Painting::Painting(CGraphicsScene *scene) : CGraphicsItem(0, scene),
-    m_brush(Qt::NoBrush),
-    m_resizeHandles(Caneda::NoHandle),
-    m_activeHandle(Caneda::NoHandle)
+    /*!
+     * \brief Constructs a painting item with default pen and default brush.
+     *
+     * \param parent Parent of the Painting item.
+     */
+    Painting::Painting(QGraphicsItem *parent) :
+        GraphicsItem(parent),
+        m_brush(Qt::NoBrush),
+        m_resizeHandles(Caneda::NoHandle),
+        m_activeHandle(Caneda::NoHandle)
     {
         Settings *settings = Settings::instance();
         m_pen = QPen(settings->currentValue("gui/foregroundColor").value<QColor>());
@@ -53,92 +58,6 @@ namespace Caneda
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
-    }
-
-    /*!
-     * \brief Sets the painting rect to \a rect.
-     *
-     * \copydoc Painting::m_paintingRect
-     */
-    void Painting::setPaintingRect(const QRectF& rect)
-    {
-        if(rect == m_paintingRect) {
-            return;
-        }
-
-        prepareGeometryChange();
-
-        m_paintingRect = rect;
-        geometryChange();
-
-        adjustGeometry();
-    }
-
-    /*!
-     * \brief Returns shape of item for given painting rect.
-     *
-     * Subclasses can use this to customize their shapes.
-     */
-    QPainterPath Painting::shapeForRect(const QRectF& rect) const
-    {
-        QPainterPath path;
-        path.addRect(rect);
-        return path;
-    }
-
-    //! \brief Sets item's pen to \a _pen.
-    void Painting::setPen(const QPen& _pen)
-    {
-        if(m_pen == _pen) {
-            return;
-        }
-
-        prepareGeometryChange();
-        m_pen = _pen;
-
-        adjustGeometry();
-    }
-
-    //! \brief Sets item's brush to \a _brush.
-    void Painting::setBrush(const QBrush& _brush)
-    {
-        if(m_brush == _brush) {
-            return;
-        }
-
-        prepareGeometryChange();
-        m_brush = _brush;
-
-        //no need to adjust geometry as brush doesn't alter geometry
-        update();
-    }
-
-    /*!
-     * \brief Draws the handles if the item is selected.
-     *
-     * Subclasses should reimplement to draw itself with using paintingRect
-     * as hint to draw. The subclassed paint method should also call this
-     * base method in the end to get the resize handles drawn.
-     */
-    void Painting::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-                         QWidget *)
-    {
-        if(option->state & QStyle::State_Selected) {
-            drawResizeHandles(m_resizeHandles, m_paintingRect, painter);
-        }
-    }
-
-    //! \brief Indicate the resize handles to be shown.
-    void Painting::setResizeHandles(Caneda::ResizeHandles handles)
-    {
-        if(m_resizeHandles == handles) {
-            return;
-        }
-
-        prepareGeometryChange();
-        m_resizeHandles = handles;
-
-        adjustGeometry();
     }
 
     /*!
@@ -227,36 +146,98 @@ namespace Caneda
         return 0;
     }
 
-    //! Reimplemented for convenience though it doesn't do actual work.
-    Painting* Painting::copy(CGraphicsScene *) const
+    /*!
+     * \brief Sets the painting rect to \a rect.
+     *
+     * \copydoc Painting::m_paintingRect
+     */
+    void Painting::setPaintingRect(const QRectF& rect)
     {
-        return 0;
+        if(rect == m_paintingRect) {
+            return;
+        }
+
+        prepareGeometryChange();
+
+        m_paintingRect = rect;
+        geometryChange();
+
+        adjustGeometry();
     }
 
-    //! \copydoc CGraphicsItem::copyDataTo()
+    /*!
+     * \brief Returns shape of item for given painting rect.
+     *
+     * Subclasses can use this to customize their shapes.
+     */
+    QPainterPath Painting::shapeForRect(const QRectF& rect) const
+    {
+        QPainterPath path;
+        path.addRect(rect);
+        return path;
+    }
+
+    //! \brief Sets item's pen to \a _pen.
+    void Painting::setPen(const QPen& _pen)
+    {
+        if(m_pen == _pen) {
+            return;
+        }
+
+        prepareGeometryChange();
+        m_pen = _pen;
+
+        adjustGeometry();
+    }
+
+    //! \brief Sets item's brush to \a _brush.
+    void Painting::setBrush(const QBrush& _brush)
+    {
+        if(m_brush == _brush) {
+            return;
+        }
+
+        prepareGeometryChange();
+        m_brush = _brush;
+
+        //no need to adjust geometry as brush doesn't alter geometry
+        update();
+    }
+
+    /*!
+     * \brief Draws the handles if the item is selected.
+     *
+     * Subclasses should reimplement to draw itself with using paintingRect
+     * as hint to draw. The subclassed paint method should also call this
+     * base method in the end to get the resize handles drawn.
+     */
+    void Painting::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                         QWidget *)
+    {
+        if(option->state & QStyle::State_Selected) {
+            drawResizeHandles(m_resizeHandles, m_paintingRect, painter);
+        }
+    }
+
+    //! \brief Indicate the resize handles to be shown.
+    void Painting::setResizeHandles(Caneda::ResizeHandles handles)
+    {
+        if(m_resizeHandles == handles) {
+            return;
+        }
+
+        prepareGeometryChange();
+        m_resizeHandles = handles;
+
+        adjustGeometry();
+    }
+
+    //! \copydoc GraphicsItem::copyDataTo()
     void Painting::copyDataTo(Painting *painting) const
     {
         painting->setPen(pen());
         painting->setBrush(brush());
-        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(painting));
-    }
-
-    /*!
-     * \brief Loads and returns a pointer to new painting object as read
-     * from \a reader. On failure returns null.
-     */
-    Painting* Painting::loadPainting(Caneda::XmlReader *reader, CGraphicsScene *scene)
-    {
-        Q_ASSERT(reader->isStartElement() && reader->name() == "painting");
-
-        Painting *painting = Painting::fromName(reader->attributes().value("name").toString());
-        if(painting) {
-            painting->loadData(reader);
-            if(scene) {
-                scene->addItem(painting);
-            }
-        }
-        return painting;
+        GraphicsItem::copyDataTo(painting);
     }
 
     //! Adjust geometry of item to accommodate resize handles.
@@ -314,7 +295,7 @@ namespace Caneda
 
         //call base method to get move behaviour as no handle is pressed
         if(m_activeHandle == Caneda::NoHandle) {
-            CGraphicsItem::mousePressEvent(event);
+            GraphicsItem::mousePressEvent(event);
         }
         else {
             storePaintingRect();
@@ -325,7 +306,7 @@ namespace Caneda
     void Painting::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     {
         if(m_activeHandle == Caneda::NoHandle) {
-            CGraphicsItem::mouseMoveEvent(event);
+            GraphicsItem::mouseMoveEvent(event);
             Q_ASSERT(scene()->mouseGrabberItem() == this);
             return;
         }
@@ -369,10 +350,10 @@ namespace Caneda
      */
     void Painting::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
-        CGraphicsItem::mouseReleaseEvent(event);
+        GraphicsItem::mouseReleaseEvent(event);
         if(m_activeHandle != Caneda::NoHandle && m_paintingRect != m_store) {
-            PaintingRectChangeCmd *cmd = new PaintingRectChangeCmd(this, storedPaintingRect(), m_paintingRect);
-            CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(this->scene());
+            ChangePaintingRectCmd *cmd = new ChangePaintingRectCmd(this, storedPaintingRect(), m_paintingRect);
+            GraphicsScene *scene = qobject_cast<GraphicsScene*>(this->scene());
             scene->undoStack()->push(cmd);
         }
         m_activeHandle = Caneda::NoHandle;

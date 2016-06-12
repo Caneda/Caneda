@@ -156,6 +156,11 @@ namespace Caneda
         return m_views.isEmpty() ? 0 : m_views.first();
     }
 
+    QList<IView*> Tab::views() const
+    {
+        return m_views;
+    }
+
     QString Tab::tabText() const
     {
         IView *view = activeView();
@@ -376,44 +381,12 @@ namespace Caneda
 
 
     /*************************************************************************
-     *                           TabBarPrivate                               *
-     *************************************************************************/
-    class TabBarPrivate : public QTabBar
-    {
-    public:
-        TabBarPrivate(QWidget *parent=0l) : QTabBar(parent)
-        {
-            setDrawBase(true);
-        }
-        ~TabBarPrivate() {}
-
-    protected:
-        void wheelEvent(QWheelEvent *ev)
-        {
-            if(count() > 1) {
-                int current = currentIndex();
-                if(ev->delta() < 0) {
-                    current = (current + 1) % count();
-                }
-                else {
-                    current--;
-                    if(current < 0 ) {
-                        current = count() - 1;
-                    }
-                }
-                setCurrentIndex(current);
-            }
-        }
-    };
-
-
-    /*************************************************************************
      *                             TabWidget                                 *
      *************************************************************************/
     //! \brief Constructor.
     TabWidget::TabWidget(QWidget *parent) : QTabWidget(parent)
     {
-        setTabBar(new TabBarPrivate(this));
+        setTabBar(new QTabBar(this));
         connect(this, SIGNAL(currentChanged(int)), this,
                 SLOT(updateTabContext()));
         connect(this, SIGNAL(tabCloseRequested(int)), this,
@@ -574,8 +547,9 @@ namespace Caneda
             return;
         }
 
-        mw->sidebarDockWidget()->setWindowTitle(view->context()->sideBarTitle());
-        mw->sidebarDockWidget()->setWidget(view->context()->sideBarWidget());
+        QWidget *sidebar = view->context()->sideBarWidget();
+        mw->sidebarDockWidget()->setWindowTitle(sidebar->windowTitle());
+        mw->sidebarDockWidget()->setWidget(sidebar);
         view->context()->updateSideBar();
 
         IDocument *document = view->document();

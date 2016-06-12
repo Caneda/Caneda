@@ -67,12 +67,15 @@ namespace Caneda
         IDocument* currentDocument() const;
         IView* currentView() const;
 
+        QList<IDocument*> documents() const;
+        QList<IView*> views() const;
+
         IDocument* documentForFileName(const QString &fileName) const;
         QList<IView*> viewsForDocument(const IDocument *document) const;
-        QList<IDocument*> documents() const;
 
         void updateSettingsChanges();
         void addFileToRecentFiles(const QString &filePath);
+        void clearRecentFiles();
         void updateRecentFilesActionList();
 
     Q_SIGNALS:
@@ -82,7 +85,7 @@ namespace Caneda
         void onViewFocussedIn(IView *view);
 
     private:
-        DocumentViewManager(QObject *parent = 0);
+        explicit DocumentViewManager(QObject *parent = 0);
 
         DocumentData* documentDataForFileName(const QString &fileName) const;
         DocumentData* documentDataForDocument(IDocument *document) const;

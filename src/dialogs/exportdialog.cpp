@@ -25,29 +25,27 @@
 
 #include <QCompleter>
 #include <QDialogButtonBox>
-#include <QDirModel>
 #include <QFileDialog>
+#include <QFileSystemModel>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMessageBox>
 #include <QSvgGenerator>
 
-#include <math.h>
-
 namespace Caneda
 {
     //! \brief Constructor.
     ExportDialog::ExportDialog(IDocument *document, QWidget *parent) :
-            QDialog(parent),
-            m_document(document)
+        QDialog(parent),
+        m_document(document)
     {
         ui.setupUi(this);
 
         // Title and file name of the scene
         QString diagramFilename = document->fileName();
         if(diagramFilename.isEmpty()) {
-            diagramFilename = QObject::tr("untitled");
+            diagramFilename = QString(tr("untitled"));
         }
 
         ui.labelSchematicName->setText(diagramFilename);
@@ -65,7 +63,10 @@ namespace Caneda
         }
 
         QCompleter *completer = new QCompleter(this);
-        completer->setModel(new QDirModel(completer));
+        QFileSystemModel *model = new QFileSystemModel(completer);
+        model->setRootPath(ui.editPath->text());
+        model->setFilter(QDir::Dirs|QDir::AllDirs|QDir::Drives|QDir::NoDot|QDir::NoDotDot);
+        completer->setModel(model);
         ui.editPath->setCompleter(completer);
 
         ui.btnBrowse->setIcon(Caneda::icon("document-open"));
@@ -74,10 +75,10 @@ namespace Caneda
         slotResetSize();
 
         ui.btnLock->setIcon(Caneda::icon("object-locked"));
-        ui.btnLock->setToolTip(QObject::tr("Keep proportions"));
+        ui.btnLock->setToolTip(QString(tr("Keep proportions")));
 
-        ui.btnReset->setIcon(Caneda::icon("edit-clear-locationbar-rtl"));
-        ui.btnReset->setToolTip(QObject::tr("Restore dimensions"));
+        ui.btnReset->setIcon(Caneda::icon("edit-clear"));
+        ui.btnReset->setToolTip(QString(tr("Restore dimensions")));
 
         ui.comboFormat->addItem(tr("PNG (*.png)"), "PNG");
         ui.comboFormat->addItem(tr("JPEG (*.jpg)"), "JPG");

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>130</height>
+    <height>151</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,37 +32,23 @@
    </item>
    <item>
     <widget class="QRadioButton" name="choiceSchematic">
-     <property name="text">
-      <string>Schematic file</string>
-     </property>
      <property name="checked">
       <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QRadioButton" name="choiceSymbol">
-     <property name="text">
-      <string>Symbol file</string>
-     </property>
-    </widget>
+    <widget class="QRadioButton" name="choiceSymbol"/>
    </item>
    <item>
     <widget class="QRadioButton" name="choiceLayout">
-     <property name="text">
-      <string>Layout file</string>
-     </property>
      <property name="checked">
       <bool>false</bool>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QRadioButton" name="choiceText">
-     <property name="text">
-      <string>Text file</string>
-     </property>
-    </widget>
+    <widget class="QRadioButton" name="choiceText"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

@@ -27,7 +27,7 @@ namespace Caneda
 {
     //! \brief Constructor.
     ProjectFileNewDialog::ProjectFileNewDialog(QWidget *parent) :
-            QDialog(parent)
+        QDialog(parent)
     {
         ui.setupUi(this);
 

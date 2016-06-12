@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2006 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,41 +23,30 @@
 
 #include "port.h"
 
-#include <QList>
-#include <QMenu>
-
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsItem;
-    class CGraphicsScene;
-
-    //! Shareable wire's data
-    struct WireData
-    {
-        QPointF port1Pos;
-        QPointF port2Pos;
-    };
+    class GraphicsItem;
 
     /*!
-     * \brief The Wire class forms part of one of the CGraphicsItem
+     * \brief The Wire class forms part of one of the GraphicsItem
      * derived classes available on Caneda. It represents a wire on schematic,
      * and connects different components throught the use of ports. One port
      * can have one or multiple wire connections, allowing multiple components
      * to be connected together.
      *
-     * \sa CGraphicsItem, Component, Port
+     * \sa GraphicsItem, Component, Port
      */
-    class Wire : public CGraphicsItem
+    class Wire : public GraphicsItem
     {
     public:
-        Wire(const QPointF &startPos, const QPointF &endPos,
-                CGraphicsScene *scene = 0);
+        explicit Wire(const QPointF &startPos, const QPointF &endPos,
+                      QGraphicsItem *parent = 0);
         ~Wire();
 
-        //! \copydoc CGraphicsItem::Type
-        enum { Type = CGraphicsItem::WireType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::Type
+        enum { Type = GraphicsItem::WireType };
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         //! Return's the list's first member.
@@ -76,28 +65,21 @@ namespace Caneda
         bool isNull() const { return port1()->scenePos() == port2()->scenePos(); }
 
         void updateGeometry();
-        QRectF boundingRect () const;
+        QRectF boundingRect() const;
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0);
 
-        Wire* copy(CGraphicsScene *scene = 0) const;
-        void copyDataTo(Wire *wire) const;
+        Wire* copy() const;
 
-        WireData storedState() const;
-        void storeState();
-        void setState(WireData state);
-        WireData currentState() const;
-
-        static Wire* loadWire(Caneda::XmlReader *reader, CGraphicsScene *scene);
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
+        //! \copydoc GraphicsItem::launchPropertiesDialog()
+        void launchPropertiesDialog() {}
+
     protected:
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-
-    private:
-        WireData store; //!< Stores the wire data when needed(undo/redo).
     };
 
 } // namespace Caneda

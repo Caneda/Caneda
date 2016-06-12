@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -24,7 +24,6 @@
 #include "component.h"
 
 #include <QHash>
-#include <QObject>
 
 namespace Caneda
 {
@@ -39,10 +38,12 @@ namespace Caneda
      *
      * \sa LibraryManager, Component
      */
-    class Library
+    class Library : public QObject
     {
+        Q_OBJECT
+
     public:
-        Library(QString libraryPath);
+        explicit Library(QString libraryPath, QObject *parent = 0);
 
         //! Returns library name.
         QString libraryName() const { return m_libraryName; }
@@ -92,10 +93,6 @@ namespace Caneda
     public:
         static LibraryManager* instance();
 
-        Component* newComponent(QString componentName,
-                                CGraphicsScene *scene,
-                                QString library);
-
         // Library management related methods
         bool newLibrary(const QString& libPath);
         bool load(const QString& libPath);
@@ -112,8 +109,10 @@ namespace Caneda
         QPainterPath symbolCache(const QString &compName, const QString &libName);
         const QPixmap pixmapCache(const QString &compName, const QString &libName);
 
+        ComponentDataPtr componentData(QString name, QString library);
+
     private:
-        LibraryManager(QObject *parent = 0);
+        explicit LibraryManager(QObject *parent = 0);
 
         //! Hash table to hold libraries.
         QHash<QString, Library*> m_libraryHash;

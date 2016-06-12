@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,10 +33,10 @@ namespace Caneda
      * \brief Constructs a line item.
      *
      * \param line Line in local coords.
-     * \param scene CGraphicsScene to which this item should be added.
+     * \param parent Parent of the GraphicLine item.
      */
-    GraphicLine::GraphicLine(const QLineF &line, CGraphicsScene *scene) :
-          Painting(scene)
+    GraphicLine::GraphicLine(const QLineF &line, QGraphicsItem *parent) :
+          Painting(parent)
     {
         setLine(line);
         setResizeHandles(Caneda::TopLeftHandle | Caneda::BottomRightHandle);
@@ -70,10 +70,10 @@ namespace Caneda
         Painting::paint(painter, option, w);
     }
 
-    //! \brief Returns copy of this line item.
-    GraphicLine* GraphicLine::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    GraphicLine* GraphicLine::copy() const
     {
-        GraphicLine *lineItem = new GraphicLine(line(), scene);
+        GraphicLine *lineItem = new GraphicLine(line(), parentItem());
         Painting::copyDataTo(lineItem);
         return lineItem;
     }
@@ -86,7 +86,7 @@ namespace Caneda
 
         writer->writeLineAttribute(line());
         writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(transform());
+        writer->writeTransformAttribute(sceneTransform());
 
         writer->writePen(pen());
 
@@ -130,10 +130,11 @@ namespace Caneda
         setPaintingRect(QRectF(line.p1(), line.p2()));
     }
 
-    int GraphicLine::launchPropertyDialog(Caneda::UndoOption opt)
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
+    void GraphicLine::launchPropertiesDialog()
     {
-        StyleDialog dia(this, opt);
-        return dia.exec();
+        StyleDialog dialog(this);
+        dialog.exec();
     }
 
 } // namespace Caneda

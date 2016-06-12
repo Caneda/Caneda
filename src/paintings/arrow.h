@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -26,37 +26,36 @@
 namespace Caneda
 {
     /*!
-     * \brief This class is used to represent resizable arrow item on a graphics scene.
-     *
-     * This class supports two different styles of arrow.
-     *
-     * \sa HeadStyle
+     * \brief This class is used to represent resizable arrow item on a
+     * graphicsscene.
      */
     class Arrow : public Painting
     {
     public:
-        //! \brief Represents the arrow head style.
+        //! \brief Enum to represent the arrow head style.
         enum HeadStyle {
-            //! This represents an ordinary arrow head style (two lines pointing in one direction)
+            //! Ordinary arrow head style (two lines pointing in a direction)
             TwoLineArrow,
-            //! This represents a filled arrow head style (filled triangle pointing in one direction)
+            //! Filled arrow head style (filled triangle pointing in a direction)
             FilledArrow
         };
 
-        Arrow(const QLineF &line = QLineF(), HeadStyle style = FilledArrow,
-                qreal headWidth = 12, qreal headHeight = 20,
-                CGraphicsScene *scene = 0);
+        explicit Arrow(const QLineF &line = QLineF(),
+                       HeadStyle style = FilledArrow,
+                       qreal headWidth = 12,
+                       qreal headHeight = 20,
+                       QGraphicsItem *parent = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::ArrowType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
 
         void paint(QPainter *, const QStyleOptionGraphicsItem*, QWidget *);
 
-        Arrow* copy(CGraphicsScene *scene = 0) const;
+        Arrow* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
@@ -76,7 +75,7 @@ namespace Caneda
         QLineF line() const { return lineFromRect(paintingRect()); }
         void setLine(const QLineF &line);
 
-        int launchPropertyDialog(Caneda::UndoOption opt);
+        void launchPropertiesDialog();
 
     protected:
         void geometryChange();
@@ -90,7 +89,7 @@ namespace Caneda
         qreal m_headWidth;
         qreal m_headHeight;
 
-        //the head's tip is always at index 1
+        // The head's tip is always at index 1
         QPolygonF m_head;
     };
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2009-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,6 +20,7 @@
 #include "folderbrowser.h"
 
 #include "global.h"
+#include "modelviewhelpers.h"
 
 #include <QFileSystemModel>
 #include <QInputDialog>
@@ -40,16 +41,17 @@ namespace Caneda
     {
         QVBoxLayout *layout = new QVBoxLayout(this);
 
-        QToolBar *toolbar = new QToolBar;
+        // Create the toolbar
+        QToolBar *toolbar = new QToolBar(this);
 
-        QToolButton *buttonUp = new QToolButton();
+        QToolButton *buttonUp = new QToolButton(this);
         buttonUp->setIcon(Caneda::icon("go-up"));
         buttonUp->setShortcut(Qt::Key_Backspace);
         buttonUp->setStatusTip(tr("Go up one folder"));
         buttonUp->setToolTip(tr("Go up one folder"));
         buttonUp->setWhatsThis(tr("Go up one folder"));
 
-        buttonBack = new QToolButton();
+        buttonBack = new QToolButton(this);
         buttonBack->setIcon(Caneda::icon("go-previous"));
         buttonBack->setShortcut(Qt::ALT + Qt::Key_Left);
         buttonBack->setStatusTip(tr("Go previous folder"));
@@ -57,7 +59,7 @@ namespace Caneda
         buttonBack->setWhatsThis(tr("Go previous folder"));
         buttonBack->setEnabled(false);
 
-        buttonForward = new QToolButton();
+        buttonForward = new QToolButton(this);
         buttonForward->setIcon(Caneda::icon("go-next"));
         buttonForward->setShortcut(Qt::ALT + Qt::Key_Right);
         buttonForward->setStatusTip(tr("Go next folder"));
@@ -65,20 +67,20 @@ namespace Caneda
         buttonForward->setWhatsThis(tr("Go next folder"));
         buttonForward->setEnabled(false);
 
-        QToolButton *buttonHome = new QToolButton();
+        QToolButton *buttonHome = new QToolButton(this);
         buttonHome->setIcon(Caneda::icon("go-home"));
         buttonHome->setShortcut(Qt::CTRL + Qt::Key_Home);
         buttonHome->setStatusTip(tr("Go to the home folder"));
         buttonHome->setToolTip(tr("Go to the home folder"));
         buttonHome->setWhatsThis(tr("Go to the home folder"));
 
-        QToolButton *buttonNewFolder = new QToolButton();
+        QToolButton *buttonNewFolder = new QToolButton(this);
         buttonNewFolder->setIcon(Caneda::icon("folder-new"));
         buttonNewFolder->setStatusTip(tr("Create new folder"));
         buttonNewFolder->setToolTip(tr("Create new folder"));
         buttonNewFolder->setWhatsThis(tr("Create new folder"));
 
-        QToolButton *buttonDeleteFile = new QToolButton();
+        QToolButton *buttonDeleteFile = new QToolButton(this);
         buttonDeleteFile->setIcon(Caneda::icon("archive-remove"));
         buttonDeleteFile->setStatusTip(tr("Delete file/folder"));
         buttonDeleteFile->setToolTip(tr("Delete file/folder"));
@@ -97,26 +99,42 @@ namespace Caneda
         toolbar->addWidget(buttonHome);
         toolbar->addWidget(buttonNewFolder);
         toolbar->addWidget(buttonDeleteFile);
+        layout->addWidget(toolbar);
 
-        m_fileModel = new QFileSystemModel;
-        m_fileModel->setRootPath(QDir::homePath());
+        // Create a new filesystem model
+        m_model = new QFileSystemModel(this);
+        m_model->setIconProvider(new IconProvider());
+        m_model->setRootPath(QDir::homePath());
 
-        m_listView = new QListView;
-        m_listView->setModel(m_fileModel);
-        m_listView->setRootIndex(m_fileModel->index(QDir::homePath()));
+        // Create a list view and set its properties
+        m_listView = new QListView(this);
+        m_listView->setModel(m_model);
+        m_listView->setRootIndex(m_model->index(QDir::homePath()));
+        layout->addWidget(m_listView);
 
+        // Signals and slots connections
         connect(m_listView, SIGNAL(activated(QModelIndex)),
                 this, SLOT(slotOnDoubleClicked(QModelIndex)));
-
-        layout->addWidget(toolbar);
-        layout->addWidget(m_listView);
 
         setWindowTitle(tr("Folder Browser"));
     }
 
+    //! \brief Set the current folder to \a path.
+    void FolderBrowser::setCurrentFolder(const QString& path)
+    {
+        m_listView->setRootIndex(m_model->index(path));
+
+        previousPages.clear();
+        nextPages.clear();
+
+        buttonBack->setEnabled(false);
+        buttonForward->setEnabled(false);
+    }
+
+    //! \brief Open the selected item.
     void FolderBrowser::slotOnDoubleClicked(const QModelIndex& index)
     {
-        if(m_fileModel->isDir(index)) {
+        if(m_model->isDir(index)) {
             previousPages << m_listView->rootIndex();
             m_listView->setRootIndex(index);
             nextPages.clear();
@@ -124,12 +142,12 @@ namespace Caneda
             buttonBack->setEnabled(true);
             buttonForward->setEnabled(false);
         }
-        // it is a file so we let the main window handle the action
         else {
-            emit itemDoubleClicked(m_fileModel->fileInfo(index).absoluteFilePath());
+            emit itemDoubleClicked(m_model->fileInfo(index).absoluteFilePath());
         }
     }
 
+    //! \brief Go up one folder in the filesystem.
     void FolderBrowser::slotUpFolder()
     {
         previousPages << m_listView->rootIndex();
@@ -140,6 +158,7 @@ namespace Caneda
         buttonForward->setEnabled(false);
     }
 
+    //! \brief Go the the previous folder.
     void FolderBrowser::slotBackFolder()
     {
         if(!previousPages.isEmpty()) {
@@ -154,6 +173,7 @@ namespace Caneda
         }
     }
 
+    //! \brief Go the the next folder.
     void FolderBrowser::slotForwardFolder()
     {
         if(!nextPages.isEmpty()) {
@@ -168,27 +188,34 @@ namespace Caneda
         }
     }
 
+    //! \brief Go the the home folder.
     void FolderBrowser::slotHomeFolder()
     {
         previousPages << m_listView->rootIndex();
-        m_listView->setRootIndex(m_fileModel->index(QDir::homePath()));
+        m_listView->setRootIndex(m_model->index(QDir::homePath()));
         nextPages.clear();
 
         buttonBack->setEnabled(true);
         buttonForward->setEnabled(false);
     }
 
+    //! \brief Create a new folder.
     void FolderBrowser::slotNewFolder()
     {
         bool ok;
-        QString text = QInputDialog::getText(this, tr("New Folder"),
-                tr("Please enter new folder name:"), QLineEdit::Normal,
-                "", &ok);
+        QString text = QInputDialog::getText(this,
+                                             tr("New Folder"),
+                                             tr("Please enter new folder name:"),
+                                             QLineEdit::Normal,
+                                             QString(),
+                                             &ok);
+
         if(ok && !text.isEmpty()) {
-            m_fileModel->mkdir(m_listView->rootIndex(), text);
+            m_model->mkdir(m_listView->rootIndex(), text);
         }
     }
 
+    //! \brief Delete currently selected folder/file.
     void FolderBrowser::slotDeleteFile()
     {
         int ret = QMessageBox::critical(this, tr("Delete File/Folder"),
@@ -197,8 +224,8 @@ namespace Caneda
                 QMessageBox::Ok | QMessageBox::Cancel);
         switch (ret) {
             case QMessageBox::Ok:
-                if(m_fileModel->isDir(m_listView->currentIndex())) {
-                    bool result = m_fileModel->rmdir(m_listView->currentIndex());
+                if(m_model->isDir(m_listView->currentIndex())) {
+                    bool result = m_model->rmdir(m_listView->currentIndex());
                     if(!result) {
                         QMessageBox::warning(this, tr("Delete File/Folder"),
                                 tr("Folder not empty. Skipping."),
@@ -206,7 +233,7 @@ namespace Caneda
                     }
                 }
                 else {
-                    m_fileModel->remove(m_listView->currentIndex());
+                    m_model->remove(m_listView->currentIndex());
                 }
                 break;
 

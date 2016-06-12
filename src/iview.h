@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,8 +33,8 @@ class QWidget;
 namespace Caneda
 {
     // Forward declarations.
-    class CGraphicsView;
-    class CSimulationView;
+    class GraphicsView;
+    class ChartView;
     class DocumentViewManager;
     class LayoutDocument;
     class IContext;
@@ -44,8 +44,6 @@ namespace Caneda
     class SymbolDocument;
     class TextDocument;
     class TextEdit;
-    class WebDocument;
-    class WebPage;
 
     /*************************************************************************
      *                       General IView Structure                         *
@@ -67,7 +65,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        IView(IDocument *document);
+        explicit IView(IDocument *document);
+        ~IView();
 
         IDocument* document() const;
 
@@ -117,7 +116,7 @@ namespace Caneda
      * This class represents the view for a document, in a manner
      * similar to Qt's Graphics View Architecture, and provides the view
      * widget, which visualizes the contents of a scene. The view is included
-     * as a pointer to CGraphicsView, that contains all the view specific
+     * as a pointer to GraphicsView, that contains all the view specific
      * methods. You can attach several views to the same scene, to provide
      * different viewports into the same data set of the document (for example,
      * when using split views).
@@ -130,7 +129,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        LayoutView(LayoutDocument *document);
+        explicit LayoutView(LayoutDocument *document);
+        ~LayoutView();
 
         // IView interface methods
         virtual QWidget* toWidget() const;
@@ -151,7 +151,7 @@ namespace Caneda
         void onWidgetFocussedOut();
 
     private:
-        CGraphicsView *m_cGraphicsView;
+        GraphicsView *m_graphicsView;
     };
 
     /*!
@@ -161,7 +161,7 @@ namespace Caneda
      * This class represents the view for a document, in a manner
      * similar to Qt's Graphics View Architecture, and provides the view
      * widget, which visualizes the contents of a scene. The view is included
-     * as a pointer to CGraphicsView, that contains all the view specific
+     * as a pointer to GraphicsView, that contains all the view specific
      * methods. You can attach several views to the same scene, to provide
      * different viewports into the same data set of the document (for example,
      * when using split views).
@@ -174,7 +174,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SchematicView(SchematicDocument *document);
+        explicit SchematicView(SchematicDocument *document);
+        ~SchematicView();
 
         // IView interface methods
         virtual QWidget* toWidget() const;
@@ -195,7 +196,7 @@ namespace Caneda
         void onWidgetFocussedOut();
 
     private:
-        CGraphicsView *m_cGraphicsView;
+        GraphicsView *m_graphicsView;
     };
 
     /*!
@@ -205,7 +206,7 @@ namespace Caneda
      * This class represents the view for a document, in a manner
      * similar to Qt's Graphics View Architecture, and provides the view
      * widget, which visualizes the contents of a scene. The view is included
-     * as a pointer to a CSimulationView, that contains all the view specific
+     * as a pointer to a ChartView, that contains all the view specific
      * methods. You can attach several views to the same scene, to provide
      * different viewports into the same data set of the document (for example,
      * when using split views).
@@ -218,7 +219,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SimulationView(SimulationDocument *document);
+        explicit SimulationView(SimulationDocument *document);
+        ~SimulationView();
 
         // IView interface methods
         virtual QWidget* toWidget() const;
@@ -239,7 +241,7 @@ namespace Caneda
         void onWidgetFocussedOut();
 
     private:
-        CSimulationView *m_simulationView;  //! \brief Plot widget.
+        ChartView *m_chartView;  //! \brief Plot widget.
     };
 
     /*!
@@ -249,7 +251,7 @@ namespace Caneda
      * This class represents the view for a document, in a manner
      * similar to Qt's Graphics View Architecture, and provides the view
      * widget, which visualizes the contents of a scene. The view is included
-     * as a pointer to CGraphicsView, that contains all the view specific
+     * as a pointer to GraphicsView, that contains all the view specific
      * methods. You can attach several views to the same scene, to provide
      * different viewports into the same data set of the document (for example,
      * when using split views).
@@ -262,7 +264,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SymbolView(SymbolDocument *document);
+        explicit SymbolView(SymbolDocument *document);
+        ~SymbolView();
 
         // IView interface methods
         virtual QWidget* toWidget() const;
@@ -283,7 +286,7 @@ namespace Caneda
         void onWidgetFocussedOut();
 
     private:
-        CGraphicsView *m_cGraphicsView;
+        GraphicsView *m_graphicsView;
     };
 
     /*!
@@ -305,7 +308,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        TextView(TextDocument *document);
+        explicit TextView(TextDocument *document);
+        ~TextView();
 
         // IView interface methods
         virtual QWidget* toWidget() const;
@@ -326,56 +330,6 @@ namespace Caneda
 
     private:
         TextEdit *m_textEdit;
-
-        void setZoomLevel(qreal level);
-
-        const qreal m_originalZoom;
-        ZoomRange m_zoomRange;
-        qreal m_currentZoom;
-    };
-
-    /*!
-     * \brief This class represents the web browser view interface
-     * implementation.
-     *
-     * This class represents the view for a web document, in a manner
-     * similar to Qt's Graphics View Architecture, and provides the view
-     * widget, which visualizes the contents of the document. The view is
-     * included as a pointer to WebPage, that contains all the view specific
-     * methods. You can attach several views to the same document, to provide
-     * different viewports into the same data set of the document (for example,
-     * when using split views).
-     *
-     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
-     * \sa WebContext, WebDocument
-     */
-    class WebView : public IView
-    {
-        Q_OBJECT
-
-    public:
-        WebView(WebDocument *document);
-
-        // IView interface methods
-        virtual QWidget* toWidget() const;
-        virtual IContext* context() const;
-
-        virtual void zoomIn();
-        virtual void zoomOut();
-        virtual void zoomFitInBest();
-        virtual void zoomOriginal();
-
-        virtual IView* duplicate();
-
-        virtual void updateSettingsChanges();
-        // End of IView interface methods
-
-    private Q_SLOTS:
-        void onFocussed();
-        void updateUrl(const QUrl& link);
-
-    private:
-        WebPage *m_webPage;
 
         void setZoomLevel(qreal level);
 

@@ -21,7 +21,7 @@
 #ifndef PORT_H
 #define PORT_H
 
-#include "cgraphicsitem.h"
+#include "graphicsitem.h"
 
 #include <QList>
 #include <QSharedData>
@@ -37,7 +37,7 @@ namespace Caneda
     //! \brief Sharable port's data.
     struct PortData : public QSharedData
     {
-        PortData(QPointF _pos, QString _name) : pos(_pos), name(_name) {}
+        explicit PortData(QPointF _pos, QString _name) : pos(_pos), name(_name) {}
 
         QPointF pos;
         QString name;
@@ -47,7 +47,7 @@ namespace Caneda
      * \brief The Port class is an electric port graphical representation, that
      * allows components to be connected together through the use of wires.
      *
-     * This class always has a parent item (CGraphicsItem) and cannot be moved
+     * This class always has a parent item (GraphicsItem) and cannot be moved
      * on its own. The port position on a scene is determined from the parent's
      * position, moving along with it. A Port class has only one parent, but
      * can be connected to multiple ports, thus allowing interconnection of
@@ -63,13 +63,14 @@ namespace Caneda
     class Port : public QGraphicsItem
     {
     public:
-        Port(CGraphicsItem* parent, QPointF pos, QString portName = QString());
+        explicit Port(GraphicsItem *parent = 0);
         ~Port();
 
         //! Returns the port's name.
         QString name() const { return m_name; }
+        void setName(const QString &newName) { m_name = newName; }
 
-        CGraphicsItem* parentItem() const;
+        GraphicsItem* parentItem() const;
 
         //! Returns a pointer to list of connected ports
         QList<Port*> *connections() { return &(m_connections); }

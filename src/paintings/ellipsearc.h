@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,12 +29,14 @@ namespace Caneda
     class EllipseArc : public Painting
     {
     public:
-        EllipseArc(QRectF rect = QRectF(), int startAngle = 20, int spanAngle = 180,
-                CGraphicsScene *scene = 0);
+        explicit EllipseArc(QRectF rect = QRectF(),
+                            int startAngle = 20,
+                            int spanAngle = 180,
+                            QGraphicsItem *parent = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::EllipseArcType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
@@ -53,12 +55,12 @@ namespace Caneda
         QRectF ellipse() const { return paintingRect(); }
         void setEllipse(const QRectF& ellipse) { setPaintingRect(ellipse); }
 
-        EllipseArc* copy(CGraphicsScene *scene = 0) const;
+        EllipseArc* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        int launchPropertyDialog(Caneda::UndoOption opt);
+        void launchPropertiesDialog();
 
     private:
         int m_startAngle;

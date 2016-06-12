@@ -22,15 +22,10 @@
 #define PROPERTY_H
 
 #include <QGraphicsSimpleTextItem>
-#include <QMap>
-#include <QObject>
-#include <QSharedData>
-#include <QString>
 
 namespace Caneda
 {
     //Forward declarations
-    class CGraphicsScene;
     class XmlWriter;
     class XmlReader;
 
@@ -43,8 +38,8 @@ namespace Caneda
      */
     struct PropertyData : public QSharedData
     {
-        PropertyData();
-        PropertyData(const PropertyData& p);
+        explicit PropertyData();
+        explicit PropertyData(const PropertyData& p);
 
         QString name;
         QString value;
@@ -72,11 +67,11 @@ namespace Caneda
     class Property
     {
     public:
-        Property(const QString &_name = QString(),
-                 const QString &_defaultValue = QString(),
-                 const QString &_description = QString(),
-                 bool _visible=false);
-        Property(QSharedDataPointer<PropertyData> data);
+        explicit Property(const QString &name = QString(),
+                          const QString &defaultValue = QString(),
+                          const QString &description = QString(),
+                          bool visible=false);
+        explicit Property(QSharedDataPointer<PropertyData> data);
 
         //! Returns the property name.
         QString name() const { return d->name; }
@@ -99,7 +94,7 @@ namespace Caneda
         void setVisible(bool visible) { d->visible = visible; }
 
         static Property loadProperty(Caneda::XmlReader *reader);
-        void saveProperty(Caneda::XmlWriter *writer);
+        void saveProperty(Caneda::XmlWriter *writer) const;
 
     private:
         //! Pointer enabling implicit sharing of data.
@@ -125,12 +120,10 @@ namespace Caneda
      *
      * \sa PropertyData, Property
      */
-    class PropertyGroup : public QObject, public QGraphicsSimpleTextItem
+    class PropertyGroup : public QGraphicsSimpleTextItem
     {
-        Q_OBJECT
-
     public:
-        PropertyGroup(CGraphicsScene* scene = 0, const PropertyMap& propMap = PropertyMap());
+        explicit PropertyGroup(QGraphicsItem *parent = 0);
 
         void addProperty(const QString& key, const Property& prop);
         //! Returns selected property from property map.
@@ -152,8 +145,7 @@ namespace Caneda
         void writeProperties(Caneda::XmlWriter *writer);
         void readProperties(Caneda::XmlReader *reader);
 
-    public Q_SLOTS:
-        int launchPropertyDialog();
+        void launchPropertiesDialog();
 
     protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);

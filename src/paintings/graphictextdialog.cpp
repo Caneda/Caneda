@@ -19,8 +19,8 @@
 
 #include "graphictextdialog.h"
 
-#include "cgraphicsscene.h"
 #include "global.h"
+#include "graphicsscene.h"
 #include "undocommands.h"
 
 #include <QAction>
@@ -41,8 +41,12 @@
 namespace Caneda
 {
     //! \brief Constructor.
-    GraphicTextDialog::GraphicTextDialog(GraphicText *text, Caneda::UndoOption opt, QWidget *parent)
-    : QDialog(parent), textItem(text), undoOption(opt)
+    GraphicTextDialog::GraphicTextDialog(GraphicText *text,
+                                         bool enableUndoCommand,
+                                         QWidget *parent) :
+        QDialog(parent),
+        textItem(text),
+        enableUndoCommand(enableUndoCommand)
     {
         mainLayout = new QVBoxLayout(this);
         toolBarLayout = new QHBoxLayout;
@@ -126,13 +130,13 @@ namespace Caneda
         }
         else {
             if(textItem) {
-                CGraphicsScene *scene = qobject_cast<CGraphicsScene*>(textItem->scene());
+                GraphicsScene *scene = qobject_cast<GraphicsScene*>(textItem->scene());
 
                 QString oldText = textItem->richText();
                 QString newText = richText();
                 if(oldText != newText) {
-                    if(undoOption == Caneda::PushUndoCmd) {
-                        QUndoCommand *cmd = new GraphicTextChangeCmd(textItem, oldText, newText);
+                    if(enableUndoCommand == true) {
+                        QUndoCommand *cmd = new ChangeGraphicTextCmd(textItem, oldText, newText);
                         scene->undoStack()->push(cmd);
                     }
                     else {

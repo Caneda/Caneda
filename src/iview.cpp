@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -21,16 +21,15 @@
 #include "iview.h"
 
 #include "actionmanager.h"
-#include "cgraphicsview.h"
-#include "csimulationscene.h"
-#include "csimulationview.h"
+#include "chartscene.h"
+#include "chartview.h"
 #include "documentviewmanager.h"
+#include "graphicsview.h"
 #include "icontext.h"
 #include "idocument.h"
 #include "global.h"
 #include "statehandler.h"
 #include "textedit.h"
-#include "webpage.h"
 
 #include <QAction>
 #include <QApplication>
@@ -40,7 +39,6 @@
 #include <QHBoxLayout>
 #include <QToolBar>
 #include <QToolButton>
-#include <QUrl>
 
 namespace Caneda
 {
@@ -75,10 +73,12 @@ namespace Caneda
      */
 
     //! \brief Constructor.
-    IView::IView(IDocument *document) : m_document(document)
+    IView::IView(IDocument *document) :
+        QObject(document),
+        m_document(document)
     {
         Q_ASSERT(document != 0);
-        m_toolBar = new QToolBar;
+        m_toolBar = new QToolBar();
 
         DocumentViewManager *manager = DocumentViewManager::instance();
         connect(manager, SIGNAL(changed()), this, SLOT(onDocumentViewManagerChanged()));
@@ -106,6 +106,11 @@ namespace Caneda
         m_toolBar->addWidget(closeViewButton);
 
         onDocumentViewManagerChanged();
+    }
+
+    IView::~IView()
+    {
+        delete m_toolBar;
     }
 
     IDocument* IView::document() const
@@ -179,22 +184,26 @@ namespace Caneda
      *                             LayoutView                                *
      *************************************************************************/
     //! \brief Constructor.
-    LayoutView::LayoutView(LayoutDocument *document) :
-        IView(document)
+    LayoutView::LayoutView(LayoutDocument *document) : IView(document)
     {
-        m_cGraphicsView = new CGraphicsView(document->cGraphicsScene());
-        StateHandler::instance()->registerWidget(m_cGraphicsView);
-        connect(m_cGraphicsView, SIGNAL(focussedIn(CGraphicsView*)), this,
+        m_graphicsView = new GraphicsView(document->graphicsScene());
+        connect(m_graphicsView, SIGNAL(focussedIn(GraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
-        connect(m_cGraphicsView, SIGNAL(focussedOut(CGraphicsView*)), this,
+        connect(m_graphicsView, SIGNAL(focussedOut(GraphicsView*)), this,
                 SLOT(onWidgetFocussedOut()));
-        connect(m_cGraphicsView, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_graphicsView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
+    }
+
+    //! \brief Destructor.
+    LayoutView::~LayoutView()
+    {
+        delete m_graphicsView;
     }
 
     QWidget* LayoutView::toWidget() const
     {
-        return m_cGraphicsView;
+        return m_graphicsView;
     }
 
     IContext* LayoutView::context() const
@@ -204,22 +213,22 @@ namespace Caneda
 
     void LayoutView::zoomIn()
     {
-        m_cGraphicsView->zoomIn();
+        m_graphicsView->zoomIn();
     }
 
     void LayoutView::zoomOut()
     {
-        m_cGraphicsView->zoomOut();
+        m_graphicsView->zoomOut();
     }
 
     void LayoutView::zoomFitInBest()
     {
-        m_cGraphicsView->zoomFitInBest();
+        m_graphicsView->zoomFitInBest();
     }
 
     void LayoutView::zoomOriginal()
     {
-        m_cGraphicsView->zoomOriginal();
+        m_graphicsView->zoomOriginal();
     }
 
     IView* LayoutView::duplicate()
@@ -229,8 +238,8 @@ namespace Caneda
 
     void LayoutView::updateSettingsChanges()
     {
-        m_cGraphicsView->invalidateScene();
-        m_cGraphicsView->resetCachedContent();
+        m_graphicsView->invalidateScene();
+        m_graphicsView->resetCachedContent();
     }
 
     void LayoutView::onWidgetFocussedIn()
@@ -248,22 +257,26 @@ namespace Caneda
      *                           SchematicView                               *
      *************************************************************************/
     //! \brief Constructor.
-    SchematicView::SchematicView(SchematicDocument *document) :
-        IView(document)
+    SchematicView::SchematicView(SchematicDocument *document) : IView(document)
     {
-        m_cGraphicsView = new CGraphicsView(document->cGraphicsScene());
-        StateHandler::instance()->registerWidget(m_cGraphicsView);
-        connect(m_cGraphicsView, SIGNAL(focussedIn(CGraphicsView*)), this,
+        m_graphicsView = new GraphicsView(document->graphicsScene());
+        connect(m_graphicsView, SIGNAL(focussedIn(GraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
-        connect(m_cGraphicsView, SIGNAL(focussedOut(CGraphicsView*)), this,
+        connect(m_graphicsView, SIGNAL(focussedOut(GraphicsView*)), this,
                 SLOT(onWidgetFocussedOut()));
-        connect(m_cGraphicsView, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_graphicsView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
+    }
+
+    //! \brief Destructor.
+    SchematicView::~SchematicView()
+    {
+        delete m_graphicsView;
     }
 
     QWidget* SchematicView::toWidget() const
     {
-        return m_cGraphicsView;
+        return m_graphicsView;
     }
 
     IContext* SchematicView::context() const
@@ -273,22 +286,22 @@ namespace Caneda
 
     void SchematicView::zoomIn()
     {
-        m_cGraphicsView->zoomIn();
+        m_graphicsView->zoomIn();
     }
 
     void SchematicView::zoomOut()
     {
-        m_cGraphicsView->zoomOut();
+        m_graphicsView->zoomOut();
     }
 
     void SchematicView::zoomFitInBest()
     {
-        m_cGraphicsView->zoomFitInBest();
+        m_graphicsView->zoomFitInBest();
     }
 
     void SchematicView::zoomOriginal()
     {
-        m_cGraphicsView->zoomOriginal();
+        m_graphicsView->zoomOriginal();
     }
 
     IView* SchematicView::duplicate()
@@ -298,8 +311,8 @@ namespace Caneda
 
     void SchematicView::updateSettingsChanges()
     {
-        m_cGraphicsView->invalidateScene();
-        m_cGraphicsView->resetCachedContent();
+        m_graphicsView->invalidateScene();
+        m_graphicsView->resetCachedContent();
     }
 
     void SchematicView::onWidgetFocussedIn()
@@ -320,21 +333,27 @@ namespace Caneda
     SimulationView::SimulationView(SimulationDocument *document) :
         IView(document)
     {
-        m_simulationView = new CSimulationView(document->cSimulationScene(), 0);
-        m_simulationView->populate();
+        m_chartView = new ChartView(document->chartScene(), 0);
+        m_chartView->populate();
 
         //! \todo Reimplement this
-//        connect(m_simulationView, SIGNAL(focussedIn(CSimulationView*)), this,
+//        connect(m_chartView, SIGNAL(focussedIn(ChartView*)), this,
 //                SLOT(onWidgetFocussedIn()));
-//        connect(m_simulationView, SIGNAL(focussedOut(CSimulationView*)), this,
+//        connect(m_chartView, SIGNAL(focussedOut(ChartView*)), this,
 //                SLOT(onWidgetFocussedOut()));
-        connect(m_simulationView, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_chartView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
+    }
+
+    //! \brief Destructor.
+    SimulationView::~SimulationView()
+    {
+        delete m_chartView;
     }
 
     QWidget* SimulationView::toWidget() const
     {
-        return m_simulationView;
+        return m_chartView;
     }
 
     IContext* SimulationView::context() const
@@ -344,22 +363,22 @@ namespace Caneda
 
     void SimulationView::zoomIn()
     {
-        m_simulationView->zoomIn();
+        m_chartView->zoomIn();
     }
 
     void SimulationView::zoomOut()
     {
-        m_simulationView->zoomOut();
+        m_chartView->zoomOut();
     }
 
     void SimulationView::zoomFitInBest()
     {
-        m_simulationView->zoomFitInBest();
+        m_chartView->zoomFitInBest();
     }
 
     void SimulationView::zoomOriginal()
     {
-        m_simulationView->zoomOriginal();
+        m_chartView->zoomOriginal();
     }
 
     IView* SimulationView::duplicate()
@@ -369,8 +388,8 @@ namespace Caneda
 
     void SimulationView::updateSettingsChanges()
     {
-        m_simulationView->loadUserSettings();
-        m_simulationView->replot();
+        m_chartView->loadUserSettings();
+        m_chartView->replot();
     }
 
     void SimulationView::onWidgetFocussedIn()
@@ -388,22 +407,26 @@ namespace Caneda
      *                             SymbolView                                *
      *************************************************************************/
     //! \brief Constructor.
-    SymbolView::SymbolView(SymbolDocument *document) :
-        IView(document)
+    SymbolView::SymbolView(SymbolDocument *document) : IView(document)
     {
-        m_cGraphicsView = new CGraphicsView(document->cGraphicsScene());
-        StateHandler::instance()->registerWidget(m_cGraphicsView);
-        connect(m_cGraphicsView, SIGNAL(focussedIn(CGraphicsView*)), this,
+        m_graphicsView = new GraphicsView(document->graphicsScene());
+        connect(m_graphicsView, SIGNAL(focussedIn(GraphicsView*)), this,
                 SLOT(onWidgetFocussedIn()));
-        connect(m_cGraphicsView, SIGNAL(focussedOut(CGraphicsView*)), this,
+        connect(m_graphicsView, SIGNAL(focussedOut(GraphicsView*)), this,
                 SLOT(onWidgetFocussedOut()));
-        connect(m_cGraphicsView, SIGNAL(cursorPositionChanged(const QString &)),
+        connect(m_graphicsView, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
+    }
+
+    //! \brief Destructor.
+    SymbolView::~SymbolView()
+    {
+        delete m_graphicsView;
     }
 
     QWidget* SymbolView::toWidget() const
     {
-        return m_cGraphicsView;
+        return m_graphicsView;
     }
 
     IContext* SymbolView::context() const
@@ -413,22 +436,22 @@ namespace Caneda
 
     void SymbolView::zoomIn()
     {
-        m_cGraphicsView->zoomIn();
+        m_graphicsView->zoomIn();
     }
 
     void SymbolView::zoomOut()
     {
-        m_cGraphicsView->zoomOut();
+        m_graphicsView->zoomOut();
     }
 
     void SymbolView::zoomFitInBest()
     {
-        m_cGraphicsView->zoomFitInBest();
+        m_graphicsView->zoomFitInBest();
     }
 
     void SymbolView::zoomOriginal()
     {
-        m_cGraphicsView->zoomOriginal();
+        m_graphicsView->zoomOriginal();
     }
 
     IView* SymbolView::duplicate()
@@ -438,8 +461,8 @@ namespace Caneda
 
     void SymbolView::updateSettingsChanges()
     {
-        m_cGraphicsView->invalidateScene();
-        m_cGraphicsView->resetCachedContent();
+        m_graphicsView->invalidateScene();
+        m_graphicsView->resetCachedContent();
     }
 
     void SymbolView::onWidgetFocussedIn()
@@ -459,8 +482,8 @@ namespace Caneda
     //! \brief Constructor.
     TextView::TextView(TextDocument *document) :
         IView(document),
-        m_zoomRange(6.0, 30.0),
-        m_originalZoom(QFontInfo(qApp->font()).pointSizeF())
+        m_originalZoom(QFontInfo(QApplication::font()).pointSizeF()),
+        m_zoomRange(6.0, 30.0)
     {
         m_currentZoom = m_originalZoom;
         m_textEdit = new TextEdit(document->textDocument());
@@ -469,6 +492,12 @@ namespace Caneda
                 SLOT(onFocussed()));
         connect(m_textEdit, SIGNAL(cursorPositionChanged(const QString &)),
                 this, SIGNAL(statusBarMessage(const QString &)));
+    }
+
+    //! \brief Destructor.
+    TextView::~TextView()
+    {
+        delete m_textEdit;
     }
 
     QWidget* TextView::toWidget() const
@@ -528,88 +557,6 @@ namespace Caneda
         m_currentZoom = zoomLevel;
 
         m_textEdit->setPointSize(m_currentZoom);
-    }
-
-
-    /*************************************************************************
-     *                               WebView                                 *
-     *************************************************************************/
-    //! \brief Constructor.
-    WebView::WebView(WebDocument *document) :
-        IView(document),
-        m_zoomRange(0.4, 10.0),
-        m_originalZoom(QFontInfo(qApp->font()).pointSizeF()/10)
-    {
-        m_currentZoom = m_originalZoom;
-        m_webPage = new WebPage(document->webUrl());
-
-        connect(m_webPage, SIGNAL(focussed()), this, SLOT(onFocussed()));
-        connect(m_webPage, SIGNAL(anchorClicked(QUrl)), this, SLOT(updateUrl(QUrl)));
-    }
-
-    QWidget* WebView::toWidget() const
-    {
-        return m_webPage;
-    }
-
-    IContext* WebView::context() const
-    {
-        return WebContext::instance();
-    }
-
-    void WebView::zoomIn()
-    {
-        setZoomLevel(m_currentZoom + 0.1);
-    }
-
-    void WebView::zoomOut()
-    {
-        setZoomLevel(m_currentZoom - 0.1);
-    }
-
-    void WebView::zoomFitInBest()
-    {
-        setZoomLevel(2);
-    }
-
-    void WebView::zoomOriginal()
-    {
-        setZoomLevel(m_originalZoom);
-    }
-
-    IView* WebView::duplicate()
-    {
-        return document()->createView();
-    }
-
-    void WebView::updateSettingsChanges()
-    {
-    }
-
-    void WebView::onFocussed()
-    {
-        emit focussedIn(static_cast<IView*>(this));
-    }
-
-    void WebView::updateUrl(const QUrl& link)
-    {
-        document()->setFileName(link.toString());
-
-    }
-
-    void WebView::setZoomLevel(qreal zoomLevel)
-    {
-        if (!m_zoomRange.contains(zoomLevel)) {
-            return;
-        }
-
-        if (qFuzzyCompare(zoomLevel, m_currentZoom)) {
-            return;
-        }
-
-        m_currentZoom = zoomLevel;
-
-        m_webPage->setPointSize(m_currentZoom);
     }
 
 } // namespace Caneda

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2007 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012-2015 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,36 +20,36 @@
 
 #include "component.h"
 
-#include "cgraphicsscene.h"
 #include "global.h"
 #include "library.h"
-#include "propertydialog.h"
+#include "port.h"
 #include "settings.h"
 #include "xmlutilities.h"
 
 #include <QDebug>
 #include <QFile>
 #include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 namespace Caneda
 {
     //! \brief Constructs default empty ComponentData.
-    ComponentData::ComponentData(CGraphicsScene *scene)
+    ComponentData::ComponentData()
     {
-        properties = new PropertyGroup(scene);
+        properties = new PropertyGroup();
     }
 
     /*!
-     * \brief Constructs a ComponentData object from a ComponentDataPtr.
+     * \brief Copy ComponentData from a ComponentDataPtr.
      *
-     * Contructs a new ComponentData object from ComponentDataPtr. Special
+     * Copies data from a ComponentData pointed by a ComponentDataPtr. Special
      * care is taken to avoid copying the properties pointer, and copying
      * properties content (PropertyMap) instead. Otherwise, one would be
      * copying the reference to the PropertyGroup (properties) and all
      * components would share only one reference, modifying only one set
      * of properties data.
      */
-    ComponentData::ComponentData(const QSharedDataPointer<ComponentData> &other, CGraphicsScene *scene)
+    void ComponentData::setData(const QSharedDataPointer<ComponentData> &other)
     {
         // Copy all data from given ComponentDataPtr
         name = other->name;
@@ -62,7 +62,6 @@ namespace Caneda
 
         // Recreate PropertyGroup (properties) as it is a pointer
         // and only internal data must be copied.
-        properties = new PropertyGroup(scene);
         properties->setPropertyMap(other->properties->propertyMap());
 
         models = other->models;
@@ -71,21 +70,18 @@ namespace Caneda
     /*!
      * \brief Constructs and initializes a default empty component item.
      *
-     * \param scene Scene where this component belong to.
+     * \param parent Parent of the component item.
      */
-    Component::Component(CGraphicsScene *scene) :
-        CGraphicsItem(0, scene)
+    Component::Component(QGraphicsItem *parent) : GraphicsItem(parent)
     {
-        d = new ComponentData(scene);
-        init();
-    }
+        // Set component flags
+        setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+        setFlag(ItemSendsGeometryChanges, true);
+        setFlag(ItemSendsScenePositionChanges, true);
 
-    //! \brief Constructs a component from \a other data.
-    Component::Component(const QSharedDataPointer<ComponentData>& other, CGraphicsScene *scene) :
-        CGraphicsItem(0, scene)
-    {
-        d = new ComponentData(other, scene);
-        init();
+        // Create component shared data
+        d = new ComponentData();
+        updateSharedData();
     }
 
     //! \brief Destructor.
@@ -95,29 +91,26 @@ namespace Caneda
     }
 
     /*!
-     * \brief Intialize the component.
+     * \brief Update this component's shared data related properties.
      *
-     * This method sets component's flags, adds initial label based on
-     * default prefix value and adds the component's ports.
-     *
-     * The symbol corresponding to this component should already be
-     * registered with LibraryManager using LibraryManager::registerComponent().
+     * This method updates the component's properties related to its shared
+     * data, for example adds the component ports depending on the ports
+     * available in the shared data. It also adds an initial label based on the
+     * default prefix value.
      */
-    void Component::init()
+    void Component::updateSharedData()
     {
-        // Set component flags
-        setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
-        setFlag(ItemSendsGeometryChanges, true);
-        setFlag(ItemSendsScenePositionChanges, true);
-
         // Add component label
-        Property _label("label", labelPrefix().append('1'), tr("Label"), true);
+        Property _label("label", labelPrefix().append('1'), QObject::tr("Label"), true);
         d->properties->addProperty("label", _label);
 
         // Add component ports
         const QList<PortData*> portDatas = d.constData()->ports;
         foreach(const PortData *data, portDatas) {
-            m_ports << new Port(this, data->pos, data->name);
+            Port *port = new Port(this);
+            port->setName(data->name);
+            port->setPos(data->pos);
+            m_ports << port;
         }
 
         // Update component geometry
@@ -127,6 +120,13 @@ namespace Caneda
         d->properties->setParentItem(this);
         d->properties->setTransform(transform().inverted());
         d->properties->setPos(boundingRect().bottomLeft());
+    }
+
+    //! \brief Returns the label's suffix part.
+    QString Component::labelSuffix() const
+    {
+        QString _label = label();
+        return _label.mid(labelPrefix().length());
     }
 
     /*!
@@ -149,11 +149,18 @@ namespace Caneda
         return true;
     }
 
-    //! \brief Returns the label's suffix part.
-    QString Component::labelSuffix() const
+    /*!
+     * \brief Sets the data of the component.
+     *
+     * This method also handles updating internal data, component label,
+     * component ports, etc.
+     *
+     * \param other Component data to set into this component.
+     */
+    void Component::setComponentData(const ComponentDataPtr &other)
     {
-        QString _label = label();
-        return _label.mid(labelPrefix().length());
+        d->setData(other);
+        updateSharedData();
     }
 
     /*!
@@ -181,102 +188,6 @@ namespace Caneda
     }
 
     /*!
-     * \brief Convenience static method to load a component saved as xml.
-     *
-     * This method loads a component saved as xml. Once the component name
-     * and library are retrieved, a new component is created from LibraryManager
-     * and its data is filled using the loadData() method.
-     *
-     * \param reader The xmlreader used to read xml data.
-     * \param scene CGraphicsScene to which component should be parented to.
-     * \return Returns new component pointer on success and null on failure.
-     *
-     * \sa LibraryManager::newComponent(), loadData()
-     */
-    Component* Component::loadComponent(Caneda::XmlReader *reader, CGraphicsScene *scene)
-    {
-        Component *retVal = 0;
-        Q_ASSERT(reader->isStartElement() && reader->name() == "component");
-
-        QString compName = reader->attributes().value("name").toString();
-        QString libName = reader->attributes().value("library").toString();
-
-        Q_ASSERT(!compName.isEmpty());
-
-        retVal = LibraryManager::instance()->newComponent(compName, scene, libName);
-        if(retVal) {
-            retVal->loadData(reader);
-        }
-        else {
-            // Read to the end of the file if not found in any of Caneda libraries.
-            qWarning() << "Warning: Found unknown element" << compName << ", skipping";
-            reader->readUnknownElement();
-        }
-        return retVal;
-    }
-
-    /*!
-     * \brief Loads current component data from \a Caneda::XmlReader.
-     *
-     * Loads current component data (name, library, position, properties
-     * and transform) from \a Caneda::XmlReader.
-     *
-     * \sa loadComponentData(), saveData()
-     */
-    void Component::loadData(Caneda::XmlReader *reader)
-    {
-        Q_ASSERT(reader->isStartElement() && reader->name() == "component");
-
-        d->name = reader->attributes().value("name").toString();
-        d->library = reader->attributes().value("library").toString();
-
-        setPos(reader->readPointAttribute("pos"));
-        setTransform(reader->readTransformAttribute("transform"));
-
-        while(!reader->atEnd()) {
-            reader->readNext();
-
-            if(reader->isEndElement()) {
-                break;
-            }
-
-            if(reader->isStartElement()) {
-
-                if(reader->name() == "properties") {
-                    d->properties->readProperties(reader);
-                }
-                else {
-                    qWarning() << "Warning: Found unknown element" << reader->name().toString();
-                    reader->readUnknownElement();
-                }
-
-            }
-        }
-    }
-
-    /*!
-     * \brief Saves current component data to \a Caneda::XmlWriter.
-     *
-     * Saves current component data (name, library, position, properties
-     * and transform) to \a Caneda::XmlWriter.
-     *
-     * \sa loadComponentData(), loadData()
-     */
-    void Component::saveData(Caneda::XmlWriter *writer) const
-    {
-        writer->writeStartElement("component");
-        writer->writeAttribute("name", name());
-        writer->writeAttribute("library", library());
-
-        writer->writePointAttribute(pos(), "pos");
-        writer->writeTransformAttribute(sceneTransform());
-
-        d->properties->writeProperties(writer);
-
-        writer->writeEndElement();  //</component>
-    }
-
-    /*!
      * \brief Paints a previously registered component.
      *
      * Takes care of painting a component on a scene. The component must be
@@ -287,7 +198,7 @@ namespace Caneda
      * \sa LibraryManager::registerComponent()
      */
     void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-            QWidget *w)
+            QWidget *)
     {
         // Paint the component symbol
         Settings *settings = Settings::instance();
@@ -323,27 +234,95 @@ namespace Caneda
         painter->setPen(savedPen);
     }
 
-    //! \brief Returns a copy of this component.
-    Component* Component::copy(CGraphicsScene *scene) const
+    //! \copydoc GraphicsItem::copy()
+    Component* Component::copy() const
     {
-        Component *retVal = new Component(d, scene);
-        // No need for Component::copyDataTo() because data is already copied from d pointer.
-        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(retVal));
-        return retVal;
+        Component *component = new Component(parentItem());
+        component->setComponentData(d);
+
+        GraphicsItem::copyDataTo(component);
+        return component;
     }
 
-    //! \brief Copies the data to \a component.
-    void Component::copyDataTo(Component *component) const
+    /*!
+     * \copydoc GraphicsItem::saveData()
+     *
+     * Saves current component data (name, library, position, properties
+     * and transform) to \a Caneda::XmlWriter.
+     *
+     * \sa loadData()
+     */
+    void Component::saveData(Caneda::XmlWriter *writer) const
     {
-        CGraphicsItem::copyDataTo(static_cast<CGraphicsItem*>(component));
-        component->d = new ComponentData(d, qobject_cast<CGraphicsScene*>(scene()));
-        component->update();
+        writer->writeStartElement("component");
+        writer->writeAttribute("name", name());
+        writer->writeAttribute("library", library());
+
+        writer->writePointAttribute(pos(), "pos");
+        writer->writeTransformAttribute(sceneTransform());
+
+        d->properties->writeProperties(writer);
+
+        writer->writeEndElement();  //</component>
     }
 
-    //! \copydoc CGraphicsItem::launchPropertyDialog()
-    int Component::launchPropertyDialog(Caneda::UndoOption)
+    /*!
+     * \copydoc GraphicsItem::loadData()
+     *
+     * Loads current component data (name, library, position, properties
+     * and transform) from \a Caneda::XmlReader. Once the component name and
+     * library are retrieved, the component data is created from LibraryManager
+     * and the remaining properties are read from the
+     * PropertyGroup::readProperties() method.
+     *
+     * \sa saveData()
+     */
+    void Component::loadData(Caneda::XmlReader *reader)
     {
-        return d->properties->launchPropertyDialog();
+        Q_ASSERT(reader->isStartElement() && reader->name() == "component");
+
+        setPos(reader->readPointAttribute("pos"));
+        setTransform(reader->readTransformAttribute("transform"));
+
+        QString compName = reader->attributes().value("name").toString();
+        QString libName = reader->attributes().value("library").toString();
+        ComponentDataPtr data = LibraryManager::instance()->componentData(compName, libName);
+
+        // If the component is found in any Caneda library, copy its data,
+        // otherwise read to the end of the file.
+        if(data.constData()) {
+            setComponentData(data);
+        }
+        else {
+            qWarning() << "Warning: Found unknown element" << compName << ", skipping...";
+            reader->readUnknownElement();
+            return;
+        }
+
+        // Read the component properties
+        while(!reader->atEnd()) {
+            reader->readNext();
+
+            if(reader->isEndElement()) {
+                break;
+            }
+
+            if(reader->isStartElement()) {
+                if(reader->name() == "properties") {
+                    d->properties->readProperties(reader);
+                }
+                else {
+                    qWarning() << "Warning: Found unknown element" << reader->name().toString();
+                    reader->readUnknownElement();
+                }
+            }
+        }
+    }
+
+    //! \copydoc GraphicsItem::launchPropertiesDialog()
+    void Component::launchPropertiesDialog()
+    {
+        d->properties->launchPropertiesDialog();
     }
 
     //! \brief Returns the rect adjusted to accomodate ports too.
@@ -354,18 +333,6 @@ namespace Caneda
             adjustedRect |= portEllipse.translated(port->pos());
         }
         return adjustedRect;
-    }
-
-    //! \brief React to change of item position.
-    QVariant Component::itemChange(GraphicsItemChange change,
-            const QVariant &value)
-    {
-        if(change == ItemTransformHasChanged) {
-            // Set the inverse of component's matrix to the PropertyGroup
-            // (properties) so that it maintains identity when transformed.
-            d->properties->setTransform(transform().inverted());
-        }
-        return CGraphicsItem::itemChange(change, value);
     }
 
     //! \brief Updates the bounding rect of this item.

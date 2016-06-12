@@ -121,6 +121,12 @@ namespace Caneda
         return m_mouseActionHash.value(action);
     }
 
+    //! \brief Return the list of actions available.
+    QList<QAction *> ActionManager::actions() const
+    {
+        return m_actionHash.values();
+    }
+
     //! \brief Return the list of mouse actions available.
     QList<QAction*> ActionManager::mouseActions() const
     {

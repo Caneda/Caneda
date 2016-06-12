@@ -1,8 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2006-2009 Xavier Guerrin                                  *
- * Copyright (C) 2009 by Pablo Daniel Pareja Obregon                       *
- * This file was part of QElectroTech and modified by Pablo Daniel Pareja  *
- * Obregon to be included in Caneda.                                       *
+ * Copyright (C) 2016 by Pablo Daniel Pareja Obregon                       *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,45 +20,48 @@
 #ifndef SETTINGS_DIALOG_H
 #define SETTINGS_DIALOG_H
 
-#include "settingspages.h"
+#include "ui_settingsdialog.h"
 
 #include <QDialog>
 
-class QDialogButtonBox;
-class QListWidget;
-class QListWidgetItem;
-class QStackedWidget;
-
 namespace Caneda
 {
-
     /*!
-     * \brief This class represents the configuration dialog of Caneda.
+     * \brief This class constructs a configuration dialog.
      *
-     * This dialog is a modal dialog showing setup or configuration pages. Each
-     * configuration page should provide an icon and a title, along with a set
-     * of different configuration options.
+     * This class constructs a configuration dialog, showing settings pages.
+     * Each settings page should provide an icon and a title, with a set of
+     * different configuration options.
      */
     class SettingsDialog : public QDialog
     {
         Q_OBJECT
 
     public:
-        SettingsDialog(QList<SettingsPage *> pages, const char *title,
-                QWidget *parent = 0);
+        explicit SettingsDialog(QWidget *parent = 0);
 
-    public Q_SLOTS:
-        void changePage(QListWidgetItem *, QListWidgetItem *);
-        void applyConf();
+    private Q_SLOTS:
+        void colorButtonDialog();
+        QColor getButtonColor(QPushButton *button);
+        void setButtonColor(QPushButton *button, QColor color);
+
+        void slotAddLibrary();
+        void slotRemoveLibrary();
+        void slotAddHdlLibrary();
+        void slotRemoveHdlLibrary();
+        void slotGetNewLibraries();
+
+        void simulationEngineChanged();
+
+        void changePage(int index);
+
+        void restoreDefaults(QAbstractButton *button);
+        void applySettings();
 
     private:
-        void buildPagesList();
+        void updateWidgets(QMap<QString, QVariant> map);
 
-    private:
-        QListWidget *pages_list;
-        QStackedWidget *pages_widget;
-        QDialogButtonBox *buttons;
-        QList<SettingsPage *> pages;
+        Ui::SettingsDialog ui;
     };
 
 } // namespace Caneda

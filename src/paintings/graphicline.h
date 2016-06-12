@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2008 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2012 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2012-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,11 +29,11 @@ namespace Caneda
     class GraphicLine : public Painting
     {
     public:
-        GraphicLine(const QLineF &line, CGraphicsScene *scene = 0);
+        explicit GraphicLine(const QLineF &line, QGraphicsItem *parent = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::GraphicLineType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF &rect) const;
@@ -44,12 +44,12 @@ namespace Caneda
         QLineF line() const { return lineFromRect(paintingRect()); }
         void setLine(const QLineF &line);
 
-        GraphicLine* copy(CGraphicsScene *scene = 0) const;
+        GraphicLine* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        int launchPropertyDialog(Caneda::UndoOption opt);
+        void launchPropertiesDialog();
 
     private:
         //! \brief Returns line from rect.

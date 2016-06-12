@@ -63,7 +63,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PropertyModel(PropertyGroup *propGroup, QObject *parent = 0);
+        explicit PropertyModel(PropertyGroup *propGroup, QObject *parent = 0);
 
         int rowCount(const QModelIndex& = QModelIndex() ) const { return propMap.size(); }
         int columnCount(const QModelIndex& = QModelIndex() ) const { return 4; }
@@ -107,7 +107,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        PropertyDialog(PropertyGroup *propGroup, QWidget *parent = 0);
+        explicit PropertyDialog(PropertyGroup *propGroup, QWidget *parent = 0);
 
     public Q_SLOTS:
         void accept();

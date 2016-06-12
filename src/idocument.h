@@ -1,6 +1,6 @@
 /***************************************************************************
  * Copyright (C) 2010 by Gopala Krishna A <krishna.ggk@gmail.com>          *
- * Copyright (C) 2010-2013 by Pablo Daniel Pareja Obregon                  *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,25 +23,21 @@
 
 #include <QObject>
 #include <QGraphicsSceneEvent>
-#include <QVariant>
 
 // Forward declarations
 class QPaintDevice;
 class QPrinter;
 class QTextDocument;
-class QUndoStack;
-class QUrl;
 
 namespace Caneda
 {
     // Forward declarations
-    class CGraphicsScene;
-    class CSimulationScene;
+    class GraphicsScene;
+    class ChartScene;
     class DocumentViewManager;
     class IContext;
     class IView;
     class TextEdit;
-    class WebPage;
 
     /*************************************************************************
      *                    General IDocument Structure                        *
@@ -64,7 +60,7 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        IDocument();
+        explicit IDocument(QObject *parent = 0);
 
         QString fileName() const;
         void setFileName(const QString &fileName);
@@ -80,8 +76,6 @@ namespace Caneda
         virtual void undo() = 0;
         virtual void redo() = 0;
 
-        virtual QUndoStack* undoStack() = 0;
-
         virtual bool canCut() const = 0;
         virtual bool canCopy() const = 0;
         virtual bool canPaste() const = 0;
@@ -92,8 +86,8 @@ namespace Caneda
 
         virtual void selectAll() = 0;
 
-        virtual void intoHierarchy() = 0;
-        virtual void popHierarchy() = 0;
+        virtual void enterHierarchy() = 0;
+        virtual void exitHierarchy() = 0;
 
         virtual void alignTop() = 0;
         virtual void alignBottom() = 0;
@@ -117,7 +111,7 @@ namespace Caneda
         virtual IView* createView() = 0;
         QList<IView*> views() const;
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) = 0;
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) = 0;
         virtual void launchPropertiesDialog() = 0;
 
     public Q_SLOTS:
@@ -147,7 +141,7 @@ namespace Caneda
      * This class manages document specific methods like saving,
      * loading, exporting to different formats, as well as containing the
      * actual scene. The scene itself is included as a pointer to
-     * CGraphicsScene, that contains all the scene specific methods.
+     * GraphicsScene, that contains all the scene specific methods.
      *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa LayoutContext, LayoutView
@@ -157,7 +151,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        LayoutDocument();
+        explicit LayoutDocument(QObject *parent = 0);
+        ~LayoutDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -170,8 +165,6 @@ namespace Caneda
         virtual void undo();
         virtual void redo();
 
-        virtual QUndoStack* undoStack();
-
         virtual bool canCut() const;
         virtual bool canCopy() const;
         virtual bool canPaste() const { return true; }
@@ -182,8 +175,8 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual void intoHierarchy();
-        virtual void popHierarchy();
+        virtual void enterHierarchy();
+        virtual void exitHierarchy();
 
         virtual void alignTop();
         virtual void alignBottom();
@@ -206,14 +199,14 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
-        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
+        GraphicsScene* graphicsScene() const { return m_graphicsScene; }
 
     private:
-        CGraphicsScene *m_cGraphicsScene;
+        GraphicsScene *m_graphicsScene;
 
         void alignElements(Qt::Alignment alignment);
     };
@@ -228,7 +221,7 @@ namespace Caneda
      * This class manages document specific methods like saving,
      * loading, exporting to different formats, as well as containing the
      * actual scene. The scene itself is included as a pointer to
-     * CGraphicsScene, that contains all the scene specific methods.
+     * GraphicsScene, that contains all the scene specific methods.
      *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa SchematicContext, SchematicView
@@ -238,7 +231,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SchematicDocument();
+        explicit SchematicDocument(QObject *parent = 0);
+        ~SchematicDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -251,8 +245,6 @@ namespace Caneda
         virtual void undo();
         virtual void redo();
 
-        virtual QUndoStack* undoStack();
-
         virtual bool canCut() const;
         virtual bool canCopy() const;
         virtual bool canPaste() const { return true; }
@@ -263,8 +255,8 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual void intoHierarchy();
-        virtual void popHierarchy();
+        virtual void enterHierarchy();
+        virtual void exitHierarchy();
 
         virtual void alignTop();
         virtual void alignBottom();
@@ -287,19 +279,22 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
-        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
+        GraphicsScene* graphicsScene() const { return m_graphicsScene; }
 
     private Q_SLOTS:
         void simulationReady(int error);
+        bool simulationError();
+        void showSimulationHelp();
 
     private:
-        CGraphicsScene *m_cGraphicsScene;
+        GraphicsScene *m_graphicsScene;
 
         void alignElements(Qt::Alignment alignment);
+        bool performBasicChecks();
     };
 
     /*!
@@ -312,7 +307,7 @@ namespace Caneda
      * This class manages document specific methods like saving,
      * loading, exporting to different formats, as well as containing the
      * actual scene. The scene itself is included as a pointer to
-     * CSimulationScene, that contains all the scene specific methods.
+     * ChartScene, that contains all the scene specific methods.
      *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa SimulationContext, SimulationView
@@ -322,7 +317,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SimulationDocument();
+        explicit SimulationDocument(QObject *parent = 0);
+        ~SimulationDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -335,8 +331,6 @@ namespace Caneda
         virtual void undo() {}
         virtual void redo() {}
 
-        virtual QUndoStack* undoStack();
-
         virtual bool canCut() const { return false; }
         virtual bool canCopy() const { return false; }
         virtual bool canPaste() const { return false; }
@@ -347,8 +341,8 @@ namespace Caneda
 
         virtual void selectAll() {}
 
-        virtual void intoHierarchy() {}
-        virtual void popHierarchy() {}
+        virtual void enterHierarchy() {}
+        virtual void exitHierarchy() {}
 
         virtual void alignTop() {}
         virtual void alignBottom() {}
@@ -371,14 +365,14 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) {}
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *) {}
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
-        CSimulationScene* cSimulationScene() const { return m_cSimulationScene; }
+        ChartScene* chartScene() const { return m_chartScene; }
 
     private:
-        CSimulationScene *m_cSimulationScene;
+        ChartScene *m_chartScene;
     };
 
     /*!
@@ -391,7 +385,7 @@ namespace Caneda
      * This class manages document specific methods like saving,
      * loading, exporting to different formats, as well as containing the
      * actual scene. The scene itself is included as a pointer to
-     * CGraphicsScene, that contains all the scene specific methods.
+     * GraphicsScene, that contains all the scene specific methods.
      *
      * \sa IContext, IDocument, IView, \ref DocumentViewFramework
      * \sa SymbolContext, SymbolView
@@ -401,7 +395,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        SymbolDocument();
+        explicit SymbolDocument(QObject *parent = 0);
+        ~SymbolDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -414,8 +409,6 @@ namespace Caneda
         virtual void undo();
         virtual void redo();
 
-        virtual QUndoStack* undoStack();
-
         virtual bool canCut() const;
         virtual bool canCopy() const;
         virtual bool canPaste() const { return true; }
@@ -426,8 +419,8 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual void intoHierarchy();
-        virtual void popHierarchy();
+        virtual void enterHierarchy();
+        virtual void exitHierarchy();
 
         virtual void alignTop();
         virtual void alignBottom();
@@ -450,14 +443,14 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e);
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
         virtual void launchPropertiesDialog();
         // End of IDocument interface methods
 
-        CGraphicsScene* cGraphicsScene() const { return m_cGraphicsScene; }
+        GraphicsScene* graphicsScene() const { return m_graphicsScene; }
 
     private:
-        CGraphicsScene *m_cGraphicsScene;
+        GraphicsScene *m_graphicsScene;
 
         void alignElements(Qt::Alignment alignment);
     };
@@ -482,7 +475,8 @@ namespace Caneda
         Q_OBJECT
 
     public:
-        TextDocument();
+        explicit TextDocument(QObject *parent = 0);
+        ~TextDocument();
 
         // IDocument interface methods
         virtual IContext* context();
@@ -495,8 +489,6 @@ namespace Caneda
         virtual void undo();
         virtual void redo();
 
-        virtual QUndoStack* undoStack();
-
         virtual bool canCut() const { return true; }
         virtual bool canCopy() const { return true; }
         virtual bool canPaste() const { return true; }
@@ -507,8 +499,8 @@ namespace Caneda
 
         virtual void selectAll();
 
-        virtual void intoHierarchy();
-        virtual void popHierarchy();
+        virtual void enterHierarchy();
+        virtual void exitHierarchy();
 
         virtual void alignTop() {}
         virtual void alignBottom() {}
@@ -531,7 +523,7 @@ namespace Caneda
 
         virtual IView* createView();
 
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) {}
+        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *) {}
         virtual void launchPropertiesDialog() {}
         // End of IDocument interface methods
 
@@ -548,85 +540,6 @@ namespace Caneda
         bool simulationErrorStatus; //! This variable is used in multistep simulations (eg. verilog) to avoid opening previously generated waveforms
         TextEdit* activeTextEdit();
         QTextDocument *m_textDocument;
-    };
-
-    /*!
-     * \brief This class represents the web browser document interface
-     * implementation.
-     *
-     * This class represents the actual web document interface
-     * (scene), in a manner similar to Qt's Graphics View Architecture.
-     *
-     * This class manages web document specific methods like loading, as well
-     * as containing the actual document. The document itself is included as a
-     * pointer to QUrl, that contains all the document specific methods.
-     *
-     * \sa IContext, IDocument, IView, \ref DocumentViewFramework
-     * \sa WebContext, WebView
-     */
-    class WebDocument : public IDocument
-    {
-        Q_OBJECT
-
-    public:
-        WebDocument();
-
-        // IDocument interface methods
-        virtual IContext* context();
-
-        virtual bool isModified() const { return false; }
-
-        virtual bool canUndo() const { return false; }
-        virtual bool canRedo() const { return false; }
-
-        virtual void undo() {}
-        virtual void redo() {}
-
-        virtual QUndoStack* undoStack();
-
-        virtual bool canCut() const { return false; }
-        virtual bool canCopy() const { return false; }
-        virtual bool canPaste() const { return false; }
-
-        virtual void cut() {}
-        virtual void copy();
-        virtual void paste() {}
-
-        virtual void selectAll() {}
-
-        virtual void intoHierarchy() {}
-        virtual void popHierarchy() {}
-
-        virtual void alignTop() {}
-        virtual void alignBottom() {}
-        virtual void alignLeft() {}
-        virtual void alignRight() {}
-        virtual void distributeHorizontal() {}
-        virtual void distributeVertical() {}
-        virtual void centerHorizontal() {}
-        virtual void centerVertical() {}
-
-        virtual void simulate() {}
-
-        virtual bool printSupportsFitInPage() const { return false; }
-        virtual void print(QPrinter *printer, bool fitInView);
-        virtual void exportImage(QPaintDevice &device) {}
-        virtual QSizeF documentSize();
-
-        virtual bool load(QString *errorMessage = 0);
-        virtual bool save(QString *errorMessage = 0) {}
-
-        virtual IView* createView();
-
-        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *e) {}
-        virtual void launchPropertiesDialog() {}
-        // End of IDocument interface methods
-
-        QUrl* webUrl() const { return m_webUrl; }
-
-    private:
-        WebPage* activeWebPage();
-        QUrl *m_webUrl;
     };
 
 } // namespace Caneda

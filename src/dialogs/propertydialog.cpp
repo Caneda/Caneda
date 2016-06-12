@@ -20,9 +20,8 @@
 
 #include "propertydialog.h"
 
-#include "documentviewmanager.h"
 #include "global.h"
-#include "idocument.h"
+#include "graphicsscene.h"
 #include "undocommands.h"
 
 #include <QSortFilterProxyModel>
@@ -35,7 +34,7 @@ namespace Caneda
     /*!
      * \brief Constructor.
      *
-     * \param map PropertyMap wich contains all properties to be modified.
+     * \param map PropertyMap which contains all properties to be modified.
      * \param parent Parent of this object.
      *
      * \sa PropertyMap
@@ -110,7 +109,7 @@ namespace Caneda
     }
 
     /*!
-     * \brief Returns item flags according to its position. This flags
+     * \brief Returns item flags according to its position. These flags
      * are responsible for the item editable or checkable state.
      *
      * \param index Item for which its flags must be returned.
@@ -331,11 +330,13 @@ namespace Caneda
      */
     void PropertyDialog::accept()
     {
-        PropertyMapCmd *cmd = new PropertyMapCmd(m_propertyGroup, m_propertyGroup->propertyMap(),
-                m_model->propMap);
-
-        DocumentViewManager *manager = DocumentViewManager::instance();
-        manager->currentDocument()->undoStack()->push(cmd);
+        GraphicsScene *scene = qobject_cast<GraphicsScene*>(m_propertyGroup->scene());
+        if(scene) {
+            ChangePropertyMapCmd *cmd = new ChangePropertyMapCmd(m_propertyGroup,
+                                                                 m_propertyGroup->propertyMap(),
+                                                                 m_model->propMap);
+            scene->undoStack()->push(cmd);
+        }
 
         QDialog::accept();
     }

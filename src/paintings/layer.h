@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2010 by Pablo Daniel Pareja Obregon                       *
+ * Copyright (C) 2010-2016 by Pablo Daniel Pareja Obregon                  *
  *                                                                         *
  * This is free software; you can redistribute it and/or modify            *
  * it under the terms of the GNU General Public License as published by    *
@@ -45,12 +45,14 @@ namespace Caneda
             PWell
         };
 
-        Layer(const QRectF &rect, LayerName layerName = Metal1, const QString &netLabel = "",
-              CGraphicsScene *scene = 0);
+        explicit Layer(const QRectF &rect,
+                       LayerName layerName = Metal1,
+                       const QString &netLabel = QString(),
+                       QGraphicsItem *parent = 0);
 
-        //! \copydoc CGraphicsItem::Type
+        //! \copydoc GraphicsItem::Type
         enum { Type = Painting::LayerType };
-        //! \copydoc CGraphicsItem::type()
+        //! \copydoc GraphicsItem::type()
         int type() const { return Type; }
 
         QPainterPath shapeForRect(const QRectF& rect) const;
@@ -68,12 +70,12 @@ namespace Caneda
         QString netLabel() const { return m_netLabel; }
         void setNetLabel(QString netLabel) { m_netLabel = netLabel; }
 
-        Layer* copy(CGraphicsScene *scene = 0) const;
+        Layer* copy() const;
 
         void saveData(Caneda::XmlWriter *writer) const;
         void loadData(Caneda::XmlReader *reader);
 
-        int launchPropertyDialog(Caneda::UndoOption opt);
+        void launchPropertiesDialog();
 
     private:
         LayerName m_layerName;
