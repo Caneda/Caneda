@@ -24,7 +24,7 @@ SET(PNGS align-horizontal-center.png application-x-caneda-layout.png
          select-rectangular.png zoom-in.png chronometer.png document-properties.png eps.png
          go-next.png object-flip-horizontal.png stop.png zoom-original.png document-save-all.png
          folder-new.png go-previous.png object-flip-vertical.png system-switch-user.png
-         zoom-out.png list-remove.png list-add.png edit-clear.png
+         zoom-out.png list-remove.png list-add.png edit-clear.png preferences-other.png
          document-open-recent.png show-menu.png view-fullscreen.png
          configure.png configure-shortcuts.png view-sidetree.png fork.png
 )
