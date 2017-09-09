@@ -6,4 +6,5 @@ Comment=Schematic capture, circuit design and simulation
 Exec=caneda %U
 Icon=caneda
 Categories=Development;Electronics;
+Keywords=electronic;electronics;schematic;circuits;simulation;
 MimeType=application/x-caneda-schematic;application/x-caneda-symbol;application/x-caneda-layout;application/x-spice-simulation-raw;application/x-spice-netlist;

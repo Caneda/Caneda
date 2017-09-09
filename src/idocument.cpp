@@ -1026,7 +1026,7 @@ namespace Caneda
         Settings *settings = Settings::instance();
         QString simulationCommand = settings->currentValue("sim/simulationCommand").toString();
 
-        // If using ngspice (the default spice backend) check if its intalled.
+        // If using ngspice (the default spice backend) check if its installed.
         if(simulationCommand.startsWith("ngspice")) {
 
             simulationCommand = QString("ngspice -v");
