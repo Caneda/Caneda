@@ -5,7 +5,14 @@ SET( DIALOGS_SRCS
   savedocumentsdialog.cpp settingsdialog.cpp shortcutsdialog.cpp
 )
 
-ADD_LIBRARY( dialogs ${DIALOGS_SRCS} )
+qt5_wrap_ui( DIALOGS_UIC
+  aboutdialog.ui chartsdialog.ui exportdialog.ui filenewdialog.ui
+  portsymboldialog.ui printdialog.ui projectfilenewdialog.ui
+  projectfileopendialog.ui propertydialog.ui savedocumentsdialog.ui
+  settingsdialog.ui shortcutsdialog.ui
+)
+
+ADD_LIBRARY( dialogs ${DIALOGS_SRCS} ${DIALOGS_UIC} )
 
 TARGET_LINK_LIBRARIES( dialogs
   Qt5::PrintSupport
