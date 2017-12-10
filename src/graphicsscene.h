@@ -133,7 +133,6 @@ namespace Caneda
         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-        void wheelEvent(QGraphicsSceneWheelEvent *event);
         void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
     private:
