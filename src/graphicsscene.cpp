@@ -975,49 +975,6 @@ namespace Caneda
         sendMouseActionEvent(event);
     }
 
-    void GraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
-    {
-        QGraphicsView *v = static_cast<QGraphicsView *>(event->widget()->parent());
-        GraphicsView *sv = qobject_cast<GraphicsView*>(v);
-        if(!sv) {
-            return;
-        }
-
-        if(event->modifiers() & Qt::ControlModifier){
-
-            if(event->delta() > 0) {
-                sv->translate(0,50);
-            }
-            else {
-                sv->translate(0,-50);
-            }
-
-        }
-        else if(event->modifiers() & Qt::ShiftModifier){
-
-            if(event->delta() > 0) {
-                sv->translate(-50,0);
-            }
-            else {
-                sv->translate(50,0);
-            }
-        }
-        else{
-
-            sv->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);  // Set transform to zoom into mouse position
-
-            if(event->delta() > 0) {
-                sv->zoomIn();
-            }
-            else {
-                sv->zoomOut();
-            }
-
-        }
-
-        event->accept();
-    }
-
     /*!
      * \brief Constructs and returns a context menu with the actions
      * corresponding to the selected object.

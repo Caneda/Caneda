@@ -22,7 +22,7 @@
 
 #include "graphicsscene.h"
 
-#include <QMouseEvent>
+#include <QtMath>
 
 namespace Caneda
 {
@@ -36,6 +36,9 @@ namespace Caneda
         m_zoomFactor(0.3),
         m_zoomRange(0.30, 10.0),
         m_currentZoom(1.0),
+        m_desiredZoom(1.0),
+        m_zoomCentre(QPointF(0,0)),
+        m_currentZoomAnimation(new QTimeLine(100, this)),
         panMode(false)
     {
         centerOn(QPointF(0, 0));
@@ -50,6 +53,10 @@ namespace Caneda
         setTransformationAnchor(QGraphicsView::NoAnchor);
         setMouseTracking(true);
         setAttribute(Qt::WA_NoSystemBackground);
+
+        m_currentZoomAnimation->setCurveShape(QTimeLine::LinearCurve);
+        m_currentZoomAnimation->setUpdateInterval(10);
+        connect(m_currentZoomAnimation, &QTimeLine::valueChanged, this, &GraphicsView::smoothZoomEvent);
 
         connect(scene, SIGNAL(mouseActionChanged(Caneda::MouseAction)),
                 this, SLOT(onMouseActionChanged(Caneda::MouseAction)));
@@ -67,13 +74,13 @@ namespace Caneda
     void GraphicsView::zoomIn()
     {
         qreal newZoom = m_currentZoom * (1 + m_zoomFactor);
-        setZoomLevel(qMin(newZoom, m_zoomRange.max));
+        smoothZoom(qMin(newZoom, m_zoomRange.max));
     }
 
     void GraphicsView::zoomOut()
     {
         qreal newZoom = m_currentZoom / (1 + m_zoomFactor);
-        setZoomLevel(qMax(newZoom, m_zoomRange.min));
+        smoothZoom(qMax(newZoom, m_zoomRange.min));
     }
 
     void GraphicsView::zoomFitInBest()
@@ -85,7 +92,13 @@ namespace Caneda
 
     void GraphicsView::zoomOriginal()
     {
-        setZoomLevel(1.0);
+        smoothZoom(1.0);
+    }
+
+    void GraphicsView::zoomDelta(qreal delta, const QPointF& centre)
+    {
+        qreal newZoom = m_desiredZoom * delta;
+        smoothZoom(qBound(m_zoomRange.min, newZoom, m_zoomRange.max), centre);
     }
 
     void GraphicsView::zoomFitRect(const QRectF &rect)
@@ -103,7 +116,7 @@ namespace Caneda
         QPointF center = rect.center();
 
         // Now set that zoom level and center the result.
-        setZoomLevel(minRatio);
+        smoothZoom(minRatio);
         centerOn(center);
     }
 
@@ -183,23 +196,87 @@ namespace Caneda
         }
     }
 
-    void GraphicsView::setZoomLevel(qreal zoomLevel)
+    void GraphicsView::smoothZoom(qreal desiredZoom) {
+        smoothZoom(desiredZoom, this->viewport()->rect().center());
+    }
+
+    void GraphicsView::smoothZoom(qreal desiredZoom, const QPointF& centre)
+    {
+
+        m_desiredZoom = desiredZoom;
+        m_zoomCentre = centre;
+
+        if (m_currentZoomAnimation->state() != QTimeLine::Running) {
+            m_currentZoomAnimation->start();
+        } else {
+            m_currentZoomAnimation->setDuration(m_currentZoomAnimation->currentTime()+350);
+        }
+
+
+    }
+
+    void GraphicsView::smoothZoomEvent(qreal step)
+    {
+
+        qreal nextScaleValue = m_currentZoom * qPow(m_desiredZoom/m_currentZoom, step);
+        setZoomLevel(nextScaleValue, m_zoomCentre);
+    }
+
+    void GraphicsView::setZoomLevel(qreal zoomLevel, const QPointF& zoomCentre)
     {
         if(!m_zoomRange.contains(zoomLevel)) {
             return;
         }
 
-        // If zoom is perform with any method but the mouse
-        // (QGraphicsView::AnchorUnderMouse), set anchor to the center
-        if(transformationAnchor() != QGraphicsView::AnchorUnderMouse) {
-            setTransformationAnchor(QGraphicsView::AnchorViewCenter);  // Set graphicsview anchor to the center
-        }
+        setResizeAnchor(GraphicsView::NoAnchor);
+        setTransformationAnchor(GraphicsView::NoAnchor);
+
+        QPointF oldCentre = mapToScene(zoomCentre.toPoint());
 
         // Scale in proportion to current zoom level and set new currentZoom
         scale(zoomLevel/m_currentZoom, zoomLevel/m_currentZoom);
         m_currentZoom = zoomLevel;
 
-        setTransformationAnchor(QGraphicsView::NoAnchor);  // Restore graphicsview anchor to be able to move afterwards
+        QPointF newCentre = mapToScene(zoomCentre.toPoint());
+        QPointF delta = oldCentre - newCentre;
+
+        translate(-delta.x(), -delta.y());
+
+    }
+
+
+    void GraphicsView::wheelEvent(QWheelEvent *event)
+    {
+        QPoint scrollAmount;
+
+        auto pixelDelta = event->pixelDelta();
+        auto angleDelta = event->angleDelta();
+
+        if (!pixelDelta.isNull()) {
+            scrollAmount = pixelDelta;
+        } else if (angleDelta.isNull()) {
+            scrollAmount = angleDelta;
+        } else {
+            return;
+        }
+
+
+        qreal zoomFactor = qExp(0.01 * scrollAmount.y());
+
+        if(event->modifiers() & Qt::ControlModifier){
+            setTransformationAnchor(QGraphicsView::NoAnchor);
+            translate(scrollAmount.x(), scrollAmount.y());
+        }
+        else if(event->modifiers() & Qt::ShiftModifier){
+            setTransformationAnchor(QGraphicsView::NoAnchor);
+            translate(scrollAmount.y(), scrollAmount.x());
+        }
+        else{
+            setTransformationAnchor(QGraphicsView::AnchorUnderMouse);  // Set transform to zoom into mouse position
+            zoomDelta(zoomFactor, event->posF());
+        }
+
+        event->accept();
     }
 
 } // namespace Caneda

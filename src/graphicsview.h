@@ -24,6 +24,7 @@
 #include "global.h"
 
 #include <QGraphicsView>
+#include <QTimeLine>
 
 namespace Caneda
 {
@@ -60,6 +61,7 @@ namespace Caneda
         void zoomOut();
         void zoomFitInBest();
         void zoomOriginal();
+        void zoomDelta(qreal delta, const QPointF& centre);
         void zoomFitRect(const QRectF &rect);
 
         qreal currentZoom() { return m_currentZoom; }
@@ -70,6 +72,7 @@ namespace Caneda
         void focussedOut(GraphicsView *view);
 
     protected:
+        void wheelEvent(QWheelEvent *event);
         void mousePressEvent(QMouseEvent *event);
         void mouseMoveEvent(QMouseEvent *event);
         void mouseReleaseEvent(QMouseEvent *event);
@@ -78,13 +81,19 @@ namespace Caneda
 
     private Q_SLOTS:
         void onMouseActionChanged(Caneda::MouseAction mouseAction);
+        void smoothZoomEvent(qreal step);
 
     private:
-        void setZoomLevel(qreal zoomLevel);
+        void smoothZoom(qreal desiredZoom);
+        void smoothZoom(qreal desiredZoom, const QPointF& centre);
+        void setZoomLevel(qreal zoomLevel, const QPointF& centre);
 
+        QTimeLine* m_currentZoomAnimation;
         const qreal m_zoomFactor;
         ZoomRange m_zoomRange;
         qreal m_currentZoom;
+        qreal m_desiredZoom;
+        QPointF m_zoomCentre;
 
         //! \brief Auxiliary pan variables
         bool panMode;
