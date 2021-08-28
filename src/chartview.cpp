@@ -141,6 +141,11 @@ namespace Caneda
     {
         QList<ChartSeries*> m_items = m_chartScene->items();
 
+        // Avoid populating empty items
+        if(m_items.isEmpty()) {
+            return;
+        }
+
         QColor color = QColor(0, 0, 0);
         int colorIndex= 0;
         int valueIndex = 255;
