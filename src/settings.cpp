@@ -223,6 +223,8 @@ namespace Caneda
         foreach (const QString& childKey, childKeys) {
             settings.setValue(childKey, currentValue(childKey));
         }
+
+        return true;
     }
 
 } // namespace Caneda
