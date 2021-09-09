@@ -317,8 +317,8 @@ namespace Caneda
 
         virtual void zoomIn();
         virtual void zoomOut();
-        virtual void zoomFitInBest();
-        virtual void zoomOriginal();
+        virtual void zoomFitInBest() {}
+        virtual void zoomOriginal() {}
 
         virtual IView* duplicate();
 
@@ -330,12 +330,6 @@ namespace Caneda
 
     private:
         TextEdit *m_textEdit;
-
-        void setZoomLevel(qreal level);
-
-        const qreal m_originalZoom;
-        ZoomRange m_zoomRange;
-        qreal m_currentZoom;
     };
 
 } // namespace Caneda

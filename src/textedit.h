@@ -50,8 +50,6 @@ namespace Caneda
     public:
         explicit TextEdit(QTextDocument *document, QWidget *parent = 0);
 
-        void setPointSize(qreal size);
-
     Q_SIGNALS:
         void focussed();
         void cursorPositionChanged(const QString& newPos);

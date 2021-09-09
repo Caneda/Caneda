@@ -32,10 +32,8 @@
 #include "textedit.h"
 
 #include <QAction>
-#include <QApplication>
 #include <QComboBox>
 #include <QFileInfo>
-#include <QFontInfo>
 #include <QHBoxLayout>
 #include <QToolBar>
 #include <QToolButton>
@@ -480,14 +478,9 @@ namespace Caneda
      *                              TextView                                 *
      *************************************************************************/
     //! \brief Constructor.
-    TextView::TextView(TextDocument *document) :
-        IView(document),
-        m_originalZoom(QFontInfo(QApplication::font()).pointSizeF()),
-        m_zoomRange(6.0, 30.0)
+    TextView::TextView(TextDocument *document) : IView(document)
     {
-        m_currentZoom = m_originalZoom;
         m_textEdit = new TextEdit(document->textDocument());
-
         connect(m_textEdit, SIGNAL(focussed()), this,
                 SLOT(onFocussed()));
         connect(m_textEdit, SIGNAL(cursorPositionChanged(const QString &)),
@@ -512,22 +505,12 @@ namespace Caneda
 
     void TextView::zoomIn()
     {
-        setZoomLevel(m_currentZoom + 1);
+        m_textEdit->zoomIn();
     }
 
     void TextView::zoomOut()
     {
-        setZoomLevel(m_currentZoom - 1);
-    }
-
-    void TextView::zoomFitInBest()
-    {
-        setZoomLevel(4);
-    }
-
-    void TextView::zoomOriginal()
-    {
-        setZoomLevel(m_originalZoom);
+        m_textEdit->zoomOut();
     }
 
     IView* TextView::duplicate()
@@ -542,21 +525,6 @@ namespace Caneda
     void TextView::onFocussed()
     {
         emit focussedIn(static_cast<IView*>(this));
-    }
-
-    void TextView::setZoomLevel(qreal zoomLevel)
-    {
-        if (!m_zoomRange.contains(zoomLevel)) {
-            return;
-        }
-
-        if (qFuzzyCompare(zoomLevel, m_currentZoom)) {
-            return;
-        }
-
-        m_currentZoom = zoomLevel;
-
-        m_textEdit->setPointSize(m_currentZoom);
     }
 
 } // namespace Caneda

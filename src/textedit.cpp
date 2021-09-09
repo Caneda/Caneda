@@ -37,13 +37,6 @@ namespace Caneda
         highlightCurrentLine();
     }
 
-    void TextEdit::setPointSize(qreal size)
-    {
-        QFont fnt = font();
-        fnt.setPointSize(static_cast<int>(qRound(size)));
-        setFont(fnt);
-    }
-
     void TextEdit::focusInEvent(QFocusEvent *event)
     {
         emit focussed();
