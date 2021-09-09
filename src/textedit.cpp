@@ -31,6 +31,12 @@ namespace Caneda
         document->setDocumentLayout(layout);
         setDocument(document);
 
+        QFont font;
+        font.setFamily("Monospace");
+        font.setFixedPitch(true);
+        font.setPointSize(10);
+        setFont(font);
+
         connect(this, SIGNAL(focussed()), this, SLOT(updateCursorPosition()));
         connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(updateCursorPosition()));
         connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
