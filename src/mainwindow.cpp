@@ -666,6 +666,18 @@ namespace Caneda
     void MainWindow::openSymbol()
     {
         SymbolContext *sy = SymbolContext::instance();
+
+        IDocument *doc = DocumentViewManager::instance()->currentDocument();
+        QFileInfo info(doc->fileName());
+        QString filename = info.completeBaseName();
+        QString path = info.path();
+        filename = QDir::toNativeSeparators(path + "/" + filename + "." + sy->defaultSuffix());
+        if (!QFileInfo::exists(filename)) {
+            newSymbol();
+            DocumentViewManager::instance()->currentDocument()->setFileName(filename);
+            return;
+        }
+
         openFileFormat(sy->defaultSuffix());
     }
 
