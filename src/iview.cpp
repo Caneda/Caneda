@@ -346,7 +346,8 @@ namespace Caneda
     //! \brief Destructor.
     SimulationView::~SimulationView()
     {
-        delete m_chartView;
+        //! \todo Quick fix for crash when one view is closed
+        // delete m_chartView;
     }
 
     QWidget* SimulationView::toWidget() const
