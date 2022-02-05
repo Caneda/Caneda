@@ -361,7 +361,7 @@ namespace Caneda
         virtual QSizeF documentSize();
 
         virtual bool load(QString *errorMessage = 0);
-        virtual bool save(QString *errorMessage = 0) {}
+        virtual bool save(QString *errorMessage = 0) { return false; }
 
         virtual IView* createView();
 

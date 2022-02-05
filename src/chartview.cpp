@@ -225,7 +225,7 @@ namespace Caneda
     void ChartView::resetAxis()
     {
         QList<ChartSeries*> m_items = m_chartScene->items();
-        size_t idx = 0;
+        int idx = 0;
         for (auto &itm : itemList(QwtPlotItem::Rtti_PlotCurve)) {
             if (itm->isVisible()) {
                 break;
