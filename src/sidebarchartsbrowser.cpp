@@ -378,6 +378,7 @@ namespace Caneda
             list.at(i)->setVisible(m_model->m_chartSeriesMap[list.at(i)->title().text()]);
         }
 
+        view->resetAxis();
         view->replot();
     }
 

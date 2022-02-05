@@ -86,6 +86,7 @@ namespace Caneda
         virtual void zoomOriginal();
 
         void populate();
+        void resetAxis();
         void setLogAxis(QwtPlot::Axis axis, bool logarithmic);
         bool isLogAxis(QwtPlot::Axis axis);
 
