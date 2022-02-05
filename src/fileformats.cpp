@@ -1782,6 +1782,8 @@ namespace Caneda
             }
             else if( keyword == "variables") {
 
+                plotCurves.clear();
+                plotCurvesPhase.clear();
                 for(int i = 0; i < nvars; i++) {
                     line = file->readLine();
 
