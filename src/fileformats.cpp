@@ -1374,6 +1374,7 @@ namespace Caneda
         QStringList subcircuitsList;
         QStringList directivesList;
         QStringList schematicsList;
+        QStringList nodesList;
 
         // Start the document and write the header
         QString retVal;
@@ -1384,7 +1385,7 @@ namespace Caneda
         // iterating over all schematic components.
         // *Note*: the parsing order is important to allow, for example
         // cascadable commands and if control statements correct extraction.
-        foreach(Component *c, components) {
+        for(auto &c : components) {
 
             // Get the spice model (multiple models may be available)
             QString model = c->model("spice");
@@ -1529,6 +1530,15 @@ namespace Caneda
                 }
             }
 
+            // collect nodes from measurement devices ammeter, voltmerer, etc.
+            //! \todo mark the measuring device in library in a some way
+            //! to avoid recognition by name
+            QStringList probes;
+            probes<<"Ammeter"<<"Voltmeter"<<"Voltmeter Differential";
+            if (probes.contains(c->name())) {
+                nodesList.append(c->properties()->propertyValue("label"));
+            }
+
             // ************************************************************
             // Now parse the generateNetlist command, which creates a
             // temporal list of schematics needed for recursive netlists
@@ -1571,6 +1581,25 @@ namespace Caneda
                 retVal.append(".subckt " + subcircuitsList.at(i) + "\n"
                               + ".ends" + "\n");
             }
+        }
+
+
+        // save only named nodes
+        for(const auto &nn: netlist) {
+            QRegExp rx("\\d+");
+            if (!nodesList.contains(nn.second) &&
+                !rx.exactMatch(nn.second)) {
+                nodesList.append(nn.second);
+            }
+        }
+
+        // form .save directive
+        if (!nodesList.isEmpty()) {
+            QString save_str = "\n.save ";
+            save_str += nodesList.join(" ");
+            retVal.append(QString("%1\n").arg(save_str));
+        } else {
+            retVal.append("\n.save all\n");
         }
 
         // Append the spice directives in directivesList

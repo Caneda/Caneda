@@ -232,6 +232,7 @@ namespace Caneda
             }
             idx++;
         }
+        if (idx >= m_items.count()) return;
         if(m_items[idx]->type() == "voltage" || m_items[idx]->type() == "current") {
             setAxisTitle(xBottom, QwtText(tr("Time [s]")));
             setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
