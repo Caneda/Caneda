@@ -43,6 +43,8 @@ SET( CMAKE_BUILD_TYPE Debug )
 
 CONFIGURE_FILE( ${Caneda_SOURCE_DIR}/config.h.cmake ${Caneda_BINARY_DIR}/config.h )
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-parameter")
+
 # ==================================================================================
 # Include sources directories
 

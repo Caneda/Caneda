@@ -533,7 +533,7 @@ namespace Caneda
             am->recentFilesActions().at(i)->setVisible(true);
         }
 
-        for(int i=itEnd; i<maxRecentFiles; i++) {
+        for(uint i=itEnd; i<maxRecentFiles; i++) {
             am->recentFilesActions().at(i)->setVisible(false);
         }
     }

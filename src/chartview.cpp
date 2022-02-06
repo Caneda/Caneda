@@ -222,6 +222,34 @@ namespace Caneda
         m_zoomer->setZoomBase();
     }
 
+    void ChartView::resetAxis()
+    {
+        QList<ChartSeries*> m_items = m_chartScene->items();
+        int idx = 0;
+        for (auto &itm : itemList(QwtPlotItem::Rtti_PlotCurve)) {
+            if (itm->isVisible()) {
+                break;
+            }
+            idx++;
+        }
+        if (idx >= m_items.count()) return;
+        if(m_items[idx]->type() == "voltage" || m_items[idx]->type() == "current") {
+            setAxisTitle(xBottom, QwtText(tr("Time [s]")));
+            setAxisTitle(yLeft, QwtText(tr("Voltage [V]")));
+            setAxisTitle(yRight, QwtText(tr("Current [A]")));
+            setLogAxis(QwtPlot::xBottom, false);
+        }
+        else {
+            setAxisTitle(xBottom, QwtText(tr("Frequency [Hz]")));
+            setAxisTitle(yLeft, QwtText(tr("Magnitude [dB]")));
+            setAxisTitle(yRight, QwtText(tr("Phase [º]")));
+            setLogAxis(QwtPlot::xBottom, true);
+        }
+
+        enableAxis(yRight);  // Always enable the y axis
+    }
+
+
     /*!
      * \brief Set axis scale logarithmic state.
      *

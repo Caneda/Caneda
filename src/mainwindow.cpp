@@ -666,6 +666,18 @@ namespace Caneda
     void MainWindow::openSymbol()
     {
         SymbolContext *sy = SymbolContext::instance();
+
+        IDocument *doc = DocumentViewManager::instance()->currentDocument();
+        QFileInfo info(doc->fileName());
+        QString filename = info.completeBaseName();
+        QString path = info.path();
+        filename = QDir::toNativeSeparators(path + "/" + filename + "." + sy->defaultSuffix());
+        if (!QFileInfo::exists(filename)) {
+            newSymbol();
+            DocumentViewManager::instance()->currentDocument()->setFileName(filename);
+            return;
+        }
+
         openFileFormat(sy->defaultSuffix());
     }
 
@@ -941,7 +953,7 @@ namespace Caneda
         action->setWhatsThis(tr("Open File\n\nOpens an existing document"));
         connect(action, SIGNAL(triggered()), SLOT(open()));
 
-        for(int i=0; i<maxRecentFiles; i++) {
+        for(uint i=0; i<maxRecentFiles; i++) {
             action = am->createRecentFilesAction();
             connect(action, SIGNAL(triggered()), SLOT(openRecent()));
         }
@@ -1374,7 +1386,7 @@ namespace Caneda
         menu->addAction(am->actionForName("fileOpen"));
 
         subMenu = menu->addMenu(Caneda::icon("document-open-recent"), tr("Open &Recent"));
-        for(int i=0; i<maxRecentFiles; i++) {
+        for(uint i=0; i<maxRecentFiles; i++) {
             subMenu->addAction(am->recentFilesActions().at(i));
         }
         DocumentViewManager::instance()->updateRecentFilesActionList();  // Update the list from the previosly saved configuration file
