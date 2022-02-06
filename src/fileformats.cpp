@@ -1923,7 +1923,11 @@ namespace Caneda
                     tok = line.split(",");  // Split real and imaginary part
 
                     real = tok.first().toDouble();  // Get the real part
-                    imaginary = tok.last().toDouble();  // Get the imaginary part
+                    if (j == 0) { // the first variable is frequency; it has no imag. part
+                        imaginary = 0.0;
+                    } else {
+                        imaginary = tok.last().toDouble();  // Get the imaginary part
+                    }
 
                     magnitude = qSqrt(real*real + imaginary*imaginary);  // Calculate the magnitude part
                     phase = qAtan(imaginary/real) * 180/M_PI;  // Calculate the phase part
@@ -2033,6 +2037,7 @@ namespace Caneda
                 for(int j = 0; j < nvars; j++){
                     out >> real;  // Get the real part
                     out >> imaginary;  // Get the imaginary part
+                    if (j==0) imaginary = 0.0; // frequency
 
                     magnitude = qSqrt(real*real + imaginary*imaginary);  // Calculate the magnitude part
                     phase = qAtan(imaginary/real) * 180/M_PI;  // Calculate the phase part
@@ -2066,6 +2071,7 @@ namespace Caneda
         // Delete the temporal data arrays
         qDeleteAll(dataSamples);
         qDeleteAll(dataSamplesPhase);
+        file->seek(device->pos());
     }
 
     ChartScene* FormatRawSimulation::chartScene() const
