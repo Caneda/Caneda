@@ -111,6 +111,9 @@ namespace Caneda
             QStandardItem *item = new QStandardItem(icon, data->name);
             libRoot->appendRow(item);
         }
+
+        // Sort items alphabetically
+        libRoot->sortChildren(0);
     }
 
     /*!
