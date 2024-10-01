@@ -174,8 +174,8 @@ namespace Caneda
         layout->addWidget(m_treeView);
 
         // Signals and slots connections
-        connect(m_model,      &QStandardItemModel::rowsInserted, m_treeView, &QTreeView::expandAll);
-        connect(m_filterEdit, &QLineEdit::textChanged,           this,       &SidebarItemsBrowser::filterTextChanged);
+        connect(m_model,      &QStandardItemModel::rowsInserted, this, &SidebarItemsBrowser::resetExpandedView);
+        connect(m_filterEdit, &QLineEdit::textChanged,           this, &SidebarItemsBrowser::filterTextChanged);
         connect(m_treeView,   QOverload<const QModelIndex &>::of(&QTreeView::clicked),   this, QOverload<const QModelIndex &>::of(&SidebarItemsBrowser::itemClicked));
         connect(m_treeView,   QOverload<const QModelIndex &>::of(&QTreeView::activated), this, QOverload<const QModelIndex &>::of(&SidebarItemsBrowser::itemClicked));
 
@@ -216,7 +216,18 @@ namespace Caneda
         QString text = m_filterEdit->text();
         QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
         m_proxyModel->setFilterRegExp(regExp);
-        m_treeView->expandAll();
+
+        if(text.isEmpty()){
+            resetExpandedView();
+        }
+        else {
+            m_treeView->expandAll();
+        }
+    }
+
+    void SidebarItemsBrowser::resetExpandedView()
+    {
+        m_treeView->expandToDepth(0);
     }
 
     //! \brief Emits the component and category clicked on the model.

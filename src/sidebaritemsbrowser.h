@@ -95,6 +95,7 @@ namespace Caneda
 
     private Q_SLOTS:
         void filterTextChanged();
+        void resetExpandedView();
 
         void itemClicked(const QModelIndex& index);
 
