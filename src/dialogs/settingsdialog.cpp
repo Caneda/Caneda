@@ -50,7 +50,6 @@ namespace Caneda
         // General group of settings
         map["gui/gridVisible"] = settings->currentValue("gui/gridVisible");
         map["gui/backgroundColor"] = settings->currentValue("gui/backgroundColor");
-        map["gui/simulationBackgroundColor"] = settings->currentValue("gui/simulationBackgroundColor");
         map["gui/foregroundColor"] = settings->currentValue("gui/foregroundColor");
         map["gui/lineColor"] = settings->currentValue("gui/lineColor");
         map["gui/selectionColor"] = settings->currentValue("gui/selectionColor");
@@ -64,6 +63,12 @@ namespace Caneda
         map["sim/simulationCommand"] = settings->currentValue("sim/simulationCommand");
         map["sim/simulationEngine"] = settings->currentValue("sim/simulationEngine");
         map["sim/outputFormat"] = settings->currentValue("sim/outputFormat");
+
+        map["gui/sim/background"] = settings->currentValue("gui/sim/background");
+        map["gui/sim/colorStart"] = settings->currentValue("gui/sim/colorStart");
+        map["gui/sim/colorEnd"] = settings->currentValue("gui/sim/colorEnd");
+        map["gui/sim/colorStep"] = settings->currentValue("gui/sim/colorStep");
+        map["gui/sim/lineWidth"] = settings->currentValue("gui/sim/lineWidth");
 
         // HDL group of settings
         map["gui/hdl/keyword"] = settings->currentValue("gui/hdl/keyword");
@@ -85,7 +90,6 @@ namespace Caneda
 
         // General group of settings
         connect(ui.buttonBackground,           &QPushButton::clicked, this, &SettingsDialog::colorButtonDialog);
-        connect(ui.buttonSimulationBackground, &QPushButton::clicked, this, &SettingsDialog::colorButtonDialog);
         connect(ui.buttonForeground,           &QPushButton::clicked, this, &SettingsDialog::colorButtonDialog);
         connect(ui.buttonLine,                 &QPushButton::clicked, this, &SettingsDialog::colorButtonDialog);
         connect(ui.buttonSelection,            &QPushButton::clicked, this, &SettingsDialog::colorButtonDialog);
@@ -98,8 +102,12 @@ namespace Caneda
         connect(ui.buttonGetNewLibraries,  &QPushButton::clicked,  this, &SettingsDialog::slotGetNewLibraries);
 
         // Simulation group of settings
-        connect(ui.radioNgspiceMode,       &QRadioButton::clicked, this, &SettingsDialog::simulationEngineChanged);
-        connect(ui.radioCustomMode,        &QRadioButton::clicked, this, &SettingsDialog::simulationEngineChanged);
+        connect(ui.radioNgspiceMode,           &QRadioButton::clicked, this, &SettingsDialog::simulationEngineChanged);
+        connect(ui.radioCustomMode,            &QRadioButton::clicked, this, &SettingsDialog::simulationEngineChanged);
+
+        connect(ui.buttonSimulationBackground, &QPushButton::clicked, this, &SettingsDialog::colorButtonDialog);
+        connect(ui.buttonSimulationColorStart, &QPushButton::clicked, this, &SettingsDialog::colorButtonDialog);
+        connect(ui.buttonSimulationColorEnd,   &QPushButton::clicked, this, &SettingsDialog::colorButtonDialog);
 
         // HDL group of settings
         connect(ui.buttonKeyword,          &QPushButton::clicked,  this, &SettingsDialog::colorButtonDialog);
@@ -222,7 +230,6 @@ namespace Caneda
         // General group of settings
         map["gui/gridVisible"] = settings->defaultValue("gui/gridVisible");
         map["gui/backgroundColor"] = settings->defaultValue("gui/backgroundColor");
-        map["gui/simulationBackgroundColor"] = settings->defaultValue("gui/simulationBackgroundColor");
         map["gui/foregroundColor"] = settings->defaultValue("gui/foregroundColor");
         map["gui/lineColor"] = settings->defaultValue("gui/lineColor");
         map["gui/selectionColor"] = settings->defaultValue("gui/selectionColor");
@@ -236,6 +243,12 @@ namespace Caneda
         map["sim/simulationCommand"] = settings->defaultValue("sim/simulationCommand");
         map["sim/simulationEngine"] = settings->defaultValue("sim/simulationEngine");
         map["sim/outputFormat"] = settings->defaultValue("sim/outputFormat");
+
+        map["gui/sim/background"] = settings->defaultValue("gui/sim/background");
+        map["gui/sim/colorStart"] = settings->defaultValue("gui/sim/colorStart");
+        map["gui/sim/colorEnd"] = settings->defaultValue("gui/sim/colorEnd");
+        map["gui/sim/colorStep"] = settings->defaultValue("gui/sim/colorStep");
+        map["gui/sim/lineWidth"] = settings->defaultValue("gui/sim/lineWidth");
 
         // HDL group of settings
         map["gui/hdl/keyword"] = settings->defaultValue("gui/hdl/keyword");
@@ -259,7 +272,6 @@ namespace Caneda
         settings->setCurrentValue("gui/gridVisible", ui.checkShowGrid->isChecked());
 
         settings->setCurrentValue("gui/backgroundColor", getButtonColor(ui.buttonBackground));
-        settings->setCurrentValue("gui/simulationBackgroundColor", getButtonColor(ui.buttonSimulationBackground));
         settings->setCurrentValue("gui/foregroundColor", getButtonColor(ui.buttonForeground));
         settings->setCurrentValue("gui/lineColor", getButtonColor(ui.buttonLine));
         settings->setCurrentValue("gui/selectionColor", getButtonColor(ui.buttonSelection));
@@ -299,6 +311,12 @@ namespace Caneda
             settings->setCurrentValue("sim/outputFormat", QString("ascii"));
         }
 
+        settings->setCurrentValue("gui/sim/background", getButtonColor(ui.buttonSimulationBackground));
+        settings->setCurrentValue("gui/sim/colorStart", getButtonColor(ui.buttonSimulationColorStart));
+        settings->setCurrentValue("gui/sim/colorEnd", getButtonColor(ui.buttonSimulationColorEnd));
+        settings->setCurrentValue("gui/sim/colorStep", ui.spinSimulationColorStep->value());
+        settings->setCurrentValue("gui/sim/lineWidth", ui.spinSimulationLineWidth->value());
+
         // HDL group of settings
         settings->setCurrentValue("gui/hdl/keyword", getButtonColor(ui.buttonKeyword));
         settings->setCurrentValue("gui/hdl/type", getButtonColor(ui.buttonType));
@@ -321,7 +339,6 @@ namespace Caneda
         // General group of settings
         ui.checkShowGrid->setChecked(map["gui/gridVisible"].value<bool>());
         setButtonColor(ui.buttonBackground, map["gui/backgroundColor"].value<QColor>());
-        setButtonColor(ui.buttonSimulationBackground, map["gui/simulationBackgroundColor"].value<QColor>());
         setButtonColor(ui.buttonForeground, map["gui/foregroundColor"].value<QColor>());
         setButtonColor(ui.buttonLine, map["gui/lineColor"].value<QColor>());
         setButtonColor(ui.buttonSelection, map["gui/selectionColor"].value<QColor>());
@@ -361,6 +378,12 @@ namespace Caneda
         else if(map["sim/outputFormat"].toString() == "ascii") {
             ui.radioAsciiMode->setChecked(true);
         }
+
+        setButtonColor(ui.buttonSimulationBackground, map["gui/sim/background"].value<QColor>());
+        setButtonColor(ui.buttonSimulationColorStart, map["gui/sim/colorStart"].value<QColor>());
+        setButtonColor(ui.buttonSimulationColorEnd, map["gui/sim/colorEnd"].value<QColor>());
+        ui.spinSimulationColorStep->setValue(map["gui/sim/colorStep"].toInt());
+        ui.spinSimulationLineWidth->setValue(map["gui/sim/lineWidth"].toInt());
 
         // HDL group of settings
         setButtonColor(ui.buttonKeyword, map["gui/hdl/keyword"].value<QColor>());

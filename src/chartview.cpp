@@ -147,12 +147,27 @@ namespace Caneda
             return;
         }
 
-        int colorIndex = 0;
-        int valueIndex = 255;
-        int penWidth = 3;
+        // Get settings target colors for the plots
+        Settings *settings = Settings::instance();
+
+        QColor colorStart = settings->currentValue("gui/sim/colorStart").value<QColor>();
+        QColor colorEnd   = settings->currentValue("gui/sim/colorEnd").value<QColor>();
+        int    colorStep  = settings->currentValue("gui/sim/colorStep").value<int>();
+        int    lineWidth  = settings->currentValue("gui/sim/lineWidth").value<int>();
+
+        // Convert settings into HSV space
+        int hueIndex        = colorStart.hue();
+        int saturationIndex = colorStart.saturation();
+        int valueIndex      = colorStart.value();
+
+        // Calculate step increments in between colors
+        int hueStep         = (colorEnd.hue()        - colorStart.hue())        / (colorStep + 1);
+        int saturationStep  = (colorEnd.saturation() - colorStart.saturation()) / (colorStep + 1);
+        int valueStep       = (colorEnd.value()      - colorStart.value())      / (colorStep + 1);
 
         // Attach the items to the plot
         foreach(ChartSeries *item, m_items) {
+
             QColor color = QColor(0, 0, 0);
             QPen pen = QPen(color);
 
@@ -170,9 +185,9 @@ namespace Caneda
 
             // Select the style and color of the new curve
             newCurve->setRenderHint(ChartSeries::RenderAntialiased);
-            color.setHsv(colorIndex , 200, valueIndex);
+            color.setHsv(hueIndex , saturationIndex, valueIndex);
             pen.setColor(color);
-            pen.setWidth(penWidth);
+            pen.setWidth(lineWidth);
 
             newCurve->setPen(pen);
 
@@ -189,18 +204,20 @@ namespace Caneda
 
             // Set the next color to be used (to change colors
             // from curve to curve.
-            if(colorIndex < 300) {  // Avoid 360, as it equals 0
-                colorIndex += 60;
-            }
-            else {
-                colorIndex = 0;
-                if(valueIndex == 255) {
-                    valueIndex = 100;
-                }
-                else {
-                    valueIndex = 255;
-                }
-            }
+            hueIndex += hueStep;
+            saturationIndex += saturationStep;
+            valueIndex += valueStep;
+
+            // If color indexes overflows or underflows, start from the initial color
+            if(hueStep > 0) if(hueIndex > colorEnd.hue()) hueIndex = colorStart.hue();
+            if(hueStep < 0) if(hueIndex < colorEnd.hue()) hueIndex = colorStart.hue();
+
+            if(saturationStep > 0) if(saturationIndex > colorEnd.saturation()) saturationIndex = colorStart.saturation();
+            if(saturationStep < 0) if(saturationIndex < colorEnd.saturation()) saturationIndex = colorStart.saturation();
+
+            if(valueStep > 0) if(valueIndex > colorEnd.value()) valueIndex = colorStart.value();
+            if(valueStep < 0) if(valueIndex < colorEnd.value()) valueIndex = colorStart.value();
+
         }
 
         // Set different axis titles depending on the type of simulation,
@@ -313,8 +330,8 @@ namespace Caneda
         // Load settings
         Settings *settings = Settings::instance();
         QColor foregroundColor = settings->currentValue("gui/foregroundColor").value<QColor>();
-        QColor backgroundColor = settings->currentValue("gui/simulationBackgroundColor").value<QColor>();
-        QColor selectionColor = settings->currentValue("gui/selectionColor").value<QColor>();
+        QColor selectionColor  = settings->currentValue("gui/selectionColor").value<QColor>();
+        QColor backgroundColor = settings->currentValue("gui/sim/background").value<QColor>();
 
         // Canvas
         QPalette canvasPalette(backgroundColor);

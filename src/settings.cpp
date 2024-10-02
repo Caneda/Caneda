@@ -60,10 +60,19 @@ namespace Caneda
         defaultSettings["gui/gridVisible"] = QVariant(bool(true));
         defaultSettings["gui/foregroundColor"] = QVariant(QColor(Qt::darkGray));
         defaultSettings["gui/backgroundColor"] = QVariant(QColor(Qt::white));
-        defaultSettings["gui/simulationBackgroundColor"] = QVariant(QColor(Qt::black));
         defaultSettings["gui/lineColor"] = QVariant(QColor(Qt::blue));
         defaultSettings["gui/selectionColor"] = QVariant(QColor(255, 128, 0)); // Dark orange
         defaultSettings["gui/lineWidth"] = QVariant(int(1));
+
+        defaultSettings["sim/simulationEngine"] = QVariant(QString("ngspice"));  //! \todo In the future this could be replaced by an enum, to avoid problems
+        defaultSettings["sim/simulationCommand"] = QVariant(QString("ngspice -b -r %filename.raw %filename.net"));
+        defaultSettings["sim/outputFormat"] = QVariant(QString("binary"));  //! \todo In the future this could be replaced by an enum, to avoid problems
+
+        defaultSettings["gui/sim/background"] = QVariant(QColor(Qt::black));
+        defaultSettings["gui/sim/colorStart"] = QVariant(QColor::fromHsv(0, 200, 255));  // Red
+        defaultSettings["gui/sim/colorEnd"] = QVariant(QColor::fromHsv(300, 200, 255));  // Fucsia
+        defaultSettings["gui/sim/colorStep"] = QVariant(int(4));
+        defaultSettings["gui/sim/lineWidth"] = QVariant(int(3));
 
         defaultSettings["gui/hdl/keyword"]= QVariant(QVariant(QColor(Qt::black)));
         defaultSettings["gui/hdl/type"]= QVariant(QVariant(QColor(Qt::blue)));
@@ -73,10 +82,6 @@ namespace Caneda
         defaultSettings["gui/hdl/data"]= QVariant(QVariant(QColor(Qt::darkGreen)));
         defaultSettings["gui/hdl/comment"] = QVariant(QColor(Qt::red));
         defaultSettings["gui/hdl/system"] = QVariant(QColor(Qt::darkYellow));
-
-        defaultSettings["sim/simulationEngine"] = QVariant(QString("ngspice"));  //! \todo In the future this could be replaced by an enum, to avoid problems
-        defaultSettings["sim/simulationCommand"] = QVariant(QString("ngspice -b -r %filename.raw %filename.net"));
-        defaultSettings["sim/outputFormat"] = QVariant(QString("binary"));  //! \todo In the future this could be replaced by an enum, to avoid problems
 
         defaultSettings["shortcuts/fileNew"] = QVariant(QKeySequence(QKeySequence::New));
         defaultSettings["shortcuts/fileOpen"] = QVariant(QKeySequence(QKeySequence::Open));
