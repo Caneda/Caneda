@@ -90,6 +90,76 @@ namespace Caneda
     }
 
     /*!
+     * \brief Rotate item by 90 degrees around a pivot point
+     *
+     * This method rotates an item around a pivot point, using the parent
+     * method GraphicsItem::rotate(), however the rotate operation needed
+     * to be reimplemented to allow for smart positioning of the properties
+     * text according to the final rotation value.
+     *
+     * To achieve the rotation of the properties text, first the original
+     * position is obtained, then the general rotation performed, and finally
+     * a new position for the properties text calculated.
+     *
+     * \param dir Direction of rotation
+     * \param pivotPoint Point around which the rotation is performed
+     *
+     * \sa GraphicsItem::rotate()
+     */
+    void Component::rotate(AngleDirection dir, QPointF pivotPoint)
+    {
+        QPointF newPos;
+        QPointF anchorPos;
+        QPointF deltaPos;
+
+        // Get original properties text position before rotation
+        if((int(rotation()) % 360) == 0) {
+            anchorPos = boundingRect().bottomLeft();
+            deltaPos = QPointF(0, 0);
+        }
+        else if((int(rotation()) % 360) == 90) {
+            anchorPos = boundingRect().bottomLeft();
+            deltaPos = QPointF(0, d->properties->boundingRect().width());
+        }
+        else if((int(rotation()) % 360) == 180) {
+            anchorPos = boundingRect().bottomRight();
+            deltaPos = QPointF(0, d->properties->boundingRect().height());
+        }
+        else if((int(rotation()) % 360) == 270) {
+            anchorPos = boundingRect().bottomRight();
+            deltaPos = QPointF(0, 0);
+        }
+
+        newPos = d->properties->pos() - anchorPos - deltaPos;
+
+        // Rotate item
+        GraphicsItem::rotate(dir, pivotPoint);
+
+        // Move properties text position according to new rotation
+        if((int(rotation()) % 360) == 0) {
+            anchorPos = boundingRect().bottomLeft();
+            deltaPos = QPointF(0, 0);
+        }
+        else if((int(rotation()) % 360) == 90) {
+            anchorPos = boundingRect().bottomLeft();
+            deltaPos = QPointF(0, d->properties->boundingRect().width());
+        }
+        else if((int(rotation()) % 360) == 180) {
+            anchorPos = boundingRect().bottomRight();
+            deltaPos = QPointF(0, d->properties->boundingRect().height());
+        }
+        else if((int(rotation()) % 360) == 270) {
+            anchorPos = boundingRect().bottomRight();
+            deltaPos = QPointF(0, 0);
+        }
+
+        newPos = newPos + anchorPos + deltaPos;
+
+        // Set new properties text position
+        d->properties->setPos(newPos);
+    }
+
+    /*!
      * \brief Update this component's shared data related properties.
      *
      * This method updates the component's properties related to its shared

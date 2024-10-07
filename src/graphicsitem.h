@@ -129,7 +129,7 @@ namespace Caneda
         //! Returns a list of ports of the item.
         QList<Port*> ports() const { return m_ports; }
 
-        void rotate(Caneda::AngleDirection dir, QPointF pivotPoint);
+        virtual void rotate(Caneda::AngleDirection dir, QPointF pivotPoint);
         void mirror(Qt::Axis axis, QPointF pivotPoint);
 
         //! Return bounding box.

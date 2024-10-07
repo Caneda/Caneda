@@ -87,6 +87,8 @@ namespace Caneda
         //! \copydoc GraphicsItem::type()
         int type() const override { return Type; }
 
+        void rotate(Caneda::AngleDirection dir, QPointF pivotPoint);
+
         //! Returns name of the component (without localization).
         QString name() const { return d->name; }
         //! Returns the filename of the component.
