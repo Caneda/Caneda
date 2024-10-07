@@ -187,7 +187,6 @@ namespace Caneda
 
         // Update properties text position
         d->properties->setParentItem(this);
-        d->properties->setTransform(transform().inverted());
         d->properties->setPos(boundingRect().bottomLeft());
     }
 
