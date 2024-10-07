@@ -170,6 +170,7 @@ namespace Caneda
         setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
         setFlag(ItemSendsGeometryChanges, true);
         setFlag(ItemSendsScenePositionChanges, true);
+        setFlag(ItemIgnoresTransformations);
     }
 
     //! \brief Adds a new property to the PropertyMap.
