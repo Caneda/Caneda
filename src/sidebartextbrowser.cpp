@@ -27,7 +27,8 @@
 #include <QFileSystemModel>
 #include <QDebug>
 #include <QLineEdit>
-#include <QTextCodec>
+#include <QRegularExpression>
+#include <QStringConverter>
 #include <QVBoxLayout>
 
 namespace Caneda
@@ -90,8 +91,8 @@ namespace Caneda
     void SidebarTextBrowser::filterTextChanged()
     {
         QString text = m_filterEdit->text();
-        QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-        m_proxyModel->setFilterRegExp(regExp);
+        QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+        m_proxyModel->setFilterRegularExpression(regExp);
 
         if(!text.isEmpty()) {
             m_treeView->expandAll();
@@ -117,7 +118,7 @@ namespace Caneda
         }
 
         QTextStream stream(&file);
-        stream.setCodec(QTextCodec::codecForName("UTF-8"));
+        stream.setEncoding(QStringConverter::Utf8);
 
         QString content = stream.readAll();
         file.close();

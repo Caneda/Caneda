@@ -32,6 +32,7 @@
 #include <QPainter>
 #include <QPixmapCache>
 #include <QString>
+#include <QStringConverter>
 #include <QTextStream>
 
 namespace Caneda
@@ -73,7 +74,7 @@ namespace Caneda
         if(file.open(QIODevice::ReadOnly)) {
             // Read the translations file
             QTextStream in(&file);
-            in.setCodec("UTF-8");
+            in.setEncoding(QStringConverter::Utf8);
             QByteArray data = in.readAll().toUtf8();
 
             Caneda::XmlReader reader(data);

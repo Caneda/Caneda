@@ -21,6 +21,9 @@
 
 #include "global.h"
 
+#include <QFile>
+#include <QTextStream>
+
 namespace Caneda
 {
     /*!

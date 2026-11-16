@@ -322,7 +322,7 @@ namespace Caneda
             font.setPointSize(pointSize);
         }
 
-        font.setWeight(attribs.value("weight").toString().toInt(&ok3));
+        font.setWeight(static_cast<QFont::Weight>(attribs.value("weight").toString().toInt(&ok3)));
 
         readUnknownElement(); //read till end tag
 

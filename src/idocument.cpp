@@ -43,7 +43,7 @@
 #include <QMessageBox>
 #include <QPrinter>
 #include <QProcess>
-#include <QTextCodec>
+#include <QStringConverter>
 #include <QTextDocument>
 #include <QTextStream>
 
@@ -1497,7 +1497,7 @@ namespace Caneda
         }
 
         QTextStream stream(&file);
-        stream.setCodec(QTextCodec::codecForName("UTF-8"));
+        stream.setEncoding(QStringConverter::Utf8);
 
         QString content = stream.readAll();
         m_textDocument->setPlainText(content);
@@ -1539,7 +1539,7 @@ namespace Caneda
         }
 
         QTextStream stream(&file);
-        stream.setCodec(QTextCodec::codecForName("UTF-8"));
+        stream.setEncoding(QStringConverter::Utf8);
 
         stream << m_textDocument->toPlainText();
 

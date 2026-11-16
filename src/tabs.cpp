@@ -28,6 +28,7 @@
 #include "mainwindow.h"
 
 #include <QDebug>
+#include <QCloseEvent>
 #include <QDockWidget>
 #include <QFileInfo>
 #include <QHBoxLayout>
@@ -35,7 +36,6 @@
 #include <QStackedWidget>
 #include <QTabBar>
 #include <QToolBar>
-#include <QWheelEvent>
 #include <QUndoGroup>
 
 namespace Caneda

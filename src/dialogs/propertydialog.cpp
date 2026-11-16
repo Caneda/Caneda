@@ -24,6 +24,7 @@
 #include "graphicsscene.h"
 #include "undocommands.h"
 
+#include <QRegularExpression>
 #include <QSortFilterProxyModel>
 
 namespace Caneda
@@ -346,8 +347,8 @@ namespace Caneda
     void PropertyDialog::filterTextChanged()
     {
         QString text = ui.m_filterEdit->text();
-        QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-        m_proxyModel->setFilterRegExp(regExp);
+        QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+        m_proxyModel->setFilterRegularExpression(regExp);
     }
 
     //! \brief Add a new property to the model.

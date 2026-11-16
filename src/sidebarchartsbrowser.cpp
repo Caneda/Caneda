@@ -28,6 +28,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QShortcut>
 #include <QSortFilterProxyModel>
 #include <QTableView>
@@ -240,8 +241,8 @@ namespace Caneda
     void SidebarChartsBrowser::filterTextChanged()
     {
         QString text = m_filterEdit->text();
-        QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-        m_proxyModel->setFilterRegExp(regExp);
+        QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+        m_proxyModel->setFilterRegularExpression(regExp);
     }
 
     //! \brief Select all available waveforms

@@ -24,6 +24,7 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QListView>
+#include <QRegularExpression>
 #include <QSortFilterProxyModel>
 #include <QVBoxLayout>
 
@@ -177,8 +178,8 @@ namespace Caneda
     void QuickLauncher::filterTextChanged()
     {
         QString text = m_filterEdit->text();
-        QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-        m_proxyModel->setFilterRegExp(regExp);
+        QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+        m_proxyModel->setFilterRegularExpression(regExp);
         m_listView->setCurrentIndex(m_proxyModel->index(0,0));
     }
 

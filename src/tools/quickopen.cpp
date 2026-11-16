@@ -24,12 +24,15 @@
 #include "modelviewhelpers.h"
 #include "settings.h"
 
+#include <QAction>
+#include <QActionGroup>
 #include <QFileSystemModel>
 #include <QInputDialog>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QListView>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <QToolBar>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -86,13 +89,18 @@ namespace Caneda
         buttonFilters->setPopupMode(QToolButton::InstantPopup);
         buttonFilters->setMenu(filterMenu);
 
-        filterNone = new QAction(Caneda::icon("view-sidetree"), tr("Show all"), filterGroup);
-        QAction *filtersSeparator = new QAction(filterGroup);
+        filterNone = new QAction(Caneda::icon("view-sidetree"), tr("Show all"), this);
+        filterGroup->addAction(filterNone);
+        QAction *filtersSeparator = new QAction(this);
         filtersSeparator->setSeparator(true);
-        filterSchematics = new QAction(Caneda::icon("application-x-caneda-schematic"), tr("Show schematics"), filterGroup);
-        filterSymbols = new QAction(Caneda::icon("application-x-caneda-symbol"), tr("Show symbols"), filterGroup);
-        filterSimulations = new QAction(Caneda::icon("application-x-spice-simulation-raw"), tr("Show simulations"), filterGroup);
-        filterText = new QAction(Caneda::icon("text-plain"), tr("Show text files"), filterGroup);
+        filterSchematics = new QAction(Caneda::icon("application-x-caneda-schematic"), tr("Show schematics"), this);
+        filterGroup->addAction(filterSchematics);
+        filterSymbols = new QAction(Caneda::icon("application-x-caneda-symbol"), tr("Show symbols"), this);
+        filterGroup->addAction(filterSymbols);
+        filterSimulations = new QAction(Caneda::icon("application-x-spice-simulation-raw"), tr("Show simulations"), this);
+        filterGroup->addAction(filterSimulations);
+        filterText = new QAction(Caneda::icon("text-plain"), tr("Show text files"), this);
+        filterGroup->addAction(filterText);
 
         filterNone->setCheckable(true);
         filterSchematics->setCheckable(true);
@@ -293,8 +301,8 @@ namespace Caneda
 
         // Filter the proxy model
         QString text = m_filterEdit->text();
-        QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-        m_proxyModel->setFilterRegExp(regExp);
+        QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+        m_proxyModel->setFilterRegularExpression(regExp);
 
         // Select the first item in the result
         m_listView->setCurrentIndex(m_listView->model()->index(0,0, m_listView->rootIndex()));

@@ -21,6 +21,7 @@
 #define SYNTAXHIGHLIGHTERS_H
 
 #include <QSyntaxHighlighter>
+#include <QRegularExpression>
 
 // Forward declarations
 class QTextDocument;
@@ -50,13 +51,13 @@ namespace Caneda
 
         struct HighlightingRule
         {
-            QRegExp pattern;
+            QRegularExpression pattern;
             QTextCharFormat format;
         };
         QVector<HighlightingRule> highlightingRules;
 
-        QRegExp commentStartExpression;
-        QRegExp commentEndExpression;
+        QRegularExpression commentStartExpression;
+        QRegularExpression commentEndExpression;
 
         QTextCharFormat keywordFormat;
         QTextCharFormat typeFormat;
